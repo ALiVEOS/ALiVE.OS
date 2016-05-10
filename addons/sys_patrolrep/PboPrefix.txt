@@ -1,0 +1,8 @@
+x\alive\addons\sys_patrolrep
+======<HEADER>=======
+prefix=x\alive\addons\sys_patrolrep
+product=Arma 3
+version=1
+Pbo Type is: Arma Addon
+======</HEADER>============
+

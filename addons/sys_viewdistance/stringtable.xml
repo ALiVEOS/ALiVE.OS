@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_VDIST">
+	<English>View Settings</English>
+</Key>
+<Key ID="STR_ALIVE_VDIST_COMMENT">
+	<English>View Distance Settings in Game</English>
+</Key>
+<Key ID="STR_ALIVE_VDIST_USAGE">
+	<English>View Settings module allows you to dynamically change the appropriate view and terrain grid distance in game. You can also force a fixed View Distance by setting max and min values the same!</English>
+</Key>
+<Key ID="STR_ALIVE_VDIST_MAX">
+	<English>Max View Distance:</English>
+</Key>
+<Key ID="STR_ALIVE_VDIST_MAX_COMMENT">
+	<English>Maximum view distance allowed in Game</English>
+</Key>
+<Key ID="STR_ALIVE_VDIST_ENABLED">
+	<English>Set View Settings</English>
+</Key>
+<Key ID="STR_ALIVE_VDIST_ENABLED_COMMENT">
+	<English>Set you View distance in Game</English>
+</Key>
+<Key ID="STR_ALIVE_VDIST_MIN">
+	<English>Min View Distance:</English>
+</Key>
+<Key ID="STR_ALIVE_VDIST_MIN_COMMENT">
+	<English>Minimum view distance allowed in Game</English>
+</Key>
+<Key ID="STR_ALIVE_TGRID">
+	<English>Terrain Grid</English>
+</Key>
+<Key ID="STR_ALIVE_TGRID_COMMENT">
+	<English>Terrain Grid Settings in Game</English>
+</Key>
+<Key ID="STR_ALIVE_TGRID_MAX">
+	<English>Max Terrain Grid:</English>
+</Key>
+<Key ID="STR_ALIVE_TGRID_MAX_COMMENT">
+	<English>Maximum Terrain Grid allowed in Game 1 Low -> 5 High</English>
+</Key>
+<Key ID="STR_ALIVE_TGRID_MIN">
+	<English>Min Terrain Grid:</English>
+</Key>
+<Key ID="STR_ALIVE_TGRID_MIN_COMMENT">
+	<English>Minimum Terrain Grid allowed in Game 1 Low -> 5 High</English>
+</Key>
+<Key ID="STR_ALIVE_VDIST_ERROR1">
+	<English>Only one View Distance module can be used</English>
+</Key>
+
+</Container></Package></Project>

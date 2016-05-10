@@ -1,0 +1,238 @@
+/*%FSM<COMPILE "G:\Program Files (x86)\Poseidon-SQF-Editor\Poseidon\Data\Packages\Bin\fsmEditor\scriptedFSM.cfg, fnc_perfMonitor">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"wait",2,250,-75.000000,-350.000000,25.000000,-300.000000,0.000000,"wait"};
+item1[] = {"monitor",4,4314,50.000000,-350.000000,150.000000,-300.000000,0.000000,"monitor"};
+item2[] = {"init",0,250,-75.000000,-500.000000,25.000000,-450.000000,0.000000,"init"};
+item3[] = {"first",4,218,-75.000000,-425.000000,25.000000,-375.000000,0.000000,"first"};
+item4[] = {"finit",1,250,-75.000000,-650.000000,25.000000,-600.000000,0.000000,"finit"};
+item5[] = {"already",4,218,-75.000000,-575.000000,25.000000,-525.000000,1.000000,"already"};
+item6[] = {"abort",4,218,100.000000,-500.000000,200.000000,-450.000000,5.000000,"abort"};
+item7[] = {"custom__monitor",4,218,-75.000000,-275.000000,25.000000,-225.000000,0.000000,"custom " \n "monitor"};
+link0[] = {0,1};
+link1[] = {0,6};
+link2[] = {0,7};
+link3[] = {1,0};
+link4[] = {2,3};
+link5[] = {2,5};
+link6[] = {3,0};
+link7[] = {5,4};
+link8[] = {6,4};
+link9[] = {7,0};
+globals[] = {25.000000,1,0,0,0,640,480,1,21,6316128,1,-259.638550,234.638489,-190.527527,-596.800171,1157,951,1};
+window[] = {2,-1,-1,-32000,-32000,796,33,1055,30,3,1175};
+*//*%FSM</HEAD>*/
+class FSM
+{
+  fsmName = "fnc_perfMonitor";
+  class States
+  {
+    /*%FSM<STATE "wait">*/
+    class wait
+    {
+      name = "wait";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/"_c = _c + 1;" \n
+       ""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "abort">*/
+        class abort
+        {
+          priority = 5.000000;
+          to="finit";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"(_abort)"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"diag_log format[ ""perfMonitor.fsm is aborting. Abort :%1"", _abort] ;"/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "custom__monitor">*/
+        class custom__monitor
+        {
+          priority = 0.000000;
+          to="wait";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"(count _customCode > 0) && (diag_tickTime >= _customNext)"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"// Get custom monitor data" \n
+           "_data = [ [""Type"",""Data""] ];" \n
+           "" \n
+           "private [""_counter"",""_customCounter"",""_customValue""];" \n
+           "" \n
+           "_units = allUnits;" \n
+           "_Players = {(alive _x)&&(isPlayer _x)} count _units;" \n
+           "" \n
+           "_counter = _customCode select _customCount;" \n
+           "" \n
+           "if (_Players > 0) then {" \n
+           "	_data = _data + [ [""PLAYERS"", _Players]];" \n
+           "" \n
+           "	_customCounter = _counter select 0;" \n
+           "	switch (_customCounter) do {" \n
+           "		case ""triggers"": {_customValue = count allMissionObjects ""EmptyDetector"";};" \n
+           "		case ""objects"": {_customValue = count allMissionObjects ""All"";};" \n
+           "		case ""entities"": {_customValue = count entities ""All"";};" \n
+           "		default {_customValue = call compile format [""count %1"",_customCounter];};" \n
+           "	};" \n
+           "	_data = _data + [[_customCounter,_customValue]];" \n
+           "" \n
+           "	diag_log format[""perfMonitor.fsm message sent: %1"", _data];" \n
+           "					" \n
+           "	// Send data to server to be written to DB" \n
+           "	ALIVE_SYS_PERF_UPDATE_PERF = _data;" \n
+           "	publicVariableServer ""ALIVE_SYS_PERF_UPDATE_PERF"";" \n
+           "};" \n
+           "" \n
+           "_customCount = _customCount + 1;" \n
+           "if (_customCount == count _customCode) then {" \n
+           "	_customCount = 0;" \n
+           "	_customNext = diag_TickTime +  ((_customCode select _customCount) select 1);" \n
+           "} else {" \n
+           "	_customINTERVAL = ((_customCode select _customCount) select 1) - (_counter select 1); " \n
+           "	_customNext = diag_TickTime + _customINTERVAL;" \n
+           "};" \n
+           "" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "monitor">*/
+        class monitor
+        {
+          priority = 0.000000;
+          to="wait";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"(diag_tickTime >= _Next) "/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"// Units" \n
+           "_units = allUnits;" \n
+           "" \n
+           "_Players = {(alive _x)&&(isPlayer _x)} count _units;" \n
+           "" \n
+           "if (_Players > 0) then {" \n
+           "	// FPS & CPS" \n
+           "	_data = [ [""Type"",""Data""],[""FPS"",round (diag_fps*1000)] , [""FPSMIN"", round (diag_fpsmin*1000)],  [""CPS"",round((_c/_INTERVAL)*1000)] ];" \n
+           "" \n
+           "	_locAIs = {(alive _x)&&(local _x)} count _units;" \n
+           "	_remAIs = ({alive _x} count _units) - _Players - _locAIs;" \n
+           "	_data = _data + [ [""PLAYERS"", _Players],[""LOCAI"",_locAIs] , [""REMAI"",_remAIs ]];" \n
+           "" \n
+           "	// Profiles" \n
+           "	if !(isnil ""Alive_ProfileHandler"") then {" \n
+           "		private [""_active"",""_inactive"",""_unitCount"",""_activeCount"",""_inactiveCount"",""_unitCount"",""_vehicleCount""];" \n
+           "		_active = [ALIVE_profileHandler, ""getActiveEntities""] call ALIVE_fnc_profileHandler;" \n
+           "		 _activeCount = count _active;" \n
+           " " \n
+           "		// not spawned" \n
+           "		_inactive = [ALIVE_profileHandler, ""getInActiveEntities""] call ALIVE_fnc_profileHandler;" \n
+           "		_inactiveCount = count _inactive;" \n
+           "" \n
+           "		  // individual units" \n
+           "		 _unitCount = [ALIVE_profileHandler, ""getUnitCount""] call ALIVE_fnc_profileHandler;" \n
+           "" \n
+           "		  // vehicles" \n
+           "		   _vehicleCount = [ALIVE_profileHandler, ""getVehicleCount""] call ALIVE_fnc_profileHandler;" \n
+           " " \n
+           "		 _data = _data +  [ [""Active"", _activeCount],  [""Inactive"", _inactiveCount], [""Units"", _unitCount], [""PVehicles"", _vehicleCount]];" \n
+           "	};" \n
+           "" \n
+           "	diag_log format[""perfMonitor.fsm message sent: %1"", _data];" \n
+           "					" \n
+           "	// Send data to server to be written to DB" \n
+           "	ALIVE_SYS_PERF_UPDATE_PERF = _data;" \n
+           "	publicVariableServer ""ALIVE_SYS_PERF_UPDATE_PERF"";" \n
+           "};" \n
+           "" \n
+           "_Next = diag_TickTime + _INTERVAL;" \n
+           "_c = 0;"/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "init">*/
+    class init
+    {
+      name = "init";
+      init = /*%FSM<STATEINIT""">*/"" \n
+       "if !(isDedicated) exitWith {" \n
+       "	diag_log (""perfMonitor.fsm exiting - not dedicated server"");" \n
+       "};" \n
+       "" \n
+       "diag_log (""perfMonitor.fsm started"");" \n
+       "_abort = false;" \n
+       "" \n
+       "// get custom code" \n
+       "_customCode = _this select 0;" \n
+       "_customCount = 0;" \n
+       "_customNext = 0;" \n
+       "" \n
+       "// variable for counting the number of condition evaluations" \n
+       "_c = 0;" \n
+       "" \n
+       "// Number of alive units impacting performance" \n
+       "_Players = 0; // impacts FPS" \n
+       "_locAIs = 0; // impacts FCEF" \n
+       "_remAIs = 0; // sum of all AI not local" \n
+       "_profiles = 0; // Number of virtual profiles" \n
+       "" \n
+       "// define the minimal time interval in seconds" \n
+       "_INTERVAL = 180;" \n
+       "" \n
+       "_Next = diag_TickTime;" \n
+       "" \n
+       "if (count _customCode > 0) then {" \n
+       "	_customNext = diag_TickTime + ((_customCode select _customCount) select 1);" \n
+       "};" \n
+       "" \n
+       "_units =[];" \n
+       "" \n
+       "diag_log (""perfMonitor.fsm init completed"");"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/"(isDedicated)"/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "already">*/
+        class already
+        {
+          priority = 1.000000;
+          to="finit";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"(!isnil (""PerfMonRunning"") || !(isDedicated))"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"diag_log format[ ""perfMonitor.fsm already started or is client machine - IsDedicated:%1"", isDedicated] ;"/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "first">*/
+        class first
+        {
+          priority = 0.000000;
+          to="wait";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"(isnil (""PerfMonRunning"") && isDedicated)"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"" \n
+           "PerfMonRunning = true;" \n
+           "" \n
+           "active = true;" \n
+           "" \n
+           "diag_log (""perfMonitor.fsm started"");"/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "finit">*/
+    class finit
+    {
+      name = "finit";
+      init = /*%FSM<STATEINIT""">*/"diag_log ""perfMonitor.fsm is shutting down"" ;" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+  };
+  initState="init";
+  finalStates[] =
+  {
+    "finit"
+  };
+};
+/*%FSM</COMPILE>*/

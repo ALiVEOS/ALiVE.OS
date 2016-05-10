@@ -1,0 +1,4 @@
+x\alive\addons\sys_xstream
+prefix=x\alive\addons\sys_xstream
+Mikero=DePbo.dll
+Pbo Type is: Arma

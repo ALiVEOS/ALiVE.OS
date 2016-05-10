@@ -1,0 +1,24 @@
+Run Cluster Generation: 
+
+execVM "\x\alive\addons\civ_placement\tests\test_clusterGeneration.sqf"
+
+Once completed paste the results in 
+
+civ_placement\clusters\clusters.WORLDNAME_civ.sqf
+
+Run a find and replace for ;
+
+* and replace with *;\r\n on the file
+
+Merge sector data with cluster data: 
+
+execVM "\x\alive\addons\fnc_analysis\tests\test_appendClustersCiv.sqf"
+
+Once completed paste the results in a temp file
+Run a find and replace for 
+
+;* and replace with *;\r\n on the file
+
+Copy the contents of the file to the bottom of the grid data file replacing the existing cluster data sections: 
+
+fnc_analysis\data\data.WORLDNAME.sqf

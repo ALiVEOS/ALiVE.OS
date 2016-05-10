@@ -1,0 +1,2 @@
+TODO
+- Maybe this function could be interesting: CBA_fnc_setVarNet (https://dev-heaven.net/docs/cba/files/network/fnc_setVarNet-sqf.html)

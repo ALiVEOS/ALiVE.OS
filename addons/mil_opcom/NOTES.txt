@@ -1,0 +1,108 @@
+*Model - no visual just reference data*
+- list of objectives and priorities
+- enemy force composition as profiles
+
+*Controller - *
+- None
+
+*View - purely visual*
+- None
+
+---Not OPCOM---
+And you can apply rules so they move from one to the other depending on situation and current force strength
+So for example you could hypothetically have a Comd starting as Offensive, captures several objectives but loses a lot of troops, goes defensive arounnd his HQ location
+get's a resupply, goes offensive again
+
+Depending on the enemy's STANCE (ie safe, aware, etc) - I'd like for spawned AI to walk around the base casually if they have no clue we are near. Its a long way down the road, but it would be awesome seeing them go into danger mode and all regroup and jump in vehicles, etc.
+
+- mission editor defines an AO and specifies then enemy is invading from a position (should be performed by Logistics)
+
+----------------------------------------
+https://dev-heaven.net/boards/111/topics/2620
+
+Basics of OPCOM Design
+
+This is version 1 of this module. Its specifically about appropriate placement of enemy units.
+
+OPCOM Definition
+Initial placement of Enemy based on clustered objectives within the AO. In a persisted situation, the stance, etc would change during gameplay and be persisted as well, restoring if the mission is restarted ie params within editor module ignored.
+
+Parameters
+A single editor module is placed for OPCOM, with the following parameters:
+- Enemy Size: 1/2/3 Platoon, 1/2/3 Company, Battallion or auto based on objectives
+- Initial Enemy Stance: SAFE, AWARE, DANGER - this chooses if the enemy are well defended and on active patrols. As enemy aggravates, reinforcements can come from outside the map
+- Available Unit Types: Infantry, Motorised, Mechanised, Armour, Anti-air, Mortars, Artillery, Special Forces?, Sniper Teams?, Airborne
+- AO Marker(s?)
+- Blacklist Markers: Marker names that are used to identify blacklisted areas
+- Posture (Defence/Offence/Occupying/Insurgency)
+- Skill level (Green, Regular, Veteran)
+- Factions
+
+Once the size, is chosen, locations are looked for or created from the top down - for example, Tactical Command will look for Military Offices, otherwise annex a civilian office or create a tent camp for them. Camps for example, are created once, and PDB stores them as objects rather than recreating them every restart.
+
+All randomisation is based on the randomSeed value found in the misson.sqm (currently not possible) - check Destroy City on how to use seeds for randomisation. This means that the mission looks the same on every restart until the seed is changed.
+
+Use Cases:
+- mission editor defines an AO, size is calculated automatically, and the enemy is already present but relaxed
+- drop OPCOM module and select size of unit - Bn, Coy, Pl
+
+Assume location of module on the map is the start point or HQ point as the highest priority
+
+Example: So OPCOM needs to generate a Platoon
+
+The Mission Editor has dropped the OPCOM module in the editor and selected ratios like so:
+Infantry = 4
+Support = 2
+SpecOps = 1
+Motorised = 2
+Mechanised = 1
+Armour = 0
+Air = 1
+
+So for a platoon it decides it needs 3 sections/squads - the ratios determine it might get 3 from Infantry (2 x regular sqd and Weapons sqd)
+OR
+It chooses 2 from Infantry (1 x Reg sqd and 1 x AT team) and 1 from Support (1 x Mortars)
+
+I think later in v1, I will included units either static (defending & foot patrols) or mobile (larger motor/mech patrols, reinforcements, attacking, recon) but for now it will be simply enemy placement and defense of placement.
+----------------------------------------
+Company Types:
+- Rifle Company
+- Artillery Battery
+- Headquarters company
+- Heavy weapons/Combat Support Company administratively contains the specialized infantry platoons such as Reconnaissance Platoon, Pioneer Platoon, Headquarters and Signals Platoon, Anti-Armour Platoon, and Mortar Platoon
+- Support/Administration Support Company contains the support tradesmen which a battalion requires, such as cooks, vehicle technicians, supply, medics, etc.
+- Motorised Rifle Company mounted in BTR/BMP
+	- BTR rifle company consisted of a company headquarters, three motorised rifle platoons and a machine gun/antitank platoon with two PK machine guns and two AT-7 Saxhorn launchers for a total of 110 personnel and 12 BTRs
+	- BMP rifle company had the same number of personnel and carriers and also consisted of a company headquarters and three motorised rifle platoons but instead included a machine gun platoon with six RPK-74s
+- Tank companies at 10 tanks, with three tanks in each platoon plus HQ tank
+- Headquarters and Service Company
+	- Service Platoon, consisting of S-4, Motor Transportation, Food Service, armorers, and Supply.
+	- Scout Sniper Platoon.
+	- Medical Platoon
+- Airborne - Airborne forces are generally composed of infantry and light, non-armored vehicles and guns
+	- Paratroopers - Infantry soldier landed by parachute from aircraft
+	- Air assault troops or airmobile infantry—transported to the battle by helicopter or by aircraft.
+----------------------------------------
+Tupolov:
+OPCOM accepts input from mission maker. Mission maker is essentially 2 UP from player. 2 UP is the commander that says, here's the situation, I want you to defend/attack/occupy/counter insurgency/raid/invade X location. I expect a BN/coy/platoon with inf/mech/armour/air assets.
+OPCOM then deploys the EN bn/coy/platoon of assets based on area focus and priority of clusters.
+OPCOM is 1 UP and manages EN forces deployed to either attack/defend/disrupt/protect/repulse BLUFOR. Opcom can also act as 1up for BLUFOR and allocate tasks.
+The location could be the whole of Stratis, but it also could be the southern coast etc
+Based on area, priority of cluster and enemy size you split the 'template' assets across the priority clusters
+So might get a whole bn defending the coast and the key clusters around there.
+----------------------------------------
+Friznit:
+Process (and to clear up the language a bit):
+1. Mission Maker defines strategic situation with OPCOM (Invasion, Occupation, Insurgency) -> OPCOM outputs a list of locations prioritised by relative strategic importance (these are called *Objectives*)
+2.  Mission Maker defines force composition available for OPCOM Commander(s) and its *Mission*
+a. Size (Bn, Coy Pl)
+b. Type (Armoured, Mech, Light, Airborne, Marine)
+c.  Mission (Attack, Defend, Occupy, Raid, Terrorize etc)
+3.  OPCOM defines *Tasks* for forces under command (3Pl attack Objective A; 1Coy defence Objective C etc)
+4.  OPCOM reacts to the changing situation and defines new tasks on the fly (Engr Troop repair Chopper A; Logistics Group move to Grid XXX; Tank Troop replen at Objective C)
+
+
+
+Defending (Dug-in)
+Occupation (Patrolling)
+Insurgency (Civilian infrastructure) 

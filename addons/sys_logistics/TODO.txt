@@ -1,0 +1,71 @@
+﻿TODO
+
+1. UI
+
+----------------------------------
+Methods
+done - 1. addObject - add an object to the store
+done - 2. removeObject - remove an object from the store
+done - 3. saveLogistics - save data to DB - done (method â€œstateâ€�)
+done - 4. loadLogistics - load data from DB - done (method â€œstateâ€�)
+done - 5. moveObject - move object from a to b - done
+done - 6. carryObject - player carry object - done
+done - 7. dropObject - player drop object - done
+done - 8. releaseObject - vehicle release object - done
+done - 9. towObject - vehicle tow vehicle - done
+done - 10. untowObject - vehicle release vehicle from tow - done
+done - 11. liftObject - heli/vstol lift object/vehicle, forklift lift object, crane lift object/vehicle - done
+
+done - 12. stowObject - object/vehicle placed in vehicle - done
+done - 13. unloadObject - object/vehicle unloaded from vehicle - done
+
+14. buildObject - Create a land structure? (not yet needed, prio 3)
+15. demolishObject - Remove a land structure? (not yet needed, prio 3)
+
+eventhandlers
+done - killed - remove vehicle and objects it contains - done
+done - put: check to see if weapon/item is on ground - addobject 
+done - take: remove object from list if taken from ground (and put into something else) - removeobject
+
+functions
+done - availableCargo - checks available space in vehicle - done
+done - availableWeight - checks available weight for vehicle - done
+done - canLift - checks if vehicle can lift object/vehicle - done
+done - canCarry - checks if player can lift object/vehicle - done
+done - canTow - checks if vehicle can tow vehicle - done
+done - getObjectSize - returns the volume of the object - done
+done - getObjectWeight - returns the weight of the object - done
+done - getObjectState - returns CBA Hash of object state
+done - setObjectState - sets object state from CBA Hash of values
+- createObject - creates an object (why not use createvehicle)?
+- deleteObject - deletes object (why not use deletevehicle)?
+
+don't forget about items left lying around!
+
+List of objects/vehicle classes to be persisted...
+done - 1. ReammoBox, ThingX - done
+done - 2. LandVehicle, Air, Ship, - done
+done - 3. Weapons (including Items) not stored in crates/vehicles - done
+done - 5. Land? Hesco, cargo containers etc - need a list - House_Small_F - done (static for now)
+done - 4. Magazines and Magazine count
+
+------------------------------------
+DESIGN NOTES for module
+
+CfgVehicles
+- Disable Player Logistics (set ALiVE_sup_logistics_enabled to false)
+---> needs to be switched as for now you have to place the module
+
+module options:
+
+disable Persistence
+disable Load/Unload
+disable Towing
+disable Lifting
+disable Player Carry/Drop
+disable 3D Logistics Mode
+
+Properties
+- ALIVE_sys_Logistics_Store (CBA Hash of objects to be stored)
+- Debug
+- Enabled

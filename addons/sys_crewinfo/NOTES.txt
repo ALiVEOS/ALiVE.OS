@@ -1,0 +1,27 @@
+***Use Cases***
+
+As a player:
+
+- View all player names and seat locations in my vehicle
+- Gunner position's HUD displays details of vehicles in FOV
+
+
+As a mission editor:
+
+- Set my crewinfo HUD position left or right relative on screen
+- Enabled debug messages
+
+
+*Model - no visual just reference data*
+- HUD location
+- Activate/Deactivate
+- Debug messages
+- Enforce Setting
+
+*Controller - coordination*
+- Enforce: If in vehicle...
+
+
+*View - purely visual*
+
+

@@ -1,0 +1,8 @@
+cluster hash
+"centre" => calculated & refreshed
+"size" => calculated & refreshed
+"nodes" => [obj1,obj2,objn]
+"type" => "military","infrastructure","civilian"
+"priority" => calculated initially, then fixed
+
+---------------------------------------------------

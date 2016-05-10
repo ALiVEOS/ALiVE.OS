@@ -1,0 +1,159 @@
+Camera system
+
+Headline: Automated in game camera that catches key action events as they happen
+
+Description: Similar to spectator mode, this module provides an automated camera that follows key events in game. A player can opt for their client to act as the "camera". This is useful for groups or clans to record operations for playback later or for streaming to services such as twitch.tv. The camera utilizes typical "hollywood" shots and shot lengths to provide an action/documentary feel. If ACRE is used, the camera system will also attempt to capture key conversations between group leaders.
+
+Types of Shots / Trigger:
+- Close up shot - for conversations/radio order, in building
+- Satellite shot - random/filler shot
+- aerial shot - landing, enter location, initial contact
+- Over the shoulder - infantry shooting
+- Reverse shot - enemy over the shoulder shot(target) - enemy being shot at by BLUFOR
+- Vehicle wheel shot - vehicle movement
+- Aircraft wing shot (OTS aircraft) - missile lock, target lock, fired EH
+- Weapon shot - fired eh
+- Pilot View - target lock
+- Missile shot - missile fired
+- Bullet cam? - missile/fired eh
+- Side Tracking shot - group movement
+- Cameraman shot - blufor near enemy, movement - increase head bob
+- Ground tracking shot - movement, like cameraman but tracks something
+- Front tracking shot - group movement
+- 2 person shot - on heal
+- Behind tracking shot - fired eh focus on shooter tracking to target
+- Optics view - fired eh
+- medium shot - explosion, killed, getin, getout
+- establishing shot - entering location
+
+Priority of triggers
+- Fired - Missile, AA, AT, AP, Grenade round, heavy calibre, LRR, MG, Rifle, SMG, HandGrenade, Pistol, Artillery
+- Killed - Aircraft, Tank, Ship, Car, Static
+- Explosion - Aircraft, Tank, Ship, Car, Static
+- Incoming Missile - Aircraft, Tank, Ship, Car, Static
+- Target Lock by - Aircraft, Tank, Car, Static, AA inf, AT Inf, Sniper, Inf with Laser, Inf
+- ACRE Radio Transmit - Coy Cmdr, Pl Cmdr, Section Cmdr, Team Ldr
+- Hit - Aircraft, Tank, Ship, Car, Inf, Static
+- Entering Location
+- Movement near enemy
+- Entering Building
+- Movement by vehicle
+- Movement by group leader
+- Get In vehicle
+- Take off vehicle?
+- Landing Vehicle (gear lowered or close to ground)
+- Get out vehicle
+- Weapon Assembled
+- Heal
+- Movement by anyone
+- Any unit
+
+
+Usage: Place the camera module and choose the following settings:
+
+- Sides to include: ALL, BLUFOR & IND, BLUFOR & OPFOR, OPFOR & IND, BLUFOR ONLY, OPFOR ONLY, IND ONLY
+- Choose Overall leader (select playable unit)
+- Capture Radio Conservations (requires ACRE)
+	- Set ACRE channel?
+- Include Satellite Tracking Shots
+- Include Aerial Shots
+- Include Vehicle Shots
+- Include 3rd-person views
+- Cameraman shots only
+- Enable Camera Shake
+
+In-game: 
+
+Admins can
+
+- Enable/Disable Camera System
+- Select player/client that can act as camera
+
+Players can
+
+- Turn on camera
+- Turn off camera
+
+Mechanism Concept:
+
+Server tracks server side events and sends camera command (event information) to camera client
+All clients track client side events and send camera command to camera client
+Camera client initializes camera and runs through "non event" shots until a new command is received, new command is evaluated based on priority and put in stack of shots
+If shot expires prior to reaching top of stack of commands, then its deleted
+Current running shot has a shot length (Min 2 seconds and max 7 seconds) after 2 seconds the shot can be interrupted by a priority shot
+After shot completion next shot in stack takes over
+Stack is filled with "non-event" shots if no commands received
+Camera runs until client selects stop or Admin stops camera
+No player input while camera is running other than action menu to stop camera
+Admin can kill Camera at anytime
+
+Mechanism Implementation:
+
+Camera Module logic object placed in editor
+On init module sets params and waits for Camera Client to identify itself
+EH setup via config on appropriate classes (vehicles)
+EH only executes if Camera System in ON
+EH will send event information to Camera Client (client id must be set on object)
+Admin/player set client as Camera 
+Logic is updated with client info and marked as "ON"
+Any EH that fires, command/info is sent to Camera Client using either CBA Events or ALIVE BUS
+Camera client processes info and places info into a "stack" based on priority (CBA HASH?)
+Camera client instantiates a camera based on top of stack request
+Admin or player stops Camera Client, logic is set to "OFF"
+
+
+
+
+// Sys_Camera
+//
+// fnc_ALiVECamera.sqf
+
+Logic Properties
+- Sync playable unit to logic (or all are available)
+- Camera settings etc
+- Enabled/Disabled
+- Camera Client ID
+
+Logic Methods
+- Enable
+- Disable
+- setCameraClient (clientID)
+- SetCameraSetting (setting, setting value)
+- addClient (clientID)
+- removeClient (clientID)
+- startClient (clientID) - initiates camera
+- stopClient (clientID)
+- processEH (EH) - function that stacks EHs
+- processCamera - function that looks for stack, calls shots, logic for choosing shot
+- getShot - processes shot functio
+
+Server Side Process
+- Any additional EH
+- Set logic up
+- PV logic
+
+Client Side Process
+- Any additional EH
+
+Client Side Menu/Interaction
+- Check for Admin - Enable/Disable Camera
+- Check for Admin - Select client
+- Check admin - force client start
+- Player check for rights - Start/Stop Camera
+
+Init
+Set each relevant EH for all vehicle classes
+- sent event info to camera client using BUS (get clientID from logic)
+
+Shots
+- Create set camera positions relative to objects (arj functions +)
+- Face shot
+- over the shoulder
+- behind aircraft
+- side track of vehicle
+- pilot/driver shot
+- cameraman shot, eye level, following group leader/random squad member, head bob
+- establishing shot - high above
+- view from target - just in front
+- bullet cam
+- 

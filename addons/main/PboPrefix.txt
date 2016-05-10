@@ -1,0 +1,8 @@
+x\alive\addons\main
+=======HEADER=======
+prefix=x\alive\addons\main
+Mikero=DePbo.dll
+product=Arma 3
+version=1
+Pbo Type is: Arma Addon
+==================

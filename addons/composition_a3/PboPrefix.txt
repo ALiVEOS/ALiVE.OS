@@ -1,0 +1,8 @@
+x\alive\addons\composition_a3
+======<HEADER>=======
+prefix=x\alive\addons\composition_a3
+product=Arma 3
+version=1
+Pbo Type is: Arma Addon
+======</HEADER>============
+

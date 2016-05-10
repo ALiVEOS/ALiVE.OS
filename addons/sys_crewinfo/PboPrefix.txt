@@ -1,0 +1,4 @@
+x\alive\addons\sys_crewinfo
+prefix=x\alive\addons\sys_crewinfo
+Mikero=DePbo.dll
+Pbo Type is: Arma

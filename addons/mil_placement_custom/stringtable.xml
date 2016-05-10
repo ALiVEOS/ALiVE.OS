@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_CMP">
+    <English>Military Placement (Cust. Obj.)</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_COMMENT">
+    <English>Custom Military Objective</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_DEBUG">
+    <English>Enable Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_DEBUG_COMMENT">
+    <English>Enables CMP Module Debug</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_FACTION">
+    <English>Force Faction:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_FACTION_COMMENT">
+    <English>Faction of the units to be placed (BLU_F, OPF_F, IND_F, BLU_G_F)</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_PRIORITY">
+    <English>Objective priority:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_PRIORITY_COMMENT">
+    <English>Priority of the custom objective. Used by OPCOM and others for target evaluation</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_SIZE">
+    <English>Objective size:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_SIZE_COMMENT">
+    <English>Size of the custom objective. Used by OPCOM and others for target evaluation</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_CUSTOM_INFANTRY_COUNT">
+    <English>Infantry Count:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_CUSTOM_INFANTRY_COUNT_COMMENT">
+    <English>Set count of Infantry groups to be spawned, set to 0 for none</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_CUSTOM_MOTORISED_COUNT">
+    <English>Motorised Count:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_CUSTOM_MOTORISED_COUNT_COMMENT">
+    <English>Set count of Motorised groups to be spawned, set to 0 for none</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_CUSTOM_MECHANISED_COUNT">
+    <English>Mechanised Count:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_CUSTOM_MECHANISED_COUNT_COMMENT">
+    <English>Set count of Mechanised groups to be spawned, set to 0 for none</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT">
+    <English>Armour Count:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT_COMMENT">
+    <English>Set count of Armour groups to be spawned, set to 0 for none</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT">
+    <English>SpecOps Count:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT_COMMENT">
+    <English>Set count of SpecOps groups to be spawned, set to 0 for none</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_COMPOSITION">
+    <English>Spawn Composition:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_COMPOSITION_COMMENT">
+    <English>Spawn a composition at the objective location</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_A">
+    <English>BIS - Camp Audacity</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_B">
+    <English>BIS - Camp Bravery</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_C">
+    <English>BIS - Camp Courage</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_D">
+    <English>BIS - Camp Defiance</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_E">
+    <English>BIS - Camp Endurance</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_F">
+    <English>BIS - Camp Fortitude</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_USAGE">
+    <English>Place the Custom Military Objective module in the editor, select the desired Size, Priority and force composition. Custom factions can be entered in the text box (separated by a comma).</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_READINESS_LEVEL">
+	<English>Readiness:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_READINESS_LEVEL_COMMENT">
+	<English>The amount of troops that will be on duty and patrolling</English>
+</Key>
+</Container></Package></Project>

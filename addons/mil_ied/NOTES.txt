@@ -1,0 +1,26 @@
+*Model - no visual just reference data*
+- server side object only
+- debug enabled
+- ied threat
+- bomber threat
+- vb-ied threat
+- location for ieds
+- roadblocks with ieds
+
+*Controller - *
+- frequent check if player is server admin
+- check player in is location
+
+*View - purely visual*
+- initialise menu
+- frequent check to modify menu and display status
+- enable/disable
+- debug
+
+To do:
+- disarm ied
+- handle damage to ied
+- locations
+- remove ied
+- suicide bomber
+- dickers

@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_AMBCP">
+	<English>Civilian Placement</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_COMMENT">
+	<English>Ambient Civilian Placement</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_DEBUG">
+	<English>Enable Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_DEBUG_COMMENT">
+	<English>Enables CP Module Debug</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_TAOR">
+	<English>TAOR Marker:</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_TAOR_COMMENT">
+	<English>Tactical Area Operation Responsibility Marker</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_BLACKLIST">
+	<English>Blacklist Marker:</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_BLACKLIST_COMMENT">
+	<English>Exclusion Marker</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_SIZE_FILTER">
+	<English>Objective Size Filter:</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_COMMENT">
+	<English>Filter objectives less than selected size</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_NONE">
+	<English>Do not filter</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_SMALL">
+	<English>Ignore small objectives</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_MEDIUM">
+	<English>Ignore small + medium objectives</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_LARGE">
+	<English>Only huge objectives</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER">
+	<English>Objective Priority Filter:</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER_COMMENT">
+	<English>Filter objectives less than selected priority</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER_NONE">
+	<English>Do not filter</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER_LOW">
+	<English>Ignore low priority objectives</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER_MEDIUM">
+	<English>Ignore low + medium priority objectives</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER_HIGH">
+	<English>Only high priority objectives</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_FACTION">
+	<English>Force Faction:</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_FACTION_COMMENT">
+	<English>Faction of the units to be placed (CIV_F,mod_faction_name)</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_PLACEMENT_MULTIPLIER">
+    <English>Placement Level</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_PLACEMENT_MULTIPLIER_COMMENT">
+    <English>Amount of civilian agents to place in locations</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_PLACEMENT_MULTIPLIER_LOW">
+    <English>Low</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_PLACEMENT_MULTIPLIER_MEDIUM">
+    <English>Medium</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_PLACEMENT_MULTIPLIER_HIGH">
+    <English>High</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_PLACEMENT_MULTIPLIER_EXTREME">
+    <English>Extreme</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT">
+    <English>Place ambient vehicles</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT_COMMENT">
+    <English>Place ambeint vehicles in locations</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT_NONE">
+    <English>No ambient vehicles</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT_LOW">
+    <English>Low ambient vehicles</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT_MEDIUM">
+    <English>Medium ambient vehicles</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT_HIGH">
+    <English>High ambient vehicles</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_FACTION">
+    <English>Ambient vehicle faction</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_FACTION_COMMENT">
+    <English>Ambient vehicles pulled from this faction (CIV_F,mod_faction_name)</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_USAGE">
+	<English>Define the settings on the module, place optional TAOR / Blacklist markers!</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_CIVILIAN_ROLES">
+    <English>Civilian roles:</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_CIVILIAN_ROLES_COMMENT">
+    <English>Selects the possible civilian roles like major, priest, townelder etc.</English>
+</Key>
+
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_CIVILIAN_ROLES_NONE">
+    <English>None</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_CIVILIAN_ROLES_WEST">
+    <English>Western</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_CIVILIAN_ROLES_EAST">
+    <English>Eastern</English>
+</Key>
+
+
+
+
+
+
+
+
+
+
+</Container></Package></Project>

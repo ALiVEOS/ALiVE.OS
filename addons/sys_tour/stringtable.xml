@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_TOUR">
+    <English>ALiVE Tour</English>
+</Key>
+<Key ID="STR_ALIVE_TOUR_COMMENT">
+    <English>Drop on a mission to enable a tour for players</English>
+</Key>
+<Key ID="STR_ALIVE_TOUR_DEBUG">
+    <English>Enable Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_TOUR_DEBUG_COMMENT">
+    <English>Enables Tour Module Debug</English>
+</Key>
+</Container></Package></Project>

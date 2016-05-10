@@ -1,0 +1,1 @@
+ALIVE_gridData = [] call ALIVE_fnc_hashCreate;

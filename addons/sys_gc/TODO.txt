@@ -1,0 +1,1 @@
+TODO: Integrate analysis incl. output to RPT option in Allmissionobjects

@@ -1,0 +1,8 @@
+x\alive\addons\fnc_analysis
+======<HEADER>=======
+prefix=x\alive\addons\fnc_analysis
+product=Arma 3
+version=1
+Pbo Type is: Arma Addon
+======</HEADER>============
+

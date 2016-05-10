@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_QUICKSTART">
+	<English>Quick Start Module</English>
+</Key>
+<Key ID="STR_ALIVE_QUICKSTART_COMMENT">
+	<English>Autostarting ALiVE Module template (uses additional module to configure parameters)</English>
+</Key>
+<Key ID="STR_ALIVE_QUICKSTART_DATABASE">
+	<English>Database:</English>
+</Key>
+<Key ID="STR_ALIVE_QUICKSTART_DATABASE_COMMENT">
+	<English>Enable the external database to persist your mission</English>
+</Key>
+<Key ID="STR_ALIVE_QUICKSTART_ERROR1">
+	<English>Only one Quick Start Module allowed</English>
+</Key>
+<Key ID="STR_ALIVE_QUICKSTART_DEBUG">
+	<English>Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_QUICKSTART_DEBUG_COMMENT">
+	<English>Enable Debug</English>
+</Key>
+</Container></Package></Project>

@@ -1,0 +1,1320 @@
+/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, alivearty">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"Start",0,250,-41.455616,-237.568573,48.544384,-187.568573,0.000000,"Start"};
+item1[] = {"True",4,218,-42.781796,-125.724930,47.218204,-75.724922,0.000000,"True"};
+item2[] = {"main_loop",2,250,-43.161469,-20.598993,46.838547,29.401003,0.000000,"main loop"};
+item3[] = {"new_task",4,218,-38.938957,58.070740,51.061043,108.070747,0.000000,"new task"};
+item4[] = {"_",2,250,-39.730919,130.312286,50.269096,180.312286,0.000000,""};
+item5[] = {"proceed",4,4314,-38.146973,229.671280,51.853027,279.671356,0.000000,"proceed"};
+item6[] = {"__1",2,250,-40.522888,304.116425,49.477127,354.116425,0.000000,""};
+item7[] = {"Shoot",4,218,-38.938953,375.393738,51.061047,425.393738,0.000000,"Shoot"};
+item8[] = {"__2",2,250,-220.322266,425.625824,-130.322189,475.625824,0.000000,""};
+item9[] = {"splash",4,218,-25.917665,523.731567,64.082306,573.731567,1.000000,"splash"};
+item10[] = {"__3",2,250,-28.606581,600.313232,61.393440,650.313232,0.000000,""};
+item11[] = {"complete",4,218,-28.643337,673.174500,61.356651,723.174500,0.000000,"complete"};
+item12[] = {"__4",2,250,-29.297188,763.329834,60.702827,813.329834,0.000000,""};
+item13[] = {"ready_for_new_mi",4,218,-49.835411,854.863464,84.514908,934.958313,0.000000,"ready for new mission"};
+item14[] = {"__5",2,250,-25.202356,996.407898,64.797668,1046.407837,0.000000,""};
+item15[] = {"",7,210,-396.776917,1016.971802,-388.776917,1024.971802,0.000000,""};
+item16[] = {"dead",4,218,-480.812317,-21.425758,-390.812347,28.574249,100.000000,"dead"};
+item17[] = {"not_viable_",4,218,-182.663177,129.460892,-92.663177,179.460892,3.000000,"not viable" \n ""};
+item18[] = {"",7,210,-433.508423,322.146332,-425.508423,330.146332,0.000000,""};
+item19[] = {"",7,210,-409.517120,630.532776,-401.517120,638.532776,0.000000,""};
+item20[] = {"__6",1,250,-656.779907,-21.765007,-566.779907,28.234982,0.000000,""};
+item21[] = {"",7,210,-405.973358,779.044312,-397.973358,787.044312,0.000000,""};
+item22[] = {"",7,210,460.316040,-0.979358,468.316040,7.020648,0.000000,""};
+item23[] = {"",7,210,-420.700317,513.539978,-412.700317,521.539978,0.000000,""};
+item24[] = {"not_in_range",4,218,208.929932,64.092453,298.929932,114.092430,1.000000,"not in range"};
+item25[] = {"__7",2,250,219.131882,190.831787,309.131866,240.831772,0.000000,""};
+item26[] = {"Static",4,250,405.627228,193.648911,495.627014,243.648956,0.000000,"Static"};
+item27[] = {"no_ammo",4,218,-234.370651,-101.837402,-144.370667,-51.837425,50.000000,"no ammo"};
+item28[] = {"__8",1,250,-463.550537,-101.837433,-373.550507,-51.837440,0.000000,""};
+item29[] = {"at_base",4,218,54.840569,922.746033,144.841217,972.745728,0.000000,"at base"};
+item30[] = {"",7,210,111.217598,-0.995733,119.217628,7.004266,0.000000,""};
+item31[] = {"",7,210,-437.671722,211.124527,-429.671722,219.124512,0.000000,""};
+item32[] = {"Mobile",4,218,230.611542,265.626190,320.611542,315.626190,1.000000,"Mobile"};
+item33[] = {"__9",2,250,231.537720,340.923096,321.537689,390.923096,0.000000,""};
+item34[] = {"Move_out_",4,218,232.825073,427.215485,322.825073,477.215424,1.000000,"Move out" \n ""};
+item35[] = {"__10",2,250,232.825104,504.689758,322.825134,554.689758,0.000000,""};
+item36[] = {"in_position",4,218,411.072601,515.687988,501.072601,565.687988,0.000000,"in position"};
+item37[] = {"__11",-1,250,208.475998,662.958740,211.796326,664.065491,0.000000,""};
+item38[] = {"__12",2,250,418.206909,617.027161,490.498505,651.532288,0.000000,""};
+item39[] = {"",7,210,143.778152,244.724869,151.778152,252.724869,0.000000,""};
+item40[] = {"",7,210,-432.852020,385.285370,-424.852051,393.285492,0.000000,""};
+item41[] = {"__13",1,250,-326.805176,126.791603,-236.805145,176.791580,0.000000,""};
+item42[] = {"do_not__move",4,218,577.821899,333.043030,667.821472,383.043030,0.000000,"do not" \n " move"};
+item43[] = {"",7,210,-419.629700,450.371429,-411.629700,458.371429,0.000000,""};
+item44[] = {"move_aborted",4,218,251.622467,994.922485,341.622467,1044.922119,1.000000,"move aborted"};
+item45[] = {"not_at_base",4,218,-25.323471,1096.692627,64.676529,1146.692627,1.000000,"not at base"};
+item46[] = {"__14",2,250,-22.391148,1189.061035,67.608894,1239.061035,0.000000,""};
+item47[] = {"in_pos_at_base",4,218,-22.273308,1292.386597,67.726692,1342.386597,0.000000,"in pos at base"};
+item48[] = {"",7,210,-373.318268,1201.708862,-365.318268,1209.708862,0.000000,""};
+item49[] = {"",7,210,185.971909,1419.794434,193.971909,1427.794434,0.000000,""};
+item50[] = {"",7,210,156.174759,806.058228,164.174789,814.058228,0.000000,""};
+item51[] = {"Mortar",4,218,414.324158,680.520569,504.324158,730.520569,1.000000,"Mortar"};
+item52[] = {"__15",2,250,415.615295,778.735474,505.615295,828.735474,0.000000,""};
+item53[] = {"unpacked",4,218,417.869843,889.206848,507.869873,939.206848,0.000000,"unpacked"};
+item54[] = {"",7,210,183.232224,630.247375,191.232224,638.247375,0.000000,""};
+item55[] = {"__16",2,250,421.251617,999.678101,511.251587,1049.677979,0.000000,""};
+item56[] = {"",7,210,-392.446259,869.225037,-384.446259,877.225037,0.000000,""};
+item57[] = {"",7,210,-392.446259,945.878601,-384.446259,953.878601,0.000000,""};
+item58[] = {"Mortar",4,218,-23.954081,1485.045166,66.045891,1535.045166,1.000000,"Mortar"};
+item59[] = {"__17",2,250,-25.706543,1583.260010,64.293434,1633.260010,0.000000,""};
+item60[] = {"unpacked",4,218,144.960495,1583.147339,234.960526,1633.147339,0.000000,"unpacked"};
+item61[] = {"__18",2,250,-22.962128,1398.389893,67.037888,1448.389893,0.000000,""};
+item62[] = {"",7,210,-365.201996,1597.376709,-357.201996,1605.376709,0.000000,""};
+item63[] = {"",7,210,-368.245575,1432.007813,-360.245575,1440.007813,0.000000,""};
+item64[] = {"not_mortar",4,218,71.240044,1330.887329,161.240051,1380.887329,0.000000,"not mortar"};
+version=1;
+class LayoutItems
+{
+	class Item37
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
+};
+link0[] = {0,1};
+link1[] = {1,2};
+link2[] = {2,3};
+link3[] = {2,16};
+link4[] = {2,27};
+link5[] = {3,4};
+link6[] = {4,5};
+link7[] = {4,17};
+link8[] = {4,24};
+link9[] = {5,6};
+link10[] = {6,7};
+link11[] = {6,18};
+link12[] = {7,8};
+link13[] = {8,9};
+link14[] = {8,23};
+link15[] = {9,10};
+link16[] = {10,11};
+link17[] = {10,19};
+link18[] = {11,12};
+link19[] = {12,13};
+link20[] = {12,21};
+link21[] = {13,14};
+link22[] = {14,15};
+link23[] = {14,29};
+link24[] = {14,45};
+link25[] = {15,57};
+link26[] = {16,20};
+link27[] = {17,41};
+link28[] = {18,31};
+link29[] = {19,23};
+link30[] = {21,19};
+link31[] = {22,30};
+link32[] = {23,43};
+link33[] = {24,25};
+link34[] = {25,26};
+link35[] = {25,31};
+link36[] = {25,32};
+link37[] = {26,22};
+link38[] = {27,28};
+link39[] = {29,50};
+link40[] = {30,2};
+link41[] = {31,16};
+link42[] = {32,33};
+link43[] = {33,34};
+link44[] = {33,40};
+link45[] = {33,42};
+link46[] = {34,35};
+link47[] = {35,36};
+link48[] = {35,43};
+link49[] = {35,44};
+link50[] = {36,38};
+link51[] = {38,51};
+link52[] = {38,54};
+link53[] = {39,5};
+link54[] = {40,18};
+link55[] = {42,22};
+link56[] = {43,40};
+link57[] = {44,14};
+link58[] = {45,46};
+link59[] = {46,47};
+link60[] = {46,48};
+link61[] = {47,61};
+link62[] = {48,15};
+link63[] = {49,50};
+link64[] = {50,30};
+link65[] = {51,52};
+link66[] = {52,53};
+link67[] = {52,56};
+link68[] = {53,55};
+link69[] = {54,39};
+link70[] = {55,54};
+link71[] = {56,21};
+link72[] = {57,56};
+link73[] = {58,59};
+link74[] = {59,60};
+link75[] = {59,62};
+link76[] = {60,49};
+link77[] = {61,58};
+link78[] = {61,64};
+link79[] = {62,63};
+link80[] = {63,48};
+link81[] = {64,49};
+globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-684.352539,494.065521,542.621582,-231.827179,1127,755,1};
+window[] = {0,-1,-1,-1,-1,1084,198,1890,198,1,1144};
+*//*%FSM</HEAD>*/
+class FSM
+{
+  fsmName = "alivearty";
+  class States
+  {
+    /*%FSM<STATE "Start">*/
+    class Start
+    {
+      name = "Start";
+      init = /*%FSM<STATEINIT""">*/"private " \n
+       "[" \n
+       "	""_units"",""_grp"", ""_callsign"", ""_pos"", ""_availableRounds"", ""_canMove""," \n
+       "	""_class"", ""_battery"", ""_leader"",""_unitCount""" \n
+       "];" \n
+       "_units = _this select 0; _unitCount = count _units;" \n
+       "_grp = _this select 1;" \n
+       "_callsign = _this select 2;" \n
+       "_pos = _this select 3;" \n
+       "_availableRounds = _this select 4;" \n
+       "_canMove = _this select 5;" \n
+       "_class = _this select 6;" \n
+       "_battery = _this select 7;" \n
+       "_code = _this select 8;" \n
+       "_leader = leader _grp;" \n
+       "" \n
+       "diag_log format[""START ARTY FSM: %1"",_this];" \n
+       "" \n
+       "private " \n
+       "[" \n
+       "	""_radiusMove"", ""_dirMove"", ""_posMove"", ""_isFlat"", ""_tries"", ""_delay"", ""_dummy""," \n
+       "	""_firingDistance"", ""_ammo"", ""_newAmmo"", ""_newAmmoIndex"", ""_newAmmoArray""," \n
+       "	""_classCopy""" \n
+       "];" \n
+       "_classCopy = _class;" \n
+       "_radiusMove = 0;" \n
+       "_dirMove = 0;" \n
+       "_posMove = [];" \n
+       "_isFlat = [];" \n
+       "_tries = 0;" \n
+       "_delay = 0;" \n
+       "_dummy = objNull;" \n
+       "_firingDistance = [];" \n
+       "_ammo = [];" \n
+       "_newAmmo = [];" \n
+       "_newAmmoIndex = 0;" \n
+       "_newAmmoArray = [];" \n
+       "" \n
+       "private " \n
+       "[" \n
+       "	""_inRange"", ""_available"", ""_viable""" \n
+       "];" \n
+       "_inRange = false;" \n
+       "_available = [];" \n
+       "_viable = false;" \n
+       "" \n
+       "_grp setBehaviour ""COMBAT"";" \n
+       "_grp setCombatMode ""RED"";" \n
+       "_grp setSpeedMode ""FULL"";" \n
+       "" \n
+       "//Battery Status" \n
+       "_battery setVariable [""NEO_radioArtyUnitStatus"", ""NONE"", true];" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "True">*/
+        class True
+        {
+          priority = 0.000000;
+          to="main_loop";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "main_loop">*/
+    class main_loop
+    {
+      name = "main_loop";
+      init = /*%FSM<STATEINIT""">*/"private " \n
+       "[" \n
+       "	""_newTaskArray"", ""_missionType"", ""_ordnanceType"", ""_rateOfFire"", ""_durationOrCount"", " \n
+       "	""_dispersion"", ""_target"",""_class"",""_ordnance""" \n
+       "];" \n
+       "_newTaskArray = [];" \n
+       "_missionType = """";" \n
+       "_ordnanceType = """";" \n
+       "_rateOfFire = 0;" \n
+       "_durationOrCount = 0;" \n
+       "_dispersion = 0;" \n
+       "_target = [];" \n
+       "" \n
+       "{" \n
+       "	_x setFuel 1;" \n
+       "	_x setDamage 0;" \n
+       "	_x setVehicleAmmo 1;" \n
+       "} forEach _units;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "dead">*/
+        class dead
+        {
+          priority = 100.000000;
+          to="__6";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+           "||" \n
+           "{ alive _x } count units _grp < 1" \n
+           "" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "no_ammo">*/
+        class no_ammo
+        {
+          priority = 50.000000;
+          to="__8";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"count (_battery getVariable ""NEO_radioArtyBatteryRounds"") < 1" \n
+           "||" \n
+           "_grp getVariable [""supportWeaponCount"",3] == 0"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 0.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _battery getVariable ""NEO_radioArtyNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_newTaskArray = _battery getVariable ""NEO_radioArtyNewTask"";" \n
+           "" \n
+           "_missionType = _newTaskArray select 0;" \n
+           "_ordnanceType = _newTaskArray select 1;" \n
+           "_rateOfFire = _newTaskArray select 2;" \n
+           "_durationOrCount = _newTaskArray select 3;" \n
+           "_dispersion = _newTaskArray select 4;" \n
+           "_target = _newTaskArray select 5; _target set [2, 0];" \n
+           "//_class = _newTaskArray select 6;" \n
+           "_ordnance = _newTaskArray select 7;" \n
+           "_callsignPlayer = _newTaskArray select 8;" \n
+           "_battery setVariable [""NEO_radioArtyNewTask"", nil, true];" \n
+           "" \n
+           "//Get ASL position" \n
+           "_dummy = ""Land_HelipadEmpty_F"" createVehicleLocal _target;" \n
+           "_dummy setPosATL [getPosATL _dummy select 0, getPosATL _dummy select 1, 0];" \n
+           "_target = getPosASL _dummy;" \n
+           "deleteVehicle _dummy;" \n
+           "" \n
+           "//Validate Fire Mission" \n
+           "_inRange = _target inRangeOfArtillery [[_battery], _ordnance];" \n
+           "_available = true;" \n
+           "_viable = true;" \n
+           "" \n
+           "//Spawn Mode" \n
+           "/*[_battery, false] call BIS_ARTY_F_SetShellSpawn;*/" \n
+           "" \n
+           "//Dispersion" \n
+           "/*[_battery, _dispersion] call BIS_ARTY_F_SetDispersion;*/" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "_">*/
+    class _
+    {
+      name = "_";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "not_viable_">*/
+        class not_viable_
+        {
+          priority = 3.000000;
+          to="__13";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!_viable" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "not_in_range">*/
+        class not_in_range
+        {
+          priority = 1.000000;
+          to="__7";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!_inRange" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "proceed">*/
+        class proceed
+        {
+          priority = 0.000000;
+          to="__1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"true" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"{ doStop _x } forEach _units;" \n
+           "" \n
+           "_battery setVariable [""NEO_radioArtyUnitStatus"", ""MISSION"", true];" \n
+           "" \n
+           "[_battery, _target, _missionType, _ordnanceType, _rateOfFire, _durationOrCount, _class,_ordnance,_dispersion, _units] spawn ALIVE_fnc_ExecuteMission;" \n
+           "" \n
+           "//Update ammo" \n
+           "_ammo = _battery getVariable ""NEO_radioArtyBatteryRounds"";" \n
+           "_newAmmo = [];" \n
+           "_newAmmoArray = _ammo;" \n
+           "" \n
+           "{" \n
+           "	private [""_round"", ""_count"", ""_countNew""];" \n
+           "	_round = _x select 0; " \n
+           "	_count = _x select 1; " \n
+           "	_newAmmoIndex = _forEachIndex;" \n
+           "" \n
+           "	if (_ordnanceType == _round) then  " \n
+           "	{" \n
+           "		_countNew = _count - _durationOrCount;" \n
+           "		if(_countNew > 0) then" \n
+           "		{" \n
+           "" \n
+           "		_newAmmo = [_ordnanceType, _countNew];" \n
+           "" \n
+           "				if (count _newAmmo > 0) then" \n
+           "				{" \n
+           "" \n
+           "				_newAmmoArray set [_newAmmoIndex, _newAmmo];" \n
+           "" \n
+           "				};" \n
+           "		}" \n
+           "		else" \n
+           "		{" \n
+           "" \n
+           "		_newAmmoArray set [_newAmmoIndex, ""DELETEPLEASE""];" \n
+           "		_newAmmoArray = _newAmmoArray - [""DELETEPLEASE""]" \n
+           "		" \n
+           "		};" \n
+           "	};" \n
+           "} forEach _ammo;" \n
+           "" \n
+           "_battery setVariable [""NEO_radioArtyBatteryRounds"", _newAmmoArray, true];" \n
+           "" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__1">*/
+    class __1
+    {
+      name = "__1";
+      init = /*%FSM<STATEINIT""">*/"[(_units select 0), _callsign,_callsignPlayer] spawn" \n
+       "{" \n
+       "	private ""_msg"";" \n
+       "	sleep 5;" \n
+       "	_msg = format [""%1 this is %2, Stand by for fire mission. Out."",_this select 2, _this select 1];" \n
+       "	[[_this select 0, _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "};" \n
+       "" \n
+       "_delay = time + 10;" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "dead">*/
+        class dead
+        {
+          priority = 100.000000;
+          to="__6";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+           "||" \n
+           "{ alive _x } count units _grp < 1" \n
+           "" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Shoot">*/
+        class Shoot
+        {
+          priority = 0.000000;
+          to="__2";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_battery getVariable ""ARTY_SHOTCALLED""" \n
+           "&&" \n
+           "time > _delay" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"private ""_msg"";" \n
+           "_msg = format [""%1 this is %2, We are firing on target. Out."",_callsignPlayer, _callsign];" \n
+           "[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;"/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__2">*/
+    class __2
+    {
+      name = "__2";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "dead">*/
+        class dead
+        {
+          priority = 100.000000;
+          to="__6";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+           "||" \n
+           "{ alive _x } count units _grp < 1" \n
+           "" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "splash">*/
+        class splash
+        {
+          priority = 1.000000;
+          to="__3";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_battery getVariable ""ARTY_SPLASH""" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"private ""_msg"";" \n
+           "_msg = format [""%1 this is %2, Splash. Out."",_callsignPlayer, _callsign];" \n
+           "[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;"/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__3">*/
+    class __3
+    {
+      name = "__3";
+      init = /*%FSM<STATEINIT""">*/"_delay = time + 10;" \n
+       "" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "dead">*/
+        class dead
+        {
+          priority = 100.000000;
+          to="__6";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+           "||" \n
+           "{ alive _x } count units _grp < 1" \n
+           "" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "complete">*/
+        class complete
+        {
+          priority = 0.000000;
+          to="__4";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_battery getVariable ""ARTY_COMPLETE""" \n
+           "&&" \n
+           "time > _delay" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"private ""_msg"";" \n
+           "_msg = format [""%1 this is %2, Battery is rounds complete. Out."",_callsignPlayer, _callsign];" \n
+           "[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;"/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__4">*/
+    class __4
+    {
+      name = "__4";
+      init = /*%FSM<STATEINIT""">*/"_delay = time + 10;" \n
+       "" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "dead">*/
+        class dead
+        {
+          priority = 100.000000;
+          to="__6";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+           "||" \n
+           "{ alive _x } count units _grp < 1" \n
+           "" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "ready_for_new_mi">*/
+        class ready_for_new_mi
+        {
+          priority = 0.000000;
+          to="__5";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!(_battery getVariable ""ARTY_ONMISSION"")" \n
+           "&&" \n
+           "time > _delay" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__5">*/
+    class __5
+    {
+      name = "__5";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "dead">*/
+        class dead
+        {
+          priority = 100.000000;
+          to="__6";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+           "||" \n
+           "{ alive _x } count units _grp < 1" \n
+           "" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "not_at_base">*/
+        class not_at_base
+        {
+          priority = 1.000000;
+          to="__14";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _grp getVariable ""NEO_radioArtyNotInBase"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_battery setVariable [""NEO_radioArtyUnitStatus"", ""RTB"", true];" \n
+           "" \n
+           "// IF its a mortar team moving, get them to disassemble and pack up" \n
+           "if (	_grp getVariable [""mortar"", false]) then {" \n
+           "" \n
+           "	{" \n
+           "		[_grp, _x] call ALiVE_fnc_packMortar;" \n
+           "	} foreach (_grp getVariable [""supportWeaponArray"",[]]);" \n
+           "" \n
+           "	private ""_packedup"";" \n
+           "	_packedup = false;" \n
+           "	while { !(_packedup) } do" \n
+           "	{" \n
+           "		{" \n
+           "			_packedup = true;" \n
+           "			if !(_x getVariable [""packed"",false]) exitWith {_packedup = false};" \n
+           "		}foreach  (_grp getVariable [""supportWeaponArray"",[]]);" \n
+           "	};" \n
+           "" \n
+           "	{" \n
+           "		_x enableAI ""MOVE""; _x enableAI ""ANIM"";" \n
+           "		[_x, [_pos, 50, random 360] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "	} forEach (units _grp);" \n
+           "" \n
+           "} else {" \n
+           "" \n
+           "{" \n
+           "	[_x, [_pos, 20, random 360] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "} forEach _units;" \n
+           "" \n
+           "};" \n
+           "" \n
+           "private ""_msg"";" \n
+           "_msg = format [""%1 this is %2, Battery is moving back to Base. Out"",_callsignPlayer, _callsign];" \n
+           "[[(_units select 0),_msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "at_base">*/
+        class at_base
+        {
+          priority = 0.000000;
+          to="main_loop";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"if (count (_battery getVariable ""NEO_radioArtyBatteryRounds"") < 1) then" \n
+           "{" \n
+           "	private ""_msg"";" \n
+           "	_battery setVariable [""NEO_radioArtyUnitStatus"", ""NOAMMO"", true];" \n
+           "	_msg = format[""%2 this is %1, the Battery is out of ammo. Out."",_callsign, _callsignPlayer];" \n
+           "	[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "}" \n
+           "else" \n
+           "{" \n
+           "	private ""_msg"";" \n
+           "	_battery setVariable [""NEO_radioArtyUnitStatus"", ""NONE"", true];" \n
+           "	_msg = format[""%2 this is %1, the Battery is ready for fire mission. Out"",_callsign, _callsignPlayer];" \n
+           "	[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "};" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__6">*/
+    class __6
+    {
+      name = "__6";
+      init = /*%FSM<STATEINIT""">*/"_battery setVariable [""NEO_radioArtyUnitStatus"", ""KILLED"", true];" \n
+       "[_units, _grp, _callsign, _pos, _availableRounds,_canMove,_classCopy, _battery,CS_RESPAWN,_code] spawn ALIVE_fnc_RespawnArtyAsset;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__7">*/
+    class __7
+    {
+      name = "__7";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "dead">*/
+        class dead
+        {
+          priority = 100.000000;
+          to="__6";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+           "||" \n
+           "{ alive _x } count units _grp < 1" \n
+           "" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Mobile">*/
+        class Mobile
+        {
+          priority = 1.000000;
+          to="__9";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_canMove"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_battery setVariable [""NEO_radioArtyUnitStatus"", ""RESPONSE"", true];" \n
+           "" \n
+           "[(_units select 0), _callsign, side leader _grp, _battery,_callsignPlayer] spawn" \n
+           "{" \n
+           "	private [""_msg""];" \n
+           "	sleep 5;" \n
+           "	_msg = format[""%1 this is %2, Target is out of range of battery, would you like us to move into good position? Over."",_this select 4,_this select 1];" \n
+           "	[[_this select 0, _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "	" \n
+           "	[_this select 0, _this select 1, _this select 3,_this select 4] spawn" \n
+           "	{" \n
+           "		private [""_unit"", ""_callsign"", ""_battery"",""_respmsg""];" \n
+           "		_unit = _this select 0;" \n
+           "		_callsign = _this select 1;" \n
+           "		_battery = _this select 2;" \n
+           "		_callsignPlayer = _this select 3;" \n
+           "		" \n
+           "		sleep 75;" \n
+           "		" \n
+           "		_respmsg = format[""%1 this is %2, Should we move in range? Please respond. Over."",_callsignPlayer,_callsign];" \n
+           "		while { (_battery getVariable ""NEO_radioArtyUnitStatus"") == ""RESPONSE"" } do" \n
+           "		{" \n
+           "			[[" \n
+           "				_unit," \n
+           "				_respmsg," \n
+           "				""side""" \n
+           "			],"" NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "			" \n
+           "			sleep 75;" \n
+           "		};" \n
+           "	};" \n
+           "};" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Static">*/
+        class Static
+        {
+          priority = 0.000000;
+          to="main_loop";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"true" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"[(_units select 0), _callsignPlayer, _callsign] spawn" \n
+           "{" \n
+           "	private ""_msg"";" \n
+           "	_msg = format [ ""%1 this is %2, Target is out of range of battery, choose another target. Out."", _this select 1, _this select 2];" \n
+           "	sleep 5;" \n
+           "	[[_this select 0,_msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "};" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__8">*/
+    class __8
+    {
+      name = "__8";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__9">*/
+    class __9
+    {
+      name = "__9";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "dead">*/
+        class dead
+        {
+          priority = 100.000000;
+          to="__6";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+           "||" \n
+           "{ alive _x } count units _grp < 1" \n
+           "" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Move_out_">*/
+        class Move_out_
+        {
+          priority = 1.000000;
+          to="__10";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _battery getVariable ""NEO_radioArtyMove"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_battery setVariable [""NEO_radioArtyUnitStatus"", ""MOVE"", true];" \n
+           "_battery setVariable [""NEO_radioArtyMove"", nil, true];" \n
+           "" \n
+           "_firingDistance = _class call NEO_fnc_artyUnitFiringDistance;" \n
+           "_radiusMove = 0;" \n
+           "if (_leader distance _target < (_firingDistance select 0)) then { _radiusMove = _firingDistance select 0 };" \n
+           "if (_leader distance _target > (_firingDistance select 1)) then { _radiusMove = _firingDistance select 1 };" \n
+           "_dirMove = [_target, _leader] call BIS_fnc_dirTo;" \n
+           "_posMove = [_target, _radiusMove, _dirMove] call BIS_fnc_relPos;" \n
+           "_isFlat = _posMove isflatempty [10,0,1,10,0,false,objNull];" \n
+           "_tries = 0;" \n
+           "" \n
+           "while { count _isFlat < 2 && _tries < 360 } do" \n
+           "{" \n
+           "	_tries = _tries + 1;" \n
+           "	_dirMove = _dirMove + 1;" \n
+           "	_posMove = [_target, _radiusMove, _dirMove] call BIS_fnc_relPos;" \n
+           "	_isFlat = _posMove isflatempty [50,0,0.9,50,0,false,objNull];" \n
+           "};" \n
+           "" \n
+           "if (count _isFlat < 2) then" \n
+           "{" \n
+           "	_isFlat = [_target, _radiusMove, ([_target, _leader] call BIS_fnc_dirTo)] call BIS_fnc_relPos;" \n
+           "};" \n
+           "" \n
+           "_grp setVariable [""NEO_radioArtyNotInBase"", _isFlat];" \n
+           "" \n
+           "// IF its a mortar team moving, get them to disassemble and pack up" \n
+           "if ((typeOf (vehicle _battery)) in [""O_Mortar_01_F"", ""B_Mortar_01_F"",""I_Mortar_01_F""]) then {" \n
+           "" \n
+           "	_grp setVariable [""mortar"", true];" \n
+           "" \n
+           "diag_log ""Battery is mortar, waiting for team to pack up mortars"";" \n
+           "" \n
+           "	{" \n
+           "		[_grp, _x] call ALiVE_fnc_packMortar;" \n
+           "	} foreach (_grp getVariable [""supportWeaponArray"",[]]);" \n
+           "" \n
+           "	private ""_packedup"";" \n
+           "	_packedup = false;" \n
+           "	while { !(_packedup) } do" \n
+           "	{" \n
+           "		{" \n
+           "			_packedup = true;" \n
+           "			if !(_x getVariable [""packed"",false]) exitWith {_packedup = false};" \n
+           "		}foreach  (_grp getVariable [""supportWeaponArray"",[]]);" \n
+           "	};" \n
+           "" \n
+           "diag_log ""Mortar team have packed up mortars and are moving"";" \n
+           "" \n
+           "	{" \n
+           "		[_x, [_isFlat, 50, random 360] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "	} forEach (units _grp);" \n
+           "" \n
+           "} else {" \n
+           "	_grp setVariable [""mortar"", false];" \n
+           "	{" \n
+           "		[_x, [_isFlat, 50, random 360] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "	} forEach _units;" \n
+           "" \n
+           "};" \n
+           "" \n
+           "[(_units select 0), _callsign, _callsignPlayer] spawn" \n
+           "{" \n
+           "	private ""_msg"";" \n
+           "	_msg = format[""Copy that %1, %2 moving in range of target, stand by. Out."", _this select 2, _this select 1];" \n
+           "	sleep 5;" \n
+           "	[[_this select 0, _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "};" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "do_not__move">*/
+        class do_not__move
+        {
+          priority = 0.000000;
+          to="main_loop";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _battery getVariable ""NEO_radioArtyDontMove"" }"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_battery setVariable [""NEO_radioArtyUnitStatus"", ""NONE"", true];" \n
+           "_battery setVariable [""NEO_radioArtyDontMove"", nil, true];" \n
+           "" \n
+           "[(_units select 0), _callsignPlayer, _callsign] spawn" \n
+           "{" \n
+           "	private ""_msg"";" \n
+           "	_msg = format[""Copy that %1, %2  aborting fire mission. Out."", _this select 1, _this select 2];" \n
+           "	sleep 5;" \n
+           "	[[_this,_msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "};" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__10">*/
+    class __10
+    {
+      name = "__10";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "dead">*/
+        class dead
+        {
+          priority = 100.000000;
+          to="__6";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+           "||" \n
+           "{ alive _x } count units _grp < 1" \n
+           "" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "move_aborted">*/
+        class move_aborted
+        {
+          priority = 1.000000;
+          to="__5";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _battery getVariable ""NEO_radioArtyGoToBase"" }"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_battery setVariable [""NEO_radioArtyGoToBase"", nil, true];"/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "in_position">*/
+        class in_position
+        {
+          priority = 0.000000;
+          to="__12";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{ _x call ALiVE_fnc_unitReadyRemote } count units _grp == count units _grp" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"// IF its a mortar team, get them to assemble mortars" \n
+           "" \n
+           "if (	_grp getVariable [""mortar"", false]) then {" \n
+           "" \n
+           "	private [""_oldUnits"",""_newUnits""];" \n
+           "" \n
+           "	_oldUnits = _grp getvariable [""supportWeaponArray"", []];" \n
+           "" \n
+           "	_grp setvariable [""supportWeaponArray"", []];" \n
+           "" \n
+           "	{" \n
+           "		private ""_gunner"";" \n
+           "		_gunner = [_grp, _isFlat, _target, _x] call ALiVE_fnc_unpackMortar;" \n
+           "	} foreach _oldUnits;" \n
+           "" \n
+           "};"/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__12">*/
+    class __12
+    {
+      name = "__12";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "Mortar">*/
+        class Mortar
+        {
+          priority = 1.000000;
+          to="__15";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_grp getVariable [""mortar"", false]"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"diag_log ""Battery is mortar, waiting for team to unpack"";"/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "proceed">*/
+        class proceed
+        {
+          priority = 0.000000;
+          to="__1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"true" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"{ doStop _x } forEach _units;" \n
+           "" \n
+           "_battery setVariable [""NEO_radioArtyUnitStatus"", ""MISSION"", true];" \n
+           "" \n
+           "[_battery, _target, _missionType, _ordnanceType, _rateOfFire, _durationOrCount, _class,_ordnance,_dispersion, _units] spawn ALIVE_fnc_ExecuteMission;" \n
+           "" \n
+           "//Update ammo" \n
+           "_ammo = _battery getVariable ""NEO_radioArtyBatteryRounds"";" \n
+           "_newAmmo = [];" \n
+           "_newAmmoArray = _ammo;" \n
+           "" \n
+           "{" \n
+           "	private [""_round"", ""_count"", ""_countNew""];" \n
+           "	_round = _x select 0; " \n
+           "	_count = _x select 1; " \n
+           "	_newAmmoIndex = _forEachIndex;" \n
+           "" \n
+           "	if (_ordnanceType == _round) then  " \n
+           "	{" \n
+           "		_countNew = _count - _durationOrCount;" \n
+           "		if(_countNew > 0) then" \n
+           "		{" \n
+           "" \n
+           "		_newAmmo = [_ordnanceType, _countNew];" \n
+           "" \n
+           "				if (count _newAmmo > 0) then" \n
+           "				{" \n
+           "" \n
+           "				_newAmmoArray set [_newAmmoIndex, _newAmmo];" \n
+           "" \n
+           "				};" \n
+           "		}" \n
+           "		else" \n
+           "		{" \n
+           "" \n
+           "		_newAmmoArray set [_newAmmoIndex, ""DELETEPLEASE""];" \n
+           "		_newAmmoArray = _newAmmoArray - [""DELETEPLEASE""]" \n
+           "		" \n
+           "		};" \n
+           "	};" \n
+           "} forEach _ammo;" \n
+           "" \n
+           "_battery setVariable [""NEO_radioArtyBatteryRounds"", _newAmmoArray, true];" \n
+           "" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__13">*/
+    class __13
+    {
+      name = "__13";
+      init = /*%FSM<STATEINIT""">*/"_battery setVariable [""NEO_radioArtyUnitStatus"", ""KILLED"", true];" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__14">*/
+    class __14
+    {
+      name = "__14";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "dead">*/
+        class dead
+        {
+          priority = 100.000000;
+          to="__6";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+           "||" \n
+           "{ alive _x } count units _grp < 1" \n
+           "" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "in_pos_at_base">*/
+        class in_pos_at_base
+        {
+          priority = 0.000000;
+          to="__18";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{ _x call ALiVE_fnc_unitReadyRemote } count units _grp == count units _grp" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_grp setVariable [""NEO_radioArtyNotInBase"", nil];" \n
+           "" \n
+           "// IF its a mortar team, get them to assemble mortars" \n
+           "" \n
+           "if (	_grp getVariable [""mortar"", false]) then {" \n
+           "" \n
+           "	private [""_oldUnits""];" \n
+           "" \n
+           "	_oldUnits = _grp getvariable [""supportWeaponArray"", []];" \n
+           "" \n
+           "	_grp setvariable [""supportWeaponArray"", []];" \n
+           "" \n
+           "	{" \n
+           "		private ""_gunner"";" \n
+           "		_gunner = [_grp, _isFlat, _target, _x] call ALiVE_fnc_unpackMortar;" \n
+           "	} foreach _oldUnits;" \n
+           "" \n
+           "};" \n
+           "" \n
+           "if (count (_battery getVariable ""NEO_radioArtyBatteryRounds"") < 1) then" \n
+           "{" \n
+           "	_battery setVariable [""NEO_radioArtyUnitStatus"", ""NOAMMO"", true];" \n
+           "	private ""_msg"";" \n
+           "	_msg = format [""%1 this is %2, Battery is at Base and out of ammo. Out."",_callsignPlayer, _callsign];" \n
+           "	[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "}" \n
+           "else" \n
+           "{" \n
+           "	_battery setVariable [""NEO_radioArtyUnitStatus"", ""NONE"", true];" \n
+           "	private ""_msg"";" \n
+           "	_msg = format [""%1 this is %2, Battery is at Base and ready for fire mission. Out."",_callsignPlayer, _callsign];" \n
+           "	[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "};" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__15">*/
+    class __15
+    {
+      name = "__15";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "dead">*/
+        class dead
+        {
+          priority = 100.000000;
+          to="__6";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+           "||" \n
+           "{ alive _x } count units _grp < 1" \n
+           "" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "unpacked">*/
+        class unpacked
+        {
+          priority = 0.000000;
+          to="__16";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"count (_grp getVariable [""supportWeaponArray"",[]]) == _grp getVariable [""supportWeaponCount"",3]"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"diag_log ""Mortar team have unpacked mortars and are ready"";" \n
+           "_units = _grp getVariable [""supportWeaponArray"",[]];"/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__16">*/
+    class __16
+    {
+      name = "__16";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "proceed">*/
+        class proceed
+        {
+          priority = 0.000000;
+          to="__1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"true" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"{ doStop _x } forEach _units;" \n
+           "" \n
+           "_battery setVariable [""NEO_radioArtyUnitStatus"", ""MISSION"", true];" \n
+           "" \n
+           "[_battery, _target, _missionType, _ordnanceType, _rateOfFire, _durationOrCount, _class,_ordnance,_dispersion, _units] spawn ALIVE_fnc_ExecuteMission;" \n
+           "" \n
+           "//Update ammo" \n
+           "_ammo = _battery getVariable ""NEO_radioArtyBatteryRounds"";" \n
+           "_newAmmo = [];" \n
+           "_newAmmoArray = _ammo;" \n
+           "" \n
+           "{" \n
+           "	private [""_round"", ""_count"", ""_countNew""];" \n
+           "	_round = _x select 0; " \n
+           "	_count = _x select 1; " \n
+           "	_newAmmoIndex = _forEachIndex;" \n
+           "" \n
+           "	if (_ordnanceType == _round) then  " \n
+           "	{" \n
+           "		_countNew = _count - _durationOrCount;" \n
+           "		if(_countNew > 0) then" \n
+           "		{" \n
+           "" \n
+           "		_newAmmo = [_ordnanceType, _countNew];" \n
+           "" \n
+           "				if (count _newAmmo > 0) then" \n
+           "				{" \n
+           "" \n
+           "				_newAmmoArray set [_newAmmoIndex, _newAmmo];" \n
+           "" \n
+           "				};" \n
+           "		}" \n
+           "		else" \n
+           "		{" \n
+           "" \n
+           "		_newAmmoArray set [_newAmmoIndex, ""DELETEPLEASE""];" \n
+           "		_newAmmoArray = _newAmmoArray - [""DELETEPLEASE""]" \n
+           "		" \n
+           "		};" \n
+           "	};" \n
+           "} forEach _ammo;" \n
+           "" \n
+           "_battery setVariable [""NEO_radioArtyBatteryRounds"", _newAmmoArray, true];" \n
+           "" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__17">*/
+    class __17
+    {
+      name = "__17";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "dead">*/
+        class dead
+        {
+          priority = 100.000000;
+          to="__6";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{ alive _x } count _units < 1" \n
+           "||" \n
+           "{ alive _x } count units _grp < 1" \n
+           "" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "unpacked">*/
+        class unpacked
+        {
+          priority = 0.000000;
+          to="main_loop";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"count (_grp getVariable [""supportWeaponArray"",[]]) == _grp getVariable [""supportWeaponCount"",3]"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"diag_log ""Mortar team have unpacked mortars and are ready"";" \n
+           "_units = _grp getVariable [""supportWeaponArray"",[]];"/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__18">*/
+    class __18
+    {
+      name = "__18";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "Mortar">*/
+        class Mortar
+        {
+          priority = 1.000000;
+          to="__17";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_grp getVariable [""mortar"", false]"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"diag_log ""Battery is mortar, waiting for team to unpack"";"/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "not_mortar">*/
+        class not_mortar
+        {
+          priority = 0.000000;
+          to="main_loop";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!(_grp getVariable [""mortar"", false])"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"diag_log ""Battery is back at base"";"/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+  };
+  initState="Start";
+  finalStates[] =
+  {
+    "__6",
+    "__8",
+    "__13",
+  };
+};
+/*%FSM</COMPILE>*/

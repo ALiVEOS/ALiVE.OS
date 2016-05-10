@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_ADMINACTIONS">
+	<English>Admin Actions</English>
+	<German>Admin Aktionen</German>
+	<Italian>Azioni Admin</Italian>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_COMMENT">
+	<English>Server admin functions</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_OPTIONS">
+	<English>Module Settings</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_OPTIONS_COMMENT">
+	<English>Adjust ALiVE module settings, i.e. debug, as necessary</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_GHOST">
+	<English>Allow Ghosting:</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_GHOST_ENABLE">
+	<English>Enable Ghosting</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_GHOST_DISABLE">
+	<English>Disable Ghosting</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_GHOST_COMMENT">
+	<English>Allow server admins to be ignored by AI</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_TELEPORT">
+	<English>Allow Teleport:</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_TELEPORT_ENABLE">
+	<English>Enable Teleporting</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_TELEPORTUNITS">
+	<English>Teleport Units</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_TELEPORTUNITS_COMMENT">
+	<English>Teleports the given units to the desired position</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_TELEPORT_DISABLE">
+	<English>Disable Teleporting</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_TELEPORT_COMMENT">
+	<English>Allow server admins to teleport anywhere on the map</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_MARK_UNITS">
+	<English>Mark Units:</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_MARK_UNITS_ENABLE">
+	<English>Activate Marking Units</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_MARK_UNITS_COMMENT">
+	<English>Allow server admins to mark units positions for 15 seconds</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_PROFILES_DEBUG">
+    <English>Debug Profile System:</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_CREATE_PROFILES">
+    <English>Profile non profiled units:</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_CREATE_PROFILES_ENABLE">
+    <English>Profile non profiled units</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_CREATE_PROFILES_COMMENT">
+    <English>Create profiles from non profiles units and vehicles.</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_CONSOLE">
+	<English>Allow Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_CONSOLE_ENABLE">
+	<English>Debug Console</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_CONSOLE_COMMENT">
+	<English>Open the debug console</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_ERROR1">
+	<English>Only one Admin Actions module can be used</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_USAGE">
+    <English>Place an admin actions module to give the server admin or single player admin functions like teleport, ghost and run scripts.</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_OPCOM_TOGGLEINSTALLATIONS">
+	<English>Toggle OPCOM installations</English>
+</Key>
+<Key ID="STR_ALIVE_ADMINACTIONS_OPCOM_TOGGLEINSTALLATIONS_COMMENT">
+    <English>Displays markers at installations</English>
+</Key>
+</Container></Package></Project>

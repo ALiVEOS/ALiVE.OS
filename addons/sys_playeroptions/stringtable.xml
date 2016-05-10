@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_playeroptions">
+	<English>ALiVE Player Options</English>
+</Key>
+<Key ID="STR_ALIVE_PLAYEROPTIONS_SHORT">
+	<English>Player Options</English>
+</Key>
+<Key ID="STR_ALIVE_playeroptions_COMMENT">
+	<English>Set in game player options such as view distance, respawn, player persistence, crew info, player tags and more</English>
+</Key>
+<Key ID="STR_ALIVE_playeroptionsPARAMS">
+	<English>Template Parameters</English>
+</Key>
+<Key ID="STR_ALIVE_playeroptions_ERROR1">
+	<English>Only one module template allowed</English>
+</Key>
+<Key ID="STR_ALIVE_playeroptionsPARAMS_COMMENT">
+	<English>Over-ride default parameters for the Module Template</English>
+</Key>
+<Key ID="STR_ALIVE_playeroptions_USAGE">
+	<English>Place the module and configure player options</English>
+</Key>
+<Key ID="STR_ALIVE_playeroptions_DEBUG">
+	<English>Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_playeroptions_DEBUG_COMMENT">
+	<English>Enable Debug</English>
+</Key>
+</Container></Package></Project>

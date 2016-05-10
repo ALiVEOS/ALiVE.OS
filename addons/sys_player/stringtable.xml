@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_player">
+	<English>Player Persistence</English>
+	<German>Player Persistence</German>
+	<Italian>Player Persistence</Italian>
+</Key>
+<Key ID="STR_ALIVE_player_COMMENT">
+	<English>Player Persistence Module</English>
+</Key>
+<Key ID="STR_ALIVE_player_ENABLE">
+	<English>Persist Player State</English>
+</Key>
+<Key ID="STR_ALIVE_player_ENABLE_COMMENT">
+	<English>Persist Player State between server disconnects and/or server restarts</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowReset">
+	<English>Allow Player State Reset:</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowReset_ENABLE">
+	<English>Enable Player Reset</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowReset_DISABLE">
+	<English>Disable Player Reset</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowReset_COMMENT">
+	<English>Allow players to reset themselves to their current session starting state or manual save point</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowReset_ACTION">
+	<English>Reset to Previous Session State</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowManualSave">
+	<English>Allow Player Manual Save:</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowReset_ACTION_COMMENT">
+	<English>Reset yourself to the last current session starting state or manual save point</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowManualSave_ENABLE">
+	<English>Enable Player Manual Save</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowManualSave_DISABLE">
+	<English>Disable Player Manual Save</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowManualSave_COMMENT">
+	<English>Allow players to manually save their current state</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowManualSave_ACTION">
+	<English>Save Player Data</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowManualSave_ACTION_COMMENT">
+	<English>Save your player data between disconnect and reconnect. If DB is enabled, will store player state between server restarts.</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowDiffClass">
+	<English>Allow Different Class Rejoin:</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowDiffClass_ENABLE">
+	<English>Enable Different Class Rejoin</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowDiffClass_DISABLE">
+	<English>Disable Different Class Rejoin</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowDiffClass_COMMENT">
+	<English>Allow players to rejoin the mission as a different class</English>
+</Key>
+<Key ID="STR_ALIVE_player_storeToDB">
+	<English>Save to Database:</English>
+</Key>
+<Key ID="STR_ALIVE_player_storeToDB_ENABLE">
+	<English>Enable external database</English>
+</Key>
+<Key ID="STR_ALIVE_player_storeToDB_DISABLE">
+	<English>Disable External Database</English>
+</Key>
+<Key ID="STR_ALIVE_player_storeToDB_COMMENT">
+	<English>Enable/disable saving player data</English>
+</Key>
+<Key ID="STR_ALIVE_player_SAVELOADOUT">
+	<English>Store Loadout:</English>
+</Key>
+<Key ID="STR_ALIVE_player_SAVELOADOUT_COMMENT">
+	<English>Enable/disable saving player load-out data</English>
+</Key>
+<Key ID="STR_ALIVE_player_SAVEAMMO">
+	<English>Store Ammo Count:</English>
+</Key>
+<Key ID="STR_ALIVE_player_SAVEAMMO_COMMENT">
+	<English>Enable/disable saving player ammo count</English>
+</Key>
+<Key ID="STR_ALIVE_player_SAVEHEALTH">
+	<English>Store Health:</English>
+</Key>
+<Key ID="STR_ALIVE_player_SAVEHEALTH_COMMENT">
+	<English>Enable/disable saving player health data</English>
+</Key>
+<Key ID="STR_ALIVE_player_SAVEPOSITION">
+	<English>Store Position:</English>
+</Key>
+<Key ID="STR_ALIVE_player_SAVEPOSITION_COMMENT">
+	<English>Enable/disable saving player position data</English>
+</Key>
+<Key ID="STR_ALIVE_player_SAVESCORES">
+	<English>Store Scores:</English>
+</Key>
+<Key ID="STR_ALIVE_player_SAVESCORES_COMMENT">
+	<English>Enable/disable saving player score for the current mission</English>
+</Key>
+<Key ID="STR_ALIVE_player_autoSaveTime">
+	<English>Auto Save Interval:</English>
+</Key>
+<Key ID="STR_ALIVE_player_autoSaveTime_SET">
+	<English>Set Auto Save Interval</English>
+</Key>
+<Key ID="STR_ALIVE_player_autoSaveTime_COMMENT">
+	<English>Set the interval between auto saves of player data (in seconds) to external database. This may impact server performance. 0 means save only at mission exit or player disconnection.</English>
+</Key>
+<Key ID="STR_ALIVE_player_ERROR1">
+	<English>Only one Player Persistence module can be used</English>
+</Key>
+</Container></Package></Project>

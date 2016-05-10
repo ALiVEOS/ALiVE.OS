@@ -1,0 +1,225 @@
+version=12;
+class Mission
+{
+	addOns[]=
+	{
+		"A3_Characters_F_BLUFOR",
+		"a3_characters_f",
+		"render"
+	};
+	addOnsAuto[]=
+	{
+		"A3_Characters_F_BLUFOR",
+		"a3_characters_f",
+		"render"
+	};
+	randomSeed=11290611;
+	class Intel
+	{
+		briefingName="ALiVE War Room Image Capture";
+		startWeather=0;
+		startWind=0.099999994;
+		startWaves=0.099999994;
+		forecastWeather=0;
+		forecastWind=0.099999994;
+		forecastWaves=0.099999994;
+		forecastLightnings=0.099999994;
+		year=2009;
+		day=28;
+		hour=12;
+		minute=0;
+		startFogDecay=0.0049999999;
+		forecastFogDecay=0.0049999999;
+	};
+	class Groups
+	{
+		items=1;
+		class Item0
+		{
+			side="WEST";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={1799.5107,20,1799.5148};
+					id=0;
+					side="WEST";
+					vehicle="B_Soldier_F";
+					player="PLAYER COMMANDER";
+					leader=1;
+					skill=0.60000002;
+				};
+			};
+		};
+	};
+	class Sensors
+	{
+		items=6;
+		class Item0
+		{
+			position[]={1765.7395,20,1824.9515};
+			activationBy="ALPHA";
+			repeating=1;
+			interruptable=1;
+			age="UNKNOWN";
+			text="Weapons (Test)";
+			expActiv="null = [] spawn { [""screenshotstest"",""A3"",[],[]] call ALIVE_fnc_exportCfgWeapons; }";
+			class Effects
+			{
+			};
+		};
+		class Item1
+		{
+			position[]={1824.9615,20,1820.5488};
+			activationBy="BRAVO";
+			repeating=1;
+			interruptable=1;
+			age="UNKNOWN";
+			text="Weapons";
+			expActiv="null = [] spawn { [""screenshots"",""A3"",[],[]] call ALIVE_fnc_exportCfgWeapons; }";
+			class Effects
+			{
+			};
+		};
+		class Item2
+		{
+			position[]={1759.866,20,1794.6229};
+			activationBy="ECHO";
+			repeating=1;
+			interruptable=1;
+			age="UNKNOWN";
+			text="Vehicle Weapons (Test)";
+			expActiv="null = [] spawn { [""screenshotstest"",[0,1,2,3],""A3""] call ALiVE_fnc_exportCfgVehicleWeapons; }";
+			class Effects
+			{
+			};
+		};
+		class Item3
+		{
+			position[]={1823.8679,20,1766.6782};
+			activationBy="DELTA";
+			repeating=1;
+			interruptable=1;
+			age="UNKNOWN";
+			text="Vehicles";
+			expActiv="null = [] spawn { [""screenshots"",[0,1,2,3],""A3""] call ALiVE_fnc_exportCfgVehicles; }";
+			class Effects
+			{
+			};
+		};
+		class Item4
+		{
+			position[]={1768.676,20,1771.1428};
+			activationBy="CHARLIE";
+			repeating=1;
+			interruptable=1;
+			age="UNKNOWN";
+			text="Vehicles (Test)";
+			expActiv="null = [] spawn { [""screenshotstest"",[0,1,2,3],""A3""] call ALiVE_fnc_exportCfgVehicles; }";
+			class Effects
+			{
+			};
+		};
+		class Item5
+		{
+			position[]={1840.6232,20,1794.1338};
+			activationBy="FOXTROT";
+			repeating=1;
+			interruptable=1;
+			age="UNKNOWN";
+			text="Vehicle Weapons";
+			expActiv="null = [] spawn { [""screenshots"",[0,1,2,3],""A3""] call ALiVE_fnc_exportCfgVehicleWeapons; }";
+			class Effects
+			{
+			};
+		};
+	};
+};
+class Intro
+{
+	addOns[]=
+	{
+		"render"
+	};
+	addOnsAuto[]=
+	{
+		"render"
+	};
+	randomSeed=13414232;
+	class Intel
+	{
+		timeOfChanges=1800.0002;
+		startWeather=0;
+		startWind=0.1;
+		startWaves=0.1;
+		forecastWeather=0;
+		forecastWind=0.1;
+		forecastWaves=0.1;
+		forecastLightnings=0.1;
+		year=2009;
+		day=28;
+		hour=12;
+		minute=0;
+		startFogDecay=0.0049999999;
+		forecastFogDecay=0.0049999999;
+	};
+};
+class OutroWin
+{
+	addOns[]=
+	{
+		"render"
+	};
+	addOnsAuto[]=
+	{
+		"render"
+	};
+	randomSeed=9466012;
+	class Intel
+	{
+		timeOfChanges=1800.0002;
+		startWeather=0;
+		startWind=0.1;
+		startWaves=0.1;
+		forecastWeather=0;
+		forecastWind=0.1;
+		forecastWaves=0.1;
+		forecastLightnings=0.1;
+		year=2009;
+		day=28;
+		hour=12;
+		minute=0;
+		startFogDecay=0.0049999999;
+		forecastFogDecay=0.0049999999;
+	};
+};
+class OutroLoose
+{
+	addOns[]=
+	{
+		"render"
+	};
+	addOnsAuto[]=
+	{
+		"render"
+	};
+	randomSeed=4039108;
+	class Intel
+	{
+		timeOfChanges=1800.0002;
+		startWeather=0;
+		startWind=0.1;
+		startWaves=0.1;
+		forecastWeather=0;
+		forecastWind=0.1;
+		forecastWaves=0.1;
+		forecastLightnings=0.1;
+		year=2009;
+		day=28;
+		hour=12;
+		minute=0;
+		startFogDecay=0.0049999999;
+		forecastFogDecay=0.0049999999;
+	};
+};

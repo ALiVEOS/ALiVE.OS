@@ -1,0 +1,8 @@
+*Model - no visual just reference data*
+- XXXX
+
+*Controller - *
+- XXXX
+
+*View - purely visual*
+- XXXX

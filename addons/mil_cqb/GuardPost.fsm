@@ -1,0 +1,315 @@
+/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, Simple Guard Post">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"Start",0,4346,-43.529308,-148.076935,46.470692,-98.076927,0.000000,"Start"};
+item1[] = {"End",1,250,174.978165,-33.990349,264.978180,16.009644,0.000000,"End"};
+item2[] = {"Unit_Dead",4,218,68.497658,-37.690125,158.497620,12.309845,9.000000,"Unit" \n "Dead"};
+item3[] = {"Enemy_Spotted",4,218,68.917511,-150.034149,158.917450,-100.034027,5.000000,"Enemy" \n "Spotted"};
+item4[] = {"Random_Delay",4,218,-43.969070,-90.463928,46.030930,-40.463928,0.000000,"Random Delay"};
+item5[] = {"Looking",2,250,-42.938148,110.567032,47.061867,160.567017,0.000000,"Looking"};
+item6[] = {"",7,210,275.103180,131.701050,283.103180,139.701050,0.000000,""};
+item7[] = {"",7,210,152.193039,-68.907234,160.193069,-60.907227,0.000000,""};
+item8[] = {"_",2,250,-43.453609,-21.391754,46.546406,28.608238,0.000000,""};
+item9[] = {"_",8,218,-42.422684,44.072178,47.577316,94.072174,0.000000,""};
+item10[] = {"Wait_while_Enemy",2,250,173.556808,-145.910431,263.556824,-95.910316,0.000000,"Wait while" \n "Enemy" \n "Spotted"};
+item11[] = {"",7,210,274.350586,-66.960464,282.350586,-58.960464,0.000000,""};
+item12[] = {"Abort",4,218,71.926971,58.970604,161.926987,108.970596,9.000000,"Abort"};
+item13[] = {"End_1",1,250,175.397034,59.392937,265.397125,109.392929,0.000000,"End"};
+link0[] = {0,4};
+link1[] = {2,1};
+link2[] = {3,10};
+link3[] = {4,8};
+link4[] = {5,2};
+link5[] = {5,6};
+link6[] = {5,12};
+link7[] = {6,11};
+link8[] = {7,2};
+link9[] = {7,4};
+link10[] = {7,12};
+link11[] = {8,2};
+link12[] = {8,3};
+link13[] = {8,9};
+link14[] = {8,12};
+link15[] = {9,5};
+link16[] = {10,7};
+link17[] = {11,7};
+link18[] = {12,13};
+globals[] = {0.000000,0,0,0,0,640,480,1,20,6316128,1,-54.613853,289.041229,315.832916,-207.120453,1169,1031,1};
+window[] = {2,-1,-1,-1,-1,779,150,1085,150,3,1187};
+*//*%FSM</HEAD>*/
+class FSM
+{
+  fsmName = "Simple Guard Post";
+  class States
+  {
+    /*%FSM<STATE "Start">*/
+    class Start
+    {
+      name = "Start";
+      init = /*%FSM<STATEINIT""">*/"// Simple Guard Post Script 1.0" \n
+       "// by Tophe of ?stg?ta Ops" \n
+       "//" \n
+       "// Usage with default values:" \n
+       "// nul = [this] execVM ""GuardPost.sqf""" \n
+       "//" \n
+       "// Optional settings:" \n
+       "// nul = [unit, range in degrees, behaviour, stance (up/down/middle/auto), look up/down, min delay] execVM ""GuardPost.sqf""" \n
+       "//" \n
+       "// Default values:" \n
+       "// nul = [this, 360, ""SAFE"", ""AUTO"", false, 1] execVM ""GuardPost.sqf""" \n
+       "//" \n
+       "// For feedback and support - check thread in the BIS forums. " \n
+       "// http://forums.bistudio.com/showthread.php?p=1681721" \n
+       "" \n
+       "_debug = false;" \n
+       "_abort = false;" \n
+       "_wait = 0;" \n
+       "" \n
+       "_unit = _this select 0;" \n
+       "" \n
+       "_range = if (count _this > 1) then {_this select 1} else {240};" \n
+       "if (_range < 0) then {_range = 0;};" \n
+       "if (_range > 360) then {_range = 360;};" \n
+       "" \n
+       "_beh = if (count _this > 2) then {_this select 2} else {""SAFE""};" \n
+       "if (toUpper(_beh) in [""CARELESS"",""SAFE"", ""AWARE"", ""COMBAT"", ""STEALTH""]) then {" \n
+       "        _unit setBehaviour _beh;" \n
+       "} else {" \n
+       "        _unit setBehaviour ""SAFE"";" \n
+       "};" \n
+       "" \n
+       "_stance = if (count _this > 3) then {_this select 3} else {""AUTO""};" \n
+       "if (toUpper(_stance) in [""AUTO"",""UP"", ""MIDDLE"", ""DOWN""]) then {" \n
+       "	_unit setUnitPos _stance;" \n
+       "} else {" \n
+       "	_unit setUnitPos ""AUTO"";" \n
+       "};" \n
+       "" \n
+       "_lookvert = if (count _this > 4) then {_this select 4} else {false};" \n
+       "" \n
+       "_delay = if (count _this > 5) then {_this select 5} else {1}; " \n
+       "" \n
+       "_debug = if (count _this > 6) then {_this select 6} else {false};" \n
+       "" \n
+       "_startdir = getDir _unit;" \n
+       "_pos = getPosATL _unit;" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "Random_Delay">*/
+        class Random_Delay
+        {
+          priority = 0.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"time > _wait"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "End">*/
+    class End
+    {
+      name = "End";
+      init = /*%FSM<STATEINIT""">*/"deleteMarkerLocal format[""GP:%1"", _unit];" \n
+       "if(_debug) then {" \n
+       "	format[""%1 killed - ending Simple Guard Post FSM"",  _unit] call ALiVE_fnc_logger;" \n
+       "};" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "Looking">*/
+    class Looking
+    {
+      name = "Looking";
+      init = /*%FSM<STATEINIT""">*/"_dir = direction _unit + (random _range) - ( _range / 2);" \n
+       "if (_dir < 0) then {_dir = _dir + 360};" \n
+       "_pos = getPosATL _unit;" \n
+       "" \n
+       "_zaxis = _pos select 2;" \n
+       "if (_lookvert) then {" \n
+       "	_zaxis = (_pos select 2) + (random 15) - 5;" \n
+       "};" \n
+       "" \n
+       "_pos = [" \n
+       "	(_pos select 0) + 50 * sin _dir," \n
+       "	(_pos select 1) + 50 * cos _dir," \n
+       "	_zaxis" \n
+       "];" \n
+       "" \n
+       "_unit doWatch _pos;" \n
+       "" \n
+       "deleteMarkerLocal format[""GP:%1"", _unit];" \n
+       "if(_debug) then {" \n
+       "	createMarkerLocal [format[""GP:%1"", _unit], _pos];" \n
+       "	format[""GP:%1"", _unit] setMarkerShapeLocal ""ICON"";" \n
+       "	format[""GP:%1"", _unit] setMarkerTypeLocal ""hd_dot"";" \n
+       "	format[""GP:%1"", _unit] setMarkerDir _startdir;" \n
+       "};" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "Abort">*/
+        class Abort
+        {
+          priority = 9.000000;
+          to="End_1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_abort"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Unit_Dead">*/
+        class Unit_Dead
+        {
+          priority = 9.000000;
+          to="End";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _unit"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Random_Delay">*/
+        class Random_Delay
+        {
+          priority = 0.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"time > _wait"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "_">*/
+    class _
+    {
+      name = "_";
+      init = /*%FSM<STATEINIT""">*/"_wait = time + _delay +  (random 10);" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "Abort">*/
+        class Abort
+        {
+          priority = 9.000000;
+          to="End_1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_abort"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Unit_Dead">*/
+        class Unit_Dead
+        {
+          priority = 9.000000;
+          to="End";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _unit"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Enemy_Spotted">*/
+        class Enemy_Spotted
+        {
+          priority = 5.000000;
+          to="Wait_while_Enemy";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{" \n
+           "        (_unit knowsAbout _x > 1.4)  &&" \n
+           "        {side _unit getFriend side _x < 0.6}" \n
+           "} count allUnits != 0"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "_">*/
+        class _
+        {
+          priority = 0.000000;
+          to="Looking";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "Wait_while_Enemy">*/
+    class Wait_while_Enemy
+    {
+      name = "Wait_while_Enemy";
+      init = /*%FSM<STATEINIT""">*/"_unit doWatch objNull;" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "Abort">*/
+        class Abort
+        {
+          priority = 9.000000;
+          to="End_1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_abort"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Unit_Dead">*/
+        class Unit_Dead
+        {
+          priority = 9.000000;
+          to="End";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _unit"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Random_Delay">*/
+        class Random_Delay
+        {
+          priority = 0.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"time > _wait"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "End_1">*/
+    class End_1
+    {
+      name = "End_1";
+      init = /*%FSM<STATEINIT""">*/"_unit doWatch objNull;" \n
+       "" \n
+       "deleteMarkerLocal format[""GP:%1"", _unit];" \n
+       "if(_debug) then {" \n
+       "	format[""%1 aborting Simple Guard Post FSM"",  _unit] call ALiVE_fnc_logger;" \n
+       "};" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+  };
+  initState="Start";
+  finalStates[] =
+  {
+    "End",
+    "End_1",
+  };
+};
+/*%FSM</COMPILE>*/

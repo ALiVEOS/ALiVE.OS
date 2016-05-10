@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_CREWINFO">
+	<English>Crew Info</English>
+</Key>
+<Key ID="STR_ALIVE_CREWINFO_DEBUG">
+	<English>Enable Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_CREWINFO_DEBUG_COMMENT">
+	<English>Enables Crew Info Module Debug</English>
+</Key>
+<Key ID="STR_ALIVE_CREWINFO_UI">
+	<English>Crew Info (Position):</English>
+</Key>
+<Key ID="STR_ALIVE_CREWINFO_UI_COMMENT">
+	<English>Crew Info Interface Location - select none to turn off</English>
+</Key>
+<Key ID="STR_ALIVE_CREWINFO_ERROR1">
+	<English>Only one crew info module can be used</English>
+</Key>
+</Container></Package></Project>

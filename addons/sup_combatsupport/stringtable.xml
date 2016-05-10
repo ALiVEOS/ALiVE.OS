@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_COMBATSUPPORT">
+	<English>Player Combat Support</English>
+</Key>
+<Key ID="STR_ALIVE_CS_COMMENT">
+	<English>ALiVE Combat Support System (CAS/Artillery/Transport)</English>
+</Key>
+<Key ID="STR_ALIVE_CS_ALLOW">
+	<English>Call in Combat Support with:</English>
+</Key>
+<Key ID="STR_ALIVE_CAS_LIMIT_COMMENT">
+	<English>Set the number of times CAS Asssets can be replenished</English>
+</Key>
+<Key ID="STR_ALIVE_CAS_LIMIT">
+	<English>CAS Respawn Limit:</English>
+</Key>
+<Key ID="STR_ALIVE_TRANS_LIMIT_COMMENT">
+	<English>Set the number of times Transport Asssets can be replenished</English>
+</Key>
+<Key ID="STR_ALIVE_ARTY_LIMIT">
+	<English>Arty Respawn Limit:</English>
+</Key>
+<Key ID="STR_ALIVE_ARTY_LIMIT_COMMENT">
+	<English>Set the number of times Arty Asssets can be replenished</English>
+</Key>
+<Key ID="STR_ALIVE_TRANS_LIMIT">
+	<English>Transport Respawn Limit:</English>
+</Key>
+<Key ID="STR_ALIVE_CS_RESPAWN_COMMENT">
+	<English>Set the amount of time before the CS Asset is replenished</English>
+</Key>
+<Key ID="STR_ALIVE_CS_RESPAWN">
+	<English>Respawn Time:</English>
+</Key>
+<Key ID="STR_ALIVE_CS_ALLOW_COMMENT">
+	<English>Define the item the player must have to be able to use Combat Support i.e "LaserDesignator"</English>
+</Key>
+<Key ID="STR_ALIVE_CS_ENABLE">
+	<English>Enable Combat Support</English>
+</Key>
+<Key ID="STR_ALIVE_CS_ENABLE_COMMENT">
+	<English>Enables the use of Combat Support in Game</English>
+</Key>
+<Key ID="STR_ALIVE_CS_DISABLE">
+	<English>Disable Combat Support</English>
+</Key>
+<Key ID="STR_ALIVE_CS_SIDE">
+	<English>Select Side for Combat Support</English>
+</Key>
+<Key ID="STR_ALIVE_CS_SIDE_COMMENT">
+	<English>Select Side for Combat Support</English>
+</Key>
+<Key ID="STR_ALIVE_CS_DISABLE_COMMENT">
+	<English>Disable Combat Support in Game</English>
+</Key>
+<Key ID="STR_ALIVE_CS_ERROR1">
+	<English>Only one Combat Support module can be used</English>
+</Key>
+<Key ID="STR_ALIVE_CS_USAGE">
+	<English>Place Module and set the settings accordingly! Sync to a SUP CAS or SUP Transport Module!</English>
+</Key>
+</Container></Package></Project>

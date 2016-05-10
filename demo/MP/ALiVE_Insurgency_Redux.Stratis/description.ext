@@ -1,0 +1,200 @@
+/*
+  _____
+  \_   \_ __  ___ _   _ _ __ __ _  ___ _ __   ___ _   _
+   / /\/ '_ \/ __| | | | '__/ _` |/ _ \ '_ \ / __| | | |
+/\/ /_ | | | \__ \ |_| | | | (_| |  __/ | | | (__| |_| |
+\____/ |_| |_|___/\__,_|_|  \__, |\___|_| |_|\___|\__, |
+                            |___/                 |___/
+
+@filename: description.ext
+
+Author:
+
+	Hazey
+
+Last modified:
+
+	2/20/2015
+
+Description:
+
+	Contains the main defines and params.
+______________________________________________________*/
+
+//--- System Header
+class header {
+	gametype = COOP;
+	minplayers = 1;
+	maxplayers = 24;
+	playerCountMultipleOf = 1;  //Coop type missions use 1, Team type missions use 2
+};
+
+//--- Mission Title
+author = "Alive Dev Team | Mission by Hazey";
+onLoadMission = "Welcome to Insurgency | ALiVE. Find and destroy the hidden weapons caches. Use your map to find possible cache locations.";
+onLoadIntroTime = true;
+onLoadMissionTime = true;
+onLoadName = Insurgency | ALiVE;
+loadScreen = "media\logo_INS.paa";
+
+//--- General Settings
+aiKills = 0;
+briefing = 1;
+debriefing = 1;
+allowFunctionsRecompile = 1;
+
+//--- Debug
+enableDebugConsole = 1;
+
+//--- Respawn
+respawn = BASE;
+respawnDelay = 15;
+respawnDialog = 1;
+disabledAI = 1;
+respawnTemplates[] = {"MenuPosition"};
+respawnButton = 0;
+respawnOnStart = 0;
+
+//--- General Includes
+
+//--- Intro Sounds/ Others
+class CfgSounds {
+	sounds[] = {news,prayer};
+
+	class news {
+		name = "news";
+		sound[] = {"media\sounds\news.ogg", db+0, 1.0};
+		titles[] = {};
+	};
+
+	class prayer {
+		name = "prayer";
+		sound[] = {"media\sounds\prayer.ogg", db+1, 1};
+		titles[] = {};
+	};
+};
+
+//--- Custom Intel Event Handlers
+class Extended_InitPost_EventHandlers {
+    class Man {
+        //--- Make sure everyone is happy when the mission starts
+		init = "_this call INS_fnc_handlerRegister";
+    };
+};
+
+//--- CfgFunctions
+class CfgFunctions{
+	#include "functions\cfgfunctions.hpp"
+};
+
+//--- Params
+class Params {
+
+	class EmtpyLine1 {
+		//--- paramsArray[0]
+		title = ":: General Settings";
+		values[]={0,0};
+		texts[]={ "",""};
+		default = 0;
+	};
+
+	class INS_STARTTIME {
+		title = "Mission Start Time";
+		values[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
+		texts[] = {
+			"1:00","2:00","3:00","4:00","5:00","6:00","7:00","8:00","9:00","10:00","11:00","12:00",
+			"13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00","23:00","24:00"
+		};
+		default = 6;
+		function = "BIS_fnc_paramDaytime";
+	};
+
+	class INS_CallToPrayer {
+		//--- paramsArray[2]
+		title = "Civilian Call To Prayer";
+		values[] = {1,0};
+		texts[] = {"Enabled","Disabled"};
+		default = 1;
+	};
+
+	class EMPTYPARAM {
+		//--- paramsArray[3]
+		title = "Empty Param";
+		values[] = {0};
+		texts[] = {"Disabled"};
+		default = 0;
+	};
+
+	class INS_ADVANCEDROLES{
+		//--- paramsArray[4]
+		title = "Advanced Roles: Specialty Utilities.";
+		values[] = {1,0};
+		texts[] = {"Enabled","Disabled"};
+		default = 1;
+	};
+
+	class EmtpyLine2 {
+		//--- paramsArray[5]
+		title = ":: Core Settings";
+		values[]={0,0};
+		texts[]={ "",""};
+		default = 0;
+	};
+
+    class cachesLimit {
+		//--- paramsArray[6]
+		title = "Number of caches to hunt";
+		values[] = {2,4,6,8,10,12,14,16};
+		texts[] = {"Two","Four","Six","Eight","Ten","Twelve","Fourteen","Sixteen"};
+		default = 6;
+	};
+
+	class intelItems {
+		//--- paramsArray[7]
+		title = "Spawn Intel in town?";
+		values[] = {1,0};
+		texts[] = {"Enabled","Disabled"};
+		default = 0;
+	};
+
+	class intelAmount {
+		//--- paramsArray[8]
+		title = "Number of Intel Items to spawn per town";
+		values[] = {2,4,6,8,10};
+		texts[] = {"2","4","6","8","10"};
+		default = 4;
+	};
+
+	class EMPTYPARAM1 {
+		//--- paramsArray[9]
+		title = "Empty Param";
+		values[] = {0};
+		texts[] = {"Disabled"};
+		default = 0;
+	};
+
+	class INS_dropRate {
+		//--- paramsArray[10]
+		title = "Intel drop rate - off bodies";
+		values[] = {98,95,92,87,84,80,77,75,70};
+		texts[] = {"2% Chance","5% Chance","8% Chance","13% Chance","16% Chance","20% Chance","23% Chance","25% Chance","30% Chance"};
+		default = 95;
+	};
+
+	class INS_MHQ {
+		//--- paramsArray[11]
+		title = "Insurgency MHQ - WIP";
+		values[] = {1,0};
+		texts[] = {"Enabled","Disabled"};
+		default = 1;
+	};
+
+	class INS_MHQ_DeployTime {
+		//--- paramsArray[12]
+		title = "MHQ Deploy Time.";
+		values[] = {10,20,30,60,120,300};
+		texts[] = {"10 Seconds","20 Seconds","30 Seconds","60 Seconds","2 Minutes","5 Minutes"};
+		default = 30;
+	};
+
+};

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_GM">
+    <English>Player Command/Control (C2ISTAR)</English>
+</Key>
+<Key ID="STR_ALIVE_GM_MENU">
+    <English>Player C2ISTAR</English>
+</Key>
+<Key ID="STR_ALIVE_GM_COMMENT">
+    <English>Group Management</English>
+</Key>
+</Container></Package></Project>

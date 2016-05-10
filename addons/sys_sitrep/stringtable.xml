@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_sitrep">
+	<English>sitrep Module</English>
+</Key>
+<Key ID="STR_ALIVE_sitrep_COMMENT">
+	<English>Send a SITREP to be stored in game and on War Room</English>
+</Key>
+<Key ID="STR_ALIVE_sitrepPARAMS">
+	<English>Template Parameters</English>
+</Key>
+<Key ID="STR_ALIVE_sitrep_ERROR1">
+	<English>Only one module template allowed</English>
+</Key>
+<Key ID="STR_ALIVE_sitrepPARAMS_COMMENT">
+	<English>Over-ride default parameters for the Module Template</English>
+</Key>
+<Key ID="STR_ALIVE_sitrepPARAMS_USAGE">
+	<English>Place the module and configure the over-rides</English>
+</Key>
+<Key ID="STR_ALIVE_sitrep_DEBUG">
+	<English>Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_sitrep_DEBUG_COMMENT">
+	<English>Enable Debug</English>
+</Key>
+<Key ID="STR_ALIVE_sitrep_DIALOG_TITLE">
+	<English>ADVANCED SITREP</English>
+</Key>
+<Key ID="STR_ALIVE_sitrep_DIALOG_SITREP">
+	<English>SITREP</English>
+</Key>
+</Container></Package></Project>

@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_OPCOM">
+	<English>Military AI Commander</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_COMMENT">
+	<English>Virtual AI High Command</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_DEBUG">
+	<English>Enable Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_DEBUG_COMMENT">
+	<English>Enables Module Debug</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_PERSISTENT">
+	<English>Persistent:</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_PERSISTENT_COMMENT">
+	<English>Enables external Database persistence for AI Commander</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_CONTROLTYPE">
+	<English>Control Type:</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_CONTROLTYPE_COMMENT">
+	<English>Type of AI Commander control</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_OCCUPATION">
+	<English>Installations (asymm.):</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_OCCUPATION_COMMENT">
+	<English>Amount of pre-placed installations like IED factories, HQ (asymmetric mode only)</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_SIDE">
+	<English>Side:</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_SIDE_COMMENT">
+	<English>AI Commanders side</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_REINFORCEMENTS">
+	<English>Reinforcements:</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_REINFORCEMENTS_COMMENT">
+	<English>Requires Military Logistics Module! Selects the threshold of the AI Commanders reinforcement requests (90% / 75% / 50% of original forces)</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_FACTIONS">
+	<English>Override Factions:</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_FACTIONS_COMMENT">
+	<English>Override AI Commander drop downs with f.e. ["BLU_F","BLU_G_F"]. Only use factions of one side!</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_FACTION">
+	<English>Faction:</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_FACTION_COMMENT">
+	<English>AI Commander will control this faction. Multiselection is possible!</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_USAGE">
+	<English>Place a Military AI Commander module in the editor and select a faction from the dropdown. Custom factions can be entered in the “override default faction” box. Choose the Control Type in the drop down menu. By default, the AI Commander will take command of all available virtual units (profiles) for its faction. Therefore, it requires a minimum of one synced Placement Module and the Virtual AI module.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INTELCHANCE">
+	<English>INTEL:</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INTELCHANCE_COMMENT">
+	<English>Some soldiers can carry viable information about nearby installations</English>
+</Key>
+</Container></Package></Project>

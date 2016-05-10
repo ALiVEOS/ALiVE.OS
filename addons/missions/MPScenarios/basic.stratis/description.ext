@@ -1,0 +1,25 @@
+//http://community.bistudio.com/wiki/description.ext#Header_Class
+class header {
+	gametype = COOP;
+	minplayers = 1;
+	maxplayers = 9;
+	playerCountMultipleOf = 1;  //Coop type missions use 1, Team type missions use 2
+};
+
+author = ALiVE Mod Team || Mission by Tupolov;
+onLoadMission = "Stratis is occupied by CSAT forces, your pathfinding unit supported by CAS and Air assets need to drive back the occupying force!";
+onLoadIntroTime = 1;
+onLoadMissionTime = 1;
+onLoadName = ALiVE | Getting Started;
+loadScreen = "x\alive\addons\missions\logo_alive.paa";
+overviewPicture = "x\alive\addons\missions\logo_alive.paa";
+overviewText = "This is the basic quick start mission featured in the ALiVE documentation and Wiki (alivemod.com). CSAT have occupied Stratis, use your Combat Support assets to assist the BLUFOR pathfinding unit in driving back occupying forces!";
+
+aiKills = 0;
+briefing = 1;
+debriefing = 1;
+respawn = 3;
+respawnDelay = 15;
+RespawnDialog = 0;
+enableDebugConsole = 1;
+allowFunctionsRecompile = 1;

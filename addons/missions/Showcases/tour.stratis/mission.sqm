@@ -1,0 +1,4226 @@
+version=12;
+class Mission
+{
+	addOns[]=
+	{
+		"a3_characters_f",
+		"alive_main",
+		"alive_sys_profile",
+		"alive_mil_opcom",
+		"alive_mil_placement",
+		"a3_map_stratis",
+		"A3_Characters_F_BLUFOR",
+		"alive_mil_logistics",
+		"alive_amb_civ_population",
+		"alive_amb_civ_placement",
+		"alive_civ_placement",
+		"alive_mil_intelligence",
+		"alive_mil_cqb",
+		"A3_Soft_F_HEMTT",
+		"A3_Weapons_F_Ammoboxes",
+		"alive_sys_player",
+		"alive_mil_c2istar",
+		"alive_sys_weather",
+		"alive_sup_player_resupply",
+		"alive_sup_combatsupport",
+		"alive_sup_artillery",
+		"alive_sup_cas",
+		"alive_sup_transport",
+		"alive_mil_placement_custom",
+		"alive_sys_tour",
+		"alive_sys_playeroptions"
+	};
+	addOnsAuto[]=
+	{
+		"alive_main",
+		"alive_sys_profile",
+		"alive_mil_opcom",
+		"A3_Characters_F_BLUFOR",
+		"a3_characters_f",
+		"alive_mil_logistics",
+		"alive_mil_placement",
+		"alive_civ_placement",
+		"alive_mil_c2istar",
+		"alive_sys_weather",
+		"alive_mil_cqb",
+		"alive_sup_player_resupply",
+		"alive_sup_combatsupport",
+		"alive_sup_artillery",
+		"alive_sup_cas",
+		"alive_sup_transport",
+		"alive_mil_placement_custom",
+		"alive_sys_tour",
+		"alive_amb_civ_population",
+		"alive_amb_civ_placement",
+		"alive_sys_playeroptions",
+		"A3_Weapons_F_Ammoboxes",
+		"A3_Soft_F_HEMTT",
+		"a3_map_stratis"
+	};
+	randomSeed=10015019;
+	class Intel
+	{
+		resistanceWest=0;
+		resistanceEast=1;
+		startWeather=0.29999998;
+		startWind=0.099999994;
+		startWaves=0.099999994;
+		forecastWeather=0.29999998;
+		forecastWind=0.099999994;
+		forecastWaves=0.099999994;
+		forecastLightnings=0.099999994;
+		year=2035;
+		month=7;
+		day=6;
+		hour=12;
+		minute=0;
+		startFogDecay=0.013;
+		forecastFogDecay=0.013;
+	};
+	class Groups
+	{
+		items=45;
+		class Item0
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={395.82877,0.27188075,7301.4658};
+					class args
+					{
+						items=6;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_require";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="warning";
+							parentCls="ALiVE_require";
+							typeName="ALiVE_Versioning";
+						};
+						class Item2
+						{
+							value="true";
+							parentCls="ALiVE_require";
+							typeName="ALiVE_DISABLESAVE";
+						};
+						class Item3
+						{
+							value="300";
+							parentCls="ALiVE_require";
+							typeName="ALiVE_GC_INTERVAL";
+						};
+						class Item4
+						{
+							value="100";
+							parentCls="ALiVE_require";
+							typeName="ALiVE_GC_THRESHHOLD";
+						};
+						class Item5
+						{
+							value="";
+							parentCls="ALiVE_require";
+							typeName="ALiVE_GC_INDIVIDUALTYPES";
+						};
+					};
+					id=0;
+					side="LOGIC";
+					vehicle="ALiVE_require";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+				};
+			};
+		};
+		class Item1
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={396.45297,-0.030338839,7201.501};
+					class args
+					{
+						items=7;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_sys_profile";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="true";
+							parentCls="ALiVE_sys_profile";
+							typeName="persistent";
+						};
+						class Item2
+						{
+							value="ADD";
+							parentCls="ALiVE_sys_profile";
+							typeName="syncronised";
+						};
+						class Item3
+						{
+							value="900";
+							parentCls="ALiVE_sys_profile";
+							typeName="spawnRadius";
+						};
+						class Item4
+						{
+							value="1500";
+							parentCls="ALiVE_sys_profile";
+							typeName="spawnTypeHeliRadius";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_sys_profile";
+							typeName="spawnTypeJetRadius";
+						};
+						class Item6
+						{
+							value="50";
+							parentCls="ALiVE_sys_profile";
+							typeName="activeLimiter";
+						};
+					};
+					id=1;
+					side="LOGIC";
+					vehicle="ALiVE_sys_profile";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+				};
+			};
+		};
+		class Item2
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={3290.9453,206.57649,3128.5967};
+					class args
+					{
+						items=9;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="false";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="persistent";
+						};
+						class Item2
+						{
+							value="invasion";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="controltype";
+						};
+						class Item3
+						{
+							value="0.9";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="reinforcements";
+						};
+						class Item4
+						{
+							value="OPF_F";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="faction1";
+						};
+						class Item5
+						{
+							value="NONE";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="faction2";
+						};
+						class Item6
+						{
+							value="NONE";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="faction3";
+						};
+						class Item7
+						{
+							value="NONE";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="faction4";
+						};
+						class Item8
+						{
+							value="";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="factions";
+						};
+					};
+					id=2;
+					side="LOGIC";
+					vehicle="ALiVE_mil_OPCOM";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=0;
+					synchronizations[]={2,4,5,6,21,22,23,25,26,27,30,33,28,31,32};
+				};
+			};
+		};
+		class Item3
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={4699.582,119.57518,5341.9551};
+					class args
+					{
+						items=9;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="false";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="persistent";
+						};
+						class Item2
+						{
+							value="invasion";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="controltype";
+						};
+						class Item3
+						{
+							value="0.9";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="reinforcements";
+						};
+						class Item4
+						{
+							value="BLU_F";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="faction1";
+						};
+						class Item5
+						{
+							value="NONE";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="faction2";
+						};
+						class Item6
+						{
+							value="NONE";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="faction3";
+						};
+						class Item7
+						{
+							value="NONE";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="faction4";
+						};
+						class Item8
+						{
+							value="";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="factions";
+						};
+					};
+					id=3;
+					side="LOGIC";
+					vehicle="ALiVE_mil_OPCOM";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=1;
+					synchronizations[]={4,5,3,6,12,13,20,19,21,23,22,18,24,25,28,29,31,33};
+				};
+			};
+		};
+		class Item4
+		{
+			side="WEST";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={6476.9546,7.4493761,5396.3892};
+					azimut=44.537075;
+					id=4;
+					side="WEST";
+					vehicle="B_Soldier_SL_F";
+					player="PLAYER COMMANDER";
+					leader=1;
+					skill=0.60000002;
+					init="this addItem ""LaserDesignator"";this addItem ""ALIVE_Tablet"";";
+				};
+			};
+		};
+		class Item5
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={3287.8911,208.33165,2788.3223};
+					class args
+					{
+						items=10;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_logistics";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="false";
+							parentCls="ALiVE_mil_logistics";
+							typeName="persistent";
+						};
+						class Item2
+						{
+							value="DYNAMIC";
+							parentCls="ALiVE_mil_logistics";
+							typeName="type";
+						};
+						class Item3
+						{
+							value="1000";
+							parentCls="ALiVE_mil_logistics";
+							typeName="forcePool";
+						};
+						class Item4
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowInfantryReinforcement";
+						};
+						class Item5
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowMechanisedReinforcement";
+						};
+						class Item6
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowMotorisedReinforcement";
+						};
+						class Item7
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowArmourReinforcement";
+						};
+						class Item8
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowHeliReinforcement";
+						};
+						class Item9
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowPlaneReinforcement";
+						};
+					};
+					id=5;
+					side="LOGIC";
+					vehicle="ALiVE_mil_logistics";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=2;
+					synchronizations[]={0};
+				};
+			};
+		};
+		class Item6
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={4698.4629,95.692879,5665.104};
+					class args
+					{
+						items=10;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_logistics";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="false";
+							parentCls="ALiVE_mil_logistics";
+							typeName="persistent";
+						};
+						class Item2
+						{
+							value="DYNAMIC";
+							parentCls="ALiVE_mil_logistics";
+							typeName="type";
+						};
+						class Item3
+						{
+							value="1000";
+							parentCls="ALiVE_mil_logistics";
+							typeName="forcePool";
+						};
+						class Item4
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowInfantryReinforcement";
+						};
+						class Item5
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowMechanisedReinforcement";
+						};
+						class Item6
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowMotorisedReinforcement";
+						};
+						class Item7
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowArmourReinforcement";
+						};
+						class Item8
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowHeliReinforcement";
+						};
+						class Item9
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowPlaneReinforcement";
+						};
+					};
+					id=6;
+					side="LOGIC";
+					vehicle="ALiVE_mil_logistics";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=3;
+					synchronizations[]={1};
+				};
+			};
+		};
+		class Item7
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={3290.2544,117.36195,3432.9038};
+					class args
+					{
+						items=20;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="OPF_F";
+							parentCls="ALiVE_mil_placement";
+							typeName="taor";
+						};
+						class Item2
+						{
+							value="";
+							parentCls="ALiVE_mil_placement";
+							typeName="blacklist";
+						};
+						class Item3
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement";
+							typeName="sizeFilter";
+						};
+						class Item4
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement";
+							typeName="priorityFilter";
+						};
+						class Item5
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement";
+							typeName="withPlacement";
+						};
+						class Item6
+						{
+							value="200";
+							parentCls="ALiVE_mil_placement";
+							typeName="size";
+						};
+						class Item7
+						{
+							value="Random";
+							parentCls="ALiVE_mil_placement";
+							typeName="type";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement";
+							typeName="randomcamps";
+						};
+						class Item9
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement";
+							typeName="readinessLevel";
+						};
+						class Item10
+						{
+							value="10";
+							parentCls="ALiVE_mil_placement";
+							typeName="customInfantryCount";
+						};
+						class Item11
+						{
+							value="2";
+							parentCls="ALiVE_mil_placement";
+							typeName="customMotorisedCount";
+						};
+						class Item12
+						{
+							value="2";
+							parentCls="ALiVE_mil_placement";
+							typeName="customMechanisedCount";
+						};
+						class Item13
+						{
+							value="2";
+							parentCls="ALiVE_mil_placement";
+							typeName="customArmourCount";
+						};
+						class Item14
+						{
+							value="";
+							parentCls="ALiVE_mil_placement";
+							typeName="customSpecOpsCount";
+						};
+						class Item15
+						{
+							value="OPF_F";
+							parentCls="ALiVE_mil_placement";
+							typeName="faction";
+						};
+						class Item16
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement";
+							typeName="createHQ";
+						};
+						class Item17
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement";
+							typeName="placeHelis";
+						};
+						class Item18
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement";
+							typeName="placeSupplies";
+						};
+						class Item19
+						{
+							value="0.6";
+							parentCls="ALiVE_mil_placement";
+							typeName="ambientVehicleAmount";
+						};
+					};
+					id=7;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=4;
+					synchronizations[]={0,1,7};
+				};
+			};
+		};
+		class Item8
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={4697.5928,103.45951,4984.9199};
+					class args
+					{
+						items=20;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="BLU_F";
+							parentCls="ALiVE_mil_placement";
+							typeName="taor";
+						};
+						class Item2
+						{
+							value="";
+							parentCls="ALiVE_mil_placement";
+							typeName="blacklist";
+						};
+						class Item3
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement";
+							typeName="sizeFilter";
+						};
+						class Item4
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement";
+							typeName="priorityFilter";
+						};
+						class Item5
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement";
+							typeName="withPlacement";
+						};
+						class Item6
+						{
+							value="200";
+							parentCls="ALiVE_mil_placement";
+							typeName="size";
+						};
+						class Item7
+						{
+							value="Random";
+							parentCls="ALiVE_mil_placement";
+							typeName="type";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement";
+							typeName="randomcamps";
+						};
+						class Item9
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement";
+							typeName="readinessLevel";
+						};
+						class Item10
+						{
+							value="10";
+							parentCls="ALiVE_mil_placement";
+							typeName="customInfantryCount";
+						};
+						class Item11
+						{
+							value="2";
+							parentCls="ALiVE_mil_placement";
+							typeName="customMotorisedCount";
+						};
+						class Item12
+						{
+							value="2";
+							parentCls="ALiVE_mil_placement";
+							typeName="customMechanisedCount";
+						};
+						class Item13
+						{
+							value="2";
+							parentCls="ALiVE_mil_placement";
+							typeName="customArmourCount";
+						};
+						class Item14
+						{
+							value="";
+							parentCls="ALiVE_mil_placement";
+							typeName="customSpecOpsCount";
+						};
+						class Item15
+						{
+							value="BLU_F";
+							parentCls="ALiVE_mil_placement";
+							typeName="faction";
+						};
+						class Item16
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement";
+							typeName="createHQ";
+						};
+						class Item17
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement";
+							typeName="placeHelis";
+						};
+						class Item18
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement";
+							typeName="placeSupplies";
+						};
+						class Item19
+						{
+							value="0.6";
+							parentCls="ALiVE_mil_placement";
+							typeName="ambientVehicleAmount";
+						};
+					};
+					id=8;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=5;
+					synchronizations[]={1,0,10};
+				};
+			};
+		};
+		class Item9
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={3589.4385,181.35513,3124.4976};
+					class args
+					{
+						items=17;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_civ_placement";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="OPF_F";
+							parentCls="ALiVE_civ_placement";
+							typeName="taor";
+						};
+						class Item2
+						{
+							value="";
+							parentCls="ALiVE_civ_placement";
+							typeName="blacklist";
+						};
+						class Item3
+						{
+							value="All";
+							parentCls="ALiVE_civ_placement";
+							typeName="clusterType";
+						};
+						class Item4
+						{
+							value="160";
+							parentCls="ALiVE_civ_placement";
+							typeName="sizeFilter";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_civ_placement";
+							typeName="priorityFilter";
+						};
+						class Item6
+						{
+							value="true";
+							parentCls="ALiVE_civ_placement";
+							typeName="withPlacement";
+						};
+						class Item7
+						{
+							value="200";
+							parentCls="ALiVE_civ_placement";
+							typeName="size";
+						};
+						class Item8
+						{
+							value="Random";
+							parentCls="ALiVE_civ_placement";
+							typeName="type";
+						};
+						class Item9
+						{
+							value="1";
+							parentCls="ALiVE_civ_placement";
+							typeName="readinessLevel";
+						};
+						class Item10
+						{
+							value="0";
+							parentCls="ALiVE_civ_placement";
+							typeName="roadblocks";
+						};
+						class Item11
+						{
+							value="5";
+							parentCls="ALiVE_civ_placement";
+							typeName="customInfantryCount";
+						};
+						class Item12
+						{
+							value="";
+							parentCls="ALiVE_civ_placement";
+							typeName="customMotorisedCount";
+						};
+						class Item13
+						{
+							value="";
+							parentCls="ALiVE_civ_placement";
+							typeName="customMechanisedCount";
+						};
+						class Item14
+						{
+							value="";
+							parentCls="ALiVE_civ_placement";
+							typeName="customArmourCount";
+						};
+						class Item15
+						{
+							value="";
+							parentCls="ALiVE_civ_placement";
+							typeName="customSpecOpsCount";
+						};
+						class Item16
+						{
+							value="OPF_F";
+							parentCls="ALiVE_civ_placement";
+							typeName="faction";
+						};
+					};
+					id=9;
+					side="LOGIC";
+					vehicle="ALiVE_civ_placement";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=6;
+					synchronizations[]={0,1,7};
+				};
+			};
+		};
+		class Item10
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={399.51688,-0.12857883,7104.5679};
+					class args
+					{
+						items=10;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_MIL_C2ISTAR";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="LaserDesignator";
+							parentCls="ALiVE_MIL_C2ISTAR";
+							typeName="c2_item";
+						};
+						class Item2
+						{
+							value="false";
+							parentCls="ALiVE_MIL_C2ISTAR";
+							typeName="persistent";
+						};
+						class Item3
+						{
+							value="false";
+							parentCls="ALiVE_MIL_C2ISTAR";
+							typeName="displayIntel";
+						};
+						class Item4
+						{
+							value="1";
+							parentCls="ALiVE_MIL_C2ISTAR";
+							typeName="intelChance";
+						};
+						class Item5
+						{
+							value="false";
+							parentCls="ALiVE_MIL_C2ISTAR";
+							typeName="friendlyIntel";
+						};
+						class Item6
+						{
+							value="2000";
+							parentCls="ALiVE_MIL_C2ISTAR";
+							typeName="friendlyIntelRadius";
+						};
+						class Item7
+						{
+							value="false";
+							parentCls="ALiVE_MIL_C2ISTAR";
+							typeName="displayMilitarySectors";
+						};
+						class Item8
+						{
+							value="false";
+							parentCls="ALiVE_MIL_C2ISTAR";
+							typeName="displayPlayerSectors";
+						};
+						class Item9
+						{
+							value="2";
+							parentCls="ALiVE_MIL_C2ISTAR";
+							typeName="runEvery";
+						};
+					};
+					id=10;
+					side="LOGIC";
+					vehicle="ALiVE_MIL_C2ISTAR";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+				};
+			};
+		};
+		class Item11
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={598.76453,0.015404683,7102.5889};
+					class args
+					{
+						items=6;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_sys_weather";
+							typeName="weather_debug_setting";
+						};
+						class Item1
+						{
+							value="60";
+							parentCls="ALiVE_sys_weather";
+							typeName="weather_debug_cycle_setting";
+						};
+						class Item2
+						{
+							value="3";
+							parentCls="ALiVE_sys_weather";
+							typeName="weather_initial_setting";
+						};
+						class Item3
+						{
+							value="1";
+							parentCls="ALiVE_sys_weather";
+							typeName="weather_override_setting";
+						};
+						class Item4
+						{
+							value="1800";
+							parentCls="ALiVE_sys_weather";
+							typeName="weather_cycle_delay_setting";
+						};
+						class Item5
+						{
+							value="0.2";
+							parentCls="ALiVE_sys_weather";
+							typeName="weather_cycle_variance_setting";
+						};
+					};
+					id=11;
+					side="LOGIC";
+					vehicle="ALiVE_sys_weather";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+				};
+			};
+		};
+		class Item12
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={397.34476,0.2017656,6903.8179};
+					class args
+					{
+						items=15;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_cqb";
+							typeName="CQB_debug_setting";
+						};
+						class Item1
+						{
+							value="false";
+							parentCls="ALiVE_mil_cqb";
+							typeName="CQB_persistent";
+						};
+						class Item2
+						{
+							value="server";
+							parentCls="ALiVE_mil_cqb";
+							typeName="CQB_locality_setting";
+						};
+						class Item3
+						{
+							value="regular";
+							parentCls="ALiVE_mil_cqb";
+							typeName="CQB_TYPE";
+						};
+						class Item4
+						{
+							value="all";
+							parentCls="ALiVE_mil_cqb";
+							typeName="CQB_LOCATIONTYPE";
+						};
+						class Item5
+						{
+							value="0.2";
+							parentCls="ALiVE_mil_cqb";
+							typeName="CQB_spawn_setting";
+						};
+						class Item6
+						{
+							value="700";
+							parentCls="ALiVE_mil_cqb";
+							typeName="CQB_DENSITY";
+						};
+						class Item7
+						{
+							value="3";
+							parentCls="ALiVE_mil_cqb";
+							typeName="CQB_amount";
+						};
+						class Item8
+						{
+							value="true";
+							parentCls="ALiVE_mil_cqb";
+							typeName="CQB_UseDominantFaction";
+						};
+						class Item9
+						{
+							value="700";
+							parentCls="ALiVE_mil_cqb";
+							typeName="CQB_spawndistance";
+						};
+						class Item10
+						{
+							value="0";
+							parentCls="ALiVE_mil_cqb";
+							typeName="CQB_spawndistanceHeli";
+						};
+						class Item11
+						{
+							value="0";
+							parentCls="ALiVE_mil_cqb";
+							typeName="CQB_spawndistanceJet";
+						};
+						class Item12
+						{
+							value="OPF_F";
+							parentCls="ALiVE_mil_cqb";
+							typeName="CQB_FACTIONS";
+						};
+						class Item13
+						{
+							value="";
+							parentCls="ALiVE_mil_cqb";
+							typeName="whitelist";
+						};
+						class Item14
+						{
+							value="";
+							parentCls="ALiVE_mil_cqb";
+							typeName="blacklist";
+						};
+					};
+					id=12;
+					side="LOGIC";
+					vehicle="ALiVE_mil_cqb";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+				};
+			};
+		};
+		class Item13
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={4704.3101,111.78114,3133.7158};
+					class args
+					{
+						items=9;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="false";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="persistent";
+						};
+						class Item2
+						{
+							value="invasion";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="controltype";
+						};
+						class Item3
+						{
+							value="0.9";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="reinforcements";
+						};
+						class Item4
+						{
+							value="BLU_G_F";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="faction1";
+						};
+						class Item5
+						{
+							value="NONE";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="faction2";
+						};
+						class Item6
+						{
+							value="NONE";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="faction3";
+						};
+						class Item7
+						{
+							value="NONE";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="faction4";
+						};
+						class Item8
+						{
+							value="";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="factions";
+						};
+					};
+					id=13;
+					side="LOGIC";
+					vehicle="ALiVE_mil_OPCOM";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=7;
+					synchronizations[]={8,9,6,4,13,12,20,19,22,21,23,18,25,26,27,30,32};
+				};
+			};
+		};
+		class Item14
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={4706.6499,8.1285,2782.6387};
+					class args
+					{
+						items=10;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_logistics";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="false";
+							parentCls="ALiVE_mil_logistics";
+							typeName="persistent";
+						};
+						class Item2
+						{
+							value="DYNAMIC";
+							parentCls="ALiVE_mil_logistics";
+							typeName="type";
+						};
+						class Item3
+						{
+							value="1000";
+							parentCls="ALiVE_mil_logistics";
+							typeName="forcePool";
+						};
+						class Item4
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowInfantryReinforcement";
+						};
+						class Item5
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowMechanisedReinforcement";
+						};
+						class Item6
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowMotorisedReinforcement";
+						};
+						class Item7
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowArmourReinforcement";
+						};
+						class Item8
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowHeliReinforcement";
+						};
+						class Item9
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowPlaneReinforcement";
+						};
+					};
+					id=14;
+					side="LOGIC";
+					vehicle="ALiVE_mil_logistics";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=8;
+					synchronizations[]={7};
+				};
+			};
+		};
+		class Item15
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={4705.5654,160.23158,3445.0674};
+					class args
+					{
+						items=18;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="BLU_G_F";
+							parentCls="ALiVE_mil_placement";
+							typeName="taor";
+						};
+						class Item2
+						{
+							value="";
+							parentCls="ALiVE_mil_placement";
+							typeName="blacklist";
+						};
+						class Item3
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement";
+							typeName="sizeFilter";
+						};
+						class Item4
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement";
+							typeName="priorityFilter";
+						};
+						class Item5
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement";
+							typeName="withPlacement";
+						};
+						class Item6
+						{
+							value="200";
+							parentCls="ALiVE_mil_placement";
+							typeName="size";
+						};
+						class Item7
+						{
+							value="Random";
+							parentCls="ALiVE_mil_placement";
+							typeName="type";
+						};
+						class Item8
+						{
+							value="10";
+							parentCls="ALiVE_mil_placement";
+							typeName="customInfantryCount";
+						};
+						class Item9
+						{
+							value="2";
+							parentCls="ALiVE_mil_placement";
+							typeName="customMotorisedCount";
+						};
+						class Item10
+						{
+							value="2";
+							parentCls="ALiVE_mil_placement";
+							typeName="customMechanisedCount";
+						};
+						class Item11
+						{
+							value="2";
+							parentCls="ALiVE_mil_placement";
+							typeName="customArmourCount";
+						};
+						class Item12
+						{
+							value="";
+							parentCls="ALiVE_mil_placement";
+							typeName="customSpecOpsCount";
+						};
+						class Item13
+						{
+							value="BLU_G_F";
+							parentCls="ALiVE_mil_placement";
+							typeName="faction";
+						};
+						class Item14
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement";
+							typeName="createHQ";
+						};
+						class Item15
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement";
+							typeName="placeHelis";
+						};
+						class Item16
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement";
+							typeName="placeSupplies";
+						};
+						class Item17
+						{
+							value="0.6";
+							parentCls="ALiVE_mil_placement";
+							typeName="ambientVehicleAmount";
+						};
+					};
+					id=15;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=9;
+					synchronizations[]={7,10};
+				};
+			};
+		};
+		class Item16
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={3264.2332,56.688904,5351.4351};
+					class args
+					{
+						items=9;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="false";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="persistent";
+						};
+						class Item2
+						{
+							value="invasion";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="controltype";
+						};
+						class Item3
+						{
+							value="0.9";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="reinforcements";
+						};
+						class Item4
+						{
+							value="IND_F";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="faction1";
+						};
+						class Item5
+						{
+							value="NONE";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="faction2";
+						};
+						class Item6
+						{
+							value="NONE";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="faction3";
+						};
+						class Item7
+						{
+							value="NONE";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="faction4";
+						};
+						class Item8
+						{
+							value="";
+							parentCls="ALiVE_mil_OPCOM";
+							typeName="factions";
+						};
+					};
+					id=16;
+					side="LOGIC";
+					vehicle="ALiVE_mil_OPCOM";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=10;
+					synchronizations[]={11,12,5,9,13,20,19,24,26,29,28,31,33};
+				};
+			};
+		};
+		class Item17
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={3266.573,169.11884,5000.3579};
+					class args
+					{
+						items=10;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_logistics";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="false";
+							parentCls="ALiVE_mil_logistics";
+							typeName="persistent";
+						};
+						class Item2
+						{
+							value="DYNAMIC";
+							parentCls="ALiVE_mil_logistics";
+							typeName="type";
+						};
+						class Item3
+						{
+							value="1000";
+							parentCls="ALiVE_mil_logistics";
+							typeName="forcePool";
+						};
+						class Item4
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowInfantryReinforcement";
+						};
+						class Item5
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowMechanisedReinforcement";
+						};
+						class Item6
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowMotorisedReinforcement";
+						};
+						class Item7
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowArmourReinforcement";
+						};
+						class Item8
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowHeliReinforcement";
+						};
+						class Item9
+						{
+							value="true";
+							parentCls="ALiVE_mil_logistics";
+							typeName="allowPlaneReinforcement";
+						};
+					};
+					id=17;
+					side="LOGIC";
+					vehicle="ALiVE_mil_logistics";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=11;
+					synchronizations[]={10};
+				};
+			};
+		};
+		class Item18
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={3265.4885,44.349335,5662.7866};
+					class args
+					{
+						items=18;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="IND_F";
+							parentCls="ALiVE_mil_placement";
+							typeName="taor";
+						};
+						class Item2
+						{
+							value="";
+							parentCls="ALiVE_mil_placement";
+							typeName="blacklist";
+						};
+						class Item3
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement";
+							typeName="sizeFilter";
+						};
+						class Item4
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement";
+							typeName="priorityFilter";
+						};
+						class Item5
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement";
+							typeName="withPlacement";
+						};
+						class Item6
+						{
+							value="200";
+							parentCls="ALiVE_mil_placement";
+							typeName="size";
+						};
+						class Item7
+						{
+							value="Random";
+							parentCls="ALiVE_mil_placement";
+							typeName="type";
+						};
+						class Item8
+						{
+							value="10";
+							parentCls="ALiVE_mil_placement";
+							typeName="customInfantryCount";
+						};
+						class Item9
+						{
+							value="2";
+							parentCls="ALiVE_mil_placement";
+							typeName="customMotorisedCount";
+						};
+						class Item10
+						{
+							value="2";
+							parentCls="ALiVE_mil_placement";
+							typeName="customMechanisedCount";
+						};
+						class Item11
+						{
+							value="2";
+							parentCls="ALiVE_mil_placement";
+							typeName="customArmourCount";
+						};
+						class Item12
+						{
+							value="";
+							parentCls="ALiVE_mil_placement";
+							typeName="customSpecOpsCount";
+						};
+						class Item13
+						{
+							value="IND_F";
+							parentCls="ALiVE_mil_placement";
+							typeName="faction";
+						};
+						class Item14
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement";
+							typeName="createHQ";
+						};
+						class Item15
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement";
+							typeName="placeHelis";
+						};
+						class Item16
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement";
+							typeName="placeSupplies";
+						};
+						class Item17
+						{
+							value="0.6";
+							parentCls="ALiVE_mil_placement";
+							typeName="ambientVehicleAmount";
+						};
+					};
+					id=18;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=12;
+					synchronizations[]={10,1,7};
+				};
+			};
+		};
+		class Item19
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={3594.5471,90.651772,5341.7769};
+					class args
+					{
+						items=15;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_civ_placement";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="IND_F";
+							parentCls="ALiVE_civ_placement";
+							typeName="taor";
+						};
+						class Item2
+						{
+							value="";
+							parentCls="ALiVE_civ_placement";
+							typeName="blacklist";
+						};
+						class Item3
+						{
+							value="All";
+							parentCls="ALiVE_civ_placement";
+							typeName="clusterType";
+						};
+						class Item4
+						{
+							value="160";
+							parentCls="ALiVE_civ_placement";
+							typeName="sizeFilter";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_civ_placement";
+							typeName="priorityFilter";
+						};
+						class Item6
+						{
+							value="true";
+							parentCls="ALiVE_civ_placement";
+							typeName="withPlacement";
+						};
+						class Item7
+						{
+							value="200";
+							parentCls="ALiVE_civ_placement";
+							typeName="size";
+						};
+						class Item8
+						{
+							value="Random";
+							parentCls="ALiVE_civ_placement";
+							typeName="type";
+						};
+						class Item9
+						{
+							value="5";
+							parentCls="ALiVE_civ_placement";
+							typeName="customInfantryCount";
+						};
+						class Item10
+						{
+							value="";
+							parentCls="ALiVE_civ_placement";
+							typeName="customMotorisedCount";
+						};
+						class Item11
+						{
+							value="";
+							parentCls="ALiVE_civ_placement";
+							typeName="customMechanisedCount";
+						};
+						class Item12
+						{
+							value="";
+							parentCls="ALiVE_civ_placement";
+							typeName="customArmourCount";
+						};
+						class Item13
+						{
+							value="";
+							parentCls="ALiVE_civ_placement";
+							typeName="customSpecOpsCount";
+						};
+						class Item14
+						{
+							value="IND_F";
+							parentCls="ALiVE_civ_placement";
+							typeName="faction";
+						};
+					};
+					id=19;
+					side="LOGIC";
+					vehicle="ALiVE_civ_placement";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=13;
+					synchronizations[]={10,1,7};
+				};
+			};
+		};
+		class Item20
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={402.5607,-107.11882,6997.813};
+					class args
+					{
+						items=1;
+						class Item0
+						{
+							value="LaserDesignator";
+							parentCls="ALiVE_SUP_PLAYER_RESUPPLY";
+							typeName="pr_item";
+						};
+					};
+					id=20;
+					side="LOGIC";
+					vehicle="ALiVE_SUP_PLAYER_RESUPPLY";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+				};
+			};
+		};
+		class Item21
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={6015.5176,15.912119,4195.0376};
+					class args
+					{
+						items=5;
+						class Item0
+						{
+							value="LaserDesignator";
+							parentCls="ALiVE_sup_combatsupport";
+							typeName="combatsupport_item";
+						};
+						class Item1
+						{
+							value="3";
+							parentCls="ALiVE_sup_combatsupport";
+							typeName="combatsupport_casrespawnlimit";
+						};
+						class Item2
+						{
+							value="3";
+							parentCls="ALiVE_sup_combatsupport";
+							typeName="combatsupport_transportrespawnlimit";
+						};
+						class Item3
+						{
+							value="3";
+							parentCls="ALiVE_sup_combatsupport";
+							typeName="combatsupport_artyrespawnlimit";
+						};
+						class Item4
+						{
+							value="60";
+							parentCls="ALiVE_sup_combatsupport";
+							typeName="combatsupport_respawn";
+						};
+					};
+					id=21;
+					side="LOGIC";
+					vehicle="ALiVE_sup_combatsupport";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=14;
+					synchronizations[]={15,16,17};
+				};
+			};
+		};
+		class Item22
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={6007.002,18.74629,4169.6309};
+					class args
+					{
+						items=11;
+						class Item0
+						{
+							value="FOX SEVEN";
+							parentCls="ALiVE_sup_artillery";
+							typeName="artillery_callsign";
+						};
+						class Item1
+						{
+							value="B_MBT_01_arty_F";
+							parentCls="ALiVE_sup_artillery";
+							typeName="artillery_type";
+						};
+						class Item2
+						{
+							value="30";
+							parentCls="ALiVE_sup_artillery";
+							typeName="artillery_he";
+						};
+						class Item3
+						{
+							value="30";
+							parentCls="ALiVE_sup_artillery";
+							typeName="artillery_illum";
+						};
+						class Item4
+						{
+							value="30";
+							parentCls="ALiVE_sup_artillery";
+							typeName="artillery_smoke";
+						};
+						class Item5
+						{
+							value="30";
+							parentCls="ALiVE_sup_artillery";
+							typeName="artillery_guided";
+						};
+						class Item6
+						{
+							value="30";
+							parentCls="ALiVE_sup_artillery";
+							typeName="artillery_cluster";
+						};
+						class Item7
+						{
+							value="30";
+							parentCls="ALiVE_sup_artillery";
+							typeName="artillery_lg";
+						};
+						class Item8
+						{
+							value="30";
+							parentCls="ALiVE_sup_artillery";
+							typeName="artillery_mine";
+						};
+						class Item9
+						{
+							value="30";
+							parentCls="ALiVE_sup_artillery";
+							typeName="artillery_atmine";
+						};
+						class Item10
+						{
+							value="16";
+							parentCls="ALiVE_sup_artillery";
+							typeName="artillery_rockets";
+						};
+					};
+					id=22;
+					side="LOGIC";
+					vehicle="ALiVE_sup_artillery";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=15;
+					synchronizations[]={14};
+				};
+			};
+		};
+		class Item23
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={6022.3574,18.225868,4159.3008};
+					class args
+					{
+						items=3;
+						class Item0
+						{
+							value="EAGLE ONE";
+							parentCls="ALiVE_sup_cas";
+							typeName="cas_callsign";
+						};
+						class Item1
+						{
+							value="B_Heli_Attack_01_F";
+							parentCls="ALiVE_sup_cas";
+							typeName="cas_type";
+						};
+						class Item2
+						{
+							value="0";
+							parentCls="ALiVE_sup_cas";
+							typeName="cas_height";
+						};
+					};
+					id=23;
+					side="LOGIC";
+					vehicle="ALiVE_sup_cas";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=16;
+					synchronizations[]={14};
+				};
+			};
+		};
+		class Item24
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={6028.9185,17.738232,4172.1436};
+					class args
+					{
+						items=3;
+						class Item0
+						{
+							value="RODEO TWO";
+							parentCls="ALiVE_SUP_TRANSPORT";
+							typeName="transport_callsign";
+						};
+						class Item1
+						{
+							value="B_Heli_Transport_01_camo_F";
+							parentCls="ALiVE_SUP_TRANSPORT";
+							typeName="transport_type";
+						};
+						class Item2
+						{
+							value="0";
+							parentCls="ALiVE_SUP_TRANSPORT";
+							typeName="transport_height";
+						};
+					};
+					id=24;
+					side="LOGIC";
+					vehicle="ALiVE_SUP_TRANSPORT";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=17;
+					synchronizations[]={14};
+				};
+			};
+		};
+		class Item25
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={2642.7051,84.322632,5415.9214};
+					azimut=-136.60764;
+					class args
+					{
+						items=10;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="IND_F";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="faction";
+						};
+						class Item2
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="priority";
+						};
+						class Item3
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="size";
+						};
+						class Item4
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customInfantryCount";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMotorisedCount";
+						};
+						class Item6
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMechanisedCount";
+						};
+						class Item7
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customArmourCount";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customSpecOpsCount";
+						};
+						class Item9
+						{
+							value="mediumMGCamp2";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="composition";
+						};
+					};
+					id=25;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement_custom";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=18;
+					synchronizations[]={1,7};
+				};
+			};
+		};
+		class Item26
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={2518.3774,120.12322,4932.1338};
+					azimut=-264.81265;
+					class args
+					{
+						items=10;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="IND_F";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="faction";
+						};
+						class Item2
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="priority";
+						};
+						class Item3
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="size";
+						};
+						class Item4
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customInfantryCount";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMotorisedCount";
+						};
+						class Item6
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMechanisedCount";
+						};
+						class Item7
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customArmourCount";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customSpecOpsCount";
+						};
+						class Item9
+						{
+							value="smallMGNest1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="composition";
+						};
+					};
+					id=26;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement_custom";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=19;
+					synchronizations[]={10,1,7};
+				};
+			};
+		};
+		class Item27
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={3231.0554,2.7841265,6856.6138};
+					azimut=-73.987656;
+					class args
+					{
+						items=10;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="IND_F";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="faction";
+						};
+						class Item2
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="priority";
+						};
+						class Item3
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="size";
+						};
+						class Item4
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customInfantryCount";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMotorisedCount";
+						};
+						class Item6
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMechanisedCount";
+						};
+						class Item7
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customArmourCount";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customSpecOpsCount";
+						};
+						class Item9
+						{
+							value="largeMilitaryOutpost1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="composition";
+						};
+					};
+					id=27;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement_custom";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=20;
+					synchronizations[]={10,1,7};
+				};
+			};
+		};
+		class Item28
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={1995.2971,25.127092,2836.8052};
+					azimut=-89.012901;
+					class args
+					{
+						items=10;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="OPF_F";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="faction";
+						};
+						class Item2
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="priority";
+						};
+						class Item3
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="size";
+						};
+						class Item4
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customInfantryCount";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMotorisedCount";
+						};
+						class Item6
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMechanisedCount";
+						};
+						class Item7
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customArmourCount";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customSpecOpsCount";
+						};
+						class Item9
+						{
+							value="mediumCheckpoint1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="composition";
+						};
+					};
+					id=28;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement_custom";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=21;
+					synchronizations[]={0,7,1};
+				};
+			};
+		};
+		class Item29
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={2500.77,3.3247874,1172.7837};
+					azimut=67.775566;
+					class args
+					{
+						items=10;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="OPF_F";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="faction";
+						};
+						class Item2
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="priority";
+						};
+						class Item3
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="size";
+						};
+						class Item4
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customInfantryCount";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMotorisedCount";
+						};
+						class Item6
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMechanisedCount";
+						};
+						class Item7
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customArmourCount";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customSpecOpsCount";
+						};
+						class Item9
+						{
+							value="mediumMilitaryOutpost1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="composition";
+						};
+					};
+					id=29;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement_custom";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=22;
+					synchronizations[]={0,7,1};
+				};
+			};
+		};
+		class Item30
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={2119.9072,53.43803,2060.7773};
+					azimut=-114.41;
+					class args
+					{
+						items=10;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="OPF_F";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="faction";
+						};
+						class Item2
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="priority";
+						};
+						class Item3
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="size";
+						};
+						class Item4
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customInfantryCount";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMotorisedCount";
+						};
+						class Item6
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMechanisedCount";
+						};
+						class Item7
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customArmourCount";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customSpecOpsCount";
+						};
+						class Item9
+						{
+							value="largeMilitaryOutpost1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="composition";
+						};
+					};
+					id=30;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement_custom";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=23;
+					synchronizations[]={0,7,1};
+				};
+			};
+		};
+		class Item31
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={4311.1875,137.0024,6829.106};
+					azimut=-2.37392;
+					class args
+					{
+						items=10;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="BLU_F";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="faction";
+						};
+						class Item2
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="priority";
+						};
+						class Item3
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="size";
+						};
+						class Item4
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customInfantryCount";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMotorisedCount";
+						};
+						class Item6
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMechanisedCount";
+						};
+						class Item7
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customArmourCount";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customSpecOpsCount";
+						};
+						class Item9
+						{
+							value="mediumMGCamp3";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="composition";
+						};
+					};
+					id=31;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement_custom";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=24;
+					synchronizations[]={1,10};
+				};
+			};
+		};
+		class Item32
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={2633.8264,65.448524,636.96875};
+					azimut=3.75086;
+					class args
+					{
+						items=10;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="OPF_F";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="faction";
+						};
+						class Item2
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="priority";
+						};
+						class Item3
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="size";
+						};
+						class Item4
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customInfantryCount";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMotorisedCount";
+						};
+						class Item6
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMechanisedCount";
+						};
+						class Item7
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customArmourCount";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customSpecOpsCount";
+						};
+						class Item9
+						{
+							value="hugeMilitaryOutpost1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="composition";
+						};
+					};
+					id=32;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement_custom";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=25;
+					synchronizations[]={0,7,1};
+				};
+			};
+		};
+		class Item33
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={4427.8965,93.882736,2767.7129};
+					azimut=-95.546104;
+					class args
+					{
+						items=10;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="BLU_G_F";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="faction";
+						};
+						class Item2
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="priority";
+						};
+						class Item3
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="size";
+						};
+						class Item4
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customInfantryCount";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMotorisedCount";
+						};
+						class Item6
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMechanisedCount";
+						};
+						class Item7
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customArmourCount";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customSpecOpsCount";
+						};
+						class Item9
+						{
+							value="mediumMGCamp3";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="composition";
+						};
+					};
+					id=33;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement_custom";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=26;
+					synchronizations[]={7,0,10};
+				};
+			};
+		};
+		class Item34
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={5350.9902,11.542651,3785.4238};
+					azimut=85.606873;
+					class args
+					{
+						items=10;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="BLU_G_F";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="faction";
+						};
+						class Item2
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="priority";
+						};
+						class Item3
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="size";
+						};
+						class Item4
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customInfantryCount";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMotorisedCount";
+						};
+						class Item6
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMechanisedCount";
+						};
+						class Item7
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customArmourCount";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customSpecOpsCount";
+						};
+						class Item9
+						{
+							value="mediumMGCamp1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="composition";
+						};
+					};
+					id=34;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement_custom";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=27;
+					synchronizations[]={7,0};
+				};
+			};
+		};
+		class Item35
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={5584.8091,65.88961,4636.7095};
+					azimut=-88.936203;
+					class args
+					{
+						items=15;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="BLU_F";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="faction";
+						};
+						class Item2
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="priority";
+						};
+						class Item3
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="size";
+						};
+						class Item4
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customInfantryCount";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMotorisedCount";
+						};
+						class Item6
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMechanisedCount";
+						};
+						class Item7
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customArmourCount";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customSpecOpsCount";
+						};
+						class Item9
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="readinessLevel";
+						};
+						class Item10
+						{
+							value="mediumMGCamp3";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="composition";
+						};
+						class Item11
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="createHQ";
+						};
+						class Item12
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="placeHelis";
+						};
+						class Item13
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="placeSupplies";
+						};
+						class Item14
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="ambientVehicleAmount";
+						};
+					};
+					id=35;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement_custom";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=28;
+					synchronizations[]={1,10,0};
+				};
+			};
+		};
+		class Item36
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={5892.0796,36.549603,5609.4341};
+					azimut=163.397;
+					class args
+					{
+						items=15;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="BLU_F";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="faction";
+						};
+						class Item2
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="priority";
+						};
+						class Item3
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="size";
+						};
+						class Item4
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customInfantryCount";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMotorisedCount";
+						};
+						class Item6
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMechanisedCount";
+						};
+						class Item7
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customArmourCount";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customSpecOpsCount";
+						};
+						class Item9
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="readinessLevel";
+						};
+						class Item10
+						{
+							value="smallATNest1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="composition";
+						};
+						class Item11
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="createHQ";
+						};
+						class Item12
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="placeHelis";
+						};
+						class Item13
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="placeSupplies";
+						};
+						class Item14
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="ambientVehicleAmount";
+						};
+					};
+					id=36;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement_custom";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=29;
+					synchronizations[]={1,10};
+				};
+			};
+		};
+		class Item37
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={5026.4995,40.869915,3586.9097};
+					azimut=3.75086;
+					class args
+					{
+						items=10;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="BLU_G_F";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="faction";
+						};
+						class Item2
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="priority";
+						};
+						class Item3
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="size";
+						};
+						class Item4
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customInfantryCount";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMotorisedCount";
+						};
+						class Item6
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMechanisedCount";
+						};
+						class Item7
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customArmourCount";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customSpecOpsCount";
+						};
+						class Item9
+						{
+							value="mediumMilitaryCamp1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="composition";
+						};
+					};
+					id=37;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement_custom";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=30;
+					synchronizations[]={7,0};
+				};
+			};
+		};
+		class Item38
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={5856.1035,38.130009,5613.4878};
+					azimut=163.397;
+					class args
+					{
+						items=15;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="BLU_F";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="faction";
+						};
+						class Item2
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="priority";
+						};
+						class Item3
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="size";
+						};
+						class Item4
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customInfantryCount";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMotorisedCount";
+						};
+						class Item6
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMechanisedCount";
+						};
+						class Item7
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customArmourCount";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customSpecOpsCount";
+						};
+						class Item9
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="readinessLevel";
+						};
+						class Item10
+						{
+							value="mediumMGCamp3";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="composition";
+						};
+						class Item11
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="createHQ";
+						};
+						class Item12
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="placeHelis";
+						};
+						class Item13
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="placeSupplies";
+						};
+						class Item14
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="ambientVehicleAmount";
+						};
+					};
+					id=38;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement_custom";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=31;
+					synchronizations[]={1,10,0};
+				};
+			};
+		};
+		class Item39
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={4477.2202,85.736923,2729.3965};
+					azimut=-2.37392;
+					class args
+					{
+						items=10;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="BLU_G_F";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="faction";
+						};
+						class Item2
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="priority";
+						};
+						class Item3
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="size";
+						};
+						class Item4
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customInfantryCount";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMotorisedCount";
+						};
+						class Item6
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMechanisedCount";
+						};
+						class Item7
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customArmourCount";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customSpecOpsCount";
+						};
+						class Item9
+						{
+							value="mediumMilitaryCamp1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="composition";
+						};
+					};
+					id=39;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement_custom";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=32;
+					synchronizations[]={0,7};
+				};
+			};
+		};
+		class Item40
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={6555.5923,78.294563,5198.2588};
+					azimut=119.397;
+					class args
+					{
+						items=15;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="BLU_F";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="faction";
+						};
+						class Item2
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="priority";
+						};
+						class Item3
+						{
+							value="50";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="size";
+						};
+						class Item4
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customInfantryCount";
+						};
+						class Item5
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMotorisedCount";
+						};
+						class Item6
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customMechanisedCount";
+						};
+						class Item7
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customArmourCount";
+						};
+						class Item8
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="customSpecOpsCount";
+						};
+						class Item9
+						{
+							value="1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="readinessLevel";
+						};
+						class Item10
+						{
+							value="mediumMGCamp1";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="composition";
+						};
+						class Item11
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="createHQ";
+						};
+						class Item12
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="placeHelis";
+						};
+						class Item13
+						{
+							value="true";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="placeSupplies";
+						};
+						class Item14
+						{
+							value="0";
+							parentCls="ALiVE_mil_placement_custom";
+							typeName="ambientVehicleAmount";
+						};
+					};
+					id=40;
+					side="LOGIC";
+					vehicle="ALiVE_mil_placement_custom";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+					syncId=33;
+					synchronizations[]={1,10,0};
+				};
+			};
+		};
+		class Item41
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={6397.2637,7.5931063,5420.0767};
+					azimut=-0.64377117;
+					class args
+					{
+						items=1;
+						class Item0
+						{
+							value="true";
+							parentCls="ALiVE_sys_tour";
+							typeName="debug";
+						};
+					};
+					id=41;
+					side="LOGIC";
+					vehicle="ALiVE_sys_tour";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+				};
+			};
+		};
+		class Item42
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={600.31122,-116.76595,7000.0244};
+					class args
+					{
+						items=8;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_amb_civ_population";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="900";
+							parentCls="ALiVE_amb_civ_population";
+							typeName="spawnRadius";
+						};
+						class Item2
+						{
+							value="900";
+							parentCls="ALiVE_amb_civ_population";
+							typeName="spawnTypeHeliRadius";
+						};
+						class Item3
+						{
+							value="0";
+							parentCls="ALiVE_amb_civ_population";
+							typeName="spawnTypeJetRadius";
+						};
+						class Item4
+						{
+							value="25";
+							parentCls="ALiVE_amb_civ_population";
+							typeName="activeLimiter";
+						};
+						class Item5
+						{
+							value="3";
+							parentCls="ALiVE_amb_civ_population";
+							typeName="hostilityWest";
+						};
+						class Item6
+						{
+							value="0";
+							parentCls="ALiVE_amb_civ_population";
+							typeName="hostilityEast";
+						};
+						class Item7
+						{
+							value="0";
+							parentCls="ALiVE_amb_civ_population";
+							typeName="hostilityIndep";
+						};
+					};
+					id=42;
+					side="LOGIC";
+					vehicle="ALiVE_amb_civ_population";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+				};
+			};
+		};
+		class Item43
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={599.56213,0.10021996,6902.5527};
+					class args
+					{
+						items=9;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_amb_civ_placement";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="";
+							parentCls="ALiVE_amb_civ_placement";
+							typeName="taor";
+						};
+						class Item2
+						{
+							value="";
+							parentCls="ALiVE_amb_civ_placement";
+							typeName="blacklist";
+						};
+						class Item3
+						{
+							value="160";
+							parentCls="ALiVE_amb_civ_placement";
+							typeName="sizeFilter";
+						};
+						class Item4
+						{
+							value="0";
+							parentCls="ALiVE_amb_civ_placement";
+							typeName="priorityFilter";
+						};
+						class Item5
+						{
+							value="CIV_F";
+							parentCls="ALiVE_amb_civ_placement";
+							typeName="faction";
+						};
+						class Item6
+						{
+							value="1";
+							parentCls="ALiVE_amb_civ_placement";
+							typeName="placementMultiplier";
+						};
+						class Item7
+						{
+							value="0.6";
+							parentCls="ALiVE_amb_civ_placement";
+							typeName="ambientVehicleAmount";
+						};
+						class Item8
+						{
+							value="CIV_F";
+							parentCls="ALiVE_amb_civ_placement";
+							typeName="ambientVehicleFaction";
+						};
+					};
+					id=43;
+					side="LOGIC";
+					vehicle="ALiVE_amb_civ_placement";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+				};
+			};
+		};
+		class Item44
+		{
+			side="LOGIC";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={602.13055,-109.50859,7200.4751};
+					class args
+					{
+						items=35;
+						class Item0
+						{
+							value="false";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="debug";
+						};
+						class Item1
+						{
+							value="";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="VIEW_DISTANCE";
+						};
+						class Item2
+						{
+							value="20000";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="maxVD";
+						};
+						class Item3
+						{
+							value="500";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="minVD";
+						};
+						class Item4
+						{
+							value="5";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="maxTG";
+						};
+						class Item5
+						{
+							value="1";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="minTG";
+						};
+						class Item6
+						{
+							value="";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="PERSISTENCE";
+						};
+						class Item7
+						{
+							value="true";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="enablePlayerPersistence";
+						};
+						class Item8
+						{
+							value="true";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="allowReset";
+						};
+						class Item9
+						{
+							value="true";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="allowManualSave";
+						};
+						class Item10
+						{
+							value="false";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="allowDiffClass";
+						};
+						class Item11
+						{
+							value="true";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="saveLoadout";
+						};
+						class Item12
+						{
+							value="true";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="saveAmmo";
+						};
+						class Item13
+						{
+							value="true";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="saveHealth";
+						};
+						class Item14
+						{
+							value="true";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="savePosition";
+						};
+						class Item15
+						{
+							value="true";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="saveScores";
+						};
+						class Item16
+						{
+							value="false";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="storeToDB";
+						};
+						class Item17
+						{
+							value="0";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="autoSaveTime";
+						};
+						class Item18
+						{
+							value="";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="CREW_INFO";
+						};
+						class Item19
+						{
+							value="0";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="crewinfo_ui_setting";
+						};
+						class Item20
+						{
+							value="";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="PLAYER_TAGS";
+						};
+						class Item21
+						{
+							value="0";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="playertags_style_setting";
+						};
+						class Item22
+						{
+							value="false";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="playertags_onview_setting";
+						};
+						class Item23
+						{
+							value="true";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="playertags_displayrank_setting";
+						};
+						class Item24
+						{
+							value="true";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="playertags_displaygroup_setting";
+						};
+						class Item25
+						{
+							value="false";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="playertags_invehicle_setting";
+						};
+						class Item26
+						{
+							value="[""CAManBase"", ""Car"", ""Tank"", ""StaticWeapon"", ""Helicopter"", ""Plane""]";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="playertags_targets_setting";
+						};
+						class Item27
+						{
+							value="20";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="playertags_distance_setting";
+						};
+						class Item28
+						{
+							value="0.75";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="playertags_tolerance_setting";
+						};
+						class Item29
+						{
+							value="0.65";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="playertags_scale_setting";
+						};
+						class Item30
+						{
+							value="1.1";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="playertags_height_setting";
+						};
+						class Item31
+						{
+							value="#FFFFFF";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="playertags_namecolour_setting";
+						};
+						class Item32
+						{
+							value="#A8F000";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="playertags_groupcolour_setting";
+						};
+						class Item33
+						{
+							value="#FFB300";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="playertags_thisgroupleadernamecolour_setting";
+						};
+						class Item34
+						{
+							value="#009D91";
+							parentCls="ALiVE_SYS_playeroptions";
+							typeName="playertags_thisgroupcolour_setting";
+						};
+					};
+					id=44;
+					side="LOGIC";
+					vehicle="ALiVE_SYS_playeroptions";
+					leader=1;
+					lock="UNLOCKED";
+					skill=0.60000002;
+				};
+			};
+		};
+	};
+	class Vehicles
+	{
+		items=3;
+		class Item0
+		{
+			position[]={6396.0444,7.5714884,5423.772};
+			azimut=-49.02367;
+			id=45;
+			side="EMPTY";
+			vehicle="Box_NATO_Wps_F";
+			skill=0.60000002;
+		};
+		class Item1
+		{
+			position[]={6396.9624,7.5729222,5422.9688};
+			azimut=-49.023701;
+			id=46;
+			side="EMPTY";
+			vehicle="Box_NATO_AmmoOrd_F";
+			skill=0.60000002;
+		};
+		class Item2
+		{
+			position[]={6429.9375,7.1793947,5446.1016};
+			azimut=-49.023701;
+			id=47;
+			side="EMPTY";
+			vehicle="B_Truck_01_transport_F";
+			skill=0.60000002;
+		};
+	};
+	class Markers
+	{
+		items=4;
+		class Item0
+		{
+			position[]={2475.3228,28.81711,2059.9507};
+			name="OPF_F";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorEAST";
+			a=1500;
+			b=2000;
+		};
+		class Item1
+		{
+			position[]={5472.2891,74.731087,6088.9814};
+			name="BLU_F";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorWEST";
+			a=1500;
+			b=2000;
+		};
+		class Item2
+		{
+			position[]={2467.3723,0.10444996,6088.4375};
+			name="IND_F";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorGUER";
+			a=1500;
+			b=2000;
+		};
+		class Item3
+		{
+			position[]={5488.917,-0.10452518,2076.4639};
+			name="BLU_G_F";
+			markerType="RECTANGLE";
+			type="Empty";
+			colorName="ColorWEST";
+			a=1500;
+			b=2000;
+		};
+	};
+};
+class Intro
+{
+	addOns[]=
+	{
+		"a3_map_stratis"
+	};
+	addOnsAuto[]=
+	{
+		"a3_map_stratis"
+	};
+	randomSeed=2036598;
+	class Intel
+	{
+		timeOfChanges=1800.0002;
+		startWeather=0.30000001;
+		startWind=0.1;
+		startWaves=0.1;
+		forecastWeather=0.30000001;
+		forecastWind=0.1;
+		forecastWaves=0.1;
+		forecastLightnings=0.1;
+		year=2035;
+		month=7;
+		day=6;
+		hour=12;
+		minute=0;
+		startFogDecay=0.013;
+		forecastFogDecay=0.013;
+	};
+};
+class OutroWin
+{
+	addOns[]=
+	{
+		"a3_map_stratis"
+	};
+	addOnsAuto[]=
+	{
+		"a3_map_stratis"
+	};
+	randomSeed=9415812;
+	class Intel
+	{
+		timeOfChanges=1800.0002;
+		startWeather=0.30000001;
+		startWind=0.1;
+		startWaves=0.1;
+		forecastWeather=0.30000001;
+		forecastWind=0.1;
+		forecastWaves=0.1;
+		forecastLightnings=0.1;
+		year=2035;
+		month=7;
+		day=6;
+		hour=12;
+		minute=0;
+		startFogDecay=0.013;
+		forecastFogDecay=0.013;
+	};
+};
+class OutroLoose
+{
+	addOns[]=
+	{
+		"a3_map_stratis"
+	};
+	addOnsAuto[]=
+	{
+		"a3_map_stratis"
+	};
+	randomSeed=5247165;
+	class Intel
+	{
+		timeOfChanges=1800.0002;
+		startWeather=0.30000001;
+		startWind=0.1;
+		startWaves=0.1;
+		forecastWeather=0.30000001;
+		forecastWind=0.1;
+		forecastWaves=0.1;
+		forecastLightnings=0.1;
+		year=2035;
+		month=7;
+		day=6;
+		hour=12;
+		minute=0;
+		startFogDecay=0.013;
+		forecastFogDecay=0.013;
+	};
+};

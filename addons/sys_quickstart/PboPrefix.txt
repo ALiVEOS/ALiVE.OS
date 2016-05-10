@@ -1,0 +1,8 @@
+x\alive\addons\sys_quickstart
+======<HEADER>=======
+prefix=x\alive\addons\sys_quickstart
+product=Arma 3
+version=1
+Pbo Type is: Arma Addon
+======</HEADER>============
+

@@ -1,0 +1,127 @@
+/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, profile spawner">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"INIT",0,4346,138.297867,22.993019,228.297867,72.992973,0.000000,"INIT"};
+item1[] = {"SPAWN_LOOP",2,250,131.828568,211.840439,221.828629,261.840515,0.000000,"SPAWN" \n "LOOP"};
+item2[] = {"ITERATE",4,218,266.536499,209.778595,356.536438,259.778656,1.000000,"ITERATE"};
+item3[] = {"END",1,250,127.726532,425.115662,217.726578,475.115570,0.000000,"END"};
+item4[] = {"FINISH",4,218,136.658646,321.424805,226.658646,371.424835,0.000000,"FINISH"};
+item5[] = {"DONE",4,218,144.016876,100.455437,234.016876,150.455444,0.000000,"DONE"};
+link0[] = {0,5};
+link1[] = {1,2};
+link2[] = {1,4};
+link3[] = {2,1};
+link4[] = {4,3};
+link5[] = {5,1};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,130,6316128,1,-317.132233,578.068359,640.304138,-155.429688,846,752,1};
+window[] = {0,-1,-1,-1,-1,1054,-1764,-141,156,1,864};
+*//*%FSM</HEAD>*/
+class FSM
+{
+  fsmName = "profile spawner";
+  class States
+  {
+    /*%FSM<STATE "INIT">*/
+    class INIT
+    {
+      name = "INIT";
+      init = /*%FSM<STATEINIT""">*/"private [""_spawnCount"",""_countToSpawn"",""_countGroupsToSpawn"",""_group"",""_position"",""_postions"",""_ranks"",""_damages""];" \n
+       "" \n
+       "_spawnCount = 0;" \n
+       "_countToSpawn = 10;" \n
+       "" \n
+       "_position = position player;" \n
+       "_positions = [];" \n
+       "_ranks = [];" \n
+       "_damages = [];" \n
+       "" \n
+       "for ""_i"" from 0 to _countToSpawn do {" \n
+       "	_pos = [_position, (random(50)), random(360)] call BIS_fnc_relPos;" \n
+       "	_positions set [count _positions, _pos];" \n
+       "	_ranks set [count _ranks, ""CAPTAIN""];" \n
+       "	_damages set [count _damages, 0];" \n
+       "};"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "DONE">*/
+        class DONE
+        {
+          priority = 0.000000;
+          to="SPAWN_LOOP";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "SPAWN_LOOP">*/
+    class SPAWN_LOOP
+    {
+      name = "SPAWN_LOOP";
+      init = /*%FSM<STATEINIT""">*/"_spawnCount = _spawnCount + 1;" \n
+       "" \n
+       "private [""_unit""];" \n
+       "" \n
+       "for ""_i"" from 0 to 6 -1 do {" \n
+       "" \n
+       "_group = createGroup west;" \n
+       "" \n
+       "_unit = _group createUnit [""B_Soldier_F"", (_positions select _spawnCount), [], 0 , ""NONE""];" \n
+       "_unit setPos formationPosition _unit;" \n
+       "_unit setDamage (_damages select _spawnCount);" \n
+       "_unit setRank (_ranks select _spawnCount);" \n
+       "" \n
+       "_unit setVariable [""profileID"", 1];" \n
+       "_unit setVariable [""profileIndex"", 1];" \n
+       "" \n
+       "_eventID = _unit addEventHandler[""Killed"", ALIVE_fnc_profileKilledEventHandler];" \n
+       "" \n
+       "};"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "ITERATE">*/
+        class ITERATE
+        {
+          priority = 1.000000;
+          to="SPAWN_LOOP";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_spawnCount < _countToSpawn"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "FINISH">*/
+        class FINISH
+        {
+          priority = 0.000000;
+          to="END";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_spawnCount >= _countToSpawn"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "END">*/
+    class END
+    {
+      name = "END";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+  };
+  initState="INIT";
+  finalStates[] =
+  {
+    "END",
+  };
+};
+/*%FSM</COMPILE>*/

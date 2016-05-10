@@ -1,0 +1,8 @@
+x\alive\addons\c_tablet
+======<HEADER>=======
+prefix=x\alive\addons\c_tablet
+product=Arma 3
+version=1
+Pbo Type is: Arma Addon
+======</HEADER>============
+

@@ -1,0 +1,79 @@
+***Use Cases***
+
+As a player:
+- Set my VD and TG to any value I like
+- Store my VD/TG in my profileNameSpace for all missions
+- Store my VD/TG in my profileNameSpace for all missions on this map
+
+- Set my VD up to min/max VD setting
+- Set my TG up to min/max TG setting
+
+- Enable auto-adjust where VD/TG settings are increased/decreased in steps depending on the current frame rate every (3?) second
+
+
+
+As a mission editor:
+- Users store their VD/TG in the external storage
+
+- Set min VD setting
+- Set min TG setting
+- Set max VD setting
+- Set max TG setting
+- Set max/userpref auto VD setting
+- Set max/userpref auto TG setting
+- Set step auto VD setting
+- Set step auto TG setting
+- Set min auto FPS
+- set max auto FPS
+
+- Enable auto-enforce where VD/TG settings are checked with min/max ranges and adjusted if required
+
+- Enabled debug messages
+
+
+*Model - no visual just reference data*
+- User Preference ViewDistance
+- User Preference TerrainGrid
+
+- Min ViewDistance (500) Minimum Viewdistance (m)
+- Max ViewDistance (10000) Maximum Viewdistance (m)
+
+- Min Auto ViewDistance (500) Minimum Viewdistance (m)
+- Max Auto ViewDistance (0 / User Pref) Maximum Viewdistance (m)
+- Step Auto ViewDistance (250)
+
+- Min TerrainGrid (50)
+- Max TerrainGrid (5)
+
+- Min Auto TerrainGrid (50)
+- Max Auto TerrainGrid (5 / User Pref)
+- Step Auto TerrainGrid (5)
+
+- Min Auto FPS (24) Low FPS (Quality --)
+- Max Auto FPS (40) High FPS (Quality ++)
+- Activate/Deactivate
+- Debug messages
+- Enforce Setting
+
+*Controller - coordination*
+- Enforce: check every 60 seconds that viewDistance/terrainGrid are correct settings
+- HC or Dedi - set ViewDistance/TerrainGrid
+- If not Auto
+	- If in vehicle or on map, suspend and set low TG (?)
+	- If in Air vehicle, suspend and set max VD
+- If FPS low and TG is not already low
+	- lower TG
+- If FPS low and VD is not already low
+	- step down VD
+- If FPS high and TG is not already low
+	- set TG low
+- If FPS high and VD is not already high
+	- step up VD
+- If FPS high and TG is not already high
+	- wait 60 sec then set TG high
+
+
+
+*View - purely visual*
+
+

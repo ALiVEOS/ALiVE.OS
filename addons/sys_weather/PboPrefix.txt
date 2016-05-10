@@ -1,0 +1,4 @@
+x\alive\addons\sys_weather
+prefix=x\alive\addons\sys_weather
+Mikero=DePbo.dll
+Pbo Type is: Arma

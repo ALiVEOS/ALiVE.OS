@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_AISKILL">
+    <English>Military AI Skill</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_COMMENT">
+    <English>Set AI Skill levels per faction by presets or custom settings</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_ERROR1">
+    <English>Only one AI SKILL module allowed</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_DEBUG">
+    <English>Enable Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_DEBUG_COMMENT">
+    <English>Enables AI Skill Module Debug</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_RECRUIT">
+    <English>Recruit Factions:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_RECRUIT_COMMENT">
+    <English>Faction units will be given recruit skill level, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_REGULAR">
+    <English>Regular Factions:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_REGULAR_COMMENT">
+    <English>Faction units will be given regular skill level, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_VETERAN">
+    <English>Veteran Factions:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_VETERAN_COMMENT">
+    <English>Faction units will be given veteran skill level, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_EXPERT">
+    <English>Expert Factions:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_EXPERT_COMMENT">
+    <English>Faction units will be given expert skill level, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM">
+    <English>Custom Skill:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_COMMENT">
+    <English>Factions that will have the following custom skill settings, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MIN">
+    <English>Minimum Ability:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MIN_COMMENT">
+    <English>Minimum Ability</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MAX">
+    <English>Maximum Ability:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MAX_COMMENT">
+    <English>Maximum Ability</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_ACCURACY">
+    <English>Aim Accuracy:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_ACCURACY_COMMENT">
+    <English>Aim Accuracy</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SHAKE">
+    <English>Aim Shake:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SHAKE_COMMENT">
+    <English>Aim Shake</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SPEED">
+    <English>Aim Speed</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SPEED_COMMENT">
+    <English>Aim Speed</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_ENDURANCE">
+    <English>Endurance:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_ENDURANCE_COMMENT">
+    <English>Endurance</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_SPOT_DISTANCE">
+    <English>Spot Distance:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_SPOT_DISTANCE_COMMENT">
+    <English>Spot Distance</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_SPOT_TIME">
+    <English>Spot Time:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_SPOT_TIME_COMMENT">
+    <English>Spot Time</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_COURAGE">
+    <English>Courage:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_COURAGE_COMMENT">
+    <English>Courage</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_RELOAD">
+    <English>Reload:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_RELOAD_COMMENT">
+    <English>Reload</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_COMMANDING">
+    <English>Commanding:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_COMMANDING_COMMENT">
+    <English>Commanding</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_GENERAL">
+    <English>General:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_GENERAL_COMMENT">
+    <English>General</English>
+</Key>
+</Container></Package></Project>

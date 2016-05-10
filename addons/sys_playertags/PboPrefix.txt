@@ -1,0 +1,8 @@
+x\alive\addons\sys_playertags
+======<HEADER>=======
+prefix=x\alive\addons\sys_playertags
+product=Arma 3
+version=1
+Pbo Type is: Arma Addon
+======</HEADER>============
+

@@ -1,0 +1,16 @@
+*Model - no visual just reference data*
+- server side object only
+- allowReset enabled
+- forceclass enabled
+- autosave enabled
+- autoSaveTime set to 5 mins
+- save loadout
+- save health
+- save position
+
+*Controller - *
+- Save player data to server (or player profilespace)
+
+*View - purely visual*
+- initialise menu
+- frequent check to modify menu and display status

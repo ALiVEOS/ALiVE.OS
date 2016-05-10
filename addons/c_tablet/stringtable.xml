@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+	<Key
+            ID="STR_ALIVE_tablet">
+            <Original>Combat Support Tablet</Original>
+            <English>Combat Support Tablet</English>
+            <Czech>Combat Support Tablet</Czech>
+            <French>Combat Support Tablet</French>
+            <German>Combat Support Tablet</German>
+            <Italian>Combat Support Tablet</Italian>
+            <Polish>Combat Support Tablet</Polish>
+            <Portuguese>Combat Support Tablet</Portuguese>
+            <Russian>Combat Support Tablet</Russian>
+            <Spanish>Combat Support Tablet</Spanish>
+	</Key>
+	<Key
+            ID="STR_ALIVE_tablet1">
+            <Original>Enables the user to call in available Combat Support units.&lt;br/&gt;Unlimited number of uses&lt;br /&gt;Used by: Anyone</Original>
+            <English>Enables the user to call in available Combat Support units.&lt;br/&gt;Unlimited number of uses&lt;br /&gt;Used by: Anyone</English>
+	</Key>
+	<Key
+            ID="STR_ALIVE_use_tablet0">
+            <Original>&lt;t color='#9cf953'&gt;Use: &lt;/t&gt;Access Combat Support Tablet</Original>
+            <English>&lt;t color='#9cf953'&gt;Use: &lt;/t&gt;Access Combat Support Tablet</English>
+	</Key>      
+</Container></Package></Project>

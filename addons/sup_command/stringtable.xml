@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_SCOM">
+    <English>Player Command/Control (C2ISTAR)</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_MENU">
+    <English>Player C2ISTAR</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_COMMENT">
+    <English>Group Management</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_INTEL_COMMENT">
+    <English>Battlefield Intelligence</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_OPS_COMMENT">
+    <English>Command/Control</English>
+</Key>
+</Container></Package></Project>

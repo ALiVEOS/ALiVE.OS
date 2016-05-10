@@ -1,0 +1,55 @@
+Unless where explicitly stated otherwise, the following copyright and license applies
+to this package and all related files.
+
+   Copyright 2015 Hazey
+
+   Licensed under the Creative Commons BY-NC-ND License, Version 3.0 (the "License");
+   you may not use this work except in compliance with the License.You may obtain a
+   copy of the License at
+
+       http://creativecommons.org/licenses/by-nc-nd/3.0/
+
+You are free:
+
+   - to Share — to copy, distribute and transmit the work
+
+
+Under the following conditions:
+
+   - Attribution — You must attribute the work in the manner specified by the author or
+      licensor (but not in any way that suggests that they endorse you or your use of
+      the work).
+
+   - Noncommercial — You may not use this work for commercial purposes.
+   
+   - No Derivative Works — You may not alter, transform, or build upon this work.
+
+With the understanding that:
+
+   - Waiver — Any of the above conditions can be waived if you get permission from the
+      copyright holder.
+
+   - Public Domain — Where the work or any of its elements is in the public domain under
+      applicable law, that status is in no way affected by the license.
+
+   - Other Rights — In no way are any of the following rights affected by the license:
+      - Your fair dealing or fair use rights, or other applicable copyright exceptions
+        and limitations;
+      - The author's moral rights;
+      - Rights other persons may have either in the work itself or in how the work is
+        used, such as publicity or privacy rights.
+
+
+Known exceptions to this license and copyright are:
+
+You are permitted to edit, tweak or change the mission however please read and agree to the following below.
+
+-- TERM.A - You must NOT re-release the mission to the BIS forums or any other distribution platform.
+-- TERM.A.CTN - You may alter or change the mission for ONLY personal or group/unit use.
+-- TERM.A.CTN - User must state somewhere clearly that it was built using Insurgency | ALiVE Framework.
+-- TERM.A.CTN - ALL headers in files must REMAIN UN-EDITED. However you may add a line Edits By: (author) if you do minor changes.
+
+
+
+
+Enjoy!!!!

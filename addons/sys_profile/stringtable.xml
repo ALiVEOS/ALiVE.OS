@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_PROFILE_SYSTEM">
+	<English>ALiVE Virtual AI System</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_COMMENT">
+	<English>Virtual AI System (Profiles)</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG">
+	<English>Enable Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_COMMENT">
+	<English>Enables Module Debug</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PERSISTENT">
+    <English>Persistent:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PERSISTENT_COMMENT">
+    <English>Enables external Database persistence for Virtual AI</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PLOT_SECTORS">
+	<English>Sector Colouring:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PLOT_SECTORS_COMMENT">
+	<English>Enables sector colouring according to units presence</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC">
+	<English>Synchronisation Options:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC_COMMENT">
+	<English>Modify synced units behaviour</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC_ADD">
+	<English>Only virtualize synced units</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC_IGNORE">
+	<English>Virtualize all editor placed units except synced units</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS">
+	<English>Spawn Radius:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS_COMMENT">
+	<English>Sets the distance from players to spawn AI units</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER">
+    <English>Active Limiter:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER_COMMENT">
+    <English>Sets the max number of virtualized AI *groups* to spawn at any one time</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS">
+    <English>Spawn planes radius:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS_COMMENT">
+    <English>The radius around player in planes to spawn AI. Set to 0 to disable spawning while in planes</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS">
+    <English>Spawn heli radius:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS_COMMENT">
+    <English>The radius around player in helicopters to spawn AI. Set to 0 to disable spawning while in helicopters</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER">
+    <English>Profile Speed Modifier:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER_COMMENT">
+    <English>Alters how fast virtual AI can move across the map. 25% means 25% of a unit's normal speed.</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ERROR1">
+	<English>Only one Virtual AI System module can be used</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_ENABLE">
+    <English>Activate Profiles Debug</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_DISABLE">
+    <English>Deactivate Profiles Debug</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG1_COMMENT">
+    <English>Toggle debug mode on the profile system</English>
+</Key>
+</Container></Package></Project>

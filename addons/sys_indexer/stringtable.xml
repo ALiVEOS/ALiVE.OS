@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_INDEXER">
+	<English>Map Indexer</English>
+</Key>
+<Key ID="STR_ALIVE_INDEXER_COMMENT">
+	<English>Index the current map</English>
+</Key>
+<Key ID="STR_ALIVE_INDEXER_STATICDATA">
+	<English>Object Categorization:</English>
+</Key>
+<Key ID="STR_ALIVE_INDEXER_STATICDATA_COMMENT">
+	<English>If enabled, each unique object on the map will need to be categorised</English>
+</Key>
+<Key ID="STR_ALIVE_INDEXER_MAPPATH">
+	<English>Map PBO file path:</English>
+</Key>
+<Key ID="STR_ALIVE_INDEXER_MAPPATH_COMMENT">
+	<English>Enter the path and filename of the map pbo relative to Arma 3 root directory.</English>
+</Key>
+<Key ID="STR_ALIVE_INDEXER_MAPBOUND">
+	<English>Custom MapBound:</English>
+</Key>
+<Key ID="STR_ALIVE_INDEXER_MAPPATH_COMMENT">
+	<English>Map bound value must cover the entire map and be rounded up to nearest 1000. By default uses worldSize/mapSize</English>
+</Key>
+<Key ID="STR_ALIVE_INDEXER_ERROR1">
+	<English>Only one Map Indexer module can be used</English>
+</Key>
+
+</Container></Package></Project>

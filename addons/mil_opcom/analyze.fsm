@@ -1,0 +1,372 @@
+/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, analyze">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"INIT",0,250,-717.630066,-1005.371277,-627.630066,-955.371338,0.000000,"INIT"};
+item1[] = {"_",4,218,-716.880127,-893.772217,-626.880127,-843.772217,0.000000,""};
+item2[] = {"_",2,250,-720.591614,-816.600708,-630.591614,-766.600708,0.000000,""};
+item3[] = {"__1",4,218,-709.047241,-724.198975,-619.047241,-674.198975,0.000000,""};
+item4[] = {"__1",2,4346,-695.354553,-446.391876,-605.354675,-396.391907,0.000000,""};
+item5[] = {"__1",4,218,-695.354553,-363.960693,-605.354675,-313.960693,0.000000,""};
+item6[] = {"__2",2,250,-694.137268,-249.042999,-604.137268,-199.042953,0.000000,""};
+item7[] = {"_",4,218,-529.129639,-246.116913,-439.129639,-196.116913,0.000000,""};
+item8[] = {"_",4,218,-835.589966,-553.353027,-745.589966,-503.353058,1.000000,""};
+item9[] = {"__3",2,250,-709.391968,-634.817139,-619.392029,-584.817261,0.000000,""};
+item10[] = {"__1",4,218,-705.247314,-552.577148,-615.247314,-502.577148,0.000000,""};
+item11[] = {"_",4,218,-888.125000,-651.445129,-798.125000,-601.445129,1.000000,""};
+item12[] = {"_",4,218,-557.836121,-812.486572,-467.836121,-762.486572,1.000000,""};
+item13[] = {"__4",2,250,-934.816589,-774.399658,-844.816589,-724.399658,0.000000,""};
+item14[] = {"_",4,218,-843.768066,-813.309326,-753.768066,-763.309326,0.000000,""};
+item15[] = {"__5",2,250,-543.999390,-644.691162,-453.999390,-594.691162,0.000000,""};
+item16[] = {"__6",1,250,-533.668579,-541.541016,-443.668549,-491.541016,0.000000,""};
+item17[] = {"_",4,218,-441.011627,-635.056030,-351.011627,-585.056030,0.000000,""};
+link0[] = {0,1};
+link1[] = {1,2};
+link2[] = {2,3};
+link3[] = {2,12};
+link4[] = {3,9};
+link5[] = {4,5};
+link6[] = {4,8};
+link7[] = {5,6};
+link8[] = {6,7};
+link9[] = {7,4};
+link10[] = {8,9};
+link11[] = {9,10};
+link12[] = {9,11};
+link13[] = {10,4};
+link14[] = {11,13};
+link15[] = {12,15};
+link16[] = {13,14};
+link17[] = {14,2};
+link18[] = {15,17};
+link19[] = {17,16};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,105,6316128,1,-1392.037964,-184.487167,-165.742310,-1046.113525,1122,818,1};
+window[] = {0,-1,-1,-1,-1,1015,1954,3724,66,1,1139};
+*//*%FSM</HEAD>*/
+class FSM
+{
+  fsmName = "analyze";
+  class States
+  {
+    /*%FSM<STATE "INIT">*/
+    class INIT
+    {
+      name = "INIT";
+      init = /*%FSM<STATEINIT""">*/"private [""_OPCOM_HANDLER"",""_logic"",""_OBJECTIVES"",""_PROFILES"",""_side"",""_factions"",""_sidesEnemy"",""_sidesFriendly"",""_controltype""];" \n
+       "" \n
+       "_OPCOM_HANDLER = _this select 0;" \n
+       "_logic = _OPCOM_HANDLER;" \n
+       "_OBJECTIVES = [_OPCOM_HANDLER,""objectives"",[]] call ALiVE_fnc_HashGet;" \n
+       "_PROFILES = [ALiVE_Profilehandler,""getProfiles"",[]] call ALiVE_fnc_ProfileHandler;" \n
+       "" \n
+       "_side = [_OPCOM_HANDLER,""side"",""EAST""] call ALiVE_fnc_HashGet;" \n
+       "_factions = [_OPCOM_HANDLER,""factions"",[""OPF_F""]] call ALiVE_fnc_HashGet;" \n
+       "_controltype = [_OPCOM_HANDLER, ""controltype"",""invasion""] call ALiVE_fnc_HashGet;" \n
+       "_sidesEnemy = [_OPCOM_HANDLER,""sidesenemy"",[""EAST""]] call ALiVE_fnc_HashGet;" \n
+       "_sidesFriendly = [_OPCOM_HANDLER,""sidesfriendly"",[""WEST""]] call ALiVE_fnc_HashGet;" \n
+       "_sides = [_sidesFriendly,_sidesEnemy];" \n
+       "" \n
+       "_result_tmp = [];" \n
+       "_i = 0;" \n
+       "_z = 0;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "_">*/
+        class _
+        {
+          priority = 0.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "_">*/
+    class _
+    {
+      name = "_";
+      init = /*%FSM<STATEINIT""">*/"private [""_sideX""];" \n
+       "" \n
+       "_sideX = _sides select _i;" \n
+       "_nearForces = [];" \n
+       "" \n
+       "_i = _i + 1;" \n
+       "_z = 0; "/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "_">*/
+        class _
+        {
+          priority = 1.000000;
+          to="__5";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"count _result_tmp > 1"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "__1">*/
+        class __1
+        {
+          priority = 0.000000;
+          to="__3";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isnil ""_sideX"""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__1">*/
+    class __1
+    {
+      name = "__1";
+      init = /*%FSM<STATEINIT""">*/"private [""_item""];" \n
+       "" \n
+       "_item = _objectives select _y;" \n
+       "" \n
+       "_pos = [_item,""center""] call ALiVE_fnc_HashGet;" \n
+       "_id = [_item,""objectiveID""] call ALiVE_fnc_HashGet;" \n
+       "" \n
+       "_entArr = [];" \n
+       "_entities = [];" \n
+       "" \n
+       "_profiles = [_pos, 500, [_side,""entity""]] call ALIVE_fnc_getNearProfiles;" \n
+       "{" \n
+       "    if (typeName (_x select 2 select 4) == ""STRING"") then {" \n
+       "        	_entities set [count _entities,_x select 2 select 4];" \n
+       "            " \n
+       "            //player sidechat format[""Entities: %1, count total %2 val %3"",_entities,count _entities,(_x select 2 select 4)];" \n
+       "   		//diag_log format[""Entities: %1, count total %2 val %3"",_entities,count _entities,(_x select 2 select 4)];" \n
+       "    	};" \n
+       "        //sleep 0.03;" \n
+       "} foreach _profiles;" \n
+       "    "/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "_">*/
+        class _
+        {
+          priority = 1.000000;
+          to="__3";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_y == ((count _objectives)-1)"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "__1">*/
+        class __1
+        {
+          priority = 0.000000;
+          to="__2";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__2">*/
+    class __2
+    {
+      name = "__2";
+      init = /*%FSM<STATEINIT""">*/"if (count _entities > 0) then {_nearForces set [count _nearForces,[_id,_entities]]};" \n
+       "_y = _y + 1;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "_">*/
+        class _
+        {
+          priority = 0.000000;
+          to="__1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__3">*/
+    class __3
+    {
+      name = "__3";
+      init = /*%FSM<STATEINIT""">*/"private [""_side""];" \n
+       "" \n
+       "_side = _sideX select _z;" \n
+       "_z = _z + 1;" \n
+       "_y = 0;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "_">*/
+        class _
+        {
+          priority = 1.000000;
+          to="__4";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"isnil ""_side"""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "__1">*/
+        class __1
+        {
+          priority = 0.000000;
+          to="__1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isnil ""_side"""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__4">*/
+    class __4
+    {
+      name = "__4";
+      init = /*%FSM<STATEINIT""">*/"_result_tmp set [count _result_tmp,_nearForces];"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "_">*/
+        class _
+        {
+          priority = 0.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__5">*/
+    class __5
+    {
+      name = "__5";
+      init = /*%FSM<STATEINIT""">*/"private [""_prios""];" \n
+       "" \n
+       "         _targetsTaken1 =  _result_tmp select 0;" \n
+       "         _targetsTaken2 =  _result_tmp select 1;" \n
+       "         " \n
+       "     	_targetsAttacked1 = [];" \n
+       "            _remover1 = [];" \n
+       "{" \n
+       "	_targetID = _x select 0;" \n
+       "	_entities = _x select 1;" \n
+       "	" \n
+       "	if (({(_x select 0) == _targetID} count _targetsTaken2 > 0) && {(typename _x == ""ARRAY"")}) then {" \n
+       "		_targetsAttacked1 set [count _targetsAttacked1,_x];" \n
+       "		_remover1 set [count _remover1,_foreachIndex];" \n
+       "	};" \n
+       "                //sleep 0.03;" \n
+       "} foreach _targetsTaken1;" \n
+       "" \n
+       "_targetsAttacked2 = [];" \n
+       "            _remover2 = [];" \n
+       "{" \n
+       "	_targetID = _x select 0;" \n
+       "	_entities = _x select 1;" \n
+       "	" \n
+       "	if (({(_x select 0) == _targetID} count _targetsTaken1 > 0) && {(typename _x == ""ARRAY"")}) then {" \n
+       "		_targetsAttacked2 set [count _targetsAttacked2,_x];" \n
+       "		_remover2 set [count _remover2,_foreachIndex];" \n
+       "	};" \n
+       "                //sleep 0.03;" \n
+       "} foreach _targetsTaken2;" \n
+       "            " \n
+       "" \n
+       "            {" \n
+       "            	if !(_x > ((count _targetsTaken1)-1)) then {" \n
+       "               		_targetsTaken1 set [_x,""x""];" \n
+       "               		_targetsTaken1 = _targetsTaken1 - [""x""];" \n
+       "            	};" \n
+       "                //sleep 0.03;" \n
+       "            } foreach _remover1;" \n
+       "            " \n
+       "            _targetsTaken1 = _targetsTaken1 - [objNull];" \n
+       "            " \n
+       "            {" \n
+       "                if !(_x > ((count _targetsTaken2)-1)) then {" \n
+       "               		_targetsTaken2 set [_x,""x""];" \n
+       "               		_targetsTaken2 = _targetsTaken2 - [""x""];" \n
+       "                };" \n
+       "                //sleep 0.03;" \n
+       "            } foreach _remover2;" \n
+       "            " \n
+       "            _targetsTaken2 = _targetsTaken2 - [objNull];" \n
+       "           " \n
+       "         _result = [_targetsTaken1, _targetsAttacked1, _targetsTaken2, _targetsAttacked2,time];" \n
+       "            [_logic,""clusteroccupation"",_result] call AliVE_fnc_HashSet;" \n
+       "            " \n
+       "    		_targetsTaken = _result select 0;" \n
+       "_targetsAttacked = _result select 1;" \n
+       "_targetsTakenEnemy = _result select 2;" \n
+       "_targetsAttackedEnemy = _result select 3;" \n
+       "            " \n
+       "            switch (_controltype) do {" \n
+       "	case (""invasion"") : {" \n
+       "		_prios = [" \n
+       "			[_targetsTaken,""reserve""]," \n
+       "			[_targetsTakenEnemy,""attack""]," \n
+       "			[_targetsAttackedEnemy,""defend""]" \n
+       "		];" \n
+       "                };" \n
+       "                " \n
+       "                case (""occupation"") : {" \n
+       "		_prios = [" \n
+       "			[_targetsTaken,""reserve""]," \n
+       "			[_targetsTakenEnemy,""attack""]," \n
+       "			[_targetsAttackedEnemy,""defend""]" \n
+       "		];" \n
+       "                };" \n
+       "};" \n
+       "            " \n
+       "{" \n
+       "	[_logic,""setstatebyclusteroccupation"",[(_x select 0),(_x select 1)]] call ALiVE_fnc_OPCOM;" \n
+       "} foreach _prios;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "_">*/
+        class _
+        {
+          priority = 0.000000;
+          to="__6";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__6">*/
+    class __6
+    {
+      name = "__6";
+      init = /*%FSM<STATEINIT""">*/"ANALYSISDONE = true;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+  };
+  initState="INIT";
+  finalStates[] =
+  {
+    "__6",
+  };
+};
+/*%FSM</COMPILE>*/

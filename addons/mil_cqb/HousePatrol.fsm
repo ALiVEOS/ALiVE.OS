@@ -1,0 +1,567 @@
+/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, Simple House Patrol">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"Start",0,4346,-155.232559,-241.279068,-65.232559,-191.279068,0.000000,"Start"};
+item1[] = {"Random_Delay",4,218,-154.883728,-168.604660,-64.883736,-118.604660,0.000000,"Random" \n "Delay"};
+item2[] = {"Select_floors",2,250,-154.302368,-88.372086,-64.302322,-38.372086,0.000000,"Select floors"};
+item3[] = {"Enemy_Spotted",4,218,-40.348866,-87.790695,49.651142,-37.790703,5.000000,"Enemy" \n "Spotted"};
+item4[] = {"Wait_while_Enemy",2,250,75.348831,-88.372116,165.348816,-38.372097,0.000000,"Wait while" \n "Enemy" \n "Spotted"};
+item5[] = {"",7,210,190.465103,-67.441856,198.465118,-59.441856,0.000000,""};
+item6[] = {"",7,210,190.469543,-147.626953,198.469543,-139.626953,0.000000,""};
+item7[] = {"_",8,218,-154.463562,-22.245586,-64.463570,27.754414,0.000000,""};
+item8[] = {"Garrison_Buildin",2,250,-155.005432,46.033588,-65.005432,96.033607,0.000000,"Garrison" \n "Buildings"};
+item9[] = {"",7,210,190.209213,67.273834,198.209213,75.273834,0.000000,""};
+item10[] = {"Wait_1_minute",4,218,-38.573677,45.691322,51.426323,95.691330,0.000000,"Wait 1 minute"};
+item11[] = {"set_user_waiting",2,250,77.103096,46.333992,167.103088,96.333992,0.000000,"set" \n "user waiting" \n "time"};
+item12[] = {"Unit_Dead",4,218,81.425049,129.015778,171.425034,179.015732,9.000000,"Unit" \n "Dead"};
+item13[] = {"End",1,250,-136.241180,191.556534,-46.241142,241.556503,0.000000,"End"};
+item14[] = {"No_Patrol",4,218,-34.398903,128.351761,55.600967,178.351761,9.000000,"No Patrol"};
+item15[] = {"Abort",4,218,-138.296738,126.212921,-48.296669,176.212936,9.000000,"Abort"};
+item16[] = {"Pass_FSM_and_End",1,250,80.389030,194.239243,170.389069,244.239197,0.000000,"Pass FSM" \n "and" \n "End"};
+item17[] = {"End_1",1,250,-30.944130,192.897903,59.055893,242.897858,0.000000,"End"};
+item18[] = {"Players__out_of",4,218,-262.983612,51.398300,-172.983444,101.398277,0.000000,"Players " \n "out of Range"};
+item19[] = {"Move_home",2,250,-382.479431,49.360733,-292.479431,99.360764,0.000000,"Move home"};
+item20[] = {"Players__in_Rang",4,218,-383.809692,-88.932213,-293.809418,-38.932289,0.000000,"Players " \n "in Range"};
+item21[] = {"At_home",4,218,-382.350586,131.043976,-292.350250,181.044006,2.000000,"At home"};
+item22[] = {"_",-1,250,-440.685394,-235.585892,-437.600311,-235.585892,0.000000,""};
+item23[] = {"Players__far_awa",4,218,-286.061401,128.855042,-196.061249,178.855042,3.000000,"Players " \n "far away"};
+item24[] = {"End_delete_group",1,250,-333.600098,194.266846,-243.600525,244.266830,0.000000,"End" \n "delete group"};
+version=1;
+class LayoutItems
+{
+	class Item22
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
+};
+link0[] = {0,1};
+link1[] = {1,2};
+link2[] = {2,3};
+link3[] = {2,7};
+link4[] = {3,4};
+link5[] = {4,5};
+link6[] = {5,6};
+link7[] = {6,1};
+link8[] = {6,12};
+link9[] = {6,14};
+link10[] = {6,15};
+link11[] = {6,18};
+link12[] = {7,8};
+link13[] = {8,3};
+link14[] = {8,10};
+link15[] = {8,12};
+link16[] = {8,15};
+link17[] = {8,18};
+link18[] = {9,5};
+link19[] = {10,11};
+link20[] = {11,9};
+link21[] = {12,16};
+link22[] = {14,17};
+link23[] = {15,13};
+link24[] = {18,19};
+link25[] = {19,20};
+link26[] = {19,21};
+link27[] = {19,23};
+link28[] = {20,2};
+link29[] = {21,24};
+link30[] = {23,24};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,32,6316128,1,-505.414032,286.909515,262.642639,-593.418457,721,779,1};
+window[] = {0,-1,-1,-1,-1,976,66,1735,66,1,738};
+*//*%FSM</HEAD>*/
+class FSM
+{
+  fsmName = "Simple House Patrol";
+  class States
+  {
+    /*%FSM<STATE "Start">*/
+    class Start
+    {
+      name = "Start";
+      init = /*%FSM<STATEINIT""">*/"//////////////////////////////////////////////////////////////////" \n
+       "// Function file for Armed Assault" \n
+       "// Created by: (AEF)Wolffy.au" \n
+       "// Created: 20100705" \n
+       "// Modified: 20100706" \n
+       "// Contact: http://creobellum.org" \n
+       "// Purpose: Move or patrol a unit to random house positions" \n
+       "//" \n
+       "// The following code is an extract from Random Building Position Script v1.0 by Tophe of Östgöta Ops" \n
+       "// Usage:" \n
+       "// Move unit to random house position within 10m" \n
+       "// 0 = [this] execVM  ""scripts\crb_scripts\crB_HousePos.sqf"";" \n
+       "//" \n
+       "// Move unit to random house position within 50m" \n
+       "// 0 = [this, 50] execVM ""scripts\crb_scripts\crB_HousePos.sqf"";" \n
+       "//" \n
+       "// Patrol unit to random house positions within 50m with a maximum" \n
+       "// 	wait time 300 sec between positions" \n
+       "// 0 = [this, 50, true] execVM ""scripts\crb_scripts\crB_HousePos.sqf"";" \n
+       "//" \n
+       "// Patrol unit to random house positions within 50m with a maximum" \n
+       "// 	wait time 600 sec between positions" \n
+       "// 0 = [this, 50, true, 600] execVM ""scripts\crb_scripts\crB_HousePos.sqf"";" \n
+       "//////////////////////////////////////////////////////////////////" \n
+       "private [""_pos"",""_debug"",""_abort"",""_pat"",""_wait"",""_guardpost"",""_markers""];" \n
+       "" \n
+       "" \n
+       "_debug = false;" \n
+       "_abort = false;" \n
+       "_pat = false;" \n
+       "_wait = 0;" \n
+       "_guardpost = 0;" \n
+       "_markers = [];" \n
+       "" \n
+       "_logic = _this select 0;" \n
+       "_grp = _this select 1;" \n
+       "_leader = leader _grp;" \n
+       "_mkr = format[""HP:%1"", _leader];" \n
+       "_spawn = _logic getVariable [""spawnDistance"", 800];" \n
+       "_spawnHeli = _logic getVariable [""spawnDistanceHeli"", 0];" \n
+       "_spawnJet = _logic getVariable [""spawnDistanceJet"", 0];" \n
+       "" \n
+       "_radius = 50;" \n
+       "if(count _this > 2) then {_radius = _this select 2;};" \n
+       "" \n
+       "_patrol = true;" \n
+       "if(count _this > 3) then {_patrol = _this select 3;};" \n
+       "" \n
+       "_maxwait = 60;" \n
+       "if(count _this > 4) then {_maxwait = _this select 4;};" \n
+       "" \n
+       "if(count _this > 5) then {_debug = _this select 5;};" \n
+       "" \n
+       "_pos = getPosATL _leader;" \n
+       "_posDespawn = _pos;" \n
+       "_bldgpos = [_pos,_radius,""building""] call ALiVE_fnc_findNearHousePositions;" \n
+       "" \n
+       "if ((count _bldgpos) < (count units _grp)*1.2) then {" \n
+       "	_pat = true;" \n
+       "} else {" \n
+       "	_bldgpos = [_bldgpos,[],{_x select 2},""DESCEND""] call ALiVE_fnc_SortBy;" \n
+       "};" \n
+       "" \n
+       "//[""Buildingpos: %1 - units: %2 - patrol %3"",_posNo,_grpTH,_pat] call ALiVE_fnc_DumpR;" \n
+       "" \n
+       "if (count _bldgpos == 0) exitwith {" \n
+       "	diag_log format[""CQB error: Group %1 has no buildingpositions! Deleting..."",_grp];" \n
+       "	[_logic, ""delGroup"", _grp] call ALiVE_fnc_CQB;" \n
+       "	_abort = true;" \n
+       "};"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "Random_Delay">*/
+        class Random_Delay
+        {
+          priority = 0.000000;
+          to="Select_floors";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"time > _wait"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "Select_floors">*/
+    class Select_floors
+    {
+      name = "Select_floors";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "Enemy_Spotted">*/
+        class Enemy_Spotted
+        {
+          priority = 5.000000;
+          to="Wait_while_Enemy";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{" \n
+           "        (_leader knowsAbout _x > 1.4)  &&" \n
+           "        {side _leader getFriend side _x < 0.6}" \n
+           "} count allUnits != 0"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "_">*/
+        class _
+        {
+          priority = 0.000000;
+          to="Garrison_Buildin";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "Wait_while_Enemy">*/
+    class Wait_while_Enemy
+    {
+      name = "Wait_while_Enemy";
+      init = /*%FSM<STATEINIT""">*/"_grp setbehaviour ""AWARE"";" \n
+       "_grp setSpeedMode ""FULL"";" \n
+       "" \n
+       "_wait = time + 5 +  (random _maxwait);" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "Unit_Dead">*/
+        class Unit_Dead
+        {
+          priority = 9.000000;
+          to="Pass_FSM_and_End";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _leader && !(leader _grp == _leader)"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "No_Patrol">*/
+        class No_Patrol
+        {
+          priority = 9.000000;
+          to="End_1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!_patrol"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Abort">*/
+        class Abort
+        {
+          priority = 9.000000;
+          to="End";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_abort"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Players__out_of">*/
+        class Players__out_of
+        {
+          priority = 0.000000;
+          to="Move_home";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!([_posDespawn, _spawn*1.2, _spawnJet*1.2, _spawnHeli*1.2] call ALiVE_fnc_anyPlayersInRangeIncludeAir);"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Random_Delay">*/
+        class Random_Delay
+        {
+          priority = 0.000000;
+          to="Select_floors";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"time > _wait"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "Garrison_Buildin">*/
+    class Garrison_Buildin
+    {
+      name = "Garrison_Buildin";
+      init = /*%FSM<STATEINIT""">*/"_timeout = time;" \n
+       "" \n
+       "_grp setbehaviour ""SAFE"";" \n
+       "_grp setSpeedMode ""LIMITED"";" \n
+       "_grp setCombatMode ""YELLOW"";" \n
+       "" \n
+       "{" \n
+       "		_unit = _x;" \n
+       "		_HousePos = _unit getvariable [""HousePos"",nil];" \n
+       "" \n
+       "		if ((isnil ""_HousePos"") || {random 1 < 0.4}) then {" \n
+       "			" \n
+       "			if (_pat) then {" \n
+       "				_pos = [_pos,100] call CBA_fnc_Randpos;" \n
+       "			} else {" \n
+       "				_pos = _bldgpos select 0;" \n
+       "" \n
+       "				_bldgpos pushback _pos;" \n
+       "				_bldgpos set [0,""x""];" \n
+       "" \n
+       "				_bldgpos = _bldgpos - [""x""];" \n
+       "			};" \n
+       "" \n
+       "			_timeout = time;" \n
+       "			[_unit, _pos] call ALiVE_fnc_doMoveRemote;" \n
+       "			_unit setvariable [""HousePos"",_pos];" \n
+       "		};" \n
+       "} foreach (units _grp);" \n
+       "" \n
+       "deleteMarkerLocal _mkr;" \n
+       "if(_debug) then {" \n
+       "	createMarkerLocal [_mkr, _leader];" \n
+       "	_mkr setMarkerShapeLocal ""ICON"";" \n
+       "	_mkr setMarkerTypeLocal ""mil_box"";" \n
+       "};" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "Abort">*/
+        class Abort
+        {
+          priority = 9.000000;
+          to="End";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_abort"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Unit_Dead">*/
+        class Unit_Dead
+        {
+          priority = 9.000000;
+          to="Pass_FSM_and_End";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _leader && !(leader _grp == _leader)"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Enemy_Spotted">*/
+        class Enemy_Spotted
+        {
+          priority = 5.000000;
+          to="Wait_while_Enemy";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{" \n
+           "        (_leader knowsAbout _x > 1.4)  &&" \n
+           "        {side _leader getFriend side _x < 0.6}" \n
+           "} count allUnits != 0"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Players__out_of">*/
+        class Players__out_of
+        {
+          priority = 0.000000;
+          to="Move_home";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!([_posDespawn, _spawn*1.2, _spawnJet*1.2, _spawnHeli*1.2] call ALiVE_fnc_anyPlayersInRangeIncludeAir);"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Wait_1_minute">*/
+        class Wait_1_minute
+        {
+          priority = 0.000000;
+          to="set_user_waiting";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"(time - _timeout > 60)"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "set_user_waiting">*/
+    class set_user_waiting
+    {
+      name = "set_user_waiting";
+      init = /*%FSM<STATEINIT""">*/"_wait = time + 5 +  (random _maxwait);" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "Unit_Dead">*/
+        class Unit_Dead
+        {
+          priority = 9.000000;
+          to="Pass_FSM_and_End";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _leader && !(leader _grp == _leader)"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "No_Patrol">*/
+        class No_Patrol
+        {
+          priority = 9.000000;
+          to="End_1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!_patrol"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Abort">*/
+        class Abort
+        {
+          priority = 9.000000;
+          to="End";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_abort"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Players__out_of">*/
+        class Players__out_of
+        {
+          priority = 0.000000;
+          to="Move_home";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!([_posDespawn, _spawn*1.2, _spawnJet*1.2, _spawnHeli*1.2] call ALiVE_fnc_anyPlayersInRangeIncludeAir);"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Random_Delay">*/
+        class Random_Delay
+        {
+          priority = 0.000000;
+          to="Select_floors";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"time > _wait"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "End">*/
+    class End
+    {
+      name = "End";
+      init = /*%FSM<STATEINIT""">*/"deleteMarkerLocal _mkr;" \n
+       "if(_debug) then {" \n
+       "	format[""%1 aborting Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
+       "};" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "Pass_FSM_and_End">*/
+    class Pass_FSM_and_End
+    {
+      name = "Pass_FSM_and_End";
+      init = /*%FSM<STATEINIT""">*/"if ({alive _x} count (units _grp) > 0) then {" \n
+       "    	_leaderNew = leader _grp;" \n
+       "	_fsm = ""\x\alive\addons\mil_cqb\HousePatrol.fsm"";" \n
+       "	_hdl = [_logic,_leaderNew, 50, true, 60] execFSM _fsm;" \n
+       "	_leader setVariable [""FSM"", [_hdl,_fsm], true];" \n
+       "" \n
+       "	if(_debug) then {" \n
+       "		format[""%1 killed - Passing Simple House Patrol FSM to %2"",  _leader,_leaderNew] call ALiVE_fnc_logger;" \n
+       "	};" \n
+       "} else {" \n
+       "	if(_debug) then {" \n
+       "		format[""%1 killed - Ending Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
+       "	};" \n
+       "};" \n
+       "deleteMarkerLocal _mkr;" \n
+       "" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "End_1">*/
+    class End_1
+    {
+      name = "End_1";
+      init = /*%FSM<STATEINIT""">*/"deleteMarkerLocal _mkr;" \n
+       "if(_debug) then {" \n
+       "	format[""%1 patrol over -  Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
+       "};"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "Move_home">*/
+    class Move_home
+    {
+      name = "Move_home";
+      init = /*%FSM<STATEINIT""">*/"{" \n
+       "	_unit = _x;" \n
+       "	_pos = _unit getvariable [""HousePos"",nil];" \n
+       "	if (isnil ""_pos"") then {_pos = _bldgpos call BIS_fnc_selectRandom};" \n
+       "	_timeout = time;" \n
+       "" \n
+       "	_unit setSpeedMode ""FULL"";" \n
+       "	_unit setbehaviour ""AWARE"";" \n
+       "	[_unit, _pos] call ALiVE_fnc_doMoveRemote;" \n
+       "	_unit setvariable [""HousePos"",nil];" \n
+       "} foreach (units _grp);"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "Players__far_awa">*/
+        class Players__far_awa
+        {
+          priority = 3.000000;
+          to="End_delete_group";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!([_posDespawn, _spawn*2.5, _spawnJet*2, _spawnHeli*2] call ALiVE_fnc_anyPlayersInRangeIncludeAir) && {({alive _x} count (units _grp) > 0)}"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "At_home">*/
+        class At_home
+        {
+          priority = 2.000000;
+          to="End_delete_group";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{alive _x && (_x distance (_x getvariable ""HousePos"") > 4)} count (units _grp) < 2"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "Players__in_Rang">*/
+        class Players__in_Rang
+        {
+          priority = 0.000000;
+          to="Select_floors";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"([_posDespawn, _spawn, _spawn, spawnJet,_spawnHeli] call ALiVE_fnc_anyPlayersInRangeIncludeAir);"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "End_delete_group">*/
+    class End_delete_group
+    {
+      name = "End_delete_group";
+      init = /*%FSM<STATEINIT""">*/"if (typename _grp == ""OBJECT"") then {_grp = group _grp};" \n
+       "[_logic, ""delGroup"", _grp] call ALiVE_fnc_CQB;" \n
+       "" \n
+       "if(_debug) then {" \n
+       "	format[""%1 aborting Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
+       "};" \n
+       "" \n
+       "deleteMarkerLocal _mkr;" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+  };
+  initState="Start";
+  finalStates[] =
+  {
+    "End",
+    "Pass_FSM_and_End",
+    "End_1",
+    "End_delete_group",
+  };
+};
+/*%FSM</COMPILE>*/

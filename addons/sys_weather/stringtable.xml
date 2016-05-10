@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_WEATHER">
+	<English>Ambient Dynamic Weather</English>
+</Key>
+<Key ID="STR_ALIVE_WEATHER_COMMENT">
+	<English>Dynamic Weather module</English>
+</Key>
+<Key ID="STR_ALIVE_WEATHER_USAGE">
+	<English>Place the Dynamic Weather module and choose between different climates! Find a high detailed set of adjustment options on the module to refine your mission!</English>
+</Key>
+<Key ID="STR_ALIVE_WEATHER_DEBUG">
+	<English>Enable Debug:</English>
+</Key>
+
+<Key ID="STR_ALIVE_WEATHER_DEBUG_COMMENT">
+	<English>Enables dynamic weather module debug mode</English>
+</Key>
+
+<Key ID="STR_ALIVE_WEATHER_DEBUG_CYCLE">
+	<English>Debug Output Delay:</English>
+</Key>
+
+<Key ID="STR_ALIVE_WEATHER_DEBUG_CYCLE_COMMENT">
+	<English>Delay in seconds between each rpt output (Enable Debug must be enabled)</English>
+</Key>
+
+<Key ID="STR_ALIVE_WEATHER_ERROR1">
+	<English>Only one dynamic weather module can be used</English>
+</Key>
+
+<Key ID="STR_ALIVE_WEATHER_INITIAL">
+	<English>Weather Climate:</English>
+</Key>
+
+<Key ID="STR_ALIVE_WEATHER_INITIAL_COMMENT">
+	<English>For a complete local explanation please refer to ALiVE wiki
+	</English>
+</Key>
+
+<Key ID="STR_ALIVE_WEATHER_OVERRIDE">
+	<English>Weather Override:</English>
+</Key>
+
+<Key ID="STR_ALIVE_WEATHER_OVERRIDE_COMMENT">
+	<English>Set initial weather to one of the override settings
+	</English>
+</Key>
+
+<Key ID="STR_ALIVE_WEATHER_CYCLE_VARIANCE">
+	<English>Cycle Variance:</English>
+</Key>
+
+<Key ID="STR_ALIVE_WEATHER_CYCLE_VARIANCE_COMMENT">
+	<English>Amount of variance to weather between weather cycles</English>
+</Key>
+
+<Key ID="STR_ALIVE_WEATHER_CYCLE_DELAY">
+	<English>Cycle Delay:</English>
+</Key>
+
+<Key ID="STR_ALIVE_WEATHER_CYCLE_DELAY_COMMENT">
+	<English>Time in seconds between each weather cycle (minimum 1800 set by game engine)</English>
+</Key>
+
+<Key ID="STR_ALIVE_WEATHER_REAL_LOCATION">
+	<English>Real Weather Loc:</English>
+</Key>
+
+<Key ID="STR_ALIVE_WEATHER_REAL_LOCATION_COMMENT">
+	<English>For a complete list of valid Locales please refer to ALiVE wiki</English>
+</Key>
+
+</Container></Package></Project>
+
+

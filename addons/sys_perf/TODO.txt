@@ -1,0 +1,3 @@
+TODO
+- Tidy up init and logic
+- Sort out FSM that never ends

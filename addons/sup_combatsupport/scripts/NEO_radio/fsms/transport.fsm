@@ -1,0 +1,1676 @@
+/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, transport">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"react",0,250,-39.125454,36.278599,50.874546,86.278595,0.000000,"react"};
+item1[] = {"killed",4,218,-176.596497,35.791580,-86.596497,85.791595,50.000000,"killed"};
+item2[] = {"end1",1,250,-381.218628,39.896168,-291.218750,89.896164,0.000000,"end1"};
+item3[] = {"new_task",4,218,-39.236374,128.021286,50.763626,178.021286,10.000000,"new task"};
+item4[] = {"",7,210,-134.446793,239.584732,-126.446762,247.584732,0.000000,""};
+item5[] = {"_",2,250,-39.236374,218.464615,50.763641,268.464600,0.000000,""};
+item6[] = {"pickup",4,218,-100.407379,333.143829,-10.407383,383.143829,0.000000,"pickup"};
+item7[] = {"land",4,218,92.406570,336.191833,182.406570,386.191833,0.000000,"land"};
+item8[] = {"move",4,218,299.347931,336.657623,389.348022,386.657623,0.000000,"move"};
+item9[] = {"circle",4,218,504.298615,342.826050,594.298584,392.826050,0.000000,"circle"};
+item10[] = {"",7,210,-134.421814,149.088745,-126.421806,157.088745,0.000000,""};
+item11[] = {"__1",2,250,-26.534916,398.299042,63.465096,448.299042,0.000000,""};
+item12[] = {"ready_for_smoke",4,218,-100.355843,530.731445,-10.355839,580.731445,0.000000,"ready for" \n "smoke"};
+item13[] = {"__2",2,250,-100.094650,622.111084,-10.094629,672.111084,0.000000,""};
+item14[] = {"",7,210,-134.421387,455.318359,-126.421387,463.318359,0.000000,""};
+item15[] = {"",7,210,-134.421356,643.722168,-126.421371,651.722168,0.000000,""};
+item16[] = {"smoke_found_",4,218,-100.416473,715.152222,-10.416485,765.152222,1.000000,"smoke found?"};
+item17[] = {"rtb",4,218,706.732605,345.322205,796.732605,395.322205,0.000000,"rtb"};
+item18[] = {"__3",2,250,-99.639786,813.210999,-9.639786,863.210999,0.000000,""};
+item19[] = {"",7,210,-134.421402,835.788391,-126.421402,843.788391,0.000000,""};
+item20[] = {"smoke_position",4,218,-100.125366,907.912292,-10.125385,957.912292,0.000000,"smoke" \n "position"};
+item21[] = {"__4",2,250,-99.985641,996.174500,-9.985600,1046.174316,0.000000,""};
+item22[] = {"smoke_confirmed",4,218,-99.942123,1078.979370,-9.942158,1128.979370,0.000000,"smoke confirmed"};
+item23[] = {"circle",4,218,-114.868019,684.968689,-68.896660,708.206177,0.000000,"circle"};
+item24[] = {"",7,210,-134.738495,1016.523315,-126.738533,1024.523315,0.000000,""};
+item25[] = {"new_smoke",4,218,-118.258751,1224.969849,-61.488991,1258.803711,0.000000,"new" \n "smoke"};
+item26[] = {"",7,210,-120.263184,353.415558,-112.263184,361.415558,0.000000,""};
+item27[] = {"__5",2,250,-100.306427,1159.139404,-10.306423,1209.139404,0.000000,""};
+item28[] = {"land",4,218,-51.064598,1225.438354,5.705161,1259.272217,1.000000,"land"};
+item29[] = {"__6",2,250,-122.856491,1264.952393,-65.503418,1286.490967,0.000000,""};
+item30[] = {"__7",2,250,-51.249748,1289.773193,6.103328,1311.311768,0.000000,""};
+item31[] = {"",7,210,-134.972275,1179.676270,-126.972267,1187.676270,0.000000,""};
+item32[] = {"",7,210,-120.565231,1249.577271,-112.565231,1257.577271,0.000000,""};
+item33[] = {"",7,210,-134.805664,1296.796509,-126.805656,1304.796509,0.000000,""};
+item34[] = {"__8",2,250,707.587769,448.106079,797.587769,498.106079,0.000000,""};
+item35[] = {"at_base",4,4314,706.463440,527.640503,796.463440,577.640503,0.000000,"at base"};
+item36[] = {"__9",2,250,706.707458,623.358032,796.707458,673.358032,0.000000,""};
+item37[] = {"__10",2,250,122.906776,474.556183,212.906769,524.556519,0.000000,""};
+item38[] = {"ready_for_landin",4,218,93.793373,531.183289,183.793381,581.183289,0.000000,"ready for" \n "landing"};
+item39[] = {"__11",2,250,207.942062,869.828857,297.942078,919.828857,0.000000,""};
+item40[] = {"__12",2,250,307.148682,427.829742,397.148651,477.829926,0.000000,""};
+item41[] = {"at_position",4,218,298.936066,530.764771,388.936066,580.764771,0.000000,"at position"};
+item42[] = {"__13",2,250,403.274445,854.036072,493.274445,904.036072,0.000000,""};
+item43[] = {"__14",2,250,506.656189,418.252380,596.656372,468.252380,0.000000,""};
+item44[] = {"circle_around",4,218,505.904175,528.194092,595.904175,578.194092,0.000000,"circle around"};
+item45[] = {"insertion",4,218,883.858765,349.619659,973.858765,399.619659,0.000000,"insertion"};
+item46[] = {"__15",2,250,876.583252,438.693390,966.583252,488.693451,0.000000,""};
+item47[] = {"at_insertion",4,218,885.664551,522.563660,975.664551,572.563660,0.000000,"at insertion"};
+item48[] = {"__16",2,250,906.067444,620.030151,996.067444,670.030151,0.000000,""};
+item49[] = {"At_roping_point",4,218,912.881775,715.185608,1002.881775,765.185608,0.000000,"At roping point"};
+item50[] = {"__17",2,250,723.922913,827.749146,813.922913,877.749146,0.000000,""};
+link0[] = {0,1};
+link1[] = {0,3};
+link2[] = {1,2};
+link3[] = {3,5};
+link4[] = {4,10};
+link5[] = {5,4};
+link6[] = {5,6};
+link7[] = {5,7};
+link8[] = {5,8};
+link9[] = {5,9};
+link10[] = {5,17};
+link11[] = {5,45};
+link12[] = {6,11};
+link13[] = {7,37};
+link14[] = {8,40};
+link15[] = {9,43};
+link16[] = {10,1};
+link17[] = {10,3};
+link18[] = {11,12};
+link19[] = {11,14};
+link20[] = {12,13};
+link21[] = {13,15};
+link22[] = {13,16};
+link23[] = {13,23};
+link24[] = {14,4};
+link25[] = {15,14};
+link26[] = {16,18};
+link27[] = {17,34};
+link28[] = {18,19};
+link29[] = {18,20};
+link30[] = {19,15};
+link31[] = {20,21};
+link32[] = {21,22};
+link33[] = {21,24};
+link34[] = {22,27};
+link35[] = {23,13};
+link36[] = {24,19};
+link37[] = {25,29};
+link38[] = {26,6};
+link39[] = {27,25};
+link40[] = {27,28};
+link41[] = {27,31};
+link42[] = {28,30};
+link43[] = {29,32};
+link44[] = {29,33};
+link45[] = {30,33};
+link46[] = {31,24};
+link47[] = {32,26};
+link48[] = {33,31};
+link49[] = {34,14};
+link50[] = {34,35};
+link51[] = {35,36};
+link52[] = {36,15};
+link53[] = {37,14};
+link54[] = {37,38};
+link55[] = {38,39};
+link56[] = {39,15};
+link57[] = {40,14};
+link58[] = {40,41};
+link59[] = {41,42};
+link60[] = {42,15};
+link61[] = {43,14};
+link62[] = {43,44};
+link63[] = {44,43};
+link64[] = {45,46};
+link65[] = {46,14};
+link66[] = {46,47};
+link67[] = {47,48};
+link68[] = {48,49};
+link69[] = {49,50};
+link70[] = {50,15};
+globals[] = {0.000000,0,0,0,0,640,480,1,19,6316128,1,-356.551666,1008.814819,1456.860107,149.205002,965,929,1};
+window[] = {2,-1,-1,-1,-1,847,110,1370,110,3,982};
+*//*%FSM</HEAD>*/
+class FSM
+{
+  fsmName = "transport";
+  class States
+  {
+    /*%FSM<STATE "react">*/
+    class react
+    {
+      name = "react";
+      init = /*%FSM<STATEINIT""">*/"private " \n
+       "[" \n
+       "	""_chopper"", ""_grp"", ""_callsign"", ""_base"", ""_dir"",""_height"",""_type"",""_respawn"",""_code"",""_h"", ""_task"", ""_pos"", ""_posLand""," \n
+       "	""_timeOut"", ""_delay"", ""_smoke"", ""_smokeColor"", ""_posSmoke"",	""_goodToLand"", " \n
+       "	""_dirCircle"", ""_radiusCircle"", ""_alt"",""_speechSaid"", ""_speechSaidSmoke"", ""_heliHs""" \n
+       "];" \n
+       "_chopper = _this select 0;" \n
+       "_grp = _this select 1;" \n
+       "_callsign = _this select 2;" \n
+       "_base = _this select 3;" \n
+       "_dir = _this select 4;" \n
+       "_height = _this select 5;" \n
+       "_type = _this select 6;" \n
+       "_respawn = _this select 7;" \n
+       "_code = _this select 8;" \n
+       "_h = createVehicle [""Land_HelipadEmpty_F"", _base, [], 0, ""CAN_COLLIDE""];" \n
+       "_task = ""NONE"";" \n
+       "_pos = [];" \n
+       "_posLand = [];" \n
+       "_timeOut = 0;" \n
+       "_delay = 0;" \n
+       "_smoke = objNull;" \n
+       "_smokeColor = """";" \n
+       "_posSmoke = [];" \n
+       "_posCircle = [];" \n
+       "_goodToLand = false;" \n
+       "_dirCircle = 0;" \n
+       "_radiusCircle = 150;" \n
+       "_alt = 35;" \n
+       "_speechSaid = false;" \n
+       "_speechSaidSmoke = false;" \n
+       "_heliHs = objNull;" \n
+       "" \n
+       "//Behaviour" \n
+       "_grp setBehaviour ""CARELESS"";" \n
+       "_grp setCombatMode ""BLUE"";" \n
+       "_grp enableAttack false;" \n
+       "" \n
+       "//Optimization" \n
+       "{" \n
+       "	_x disableAi ""FSM"";" \n
+       "	_x disableAi ""TARGET"";" \n
+       "	_x disableAi ""AUTOTARGET"";" \n
+       "	_x setSkill 1;" \n
+       "} forEach units _grp;" \n
+       "" \n
+       "//Vehicle Status" \n
+       "_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""NONE"", true];" \n
+       "_chopper setVariable [""NEO_radioTrasportUnitFlyingProperties"", [1, 1, 0], true];" \n
+       "_chopper lockDriver true;" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "end1">*/
+    class end1
+    {
+      name = "end1";
+      init = /*%FSM<STATEINIT""">*/"/*TRANS_RESPAWN_LIMIT = TRANS_RESPAWN_LIMIT -1;" \n
+       "{" \n
+       "if (TRANS_RESPAWN_LIMIT = 0) then {" \n
+       "" \n
+       " _replen = format [""All Units we are unable to replensih any CAS Assets. Out""]; 	" \n
+       "	" \n
+       "[[player,_replen,""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "" \n
+       "} else {*/" \n
+       "" \n
+       "[_chopper, _grp, _callsign, _base, _dir,_height,_type, _respawn, _code] spawn ALIVE_fnc_RespawnTransportAsset;" \n
+       "" \n
+       "//};"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "_">*/
+    class _
+    {
+      name = "_";
+      init = /*%FSM<STATEINIT""">*/"[_chopper,""NONE""] call ALiVE_fnc_landRemote;" \n
+       "_speechSaid = false;" \n
+       "_speechSaidSmoke = false;" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "circle">*/
+        class circle
+        {
+          priority = 0.000000;
+          to="__14";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_task == ""CIRCLE""" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_dirCircle = [_pos, _chopper] call BIS_fnc_dirTo;" \n
+           "[_chopper, [_pos, _radiusCircle, _dirCircle] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "_chopper flyinheight 100;" \n
+           "" \n
+           "//New Status" \n
+           "_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""MISSION"", true];" \n
+           "" \n
+           "//Dialog from pilot" \n
+           "[_chopper,_callsign,_pos] spawn" \n
+           "{		" \n
+           "private [""_chopper"", ""_callsign"",""_pos""];" \n
+           "		_chopper = _this select 0;" \n
+           "		_callsign = _this select 1;" \n
+           " _pos = _this select 2;" \n
+           "_coord = _pos call BIS_fnc_posToGrid;" \n
+           "	sleep 5;" \n
+           "	" \n
+           "   [[ _chopper,format[ ""Copy that, %1 is inbound to provide overwatch at %2 %3. Out."",_callsign,_coord select 0, _coord select 1], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "};" \n
+           "[_chopper] spawn {  " \n
+           "private [""_chopper""];" \n
+           "_chopper = _this select 0;" \n
+           "" \n
+           "while {" \n
+           "(_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""MISSION"" } do" \n
+           "{  _chopper action [""CollisionLightOff"", _chopper];" \n
+           "sleep 0.01};" \n
+           "};  "/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "rtb">*/
+        class rtb
+        {
+          priority = 0.000000;
+          to="__8";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_task == ""RTB""" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""RTB"", true];" \n
+           "" \n
+           "[_chopper] spawn {  " \n
+           "private [""_chopper""];" \n
+           "_chopper = _this select 0;" \n
+           "" \n
+           "while {" \n
+           "(_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""RTB"" } do" \n
+           "{  _chopper action [""CollisionLightOff"", _chopper];" \n
+           "sleep 0.01};" \n
+           "};  " \n
+           "_chopper flyinheight 100;" \n
+           "[_chopper, _base] call ALiVE_fnc_doMoveRemote;" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "insertion">*/
+        class insertion
+        {
+          priority = 0.000000;
+          to="__15";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_task == ""INSERTION"""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""MISSION"", true];" \n
+           "" \n
+           "[_chopper] spawn {  " \n
+           "private [""_chopper""];" \n
+           "_chopper = _this select 0;" \n
+           "" \n
+           "while {" \n
+           "(_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""MISSION"" } do" \n
+           "{  _chopper action [""CollisionLightOff"", _chopper];" \n
+           "sleep 0.01};" \n
+           "};  " \n
+           "" \n
+           "[_chopper,_pos] call ALiVE_fnc_doMoveRemote;" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "move">*/
+        class move
+        {
+          priority = 0.000000;
+          to="__12";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_task == ""MOVE""" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""MISSION"", true];" \n
+           "" \n
+           "[_chopper] spawn {  " \n
+           "private [""_chopper""];" \n
+           "_chopper = _this select 0;" \n
+           "" \n
+           "while {" \n
+           "(_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""MISSION"" } do" \n
+           "{  _chopper action [""CollisionLightOff"", _chopper];" \n
+           "sleep 0.01};" \n
+           "};  " \n
+           "" \n
+           "_chopper flyinheight 100;" \n
+           "[_chopper,_pos] call ALiVE_fnc_doMoveRemote;"/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "land">*/
+        class land
+        {
+          priority = 0.000000;
+          to="__10";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_task == ""LAND""" \n
+           "||" \n
+           "_task == ""LAND (ENG OFF)""" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""MISSION"", true];" \n
+           "" \n
+           "[_chopper] spawn {  " \n
+           "private [""_chopper""];" \n
+           "_chopper = _this select 0;" \n
+           "" \n
+           "while {" \n
+           "(_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""MISSION"" } do" \n
+           "{  _chopper action [""CollisionLightOff"", _chopper];" \n
+           "sleep 0.01};" \n
+           "};  " \n
+           "" \n
+           "_chopper flyinheight 100;" \n
+           "//Find position to land" \n
+           "_heliHs = nearestObjects [_pos, [""Land_HelipadSquare_F"",""Land_HelipadRescue_F"",""Land_HelipadCivil_F"",""Land_HelipadCircle_F"",""Land_HelipadEmpty_F"",""HeliH"", ""HeliHCivil"", ""HeliHRescue""], 50];" \n
+           "" \n
+           "if (count _heliHs > 0) then" \n
+           "{" \n
+           "	_posLand = getPosATL (_heliHs select 0);" \n
+           "}" \n
+           "else" \n
+           "{" \n
+           "	_posLand = _pos isflatempty [sizeOf typeOf _chopper, 0, 0.5, sizeOf typeOf _chopper, 0, false, _chopper];" \n
+           "	" \n
+           "	if (count _posLand < 2) then" \n
+           "	{" \n
+           "		_heliHs = nearestObjects [_pos, [""Land_HelipadSquare_F"",""Land_HelipadRescue_F"",""Land_HelipadCivil_F"",""Land_HelipadCircle_F"",""Land_HelipadEmpty_F"",""HeliH"", ""HeliHCivil"", ""HeliHRescue""], 100];" \n
+           "" \n
+           "		if (count _heliHs > 0) then" \n
+           "		{" \n
+           "			_posLand = getPosATL (_heliHs select 0);" \n
+           "		}" \n
+           "		else" \n
+           "		{" \n
+           "			private [""_dir"", ""_dist""];" \n
+           "			_dir = 0;" \n
+           "			_dist = 10;" \n
+           "			" \n
+           "			while { _dist <= 250 } do" \n
+           "			{" \n
+           "				_posLand = ([_pos, _dist, _dir] call BIS_fnc_relPos) isflatempty [sizeOf typeOf _chopper, 0, 0.5, sizeOf typeOf _chopper, 0, false, _chopper];" \n
+           "				if (count _posLand > 0) exitWith {};" \n
+           "				" \n
+           "				_dir = _dir + 1;" \n
+           "				" \n
+           "				if (_dir >= 360) then " \n
+           "				{" \n
+           "					_dir = 0;" \n
+           "					_dist = _dist + 10;" \n
+           "				};" \n
+           "			};" \n
+           "			" \n
+           "			if (count _posLand < 2) then" \n
+           "			{" \n
+           "				_posLand = _pos;" \n
+           "			};" \n
+           "		};" \n
+           "	};" \n
+           "};" \n
+           "" \n
+           "_posLand set [2, 0];" \n
+           "if (surfaceIsWater _posLand) then {" \n
+           "[_chopper, _posLand] call ALiVE_fnc_doMoveRemote;" \n
+           "_task = ""HOVER"";" \n
+           "} else {" \n
+           " _h setPosATL _posLand;" \n
+           " [_chopper, _posLand] call ALiVE_fnc_doMoveRemote;" \n
+           "};" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "pickup">*/
+        class pickup
+        {
+          priority = 0.000000;
+          to="__1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_task == ""PICKUP""" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_radiusCircle = 150;" \n
+           "_chopper flyinheight 100;" \n
+           "_dirCircle = [_pos, _chopper] call BIS_fnc_dirTo;" \n
+           "[_chopper, [_pos, _radiusCircle, _dirCircle] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""MISSION"", true];" \n
+           "" \n
+           "[_chopper] spawn {  " \n
+           "private [""_chopper""];" \n
+           "_chopper = _this select 0;" \n
+           "" \n
+           "while {" \n
+           "(_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""MISSION"" } do" \n
+           "{  _chopper action [""CollisionLightOff"", _chopper];" \n
+           "sleep 0.01};" \n
+           "};  " \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__1">*/
+    class __1
+    {
+      name = "__1";
+      init = /*%FSM<STATEINIT""">*/"if (!_speechSaid) then" \n
+       "{" \n
+       "	_speechSaid = true;" \n
+       "	" \n
+       "	[_chopper,_callsign,_pos] spawn" \n
+       "	{" \n
+       "		private [""_chopper"", ""_callsign"",""_pos""];" \n
+       "		_chopper = _this select 0;" \n
+       "		_callsign = _this select 1;" \n
+       " _pos = _this select 2;" \n
+       "_coord = _pos call BIS_fnc_posToGrid;" \n
+       "" \n
+       "		sleep 5;" \n
+       "			" \n
+       "		[[_chopper, format[""Copy that, %1 is moving to %2%3 for pickup. Out."",_callsign,_coord select 0, _coord select 1], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "	};" \n
+       "};" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "ready_for_smoke">*/
+        class ready_for_smoke
+        {
+          priority = 0.000000;
+          to="__2";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_chopper call ALiVE_fnc_unitReadyRemote" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""SMOKE"", true];" \n
+           "" \n
+           "[_chopper] spawn {  " \n
+           "private [""_chopper""];" \n
+           "_chopper = _this select 0;" \n
+           "" \n
+           "while {" \n
+           "(_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""SMOKE"" } do" \n
+           "{  _chopper action [""CollisionLightOff"", _chopper];" \n
+           "sleep 0.01};" \n
+           "};  "/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__2">*/
+    class __2
+    {
+      name = "__2";
+      init = /*%FSM<STATEINIT""">*/"if (!_speechSaidSmoke) then" \n
+       "{" \n
+       "	_speechSaidSmoke = true;" \n
+       "	" \n
+       "	if (sunOrMoon == 0) then {" \n
+       "		[[_chopper,	format[""%1 has arrived at pickup point, deploy IR marker to confirm landing position. Over."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "	} else {" \n
+       "" \n
+       "		[[_chopper,	format[""%1 has arrived at pickup point, pop smoke to confirm landing position. Over."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "" \n
+       "	};" \n
+       "" \n
+       "	[_chopper, _callsign] spawn" \n
+       "	{" \n
+       "		private [""_chopper"", ""_callsign""];" \n
+       "		_chopper = _this select 0;" \n
+       "		_callsign = _this select 1;" \n
+       "" \n
+       "" \n
+       "		sleep 75;" \n
+       "		" \n
+       "		while { (_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""SMOKE"" } do" \n
+       "		{" \n
+       "			if (sunOrMoon == 0) then {" \n
+       "				[[ _chopper, format[""%1 is still waiting for that IR marker. Over."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "			} else {" \n
+       "				[[ _chopper, format[""%1 is still waiting for that smoke. Over."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "			};" \n
+       "			sleep 75;" \n
+       "		};" \n
+       "	};" \n
+       "};" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "smoke_found_">*/
+        class smoke_found_
+        {
+          priority = 1.000000;
+          to="__3";
+          precondition = /*%FSM<CONDPRECONDITION""">*/"private [""_smoke""];" \n
+           "" \n
+           "if (sunOrMoon == 0) then {" \n
+           "	_smoke = _pos nearObjects [""B_IRStrobe"", 250] select 0;" \n
+           "} else {" \n
+           "	_smoke = _pos nearObjects [""SmokeShell"", 250] select 0;" \n
+           "};" \n
+           "" \n
+           "" \n
+           ""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isnil ""_smoke""" \n
+           "&&" \n
+           "{_chopper call ALiVE_fnc_unitReadyRemote}" \n
+           "" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"[_chopper, getPosATL _smoke] call ALiVE_fnc_doMoveRemote;" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "circle">*/
+        class circle
+        {
+          priority = 0.000000;
+          to="__2";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_chopper call ALiVE_fnc_unitReadyRemote" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_posCircle = [_pos, _radiusCircle, _dirCircle] call BIS_fnc_relPos;" \n
+           "_dirCircle = _dirCircle + 45;" \n
+           "" \n
+           "[_chopper,_posCircle] call ALiVE_fnc_doMoveRemote;" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__3">*/
+    class __3
+    {
+      name = "__3";
+      init = /*%FSM<STATEINIT""">*/"_delay = time + 7.5;" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "smoke_position">*/
+        class smoke_position
+        {
+          priority = 0.000000;
+          to="__4";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"time > _delay" \n
+           "&&" \n
+           "_chopper call ALiVE_fnc_unitReadyRemote" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"//Store smoke position" \n
+           "_posSmoke = getPosATL _smoke;" \n
+           "_posSmoke set [2, 0];" \n
+           "" \n
+           "//Smoke color" \n
+           "if (sunOrMoon == 0) then {" \n
+           "	_smokeColor = ""Infrared"";" \n
+           "} else {" \n
+           "	_smokeColor = _smoke call NEO_fnc_smokeColor;" \n
+           "};" \n
+           "" \n
+           "//Move Chopper H to land position" \n
+           "_h setPosATL _posSmoke;" \n
+           "" \n
+           "//New Status" \n
+           "_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""SMOKECONF"", true];" \n
+           "" \n
+           "[_chopper] spawn {  " \n
+           "private [""_chopper""];" \n
+           "_chopper = _this select 0;" \n
+           "" \n
+           "while {" \n
+           "(_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""SMOKECONF"" } do" \n
+           "{  _chopper action [""CollisionLightOff"", _chopper];" \n
+           "sleep 0.01};" \n
+           "};  "/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__4">*/
+    class __4
+    {
+      name = "__4";
+      init = /*%FSM<STATEINIT""">*/"//We see smoke" \n
+       "if (sunOrMoon == 0) then {" \n
+       "	[[_chopper,	format [""We see %1 marker, do you confirm? Over."", _smokeColor],	""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "} else {" \n
+       "	[[_chopper,	format [""We see %1 smoke, do you confirm? Over."", _smokeColor],	""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "};" \n
+       "" \n
+       "[_chopper, _callsign, _smokeColor] spawn" \n
+       "{" \n
+       "	private [""_chopper"", ""_callsign"", ""_smokeColor""];" \n
+       "	_chopper = _this select 0;" \n
+       "	_callsign = _this select 1;" \n
+       "	_smokeColor = _this select 2;" \n
+       "	" \n
+       "	sleep 75;" \n
+       "	" \n
+       "	while { (_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""SMOKECONF"" } do" \n
+       "	{" \n
+       "		if (sunOrMoon == 0) then {" \n
+       "			[[_chopper, format [""This is %1, please respond, is that %1 marker yours? Over."", _smokeColor],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "		} else {" \n
+       "			[[_chopper, format [""This is %1, please respond, is that %1 smoke yours? Over."", _smokeColor],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "		};" \n
+       "		sleep 75;" \n
+       "	};" \n
+       "};" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "smoke_confirmed">*/
+        class smoke_confirmed
+        {
+          priority = 0.000000;
+          to="__5";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioSmokeConfirmed"" }" \n
+           "&&" \n
+           "_chopper call ALiVE_fnc_unitReadyRemote" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_goodToLand = _chopper getVariable ""NEO_radioSmokeConfirmed"";" \n
+           "_chopper setVariable [""NEO_radioSmokeConfirmed"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__5">*/
+    class __5
+    {
+      name = "__5";
+      init = /*%FSM<STATEINIT""">*/"if (_task != ""RTB"") then" \n
+       "{" \n
+       "	[_chopper, _goodToLand] spawn" \n
+       "	{" \n
+       "		sleep 4;" \n
+       "		" \n
+       "		private [""_chopper"", ""_goodToLand""];" \n
+       "		_chopper = _this select 0;" \n
+       "		_goodToLand = _this select 1;" \n
+       "		" \n
+       "		if (!_goodToLand) then" \n
+       "		{" \n
+       "				[[_chopper,""Copy that, pop another marker to confirm LZ. Out."",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "		}" \n
+       "		else" \n
+       "		{" \n
+       "			[[_chopper,""Copy that, secure LZ. Out."",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "		};" \n
+       "	};" \n
+       "};" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "land">*/
+        class land
+        {
+          priority = 1.000000;
+          to="__7";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_goodToLand" \n
+           "&&" \n
+           "_chopper call ALiVE_fnc_unitReadyRemote" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"[_chopper,""Get In""] call ALiVE_fnc_landRemote;" \n
+           "_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""CARGO"", true];" \n
+           "" \n
+           "" \n
+           "[_chopper] spawn {  " \n
+           "private [""_chopper""];" \n
+           "_chopper = _this select 0;" \n
+           "" \n
+           "while {" \n
+           "(_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""CARGO"" } do" \n
+           "{  _chopper action [""CollisionLightOff"", _chopper];" \n
+           "sleep 0.01};" \n
+           "};  "/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_smoke">*/
+        class new_smoke
+        {
+          priority = 0.000000;
+          to="__6";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"true" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__6">*/
+    class __6
+    {
+      name = "__6";
+      init = /*%FSM<STATEINIT""">*/"if (alive _smoke) then { deleteVehicle _smoke };" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "pickup">*/
+        class pickup
+        {
+          priority = 0.000000;
+          to="__1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_task == ""PICKUP""" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_radiusCircle = 150;" \n
+           "_chopper flyinheight 100;" \n
+           "_dirCircle = [_pos, _chopper] call BIS_fnc_dirTo;" \n
+           "[_chopper, [_pos, _radiusCircle, _dirCircle] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""MISSION"", true];" \n
+           "" \n
+           "[_chopper] spawn {  " \n
+           "private [""_chopper""];" \n
+           "_chopper = _this select 0;" \n
+           "" \n
+           "while {" \n
+           "(_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""MISSION"" } do" \n
+           "{  _chopper action [""CollisionLightOff"", _chopper];" \n
+           "sleep 0.01};" \n
+           "};  " \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__7">*/
+    class __7
+    {
+      name = "__7";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__8">*/
+    class __8
+    {
+      name = "__8";
+      init = /*%FSM<STATEINIT""">*/"[_chopper,_callsign] spawn" \n
+       "{		" \n
+       "private [""_chopper"", ""_callsign""];" \n
+       "		_chopper = _this select 0;" \n
+       "		_callsign = _this select 1;" \n
+       "	sleep 5;" \n
+       "	" \n
+       "	[[_chopper,format[""Copy that, %1 is RTB. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "};" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "at_base">*/
+        class at_base
+        {
+          priority = 0.000000;
+          to="__9";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_chopper call ALiVE_fnc_unitReadyRemote" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_h setPosATL _base;" \n
+           "[_chopper,""LAND""] call ALiVE_fnc_landRemote;" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"", nil, true];" \n
+           "_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""NONE"", true];" \n
+           "" \n
+           "_chopper setFuel 1;" \n
+           "_chopper setDamage 0;" \n
+           "_chopper setVehicleAmmo 1;" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__9">*/
+    class __9
+    {
+      name = "__9";
+      init = /*%FSM<STATEINIT""">*/"[[_chopper, format[""%1 is at Base. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__10">*/
+    class __10
+    {
+      name = "__10";
+      init = /*%FSM<STATEINIT""">*/"[_chopper,_callsign,_pos] spawn" \n
+       "{" \n
+       "		private [""_chopper"", ""_callsign""];" \n
+       "		_chopper = _this select 0;" \n
+       "		_callsign = _this select 1;" \n
+       "	 _pos = _this select 2;" \n
+       "_coord = _pos call BIS_fnc_posToGrid;" \n
+       "" \n
+       "	sleep 5;" \n
+       "	" \n
+       "	[[_chopper,format[""Copy that, %1 is landing at %2 %3. Out."",_callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "};" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "ready_for_landin">*/
+        class ready_for_landin
+        {
+          priority = 0.000000;
+          to="__11";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_chopper call ALiVE_fnc_unitReadyRemote" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"switch (_task) do" \n
+           "{" \n
+           "case ""LAND"" : { [_chopper,""GET OUT""] call ALiVE_fnc_landRemote;};" \n
+           "case ""HOVER"" : {[[_chopper,format[""%1 is unable to Land at coordinates. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP; };" \n
+           "default {[_chopper,""LAND""] call ALiVE_fnc_landRemote; };" \n
+           "};" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__11">*/
+    class __11
+    {
+      name = "__11";
+      init = /*%FSM<STATEINIT""">*/"switch (_task) do" \n
+       "{" \n
+       "case ""HOVER"" : {[[_chopper,format[""%1 is awaiting new orders. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP; };" \n
+       "default { [[_chopper,format[""%1 is landing at coordinates. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP; };" \n
+       "};" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__12">*/
+    class __12
+    {
+      name = "__12";
+      init = /*%FSM<STATEINIT""">*/"[_chopper,_callsign,_pos] spawn" \n
+       "{		" \n
+       "private [""_chopper"", ""_callsign"",""_pos""];" \n
+       "		_chopper = _this select 0;" \n
+       "		_callsign = _this select 1;" \n
+       " _pos = _this select 2;" \n
+       "_coord = _pos call BIS_fnc_posToGrid;" \n
+       "" \n
+       "	sleep 5;" \n
+       "	" \n
+       "	[[_chopper,format[""Copy that, %1 is moving to %2%3. Out."",_callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "};" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "at_position">*/
+        class at_position
+        {
+          priority = 0.000000;
+          to="__13";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_chopper call ALiVE_fnc_unitReadyRemote" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__13">*/
+    class __13
+    {
+      name = "__13";
+      init = /*%FSM<STATEINIT""">*/"[[_chopper,format[""%1 is holding position and waiting for further orders. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__14">*/
+    class __14
+    {
+      name = "__14";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "circle_around">*/
+        class circle_around
+        {
+          priority = 0.000000;
+          to="__14";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_chopper call ALiVE_fnc_unitReadyRemote" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_dirCircle = _dirCircle + 45;" \n
+           "_posCircle = [_pos, _radiusCircle, _dirCircle] call BIS_fnc_relPos;" \n
+           "[_chopper,_posCircle] call ALiVE_fnc_doMoveRemote;" \n
+           "_coord = _pos call BIS_fnc_posToGrid;" \n
+           "" \n
+           "if (!_speechSaid) then" \n
+           "{" \n
+           "	_speechSaid = true;" \n
+           "" \n
+           "	[[_chopper, format [""This is %1, we are at %2 %3, circling the AO. Out."", _callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "};" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__15">*/
+    class __15
+    {
+      name = "__15";
+      init = /*%FSM<STATEINIT""">*/"[_chopper,_callsign,_pos] spawn" \n
+       "{		" \n
+       "private [""_chopper"", ""_callsign"",""_pos""];" \n
+       "		_chopper = _this select 0;" \n
+       "		_callsign = _this select 1;" \n
+       " _pos = _this select 2;" \n
+       "_coord = _pos call BIS_fnc_posToGrid;" \n
+       "" \n
+       "	sleep 5;" \n
+       "	" \n
+       "	[[_chopper,format[""Copy that, %1 is moving to %2%3 for Insertion. Out."",_callsign,_coord select 0, _coord select 1 ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "};" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "at_insertion">*/
+        class at_insertion
+        {
+          priority = 0.000000;
+          to="__16";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_chopper call ALiVE_fnc_unitReadyRemote" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper flyinheight _alt;" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__16">*/
+    class __16
+    {
+      name = "__16";
+      init = /*%FSM<STATEINIT""">*/"[[_chopper,""Prepare for Insertion. Out."",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "At_roping_point">*/
+        class At_roping_point
+        {
+          priority = 0.000000;
+          to="__17";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_chopper call ALiVE_fnc_unitReadyRemote"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "__17">*/
+    class __17
+    {
+      name = "__17";
+      init = /*%FSM<STATEINIT""">*/"_chopper spawn" \n
+       "{" \n
+       "	sleep 15;" \n
+       "	" \n
+       "[[_this,""Go Go Go. Out."",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "};" \n
+       ""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+  };
+  initState="react";
+  finalStates[] =
+  {
+    "end1",
+  };
+};
+/*%FSM</COMPILE>*/

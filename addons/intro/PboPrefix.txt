@@ -1,0 +1,7 @@
+x\alive\addons\intro
+======<HEADER>=======
+prefix=x\alive\addons\intro
+product=Arma 3
+version=1
+Pbo Type is: Arma Addon
+======</HEADER>============

@@ -1,0 +1,12 @@
+*Model - no visual just reference data*
+- server side object only
+- ghosting enabled
+- teleport enabled
+- ACE spectator enabled
+
+*Controller - *
+- frequent check if player is server admin
+
+*View - purely visual*
+- initialise menu
+- frequent check to modify menu and display status

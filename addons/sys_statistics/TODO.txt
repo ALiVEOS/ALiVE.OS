@@ -1,0 +1,11 @@
+TODO
+- Fix unitkilled to pick up on vehicles
+- Fix Medic events
+- Fix flight time not being recorded
+- Add objectives events
+- Fix fired to pick up on player firing from vehicle
+- confirm integer code is working
+
+Website
+- Marksmen should not include static weapons
+- 

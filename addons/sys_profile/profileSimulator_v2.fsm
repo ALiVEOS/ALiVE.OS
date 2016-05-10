@@ -1,0 +1,684 @@
+/*%FSM<COMPILE "scriptedFSM.cfg, profile simulator">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"INIT",0,4346,-191.791229,-248.493942,-101.791237,-198.494003,0.000000,"INIT"};
+item1[] = {"INIT_COMPLETE",4,218,-191.814072,-169.241699,-101.814072,-119.241699,0.000000,"INIT" \n "COMPLETE"};
+item2[] = {"_",-1,250,-440.685394,-235.585892,-437.600311,-235.585892,0.000000,""};
+item3[] = {"DESTROY",4,218,-71.868134,-91.997047,18.131832,-41.997047,0.000000,"DESTROY"};
+item4[] = {"END",1,250,48.878220,-90.319656,138.878342,-40.319702,0.000000,"END"};
+item5[] = {"SWITCH",2,250,-190.815353,-90.341660,-100.815338,-40.341648,0.000000,"SWITCH"};
+item6[] = {"SIMULATE",4,218,-190.485504,-10.103760,-100.485519,39.896233,3.000000,"SIMULATE"};
+item7[] = {"PREPARE",2,250,-191.265823,69.891739,-101.265800,119.891724,0.000000,"PREPARE"};
+item8[] = {"COMPLETE",4,218,-402.130737,294.729095,-312.130920,344.729034,0.000000,"COMPLETE"};
+item9[] = {"COMPLETE",4,218,-192.397751,608.912659,-102.397751,658.912659,0.000000,"COMPLETE"};
+item10[] = {"MEASURE",2,250,-190.404572,691.447083,-103.745209,738.106262,0.000000,"MEASURE"};
+item11[] = {"WAIT",4,218,-313.421509,-89.343033,-223.421524,-39.343060,4.000000,"WAIT"};
+item12[] = {"CONTINUE",4,218,-191.670029,148.882645,-101.670029,198.882645,0.000000,"CONTINUE"};
+item13[] = {"SIMULATE",2,250,-191.125565,220.750656,-101.125549,270.750671,0.000000,"SIMULATE"};
+item14[] = {"ITERATE",4,218,-53.864235,220.581512,36.135887,270.581543,2.000000,"ITERATE"};
+item15[] = {"SIMULATION__DONE",4,218,-191.670029,295.139282,-101.670029,345.139282,0.000000,"SIMULATION " \n "DONE"};
+item16[] = {"SIMULATE_DEATH",2,250,-192.397751,371.529755,-102.397743,421.529755,0.000000,"SIMULATE" \n "DEATH"};
+item17[] = {"DEATH_DONE",4,218,-192.397781,446.422363,-102.397774,496.422363,0.000000,"DEATH" \n "DONE"};
+item18[] = {"REMOVE_PROFILE",2,250,-193.066437,527.333191,-103.066429,577.333191,0.000000,"REMOVE" \n "PROFILE"};
+version=1;
+class LayoutItems
+{
+	class Item2
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
+};
+link0[] = {0,1};
+link1[] = {1,5};
+link2[] = {3,4};
+link3[] = {5,3};
+link4[] = {5,6};
+link5[] = {5,11};
+link6[] = {6,7};
+link7[] = {7,12};
+link8[] = {8,5};
+link9[] = {9,10};
+link10[] = {10,8};
+link11[] = {11,5};
+link12[] = {12,13};
+link13[] = {13,14};
+link14[] = {13,15};
+link15[] = {14,13};
+link16[] = {15,16};
+link17[] = {16,17};
+link18[] = {17,18};
+link19[] = {18,9};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,103,6316128,1,-561.251038,192.231064,620.214355,-221.808563,851,951,1};
+window[] = {2,-1,-1,-32000,-32000,1098,200,1823,200,3,869};
+*//*%FSM</HEAD>*/
+class FSM
+{
+  fsmName = "profile simulator";
+  class States
+  {
+    /*%FSM<STATE "INIT">*/
+    class INIT
+    {
+      name = "INIT";
+      init = /*%FSM<STATEINIT""">*/"private [""_profileSystem"",""_startWait"",""_startSimulate"",""_simulationCycleTime"",""_lastSimulationTime"",""_doSimulation""," \n
+       """_destroy"",""_debug"",""_profiles"",""_markers"",""_deleteMarkers"",""_deleteMarker"",""_createMarker""];" \n
+       "" \n
+       "_profileSystem = _this select 0;" \n
+       "" \n
+       "_startWait = time;" \n
+       "_simulationWaitTime = 3;" \n
+       "_simulationCycleTime = 3;" \n
+       "_lastSimulationTime = 0;" \n
+       "_doSimulation = false;" \n
+       "" \n
+       "_speedModifier = [_profileSystem,""speedModifier"",1] call ALiVE_fnc_HashGet;" \n
+       "" \n
+       "_destroy = false;" \n
+       "_debug = [_profileSystem,""debug"",false] call ALiVE_fnc_HashGet;" \n
+       "_markers = [] call ALIVE_fnc_hashCreate;" \n
+       "" \n
+       "_deleteMarkers = {" \n
+       "	{" \n
+       "		deleteMarker _x;" \n
+       "	} forEach (_markers select 2);" \n
+       "	_markers = [] call ALIVE_fnc_hashCreate;" \n
+       "};" \n
+       "" \n
+       "_deleteMarker = {" \n
+       "	private [""_profile"",""_m"",""_profileID""];" \n
+       "	_profile = _this;" \n
+       "	" \n
+       "	_profileID = [_profile,""profileID""] call ALIVE_fnc_hashGet;" \n
+       "	" \n
+       "	_profileIndex = _markers select 1;" \n
+       "	if(_profileID in _profileIndex) then {	" \n
+       "		_m = [_markers,_profileID] call ALIVE_fnc_hashGet;			" \n
+       "		deleteMarker _m;		" \n
+       "		[_markers,_profileID] call ALIVE_fnc_hashRem;" \n
+       "	};" \n
+       "};" \n
+       "" \n
+       "_createMarker = {" \n
+       "	private [""_profile"",""_waypoint"",""_m"",""_label"",""_position"",""_profileID"",""_debugColor"",""_profileSide"",""_markerLabel""];" \n
+       "	_profile = _this select 0;" \n
+       "	_waypoint = _this select 1;" \n
+       "	" \n
+       "	_entityProfile call _deleteMarker;" \n
+       "" \n
+       "	_position = [_waypoint,""position""] call ALIVE_fnc_hashGet;" \n
+       "	_profileID = [_profile,""profileID""] call ALIVE_fnc_hashGet;" \n
+       "	_profileSide = [_profile,""side""] call ALIVE_fnc_hashGet;" \n
+       "	_markerLabel = format[""%1 destination"", _profileID];" \n
+       "	" \n
+       "	switch(_profileSide) do {" \n
+       "		case ""EAST"":{" \n
+       "			_debugColor = ""ColorRed"";" \n
+       "		};" \n
+       "		case ""WEST"":{" \n
+       "			_debugColor = ""ColorBlue"";" \n
+       "		};" \n
+       "		case ""CIV"":{" \n
+       "			_debugColor = ""ColorYellow"";" \n
+       "		};" \n
+       "		case ""GUER"":{" \n
+       "			_debugColor = ""ColorGreen"";" \n
+       "		};" \n
+       "		default {" \n
+       "			_debugColor = ""ColorGreen"";" \n
+       "		};" \n
+       "	};" \n
+       "" \n
+       "	if(count _position > 0) then {" \n
+       "		_m = createMarker [format[""SIM_MARKER_%1"",_profileID], _position];" \n
+       "		_m setMarkerShape ""ICON"";" \n
+       "		_m setMarkerSize [1, 1];" \n
+       "		_m setMarkerType ""waypoint"";" \n
+       "		_m setMarkerColor _debugColor;" \n
+       "		" \n
+       "		_label = [_profileID, ""_""] call CBA_fnc_split;" \n
+       "		_m setMarkerText format[""%1"",_label select ((count _label) - 1)];" \n
+       "" \n
+       "		[_markers,_profileID,_m] call ALIVE_fnc_hashSet;" \n
+       "	};" \n
+       "};" \n
+       "" \n
+       "// debug ---------------------------------------" \n
+       "//if(_debug) then { [""ALIVE Profile Simulator FSM init""] call ALIVE_fnc_dumpR; };" \n
+       "// debug ---------------------------------------"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "INIT_COMPLETE">*/
+        class INIT_COMPLETE
+        {
+          priority = 0.000000;
+          to="SWITCH";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "END">*/
+    class END
+    {
+      name = "END";
+      init = /*%FSM<STATEINIT""">*/"// debug ---------------------------------------" \n
+       "//if(_debug) then { [""SIMULATION CONTROLLER destroyed""] call ALIVE_fnc_dumpR; };" \n
+       "// debug ---------------------------------------"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "SWITCH">*/
+    class SWITCH
+    {
+      name = "SWITCH";
+      init = /*%FSM<STATEINIT""">*/"if(ALIVE_isPaused) then {" \n
+       "	//[""ALIVE SIMULATOR PAUSED""] call ALIVE_fnc_dump;" \n
+       "};"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "WAIT">*/
+        class WAIT
+        {
+          priority = 4.000000;
+          to="SWITCH";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"(ALIVE_isPaused)"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "SIMULATE">*/
+        class SIMULATE
+        {
+          priority = 3.000000;
+          to="PREPARE";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"(time - _startWait) > _simulationWaitTime"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "DESTROY">*/
+        class DESTROY
+        {
+          priority = 0.000000;
+          to="END";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_destroy"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "PREPARE">*/
+    class PREPARE
+    {
+      name = "PREPARE";
+      init = /*%FSM<STATEINIT""">*/"private [""_profiles"",""_profileBlock"",""_profile"",""_entityProfile"",""_profileType"",""_profileID"",""_active"",""_waypoints"",""_waypointsCompleted"",""_currentPosition"",""_vehiclesInCommandOf""," \n
+       """_vehicleCommander"",""_vehicleCargo"",""_vehiclesInCargoOf"",""_activeWaypoint"",""_type"",""_speed"",""_destination"",""_distance"",""_speedPerSecondArray"",""_speedPerSecond""," \n
+       """_moveDistance"",""_vehicleProfile"",""_vehicleClass"",""_vehicleAssignments"",""_speedArray"",""_direction"",""_newPosition"",""_leader"",""_handleWPcomplete"",""_statements"",""_isCycling""," \n
+       """_isPlayer"",""_simulateCount"",""_countProfiles"",""_clash"",""_engaged"",""_engagedTotal""];" \n
+       "" \n
+       "_profiles = [ALIVE_profileHandler, ""profiles""] call ALIVE_fnc_hashGet;" \n
+       "//_profileBlock = [ALIVE_arrayBlockHandler,""getNextBlock"", [""simulation"",_profiles select 2,50]] call ALIVE_fnc_arrayBlockHandler;" \n
+       "" \n
+       "_startSimulate = time;" \n
+       "_simulateCount = 0;" \n
+       "_countProfiles = count (_profiles select 1);" \n
+       "" \n
+       "_clash = [];" \n
+       "_engaged = [0,0,0];"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "CONTINUE">*/
+        class CONTINUE
+        {
+          priority = 0.000000;
+          to="SIMULATE";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "MEASURE">*/
+    class MEASURE
+    {
+      name = "MEASURE";
+      init = /*%FSM<STATEINIT""">*/"_doSimulation = false;" \n
+       "_lastSimulationTime = time;" \n
+       "" \n
+       "_simulationCycleTime = _simulationWaitTime + (_lastSimulationTime - _startSimulate);" \n
+       "" \n
+       "_startWait = time;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "COMPLETE">*/
+        class COMPLETE
+        {
+          priority = 0.000000;
+          to="SWITCH";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "SIMULATE">*/
+    class SIMULATE
+    {
+      name = "SIMULATE";
+      init = /*%FSM<STATEINIT""">*/"_entityProfile = _profiles select 2 select _simulateCount;" \n
+       "" \n
+       "	_profileType = _entityProfile select 2 select 5; //[_profile,""type""] call ALIVE_fnc_hashGet;" \n
+       "				" \n
+       "	if(_profileType == ""entity"") then {" \n
+       "		_profileID = _entityProfile select 2 select 4; //[_profile,""profileID""] call ALIVE_fnc_hashGet;" \n
+       "		_active = _entityProfile select 2 select 1; //[_profile, ""active""] call ALIVE_fnc_hashGet;	" \n
+       "		_waypoints = _entityProfile select 2 select 16; //[_entityProfile,""waypoints""] call ALIVE_fnc_hashGet;" \n
+       "		_waypointsCompleted = _entityProfile select 2 select 17; //[_entityProfile,""waypointsCompleted"",[]] call ALIVE_fnc_hashGet;" \n
+       "		_currentPosition = _entityProfile select 2 select 2; //[_entityProfile,""position""] call ALIVE_fnc_hashGet;" \n
+       "		_vehiclesInCommandOf = _entityProfile select 2 select 8; //[_entityProfile,""vehiclesInCommandOf""] call ALIVE_fnc_hashGet;" \n
+       "		_vehiclesInCargoOf = _entityProfile select 2 select 9; //[_entityProfile,""vehiclesInCargoOf""] call ALIVE_fnc_hashGet;" \n
+       "		_speedPerSecondArray = _entityProfile select 2 select 22; //[_entityProfile, ""speedPerSecond""] call ALIVE_fnc_hashGet;" \n
+       "		_isCycling = _entityProfile select 2 select 25; //[_entityProfile, ""speedPerSecond""] call ALIVE_fnc_hashGet;" \n
+       "		_side = _entityProfile select 2 select 3; //[_entityProfile, ""side""] call ALIVE_fnc_hashGet;" \n
+       "		_positions = _entityProfile select 2 select 18; //[_entityProfile, ""positions""] call ALIVE_fnc_hashGet;" \n
+       "		_isPlayer = _entityProfile select 2 select 30; //[_entityProfile, ""isPlayer""] call ALIVE_fnc_hashGet;" \n
+       "		_vehicleCommander = false;" \n
+       "		_vehicleCargo = false;" \n
+       "					" \n
+       "		// if entity is commanding a vehicle/s" \n
+       "		if(count _vehiclesInCommandOf > 0) then {" \n
+       "			_vehicleCommander = true;				" \n
+       "		};" \n
+       "					" \n
+       "		// if entity is cargo of vehicle/s" \n
+       "		if(count _vehiclesInCargoOf > 0) then {	" \n
+       "			_vehicleCargo = true;" \n
+       "		};" \n
+       "		" \n
+       "		// entity has waypoints assigned and entity is not in cargo of a vehicle" \n
+       "		if(count _waypoints > 0 && !(_vehicleCargo) && !(_isPlayer)) then {" \n
+       "						" \n
+       "			// entity is not spawned, simulate" \n
+       "			if!(_active) then {" \n
+       "						" \n
+       "				_activeWaypoint = _waypoints select 0;" \n
+       "				_type = [_activeWaypoint,""type""] call ALIVE_fnc_hashGet;" \n
+       "				_speed = [_activeWaypoint,""speed""] call ALIVE_fnc_hashGet;" \n
+       "				_destination = [_activeWaypoint,""position""] call ALIVE_fnc_hashGet;" \n
+       "				_statements = [_activeWaypoint,""statements""] call ALIVE_fnc_hashGet;" \n
+       "				_distance = _currentPosition distance _destination;" \n
+       "										" \n
+       "				switch(_speed) do {" \n
+       "					case ""LIMITED"": { _speedPerSecond = _speedPerSecondArray select 0; };" \n
+       "					case ""NORMAL"": { _speedPerSecond = _speedPerSecondArray select 1; };" \n
+       "					case ""FULL"": { _speedPerSecond = _speedPerSecondArray select 2; };" \n
+       "					case default { _speedPerSecond = _speedPerSecondArray select 1; };" \n
+       "				};" \n
+       "							" \n
+       "				_moveDistance = floor(_speedPerSecond * _simulationCycleTime * _speedModifier);" \n
+       "				_direction = 0;" \n
+       "				" \n
+       "				// DEBUG -------------------------------------------------------------------------------------" \n
+       "				if(_debug) then {" \n
+       "					//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "					//[""ALIVE Simulated profile movement Profile: [%1] WPType: [%2] WPSpeed: [%3] Distance: [%4] MoveSpeed: [%5] SpeedArray: %6"",_profileID,_type,_speed,_distance,_speedPerSecond,_speedPerSecondArray] call ALIVE_fnc_dump;" \n
+       "					[_entityProfile,_activeWaypoint] call _createMarker;" \n
+       "				};" \n
+       "				// DEBUG -------------------------------------------------------------------------------------" \n
+       "				" \n
+       "				if (!(isnil ""_currentPosition"") && {count _currentPosition > 0} && {!(isnil ""_destination"")} && {count _destination > 0}) then {" \n
+       "					" \n
+       "					// if other profiles of enemy sides are near collect to clashing groups and do not simulate them" \n
+       "					if (({if !(isnil ""_x"") then {((_x select 2 select 2) distance _currentPosition < 200) && {!((_x select 2 select 3) == _side)} && {(_x select 2 select 5) == ""entity""}}} count (_profiles select 2)) > 0) then {" \n
+       "					   " \n
+       "						_clash set [count _clash,[_profileID,_currentPosition,_side,(count _positions),_vehiclesInCommandOf]];" \n
+       "						" \n
+       "						switch (_side) do {" \n
+       "							case (""WEST"") : {_engaged set [0,(_engaged select 0) + (count _positions)]};" \n
+       "							case (""EAST"") : {_engaged set [1,(_engaged select 1) + (count _positions)]};" \n
+       "							case (""GUER"") : {_engaged set [2,(_engaged select 2) + (count _positions)]};" \n
+       "						};" \n
+       "					} else {" \n
+       "						//else simulate them" \n
+       "						//Match 2D since some profiles dont have a _pos select 2 defined" \n
+       "						_currentPosition set [2,0];" \n
+       "						_destination set [2,0];" \n
+       "						" \n
+       "						switch (_type) do {" \n
+       "							case ""MOVE"" : {" \n
+       "								 _direction = [_currentPosition, _destination] call BIS_fnc_dirTo;" \n
+       "								 _newPosition = [_currentPosition, _moveDistance, _direction] call BIS_fnc_relPos;" \n
+       "								 _handleWPcomplete = {};" \n
+       "			" \n
+       "							};" \n
+       "							case ""CYCLE"" : {" \n
+       "								 _direction = [_currentPosition, _destination] call BIS_fnc_dirTo;" \n
+       "								 _newPosition = [_currentPosition, _moveDistance, _direction] call BIS_fnc_relPos;" \n
+       "								 _handleWPcomplete = {" \n
+       "									_waypoints = _waypoints + _waypointsCompleted;" \n
+       "									_waypointsCompleted = [];" \n
+       "								};" \n
+       "							};" \n
+       "							default {" \n
+       "								_newPosition = _currentPosition;" \n
+       "								_handleWPcomplete = {};" \n
+       "							};" \n
+       "						};" \n
+       "						" \n
+       "						// distance to wp destination within completion radius" \n
+       "						if(_distance <= (_moveDistance * 2)) then {" \n
+       "									" \n
+       "							// DEBUG -------------------------------------------------------------------------------------" \n
+       "							if(_debug) then {" \n
+       "								_entityProfile call _deleteMarker;" \n
+       "							};" \n
+       "							// DEBUG -------------------------------------------------------------------------------------" \n
+       "								" \n
+       "							if(_isCycling) then {" \n
+       "								_waypointsCompleted set [count _waypointsCompleted,_activeWaypoint];" \n
+       "							};" \n
+       "							" \n
+       "							_waypoints set [0,objNull];" \n
+       "							_waypoints = _waypoints - [objNull];" \n
+       "										" \n
+       "							//Needs review of any variables in hashes" \n
+       "							if ((typeName _statements == ""ARRAY"") && {call compile (_statements select 0)}) then {call compile (_statements select 1)};" \n
+       "										" \n
+       "							[] call _handleWPcomplete;			" \n
+       "							" \n
+       "							[_entityProfile,""waypoints"",_waypoints] call ALIVE_fnc_hashSet;" \n
+       "							" \n
+       "							if(_isCycling) then {" \n
+       "								[_entityProfile,""waypointsCompleted"",_waypointsCompleted] call ALIVE_fnc_hashSet;" \n
+       "							};" \n
+       "						};" \n
+       "													" \n
+       "						if(_vehicleCommander) then {" \n
+       "							// if in command of vehicle move all entities within the vehicle						" \n
+       "							// set the vehicle position and merge all assigned entities positions" \n
+       "							[_entityProfile,""hasSimulated"",true] call ALIVE_fnc_hashSet;" \n
+       "							{							" \n
+       "								_vehicleProfile = [ALIVE_profileHandler, ""getProfile"", _x] call ALIVE_fnc_profileHandler;" \n
+       "								" \n
+       "								if !(isnil ""_vehicleProfile"") then {" \n
+       "									[_vehicleProfile,""hasSimulated"",true] call ALIVE_fnc_hashSet;" \n
+       "									[_vehicleProfile,""position"",_newPosition] call ALIVE_fnc_profileVehicle;" \n
+       "									[_vehicleProfile,""direction"",_direction] call ALIVE_fnc_profileVehicle;" \n
+       "									[_vehicleProfile,""mergePositions""] call ALIVE_fnc_profileVehicle;" \n
+       "								};" \n
+       "							} forEach _vehiclesInCommandOf;										" \n
+       "						}else{" \n
+       "							// set the entity position and merge all unit positions to group position" \n
+       "							[_entityProfile,""hasSimulated"",true] call ALIVE_fnc_hashSet;" \n
+       "							[_entityProfile,""position"",_newPosition] call ALIVE_fnc_profileEntity;" \n
+       "							[_entityProfile,""mergePositions""] call ALIVE_fnc_profileEntity;" \n
+       "						};" \n
+       "					};" \n
+       "				} else {" \n
+       "					diag_log format [""Profile-Simulator corrupted profile detected %3: _currentPosition %1 _destination %2"",_currentPosition,_destination,_entityProfile];" \n
+       "				};" \n
+       "						" \n
+       "			// entity is spawned, update positions" \n
+       "			} else {" \n
+       "			" \n
+       "				_leader = _entityProfile select 2 select 10; //_leader = [_profile,""leader""] call ALIVE_fnc_hashGet;" \n
+       "				_newPosition = getPosATL _leader;" \n
+       "				_position = _entityProfile select 2 select 2; //_leader = [_profile,""position""] call ALIVE_fnc_hashGet;" \n
+       "" \n
+       "" \n
+       "				" \n
+       "				if (!(isnil ""_newPosition"") && {count _newPosition > 0} && {!(isnil ""_position"")} && {count _position > 0}) then {" \n
+       "				" \n
+       "					_moveDistance = _newPosition distance _position;" \n
+       "					" \n
+       "					if(_moveDistance > 10) then {					" \n
+       "						if(_vehicleCommander) then {" \n
+       "							// if in command of vehicle move all entities within the vehicle						" \n
+       "							// set the vehicle position and merge all assigned entities positions" \n
+       "							" \n
+       "							_leader = _entityProfile select 2 select 10; //_leader = [_profile,""leader""] call ALIVE_fnc_hashGet;" \n
+       "" \n
+       "							_newPosition = getPosATL vehicle _leader;" \n
+       "							" \n
+       "							{" \n
+       "								_vehicleProfile = [ALIVE_profileHandler, ""getProfile"", _x] call ALIVE_fnc_profileHandler;" \n
+       "								" \n
+       "								if !(isnil ""_vehicleProfile"") then {				" \n
+       "									[_vehicleProfile,""position"",_newPosition] call ALIVE_fnc_profileVehicle;" \n
+       "									[_vehicleProfile,""mergePositions""] call ALIVE_fnc_profileVehicle;" \n
+       "								};" \n
+       "							} forEach _vehiclesInCommandOf;												" \n
+       "						} else {" \n
+       "							_leader = _entityProfile select 2 select 10; //_leader = [_profile,""leader""] call ALIVE_fnc_hashGet;" \n
+       "							_newPosition = getPosATL _leader;" \n
+       "						" \n
+       "							// set the entity position and merge all unit positions to group position" \n
+       "							[_entityProfile,""position"",_newPosition] call ALIVE_fnc_profileEntity;" \n
+       "							[_entityProfile,""mergePositions""] call ALIVE_fnc_profileEntity;" \n
+       "						};			" \n
+       "					};" \n
+       "				} else {" \n
+       "					diag_log format [""Profile-Simulator corrupted profile detected %3: _newPosition %1 _position %2"",_newPosition,_position,_entityProfile];" \n
+       "				};" \n
+       "			};" \n
+       "		} else {" \n
+       "		    // entity is player entity" \n
+       "            if(_isPlayer) then {" \n
+       "" \n
+       "                 _leader = _entityProfile select 2 select 10; //_leader = [_profile,""leader""] call ALIVE_fnc_hashGet;" \n
+       "                 _newPosition = getPosATL _leader;" \n
+       "                 _position = _entityProfile select 2 select 2; //_leader = [_profile,""position""] call ALIVE_fnc_hashGet;" \n
+       "" \n
+       "                 if (!(isnil ""_newPosition"") && {count _newPosition > 0} && {!(isnil ""_position"")} && {count _position > 0}) then {" \n
+       "" \n
+       "                     _moveDistance = _newPosition distance _position;" \n
+       "" \n
+       "                     if(_moveDistance > 10) then {" \n
+       "                         if(_vehicleCommander) then {" \n
+       "                             // if in command of vehicle move all entities within the vehicle" \n
+       "                             // set the vehicle position and merge all assigned entities positions" \n
+       "" \n
+       "                             _leader = _entityProfile select 2 select 10; //_leader = [_profile,""leader""] call ALIVE_fnc_hashGet;" \n
+       "                             _newPosition = getPosATL vehicle _leader;" \n
+       "" \n
+       "                             {" \n
+       "                                 _vehicleProfile = [ALIVE_profileHandler, ""getProfile"", _x] call ALIVE_fnc_profileHandler;" \n
+       "" \n
+       "                                 if !(isnil ""_vehicleProfile"") then {" \n
+       "                                     [_vehicleProfile,""position"",_newPosition] call ALIVE_fnc_profileVehicle;" \n
+       "                                     [_vehicleProfile,""mergePositions""] call ALIVE_fnc_profileVehicle;" \n
+       "                                 };" \n
+       "                             } forEach _vehiclesInCommandOf;" \n
+       "                         } else {" \n
+       "                             _leader = _entityProfile select 2 select 10; //_leader = [_profile,""leader""] call ALIVE_fnc_hashGet;" \n
+       "                             _newPosition = getPosATL _leader;" \n
+       "" \n
+       "                             // set the entity position and merge all unit positions to group position" \n
+       "                             [_entityProfile,""position"",_newPosition] call ALIVE_fnc_profileEntity;" \n
+       "                             [_entityProfile,""mergePositions""] call ALIVE_fnc_profileEntity;" \n
+       "                         };" \n
+       "                     };" \n
+       "                 };" \n
+       "            };" \n
+       "        };" \n
+       "	};" \n
+       "" \n
+       "_simulateCount = _simulateCount + 1;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "ITERATE">*/
+        class ITERATE
+        {
+          priority = 2.000000;
+          to="SIMULATE";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_simulateCount < _countProfiles"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "SIMULATION__DONE">*/
+        class SIMULATION__DONE
+        {
+          priority = 0.000000;
+          to="SIMULATE_DEATH";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_simulateCount >= _countProfiles"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "SIMULATE_DEATH">*/
+    class SIMULATE_DEATH
+    {
+      name = "SIMULATE_DEATH";
+      init = /*%FSM<STATEINIT""">*/"private [""_toBekilled""];" \n
+       "" \n
+       "//Simulate death" \n
+       "_toBekilled = [];" \n
+       "{" \n
+       "    private [""_engagedOwn"",""_surviveFactor"",""_factor1"",""_factor2"",""_killFactor""];" \n
+       "    " \n
+       "    _profileID = _x select 0;" \n
+       "    _currentPosition = _x select 1;" \n
+       "    _side = _x select 2;" \n
+       "    _positions = _x select 3;" \n
+       "    _vehiclesInCommandOf = _x select 4;" \n
+       "    " \n
+       "    _factor1 = 0.2;" \n
+       "    _factor2 = 0;" \n
+       "    " \n
+       "     switch (_side) do {" \n
+       "        case (""WEST"") : {_engagedOwn = _engaged select 0};" \n
+       "        case (""EAST"") : {_engagedOwn = _engaged select 1};" \n
+       "        case (""GUER"") : {_engagedOwn = _engaged select 2; _side = ""INDEPENDENT""};" \n
+       "    };" \n
+       "    " \n
+       "    _killFactor = random 1;" \n
+       "    " \n
+       "    if (count _vehiclesInCommandOf > 0) then {_killFactor = _killFactor - 0.15};" \n
+       "    if (_engagedTotal > 0) then {" \n
+       "        _surviveFactor = (_engagedOwn/_engagedTotal)-(random 0.25);" \n
+       "    } else {" \n
+       "		_surviveFactor = random 1;" \n
+       "    };" \n
+       "    " \n
+       "    //[""Killfactor %1 | Survive %2"",_killFactor,_surviveFactor] call ALiVE_fnc_dumpR;" \n
+       "" \n
+       "    // Enemy sides near, chance of death by weighting" \n
+       "    if ((({_sideInternal = _x select 2; if (_sideInternal == ""GUER"") then {_sideInternal = ""INDEPENDENT""}; ((_x select 1) distance _currentPosition < 200) && {((call compile _side) getfriend (call compile _sideInternal)) < 0.6}} count _clash) > 0) && (_killFactor > _surviveFactor)) then {" \n
+       "        _clash set [_foreachIndex,["""",[0,0,0],""""]];" \n
+       "        _toBekilled set [count _toBekilled,_profileID];" \n
+       "    };" \n
+       "} foreach _clash;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "DEATH_DONE">*/
+        class DEATH_DONE
+        {
+          priority = 0.000000;
+          to="REMOVE_PROFILE";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "REMOVE_PROFILE">*/
+    class REMOVE_PROFILE
+    {
+      name = "REMOVE_PROFILE";
+      init = /*%FSM<STATEINIT""">*/" private [""_deathToll"",""_event"",""_eventID""];" \n
+       "" \n
+       "//remove profile" \n
+       "{" \n
+       "    _profileID = _x;" \n
+       "	_profile = [ALIVE_profileHandler, ""getProfile"", _profileID] call ALIVE_fnc_profileHandler;" \n
+       "	" \n
+       "	if (!(isnil ""_profile"") && {!(_profile select 2 select 1)}) then {" \n
+       "        	//player sidechat format[""Group %1 killed in simulated combat!"",_profileID];" \n
+       "            _vehiclesInCommandOf = _profile select 2 select 8;" \n
+       "            _units = _profile select 2 select 11;" \n
+       "            _deathToll = floor(random(count _units));" \n
+       "            " \n
+       "            //To be looked at, ""removeUnit"" seems to leave null entries in units array (also tested with foreach)" \n
+       "            //[""Count units %1 for profile %2 before deletion | Array %3"",(count _units),_profileID,([_profile,""unitClasses"",[]] call ALIVE_fnc_hashGet)] call ALiVE_fnc_DumpR;" \n
+       "        	for ""_i"" from 0 to _deathToll do {" \n
+       "                if (_i > _deathToll) exitwith {};" \n
+       "                [_profile, ""removeUnit"", _i] call ALiVE_fnc_profileEntity;" \n
+       "            };" \n
+       "            //[""Count units %1 for profile %2 after deletion | Array %3"",(count ([_profile,""unitClasses"",[]] call ALIVE_fnc_hashGet)),_profileID,([_profile,""unitClasses"",[]] call ALIVE_fnc_hashGet)] call ALiVE_fnc_DumpR;" \n
+       "            " \n
+       "            if (count (_profile select 2 select 11) == 0) then {" \n
+       "                //[""Deleting %1!"",_profileID] call ALiVE_fnc_DumpR;" \n
+       "                " \n
+       "	            if (count _vehiclesInCommandOf > 0) then {" \n
+       "	                {" \n
+       "	                    //player sidechat format[""Vehicle %1 destroyed!"",_x];" \n
+       "	                    _vehicleProfile = [ALIVE_profileHandler, ""getProfile"", _x] call ALIVE_fnc_profileHandler;" \n
+       "	                    [ALIVE_profileHandler, ""unregisterProfile"", _vehicleProfile] call ALIVE_fnc_profileHandler;" \n
+       "" \n
+       "	                } foreach _vehiclesInCommandOf;" \n
+       "	            };" \n
+       "" \n
+       "	            // log event" \n
+       "	            _position = _profile select 2 select 2;" \n
+       "	            _faction = _profile select 2 select 29;" \n
+       "	            _side = _profile select 2 select 3;" \n
+       "                _event = ['PROFILE_KILLED', [_position,_faction,_side],""ProfileSimulator""] call ALIVE_fnc_event;" \n
+       "                _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
+       "	" \n
+       "				[ALIVE_profileHandler, ""unregisterProfile"", _profile] call ALIVE_fnc_profileHandler;" \n
+       "            };" \n
+       "    };" \n
+       "} foreach _toBekilled;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "COMPLETE">*/
+        class COMPLETE
+        {
+          priority = 0.000000;
+          to="MEASURE";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+  };
+  initState="INIT";
+  finalStates[] =
+  {
+    "END"
+  };
+};
+/*%FSM</COMPILE>*/

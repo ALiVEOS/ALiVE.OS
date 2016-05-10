@@ -1,0 +1,9 @@
+*Model - no visual just reference data*
+
+
+*Controller - *
+
+
+*View - purely visual*
+- initialise menu
+- frequent check to modify menu and display status

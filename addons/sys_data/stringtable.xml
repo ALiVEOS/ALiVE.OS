@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+	<Package name="ALiVE">
+		<Container name="STR_DN">
+			<Key ID="STR_ALIVE_Data">
+				<English>ALiVE Data</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_COMMENT">
+				<English>Data module for perf monitoring, stats and persistence</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_DEBUG">
+				<English>Enable Debug:</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_DEBUG_COMMENT">
+				<English>Enables Data Module Debug</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_ENABLE">
+				<English>Enable Database</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_ENABLE_COMMENT">
+				<English>Enables Database module</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_DISABLE">
+				<English>Disable Database</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_DISABLE_COMMENT">
+				<English>Disables Database module</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_Source">
+				<English>Database Source</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_Source_COMMENT">
+				<English>Choose an available Database Source</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_DATABASENAME">
+				<English>Database Name</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_DATABASENAME_COMMENT">
+				<English>Enter the name of the database</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_ERROR1">
+				<English>Only one Data module can be used</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_SAVEDATETIME">
+				<English>Save Mission Time:</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_SAVEDATETIME_COMMENT">
+				<English>Enable/disable saving date and time of the mission</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_disableStats">
+				<English>Disable Stats:</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_disableStats_COMMENT">
+				<English>Disable the recording of player/operation stats to the website</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_disableAAR">
+				<English>Disable AAR:</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_disableAAR_COMMENT">
+				<English>Disable player tracking for AAR on War Room</English>
+			</Key>			
+			<Key ID="STR_ALIVE_Data_disablePerf">
+				<English>Disable PerfMon:</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_disablePerf_COMMENT">
+				<English>Disable the performance monitoring module</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_disablePerfMon">
+				<English>Disable OS PerfMon:</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_disablePerfMon_COMMENT">
+				<English>Disable OS Performance Statistics such as %CPU, Threads, Memory Usage etc</English>
+			</Key>	
+			<Key ID="STR_ALIVE_Data_customPerfMonCode">
+				<English>Custom Perf Monitors:</English>
+			</Key>
+			<Key ID="STR_ALIVE_Data_customPerfMonCode_COMMENT">
+				<English>Customize objects counted and intervals. Ensure interval values are in ascending order. 'triggers' will count allMissionObjects "EmptyDetector", 'entities' will count entities "All", 'objects' will count allMissionObjects "All". Any thing else will be count YOURPARAM i.e. count allDead.</English>
+			</Key>						
+		</Container>
+	</Package>
+</Project>

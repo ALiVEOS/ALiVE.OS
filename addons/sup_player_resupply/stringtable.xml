@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_PR">
+    <English>Player Combat Logistics</English>
+</Key>
+<Key ID="STR_ALIVE_PR_COMMENT">
+    <English>Resupply players with logistics requests</English>
+</Key>
+<Key ID="STR_ALIVE_PR_ALLOW">
+    <English>Call Log. Support with</English>
+</Key>
+<Key ID="STR_ALIVE_PR_ALLOW_COMMENT">
+    <English>Define the item the player must have to be able to use Player Resupply i.e "LaserDesignator"</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_TYPE">
+    <English>Restrict to</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_COMMENT">
+    <English>Restrict the player selection to items from own side, or own faction</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_SIDE">
+    <English>Side</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_FACTION">
+    <English>Faction</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_AIRDROP">
+    <English>Allow Airdrop</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_AIRDROP_COMMENT">
+    <English>Allow players to request supplies via Air Drop</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_INSERT">
+    <English>Allow Heli Insert</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_INSERT_COMMENT">
+    <English>Allow players to request supplies via Heli Insert</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_CONVOY">
+    <English>Allow Convoy</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_CONVOY_COMMENT">
+    <English>Allow players to request supplies via Convoy</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_BLACKLIST">
+    <English>Blacklist</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_BLACKLIST_COMMENT">
+    <English>Excluded config classes (f.e. Box_IND_Ammo_F,B_Soldier_diver_base_F,B_MRAP_01_F,...)! Caution: case sensitive!</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_WHITELIST">
+    <English>Whitelist</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_WHITELIST_COMMENT">
+    <English>Only these config classes will be used (Box_IND_Ammo_F,B_Soldier_diver_base_F,B_MRAP_01_F,...)! Caution: case sensitive!</English>
+</Key>
+</Container></Package></Project>

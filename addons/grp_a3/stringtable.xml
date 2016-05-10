@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="str_a3_cfggroups_east_opf_f_infantry_oia_infwepteam0">
+	<Original>Weapons Team</Original>
+</Key>
+<Key ID="str_a3_cfggroups_east_opf_f_infantry_oia_infsupteam0">
+	<Original>Support Team</Original>
+</Key>
+<Key ID="str_a3_cfggroups_east_opf_f_infantry_oia_infhq0">
+	<Original>Infantry HQ</Original>
+</Key>
+<Key ID="str_a3_cfggroups_east_opf_f_infantry_oia_infsniper0">
+	<Original>Sniper Team</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Motorized_MTP_OIA_MotInfSection0">
+	<Original>Motorized Section</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Motorized_MTP_OIA_MotInf_ATV0">
+	<Original>Motorized ATV Team</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Motorized_MTP_OIA_MotInf_HQ0">
+	<Original>Motorized HQ</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Motorized_MTP_OIA_MotInf_Transport0">
+	<Original>Motorized Transport</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Mechanize_OIA_MechInf_Section10">
+	<Original>Mechanized 1st Rifle Section</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Mechanize_OIA_MechInf_Section20">
+	<Original>Mechanized 2nd Rifle Section</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Mechanize_OIA_MechInf_Section30">
+	<Original>Mechanized 3rd Rifle Section</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Mechanize_OIA_MechInf_CoyHQ0">
+	<Original>Mechanized Company HQ</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Mechanize_OIA_MechInf_SectionAT0">
+	<Original>Mechanized Anti-Tank Section</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Mechanize_OIA_MechInf_SectionMG0">
+	<Original>Mechanized Weapons Section</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Air_OIA_PO30_Squadron0">
+	<Original>PO-30 Squadron</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Air_OIA_PO30_Transport0">
+	<Original>PO-30 Transport</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Mech0">
+	<Original>Mechanized Infantry</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Air0">
+	<Original>Air</Original>
+</Key>
+<Key ID="STR_A3_CfgVehicles_Quadbike_Light_F0">
+	<Original>Quadbike (Light)</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfSentry0">
+	<Original>Sentry</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfSquad0">
+	<Original>Rifle Squad</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfSquad_Weapons0">
+	<Original>Weapons Squad</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfTeam0">
+	<Original>Fire Team</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfTeam_AA0">
+	<Original>Air-defense Team</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfTeam_AT0">
+	<Original>Anti-armor Team</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfWepTeam0">
+	<Original>Weapons Team</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfSupTeam0">
+	<Original>Support Team</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfHQ0">
+	<Original>Infantry HQ</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_ReconSentry0">
+	<Original>Recon Sentry</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Motorized_MTP_ORG_MotInf_Team0">
+	<Original>Motorized Patrol</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Motorized_MTP_ORG_Technicals0">
+	<Original>Technicals</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_Support_CLS0">
+	<Original>Support Team (CLS)</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_Support_ENG0">
+	<Original>Support Team (Engineer)</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_Support_EOD0">
+	<Original>Support Team (EOD)</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Naval">
+	<Original>Naval</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_West_BLU_F_Naval">
+	<Original>Naval</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_F_Naval_OIA_sentryTeam_Boat0">
+	<Original>Sentry Team (Speed Boat)</Original>
+</Key>
+</Container></Package></Project>

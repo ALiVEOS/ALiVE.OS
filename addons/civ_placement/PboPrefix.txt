@@ -1,0 +1,8 @@
+x\alive\addons\civ_placement
+======<HEADER>=======
+prefix=x\alive\addons\civ_placement
+product=Arma 3
+version=1
+Pbo Type is: Arma Addon
+======</HEADER>============
+

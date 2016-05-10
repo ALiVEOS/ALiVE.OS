@@ -1,0 +1,8 @@
+x\alive\addons\sys_profile
+======<HEADER>=======
+prefix=x\alive\addons\sys_profile
+product=Arma 3
+version=1
+Pbo Type is: Arma Addon
+======</HEADER>============
+

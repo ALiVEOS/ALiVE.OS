@@ -1,0 +1,139 @@
+/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, Test Command">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"INIT",0,250,-191.791229,-248.493942,-101.791237,-198.494003,0.000000,"INIT"};
+item1[] = {"INIT_COMPLETE",4,218,-191.814072,-169.241699,-101.814072,-119.241699,0.000000,"INIT" \n "COMPLETE"};
+item2[] = {"_",-1,250,-440.685394,-235.585892,-437.600311,-235.585892,0.000000,""};
+item3[] = {"DESTROY",4,218,-71.868134,-91.997047,18.131832,-41.997047,0.000000,"DESTROY"};
+item4[] = {"END",1,250,48.878220,-90.319656,138.878342,-40.319702,0.000000,"END"};
+item5[] = {"ACTION",2,4346,-190.815353,-90.341660,-100.815338,-40.341648,0.000000,"ACTION"};
+item6[] = {"LOOP",4,218,-190.845840,-16.206680,-100.845863,33.793304,0.000000,"LOOP"};
+version=1;
+class LayoutItems
+{
+	class Item2
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
+};
+link0[] = {0,1};
+link1[] = {1,5};
+link2[] = {3,4};
+link3[] = {5,3};
+link4[] = {5,6};
+link5[] = {6,5};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,93,6316128,1,-384.671082,187.342346,395.960999,-323.929016,851,1030,1};
+window[] = {2,-1,-1,-1,-1,976,-1842,-219,78,3,869};
+*//*%FSM</HEAD>*/
+class FSM
+{
+  fsmName = "Test Command";
+  class States
+  {
+    /*%FSM<STATE "INIT">*/
+    class INIT
+    {
+      name = "INIT";
+      init = /*%FSM<STATEINIT""">*/"/*" \n
+       " Active Command FSM Example" \n
+       " To be used when profile is active" \n
+       "*/" \n
+       "" \n
+       "private [""_profile"",""_args"",""_destroy"",""_debug"",""_profileID"",""_leader"",""_group"",""_units"",""_testWait"",""_iteration""];" \n
+       "" \n
+       "_profile = _this select 0;" \n
+       "_args = _this select 1;" \n
+       "_debug = _this select 2;" \n
+       "" \n
+       "_destroy = false;" \n
+       "" \n
+       "_profileID = _profile select 2 select 4;" \n
+       "_leader = _profile select 2 select 10;" \n
+       "_group = _profile select 2 select 13;" \n
+       "_units = _profile select 2 select 21;" \n
+       "" \n
+       "_testWait = 5;" \n
+       "_iteration = 0;" \n
+       "" \n
+       "// debug ---------------------------------------" \n
+       "if(_debug) then { [""ALiVE Executed FSM Command - [%1] called args: %2"",_profileID,_args] call ALIVE_fnc_dump; };" \n
+       "// debug ---------------------------------------"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "INIT_COMPLETE">*/
+        class INIT_COMPLETE
+        {
+          priority = 0.000000;
+          to="ACTION";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "END">*/
+    class END
+    {
+      name = "END";
+      init = /*%FSM<STATEINIT""">*/"// debug ---------------------------------------" \n
+       "if(_debug) then { [""ALiVE Executed FSM Command - [%1] destroy"",_profileID] call ALIVE_fnc_dump; };" \n
+       "// debug ---------------------------------------"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "ACTION">*/
+    class ACTION
+    {
+      name = "ACTION";
+      init = /*%FSM<STATEINIT""">*/"// debug ---------------------------------------" \n
+       "if(_debug) then { [""ALiVE Executed FSM Command - [%1] iteration: %2"",_profileID,_iteration] call ALIVE_fnc_dump; };" \n
+       "// debug ---------------------------------------" \n
+       "" \n
+       "_iteration = _iteration + 1;" \n
+       "" \n
+       "_startWait = time;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "LOOP">*/
+        class LOOP
+        {
+          priority = 0.000000;
+          to="ACTION";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"(time - _startWait) > _testWait"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "DESTROY">*/
+        class DESTROY
+        {
+          priority = 0.000000;
+          to="END";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_destroy"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+  };
+  initState="INIT";
+  finalStates[] =
+  {
+    "END",
+  };
+};
+/*%FSM</COMPILE>*/

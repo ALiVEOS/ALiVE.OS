@@ -1,0 +1,12 @@
+To do list
+1. MP Test
+2. Move, rotate marker (alt left click on marker to move, alt right click to rotate)
+4. Integrate with C2ISTAR
+5. add to events
+6. draw line, ellipse, rectangle, arrow
+
+
+
+
+
+

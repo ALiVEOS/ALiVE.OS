@@ -1,0 +1,8 @@
+x\alive\addons\mil_convoy
+======<HEADER>=======
+prefix=x\alive\addons\mil_convoy
+product=Arma 3
+version=1
+Pbo Type is: Arma Addon
+======</HEADER>============
+

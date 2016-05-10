@@ -1,0 +1,78 @@
+[center][url=http://alivemod.com/][img=http://alivemod.com/img/alive_logo_bif.jpg][/url][/center]
+[center][b][url=http://alivemod.com/]ALiVEmod.com[/url]
+[size=4]The next generation dynamic persistent mission addon for ArmA3[/size][/b][/center]
+
+[center][b]Release 1.0.5 - Persistence Fix, Unit Blacklisting Help[/b][/center]
+
+[center][img=http://i.imgur.com/AdBIYNM.png][/center]
+[b]Updates[/b]
+A fairly small but important update this time, mostly to fix an issue with mission persistence that manifested after the last ArmA3 patch.  We have also added a couple of new functions for advanced users to make blacklisting specific unit classes easier.  Details are in the change notes below and on our wiki.  Finally, you now have a chance of finding important tactical intel on enemy combatants - be sure to search them carefully!
+
+[b]Map Indexing[/b]
+We've included two new maps in this release thanks to indexing completed by community members using our indexing tool.  Many thanks!  The tool is simple to setup and use and everything is done IN GAME! Our instructions for using the Map Indexer can be found here - [url=http://alivemod.com/wiki/index.php/Map_Indexing]http://alivemod.com/wiki/index.php/Map_Indexing[/url]
+
+[b]Are you using Linux?[/b]
+ALiVE is fully supported on a Linux Dedicated Server (as well as Windows). In fact the ALiVE Official Server for testing is running Ubuntu. Here are some tips on getting ALiVE running smoothly on Linux and integrated with War Room - [url=http://www.alivemod.com/forum/1916-setting-up-linux-dedi-server]http://www.alivemod.com/forum/1916-setting-up-linux-dedi-server[/url]
+
+[center][b][url=http://alivemod.com/#Download]Download[/url][/b]
+Grab the latest version from [url=http://alivemod.com/#Download]ALiVEmod.com[/url]
+Also available from PlayWithSix, ArmAholic and Steam (Usually within 24 hours of this post)
+Note for server admins that this build[b] requires the 1.0.5 @ALiVEServer[/b] package. Any old versions (i.e. before 1.0.0) should not be used and in most cases won't work or will crash.
+Please note that as with all updates, if you have an issue loading a mission made with a previous version of ALiVE, delete and replace the modules in that mission. Don't forget if using 3DEN to set appropriate default values in your modules.[/center]
+
+[center][b][url=http://alivemod.com/#ALiVEWarRoom]Join the War Room Now![/url][/b][/center]
+
+[b]Manual[/b]
+Please refer to the [url=http://www.alivemod.com/wiki]ALiVE Wiki[/url]. All the info you need is there. If anything is missing or unclear, please let us know.
+
+[b]Support Forum[/b]
+For direct support and feedback from the ALiVE dev team, join us on our forum at [url=http://alivemod.com/forum/]http://alivemod.com/forum/[/url].
+[b]Please avoid posting issues/questions related to bugs etc on this thread. Devs and support will answer questions on our forum.[/b]
+
+[b]Release Highlights[/b]
+[LIST]
+[*]Fix to persistence issue[/*]
+[*]Added chance of finding intel on enemy soldiers[/*]
+[*]Added index for Kapaulio thanks to psvialli[/*]
+[*]Added index for Ambramia thanks to noonanamous - please not that Icebreakr maps get updated regularly, so this index might not work[/*]
+[*]Various performance and optimisation fixes[/*]
+[/LIST]
+[b]Changelog[/b]
+[spoiler]- Repo updated 05/05/2016 @ 10:45 GMT 
+- Latest Version set to 1605051
+- Release Build 1.0.5
+
+[ALL] Updated version to 1.0.5
+[ALL] Updated version to 1.0.4.1605051 clusterbuild 1.58.135742 - public stable (hotfix)
+[X LIB] Added 2 functions to ease up unit detection for custom blacklisting (esp. to support the common request to remove AA units and groups). Details below:
+_groupTypes = [_stringToSearchFor, _side or _faction] call ALiVE_fnc_groupFinder;
+_entries = [_configPath, stringToSearchFor] call ALiVE_fnc_configFindEntries;
+Example:
+_groupTypes = ["AA", INDEPENDENT]  call ALiVE_fnc_groupFinder;
+_objectTypes = [configFile >> "cfgVehicles", "AA"] call ALiVE_fnc_configFindEntries;
+those arrays can basically be easily read and copypasted to whatever blacklist you like (ALiVE_PLACEMENT_CUSTOM_GROUPBLACKLIST, ALiVE_PLACEMENT_CUSTOM_VEHICLEBLACKLIST, ALiVE_PLACEMENT_CUSTOM_UNITBLACKLIST and ALiVE_MIL_CQB_CUSTOM_UNITBLACKLIST)
+[X LIB] Removed legacy code from ALiVE_fnc_inArea and switched to inArea command (incl. keeping pos-array, locations, and objects working)
+[X LIB] Fixed bug in ALiVE_fnc_RandomGroup which could cause a potential issue for random units on side INDEP (minor as fnc not used atm)
+[MAIN] Complete index of Ambramia by noonanamous. Index thanks to noonanamous!
+[AMB_CIV_PLACEMENT] Updated function to allow for use of custom indexes
+[MAIN] Full index of Kapaulio by psvialli. http://alivemod.com/forum/1975-saint-kapaulio-complete-index/0#p11288
+[SUP_COMBATSUPPORT] Fix to Synched Arty Object code error
+[MIL OPCOM] Improved - Allow different INTEL settings per side
+[MIL OPCOM] Added option for soldiers to carry INTEL on them. If they get killed they will drop a file, that has information about nearby objectives and installations. The probability can be adjusted on the OPCOM module.
+[SYS PROFILE] Fixed units were sometimes wounded or killed during the spawn process, esp. if they were spawned in mid-air! Also fixes group vanishing after unload from transport helicopter when ordered with player combat logistics! Improved some parts with lazy evaluation!
+[SYS_PLAYER] Fixed persistence issue where allPlayers is empty at mission start.
+[SYS_PLAYER] More TRACE to debug connection issue.
+[EXTENSIONS] Updated linux plugin to address thread issue
+[/spoiler]
+[b]Acknowledgements and Thanks[/b]
+Particular thanks to all those on our support forum who have worked closely with us to identify bugs, provide logs and generally help us improve ALiVE. Your assistance is valuable and your dedication to ALiVE makes it all worth the effort!
+
+[b]Disclaimer[/b]
+ALiVE is now GA. However, we may need to prune the persistent database data from the War Room, eliminating data that is older than 6-12 months. The ALiVE War Room database is run on a voluntary basis at a cost to the ALiVE development team. No guarantees can be given on the mission data stored or the availability of the service. We apologise for any downtime that may impact your MP persistent missions.
+
+[b]ALiVE has transformed my Arma 3 experience, how can I thank you?[/b]
+Please consider making a contribution to our server costs if you enjoy ALiVE! It costs us $65 per month to run our War Room website and the ALiVE Database servers and every little helps. Donate here [url=http://www.alivemod.com/#Donate]http://www.alivemod.com/#Donate[/url]
+
+Special thanks to everyone here for supporting us with donations to the ALiVE mod development effort.
+
+Have fun!

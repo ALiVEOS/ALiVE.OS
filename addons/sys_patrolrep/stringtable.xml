@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_patrolrep">
+	<English>patrolrep Module</English>
+</Key>
+<Key ID="STR_ALIVE_patrolrep_COMMENT">
+	<English>Send a PATROLREP to be stored in game and on War Room</English>
+</Key>
+<Key ID="STR_ALIVE_patrolrepPARAMS">
+	<English>Template Parameters</English>
+</Key>
+<Key ID="STR_ALIVE_patrolrep_ERROR1">
+	<English>Only one module template allowed</English>
+</Key>
+<Key ID="STR_ALIVE_patrolrepPARAMS_COMMENT">
+	<English>Over-ride default parameters for the Module Template</English>
+</Key>
+<Key ID="STR_ALIVE_patrolrepPARAMS_USAGE">
+	<English>Place the module and configure the over-rides</English>
+</Key>
+<Key ID="STR_ALIVE_patrolrep_DEBUG">
+	<English>Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_patrolrep_DEBUG_COMMENT">
+	<English>Enable Debug</English>
+</Key>
+<Key ID="STR_ALIVE_patrolrep_DIALOG_TITLE">
+	<English>ADVANCED patrolrep</English>
+</Key>
+<Key ID="STR_ALIVE_patrolrep_DIALOG_patrolrep">
+	<English>patrolrep</English>
+</Key>
+</Container></Package></Project>

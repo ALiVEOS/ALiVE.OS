@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_XSTREAM">
+    <English>xStream</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_COMMENT">
+    <English>ALiVE xStream service for streaming live operations to the ALiVE War Room</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_DEBUG">
+    <English>Enable Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_DEBUG_COMMENT">
+    <English>Enables xStream Module Debug</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_enableTwitch">
+    <English>Enable Twitch:</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_enableTwitch_COMMENT">
+    <English>Allow twitch streams for this operation in the ALiVE War Room</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_enableTwitch_ENABLE">
+    <English>Enable Twitch Steaming</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_enableTwitch_DISABLE">
+    <English>Disable Twitch Steaming</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_enableLiveMap">
+    <English>Enable Live Map:</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_enableLiveMap_COMMENT">
+    <English>Stream live in-game BLUFOR data to the ALiVE War Room Map</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_enableLiveMap_ENABLE">
+    <English>Enable Live Map</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_enableLiveMap_DISABLE">
+    <English>Disable Live Map</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_enableCamera">
+    <English>Enable xStream Camera:</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_enableCamera_COMMENT">
+    <English>Enable xStream camera system for streaming purposes</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_enableCamera_ENABLE">
+    <English>Enable xStream Camera</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_enableCamera_DISABLE">
+    <English>Disable xStream Camera</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_startCamera">
+    <English>Start xStream Camera</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_stopCamera">
+    <English>Stop xStream Camera</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_acreChannel">
+    <English>ACRE Channel:</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_acreChannel_COMMENT">
+    <English>(Optional) Select an ACRE channel for the camera system to listen in on (recommend an HQ net)</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_cameraShake">
+    <English>Camera Shake:</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_cameraShake_COMMENT">
+    <English>Enable camera shake for the ALiVE xStream camera</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_satellite">
+    <English>Satellite Camera:</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_satellite_COMMENT">
+    <English>Enable satellite camera views for the ALiVE xStream camera system</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_aerial">
+    <English>Aerial Camera:</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_aerial_COMMENT">
+    <English>Enable satellite camera views for the ALiVE xStream camera system</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_vehicle">
+    <English>Vehicle Camera:</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_vehicle_COMMENT">
+    <English>Enable external vehicle camera views for the ALiVE xStream camera system</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_thirdPerson">
+    <English>3rd Person Camera:</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_thirdPerson_COMMENT">
+    <English>Enable third person camera views for the ALiVE xStream camera system</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_cameraManOnly">
+    <English>Cameraman View Only:</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_cameraManOnly_COMMENT">
+    <English>Only allow a cameraman view for the ALiVE xStream camera</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_clientID">
+    <English>Client IDs</English>
+</Key>
+<Key ID="STR_ALIVE_XSTREAM_clientID_COMMENT">
+    <English>Specify a list of usernames that are allowed to act as camera clients, separated by commas (Tupolov,Wolffy,Highhead etc)</English>
+</Key>
+</Container></Package></Project>

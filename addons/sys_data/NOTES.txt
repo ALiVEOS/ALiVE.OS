@@ -1,0 +1,17 @@
+*Model - no visual just reference data*
+- server side object only
+
+*Controller - *
+- set of event handlers to post data to backend
+- readData - read a specific record
+- writeData - write a record (append to table or set of docs)
+- restoreData - convert data from JSON to ARMA type
+- convertData - convert data from ARMA type to JSON
+- loadData - read entire table or set of documents
+- saveData - write entire table or set of documents
+- updateData - overwrite a specific record
+- deleteData - remove a specific record
+- removeData - delete an entire table or set of documents
+
+*View - purely visual*
+- none

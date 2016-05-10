@@ -1,0 +1,9 @@
+TODO
+- Sort out module init, so sys_player waits if sys_data exists
+- storing a customized rifle in a backpack, doesn't persist custom items etc
+- ammo state not saved correctly?
+- sync inv on respawn?
+- sync inv every 5 mins?
+- redo time measurement - use tick time or system time, don't use date
+- code review
+

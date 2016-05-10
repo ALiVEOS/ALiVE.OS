@@ -1,0 +1,28 @@
+TODO
+
+
+Example:
+Guard Comd; Light Infantry bias; CoM on an Friendly Airbase.
+Rules: OPCOM looks for OPCOM locations within a marker zone and set up a bunch of fortify tasks.
+Effect: TACOM spawns Light Inf Platoons and applies Task_Defend or Task_CQB.
+
+Defensive Comd; Mech Inf bias; CoM somewhere within 2km of main base.
+Rules: OPCOM looks for strategic locations within 2km sq marker zone, defined recce tasks or defend tasks or attack task depending on intel state (unknown, blue, red respectively).
+
+
+
+- Are Blacklist markers placed? Exlude from detection
+
+- Size selected - 1 PL, 2PL, Coy, 2 Coy, Btl
+
+- Identify top level of hierarchy - Btl Co, Coy Co
+
+- Within logic placement, where is nearest:
+	a3\structures_f\mil\cargo\cargo_hq_v1_f.p3d
+	a3\structures_f\mil\cargo\cargo_hq_v2_f.p3d
+	a3\structures_f\mil\offices\miloffices_v1_f.p3d
+	- If greater than 1km(?) setup HQ composition
+
+
+
+- Are TOAR markers placed? Exclude from detection

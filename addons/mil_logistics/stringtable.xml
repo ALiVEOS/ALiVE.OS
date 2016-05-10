@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_ML">
+	<English>Military Logistics</English>
+</Key>
+<Key ID="STR_ALIVE_ML_COMMENT">
+	<English>Strategic Military Logistics</English>
+</Key>
+<Key ID="STR_ALIVE_ML_DEBUG">
+	<English>Enable Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_DEBUG_COMMENT">
+	<English>Enables ML Module Debug</English>
+</Key>
+<Key ID="STR_ALIVE_ML_PERSISTENT">
+    <English>Persistent:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_PERSISTENT_COMMENT">
+    <English>Enables external Database persistence for military logistics</English>
+</Key>
+<Key ID="STR_ALIVE_ML_TYPE">
+    <English>Reinforcement Type:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_TYPE_COMMENT">
+    <English>Select the type of logistics. Dynamic, will fall back to lower priority objectives if lost. Static will only select the closest objective to use as insertion point</English>
+</Key>
+<Key ID="STR_ALIVE_ML_TYPE_DYNAMIC">
+    <English>Dynamic</English>
+</Key>
+<Key ID="STR_ALIVE_ML_TYPE_STATIC">
+    <English>Static</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL">
+    <English>Force Pool:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_COMMENT">
+    <English>The number of groups that can be called upon for reinforcements</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_DYNAMIC">
+    <English>Dynamic</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_INFINITE">
+    <English>Infinite</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_20000">
+    <English>20000</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_10000">
+    <English>10000</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_5000">
+    <English>5000</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_2500">
+    <English>2500</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_1000">
+    <English>1000</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_500">
+    <English>500</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_200">
+    <English>200</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_100">
+    <English>100</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_50">
+    <English>50</English>
+</Key>
+<Key ID="STR_ALIVE_ML_ALLOW_INF">
+    <English>Allow Infantry:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_ALLOW_INF_COMMENT">
+    <English>Allow infantry reinforcements</English>
+</Key>
+<Key ID="STR_ALIVE_ML_ALLOW_MECH">
+    <English>Allow Mechanised:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_ALLOW_MECH_COMMENT">
+    <English>Allow mechanised reinforcements</English>
+</Key>
+<Key ID="STR_ALIVE_ML_ALLOW_MOT">
+    <English>Allow Motorised:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_ALLOW_MOT_COMMENT">
+    <English>Allow motorised reinforcements</English>
+</Key>
+<Key ID="STR_ALIVE_ML_ALLOW_ARM">
+    <English>Allow Armour:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_ALLOW_ARM_COMMENT">
+    <English>Allow armour reinforcements</English>
+</Key>
+<Key ID="STR_ALIVE_ML_ALLOW_HELI">
+    <English>Allow Helicopters:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_ALLOW_HELI_COMMENT">
+    <English>Allow helicopters reinforcements</English>
+</Key>
+<Key ID="STR_ALIVE_ML_ALLOW_PLANE">
+    <English>Allow Planes:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_ALLOW_PLANE_COMMENT">
+    <English>Allow planes reinforcements</English>
+</Key>
+<Key ID="STR_ALIVE_ML_USAGE">
+    <English>Place a Military Logistics module to reinforce and resupply factions under control of the synced Military AI Commander module.</English>
+</Key>
+</Container></Package></Project>

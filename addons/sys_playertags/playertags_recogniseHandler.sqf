@@ -1,0 +1,1 @@
+enable_playertags = !enable_playertags;

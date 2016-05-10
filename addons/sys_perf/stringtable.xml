@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_PERF">
+	<English>Perf</English>
+</Key>
+<Key ID="STR_ALIVE_DISABLE_PERF">
+	<English>Disable Perf</English>
+</Key>
+<Key ID="STR_ALIVE_PERF_COMMENT">
+	<English>Disable MP Perf recorded to ALiVE web service</English>
+</Key>
+<Key ID="STR_ALIVE_PERF_ENABLE">
+	<English>Enable Perf</English>
+</Key>
+<Key ID="STR_ALIVE_PERF_ENABLE_COMMENT">
+	<English>Enable/Disable perf recording to the ALiVE web service</English>
+</Key>
+<Key ID="STR_ALIVE_PERF_ERROR1">
+	<English>Only one perf module can be used</English>
+</Key>
+
+</Container></Package></Project>
