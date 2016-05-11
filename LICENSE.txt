@@ -2,12 +2,12 @@
                      Version 1, May 2016
 
 The ALiVE mod constituting the full content of @ALiVE and 
-@ALiVEServer mod folders (“ALiVE”) up to and including build 1.0.5.1605051 
+@ALiVEServer mod folders including ALiVEclient.dll (“ALiVE”) up to and including build 1.0.5.1605051 
 is licensed under Creative Commons Attribution-NonCommercial-NoDerivatives 4.0.
 Others may download and share ALiVE as long as they credit the ALiVE mod team 
 but they cannot change the code in any way or use it commercially.
 
-ALiVE Open Source mod constiting the content of @ALiVE mod folder only (“ALiVE.OS”) 
+ALiVE Open Source mod constiting the content of @ALiVE mod folder only except ALiVEclient.dll (“ALiVE.OS”) 
  subsequent to and excluding build 1.0.5.1605051 is licensed under GPL version 2 
  or any later version, with caveats outline below.  The content of @ALiVEServer including the 
  alive.dll and alive.so files retain the CC BY-NC-ND licence.
