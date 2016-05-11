@@ -1,0 +1,6 @@
+language: python
+python:
+- '3.4'
+script:
+- python3 utils/sqf_validator.py
+- python3 utils/config_validator.py
