@@ -814,7 +814,7 @@ switch(_operation) do {
                         };
                         case "FACTION": {
                             {
-                                if (_side in ([_x,"factions",[]] call ALiVE_fnc_hashGet)) then {
+                                if (_faction in ([_x,"factions",[]] call ALiVE_fnc_hashGet)) then {
                                     _opcoms pushback _x;
                                 };
                             } foreach OPCOM_instances;
