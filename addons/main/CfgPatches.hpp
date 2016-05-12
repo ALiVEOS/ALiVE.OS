@@ -25,7 +25,7 @@ class CfgPatches {
 			"WobbleyHeadedBob",
 			"Wolffy_au"
 		};
-		authorUrl = "http://dev-heaven.net/projects/alive";
+		authorUrl = "http://alivemod.com/";
 	};
 };
 

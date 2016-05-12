@@ -12,7 +12,7 @@
 //  of the developer. For further licensing details please refer to the End    //
 //  User License Agreement provided within this PBO file. Any questions or     //
 //  comments, please contact:             				       //
-//                    https://dev-heaven.net/projects/alive                    //
+//                    http://alivemod.com/                    //
 //                                                                             //
 ///////////////////////////////////////////////////////////////////////////////// 
 
@@ -44,5 +44,5 @@ Enables players to view who is occupying their vehicle
 | Contact details |
 #=================#
 
-Page:	http://dev-heaven.net/projects/alive
+Page:	http://alivemod.com/
 

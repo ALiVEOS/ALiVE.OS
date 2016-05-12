@@ -9,7 +9,7 @@ class CfgPatches {
 		//versionAct = "['SYS_CREWINFO',_this] execVM '\x\alive\addons\main\about.sqf';";
 		VERSION_CONFIG;
 		author[] = {"Jman"};
-		authorUrl = "http://dev-heaven.net/projects/alive";
+		authorUrl = "http://alivemod.com/";
 	};
 };
 	#include <\x\alive\addons\sys_crewinfo\crewinfo.hpp>

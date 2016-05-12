@@ -11,7 +11,7 @@ class CfgPatches
 		versionDesc = "ALiVE";
 		VERSION_CONFIG;
 		author[] = {"Music by Johari"};
-		authorUrl = "http://dev-heaven.net/projects/alive";
+		authorUrl = "http://alivemod.com/";
 	};
 };
 class CfgMissions

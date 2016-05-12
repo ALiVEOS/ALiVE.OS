@@ -9,6 +9,6 @@ class CfgPatches {
 		//versionAct = "['SYS_DATA_COUCHDB',_this] execVM '\x\alive\addons\main\about.sqf';";
 		VERSION_CONFIG;
 		author[] = {"Tupolov"};
-		authorUrl = "http://dev-heaven.net/projects/alive";
+		authorUrl = "http://alivemod.com/";
 	};
 };
