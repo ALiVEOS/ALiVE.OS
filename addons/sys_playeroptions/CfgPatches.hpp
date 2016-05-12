@@ -8,6 +8,6 @@ class CfgPatches {
 		versionDesc = "ALiVE";
 		VERSION_CONFIG;
 		author[] = {"Tupolov"};
-		authorUrl = "http://dev-heaven.net/projects/alive";
+		authorUrl = "http://alivemod.com/";
 	};
 };
