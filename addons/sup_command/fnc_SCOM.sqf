@@ -4041,6 +4041,12 @@ switch(_operation) do {
 
         private ["_commandState","_renderTarget","_cam","_boundingBoxReal","_height"];
 
+        // if pip is disabled, notify player
+
+        if !(isPiPEnabled) then {
+            hint "PiP is disabled in your video settings. PiP must be enabled for ALiVE IMINT to function.";
+        };
+
         _commandState = [_logic,"commandState"] call MAINCLASS;
 
         // render pip picture starting from source object to ground position

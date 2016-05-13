@@ -801,20 +801,20 @@ switch(_operation) do {
                     if (isnil "OPCOM_instances") exitWith {["[%1] Marking Units - No available opcom instances", QUOTE(ADDON)] call ALiVE_fnc_dump};
 
                     _opcoms = [];
-                    _profilesBySide = [[],[],[]];
+                    _profilesBySide = [[],[],[]];   // east, west, indep
                     _knownEnemiesBySide = [[],[],[]];
 
                     switch(_limit) do {
                         case "SIDE": {
                             {
-                                if (_side == [_x,"side","WEST"] call ALiVE_fnc_hashGet) then {
+                                if (_side == ([_x,"side","WEST"] call ALiVE_fnc_hashGet)) then {
                                     _opcoms pushback _x;
                                 };
                             } foreach OPCOM_instances;
                         };
                         case "FACTION": {
                             {
-                                if (_side in [_x,"factions",[]] call ALiVE_fnc_hashGet) then {
+                                if (_side in ([_x,"factions",[]] call ALiVE_fnc_hashGet)) then {
                                     _opcoms pushback _x;
                                 };
                             } foreach OPCOM_instances;
