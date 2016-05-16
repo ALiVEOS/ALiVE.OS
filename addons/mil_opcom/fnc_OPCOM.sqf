@@ -53,7 +53,7 @@ private ["_result"];
 TRACE_1("OPCOM - input",_this);
 
 params [
-    ["_logic", objNull, [objNull,[]]],
+    ["_logic", objNull, [objNull,[],""]],
     ["_operation", "", [""]],
     ["_args", objNull, [objNull,[],"",0,true,false]]
 ];
@@ -608,7 +608,7 @@ switch(_operation) do {
             _size = _args select 1;
             _type = _args select 2;
             
-            _side = [_logic,"side"] call ALiVE_fnc_Hashget;
+            _side = [_logic,"side"] call ALiVE_fnc_HashGet;
             _factions = [_logic,"factions"] call ALiVE_fnc_HashGet;
             _sides = [_logic,"sidesenemy",["EAST"]] call ALiVE_fnc_HashGet;
             _knownE = [_logic,"knownentities",[]] call ALiVE_fnc_HashGet;
@@ -935,7 +935,7 @@ switch(_operation) do {
 	        if(isnil "_args") then {
 				_args = [_logic,"objectives"] call ALIVE_fnc_hashGet;
 	        } else {
-                private ["_objectives","_type","_asym_occupation"];
+                private ["_objectives","_type","_asym_occupation","_side","_color"];
                 
                 _type = _args;
                 _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
@@ -1091,11 +1091,20 @@ switch(_operation) do {
                 
 				// Create additional debug markers
 				if (_debug) then {
+	                _side = [_logic,"side","EAST"] call ALiVE_fnc_HashGet;
+	                
+	                 _color = switch (_side) do {
+	                    case "EAST" : {"COLORRED"};
+	                    case "WEST" : {"COLORBLUE"};
+	                    case "GUER" : {"COLORGREEN"};
+	                    default {"COLORYELLOW"};
+	                };    
+                    
 	                {
 	                	_center = [_x,"center"] call ALiVE_fnc_HashGet;
 	                	_id = [_x,"objectiveID"] call ALiVE_fnc_HashGet;
 	                     
-	                	[format[MTEMPLATE, _id], _center,"ICON", [0.5,0.5],"COLORGREY",format["ALiVE - vAI COM PRIO %1",_foreachIndex],"mil_dot","FDiagonal",0,1] call ALIVE_fnc_createMarkerGlobal;
+	                	[format[MTEMPLATE, _id], _center,"ICON", [0.5,0.5],_color,format["%1 #%2",_side,_foreachIndex],"mil_dot","FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal;
 	                } foreach _objectives;
 				};
                 
@@ -1794,33 +1803,46 @@ switch(_operation) do {
         };
                 
         case "addObjective": {
+            
+            	private ["_found"];
+
+            	if (typeName _logic == "STRING") then {
+                    
+                    
+                    _found = false;
+                    
+                    {
+                        _factions = [_x,"factions",[]] call ALiVE_fnc_HashGet;
+                        _side = [[_x,"side",""] call ALiVE_fnc_HashGet];
+                        
+                        _input = _factions + _side;
+
+                        if (_logic in _input) exitwith {_found = true; _logic = _x};
+                    } foreach OPCOM_instances;
+                };
+                
+            	if (!isnil "_found" && {!_found}) exitwith {["ALiVE - vAI operation addObjective didn't find an OPCOM of faction or side %1!",_logic] call ALiVE_fnc_Dump};    
+
                 if(isnil "_args") then {
 					_args = [_logic,"objectives"] call ALIVE_fnc_hashGet;
                 } else {
                     ASSERT_TRUE(typeName _args == "ARRAY",str _args);
                     ASSERT_TRUE(count _args > 2,str _args);
                     
-                    private ["_debug","_params","_id","_pos","_size","_type","_priority","_opcom_state","_clusterID","_target","_objectives","_opcomID"];
+                    private ["_debug","_params","_side","_id","_pos","_size","_color","_type","_priority","_opcom_state","_clusterID","_target","_objectives","_opcomID"];
 
                     _debug = [_logic, "debug",false] call ALIVE_fnc_HashGet;
-                    _params = _args;
-                    
-                    _id = _params select 0;
-                    _pos = _params select 1;
-                    _size = _params select 2;
-                    
-                    if (count _params > 3) then {_type = _params select 3};
-                    if (count _params > 4) then {_priority = _params select 4};
-                    if (count _params > 5) then {_opcom_state = _params select 5};
-                    if (count _params > 6) then {_clusterID = _params select 6};
-                    if (count _params > 7) then {_opcomID = _params select 7};
-                    
-                    if (isnil "_type") then {_type = "unknown"};
-                    if (isnil "_priority") then {_priority = 100};
-                    if (isnil "_opcom_state") then {_opcom_state = "unassigned"};
-                    if (isnil "_clusterID") then {_clusterID = "none"};
-                    if (isnil "_opcomID") then {_opcomID = [_logic,"opcomID",""] call ALiVE_fnc_HashGet};
-                    
+                    _side = [_logic, "side","EAST"] call ALIVE_fnc_HashGet;
+
+                    _id = [_args, 0, "", [""]] call BIS_fnc_param;
+                    _pos = [_args, 1, [0,0,0], [[]]] call BIS_fnc_param;
+                    _size = [_args, 2, 50, [-1]] call BIS_fnc_param;
+                    _type = [_args, 3, "unknown", [""]] call BIS_fnc_param;
+                    _priority = [_args, 4, 100, [-1]] call BIS_fnc_param;
+                    _opcom_state = [_args, 5, "unassigned", [""]] call BIS_fnc_param;
+                    _clusterID = [_args, 6, "none", [""]] call BIS_fnc_param;
+                    _opcomID = [_args, 7, [_logic,"opcomID",""] call ALiVE_fnc_HashGet, [""]] call BIS_fnc_param;
+
                     _target = [nil, "createhashobject"] call ALIVE_fnc_OPCOM;
                     [_target, "objectiveID",_id] call ALIVE_fnc_HashSet;
                     [_target, "center",_pos] call ALIVE_fnc_HashSet;
@@ -1833,29 +1855,23 @@ switch(_operation) do {
                     [_target,"_rev",""] call ALIVE_fnc_hashSet;
                     
 					if  (_debug) then {
-						_m = createMarkerLocal [_id, _pos];
-						_m setMarkerShapeLocal "RECTANGLE";
-						_m setMarkerSizeLocal [_size, _size];
-						_m setMarkerBrushLocal "FDiagonal";
-						_m setMarkerColorLocal "ColorYellow";
-						
-						_m = createMarkerLocal [format["%1_label",_id], _pos];
-						_m setMarkerShapeLocal "ICON";
-						_m setMarkerSizeLocal [0.5, 0.5];
-						_m setMarkerTypeLocal "mil_dot";
-						_m setMarkerColorLocal "ColorYellow";
-                        
-                        /*
-                        // Must define _side above before using this switch
-                        switch (_side) do {
-                            //case "EAST" : {_m setMarkerTextLocal format["Objective %2 Global Priority %1",_foreachIndex,_side]};
-                            //case "WEST" : {_m setMarkerTextLocal format["Objective %2 Global Priority %1",_foreachIndex,_side]};
+                        if !((format[MTEMPLATE, _id]) call ALiVE_fnc_markerExists) then {
+                            
+	                         _color = switch (_side) do {
+	                            case "EAST" : {"COLORRED"};
+	                            case "WEST" : {"COLORBLUE"};
+	                            case "GUER" : {"COLORGREEN"};
+	                            default {"COLORYELLOW"};
+	                        };
+                            
+                            [format[MTEMPLATE, _id], _pos,"ICON", [0.5,0.5],_color,format["%1 #%2",_side,_id],"mil_dot","FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal;
                         };
-                        */
 					};
                     
                     _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
+                    
                     _objectives pushback _target;
+                    
                     [_logic,"objectives",_objectives] call ALiVE_fnc_HashSet;
                     
                     _args = _target;

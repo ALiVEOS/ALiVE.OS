@@ -79,8 +79,8 @@ if (!isNull _object) then {
 	    waituntil {sleep 10; isNil "_unit" || {isNull _unit}};
 	    
         //["ALiVE OPCOM DropIntel TRACE deleting object %1! DropIntel finishing!",_object] call ALiVE_fnc_DumpR;
+        //deleteMarker _marker;
         
-        deleteMarker _marker;
 	    deleteVehicle _object;
 	};
 	
