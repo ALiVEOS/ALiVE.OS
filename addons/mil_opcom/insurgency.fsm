@@ -1,11 +1,11 @@
 /*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, insurgency">*/
 /*%FSM<HEAD>*/
 /*
-item0[] = {"INIT",0,4346,-717.630066,-1005.371277,-627.630066,-955.371338,0.000000,"INIT"};
+item0[] = {"INIT",0,250,-717.630066,-1005.371277,-627.630066,-955.371338,0.000000,"INIT"};
 item1[] = {"INIT_COMPLETE",4,218,-720.395935,-937.944458,-630.395935,-887.944458,0.000000,"INIT" \n "COMPLETE"};
 item2[] = {"INIT_INFO",2,250,-720.879761,-873.838257,-630.879761,-823.838257,0.000000,"INIT INFO"};
 item3[] = {"",7,210,-52.802883,324.913116,-44.802883,332.913116,0.000000,""};
-item4[] = {"ANALYZE_OBJECTIV",2,250,-720.879822,-549.151001,-630.879822,-499.151001,0.000000,"ANALYZE" \n "OBJECTIVE"};
+item4[] = {"ANALYZE_OBJECTIV",2,4346,-720.879822,-549.151001,-630.879822,-499.151001,0.000000,"ANALYZE" \n "OBJECTIVE"};
 item5[] = {"ATTACK",4,218,-928.976746,-250.825409,-838.976746,-200.825378,1.000000,"ATTACK"};
 item6[] = {"DEFEND",4,218,-806.225098,-252.264771,-716.225098,-202.264740,2.000000,"DEFEND"};
 item7[] = {"TERRORIZE",4,218,-650.359680,-253.024353,-560.359680,-203.024323,3.000000,"TERRORIZE"};
@@ -75,8 +75,8 @@ link37[] = {29,4};
 link38[] = {30,29};
 link39[] = {31,26};
 link40[] = {32,26};
-globals[] = {0.000000,0,0,0,16777215,640,480,1,135,6316128,1,-1031.152222,-339.604828,80.179443,-1217.724609,414,777,1};
-window[] = {0,-1,-1,-1,-1,930,22,1574,22,1,431};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,135,6316128,1,-998.090088,-372.667175,18.127726,-1155.673096,414,777,1};
+window[] = {0,-1,-1,-1,-1,996,88,1640,88,1,431};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -339,7 +339,7 @@ class FSM
        "	[_id,_center,""RECTANGLE"", [_size,_size],_color,"""", ""EMPTY"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal;" \n
        "" \n
        "	// Always show hostility value" \n
-       "	[format[""%1_Hostility"",_id],_center,""ICON"", [1,1],_color,str(_hostility), ""mil_dot"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal;" \n
+       "	[format[""%1_Hostility"",_id],_center,""ICON"", [1,1],_color,""         H: "" + str(_hostility), ""mil_dot"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal;" \n
        "" \n
        "	// Always show installations" \n
        "	if (alive _HQ) then {[format[""hq_%1"",_id],getposATL _HQ,""ICON"", [1,1],""ColorRed"",""Recruitment HQ"", ""n_installation"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal} else {deleteMarker format[""hq_%1"",_id]};" \n
@@ -356,7 +356,7 @@ class FSM
        "" \n
        "	// Only show orders on assigned or guarded objectives" \n
        "	if (count (_section + _guardsCopy) > 0) then {" \n
-       "		[format[""%1_actions"",_id,_type],_center,""ICON"", [1,1],""ColorRed"",""     "" + str(([_actions select 0] + _actionsFulfilled)), ""mil_dot"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal;" \n
+       "		[format[""%1_actions"",_id,_type],_center,""ICON"", [1,1],""ColorRed"",""                "" + str(([_actions select 0] + _actionsFulfilled)), ""mil_dot"", ""FDiagonal"",0,0.5 ] call ALIVE_fnc_createMarkerGlobal;" \n
        "	};" \n
        "" \n
        "	//[""FSM state: %1 of %2"",""OBJECTIVE ANALYSIS"",_id] call ALIVE_fnc_dumpR;" \n
