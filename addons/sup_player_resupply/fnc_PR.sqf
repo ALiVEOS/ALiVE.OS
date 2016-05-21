@@ -1249,6 +1249,14 @@ switch(_operation) do {
         // The machine has an interface? Must be a MP client, SP client or a client that acts as host!
         if (hasInterface) then {
 
+            // clear markers
+
+            private _markers = [_logic,"statusMarker"] call MAINCLASS;
+            {deleteMarker _x} foreach _markers;
+
+            _markers = [_logic,"destinationMarker"] call MAINCLASS;
+            {deleteMarker _x} foreach _markers;
+
             // Show GPS
             showGPS true;
 
