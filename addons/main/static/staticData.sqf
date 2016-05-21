@@ -5436,7 +5436,7 @@ If (_fileExists) then {
 		ALIVE_civilianFuelBuildingTypes = ALIVE_civilianFuelBuildingTypes + ["ca\misc\fuel_tank_small.p3d"];
 		ALIVE_civilianConstructionBuildingTypes = ALIVE_civilianConstructionBuildingTypes + ["ca\structures_e\misc\misc_construction\misc_concbox_ep1.p3d","opxbuildings\ruin.p3d"];
 	};
-	
+
 	//Kapaulio - index by psvialli
 	if(tolower(_worldName) == "kapaulio") then {
 		ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + ["a3\structures_f_epa\civ\constructions\portablelight_double_f.p3d","a3\structures_f\naval\piers\pier_small_f.p3d","a3\structures_f_epb\naval\fishing\fishinggear_01_f.p3d","a3\structures_f\walls\cncwall4_f.p3d","a3\structures_f_epa\items\medical\defibrillator_f.p3d","a3\structures_f_epa\items\medical\disinfectantspray_f.p3d","a3\structures_f_epa\items\tools\ducttape_f.p3d","a3\structures_f_bootcamp\items\food\foodcontainer_01_f.p3d","a3\structures_f_epa\items\medical\antibiotic_f.p3d","a3\structures_f_epa\items\medical\bandage_f.p3d","a3\roads_f\runway\runwaylights\flush_light_red_f.p3d","a3\structures_f\wrecks\wreck_hunter_f.p3d","a3\structures_f\mil\bagfence\bagfence_long_f.p3d","a3\structures_f_epb\naval\fishing\fishinggear_02_f.p3d","a3\structures_f\ind\wavepowerplant\wavepowerplant_f.p3d","a3\structures_f\ind\wavepowerplant\wavepowerplantbroken_f.p3d","jbad_misc\misc_market\jbad_crates.p3d","a3\structures_f_epc\dominants\ghosthotel\gh_stairs_f.p3d","a3\structures_f\training\rampconcrete_f.p3d","a3\structures_f\training\rampconcretehigh_f.p3d","a3\structures_f\wrecks\wreck_ural_f.p3d","a3\structures_f\items\electronics\survivalradio_f.p3d","a3\structures_f\items\food\tacticalbacon_f.p3d","a3\structures_f_epa\mil\scrapyard\pallet_milboxes_f.p3d","a3\structures_f_epa\items\medical\vitaminbottle_f.p3d","a3\structures_f_epa\items\food\ricebox_f.p3d","a3\structures_f_epa\civ\camping\woodentable_large_f.p3d","a3\structures_f\walls\cncwall1_f.p3d","a3\structures_f_epa\mil\scrapyard\paperbox_open_full_f.p3d","a3\structures_f\items\food\bottleplastic_v1_f.p3d","a3\structures_f_epa\items\food\bottleplastic_v2_f.p3d","a3\structures_f_epa\items\tools\fireextinguisher_f.p3d","a3\structures_f\items\electronics\fmradio_f.p3d","a3\structures_f\civ\infoboards\mapboard_f.p3d","a3\structures_f_epa\mil\scrapyard\paperbox_closed_f.p3d","a3\structures_f_epa\items\food\canteen_f.p3d","a3\structures_f_epa\mil\scrapyard\paperbox_open_empty_f.p3d","a3\structures_f_epa\items\tools\metalwire_f.p3d","a3\structures_f_epb\civ\dead\grave_dirt_f.p3d","a3\structures_f_epa\civ\constructions\pallets_stack_f.p3d","a3\structures_f\research\dome_b_cargo_entrance_f.p3d","a3\structures_f\research\dome_b_person_entrance_f.p3d","a3\structures_f\civ\infoboards\billboard_f.p3d","a3\structures_f_epc\civ\accessories\bench_01_f.p3d","a3\structures_f_epa\civ\camping\woodentable_small_f.p3d","a3\structures_f_epa\items\tools\gascanister_f.p3d","a3\structures_f\items\tools\meter3m_f.p3d","a3\structures_f_epb\items\vessels\barrelsand_grey_f.p3d","a3\structures_f_epa\items\vessels\tincontainer_f.p3d","a3\structures_f_epa\items\food\bakedbeans_f.p3d","a3\structures_f_epa\items\medical\heatpack_f.p3d","a3\structures_f\walls\cncbarrier_stripes_f.p3d","a3\structures_f\walls\cncbarriermedium4_f.p3d","a3\structures_f\mil\flags\mast_f.p3d","a3\structures_f_epa\mil\scrapyard\scrap_mrap_01_f.p3d","a3\structures_f\wrecks\wreck_uaz_f.p3d","a3\structures_f\civ\lamps\lampsolar_f.p3d","a3\structures_f\ind\cargo\cargo40_color_v2_ruins_f.p3d","a3\structures_f\households\addons\metal_shed_ruins_f.p3d","a3\structures_f\mil\bagfence\bagfence_round_f.p3d","a3\structures_f\mil\bagfence\bagfence_short_f.p3d","a3\structures_f\items\tools\drillaku_f.p3d","a3\structures_f\items\electronics\extensioncord_f.p3d","a3\structures_f\civ\camping\sleeping_bag_blue_f.p3d","a3\structures_f\items\tools\hammer_f.p3d","a3\structures_f\items\tools\pliers_f.p3d","a3\structures_f\items\electronics\portable_generator_f.p3d","a3\structures_f_epa\items\medical\painkillers_f.p3d","a3\structures_f_epa\mil\scrapyard\scrapheap_2_f.p3d","a3\structures_f_epa\items\food\cerealsbox_f.p3d","a3\structures_f\items\vessels\canisterfuel_f.p3d","a3\structures_f\items\documents\map_f.p3d","a3\structures_f\items\electronics\portablelongrangeradio_f.p3d","a3\structures_f\walls\rampart_f.p3d","a3\structures_f\ind\windpowerplant\wpp_turbine_v2_f.p3d","a3\structures_f_epa\civ\constructions\portablelight_single_f.p3d","a3\structures_f\civ\market\marketshelter_f.p3d","a3\structures_f\walls\cncshelter_f.p3d","a3\structures_f\mil\fortification\hbarrier_3_f.p3d","a3\structures_f_epb\items\vessels\barrelempty_grey_f.p3d","a3\structures_f_epb\items\vessels\barrelwater_grey_f.p3d","a3\structures_f\items\tools\axe_f.p3d","a3\structures_f\civ\camping\sleeping_bag_f.p3d","a3\structures_f\items\food\can_v1_f.p3d","a3\structures_f\items\food\can_v2_f.p3d","a3\structures_f\items\tools\gloves_f.p3d","a3\structures_f\civ\camping\sleeping_bag_brown_f.p3d","a3\structures_f_epa\items\tools\shovel_f.p3d","a3\structures_f_epa\civ\camping\woodenlog_f.p3d","a3\structures_f_epa\items\tools\gascooker_f.p3d","a3\structures_f\items\vessels\barrelempty_f.p3d","a3\structures_f\wrecks\wreck_bmp2_f.p3d","a3\structures_f_epa\items\tools\butanetorch_f.p3d","a3\structures_f_epb\items\luggage\luggageheap_02_f.p3d","a3\structures_f_epb\items\luggage\luggageheap_04_f.p3d","a3\structures_f_epc\civ\camping\sunshade_04_f.p3d","a3\structures_f\walls\indfnc_corner_f.p3d","a3\structures_f\furniture\tabledesk_f.p3d","a3\structures_f_epb\furniture\shelveswooden_f.p3d","a3\structures_f\furniture\chairwood_f.p3d","a3\structures_f_epa\mil\scrapyard\scrapheap_1_f.p3d","a3\structures_f_epb\furniture\shelveswooden_khaki_f.p3d","a3\structures_f\items\tools\dustmask_f.p3d","a3\structures_f_epc\civ\accessories\tableplastic_01_f.p3d","a3\structures_f\civ\ancient\ancientpillar_damaged_f.p3d","a3\structures_f\items\vessels\barreltrash_f.p3d","rspn_assets\models\cover_bluntstone.p3d","a3\structures_f\wrecks\wreck_t72_turret_f.p3d","rspn_assets\models\cover_dirt_inset.p3d","rspn_assets\models\cover_grass_inset.p3d","a3\structures_f\mil\bagfence\bagfence_corner_f.p3d","a3\structures_f\mil\bagfence\bagfence_end_f.p3d","a3\structures_f\civ\accessories\water_source_f.p3d","a3\structures_f_epc\civ\camping\sunshade_01_f.p3d","a3\structures_f_epa\items\tools\butanecanister_f.p3d","a3\structures_f_epa\items\tools\canopener_f.p3d","a3\structures_f\walls\wired_fence_4md_f.p3d","a3\structures_f_epb\civ\graffiti\graffiti_03_f.p3d","a3\structures_f_epb\items\documents\poster_05_f.p3d","a3\structures_f\civ\camping\camping_light_off_f.p3d","a3\structures_f\civ\camping\pillow_old_f.p3d","a3\structures_f\civ\camping\sleeping_bag_blue_folded_f.p3d","a3\structures_f_epa\items\medical\waterpurificationtablets_f.p3d","a3\structures_f\civ\camping\ground_sheet_blue_f.p3d","a3\structures_f\civ\camping\ground_sheet_f.p3d","a3\structures_f\civ\camping\ground_sheet_opfor_f.p3d","a3\structures_f\civ\camping\pillow_camouflage_f.p3d","a3\structures_f\civ\camping\pillow_f.p3d","a3\structures_f\items\vessels\canisteroil_f.p3d","a3\structures_f\civ\camping\pillow_grey_f.p3d","a3\structures_f\civ\camping\sleeping_bag_brown_folded_f.p3d","a3\structures_f_epb\items\luggage\luggageheap_03_f.p3d","a3\structures_f\items\documents\map_unfolded_f.p3d","a3\structures_f\research\dome_small_plates_f.p3d"];
@@ -6192,7 +6192,16 @@ ALIVE_RHSResupplyVehicleOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyVehicleOptions, "rhs_faction_rva", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyVehicleOptions, "rhs_faction_insurgents", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
 
-
+// RHS GREF.
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_cdf_air", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_cdf_air_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_cdf_ground", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_cdf_ground_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_cdf_ng", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_cdf_ng_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_chdkz", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_chdkz_g", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_nationalist", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
 
 ALIVE_RHSResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_RHSResupplyIndividualOptions, "PR_AIRDROP", [["<< Back","Men","MenDiver","MenRecon","MenSniper","MenSupport","RHS Infantry"],["<< Back","Men","MenDiver","MenRecon","MenSniper","MenSupport","rhs_vehclass_infantry"]]] call ALIVE_fnc_hashSet;
@@ -6218,6 +6227,16 @@ ALIVE_RHSResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyIndividualOptions, "rhs_faction_rva", ALIVE_RHSResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "rhs_faction_insurgents", ALIVE_RHSResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 
+// RHS GREF
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_cdf_air", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_cdf_air_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_cdf_ground", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_cdf_ground_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_cdf_ng", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_cdf_ng_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_chdkz", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_chdkz_g", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_nationalist", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
 
 
 ALIVE_RHSResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
@@ -6339,6 +6358,16 @@ ALIVE_RHSResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyGroupOptions, "rhs_faction_rva", ALIVE_RHSResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "rhs_faction_insurgents", ALIVE_RHSResupplyGroupOptions] call ALIVE_fnc_hashSet;
 
+// RHS GREF
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_cdf_air", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_cdf_air_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_cdf_ground", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_cdf_ground_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_cdf_ng", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_cdf_ng_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_chdkz", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_chdkz_g", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_nationalist", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
 
 
 // RHS USAF ----------------------------------------------------------------------------------------------------------------
@@ -7137,6 +7166,12 @@ rhs_faction_insurgents_typeMappings = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultAirTransport, "rhs_faction_insurgents", ["rhs_t72bb_chdkz"]] call ALIVE_fnc_hashSet;
 */
 
+// ------------------------------------------------------------------------------------------------------------------
+
+
+// RHS GREF -----------------------------------------------------------------------------------------------------
+
+#include "./include/rhs_gref_compat.hpp"
 
 // ---------------------------------------------------------------------------------------------------------------------
 
