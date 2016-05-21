@@ -53,13 +53,16 @@ ARJay
 #define WAIT_TIME_MARINE 30
 #define WAIT_TIME_DROP 40
 
-private ["_logic","_operation","_args","_result"];
+private ["_result"];
 
 TRACE_1("ML - input",_this);
 
-_logic = [_this, 0, objNull, [objNull]] call BIS_fnc_param;
-_operation = [_this, 1, "", [""]] call BIS_fnc_param;
-_args = [_this, 2, objNull, [objNull,[],"",0,true,false]] call BIS_fnc_param;
+params [
+	["_logic", objNull, [objNull]],
+	["_operation", "", [""]],
+	["_args", objNull, [objNull,[],"",0,true,false]]
+
+];
 _result = true;
 
 switch(_operation) do {
@@ -1544,7 +1547,7 @@ switch(_operation) do {
                                 // there are marine objectives available
 
                                 // pick a primary one
-                                _primaryReinforcementObjective = (ALIVE_clustersCivMarine select 2) call BIS_fnc_selectRandom;
+                                _primaryReinforcementObjective = selectRandom (ALIVE_clustersCivMarine select 2);
 
                                 _reinforcementType = "MARINE";
 
@@ -1865,7 +1868,7 @@ switch(_operation) do {
 
                             _group = _infantryGroups select _i;
 
-                            _position = [_reinforcementPosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                            _position = _reinforcementPosition getPos [random(200), random(360)];
 
                             if(_paraDrop) then {
 
@@ -1909,7 +1912,7 @@ switch(_operation) do {
                             if(count _transportGroups > 0) then {
                                 for "_i" from 0 to _groupCount -1 do {
 
-                                    _position = [_reinforcementPosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                                    _position = _reinforcementPosition getPos [random(200), random(360)];
 
                                     if(_paraDrop) then {
                                         _position set [2,PARADROP_HEIGHT];
@@ -1917,7 +1920,7 @@ switch(_operation) do {
 
                                     if(count _transportGroups > 0) then {
 
-                                        _vehicleClass = _transportGroups call BIS_fnc_selectRandom;
+                                        _vehicleClass = selectRandom _transportGroups;
 
                                         _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,false,true] call ALIVE_fnc_createProfilesCrewedVehicle;
 
@@ -1952,7 +1955,7 @@ switch(_operation) do {
 
                                 for "_i" from 0 to _groupCount -1 do {
 
-                                    _position = [_remotePosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                                    _position = _remotePosition getPos [random(200), random(360)];
 
                                     if(_paraDrop) then {
                                         _position set [2,PARADROP_HEIGHT];
@@ -1960,7 +1963,7 @@ switch(_operation) do {
 
                                     if(count _transportGroups > 0) then {
 
-                                        _vehicleClass = _transportGroups call BIS_fnc_selectRandom;
+                                        _vehicleClass = selectRandom _transportGroups;
 
                                         _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
 
@@ -2019,7 +2022,7 @@ switch(_operation) do {
 
                             _group = _armourGroups select _i;
 
-                            _position = [_reinforcementPosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                            _position = _reinforcementPosition getPos [random(200), random(360)];
 
                             if(_paraDrop) then {
                                 _position set [2,PARADROP_HEIGHT];
@@ -2067,7 +2070,7 @@ switch(_operation) do {
 
                             _group = _mechanisedGroups select _i;
 
-                            _position = [_reinforcementPosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                            _position = _reinforcementPosition getPos [random(200), random(360)];
 
                             if(_paraDrop) then {
                                 _position set [2,PARADROP_HEIGHT];
@@ -2115,7 +2118,7 @@ switch(_operation) do {
 
                             _group = _motorisedGroups select _i;
 
-                            _position = [_reinforcementPosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                            _position = _reinforcementPosition getPos [random(200), random(360)];
 
                             if(_paraDrop) then {
                                 _position set [2,PARADROP_HEIGHT];
@@ -2152,12 +2155,12 @@ switch(_operation) do {
 
                             for "_i" from 0 to _eventForcePlane -1 do {
 
-                                _position = [_remotePosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                                _position = _remotePosition getPos [random(200), random(360)];
                                 _position set [2,1000];
 
                                 if(count _planeClasses > 0) then {
 
-                                    _vehicleClass = _planeClasses call BIS_fnc_selectRandom;
+                                    _vehicleClass = selectRandom _planeClasses;
 
                                     _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
 
@@ -2196,12 +2199,12 @@ switch(_operation) do {
 
                             for "_i" from 0 to _eventForceHeli -1 do {
 
-                                _position = [_remotePosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                                _position = _remotePosition getPos [random(200), random(360)];
                                 _position set [2,1000];
 
                                 if(count _heliClasses > 0) then {
 
-                                    _vehicleClass = _heliClasses call BIS_fnc_selectRandom;
+                                    _vehicleClass = selectRandom _heliClasses;
 
                                     _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
 
@@ -2334,10 +2337,10 @@ switch(_operation) do {
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
 
-                [_event, "finalDestination", [_eventPosition, (random(DESTINATION_VARIANCE)), random(360)] call BIS_fnc_relPos] call ALIVE_fnc_hashSet;
+                [_event, "finalDestination", _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)]] call ALIVE_fnc_hashSet;
 
                 {
-                    _position = [_eventPosition, (random(DESTINATION_VARIANCE)), random(360)] call BIS_fnc_relPos;
+                    _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
                     _profileWaypoint = [_position, 100, "MOVE", "NORMAL", 100, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
 
                     _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
@@ -2358,7 +2361,7 @@ switch(_operation) do {
                 } forEach _infantryProfiles;
 
                 {
-                    _position = [_eventPosition, (random(DESTINATION_VARIANCE)), random(360)] call BIS_fnc_relPos;
+                    _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
                     _profileWaypoint = [_position, 100, "MOVE", "NORMAL", 100, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
 
                     _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
@@ -2369,7 +2372,7 @@ switch(_operation) do {
                 } forEach _planeProfiles;
 
                 {
-                    _position = [_eventPosition, (random(DESTINATION_VARIANCE)), random(360)] call BIS_fnc_relPos;
+                    _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
                     _profileWaypoint = [_position, 100, "MOVE", "NORMAL", 100, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
 
                     _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
@@ -2749,7 +2752,7 @@ switch(_operation) do {
                     // send transport vehicles back to insertion point
                     {
                         _reinforcementPosition = [_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet;
-                        _position = [_reinforcementPosition, (random(300)), random(360)] call BIS_fnc_relPos;
+                        _position = _reinforcementPosition getPos [random(300), random(360)];
                         _position = [_position] call ALIVE_fnc_getClosestRoad;
                         _profileWaypoint = [_position, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
 
@@ -3074,7 +3077,7 @@ switch(_operation) do {
 
                 if((count _positionSeries) < _countProfiles) then {
                     for "_i" from 0 to _countProfiles -1 do {
-                        _position = [_eventPosition, (random(DESTINATION_VARIANCE)), random(360)] call BIS_fnc_relPos;
+                        _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
                         _positionSeries set [_i, _position];
                     };
                 };
@@ -3098,7 +3101,7 @@ switch(_operation) do {
                 } forEach _transportProfiles;
 
                 {
-                    _position = [_eventPosition, (random(DESTINATION_VARIANCE)), random(360)] call BIS_fnc_relPos;
+                    _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
                     _profileWaypoint = [_position, 1, "MOVE", "LIMITED", 2, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
 
                     _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
@@ -3148,7 +3151,7 @@ switch(_operation) do {
                 } forEach _motorisedProfiles;
 
                 {
-                    _position = [_eventPosition, (random(DESTINATION_VARIANCE)), random(360)] call BIS_fnc_relPos;
+                    _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
                     _profileWaypoint = [_position, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
 
                     _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
@@ -3159,7 +3162,7 @@ switch(_operation) do {
                 } forEach _planeProfiles;
 
                 {
-                    _position = [_eventPosition, (random(DESTINATION_VARIANCE)), random(360)] call BIS_fnc_relPos;
+                    _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
                     _profileWaypoint = [_position, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
 
                     _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
@@ -3585,7 +3588,7 @@ switch(_operation) do {
                     // send transport vehicles back to insertion point
                     {
                         _reinforcementPosition = [_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet;
-                        _position = [_reinforcementPosition, (random(300)), random(360)] call BIS_fnc_relPos;
+                        _position = _reinforcementPosition getPos [random(300), random(360)];
                         _position = [_position] call ALIVE_fnc_getClosestRoad;
                         _profileWaypoint = [_position, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
 
@@ -3805,7 +3808,7 @@ switch(_operation) do {
                         {
                             _itemClass = _x select 0;
 
-                            _position = [_reinforcementPosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                            _position = _reinforcementPosition getPos [random(200), random(360)];
 
                             if!(surfaceIsWater _position) then {
 
@@ -3823,7 +3826,7 @@ switch(_operation) do {
                                         };
                                     };
                                     case "Air":{
-                                        _position = [_remotePosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                                        _position = _remotePosition getPos [random(200), random(360)];
                                         _position set [2,1000];
                                     };
                                 };
@@ -3876,7 +3879,7 @@ switch(_operation) do {
 
                             _staticIndividualProfiles = [];
 
-                            _position = [_reinforcementPosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                            _position = _reinforcementPosition getPos [random(200), random(360)];
 
                             if(_paraDrop) then {
                                 if(_eventType == "PR_HELI_INSERT") then {
@@ -3911,7 +3914,7 @@ switch(_operation) do {
 
                             _joinIndividualProfiles = [];
 
-                            _position = [_reinforcementPosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                            _position = _reinforcementPosition getPos [random(200), random(360)];
 
                             if(_paraDrop) then {
                                 if(_eventType == "PR_HELI_INSERT") then {
@@ -3945,7 +3948,7 @@ switch(_operation) do {
 
                             _reinforceIndividualProfiles = [];
 
-                            _position = [_reinforcementPosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                            _position = _reinforcementPosition getPos [random(200), random(360)];
 
                             if(_paraDrop) then {
                                 if(_eventType == "PR_HELI_INSERT") then {
@@ -3980,7 +3983,7 @@ switch(_operation) do {
 
                             _group = _x select 0;
 
-                            _position = [_reinforcementPosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                            _position = _reinforcementPosition getPos [random(200), random(360)];
 
                             if!(surfaceIsWater _position) then {
 
@@ -4022,7 +4025,7 @@ switch(_operation) do {
                                         };
                                     };
                                     case "Air":{
-                                        _position = [_remotePosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                                        _position = _remotePosition getPos [random(200), random(360)];
                                         _position set [2,1000];
                                     };
                                 };
@@ -4082,7 +4085,7 @@ switch(_operation) do {
 
                             _group = _x select 0;
 
-                            _position = [_reinforcementPosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                            _position = _reinforcementPosition getPos [random(200), random(360)];
 
                             if!(surfaceIsWater _position) then {
 
@@ -4124,7 +4127,7 @@ switch(_operation) do {
                                         };
                                     };
                                     case "Air":{
-                                        _position = [_remotePosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                                        _position = _remotePosition getPos [random(200), random(360)];
                                         _position set [2,1000];
                                     };
                                 };
@@ -4184,7 +4187,7 @@ switch(_operation) do {
 
                             _group = _x select 0;
 
-                            _position = [_reinforcementPosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                            _position = _reinforcementPosition getPos [random(200), random(360)];
 
                             if!(surfaceIsWater _position) then {
 
@@ -4226,7 +4229,7 @@ switch(_operation) do {
                                         };
                                     };
                                     case "Air":{
-                                        _position = [_remotePosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                                        _position = _remotePosition getPos [random(200), random(360)];
                                         _position set [2,1000];
                                     };
                                 };
@@ -4291,7 +4294,7 @@ switch(_operation) do {
                             if(count _transportGroups > 0) then {
                                 for "_i" from 0 to (count _infantryProfiles) -1 do {
 
-                                    _position = [_reinforcementPosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                                    _position = _reinforcementPosition getPos [random(200), random(360)];
 
                                     if(_paraDrop) then {
                                         _position set [2,PARADROP_HEIGHT];
@@ -4299,7 +4302,7 @@ switch(_operation) do {
 
                                     if(count _transportGroups > 0) then {
 
-                                        _vehicleClass = _transportGroups call BIS_fnc_selectRandom;
+                                        _vehicleClass = selectRandom _transportGroups;
 
                                         _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,false,true] call ALIVE_fnc_createProfilesCrewedVehicle;
 
@@ -4334,7 +4337,7 @@ switch(_operation) do {
 
                                 for "_i" from 0 to (count _infantryProfiles) -1 do {
 
-                                    _position = [_remotePosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                                    _position = _remotePosition getPos [random(200), random(360)];
 
                                     if(_paraDrop) then {
                                         _position set [2,PARADROP_HEIGHT];
@@ -4342,7 +4345,7 @@ switch(_operation) do {
 
                                     if(count _transportGroups > 0) then {
 
-                                        _vehicleClass = _transportGroups call BIS_fnc_selectRandom;
+                                        _vehicleClass = selectRandom _transportGroups;
 
                                         _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
 
@@ -4410,13 +4413,13 @@ switch(_operation) do {
 
                                 if(count _transportGroups > 0) then {
 
-                                    _position = [_reinforcementPosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                                    _position = _reinforcementPosition getPos [random(200), random(360)];
 
                                     if(_paraDrop) then {
                                         _position set [2,PARADROP_HEIGHT];
                                     };
 
-                                    _vehicleClass = _transportGroups call BIS_fnc_selectRandom;
+                                    _vehicleClass = selectRandom _transportGroups;
 
                                     _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,false,true,_payload] call ALIVE_fnc_createProfilesCrewedVehicle;
 
@@ -4454,13 +4457,13 @@ switch(_operation) do {
 
                                 if(count _transportGroups > 0) then {
 
-                                    _position = [_reinforcementPosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                                    _position = _reinforcementPosition getPos [random(200), random(360)];
 
                                     if(_paraDrop) then {
                                         _position set [2,PARADROP_HEIGHT];
                                     };
 
-                                    _vehicleClass = _transportGroups call BIS_fnc_selectRandom;
+                                    _vehicleClass = selectRandom _transportGroups;
 
                                     _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,_payload] call ALIVE_fnc_createProfilesCrewedVehicle;
 
@@ -4503,13 +4506,13 @@ switch(_operation) do {
 
                                 if(count _containers > 0) then {
 
-                                    _position = [_reinforcementPosition, (random(200)), random(360)] call BIS_fnc_relPos;
+                                    _position = _reinforcementPosition getPos [random(200), random(360)];
 
                                     if(_paraDrop) then {
                                         _position set [2,PARADROP_HEIGHT];
                                     };
 
-                                    _vehicleClass = _containers call BIS_fnc_selectRandom;
+                                    _vehicleClass = selectRandom _containers;
 
                                     //_profile = [_vehicleClass,_side,_eventFaction,_position,random(360),false,_eventFaction,_payload] call ALIVE_fnc_createProfileVehicle;
 
@@ -4525,8 +4528,8 @@ switch(_operation) do {
                                         _parachute setvelocity [0,0,-1];
 
                                         if (time - (missionnamespace getvariable ["bis_fnc_curatorobjectedited_paraSoundTime",0]) > 0) then {
-                                            _soundFlyover = ["BattlefieldJet1","BattlefieldJet2"] call bis_fnc_selectrandom;
-                                            [[_parachute,_soundFlyover,"say3d"],"bis_fnc_sayMessage"] call bis_fnc_mp;
+                                            _soundFlyover = selectRandom ["BattlefieldJet1","BattlefieldJet2"];
+                                            [_parachute,_soundFlyover,"say3d"] remoteExec ["bis_fnc_sayMessage"];
                                             missionnamespace setvariable ["bis_fnc_curatorobjectedited_paraSoundTime",time + 10]
                                         };
 
@@ -5274,11 +5277,11 @@ switch(_operation) do {
                     _group = _entityProfile select 2 select 13;
                     _group setBehaviour "CARELESS";
 
-                    _position = [_eventPosition, (random(DESTINATION_VARIANCE)), random(360)] call BIS_fnc_relPos;
+                    _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
                     _position = _position findEmptyPosition [10,200];
 
                     if(count _position == 0) then {
-                        _position = [_eventPosition, (random(DESTINATION_VARIANCE)), random(360)] call BIS_fnc_relPos;
+                        _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
                     };
                     _heliPad = "Land_HelipadEmpty_F" createVehicle _position;
 
@@ -5304,7 +5307,7 @@ switch(_operation) do {
                     private ["_position","_inCargo","_cargoProfileID","_cargoProfile"];
 
                     _inCargo = _vehicleProfile select 2 select 9;
-                    _position = [_eventPosition, (random(DESTINATION_VARIANCE)), random(360)] call BIS_fnc_relPos;
+                    _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
 
                     if(count _inCargo > 0) then {
                         {
@@ -5331,11 +5334,11 @@ switch(_operation) do {
                     _group = _entityProfile select 2 select 13;
                     _group setBehaviour "CARELESS";
 
-                    _position = [_eventPosition, (random(DESTINATION_VARIANCE)), random(360)] call BIS_fnc_relPos;
+                    _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
                     _position = _position findEmptyPosition [10,200];
 
                     if(count _position == 0) then {
-                        _position = [_eventPosition, (random(DESTINATION_VARIANCE)), random(360)] call BIS_fnc_relPos;
+                        _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
                     };
                     _heliPad = "Land_HelipadEmpty_F" createVehicle _position;
 
@@ -5386,11 +5389,11 @@ switch(_operation) do {
                     _group = _entityProfile select 2 select 13;
                     _group setBehaviour "CARELESS";
 
-                    _position = [_eventPosition, (random(DESTINATION_VARIANCE)), random(360)] call BIS_fnc_relPos;
+                    _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
                     _position = _position findEmptyPosition [10,200];
 
                     if(count _position == 0) then {
-                        _position = [_eventPosition, (random(DESTINATION_VARIANCE)), random(360)] call BIS_fnc_relPos;
+                        _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
                     };
                     _heliPad = "Land_HelipadEmpty_F" createVehicle _position;
 
@@ -5785,7 +5788,7 @@ switch(_operation) do {
                 if(count _payloadProfiles > 0) then {
 
                     _reinforcementPosition = [_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet;
-                    _position = [_reinforcementPosition, (random(300)), random(360)] call BIS_fnc_relPos;
+                    _position = _reinforcementPosition getPos [random(300), random(360)];
 
                     [_payloadGroupProfiles,_position] spawn {
 
