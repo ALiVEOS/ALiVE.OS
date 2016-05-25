@@ -6,7 +6,7 @@
 #define MINOR 0
 #define PATCHLVL 5
 // BUILD should be YYMMDDR eg 1311211
-#define BUILD 1605051
+#define BUILD 1605251
 
 #define CLUSTERBUILD "Arma 3","Arma3",158,135742,"Stable"
 
@@ -55,5 +55,5 @@
 
 #define MOD(var1) GVARMAIN(var1)
 #define QMOD(var1) QUOTE(GVARMAIN(var1))
-#define RECOMPILE 1
+#define RECOMPILE 0
 #define MODULE_AUTHOR QUOTE(ALiVE Mod Team)
