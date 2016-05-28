@@ -144,7 +144,8 @@ if (tolower(_worldName) == "dakrong") then {
         "uns_buildings\west_objects\t_sb_5_covered.p3d",
         "uns_buildings\west_objects\t_sb_cross_half.p3d",
         "uns_buildings\west_objects\t_sb_45_half.p3d",
-        "uns_buildings\west_objects\t_sb_pit2.p3d"
+        "uns_buildings\west_objects\t_sb_pit2.p3d",
+        "raz_nam_obj\m\helipad\heli_h.p3d"
     ];
     ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [
         "wx_objects\wx_logbunker01.p3d",
@@ -233,12 +234,10 @@ if (tolower(_worldName) == "dakrong") then {
     ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [];
     ALIVE_civilianAirBuildingTypes = ALIVE_civilianAirBuildingTypes + [];
     ALIVE_heliBuildingTypes = ALIVE_heliBuildingTypes + [
-        "raz_nam_obj\m\helipad\heli_h.p3d",
         "raz_nam_obj\m\helipad\heli_h2.p3d",
         "uns_buildings\west_objects\uns_evac_pad.p3d"
     ];
     ALIVE_militaryHeliBuildingTypes = ALIVE_militaryHeliBuildingTypes + [
-        "raz_nam_obj\m\helipad\heli_h.p3d",
         "raz_nam_obj\m\helipad\heli_h2.p3d",
         "uns_buildings\west_objects\uns_evac_pad.p3d"
     ];
