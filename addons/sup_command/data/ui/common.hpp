@@ -376,10 +376,19 @@ class SCOMTablet_RscMap
     y = "(safeZoneY + (safeZoneH / 2.49))";
     w = "(safeZoneW / 4.05)";
     h = "(safeZoneH / 4.2)";
-	class ActiveMarker
+    class ActiveMarker
     {
         color[] = {0.3,0.1,0.9,1};
         size = 50;
+    };
+    class LineMarker
+    {
+        color[] = {0.3,0.1,0.9,1};
+        size = 20;
+        lineWidthThin = 2;
+        lineWidthThick = 3;
+        lineLengthMin = 5;
+        lineDistanceMin = 5;
     };
     class Bunker
     {
