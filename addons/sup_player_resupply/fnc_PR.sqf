@@ -834,6 +834,25 @@ switch(_operation) do {
 
                     [_logic,"state","RESET"] call MAINCLASS;
 
+                    // delete destination markers after 3 minutes
+
+                    [_logic,_position] spawn {
+
+                        params ["_logic","_position"];
+
+                        sleep 180;
+
+                        private _markers = [_logic,"destinationMarker"] call MAINCLASS;
+
+                        {
+                            if (markerPos _x isEqualTo _position) then {
+
+                                deleteMarker _x;
+
+                            };
+                        } foreach _markers;
+
+                    };
 
                 };
                 case "REQUEST_LOST":{
@@ -1251,7 +1270,10 @@ switch(_operation) do {
 
             // clear markers
 
-            private _markers = [_logic,"statusMarker"] call MAINCLASS;
+            private _markers = [_logic,"marker"] call MAINCLASS;
+            {deleteMarker _x} foreach _markers;
+
+            _markers = [_logic,"statusMarker"] call MAINCLASS;
             {deleteMarker _x} foreach _markers;
 
             _markers = [_logic,"destinationMarker"] call MAINCLASS;
