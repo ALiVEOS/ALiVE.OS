@@ -339,12 +339,11 @@ ptsPerSquareSea = 8;
     };
     class LineMarker
     {
-    color[] = {0.3,0.1,0.9,1};
-    size = 20;
-    lineWidthThin = 2;
-    lineWidthThick = 3;
-    lineLengthMin = 5;
-    lineDistanceMin = 5;
+        lineWidthThin = 0.008;
+        lineWidthThick = 0.014;
+        lineLengthMin = 5;
+        lineDistanceMin = 3e-005;
+        textureComboBoxColor = "#(argb,8,8,3)color(1,1,1,1)";
     };
   class Bunker
     {
