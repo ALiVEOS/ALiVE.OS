@@ -8,7 +8,8 @@ class CfgPatches {
 		versionDesc = "ALiVE";
 		//versionAct = "['SYS_VIEWDISTANCE',_this] execVM '\x\alive\addons\main\about.sqf';";
 		VERSION_CONFIG;
-		author[] = { "Gunny", "Wolffy_au" };
+		author = MODULE_AUTHOR;
+		authors[] = { "Gunny", "Wolffy_au" };
 		authorUrl = "http://alivemod.com/";
 	};
 };

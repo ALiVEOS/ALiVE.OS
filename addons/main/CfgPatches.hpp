@@ -8,7 +8,8 @@ class CfgPatches {
 		versionDesc = "ALiVE";
 		//versionAct = "['MAIN',_this] execVM '\x\alive\addons\main\about.sqf';";
 		VERSION_CONFIG;
-		author[] = {
+		author = MODULE_AUTHOR;
+		authors[] = {
 			"AndrewKhan",
 			"ARJay",
 			"Friznit",

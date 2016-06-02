@@ -9,7 +9,8 @@ class CfgPatches {
 		VERSION_CONFIG;
 		
 		authorUrl = "http://alivemod.com/";
-		author[] = {
+		author = MODULE_AUTHOR;
+		authors[] = {
 			"Naught",
 			"ARJay",
 			"Friznit",

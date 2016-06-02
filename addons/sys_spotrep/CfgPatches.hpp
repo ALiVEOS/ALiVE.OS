@@ -7,7 +7,8 @@ class CfgPatches {
 		requiredAddons[] = {"ALIVE_main","cba_ui"};
 		versionDesc = "ALiVE";
 		VERSION_CONFIG;
-		author[] = {"Tupolov"};
+		author = MODULE_AUTHOR;
+		authors[] = {"Tupolov"};
 		authorUrl = "http://alivemod.com/";
 	};
 };
