@@ -68,7 +68,7 @@ switch (_state) do {
         if(count _target > 0) then {
             _target = _target select 0;
             [_agent] call ALIVE_fnc_agentSelectSpeedMode;
-            _position = [getPosASL _target, 1+(random 5), random 360] call BIS_fnc_relPos;
+            _position = (getPosASL _target) getPos [1+(random 5), random 360];
             [_agent, _position] call ALiVE_fnc_doMoveRemote;
 
             _timeout = _minTimeout + floor(random _maxTimeout);
@@ -133,7 +133,7 @@ switch (_state) do {
             if(_agent call ALiVE_fnc_unitReadyRemote) then {
                 if(_agent distance _target > 7) then {
                     [_agent] call ALIVE_fnc_agentSelectSpeedMode;
-                    _position = [getPosASL _target,1+(random 5), random 360] call BIS_fnc_relPos;
+                    _position = (getPosASL _target) getPos [1+(random 5), random 360];
                     [_agent, _position] call ALiVE_fnc_doMoveRemote;
                 }
             };

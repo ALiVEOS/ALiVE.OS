@@ -64,7 +64,7 @@ switch (_state) do {
         _agents = _agents select 2;
 
         if(count _agents > 0) then {
-            _partner = _agents call BIS_fnc_selectRandom;
+            _partner = selectRandom _agents;
             _partnerAgent = _partner select 2 select 5;
 
             if!(_partnerAgent getVariable ["ALIVE_agentMeetingRequested",false]) then {

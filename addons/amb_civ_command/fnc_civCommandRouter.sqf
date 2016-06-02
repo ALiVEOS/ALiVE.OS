@@ -37,13 +37,15 @@ nil
 #define SUPERCLASS ALIVE_fnc_baseClassHash
 #define MAINCLASS ALIVE_fnc_civCommandRouter
 
-private ["_logic","_operation","_args","_result"];
+private ["_result"];
 
 TRACE_1("commandRouter - input",_this);
 
-_logic = [_this, 0, objNull, [objNull,[]]] call BIS_fnc_param;
-_operation = [_this, 1, "", [""]] call BIS_fnc_param;
-_args = [_this, 2, objNull, [objNull,[],"",0,true,false]] call BIS_fnc_param;
+params [
+    ["_logic", objNull, [objNull,[]]],
+    ["_operation", "", [""]],
+    ["_args", objNull, [objNull,[],"",0,true,false]]
+];
 _result = true;
 
 #define MTEMPLATE "ALiVE_CIV_COMMAND_ROUTER_%1"

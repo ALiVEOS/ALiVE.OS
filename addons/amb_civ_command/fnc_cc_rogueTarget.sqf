@@ -66,7 +66,7 @@ switch (_state) do {
         _agentClusterID = _agentData select 2 select 9;
         _agentCluster = [ALIVE_clusterHandler,"getCluster",_agentClusterID] call ALIVE_fnc_clusterHandler;
 
-        _targetSide = (_args select 0) call BIS_fnc_SelectRandom;
+        _targetSide = selectRandom (_args select 0);
 
         //Thank you, BIS...
         if (_targetSide in ["GUER","INDEP"]) then {_targetSide = RESISTANCE} else {
@@ -132,7 +132,7 @@ switch (_state) do {
             };
 
             if(count _weapons > 0) then {
-                _weaponGroup = _weapons call BIS_fnc_selectRandom;
+                _weaponGroup = selectRandom _weapons;
                 _weapon = _weaponGroup select 0;
                 _ammo = _weaponGroup select 1;
 

@@ -77,7 +77,7 @@ switch (_state) do {
             
             [_agent, _position] call ALiVE_fnc_doMoveRemote;
             
-            _position = ([_position,15] call ALIVE_fnc_findIndoorHousePositions) call BIS_fnc_selectRandom;
+            _position = selectRandom ([_position,15] call ALIVE_fnc_findIndoorHousePositions);
 
             _nextStateArgs = _args;
             _nextState = "move";
@@ -131,7 +131,7 @@ switch (_state) do {
                 
                 for "_i" from 1 to 3 do {
                     
-                    _charge = _positions call BIS_fnc_SelectRandom;
+                    _charge = selectRandom _positions;
                     [_agent,_charge] call ALiVE_fnc_doMoveRemote;
                     
                     sleep 20;

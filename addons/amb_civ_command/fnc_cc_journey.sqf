@@ -62,7 +62,7 @@ switch (_state) do {
 
         _sectors = [ALIVE_sectorGrid, "surroundingSectors", getPos _agent] call ALIVE_fnc_sectorGrid;
         _sectors = [_sectors, "SEA"] call ALIVE_fnc_sectorFilterTerrain;
-        _sector = _sectors call BIS_fnc_selectRandom;
+        _sector = selectRandom _sectors;
         _center = [_sector,"center"] call ALIVE_fnc_sector;
         _destination = [_center] call ALIVE_fnc_getClosestRoad;
         _activeAgents = [ALIVE_agentHandler, "getActive"] call ALIVE_fnc_agentHandler;
@@ -80,7 +80,7 @@ switch (_state) do {
 
         if(count _activeVehicles > 0) then {
 
-            _vehicle = _activeVehicles call BIS_fnc_selectRandom;
+            _vehicle = selectRandom _activeVehicles;
             _vehicle = _vehicle select 2 select 5;
 
             if!(isNull _vehicle) then {

@@ -63,7 +63,7 @@ switch (_state) do {
         _target = _agent getVariable ["ALIVE_agentGatheringTarget", objNull];
 
         if!(isNil "_target") then {
-            _position = [getPosASL _target, random 5, random 360] call BIS_fnc_relPos;
+            _position = (getPosASL _target) getPos [random 5, random 360];
             [_agent] call ALIVE_fnc_agentSelectSpeedMode;
             [_agent, _position] call ALiVE_fnc_doMoveRemote;
 
