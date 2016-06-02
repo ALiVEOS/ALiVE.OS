@@ -70,7 +70,7 @@ switch (_state) do {
         if !(isnil "_position") then {
             [_agent, _position] call ALiVE_fnc_doMoveRemote;
             
-            _position = ([_position,10] call ALIVE_fnc_findIndoorHousePositions) call BIS_fnc_selectRandom;
+            _position = selectRandom ([_position,10] call ALIVE_fnc_findIndoorHousePositions);
 
             _nextStateArgs = _args;
             _nextState = "move";

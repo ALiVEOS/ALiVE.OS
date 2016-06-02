@@ -136,7 +136,7 @@ if(count (ALIVE_civCommands select 1) > 0) then {
     };
 
     // select a random command
-    _commandName = ALIVE_availableCivCommands call BIS_fnc_selectRandom;
+    _commandName = selectRandom ALIVE_availableCivCommands;
     _command = [ALIVE_civCommands, _commandName] call ALIVE_fnc_hashGet;
 
     // get the probability for the command for the current time of day

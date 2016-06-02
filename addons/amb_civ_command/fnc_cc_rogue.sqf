@@ -120,7 +120,7 @@ switch (_state) do {
             };
 
             if(count _weapons > 0) then {
-                _weaponGroup = _weapons call BIS_fnc_selectRandom;
+                _weaponGroup = selectRandom _weapons;
                 _weapon = _weaponGroup select 0;
                 _ammo = _weaponGroup select 1;
 
