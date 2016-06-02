@@ -28,7 +28,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_cluster","_position","_distance","_result","_clusterHostility","_hostilitySettingsEAST","_hostilitySettingsWEST","_hostilitySettingsINDEP",
-"_hostilitySides","_hostilityNumbers","_nearUnits","_highest","_highestIndex","_nearEAST","_nearWEST","_nearINDEP","_players","_mostHostileSide"];
+"_hostilitySides","_hostilityNumbers","_nearUnits","_highest","_highestIndex","_nearEAST","_nearWEST","_nearINDEP","_mostHostileSide"];
 
 _cluster = _this select 0;
 _position = _this select 1;
@@ -73,9 +73,6 @@ _nearINDEP = [_nearUnits, "GUER"] call ALIVE_fnc_hashGet;
     };
 } forEach (_position nearEntities ["CAManBase", _distance]);
 
-
-_players = [] call BIS_fnc_listPlayers;
-
 {
     if(_position distance position _x < _distance) then {
         if(alive _x) then {
@@ -92,7 +89,7 @@ _players = [] call BIS_fnc_listPlayers;
             };
         };
     };
-} forEach _players;
+} forEach allPlayers;
 
 _nearEAST = [_nearUnits, "EAST"] call ALIVE_fnc_hashGet;
 _nearWEST = [_nearUnits, "WEST"] call ALIVE_fnc_hashGet;
@@ -129,7 +126,7 @@ private ["_units","_unit"];
 if(count ([_nearUnits, _mostHostileSide] call ALIVE_fnc_hashGet) > 0) then {
     if(_highest > 0) then {
         _units = [_nearUnits, _mostHostileSide] call ALIVE_fnc_hashGet;
-        _unit = _units call BIS_fnc_selectRandom;
+        _unit = selectRandom _units;
         _result = [_unit];
     }
 }else{
@@ -155,7 +152,7 @@ if(count ([_nearUnits, _mostHostileSide] call ALIVE_fnc_hashGet) > 0) then {
     if(count ([_nearUnits, _mostHostileSide] call ALIVE_fnc_hashGet) > 0) then {
         if(_highest > 0) then {
             _units = [_nearUnits, _mostHostileSide] call ALIVE_fnc_hashGet;
-            _unit = _units call BIS_fnc_selectRandom;
+            _unit = selectRandom _units;
             _result = [_unit];
         }
     }else{
@@ -181,7 +178,7 @@ if(count ([_nearUnits, _mostHostileSide] call ALIVE_fnc_hashGet) > 0) then {
         if(count ([_nearUnits, _mostHostileSide] call ALIVE_fnc_hashGet) > 0) then {
             if(_highest > 0) then {
                 _units = [_nearUnits, _mostHostileSide] call ALIVE_fnc_hashGet;
-                _unit = _units call BIS_fnc_selectRandom;
+                _unit = selectRandom _units;
                 _result = [_unit];
             }
         };

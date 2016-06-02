@@ -45,7 +45,8 @@ hideObject _musicSource;
             _trackDuration = [ALIVE_civilianHouseTracks, _trackName] call ALIVE_fnc_hashGet;
 
             if(isMultiplayer) then {
-                [[_building, _musicSource, _trackName],"ALIVE_fnc_clientAddAmbientRoomMusic"] call BIS_fnc_MP;
+                [_building, _musicSource, _trackName] remoteExec ["ALIVE_fnc_clientAddAmbientRoomMusic"];
+                
             }else{
                 _musicSource say3d _trackName;
             };
