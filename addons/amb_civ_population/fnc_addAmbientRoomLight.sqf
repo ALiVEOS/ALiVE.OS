@@ -35,7 +35,7 @@ _light = "#lightpoint" createVehicle getPos _building;
 
 if(isMultiplayer) then
 {
-    [[_building, _light, _brightness, _colour],"ALIVE_fnc_clientAddAmbientRoomLight"] call BIS_fnc_MP;
+    [_building, _light, _brightness, _colour] remoteExec ["ALIVE_fnc_clientAddAmbientRoomLight"];
 }
 else
 {

@@ -46,14 +46,14 @@ if (_reduceHostility) then {
     _text3 = format["%1<t>This person clearly is not interested in talking to the likes of you!</t>",_title];
     _text4 = format["%1<t>The person just wants to be left alone!</t>",_title];
     
-    _text = [_text1,_text2,_text3,_text4] call BIS_fnc_SelectRandom;
+    _text = selectRandom [_text1,_text2,_text3,_text4];
 	
 	["openSideSmall",0.3] call ALIVE_fnc_displayMenu;
 	["setSideSmallText",_text] spawn ALIVE_fnc_displayMenu;
 };
 
 // execute only on server
-if !(isServer) exitwith {[[_target,_caller,_reduceHostility],"ALIVE_fnc_selectRoleAction",false,false] call BIS_fnc_MP};
+if !(isServer) exitwith {[_target,_caller,_reduceHostility] remoteExec ["ALIVE_fnc_selectRoleAction",2]};
 
 if (_reduceHostility) then {
     _townelder = _target getVariable ["townelder", false];

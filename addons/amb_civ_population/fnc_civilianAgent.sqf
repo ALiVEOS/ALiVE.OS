@@ -66,13 +66,15 @@ nil
 #define SUPERCLASS ALIVE_fnc_baseClassHash
 #define MAINCLASS ALIVE_fnc_civilianAgent
 
-private ["_logic","_operation","_args","_result","_deleteMarkers","_createMarkers"];
+private ["_result","_deleteMarkers","_createMarkers"];
 
 TRACE_1("civilianAgent - input",_this);
 
-_logic = [_this, 0, objNull, [objNull,[]]] call BIS_fnc_param;
-_operation = [_this, 1, "", [""]] call BIS_fnc_param;
-_args = [_this, 2, objNull, [objNull,[],"",0,true,false]] call BIS_fnc_param;
+params [
+    ["_logic", objNull, [objNull,[]]],
+    ["_operation", "", [""]],
+    ["_args", objNull, [objNull,[],"",0,true,false]]
+];
 _result = true;
 
 #define MTEMPLATE "ALiVE_CIVILIANAGENT_%1"
@@ -452,7 +454,7 @@ switch(_operation) do {
 
         private ["_markers","_m","_position","_agentID","_debugColor","_icon","_text","_alpha","_side","_active","_agentPosture","_activeCommands"];
 
-        _alpha = [_args, 0, 0.5, [1]] call BIS_fnc_param;
+        _alpha = _args param [0, 0.5, [1]];
 
         _markers = [];
 
