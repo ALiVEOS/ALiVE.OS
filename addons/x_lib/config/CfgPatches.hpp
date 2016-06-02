@@ -8,8 +8,9 @@ class CfgPatches {
 		requiredAddons[] = {};
 		VERSION_CONFIG;
 		
-		authorUrl = "http://dev-heaven.net/projects/alive";
-		author[] = {
+		authorUrl = "http://alivemod.com/";
+		author = MODULE_AUTHOR;
+		authors[] = {
 			"Naught",
 			"ARJay",
 			"Friznit",

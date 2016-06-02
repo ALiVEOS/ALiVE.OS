@@ -10,8 +10,9 @@ class CfgPatches
 		requiredAddons[] = {"ALIVE_main"};
 		versionDesc = "ALiVE";
 		VERSION_CONFIG;
-		author[] = {"Music by Johari"};
-		authorUrl = "http://dev-heaven.net/projects/alive";
+		author = MODULE_AUTHOR;
+		authors[] = {"Music by Johari"};
+		authorUrl = "http://alivemod.com/";
 	};
 };
 class CfgMissions

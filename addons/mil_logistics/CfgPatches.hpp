@@ -8,8 +8,9 @@ class CfgPatches {
 		versionDesc = "ALiVE";
 		//versionAct = "['mil_logistics',_this] execVM '\x\alive\addons\main\about.sqf';";
 		VERSION_CONFIG;
-		author[] = {"ARJay"};
-		authorUrl = "http://dev-heaven.net/projects/alive";
+		author = MODULE_AUTHOR;
+		authors[] = {"ARJay"};
+		authorUrl = "http://alivemod.com/";
 	};
 };
 class Extended_InitPost_EventHandlers {
