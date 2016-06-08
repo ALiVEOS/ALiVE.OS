@@ -332,7 +332,7 @@ switch (_operation) do {
 
                     _control = _display displayCtrl MAP_CONTROL;
     				_control ctrlAddEventHandler ["MouseButtonClick", "[ALiVE_SYS_marker,'mouseButton',[player, _this]] call ALiVE_fnc_marker;"];
-                    _control ctrlAddEventHandler ["MouseButtonDblClick", "hint 'Only ALIVE Advanced Markers will be stored. Default BIS markers are not supported by ALIVE. CTRL-MOUSE BUTTON to create an Advanced Marker.'"];
+                    _control ctrlAddEventHandler ["MouseButtonDblClick", "hint 'Only ALIVE Advanced Markers will be stored. Default BIS markers are not supported by ALIVE. CTRL+ALT+MOUSE BUTTON to create an Advanced Marker.'"];
        				_control ctrlAddEventHandler ["draw", "[ALiVE_SYS_marker,'draw',[player, _this]] call ALiVE_fnc_marker;"];
                     _control ctrlAddEventHandler ["MouseMoving", {[ALiVE_SYS_marker,"mouseMoving",[player, _this]] call ALiVE_fnc_marker;}];
 
@@ -371,7 +371,7 @@ switch (_operation) do {
             _toggle = [_logic, "drawToggle"] call MAINCLASS;
 
 			// Check to see if CTRL is held down
-			if (_ctr && !_shift && !_alt) then {
+			if (_ctr && !_shift && _alt) then {
 				private ["_side","_xy","_pos","_check"];
 				_xy = [_params select 2, _params select 3];
 
@@ -402,7 +402,7 @@ switch (_operation) do {
                         } else {
 
                              // drawToggle is on
-                            if (_ctr && _button == 0) then {
+                            if (_ctr && _alt && _button == 0) then {
                                 private "_drawing";
 
                                 _drawing = [_logic, "drawing"] call ALIVE_fnc_marker;
@@ -620,19 +620,19 @@ switch (_operation) do {
                            };
                             case ARROW_DRAW: {          // Free Arrow Draw
                                 _title = "Arrow Draw Mode";
-                                 _msg = "Press [Left Ctrl] + [LMB] to select start point.<br/>Press [Left Arrow] to change color.<br/>Press [Right Arrow] to toggle fill<br/>Press [Left Ctrl] + [LMB] again to finish.<br/>Press [END] to cancel.<br/>Press [Left Bracket] to cycle draw mode.";
+                                 _msg = "Press [Left Ctrl] + [Left Alt] + [LMB] to select start point.<br/>Press [Left Arrow] to change color.<br/>Press [Right Arrow] to toggle fill<br/>Press [Left Ctrl] + [Left Alt] + [LMB] again to finish.<br/>Press [END] to cancel.<br/>Press [Left Bracket] to cycle draw mode.";
                             };
                             case ELLIPSE_DRAW: {            // Free Ellipse Draw
                                 _title =  "Ellipse Draw Mode";
-                                _msg = "Press [Left Ctrl] + [LMB] to select start point.<br/>Press [Left Arrow] to change color.<br/>Press [Right Arrow] to toggle fill<br/>Press [Up Arrow] to rotate clockwise<br/>Press [Down Arrow] to rotate counter-clockwise<br/>Press [Left Ctrl] + [LMB] again to finish.<br/>Press [END] to cancel.<br/>Press [Left Bracket] to cycle draw mode.<br/>Press [Left Ctrl] + [RMB] to delete"
+                                _msg = "Press [Left Ctrl] + [Left Alt] + [LMB] to select start point.<br/>Press [Left Arrow] to change color.<br/>Press [Right Arrow] to toggle fill<br/>Press [Up Arrow] to rotate clockwise<br/>Press [Down Arrow] to rotate counter-clockwise<br/>Press [Left Ctrl] + [Left Alt] + [LMB] again to finish.<br/>Press [END] to cancel.<br/>Press [Left Bracket] to cycle draw mode.<br/>Press [Left Ctrl] + [Left Alt] + [RMB] to delete"
                             };
                             case RECTANGLE_DRAW: {          // Free Rectangle Draw
                                 _title =  "Rectangle Draw Mode";
-                                _msg = "Press [Left Ctrl] + [LMB] to select start point.<br/>Press [Left Arrow] to change color.<br/>Press [Right Arrow] to toggle fill<br/>Press [Up Arrow] to rotate clockwise<br/>Press [Down Arrow] to rotate counter-clockwise<br/>Press [Left Ctrl] + [LMB] again to finish.<br/>Press [END] to cancel.<br/>Press [Left Bracket] to cycle draw mode.<br/>Press [Left Ctrl] + [RMB] to delete"
+                                _msg = "Press [Left Ctrl] + [Left Alt] + [LMB] to select start point.<br/>Press [Left Arrow] to change color.<br/>Press [Right Arrow] to toggle fill<br/>Press [Up Arrow] to rotate clockwise<br/>Press [Down Arrow] to rotate counter-clockwise<br/>Press [Left Ctrl] + [Left Alt] + [LMB] again to finish.<br/>Press [END] to cancel.<br/>Press [Left Bracket] to cycle draw mode.<br/>Press [Left Ctrl] + [Left Alt] + [RMB] to delete"
                             };
                             case LINE_DRAW: {           // Free Line Draw
                                 _title =  "Line Draw Mode";
-                                _msg = "Press [Left Ctrl] + [LMB] to select start point.<br/>Press [Left Arrow] to change color.<br/>Press [Right Arrow] to toggle fill<br/>Press [Up Arrow] to increase width<br/>Press [Down Arrow] to decrease width<br/>Press [Left Ctrl] + [LMB] again to finish.<br/>Press [END] to cancel.<br/>Press [Left Bracket] to cycle draw mode.<br/>Press [Left Ctrl] + [RMB] to delete"
+                                _msg = "Press [Left Ctrl] + [Left Alt] + [LMB] to select start point.<br/>Press [Left Arrow] to change color.<br/>Press [Right Arrow] to toggle fill<br/>Press [Up Arrow] to increase width<br/>Press [Down Arrow] to decrease width<br/>Press [Left Ctrl] + [Left Alt] + [LMB] again to finish.<br/>Press [END] to cancel.<br/>Press [Left Bracket] to cycle draw mode.<br/>Press [Left Ctrl] + [Left Alt] + [RMB] to delete"
                             };
                             default {
                                 _title =  "DRAW MODE OFF";
