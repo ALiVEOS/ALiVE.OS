@@ -5,6 +5,8 @@
 #define GUI_GRID_WAbs (1)
 #define GUI_GRID_HAbs (1)
 
+class RscPicture;
+
 /***************************
 //BACKGROUND
 ***************************/
@@ -300,9 +302,9 @@ class NEO_RscMap
   fontLevel = "TahomaB";
   fontNames = "PuristaMedium";
   fontUnits = "TahomaB";
-   maxSatelliteAlpha = 0.85;
+  maxSatelliteAlpha = 0.85;
   moveOnEdges = 1;
-ptsPerSquareSea = 8;
+  ptsPerSquareSea = 8;
   ptsPerSquareTxt = 10;
   ptsPerSquareCLn = 10;
   ptsPerSquareExp = 10;
@@ -643,23 +645,4 @@ ptsPerSquareSea = 8;
     importance = 1;
     size = 24;
     };
-};
-class RscPicture
-{
-  colorBackground[] = {0,0,0,0};
-  colorText[] = {1,1,1,1};
-  fixedWidth = 0;
-  access = 0;
-  type = 0;
-  idc = -1;
-  style = 48;
-    font = "PuristaMedium";
-  sizeEx = 0;
-  lineSpacing = 0;
-  text = "";
-  shadow = 0;
-  x = 0;
-  y = 0;
-  w = 0.2;
-  h = 0.15;
 };

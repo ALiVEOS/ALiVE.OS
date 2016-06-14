@@ -74,7 +74,7 @@
 
 #define SL_TEXTURES       0x10
 
-// progress bar 
+// progress bar
 #define ST_VERTICAL       0x01
 #define ST_HORIZONTAL     0
 
@@ -104,24 +104,7 @@
 ///////////////////////////////////////////////////////////////////////////
 /// Base Classes
 ///////////////////////////////////////////////////////////////////////////
-class IGUIBack {
-	type = 0;idc = 124;style = 128;text = "";
-	colorText[] = { 0, 0, 0, 0 };font = GUI_FONT_NORMAL;sizeEx = 0;shadow = 0;x = 0.1;y = 0.1;w = 0.1;h = 0.1;
-	colorbackground[] = { 0, 0, 0, 1 };
-};
-class RscText {
-	access = 0;type = 0;idc = -1;
-	colorBackground[] = { 0, 0, 0, 0 };
-	colorText[] = { 1, 1, 1, 1 };text = "";fixedWidth = 0;x = 0;y = 0;h = 0.037;w = 0.3;style = 0;shadow = 1;
-	colorShadow[] = { 0, 0, 0, 0.5 };font = GUI_FONT_NORMAL;SizeEx = "(((1 / 1.2) / 20) * 0.9)";linespacing = 1;
-};
-
-class RscSlider {
-	access = 0;type = 3;style = 1024;w = 0.3;
-	color[] = { 1, 1, 1, 0.8 };
-	colorActive[] = { 1, 1, 1, 1 };shadow = 0;h = 0.025;
-};
-class RscPicture {
-	colorBackground[] = { 0, 0, 0, 0 };
-	colorText[] = { 1, 1, 1, 1 };fixedWidth = 0;access = 0;type = 0;idc = -1;style = 48;font = "PuristaMedium";sizeEx = 0;lineSpacing = 0;text = "";shadow = 0;x = 0;y = 0;w = 0.2;h = 0.15;
-};
+class IGUIBack;
+class RscText;
+class RscSlider;
+class RscPicture;

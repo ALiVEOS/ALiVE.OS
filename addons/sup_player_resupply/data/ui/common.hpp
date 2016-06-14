@@ -5,9 +5,11 @@
 #define GUI_GRID_WAbs (1)
 #define GUI_GRID_HAbs (1)
 
+class RscPicture;
+
 class PRTablet_RscBackground
 {
-	idc = -1; 
+	idc = -1;
 	type = 0;
 	style = 128;
 	colorbackground[] = {0,0,0,1};
@@ -16,13 +18,13 @@ class PRTablet_RscBackground
 	sizeEx = 0;
 	moving = 0;
 	shadow =0;
-	x = "(safeZoneX + (safeZoneW / 1.8))"; 
-	y = "(safeZoneY + (safeZoneH / 3.25))"; 
+	x = "(safeZoneX + (safeZoneW / 1.8))";
+	y = "(safeZoneY + (safeZoneH / 3.25))";
 	w = "(safeZoneW / 3)";
 	h = "(safeZoneH / 2)";
 };
 
-class PRTablet_RscEdit 
+class PRTablet_RscEdit
 {
 	idc = -1;
 	type = 2;
@@ -40,30 +42,30 @@ class PRTablet_RscEdit
 };
 
 class PRTablet_RscText
-{ 
-	idc = -1; 
-	type = 13; 
+{
+	idc = -1;
+	type = 13;
 	style = 0x00;
 	colorBackground[] = { 0, 0, 0, 0 };
 	size = "((safeZoneW / 75) + (safeZoneH / 225))";
-	x = "safeZoneX + (safeZoneW / 6)"; 
-	y = "safeZoneY + (safeZoneH / 6)"; 
-	w = "safeZoneW / 5"; 
+	x = "safeZoneX + (safeZoneW / 6)";
+	y = "safeZoneY + (safeZoneH / 6)";
+	w = "safeZoneW / 5";
 	h = "safeZoneH / 10";
 	text = "SUPPORT MENU";
-	class Attributes 
-	{ 
-		font = "PuristaMedium"; 
-		color = "#C0C0C0"; 
-		align = "center"; 
-		valign = "middle"; 
-		shadow = true; 
+	class Attributes
+	{
+		font = "PuristaMedium";
+		color = "#C0C0C0";
+		align = "center";
+		valign = "middle";
+		shadow = true;
 		shadowColor = "#000000";
 	};
 };
 
 class PRTablet_RscSlider
-{ 
+{
 	idc = -1;
 	type = 43;
 	style = 0x400 + 0x10;
@@ -293,7 +295,7 @@ class PRTablet_RscButton
 };
 
 class PRTablet_RscMap
-{	
+{
     access = 0;
     alphaFadeEndScale = 0.4;
     alphaFadeStartScale = 0.35;
@@ -674,22 +676,3 @@ class PRTablet_RscMap
     };
 };
 
-class RscPicture
-{
-    colorBackground[] = {0,0,0,0};
-    colorText[] = {1,1,1,1};
-    fixedWidth = 0;
-    access = 0;
-    type = 0;
-    idc = -1;
-    style = 48;
-    font = "PuristaMedium";
-    sizeEx = 0;
-    lineSpacing = 0;
-    text = "";
-    shadow = 0;
-    x = 0;
-    y = 0;
-    w = 0.2;
-    h = 0.15;
-};
