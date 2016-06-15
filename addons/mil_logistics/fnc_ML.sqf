@@ -2586,6 +2586,7 @@ switch(_operation) do {
                 _infantryProfiles = [_eventCargoProfiles, 'infantry'] call ALIVE_fnc_hashGet;
                 _unloadedUnits = [];
                 _loadedUnits = [];
+                _units = [];
 
                 {
 
@@ -2627,10 +2628,12 @@ switch(_operation) do {
 
                 } forEach _infantryProfiles;
 
-                if(count _loadedUnits == 0) then {
+                if(count _loadedUnits == 0 && count _units > 0) then {
 
                     // all unloaded
                     // continue on to travel
+                    _eventStateData set [0, 0];
+                    [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
 
                     [_event, "state", "heliTransportComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
@@ -2665,6 +2668,7 @@ switch(_operation) do {
                 _count = [_logic, "checkEvent", _event] call MAINCLASS;
                 if(_count == 0) exitWith {
                     // set state to event complete
+
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
@@ -2704,7 +2708,6 @@ switch(_operation) do {
                                 //[ALIVE_profileHandler, "unregisterProfile", _transportProfile] call ALIVE_fnc_profileHandler;
 
                                 [_logic, "setEventProfilesAvailable", _event] call MAINCLASS;
-
                                 // set state to event complete
                                 [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                                 [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
@@ -2725,7 +2728,6 @@ switch(_operation) do {
                     };
 
                 }else{
-
                     // no transport vehicles
                     // set state to event complete
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
@@ -2748,11 +2750,10 @@ switch(_operation) do {
 
                 if(count _eventTransportProfiles > 0) then {
 
-                    // send transport vehicles back to insertion point
+                    // send transport vehicles back to insertion point and beyond 1500m to ensure it
                     {
                         _reinforcementPosition = [_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet;
-                        _position = _reinforcementPosition getPos [random(300), random(360)];
-                        _position = [_position] call ALIVE_fnc_getClosestRoad;
+                        _position = _reinforcementPosition getPos [1500, [[_event, "finalDestination"] call ALIVE_fnc_hashGet,_reinforcementPosition] call BIS_fnc_dirTo];
                         _profileWaypoint = [_position, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
 
                         _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
@@ -2781,7 +2782,7 @@ switch(_operation) do {
 
             case "heliTransportReturnWait": {
 
-                private ["_anyActive","_anyAlive","_transportProfile","_active","_inCommand","_commandProfileID","_commandProfile","_commandUnits","_vehicle","_count"];
+                private ["_waitTotalIterations","_waitIterations","_anyActive","_anyAlive","_transportProfile","_active","_inCommand","_commandProfileID","_commandProfile","_commandUnits","_vehicle","_count"];
 
                 _count = [_logic, "checkEvent", _event] call MAINCLASS;
                 if(_count == 0) exitWith {
@@ -2794,6 +2795,15 @@ switch(_operation) do {
 
                     _anyActive = 0;
                     _anyAlive = 0;
+
+                    // mechanism for aborting this state
+                    // once set time limit has passed
+                    // if all units haven't reached objective
+                    _waitTotalIterations = 40;
+                    _waitIterations = 0;
+                    if(count _eventStateData > 0) then {
+                        _waitIterations = _eventStateData select 0;
+                    };
 
                     // once transport vehicles are inactive
                     // dispose of the profiles
@@ -2811,7 +2821,7 @@ switch(_operation) do {
 
                             };
 
-                            if([position _vehicle, 1500] call ALiVE_fnc_anyPlayersInRange == 0) then {
+                            if([position _vehicle, 1000] call ALiVE_fnc_anyPlayersInRange == 0 || _waitIterations > _waitTotalIterations) then {
 
                                 // if not active dispose of transport profiles
 
@@ -2851,9 +2861,17 @@ switch(_operation) do {
 
                     } forEach _eventTransportVehiclesProfiles;
 
+                    _waitIterations = _waitIterations + 1;
+                    _eventStateData set [0, _waitIterations];
+                    [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
+
                     if(_anyActive == 0 || _anyAlive == 0) then {
                         // no transport vehicles
                         // set state to event complete
+
+                    _eventStateData set [0, 0];
+                    [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
+
                         [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                         [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                     };
@@ -4466,6 +4484,7 @@ switch(_operation) do {
 
                                     _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,_payload] call ALIVE_fnc_createProfilesCrewedVehicle;
 
+
                                     _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
                                     _transportVehicleProfiles set [count _transportVehicleProfiles, _profiles select 1 select 2 select 4];
 
@@ -4476,6 +4495,7 @@ switch(_operation) do {
                                     } forEach _profiles;
 
                                     _payloadGroupProfiles set [count _payloadGroupProfiles, _profileIDs];
+
 
                                     _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
                                     _profile = _profiles select 0;
@@ -4984,9 +5004,9 @@ switch(_operation) do {
             "_destination","_completionRadius","_distance"];
 
             _group = _entityProfile select 2 select 13;
-            
+
             if !(!isnil "_group" && {typeName _group == "GROUP"}) exitwith {_waypointCompleted = true};
-            
+
             _leader = leader _group;
             _currentPosition = position _leader;
             _currentWaypoint = currentWaypoint _group;
@@ -5379,6 +5399,7 @@ switch(_operation) do {
                 _eventTransportVehiclesProfiles set [_index,objNull];
                 _eventTransportVehiclesProfiles = _eventTransportVehiclesProfiles - [objNull];
                 [_event, "transportVehiclesProfiles",_eventTransportVehiclesProfiles] call ALIVE_fnc_hashSet;
+
 
                 if(_active) then {
 
@@ -5787,7 +5808,7 @@ switch(_operation) do {
                 if(count _payloadProfiles > 0) then {
 
                     _reinforcementPosition = [_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet;
-                    _position = _reinforcementPosition getPos [random(300), random(360)];
+                    _position = _reinforcementPosition getPos [1500, [[_event, "finalDestination"] call ALIVE_fnc_hashGet,_reinforcementPosition] call BIS_fnc_dirTo];
 
                     [_payloadGroupProfiles,_position] spawn {
 
