@@ -7,7 +7,7 @@ _callsign = _casArray select (lbCurSel _casUnitLb) select 2;
 _callSignPlayer = (format ["%1", group player]) call NEO_fnc_callsignFix;
 
 //Task
-_veh setVariable ["NEO_radioCasNewTask", ["RTB", [], 0, 0, ""], true];
+_veh setVariable ["NEO_radioCasNewTask", ["RTB", [], 0, 0, "", "", player], true];
 [player, format ["%1, this is %2. Return to base. Over.", _callsign, _callSignPlayer], "side"] call NEO_fnc_messageBroadcast;
 
 //Interface

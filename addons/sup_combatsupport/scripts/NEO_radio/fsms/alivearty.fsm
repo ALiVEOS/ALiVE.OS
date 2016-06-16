@@ -1,4 +1,4 @@
-/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, alivearty">*/
+/*%FSM<COMPILE "G:\Program Files (x86)\Poseidon-SQF-Editor\Poseidon\Data\Packages\Bin\fsmEditor\scriptedFSM.cfg, alivearty">*/
 /*%FSM<HEAD>*/
 /*
 item0[] = {"Start",0,250,-41.455616,-237.568573,48.544384,-187.568573,0.000000,"Start"};
@@ -6,13 +6,13 @@ item1[] = {"True",4,218,-42.781796,-125.724930,47.218204,-75.724922,0.000000,"Tr
 item2[] = {"main_loop",2,250,-43.161469,-20.598993,46.838547,29.401003,0.000000,"main loop"};
 item3[] = {"new_task",4,218,-38.938957,58.070740,51.061043,108.070747,0.000000,"new task"};
 item4[] = {"_",2,250,-39.730919,130.312286,50.269096,180.312286,0.000000,""};
-item5[] = {"proceed",4,4314,-38.146973,229.671280,51.853027,279.671356,0.000000,"proceed"};
+item5[] = {"proceed",4,218,-38.146973,229.671280,51.853027,279.671356,0.000000,"proceed"};
 item6[] = {"__1",2,250,-40.522888,304.116425,49.477127,354.116425,0.000000,""};
 item7[] = {"Shoot",4,218,-38.938953,375.393738,51.061047,425.393738,0.000000,"Shoot"};
 item8[] = {"__2",2,250,-220.322266,425.625824,-130.322189,475.625824,0.000000,""};
 item9[] = {"splash",4,218,-25.917665,523.731567,64.082306,573.731567,1.000000,"splash"};
 item10[] = {"__3",2,250,-28.606581,600.313232,61.393440,650.313232,0.000000,""};
-item11[] = {"complete",4,218,-28.643337,673.174500,61.356651,723.174500,0.000000,"complete"};
+item11[] = {"complete",4,4314,-28.643337,673.174500,61.356651,723.174500,0.000000,"complete"};
 item12[] = {"__4",2,250,-29.297188,763.329834,60.702827,813.329834,0.000000,""};
 item13[] = {"ready_for_new_mi",4,218,-49.835411,854.863464,84.514908,934.958313,0.000000,"ready for new mission"};
 item14[] = {"__5",2,250,-25.202356,996.407898,64.797668,1046.407837,0.000000,""};
@@ -161,8 +161,8 @@ link78[] = {61,64};
 link79[] = {62,63};
 link80[] = {63,48};
 link81[] = {64,49};
-globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-684.352539,494.065521,542.621582,-231.827179,1127,755,1};
-window[] = {0,-1,-1,-1,-1,1084,198,1890,198,1,1144};
+globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-857.633850,686.069214,604.057739,-526.262451,1012,741,1};
+window[] = {0,-1,-1,-1,-1,938,84,1776,52,1,1030};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -187,6 +187,7 @@ class FSM
        "_class = _this select 6;" \n
        "_battery = _this select 7;" \n
        "_code = _this select 8;" \n
+       "_audio = _this select 9;" \n
        "_leader = leader _grp;" \n
        "" \n
        "diag_log format[""START ARTY FSM: %1"",_this];" \n
@@ -312,6 +313,7 @@ class FSM
            "//_class = _newTaskArray select 6;" \n
            "_ordnance = _newTaskArray select 7;" \n
            "_callsignPlayer = _newTaskArray select 8;" \n
+           "_player = _newTaskArray select 9;" \n
            "_battery setVariable [""NEO_radioArtyNewTask"", nil, true];" \n
            "" \n
            "//Get ASL position" \n
@@ -428,7 +430,7 @@ class FSM
     class __1
     {
       name = "__1";
-      init = /*%FSM<STATEINIT""">*/"[(_units select 0), _callsign,_callsignPlayer] spawn" \n
+      init = /*%FSM<STATEINIT""">*/"[(_units select 0), _callsign,_callsignPlayer, _player] spawn" \n
        "{" \n
        "	private ""_msg"";" \n
        "	sleep 5;" \n
@@ -466,8 +468,12 @@ class FSM
            "time > _delay" \n
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"private ""_msg"";" \n
-           "_msg = format [""%1 this is %2, We are firing on target. Out."",_callsignPlayer, _callsign];" \n
-           "[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;"/*%FSM</ACTION""">*/;
+           "if (_audio) then {" \n
+           "	leader (_units select 0) kbTell [_player, ""ALIVE_SUPP_protocol"", ""Artillery_Acknowledged"", ""GROUP""];	" \n
+           "} else {" \n
+           "	_msg = format [""%1 this is %2, We are firing on target. Out."",_callsignPlayer, _callsign];" \n
+           "	[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
       };
@@ -504,8 +510,12 @@ class FSM
           condition=/*%FSM<CONDITION""">*/"_battery getVariable ""ARTY_SPLASH""" \n
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"private ""_msg"";" \n
-           "_msg = format [""%1 this is %2, Splash. Out."",_callsignPlayer, _callsign];" \n
-           "[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;"/*%FSM</ACTION""">*/;
+           "if (_audio) then {" \n
+           "	leader (_units select 0) kbTell [_player, ""ALIVE_SUPP_protocol"", ""Artillery_Accomplished"", ""GROUP""];" \n
+           "} else {" \n
+           "	_msg = format [""%1 this is %2, Splash. Out."",_callsignPlayer, _callsign];" \n
+           "	[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
       };
@@ -546,8 +556,13 @@ class FSM
            "time > _delay" \n
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"private ""_msg"";" \n
-           "_msg = format [""%1 this is %2, Battery is rounds complete. Out."",_callsignPlayer, _callsign];" \n
-           "[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;"/*%FSM</ACTION""">*/;
+           "if (_audio) then {" \n
+           "	leader (_units select 0) kbTell [_player, ""ALIVE_SUPP_protocol"", ""Artillery_Rounds_Complete"", ""GROUP""];" \n
+           "} else {" \n
+           "	_msg = format [""%1 this is %2, Battery is rounds complete. Out."",_callsignPlayer, _callsign];" \n
+           "	[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "};" \n
+           ""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
       };
@@ -1312,9 +1327,7 @@ class FSM
   initState="Start";
   finalStates[] =
   {
-    "__6",
-    "__8",
-    "__13",
+    "__6"    ,"__8"    ,"__13"
   };
 };
 /*%FSM</COMPILE>*/

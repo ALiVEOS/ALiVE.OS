@@ -6,6 +6,7 @@ private
 ];
 _display = findDisplay 655555;
 _artyArray = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", playerSide];
+_audio = NEO_radioLogic getVariable format ["combatsupport_audio", true];
 _artyConfirmButton = _display displayCtrl 655597;
 _artyUnitLb = _display displayCtrl 655594;
 _artyOrdnanceTypeLb = _display displayCtrl 655601;
@@ -49,8 +50,16 @@ _callsignPlayer = (format ["%1", group player]) call NEO_fnc_callsignFix;
 [[player,format["%1, this is %2. We need an %5 %7 round %6 strike at grid %3%4 with %8m dispersion and %9s delay. Over.", _callsign, _callSignPlayer, _coord select 0, _coord select 1, _type, _ordnanceType, _count, _dispersion, _rate],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 
 
+if (_audio) then {
+	player kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
+	_battery kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
+
+	player kbTell [_battery, "ALIVE_SUPP_protocol", "Artillery_Request", "GROUP"];
+};
+
+
 //NEW TASK
-_battery setVariable ["NEO_radioArtyNewTask", [_type, _ordnanceType, _rate, _count, _dispersion, _pos, _unit, _ord, _callsignPlayer], true];
+_battery setVariable ["NEO_radioArtyNewTask", [_type, _ordnanceType, _rate, _count, _dispersion, _pos, _unit, _ord, _callsignPlayer, player], true];
 
 //Interface
 [lbCurSel 655565] call NEO_fnc_radioRefreshUi;

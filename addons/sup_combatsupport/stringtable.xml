@@ -26,6 +26,12 @@
 <Key ID="STR_ALIVE_ARTY_LIMIT_COMMENT">
 	<English>Set the number of times Arty Asssets can be replenished</English>
 </Key>
+<Key ID="STR_ALIVE_CS_AUDIO">
+	<English>Radio Messages (Audio):</English>
+</Key>
+<Key ID="STR_ALIVE_CS_AUDIO_COMMENT">
+	<English>Uses audible radio messages for support requests</English>
+</Key>
 <Key ID="STR_ALIVE_TRANS_LIMIT">
 	<English>Transport Respawn Limit:</English>
 </Key>
