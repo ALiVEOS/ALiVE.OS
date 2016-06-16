@@ -12,7 +12,7 @@ _callSignPlayer = (format ["%1", group player]) call NEO_fnc_callsignFix;
 _task = "RTB";
 
 //New Task Assigned - RTB
-_chopper setVariable ["NEO_radioTransportNewTask", [_task, []], true];
+_chopper setVariable ["NEO_radioTransportNewTask", [_task, [],0, player], true];
 [player, format ["%1 this is %2, return to base. Over.", _callSign, _callSignPlayer], "side"] call NEO_fnc_messageBroadcast;
 
 //Interface

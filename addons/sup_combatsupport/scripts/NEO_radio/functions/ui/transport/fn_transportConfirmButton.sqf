@@ -6,6 +6,7 @@ _transportTaskLb = _display displayCtrl 655569;
 _transportConfirmButton = _display displayCtrl 655574;
 _slider = _display displayCtrl 655578;
 _transportFlyHeightSlider = _display displayCtrl 655580;
+_audio = NEO_radioLogic getVariable format ["combatsupport_audio", true];
 
 private ["_transportArray", "_unit", "_grp", "_callsign", "_callSignPlayer", "_task", "_marker", "_pos","_amnt"];
 _transportArray = NEO_radioLogic getVariable format ["NEO_radioTrasportArray_%1", playerSide];
@@ -22,15 +23,15 @@ _amnt = sliderPosition _slider;_location = _pos call BIS_fnc_posToGrid;
 
 //New Task Assigned
 private ["_arguments"];
-_arguments = [_task, _pos];
+_arguments = [_task, _pos, 0, player];
 
 if (toUpper _task == "CIRCLE") then
 {
-	_arguments = [_task, _pos,_amnt];
+	_arguments = [_task, _pos,_amnt, player];
 };
 if (toUpper _task == "INSERTION") then
 {
-	_arguments = [_task, _pos,_amnt];
+	_arguments = [_task, _pos,_amnt, player];
 };
 
 //Player dialog
@@ -50,6 +51,13 @@ _text = switch (toUpper _task) do
 //New Task
 _unit setVariable ["NEO_radioTransportNewTask", _arguments, true];
 [[player,_text,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+
+if (_audio) then {
+	player kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
+	leader _grp kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
+
+	player kbTell [leader _grp, "ALIVE_SUPP_protocol", "Transport_Request", "GROUP"];
+};
 
 //Interface
 [lbCurSel 655565] call NEO_fnc_radioRefreshUi;

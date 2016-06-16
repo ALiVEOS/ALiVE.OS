@@ -69,6 +69,26 @@ class CfgVehicles {
                                 	};
                                 };
                         };
+                        class combatsupport_audio
+                        {
+                                displayName = "$STR_ALIVE_CS_AUDIO";
+                                description = "$STR_ALIVE_CS_AUDIO_COMMENT";
+                                typeName = "BOOL";
+                                class values
+                                {
+                                    class true
+                                    {
+                                        name="Yes";
+                                        value = 1;
+                                        default = 1;
+                                    };
+                                    class false
+                                    {
+                                        name="No";
+                                        value = 0;
+                                    };
+                                };
+                        };
                 };
                 class ModuleDescription
 				{

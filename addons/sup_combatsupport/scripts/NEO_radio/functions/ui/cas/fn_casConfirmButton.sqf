@@ -11,7 +11,7 @@ _casFlyHeightSlider = _display displayCtrl 655590;
 _casRadiusSlider = _display displayCtrl 655592;
 _casAttackRunLB = _display displayCtrl 655613;
 _casROELb = _display displayCtrl 655615;
-
+_audio = NEO_radioLogic getVariable format ["combatsupport_audio", true];
 _casArray = NEO_radioLogic getVariable format ["NEO_radioCasArray_%1", playerSide];
 _veh = _casArray select (lbCurSel _casUnitLb) select 0;
 _grp = _casArray select (lbCurSel _casUnitLb) select 1;
@@ -34,8 +34,21 @@ _weapon = (weapons _veh) select (lbCurSel _casAttackRunLB);
 _ROE = _casROELb lbData (lbCurSel _casROELb);
 
 //New Task
-_veh setVariable ["NEO_radioCasNewTask", [_task, _pos, _radius, _flyInHeight, _weapon, _ROE], true];
-[[player,format["%1, this is %2. We need immediate CAS at %3%4. Over.", _callsign, _callSignPlayer, _coord select 0, _coord select 1],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+_veh setVariable ["NEO_radioCasNewTask", [_task, _pos, _radius, _flyInHeight, _weapon, _ROE, player], true];
+
+
+if (_audio) then {
+	player kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
+	leader _grp kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
+
+	if (_isPlane && (_task == "SAD" || _task == "ATTACK RUN")) then {
+		player kbTell [leader _grp, "ALIVE_SUPP_protocol", "CAS_Bombing_Request", "GROUP"];
+	} else {
+		player kbTell [leader _grp, "ALIVE_SUPP_protocol", "CAS_Heli_Request", "GROUP"];
+	};
+} else {
+	[[player,format["%1, this is %2. We need immediate CAS at %3%4. Over.", _callsign, _callSignPlayer, _coord select 0, _coord select 1],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+};
 
 //Interface
 [lbCurSel 655565] call NEO_fnc_radioRefreshUi;
