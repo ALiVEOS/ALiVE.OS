@@ -114,9 +114,11 @@ sleep 1;
 
                             } forEach _codeArray;
 
+_audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
+
 //FSM
 _casfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\cas.fsm";
-[_veh, _grp, _callsign, _pos, _airport, _dir, _height, _type, _respawn, _code] execFSM _casfsm;
+[_veh, _grp, _callsign, _pos, _airport, _dir, _height, _type, _respawn, _code,_audio] execFSM _casfsm;
 
 
 //Register to all friendly side-lists

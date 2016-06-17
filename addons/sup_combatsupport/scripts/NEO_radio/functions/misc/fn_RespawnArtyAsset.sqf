@@ -93,7 +93,7 @@ if (_side == WEST && _type == "BUS_MotInf_MortTeam") then {
 		[_veh, _grp] call BIS_fnc_spawnCrew;
 		_veh lock true;
 		_vehDir = _vehDir + 90;
-        
+
 		_units set [count _units, _veh];
         _artyBatteries pushback _veh;
 
@@ -131,8 +131,10 @@ _codeArray = [_code, ";"] Call CBA_fnc_split;
     } forEach _codeArray;
 } forEach _artyBatteries;
 
+_audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
+
 //FSM
-[_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _type, leader _grp, _code] execFSM "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
+[_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _type, leader _grp, _code, _audio] execFSM "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
 
 _a = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _side];
 _a set [count _a, [leader _grp, _grp, _callsign, _units, _roundsAvailable]];
