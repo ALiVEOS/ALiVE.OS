@@ -164,7 +164,9 @@ switch(_operation) do {
 
         _result = _args;
     };
-
+    case "pr_audio": {
+        _result = [_logic,_operation,_args,true] call ALIVE_fnc_OOsimpleOperation;
+    };
 	case "countsAir": {
         _result = [_logic,_operation,_args,DEFAULT_COUNT_AIR] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -586,6 +588,15 @@ switch(_operation) do {
 
             [_logic,"sortedGroups",_sortedGroups] call MAINCLASS;
 
+            _audio = [_logic,"pr_audio"] call MAINCLASS;
+
+            // Create HQ Audio source
+            if (_audio) then {
+                ALIVE_PR_HQ = (createGroup west) createUnit ["Logic", [10,10,1000], [], 0, "NONE"];
+                ALIVE_PR_HQ setGroupId [(getText(configFile >> "CfgHQIdentities" >> "HQ" >> "name"))];
+                ALIVE_PR_HQ setIdentity "EPC_B_BHQ";
+                ALIVE_PR_HQ kbAddtopic["ALIVE_PR_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
+            };
 
             // Initialise interaction key if undefined
           if (isNil "SELF_INTERACTION_KEY") then {SELF_INTERACTION_KEY = [221,[false,false,false]];};
@@ -672,7 +683,7 @@ switch(_operation) do {
         // events
 
         private["_event","_eventData","_message","_requestID","_side","_sideObject","_selectedDeliveryValue",
-        "_radioMessage","_radioBroadcast","_markers"];
+        "_radioMessage","_radioBroadcast","_markers","_audio"];
 
         if(typeName _args == "ARRAY") then {
 
@@ -686,18 +697,30 @@ switch(_operation) do {
             _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
             _selectedDeliveryValue = [_logic,"selectedDeliveryListValue"] call MAINCLASS;
 
+            _audio = [_logic,"pr_audio"] call MAINCLASS;
+
             _radioMessage = "";
+
+            if (_audio) then {
+                player kbAddtopic["ALIVE_PR_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
+            };
 
             switch(_message) do {
                 case "ACKNOWLEDGED":{
 
                     // LOGCOM has received and accepted the request
+                    if (_audio) then {
 
-                    _radioMessage = "Request acknowledged, stand by";
+                        ALIVE_PR_HQ kbTell [player, "ALIVE_PR_protocol", "Drop_Acknowledged", "GROUP"];
 
-                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,"HQ"];
+                    } else {
 
-                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                        _radioMessage = "Request acknowledged, stand by";
+
+                        _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,"HQ"];
+
+                        [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                    };
 
 
                 };
@@ -770,6 +793,12 @@ switch(_operation) do {
                     _position = _eventData select 2;
                     _isWaiting = _eventData select 3;
                     _markerLabel = "";
+
+                    if (_audio) then {
+
+                        ALIVE_PR_HQ kbTell [player, "ALIVE_PR_protocol", "Drop_Accomplished", "GROUP"];
+
+                    };
 
                     switch(_selectedDeliveryValue) do {
                         case "PR_AIRDROP": {
@@ -861,6 +890,13 @@ switch(_operation) do {
 
                     switch(_selectedDeliveryValue) do {
                         case "PR_HELI_INSERT": {
+
+                            if (_audio) then {
+
+                                ALIVE_PR_HQ kbTell [player, "ALIVE_PR_protocol", "Drop_Destroyed", "GROUP"];
+
+                            };
+
                             _radioMessage = "Rotary wing units have been destroyed enroute to destination";
                         };
                         case "PR_STANDARD": {
@@ -2166,6 +2202,7 @@ switch(_operation) do {
 
                     _markers = [_logic,"marker"] call MAINCLASS;
                     _payloadReady = [_logic,"payloadReady"] call MAINCLASS;
+                    _audio = [_logic,"pr_audio"] call MAINCLASS;
 
                     _status = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_PayloadStatus);
 
@@ -2324,14 +2361,23 @@ switch(_operation) do {
 
                             private ["_side","_sideObject","_callSignPlayer","_radioMessage","_radioBroadcast"];
 
-                            _side = [_logic,"side"] call MAINCLASS;
-                            _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
-                            _callSignPlayer = format ["%1", group player];
-                            _radioMessage = "Requesting logistics support at the supplied location";
 
-                            _radioBroadcast = [player,_radioMessage,"side",_sideObject,true,false,true,false,"HQ"];
+                            if (_audio) then {
 
-                            [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                                player kbTell [ALIVE_PR_HQ, "ALIVE_PR_protocol", "Drop_Request", "GROUP"];
+
+                            } else {
+
+                                _side = [_logic,"side"] call MAINCLASS;
+                                _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
+                                _callSignPlayer = format ["%1", group player];
+
+                                _radioMessage = "Requesting logistics support at the supplied location";
+
+                                _radioBroadcast = [player,_radioMessage,"side",_sideObject,true,false,true,false,"HQ"];
+
+                                [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                            };
 
                         }else{
                             _status ctrlSetText "Payload refused adjust payload settings";
