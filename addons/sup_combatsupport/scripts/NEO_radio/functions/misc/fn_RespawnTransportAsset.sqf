@@ -122,9 +122,11 @@ _veh setVariable ["NEO_transportAvailableTasks", _tasks, true];
 	};
 } foreach _sides;
 
+_audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
+
 //Start FSM
 _transportfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\transport.fsm";
-[_veh, _grp, _callsign, _pos, _dir,_height,_type, _respawn,_code] execFSM _transportfsm;
+[_veh, _grp, _callsign, _pos, _dir,_height,_type, _respawn,_code,_audio] execFSM _transportfsm;
 
 
 _replen = format["All units this is %1! We are back on station and are ready for tasking", _callsign] ;
