@@ -10,12 +10,12 @@ _battery = _artyArray select (lbCurSel _artyUnitLb) select 0; if (!isNil { NEO_r
 if (_button == _artyMoveButton) then
 {
 	_battery setVariable ["NEO_radioArtyMove", true, true];
-	[player, "Copy that, move into a good fire position. Over.", "side"] call NEO_fnc_messageBroadcast;
+	[player, "Copy that, move into a good fire position. Over.", "group"] call NEO_fnc_messageBroadcast;
 }
 else
 {
 	_battery setVariable ["NEO_radioArtyDontMove", true, true];
-	[player, "Negative, hold position. Over.", "side"] call NEO_fnc_messageBroadcast;
+	[player, "Negative, hold position. Over.", "group"] call NEO_fnc_messageBroadcast;
 };
 
 //Interface
