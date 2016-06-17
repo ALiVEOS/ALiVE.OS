@@ -47,7 +47,7 @@ if (_audio) then {
 		player kbTell [leader _grp, "ALIVE_SUPP_protocol", "CAS_Heli_Request", "GROUP"];
 	};
 } else {
-	[[player,format["%1, this is %2. We need immediate CAS at %3%4. Over.", _callsign, _callSignPlayer, _coord select 0, _coord select 1],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+	[[player,format["%1, %2 needs immediate CAS at %3%4. Over.", _callsign, _callSignPlayer, _coord select 0, _coord select 1],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 };
 
 //Interface

@@ -12,7 +12,7 @@ _chopper setVariable ["NEO_radioSmokeConfirmed", true, true];
 [
 	player,
 	"Affirmative, clear for landing. Over.",
-	"side"
+	"group"
 ] call NEO_fnc_messageBroadcast;
 
 //Interface

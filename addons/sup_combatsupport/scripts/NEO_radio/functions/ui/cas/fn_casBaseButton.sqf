@@ -8,7 +8,7 @@ _callSignPlayer = (format ["%1", group player]) call NEO_fnc_callsignFix;
 
 //Task
 _veh setVariable ["NEO_radioCasNewTask", ["RTB", [], 0, 0, "", "", player], true];
-[player, format ["%1, this is %2. Return to base. Over.", _callsign, _callSignPlayer], "side"] call NEO_fnc_messageBroadcast;
+[player, format ["%1. Return to base. Over.", _callsign, _callSignPlayer], "side"] call NEO_fnc_messageBroadcast;
 
 //Interface
 [lbCurSel 655565] call NEO_fnc_radioRefreshUi;

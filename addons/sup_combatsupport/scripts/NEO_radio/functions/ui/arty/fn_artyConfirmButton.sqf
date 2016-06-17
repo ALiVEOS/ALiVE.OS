@@ -47,7 +47,7 @@ _callsign = _artyArray select (lbCurSel _artyUnitLb) select 2; if (!isNil { NEO_
 _callsignPlayer = (format ["%1", group player]) call NEO_fnc_callsignFix;
 
 //Dislog from player
-[[player,format["%1, this is %2. We need an %5 %7 round %6 strike at grid %3%4 with %8m dispersion and %9s delay. Over.", _callsign, _callSignPlayer, _coord select 0, _coord select 1, _type, _ordnanceType, _count, _dispersion, _rate],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+[[player,format["%1, %2 needs an %5 %7 round %6 strike at grid %3%4 with %8m dispersion and %9s delay. Over.", _callsign, _callSignPlayer, _coord select 0, _coord select 1, _type, _ordnanceType, _count, _dispersion, _rate],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 
 
 if (_audio) then {
