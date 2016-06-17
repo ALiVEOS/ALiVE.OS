@@ -100,7 +100,7 @@ class CfgVehicles {
                                     };
                             };
                     };
-                    
+
                     class pr_restrictionBlacklist
                     {
                                 displayName = "$STR_ALIVE_PR_RESTRICTION_BLACKLIST";
@@ -108,13 +108,33 @@ class CfgVehicles {
                                 typeName = "STRING";
                                 defaultValue = "";
                     };
-                    
+
                     class pr_restrictionWhitelist
                     {
                                 displayName = "$STR_ALIVE_PR_RESTRICTION_WHITELIST";
                                 description = "$STR_ALIVE_PR_RESTRICTION_WHITELIST_COMMENT";
                                 typeName = "STRING";
                                 defaultValue = "";
+                    };
+                    class pr_audio
+                    {
+                            displayName = "$STR_ALIVE_CS_AUDIO";
+                            description = "$STR_ALIVE_CS_AUDIO_COMMENT";
+                            typeName = "BOOL";
+                            class values
+                            {
+                                class true
+                                {
+                                    name="Yes";
+                                    value = 1;
+                                    default = 1;
+                                };
+                                class false
+                                {
+                                    name="No";
+                                    value = 0;
+                                };
+                            };
                     };
                 };
 
