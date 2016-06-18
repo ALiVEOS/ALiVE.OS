@@ -50,7 +50,7 @@ _params = _this;
 
 LOG(str _params);
 
-_markerName = "MK" + str(random time + 1);
+_markerName = _params select 0;
 
 if !(player diarySubjectExists "SITREP") then {
     player createDiarySubject ["SITREP","SITREP"];
