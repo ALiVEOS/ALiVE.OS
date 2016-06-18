@@ -82,7 +82,9 @@ switch(_operation) do {
             // set defaults
             [_logic,"debug",false] call ALIVE_fnc_hashSet;
 
-            waituntil {!(isnil "ALIVE_profileSystemInit")};
+            if ([QMOD(sys_profile)] call ALiVE_fnc_isModuleAvailable) {
+                waituntil {!(isnil "ALIVE_profileSystemInit")};
+            ];
 
             [_logic,"listen"] call MAINCLASS;
         };

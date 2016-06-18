@@ -114,7 +114,9 @@ switch(_operation) do {
             [_tasksToDispatch, "delete", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
             [_logic,"tasksToDispatch",_tasksToDispatch] call ALIVE_fnc_hashSet;
 
-            waituntil {!(isnil "ALIVE_profileSystemInit")};
+            if ([QMOD(sys_profile)] call ALiVE_fnc_isModuleAvailable) {
+                waituntil {!(isnil "ALIVE_profileSystemInit")};
+            ];
 
             [_logic,"listen"] call MAINCLASS;
         };
