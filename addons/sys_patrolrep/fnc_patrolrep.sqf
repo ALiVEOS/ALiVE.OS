@@ -63,6 +63,11 @@ nil
 #define SUPERCLASS ALIVE_fnc_baseClass
 #define MAINCLASS ALIVE_fnc_patrolrep
 
+#define MAP_DISPLAY 12
+#define MAP_CONTROL 51
+#define BRIEFING_DISPLAY_SERVER 52
+#define BRIEFING_DISPLAY_CLIENT 53
+
 private ["_result", "_operation", "_args", "_logic"];
 
 PARAMS_1(_logic);
@@ -181,6 +186,8 @@ switch (_operation) do {
             if (hasInterface) then {
                 // Start any client-side processes that are needed
 
+                ["ALiVE","deleteReport", "PatrolRep/SitRep - Delete marker", {}, {}, [211,[true,false,false]]] call CBA_fnc_addKeybind;
+
                  waituntil {!isnil QGVAR(STORE)};
 
                 if (didJIP) then {
@@ -195,11 +202,65 @@ switch (_operation) do {
                 };
                  TRACE_1("Initial STORE", GVAR(STORE));
 
+                if !(didJIP) then { // Don't run if JIP as no briefing screen appears
+                    ["Registering PATROLREP controls for briefing screen. JIP: %1", didJIP] call ALiVE_fnc_Dump;
+                    [_logic] spawn {
+                        // Install handlers on briefing screen
+                        private ["_display","_control","_logic"];
+
+                        _logic = _this select 0;
+
+                        _display = BRIEFING_DISPLAY_CLIENT;
+                        if (isServer && isMultiplayer) then {
+                            _display = BRIEFING_DISPLAY_SERVER;
+                        };
+
+                        _waitTime = diag_tickTime + 1500;
+                        /*waitUntil {
+                            LOG(str ( (findDisplay _display) displayCtrl MAP_CONTROL ));
+                            str ((findDisplay _display) displayCtrl MAP_CONTROL) != "No control" || diag_tickTime > _waitTime;
+                        };*/
+                         // Add eventhandler for creating markers
+
+                        if (str ((findDisplay _display) displayCtrl MAP_CONTROL) != "No control" ) then {
+                            // diag_log _display;
+                            disableSerialization;
+                            _display = findDisplay _display;
+                            _control = _display displayCtrl MAP_CONTROL;
+                            _display displayAddEventHandler ["keyDown", {[ALiVE_SYS_patrolrep,"keyDown",[player, _this]] call ALiVE_fnc_patrolrep;}];
+                            ["Registered PATROLREP controls for NON-JIP on briefing screen: %1", player] call ALiVE_fnc_Dump;
+                        } else {
+                            ["Did not Register PATROLREP controls for briefing screen: %1", player] call ALiVE_fnc_Dump;
+                        };
+                    };
+                };
+
+
                 waitUntil {
                     sleep 1;
                     ((str side player) != "UNKNOWN")
                 };
 
+                // Wait until game map is opened and register map controls
+                [] spawn {
+                    private ["_display","_control"];
+
+                    ["Registering PATROLREP controls for %1 on map screen.", player] call ALiVE_fnc_Dump;
+
+                    waitUntil {LOG(str ((findDisplay MAP_DISPLAY) displayCtrl MAP_CONTROL)); str ((findDisplay MAP_DISPLAY) displayCtrl MAP_CONTROL) != "No control"};
+
+                    LOG(str ((findDisplay MAP_DISPLAY) displayCtrl MAP_CONTROL));
+
+                    disableSerialization;
+
+                    // Add eventhandler for creating markers
+                    _display = findDisplay MAP_DISPLAY;
+
+                    _control = _display displayCtrl MAP_CONTROL;
+
+                    _display displayAddEventHandler ["keyDown", {[ALiVE_SYS_patrolrep,"keyDown",[player, _this]] call ALiVE_fnc_patrolrep;}];
+                    ["Registered PATROLREP controls for PLAYER on map screen: %1", player] call ALiVE_fnc_Dump;
+                };
                 GVAR(spos) = position player;
                 GVAR(sdate) = date;
             };
@@ -240,6 +301,75 @@ switch (_operation) do {
             } else {
                 // If player owns patrolrep, or player is admin or player is higher rank than owner
                 _result = true;
+            };
+        };
+
+        case "onReport": {
+            // Check to see if cursor is on a marker
+
+            private ["_markerName", "_markerPos", "_marker","_obj","_pos"];
+
+            _pos = _args select 0;
+            _result = false;
+
+            // Find nearest marker
+            _markerName = "";
+            _markerPos = [0,0,0];
+            {
+                _markers = format ["%1START",_x];
+                if ((getmarkerpos _markers) distance _pos < _markerPos distance _pos) then {
+                    _markerName = _x;
+                    _markerPos = getmarkerPos _markers;
+                };
+
+                _markere = format ["%1END",_x];
+                if ((getmarkerpos _markere) distance _pos < _markerPos distance _pos) then {
+                    _markerName = _x;
+                    _markerPos = getmarkerPos _markere;
+                };
+            } foreach (GVAR(STORE) select 1);
+
+            // See if position is inside nearest marker
+            _scale = ctrlMapScale ((findDisplay 12) displayCtrl 51);
+            if (_scale * 160 > (_markerPos distance _pos)) then {
+                    _result = _markerName;
+            };
+        };
+
+        case "keyDown": {
+            // Handles pressing of certain keys on map
+            private ["_player","_shift","_alt","_ctr","_key","_toggle","_width","_angle","_display"];
+
+            diag_log str _this;
+
+            _params = _args select 1;
+
+            _display = _params select 0;
+            _key = _params select 1;
+            _shift = _params select 2;
+            _ctr = _params select 3;
+            _alt = _params select 4;
+
+            _pos = (_display displayCtrl MAP_CONTROL) ctrlMapScreenToWorld getMousePosition;
+
+            _result = false;
+
+            switch _key do {
+                case (((["ALiVE", "deleteReport"] call cba_fnc_getKeybind) select 5) select 0): {           // Press DELETE
+                    private ["_check"];
+                    // Check to see if Marker exists at location, if so delete it
+                    _check = [_logic, "onReport", [_pos]] call ALIVE_fnc_patrolrep;
+                    if (typeName _check != "BOOL") then {
+                        if ([_logic, "isAuthorized", [_check]] call ALIVE_fnc_patrolrep) then {
+                            // delete marker
+                            [_logic, "removepatrolrep",[_check]] call ALIVE_fnc_patrolrep;
+                        } else {
+                            hint "You are not authorized to delete this report";
+                        };
+                        _result = false;
+                    };
+                };
+                default { _result = false };
             };
         };
 
@@ -444,7 +574,8 @@ switch (_operation) do {
                 if (_check) then {
                     LOG("Deleting patrolrep...");
                     LOG(_patrolrepName);
-     //             BIS Y U NO COMMAND TO DELETE DIARY ENTRIES?
+                    deleteMarkerLocal format["%1START",_patrolrepName];
+                    deleteMarkerLocal format["%1END",_patrolrepName];
                 };
             };
 
@@ -458,7 +589,7 @@ switch (_operation) do {
 
             If (isDedicated) then {
                 private "_response";
-                _response = [_patrolrepName, _patrolrepHash] call ALIVE_fnc_patrolrepDeleteData;
+                // _response = [_patrolrepName, _patrolrepHash] call ALIVE_fnc_patrolrepDeleteData;
                 TRACE_1("Delete patrolrep", _response);
             };
 
