@@ -214,12 +214,15 @@ switch (_operation) do {
                         if (isServer && isMultiplayer) then {
                             _display = BRIEFING_DISPLAY_SERVER;
                         };
+                        if (!isMultiplayer) then {
+                            _display = 12;
+                        };
 
-                        _waitTime = diag_tickTime + 1500;
-                        /*waitUntil {
+                        _waitTime = diag_tickTime + 60;
+                        waitUntil {
                             LOG(str ( (findDisplay _display) displayCtrl MAP_CONTROL ));
                             str ((findDisplay _display) displayCtrl MAP_CONTROL) != "No control" || diag_tickTime > _waitTime;
-                        };*/
+                        };
                          // Add eventhandler for creating markers
 
                         if (str ((findDisplay _display) displayCtrl MAP_CONTROL) != "No control" ) then {
@@ -340,7 +343,7 @@ switch (_operation) do {
             // Handles pressing of certain keys on map
             private ["_player","_shift","_alt","_ctr","_key","_toggle","_width","_angle","_display"];
 
-            diag_log str _this;
+            // diag_log str _this;
 
             _params = _args select 1;
 
