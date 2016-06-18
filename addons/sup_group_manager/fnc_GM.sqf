@@ -149,7 +149,7 @@ switch(_operation) do {
         if (isServer) then {
 
             // create the group handler
-            ALIVE_groupHandler = [nil, "create"] call ALIVE_fnc_groupHandler;
+            ALIVE_groupHandler = [] call ALIVE_fnc_hashCreate;
             [ALIVE_groupHandler, "init"] call ALIVE_fnc_groupHandler;
             [ALIVE_groupHandler, "debug", _debug] call ALIVE_fnc_groupHandler;
 

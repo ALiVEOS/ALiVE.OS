@@ -189,7 +189,7 @@ switch(_operation) do {
         if (isServer) then {
 
             // create the command handler
-            ALIVE_commandHandler = [nil, "create"] call ALIVE_fnc_commandHandler;
+            ALIVE_commandHandler = [] call ALiVE_fnc_hashCreate;
             [ALIVE_commandHandler, "init"] call ALIVE_fnc_commandHandler;
             [ALIVE_commandHandler, "debug", _debug] call ALIVE_fnc_commandHandler;
 
@@ -548,9 +548,9 @@ switch(_operation) do {
             private ["_commandState","_IMINTcam","_markers","_groupWaypoints","_plannedWaypoints"];
 
             _commandState = [_logic,"commandState"] call MAINCLASS;
-            
+
             // reset IMINT
-            
+
             [_commandState,"intelListValues",[]] call ALiVE_fnc_hashSet;
 
             _IMINTcam = [_commandState,"intelIMINTCamera"] call ALIVE_fnc_hashGet;
@@ -1041,7 +1041,7 @@ switch(_operation) do {
                         _requestID = format["%1_%2",_faction,floor(time)];
 
 						[nil,"opsOPCOMSelected", [_requestID,_playerID,_selectedValue]] remoteExecCall [QUOTE(ALIVE_fnc_commandHandler),2]; // need the raw speed
-						
+
 						/*
                         _event = ['OPS_OPCOM_SELECT', [_requestID,_playerID,_selectedValue], "SCOM"] call ALIVE_fnc_event;
                         if(isServer) then {
@@ -1182,7 +1182,7 @@ switch(_operation) do {
 
                     ["openSplash",0.25] call ALIVE_fnc_displayMenu;
                     ["setSplashText",_line1] call ALIVE_fnc_displayMenu;
-					
+
                     player allowDamage false; // must be locally executed, protect player from explosives, invisibility is done serverside
 
                     // send the event to get further data from the command handler
@@ -1346,9 +1346,9 @@ switch(_operation) do {
                     _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
                     _back ctrlShow true;
                     _back ctrlSetEventHandler ["MouseButtonClick", "['OPS_RESET',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
-                    
+
                     // reset selected profile data
-                    
+
                     [_commandState,"opsGroupSelectedProfile",[]] call ALIVE_fnc_hashSet;
                     [_commandState,"opsGroupWaypoints",[]] call ALIVE_fnc_hashSet;
                     [_commandState,"opsGroupPlannedWaypoints",[]] call ALIVE_fnc_hashSet;
@@ -1356,9 +1356,9 @@ switch(_operation) do {
 
                     [_commandState,"opsGroupsSelectedIndex",DEFAULT_SELECTED_INDEX] call ALIVE_fnc_hashSet;
                     [_commandState,"opsGroupsSelectedValue",DEFAULT_SELECTED_VALUE] call ALIVE_fnc_hashSet;
-                    
+
                     // delete profile markers, they are created again once list is reshown
-                    
+
                     _markers = [_logic,"marker"] call MAINCLASS;
                     {
                         deleteMarkerLocal _x;
@@ -1396,9 +1396,9 @@ switch(_operation) do {
 
                         _plannedWaypoints = [_commandState,"opsGroupPlannedWaypoints"] call ALIVE_fnc_hashGet;
                         _selectedProfile = [_commandState,"opsGroupSelectedProfile"] call ALIVE_fnc_hashGet;
-						
+
 						// store position
-						
+
 						_plannedWaypoints pushback _position;
 
                         // add to the waypoints array
@@ -1717,9 +1717,9 @@ switch(_operation) do {
                     }else{
                         [_event] remoteExecCall ["ALIVE_fnc_addEventToServer",2];
                     };
-					
+
 					// clear planned waypoints
-					
+
 					[_commandState,"opsGroupPlannedWaypoints", []] call ALiVE_fnc_hashSet;
 
                     // show waiting until response comes back
@@ -1791,9 +1791,9 @@ switch(_operation) do {
                     }else{
                         [_event] remoteExecCall ["ALIVE_fnc_addEventToServer",2];
                     };
-					
+
                     // reset planned waypoints
-					
+
                     [_commandState,"opsGroupPlannedWaypoints", []] call ALiVE_fnc_hashSet;
 
                     // hide editing buttons
@@ -2287,7 +2287,7 @@ switch(_operation) do {
                     _m setMarkerShapeLocal "ICON";
                     _m setMarkerSizeLocal [.5, .5];
                     _m setMarkerColorLocal _color;
-                    
+
                     _markers pushback _m;
                     _profileCount = _profileCount + 1;
 
@@ -2366,7 +2366,7 @@ switch(_operation) do {
 
             _listValues = [];
             _sources = _args select 1;
-            
+
 
             _intelTypeTitle = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeTitle);
             _intelTypeTitle ctrlShow true;
@@ -3458,7 +3458,7 @@ switch(_operation) do {
 
                 [_commandState,"opsGroupSelectedProfile",_profile] call ALIVE_fnc_hashSet;
                 [_commandState,"opsGroupWaypoints",_groupWaypoints] call ALIVE_fnc_hashSet;
-                
+
 /*
                 // move profile marker to refreshed position
                 _selectedIndex = [_commandState,"opsGroupsSelectedIndex"] call ALIVE_fnc_hashGet;
@@ -3540,28 +3540,28 @@ switch(_operation) do {
         };
 
     };
-	
+
 	case "opsDrawWaypoints": {
         private ["_map","_commandState","_selectedProfile","_profilePos","_waypoint","_waypointPos",
         "_waypoints","_plannedWaypoints"];
-		
+
 		disableSerialization;
-		
+
         _map = _args select 0;
 
         // Get selected profile
-		
+
         _commandState = [_logic,"commandState"] call MAINCLASS;
         _selectedProfile = [_commandState,"opsGroupsSelectedValue"] call ALIVE_fnc_hashGet;
 
         if (count _selectedProfile > 0) then {
             _map = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
             _profilePos = _selectedProfile select 1;
-			
+
             // Draw active waypoints in blue
 
             _waypoints = [_commandState,"opsGroupWaypoints", []] call ALiVE_fnc_hashGet;
-			
+
             {
                 if (_forEachIndex > 0) then {
                     // Draw line from waypoint to waypoint
@@ -3579,11 +3579,11 @@ switch(_operation) do {
                     ];
                 };
             } foreach _waypoints;
-		
+
             // Draw planned waypoints in green
-			
+
             _plannedWaypoints = [_commandState,"opsGroupPlannedWaypoints", []] call ALiVE_fnc_hashGet;
-			
+
             {
                 if (_forEachIndex > 0) then {
                     // Draw line from planned waypoint to planned waypoint
@@ -3793,7 +3793,7 @@ switch(_operation) do {
                     player setPos _initialPosition;
 
                 };
-				
+
 				sleep 2;
 
                 // revert camera and control back to player unit
@@ -4071,7 +4071,7 @@ switch(_operation) do {
 
         _boundingBoxReal = boundingBoxReal _source;
         _height = abs (((_boundingBoxReal select 1) select 2) - ((_boundingBoxReal select 0) select 2));
-        
+
         _cam attachTo [_source, [0,0,- (_height * 0.75)]];
         _cam camCommit 0;
 
