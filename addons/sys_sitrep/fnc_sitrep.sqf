@@ -63,6 +63,11 @@ nil
 #define SUPERCLASS ALIVE_fnc_baseClass
 #define MAINCLASS ALIVE_fnc_sitrep
 
+#define MAP_DISPLAY 12
+#define MAP_CONTROL 51
+#define BRIEFING_DISPLAY_SERVER 52
+#define BRIEFING_DISPLAY_CLIENT 53
+
 private ["_result", "_operation", "_args", "_logic"];
 
 PARAMS_1(_logic);
@@ -181,6 +186,8 @@ switch (_operation) do {
             if (hasInterface) then {
                 // Start any client-side processes that are needed
 
+                ["ALiVE","deleteReport", "PatrolRep/SitRep - Delete marker", {}, {}, [211,[true,false,false]]] call CBA_fnc_addKeybind;
+
                  waituntil {!isnil QGVAR(STORE)};
 
                 if (didJIP) then {
@@ -195,11 +202,68 @@ switch (_operation) do {
                 };
                  TRACE_1("Initial STORE", GVAR(store));
 
+                if !(didJIP) then { // Don't run if JIP as no briefing screen appears
+                    ["Registering SITREP controls for briefing screen. JIP: %1", didJIP] call ALiVE_fnc_Dump;
+                    [_logic] spawn {
+                        // Install handlers on briefing screen
+                        private ["_display","_control","_logic"];
+
+                        _logic = _this select 0;
+
+                        _display = BRIEFING_DISPLAY_CLIENT;
+                        if (isServer && isMultiplayer) then {
+                            _display = BRIEFING_DISPLAY_SERVER;
+                        };
+                        if (!isMultiplayer) then {
+                            _display = 12;
+                        };
+
+                        _waitTime = diag_tickTime + 60;
+                        waitUntil {
+                             ["%1 : %2", _display, ((findDisplay _display) displayCtrl MAP_CONTROL)] call ALiVE_fnc_Dump;
+
+                            str ((findDisplay _display) displayCtrl MAP_CONTROL) != "No control" || diag_tickTime > _waitTime;
+                        };
+                         // Add eventhandler for creating markers
+
+                        if (str ((findDisplay _display) displayCtrl MAP_CONTROL) != "No control" ) then {
+                            // diag_log _display;
+                            disableSerialization;
+                            _display = findDisplay _display;
+                            _control = _display displayCtrl MAP_CONTROL;
+                            _display displayAddEventHandler ["keyDown", {[ALiVE_SYS_sitrep,"keyDown",[player, _this]] call ALiVE_fnc_sitrep;}];
+                            ["Registered SITREP controls for NON-JIP on briefing screen: %1", player] call ALiVE_fnc_Dump;
+                        } else {
+                            ["Did not Register SITREP controls for briefing screen: %1", player] call ALiVE_fnc_Dump;
+                        };
+                    };
+                };
+
                 waitUntil {
                     sleep 1;
                     ((str side player) != "UNKNOWN")
                 };
 
+                // Wait until game map is opened and register map controls
+                [] spawn {
+                    private ["_display","_control"];
+
+                    ["Registering SITREP controls for %1 on map screen.", player] call ALiVE_fnc_Dump;
+
+                    waitUntil {LOG(str ((findDisplay MAP_DISPLAY) displayCtrl MAP_CONTROL)); str ((findDisplay MAP_DISPLAY) displayCtrl MAP_CONTROL) != "No control"};
+
+                    LOG(str ((findDisplay MAP_DISPLAY) displayCtrl MAP_CONTROL));
+
+                    disableSerialization;
+
+                    // Add eventhandler for creating markers
+                    _display = findDisplay MAP_DISPLAY;
+
+                    _control = _display displayCtrl MAP_CONTROL;
+
+                    _display displayAddEventHandler ["keyDown", {[ALiVE_SYS_sitrep,"keyDown",[player, _this]] call ALiVE_fnc_sitrep;}];
+                    ["Registered SITREP controls for PLAYER on map screen: %1", player] call ALiVE_fnc_Dump;
+                };
             };
 
 
@@ -242,6 +306,69 @@ switch (_operation) do {
             };
         };
 
+        case "onReport": {
+            // Check to see if cursor is on a marker
+
+            private ["_markerName", "_markerPos", "_marker","_obj","_pos"];
+
+            _pos = _args select 0;
+            _result = false;
+
+            // Find nearest marker
+            _markerName = "";
+            _markerPos = [0,0,0];
+            {
+                _marker = _x;
+                if ((getmarkerpos _marker) distance _pos < _markerPos distance _pos) then {
+                    _markerName = _marker;
+                    _markerPos = getmarkerPos _marker;
+                };
+
+            } foreach (GVAR(STORE) select 1);
+
+            // See if position is inside nearest marker
+            _scale = ctrlMapScale ((findDisplay 12) displayCtrl 51);
+            if (_scale * 160 > (_markerPos distance _pos)) then {
+                    _result = _markerName;
+            };
+        };
+
+        case "keyDown": {
+            // Handles pressing of certain keys on map
+            private ["_player","_shift","_alt","_ctr","_key","_toggle","_width","_angle","_display"];
+
+            // diag_log str _this;
+
+            _params = _args select 1;
+
+            _display = _params select 0;
+            _key = _params select 1;
+            _shift = _params select 2;
+            _ctr = _params select 3;
+            _alt = _params select 4;
+
+            _pos = (_display displayCtrl MAP_CONTROL) ctrlMapScreenToWorld getMousePosition;
+
+            _result = false;
+
+            switch _key do {
+                case (((["ALiVE", "deleteReport"] call cba_fnc_getKeybind) select 5) select 0): {           // Press DELETE
+                    private ["_check"];
+                    // Check to see if Marker exists at location, if so delete it
+                    _check = [_logic, "onReport", [_pos]] call ALIVE_fnc_sitrep;
+                    if (typeName _check != "BOOL") then {
+                        if ([_logic, "isAuthorized", [_check]] call ALIVE_fnc_sitrep) then {
+                            // delete marker
+                            [_logic, "removesitrep",[_check]] call ALIVE_fnc_sitrep;
+                        } else {
+                            hint "You are not authorized to delete this report";
+                        };
+                        _result = false;
+                    };
+                };
+                default { _result = false };
+            };
+        };
 
         case "loadsitreps": {
             // Get sitreps from DB
@@ -384,7 +511,6 @@ switch (_operation) do {
             _result = GVAR(STORE);
         };
 
-
         case "removesitrep": {
             // Removes a sitrep from the store
             private ["_sitrepName","_sitrepHash","_sitrep"];
@@ -416,7 +542,6 @@ switch (_operation) do {
             // Remove sitrep from store on all localities
             [[_logic, "deletesitrepFromStore", [_sitrepName, _sitrepHash]], "ALIVE_fnc_sitrep",true,false,true] call BIS_fnc_MP;
 
-
             _result = GVAR(STORE);
 
         };
@@ -442,6 +567,7 @@ switch (_operation) do {
                     LOG("Deleting sitrep...");
                     LOG(_sitrepName);
      //             BIS Y U NO COMMAND TO DELETE DIARY ENTRIES?
+                    deleteMarkerLocal _sitrepName;
                 };
             };
 
@@ -455,7 +581,7 @@ switch (_operation) do {
 
             If (isDedicated) then {
                 private "_response";
-                _response = [_sitrepName, _sitrepHash] call ALIVE_fnc_sitrepDeleteData;
+                // _response = [_sitrepName, _sitrepHash] call ALIVE_fnc_sitrepDeleteData;
                 TRACE_1("Delete sitrep", _response);
             };
 
