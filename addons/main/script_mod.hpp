@@ -45,7 +45,10 @@
 //	#define DEBUG_ENABLED_SYS_marker
 //	#define DEBUG_ENABLED_SYS_spotrep
 //	#define DEBUG_ENABLED_SYS_sitrep
+//	#define DEBUG_ENABLED_MIL_C2ISTAR
 //	#define DEBUG_ENABLED_SYS_patrolrep
+//	#define DEBUG_ENABLED_SUP_GROUP_MANAGER
+//	#define DEBUG_ENABLED_SUP_COMMAND
 //	#define DEBUG_ENABLED_X_LIB
 //	#define DEBUG_ENABLED_mil_ied
 //	#define DEBUG_ENABLED_sup_submarine
