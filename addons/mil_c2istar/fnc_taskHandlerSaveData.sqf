@@ -39,6 +39,7 @@ _missionName = format["%1_%2_TASK", ALIVE_sys_data_GROUP_ID, _missionName];
 
 _data = [ALIVE_taskHandler,"exportTaskData"] call ALIVE_fnc_taskHandler;
 
+if (isNil "_data") exitWith {};
 if (count (_data select 1) == 0) exitwith {
     //[["ALiVE_LOADINGSCREEN"],"BIS_fnc_endLoadingScreen",true,false] call BIS_fnc_MP;
 };
@@ -51,7 +52,7 @@ _messages set [count _messages,_message];
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     ["ALiVE SAVE TASK HANDLER DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALIVE_fnc_dump;
-    _data call ALIVE_fnc_inspectHash;
+    if (! isNil "_data") then {_data call ALIVE_fnc_inspectHash;};
 };
 
 
