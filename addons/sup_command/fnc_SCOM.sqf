@@ -92,7 +92,7 @@ _result = true;
 
 switch(_operation) do {
 	default {
-		_result = [_logic, _operation, _args] call SUPERCLASS;
+		_result = _this call SUPERCLASS;
 	};
 	case "destroy": {
 		if (isServer) then {
@@ -189,7 +189,7 @@ switch(_operation) do {
         if (isServer) then {
 
             // create the command handler
-            ALIVE_commandHandler = [] call ALiVE_fnc_hashCreate;
+            ALIVE_commandHandler = [nil,"create"] call ALIVE_fnc_commandHandler;
             [ALIVE_commandHandler, "init"] call ALIVE_fnc_commandHandler;
             [ALIVE_commandHandler, "debug", _debug] call ALIVE_fnc_commandHandler;
 
