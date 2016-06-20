@@ -82,9 +82,9 @@ switch(_operation) do {
             // set defaults
             [_logic,"debug",false] call ALIVE_fnc_hashSet;
 
-            if ([QMOD(sys_profile)] call ALiVE_fnc_isModuleAvailable) {
+            if ([QMOD(sys_profile)] call ALiVE_fnc_isModuleAvailable) then {
                 waituntil {!(isnil "ALIVE_profileSystemInit")};
-            ];
+            };
 
             [_logic,"listen"] call MAINCLASS;
         };
@@ -318,28 +318,31 @@ switch(_operation) do {
 
             _opcomData = [];
 
-            {
-                _opcom = _x;
-                _opcomFactions = [_opcom,"factions",""] call ALiVE_fnc_HashGet;
-                _opcomSide = [_opcom,"side"] call ALIVE_fnc_hashGet;
+            if (!isnil "OPCOM_INSTANCES") then {
 
-                switch(_limit) do {
-                    case "SIDE": {
-                        if(_side == _opcomSide) then {
+                {
+                    _opcom = _x;
+                    _opcomFactions = [_opcom,"factions",""] call ALiVE_fnc_HashGet;
+                    _opcomSide = [_opcom,"side"] call ALIVE_fnc_hashGet;
+
+                    switch(_limit) do {
+                        case "SIDE": {
+                            if(_side == _opcomSide) then {
+                                _opcomData pushBack (_opcomSide);
+                            };
+                        };
+                        case "FACTION": {
+                            if(_faction in _opcomFactions) then {
+                                _opcomData pushBack (_opcomSide);
+                            };
+                        };
+                        case "ALL": {
                             _opcomData pushBack (_opcomSide);
                         };
                     };
-                    case "FACTION": {
-                        if(_faction in _opcomFactions) then {
-                            _opcomData pushBack (_opcomSide);
-                        };
-                    };
-                    case "ALL": {
-                        _opcomData pushBack (_opcomSide);
-                    };
-                };
+                } foreach OPCOM_INSTANCES;
 
-            } foreach OPCOM_INSTANCES;
+            };
 
             // send the data back to the players SCOM tablet
 
@@ -765,28 +768,32 @@ switch(_operation) do {
 
                     _opcomData = [];
 
-                    {
-                        _opcom = _x;
-                        _opcomFactions = [_opcom,"factions",""] call ALiVE_fnc_HashGet;
-                        _opcomSide = [_opcom,"side"] call ALIVE_fnc_hashGet;
+                    if (!isnil "OPCOM_INSTANCES") then {
 
-                        switch(_limit) do {
-                            case "SIDE": {
-                                if(_side == _opcomSide) then {
+                        {
+                            _opcom = _x;
+                            _opcomFactions = [_opcom,"factions",""] call ALiVE_fnc_HashGet;
+                            _opcomSide = [_opcom,"side"] call ALIVE_fnc_hashGet;
+
+                            switch(_limit) do {
+                                case "SIDE": {
+                                    if(_side == _opcomSide) then {
+                                        _opcomData pushBack (_opcomSide);
+                                    };
+                                };
+                                case "FACTION": {
+                                    if(_faction in _opcomFactions) then {
+                                        _opcomData pushBack (_opcomSide);
+                                    };
+                                };
+                                case "ALL": {
                                     _opcomData pushBack (_opcomSide);
                                 };
                             };
-                            case "FACTION": {
-                                if(_faction in _opcomFactions) then {
-                                    _opcomData pushBack (_opcomSide);
-                                };
-                            };
-                            case "ALL": {
-                                _opcomData pushBack (_opcomSide);
-                            };
-                        };
 
-                    } foreach OPCOM_INSTANCES;
+                        } foreach OPCOM_INSTANCES;
+
+                    };
 
                     // send the data back to the players SCOM tablet
 
@@ -800,76 +807,78 @@ switch(_operation) do {
 
                     // get inactive profiles available by limit set on intel
 
-                    if (isnil "OPCOM_instances") exitWith {["[%1] Marking Units - No available opcom instances", QUOTE(ADDON)] call ALiVE_fnc_dump};
-
                     _opcoms = [];
                     _profilesBySide = [[],[],[]];   // east, west, indep
                     _knownEnemiesBySide = [[],[],[]];
 
-                    switch(_limit) do {
-                        case "SIDE": {
-                            {
-                                if (_side == ([_x,"side","WEST"] call ALiVE_fnc_hashGet)) then {
-                                    _opcoms pushback _x;
-                                };
-                            } foreach OPCOM_instances;
-                        };
-                        case "FACTION": {
-                            {
-                                if (_faction in ([_x,"factions",[]] call ALiVE_fnc_hashGet)) then {
-                                    _opcoms pushback _x;
-                                };
-                            } foreach OPCOM_instances;
-                        };
-                        case "ALL": {
-                            _opcoms = OPCOM_instances;
-                        };
-                    };
+                    if (!isnil "OPCOM_instances") then {
 
-                    {
-                        private _opcom = _x;
-                        private _profileByType = [];
-                        private _side = [_opcom,"side","WEST"] call ALiVE_fnc_hashGet;
+                        switch(_limit) do {
+                            case "SIDE": {
+                                {
+                                    if (_side == ([_x,"side","WEST"] call ALiVE_fnc_hashGet)) then {
+                                        _opcoms pushback _x;
+                                    };
+                                } foreach OPCOM_instances;
+                            };
+                            case "FACTION": {
+                                {
+                                    if (_faction in ([_x,"factions",[]] call ALiVE_fnc_hashGet)) then {
+                                        _opcoms pushback _x;
+                                    };
+                                } foreach OPCOM_instances;
+                            };
+                            case "ALL": {
+                                _opcoms = OPCOM_instances;
+                            };
+                        };
 
                         {
-                            private _profIDs = [_opcom,_x,[]] call ALiVE_fnc_hashGet;
-                            private _typeData = [];
+                            private _opcom = _x;
+                            private _profileByType = [];
+                            private _side = [_opcom,"side","WEST"] call ALiVE_fnc_hashGet;
 
                             {
-                                private _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                private _profIDs = [_opcom,_x,[]] call ALiVE_fnc_hashGet;
+                                private _typeData = [];
+
+                                {
+                                    private _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+
+                                    if !(isnil "_profile") then {
+                                        private _profilePosition = _profile select 2 select 2;
+                                        _typeData pushback _profilePosition;
+                                    };
+                                } foreach _profIDs;
+
+                                _profileByType pushback _typeData;
+                            } foreach ["infantry","motorized","mechanized","armored","artillery","AAA","air","sea"];
+
+                            switch (_side) do {
+                                case "EAST": {(_profilesBySide select 0) pushback _profileByType};
+                                case "WEST": {(_profilesBySide select 1) pushback _profileByType};
+                                case "GUER": {(_profilesBySide select 2) pushback _profileByType};
+                            };
+
+                            private _knownEnemies = [_opcom,"knownentities",[]] call ALiVE_fnc_hashGet; // visible enemy - [id,pos]
+                            {
+                                private _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
 
                                 if !(isnil "_profile") then {
-                                    private _profilePosition = _profile select 2 select 2;
-                                    _typeData pushback _profilePosition;
+                                    _side = _profile select 2 select 3;
+
+                                    switch (_side) do {
+                                        case "EAST": {(_knownEnemiesBySide select 0) pushbackunique (_x select 1)};
+                                        case "WEST": {(_knownEnemiesBySide select 1) pushbackunique (_x select 1)};
+                                        case "GUER": {(_knownEnemiesBySide select 2) pushbackunique (_x select 1)};
+                                    };
                                 };
-                            } foreach _profIDs;
-
-                            _profileByType pushback _typeData;
-                        } foreach ["infantry","motorized","mechanized","armored","artillery","AAA","air","sea"];
-
-                        switch (_side) do {
-                            case "EAST": {(_profilesBySide select 0) pushback _profileByType};
-                            case "WEST": {(_profilesBySide select 1) pushback _profileByType};
-                            case "GUER": {(_profilesBySide select 2) pushback _profileByType};
-                        };
-
-                        private _knownEnemies = [_opcom,"knownentities",[]] call ALiVE_fnc_hashGet; // visible enemy - [id,pos]
-                        {
-                            private _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
-
-                            if !(isnil "_profile") then {
-                                _side = _profile select 2 select 3;
-
-                                switch (_side) do {
-                                    case "EAST": {(_knownEnemiesBySide select 0) pushbackunique (_x select 1)};
-                                    case "WEST": {(_knownEnemiesBySide select 1) pushbackunique (_x select 1)};
-                                    case "GUER": {(_knownEnemiesBySide select 2) pushbackunique (_x select 1)};
-                                };
-                            };
+                                false
+                            } count _knownEnemies;
                             false
-                        } count _knownEnemies;
-                        false
-                    } count _opcoms;
+                        } count _opcoms;
+
+                    };
 
                     // send the data back to the players SCOM tablet
 
@@ -969,45 +978,49 @@ switch(_operation) do {
 
             _objectiveData = [];
 
-            {
-                _opcom = _x;
-                _opcomSide = [_opcom,"side"] call ALIVE_fnc_hashGet;
+            if (!isnil "OPCOM_instances") then {
 
-                if(_side == _opcomSide) then {
+                {
+                    _opcom = _x;
+                    _opcomSide = [_opcom,"side"] call ALIVE_fnc_hashGet;
 
-                    {
-                        _center = [_x,"center",[]] call ALIVE_fnc_hashGet;
-                        _size = [_x,"size",150] call ALIVE_fnc_hashGet;
-                        _tacom_state = [_x,"tacom_state","unassigned"] call ALIVE_fnc_hashGet;
-                        _opcom_state = [_x,"opcom_state","unassigned"] call ALIVE_fnc_hashGet;
-                        _section = [_x,"section"] call ALIVE_fnc_hashGet;
+                    if(_side == _opcomSide) then {
 
-                        _sections = [];
+                        {
+                            _center = [_x,"center",[]] call ALIVE_fnc_hashGet;
+                            _size = [_x,"size",150] call ALIVE_fnc_hashGet;
+                            _tacom_state = [_x,"tacom_state","unassigned"] call ALIVE_fnc_hashGet;
+                            _opcom_state = [_x,"opcom_state","unassigned"] call ALIVE_fnc_hashGet;
+                            _section = [_x,"section"] call ALIVE_fnc_hashGet;
 
-                        if!(isNil "_section") then {
+                            _sections = [];
 
-                            {
-                                _profileID = _x;
-                                _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
-                                if !(isnil "_profile") then {
-                                    _position = _profile select 2 select 2;
+                            if!(isNil "_section") then {
 
-                                    if!(surfaceIsWater _position) then {
-                                        _dir = _position getDir _center;
-                                        _sections pushBack [_position,_dir];
+                                {
+                                    _profileID = _x;
+                                    _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
+                                    if !(isnil "_profile") then {
+                                        _position = _profile select 2 select 2;
+
+                                        if!(surfaceIsWater _position) then {
+                                            _dir = _position getDir _center;
+                                            _sections pushBack [_position,_dir];
+                                        };
+
                                     };
+                                } foreach _section;
+                            };
 
-                                };
-                            } foreach _section;
-                        };
+                            _objectiveData pushBack [_size,_center,_tacom_state,_opcom_state,_sections];
 
-                        _objectiveData pushBack [_size,_center,_tacom_state,_opcom_state,_sections];
+                        } foreach ([_opcom,"objectives",[]] call ALiVE_fnc_HashGet);
 
-                    } foreach ([_opcom,"objectives",[]] call ALiVE_fnc_HashGet);
+                    };
 
-                };
+                } foreach OPCOM_INSTANCES;
 
-            } foreach OPCOM_INSTANCES;
+            };
 
             // send the data back to the players SCOM tablet
 
@@ -1017,7 +1030,7 @@ switch(_operation) do {
         };
     };
     default {
-        _result = [_logic, _operation, _args] call SUPERCLASS;
+        _result = _this call SUPERCLASS;
     };
 };
 TRACE_1("commandHandler - output",_result);
