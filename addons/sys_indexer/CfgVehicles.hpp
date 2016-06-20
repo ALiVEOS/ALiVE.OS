@@ -16,6 +16,7 @@ class CfgVehicles {
                         {
                                 displayName = "$STR_ALIVE_INDEXER_STATICDATA";
                                 description = "$STR_ALIVE_INDEXER_STATICDATA_COMMENT";
+                                typeName = "BOOL";
                                 class Values
                                 {
                                         class Yes
