@@ -116,10 +116,37 @@ switch (_operation) do {
 	        // Create logistics data storage in memory on all localities
 	        GVAR(STORE) = [] call ALIVE_fnc_hashCreate;
 
+            // load static data
+            if(isNil "ALiVE_STATIC_DATA_LOADED") then {
+                _file = "\x\alive\addons\main\static\staticData.sqf";
+                call compile preprocessFileLineNumbers _file;
+            };
+
+            // Get all containers
+            private "_containers";
+            _aliveContainers = [];
+            {
+                private "_containers";
+                _containers = _x;
+                TRACE_1(">>>>",_containers);
+                {
+                    private "_container";
+                    _container = _x;
+                    TRACE_1(">>>>",_container);
+                    if !(_container in _aliveContainers) then {
+                        _aliveContainers set [count _aliveContainers, _x];
+                    };
+                } foreach _containers;
+            } foreach (ALIVE_factionDefaultContainers select 2);
+
             // Define logistics properties on all localities (containers: select 0 / objects: select 1 / exclude: select 2)
             GVAR(CARRYABLE) = [["Man"],["Reammobox_F","Static","StaticWeapon","ThingX"],["House"] + (_logic getvariable ["BLACKLIST",[]])];
             GVAR(TOWABLE) = [["Truck_F"],["Car","Ship"],[] + (_logic getvariable ["BLACKLIST",[]])];
-            GVAR(STOWABLE) = [["Car","Truck_F","Helicopter","Ship","ALIVE_O_supplyCrate_F","ALIVE_I_supplyCrate_F","ALIVE_B_supplyCrate_F"],(GVAR(CARRYABLE) select 1),[] + (_logic getvariable ["BLACKLIST",[]])];
+            GVAR(STOWABLE) = [
+                ["Car","Truck_F","Helicopter","Ship"] + _aliveContainers,
+                (GVAR(CARRYABLE) select 1),
+                [] + (_logic getvariable ["BLACKLIST",[]])
+            ];
             GVAR(LIFTABLE) = [["Helicopter"],["Car","Ship","Truck_F"],[] + (_logic getvariable ["BLACKLIST",[]])];
 
             //Define actions on all localities (just in case)
@@ -450,7 +477,22 @@ switch (_operation) do {
             _container setvariable [QGVAR(CARGO),(_container getvariable [QGVAR(CARGO),[]]) - [_object],true];
 
 			if (isMultiplayer && isServer) then {_object hideObjectGlobal false; _object enableSimulationGlobal true} else {_object hideObject false; _object enableSimulation true};
-            _object setpos ([getpos _container, 0, 15, 2, 0, 20, 0, [],[[getpos _container,20] call CBA_fnc_Randpos]] call BIS_fnc_findSafePos);
+
+            _object setpos (
+            [
+                getpos _container, // center position
+                (sizeOf typeOf _container) + (sizeOf typeOf _object), // minimum distance
+                (sizeOf typeOf _container) + (sizeOf typeOf _object * 4), // maximum distance
+                sizeOf typeOf _object, // minimum to nearest object
+                0, // water mode
+                1, // gradient
+                0, // shore mode
+                [], // blacklist
+                [
+                    _container getpos [(sizeOf typeOf _container) + (sizeOf typeOf _object * 4), random(360)], // default position on land
+                    _container getpos [(sizeOf typeOf _container) + (sizeOf typeOf _object * 4), random(360)] // default position on water
+                ]
+            ] call BIS_fnc_findSafePos);
 
 			[_logic,"updateObject",[_container,_object]] call ALIVE_fnc_logistics;
 
