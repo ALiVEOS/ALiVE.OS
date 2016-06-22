@@ -36,7 +36,7 @@ _types = [
 		["Air",327],
 		["Ship",750],
 		["Reammobox_F",200],
-		["Static",100],
+		["Static",400],
 		["ThingX",7],
 		["Man",200],
 		["StaticWeapon",60]
@@ -44,9 +44,9 @@ _types = [
 
 {
     private ["_object","_weight","_type"];
-    
+
     _object = _x;
-    
+
     switch (typeName _object) do {
 		case ("OBJECT") : {_type = typeOf _object; _weight = getMass _object};
 		case ("STRING") : {_type = _object; _weight = getNumber(configfile >> "CfgVehicles" >> _type >> "mass")};
