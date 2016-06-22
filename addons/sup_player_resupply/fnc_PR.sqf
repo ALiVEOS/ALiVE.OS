@@ -464,7 +464,6 @@ switch(_operation) do {
 
             // set the counts
 
-             private ["_countAir","_countInsert","_countConvoy"];
             private ["_countAir","_countInsert","_countConvoy","_heliLiftCapacity","_heliLiftClasses"];
 
             // Works out maximum helicopter load (anywhere from 2000 to 12000 kg)
@@ -498,17 +497,17 @@ switch(_operation) do {
             _deliveryListValues = [];
 
             if(_restrictionTypeAirDrop) then {
-                _deliveryListOptions set [count _deliveryListOptions,"Air Drop"];
+                _deliveryListOptions set [count _deliveryListOptions,"Airlift: Air drop by transport plane"];
                 _deliveryListValues set [count _deliveryListValues,"PR_AIRDROP"];
             };
 
             if(_restrictionTypeHeliInsert) then {
-                _deliveryListOptions set [count _deliveryListOptions,"Heli Insertion"];
+                _deliveryListOptions set [count _deliveryListOptions,"Airlift: Air insertion via helicopter or VTOL"];
                 _deliveryListValues set [count _deliveryListValues,"PR_HELI_INSERT"];
             };
 
             if(_restrictionTypeConvoy) then {
-                _deliveryListOptions set [count _deliveryListOptions,"Convoy"];
+                _deliveryListOptions set [count _deliveryListOptions,"Convoy: Resupply via road transport vehicles"];
                 _deliveryListValues set [count _deliveryListValues,"PR_STANDARD"];
             };
 

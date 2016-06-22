@@ -33,10 +33,10 @@
     <English>Allow players to request supplies via Air Drop</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_INSERT">
-    <English>Allow Heli Insert</English>
+    <English>Allow Helicopter/VTOL Resupply</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_INSERT_COMMENT">
-    <English>Allow players to request supplies via Heli Insert</English>
+    <English>Allow players to request supplies via Helicopter/VTOL</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_CONVOY">
     <English>Allow Convoy</English>
