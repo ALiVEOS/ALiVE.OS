@@ -47,6 +47,7 @@ _prefix = if(count _this > 7) then {_this select 7} else {""};
 _engineOn = if(count _this > 8) then {_this select 8} else {false};
 _busy = if(count _this > 9) then {_this select 9} else {false};
 _cargo = if(count _this > 10) then {_this select 10} else {[]};
+_slingload = if(count _this > 11) then {_this select 11} else {[]};
 
 // get counts of current profiles
 
@@ -95,6 +96,10 @@ _profileVehicle = [nil, "create"] call ALIVE_fnc_profileVehicle;
 
 if(count _cargo > 0) then {
     [_profileVehicle, "cargo", _cargo] call ALIVE_fnc_profileVehicle;
+};
+
+if(count _slingload > 0) then {
+    [_profileVehicle, "slingload", _slingload] call ALIVE_fnc_profileVehicle;
 };
 
 if(_vehicleKind == "Plane" || _vehicleKind == "Helicopter") then {

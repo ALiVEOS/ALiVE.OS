@@ -398,6 +398,12 @@ switch(_operation) do {
                 };
                 _result = [_logic,"cargo"] call ALIVE_fnc_hashGet;
         };
+        case "slingload": {
+                if(typeName _args == "ARRAY") then {
+                        [_logic,"slingload",_args] call ALIVE_fnc_hashSet;
+                };
+                _result = [_logic,"slingload"] call ALIVE_fnc_hashGet;
+        };
 		case "addVehicleAssignment": {
 				private ["_assignments","_key","_units","_unit","_group"];
 
@@ -434,7 +440,7 @@ switch(_operation) do {
 		case "spawn": {
 				private ["_debug","_side","_vehicleClass","_vehicleType","_position","_side","_direction","_damage",
 				"_fuel","_ammo","_engineOn","_profileID","_active","_vehicleAssignments","_cargo","_cargoItems","_special","_vehicle","_eventID",
-				"_speed","_velocity","_paraDrop","_parachute","_soundFlyover","_locked"];
+				"_speed","_velocity","_paraDrop","_parachute","_soundFlyover","_locked","_slingload"];
 
 				_debug = _logic select 2 select 0; //[_logic,"debug"] call ALIVE_fnc_hashGet;
 				_vehicleClass = _logic select 2 select 11; //[_logic,"vehicleClass"] call ALIVE_fnc_hashGet;
@@ -450,6 +456,7 @@ switch(_operation) do {
 				_active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet;
 				_vehicleAssignments = _logic select 2 select 7; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
 				_cargo = _logic select 2 select 27; //[_logic,"cargo"] call ALIVE_fnc_hashGet;
+				_slingload = [_logic,"slingload",[]] call ALIVE_fnc_hashGet;
 				_paraDrop = false;
                 
                 _locked = [_logic, "locked",false] call ALIVE_fnc_HashGet;
@@ -504,6 +511,29 @@ switch(_operation) do {
 					    _cargoItems = [];
 					    _cargoItems = _cargoItems + _cargo;
                         [ALiVE_SYS_LOGISTICS,"fillContainer",[_vehicle,_cargoItems]] call ALiVE_fnc_Logistics;
+					};
+
+					if(count _slingload > 0) then {
+
+						private ["_slingloadClass","_slingloadVehicle","_slinging"];
+
+                        TRACE_1("SPAWNING SLINGLOAD %1", _slingload);
+
+						_slingloadClass = _slingload select 0;
+
+						_slingloadVehicle = createvehicle [_slingLoadClass, position _vehicle ,[],100,"none"];
+
+					    _cargoItems = [];
+					    _cargoItems = _cargoItems + (_slingload select 1);
+					    if (count _cargoItems > 0) then {
+                        	[ALiVE_SYS_LOGISTICS,"fillContainer",[_slingloadVehicle,_cargoItems]] call ALiVE_fnc_Logistics;
+                        };
+
+                        _slinging = _vehicle setSlingLoad _slingloadVehicle;
+
+                        TRACE_3("SPAWNING SLINGLOAD VEHICLES %3 - %1 : %2", _vehicle, _slingloadVehicle, _slinging);
+
+                        if (_slinging) then {[_logic, "slingloading", true] call ALIVE_fnc_hashSet;};
 					};
 
 					if(_paraDrop) then {
@@ -573,7 +603,7 @@ switch(_operation) do {
 				};
 		};
 		case "despawn": {
-				private ["_debug","_active","_side","_vehicle","_profileID","_cargo","_position","_despawnPrevented","_linked","_spawnType"];
+				private ["_debug","_active","_side","_vehicle","_profileID","_cargo","_position","_despawnPrevented","_linked","_spawnType","_slingload"];
 
 				_debug = _logic select 2 select 0; //[_logic,"debug"] call ALIVE_fnc_hashGet;
 				_active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet;
@@ -581,6 +611,7 @@ switch(_operation) do {
 				_vehicle = _logic select 2 select 10; //[_logic,"vehicle"] call ALIVE_fnc_hashGet;
 				_profileID = _logic select 2 select 4; //[_logic,"profileID"] call ALIVE_fnc_hashGet;
 				_cargo = _logic select 2 select 27; //[_logic,"cargo"] call ALIVE_fnc_hashGet;
+				_slingload = _logic select 2 select 28;
 
 				// not already inactive
 				if(_active) then {
@@ -625,6 +656,18 @@ switch(_operation) do {
 
 						if(count _cargo > 0) then {
                             [ALiVE_SYS_LOGISTICS,"clearContainer",_vehicle] call ALiVE_fnc_Logistics;
+                        };
+
+						if(count _slingload > 0) then {
+							private ["_slingloadVehicle"];
+							_slingloadVehicle = getSlingLoad _vehicle;
+
+							if (count (_slingload select 1) > 0) then {
+                            	[ALiVE_SYS_LOGISTICS,"clearContainer",_slingloadVehicle] call ALiVE_fnc_Logistics;
+                            };
+
+                            _vehicle setSlingLoad objNull;
+                            deleteVehicle _slingloadVehicle;
                         };
 
 						// delete
