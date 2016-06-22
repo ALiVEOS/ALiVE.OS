@@ -830,7 +830,7 @@ switch(_operation) do {
                     };
 
                     if(_isWaiting) then {
-                        _radioMessage = format["%1, Payload transport vehicle will wait for 2 minutes for unloading before RTB.",_radioMessage];
+                        _radioMessage = format["%1, Payload transport vehicle is RTB.",_radioMessage];
                     };
 
                     _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,"HQ"];
