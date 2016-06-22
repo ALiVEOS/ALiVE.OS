@@ -281,20 +281,20 @@ ALIVE_sideDefaultTransport = [] call ALIVE_fnc_hashCreate;
  */
 
 ALIVE_sideDefaultAirTransport = [] call ALIVE_fnc_hashCreate;
-[ALIVE_sideDefaultAirTransport, "EAST", ["O_Heli_Attack_02_F","O_Heli_Light_02_F"]] call ALIVE_fnc_hashSet;
-[ALIVE_sideDefaultAirTransport, "WEST", ["B_Heli_Transport_01_camo_F","B_Heli_Transport_01_camo_F"]] call ALIVE_fnc_hashSet;
-[ALIVE_sideDefaultAirTransport, "GUER", ["I_Heli_light_03_unarmed_F","I_Heli_Transport_02_F"]] call ALIVE_fnc_hashSet;
-[ALIVE_sideDefaultAirTransport, "CIV", []] call ALIVE_fnc_hashSet;
+[ALIVE_sideDefaultAirTransport, "EAST", ["O_Heli_Transport_04_F","O_Heli_Transport_04_box_F","O_Heli_Attack_02_F","O_Heli_Light_02_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_sideDefaultAirTransport, "WEST", ["B_Heli_Transport_03_F","B_Heli_Transport_01_F","B_Heli_Transport_01_camo_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_sideDefaultAirTransport, "GUER", ["I_Heli_Transport_02_F","I_Heli_light_03_unarmed_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_sideDefaultAirTransport, "CIV", ["C_Heli_light_01_ion_F"]] call ALIVE_fnc_hashSet;
 
 /*
  * Mil logistics airdrop containers fallback for sides
  */
 
 ALIVE_sideDefaultContainers = [] call ALIVE_fnc_hashCreate;
-[ALIVE_sideDefaultContainers, "EAST", ["ALIVE_O_supplyCrate_F"]] call ALIVE_fnc_hashSet;
-[ALIVE_sideDefaultContainers, "WEST", ["ALIVE_B_supplyCrate_F"]] call ALIVE_fnc_hashSet;
-[ALIVE_sideDefaultContainers, "GUER", ["ALIVE_I_supplyCrate_F"]] call ALIVE_fnc_hashSet;
-[ALIVE_sideDefaultContainers, "CIV", []] call ALIVE_fnc_hashSet;
+[ALIVE_sideDefaultContainers, "EAST", ["ALIVE_O_supplyCrate_F","O_CargoNet_01_ammo_F","CargoNet_01_box_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_sideDefaultContainers, "WEST", ["ALIVE_B_supplyCrate_F","B_CargoNet_01_ammo_F","CargoNet_01_box_F","B_Slingload_01_Cargo_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_sideDefaultContainers, "GUER", ["ALIVE_I_supplyCrate_F","I_CargoNet_01_ammo_F","CargoNet_01_box_F","B_Slingload_01_Cargo_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_sideDefaultContainers, "CIV", ["CargoNet_01_box_F","B_Slingload_01_Cargo_F"]] call ALIVE_fnc_hashSet;
 
 /*
  * Mil placement ambient vehicles per faction
@@ -336,24 +336,23 @@ ALIVE_factionDefaultTransport = [] call ALIVE_fnc_hashCreate;
  */
 
 ALIVE_factionDefaultAirTransport = [] call ALIVE_fnc_hashCreate;
-[ALIVE_factionDefaultAirTransport, "OPF_F", ["O_Heli_Attack_02_F","O_Heli_Light_02_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "OPF_F", ["O_Heli_Transport_04_F","O_Heli_Transport_04_box_F","O_Heli_Attack_02_F","O_Heli_Light_02_F"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultAirTransport, "OPF_G_F", ["I_Heli_light_03_unarmed_F"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultAirTransport, "IND_F", ["I_Heli_light_03_unarmed_F","I_Heli_Transport_02_F"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultAirTransport, "BLU_F", ["B_Heli_Transport_01_camo_F","B_Heli_Transport_01_camo_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "IND_F", ["I_Heli_Transport_02_F","I_Heli_light_03_unarmed_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "BLU_F", ["B_Heli_Transport_03_F","B_Heli_Transport_01_F","B_Heli_Transport_01_camo_F"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultAirTransport, "BLU_G_F", ["I_Heli_light_03_unarmed_F"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultAirTransport, "CIV_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "CIV_F", ["C_Heli_light_01_ion_F"]] call ALIVE_fnc_hashSet;
 
 /*
  * Mil logistics airdrop containers per faction
  */
-
 ALIVE_factionDefaultContainers = [] call ALIVE_fnc_hashCreate;
-[ALIVE_factionDefaultContainers, "OPF_F", ["ALIVE_O_supplyCrate_F"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultContainers, "OPF_G_F", ["ALIVE_O_supplyCrate_F"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultContainers, "IND_F", ["ALIVE_I_supplyCrate_F"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultContainers, "BLU_F", ["ALIVE_B_supplyCrate_F"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultContainers, "BLU_G_F", ["ALIVE_B_supplyCrate_F"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultContainers, "CIV_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "OPF_F", ["ALIVE_O_supplyCrate_F","O_CargoNet_01_ammo_F","CargoNet_01_box_F","Land_Pod_Heli_Transport_04_box_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "OPF_G_F", ["ALIVE_O_supplyCrate_F","O_CargoNet_01_ammo_F","CargoNet_01_box_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "IND_F", ["ALIVE_I_supplyCrate_F","I_CargoNet_01_ammo_F","CargoNet_01_box_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "BLU_F", ["ALIVE_B_supplyCrate_F","B_CargoNet_01_ammo_F","CargoNet_01_box_F","B_Slingload_01_Cargo_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "BLU_G_F", ["ALIVE_B_supplyCrate_F","B_CargoNet_01_ammo_F","CargoNet_01_box_F","B_Slingload_01_Cargo_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "CIV_F", ["CargoNet_01_box_F"]] call ALIVE_fnc_hashSet;
 
 /*
  * Player resupply
@@ -362,7 +361,7 @@ ALIVE_factionDefaultContainers = [] call ALIVE_fnc_hashCreate;
 ALIVE_globalDefaultResupplyVehicleOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_globalDefaultResupplyVehicleOptions, "PR_AIRDROP", [["<< Back","Car","Ship"],["<< Back","Car","Ship"]]] call ALIVE_fnc_hashSet;
 [ALIVE_globalDefaultResupplyVehicleOptions, "PR_HELI_INSERT", [["<< Back","Air"],["<< Back","Air"]]] call ALIVE_fnc_hashSet;
-[ALIVE_globalDefaultResupplyVehicleOptions, "PR_STANDARD", [["<< Back","Car","Armored","Support"],["<< Back","Car","Armored","Support"]]] call ALIVE_fnc_hashSet;
+[ALIVE_globalDefaultResupplyVehicleOptions, "PR_STANDARD", [["<< Back","Armored","Mechanized","Car","Support"],["<< Back","Car","Support"]]] call ALIVE_fnc_hashSet;
 
 ALIVE_sideDefaultResupplyVehicleOptions = [] call ALIVE_fnc_hashCreate;
 
@@ -402,7 +401,6 @@ ALIVE_factionDefaultResupplyDefenceStoreOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyDefenceStoreOptions, "BLU_F", ALIVE_globalDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyDefenceStoreOptions, "BLU_G_F", ALIVE_globalDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyDefenceStoreOptions, "CIV_F", ALIVE_globalDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
-
 
 
 ALIVE_globalDefaultResupplyCombatSuppliesOptions = [] call ALIVE_fnc_hashCreate;
@@ -452,9 +450,9 @@ ALIVE_factionDefaultResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 
 
 ALIVE_globalDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
-[ALIVE_globalDefaultResupplyGroupOptions, "PR_AIRDROP", ["Armored","Support"]] call ALIVE_fnc_hashSet;
-[ALIVE_globalDefaultResupplyGroupOptions, "PR_HELI_INSERT", ["Armored","Mechanized","Motorized","Motorized_MTP","SpecOps","Support"]] call ALIVE_fnc_hashSet;
-[ALIVE_globalDefaultResupplyGroupOptions, "PR_STANDARD", ["Support"]] call ALIVE_fnc_hashSet;
+[ALIVE_globalDefaultResupplyGroupOptions, "PR_AIRDROP", ["Motorized","Motorized_MTP","SpecOps","Support"]] call ALIVE_fnc_hashSet;
+[ALIVE_globalDefaultResupplyGroupOptions, "PR_HELI_INSERT", ["Motorized","Motorized_MTP","SpecOps","Support"]] call ALIVE_fnc_hashSet;
+[ALIVE_globalDefaultResupplyGroupOptions, "PR_STANDARD", ["Armored","Mechanized","Motorized","Motorized_MTP","SpecOps","Support"]] call ALIVE_fnc_hashSet;
 
 ALIVE_sideDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 
@@ -5436,7 +5434,7 @@ If (_fileExists) then {
 		ALIVE_civilianFuelBuildingTypes = ALIVE_civilianFuelBuildingTypes + ["ca\misc\fuel_tank_small.p3d"];
 		ALIVE_civilianConstructionBuildingTypes = ALIVE_civilianConstructionBuildingTypes + ["ca\structures_e\misc\misc_construction\misc_concbox_ep1.p3d","opxbuildings\ruin.p3d"];
 	};
-	
+
 	//Kapaulio - index by psvialli
 	if(tolower(_worldName) == "kapaulio") then {
 		ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + ["a3\structures_f_epa\civ\constructions\portablelight_double_f.p3d","a3\structures_f\naval\piers\pier_small_f.p3d","a3\structures_f_epb\naval\fishing\fishinggear_01_f.p3d","a3\structures_f\walls\cncwall4_f.p3d","a3\structures_f_epa\items\medical\defibrillator_f.p3d","a3\structures_f_epa\items\medical\disinfectantspray_f.p3d","a3\structures_f_epa\items\tools\ducttape_f.p3d","a3\structures_f_bootcamp\items\food\foodcontainer_01_f.p3d","a3\structures_f_epa\items\medical\antibiotic_f.p3d","a3\structures_f_epa\items\medical\bandage_f.p3d","a3\roads_f\runway\runwaylights\flush_light_red_f.p3d","a3\structures_f\wrecks\wreck_hunter_f.p3d","a3\structures_f\mil\bagfence\bagfence_long_f.p3d","a3\structures_f_epb\naval\fishing\fishinggear_02_f.p3d","a3\structures_f\ind\wavepowerplant\wavepowerplant_f.p3d","a3\structures_f\ind\wavepowerplant\wavepowerplantbroken_f.p3d","jbad_misc\misc_market\jbad_crates.p3d","a3\structures_f_epc\dominants\ghosthotel\gh_stairs_f.p3d","a3\structures_f\training\rampconcrete_f.p3d","a3\structures_f\training\rampconcretehigh_f.p3d","a3\structures_f\wrecks\wreck_ural_f.p3d","a3\structures_f\items\electronics\survivalradio_f.p3d","a3\structures_f\items\food\tacticalbacon_f.p3d","a3\structures_f_epa\mil\scrapyard\pallet_milboxes_f.p3d","a3\structures_f_epa\items\medical\vitaminbottle_f.p3d","a3\structures_f_epa\items\food\ricebox_f.p3d","a3\structures_f_epa\civ\camping\woodentable_large_f.p3d","a3\structures_f\walls\cncwall1_f.p3d","a3\structures_f_epa\mil\scrapyard\paperbox_open_full_f.p3d","a3\structures_f\items\food\bottleplastic_v1_f.p3d","a3\structures_f_epa\items\food\bottleplastic_v2_f.p3d","a3\structures_f_epa\items\tools\fireextinguisher_f.p3d","a3\structures_f\items\electronics\fmradio_f.p3d","a3\structures_f\civ\infoboards\mapboard_f.p3d","a3\structures_f_epa\mil\scrapyard\paperbox_closed_f.p3d","a3\structures_f_epa\items\food\canteen_f.p3d","a3\structures_f_epa\mil\scrapyard\paperbox_open_empty_f.p3d","a3\structures_f_epa\items\tools\metalwire_f.p3d","a3\structures_f_epb\civ\dead\grave_dirt_f.p3d","a3\structures_f_epa\civ\constructions\pallets_stack_f.p3d","a3\structures_f\research\dome_b_cargo_entrance_f.p3d","a3\structures_f\research\dome_b_person_entrance_f.p3d","a3\structures_f\civ\infoboards\billboard_f.p3d","a3\structures_f_epc\civ\accessories\bench_01_f.p3d","a3\structures_f_epa\civ\camping\woodentable_small_f.p3d","a3\structures_f_epa\items\tools\gascanister_f.p3d","a3\structures_f\items\tools\meter3m_f.p3d","a3\structures_f_epb\items\vessels\barrelsand_grey_f.p3d","a3\structures_f_epa\items\vessels\tincontainer_f.p3d","a3\structures_f_epa\items\food\bakedbeans_f.p3d","a3\structures_f_epa\items\medical\heatpack_f.p3d","a3\structures_f\walls\cncbarrier_stripes_f.p3d","a3\structures_f\walls\cncbarriermedium4_f.p3d","a3\structures_f\mil\flags\mast_f.p3d","a3\structures_f_epa\mil\scrapyard\scrap_mrap_01_f.p3d","a3\structures_f\wrecks\wreck_uaz_f.p3d","a3\structures_f\civ\lamps\lampsolar_f.p3d","a3\structures_f\ind\cargo\cargo40_color_v2_ruins_f.p3d","a3\structures_f\households\addons\metal_shed_ruins_f.p3d","a3\structures_f\mil\bagfence\bagfence_round_f.p3d","a3\structures_f\mil\bagfence\bagfence_short_f.p3d","a3\structures_f\items\tools\drillaku_f.p3d","a3\structures_f\items\electronics\extensioncord_f.p3d","a3\structures_f\civ\camping\sleeping_bag_blue_f.p3d","a3\structures_f\items\tools\hammer_f.p3d","a3\structures_f\items\tools\pliers_f.p3d","a3\structures_f\items\electronics\portable_generator_f.p3d","a3\structures_f_epa\items\medical\painkillers_f.p3d","a3\structures_f_epa\mil\scrapyard\scrapheap_2_f.p3d","a3\structures_f_epa\items\food\cerealsbox_f.p3d","a3\structures_f\items\vessels\canisterfuel_f.p3d","a3\structures_f\items\documents\map_f.p3d","a3\structures_f\items\electronics\portablelongrangeradio_f.p3d","a3\structures_f\walls\rampart_f.p3d","a3\structures_f\ind\windpowerplant\wpp_turbine_v2_f.p3d","a3\structures_f_epa\civ\constructions\portablelight_single_f.p3d","a3\structures_f\civ\market\marketshelter_f.p3d","a3\structures_f\walls\cncshelter_f.p3d","a3\structures_f\mil\fortification\hbarrier_3_f.p3d","a3\structures_f_epb\items\vessels\barrelempty_grey_f.p3d","a3\structures_f_epb\items\vessels\barrelwater_grey_f.p3d","a3\structures_f\items\tools\axe_f.p3d","a3\structures_f\civ\camping\sleeping_bag_f.p3d","a3\structures_f\items\food\can_v1_f.p3d","a3\structures_f\items\food\can_v2_f.p3d","a3\structures_f\items\tools\gloves_f.p3d","a3\structures_f\civ\camping\sleeping_bag_brown_f.p3d","a3\structures_f_epa\items\tools\shovel_f.p3d","a3\structures_f_epa\civ\camping\woodenlog_f.p3d","a3\structures_f_epa\items\tools\gascooker_f.p3d","a3\structures_f\items\vessels\barrelempty_f.p3d","a3\structures_f\wrecks\wreck_bmp2_f.p3d","a3\structures_f_epa\items\tools\butanetorch_f.p3d","a3\structures_f_epb\items\luggage\luggageheap_02_f.p3d","a3\structures_f_epb\items\luggage\luggageheap_04_f.p3d","a3\structures_f_epc\civ\camping\sunshade_04_f.p3d","a3\structures_f\walls\indfnc_corner_f.p3d","a3\structures_f\furniture\tabledesk_f.p3d","a3\structures_f_epb\furniture\shelveswooden_f.p3d","a3\structures_f\furniture\chairwood_f.p3d","a3\structures_f_epa\mil\scrapyard\scrapheap_1_f.p3d","a3\structures_f_epb\furniture\shelveswooden_khaki_f.p3d","a3\structures_f\items\tools\dustmask_f.p3d","a3\structures_f_epc\civ\accessories\tableplastic_01_f.p3d","a3\structures_f\civ\ancient\ancientpillar_damaged_f.p3d","a3\structures_f\items\vessels\barreltrash_f.p3d","rspn_assets\models\cover_bluntstone.p3d","a3\structures_f\wrecks\wreck_t72_turret_f.p3d","rspn_assets\models\cover_dirt_inset.p3d","rspn_assets\models\cover_grass_inset.p3d","a3\structures_f\mil\bagfence\bagfence_corner_f.p3d","a3\structures_f\mil\bagfence\bagfence_end_f.p3d","a3\structures_f\civ\accessories\water_source_f.p3d","a3\structures_f_epc\civ\camping\sunshade_01_f.p3d","a3\structures_f_epa\items\tools\butanecanister_f.p3d","a3\structures_f_epa\items\tools\canopener_f.p3d","a3\structures_f\walls\wired_fence_4md_f.p3d","a3\structures_f_epb\civ\graffiti\graffiti_03_f.p3d","a3\structures_f_epb\items\documents\poster_05_f.p3d","a3\structures_f\civ\camping\camping_light_off_f.p3d","a3\structures_f\civ\camping\pillow_old_f.p3d","a3\structures_f\civ\camping\sleeping_bag_blue_folded_f.p3d","a3\structures_f_epa\items\medical\waterpurificationtablets_f.p3d","a3\structures_f\civ\camping\ground_sheet_blue_f.p3d","a3\structures_f\civ\camping\ground_sheet_f.p3d","a3\structures_f\civ\camping\ground_sheet_opfor_f.p3d","a3\structures_f\civ\camping\pillow_camouflage_f.p3d","a3\structures_f\civ\camping\pillow_f.p3d","a3\structures_f\items\vessels\canisteroil_f.p3d","a3\structures_f\civ\camping\pillow_grey_f.p3d","a3\structures_f\civ\camping\sleeping_bag_brown_folded_f.p3d","a3\structures_f_epb\items\luggage\luggageheap_03_f.p3d","a3\structures_f\items\documents\map_unfolded_f.p3d","a3\structures_f\research\dome_small_plates_f.p3d"];
