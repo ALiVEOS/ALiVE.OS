@@ -465,10 +465,25 @@ switch(_operation) do {
             // set the counts
 
              private ["_countAir","_countInsert","_countConvoy"];
+            private ["_countAir","_countInsert","_countConvoy","_heliLiftCapacity","_heliLiftClasses"];
 
-            _countAir = [1000,3,3,8,100];
-            _countInsert = [500,2,1,8,40];
-            _countConvoy = [5000,5,5,8,200];
+            // Works out maximum helicopter load (anywhere from 2000 to 12000 kg)
+            _heliLiftCapacity = 2000;
+            _heliLiftClasses = [ALIVE_factionDefaultAirTransport,_playerFaction, [ALIVE_sideDefaultAirTransport,_sideText] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashGet;
+            if (count _heliLiftClasses > 0) then {
+                {
+                    private ["_capacity","_slingloadmax","_maxLoad"];
+                    _slingloadmax = [(configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue;
+                    _maxLoad = [(configFile >> "CfgVehicles" >> _x >> "maximumLoad")] call ALiVE_fnc_getConfigValue;
+                    if (_slingloadmax > _maxLoad) then {_capacity = _slingloadmax;} else {_capacity = _maxLoad;};
+                    if (_capacity > _heliLiftCapacity) then {_heliLiftCapacity = _capacity;};
+                } foreach _heliLiftClasses;
+            };
+
+             // Weight, Groups, Vehicles, Individuals, Size
+            _countInsert =  [_heliLiftCapacity,2,2,8,80];
+            _countAir =     [20000,5,5,8,100];
+            _countConvoy =  [10000,5,5,8,200]; // HEMTT can carry 10 tons = ~10,000kg
 
             [_logic,"countsAir",_countAir] call MAINCLASS;
             [_logic,"countsInsert",_countInsert] call MAINCLASS;
