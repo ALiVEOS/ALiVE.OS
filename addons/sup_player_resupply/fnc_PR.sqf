@@ -481,7 +481,7 @@ switch(_operation) do {
 
              // Weight, Groups, Vehicles, Individuals, Size
             _countInsert =  [_heliLiftCapacity,2,2,8,80];
-            _countAir =     [20000,5,5,8,100];
+            _countAir =     [18000,5,5,8,100]; // Parachute can drop ~18,000kg
             _countConvoy =  [10000,5,5,8,200]; // HEMTT can carry 10 tons = ~10,000kg
 
             [_logic,"countsAir",_countAir] call MAINCLASS;
@@ -1674,12 +1674,14 @@ switch(_operation) do {
 
                                 {
                                     private ["_slingable"];
-                                    // Make sure item is not too heavy to transport based on delivery type
-                                    if ([_x] call ALIVE_fnc_getObjectWeight < _maxWeight) then {
 
-                                        _displayName = getText(configFile >> "CfgVehicles" >> _x >> "displayname");
+                                    _displayName = getText(configFile >> "CfgVehicles" >> _x >> "displayname");
+
+                                    // Make sure item is not too heavy to transport based on delivery type
+                                    if ([_x] call ALIVE_fnc_getObjectWeight < _maxWeight && (_deliveryType == "PR_HELI_INSERT" || _deliveryType == "PR_AIRDROP")) then {
 
                                         _slingable = count ([(configFile >> "CfgVehicles" >> _x >> "slingLoadCargoMemoryPoints")] call ALiVE_fnc_getConfigValue) > 0;
+
                                         If (!_slingable && _deliveryType == "PR_HELI_INSERT" && (_selectedValue == "Car" || _selectedValue == "Ship")) then {
                                             // Don't display
                                         } else {
@@ -1687,7 +1689,12 @@ switch(_operation) do {
                                             _values set [count _values, _x];
                                         };
 
+                                    } else {
 
+                                        if (_deliveryType == "PR_STANDARD") then {
+                                            _options set [count _options, _displayName];
+                                            _values set [count _values, _x];
+                                        };
                                     };
 
                                 } forEach _vehicleClasses;
@@ -1876,6 +1883,8 @@ switch(_operation) do {
                                     _options = _options + _categories;
 
                                     private ["_staticOptions"];
+
+                                    // STATIC OPTIONS ARE BLACKLIST OPTIONS
 
                                     // attempt to get options by faction
                                     _staticOptions = [ALIVE_factionDefaultResupplyGroupOptions,_faction,[]] call ALIVE_fnc_hashGet;
