@@ -3885,6 +3885,11 @@ switch(_operation) do {
                                             _position set [2,PARADROP_HEIGHT];
                                         };
                                     };
+                                    case "Ship":{
+                                        if(_paraDrop) then {
+                                            _position set [2,PARADROP_HEIGHT];
+                                        };
+                                    };
                                     case "Air":{
                                         _position = _remotePosition getPos [random(200), random(360)];
                                         _position set [2,1000];
@@ -6094,6 +6099,7 @@ switch(_operation) do {
                         } foreach _payloadProfiles;
 
                         _waitTime = 12; // 2 minutes = 12 x 10 secs
+                        _currentTime = 0;
 
                         if (!_payloadUnloaded) then {
                             waituntil {
