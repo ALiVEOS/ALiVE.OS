@@ -2653,7 +2653,7 @@ switch(_operation) do {
                         _noCargo = count (_vehicle getvariable ["ALiVE_SYS_LOGISTICS_CARGO",[]]) == 0;
 
                         // If payload vehicle is not slingloading and its cargo is empty - its done.
-                            TRACE_2("PR UNLOADED", !_slingLoading, _noCargo);
+                        TRACE_2("PR UNLOADED", !_slingLoading, _noCargo);
                         if( _active && _noCargo && !_slingloading ) then {
 
                             _payloadUnloaded = true;
@@ -5626,11 +5626,12 @@ switch(_operation) do {
 
                     if!(isNil "_vehicle") then {
 
-                        [_vehicle, _slingloading, _position] spawn {
+                        [_vehicle, _slingloading, _position, _eventPosition] spawn {
 
                             _vehicle = _this select 0;
                             _slingloading = _this select 1;
                             _position = _this select 2;
+                            _eventPosition = _this select 3;
 
                             sleep 3;
 
@@ -5642,6 +5643,26 @@ switch(_operation) do {
                             if (alive _vehicle) then
                             {
                                 if (_slingLoading) then {
+
+                                    _slingloadVehicle = getSlingLoad _vehicle;
+
+                                    // If slingloading a boat, find the nearest patch of water
+                                    If (_slingloadVehicle isKindOf "Ship") then {
+                                        _position = [
+                                            _eventPosition, // center position
+                                            0, // minimum distance
+                                            100, // maximum distance
+                                            (sizeOf typeOf _slingloadVehicle) / 2, // minimum to nearest object
+                                            2, // water mode
+                                            0, // gradient
+                                            0, // shore mode
+                                            [], // blacklist
+                                            [
+                                                _eventPosition, // default position on land
+                                                _eventPosition // default position on water
+                                            ]
+                                        ] call bis_fnc_findSafePos;
+                                    };
 
                                     _wp = group _vehicle addWaypoint [_position, 0];
                                     _wp setWaypointType "UNHOOK";
