@@ -118,7 +118,7 @@ _createMarkers = {
 		_profileSide = [_logic,"side"] call ALIVE_fnc_hashGet;
 		_vehicleType = [_logic,"objectType"] call ALIVE_fnc_hashGet;
 		_profileActive = [_logic,"active"] call ALIVE_fnc_hashGet;
-		
+
 		switch(_profileSide) do {
 			case "EAST":{
 				_debugColor = "ColorRed";
@@ -141,7 +141,7 @@ _createMarkers = {
 				_typePrefix = "n";
 			};
 		};
-		
+
 		switch(_vehicleType) do {
 			case "Car":{
 				_debugIcon = format["%1_recon",_typePrefix];
@@ -171,12 +171,12 @@ _createMarkers = {
 				_debugIcon = "hd_dot";
 			};
 		};
-		
+
 		_debugAlpha = 0.3;
 		if(_profileActive) then {
 			_debugAlpha = 1;
 		};
-		
+
         if(count _position > 0) then {
 				_m = createMarker [format[MTEMPLATE, _profileID], _position];
 				_m setMarkerShape "ICON";
@@ -184,7 +184,7 @@ _createMarkers = {
 				_m setMarkerType _debugIcon;
 				_m setMarkerColor _debugColor;
 				_m setMarkerAlpha _debugAlpha;
-				
+
 				_markers pushback _m;
 
 				[_logic,"debugMarkers",_markers] call ALIVE_fnc_hashSet;
@@ -206,7 +206,7 @@ switch(_operation) do {
 					[_logic,"super"] call ALIVE_fnc_hashRem;
 					[_logic,"class"] call ALIVE_fnc_hashRem;
 					//TRACE_1("After module init",_logic);
-					
+
 					// init the super class
 					[_logic, "init"] call SUPERCLASS;
 
@@ -232,6 +232,7 @@ switch(_operation) do {
 					[_logic,"_id",""] call ALIVE_fnc_hashSet; // select 2 select 25
 					[_logic,"busy",false] call ALIVE_fnc_hashSet; // select 2 select 26
 					[_logic,"cargo",[]] call ALIVE_fnc_hashSet; // select 2 select 27
+					[_logic,"slingload",[]] call ALIVE_fnc_hashSet; // select 2 select 28
                 };
 
                 /*
@@ -290,14 +291,14 @@ switch(_operation) do {
         };
 		case "vehicleClass": {
 				if(typeName _args == "STRING") then {
-						[_logic,"vehicleClass",_args] call ALIVE_fnc_hashSet;						
+						[_logic,"vehicleClass",_args] call ALIVE_fnc_hashSet;
 						[_logic,"objectType",_args call ALIVE_fnc_vehicleGetKindOf] call ALIVE_fnc_hashSet;
                 };
 				_result = _logic select 2 select 11; //[_logic,"vehicleClass"] call ALIVE_fnc_hashGet;
         };
 		case "position": {
 				if(typeName _args == "ARRAY") then {
-				
+
 						if(count _args == 2) then  {
 							_args pushback 0;
 						};
@@ -411,10 +412,10 @@ switch(_operation) do {
 						_assignments = _logic select 2 select 7; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
 						_key = _args select 1;
 						[_assignments, _key, _args] call ALIVE_fnc_hashSet;
-						
+
 						// take assignments and determine if this entity is in command of any of them
 						[_logic,"entitiesInCommandOf",[_assignments,_logic] call ALIVE_fnc_profileVehicleAssignmentsGetInCommand] call ALIVE_fnc_hashSet;
-						
+
 						// take assignments and determine if this entity is in cargo of any of them
 						[_logic,"entitiesInCargoOf",[_assignments,_logic] call ALIVE_fnc_profileVehicleAssignmentsGetInCargo] call ALIVE_fnc_hashSet;
                 };
@@ -422,17 +423,17 @@ switch(_operation) do {
 		case "clearVehicleAssignments": {
 				[_logic,"vehicleAssignments",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
 				[_logic,"entitiesInCommandOf",[]] call ALIVE_fnc_hashSet;
-				[_logic,"entitiesInCargoOf",[]] call ALIVE_fnc_hashSet;				
+				[_logic,"entitiesInCargoOf",[]] call ALIVE_fnc_hashSet;
 		};
 		case "mergePositions": {
 				private ["_position","_assignments"];
-				
-				_profileID = _logic select 2 select 4; //[_logic,"profileID"] call ALIVE_fnc_hashGet;	
-				_position = _logic select 2 select 2; //[_logic,"position"] call ALIVE_fnc_hashGet;	
+
+				_profileID = _logic select 2 select 4; //[_logic,"profileID"] call ALIVE_fnc_hashGet;
+				_position = _logic select 2 select 2; //[_logic,"position"] call ALIVE_fnc_hashGet;
 				_assignments = _logic select 2 select 7; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
 
 				//["VEHICLE %1 mergePosition: %2",_logic select 2 select 4,_position] call ALIVE_fnc_dump;
-				
+
 				if(count (_assignments select 1) > 0) then {
 					[_assignments,_position] call ALIVE_fnc_profileVehicleAssignmentsSetAllPositions;
 				};
@@ -458,12 +459,12 @@ switch(_operation) do {
 				_cargo = _logic select 2 select 27; //[_logic,"cargo"] call ALIVE_fnc_hashGet;
 				_slingload = [_logic,"slingload",[]] call ALIVE_fnc_hashGet;
 				_paraDrop = false;
-                
+
                 _locked = [_logic, "locked",false] call ALIVE_fnc_HashGet;
 
 				// not already active and spawning has not yet been triggered
 				if (!_active && !_locked) then {
-                    
+
                     //Indicate spawn has been triggered and lock profile during spawn in case it is an asynchronous call
                     [_logic, "locked",true] call ALIVE_fnc_HashSet;
 
@@ -488,10 +489,10 @@ switch(_operation) do {
 					        _position set [2,0];
 					    };
 					} else {
-						
+
 						if ((_position select 2) > 300) then {
 						    _paraDrop = true;
-                            
+
 						}else{
                             //_position = [_position, 0, 50, 5, 0, 5 , 0, [], [_position]] call BIS_fnc_findSafePos;
 
@@ -499,7 +500,7 @@ switch(_operation) do {
                             //_special = "CAN_COLLIDE";
 						};
 					};
-                    
+
 					_vehicle = createVehicle [_vehicleClass, _position, [], 0, _special];
 					//_vehicle setPos _position;
 					_vehicle setDir _direction;
@@ -519,19 +520,38 @@ switch(_operation) do {
 
                         TRACE_1("SPAWNING SLINGLOAD %1", _slingload);
 
-						_slingloadClass = _slingload select 0;
+                        _slinging = false;
+						_slingLoadClass = _slingload select 0;
 
-						_slingloadVehicle = createvehicle [_slingLoadClass, position _vehicle ,[],100,"none"];
+						if (typeName _slingLoadClass == "STRING") then {
 
-					    _cargoItems = [];
-					    _cargoItems = _cargoItems + (_slingload select 1);
-					    if (count _cargoItems > 0) then {
-                        	[ALiVE_SYS_LOGISTICS,"fillContainer",[_slingloadVehicle,_cargoItems]] call ALiVE_fnc_Logistics;
-                        };
+							_slingloadVehicle = createvehicle [_slingLoadClass, position _vehicle ,[],100,"none"];
+						    _cargoItems = [];
+						    _cargoItems = _cargoItems + (_slingload select 1);
+						    if (count _cargoItems > 0) then {
+	                        	[ALiVE_SYS_LOGISTICS,"fillContainer",[_slingloadVehicle,_cargoItems]] call ALiVE_fnc_Logistics;
+	                        };
+	                        _slinging = _vehicle setSlingLoad _slingloadVehicle;
 
-                        _slinging = _vehicle setSlingLoad _slingloadVehicle;
+	                	} else {
 
-                        TRACE_3("SPAWNING SLINGLOAD VEHICLES %3 - %1 : %2", _vehicle, _slingloadVehicle, _slinging);
+	                		// Another profile is being slingloaded
+	                		if ([_slingLoadClass] call ALiVE_fnc_isHash) then {
+
+	                			private "_slActive";
+	                			_slActive = _slingLoadClass select 2 select 1;
+
+	                			if (typeName _slActive == "BOOL" && _slActive) then {
+	                				_slinging = _vehicle setSlingLoad (_slingloadClass select 2 select 10); // if profile is active, then slingload vehicle
+	                			} else {
+	                				[_slingLoadClass, "spawn"] call MAINCLASS; // spawn the slung profile
+	                				_slingloadVehicle = [_slingLoadClass, "vehicle"] call MAINCLASS; // get the vehicle that is spawned
+	                				_slinging = _vehicle setSlingLoad _slingloadVehicle;  // slingload the vehicle
+	                			};
+	                		};
+	                	};
+
+	                    TRACE_3("SPAWNING SLINGLOAD VEHICLES %3 - %1 : %2", _vehicle, _slingloadVehicle, _slinging);
 
                         if (_slinging) then {[_logic, "slingloading", true] call ALIVE_fnc_hashSet;};
 					};
@@ -590,10 +610,10 @@ switch(_operation) do {
 
 					// create vehicle assignments from profile vehicle assignments
 					[_vehicleAssignments, _logic] call ALIVE_fnc_profileVehicleAssignmentsToVehicleAssignments;
-					
+
 					// store the profile id on the active profiles index
 					[ALIVE_profileHandler,"setActive",[_profileID,_side,_logic]] call ALIVE_fnc_profileHandler;
-					
+
 					// DEBUG -------------------------------------------------------------------------------------
 					if(_debug) then {
 						//["Profile [%1] Spawn - class: %2 type: %3 pos: %4",_profileID,_vehicleClass,_vehicleType,_position] call ALIVE_fnc_dump;
@@ -667,7 +687,11 @@ switch(_operation) do {
                             };
 
                             _vehicle setSlingLoad objNull;
-                            deleteVehicle _slingloadVehicle;
+                            if ((_slingload select 0) call ALiVE_fnc_isHash) then {
+                            	[(_slingload select 0),"despawn"] call MAINCLASS;
+                            } else {
+                            	deleteVehicle _slingloadVehicle;
+                            };
                         };
 
 						// delete
@@ -691,7 +715,7 @@ switch(_operation) do {
 		};
 		case "handleDeath": {
 				[_logic,"damage",1] call ALIVE_fnc_hashSet;
-				
+
 				// remove all assignments for this vehicle
 				[_logic] call ALIVE_fnc_removeProfileVehicleAssignments;
 		};
@@ -725,9 +749,9 @@ switch(_operation) do {
         };
 		case "createMarker": {
 				private ["_markers","_m","_position","_profileID","_color","_icon","_alpha","_profileSide","_vehicleType","_profileActive","_typePrefix"];
-				
+
 				_alpha = _args param [0, 0.5, [1]];
-				
+
 				_markers = [];
 
 				_position = [_logic,"position"] call ALIVE_fnc_hashGet;
@@ -735,7 +759,7 @@ switch(_operation) do {
 				_profileSide = [_logic,"side"] call ALIVE_fnc_hashGet;
 				_vehicleType = [_logic,"objectType"] call ALIVE_fnc_hashGet;
 				_profileActive = [_logic,"active"] call ALIVE_fnc_hashGet;
-				
+
 				switch(_profileSide) do {
 					case "EAST":{
 						_color = "ColorRed";
@@ -758,7 +782,7 @@ switch(_operation) do {
 						_typePrefix = "n";
 					};
 				};
-				
+
 				switch(_vehicleType) do {
 					case "Car":{
 						_icon = format["%1_recon",_typePrefix];
@@ -788,7 +812,7 @@ switch(_operation) do {
 						_icon = "hd_dot";
 					};
 				};
-				
+
 				if(count _position > 0) then {
 					_m = createMarker [format[MTEMPLATE, format["%1_debug",_profileID]], _position];
 					_m setMarkerShape "ICON";
@@ -796,12 +820,12 @@ switch(_operation) do {
 					_m setMarkerType _icon;
 					_m setMarkerColor _color;
 					_m setMarkerAlpha _alpha;
-					
+
 					_markers pushback _m;
 
 					[_logic,"markers",_markers] call ALIVE_fnc_hashSet;
 				};
-				
+
 				_result = _markers;
 		};
 		case "deleteMarker": {

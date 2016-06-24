@@ -3828,7 +3828,7 @@ switch(_operation) do {
 
                         // players near check
 
-                        _playersInRange = [_reinforcementPosition, 1500] call ALiVE_fnc_anyPlayersInRange;
+                        _playersInRange = [_reinforcementPosition, 350] call ALiVE_fnc_anyPlayersInRange;
 
                         // if players are in visible range
                         // para drop groups instead of
@@ -3838,7 +3838,7 @@ switch(_operation) do {
                         if(_playersInRange > 0) then {
                             _paraDrop = true;
 
-                            _remotePosition = [_reinforcementPosition, 2000] call ALIVE_fnc_getPositionDistancePlayers;
+                            _remotePosition = [_reinforcementPosition, 1600] call ALIVE_fnc_getPositionDistancePlayers;
                         }else{
                             _remotePosition = _reinforcementPosition;
                         };
@@ -3859,6 +3859,7 @@ switch(_operation) do {
                         _heliProfiles = [];
                         _planeProfiles = [];
 
+                        _payloadGroupProfiles = [];
 
                         // empty vehicles
 
@@ -3890,10 +3891,7 @@ switch(_operation) do {
                                     };
                                 };
 
-                                // IF PR_HELI_INSERTION AND NOT AIR THEN DO SLINGLOADING
-
-
-                                if(_eventType == "PR_AIRDROP") then {
+                                if(_eventType == "PR_AIRDROP" || (_eventType == "HELI_INSERT" && _itemCategory != "Air")) then {
                                     _profiles = [_itemClass,_side,_eventFaction,_position] call ALIVE_fnc_createProfileVehicle;
                                     _profiles = [_profiles];
                                 }else{
@@ -3929,6 +3927,86 @@ switch(_operation) do {
                             };
 
                         } forEach _emptyVehicles;
+
+                        if(_eventType == "PR_HELI_INSERT" && {_x select 1 select 1 != "Air"} count _emptyVehicles > 0) then {
+
+                            // create heli transport vehicles for the empty vehicles
+
+                            _transportGroups = [ALIVE_factionDefaultAirTransport,_eventFaction,[]] call ALIVE_fnc_hashGet;
+                            _transportProfiles = [];
+                            _transportVehicleProfiles = [];
+
+                            if(count _transportGroups == 0) then {
+                                _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
+                            };
+
+                            if(count _transportGroups > 0) then {
+
+                                // For each empty vehicle - create a heli to carry it
+                                {
+                                    private ["_currentDiff","_vehicleClass","_position","_payloadWeight","_slingLoadProfile"];
+
+                                    _position = _reinforcementPosition getPos [random(200), random(360)];
+
+                                    // Get the profile
+                                    _slingLoadProfile = [ALiVE_ProfileHandler, "getProfile", (_x select 1)] call ALIVE_fnc_profileHandler;
+
+                                    // Ensure Profile has no assignments
+                                    [_slingloadProfile,"clearVehicleAssignments"] call ALIVE_fnc_profileVehicle;
+
+                                    _slingloadProfile call ALIVE_fnc_inspectHash;
+
+                                    _payloadWeight = [(_slingLoadProfile select 2 select 11)] call ALIVE_fnc_getObjectWeight;
+
+                                    // Select helicopter that can slingload the vehicle
+                                    _vehicleClass = "";
+                                    _currentDiff = 15000;
+                                    {
+                                        private ["_capacity","_slingloadmax","_maxLoad","_slingDiff","_loadDiff"];
+
+                                        _slingloadmax = [(configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue;
+
+                                        _slingDiff = _slingloadmax - _payloadWeight;
+
+                                        if ((_slingDiff < _currentDiff) && (_slingDiff > 0)) then {_currentDiff = _slingDiff; _vehicleClass = _x;};
+
+                                    } foreach _transportGroups;
+
+                                    // Cannot find vehicle big enough to slingload...
+                                    if (_vehicleClass == "") exitWith {_totalCount = _totalCount - 1;};
+
+                                    if(_paraDrop) then {
+                                        _position set [2,PARADROP_HEIGHT];
+                                    };
+
+                                    // Create slingloading heli (slingloading another profile!)
+                                    _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,[], [_slingLoadProfile, []]] call ALIVE_fnc_createProfilesCrewedVehicle;
+
+                                    _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
+                                    _transportVehicleProfiles set [count _transportVehicleProfiles, _profiles select 1 select 2 select 4];
+
+                                    _profileIDs = [];
+                                    {
+                                        _profileID = _x select 2 select 4;
+                                        _profileIDs set [count _profileIDs, _profileID];
+                                    } forEach _profiles;
+
+                                    _payloadGroupProfiles set [count _payloadGroupProfiles, _profileIDs];
+
+                                    _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                                    _profile = _profiles select 0;
+                                    [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+
+                                    _totalCount = _totalCount + 1;
+
+                                } foreach _emptyVehicleProfiles;
+
+                            };
+
+                            _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
+                            _eventTransportVehiclesProfiles = _eventTransportVehiclesProfiles + _transportVehicleProfiles;
+
+                        };
 
 
                         // static individuals
@@ -4446,15 +4524,12 @@ switch(_operation) do {
 
                         };
 
-
                         // payload
                         // spawn vehicles to fit the requested
                         // payload items in
 
                         private ["_payloadGroupProfiles","_transportGroups","_transportProfiles","_transportVehicleProfiles","_vehicleClass","_vehicle","_itemClass",
                         "_itemWeight","_payloadWeight","_payloadcount","_payloadSize","_payloadMaxSize"];
-
-                        _payloadGroupProfiles = [];
 
                         if(count _payload > 0) then {
 
@@ -4564,8 +4639,6 @@ switch(_operation) do {
                                     if(_paraDrop) then {
                                         _position set [2,PARADROP_HEIGHT];
                                     };
-
-                                    // If payload can fit in Helicopter, then add it as cargo
 
                                     if (!_slingload) then {
                                         _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,_payload] call ALIVE_fnc_createProfilesCrewedVehicle;
