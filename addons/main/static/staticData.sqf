@@ -360,8 +360,8 @@ ALIVE_factionDefaultContainers = [] call ALIVE_fnc_hashCreate;
 
 ALIVE_globalDefaultResupplyVehicleOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_globalDefaultResupplyVehicleOptions, "PR_AIRDROP", [["<< Back","Car","Ship"],["<< Back","Car","Ship"]]] call ALIVE_fnc_hashSet;
-[ALIVE_globalDefaultResupplyVehicleOptions, "PR_HELI_INSERT", [["<< Back","Air"],["<< Back","Air"]]] call ALIVE_fnc_hashSet;
-[ALIVE_globalDefaultResupplyVehicleOptions, "PR_STANDARD", [["<< Back","Armored","Mechanized","Car","Support"],["<< Back","Car","Support"]]] call ALIVE_fnc_hashSet;
+[ALIVE_globalDefaultResupplyVehicleOptions, "PR_HELI_INSERT", [["<< Back","Air","Car","Ship"],["<< Back","Air","Car","Ship"]]] call ALIVE_fnc_hashSet;
+[ALIVE_globalDefaultResupplyVehicleOptions, "PR_STANDARD", [["<< Back","Armored","Car"],["<< Back","Armored","Car"]]] call ALIVE_fnc_hashSet;
 
 ALIVE_sideDefaultResupplyVehicleOptions = [] call ALIVE_fnc_hashCreate;
 

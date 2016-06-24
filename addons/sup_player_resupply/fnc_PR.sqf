@@ -1492,7 +1492,6 @@ switch(_operation) do {
                     _payloadRequestButton ctrlShow true;
                     _payloadRequestButton ctrlSetEventHandler ["MouseButtonClick", "['PAYLOAD_REQUEST_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
 
-
                 };
 
                 case "SUPPLY_LIST_SELECT": {
@@ -1655,11 +1654,41 @@ switch(_operation) do {
 
                                 _vehicleClasses = [_sortedVehicles,_selectedValue] call ALIVE_fnc_hashGet;
 
-                                {
-                                    _displayName = getText(configFile >> "CfgVehicles" >> _x >> "displayname");
+                                private ["_deliveryType","_maxWeight","_counts"];
 
-                                    _options set [count _options, _displayName];
-                                    _values set [count _values, _x];
+                                _deliveryType = [_logic,"selectedDeliveryListValue"] call MAINCLASS;
+
+                                switch(_deliveryType) do {
+                                    case "PR_AIRDROP": {
+                                        _counts = [_logic,"countsAir"] call MAINCLASS;
+                                    };
+                                    case "PR_HELI_INSERT": {
+                                        _counts = [_logic,"countsInsert"] call MAINCLASS;
+                                    };
+                                    case "PR_STANDARD": {
+                                        _counts = [_logic,"countsConvoy"] call MAINCLASS;
+                                    };
+                                };
+
+                                _maxWeight = _counts select 0;
+
+                                {
+                                    private ["_slingable"];
+                                    // Make sure item is not too heavy to transport based on delivery type
+                                    if ([_x] call ALIVE_fnc_getObjectWeight < _maxWeight) then {
+
+                                        _displayName = getText(configFile >> "CfgVehicles" >> _x >> "displayname");
+
+                                        _slingable = count ([(configFile >> "CfgVehicles" >> _x >> "slingLoadCargoMemoryPoints")] call ALiVE_fnc_getConfigValue) > 0;
+                                        If (!_slingable && _deliveryType == "PR_HELI_INSERT" && (_selectedValue == "Car" || _selectedValue == "Ship")) then {
+                                            // Don't display
+                                        } else {
+                                            _options set [count _options, _displayName];
+                                            _values set [count _values, _x];
+                                        };
+
+
+                                    };
 
                                 } forEach _vehicleClasses;
 
@@ -2047,18 +2076,29 @@ switch(_operation) do {
                     _payloadOption = _selectedValue select 2;
                     _payloadType = _payloadInfo select 0;
 
+                    private ["_displayName","_vehsize","_weight","_class"];
+                    _class = _selectedValue select 0;
+                    _displayName = [(configFile >> "CfgVehicles" >> _class >> "displayName")] call ALiVE_fnc_getConfigValue;
+                    _vehsize = [(configFile >> "CfgVehicles" >> _class >> "mapSize")] call ALiVE_fnc_getConfigValue;
+                    _weight = [_class] call ALIVE_fnc_getObjectWeight;
+                    _faction = [(configFile >> "CfgVehicles" >> _class >> "faction")] call ALiVE_fnc_getConfigValue;
+                    _faction = [(configFile >> "CfgFactionClasses" >> _faction >> "displayname")] call ALiVE_fnc_getConfigValue;
+                    _side = [[[(configFile >> "CfgVehicles" >> _class >> "side")] call ALiVE_fnc_getConfigValue] call ALIVE_fnc_sideNumberToText] call ALIVE_fnc_sideTextToLong;
+
+                    disableSerialization;
+
                     switch(_payloadType) do {
                         case "Vehicles":{
-                            _payloadInfoText ctrlSetText "Empty vehicle";
+                            _payloadInfoText ctrlSetText format["Empty vehicle: %1, Size: %2m, Weight: %3kg", _displayName, _vehsize, _weight];
                         };
                         case "Defence Stores":{
-                            _payloadInfoText ctrlSetText "Defence object";
+                            _payloadInfoText ctrlSetText format["Defence Stores: %1, Size: %2m, Weight: %3kg", _displayName, _vehsize, _weight];
                         };
                         case "Combat Supplies":{
-                            _payloadInfoText ctrlSetText "Combat supply";
+                            _payloadInfoText ctrlSetText format["Combat Supplies: %1, Size: %2m, Weight: %3kg", _displayName, _vehsize, _weight];
                         };
                         case "Individuals":{
-                            _payloadInfoText ctrlSetText "Reinforcement individual";
+                            _payloadInfoText ctrlSetText format["Reinforcements: %1, Faction: %2, Side: %3", _displayName, _faction, _side];
 
                             // enable the options combo
 
@@ -2068,7 +2108,7 @@ switch(_operation) do {
 
                         };
                         case "Groups":{
-                            _payloadInfoText ctrlSetText "Reinforcement group";
+                            _payloadInfoText ctrlSetText format["Reinforcements: %1, Faction: %2, Side: %3", _displayName, _faction, _side];
 
                             // enable the options combo
 
