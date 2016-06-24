@@ -448,11 +448,12 @@ ALIVE_factionDefaultResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyIndividualOptions, "CIV_F", ALIVE_globalDefaultResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 
 
+// THE FOLLOWING IS A BLACKLIST
 
 ALIVE_globalDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
-[ALIVE_globalDefaultResupplyGroupOptions, "PR_AIRDROP", ["Motorized","Motorized_MTP","SpecOps","Support"]] call ALIVE_fnc_hashSet;
-[ALIVE_globalDefaultResupplyGroupOptions, "PR_HELI_INSERT", ["Motorized","Motorized_MTP","SpecOps","Support"]] call ALIVE_fnc_hashSet;
-[ALIVE_globalDefaultResupplyGroupOptions, "PR_STANDARD", ["Armored","Mechanized","Motorized","Motorized_MTP","SpecOps","Support"]] call ALIVE_fnc_hashSet;
+[ALIVE_globalDefaultResupplyGroupOptions, "PR_AIRDROP", ["Armored","Support"]] call ALIVE_fnc_hashSet;
+[ALIVE_globalDefaultResupplyGroupOptions, "PR_HELI_INSERT", ["Armored","Mechanized","Support"]] call ALIVE_fnc_hashSet;
+[ALIVE_globalDefaultResupplyGroupOptions, "PR_STANDARD", ["Support"]] call ALIVE_fnc_hashSet;
 
 ALIVE_sideDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 
@@ -469,6 +470,8 @@ ALIVE_factionDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyGroupOptions, "BLU_F", ALIVE_globalDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "BLU_G_F", ALIVE_globalDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "CIV_F", ALIVE_globalDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+
+// OVER
 
 /*
  * Garrison building defaults
