@@ -2085,14 +2085,20 @@ switch(_operation) do {
                     _payloadOption = _selectedValue select 2;
                     _payloadType = _payloadInfo select 0;
 
+                    // [">>>>>>>>>> %1 %2 %3", _payloadInfo, _payloadOption, _payloadType] call ALiVE_fnc_dump;
+
                     private ["_displayName","_vehsize","_weight","_class"];
-                    _class = _selectedValue select 0;
-                    _displayName = [(configFile >> "CfgVehicles" >> _class >> "displayName")] call ALiVE_fnc_getConfigValue;
-                    _vehsize = [(configFile >> "CfgVehicles" >> _class >> "mapSize")] call ALiVE_fnc_getConfigValue;
-                    _weight = [_class] call ALIVE_fnc_getObjectWeight;
-                    _faction = [(configFile >> "CfgVehicles" >> _class >> "faction")] call ALiVE_fnc_getConfigValue;
-                    _faction = [(configFile >> "CfgFactionClasses" >> _faction >> "displayname")] call ALiVE_fnc_getConfigValue;
-                    _side = [[[(configFile >> "CfgVehicles" >> _class >> "side")] call ALiVE_fnc_getConfigValue] call ALIVE_fnc_sideNumberToText] call ALIVE_fnc_sideTextToLong;
+
+                    if (_payloadType != "Groups") then {
+
+                        _class = _selectedValue select 0;
+                        _displayName = [(configFile >> "CfgVehicles" >> _class >> "displayName")] call ALiVE_fnc_getConfigValue;
+                        _vehsize = [(configFile >> "CfgVehicles" >> _class >> "mapSize")] call ALiVE_fnc_getConfigValue;
+                        _weight = [_class] call ALIVE_fnc_getObjectWeight;
+                        _faction = [(configFile >> "CfgVehicles" >> _class >> "faction")] call ALiVE_fnc_getConfigValue;
+                        _faction = [(configFile >> "CfgFactionClasses" >> _faction >> "displayname")] call ALiVE_fnc_getConfigValue;
+                        _side = [[[(configFile >> "CfgVehicles" >> _class >> "side")] call ALiVE_fnc_getConfigValue] call ALIVE_fnc_sideNumberToText] call ALIVE_fnc_sideTextToLong;
+                    };
 
                     disableSerialization;
 
@@ -2107,7 +2113,7 @@ switch(_operation) do {
                             _payloadInfoText ctrlSetText format["Combat Supplies: %1, Size: %2m, Weight: %3kg", _displayName, _vehsize, _weight];
                         };
                         case "Individuals":{
-                            _payloadInfoText ctrlSetText format["Reinforcements: %1, Faction: %2, Side: %3", _displayName, _faction, _side];
+                            _payloadInfoText ctrlSetText format["Individual Reinforcements: %1, Faction: %2, Side: %3", _displayName, _faction, _side];
 
                             // enable the options combo
 
@@ -2117,7 +2123,7 @@ switch(_operation) do {
 
                         };
                         case "Groups":{
-                            _payloadInfoText ctrlSetText format["Reinforcements: %1, Faction: %2, Side: %3", _displayName, _faction, _side];
+                            _payloadInfoText ctrlSetText format["Group Reinforcements:"];
 
                             // enable the options combo
 
