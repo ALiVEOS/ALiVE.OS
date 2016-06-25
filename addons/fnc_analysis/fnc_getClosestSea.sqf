@@ -17,7 +17,7 @@ Array - position
 Examples:
 (begin example)
 // get closest land
-_position = [getPos player, 500] call ALIVE_fnc_getClosestSea;
+_position = [getPos player, true] call ALIVE_fnc_getClosestSea;
 (end)
 
 See Also:
