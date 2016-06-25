@@ -3858,6 +3858,8 @@ switch(_operation) do {
                         _armourProfiles = [];
                         _heliProfiles = [];
                         _planeProfiles = [];
+                        _marineProfiles = [];
+                        _specOpsProfiles = [];
 
                         _payloadGroupProfiles = [];
 
@@ -3918,6 +3920,9 @@ switch(_operation) do {
                                     case "Armored":{
                                         _armourProfiles set [count _armourProfiles, _profileIDs];
                                     };
+                                    case "Ship":{
+                                        _marineProfiles set [count _marineProfiles, _profileIDs];
+                                    };
                                     case "Air":{
                                         _heliProfiles set [count _heliProfiles, _profileIDs];
 
@@ -3933,6 +3938,7 @@ switch(_operation) do {
 
                         } forEach _emptyVehicles;
 
+                        // set up slingload for empty vehicles
                         if(_eventType == "PR_HELI_INSERT" && {_x select 1 select 1 != "Air"} count _emptyVehicles > 0) then {
 
                             // create heli transport vehicles for the empty vehicles
@@ -4118,6 +4124,8 @@ switch(_operation) do {
                         };
 
 
+                        // Handle Groups - spawn inf and vehicles, slingload/paradrop vehicles if necessary
+
                         // static groups
 
                         private ["_staticGroupProfiles","_group"];
@@ -4134,47 +4142,27 @@ switch(_operation) do {
 
                                 _itemCategory = _x select 1 select 2;
 
+                                // Handle other infantry groups such as Infantry_WDL
+                                if ([_itemCategory,"Infantry"] call CBa_Fnc_find != -1) then {_itemCategory = "Infantry";};
+
+                                // Handle other Motorized groups such as Motorized_WDL
+                                if ([_itemCategory,"Motorized"] call CBa_Fnc_find != -1) then {_itemCategory = "Motorized";};
+
                                 switch(_itemCategory) do {
-                                    case "Infantry":{
-                                        if(_paraDrop) then {
+                                    case "Air":{
+                                        _position = _remotePosition getPos [random(200), random(360)];
+                                        _position set [2,1000];
+                                    };
+                                    default {
                                             if(_eventType == "PR_HELI_INSERT") then {
                                                 _position = _remotePosition;
                                             }else{
                                                 _position set [2,PARADROP_HEIGHT];
                                             };
-                                        };
-                                    };
-                                    case "SpecOps":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        };
-                                    };
-                                    case "Armored":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        };
-                                    };
-                                    case "Mechanized":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        };
-                                    };
-                                    case "Motorized":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        };
-                                    };
-                                    case "Motorized_MTP":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        };
-                                    };
-                                    case "Air":{
-                                        _position = _remotePosition getPos [random(200), random(360)];
-                                        _position set [2,1000];
                                     };
                                 };
 
+                                TRACE_2(">>>>>>>>>>>>>>>>>>>>>>>>",_group, _position);
                                 _profiles = [_group, _position, random(360), false, _eventFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
 
                                 _profileIDs = [];
@@ -4190,7 +4178,10 @@ switch(_operation) do {
                                         _infantryProfiles set [count _infantryProfiles, _profileIDs];
                                     };
                                     case "SpecOps":{
-                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
+                                        _specOpsProfiles set [count _specOpsProfiles, _profileIDs];
+                                    };
+                                    case "Naval":{
+                                        _marineProfiles set [count _marineProfiles, _profileIDs];
                                     };
                                     case "Armored":{
                                         _armourProfiles set [count _armourProfiles, _profileIDs];
@@ -4199,9 +4190,6 @@ switch(_operation) do {
                                          _mechanisedProfiles set [count _mechanisedProfiles, _profileIDs];
                                     };
                                     case "Motorized":{
-                                         _motorisedProfiles set [count _motorisedProfiles, _profileIDs];
-                                    };
-                                    case "Motorized_MTP":{
                                          _motorisedProfiles set [count _motorisedProfiles, _profileIDs];
                                     };
                                     case "Air":{
@@ -4236,44 +4224,23 @@ switch(_operation) do {
 
                                 _itemCategory = _x select 1 select 2;
 
+                                // Handle other infantry groups such as Infantry_WDL
+                                if ([_itemCategory,"Infantry"] call CBa_Fnc_find != -1) then {_itemCategory = "Infantry";};
+
+                                // Handle other Motorized groups such as Motorized_WDL
+                                if ([_itemCategory,"Motorized"] call CBa_Fnc_find != -1) then {_itemCategory = "Motorized";};
+
                                 switch(_itemCategory) do {
-                                    case "Infantry":{
-                                        if(_paraDrop) then {
-                                           if(_eventType == "PR_HELI_INSERT") then {
-                                               _position = _remotePosition;
-                                           }else{
-                                               _position set [2,PARADROP_HEIGHT];
-                                           };
-                                        };
-                                    };
-                                    case "SpecOps":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        };
-                                    };
-                                    case "Armored":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        };
-                                    };
-                                    case "Mechanized":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        };
-                                    };
-                                    case "Motorized":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        };
-                                    };
-                                    case "Motorized_MTP":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        };
-                                    };
                                     case "Air":{
                                         _position = _remotePosition getPos [random(200), random(360)];
                                         _position set [2,1000];
+                                    };
+                                    default {
+                                            if(_eventType == "PR_HELI_INSERT") then {
+                                                _position = _remotePosition;
+                                            }else{
+                                                _position set [2,PARADROP_HEIGHT];
+                                            };
                                     };
                                 };
 
@@ -4292,7 +4259,10 @@ switch(_operation) do {
                                         _infantryProfiles set [count _infantryProfiles, _profileIDs];
                                     };
                                     case "SpecOps":{
-                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
+                                        _specOpsProfiles set [count _specOpsProfiles, _profileIDs];
+                                    };
+                                    case "Naval":{
+                                        _marineProfiles set [count _marineProfiles, _profileIDs];
                                     };
                                     case "Armored":{
                                         _armourProfiles set [count _armourProfiles, _profileIDs];
@@ -4301,9 +4271,6 @@ switch(_operation) do {
                                          _mechanisedProfiles set [count _mechanisedProfiles, _profileIDs];
                                     };
                                     case "Motorized":{
-                                         _motorisedProfiles set [count _motorisedProfiles, _profileIDs];
-                                    };
-                                    case "Motorized_MTP":{
                                          _motorisedProfiles set [count _motorisedProfiles, _profileIDs];
                                     };
                                     case "Air":{
@@ -4338,44 +4305,23 @@ switch(_operation) do {
 
                                 _itemCategory = _x select 1 select 2;
 
+                                // Handle other infantry groups such as Infantry_WDL
+                                if ([_itemCategory,"Infantry"] call CBa_Fnc_find != -1) then {_itemCategory = "Infantry";};
+
+                                // Handle other Motorized groups such as Motorized_WDL
+                                if ([_itemCategory,"Motorized"] call CBa_Fnc_find != -1) then {_itemCategory = "Motorized";};
+
                                 switch(_itemCategory) do {
-                                    case "Infantry":{
-                                        if(_paraDrop) then {
+                                    case "Air":{
+                                        _position = _remotePosition getPos [random(200), random(360)];
+                                        _position set [2,1000];
+                                    };
+                                    default {
                                             if(_eventType == "PR_HELI_INSERT") then {
                                                 _position = _remotePosition;
                                             }else{
                                                 _position set [2,PARADROP_HEIGHT];
                                             };
-                                        };
-                                    };
-                                    case "SpecOps":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        };
-                                    };
-                                    case "Armored":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        };
-                                    };
-                                    case "Mechanized":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        };
-                                    };
-                                    case "Motorized":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        };
-                                    };
-                                    case "Motorized_MTP":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        };
-                                    };
-                                    case "Air":{
-                                        _position = _remotePosition getPos [random(200), random(360)];
-                                        _position set [2,1000];
                                     };
                                 };
 
@@ -4394,7 +4340,10 @@ switch(_operation) do {
                                         _infantryProfiles set [count _infantryProfiles, _profileIDs];
                                     };
                                     case "SpecOps":{
-                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
+                                        _specOpsProfiles set [count _specOpsProfiles, _profileIDs];
+                                    };
+                                    case "Naval":{
+                                        _marineProfiles set [count _marineProfiles, _profileIDs];
                                     };
                                     case "Armored":{
                                         _armourProfiles set [count _armourProfiles, _profileIDs];
@@ -4403,9 +4352,6 @@ switch(_operation) do {
                                          _mechanisedProfiles set [count _mechanisedProfiles, _profileIDs];
                                     };
                                     case "Motorized":{
-                                         _motorisedProfiles set [count _motorisedProfiles, _profileIDs];
-                                    };
-                                    case "Motorized_MTP":{
                                          _motorisedProfiles set [count _motorisedProfiles, _profileIDs];
                                     };
                                     case "Air":{
@@ -4423,6 +4369,7 @@ switch(_operation) do {
 
                         } forEach _reinforceGroups;
 
+                        // Handle infantry
 
                         if(_eventType == "PR_STANDARD") then {
 
@@ -4529,7 +4476,11 @@ switch(_operation) do {
 
                         };
 
-                        // payload
+                        // Handle Groups
+
+
+                        // Handle payload
+
                         // spawn vehicles to fit the requested
                         // payload items in
 
