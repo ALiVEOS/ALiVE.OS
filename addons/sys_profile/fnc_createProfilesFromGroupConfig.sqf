@@ -158,11 +158,15 @@ if(count _config > 0) then {
 		_vehicleClass = _vehicle select 0;
 		_vehicleRank = _vehicle select 1;
 
-	    //["V: %1 %2",_vehicle,_vehicleClass] call ALIVE_fnc_dump;
-
 		_vehicleKind = _vehicleClass call ALIVE_fnc_vehicleGetKindOf;
 
 		_vehiclePosition = _position getPos [(20 * ((_forEachIndex)+1)), random(360)];
+
+		if (_position select 2 > 50) then {
+			_vehiclePosition set [2, _position select 2]; // Make sure that you honour the original height if above 50
+		};
+
+	    // ["V: %1 %2 %3 %4",_vehicle,_vehicleClass, _position select 2, _vehiclePosition select 2] call ALIVE_fnc_dump;
 
 		_profileVehicle = [nil, "create"] call ALIVE_fnc_profileVehicle;
 		[_profileVehicle, "init"] call ALIVE_fnc_profileVehicle;
