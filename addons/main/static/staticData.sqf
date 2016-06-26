@@ -893,11 +893,11 @@ _worldName = worldName;
 
 // Load map static data
 // check file exists, if not then load hardcoded
-_fileExists = [format["x\alive\addons\main\static\%1_staticData.sqf", worldName]] call ALiVE_fnc_fileExists;
+_fileExists = [format["x\alive\addons\main\static\%1_staticData.sqf", toLower(worldName)]] call ALiVE_fnc_fileExists;
 
 If (_fileExists) then {
 	["ALiVE LOADING MAP DATA: %1",_worldName] call ALIVE_fnc_dump;
-	_file = format["x\alive\addons\main\static\%1_staticData.sqf", worldName];
+	_file = format["x\alive\addons\main\static\%1_staticData.sqf", toLower(worldName)];
 	call compile preprocessFileLineNumbers _file;
 } else {
 	["ALiVE SETTING UP MAP (HARD CODED): %1",_worldName] call ALIVE_fnc_dump;
