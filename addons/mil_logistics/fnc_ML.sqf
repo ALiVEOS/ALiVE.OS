@@ -2353,6 +2353,7 @@ switch(_operation) do {
                     _profileWaypoint = [_eventPosition, 100, "MOVE", "NORMAL", 100, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
 
                     _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
+
                     if!(isNil "_profile") then {
                         [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
                     };
@@ -2637,13 +2638,15 @@ switch(_operation) do {
                 private ["_payloadUnloaded"];
                 _payloadUnloaded = true;
                 {
-                    private ["_Profile","_vehicleProfile"];
+                    private ["_vehicleProfile"];
 
                     _vehicleProfile = [ALIVE_profileHandler, "getProfile", _x select 1] call ALIVE_fnc_profileHandler;
 
                     if!(isNil "_vehicleProfile") then {
 
                         private ["_active","_slingLoading","_slingload","_noCargo","_vehicle"];
+
+                        _vehicleProfile call ALIVE_fnc_inspectHash;
 
                         _active = _vehicleProfile select 2 select 1;
 
@@ -4189,6 +4192,9 @@ switch(_operation) do {
                                     case "Infantry":{
                                         _infantryProfiles set [count _infantryProfiles, _profileIDs];
                                     };
+                                    case "Support":{
+                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
+                                    };
                                     case "SpecOps":{
                                         _specOpsProfiles set [count _specOpsProfiles, _profileIDs];
                                     };
@@ -4278,6 +4284,9 @@ switch(_operation) do {
                                     case "Infantry":{
                                         _infantryProfiles set [count _infantryProfiles, _profileIDs];
                                     };
+                                    case "Support":{
+                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
+                                    };
                                     case "SpecOps":{
                                         _specOpsProfiles set [count _specOpsProfiles, _profileIDs];
                                     };
@@ -4365,6 +4374,9 @@ switch(_operation) do {
 
                                 switch(_itemCategory) do {
                                     case "Infantry":{
+                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
+                                    };
+                                    case "Support":{
                                         _infantryProfiles set [count _infantryProfiles, _profileIDs];
                                     };
                                     case "SpecOps":{
@@ -4737,18 +4749,21 @@ switch(_operation) do {
                                             // Choose a good sized container
                                             _containerClass = _containers select 0;
 
-                                            // Find a container big enough
+                                            // Find a container big enough and the helicopter can slingload
                                             _tempContainer = _containerClass;
                                             _tempContainerSize = [(configFile >> "CfgVehicles" >> _containerClass >> "mapSize")] call ALiVE_fnc_getConfigValue;
                                             {
-                                                private ["_containerSize"];
+                                                private ["_containerSize","_heliCanSling"];
                                                 _containerSize = [(configFile >> "CfgVehicles" >> _x >> "mapSize")] call ALiVE_fnc_getConfigValue;
 
-                                                if (_containerSize > _tempContainerSize) then {_tempContainer = _x; _tempContainerSize = _containerSize;};
+                                                // Work around for cargo container that is 7500kg
+                                                _heliCanSling = if ([(configFile >> "CfgVehicles" >> _vehicleClass >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue < 7500 && _x == "B_Slingload_01_Cargo_F") then {false;}else{true;};
 
-                                                TRACE_3("RESUPPLY %3 : %2 for %1", _payloadMaxSize, _containerSize, _x);
+                                                if (_containerSize > _tempContainerSize && _heliCanSling) then {_tempContainer = _x; _tempContainerSize = _containerSize;};
 
-                                                if ((_containerSize * 2) > _payloadMaxSize) exitWith {_containerClass = _x;};
+                                                TRACE_3("RESUPPLY", _payloadMaxSize, _containerSize, _x);
+
+                                                if ((_containerSize * 2) > _payloadMaxSize && _heliCanSling) exitWith {_containerClass = _x;};
                                             } foreach _containers;
 
                                             // If no container is big enough, then just use biggest
