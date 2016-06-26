@@ -551,7 +551,9 @@ switch(_operation) do {
 	                		};
 	                	};
 
-	                    TRACE_3("SPAWNING SLINGLOAD VEHICLES %3 - %1 : %2", _vehicle, _slingloadVehicle, _slinging);
+	                	If (_debug) then {
+	                    	["SPAWNING SLINGLOAD VEHICLES %3 - %1 : %2", _vehicle, _slingloadVehicle, _slinging] call ALiVE_fnc_dump;
+	                    };
 
                         if (_slinging) then {[_logic, "slingloading", true] call ALIVE_fnc_hashSet;};
 					};
