@@ -451,9 +451,9 @@ ALIVE_factionDefaultResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 // THE FOLLOWING IS A BLACKLIST
 
 ALIVE_globalDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
-[ALIVE_globalDefaultResupplyGroupOptions, "PR_AIRDROP", ["Armored","Support"]] call ALIVE_fnc_hashSet;
-[ALIVE_globalDefaultResupplyGroupOptions, "PR_HELI_INSERT", ["Armored","Mechanized","Support"]] call ALIVE_fnc_hashSet;
-[ALIVE_globalDefaultResupplyGroupOptions, "PR_STANDARD", ["Support"]] call ALIVE_fnc_hashSet;
+[ALIVE_globalDefaultResupplyGroupOptions, "PR_AIRDROP", ["Armored","Mechanized"]] call ALIVE_fnc_hashSet;
+[ALIVE_globalDefaultResupplyGroupOptions, "PR_HELI_INSERT", ["Armored","Mechanized"]] call ALIVE_fnc_hashSet;
+[ALIVE_globalDefaultResupplyGroupOptions, "PR_STANDARD", []] call ALIVE_fnc_hashSet;
 
 ALIVE_sideDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 
