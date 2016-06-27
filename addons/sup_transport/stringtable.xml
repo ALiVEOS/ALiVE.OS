@@ -35,5 +35,10 @@
 <Key ID="STR_ALIVE_TRANSPORT_CODE_DESC">
 	<English>Code that will be ran on this unit</English>
 </Key>
-
+<Key ID="STR_ALIVE_TRANSPORT_SLINGLOADING">
+	<English>Slingloading</English>
+</Key>
+<Key ID="STR_ALIVE_TRANSPORT_CODE_DESC">
+	<English>If selected enables slingloading of vehicles and containers, containers are spawned near transport chopper.</English>
+</Key>
 </Container></Package></Project>

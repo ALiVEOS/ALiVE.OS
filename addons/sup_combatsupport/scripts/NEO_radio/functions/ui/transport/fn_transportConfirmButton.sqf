@@ -46,18 +46,25 @@ _text = switch (toUpper _task) do
 	case "CIRCLE" : { format ["%1, move to %3 %4 and provide overwatch. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
 	case "RTB" : { format ["%1, return to base. Over.", _callsign, _callSignPlayer] };
 	case "INSERTION" : { format ["%1, move to %3 %4 for insertion. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+	case "SLINGLOAD" : { format ["%1, move to %3 %4 for slingloading. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+	case "UNHOOK" : { format ["%1, move to %3 %4 to deliver sling load. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
 };
 
-//New Task
-_unit setVariable ["NEO_radioTransportNewTask", _arguments, true];
+// Let side know over the readio
 [[player,_text,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 
 if (_audio) then {
 	player kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
 	leader _grp kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
-
-	player kbTell [leader _grp, "ALIVE_SUPP_protocol", "Transport_Request", "GROUP"];
+	if (toUpper _task != "UNHOOK") then {
+		player kbTell [leader _grp, "ALIVE_SUPP_protocol", "Transport_Request", "GROUP"];
+	} else {
+		player kbTell [leader _grp, "ALIVE_SUPP_protocol", "Drop_Request", "GROUP"];
+	};
 };
+
+//New Task
+_unit setVariable ["NEO_radioTransportNewTask", _arguments, true];
 
 //Interface
 [lbCurSel 655565] call NEO_fnc_radioRefreshUi;

@@ -1,4 +1,6 @@
-private ["_veh", "_grp", "_callsign", "_pos", "_dir","_height","_type", "_respawn","_code","_tasks","_faction","_side","_sides"];
+#define DEFAULT_TRANSPORT_TASKS ["Pickup", "Land", "Land (Eng off)", "Move", "Circle", "Insertion", "Slingload", "Unhook"]
+
+private ["_veh", "_grp", "_callsign", "_pos", "_dir","_height","_type", "_respawn","_code","_tasks","_faction","_side","_sides","_slingloading"];
 
 _veh = _this select 0;
 _grp = _this select 1;
@@ -8,10 +10,11 @@ _dir = _this select 4;
 _height = _this select 5;
 _type = _this select 6;
 _respawn = _this select 7;
+_code = _this select 8;
+_slingloading = _this select 9;
 
 //define defaults
-_code = _this select 8;
-_tasks = ["Pickup", "Land", "land (Eng off)", "Move", "Circle","Insertion"];
+
 _faction = gettext(configfile >> "CfgVehicles" >> _type >> "faction");
 _sides = [WEST,EAST,RESISTANCE,CIVILIAN];
 
@@ -74,37 +77,41 @@ _veh lockDriver true;
 
 
 _ffvTurrets = [_type,true,true,false,true] call ALIVE_fnc_configGetVehicleTurretPositions;
-                                _gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
-                                _ffvTurrets = _ffvTurrets - _gunnerTurrets;
+_gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
+_ffvTurrets = _ffvTurrets - _gunnerTurrets;
 
-                           if(count _ffvTurrets > 0) then
-                            {
-                                for "_i" from 0 to (count _ffvTurrets)-1 do
-                                    {
-                                          _turretPath = _ffvTurrets call BIS_fnc_arrayPop;
-                                         [_veh turretUnit _turretPath] join grpNull;
-                                         deleteVehicle (_veh turretUnit _turretPath);
-                                    };
-                            };
+if(count _ffvTurrets > 0) then
+{
+    for "_i" from 0 to (count _ffvTurrets)-1 do
+        {
+              _turretPath = _ffvTurrets call BIS_fnc_arrayPop;
+             [_veh turretUnit _turretPath] join grpNull;
+             deleteVehicle (_veh turretUnit _turretPath);
+        };
+};
 
 _hdl = [[(units _grp select 0),_callsign], "fnc_setGroupID", false, false] spawn BIS_fnc_MP;
 waituntil {scriptdone _hdl};
 
 sleep 1;
 
- _codeArray = [_code, ";"] Call CBA_fnc_split;
-     {
-        If(_x != "") then {
-           [_veh, _x] spawn {
-                           private ["_veh", "_spawn"];
-                           _veh = _this select 0;
-                           _spawn = compile(_this select 1);
-                           [_veh] spawn _spawn;
-                            };
-                           };
+_codeArray = [_code, ";"] Call CBA_fnc_split;
+{
+  If(_x != "") then {
+      [_veh, _x] spawn {
+         private ["_veh", "_spawn"];
+         _veh = _this select 0;
+         _spawn = compile(_this select 1);
+         [_veh] spawn _spawn;
+      };
+  };
+} forEach _codeArray;
 
-
-                            } forEach _codeArray;
+if (!_slingloading) then {
+    _tasks = DEFAULT_TRANSPORT_TASKS - ["Slingload","Unhook"];
+} else {
+    _tasks = DEFAULT_TRANSPORT_TASKS;
+};
 
 //Set variables and run FSM and optionally passed code
 _veh setVariable ["ALIVE_CombatSupport", true];
@@ -126,7 +133,7 @@ _audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
 
 //Start FSM
 _transportfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\transport.fsm";
-[_veh, _grp, _callsign, _pos, _dir,_height,_type, _respawn,_code,_audio] execFSM _transportfsm;
+[_veh, _grp, _callsign, _pos, _dir,_height,_type, _respawn,_code,_audio,_slingloading] execFSM _transportfsm;
 
 
 _replen = format["All units this is %1! We are back on station and are ready for tasking", _callsign] ;

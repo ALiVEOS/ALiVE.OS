@@ -37,6 +37,7 @@ NEO, adapted by Gunny for ALiVE
 ---------------------------------------------------------------------------- */
 
 #define SUPERCLASS nil
+#define DEFAULT_TRANSPORT_TASKS ["Pickup", "Land", "Land (Eng off)", "Move", "Circle", "Insertion", "Slingload", "Unhook"]
 
 private ["_logic","_operation","_args"];
 
@@ -117,7 +118,7 @@ switch(_operation) do {
                                     };
 
                                     case ("transport") : {
-	                                    private ["_position","_callsign","_type"];
+	                                    private ["_position","_callsign","_type","_slingloading"];
 
                                         _callsign = _entry getvariable ["CS_CALLSIGN",groupID (group _entry)];
 	                                    _height = _entry getvariable ["CS_HEIGHT",0];
@@ -127,8 +128,8 @@ switch(_operation) do {
 	                                    _id = [_position] call ALiVE_fnc_getNearestAirportID;
 	                                    _type = typeOf _entry;
 	                                    _direction =  getDir _entry;
-
-	                                    _transportArray = [_position,_direction,_type, _callsign,["Pickup", "Land", "land (Eng off)", "Move", "Circle","Insertion"],_code,_height];
+                                        _slingloading = true;
+	                                    _transportArray = [_position,_direction,_type, _callsign,DEFAULT_TRANSPORT_TASKS,_code,_height,_slingloading];
 	                                    _transportArrays set [count _transportArrays,_transportArray];
                                     };
                                 };
@@ -179,7 +180,7 @@ switch(_operation) do {
                                     _casArrays set [count _casArrays,_casArray];
                                 };
                                 case ("ALiVE_SUP_TRANSPORT") : {
-                                    private ["_position","_callsign","_type"];
+                                    private ["_position","_callsign","_type","_slingloading"];
 
                                     _position = getposATL ((synchronizedObjects _logic) select _i);
                                     _callsign = ((synchronizedObjects _logic) select _i) getvariable ["transport_callsign","FRIZ ONE"];
@@ -191,8 +192,17 @@ switch(_operation) do {
                                     _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
 
 
+                                    _slingloading = ((synchronizedObjects _logic) select _i) getvariable ["transport_slingloading",true];
 
-                                    _transportArray = [_position,_direction,_type, _callsign,["Pickup", "Land", "land (Eng off)", "Move", "Circle","Insertion"],_code,_height];
+                                    LOG(_slingloading);
+
+                                    if (!_slingloading) then {
+                                        _tasks = DEFAULT_TRANSPORT_TASKS - ["Slingload","Unhook"];
+                                    } else {
+                                        _tasks = DEFAULT_TRANSPORT_TASKS;
+                                    };
+
+                                    _transportArray = [_position,_direction,_type, _callsign,DEFAULT_TRANSPORT_TASKS,_code,_height,_slingloading];
                                     _transportArrays set [count _transportArrays,_transportArray];
                                 };
                                 case ("ALiVE_sup_artillery") : {
@@ -262,16 +272,15 @@ switch(_operation) do {
                         // Transport
 
                         {
-                            private ["_pos", "_dir", "_type", "_callsign", "_tasks", "_code","_Height","_side"];
+                            private ["_pos", "_dir", "_type", "_callsign", "_tasks", "_code","_Height","_side","_slingloading"];
                             _pos = _x select 0; _pos set [2, 0];
                             _dir = _x select 1;
                             _type = _x select 2;
                             _callsign = toUpper (_x select 3);
                             _tasks = _x select 4;
                             _code =  _x select 5;
-                             _height = _x select 6;
-
-
+                            _height = _x select 6;
+                            _slingloading = _x select 7;
 
 							_transportfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\transport.fsm";
                             _faction = gettext(configfile >> "CfgVehicles" >> _type >> "faction");
@@ -307,8 +316,6 @@ switch(_operation) do {
                             _gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
                             _ffvTurrets = _ffvTurrets - _gunnerTurrets;
 
-
-
                             if(count _ffvTurrets > 0) then
                             {
                                 for "_i" from 0 to (count _ffvTurrets)-1 do
@@ -333,20 +340,51 @@ switch(_operation) do {
                                                                       };
                                                         };
 
-
                             } forEach _codeArray;
-
-
-
 
                             //Set Group ID
                             [[(units _grp select 0),_callsign], "fnc_setGroupID", false, false] spawn BIS_fnc_MP;
+
+                            // Check vehicle can slingload
+                            _slingloading = [(configFile >> "CfgVehicles" >> _type >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue > 0 && _slingloading;
+
+                            // Spawn containers and cargo nets if slingloading is enabled?
+                            if (_slingloading) then {
+
+                                _containers = [ALIVE_factionDefaultContainers,_faction,[]] call ALIVE_fnc_hashGet;
+
+                                if(count _containers == 0) then {
+                                    _containers = [ALIVE_sideDefaultContainers,_side] call ALIVE_fnc_hashGet;
+                                };
+
+                                If (count _containers > 0) then {
+                                    {
+                                        for "_i" from 1 to 3 do { // 3 of each container
+                                            private ["_veh","_position"];
+                                            _position = [
+                                                _pos,
+                                                (sizeOf _type),
+                                                (sizeOf _type) + (sizeOf _x) * 2,
+                                                (sizeOf _x),
+                                                0,
+                                                0.5,
+                                                0,
+                                                [],
+                                                [_pos getpos [25, random(360)],
+                                                _pos getpos [25, random(360)]]
+                                            ] call bis_fnc_findSafePos;
+                                            _veh = createVehicle [_x, _position, [], 5, "NONE"];
+                                        };
+                                    }foreach _containers;
+                                };
+
+                            };
 
                             // set ownership flag for other modules
                             _veh setVariable ["ALIVE_CombatSupport", true];
                             _veh setVariable ["NEO_transportAvailableTasks", _tasks, true];
 
-                            [_veh, _grp, _callsign, _pos, _dir, _height, _type, CS_RESPAWN,_code, _audio] execFSM _transportfsm;
+                            [_veh, _grp, _callsign, _pos, _dir, _height, _type, CS_RESPAWN,_code, _audio, _slingloading] execFSM _transportfsm;
 
                             _t = NEO_radioLogic getVariable format ["NEO_radioTrasportArray_%1", _side];
                             _t set [count _t, [_veh, _grp, _callsign]];

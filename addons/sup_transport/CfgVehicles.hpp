@@ -36,6 +36,28 @@ class CfgVehicles {
 								description = "$STR_ALIVE_TRANSPORT_CODE_DESC";
 								defaultValue="";
 						};
+						class transport_slingloading
+						{
+								displayName = "$STR_ALIVE_TRANSPORT_SLINGLOADING";
+								description = "$STR_ALIVE_TRANSPORT_SLINGLOADING_DESC";
+								typeName = "BOOL";
+                                class Values
+                                {
+
+                                        class No
+                                        {
+                                                name = "No";
+                                                value = 0;
+                                        };
+                                        class Yes
+                                        {
+                                                name = "Yes";
+                                                value = 1;
+                                                default = 1;
+
+                                        };
+                                };
+						};
 				};
 				class ModuleDescription
 				{
