@@ -259,7 +259,6 @@ switch(_operation) do {
 						[_profilesCatagorised, "CIV", _catagoriesCIV] call ALIVE_fnc_hashSet;
 						[_logic,"profilesCatagorised",_profilesCatagorised] call ALIVE_fnc_hashSet;
 
-
                 };
 
                 /*
@@ -396,9 +395,9 @@ switch(_operation) do {
 						_profileIsPlayer = [_profile, "isPlayer"] call ALIVE_fnc_hashGet;
 
 						_profilesCatagorisedSide = [_profilesCatagorised, _profileSide] call ALIVE_fnc_hashGet;
-                        
+
                         if (isNil "_profilesCatagorisedSide") exitwith {["ALIVE Error on detecting correct side #hash for profile %1",_profileID] call ALiVE_fnc_Dump};
-                        
+
 						_profilesCatagorisedTypes = [_profilesCatagorisedSide, "type"] call ALIVE_fnc_hashGet;
 						_profilesCatagorisedVehicleTypes = [_profilesCatagorisedSide, "vehicleType"] call ALIVE_fnc_hashGet;
 
@@ -1068,6 +1067,7 @@ switch(_operation) do {
 			_vehicles = [_logic, "getProfilesByType", "vehicle"] call MAINCLASS;
 			_result = count _vehicles;
 		};
+
 		case "reset": {
 
 		     private["_profiles","_profileIndex","_profile","_profileID","_profileType","_isPlayer","_state"];
@@ -1251,7 +1251,7 @@ switch(_operation) do {
                             if(!isNil "_x") then {
                                 if(typeName _x == "STRING") then {
                                     _rankMap = [_ranksMap, toUpper(_x),"PRIVATE"] call ALIVE_fnc_hashGet;
-                                    
+
                                     if(typeName _rankMap == "SCALAR") then {
                                         _exportRanks pushback _rankMap;
                                     }else{
@@ -1386,7 +1386,7 @@ switch(_operation) do {
                 [_ranksMap, 6, "COLONEL"] call ALIVE_fnc_hashSet;
 
                 _profiles = _args;
-                
+
                 _entities = [];
                 _vehicles = [];
                 _total = [_logic,"profileCount",0] call ALIVE_fnc_hashGet;
@@ -1417,7 +1417,7 @@ switch(_operation) do {
                     };
 
                     //_profile call ALIVE_fnc_inspectHash;
-                    
+
                     _total = _total + 1;
 
                     if(_profileType == 1) then {
@@ -1499,9 +1499,9 @@ switch(_operation) do {
                         if (count _index > 0) then {
 	                        _index sort true;
 	                        _index = parseNumber (_index select 0); // will fallback to 0 if a wrong input is given
-                            
+
 	                        _entities pushback _index;
-                        };                        
+                        };
                     }else{
 
                         _profileVehicle = [nil, "create"] call ALIVE_fnc_profileVehicle;
@@ -1560,21 +1560,21 @@ switch(_operation) do {
                         if (count _index > 0) then {
 	                        _index sort true;
 	                        _index = parseNumber (_index select 0); // will fallback to 0 if a wrong input is given
-                            
+
 	                        _vehicles pushback _index;
                         };
                     };
 
                 } forEach (_profiles select 2);
-                
+
                 //Sort collected index-numbers to get the highest one
                 _vehicles sort false;
                 _entities sort false;
-                
+
                 //Validating
                 _entities = if (count _entities > 0 && {typeName (_entities select 0) == "SCALAR"}) then {_entities select 0} else {0};
                 _vehicles = if (count _vehicles > 0 && {typeName (_vehicles select 0) == "SCALAR"}) then {_vehicles select 0} else {0};
-                                                             
+
                 //Set highest index-number on the profiles-counters in order to let objects created lateron have correct unique IDs
                 [_logic, "profileVehicleCount", _vehicles] call ALIVE_fnc_hashSet;
                 [_logic, "profileEntityCount", _entities] call ALIVE_fnc_hashSet;
