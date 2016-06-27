@@ -16,7 +16,7 @@ Returns:
 Examples:
 (begin example)
 // remove vehicle assignment
-_result = [_vehicleProfile,_entityProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
+_result = [_entityProfile,_vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
 (end)
 
 See Also:
