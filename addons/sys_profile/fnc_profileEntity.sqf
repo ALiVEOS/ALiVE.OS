@@ -697,9 +697,7 @@ switch(_operation) do {
 						_active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
 						if(_active) then {
 							_units = _logic select 2 select 21; //[_logic,"units"] call ALIVE_fnc_hashGet;
-                            _unit = _units select _unitIndex;
                             _units deleteAt _unitIndex;
-                            deleteVehicle _unit;
 							[_logic,"units",_units] call ALIVE_fnc_hashSet;
 						};
 
