@@ -899,7 +899,11 @@ switch(_operation) do {
 							_rank = _ranks select _unitCount;
 
                             //Creating unit on ground, or they will fall to death with slow-spawn
-							_unit = _group createUnit [_x, [_unitPosition select 0, _unitPosition select 1, 0], [], 0 , "NONE"];
+                            if (_forEachIndex == 0) then {
+                                _unit = _group createUnit [_x, [_unitPosition select 0, _unitPosition select 1, 0], [], 0 , "NONE"];
+                            } else {
+                                _unit = _group createUnit [_x, [0,0,0], [], 0 , "NONE"];
+                            };
 
                             if (_forEachIndex == 0) then {
                                 // select a random formation
