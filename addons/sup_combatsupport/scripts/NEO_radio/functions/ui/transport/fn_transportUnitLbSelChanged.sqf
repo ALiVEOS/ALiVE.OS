@@ -1,7 +1,7 @@
-private 
+private
 [
 	"_display", "_map", "_transportBaseButton", "_text", "_lb", "_index", "_transportArray", "_transportUnitLb", "_chopper", "_status",
-	"_supportMarker", "_slider", "_sliderText", "_transportHeightCombo", "_transportSpeedCombo", "_transportRoeCombo", "_transportComboText", "_flyingProperties", 
+	"_supportMarker", "_slider", "_sliderText", "_transportHeightCombo", "_transportSpeedCombo", "_transportRoeCombo", "_transportComboText", "_flyingProperties",
 	"_height", "_speed", "_roeIndex", "_roe"
 ];
 _display = findDisplay 655555;
@@ -74,6 +74,10 @@ _transportTaskText = _display displayCtrl 655571;
 _transportHelpTaskText = _display displayCtrl 655573;
 _tasksArray = _chopper getVariable "NEO_transportAvailableTasks";
 
+if ([(configFile >> "CfgVehicles" >> typeOf _chopper >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue == 0) then {
+	_tasksArray = _tasksArray - ["Slingload","Unhook"];
+};
+
 
 //Re-initialize Controls
 { _x ctrlSetPosition [1, 1, (safeZoneW / 1000), (safeZoneH / 1000)]; _x ctrlCommit 0; } forEach [_slider, _sliderText, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo];
@@ -89,7 +93,7 @@ if (_status != "KILLED") then
 	_transportTaskLb ctrlEnable true;
 	_sitRepButton ctrlEnable true;
 	lbClear _transportTaskLb;
-	
+
 	{
 		_transportTaskLb lbAdd (toUpper _x);
 	} forEach _tasksArray;
@@ -100,10 +104,10 @@ if (_status != "KILLED") then
 	//GPS
 	uinamespace setVariable ["NEO_transportMarkerCreated", nil];
 	_supportMarker setMarkerAlphaLocal 0;
-	
+
 	//GPS
 	_map ctrlSetEventHandler ["MouseButtonDown", "_this call NEO_fnc_radioMapEvent"];
-	
+
 	//ComboBoxes
 	_transportHeightCombo ctrlEnable true; _transportHeightCombo ctrlSetPosition [0.278525 * safezoneW + safezoneX, 0.64 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.028 * safezoneH)]; _transportHeightCombo ctrlCommit 0;
 	_transportSpeedCombo ctrlEnable true; _transportSpeedCombo ctrlSetPosition [0.401017 * safezoneW + safezoneX, 0.64 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.028 * safezoneH)]; _transportSpeedCombo ctrlCommit 0;
@@ -115,19 +119,19 @@ if (_status != "KILLED") then
 		_transportHeightCombo lbAdd _x;
 	} forEach ["Height - Low", "Height - Medium", "Height - High"];
 	_transportHeightCombo lbSetCurSel _height;
-	
+
 	lbClear _transportSpeedCombo;
 	{
 		_transportSpeedCombo lbAdd _x;
 	} forEach ["Speed - Slow", "Speed - Normal", "Speed - Fast"];
 	_transportSpeedCombo lbSetCurSel _speed;
-	
+
 	lbClear _transportRoeCombo;
 	{
 		_transportRoeCombo lbAdd _x;
 	} forEach ["Roe - Hold Fire", "Roe - Fire"];
 	_transportRoeCombo lbSetCurSel _roe;
-	
+
 	//ComboBoxes EventHandlers
 	{
 		_x ctrlSetEventHandler ["lbSelChanged", "_this call NEO_fnc_radioTransportOnComboCurSelChanged"];
