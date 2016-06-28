@@ -50,9 +50,6 @@ _text = switch (toUpper _task) do
 	case "UNHOOK" : { format ["%1, move to %3 %4 to deliver sling load. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
 };
 
-// Let side know over the readio
-[[player,_text,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
-
 if (_audio) then {
 	player kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
 	leader _grp kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
@@ -61,6 +58,13 @@ if (_audio) then {
 	} else {
 		player kbTell [leader _grp, "ALIVE_SUPP_protocol", "Drop_Request", "GROUP"];
 	};
+};
+
+if (_task == "SLINGLOAD" && !isNull getSlingLoad _unit || _task == "UNHOOK" && isNull getSlingLoad _unit) then {
+	// probably not supported
+} else {
+	// Let side know over the raadio
+	[[player,_text,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 };
 
 //New Task
