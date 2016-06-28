@@ -3,33 +3,33 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_spotrep">
-	<English>spotrep Module</English>
+	<Original>spotrep Module</Original>
 </Key>
 <Key ID="STR_ALIVE_spotrep_COMMENT">
-	<English>Autostarting ALiVE Module template (uses additional module to configure parameters)</English>
+	<Original>Autostarting ALiVE Module template (uses additional module to configure parameters)</Original>
 </Key>
 <Key ID="STR_ALIVE_spotrepPARAMS">
-	<English>Template Parameters</English>
+	<Original>Template Parameters</Original>
 </Key>
 <Key ID="STR_ALIVE_spotrep_ERROR1">
-	<English>Only one module template allowed</English>
+	<Original>Only one module template allowed</Original>
 </Key>
 <Key ID="STR_ALIVE_spotrepPARAMS_COMMENT">
-	<English>Over-ride default parameters for the Module Template</English>
+	<Original>Over-ride default parameters for the Module Template</Original>
 </Key>
 <Key ID="STR_ALIVE_spotrepPARAMS_USAGE">
-	<English>Place the module and configure the over-rides</English>
+	<Original>Place the module and configure the over-rides</Original>
 </Key>
 <Key ID="STR_ALIVE_spotrep_DEBUG">
-	<English>Debug:</English>
+	<Original>Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_spotrep_DEBUG_COMMENT">
-	<English>Enable Debug</English>
+	<Original>Enable Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_spotrep_DIALOG_TITLE">
-	<English>ADVANCED spotrep</English>
+	<Original>ADVANCED spotrep</Original>
 </Key>
 <Key ID="STR_ALIVE_spotrep_DIALOG_spotrep">
-	<English>spotrep</English>
+	<Original>spotrep</Original>
 </Key>
 </Container></Package></Project>

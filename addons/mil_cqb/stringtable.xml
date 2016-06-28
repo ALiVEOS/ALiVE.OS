@@ -3,129 +3,129 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_CQB">
-	<English>Military Close Quarters Battle</English>
+	<Original>Military Close Quarters Battle</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_COMMENT">
-	<English>ALiVE Military Close Quarters Battle</English>
+	<Original>ALiVE Military Close Quarters Battle</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_DEBUG">
-	<English>Enable Debug:</English>
+	<Original>Enable Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_DEBUG_COMMENT">
-	<English>Enables CQB Module Debug</English>
+	<Original>Enables CQB Module Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_PERSISTENT">
-	<English>Persistent:</English>
+	<Original>Persistent:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_PERSISTENT_COMMENT">
-	<English>Enables CQB DB persistence (needs SYS DATA module and registration on ALiVE WarRoom)</English>
+	<Original>Enables CQB DB persistence (needs SYS DATA module and registration on ALiVE WarRoom)</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_LOCALITY">
-	<English>Locality:</English>
+	<Original>Locality:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_LOCALITY_COMMENT">
-	<English>Selects locality of hosted AI</English>
+	<Original>Selects locality of hosted AI</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_AMOUNT">
-	<English>AI Amount:</English>
+	<Original>AI Amount:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_AMOUNT_COMMENT">
-	<English>Max. group size spawned per CQB location</English>
+	<Original>Max. group size spawned per CQB location</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_ENABLE">
-	<English>Enable CQB</English>
+	<Original>Enable CQB</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_ENABLE_COMMENT">
-	<English>Enables CQB module</English>
+	<Original>Enables CQB module</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_FACTIONS">
-	<English>Factions:</English>
+	<Original>Factions:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_FACTIONS_COMMENT">
-	<English>Chooses the factions of CQB units</English>
+	<Original>Chooses the factions of CQB units</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_TYPE">
-	<English>Type:</English>
+	<Original>Type:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_TYPE_COMMENT">
-	<English>Chooses the type of buildings in which CQB will be present</English>
+	<Original>Chooses the type of buildings in which CQB will be present</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWN">
-	<English>Probability:</English>
+	<Original>Probability:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWN_COMMENT">
-	<English>Probability in % that a house will be occupied</English>
+	<Original>Probability in % that a house will be occupied</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_DISABLE">
-	<English>Disable CQB:</English>
+	<Original>Disable CQB:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_DISABLE_COMMENT">
-	<English>Disables CQB module</English>
+	<Original>Disables CQB module</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_ERROR1">
-	<English>Only one CQB module can be used</English>
+	<Original>Only one CQB module can be used</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_USAGE">
-	<English>Place the CQB module and select the preferred intensity. CQB can be synchronised (F5) to a Mil_MP or CIV_CP module (optionally).</English>
+	<Original>Place the CQB module and select the preferred intensity. CQB can be synchronised (F5) to a Mil_MP or CIV_CP module (optionally).</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_LOCATIONTYPE">
-	<English>CQB locations:</English>
+	<Original>CQB locations:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_LOCATIONTYPE_COMMENT">
-	<English>Selects the type of area in which CQB will be available, if synced to a MIL/CIV MP module this setting will be overwritten</English>
+	<Original>Selects the type of area in which CQB will be available, if synced to a MIL/CIV MP module this setting will be overwritten</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_BLACKLIST">
-	<English>Blacklist Marker:</English>
+	<Original>Blacklist Marker:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_BLACKLIST_COMMENT">
-	<English>Markers where no CQB will be present (optional)</English>
+	<Original>Markers where no CQB will be present (optional)</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_WHITELIST">
-	<English>TAOR Marker:</English>
+	<Original>TAOR Marker:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_WHITELIST_COMMENT">
-	<English>Markers where CQB will be present (optional, opposite to Blacklist)</English>
+	<Original>Markers where CQB will be present (optional, opposite to Blacklist)</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_USEDOMINANTFACTION">
-	<English>Placement:</English>
+	<Original>Placement:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_USEDOMINANTFACTION_COMMENT">
-	<English>CQB will determine the dominant faction or use static factions from the faction param fields</English>
+	<Original>CQB will determine the dominant faction or use static factions from the faction param fields</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_DENSITY">
-	<English>Density:</English>
+	<Original>Density:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_DENSITY_COMMENT">
-	<English>Density of additional CQB placements</English>
+	<Original>Density of additional CQB placements</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCE">
-	<English>Spawn Ground:</English>
+	<Original>Spawn Ground:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCE_COMMENT">
-	<English>Spawn distance for grunts! Note that spawn distance for strategic placements is factor 1.4 of this value</English>
+	<Original>Spawn distance for grunts! Note that spawn distance for strategic placements is factor 1.4 of this value</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEHELI">
-	<English>Spawn Heli:</English>
+	<Original>Spawn Heli:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEHELI_COMMENT">
-	<English>Spawn distance for helicopters (0 is no spawning)! Note that spawn distance for strategic placements is factor 1.4 of this value</English>
+	<Original>Spawn distance for helicopters (0 is no spawning)! Note that spawn distance for strategic placements is factor 1.4 of this value</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEJET">
-	<English>Spawn Jet:</English>
+	<Original>Spawn Jet:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEJET_COMMENT">
-	<English>Spawn distance for jets (0 is no spawning)! Note that spawn distance for strategic placements is factor 1.4 of this value</English>
+	<Original>Spawn distance for jets (0 is no spawning)! Note that spawn distance for strategic placements is factor 1.4 of this value</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_DEBUG_ENABLE">
-    <English>Activate CQB Debug</English>
+    <Original>Activate CQB Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_DEBUG_ENABLE_COMMENT">
-    <English>Activates CQB Debug</English>
+    <Original>Activates CQB Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_DEBUG_DISABLE">
-    <English>Deactivate CQB Debug</English>
+    <Original>Deactivate CQB Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_DEBUG_DISABLE_COMMENT">
-    <English>Deactivates CQB Debug</English>
+    <Original>Deactivates CQB Debug</Original>
 </Key>
 </Container></Package></Project>

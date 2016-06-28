@@ -3,42 +3,42 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_TRANSPORT">
-	<English>Player Combat Support (Transport)</English>
+	<Original>Player Combat Support (Transport)</Original>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_COMMENT">
-	<English>Transport Module for ALiVE Combat Support</English>
+	<Original>Transport Module for ALiVE Combat Support</Original>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_USAGE">
-	<English>Place Module and set the settings accordingly! Sync to a Combat Support Module!</English>
+	<Original>Place Module and set the settings accordingly! Sync to a Combat Support Module!</Original>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_CALLSIGN">
-	<English>Callsign</English>
+	<Original>Callsign</Original>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_CALLSIGN_DESC">
-	<English>Enter the Callsign, ensure that it is unique</English>
+	<Original>Enter the Callsign, ensure that it is unique</Original>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_TYPE">
-	<English>Transport Vehicle Type</English>
+	<Original>Transport Vehicle Type</Original>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_TYPE_DESC">
-	<English>Type of Transport i.e B_Heli_Transport_01_camo_F</English>
+	<Original>Type of Transport i.e B_Heli_Transport_01_camo_F</Original>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_HEIGHT">
-	<English>Spawn Height</English>
+	<Original>Spawn Height</Original>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_HEIGHT_DESC">
-	<English>Sets Assets Spawn Height ASL, for use with Nimitz Addon</English>
+	<Original>Sets Assets Spawn Height ASL, for use with Nimitz Addon</Original>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_CODE">
-	<English>Code</English>
+	<Original>Code</Original>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_CODE_DESC">
-	<English>Code that will be ran on this unit</English>
+	<Original>Code that will be ran on this unit</Original>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_SLINGLOADING">
-	<English>Slingloading</English>
+	<Original>Slingloading</Original>
 </Key>
-<Key ID="STR_ALIVE_TRANSPORT_CODE_DESC">
-	<English>If selected enables slingloading of vehicles and containers, containers are spawned near transport chopper.</English>
+<Key ID="STR_ALIVE_TRANSPORT_SLINGLOADING_DESC">
+	<Original>If selected enables slingloading of vehicles and containers, containers are spawned near transport chopper.</Original>
 </Key>
 </Container></Package></Project>

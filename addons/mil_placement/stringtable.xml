@@ -3,222 +3,222 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_MP">
-	<English>Military Placement (Mil. Obj.)</English>
+	<Original>Military Placement (Mil. Obj.)</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_COMMENT">
-	<English>Strategic Military Placement at Military Objectives</English>
+	<Original>Strategic Military Placement at Military Objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_DEBUG">
-	<English>Enable Debug:</English>
+	<Original>Enable Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_DEBUG_COMMENT">
-	<English>Enables MP Module Debug</English>
+	<Original>Enables MP Module Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_RANDOMCAMPS">
-	<English>Random Camps:</English>
+	<Original>Random Camps:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_RANDOMCAMPS_COMMENT">
-	<English>Level of random camps</English>
+	<Original>Level of random camps</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_TAOR">
-	<English>TAOR Marker:</English>
+	<Original>TAOR Marker:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_TAOR_COMMENT">
-	<English>Tactical Area Operation Responsibility Marker</English>
+	<Original>Tactical Area Operation Responsibility Marker</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_BLACKLIST">
-	<English>Blacklist Marker:</English>
+	<Original>Blacklist Marker:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_BLACKLIST_COMMENT">
-	<English>Exclusion Marker</English>
+	<Original>Exclusion Marker</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_SIZE_FILTER">
-	<English>Objective Size Filter:</English>
+	<Original>Objective Size Filter:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_SIZE_FILTER_COMMENT">
-	<English>Filter objectives less than selected size</English>
+	<Original>Filter objectives less than selected size</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_SIZE_FILTER_NONE">
-	<English>Do not filter</English>
+	<Original>Do not filter</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_SIZE_FILTER_SMALL">
-	<English>Ignore small objectives</English>
+	<Original>Ignore small objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_SIZE_FILTER_MEDIUM">
-	<English>Ignore small + medium objectives</English>
+	<Original>Ignore small + medium objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_SIZE_FILTER_LARGE">
-	<English>Only huge objectives</English>
+	<Original>Only huge objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_PRIORITY_FILTER">
-	<English>Objective Priority Filter:</English>
+	<Original>Objective Priority Filter:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_PRIORITY_FILTER_COMMENT">
-	<English>Filter objectives less than selected priority</English>
+	<Original>Filter objectives less than selected priority</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_PRIORITY_FILTER_NONE">
-	<English>Do not filter</English>
+	<Original>Do not filter</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_PRIORITY_FILTER_LOW">
-	<English>Ignore low priority objectives</English>
+	<Original>Ignore low priority objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_PRIORITY_FILTER_MEDIUM">
-	<English>Ignore low + medium priority objectives</English>
+	<Original>Ignore low + medium priority objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_PRIORITY_FILTER_HIGH">
-	<English>Only high priority objectives</English>
+	<Original>Only high priority objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_READINESS_LEVEL">
-	<English>Readiness:</English>
+	<Original>Readiness:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_READINESS_LEVEL_COMMENT">
-	<English>The amount of troops that will be on duty and patrolling</English>
+	<Original>The amount of troops that will be on duty and patrolling</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_PLACEMENT">
-	<English>Place units:</English>
+	<Original>Place units:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_PLACEMENT_COMMENT">
-	<English>Place units or objectives only</English>
+	<Original>Place units or objectives only</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_PLACEMENT_YES">
-	<English>Place Units</English>
+	<Original>Place Units</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_PLACEMENT_NO">
-	<English>Objectives Only</English>
+	<Original>Objectives Only</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_SIZE">
-	<English>Force Size:</English>
+	<Original>Force Size:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_SIZE_COMMENT">
-	<English>Number of units to be placed</English>
+	<Original>Number of units to be placed</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_SIZE_BNx3">
-	<English>Battalion (1200)</English>
+	<Original>Battalion (1200)</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_SIZE_BNx2">
-	<English>Battalion (800)</English>
+	<Original>Battalion (800)</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_SIZE_BN">
-	<English>Battalion (400)</English>
+	<Original>Battalion (400)</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_SIZE_CYx2">
-	<English>Company (200)</English>
+	<Original>Company (200)</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_SIZE_CY">
-	<English>Company (100)</English>
+	<Original>Company (100)</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_SIZE_PLx2">
-	<English>Platoon (60)</English>
+	<Original>Platoon (60)</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_SIZE_PL">
-	<English>Platoon (30)</English>
+	<Original>Platoon (30)</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_TYPE">
-	<English>Force Weighting:</English>
+	<Original>Force Weighting:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_TYPE_COMMENT">
-	<English>The preferred type of force deployed</English>
+	<Original>The preferred type of force deployed</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_TYPE_RANDOM">
-	<English>Random</English>
+	<Original>Random</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_TYPE_ARMOR">
-	<English>Armoured</English>
+	<Original>Armoured</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_TYPE_MECH">
-	<English>Mechanised</English>
+	<Original>Mechanised</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_TYPE_MOTOR">
-	<English>Motorised</English>
+	<Original>Motorised</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_TYPE_LIGHT">
-	<English>Light Infantry</English>
+	<Original>Light Infantry</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_TYPE_AIRBORNE">
-	<English>Airborne</English>
+	<Original>Airborne</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_TYPE_SPECOPS">
-    <English>Spec Ops</English>
+    <Original>Spec Ops</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_CUSTOM_INFANTRY_COUNT">
-    <English>Override Infantry:</English>
+    <Original>Override Infantry:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_CUSTOM_INFANTRY_COUNT_COMMENT">
-    <English>Set a custom count of Infantry groups to be spawned, leave blank for no change, set to 0 for none</English>
+    <Original>Set a custom count of Infantry groups to be spawned, leave blank for no change, set to 0 for none</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_CUSTOM_MOTORISED_COUNT">
-    <English>Override Motorised:</English>
+    <Original>Override Motorised:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_CUSTOM_MOTORISED_COUNT_COMMENT">
-    <English>Set a custom count of Motorised groups to be spawned, leave blank for no change, set to 0 for none</English>
+    <Original>Set a custom count of Motorised groups to be spawned, leave blank for no change, set to 0 for none</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_CUSTOM_MECHANISED_COUNT">
-    <English>Override Mechanised:</English>
+    <Original>Override Mechanised:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_CUSTOM_MECHANISED_COUNT_COMMENT">
-    <English>Set a custom count of Mechanised groups to be spawned, leave blank for no change, set to 0 for none</English>
+    <Original>Set a custom count of Mechanised groups to be spawned, leave blank for no change, set to 0 for none</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_CUSTOM_ARMOUR_COUNT">
-    <English>Override Armour:</English>
+    <Original>Override Armour:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_CUSTOM_ARMOUR_COUNT_COMMENT">
-    <English>Set a custom count of Armour groups to be spawned, leave blank for no change, set to 0 for none</English>
+    <Original>Set a custom count of Armour groups to be spawned, leave blank for no change, set to 0 for none</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_CUSTOM_SPECOPS_COUNT">
-    <English>Override SpecOps:</English>
+    <Original>Override SpecOps:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_CUSTOM_SPECOPS_COUNT_COMMENT">
-    <English>Set a custom count of SpecOps groups to be spawned, leave blank for no change, set to 0 for none</English>
+    <Original>Set a custom count of SpecOps groups to be spawned, leave blank for no change, set to 0 for none</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_FACTION">
-	<English>Force Faction:</English>
+	<Original>Force Faction:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_FACTION_COMMENT">
-	<English>Faction of the units to be placed (BLU_F, OPF_F, IND_F, BLU_G_F)</English>
+	<Original>Faction of the units to be placed (BLU_F, OPF_F, IND_F, BLU_G_F)</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_CREATE_HQ">
-    <English>Create HQ:</English>
+    <Original>Create HQ:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_CREATE_HQ_COMMENT">
-    <English>Selects HQ objective close to the module</English>
+    <Original>Selects HQ objective close to the module</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_CREATE_FIELDHQ">
-    <English>Create Field HQ:</English>
+    <Original>Create Field HQ:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_CREATE_FIELDHQ_COMMENT">
-    <English>Places a Field HQ close to the module</English>
+    <Original>Places a Field HQ close to the module</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_PLACE_HELI">
-	<English>Place air units:</English>
+	<Original>Place air units:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_PLACE_HELI_COMMENT">
-	<English>Place air units in objectives</English>
+	<Original>Place air units in objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_PLACE_SUPPLIES">
-	<English>Place supplies:</English>
+	<Original>Place supplies:</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_PLACE_SUPPLIES_COMMENT">
-	<English>Place supply boxes in objectives</English>
+	<Original>Place supply boxes in objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT">
-	<English>Place ambient vehicles</English>
+	<Original>Place ambient vehicles</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_COMMENT">
-	<English>Place ambeint vehicles in locations</English>
+	<Original>Place ambeint vehicles in locations</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_NONE">
-	<English>No ambient vehicles</English>
+	<Original>No ambient vehicles</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_LOW">
-	<English>Low ambient vehicles</English>
+	<Original>Low ambient vehicles</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_MEDIUM">
-	<English>Medium ambient vehicles</English>
+	<Original>Medium ambient vehicles</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_HIGH">
-	<English>High ambient vehicles</English>
+	<Original>High ambient vehicles</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_USAGE">
-	<English>Place the Military Placement module in the editor, select the desired Size, Weighting and Faction from the drop down. Custom factions can be entered in the text box (separated by a comma). These will overwrite the default factions in the drop down.</English>
+	<Original>Place the Military Placement module in the editor, select the desired Size, Weighting and Faction from the drop down. Custom factions can be entered in the text box (separated by a comma). These will overwrite the default factions in the drop down.</Original>
 </Key>
 </Container></Package></Project>

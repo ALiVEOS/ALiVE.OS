@@ -9,10 +9,10 @@
 	<Original>ALiVE System</Original>
 </Key>
 <Key ID="STR_ALIVE_DEBUG">
-	<English>Enable Debug:</English>
+	<Original>Enable Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_DEBUG_COMMENT">
-	<English>Enables Debug for ALiVE Base Systems</English>
+	<Original>Enables Debug for ALiVE Base Systems</Original>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_ALIVE">
 	<Original>ALiVE (Required)</Original>

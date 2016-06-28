@@ -3,24 +3,24 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_QUICKSTART">
-	<English>Quick Start Module</English>
+	<Original>Quick Start Module</Original>
 </Key>
 <Key ID="STR_ALIVE_QUICKSTART_COMMENT">
-	<English>Autostarting ALiVE Module template (uses additional module to configure parameters)</English>
+	<Original>Autostarting ALiVE Module template (uses additional module to configure parameters)</Original>
 </Key>
 <Key ID="STR_ALIVE_QUICKSTART_DATABASE">
-	<English>Database:</English>
+	<Original>Database:</Original>
 </Key>
 <Key ID="STR_ALIVE_QUICKSTART_DATABASE_COMMENT">
-	<English>Enable the external database to persist your mission</English>
+	<Original>Enable the external database to persist your mission</Original>
 </Key>
 <Key ID="STR_ALIVE_QUICKSTART_ERROR1">
-	<English>Only one Quick Start Module allowed</English>
+	<Original>Only one Quick Start Module allowed</Original>
 </Key>
 <Key ID="STR_ALIVE_QUICKSTART_DEBUG">
-	<English>Debug:</English>
+	<Original>Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_QUICKSTART_DEBUG_COMMENT">
-	<English>Enable Debug</English>
+	<Original>Enable Debug</Original>
 </Key>
 </Container></Package></Project>
