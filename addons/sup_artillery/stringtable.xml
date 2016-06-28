@@ -3,84 +3,84 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_ARTILLERY">
-	<English>Player Combat Support (Artillery)</English>
+	<Original>Player Combat Support (Artillery)</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_COMMENT">
-	<English>Artillery Module for ALiVE Combat Support</English>
+	<Original>Artillery Module for ALiVE Combat Support</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_USAGE">
-	<English>Place Module and set the settings accordingly! Sync to a Combat Support Module!</English>
+	<Original>Place Module and set the settings accordingly! Sync to a Combat Support Module!</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_CALLSIGN">
-	<English>Callsign</English>
+	<Original>Callsign</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_CALLSIGN_DESC">
-	<English>Enter the Callsign, ensure that it is unique</English>
+	<Original>Enter the Callsign, ensure that it is unique</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_TYPE">
-	<English>Arty\Mortar Type</English>
+	<Original>Arty\Mortar Type</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_TYPE_DESC">
-	<English>Type of Arty or Mortar e.g. BUS_MotInf_MortTeam</English>
+	<Original>Type of Arty or Mortar e.g. BUS_MotInf_MortTeam</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_HE">
-	<English>Number of HE Rounds </English>
+	<Original>Number of HE Rounds </Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_HE_DESC">
-	<English>Set the number of rounds of HE available for the asset - Used by all Arty\Mortar Assets</English>
+	<Original>Set the number of rounds of HE available for the asset - Used by all Arty\Mortar Assets</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ILLUM">
-	<English>Number of ILLUM Rounds </English>
+	<Original>Number of ILLUM Rounds </Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ILLUM_DESC">
-	<English>Set the number of rounds of ILLUM available for the asset - Used by all Arty\Mortar Assets</English>
+	<Original>Set the number of rounds of ILLUM available for the asset - Used by all Arty\Mortar Assets</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_SMOKE">
-	<English>Number of SMOKE Rounds </English>
+	<Original>Number of SMOKE Rounds </Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_SMOKE_DESC">
-	<English>Set the number of rounds of SMOKE available for the asset - Used by all Arty\Mortar Assets</English>
+	<Original>Set the number of rounds of SMOKE available for the asset - Used by all Arty\Mortar Assets</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_GUIDED">
-	<English>Number of GUIDED Rounds </English>
+	<Original>Number of GUIDED Rounds </Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_GUIDED_DESC">
-	<English>Set the number of rounds of ROCKET available for the asset - Only used by MBT</English>
+	<Original>Set the number of rounds of ROCKET available for the asset - Only used by MBT</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_CLUSTER">
-	<English>Number of CLUSTER Rounds </English>
+	<Original>Number of CLUSTER Rounds </Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_CLUSTER_DESC">
-	<English>Set the number of rounds of CLUSTERS available for the asset - Only used by MBT</English>
+	<Original>Set the number of rounds of CLUSTERS available for the asset - Only used by MBT</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_LG">
-	<English>Number of Laser Guided Rounds </English>
+	<Original>Number of Laser Guided Rounds </Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_LG_DESC">
-	<English>Set the number of rounds of LG available for the asset - Only used by MBT</English>
+	<Original>Set the number of rounds of LG available for the asset - Only used by MBT</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_MINE">
-	<English>Number of MINE Rounds </English>
+	<Original>Number of MINE Rounds </Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_MINE_DESC">
-	<English>Set the number of rounds of MINE available for the asset - Only used by MBT</English>
+	<Original>Set the number of rounds of MINE available for the asset - Only used by MBT</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ATMINE">
-	<English>Number of AT MINES Rounds </English>
+	<Original>Number of AT MINES Rounds </Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ATMINE_DESC">
-	<English>Set the number of rounds of AT MINES available for the asset - Only used by MBT</English>
+	<Original>Set the number of rounds of AT MINES available for the asset - Only used by MBT</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ROCKETS">
-	<English>Number of ROCKET Rounds </English>
+	<Original>Number of ROCKET Rounds </Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ROCKETS_DESC">
-	<English>Set the number of rounds of 230mm Titan Missile available for the asset - Only used by MLRS</English>
+	<Original>Set the number of rounds of 230mm Titan Missile available for the asset - Only used by MLRS</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_CODE">
-	<English>Code</English>
+	<Original>Code</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_CODE_DESC">
-	<English>Code that will be ran on each artillery piece</English>
+	<Original>Code that will be ran on each artillery piece</Original>
 </Key>
 </Container></Package></Project>

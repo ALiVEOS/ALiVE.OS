@@ -3,79 +3,79 @@
 	<Package name="ALiVE">
 		<Container name="STR_DN">
 			<Key ID="STR_ALIVE_Data">
-				<English>ALiVE Data</English>
+				<Original>ALiVE Data</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_COMMENT">
-				<English>Data module for perf monitoring, stats and persistence</English>
+				<Original>Data module for perf monitoring, stats and persistence</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_DEBUG">
-				<English>Enable Debug:</English>
+				<Original>Enable Debug:</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_DEBUG_COMMENT">
-				<English>Enables Data Module Debug</English>
+				<Original>Enables Data Module Debug</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_ENABLE">
-				<English>Enable Database</English>
+				<Original>Enable Database</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_ENABLE_COMMENT">
-				<English>Enables Database module</English>
+				<Original>Enables Database module</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_DISABLE">
-				<English>Disable Database</English>
+				<Original>Disable Database</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_DISABLE_COMMENT">
-				<English>Disables Database module</English>
+				<Original>Disables Database module</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_Source">
-				<English>Database Source</English>
+				<Original>Database Source</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_Source_COMMENT">
-				<English>Choose an available Database Source</English>
+				<Original>Choose an available Database Source</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_DATABASENAME">
-				<English>Database Name</English>
+				<Original>Database Name</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_DATABASENAME_COMMENT">
-				<English>Enter the name of the database</English>
+				<Original>Enter the name of the database</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_ERROR1">
-				<English>Only one Data module can be used</English>
+				<Original>Only one Data module can be used</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_SAVEDATETIME">
-				<English>Save Mission Time:</English>
+				<Original>Save Mission Time:</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_SAVEDATETIME_COMMENT">
-				<English>Enable/disable saving date and time of the mission</English>
+				<Original>Enable/disable saving date and time of the mission</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_disableStats">
-				<English>Disable Stats:</English>
+				<Original>Disable Stats:</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_disableStats_COMMENT">
-				<English>Disable the recording of player/operation stats to the website</English>
+				<Original>Disable the recording of player/operation stats to the website</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_disableAAR">
-				<English>Disable AAR:</English>
+				<Original>Disable AAR:</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_disableAAR_COMMENT">
-				<English>Disable player tracking for AAR on War Room</English>
+				<Original>Disable player tracking for AAR on War Room</Original>
 			</Key>			
 			<Key ID="STR_ALIVE_Data_disablePerf">
-				<English>Disable PerfMon:</English>
+				<Original>Disable PerfMon:</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_disablePerf_COMMENT">
-				<English>Disable the performance monitoring module</English>
+				<Original>Disable the performance monitoring module</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_disablePerfMon">
-				<English>Disable OS PerfMon:</English>
+				<Original>Disable OS PerfMon:</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_disablePerfMon_COMMENT">
-				<English>Disable OS Performance Statistics such as %CPU, Threads, Memory Usage etc</English>
+				<Original>Disable OS Performance Statistics such as %CPU, Threads, Memory Usage etc</Original>
 			</Key>	
 			<Key ID="STR_ALIVE_Data_customPerfMonCode">
-				<English>Custom Perf Monitors:</English>
+				<Original>Custom Perf Monitors:</Original>
 			</Key>
 			<Key ID="STR_ALIVE_Data_customPerfMonCode_COMMENT">
-				<English>Customize objects counted and intervals. Ensure interval values are in ascending order. 'triggers' will count allMissionObjects "EmptyDetector", 'entities' will count entities "All", 'objects' will count allMissionObjects "All". Any thing else will be count YOURPARAM i.e. count allDead.</English>
+				<Original>Customize objects counted and intervals. Ensure interval values are in ascending order. 'triggers' will count allMissionObjects "EmptyDetector", 'entities' will count entities "All", 'objects' will count allMissionObjects "All". Any thing else will be count YOURPARAM i.e. count allDead.</Original>
 			</Key>						
 		</Container>
 	</Package>

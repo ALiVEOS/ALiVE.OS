@@ -3,33 +3,33 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_marker">
-	<English>Advanced Markers</English>
+	<Original>Advanced Markers</Original>
 </Key>
 <Key ID="STR_ALIVE_marker_COMMENT">
-	<English>Autostarting ALiVE Module template (uses additional module to configure parameters)</English>
+	<Original>Autostarting ALiVE Module template (uses additional module to configure parameters)</Original>
 </Key>
 <Key ID="STR_ALIVE_markerPARAMS">
-	<English>Template Parameters</English>
+	<Original>Template Parameters</Original>
 </Key>
 <Key ID="STR_ALIVE_marker_ERROR1">
-	<English>Only one module template allowed</English>
+	<Original>Only one module template allowed</Original>
 </Key>
 <Key ID="STR_ALIVE_markerPARAMS_COMMENT">
-	<English>Over-ride default parameters for the Module Template</English>
+	<Original>Over-ride default parameters for the Module Template</Original>
 </Key>
 <Key ID="STR_ALIVE_markerPARAMS_USAGE">
-	<English>Place the module and configure the over-rides</English>
+	<Original>Place the module and configure the over-rides</Original>
 </Key>
 <Key ID="STR_ALIVE_marker_DEBUG">
-	<English>Debug:</English>
+	<Original>Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_marker_DEBUG_COMMENT">
-	<English>Enable Debug</English>
+	<Original>Enable Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_marker_DIALOG_TITLE">
-	<English>ADVANCED MARKER</English>
+	<Original>ADVANCED MARKER</Original>
 </Key>
 <Key ID="STR_ALIVE_marker_DIALOG_spotrep">
-	<English>spotrep</English>
+	<Original>spotrep</Original>
 </Key>
 </Container></Package></Project>

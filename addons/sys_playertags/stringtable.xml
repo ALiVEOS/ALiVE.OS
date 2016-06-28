@@ -3,111 +3,111 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_PLAYERTAGS">
-	<English>Player Tags</English>
+	<Original>Player Tags</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_COMMENT">
-	<English>Player tag functions</English>
+	<Original>Player tag functions</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_DISPLAY_COMMENT">   
-	<English>Allow player to see player's names</English>
+	<Original>Allow player to see player's names</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_DISPLAY_ENABLE">
-	<English>Enable Player Tags</English>
+	<Original>Enable Player Tags</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_DISPLAY_DISABLE">  
-	<English>Disable Player Tags</English>
+	<Original>Disable Player Tags</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_ERROR1">
-	<English>Only one Player Tags module can be used</English>
+	<Original>Only one Player Tags module can be used</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_DEBUG">
-	<English>Enable Debug:</English>
+	<Original>Enable Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_DEBUG_COMMENT">
-	<English>Enables Player Tags Module Debug</English>
+	<Original>Enables Player Tags Module Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_STYLE">
-	<English>Player Tags:</English>
+	<Original>Player Tags:</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_STYLE_COMMENT">
-	<English>Switches style and method of player detection</English>
+	<Original>Switches style and method of player detection</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_ONVIEW">
-	<English>Player Tags On View Only:</English>
+	<Original>Player Tags On View Only:</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_ONVIEW_COMMENT">
-	<English>Only show tags if player is looked at directly</English>
+	<Original>Only show tags if player is looked at directly</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_GROUP">
-	<English>Player Tags Display Group:</English>
+	<Original>Player Tags Display Group:</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_GROUP_COMMENT">
-	<English>Enables Player Group Indicator</English>
+	<Original>Enables Player Group Indicator</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_RANK">
-	<English>Player Tags Display Rank:</English>
+	<Original>Player Tags Display Rank:</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_RANK_COMMENT">
-	<English>Enables Player Rank Indicator</English>
+	<Original>Enables Player Rank Indicator</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_INVEHICLE">
-	<English>Player Tags In Vehicle:</English>
+	<Original>Player Tags In Vehicle:</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_INVEHICLE_COMMENT">
-	<English>Enables Player Tags whilst in Vehicles (disable if using crewinfo module)</English>
+	<Original>Enables Player Tags whilst in Vehicles (disable if using crewinfo module)</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_TARGETS">
-	<English>Player Tag Targets:</English>
+	<Original>Player Tag Targets:</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_TARGETS_COMMENT">
-	<English>Sets Tag Target Types</English>
+	<Original>Sets Tag Target Types</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_DISTANCE">
-	<English>Player Tag Distance:</English>
+	<Original>Player Tag Distance:</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_DISTANCE_COMMENT">
-	<English>Sets Name Tag Distance</English>
+	<Original>Sets Name Tag Distance</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_SCALE">
-	<English>Player Tag Scale:</English>
+	<Original>Player Tag Scale:</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_SCALE_COMMENT">
-	<English>Sets Name Tag Scale</English>
+	<Original>Sets Name Tag Scale</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_HEIGHT">
-	<English>Player Tag Height:</English>
+	<Original>Player Tag Height:</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_HEIGHT_COMMENT">
-	<English>Sets Name Tag Height</English>
+	<Original>Sets Name Tag Height</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_TOLERANCE">
-	<English>Player Tag Tolerance:</English>
+	<Original>Player Tag Tolerance:</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_TOLERANCE_COMMENT">
-	<English>Sets Name Tag Tolerance</English>
+	<Original>Sets Name Tag Tolerance</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_NAMECOLOUR">
-	<English>Player Tag Name Colour:</English>
+	<Original>Player Tag Name Colour:</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_NAMECOLOUR_COMMENT">
-	<English>Sets Name Colour</English>
+	<Original>Sets Name Colour</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_GROUPCOLOUR">
-	<English>Player Tag Group Colour:</English>
+	<Original>Player Tag Group Colour:</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_GROUPCOLOUR_COMMENT">
-	<English>Sets Group Colour</English>
+	<Original>Sets Group Colour</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_THISGROUPLEADERNAMECOLOUR">
-	<English>Player Tag GL Colour:</English>
+	<Original>Player Tag GL Colour:</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_THISGROUPLEADERNAMECOLOUR_COMMENT">
-	<English>Sets Your Group Leader's Colour</English>
+	<Original>Sets Your Group Leader's Colour</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_THISGROUPCOLOUR">
-	<English>Player Tag Group Colour:</English>
+	<Original>Player Tag Group Colour:</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_THISGROUPCOLOUR_COMMENT">
-	<English>Sets Your Group's Colour</English>
+	<Original>Sets Your Group's Colour</Original>
 </Key>
 </Container></Package></Project>

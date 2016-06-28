@@ -3,81 +3,81 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_PROFILE_SYSTEM">
-	<English>ALiVE Virtual AI System</English>
+	<Original>ALiVE Virtual AI System</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_COMMENT">
-	<English>Virtual AI System (Profiles)</English>
+	<Original>Virtual AI System (Profiles)</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG">
-	<English>Enable Debug:</English>
+	<Original>Enable Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_COMMENT">
-	<English>Enables Module Debug</English>
+	<Original>Enables Module Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PERSISTENT">
-    <English>Persistent:</English>
+    <Original>Persistent:</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PERSISTENT_COMMENT">
-    <English>Enables external Database persistence for Virtual AI</English>
+    <Original>Enables external Database persistence for Virtual AI</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PLOT_SECTORS">
-	<English>Sector Colouring:</English>
+	<Original>Sector Colouring:</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PLOT_SECTORS_COMMENT">
-	<English>Enables sector colouring according to units presence</English>
+	<Original>Enables sector colouring according to units presence</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC">
-	<English>Synchronisation Options:</English>
+	<Original>Synchronisation Options:</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC_COMMENT">
-	<English>Modify synced units behaviour</English>
+	<Original>Modify synced units behaviour</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC_ADD">
-	<English>Only virtualize synced units</English>
+	<Original>Only virtualize synced units</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC_IGNORE">
-	<English>Virtualize all editor placed units except synced units</English>
+	<Original>Virtualize all editor placed units except synced units</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS">
-	<English>Spawn Radius:</English>
+	<Original>Spawn Radius:</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS_COMMENT">
-	<English>Sets the distance from players to spawn AI units</English>
+	<Original>Sets the distance from players to spawn AI units</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER">
-    <English>Active Limiter:</English>
+    <Original>Active Limiter:</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER_COMMENT">
-    <English>Sets the max number of virtualized AI *groups* to spawn at any one time</English>
+    <Original>Sets the max number of virtualized AI *groups* to spawn at any one time</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS">
-    <English>Spawn planes radius:</English>
+    <Original>Spawn planes radius:</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS_COMMENT">
-    <English>The radius around player in planes to spawn AI. Set to 0 to disable spawning while in planes</English>
+    <Original>The radius around player in planes to spawn AI. Set to 0 to disable spawning while in planes</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS">
-    <English>Spawn heli radius:</English>
+    <Original>Spawn heli radius:</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS_COMMENT">
-    <English>The radius around player in helicopters to spawn AI. Set to 0 to disable spawning while in helicopters</English>
+    <Original>The radius around player in helicopters to spawn AI. Set to 0 to disable spawning while in helicopters</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER">
-    <English>Profile Speed Modifier:</English>
+    <Original>Profile Speed Modifier:</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER_COMMENT">
-    <English>Alters how fast virtual AI can move across the map. 25% means 25% of a unit's normal speed.</English>
+    <Original>Alters how fast virtual AI can move across the map. 25% means 25% of a unit's normal speed.</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ERROR1">
-	<English>Only one Virtual AI System module can be used</English>
+	<Original>Only one Virtual AI System module can be used</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_ENABLE">
-    <English>Activate Profiles Debug</English>
+    <Original>Activate Profiles Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_DISABLE">
-    <English>Deactivate Profiles Debug</English>
+    <Original>Deactivate Profiles Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG1_COMMENT">
-    <English>Toggle debug mode on the profile system</English>
+    <Original>Toggle debug mode on the profile system</Original>
 </Key>
 </Container></Package></Project>

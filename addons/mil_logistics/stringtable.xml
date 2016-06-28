@@ -3,111 +3,111 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_ML">
-	<English>Military Logistics</English>
+	<Original>Military Logistics</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_COMMENT">
-	<English>Strategic Military Logistics</English>
+	<Original>Strategic Military Logistics</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_DEBUG">
-	<English>Enable Debug:</English>
+	<Original>Enable Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_DEBUG_COMMENT">
-	<English>Enables ML Module Debug</English>
+	<Original>Enables ML Module Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_PERSISTENT">
-    <English>Persistent:</English>
+    <Original>Persistent:</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_PERSISTENT_COMMENT">
-    <English>Enables external Database persistence for military logistics</English>
+    <Original>Enables external Database persistence for military logistics</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_TYPE">
-    <English>Reinforcement Type:</English>
+    <Original>Reinforcement Type:</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_TYPE_COMMENT">
-    <English>Select the type of logistics. Dynamic, will fall back to lower priority objectives if lost. Static will only select the closest objective to use as insertion point</English>
+    <Original>Select the type of logistics. Dynamic, will fall back to lower priority objectives if lost. Static will only select the closest objective to use as insertion point</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_TYPE_DYNAMIC">
-    <English>Dynamic</English>
+    <Original>Dynamic</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_TYPE_STATIC">
-    <English>Static</English>
+    <Original>Static</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL">
-    <English>Force Pool:</English>
+    <Original>Force Pool:</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_COMMENT">
-    <English>The number of groups that can be called upon for reinforcements</English>
+    <Original>The number of groups that can be called upon for reinforcements</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_DYNAMIC">
-    <English>Dynamic</English>
+    <Original>Dynamic</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_INFINITE">
-    <English>Infinite</English>
+    <Original>Infinite</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_20000">
-    <English>20000</English>
+    <Original>20000</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_10000">
-    <English>10000</English>
+    <Original>10000</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_5000">
-    <English>5000</English>
+    <Original>5000</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_2500">
-    <English>2500</English>
+    <Original>2500</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_1000">
-    <English>1000</English>
+    <Original>1000</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_500">
-    <English>500</English>
+    <Original>500</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_200">
-    <English>200</English>
+    <Original>200</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_100">
-    <English>100</English>
+    <Original>100</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_50">
-    <English>50</English>
+    <Original>50</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_INF">
-    <English>Allow Infantry:</English>
+    <Original>Allow Infantry:</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_INF_COMMENT">
-    <English>Allow infantry reinforcements</English>
+    <Original>Allow infantry reinforcements</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_MECH">
-    <English>Allow Mechanised:</English>
+    <Original>Allow Mechanised:</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_MECH_COMMENT">
-    <English>Allow mechanised reinforcements</English>
+    <Original>Allow mechanised reinforcements</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_MOT">
-    <English>Allow Motorised:</English>
+    <Original>Allow Motorised:</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_MOT_COMMENT">
-    <English>Allow motorised reinforcements</English>
+    <Original>Allow motorised reinforcements</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_ARM">
-    <English>Allow Armour:</English>
+    <Original>Allow Armour:</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_ARM_COMMENT">
-    <English>Allow armour reinforcements</English>
+    <Original>Allow armour reinforcements</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_HELI">
-    <English>Allow Helicopters:</English>
+    <Original>Allow Helicopters:</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_HELI_COMMENT">
-    <English>Allow helicopters reinforcements</English>
+    <Original>Allow helicopters reinforcements</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_PLANE">
-    <English>Allow Planes:</English>
+    <Original>Allow Planes:</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_PLANE_COMMENT">
-    <English>Allow planes reinforcements</English>
+    <Original>Allow planes reinforcements</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_USAGE">
-    <English>Place a Military Logistics module to reinforce and resupply factions under control of the synced Military AI Commander module.</English>
+    <Original>Place a Military Logistics module to reinforce and resupply factions under control of the synced Military AI Commander module.</Original>
 </Key>
 </Container></Package></Project>

@@ -3,12 +3,12 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_GM">
-    <English>Player Command/Control (C2ISTAR)</English>
+    <Original>Player Command/Control (C2ISTAR)</Original>
 </Key>
 <Key ID="STR_ALIVE_GM_MENU">
-    <English>Player C2ISTAR</English>
+    <Original>Player C2ISTAR</Original>
 </Key>
 <Key ID="STR_ALIVE_GM_COMMENT">
-    <English>Group Management</English>
+    <Original>Group Management</Original>
 </Key>
 </Container></Package></Project>

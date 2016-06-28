@@ -3,30 +3,30 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_CONVOY">
-	<English>MIlitary Convoy's - DEPRECIATED! REMOVE FROM YOUR MISSIONS</English>
+	<Original>MIlitary Convoy's - DEPRECIATED! REMOVE FROM YOUR MISSIONS</Original>
 </Key>
 <Key ID="STR_ALIVE_CONVOY_COMMENT">
-	<English>Military Convoy Module - DEPRECIATED! REMOVE FROM YOUR MISSIONS</English>
+	<Original>Military Convoy Module - DEPRECIATED! REMOVE FROM YOUR MISSIONS</Original>
 </Key>
 <Key ID="STR_ALIVE_CONVOY_DEBUG">
-	<English>Enable Debug:</English>
+	<Original>Enable Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_CONVOY_DEBUG_COMMENT">
-	<English>Enables CONVOY Module Debug</English>
+	<Original>Enables CONVOY Module Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_CONVOY_INTENSITY">
-	<English>Convoy Intensity</English>
+	<Original>Convoy Intensity</Original>
 </Key>
 <Key ID="STR_ALIVE_CONVOY_INTENSITY_DESC">
-	<English>Intensity setting of convoys - Low\Med\High</English>
+	<Original>Intensity setting of convoys - Low\Med\High</Original>
 </Key>
 <Key ID="STR_ALIVE_CONVOY_FACTIONS">
-	<English>Convoy Faction</English>
+	<Original>Convoy Faction</Original>
 </Key>
 <Key ID="STR_ALIVE_CONVOY_FACTIONS_COMMENT">
-	<English>Faction of Convoy's! Will be overridden if synced to an OPCOM!</English>
+	<Original>Faction of Convoy's! Will be overridden if synced to an OPCOM!</Original>
 </Key>
 <Key ID="STR_ALIVE_CONV_ERROR1">
-	<English>Only one Convoy module can be used</English>
+	<Original>Only one Convoy module can be used</Original>
 </Key>
 </Container></Package></Project>
