@@ -909,6 +909,8 @@ switch(_operation) do {
                                 _unit = _group createUnit [_x, [0,0,0], [], 0 , "NONE"];
                             };
 
+                            _unit allowDamage false; // allow all units to spawn first so profile isn't corrupted
+
                             if (_forEachIndex == 0) then {
                                 // select a random formation
                                 // must be at least one unit in group for formation to stick
@@ -934,7 +936,7 @@ switch(_operation) do {
 							// killed event handler
 							_eventID = _unit addMPEventHandler["MPKilled", ALIVE_fnc_profileKilledEventHandler];
 
-							_units set [_unitCount, _unit];
+                            _units pushback _unit;
 
 							_unitCount = _unitCount + 1;
 
@@ -970,7 +972,6 @@ switch(_operation) do {
 					} forEach _unitClasses;
 					//[] call ALIVE_fnc_timer;
 
-
 					// set group profile as active and store references to units on the profile
 					[_logic,"leader", leader _group] call ALIVE_fnc_hashSet;
 					[_logic,"group", _group] call ALIVE_fnc_hashSet;
@@ -980,7 +981,7 @@ switch(_operation) do {
                     //["Profile [%1] Spawn - Create Waypoints",_profileID] call ALIVE_fnc_dump;
                     //[true] call ALIVE_fnc_timer;
 					// create waypoints from profile waypoints
-					_waypoints = _waypoints + _waypointsCompleted;
+					_waypoints append _waypointsCompleted;
 					[_waypoints, _group] call ALIVE_fnc_profileWaypointsToWaypoints;
 					//[] call ALIVE_fnc_timer;
 
@@ -1008,10 +1009,14 @@ switch(_operation) do {
 					[ALIVE_profileHandler,"setEntityActive",_profileID] call ALIVE_fnc_profileHandler;
 
                     //Remove combat flag
-                    [_logic, "combat"] call ALIVE_fnc_HashRem;
+                    //[_logic, "combat"] call ALIVE_fnc_HashRem; // combat flag must be kept for new combat system
 
                     // Indicate profile has been spawned and unlock for asynchronous waits
                     [_logic, "locked",false] call ALIVE_fnc_HashSet;
+
+                    // profile is fully spawned and cannot be corrupted
+                    // allow damage again
+                    {_x allowDamage true} foreach _units;
 
 					//[] call ALIVE_fnc_timer;
 
