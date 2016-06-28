@@ -836,9 +836,13 @@ switch(_operation) do {
             };
         };
 		case "spawn": {
-				private ["_debug","_side","_sideObject","_unitClasses","_unitClass","_position","_positions","_damage","_damages","_ranks","_rank",
-				"_profileID","_active","_waypoints","_waypointsCompleted","_vehicleAssignments","_activeCommands","_inactiveCommands","_group","_unitPosition","_eventID",
-				"_waypointCount","_unitCount","_units","_unit","_vehiclesInCommandOf","_vehiclesInCargoOf","_paraDrop","_parachute","_soundFlyover","_formations","_formation","_locked"];
+				private [
+                    "_debug","_side","_sideObject","_unitClasses","_unitClass","_position","_positions",
+                    "_damage","_damages","_ranks","_rank","_profileID","_active","_waypoints","_waypointsCompleted",
+                    "_vehicleAssignments","_activeCommands","_inactiveCommands","_group","_unitPosition","_eventID",
+                    "_waypointCount","_unitCount","_units","_unit","_vehiclesInCommandOf","_vehiclesInCargoOf",
+                    "_paraDrop","_parachute","_soundFlyover","_formations","_formation","_locked","_formationPosition"
+                ];
 
 				_debug = _logic select 2 select 0; //[_logic,"debug"] call ALIVE_fnc_hashGet;
 				_profileID = _logic select 2 select 4; //[_profile,"profileID"] call ALIVE_fnc_hashGet;
@@ -916,7 +920,10 @@ switch(_operation) do {
                             //Set name
 							//_unit setVehicleVarName format["%1_%2",_profileID, _unitCount];
 
-							_unit setPos formationPosition _unit;
+                            _formationPosition = formationPosition _unit;
+                            _formationPosition set [2,0];
+
+							_unit setPos _formationPosition;
 							_unit setDamage _damage;
 							_unit setRank _rank;
 
