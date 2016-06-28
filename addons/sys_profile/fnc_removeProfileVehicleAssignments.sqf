@@ -15,10 +15,10 @@ Returns:
 Examples:
 (begin example)
 // remove vehicle assignments from vehicle perspective
-_result = _vehicleProfile call ALIVE_fnc_removeProfileVehicleAssignments;
+_result = [_vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignments;
 
 // remove vehicle assignments from entity perspective
-_result = _entityProfile call ALIVE_fnc_removeProfileVehicleAssignments;
+_result = [_entityProfile] call ALIVE_fnc_removeProfileVehicleAssignments;
 (end)
 
 See Also:
