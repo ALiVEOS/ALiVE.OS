@@ -117,6 +117,11 @@ switch(_operation) do {
 						ALIVE_profileHandler = [nil, "create"] call ALIVE_fnc_profileHandler;
 						[ALIVE_profileHandler, "init"] call ALIVE_fnc_profileHandler;
 
+                        // create profile combat handler
+                        ALIVE_profileCombatHandler = [nil,"create"] call ALIVE_fnc_profileCombatHandler;
+                        [ALIVE_profileCombatHandler,"init"] call ALIVE_fnc_profileCombatHandler;
+                        [ALIVE_profileCombatHandler,"debug", _debug] call ALIVE_fnc_profileCombatHandler;
+
 						// create sector grid
 						ALIVE_sectorGrid = [nil, "create"] call ALIVE_fnc_sectorGrid;
 						[ALIVE_sectorGrid, "init"] call ALIVE_fnc_sectorGrid;
@@ -250,6 +255,7 @@ switch(_operation) do {
                     [ALIVE_sectorPlotter,"destroy"] call ALIVE_fnc_plotSectors;
                     [ALIVE_sectorGrid,"destroy"] call ALIVE_fnc_sectorGrid;
                     [ALIVE_profileHandler,"destroy"] call ALIVE_fnc_profileHandler;
+                    [ALIVE_profileCombatHandler,"destroy"] call ALIVE_fnc_profileCombatHandler;
 
                     ALIVE_profileSystemInit = nil; PublicVariable "ALIVE_profileSystemInit";
 

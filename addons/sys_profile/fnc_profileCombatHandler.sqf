@@ -50,8 +50,8 @@ switch (_operation) do {
         [_logic,"class", QUOTE(MAINCLASS)] call ALiVE_fnc_hashSet;
 
         [_logic,"debug", false] call ALiVE_fnc_hashSet;
-        [_logic,"combatRange", 200] call ALiVE_fnc_hashSet;
-        [_logic,"combatRate", 1] call ALiVE_fnc_hashSet;
+        [_logic,"combatRange", 150] call ALiVE_fnc_hashSet;
+        [_logic,"combatRate", 1] call ALiVE_fnc_hashSet; // modify to slow down or speed up combat
 
         private _profilesBySide = [] call ALiVE_fnc_hashCreate;
         [_profilesBySide,"EAST", []] call ALiVE_fnc_hashSet;
