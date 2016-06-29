@@ -807,7 +807,7 @@ switch(_operation) do {
 
                                 if(_requestID == _eventCancelRequestID) then {
 
-                                    _x call ALIVE_fnc_inspectHash;
+                                    //_x call ALIVE_fnc_inspectHash;
 
                                     _eventCargoProfiles = [_x, "cargoProfiles"] call ALIVE_fnc_hashGet;
 
@@ -2634,41 +2634,43 @@ switch(_operation) do {
                 // Check to see if payload profiles are ready to return
                 // Slingloaders can return once done.
                 // If vehicle no longer has cargo it can return
-                _payloadProfiles = [_playerRequestProfiles, 'payloadGroups'] call ALIVE_fnc_hashGet;
                 private ["_payloadUnloaded"];
                 _payloadUnloaded = true;
-                {
-                    private ["_vehicleProfile"];
+                _payloadProfiles = [_playerRequestProfiles, 'payloadGroups'] call ALIVE_fnc_hashGet;
+                if (!isNil "_payloadProfiles") then {
+                    {
+                        private ["_vehicleProfile"];
 
-                    _vehicleProfile = [ALIVE_profileHandler, "getProfile", _x select 1] call ALIVE_fnc_profileHandler;
+                        _vehicleProfile = [ALIVE_profileHandler, "getProfile", _x select 1] call ALIVE_fnc_profileHandler;
 
-                    if!(isNil "_vehicleProfile") then {
+                        if!(isNil "_vehicleProfile") then {
 
-                        private ["_active","_slingLoading","_slingload","_noCargo","_vehicle"];
+                            private ["_active","_slingLoading","_slingload","_noCargo","_vehicle"];
 
-                        _vehicleProfile call ALIVE_fnc_inspectHash;
+                            _vehicleProfile call ALIVE_fnc_inspectHash;
 
-                        _active = _vehicleProfile select 2 select 1;
+                            _active = _vehicleProfile select 2 select 1;
 
-                        _slingLoading = [_vehicleProfile,"slingloading",false] call ALiVE_fnc_hashGet;
+                            _slingLoading = [_vehicleProfile,"slingloading",false] call ALiVE_fnc_hashGet;
 
-                        _vehicle = _vehicleProfile select 2 select 10;
-                        _noCargo = count (_vehicle getvariable ["ALiVE_SYS_LOGISTICS_CARGO",[]]) == 0;
+                            _vehicle = _vehicleProfile select 2 select 10;
+                            _noCargo = count (_vehicle getvariable ["ALiVE_SYS_LOGISTICS_CARGO",[]]) == 0;
 
-                        // If payload vehicle is not slingloading and its cargo is empty - its done.
-                        TRACE_2("PR UNLOADED", !_slingLoading, _noCargo);
-                        if( _active && _noCargo && !_slingloading ) then {
+                            // If payload vehicle is not slingloading and its cargo is empty - its done.
+                            TRACE_2("PR UNLOADED", !_slingLoading, _noCargo);
+                            if( _active && _noCargo && !_slingloading ) then {
 
-                            _payloadUnloaded = true;
+                                _payloadUnloaded = true;
 
-                        } else {
+                            } else {
 
-                            _payloadUnloaded = false;
+                                _payloadUnloaded = false;
+
+                            };
 
                         };
-
-                    };
-                } foreach _payloadProfiles;
+                    } foreach _payloadProfiles;
+                };
 
                 TRACE_2("PR UNLOADED", _loadedUnits, _payloadUnloaded);
 
@@ -3529,39 +3531,41 @@ switch(_operation) do {
 
                 // Check to see if payload profiles are ready to return
                 // If vehicle no longer has cargo it can return
-                _payloadProfiles = [_playerRequestProfiles, 'payloadGroups'] call ALIVE_fnc_hashGet;
-                private ["_payloadUnloaded"];
+                 private ["_payloadUnloaded"];
                 _payloadUnloaded = true;
-                {
-                    private ["_vehicleProfile"];
+                _payloadProfiles = [_playerRequestProfiles, 'payloadGroups'] call ALIVE_fnc_hashGet;
+                if (!isNil "_payloadProfiles") then {
+                    {
+                        private ["_vehicleProfile"];
 
-                    _vehicleProfile = [ALIVE_profileHandler, "getProfile", _x select 1] call ALIVE_fnc_profileHandler;
+                        _vehicleProfile = [ALIVE_profileHandler, "getProfile", _x select 1] call ALIVE_fnc_profileHandler;
 
-                    if!(isNil "_vehicleProfile") then {
+                        if!(isNil "_vehicleProfile") then {
 
-                        private ["_active","_noCargo","_vehicle"];
+                            private ["_active","_noCargo","_vehicle"];
 
-                        _vehicleProfile call ALIVE_fnc_inspectHash;
+                            _vehicleProfile call ALIVE_fnc_inspectHash;
 
-                        _active = _vehicleProfile select 2 select 1;
+                            _active = _vehicleProfile select 2 select 1;
 
-                        _vehicle = _vehicleProfile select 2 select 10;
-                        _noCargo = count (_vehicle getvariable ["ALiVE_SYS_LOGISTICS_CARGO",[]]) == 0;
+                            _vehicle = _vehicleProfile select 2 select 10;
+                            _noCargo = count (_vehicle getvariable ["ALiVE_SYS_LOGISTICS_CARGO",[]]) == 0;
 
-                        // If payload vehicle is not slingloading and its cargo is empty - its done.
-                        TRACE_1("PR UNLOADED", _noCargo);
-                        if( _active && _noCargo) then {
+                            // If payload vehicle is not slingloading and its cargo is empty - its done.
+                            TRACE_1("PR UNLOADED", _noCargo);
+                            if( _active && _noCargo) then {
 
-                            _payloadUnloaded = true;
+                                _payloadUnloaded = true;
 
-                        } else {
+                            } else {
 
-                            _payloadUnloaded = false;
+                                _payloadUnloaded = false;
+
+                            };
 
                         };
-
-                    };
-                } foreach _payloadProfiles;
+                    } foreach _payloadProfiles;
+                };
 
                 TRACE_2("PR UNLOADED", _loadedUnits, _payloadUnloaded);
 
