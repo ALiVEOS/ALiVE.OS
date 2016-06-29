@@ -82,6 +82,26 @@ class PRTablet
             action = "closeDialog 0";
         };
 
+        class PRTablet_currentForcePool : PRTablet_RscText
+        {
+            text = "";
+            idc = 60099;
+            x = 0.6462 * safezoneW + safezoneX;
+            y = 0.6450 * safezoneH + safezoneY;
+            w = 0.159596 * safezoneW;
+            h = 0.0308 * safezoneH;
+            colorBackground[] = {0,0,0,0};
+            class Attributes
+            {
+                font = "PuristaMedium";
+                color = "#627057";
+                align = "left";
+                valign = "middle";
+                shadow = true;
+                shadowColor = "#000000";
+                size = 0.8;
+            };
+        };
 
         class PRTablet_payloadWeight : PRTablet_RscText
         {
