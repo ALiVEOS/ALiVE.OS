@@ -86,7 +86,7 @@ Peer Reviewed:
 #define PRTablet_CTRL_ButtonL1 60026
 #define PRTablet_CTRL_ButtonR1 60027
 #define PRTablet_CTRL_StatusMap 60028
-
+#define PRTablet_CTRL_ForcePool 60099
 
 // Control Macros
 #define PR_getControl(disp,ctrl) ((findDisplay ##disp) displayCtrl ##ctrl)
@@ -1353,6 +1353,13 @@ switch(_operation) do {
 
                     createDialog "PRTablet";
 
+                    // Display Current Force Pool
+                    private ["_forcePool","_forcePoolStatus"];
+                    _forcePoolStatus = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ForcePool);
+                    _forcePool = [ALIVE_globalForcePool,faction player] call ALIVE_fnc_hashGet;
+                    _forcePoolStatus ctrlSetText format["Current Force Pool: %1",_forcePool];
+                    _forcePoolStatus ctrlShow true;
+
                 };
 
                 case "DELIVERY_LIST_SELECT": {
@@ -1410,7 +1417,6 @@ switch(_operation) do {
                     _groupText ctrlSetText format["%1 of %2 groups",0,_countGroups];
                     _vehiclesText ctrlSetText format["%1 of %2 vehicles",0,_countVehicles];
                     _individualsText ctrlSetText format["%1 of %2 individuals",0,_countIndividuals];
-
 
                     // reset the supply list
 
@@ -2804,6 +2810,13 @@ switch(_operation) do {
         };
 
         [_logic,"statusMarker",[]] call MAINCLASS;
+
+        // Display Current Force Pool
+        private ["_forcePool","_forcePoolStatus"];
+        _forcePoolStatus = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ForcePool);
+        _forcePool = [ALIVE_globalForcePool,faction player] call ALIVE_fnc_hashGet;
+        _forcePoolStatus ctrlSetText format["Current Force Pool: %1",_forcePool];
+        _forcePoolStatus ctrlShow true;
 
         // setup the delivery type list
 
