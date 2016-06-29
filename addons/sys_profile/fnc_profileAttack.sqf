@@ -31,7 +31,7 @@ nil
 ---------------------------------------------------------------------------- */
 
 #define SUPERCLASS  ALIVE_fnc_baseClassHash
-#define MAINCLASS   ALiVE_fnc_profileBattle
+#define MAINCLASS   ALiVE_fnc_profileAttack
 
 private ["_result"];
 
@@ -57,7 +57,7 @@ switch (_operation) do {
         [_logic,"attacker", []] call ALiVE_fnc_hashSet;
         [_logic,"targets", []] call ALiVE_fnc_hashSet;
 
-        [_logic,"maxRange", 150] call ALiVE_fnc_hashSet;
+        [_logic,"maxRange", 150] call ALiVE_fnc_hashSet;    // for arty set to max arty range, else leave default
 
         [_logic,"cyclesLeft", 9999] call ALiVE_fnc_hashSet;
 

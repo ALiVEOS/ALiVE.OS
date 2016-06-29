@@ -1096,7 +1096,7 @@ switch(_operation) do {
 						{
 							_unit = _x;
 							_positions set [_unitCount, getPosATL _unit];
-							_damages set [_unitCount, getDammage _unit];
+							_damages set [_unitCount, damage _unit];
 							_ranks set [_unitCount, rank _unit];
 							deleteVehicle _unit;
 							_unitCount = _unitCount + 1;
