@@ -538,7 +538,7 @@ _toBeKilled = [];
 
                         _maxEngagementRange = [_attack,"maxRange"] call ALiVE_fnc_hashGet;
 
-                        if (_attackerPos distance2D _targetPos <= (_maxEngagementRange * 1.1)) then {
+                        if (_attackerPos distance2D _targetPos <= _maxEngagementRange) then {
 
                             // get profiles to attack with
                             // vehicles entity commands, or just the entity
@@ -599,7 +599,7 @@ _toBeKilled = [];
                                 // if entity controls no vehicle, the entity itself
 
                                 {
-                                    _damageToInflict = _damageToInflict + (([_x,_targetToAttack] call ALiVE_fnc_profileGetDamageOutput) * _nextTargetDamageModifier * _combatRate);
+                                    _damageToInflict = _damageToInflict + (([_x,_targetToAttack] call ALiVE_fnc_profileGetDamageOutput) * _nextTargetDamageModifier * _cycleTime * _combatRate);
                                 } foreach _profilesToAttackWith;
 
                                 // deal the damage
@@ -617,7 +617,7 @@ _toBeKilled = [];
                                         _dmgPerUnitEven = _damageToInflict / _unitCount;
 
                                         while {_damageToInflictLeft > 0 && {_unitCount > 0}} do {
-if (_unitCount != count _profileToAttackHealth) then {systemchat format ["_unitCount %1 != count _profileToAttackHealth %2", _unitCount, count _profileToAttackHealth]; if (isnil "ginstances") then {ginstances = 0}; ginstances = ginstances + 1};
+
                                             _randomIndex = floor random _unitCount;
                                             _randomDudeDmg = _profileToAttackHealth select _randomIndex;
                                             _randomDamage = random [_dmgPerUnitEven / 4, _dmgPerUnitEven, _dmgPerUnitEven * 4];
