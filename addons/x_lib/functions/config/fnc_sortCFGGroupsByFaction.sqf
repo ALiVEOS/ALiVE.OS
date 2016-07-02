@@ -33,6 +33,10 @@ private ["_side","_configPath","_sortedGroups","_factionClass","_factionName","_
 _side = _this select 0;
 _faction = _this select 1;
 
+if(_side == "GUER") then {
+    _side = "INDEP";
+};
+
 _configPath = configfile >> "CfgGroups" >> _side >> _faction;
 
 _sortedGroups = [] call ALIVE_fnc_hashCreate;
