@@ -502,6 +502,7 @@ switch(_operation) do {
                             _code = _x select 5;
 
                             if (_class in ["BUS_Support_Mort","BUS_MotInf_MortTeam","OIA_MotInf_MortTeam","OI_support_Mort","HAF_MotInf_MortTeam","HAF_Support_Mort"]) then {
+                                // Force _unitCount to 1 to prevent spawning 3x3 units when _class is from CfgGroups
                                 _unitCount = 1;
                                 private _letter = _class select [0,1];
 
