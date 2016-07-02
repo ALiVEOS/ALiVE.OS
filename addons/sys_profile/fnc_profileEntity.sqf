@@ -657,10 +657,10 @@ switch(_operation) do {
                             ["_damage", 0, [0]],
                             ["_rank", "PRIVATE", [""]]
                         ];
-						_unitClasses = _logic select 2 select 11; //[_logic,"unitClasses"] call ALIVE_fnc_hashGet;
-						_positions = _logic select 2 select 18; //[_logic,"positions"] call ALIVE_fnc_hashGet;
-						_damages = _logic select 2 select 19; //[_logic,"damages"] call ALIVE_fnc_hashGet;
-						_ranks = _logic select 2 select 20; //[_logic,"ranks"] call ALIVE_fnc_hashGet;
+						_unitClasses = _logic select 2 select 11;   //[_logic,"unitClasses"] call ALIVE_fnc_hashGet;
+						_positions = _logic select 2 select 18;     //[_logic,"positions"] call ALIVE_fnc_hashGet;
+						_damages = _logic select 2 select 19;       //[_logic,"damages"] call ALIVE_fnc_hashGet;
+						_ranks = _logic select 2 select 20;         //[_logic,"ranks"] call ALIVE_fnc_hashGet;
 
 						_unitIndex = count _unitClasses;
 
@@ -671,7 +671,7 @@ switch(_operation) do {
                 };
 		};
 		case "removeUnit": {
-				private ["_unitIndex","_unitClass","_damages","_ranks","_unitCount","_units","_unitClasses","_positions","_active","_unit"];
+				private ["_unitIndex","_damages","_ranks","_units","_unitClasses","_positions","_active"];
 
 				if(typeName _args == "SCALAR") then {
 
@@ -686,19 +686,21 @@ switch(_operation) do {
                         _positions deleteAt _unitIndex;
                         _damages deleteAt _unitIndex;
                         _ranks deleteAt _unitIndex;
-                        _unitCount = count _damages; // if user entered out-of-range unit index, don't blindly decrement unit count
 
-						[_logic,"unitClasses",_unitClasses] call ALIVE_fnc_hashSet;
-						[_logic,"positions",_positions] call ALIVE_fnc_hashSet;
-						[_logic,"damages",_damages] call ALIVE_fnc_hashSet;
-						[_logic,"ranks",_ranks] call ALIVE_fnc_hashSet;
-                        [_logic,"unitCount", _unitCount] call ALiVE_fnc_hashSet;
+						//[_logic,"unitClasses",_unitClasses] call ALIVE_fnc_hashSet;
+						//[_logic,"positions",_positions] call ALIVE_fnc_hashSet;
+						//[_logic,"damages",_damages] call ALIVE_fnc_hashSet;
+						//[_logic,"ranks",_ranks] call ALIVE_fnc_hashSet;
+                        [_logic,"unitCount", count _unitClasses] call ALiVE_fnc_hashSet; // use count to ensure unitIndex is within range
 
 						_active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
 						if(_active) then {
 							_units = _logic select 2 select 21; //[_logic,"units"] call ALIVE_fnc_hashGet;
                             _units deleteAt _unitIndex;
-							[_logic,"units",_units] call ALIVE_fnc_hashSet;
+							//[_logic,"units",_units] call ALIVE_fnc_hashSet;
+
+                            // update unitIndex variables
+                            {_x setVariable ["profileIndex",_forEachIndex]} foreach _units;
 						};
 
 						_result = true;
@@ -708,16 +710,14 @@ switch(_operation) do {
                 };
 		};
 		case "removeUnitByObject": {
-				private ["_units","_unitIndex"];
+				private ["_units"];
 
 				if(typeName _args == "OBJECT") then {
 					_units = _logic select 2 select 21; //[_logic,"units"] call ALIVE_fnc_hashGet;
-					_unitIndex = 0;
 					{
 						if(_x == _args) then {
-							_result = [_logic, "removeUnit", _unitIndex] call MAINCLASS;
+							_result = [_logic, "removeUnit", _forEachIndex] call MAINCLASS;
 						};
-						_unitIndex = _unitIndex + 1;
 					} forEach _units;
 				};
 		};
