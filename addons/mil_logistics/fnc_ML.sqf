@@ -1562,7 +1562,7 @@ switch(_operation) do {
                                     // get the highest priority objective
                                     _primaryReinforcementObjective = _sortedClusters select ((count _sortedClusters)-1);
 
-                                    _reinforcementType = "DROP";
+                                    _reinforcementType = "AIR";
 
                                 };
 
@@ -1579,7 +1579,7 @@ switch(_operation) do {
                                 // get the highest priority objective
                                 _primaryReinforcementObjective = _sortedClusters select ((count _sortedClusters)-1);
 
-                                _reinforcementType = "DROP";
+                                _reinforcementType = "AIR";
 
                             };
 
@@ -1773,15 +1773,19 @@ switch(_operation) do {
                 switch(_reinforcementType) do {
                     case "AIR": {
                         _waitTime = WAIT_TIME_AIR;
+                        _eventType = "AIRDROP";
                     };
                     case "HELI": {
                         _waitTime = WAIT_TIME_HELI;
+                        _eventType = "HELI_INSERT";
                     };
                     case "MARINE": {
                         _waitTime = WAIT_TIME_MARINE;
+                        _eventType = "HELI_INSERT";
                     };
                     case "DROP": {
                         _waitTime = WAIT_TIME_DROP;
+                        _eventType = "STANDARD";
                     };
                 };
 
@@ -1800,8 +1804,48 @@ switch(_operation) do {
 
                     if((time - _eventTime) > _waitTime) then {
 
-                        private ["_reinforcementPosition","_playersInRange","_paraDrop","_remotePosition"];
+                        private ["_reinforcementPosition","_playersInRange","_paraDrop","_remotePosition","_airTrans","_noHeavy","_slingAvailable","_water","_AA","_newPos","_routeDistance","_routeDirection"];
 
+                        // Override delivery mechanism if there is water or AA or armored vehicles required
+                        _noHeavy = _eventForceMechanised == 0 && _eventForceArmour == 0;
+
+                        _water = false; // water is in the way
+
+                        // Check route
+                        _routeDistance = _eventPosition distance ([_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet);
+                        _routeDirection = [_eventPosition, [_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet] call BIS_fnc_dirTo;
+                        _newPos = _eventPosition;
+                        for "_i" from 0 to _routeDistance step 20 do {
+                            _newPos = _newPos getpos [20, _routeDirection];
+                            if (surfaceIsWater _newPos) exitWith {_water = true;};
+                        };
+
+                        _slingAvailable = false; // slingloading is available as a service
+                        _airTrans = [ALIVE_factionDefaultAirTransport,_eventFaction,[]] call ALIVE_fnc_hashGet;
+                        if(count _airTrans == 0) then {
+                             _airTrans = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
+                        };
+                        // Check helicopters can slingload
+                        {
+                            _slingAvailable = [(configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue > 1000;
+                            if (_slingAvailable) exitWith {};
+                        } foreach  _airTrans;
+
+                        // If OPCOM request airdrop of tanks, change to convoy
+                        if (_eventType == "AIRDROP" && !_noHeavy) then {_eventType = "STANDARD";};
+
+                        // If its air drop and nothing heavy and sling available then switch to Heli Insert
+                        if (_eventType == "AIRDROP" && _noHeavy && _slingAvailable) then {_eventType = "HELI_INSERT";};
+
+                        // If OPCOM requested convoy but there's water - then heli insert
+                        if (_eventType == "STANDARD" && _water && _noHeavy) then {_eventType = "HELI_INSERT";};
+
+                        // If sling is not available then its an AIRDROP
+                        If (_eventType == "HELI_INSERT" && _eventForceMotorised > 0 && !_slingAvailable && _noHeavy) then {_eventType = "AIRDROP";};
+
+                        if (_water && !_noHeavy) then {_eventType = "STANDARD"}; // COULD DELIVER TO NEAREST BEACH?
+
+                        // Choose start position
                         if(_eventType == "STANDARD" || _eventType == "HELI_INSERT") then {
 
                             _reinforcementPosition = [_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet;
@@ -1809,6 +1853,8 @@ switch(_operation) do {
                         }else{
                             _reinforcementPosition = _eventPosition;
                         };
+
+                        ["AI LOGCOM Side: %9 Type: %6 From: %8 To: %7, Dist: %1, Dir: %2, Water: %3, Sling: %4, Heavy: %5", _routeDistance, _routeDirection, _water, _slingAvailable, !_noheavy, _eventType, _eventPosition, _reinforcementPosition, _side] call ALiVE_fnc_dump;
 
                         // if heli insert allow only air and
                         // infantry groups & Motorized
@@ -2219,7 +2265,8 @@ switch(_operation) do {
                                             [_slingloadProfile,"slung",[[_profiles select 1 select 2 select 4]]] call ALIVE_fnc_profileVehicle;
 
                                             if(_debug) then {
-                                                ["ALIVE ML - Slingloading: %1 %2 ", _vehicleClass, _slingloadProfile] call ALIVE_fnc_dump;
+                                                ["ALIVE ML - Slingloading: %1", _vehicleClass] call ALIVE_fnc_dump;
+                                                _slingloadProfile call ALIVE_fnc_inspectHash;
                                             };
 
                                             _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
