@@ -46,29 +46,23 @@ switch (_operation) do {
 
     case "init": {
 
-        [_logic,"super", QUOTE(SUPERCLASS)] call ALiVE_fnc_hashSet;
-        [_logic,"class", QUOTE(MAINCLASS)] call ALiVE_fnc_hashSet;
+        [_logic,"super", QUOTE(SUPERCLASS)] call ALiVE_fnc_hashSet;     // select 2 select 0
+        [_logic,"class", QUOTE(MAINCLASS)] call ALiVE_fnc_hashSet;      // select 2 select 1
 
-        [_logic,"battleID", ""] call ALiVE_fnc_hashSet;
-        [_logic,"position", [0,0,0]] call ALiVE_fnc_hashSet;
-        [_logic,"timeStarted", time] call ALiVE_fnc_hashSet;
-        [_logic,"listenerID", ""] call ALiVE_fnc_hashSet;
+        [_logic,"battleID", ""] call ALiVE_fnc_hashSet;                 // select 2 select 2
+        [_logic,"position", [0,0,0]] call ALiVE_fnc_hashSet;            // select 2 select 3
+        [_logic,"timeStarted", time] call ALiVE_fnc_hashSet;            // select 2 select 4
+        [_logic,"listenerID", ""] call ALiVE_fnc_hashSet;               // select 2 select 5
 
-        [_logic,"attacks", []] call ALiVE_fnc_hashSet;
+        [_logic,"attacks", []] call ALiVE_fnc_hashSet;                  // select 2 select 6
 
-        private _profilesKilledBySide = [] call ALiVE_fnc_hashCreate;
-        [_profilesKilledBySide,"EAST", []] call ALiVE_fnc_hashSet;
-        [_profilesKilledBySide,"WEST", []] call ALiVE_fnc_hashSet;
-        [_profilesKilledBySide,"GUER", []] call ALiVE_fnc_hashSet;
+        private _profilesBySide = [] call ALiVE_fnc_hashCreate;         // select 2 select 7
+        [_profilesBySide,"EAST", []] call ALiVE_fnc_hashSet;            // select 2 select 8
+        [_profilesBySide,"WEST", []] call ALiVE_fnc_hashSet;            // select 2 select 9
+        [_profilesBySide,"GUER", []] call ALiVE_fnc_hashSet;            // select 2 select 10
 
-        [_logic,"profilesKilledBySide", _profilesKilledBySide] call ALiVE_fnc_hashSet;
-
-        [_logic,"start"] call MAINCLASS;
-    };
-
-    case "start": {
-
-        [_logic,"listen"] call MAINCLASS;
+        [_logic,"profilesBySide", _profilesBySide] call ALiVE_fnc_hashSet;          // select 2 select 11
+        [_logic,"profilesKilledBySide", +_profilesBySide] call ALiVE_fnc_hashSet;   // select 2 select 12
 
     };
 
@@ -180,19 +174,42 @@ switch (_operation) do {
 
     case "addAttacks": {
 
-        private _attacks = _args;
+        private ["_attacks","_attacks","_profilesBySide","_profilesToAdd","_attack","_attackID","_attacker","_targets","_profile"];
 
-        private _attacks = [_logic,"attacks"] call ALiVE_fnc_hashGet;
+        _attacksToAdd = _args;
+
+        _attacks = [_logic,"attacks"] call ALiVE_fnc_hashGet;
+        _profilesBySide = ([_logic,"profilesBySide"] call ALiVE_fnc_hashGet) select 2;
+        _profilesToAdd = [];
 
         {
-            private _attackID = _x;
+            _attack = _x;
+            _attackID = [_x,"attackID"] call ALiVE_fnc_hashGet;
 
             if (typename _attackID == "ARRAY") then {
                 _attackID = [_x,"attackID"] call ALiVE_fnc_hashGet;
             };
 
+            _attacker = [_x,"attacker"] call ALiVE_fnc_hashGet;
+            _profilesToAdd pushback _attacker;
+
+            _targets = [_x,"targets"] call ALiVE_fnc_hashGet;
+            _profilesToAdd append _targets;
+
             _attacks pushback _attackID;
-        } foreach _attacks;
+        } foreach _attacksToAdd;
+
+        // add profiles to profilesBySide
+
+        {
+            _profile = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_profileHandler;
+
+            switch (_profile select 2 select 3) do { // side
+                case "EAST": {(_profilesBySide select 0) pushback _x};
+                case "WEST": {(_profilesBySide select 1) pushback _x};
+                case "GUER": {(_profilesBySide select 2) pushback _x};
+            };
+        } foreach _profilesToAdd;
 
     };
 

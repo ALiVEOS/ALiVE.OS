@@ -52,6 +52,8 @@ switch (_operation) do {
         [_logic,"debug", false] call ALiVE_fnc_hashSet;
         [_logic,"combatRange", 150] call ALiVE_fnc_hashSet;
         [_logic,"combatRate", 1] call ALiVE_fnc_hashSet; // modify to slow down or speed up combat
+        [_logic,"battleSize", 500] call ALiVE_fnc_hashSet;
+        [_logic,"battleMinAttacks", 6] call ALiVE_fnc_hashSet;
 
         private _profilesBySide = [] call ALiVE_fnc_hashCreate;
         [_profilesBySide,"EAST", []] call ALiVE_fnc_hashSet;
@@ -181,11 +183,36 @@ switch (_operation) do {
 
         private _attack = _args;
 
+        // store attack in attacksByID
+
         private _attacksByID = [_logic,"attacksByID"] call ALiVE_fnc_hashGet;
         private _attackID = [_logic,"getNextAttackID"] call MAINCLASS;
 
         [_attack,"attackID", _attackID] call ALiVE_fnc_hashSet;
         [_attacksByID,_attackID, _attack] call ALiVE_fnc_hashSet;
+
+        // store attacker in combatBySide
+
+        private _profilesInCombatBySide = ([_logic,"profilesInCombatBySide"] call ALiVE_fnc_hashGet) select 2;
+
+        private _attackerID = [_attack,"attacker"] call ALiVE_fnc_hashGet;
+        private _attackerSide = ([MOD(profileHandler),"getProfile", _attackerID] call ALiVE_fnc_profileHandler) select 2 select 3;
+
+        switch (_attackerSide) do {
+            case "EAST": {(_profilesInCombatBySide select 0) pushback _attackerID};
+            case "WEST": {(_profilesInCombatBySide select 1) pushback _attackerID};
+            case "GUER": {(_profilesInCombatBySide select 2) pushback _attackerID};
+        };
+
+        // log event
+
+        private _targets = _attack select 2 select 7;
+        private _attackPosition = _attack select 2 select 4;
+        private _maxRange = _attack select 2 select 8;
+        private _cyclesLeft = _attack select 2 select 9;
+
+        private _event = ['PROFILE_ATTACK_START', [_attackID,_attackerID,_targets,_attackPosition,_attackerSide,_maxRange,_cyclesLeft], "profileCombatHandler"] call ALiVE_fnc_event;
+        [MOD(eventLog), "addEvent", _event] call ALiVE_fnc_eventLog;
 
         _result = _attackID;
 
@@ -211,17 +238,42 @@ switch (_operation) do {
 
         private _attacksByID = [_logic,"attacksByID"] call ALiVE_fnc_hashGet;
 
+        private _profilesInCombatBySide = ([_logic,"profilesInCombatBySide"] call ALiVE_fnc_hashGet) select 2;
+
         {
             private _attack = _x;
             private _attackID = [_attack,"attackID"] call ALiVE_fnc_hashGet;
 
             private _attackPosition = [_attack,"position"] call ALiVE_fnc_hashGet;
-            private _attacker = [_attack,"attacker"] call ALiVE_fnc_hashGet;
+            private _attackerID = [_attack,"attacker"] call ALiVE_fnc_hashGet;
             private _targetsLeft = [_attack,"targets"] call ALiVE_fnc_hashGet;
+
+            // remove from combatBySide
+            private _attackerSide = [_attack,"attackerSide"] call ALiVE_fnc_hashGet;
+
+            switch (_attackerSide) do {
+                case "EAST": {
+                        private _array = (_profilesInCombatBySide select 0);
+                        _array deleteAt (_array find _attackerID);
+                };
+                case "WEST": {
+                        private _array = (_profilesInCombatBySide select 1);
+                        _array deleteAt (_array find _attackerID);
+                };
+                case "GUER": {
+                        private _array = (_profilesInCombatBySide select 2);
+                        _array deleteAt (_array find _attackerID);
+                };
+            };
 
             [_attacksByID,_attackID, nil] call ALiVE_fnc_hashSet;
 
-            private _event = ['PROFILE_ATTACK_END', [_attackID,_attackPosition,_attacker,_targetsLeft], "profileCombatHandler"] call ALiVE_fnc_event;
+            // log event
+
+            private _maxRange = _attack select 2 select 8;
+            private _cyclesLeft = _attack select 2 select 9;
+
+            private _event = ['PROFILE_ATTACK_END', [_attackID,_attackerID,_targetsLeft,_attackPosition,_attackerSide,_maxRange,_cyclesLeft], "profileCombatHandler"] call ALiVE_fnc_event;
             [MOD(eventLog), "addEvent", _event] call ALiVE_fnc_eventLog;
         } foreach _attacks;
 

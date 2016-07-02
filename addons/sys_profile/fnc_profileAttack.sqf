@@ -46,20 +46,22 @@ switch (_operation) do {
 
     case "init": {
 
-        [_logic,"super", QUOTE(SUPERCLASS)] call ALiVE_fnc_hashSet;
-        [_logic,"class", QUOTE(MAINCLASS)] call ALiVE_fnc_hashSet;
+        [_logic,"super", QUOTE(SUPERCLASS)] call ALiVE_fnc_hashSet; // select 2 select 0
+        [_logic,"class", QUOTE(MAINCLASS)] call ALiVE_fnc_hashSet;  // select 2 select 1
 
-        [_logic,"attackID", ""] call ALiVE_fnc_hashSet;
-        [_logic,"battleID", ""] call ALiVE_fnc_hashSet;
-        [_logic,"position", [0,0,0]] call ALiVE_fnc_hashSet;
-        [_logic,"timeStarted", time] call ALiVE_fnc_hashSet;
+        [_logic,"attackID", ""] call ALiVE_fnc_hashSet;             // select 2 select 2
+        [_logic,"battleID", ""] call ALiVE_fnc_hashSet;             // select 2 select 3
+        [_logic,"position", [0,0,0]] call ALiVE_fnc_hashSet;        // select 2 select 4
+        [_logic,"timeStarted", time] call ALiVE_fnc_hashSet;        // select 2 select 5
 
-        [_logic,"attacker", []] call ALiVE_fnc_hashSet;
-        [_logic,"targets", []] call ALiVE_fnc_hashSet;
+        [_logic,"attacker", []] call ALiVE_fnc_hashSet;             // select 2 select 6
+        [_logic,"targets", []] call ALiVE_fnc_hashSet;              // select 2 select 7
 
-        [_logic,"maxRange", 150] call ALiVE_fnc_hashSet;    // for arty set to max arty range, else leave default
+        // for arty set to max arty range, else leave default
+        [_logic,"maxRange", 150] call ALiVE_fnc_hashSet;            // select 2 select 8
 
-        [_logic,"cyclesLeft", 9999] call ALiVE_fnc_hashSet;
+        [_logic,"cyclesLeft", 9999] call ALiVE_fnc_hashSet;         // select 2 select 9
+        [_logic,"attackerSide", "WEST"] call ALiVE_fnc_hashSet;     // select 2 select 10
 
     };
 
@@ -142,6 +144,17 @@ switch (_operation) do {
     };
 
     case "cyclesLeft": {
+
+        if (typename _args == "SCALAR") then {
+            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _result = _args;
+        } else {
+            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+        };
+
+    };
+
+    case "attackerSide": {
 
         if (typename _args == "SCALAR") then {
             [_logic,_operation,_args] call ALiVE_fnc_hashSet;
