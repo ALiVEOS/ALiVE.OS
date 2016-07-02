@@ -271,6 +271,10 @@ switch(_operation) do {
                                 _class = [_listener,"class"] call ALIVE_fnc_hashGet;
                             };
 
+                            if (typename _class == "STRING") then {
+                                _class = call compile _class;
+                            };
+
                             [_listener,"handleEvent",_event] call _class;
                         } forEach (_listeners select 2);
                     };
@@ -287,6 +291,10 @@ switch(_operation) do {
                                 _class = _listener getVariable "class";
                             }else{
                                 _class = [_listener,"class"] call ALIVE_fnc_hashGet;
+                            };
+
+                            if (typename _class == "STRING") then {
+                                _class = call compile _class;
                             };
 
                             [_listener,"handleEvent",_event] call _class;
