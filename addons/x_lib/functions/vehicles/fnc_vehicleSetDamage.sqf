@@ -14,7 +14,7 @@ Returns:
 
 Examples:
 (begin example)
-_result = [_vehicle, _ammo] call ALIVE_fnc_vehicleSetDamage;
+_result = [_vehicle, _damage] call ALIVE_fnc_vehicleSetDamage;
 (end)
 
 See Also:
