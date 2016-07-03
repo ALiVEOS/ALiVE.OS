@@ -36,12 +36,12 @@ private _backpacks = [];
     private _backpack = unitBackpack _x;
 
     if (!isNull _backpack) then {
-        private _cfg = (configFile >> "CfgVehicles" >> typeOf _backpack >> "assembleInfo" >> "assembleTo");
-        private _assembleToValue = _cfg call BIS_fnc_getCfgData;
+        private _assembleToCfg = (configFile >> "CfgVehicles" >> typeOf _backpack >> "assembleInfo" >> "assembleTo");
+        private _assembleToValue = _assembleToCfg call BIS_fnc_getCfgData;
 
         if (!isNil "_assembleToValue" && {count _assembleToValue > 0}) then {
-            private _cfg = (configFile >> "CfgVehicles" >> _assembleToValue >> "assembleInfo" >> "dissasembleTo");
-            private _disassembleToValue = _cfg call BIS_fnc_getCfgData;
+            private _disassembleToCfg = (configFile >> "CfgVehicles" >> _assembleToValue >> "assembleInfo" >> "dissasembleTo");
+            private _disassembleToValue = _disassembleToCfg call BIS_fnc_getCfgData;
 
             if (!isNil "_disassembleToValue" && {count _disassembleToValue > 0}) then {
                 _disassembleTo = _disassembleToValue;
