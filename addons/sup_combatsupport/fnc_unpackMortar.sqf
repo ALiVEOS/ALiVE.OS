@@ -15,99 +15,133 @@ SCRIPT(unpackMortar);
     _this select 1: location to place gun (position)
     _this select 2: location of target (position)
 */
-private ["_group","_position","_targetPos","_leader","_units","_gunner","_assistant","_weapon"];
+private _group = _this param [0, grpNull];
+private _position = _this param [1, grpNull];
+private _targetPos = _this param [2, grpNull];
 
-//diag_log str(_this);
-
-_group =         [_this, 0, grpNull] call bis_fnc_param;
-_position =        [_this, 1, grpNull] call bis_fnc_param;
-_targetPos =     [_this, 2, grpNull] call bis_fnc_param;
-_weapon =         [_this, 3, grpNull] call bis_fnc_param;
-_units =         (units _group);
-
-{
-    if (vehicle _x != _x) then {
-        doGetOut _x;
-    };
-    if (_x getVariable ["supportWeaponGunner",objNull] == _weapon) then {
-        _gunner = _x;
-    };
-    if (_x getVariable ["supportWeaponAsst",objNull] == _weapon) then {
-        _assistant = _x;
-    };
-} foreach _units;
-
-if (isNil "_gunner" || isNil "_assistant") exitWith {
-    diag_log "Someone from the mortar team died";
-    // reduce mortar count
+// TODO: Perhaps leader could pick up an other role if needed?
+if (count (units _group) < 3) exitWith {
+    // TODO: is supportWeaponCount needed?
     _sptCount = _grp getVariable ["supportWeaponCount",3];
     _grp setVariable ["supportWeaponCount", _sptCount - 1];
+
+    diag_log "unpackMortar: cannot assemble, requires 3 units"
 };
 
-[_gunner, _assistant, _targetPos, _weapon, _group] spawn {
+private _assembleTo = "";
+private _disassembleTo = [];
+private _backpacks = [];
 
-    private ["_gunner","_assistant","_pos","_tPos","_wait","_dirTo","_sptarr","_weapont", "_weapon","_grp","_timein","_timer","_sptCount"];
+{
+    private _backpack = unitBackpack _x;
 
-    _gunner = _this select 0;
-    _assistant = _this select 1;
-    _tPos = _this select 2;
-    _weapont = typeOf (_this select 3);
-    _grp = _this select 4;
+    if (!isNull _backpack) then {
+        private _cfg = (configFile >> "CfgVehicles" >> typeOf _backpack >> "assembleInfo" >> "assembleTo");
+        private _assembleToValue = _cfg call BIS_fnc_getCfgData;
 
-    waitUntil{sleep 0.1; _gunner call ALiVE_fnc_unitReadyRemote};
+        if (!isNil "_assembleToValue" && {count _assembleToValue > 0}) then {
+            private _cfg = (configFile >> "CfgVehicles" >> _assembleToValue >> "assembleInfo" >> "dissasembleTo");
+            private _disassembleToValue = _cfg call BIS_fnc_getCfgData;
 
-    _gunner disableAI "move";
-
-    _assistant disableAI "move";
-
-    _assistant setpos (position _gunner);
-
-    _assistant setUnitPos "Middle";
-
-    _assistant action ["PutBag",_assistant];
-    _gunner action ["Assemble",unitbackpack _gunner];
-
-    _wait = true;
-    _timein = true;
-    _timer = time;
-    while {_wait && _timein} do {
-        _weapon = (nearestObjects [position _gunner, [_weapont], 3]) select 0;
-        if (!isNil "_weapon") then {
-            if (alive _weapon) then {_wait = false};
+            if (!isNil "_disassembleToValue" && {count _disassembleToValue > 0}) then {
+                _disassembleTo = _disassembleToValue;
+            };
         };
-        if (time-_timer > 60) then {_timein = false};
-        sleep 1;
+
+        _backpacks pushBack (typeOf _backpack);
+    };
+} forEach (units _group);
+
+private _canAssemble = true;
+
+{
+    if (!(_x in _backpacks)) exitWith {
+        _canAssemble = false;
+    };
+} forEach _disassembleTo;
+
+if (!_canAssemble) exitWith { diag_log format ["unpackMortar: cannot assemble %1! NEED: %2 HAS: %3", _assembleTo, _disassembleTo, _backpacks] };
+
+private _weapon = objNull;
+private _leader = leader _group;
+private _units = (units _group) - [_leader];
+private _gunner = _units select 0;
+private _assistant = _units select 1;
+private _timeout = -1;
+
+{_x doMove ([_position, 0, 5, 0, 0, 20, 0] call BIS_fnc_findSafePos)} forEach (_units + [_leader]);
+
+private _unitsReady = false;
+_timeout = time + 60;
+while {!_unitsReady} do {
+    if (time >= _timeout) exitWith {
+        {
+            doStop _x;
+            _x setPos ([_position, 0, 5, 0, 0, 20, 0] call BIS_fnc_findSafePos);
+        } forEach (_units + [_leader]);
     };
 
-    if (!_timein && _wait) then {
-        diag_log format["unpack timedout %1",(nearestObjects [position _gunner, [], 3])];
-        removeBackpackGlobal _gunner;
-        removeBackpackGlobal _assistant;
-        _weapon = createVehicle [_weapont, position _gunner, [], 3, "NONE"];
-    };
+    {
+        // Break out of forEach as soon as unit is not "ready"
+        if (!(_x call ALiVE_fnc_unitReadyRemote)) exitWith {
+            _unitsReady = false;
+        };
 
-    _sptarr = _grp getVariable ["supportWeaponArray",[]];
-    _sptarr pushback _weapon;
-    _grp setvariable ["supportWeaponArray", _sptarr];
+        _unitsReady = true;
+    } forEach (_units + [_leader]);
 
-    _dirTo = ((position _weapon) getDir _tPos);
-
-    sleep 5;
-    _gunner assignAsGunner _weapon;
-    _gunner moveInGunner _weapon;
-    sleep 5;
-
-    _gunner commandWatch _tPos;
-
-    _assistant selectWeapon "Binocular";
-    sleep 6;
-    _assistant commandWatch _tPos;
-    _assistant setDir _dirTo;
-
-    _gunner setVariable ["unpacked", true];
-    _assistant setVariable ["packAssistant", false];
-
-//    diag_log str(_grp getVariable ["supportWeaponArray",[]]);
+    sleep 0.1;
 };
 
-_gunner
+// TODO: change MOVE to PATH post A3 1.62 release?
+_gunner disableAI "MOVE";
+_assistant disableAI "MOVE";
+
+private _assistantBackpack = unitBackpack _assistant;
+_assistant action ["PutBag"];
+
+_timeout = time + 5;
+while {!isNull (unitBackpack _assistant)} do {
+    if (time >= _timeout) exitWith {
+        // TODO: handle timeout
+    };
+    sleep 0.1;
+};
+
+_gunner action ["Assemble", _assistantBackpack];
+
+private _assembledEH = _gunner addEventHandler ["WeaponAssembled", {
+    private _unit = _this param [0, objNull];
+    private _weapon = _this param [1, objNull];
+
+    _unit setVariable ["assembledWeapon", _weapon];
+}];
+
+_timeout = time + 5;
+while {isNull _weapon} do {
+    if (time >= _timeout) exitWith {
+        // TODO: handle timeout
+    };
+    _weapon = _gunner getVariable ["assembledWeapon", objNull];
+    sleep 0.1;
+};
+
+_gunner removeEventHandler ["WeaponAssembled", _assembledEH];
+
+private _dirTo = [position _weapon, _targetPos] call BIS_fnc_dirTo;
+_weapon setDir _dirTo;
+
+_gunner assignAsGunner _weapon;
+_gunner moveInGunner _weapon;
+_gunner commandWatch _targetPos;
+
+_assistant setUnitPos "Middle";
+_assistant setDir _dirTo;
+_assistant commandWatch _targetPos;
+
+_leader selectWeapon "Binocular";
+_leader setUnitPos "Middle";
+_leader setDir _dirTo;
+_leader commandWatch _targetPos;
+
+_gunner;
