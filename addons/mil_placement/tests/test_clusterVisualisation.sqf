@@ -38,9 +38,9 @@ ASSERT_TRUE(!_result, _err);
 
 private ["_worldName","_file","_clusters","_HQClusters","_airClusters","_heliClusters","_vehicleClusters"];
 
-			
-_worldName = toLower(worldName);			
-_file = format["\x\alive\addons\mil_placement\clusters\clusters.%1_mil.sqf", _worldName];				
+
+_worldName = toLower(worldName);
+_file = format["\x\alive\addons\mil_placement\clusters\clusters.%1_mil.sqf", _worldName];
 call compile preprocessFileLineNumbers _file;
 
 
@@ -52,14 +52,14 @@ STAT("Debug Consolidated Mil Clusters");
 
 _clusters = ALIVE_clustersMil select 2;
 {
-	[_x, "debug", true] call ALIVE_fnc_cluster;
+    [_x, "debug", true] call ALIVE_fnc_cluster;
 } forEach _clusters;
 
 STAT("Sleeping before destroy");
 SLEEP 30;
 
 {
-	[_x, "debug", false] call ALIVE_fnc_cluster;
+    [_x, "debug", false] call ALIVE_fnc_cluster;
 } forEach _clusters;
 
 
@@ -68,14 +68,14 @@ STAT("Debug HQ Mil Clusters");
 
 _HQClusters = ALIVE_clustersMilHQ select 2;
 {
-	[_x, "debug", true] call ALIVE_fnc_cluster;
-} forEach _HQClusters;	
+    [_x, "debug", true] call ALIVE_fnc_cluster;
+} forEach _HQClusters;
 
 STAT("Sleeping before destroy");
 SLEEP 30;
 
 {
-	[_x, "debug", false] call ALIVE_fnc_cluster;
+    [_x, "debug", false] call ALIVE_fnc_cluster;
 } forEach _HQClusters;
 
 
@@ -85,14 +85,14 @@ STAT("Debug Air Mil Clusters");
 _airClusters = ALIVE_clustersMilAir select 2;
 
 {
-	[_x, "debug", true] call ALIVE_fnc_cluster;
+    [_x, "debug", true] call ALIVE_fnc_cluster;
 } forEach _airClusters;
 
 STAT("Sleeping before destroy");
 SLEEP 30;
 
 {
-	[_x, "debug", false] call ALIVE_fnc_cluster;
+    [_x, "debug", false] call ALIVE_fnc_cluster;
 } forEach _airClusters;
 
 
@@ -101,21 +101,21 @@ STAT("Debug Heli Mil Clusters");
 
 _heliClusters = ALIVE_clustersMilHeli select 2;
 {
-	[_x, "debug", true] call ALIVE_fnc_cluster;
+    [_x, "debug", true] call ALIVE_fnc_cluster;
 } forEach _heliClusters;
 
 STAT("Sleeping before destroy");
 SLEEP 30;
 
 {
-	[_x, "debug", false] call ALIVE_fnc_cluster;
+    [_x, "debug", false] call ALIVE_fnc_cluster;
 } forEach _heliClusters;
 
 
 
 ["ALIVE MP - Count clusters %1",count _clusters] call ALIVE_fnc_dump;
 ["ALIVE MP - Count air clusters %1",count _airClusters] call ALIVE_fnc_dump;
-["ALIVE MP - Count heli clusters %1",count _heliClusters] call ALIVE_fnc_dump;		
+["ALIVE MP - Count heli clusters %1",count _heliClusters] call ALIVE_fnc_dump;
 
 
 nil;

@@ -6,10 +6,10 @@ class CfgVehicles {
                 displayName = "$STR_ALIVE_MP";
                 function = "ALIVE_fnc_MPInit";
                 author = MODULE_AUTHOR;
-	            functionPriority = 90;
+                functionPriority = 90;
                 isGlobal = 1;
-		        icon = "x\alive\addons\mil_placement\icon_mil_MP.paa";
-		        picture = "x\alive\addons\mil_placement\icon_mil_MP.paa";
+                icon = "x\alive\addons\mil_placement\icon_mil_MP.paa";
+                picture = "x\alive\addons\mil_placement\icon_mil_MP.paa";
                 class Arguments
                 {
                         class debug
@@ -31,7 +31,7 @@ class CfgVehicles {
                                         };
                                 };
                         };
-						class taor
+                        class taor
                         {
                                 displayName = "$STR_ALIVE_MP_TAOR";
                                 description = "$STR_ALIVE_MP_TAOR_COMMENT";
@@ -43,7 +43,7 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_MP_BLACKLIST_COMMENT";
                                 defaultValue = "";
                         };
-						class sizeFilter
+                        class sizeFilter
                         {
                                 displayName = "$STR_ALIVE_MP_SIZE_FILTER";
                                 description = "$STR_ALIVE_MP_SIZE_FILTER_COMMENT";
@@ -60,19 +60,19 @@ class CfgVehicles {
                                                 name = "$STR_ALIVE_MP_SIZE_FILTER_SMALL";
                                                 value = "100";
                                         };
-										class MEDIUM
+                                        class MEDIUM
                                         {
                                                 name = "$STR_ALIVE_MP_SIZE_FILTER_MEDIUM";
                                                 value = "200";
                                         };
-										class LARGE
+                                        class LARGE
                                         {
                                                 name = "$STR_ALIVE_MP_SIZE_FILTER_LARGE";
                                                 value = "300";
                                         };
                                 };
                         };
-						class priorityFilter
+                        class priorityFilter
                         {
                                 displayName = "$STR_ALIVE_MP_PRIORITY_FILTER";
                                 description = "$STR_ALIVE_MP_PRIORITY_FILTER_COMMENT";
@@ -89,19 +89,19 @@ class CfgVehicles {
                                                 name = "$STR_ALIVE_MP_PRIORITY_FILTER_LOW";
                                                 value = "10";
                                         };
-										class MEDIUM
+                                        class MEDIUM
                                         {
                                                 name = "$STR_ALIVE_MP_PRIORITY_FILTER_MEDIUM";
                                                 value = "30";
                                         };
-										class HIGH
+                                        class HIGH
                                         {
                                                 name = "$STR_ALIVE_MP_PRIORITY_FILTER_HIGH";
                                                 value = "40";
                                         };
                                 };
                         };
-						class withPlacement
+                        class withPlacement
                         {
                                 displayName = "$STR_ALIVE_MP_PLACEMENT";
                                 description = "$STR_ALIVE_MP_PLACEMENT_COMMENT";
@@ -120,18 +120,18 @@ class CfgVehicles {
                                         };
                                 };
                         };
-						class size
+                        class size
                         {
                                 displayName = "$STR_ALIVE_MP_SIZE";
                                 description = "$STR_ALIVE_MP_SIZE_COMMENT";
                                 class Values
                                 {
-										class BNx3
+                                        class BNx3
                                         {
                                                 name = "$STR_ALIVE_MP_SIZE_BNx3";
                                                 value = 1200;
                                         };
-										class BNx2
+                                        class BNx2
                                         {
                                                 name = "$STR_ALIVE_MP_SIZE_BNx2";
                                                 value = 800;
@@ -141,18 +141,18 @@ class CfgVehicles {
                                                 name = "$STR_ALIVE_MP_SIZE_BN";
                                                 value = 400;
                                         };
-										class CYx2
+                                        class CYx2
                                         {
                                                 name = "$STR_ALIVE_MP_SIZE_CYx2";
                                                 value = 200;
-												default = 1;
+                                                default = 1;
                                         };
                                         class CY
                                         {
                                                 name = "$STR_ALIVE_MP_SIZE_CY";
                                                 value = 100;
                                         };
-										class PLx2
+                                        class PLx2
                                         {
                                                 name = "$STR_ALIVE_MP_SIZE_PLx2";
                                                 value = 60;
@@ -174,7 +174,7 @@ class CfgVehicles {
                                         {
                                                 name = "$STR_ALIVE_MP_TYPE_RANDOM";
                                                 value = "Random";
-												default = 1;
+                                                default = 1;
                                         };
                                         class ARMOR
                                         {
@@ -227,12 +227,12 @@ class CfgVehicles {
                                                 name = "Low";
                                                 value = "2500";
                                         };
-										class MEDIUM
+                                        class MEDIUM
                                         {
                                                 name = "Medium";
                                                 value = "1500";
                                         };
-										class HIGH
+                                        class HIGH
                                         {
                                                 name = "High";
                                                 value = "1000";
@@ -256,12 +256,12 @@ class CfgVehicles {
                                                 name = "75%";
                                                 value = "0.75";
                                         };
-										class MEDIUM
+                                        class MEDIUM
                                         {
                                                 name = "50%";
                                                 value = "0.5";
                                         };
-										class LOW
+                                        class LOW
                                         {
                                                 name = "25%";
                                                 value = "0.25";
@@ -341,8 +341,8 @@ class CfgVehicles {
                                                 value = false;
                                         };
                                 };
-                        };                        
-						class placeHelis
+                        };
+                        class placeHelis
                         {
                                 displayName = "$STR_ALIVE_MP_PLACE_HELI";
                                 description = "$STR_ALIVE_MP_PLACE_HELI_COMMENT";
@@ -361,7 +361,7 @@ class CfgVehicles {
                                         };
                                 };
                         };
-						class placeSupplies
+                        class placeSupplies
                         {
                                 displayName = "$STR_ALIVE_MP_PLACE_SUPPLIES";
                                 description = "$STR_ALIVE_MP_PLACE_SUPPLIES_COMMENT";
@@ -380,7 +380,7 @@ class CfgVehicles {
                                         };
                                 };
                         };
-						class ambientVehicleAmount
+                        class ambientVehicleAmount
                         {
                                 displayName = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT";
                                 description = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_COMMENT";
@@ -397,12 +397,12 @@ class CfgVehicles {
                                                 name = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_LOW";
                                                 value = "0.2";
                                         };
-										class MEDIUM
+                                        class MEDIUM
                                         {
                                                 name = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_MEDIUM";
                                                 value = "0.6";
                                         };
-										class HIGH
+                                        class HIGH
                                         {
                                                 name = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_HIGH";
                                                 value = "1";
