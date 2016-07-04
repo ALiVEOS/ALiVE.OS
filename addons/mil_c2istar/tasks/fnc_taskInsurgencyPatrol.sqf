@@ -31,10 +31,10 @@ _debug = _this select 4;
 _result = [];
 
 switch (_taskState) do {
-	case "init":{
+    case "init":{
 
-	    private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
-	    "_taskApplyType","_taskEnemySide","_targetObjective","_targetPosition","_taskPlayers"];
+        private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
+        "_taskApplyType","_taskEnemySide","_targetObjective","_targetPosition","_taskPlayers"];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;
@@ -70,9 +70,9 @@ switch (_taskState) do {
         _targetObjective call ALIVE_fnc_inspectArray;
         _targetPosition = _targetObjective select 1;
 
-		// ["pl %1 tar %2",getpos player, _targetPosition] call ALiVE_fnc_DumpR;
+        // ["pl %1 tar %2",getpos player, _targetPosition] call ALiVE_fnc_DumpR;
 
-		if(count _targetPosition == 0) exitwith {["C2ISTAR - Task InsurgencyPatrol - No targets found!"] call ALiVE_fnc_Dump};
+        if(count _targetPosition == 0) exitwith {["C2ISTAR - Task InsurgencyPatrol - No targets found!"] call ALiVE_fnc_Dump};
 
         if!(isNil "_targetPosition") then {
 
@@ -176,16 +176,16 @@ switch (_taskState) do {
 
         };
 
-	};
-	case "Parent":{
+    };
+    case "Parent":{
 
     };
-	case "Travel":{
+    case "Travel":{
 
-	    private["_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
-	    "_destinationReached","_taskIDs","_lastState","_taskDialog","_currentTaskDialog"];
+        private["_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
+        "_destinationReached","_taskIDs","_lastState","_taskDialog","_currentTaskDialog"];
 
-	    _taskID = _task select 0;
+        _taskID = _task select 0;
         _requestPlayerID = _task select 1;
         _taskSide = _task select 2;
         _taskPosition = _task select 3;

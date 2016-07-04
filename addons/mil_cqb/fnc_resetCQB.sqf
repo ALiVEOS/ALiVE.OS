@@ -42,13 +42,13 @@ if (count _instances > 0) then {
         _houses = _instance getvariable ["houses",[]];
         _housesPending = _instance getvariable ["houses_pending",[]];
         _debug = [_instance,"debug"] call ALiVE_fnc_CQB;
-      	_houses = _houses - _housesPending;
+          _houses = _houses - _housesPending;
         _housesPending = _housesPending - _houses;
         _housesTotal = _housesPending + _houses;
 
         [_instance,"active",false] call ALiVE_fnc_CQB;
         [_instance,"debug",false] call ALiVE_fnc_CQB;
-		
+
         waituntil {_script = _instance getvariable "process"; isnil "_script" || {scriptDone _script} || {time <= 0}};
 
         _instance setvariable ["houses",[]];

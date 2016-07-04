@@ -1,16 +1,16 @@
 class CfgFunctions {
-	class PREFIX {
-		class COMPONENT {
-			class SCOM {
-				description = "The main class";
-				file = "\x\alive\addons\sup_command\fnc_SCOM.sqf";
-				recompile = RECOMPILE;
-			};
-			class SCOMInit {
-				description = "The module initialisation function";
-				file = "\x\alive\addons\sup_command\fnc_SCOMInit.sqf";
-				recompile = RECOMPILE;
-			};
+    class PREFIX {
+        class COMPONENT {
+            class SCOM {
+                description = "The main class";
+                file = "\x\alive\addons\sup_command\fnc_SCOM.sqf";
+                recompile = RECOMPILE;
+            };
+            class SCOMInit {
+                description = "The module initialisation function";
+                file = "\x\alive\addons\sup_command\fnc_SCOMInit.sqf";
+                recompile = RECOMPILE;
+            };
             class SCOMTabletOnAction {
                 description = "The module Radio Action function";
                 file = "\x\alive\addons\sup_command\fnc_SCOMTabletOnAction.sqf";
@@ -37,5 +37,5 @@ class CfgFunctions {
                 recompile = RECOMPILE;
             };
         };
-	};
+    };
 };

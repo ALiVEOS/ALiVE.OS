@@ -45,48 +45,48 @@ waituntil {sleep 0.5; !isnil {(_profile select 2 select 13)} && {!isnull (_profi
 
 if (_type == "entity") then {
     private ["_driver","_gunner","_inVehicle"];
-    
+
     _group = _profile select 2 select 13;
     _units = +(units _group);
 
-	waituntil {sleep 2; {alive _x && _x distance _destination < 50} count _units > 0 || count _units == 0};
+    waituntil {sleep 2; {alive _x && _x distance _destination < 50} count _units > 0 || count _units == 0};
 
-	_roads = _destination nearRoads 50;
-    
+    _roads = _destination nearRoads 50;
+
     if (count _roads > 0) then {
         {
-			_agent = _x;
+            _agent = _x;
 
-			[_agent, getposATL (_roads call BIS_fnc_SelectRandom)] call ALiVE_fnc_doMoveRemote;
-            
+            [_agent, getposATL (_roads call BIS_fnc_SelectRandom)] call ALiVE_fnc_doMoveRemote;
+
             sleep 5;
-                   
-			_agent playActionNow "PutDown";
-			_bomb = "DemoCharge_Remote_Ammo_Scripted" createVehicle (getposATL _agent);
-			_bomb setposATL (getposATL _agent);
-            
-			_bombs pushBack _bomb;
+
+            _agent playActionNow "PutDown";
+            _bomb = "DemoCharge_Remote_Ammo_Scripted" createVehicle (getposATL _agent);
+            _bomb setposATL (getposATL _agent);
+
+            _bombs pushBack _bomb;
         } foreach _units;
 
         _newPosition = [
-			_destination, 
-			100, 
-			250,
-			1, 
-			0, 
-			100,
-			0, 
-			[], 
-			[_destination]
-		] call BIS_fnc_findSafePos;
+            _destination,
+            100,
+            250,
+            1,
+            0,
+            100,
+            0,
+            [],
+            [_destination]
+        ] call BIS_fnc_findSafePos;
 
         [_group,_newPosition] call ALiVE_fnc_MoveRemote;
         _group setbehaviour "AWARE";
-		_group setSpeedmode "NORMAL";
-       
+        _group setSpeedmode "NORMAL";
+
         [_bombs,_destination] spawn {
             _time = time; waituntil {sleep 2; {_x distance (_this select 1) < 20} count vehicles > 0 || {time - _time > 1800}};
-            
+
             // timeout
             if (time - _time >= 1800) then {
                 {deletevehicle _x} foreach (_this select 0);
@@ -94,6 +94,6 @@ if (_type == "entity") then {
             } else {
                 {_x setdamage 1} foreach (_this select 0);
             };
-        };        
+        };
     };
 };

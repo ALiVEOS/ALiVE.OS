@@ -27,7 +27,7 @@ ARJay
 
 private ["_profile","_args","_debug","_profileID","_leader","_group","_units","_iteration"];
 
-_profile = _this select 0;	
+_profile = _this select 0;
 _args = _this select 1;
 _debug = _this select 2;
 
@@ -40,21 +40,21 @@ _iteration = 0;
 
 // DEBUG -------------------------------------------------------------------------------------
 //if(_debug) then {
-	["ALiVE Spawned Script Command - [%1] called args: %2",_profileID,_args] call ALIVE_fnc_dump;
+    ["ALiVE Spawned Script Command - [%1] called args: %2",_profileID,_args] call ALIVE_fnc_dump;
 //};
-// DEBUG -------------------------------------------------------------------------------------	
+// DEBUG -------------------------------------------------------------------------------------
 
 waituntil {
-	
-	// DEBUG -------------------------------------------------------------------------------------
-	//if(_debug) then {
-		["ALiVE Spawned Script Command - [%1] iteration: %2",_profileID,_iteration] call ALIVE_fnc_dump;
-	//};
-	// DEBUG -------------------------------------------------------------------------------------	
-	
-	_iteration = _iteration + 1;
-	
-	sleep 5;
-	
-	false 
+
+    // DEBUG -------------------------------------------------------------------------------------
+    //if(_debug) then {
+        ["ALiVE Spawned Script Command - [%1] iteration: %2",_profileID,_iteration] call ALIVE_fnc_dump;
+    //};
+    // DEBUG -------------------------------------------------------------------------------------
+
+    _iteration = _iteration + 1;
+
+    sleep 5;
+
+    false
 };

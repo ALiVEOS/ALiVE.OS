@@ -198,7 +198,7 @@ switch(_operation) do {
                     {_x setMarkerAlpha 0} foreach (_logic getVariable ["blacklist", DEFAULT_TAOR]);
                 };
 
-		      TRACE_2("After module init",ADDON,ADDON getVariable "init");
+              TRACE_2("After module init",ADDON,ADDON getVariable "init");
 
                 // and wait for game logic to initialise
                 // TODO merge into lazy evaluation
@@ -235,10 +235,10 @@ switch(_operation) do {
                 _blacklist = [_logic, "blacklist"] call MAINCLASS;
                 _side = _logic getvariable ["VB_IED_Side", DEFAULT_VB_IED_SIDE];
 
-				if (count synchronizedObjects _logic > 0) then {
-					for "_i" from 0 to ((count synchronizedObjects _logic) - 1) do {
+                if (count synchronizedObjects _logic > 0) then {
+                    for "_i" from 0 to ((count synchronizedObjects _logic) - 1) do {
 
-			        	_mod = (synchronizedObjects _logic) select _i;
+                        _mod = (synchronizedObjects _logic) select _i;
 
                         if (typeof _mod == "ALiVE_mil_OPCOM") then {
 
@@ -249,8 +249,8 @@ switch(_operation) do {
 
                             ["ALiVE MIL IED reset for usage with OPCOM Insurgency!"] call ALiVE_fnc_Dump;
                         };
-					};
-				};
+                    };
+                };
 
                 if !(GVAR(Loaded)) then {
                     // Initialise Locations
@@ -294,28 +294,28 @@ switch(_operation) do {
                     if ({(getpos _x distance _pos) < _size} count ([] call BIS_fnc_listPlayers) == 0 || GVAR(Loaded)) then {
                         private ["_sidelist","_sideNum","_factions","_factionClasses"];
 
-						// If ALiVE Ambient civilians are available get the faction from there
-			            if (["ALiVE_amb_civ_placement"] call ALiVE_fnc_isModuleAvailable) then {
+                        // If ALiVE Ambient civilians are available get the faction from there
+                        if (["ALiVE_amb_civ_placement"] call ALiVE_fnc_isModuleAvailable) then {
 
                             waituntil {!isnil QMOD(amb_civ_placement)};
 
-                        	_factions = [ALiVE_amb_civ_placement getvariable ["faction","CIV_F"]];
-			            } else {
-	                        // Else get faction from side
-	                        _factions = [];
-	                        _sidelist = ["EAST","WEST","IND","CIV"];
-	                        _blacklist = ["Virtual_F","Interactive_F"];
-	                        _sideNum = _sidelist find _side;
-	                        _factionClasses = (configfile >> "CfgFactionClasses");
-	                        for "_i" from 1 to (count _factionClasses - 1) do {
-	                            private "_element";
-	                            _element = _factionClasses select _i;
-	                            if (isclass _element) then {
-	                                if (getnumber(_element >> "side") == _sideNum && (_blacklist find (configName _element)) == -1) then {
-	                                    _factions pushback configName _element;
-	                                };
-	                            };
-	                        };
+                            _factions = [ALiVE_amb_civ_placement getvariable ["faction","CIV_F"]];
+                        } else {
+                            // Else get faction from side
+                            _factions = [];
+                            _sidelist = ["EAST","WEST","IND","CIV"];
+                            _blacklist = ["Virtual_F","Interactive_F"];
+                            _sideNum = _sidelist find _side;
+                            _factionClasses = (configfile >> "CfgFactionClasses");
+                            for "_i" from 1 to (count _factionClasses - 1) do {
+                                private "_element";
+                                _element = _factionClasses select _i;
+                                if (isclass _element) then {
+                                    if (getnumber(_element >> "side") == _sideNum && (_blacklist find (configName _element)) == -1) then {
+                                        _factions pushback configName _element;
+                                    };
+                                };
+                            };
                         };
 
                         _faction = _factions call bis_fnc_selectRandom;

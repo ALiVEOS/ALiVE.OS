@@ -11,7 +11,7 @@ SCRIPT(test);
 LOG("=== Testing CQB ===");
 
 {
-	call compile preprocessFileLineNumbers format ["\x\alive\addons\mil_CQB\tests\test_%1.sqf", _x];
+    call compile preprocessFileLineNumbers format ["\x\alive\addons\mil_CQB\tests\test_%1.sqf", _x];
 } forEach TESTS;
 
 nil;

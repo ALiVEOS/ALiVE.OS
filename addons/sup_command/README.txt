@@ -11,8 +11,8 @@
 //  of this distribution removed or modified without express written consent   //
 //  of the developer. For further licensing details please refer to the End    //
 //  User License Agreement provided within this PBO file. Any questions or     //
-//  comments, please contact:             				       //
-//                    https://dev-heaven.net/projects/alive                    //
+//  comments, please contact:                                    //
+//                    http://alivemod.com/                    //
 //                                                                             //
 ///////////////////////////////////////////////////////////////////////////////// 
 
@@ -44,5 +44,5 @@ Command and Control / Intel Tablet
 | Contact details |
 #=================#
 
-Page:	http://dev-heaven.net/projects/alive
+Page:    http://alivemod.com/
 

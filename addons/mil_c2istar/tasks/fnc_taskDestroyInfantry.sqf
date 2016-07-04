@@ -31,10 +31,10 @@ _debug = _this select 4;
 _result = [];
 
 switch (_taskState) do {
-	case "init":{
+    case "init":{
 
-	    private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
-	    "_taskApplyType","_taskEnemySide","_targetSector","_targetEntity","_taskPlayers"];
+        private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
+        "_taskApplyType","_taskEnemySide","_targetSector","_targetEntity","_taskPlayers"];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;
@@ -63,32 +63,32 @@ switch (_taskState) do {
         // establish the location for the task
         // get enemy vehicles
 
-		//Freezes Game
+        //Freezes Game
         //_targetSector = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorEntities;
         //_targetEntity = [_targetSector,_taskEnemySide,true] call ALIVE_fnc_taskGetRandomSideEntityFromSector;
 
 
-		_targets = [ALiVE_profileHandler, "getProfilesByType", "entity"] call ALIVE_fnc_profileHandler;
-		
+        _targets = [ALiVE_profileHandler, "getProfilesByType", "entity"] call ALIVE_fnc_profileHandler;
+
         _targets = [_targets,[_taskLocation,_taskEnemySide],{
-            
+
             private ["_final"];
-            
+
             _profile = [ALiVE_ProfileHandler, "getProfile",_x] call ALIVE_fnc_ProfileHandler;
-            
+
             if (([_profile,"side"] call ALiVE_fnc_HashGet) == _Input1) then {
-		    	_final = ([_profile,"position"] call ALiVE_fnc_HashGet) distance _Input0
+                _final = ([_profile,"position"] call ALiVE_fnc_HashGet) distance _Input0
             } else {
-            	_final = 999999
+                _final = 999999
             };
-            
+
             _final
-		},"ASCEND"] call ALiVE_fnc_SortBy;
-        
+        },"ASCEND"] call ALiVE_fnc_SortBy;
+
         _targetEntity = [ALiVE_ProfileHandler,"getProfile",_targets select 0] call ALiVE_fnc_ProfileHandler;
 
         if(count _targetEntity > 0) then {
-            
+
             _targetEntity call ALiVE_fnc_InspectHash;
 
             private["_entityPosition","_entityID"];
@@ -183,8 +183,8 @@ switch (_taskState) do {
 
         };
 
-	};
-	case "Parent":{
+    };
+    case "Parent":{
 
     };
     case "Destroy":{

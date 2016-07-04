@@ -31,10 +31,10 @@ _debug = _this select 4;
 _result = [];
 
 switch (_taskState) do {
-	case "init":{
+    case "init":{
 
-	    private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
-	    "_taskApplyType","_taskEnemySide","_enemyClusters","_targetPosition","_taskPlayers"];
+        private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
+        "_taskApplyType","_taskEnemySide","_enemyClusters","_targetPosition","_taskPlayers"];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;
@@ -69,20 +69,20 @@ switch (_taskState) do {
             // no friendly occupied cluster found
             // try to get a position containing friendlies
             _targetPosition = [_taskLocation,_taskLocationType,_taskSide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
-            
-			// use selected map location or default player position
-            if (count _targetPosition == 0) then {            
-		        _targetPosition = [
-					_targetPosition, 
-					500, 
-					1500,
-					1, 
-					0, 
-					100,
-					0, 
-					[], 
-					[_targetPosition]
-				] call BIS_fnc_findSafePos;
+
+            // use selected map location or default player position
+            if (count _targetPosition == 0) then {
+                _targetPosition = [
+                    _targetPosition,
+                    500,
+                    1500,
+                    1,
+                    0,
+                    100,
+                    0,
+                    [],
+                    [_targetPosition]
+                ] call BIS_fnc_findSafePos;
             };
 
             // spawn a populated composition
@@ -190,16 +190,16 @@ switch (_taskState) do {
 
         };
 
-	};
-	case "Parent":{
+    };
+    case "Parent":{
 
     };
-	case "Travel":{
+    case "Travel":{
 
-	    private["_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
-	    "_destinationReached","_taskIDs","_lastState","_taskDialog","_currentTaskDialog"];
+        private["_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
+        "_destinationReached","_taskIDs","_lastState","_taskDialog","_currentTaskDialog"];
 
-	    _taskID = _task select 0;
+        _taskID = _task select 0;
         _requestPlayerID = _task select 1;
         _taskSide = _task select 2;
         _taskPosition = _task select 3;

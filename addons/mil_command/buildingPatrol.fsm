@@ -11,15 +11,15 @@ item6[] = {"LOOP",4,218,-190.845840,-16.206680,-100.845863,33.793304,0.000000,"L
 version=1;
 class LayoutItems
 {
-	class Item2
-	{
-		class ItemInfo
-		{
-			FontFace="Arial";
-			FontHeight=10;
-			lStyle=1;
-		};
-	};
+    class Item2
+    {
+        class ItemInfo
+        {
+            FontFace="Arial";
+            FontHeight=10;
+            lStyle=1;
+        };
+    };
 };
 link0[] = {0,1};
 link1[] = {1,5};

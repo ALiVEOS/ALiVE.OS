@@ -9,78 +9,78 @@ class RscPicture;
 
 class C2Tablet_RscBackground
 {
-	idc = -1;
-	type = 0;
-	style = 128;
-	colorbackground[] = {0,0,0,1};
-	colorText[] = {0,0,0,0};
-	font = "PuristaMedium";
-	sizeEx = 0;
-	moving = 0;
-	shadow =0;
-	x = "(safeZoneX + (safeZoneW / 1.8))";
-	y = "(safeZoneY + (safeZoneH / 3.25))";
-	w = "(safeZoneW / 3)";
-	h = "(safeZoneH / 2)";
+    idc = -1;
+    type = 0;
+    style = 128;
+    colorbackground[] = {0,0,0,1};
+    colorText[] = {0,0,0,0};
+    font = "PuristaMedium";
+    sizeEx = 0;
+    moving = 0;
+    shadow =0;
+    x = "(safeZoneX + (safeZoneW / 1.8))";
+    y = "(safeZoneY + (safeZoneH / 3.25))";
+    w = "(safeZoneW / 3)";
+    h = "(safeZoneH / 2)";
 };
 
 class C2Tablet_RscEdit
 {
-	idc = -1;
-	type = 2;
-	style = 0x00;
-	x = "1";
-	y = "1";
-	w = "safeZoneW / 25";
-	h = "safeZoneH / 30";
-	sizeEx = 0.03;
-	font = "PuristaMedium";
-	text = "";
-	colorText[] = {1,1,1,1};
-	autocomplete = 0;
-	colorSelection[] = {0,0,0,1};
-	colorDisabled[] = {};
+    idc = -1;
+    type = 2;
+    style = 0x00;
+    x = "1";
+    y = "1";
+    w = "safeZoneW / 25";
+    h = "safeZoneH / 30";
+    sizeEx = 0.03;
+    font = "PuristaMedium";
+    text = "";
+    colorText[] = {1,1,1,1};
+    autocomplete = 0;
+    colorSelection[] = {0,0,0,1};
+    colorDisabled[] = {};
 };
 
 class C2Tablet_RscText
 {
-	idc = -1;
-	type = 13;
-	style = 0x00;
-	colorBackground[] = { 0, 0, 0, 0 };
-	size = "((safeZoneW / 75) + (safeZoneH / 225))";
-	x = "safeZoneX + (safeZoneW / 6)";
-	y = "safeZoneY + (safeZoneH / 6)";
-	w = "safeZoneW / 5";
-	h = "safeZoneH / 10";
-	text = "SUPPORT MENU";
-	class Attributes
-	{
-		font = "PuristaMedium";
-		color = "#C0C0C0";
-		align = "center";
-		valign = "middle";
-		shadow = true;
-		shadowColor = "#000000";
-	};
+    idc = -1;
+    type = 13;
+    style = 0x00;
+    colorBackground[] = { 0, 0, 0, 0 };
+    size = "((safeZoneW / 75) + (safeZoneH / 225))";
+    x = "safeZoneX + (safeZoneW / 6)";
+    y = "safeZoneY + (safeZoneH / 6)";
+    w = "safeZoneW / 5";
+    h = "safeZoneH / 10";
+    text = "SUPPORT MENU";
+    class Attributes
+    {
+        font = "PuristaMedium";
+        color = "#C0C0C0";
+        align = "center";
+        valign = "middle";
+        shadow = true;
+        shadowColor = "#000000";
+    };
 };
 
 class C2Tablet_RscSlider
 {
-	idc = -1;
-	type = 43;
-	style = 0x400 + 0x10;
-	x = "safeZoneX + (safeZoneW / 5.6)";
-	y = "safeZoneY + (safeZoneH / 1.6)";
-	w = "safeZoneW / 5.5";
-	h = "safeZoneH / 40";
-	color[] = {1, 1, 1, 0.4};
-	colorActive[] = {1, 1, 1, 1};
-	colorDisabled[] = {1, 1, 1, 0.2};
-	arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
-	arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
-	border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
-	thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+    idc = -1;
+    type = 43;
+    style = 0x400 + 0x10;
+    x = "safeZoneX + (safeZoneW / 5.6)";
+    y = "safeZoneY + (safeZoneH / 1.6)";
+    w = "safeZoneW / 5.5";
+    h = "safeZoneH / 40";
+    color[] = {1, 1, 1, 0.4};
+    colorActive[] = {1, 1, 1, 1};
+    colorDisabled[] = {1, 1, 1, 0.2};
+    arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+    arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+    border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+    thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
 };
 
 class C2Tablet_RscListBox {
@@ -185,82 +185,82 @@ class C2Tablet_RscComboBox
 
 class C2Tablet_RscButton
 {
-	idc = -1;
-	type = 16;
-	style = 0x00;
-	default = 0;
-	shadow = 2;
-	x = "safeZoneX + (safeZoneW / 5)";
-	y = "safeZoneY + (safeZoneH / 1.525)";
-	w = "(safeZoneW / 12.5)";
-	h = "(safeZoneH / 20)";
+    idc = -1;
+    type = 16;
+    style = 0x00;
+    default = 0;
+    shadow = 2;
+    x = "safeZoneX + (safeZoneW / 5)";
+    y = "safeZoneY + (safeZoneH / 1.525)";
+    w = "(safeZoneW / 12.5)";
+    h = "(safeZoneH / 20)";
     colorBackgroundActive[] = {0, 0, 0, 1};
     colorBackgroundDisabled[] = {0, 0, 0, 0.5};
-	color[] = {0.8784, 0.8471, 0.651, 1.0};
-	color2[] = {0.95, 0.95, 0.95, 1};
-	colorBackground[] = {1, 1, 1, 1};
-	colorbackground2[] = {1, 1, 1, 0.4};
+    color[] = {0.8784, 0.8471, 0.651, 1.0};
+    color2[] = {0.95, 0.95, 0.95, 1};
+    colorBackground[] = {1, 1, 1, 1};
+    colorbackground2[] = {1, 1, 1, 0.4};
     colorText[] = {1, 1, 1, 1};
-	colorDisabled[] = {1, 1, 1, 0.25};
+    colorDisabled[] = {1, 1, 1, 0.25};
     colorShadow[] = {0, 0, 0, 1};
     colorBorder[] = {0, 0, 0, 1};
     borderSize = 0;
-	periodFocus = 1.2;
-	periodOver = 0.8;
+    periodFocus = 1.2;
+    periodOver = 0.8;
     offsetX = 0;
     offsetY = 0;
     offsetPressedX = 0;
     offsetPressedY = 0;
-	class HitZone
-	{
+    class HitZone
+    {
         left = 0;
         top = 0;
         right = 0;
         bottom = 0;
-	};
-	class ShortcutPos
-	{
-		left = "safeZoneW / 100";
-		top = "safeZoneH / 100";
-		w = "safeZoneW / 100";
-		h = "safeZoneH / 100";
-	};
-	class TextPos
-	{
+    };
+    class ShortcutPos
+    {
+        left = "safeZoneW / 100";
+        top = "safeZoneH / 100";
+        w = "safeZoneW / 100";
+        h = "safeZoneH / 100";
+    };
+    class TextPos
+    {
         left = "(((1 / 1.2) / 20) * 0.9) * (3/4)";
         top = "(      (     (1 / 1.2) / 20) -     (     (     (1 / 1.2) / 20) * 0.9)) / 2";
         right = 0.005;
         bottom = 0;
-	};
-	animTextureDefault = "#(argb,8,8,3)color(1,1,1,1)";
+    };
+    animTextureDefault = "#(argb,8,8,3)color(1,1,1,1)";
     animTextureDisabled = "#(argb,8,8,3)color(1,1,1,1)";
     animTextureFocused = "#(argb,8,8,3)color(1,1,1,1)";
     animTextureNormal = "#(argb,8,8,3)color(1,1,1,1)";
     animTextureOver = "#(argb,8,8,3)color(1,1,1,0.5)";
     animTexturePressed = "#(argb,8,8,3)color(1,1,1,1)";
-	period = 0.4;
-	font = "PuristaMedium";
-	size = "(safeZoneW / 125) + (safeZoneH / 125)";
-	text = "";
+    period = 0.4;
+    font = "PuristaMedium";
+    size = "(safeZoneW / 125) + (safeZoneH / 125)";
+    text = "";
     soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1};
     soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1};
     soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1};
     soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1};
-	textureNoShortcut = "";
-	action = "";
-	class Attributes
-	{
-		font = "PuristaMedium";
-		color = "#E5E5E5";
-		align = "left";
-		shadow = "true";
-	};
-	class AttributesImage
-	{
-		font = "PuristaMedium";
-		color = "#E5E5E5";
-		align = "left";
-	};
+    textureNoShortcut = "";
+    action = "";
+    class Attributes
+    {
+        font = "PuristaMedium";
+        color = "#E5E5E5";
+        align = "left";
+        shadow = "true";
+    };
+    class AttributesImage
+    {
+        font = "PuristaMedium";
+        color = "#E5E5E5";
+        align = "left";
+    };
 };
 
 class C2Tablet_RscMap
@@ -332,7 +332,7 @@ class C2Tablet_RscMap
     y = "(safeZoneY + (safeZoneH / 2.49))";
     w = "(safeZoneW / 4.05)";
     h = "(safeZoneH / 4.2)";
-	class ActiveMarker
+    class ActiveMarker
     {
         color[] = {0.3,0.1,0.9,1};
         size = 50;
