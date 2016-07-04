@@ -96,12 +96,12 @@ class CfgVehicles {
                                                 name = "75%";
                                                 value = "0.75";
                                         };
-										class MEDIUM
+                                        class MEDIUM
                                         {
                                                 name = "50%";
                                                 value = "0.5";
                                         };
-										class LOW
+                                        class LOW
                                         {
                                                 name = "25%";
                                                 value = "0.25";

@@ -90,9 +90,9 @@
     <Original>Place the Custom Military Objective module in the editor, select the desired Size, Priority and force composition. Custom factions can be entered in the text box (separated by a comma).</Original>
 </Key>
 <Key ID="STR_ALIVE_CMP_READINESS_LEVEL">
-	<Original>Readiness:</Original>
+    <Original>Readiness:</Original>
 </Key>
 <Key ID="STR_ALIVE_CMP_READINESS_LEVEL_COMMENT">
-	<Original>The amount of troops that will be on duty and patrolling</Original>
+    <Original>The amount of troops that will be on duty and patrolling</Original>
 </Key>
 </Container></Package></Project>
