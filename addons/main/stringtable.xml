@@ -3,68 +3,68 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_MODULE">
-	<Original>ALiVE Modules</Original>
+    <Original>ALiVE Modules</Original>
 </Key>
 <Key ID="STR_ALIVE_SYSTEM">
-	<Original>ALiVE System</Original>
+    <Original>ALiVE System</Original>
 </Key>
 <Key ID="STR_ALIVE_DEBUG">
-	<Original>Enable Debug:</Original>
+    <Original>Enable Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_DEBUG_COMMENT">
-	<Original>Enables Debug for ALiVE Base Systems</Original>
+    <Original>Enables Debug for ALiVE Base Systems</Original>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_ALIVE">
-	<Original>ALiVE (Required)</Original>
-	<German>ALiVE Erfordern</German>
-	<Italian>ALiVE Richiedono</Italian>
-	<Spanish>ALiVE Requieren </Spanish>
-	<French>ALiVE Exiger</French>
-	<Czech>ALiVE Vyžadovat</Czech>
-	<Russian>ALiVE Требовать</Russian>
-	<Polish>ALiVE Wymagaj</Polish>
-	<Hungarian>ALiVE Igénylése</Hungarian>
+    <Original>ALiVE (Required)</Original>
+    <German>ALiVE Erfordern</German>
+    <Italian>ALiVE Richiedono</Italian>
+    <Spanish>ALiVE Requieren </Spanish>
+    <French>ALiVE Exiger</French>
+    <Czech>ALiVE Vyžadovat</Czech>
+    <Russian>ALiVE Требовать</Russian>
+    <Polish>ALiVE Wymagaj</Polish>
+    <Hungarian>ALiVE Igénylése</Hungarian>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_ALIVE_VERSIONING">
-	<Original>ALiVE Versioning:</Original>
+    <Original>ALiVE Versioning:</Original>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_ALIVE_VERSIONING_COMMENT">
-	<Original>Will output a warning or kick players on version mismatch</Original>
+    <Original>Will output a warning or kick players on version mismatch</Original>
 </Key>
 <Key ID="STR_ALIVE_DISABLESAVE">
-	<Original>Disable SP Save:</Original>
+    <Original>Disable SP Save:</Original>
 </Key>
 <Key ID="STR_ALIVE_DISABLESAVE_COMMENT">
-	<Original>SP saving can lead due to out of memory crashes! Enable on own risks!</Original>
+    <Original>SP saving can lead due to out of memory crashes! Enable on own risks!</Original>
 </Key>
 <Key ID="STR_ALIVE_DISABLEMARKERS">
-	<Original>Disable Adv. Markers:</Original>
+    <Original>Disable Adv. Markers:</Original>
 </Key>
 <Key ID="STR_ALIVE_DISABLEMARKERS_COMMENT">
-	<Original>Disable persistent Advanced Markers.</Original>
+    <Original>Disable persistent Advanced Markers.</Original>
 </Key>
 <Key ID="STR_ALiVE_PAUSEMODULES">
-	<Original>Auto Pause:</Original>
+    <Original>Auto Pause:</Original>
 </Key>
 <Key ID="STR_ALiVE_PAUSEMODULES_COMMENT">
-	<Original>Auto pauses modules like vAIs, vAI Commander, CQB, ambCIVs if no players are on server</Original>
+    <Original>Auto pauses modules like vAIs, vAI Commander, CQB, ambCIVs if no players are on server</Original>
 </Key>
 <Key ID="STR_ALIVE_DISABLEADMINACTIONS">
-	<Original>Disable Admin Actions:</Original>
+    <Original>Disable Admin Actions:</Original>
 </Key>
 <Key ID="STR_ALIVE_DISABLEADMINACTIONS_COMMENT">
-	<Original>Disable the ALiVE Admin Action functions.</Original>
+    <Original>Disable the ALiVE Admin Action functions.</Original>
 </Key>
 <Key ID="STR_ALIVE_DISABLEPLAYERLOG">
-	<Original>Disable Player Logistics:</Original>
+    <Original>Disable Player Logistics:</Original>
 </Key>
 <Key ID="STR_ALIVE_DISABLEPLAYERLOG_COMMENT">
-	<Original>Disable player logistics, such as pickup and move crates, objects etc.</Original>
+    <Original>Disable player logistics, such as pickup and move crates, objects etc.</Original>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_ALIVE_AI_DISTRIBUTION">
-	<Original>AI Distribution:</Original>
+    <Original>AI Distribution:</Original>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_ALIVE_AI_DISTRIBUTION_COMMENT">
-	<Original>Activates dynamic AI distribution of all AI to all available headless clients</Original>
+    <Original>Activates dynamic AI distribution of all AI to all available headless clients</Original>
 </Key>
 </Container></Package></Project>

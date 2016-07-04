@@ -56,34 +56,34 @@ if (isMultiplayer && {isServer}) then {_global = "Global"} else {_global = ""};
 
 // Reset Magazines state
 call (compile format["
-			{_input removeMagazine%1 _x} forEach (magazines _input);
-			{_input addMagazine [_x select 0,_x select 1]} foreach _ammo;
-		",
-	    _global
+            {_input removeMagazine%1 _x} forEach (magazines _input);
+            {_input addMagazine [_x select 0,_x select 1]} foreach _ammo;
+        ",
+        _global
     ]
 );
 
 // Reset weapons and items state
 _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"ItemCargo"]];
 {
-	private ["_content","_current","_operation"];
-    
-	_content = _x select 0;
+    private ["_content","_current","_operation"];
+
+    _content = _x select 0;
     _operation = _x select 1;
     _current = call (compile format["get%1 _input",_operation]);
-    
-	if !(str(_content) == str(_current)) then {
-        
+
+    if !(str(_content) == str(_current)) then {
+
         if (count (_current select 0) > 0) then {call (compile format["clear%1%2 _input",_operation,_global])};
-        
-		for "_i" from 0 to (count (_content select 0))-1 do {
-	        private ["_type","_count"];
-	        
-		    _type = _content select 0 select _i;
-		    _count = _content select 1 select _i;
-	
-		    call (compile format["_input add%1%2 %3",_operation,_global,[_type,_count]]);
-		};
+
+        for "_i" from 0 to (count (_content select 0))-1 do {
+            private ["_type","_count"];
+
+            _type = _content select 0 select _i;
+            _count = _content select 1 select _i;
+
+            call (compile format["_input add%1%2 %3",_operation,_global,[_type,_count]]);
+        };
     };
 } foreach _typesWeapons;
 
@@ -91,16 +91,16 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
 _typesLogistics = [[_cargoR,"stowObject"],[_cargoT,"towObject"],[_cargoL,"liftObject"]];
 {
     private ["_contents","_operation","_container"];
-    
-	_contents = _x select 0;
+
+    _contents = _x select 0;
     _operation = _x select 1;
     _container = _input;
-    
-	for "_i" from 0 to ((count _contents)-1) do {
+
+    for "_i" from 0 to ((count _contents)-1) do {
         private ["_id","_pos","_type","_content","_object"];
-        
+
         if (_i > (count _contents)-1) exitwith {};
-        
+
         _id = _contents select _i;
 
         _pos = [[GVAR(STORE),_id] call ALiVE_fnc_HashGet,QGVAR(POSITION)] call ALiVE_fnc_HashGet;
@@ -108,11 +108,11 @@ _typesLogistics = [[_cargoR,"stowObject"],[_cargoT,"towObject"],[_cargoL,"liftOb
         _cargo = [[GVAR(STORE),_id] call ALiVE_fnc_HashGet,QGVAR(CARGO)] call ALiVE_fnc_HashGet;
         _object = (nearestObjects [_pos,[_type],3]) select 0;
 
-		[_object,_cargo] call ALiVE_fnc_setObjectCargo;
+        [_object,_cargo] call ALiVE_fnc_setObjectCargo;
 
-		//Perform operation
+        //Perform operation
         [MOD(SYS_LOGISTICS),_operation,[_object,_container]] call ALiVE_fnc_logistics;
-	};
+    };
 } foreach _typesLogistics;
 
 _cargo;

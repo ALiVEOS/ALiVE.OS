@@ -80,19 +80,19 @@ _cs = lbText [CS_LIST, lbCurSel CS_LIST];
 
 
 switch _eyes do {
-	case "SIDE" : {
-		[_sitrepHash, QGVAR(localityValue), str(side (group player))] call ALIVE_fnc_hashSet;
-	};
-	case "GROUP" : {
-		[_sitrepHash, QGVAR(localityValue), str (group player)] call ALIVE_fnc_hashSet;
-	};
-	case "FACTION" : {
-		[_sitrepHash, QGVAR(localityValue), faction player] call ALIVE_fnc_hashSet;
-	};
+    case "SIDE" : {
+        [_sitrepHash, QGVAR(localityValue), str(side (group player))] call ALIVE_fnc_hashSet;
+    };
+    case "GROUP" : {
+        [_sitrepHash, QGVAR(localityValue), str (group player)] call ALIVE_fnc_hashSet;
+    };
+    case "FACTION" : {
+        [_sitrepHash, QGVAR(localityValue), faction player] call ALIVE_fnc_hashSet;
+    };
 };
 
 if !(isNil QGVAR(mapStartMarker)) then {
-	deleteMarkerLocal GVAR(mapStartMarker);
+    deleteMarkerLocal GVAR(mapStartMarker);
 };
 
 // Create a sitrep

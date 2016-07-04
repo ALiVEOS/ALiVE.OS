@@ -2,15 +2,15 @@ class CfgVehicles {
         class ModuleAliveBase;
         class ADDON : ModuleAliveBase
         {
-				scope = 1;
-				displayName = "$STR_ALIVE_player";
-				function = "ALIVE_fnc_emptyInit";
-				functionPriority = 202;
-				isGlobal = 2;
-				icon = "x\alive\addons\sys_player\icon_sys_player.paa";
-				picture = "x\alive\addons\sys_player\icon_sys_player.paa";
-				author = MODULE_AUTHOR;
-				class ModuleDescription
+                scope = 1;
+                displayName = "$STR_ALIVE_player";
+                function = "ALIVE_fnc_emptyInit";
+                functionPriority = 202;
+                isGlobal = 2;
+                icon = "x\alive\addons\sys_player\icon_sys_player.paa";
+                picture = "x\alive\addons\sys_player\icon_sys_player.paa";
+                author = MODULE_AUTHOR;
+                class ModuleDescription
                 {
                         description = "This module allows you to persist player state between reconnects and server restarts."; // Short description, will be formatted as structured text
                 };

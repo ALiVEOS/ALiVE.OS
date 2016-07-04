@@ -43,9 +43,9 @@ if (isnil "_container" || {_object == _container} || {{_object isKindOf _x} coun
 if (!(isnil "_containerCanStow") && {!(isnil "_objectCanStow")}) then {_canStow = true};
 
 if (_canStow) then {
-	// Weight and Cargovolume must be free to fit the object in
-	if (([_object] call ALiVE_fnc_getObjectWeight) > (([_container] call ALiVE_fnc_availableWeight))) exitwith {_canStow = false};
-	if (([_object] call ALiVE_fnc_getObjectSize) > (([_container] call ALiVE_fnc_availableCargo))) exitwith {_canStow = false};
+    // Weight and Cargovolume must be free to fit the object in
+    if (([_object] call ALiVE_fnc_getObjectWeight) > (([_container] call ALiVE_fnc_availableWeight))) exitwith {_canStow = false};
+    if (([_object] call ALiVE_fnc_getObjectSize) > (([_container] call ALiVE_fnc_availableCargo))) exitwith {_canStow = false};
 };
 
 _canStow;

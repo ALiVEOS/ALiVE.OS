@@ -26,9 +26,9 @@ _amo = +(allMissionObjects "");
 STAT("Create instance");
 _err = "Creating instance failed";
 if(isServer) then {
-	TEST_LOGIC = [nil, "create"] call ALIVE_fnc_logistics;
+    TEST_LOGIC = [nil, "create"] call ALIVE_fnc_logistics;
     ASSERT_DEFINED("TEST_LOGIC",_err);
-    
+
     publicVariable "TEST_LOGIC";
 };
 
@@ -44,10 +44,10 @@ sleep 10;
 STAT("Destroy created instance");
 _err = "Destruction of old instance failed...";
 if(isServer) then {
-	[_logic, "destroy"] call ALIVE_fnc_logistics;
-	TEST_LOGIC = nil;
+    [_logic, "destroy"] call ALIVE_fnc_logistics;
+    TEST_LOGIC = nil;
 } else {
-	waitUntil {isNull TEST_LOGIC};
+    waitUntil {isNull TEST_LOGIC};
 };
 
 

@@ -44,7 +44,7 @@ if (!(isnil "_containerCanTow") && {!(isnil "_objectCanTow")}) then {_canTow = t
 
 if (_canTow) then {
     // Available weight must be free to tow the object, weight is taken by half as towing of a wheeled object is easier than stowing
-	if ((([_object] call ALiVE_fnc_getObjectWeight)/2) > (([_container] call ALiVE_fnc_availableWeight))) exitwith {_canTow = false};
+    if ((([_object] call ALiVE_fnc_getObjectWeight)/2) > (([_container] call ALiVE_fnc_availableWeight))) exitwith {_canTow = false};
 };
 
 _canTow;

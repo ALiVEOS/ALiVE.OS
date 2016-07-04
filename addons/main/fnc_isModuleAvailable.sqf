@@ -32,15 +32,15 @@ _targets = _this;
 _result = false;
 
 for "_i" from 0 to ((count _targets)-1) do {
-	private ["_mod"];
+    private ["_mod"];
     if (count _targets == 0) exitwith {};
-    
+
     _mod = _targets select 0;
-    
+
     if !(isnil "_mod") then {
-	    if ((({(typeof _x) == _mod} count (entities "Module_F") > 0))) then {
-			_targets = _targets - [_mod];
-	    };
+        if ((({(typeof _x) == _mod} count (entities "Module_F") > 0))) then {
+            _targets = _targets - [_mod];
+        };
     };
 };
 
