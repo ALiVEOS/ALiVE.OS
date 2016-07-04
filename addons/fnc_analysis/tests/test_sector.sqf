@@ -46,9 +46,9 @@ _logic = nil;
 
 STAT("Create Sector instance");
 if(isServer) then {
-	_logic = [nil, "create"] call ALIVE_fnc_sector;
-	TEST_LOGIC = _logic;
-	publicVariable "TEST_LOGIC";
+    _logic = [nil, "create"] call ALIVE_fnc_sector;
+    TEST_LOGIC = _logic;
+    publicVariable "TEST_LOGIC";
 };
 
 
@@ -104,20 +104,20 @@ _worldMarkers = [];
 
 STAT("Spawn debug markers");
 {
-	_m = [_x] call ALIVE_fnc_spawnDebugMarker;
-	_worldMarkers set [count _worldMarkers, _m];
+    _m = [_x] call ALIVE_fnc_spawnDebugMarker;
+    _worldMarkers set [count _worldMarkers, _m];
 } forEach _result;
 
 _count = 0;
 {
-	_m = createMarkerLocal [format["FOO%1", _count], _x];
-	_m setMarkerShapeLocal "ICON";
-	_m setMarkerSizeLocal [1, 1];
-	_m setMarkerTypeLocal "mil_dot";
-	_m setMarkerColorLocal ([_logic,"debugColor"] call ALIVE_fnc_hashGet);
-	_count = _count + 1;
-	
-	_markers set [count _markers, _m];
+    _m = createMarkerLocal [format["FOO%1", _count], _x];
+    _m setMarkerShapeLocal "ICON";
+    _m setMarkerSizeLocal [1, 1];
+    _m setMarkerTypeLocal "mil_dot";
+    _m setMarkerColorLocal ([_logic,"debugColor"] call ALIVE_fnc_hashGet);
+    _count = _count + 1;
+
+    _markers set [count _markers, _m];
 } forEach _result;
 
 
@@ -139,11 +139,11 @@ _state = _result;
 STAT("Reset debug");
 
 {
-	deleteMarkerLocal _x;
+    deleteMarkerLocal _x;
 } forEach _markers;
 
 {
-	deleteVehicle _x;
+    deleteVehicle _x;
 } forEach _worldMarkers;
 
 
@@ -158,19 +158,19 @@ sleep 10;
 
 STAT("Destroy old Sector instance");
 if(isServer) then {
-	[_logic, "destroy"] call ALIVE_fnc_sector;
-	TEST_LOGIC = nil;
-	publicVariable "TEST_LOGIC";
+    [_logic, "destroy"] call ALIVE_fnc_sector;
+    TEST_LOGIC = nil;
+    publicVariable "TEST_LOGIC";
 } else {
-	waitUntil{isNull TEST_LOGIC};
+    waitUntil{isNull TEST_LOGIC};
 };
 
 
 STAT("Create Sector instance");
 if(isServer) then {
-	_logic = [nil, "create"] call ALIVE_fnc_sector;
-	TEST_LOGIC2 = _logic;
-	publicVariable "TEST_LOGIC2";
+    _logic = [nil, "create"] call ALIVE_fnc_sector;
+    TEST_LOGIC2 = _logic;
+    publicVariable "TEST_LOGIC2";
 };
 
 
@@ -184,7 +184,7 @@ ASSERT_TRUE(typeName _logic == "ARRAY", _err);
 
 STAT("Restore state on new instance");
 if(isServer) then {
-	_result = [_logic, "state", _state] call ALIVE_fnc_sector;
+    _result = [_logic, "state", _state] call ALIVE_fnc_sector;
 };
 
 
@@ -205,13 +205,13 @@ sleep 10;
 
 
 if(isServer) then {
-	STAT("Destroy old instance");
-	[_logic, "destroy"] call ALIVE_fnc_sector;
-	TEST_LOGIC2 = nil;
-	publicVariable "TEST_LOGIC2";
+    STAT("Destroy old instance");
+    [_logic, "destroy"] call ALIVE_fnc_sector;
+    TEST_LOGIC2 = nil;
+    publicVariable "TEST_LOGIC2";
 } else {
-	STAT("Confirm destroy instance 2");
-	waitUntil{isNull TEST_LOGIC2};
+    STAT("Confirm destroy instance 2");
+    waitUntil{isNull TEST_LOGIC2};
 };
 
 sleep 5;

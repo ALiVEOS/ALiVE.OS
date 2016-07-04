@@ -27,7 +27,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_sectors","_profileType","_profileSide","_err","_filteredSectors","_sector","_sectorData","_sideProfiles","_sideProfile"];
-	
+
 _sectors = _this select 0;
 _profileType = _this select 1;
 _profileSide = _this select 2;
@@ -42,30 +42,30 @@ ASSERT_TRUE(typeName _profileSide == "STRING",_err);
 _filteredSectors = [];
 
 {
-	_sector = _x;
-	_sectorData = [_sector, "data"] call ALIVE_fnc_sector;
-	
-	switch(_profileType) do {
-		case "entity": {
-			if("entitiesBySide" in (_sectorData select 1)) then {
-				_sideProfiles = [_sectorData, "entitiesBySide"] call ALIVE_fnc_hashGet;
-				_sideProfile = [_sideProfiles, _profileSide] call ALIVE_fnc_hashGet;
-				if(count _sideProfile > 0) then {
-					_filteredSectors set [count _filteredSectors, _sector];
-				};
-			};
-		};
-		case "vehicle": {
-			if("vehiclesBySide" in (_sectorData select 1)) then {
-				_sideProfiles = [_sectorData, "vehiclesBySide"] call ALIVE_fnc_hashGet;
-				_sideProfile = [_sideProfiles, _profileSide] call ALIVE_fnc_hashGet;
-				if(count _sideProfile > 0) then {
-					_filteredSectors set [count _filteredSectors, _sector];
-				};
-			};
-		};
-	};
-	
+    _sector = _x;
+    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+
+    switch(_profileType) do {
+        case "entity": {
+            if("entitiesBySide" in (_sectorData select 1)) then {
+                _sideProfiles = [_sectorData, "entitiesBySide"] call ALIVE_fnc_hashGet;
+                _sideProfile = [_sideProfiles, _profileSide] call ALIVE_fnc_hashGet;
+                if(count _sideProfile > 0) then {
+                    _filteredSectors set [count _filteredSectors, _sector];
+                };
+            };
+        };
+        case "vehicle": {
+            if("vehiclesBySide" in (_sectorData select 1)) then {
+                _sideProfiles = [_sectorData, "vehiclesBySide"] call ALIVE_fnc_hashGet;
+                _sideProfile = [_sideProfiles, _profileSide] call ALIVE_fnc_hashGet;
+                if(count _sideProfile > 0) then {
+                    _filteredSectors set [count _filteredSectors, _sector];
+                };
+            };
+        };
+    };
+
 } forEach _sectors;
 
 _filteredSectors

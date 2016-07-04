@@ -11,7 +11,7 @@ SCRIPT(test-civ-population);
 LOG("=== Testing Ambient Civilian Population ===");
 
 {
-	call compile preprocessFileLineNumbers format ["\x\alive\addons\amb_civ_population\tests\test_%1.sqf", _x];
+    call compile preprocessFileLineNumbers format ["\x\alive\addons\amb_civ_population\tests\test_%1.sqf", _x];
 } forEach TESTS;
 
 nil;

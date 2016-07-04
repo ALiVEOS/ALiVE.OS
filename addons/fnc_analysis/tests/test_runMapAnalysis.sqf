@@ -46,8 +46,8 @@ diag_log format["Timer End %1",_timeEnd];
 
 
 if(isNil "ALIVE_civilianHQBuildingTypes") then {
-	_file = "\x\alive\addons\main\static\staticData.sqf";
-	call compile preprocessFileLineNumbers _file;
+    _file = "\x\alive\addons\main\static\staticData.sqf";
+    call compile preprocessFileLineNumbers _file;
 };
 
 

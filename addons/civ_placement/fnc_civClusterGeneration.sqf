@@ -28,8 +28,8 @@ nil
 private ["_file","_obj_array","_types","_clusters","_clusters_tmp","_size"];
 
 if(isNil "ALIVE_civilianHQBuildingTypes") then {
-	_file = "\x\alive\addons\main\static\staticData.sqf";
-	call compile preprocessFileLineNumbers _file;
+    _file = "\x\alive\addons\main\static\staticData.sqf";
+    call compile preprocessFileLineNumbers _file;
 };
 
 
@@ -42,9 +42,9 @@ private ["_clusters_hq","_clusters_copy_hq"];
 _clusters_hq = [ALIVE_civilianHQBuildingTypes] call ALIVE_fnc_findTargets;
 _clusters_hq = [_clusters_hq, "CIV", 50, "ColorBlack"] call ALIVE_fnc_setTargets;
 _clusters_hq = [_clusters_hq] call ALIVE_fnc_consolidateClusters;
-			
+
 // Save the non consolidated clusters
-_clusters_copy_hq = [_clusters_hq] call ALIVE_fnc_copyClusters;		
+_clusters_copy_hq = [_clusters_hq] call ALIVE_fnc_copyClusters;
 
 _clusters = +_clusters_hq;
 
@@ -192,16 +192,16 @@ _clusters_copy_settlement = [_clusters_settlement] call ALIVE_fnc_copyClusters;
 // Consolidate locations
 _clusters = _clusters + _clusters_settlement;
 
-			
 
-// Final Consolidation 
+
+// Final Consolidation
 // ------------------------------------------------------------------
 "CO - Consolidating Clusters" call ALiVE_fnc_logger;
 _clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 "CO - Locations Completed" call ALiVE_fnc_logger;
 
 {
-	[_x, "debug", true] call ALIVE_fnc_cluster;
+    [_x, "debug", true] call ALIVE_fnc_cluster;
 } forEach _clusters;
 
 
@@ -224,9 +224,9 @@ _exportString = _exportString + _result;
 
 
 if(count _clusters_copy_hq > 0) then {
-	_objectivesName = 'ALIVE_clustersCivHQ';
-	_result = [_clusters_copy_hq, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
-	_exportString = _exportString + _result;
+    _objectivesName = 'ALIVE_clustersCivHQ';
+    _result = [_clusters_copy_hq, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
+    _exportString = _exportString + _result;
 }else{
     _objectivesName = 'ALIVE_clustersCivHQ';
     _result = format['%1 = [] call ALIVE_fnc_hashCreate;',_objectivesName];
@@ -236,9 +236,9 @@ if(count _clusters_copy_hq > 0) then {
 _clusterCount = _clusterCount + (count _clusters_copy_hq);
 
 if(count _clusters_copy_power > 0) then {
-	_objectivesName = 'ALIVE_clustersCivPower';
-	_result = [_clusters_copy_power, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
-	_exportString = _exportString + _result;
+    _objectivesName = 'ALIVE_clustersCivPower';
+    _result = [_clusters_copy_power, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
+    _exportString = _exportString + _result;
 }else{
     _objectivesName = 'ALIVE_clustersCivPower';
     _result = format['%1 = [] call ALIVE_fnc_hashCreate;',_objectivesName];
@@ -248,9 +248,9 @@ if(count _clusters_copy_power > 0) then {
 _clusterCount = _clusterCount + (count _clusters_copy_power);
 
 if(count _clusters_copy_comms > 0) then {
-	_objectivesName = 'ALIVE_clustersCivComms';
-	_result = [_clusters_copy_comms, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
-	_exportString = _exportString + _result;
+    _objectivesName = 'ALIVE_clustersCivComms';
+    _result = [_clusters_copy_comms, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
+    _exportString = _exportString + _result;
 }else{
     _objectivesName = 'ALIVE_clustersCivComms';
     _result = format['%1 = [] call ALIVE_fnc_hashCreate;',_objectivesName];
@@ -260,9 +260,9 @@ if(count _clusters_copy_comms > 0) then {
 _clusterCount = _clusterCount + (count _clusters_copy_comms);
 
 if(count _clusters_copy_marine > 0) then {
-	_objectivesName = 'ALIVE_clustersCivMarine';
-	_result = [_clusters_copy_marine, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
-	_exportString = _exportString + _result;
+    _objectivesName = 'ALIVE_clustersCivMarine';
+    _result = [_clusters_copy_marine, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
+    _exportString = _exportString + _result;
 }else{
     _objectivesName = 'ALIVE_clustersCivMarine';
     _result = format['%1 = [] call ALIVE_fnc_hashCreate;',_objectivesName];
@@ -272,9 +272,9 @@ if(count _clusters_copy_marine > 0) then {
 _clusterCount = _clusterCount + (count _clusters_copy_marine);
 
 if(count _clusters_copy_rail > 0) then {
-	_objectivesName = 'ALIVE_clustersCivRail';
-	_result = [_clusters_copy_rail, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
-	_exportString = _exportString + _result;
+    _objectivesName = 'ALIVE_clustersCivRail';
+    _result = [_clusters_copy_rail, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
+    _exportString = _exportString + _result;
 }else{
     _objectivesName = 'ALIVE_clustersCivRail';
     _result = format['%1 = [] call ALIVE_fnc_hashCreate;',_objectivesName];
@@ -284,9 +284,9 @@ if(count _clusters_copy_rail > 0) then {
 _clusterCount = _clusterCount + (count _clusters_copy_rail);
 
 if(count _clusters_copy_fuel > 0) then {
-	_objectivesName = 'ALIVE_clustersCivFuel';
-	_result = [_clusters_copy_fuel, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
-	_exportString = _exportString + _result;
+    _objectivesName = 'ALIVE_clustersCivFuel';
+    _result = [_clusters_copy_fuel, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
+    _exportString = _exportString + _result;
 }else{
     _objectivesName = 'ALIVE_clustersCivFuel';
     _result = format['%1 = [] call ALIVE_fnc_hashCreate;',_objectivesName];
@@ -296,9 +296,9 @@ if(count _clusters_copy_fuel > 0) then {
 _clusterCount = _clusterCount + (count _clusters_copy_fuel);
 
 if(count _clusters_copy_construction > 0) then {
-	_objectivesName = 'ALIVE_clustersCivConstruction';
-	_result = [_clusters_copy_construction, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
-	_exportString = _exportString + _result;
+    _objectivesName = 'ALIVE_clustersCivConstruction';
+    _result = [_clusters_copy_construction, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
+    _exportString = _exportString + _result;
 }else{
     _objectivesName = 'ALIVE_clustersCivConstruction';
     _result = format['%1 = [] call ALIVE_fnc_hashCreate;',_objectivesName];
@@ -308,9 +308,9 @@ if(count _clusters_copy_construction > 0) then {
 _clusterCount = _clusterCount + (count _clusters_copy_construction);
 
 if(count _clusters_copy_settlement > 0) then {
-	_objectivesName = 'ALIVE_clustersCivSettlement';
-	_result = [_clusters_copy_settlement, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
-	_exportString = _exportString + _result;
+    _objectivesName = 'ALIVE_clustersCivSettlement';
+    _result = [_clusters_copy_settlement, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
+    _exportString = _exportString + _result;
 }else{
     _objectivesName = 'ALIVE_clustersCivSettlement';
     _result = format['%1 = [] call ALIVE_fnc_hashCreate;',_objectivesName];

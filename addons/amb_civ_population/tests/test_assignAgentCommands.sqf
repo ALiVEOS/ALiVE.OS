@@ -58,13 +58,13 @@ _agents = [ALIVE_agentHandler,"getAgents"] call ALIVE_fnc_agentHandler;
 STAT("Assign Command To All Agents");
 
 {
-	_type = _x select 2 select 4;
+    _type = _x select 2 select 4;
 
-	if(_type == "agent") then {
-		_x call ALIVE_fnc_inspectHash;
-		//[_x, "setActiveCommand", ["ALIVE_fnc_cc_suicideTarget", "managed", [WEST]]] call ALIVE_fnc_civilianAgent;
-		[_x, "setActiveCommand", ["ALIVE_fnc_cc_rogueTarget", "managed", [WEST]]] call ALIVE_fnc_civilianAgent;
-	};
+    if(_type == "agent") then {
+        _x call ALIVE_fnc_inspectHash;
+        //[_x, "setActiveCommand", ["ALIVE_fnc_cc_suicideTarget", "managed", [WEST]]] call ALIVE_fnc_civilianAgent;
+        [_x, "setActiveCommand", ["ALIVE_fnc_cc_rogueTarget", "managed", [WEST]]] call ALIVE_fnc_civilianAgent;
+    };
 } foreach (_agents select 2);
 
 

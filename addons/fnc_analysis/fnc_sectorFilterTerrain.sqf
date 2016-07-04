@@ -27,7 +27,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_sectors","_terrainType","_err","_filteredSectors","_sector","_sectorData","_terrainData"];
-	
+
 _sectors = _this select 0;
 _terrainType = _this select 1;
 
@@ -39,17 +39,17 @@ ASSERT_TRUE(typeName _terrainType == "STRING",_err);
 _filteredSectors = [];
 
 {
-	_sector = _x;
-	_sectorData = [_sector, "data"] call ALIVE_fnc_sector;
-	
-	if("terrain" in (_sectorData select 1)) then {
-		_terrainData = [_sectorData, "terrain"] call ALIVE_fnc_hashGet;
-		
-		if!(_terrainData == _terrainType) then {
-			_filteredSectors set [count _filteredSectors, _sector];
-		};
-	};
-	
+    _sector = _x;
+    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+
+    if("terrain" in (_sectorData select 1)) then {
+        _terrainData = [_sectorData, "terrain"] call ALIVE_fnc_hashGet;
+
+        if!(_terrainData == _terrainType) then {
+            _filteredSectors set [count _filteredSectors, _sector];
+        };
+    };
+
 } forEach _sectors;
 
 _filteredSectors

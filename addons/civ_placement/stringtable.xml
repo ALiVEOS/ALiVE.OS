@@ -1,30 +1,30 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_CP">
-	<Original>Military Placement (Civ. Obj.)</Original>
+    <Original>Military Placement (Civ. Obj.)</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_COMMENT">
-	<Original>Strategic Military Placement at Civilian Objectives</Original>
+    <Original>Strategic Military Placement at Civilian Objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_DEBUG">
-	<Original>Enable Debug:</Original>
+    <Original>Enable Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_DEBUG_COMMENT">
-	<Original>Enables CP Module Debug</Original>
+    <Original>Enables CP Module Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_TAOR">
-	<Original>TAOR Marker:</Original>
+    <Original>TAOR Marker:</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_TAOR_COMMENT">
-	<Original>Tactical Area Operation Responsibility Marker</Original>
+    <Original>Tactical Area Operation Responsibility Marker</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_BLACKLIST">
-	<Original>Blacklist Marker:</Original>
+    <Original>Blacklist Marker:</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_BLACKLIST_COMMENT">
-	<Original>Exclusion Marker</Original>
+    <Original>Exclusion Marker</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_CLUSTER_TYPE">
     <Original>Objective Type Filter:</Original>
@@ -57,103 +57,103 @@
     <Original>Settlement</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER">
-	<Original>Objective Size Filter:</Original>
+    <Original>Objective Size Filter:</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_COMMENT">
-	<Original>Filter objectives less than selected size</Original>
+    <Original>Filter objectives less than selected size</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_NONE">
-	<Original>Do not filter</Original>
+    <Original>Do not filter</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_SMALL">
-	<Original>Ignore small objectives</Original>
+    <Original>Ignore small objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_MEDIUM">
-	<Original>Ignore small + medium objectives</Original>
+    <Original>Ignore small + medium objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_LARGE">
-	<Original>Only huge objectives</Original>
+    <Original>Only huge objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_PRIORITY_FILTER">
-	<Original>Objective Priority Filter:</Original>
+    <Original>Objective Priority Filter:</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_PRIORITY_FILTER_COMMENT">
-	<Original>Filter objectives less than selected priority</Original>
+    <Original>Filter objectives less than selected priority</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_PRIORITY_FILTER_NONE">
-	<Original>Do not filter</Original>
+    <Original>Do not filter</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_PRIORITY_FILTER_LOW">
-	<Original>Ignore low priority objectives</Original>
+    <Original>Ignore low priority objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_PRIORITY_FILTER_MEDIUM">
-	<Original>Ignore low + medium priority objectives</Original>
+    <Original>Ignore low + medium priority objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_PRIORITY_FILTER_HIGH">
-	<Original>Only high priority objectives</Original>
+    <Original>Only high priority objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_PLACEMENT">
-	<Original>Place units:</Original>
+    <Original>Place units:</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_PLACEMENT_COMMENT">
-	<Original>Place units or objectives only</Original>
+    <Original>Place units or objectives only</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_PLACEMENT_YES">
-	<Original>Place Units</Original>
+    <Original>Place Units</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_PLACEMENT_NO">
-	<Original>Objectives Only</Original>
+    <Original>Objectives Only</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE">
-	<Original>Force Size:</Original>
+    <Original>Force Size:</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_COMMENT">
-	<Original>Number of units to be placed</Original>
+    <Original>Number of units to be placed</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_BNx3">
-	<Original>Battalion (1200)</Original>
+    <Original>Battalion (1200)</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_BNx2">
-	<Original>Battalion (800)</Original>
+    <Original>Battalion (800)</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_BN">
-	<Original>Battalion (400)</Original>
+    <Original>Battalion (400)</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_CYx2">
-	<Original>Company (200)</Original>
+    <Original>Company (200)</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_CY">
-	<Original>Company (100)</Original>
+    <Original>Company (100)</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_PLx2">
-	<Original>Platoon (60)</Original>
+    <Original>Platoon (60)</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_PL">
-	<Original>Platoon (30)</Original>
+    <Original>Platoon (30)</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE">
-	<Original>Force Weighting:</Original>
+    <Original>Force Weighting:</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_COMMENT">
-	<Original>The preferred type of force deployed</Original>
+    <Original>The preferred type of force deployed</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_RANDOM">
-	<Original>Random</Original>
+    <Original>Random</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_ARMOR">
-	<Original>Armoured</Original>
+    <Original>Armoured</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_MECH">
-	<Original>Mechanised</Original>
+    <Original>Mechanised</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_MOTOR">
-	<Original>Motorised</Original>
+    <Original>Motorised</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_LIGHT">
-	<Original>Light Infantry</Original>
+    <Original>Light Infantry</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_AIRBORNE">
-	<Original>Airborne</Original>
+    <Original>Airborne</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_SPECOPS">
     <Original>Spec Ops</Original>
@@ -189,30 +189,30 @@
     <Original>Set a custom count of SpecOps groups to be spawned, leave blank for no change, set to 0 for none</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_FACTION">
-	<Original>Force Faction:</Original>
+    <Original>Force Faction:</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_FACTION_COMMENT">
-	<Original>Faction of the units to be placed (BLU_F, OPF_F, IND_F, BLU_G_F)</Original>
+    <Original>Faction of the units to be placed (BLU_F, OPF_F, IND_F, BLU_G_F)</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_USAGE">
-	<Original>Define the settings on the module, place optional TAOR / Blacklist markers! This module has to be synced to an Military AI Commander module, if you want to use an AI Commander to control that faction.</Original>
+    <Original>Define the settings on the module, place optional TAOR / Blacklist markers! This module has to be synced to an Military AI Commander module, if you want to use an AI Commander to control that faction.</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_READINESS_LEVEL">
-	<Original>Readiness:</Original>
+    <Original>Readiness:</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_READINESS_LEVEL_COMMENT">
-	<Original>The amount of troops that will be on duty and patrolling</Original>
+    <Original>The amount of troops that will be on duty and patrolling</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_ROADBLOCKS">
-	<Original>Roadblocks:</Original>
+    <Original>Roadblocks:</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_ROADBLOCKS_COMMENT">
-	<Original>The chance of roadblocks being created at the objectives</Original>
+    <Original>The chance of roadblocks being created at the objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_PLACE_SEAPATROLS">
-	<Original>Sea Patrols:</Original>
+    <Original>Sea Patrols:</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_PLACE_SEAPATROLS_COMMENT">
-	<Original>The chance of naval units patrolling near marine objectives</Original>
+    <Original>The chance of naval units patrolling near marine objectives</Original>
 </Key>
 </Container></Package></Project>

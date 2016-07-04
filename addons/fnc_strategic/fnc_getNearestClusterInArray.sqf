@@ -43,11 +43,11 @@ _minDistance = 999999;
 _minCluster = nil;
 _pcenter = [_point, "center"] call ALIVE_fnc_cluster;
 {
-	_distance = _pcenter distance ([_x, "center"] call ALIVE_fnc_cluster);
-	if (!([_pcenter, _x] call BIS_fnc_areEqual) && {_distance < _minDistance} && {_distance < _maxDistance}) then {
-		_minDistance = _distance;
-		_minCluster = _x;
-	};
+    _distance = _pcenter distance ([_x, "center"] call ALIVE_fnc_cluster);
+    if (!([_pcenter, _x] call BIS_fnc_areEqual) && {_distance < _minDistance} && {_distance < _maxDistance}) then {
+        _minDistance = _distance;
+        _minCluster = _x;
+    };
 } forEach _cluster;
 
 if(isNil "_minCluster") then {_minCluster = _point;};

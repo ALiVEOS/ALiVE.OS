@@ -41,13 +41,13 @@ _sectors = [_grid, "sectors"] call ALIVE_fnc_sectorGrid;
 _updatedSectors = [];
 
 {
-	_sector = _x;
-	
-	_sectorData = _sector select 2 select 0; //[_sector, "data"] call ALIVE_fnc_sector;
+    _sector = _x;
 
-	if("ARRAY" == typeName _sectorData && {"active" in (_sectorData select 1)}) then {
-		[_sector, "data", ["active",[]]] call ALIVE_fnc_sector;
-	};
+    _sectorData = _sector select 2 select 0; //[_sector, "data"] call ALIVE_fnc_sector;
+
+    if("ARRAY" == typeName _sectorData && {"active" in (_sectorData select 1)}) then {
+        [_sector, "data", ["active",[]]] call ALIVE_fnc_sector;
+    };
 
 } forEach _sectors;
 
@@ -59,25 +59,25 @@ _updatedSectors = [];
 //[true] call ALIVE_fnc_timer;
 
 {
-	_player = _x;
-	_position = getPosATL _player;
+    _player = _x;
+    _position = getPosATL _player;
 
-	_sector = [_grid, "positionToSector", _position] call ALIVE_fnc_sectorGrid;
+    _sector = [_grid, "positionToSector", _position] call ALIVE_fnc_sectorGrid;
     _sectorData = [_sector,"data",["",[],[],nil]] call ALIVE_fnc_hashGet;
     //_sectorData = _sector select 2 select 0; //[_sector, "data"] call ALIVE_fnc_sector;
 
-	if (count (_sectorData select 1) > 0) then {
-        
-		_active = [_sectorData, "active",[]] call ALIVE_fnc_hashGet;
-	
-	    _active set [count _active, [_player,_position]];
-	
-	    // store the result of the analysis on the sector instance
-	    [_sector, "data", ["active",_active]] call ALIVE_fnc_sector;
-	
-	    if!(_sector in _updatedSectors) then {
-	        _updatedSectors set [count _updatedSectors, _sector];
-	    };
+    if (count (_sectorData select 1) > 0) then {
+
+        _active = [_sectorData, "active",[]] call ALIVE_fnc_hashGet;
+
+        _active set [count _active, [_player,_position]];
+
+        // store the result of the analysis on the sector instance
+        [_sector, "data", ["active",_active]] call ALIVE_fnc_sector;
+
+        if!(_sector in _updatedSectors) then {
+            _updatedSectors set [count _updatedSectors, _sector];
+        };
     };
 } forEach allPlayers;
 

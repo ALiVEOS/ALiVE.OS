@@ -72,35 +72,35 @@ _sectors = [ALIVE_sectorGrid, "surroundingSectors", _position] call ALIVE_fnc_se
 _sectors = _sectors + [_sector];
 
 {
-	_sectorData = [_x, "data"] call ALIVE_fnc_sector;
-	if("clustersCiv" in (_sectorData select 1)) then {
-		_civClusters = [_sectorData,"clustersCiv"] call ALIVE_fnc_hashGet;
-		_settlementClusters = [_civClusters,"settlement"] call ALIVE_fnc_hashGet;
-		{
-			_clusterID = _x select 1;
-			_cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
+    _sectorData = [_x, "data"] call ALIVE_fnc_sector;
+    if("clustersCiv" in (_sectorData select 1)) then {
+        _civClusters = [_sectorData,"clustersCiv"] call ALIVE_fnc_hashGet;
+        _settlementClusters = [_civClusters,"settlement"] call ALIVE_fnc_hashGet;
+        {
+            _clusterID = _x select 1;
+            _cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
 
-			if!(isNil "_cluster") then {
+            if!(isNil "_cluster") then {
 
-				_clusterHostility = [_cluster, "hostility"] call ALIVE_fnc_hashGet;
-				_clusterCasualties = [_cluster, "casualties"] call ALIVE_fnc_hashGet;
+                _clusterHostility = [_cluster, "hostility"] call ALIVE_fnc_hashGet;
+                _clusterCasualties = [_cluster, "casualties"] call ALIVE_fnc_hashGet;
 
-				["CLUSTER ID: %1",_clusterID] call ALIVE_fnc_dump;
-				["CLUSTER %1 Hostility: %2",_clusterID,_clusterHostility] call ALIVE_fnc_dump;
-				["CLUSTER %1 Casualties: %2",_clusterID,_clusterCasualties] call ALIVE_fnc_dump;
-				["CLUSTER DATA: %1",_clusterID] call ALIVE_fnc_dump;
-				_cluster call ALIVE_fnc_inspectHash;
+                ["CLUSTER ID: %1",_clusterID] call ALIVE_fnc_dump;
+                ["CLUSTER %1 Hostility: %2",_clusterID,_clusterHostility] call ALIVE_fnc_dump;
+                ["CLUSTER %1 Casualties: %2",_clusterID,_clusterCasualties] call ALIVE_fnc_dump;
+                ["CLUSTER DATA: %1",_clusterID] call ALIVE_fnc_dump;
+                _cluster call ALIVE_fnc_inspectHash;
 
-				["CLUSTER AGENTS: %1",_clusterID] call ALIVE_fnc_dump;
+                ["CLUSTER AGENTS: %1",_clusterID] call ALIVE_fnc_dump;
 
-				_agents = [ALIVE_agentHandler,"getAgentsByCluster",_clusterID] call ALIVE_fnc_agentHandler;
+                _agents = [ALIVE_agentHandler,"getAgentsByCluster",_clusterID] call ALIVE_fnc_agentHandler;
 
-				_agents call ALIVE_fnc_inspectHash;
+                _agents call ALIVE_fnc_inspectHash;
 
-			};
+            };
 
-		} forEach _settlementClusters;
-	};
+        } forEach _settlementClusters;
+    };
 } forEach _sectors;
 
 // Get the nearest civ
@@ -119,22 +119,22 @@ closestMan = objNull;
     _currentDistance = _position distance _x;
     _agentID = _x getVariable["agentID","0"];
 
-	if!(_agentID == "0") then {
-		["MAN AT DISTANCE: %1",_currentDistance] call ALIVE_fnc_dump;
+    if!(_agentID == "0") then {
+        ["MAN AT DISTANCE: %1",_currentDistance] call ALIVE_fnc_dump;
 
-		if(_currentDistance < _lowsetDistance) then {
+        if(_currentDistance < _lowsetDistance) then {
 
-			["MAN IS CLOSER!"] call ALIVE_fnc_dump;
+            ["MAN IS CLOSER!"] call ALIVE_fnc_dump;
 
-			_lowsetDistance = _currentDistance;
-			closestMan = _x;
-		};
-	};
+            _lowsetDistance = _currentDistance;
+            closestMan = _x;
+        };
+    };
 
 } forEach (_position nearObjects ["CAManBase",100]);
 
 if(isNull closestMan) exitWith {
-	["NO AGENT FOUND WITHIN 100M"] call ALIVE_fnc_dump;
+    ["NO AGENT FOUND WITHIN 100M"] call ALIVE_fnc_dump;
 };
 
 // output debug info about the agent
@@ -155,26 +155,26 @@ unit = _agent select 2 select 5;
 // draw agent icon
 
 [] spawn {
-	private["_agentID","_agent"];
-	waitUntil {
-		sleep 1;
-		drawIcon3D [
-			"",
-			[1,0,0,1],
-			getPos unit,
-			1,
-			1,
-			45,
-			format["%1",unit],
-			1,
-			0.03,
-			"PuristaMedium"
-		];
-		_agentID = unit getVariable "agentID";
-		_agent = [ALIVE_agentHandler,"getAgent",_agentID] call ALIVE_fnc_agentHandler;
-		_agent call ALIVE_fnc_inspectHash;
-		not alive unit;
-	};
+    private["_agentID","_agent"];
+    waitUntil {
+        sleep 1;
+        drawIcon3D [
+            "",
+            [1,0,0,1],
+            getPos unit,
+            1,
+            1,
+            45,
+            format["%1",unit],
+            1,
+            0.03,
+            "PuristaMedium"
+        ];
+        _agentID = unit getVariable "agentID";
+        _agent = [ALIVE_agentHandler,"getAgent",_agentID] call ALIVE_fnc_agentHandler;
+        _agent call ALIVE_fnc_inspectHash;
+        not alive unit;
+    };
 };
 
 // set command on the agent

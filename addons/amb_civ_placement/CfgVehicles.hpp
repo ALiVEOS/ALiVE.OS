@@ -6,10 +6,10 @@ class CfgVehicles {
                 displayName = "$STR_ALIVE_AMBCP";
                 function = "ALIVE_fnc_AMBCPInit";
                 author = MODULE_AUTHOR;
-				functionPriority = 80;
+                functionPriority = 80;
                 isGlobal = 1;
-				icon = "x\alive\addons\amb_civ_placement\icon_civ_AMBCP.paa";
-				picture = "x\alive\addons\amb_civ_placement\icon_civ_AMBCP.paa";
+                icon = "x\alive\addons\amb_civ_placement\icon_civ_AMBCP.paa";
+                picture = "x\alive\addons\amb_civ_placement\icon_civ_AMBCP.paa";
                 class Arguments
                 {
                         class debug
@@ -31,7 +31,7 @@ class CfgVehicles {
                                         };
                                 };
                         };
-						class taor
+                        class taor
                         {
                                 displayName = "$STR_ALIVE_AMBCP_TAOR";
                                 description = "$STR_ALIVE_AMBCP_TAOR_COMMENT";
@@ -43,7 +43,7 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_AMBCP_BLACKLIST_COMMENT";
                                 defaultValue = "";
                         };
-						class sizeFilter
+                        class sizeFilter
                         {
                                 displayName = "$STR_ALIVE_AMBCP_SIZE_FILTER";
                                 description = "$STR_ALIVE_AMBCP_SIZE_FILTER_COMMENT";
@@ -60,19 +60,19 @@ class CfgVehicles {
                                                 value = "250";
                                                 default = 1;
                                         };
-										class MEDIUM
+                                        class MEDIUM
                                         {
                                                 name = "$STR_ALIVE_AMBCP_SIZE_FILTER_MEDIUM";
                                                 value = "400";
                                         };
-										class LARGE
+                                        class LARGE
                                         {
                                                 name = "$STR_ALIVE_AMBCP_SIZE_FILTER_LARGE";
                                                 value = "700";
                                         };
                                 };
                         };
-						class priorityFilter
+                        class priorityFilter
                         {
                                 displayName = "$STR_ALIVE_AMBCP_PRIORITY_FILTER";
                                 description = "$STR_ALIVE_AMBCP_PRIORITY_FILTER_COMMENT";
@@ -89,12 +89,12 @@ class CfgVehicles {
                                                 name = "$STR_ALIVE_AMBCP_PRIORITY_FILTER_LOW";
                                                 value = "10";
                                         };
-										class MEDIUM
+                                        class MEDIUM
                                         {
                                                 name = "$STR_ALIVE_AMBCP_PRIORITY_FILTER_MEDIUM";
                                                 value = "30";
                                         };
-										class HIGH
+                                        class HIGH
                                         {
                                                 name = "$STR_ALIVE_AMBCP_PRIORITY_FILTER_HIGH";
                                                 value = "40";

@@ -9,7 +9,7 @@ SCRIPT(test-analysis);
 LOG("=== Testing Analysis ===");
 
 {
-	call compile preprocessFileLineNumbers format ["\x\alive\addons\fnc_analysis\tests\test_%1.sqf", _x];
+    call compile preprocessFileLineNumbers format ["\x\alive\addons\fnc_analysis\tests\test_%1.sqf", _x];
 } forEach TESTS;
 
 nil;

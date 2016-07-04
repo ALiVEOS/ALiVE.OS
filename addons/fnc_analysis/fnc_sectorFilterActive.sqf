@@ -32,7 +32,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_sectors","_isActive","_err","_filteredSectors","_sector","_sectorData","_active"];
-	
+
 _sectors = _this select 0;
 _isActive = if(count _this > 1) then {_this select 1} else {true};
 
@@ -42,29 +42,29 @@ ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
 _filteredSectors = [];
 
 {
-	_sector = _x;
-	_sectorData = [_sector, "data"] call ALIVE_fnc_sector;
-	
-	if("active" in (_sectorData select 1)) then {
-		
-		_active = [_sectorData, "active"] call ALIVE_fnc_hashGet;
+    _sector = _x;
+    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
 
-		if(_isActive) then {
+    if("active" in (_sectorData select 1)) then {
+
+        _active = [_sectorData, "active"] call ALIVE_fnc_hashGet;
+
+        if(_isActive) then {
             if(count _active > 0) then {
                 _filteredSectors set [count _filteredSectors, _sector];
             };
-		}else{
+        }else{
             if(count _active == 0) then {
                 _filteredSectors set [count _filteredSectors, _sector];
             };
-		};
+        };
 
-	}else{
+    }else{
         if!(_isActive) then {
             _filteredSectors set [count _filteredSectors, _sector];
         };
-	};
-	
+    };
+
 } forEach _sectors;
 
 _filteredSectors
