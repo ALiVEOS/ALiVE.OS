@@ -43,22 +43,22 @@ _nextStateArgs = [];
 
 // DEBUG -------------------------------------------------------------------------------------
 if(_debug) then {
-	["ALiVE Managed Script Command - [%1] called args: %2",_agentID,_args] call ALIVE_fnc_dump;
+    ["ALiVE Managed Script Command - [%1] called args: %2",_agentID,_args] call ALIVE_fnc_dump;
 };
-// DEBUG -------------------------------------------------------------------------------------	
+// DEBUG -------------------------------------------------------------------------------------
 
 switch (_state) do {
-	case "init":{
+    case "init":{
 
-	    private ["_sectors","_sector","_center","_destination","_activeAgents","_activeVehicles","_vehicle","_type"];
+        private ["_sectors","_sector","_center","_destination","_activeAgents","_activeVehicles","_vehicle","_type"];
 
-		// DEBUG -------------------------------------------------------------------------------------
-		if(_debug) then {
-			["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
-		};
-		// DEBUG -------------------------------------------------------------------------------------
+        // DEBUG -------------------------------------------------------------------------------------
+        if(_debug) then {
+            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        };
+        // DEBUG -------------------------------------------------------------------------------------
 
-		_agent setVariable ["ALIVE_agentBusy", true, false];
+        _agent setVariable ["ALIVE_agentBusy", true, false];
 
         _sectors = [ALIVE_sectorGrid, "surroundingSectors", getPos _agent] call ALIVE_fnc_sectorGrid;
         _sectors = [_sectors, "SEA"] call ALIVE_fnc_sectorFilterTerrain;
@@ -97,20 +97,20 @@ switch (_state) do {
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
-	};
-	case "done":{
-	
-		// DEBUG -------------------------------------------------------------------------------------
-		if(_debug) then {
-			["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
-		};
-		// DEBUG -------------------------------------------------------------------------------------
+    };
+    case "done":{
 
-		_agent setVariable ["ALIVE_agentBusy", false, false];
-		
-		_nextState = "complete";
-		_nextStateArgs = [];
-		
-		[_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-	};
+        // DEBUG -------------------------------------------------------------------------------------
+        if(_debug) then {
+            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        };
+        // DEBUG -------------------------------------------------------------------------------------
+
+        _agent setVariable ["ALIVE_agentBusy", false, false];
+
+        _nextState = "complete";
+        _nextStateArgs = [];
+
+        [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+    };
 };

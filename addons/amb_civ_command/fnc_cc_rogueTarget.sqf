@@ -43,7 +43,7 @@ _nextStateArgs = [];
 
 // DEBUG -------------------------------------------------------------------------------------
 if(_debug) then {
-	["ALiVE Managed Script Command - [%1] called args: %2",_agentID,_args] call ALIVE_fnc_dump;
+    ["ALiVE Managed Script Command - [%1] called args: %2",_agentID,_args] call ALIVE_fnc_dump;
 };
 // DEBUG -------------------------------------------------------------------------------------
 
@@ -62,7 +62,7 @@ switch (_state) do {
         _agent setVariable ["ALIVE_Insurgent", true, false];
         _agent addVest "V_ALiVE_Suicide_Vest";
         _agent addMagazines ["DemoCharge_Remote_Mag", 2];
-        
+
         _agentClusterID = _agentData select 2 select 9;
         _agentCluster = [ALIVE_clusterHandler,"getCluster",_agentClusterID] call ALIVE_fnc_clusterHandler;
 
@@ -152,17 +152,17 @@ switch (_state) do {
             };
         };
     };
-	case "target":{
+    case "target":{
 
-	    private ["_target"];
+        private ["_target"];
 
-		// DEBUG -------------------------------------------------------------------------------------
-		if(_debug) then {
-			["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
-		};
-		// DEBUG -------------------------------------------------------------------------------------
+        // DEBUG -------------------------------------------------------------------------------------
+        if(_debug) then {
+            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        };
+        // DEBUG -------------------------------------------------------------------------------------
 
-		_target = _args select 0;
+        _target = _args select 0;
 
         if!(isNil "_target") then {
 
@@ -179,8 +179,8 @@ switch (_state) do {
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
-	};
-	case "travel":{
+    };
+    case "travel":{
 
         private ["_target"];
 
@@ -214,16 +214,16 @@ switch (_state) do {
                 [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
             };
         };
-	};
-	case "done":{
+    };
+    case "done":{
 
-		// DEBUG -------------------------------------------------------------------------------------
-		if(_debug) then {
-			["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
-		};
-		// DEBUG -------------------------------------------------------------------------------------
+        // DEBUG -------------------------------------------------------------------------------------
+        if(_debug) then {
+            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        };
+        // DEBUG -------------------------------------------------------------------------------------
 
-		_agent setVariable ["ALIVE_agentBusy", false, false];
+        _agent setVariable ["ALIVE_agentBusy", false, false];
 
         if(alive _agent) then {
             _agent setCombatMode "WHITE";
@@ -231,9 +231,9 @@ switch (_state) do {
             _agent setSkill 0.1;
         };
 
-		_nextState = "complete";
-		_nextStateArgs = [];
+        _nextState = "complete";
+        _nextStateArgs = [];
 
-		[_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-	};
+        [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+    };
 };

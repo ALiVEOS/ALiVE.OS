@@ -43,22 +43,22 @@ _nextStateArgs = [];
 
 // DEBUG -------------------------------------------------------------------------------------
 if(_debug) then {
-	["ALiVE Managed Script Command - [%1] called args: %2",_agentID,_args] call ALIVE_fnc_dump;
+    ["ALiVE Managed Script Command - [%1] called args: %2",_agentID,_args] call ALIVE_fnc_dump;
 };
-// DEBUG -------------------------------------------------------------------------------------	
+// DEBUG -------------------------------------------------------------------------------------
 
 switch (_state) do {
-	case "init":{
+    case "init":{
 
-	    private ["_maxDistance","_homePosition","_agentPosition","_startPosition","_positions","_distance","_position"];
-	
-		// DEBUG -------------------------------------------------------------------------------------
-		if(_debug) then {
-			["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
-		};
-		// DEBUG -------------------------------------------------------------------------------------
+        private ["_maxDistance","_homePosition","_agentPosition","_startPosition","_positions","_distance","_position"];
 
-		_agent setVariable ["ALIVE_agentBusy", true, false];
+        // DEBUG -------------------------------------------------------------------------------------
+        if(_debug) then {
+            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        };
+        // DEBUG -------------------------------------------------------------------------------------
+
+        _agent setVariable ["ALIVE_agentBusy", true, false];
 
         _maxDistance = _args select 0;
 
@@ -83,23 +83,23 @@ switch (_state) do {
         _position = _positions call BIS_fnc_arrayPop;
         [_agent] call ALIVE_fnc_agentSelectSpeedMode;
         [_agent, _position] call ALiVE_fnc_doMoveRemote;
-		
-		_nextState = "walk";
-		_nextStateArgs = [_positions];
-		
-		[_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-	};
-	case "walk":{
 
-	    private ["_positions","_position"];
-	
-		// DEBUG -------------------------------------------------------------------------------------
-		if(_debug) then {
-			["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
-		};
-		// DEBUG -------------------------------------------------------------------------------------
+        _nextState = "walk";
+        _nextStateArgs = [_positions];
 
-		_positions = _args select 0;
+        [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+    };
+    case "walk":{
+
+        private ["_positions","_position"];
+
+        // DEBUG -------------------------------------------------------------------------------------
+        if(_debug) then {
+            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        };
+        // DEBUG -------------------------------------------------------------------------------------
+
+        _positions = _args select 0;
 
         if(count _positions == 0) then
         {
@@ -119,20 +119,20 @@ switch (_state) do {
                 [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
             };
         };
-	};
-	case "done":{
-	
-		// DEBUG -------------------------------------------------------------------------------------
-		if(_debug) then {
-			["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
-		};
-		// DEBUG -------------------------------------------------------------------------------------
+    };
+    case "done":{
 
-		_agent setVariable ["ALIVE_agentBusy", false, false];
-		
-		_nextState = "complete";
-		_nextStateArgs = [];
-		
-		[_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-	};
+        // DEBUG -------------------------------------------------------------------------------------
+        if(_debug) then {
+            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        };
+        // DEBUG -------------------------------------------------------------------------------------
+
+        _agent setVariable ["ALIVE_agentBusy", false, false];
+
+        _nextState = "complete";
+        _nextStateArgs = [];
+
+        [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+    };
 };
