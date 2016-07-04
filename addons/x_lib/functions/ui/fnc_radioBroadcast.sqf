@@ -80,10 +80,10 @@ if(_fromUnit || _toUnit) then {
     _fromCallSign = [];
 
     {
-    	if !(_forEachIndex in [0,1]) then
-    	{
-    		_fromCallSign pushback _x;
-    	};
+        if !(_forEachIndex in [0,1]) then
+        {
+            _fromCallSign pushback _x;
+        };
     } forEach _groupArray;
 
     _fromCallSign = toString _fromCallSign;

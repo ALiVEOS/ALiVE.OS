@@ -32,29 +32,29 @@ _type = _this;
 _result = [];
 
 _findRecurse = {
-	private ["_root","_class","_path","_currentPath"];
-	
-	_root = (_this select 0);
-	_path = +(_this select 1);
-	
-	for "_i" from 0 to count _root -1 do {
-	
-		_class = _root select _i;
-		
-		if (isClass _class) then {
-			_currentPath = _path + [_i];
-			
-			{
-				_result pushback [_x, _x call ALIVE_fnc_configGetWeaponMagazines, _currentPath, str _class];
-			} foreach getArray (_class >> "weapons");
-			
-			_class = _class >> "turrets";
-			
-			if (isClass _class) then {
-				[_class, _currentPath] call _findRecurse;
-			};
-		};
-	};
+    private ["_root","_class","_path","_currentPath"];
+
+    _root = (_this select 0);
+    _path = +(_this select 1);
+
+    for "_i" from 0 to count _root -1 do {
+
+        _class = _root select _i;
+
+        if (isClass _class) then {
+            _currentPath = _path + [_i];
+
+            {
+                _result pushback [_x, _x call ALIVE_fnc_configGetWeaponMagazines, _currentPath, str _class];
+            } foreach getArray (_class >> "weapons");
+
+            _class = _class >> "turrets";
+
+            if (isClass _class) then {
+                [_class, _currentPath] call _findRecurse;
+            };
+        };
+    };
 };
 
 _class = (configFile >> "CfgVehicles" >> _type >> "turrets");

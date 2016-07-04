@@ -68,10 +68,10 @@ if (!_found && {_withProfiles}) then {
         {
             _side = [_x] call ALIVE_fnc_sideObjectToNumber;
             _side = [_side] call ALIVE_fnc_sideNumberToText;
-    
-    		if (count ([_position, _radius, [_side,"entity"]] call ALIVE_fnc_getNearProfiles) > 0) exitwith {_found = true};
+
+            if (count ([_position, _radius, [_side,"entity"]] call ALIVE_fnc_getNearProfiles) > 0) exitwith {_found = true};
         } foreach _enemySides;
-        
+
         _found
     } else {
         _found

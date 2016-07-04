@@ -25,7 +25,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_vehicle","_type","_result","_hitPoints","_hitDamage"];
-	
+
 _vehicle = _this;
 
 _result = [];
@@ -34,8 +34,8 @@ _type = typeof _vehicle;
 _hitPoints = _type call ALIVE_fnc_configGetVehicleHitPoints;
 
 {
-	_hitDamage = _vehicle getHitPointDamage _x;
-	_result pushback [_x,_hitDamage];
+    _hitDamage = _vehicle getHitPointDamage _x;
+    _result pushback [_x,_hitDamage];
 } forEach _hitPoints;
 
 _result

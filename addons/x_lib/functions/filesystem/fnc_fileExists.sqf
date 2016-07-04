@@ -4,24 +4,24 @@
 Function: ALiVE_fnc_fileExists
 
 Description:
-	Returns whether a file exists
+    Returns whether a file exists
 
 Parameters:
-	0 - File path to check [string]
+    0 - File path to check [string]
 
 Returns:
-	file exists [bool]
+    file exists [bool]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
 
 Author:
-	Tupolov
+    Tupolov
 ---------------------------------------------------------------------------- */
 
 private ["_ctrl", "_fileExists","_file"];

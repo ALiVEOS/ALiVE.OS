@@ -41,6 +41,6 @@ _text = " ----------- "+_cfg+" ----------- ";
 _cfg = configFile >> _cfg;
 
 for "_i" from 0 to (count _cfg)-1 do {
-	_item = _cfg select _i;
-	[_item, _detailed] call ALIVE_fnc_inspectConfigItem;
+    _item = _cfg select _i;
+    [_item, _detailed] call ALIVE_fnc_inspectConfigItem;
 };

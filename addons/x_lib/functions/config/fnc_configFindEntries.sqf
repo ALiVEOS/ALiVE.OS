@@ -35,16 +35,16 @@ _output = [];
 
 for "_i" from 0 to (count _config)-1 do {
 
-	 private ["_cfg","_default"];
-        
+     private ["_cfg","_default"];
+
     _cfg = _config select _i;
 
-	if (isClass _cfg) then {
+    if (isClass _cfg) then {
         _default = configName _cfg;
-        
+
         if (((_default) find _find) > -1) then {
-        	_output pushback _default;
-    	};
+            _output pushback _default;
+        };
     };
 };
 

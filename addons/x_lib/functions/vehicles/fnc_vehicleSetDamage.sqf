@@ -25,10 +25,10 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_vehicle","_damage"];
-	
+
 _vehicle = _this select 0;
 _damage = _this select 1;
 
 {
-	_vehicle setHitPointDamage _x;
+    _vehicle setHitPointDamage _x;
 } forEach _damage;

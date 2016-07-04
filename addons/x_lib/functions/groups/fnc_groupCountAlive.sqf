@@ -11,7 +11,7 @@ Parameters:
 Group - group
 
 Returns:
-Scalar 
+Scalar
 
 Examples:
 (begin example)
@@ -26,15 +26,15 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_group", "_count"];
-	
+
 _group = _this select 0;
 
-_count = 0;	
+_count = 0;
 
 {
-	if(alive _x) then {
-		_count = _count + 1;
-	};
+    if(alive _x) then {
+        _count = _count + 1;
+    };
 } forEach units _group;
 
 _count

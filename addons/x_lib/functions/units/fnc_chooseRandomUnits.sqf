@@ -14,7 +14,7 @@ Number - Number of unit types to return
 (Optional) Boolean - unit is armed
 
 Returns:
-Array - A list of random unit types 
+Array - A list of random unit types
 
 Examples:
 (begin example)
@@ -37,7 +37,7 @@ DEFAULT_PARAM(2,_blacklist,[]);
 DEFAULT_PARAM(3,_armed,false);
 
 if (!(typename _factions == "ARRAY") || !(typename _count == "SCALAR") || !(typename _blacklist == "ARRAY")) then {
-	format["ALiVE Main ALiVE_fnc_chooseRandomUnits probably failes due to wrong params given! Factions (Array): %1 | Max. units (Number): %2 | Blacklist (Array): %3", _factions, _count, _blacklist] call ALiVE_fnc_logger;    
+    format["ALiVE Main ALiVE_fnc_chooseRandomUnits probably failes due to wrong params given! Factions (Array): %1 | Max. units (Number): %2 | Blacklist (Array): %3", _factions, _count, _blacklist] call ALiVE_fnc_logger;
 };
 
 _types = [0, selectRandom _factions,"Man",_armed] call ALiVE_fnc_findVehicleType;

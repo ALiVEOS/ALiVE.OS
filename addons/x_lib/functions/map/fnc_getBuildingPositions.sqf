@@ -35,16 +35,16 @@ _buildingPos = -1;
 _positions = [];
 _pos = _house buildingPos _buildingPos + 1;
 while {str _pos != "[0,0,0]"} do {
-	_buildingPos = _buildingPos + 1;
-	_positions pushback _pos;
-	_pos = _house buildingPos _buildingPos + 1;
+    _buildingPos = _buildingPos + 1;
+    _positions pushback _pos;
+    _pos = _house buildingPos _buildingPos + 1;
 };
 
 if(_buildingPos != -1) then {
-	_expected = "[0,0,0]";
-	_result = str (_house buildingPos _buildingPos) ;
-	_err = format["max positions (%1) invalid", _buildingPos];
-	ASSERT_TRUE(_result != _expected,_err);
+    _expected = "[0,0,0]";
+    _result = str (_house buildingPos _buildingPos) ;
+    _err = format["max positions (%1) invalid", _buildingPos];
+    ASSERT_TRUE(_result != _expected,_err);
 };
 
 _positions;

@@ -42,7 +42,7 @@ _positions = [];
 _nearbldgs = _pos nearObjects [_type, _radius];
 
 {
-	_positions = _positions + ([_x] call ALIVE_fnc_getBuildingPositions);
+    _positions = _positions + ([_x] call ALIVE_fnc_getBuildingPositions);
 } forEach _nearbldgs;
 
 _positions;

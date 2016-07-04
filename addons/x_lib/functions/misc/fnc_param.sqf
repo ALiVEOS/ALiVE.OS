@@ -4,27 +4,27 @@
 Function: ALiVE_fnc_param
 
 Description:
-	Selects a parameter from a parameter list.
-	
+    Selects a parameter from a parameter list.
+
 Parameters:
-	0 - Parameter list [array]
-	1 - Parameter selection index [number]
-	2 - Type list [array] (optional)
-	3 - Default value [any] (optional)
+    0 - Parameter list [array]
+    1 - Parameter selection index [number]
+    2 - Type list [array] (optional)
+    3 - Default value [any] (optional)
 
 Returns:
-	Parameter [any]
+    Parameter [any]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
 
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 private ["_list", "_index", "_typeList"];
@@ -37,16 +37,16 @@ if (typeName(_list) != "ARRAY") then {_list = [_list]};
 
 if (((count _list) > _index) && {(_typeList isEqualTo []) || {typeName(_list select _index) in _typeList}}) then
 {
-	_list select _index; // Valid value
+    _list select _index; // Valid value
 }
 else
 {
-	if ((count _this) > 2) then
-	{
-		_this select 3; // Default value
-	}
-	else
-	{
-		nil; // No valid matching value
-	};
+    if ((count _this) > 2) then
+    {
+        _this select 3; // Default value
+    }
+    else
+    {
+        nil; // No valid matching value
+    };
 };

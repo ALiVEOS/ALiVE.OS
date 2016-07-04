@@ -24,18 +24,18 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_building","_count","_position","_positions"];
-	
+
 _building = _this select 0;
 
 _count = 0;
 while {str(_building buildingPos _count) != "[0,0,0]"} do {
-	_count = _count + 1;
+    _count = _count + 1;
 };
 
 _positions = [];
 
 for "_i" from 0 to (_count-1) do {
-	_positions pushback (_building buildingPos _i);
+    _positions pushback (_building buildingPos _i);
 };
 
 buildingPositions = _positions;

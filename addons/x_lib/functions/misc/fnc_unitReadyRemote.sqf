@@ -38,12 +38,12 @@ if (isnil "_lastCheck") then {
     _lastCheck = [_currentPos,time]; _input setVariable [QGVAR(LASTCHECK),_lastCheck];
 } else {
     //Reset last data
-	if (time - (_lastCheck select 1) > 30) then {
-	    
-	    if ((_lastCheck select 0) distance _currentPos < 2) then {_moving = false};
-	    
-	    _input setVariable [QGVAR(LASTCHECK),[_currentPos,time]];
-	};
+    if (time - (_lastCheck select 1) > 30) then {
+
+        if ((_lastCheck select 0) distance _currentPos < 2) then {_moving = false};
+
+        _input setVariable [QGVAR(LASTCHECK),[_currentPos,time]];
+    };
 };
 
 _radius = 10;
@@ -54,11 +54,11 @@ if (_input isKindOf "Man") then {_radius = 2} else {
 };
 
 if ((!isnil "_unitReady" && {!_unitReady}) || {isnil "_unitReady" && {_currentPos distance2D _destination > _radius} && {_moving}}) then {
-	_unitReady = false;
+    _unitReady = false;
 } else {
     _input setvariable [QGVAR(MOVEDESTINATION),nil];
     _input setVariable [QGVAR(LASTCHECK),nil];
-    
+
     _unitReady = true;
 };
 

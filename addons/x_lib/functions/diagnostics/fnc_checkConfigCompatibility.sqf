@@ -48,17 +48,17 @@ _dump = {
     _output = "";
 
     if(count _this > 1) then {
-    	_variable = format _this;
+        _variable = format _this;
     };
 
     if(isNil {_variableType}) then {
-    	_output = ["IS NIL"];
+        _output = ["IS NIL"];
     } else {
-    	if(_variableType == "STRING") then {
-    		_output = _variable;
-    	} else {
-    		_output = str _variable;
-    	};
+        if(_variableType == "STRING") then {
+            _output = _variable;
+        } else {
+            _output = str _variable;
+        };
     };
 
     diag_log text _output;
@@ -67,11 +67,11 @@ _dump = {
 _sideToText = {
     switch (_this select 0) do
     {
-    	case 0: {"East"};
-    	case 1: {"West"};
-    	case 2: {"Indep"};
-    	case 3: {"CIV"};
-    	default {""};
+        case 0: {"East"};
+        case 1: {"West"};
+        case 2: {"Indep"};
+        case 3: {"CIV"};
+        default {""};
     };
 };
 
@@ -80,11 +80,11 @@ _cfgValue = {
     _cfg = _this select 0;
 
     switch (true) do {
-    	case (isText(_cfg)): {getText(_cfg)};
-    	case (isNumber(_cfg)): {getNumber(_cfg)};
-    	case (isArray(_cfg)): {getArray(_cfg)};
-    	case (isClass(_cfg)): {_cfg};
-    	default {nil};
+        case (isText(_cfg)): {getText(_cfg)};
+        case (isNumber(_cfg)): {getNumber(_cfg)};
+        case (isArray(_cfg)): {getArray(_cfg)};
+        case (isClass(_cfg)): {_cfg};
+        default {nil};
     };
 };
 
@@ -97,33 +97,33 @@ _cfgFindFaction = {
     _result = [];
 
     _findRecurse = {
-    	private ["_root","_class","_path","_currentPath","_currentFaction"];
+        private ["_root","_class","_path","_currentPath","_currentFaction"];
 
-    	_root = (_this select 0);
-    	_path = +(_this select 1);
+        _root = (_this select 0);
+        _path = +(_this select 1);
 
         _currentFaction = [_root >> "faction"] call _cfgValue;
 
-    	if!(isNil "_currentFaction") then {
-    	    if(_currentFaction == _faction) then {
-    	        _result pushback _root;
-    	    };
-    	};
+        if!(isNil "_currentFaction") then {
+            if(_currentFaction == _faction) then {
+                _result pushback _root;
+            };
+        };
 
-    	for "_i" from 0 to count _root -1 do {
+        for "_i" from 0 to count _root -1 do {
 
-    		_class = _root select _i;
+            _class = _root select _i;
 
-    		if (isClass _class) then {
-    			_currentPath = _path + [_i];
+            if (isClass _class) then {
+                _currentPath = _path + [_i];
 
-    			_className = configName _class;
+                _className = configName _class;
 
-    			_class = _root >> _className;
+                _class = _root >> _className;
 
-    			[_class, _currentPath] call _findRecurse;
-    		};
-    	};
+                [_class, _currentPath] call _findRecurse;
+            };
+        };
     };
 
     [_cfg, []] call _findRecurse;
@@ -252,21 +252,21 @@ if(_groupToFactionMappingOK || _factionToGroupMappingOK && (count _factionGroups
     _standardCategories = ["Infantry","SpecOps","Support","Motorized","Mechanized","Armored","Air"];
 
     for "_i" from 0 to count _config -1 do {
-    	_class = _config select _i;
+        _class = _config select _i;
 
-    	if (isClass _class) then {
-    	    _configName = configName _class;
-    	    if!(_configName in _standardCategories) then {
+        if (isClass _class) then {
+            _configName = configName _class;
+            if!(_configName in _standardCategories) then {
 
                 ["-- warning: CfgGroups category: %1 is not a standard group category!",_configName,_standardCategories] call _dump;
                 ["-- warning: Suggest using standard naming convention for CfgGroup categories eg one of: %1",_standardCategories] call _dump;
 
                 _groupCategoriesOK = false;
-    	    }else{
+            }else{
                 ["CfgGroups category: %1 is a standard group category",_configName] call _dump;
-    	    };
+            };
 
-    	};
+        };
 
     };
 

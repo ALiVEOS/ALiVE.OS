@@ -28,7 +28,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_position","_radius","_units","_vehicles","_err"];
-	
+
 _position = _this select 0;
 _radius = _this select 1;
 
@@ -41,8 +41,8 @@ _units = _position nearEntities [["CAManBase"], _radius];
 _vehicles = _position nearEntities [["Helicopter","Ship","Car","TANK","Truck","Motorcycle"], _radius];
 
 {
-	_units = _units + crew _x;
-	
+    _units = _units + crew _x;
+
 } forEach _vehicles;
 
 _units

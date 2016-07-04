@@ -28,7 +28,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_group", "_vehicle", "_groupCount", "_positionCount", "_result"];
-	
+
 _group = _this select 0;
 _vehicle = _this select 1;
 
@@ -38,7 +38,7 @@ _positionCount = [_vehicle] call ALIVE_vehicleCountEmptyPositions;
 
 if(_groupCount <= _positionCount) then
 {
-	_result = true;
+    _result = true;
 };
 
 _result

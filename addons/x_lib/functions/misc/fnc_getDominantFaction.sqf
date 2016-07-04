@@ -30,9 +30,9 @@ DEFAULT_PARAM(2,_noCiv,false);
 
 //Virtual Profiles activated?
 if !(isnil "ALIVE_profileHandler") then {
-	_profiles = [ALIVE_profileHandler, "profiles"] call ALIVE_fnc_hashGet;
+    _profiles = [ALIVE_profileHandler, "profiles"] call ALIVE_fnc_hashGet;
 } else {
-	_profiles = [[],[],[]];
+    _profiles = [[],[],[]];
 };
 
 _facs = [];
@@ -52,18 +52,18 @@ _result = [];
 {
     private ["_fac","_cnt"];
     if (count _facs == 0) exitwith {};
-    
+
     _fac = _x;
     _cnt = {_fac == _x} count _facs;
-    
+
     if (_cnt > 0) then {
-    	_result pushback [_fac,_cnt];
-    	_facs = _facs - [_fac];
+        _result pushback [_fac,_cnt];
+        _facs = _facs - [_fac];
     };
 } foreach _facs;
 
 _result = [_result,[],{_x select 1},"DESCEND",{if (_noCiv) then {!(((_x select 0) call ALiVE_fnc_factionSide) == CIVILIAN)} else {true}}] call ALiVE_fnc_SortBy;
 
 if ((count _result > 0) && {(_result select 0 select 1) > 0}) then {
-	(_result select 0) select 0;
+    (_result select 0) select 0;
 } else {nil};

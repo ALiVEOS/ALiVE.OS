@@ -16,7 +16,7 @@ Boolean - True if house has one building position
 Examples:
 (begin example)
 if([_house] call ALIVE_fnc_isHouseEnterable) then{
-	hint format["%1 is enterable", _house];
+    hint format["%1 is enterable", _house];
 };
 (end)
 

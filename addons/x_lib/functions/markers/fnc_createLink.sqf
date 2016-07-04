@@ -32,7 +32,7 @@ if(isNil "_obj2") exitWith{};
 _marker = createMarker [format ["%1_%2",_obj1,_obj2],[0,0,0]];
 _marker setMarkerShape "rectangle";
 _marker setMarkerBrush "solid";
-_marker setMarkerColor "colorblack";	
+_marker setMarkerColor "colorblack";
 _marker setMarkerAlpha 0.5;
 
 _pos1 = getPosATL _obj1;

@@ -32,9 +32,9 @@ _weaponClass = _this;
 _weapon = configFile >> "CfgWeapons" >> _weaponClass;
 _result = [];
 {
-	_result = _result + getArray (
-		(if (_x == "this") then { _weapon } else { _weapon >> _x }) >> "magazines"
-	)
+    _result = _result + getArray (
+        (if (_x == "this") then { _weapon } else { _weapon >> _x }) >> "magazines"
+    )
 } foreach getArray (_weapon >> "muzzles");
 
 _result

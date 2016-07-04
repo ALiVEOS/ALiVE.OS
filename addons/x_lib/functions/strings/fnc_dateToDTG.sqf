@@ -1,46 +1,46 @@
 #include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(dateToDTG);
 /*
-	Function: ALiVE_fnc_dateToDTG
-	Author(s): Tupolov
-	Description:
-		Formats a passed date to specification
-	Parameters:
-		0 - Date [array]
-		1 - Format [string]
-	Returns:
-		Formatted date [string]
-	Notes:
-		1. Date is in format [year, month, day, hour, minute].
-		2. Format is DTG atm
+    Function: ALiVE_fnc_dateToDTG
+    Author(s): Tupolov
+    Description:
+        Formats a passed date to specification
+    Parameters:
+        0 - Date [array]
+        1 - Format [string]
+    Returns:
+        Formatted date [string]
+    Notes:
+        1. Date is in format [year, month, day, hour, minute].
+        2. Format is DTG atm
 */
 /* ----------------------------------------------------------------------------
 Function: ALiVE_fnc_dateToDTG
 
 Description:
-	Formats a passed date to specification
-	
+    Formats a passed date to specification
+
 Parameters:
-	0 - Date [array]
-	1 - Format [string]
+    0 - Date [array]
+    1 - Format [string]
 
 Returns:
-	Formatted date [string]
+    Formatted date [string]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
 
 Notes:
-	1. Date is in format [year, month, day, hour, minute].
-	2. Format is DTG atm
+    1. Date is in format [year, month, day, hour, minute].
+    2. Format is DTG atm
 
 Author:
-	Tupolov
+    Tupolov
 ---------------------------------------------------------------------------- */
 
 private ["_in", "_format", "_min", "_hour", "_sec", "_msec","_year","_month","_day"];
@@ -49,10 +49,10 @@ _in = _this select 0;
 
 if (count _this > 1) then
 {
-	_format = _this select 1
+    _format = _this select 1
 } else
 {
-	_format = "DDHHMMZMONYY"
+    _format = "DDHHMMZMONYY"
 };
 
 _year = _in select 0;
@@ -71,6 +71,6 @@ _min = (if (_min <= 9) then {"0"} else {""}) +  str _min;
 
 switch _format do
 {
-	case "DDHHMMZMONYY": {format["%1%2%3%4%5%6",_day,_hour,_min,"Z",_month,_year]};
+    case "DDHHMMZMONYY": {format["%1%2%3%4%5%6",_day,_hour,_min,"Z",_month,_year]};
 }
 

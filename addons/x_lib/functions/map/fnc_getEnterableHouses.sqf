@@ -8,7 +8,7 @@ Description:
 Returns an array of all enterable Houses in a given radius
 
 Parameters:
-Array - Central position 
+Array - Central position
 Number - Search raidus
 
 Returns:
@@ -41,9 +41,9 @@ ASSERT_TRUE(typeName _radius == "SCALAR",_err);
 
 _enterable = [];
 {
-	if([_x] call ALIVE_fnc_isHouseEnterable) then{
-		_enterable pushback _x;
-	};
+    if([_x] call ALIVE_fnc_isHouseEnterable) then{
+        _enterable pushback _x;
+    };
 } forEach (_position nearObjects ["House", _radius]);
 _err = "enterable array not valid";
 ASSERT_TRUE(typeName _enterable == "ARRAY",_err);

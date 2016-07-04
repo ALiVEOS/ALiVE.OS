@@ -35,13 +35,13 @@ _hitPoints = configFile >> "CfgVehicles" >> _type >> "HitPoints";
 
 for "_i" from 0 to (count _hitPoints)-1 do
 {
-	_hitPoint = _hitPoints select _i;
-		
-	if(isClass _hitPoint) then
-	{
-		_hitName = configName _hitPoint;
-		_result pushback _hitName;
-	};
+    _hitPoint = _hitPoints select _i;
+
+    if(isClass _hitPoint) then
+    {
+        _hitName = configName _hitPoint;
+        _result pushback _hitName;
+    };
 };
 
 _result;

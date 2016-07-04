@@ -16,7 +16,7 @@ array - grid
 Examples:
 (begin example)
             [
-				getpos player,
+                getpos player,
                 500
             ] call ALIVE_fnc_createTraceGrid;
 (end)

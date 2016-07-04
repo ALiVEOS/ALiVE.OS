@@ -39,34 +39,34 @@ _anyInRange = false;
 scopeName "main";
 
 {
-	_player = _x;
-	
-	// they are in range
-	if((getPos _player) distance _pos < _dist) then {
-		_vehicle = vehicle _player;
-		
-		// air check
-		if!(_vehicle == _player) then {
-			_vehicleClass = typeOf _vehicle;
-			_vehicleKind = _vehicleClass call ALIVE_fnc_vehicleGetKindOf;
-			
-			// not a plane
-			if!(_vehicleKind == "Plane") then {
-			    if(_includeHelicopters) then {
-			        if!(_vehicleKind == "Helicopter") then {
-			            _anyInRange = true;
-			            breakTo "main";
+    _player = _x;
+
+    // they are in range
+    if((getPos _player) distance _pos < _dist) then {
+        _vehicle = vehicle _player;
+
+        // air check
+        if!(_vehicle == _player) then {
+            _vehicleClass = typeOf _vehicle;
+            _vehicleKind = _vehicleClass call ALIVE_fnc_vehicleGetKindOf;
+
+            // not a plane
+            if!(_vehicleKind == "Plane") then {
+                if(_includeHelicopters) then {
+                    if!(_vehicleKind == "Helicopter") then {
+                        _anyInRange = true;
+                        breakTo "main";
                     };
-			    }else{
-			        _anyInRange = true;
-			        breakTo "main";
-			    };
-			};
-		}else{
-			_anyInRange = true;
-			breakTo "main";
-		};
-	};
+                }else{
+                    _anyInRange = true;
+                    breakTo "main";
+                };
+            };
+        }else{
+            _anyInRange = true;
+            breakTo "main";
+        };
+    };
 } forEach _players;
 
 _anyInRange
