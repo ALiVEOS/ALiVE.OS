@@ -1,9 +1,9 @@
 //http://community.bistudio.com/wiki/description.ext#Header_Class
 class header {
-	gametype = COOP;
-	minplayers = 1;
-	maxplayers = 9;
-	playerCountMultipleOf = 1;  //Coop type missions use 1, Team type missions use 2
+    gametype = COOP;
+    minplayers = 1;
+    maxplayers = 9;
+    playerCountMultipleOf = 1;  //Coop type missions use 1, Team type missions use 2
 };
 
 author = ALiVE Mod Team || Mission by Tupolov;
