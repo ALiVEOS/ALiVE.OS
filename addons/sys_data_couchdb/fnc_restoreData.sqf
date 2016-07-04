@@ -48,114 +48,114 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 // for each pair, process key and value
 ALIVE_fnc_restore = {
 
-	private ["_type","_data","_tkey","_tVal","_arrayResult"];
+    private ["_type","_data","_tkey","_tVal","_arrayResult"];
 
-	_tkey = _this select 0;
-	_tVal = _this select 1;
-
-
-
-	if (count _this > 2) then {
-		_arrayResult = _this select 2;
-		TRACE_3("Restore Check", _key, _tkey, _tVal);
-		_type = [ALIVE_DataDictionary, "getDataDictionary", [_tkey]] call ALIVE_fnc_Data;
-		_value = _tVal;
-	} else {
-		_arrayResult = false;
-		_type = [ALIVE_DataDictionary, "getDataDictionary", [_key]] call ALIVE_fnc_Data;
-	};
-
-	TRACE_2("FUNC RESTORE",_value, _key);
-
-	if (isNil "_type") then {
-		_type = "STRING";
-	};
-
-	// Address each data type accordingly
-	switch(_type) do {
-			case "HASH": {
-					_data = [_logic, "restore", [_value]] call ALIVE_fnc_Data;
-			};
-			case "STRING": {
-					_data = _value;
-			};
-			case "TEXT": {
-					_data = text _value;
-			};
-			case "BOOL": {
-					private["_tmp"];
-					_tmp = if (_value == "false") then {false} else {true};
-					_data = _tmp;
-			};
-			case "SCALAR": {
-					_data = parseNumber _value;
-			};
-			case "SIDE": {
-					_data = switch(_value) do {
-							case "WEST": {west;};
-							case "EAST": {east;};
-							case "GUER": {resistance;};
-							case "CIV": {civilian;};
-							case "LOGIC": {sideLogic;};
-							case "0": {"EAST"};
-							case "1": {"WEST"};
-							case "2": {"GUER"};
-							case "3": {"CIV"};
-							default {"WEST"};
-					};
-			};
-			case "ARRAY": {
-					private ["_tmp","_i","_tmpKey"];
-					TRACE_3("ARRAY RESTORE", _key, typeName _value, _value);
-
-					/*if (typeName _value != "ARRAY") then {
-						_value = [_value, "any", "nil"] call CBA_fnc_replace;
-						_tmp = call compile _value;
-					} else {
-						_tmp = + _value;
-					};*/
-
-					_data = [];
-					_i = 0;
-					{
-						private "_item";
-						if (_arrayResult) then {
-							_tmpKey = _tkey + "_" + str(_i);
-						} else {
-							_tmpKey = _key + "_" + str(_i);
-						};
-						_item = _x;
-						TRACE_1("",_item);
-						_data set [count _data, [_tmpKey, _item, true] call ALIVE_fnc_restore];
-						_i = _i + 1;
-					} forEach _value;
-
-					TRACE_1("ARRAY RESTORED",_data);
-			};
-			default {
-				_data = _value;
-			};
-	};
+    _tkey = _this select 0;
+    _tVal = _this select 1;
 
 
-	if (isNil "_data" || typeName _data == "STRING") then {
-		if (isNil "_data" || _data == "any" || _data == "null") then {_data = "";};
-	};
 
-	//TRACE_1("DATA RESTORED",_data);
+    if (count _this > 2) then {
+        _arrayResult = _this select 2;
+        TRACE_3("Restore Check", _key, _tkey, _tVal);
+        _type = [ALIVE_DataDictionary, "getDataDictionary", [_tkey]] call ALIVE_fnc_Data;
+        _value = _tVal;
+    } else {
+        _arrayResult = false;
+        _type = [ALIVE_DataDictionary, "getDataDictionary", [_key]] call ALIVE_fnc_Data;
+    };
 
-	if (_arrayResult) exitWith {
-		_arrayResult = false;
-		_data
-	};
+    TRACE_2("FUNC RESTORE",_value, _key);
+
+    if (isNil "_type") then {
+        _type = "STRING";
+    };
+
+    // Address each data type accordingly
+    switch(_type) do {
+            case "HASH": {
+                    _data = [_logic, "restore", [_value]] call ALIVE_fnc_Data;
+            };
+            case "STRING": {
+                    _data = _value;
+            };
+            case "TEXT": {
+                    _data = text _value;
+            };
+            case "BOOL": {
+                    private["_tmp"];
+                    _tmp = if (_value == "false") then {false} else {true};
+                    _data = _tmp;
+            };
+            case "SCALAR": {
+                    _data = parseNumber _value;
+            };
+            case "SIDE": {
+                    _data = switch(_value) do {
+                            case "WEST": {west;};
+                            case "EAST": {east;};
+                            case "GUER": {resistance;};
+                            case "CIV": {civilian;};
+                            case "LOGIC": {sideLogic;};
+                            case "0": {"EAST"};
+                            case "1": {"WEST"};
+                            case "2": {"GUER"};
+                            case "3": {"CIV"};
+                            default {"WEST"};
+                    };
+            };
+            case "ARRAY": {
+                    private ["_tmp","_i","_tmpKey"];
+                    TRACE_3("ARRAY RESTORE", _key, typeName _value, _value);
+
+                    /*if (typeName _value != "ARRAY") then {
+                        _value = [_value, "any", "nil"] call CBA_fnc_replace;
+                        _tmp = call compile _value;
+                    } else {
+                        _tmp = + _value;
+                    };*/
+
+                    _data = [];
+                    _i = 0;
+                    {
+                        private "_item";
+                        if (_arrayResult) then {
+                            _tmpKey = _tkey + "_" + str(_i);
+                        } else {
+                            _tmpKey = _key + "_" + str(_i);
+                        };
+                        _item = _x;
+                        TRACE_1("",_item);
+                        _data set [count _data, [_tmpKey, _item, true] call ALIVE_fnc_restore];
+                        _i = _i + 1;
+                    } forEach _value;
+
+                    TRACE_1("ARRAY RESTORED",_data);
+            };
+            default {
+                _data = _value;
+            };
+    };
 
 
-	TRACE_3("COUCH RESTORE KEY/DATA", _key, _data, _type);
-	[_hash, _key, _data] call ALIVE_fnc_hashSet;
+    if (isNil "_data" || typeName _data == "STRING") then {
+        if (isNil "_data" || _data == "any" || _data == "null") then {_data = "";};
+    };
+
+    //TRACE_1("DATA RESTORED",_data);
+
+    if (_arrayResult) exitWith {
+        _arrayResult = false;
+        _data
+    };
+
+
+    TRACE_3("COUCH RESTORE KEY/DATA", _key, _data, _type);
+    [_hash, _key, _data] call ALIVE_fnc_hashSet;
 };
 
 if (typeName _hash == "ARRAY") then {
-	[_hash, ALIVE_fnc_restore] call CBA_fnc_hashEachPair;
+    [_hash, ALIVE_fnc_restore] call CBA_fnc_hashEachPair;
 };
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {

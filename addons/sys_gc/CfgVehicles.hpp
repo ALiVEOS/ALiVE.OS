@@ -6,10 +6,10 @@ class CfgVehicles {
                 displayName = "$STR_ALIVE_GC";
                 function = "ALIVE_fnc_emptyInit";
                 author = MODULE_AUTHOR;
-				functionPriority = 46;
+                functionPriority = 46;
                 isGlobal = 2;
-				icon = "x\alive\addons\sys_GC\icon_sys_GC.paa";
-				picture = "x\alive\addons\sys_GC\icon_sys_GC.paa";
+                icon = "x\alive\addons\sys_GC\icon_sys_GC.paa";
+                picture = "x\alive\addons\sys_GC\icon_sys_GC.paa";
                 class Arguments
                 {
                         class debug

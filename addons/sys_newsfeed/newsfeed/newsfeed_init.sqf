@@ -4,20 +4,20 @@ disableSerialization;
 
 createDialog "newsfeed_dialog";
 
-	_display = (findDisplay 660002);
+    _display = (findDisplay 660002);
 
-	_map = worldname;
-	_mission  = missionName;
-	_player = name player;
+    _map = worldname;
+    _mission  = missionName;
+    _player = name player;
 
-	_newsOnline = "http://alivemod.com/alive_news.php?map=" + _map + "&mission=" + _mission + "&player=" + _player;
+    _newsOnline = "http://alivemod.com/alive_news.php?map=" + _map + "&mission=" + _mission + "&player=" + _player;
 
-	_newsOffline = "news.html";
+    _newsOffline = "news.html";
 
 
-	//Load the correct HTML into the control
-	_ctrlHTML = _display displayCtrl 10042;
-	_ctrlHTML htmlLoad _newsOnline;
+    //Load the correct HTML into the control
+    _ctrlHTML = _display displayCtrl 10042;
+    _ctrlHTML htmlLoad _newsOnline;
 
 //diag_log format["Map: %1",  _map];
 //diag_log format["Mission: %1",  _mission];

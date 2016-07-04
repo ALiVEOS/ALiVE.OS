@@ -3,31 +3,31 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_NEWSFEED">
-	<Original>Newsfeed</Original>
+    <Original>Newsfeed</Original>
 </Key>
 <Key ID="STR_ALIVE_NEWSFEED_COMMENT">
-	<Original>ALiVE Newsfeed direct to in Game</Original>
+    <Original>ALiVE Newsfeed direct to in Game</Original>
 </Key>
 <Key ID="STR_ALIVE_NEWSFEED_ALLOW">
-	<Original>Enable Newsfeed:</Original>
+    <Original>Enable Newsfeed:</Original>
 </Key>
 <Key ID="STR_ALIVE_NEWSFEED_ALLOW_COMMENT">
-	<Original>Allow the option to get the latest ALiVE News in Game</Original>
+    <Original>Allow the option to get the latest ALiVE News in Game</Original>
 </Key>
 <Key ID="STR_ALIVE_NEWSFEED_ENABLE">
-	<Original>Enable Newsfeed</Original>
+    <Original>Enable Newsfeed</Original>
 </Key>
 <Key ID="STR_ALIVE_NEWSFEED_ENABLE_COMMENT">
-	<Original>Enable the dispaly of the ALiVE Newsfeed in game</Original>
+    <Original>Enable the dispaly of the ALiVE Newsfeed in game</Original>
 </Key>
 <Key ID="STR_ALIVE_NEWSFEED_DISABLE">
-	<Original>Disable Newsfeed</Original>
+    <Original>Disable Newsfeed</Original>
 </Key>
 <Key ID="STR_ALIVE_NEWSFEED_DISABLE_COMMENT">
-	<Original>Disable the dispaly of the ALiVE Newsfeed in game</Original>
+    <Original>Disable the dispaly of the ALiVE Newsfeed in game</Original>
 </Key>
 <Key ID="STR_ALIVE_NEWSFEED_ERROR1">
-	<Original>Only one newsfeed module can be used</Original>
+    <Original>Only one newsfeed module can be used</Original>
 </Key>
 
 </Container></Package></Project>

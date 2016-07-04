@@ -16,7 +16,7 @@ String - Returns a response error or confirmation of write
 
 Examples:
 (begin example)
-	_result = [_logic, "save", ["sys_player", GVAR(player_data), _missionKey, _ondisconnect]] call ALIVE_fnc_Data;
+    _result = [_logic, "save", ["sys_player", GVAR(player_data), _missionKey, _ondisconnect]] call ALIVE_fnc_Data;
 (end)
 
 Author:
@@ -54,9 +54,9 @@ TRACE_1("", _response);
 _indexArray = [];
 
 _createIndex = {
-	If (_key != "") then {
-		_indexArray set [count _indexArray, _key];
-	};
+    If (_key != "") then {
+        _indexArray set [count _indexArray, _key];
+    };
 };
 [_data, _createIndex] call CBA_fnc_hashEachPair;
 
@@ -74,69 +74,69 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 
 if ( ([str(_newIndexDoc)] call CBA_fnc_strLen) > DATA_INBOUND_LIMIT ) then {
 
-		private ["_tempIndex","_indexName","_i"];
+        private ["_tempIndex","_indexName","_i"];
 
-		_indexRevs = [_logic, "indexRevs", []] call CBA_fnc_hashGet;
+        _indexRevs = [_logic, "indexRevs", []] call CBA_fnc_hashGet;
 
-		_tempIndex = [];
+        _tempIndex = [];
 
-		_i = 0;
+        _i = 0;
 
-		{
-			if ( ([str(_tempIndex)] call CBA_fnc_strLen) < DATA_INBOUND_LIMIT ) then {
-
-                if(ALiVE_SYS_DATA_DEBUG_ON) then {
-//				    ["ALiVE SYS_DATA_COUCHDB - BULK SAVE TEMP INDEX SIZE: %1",[str(_tempIndex)] call CBA_fnc_strLen] call ALIVE_fnc_dump;
-                };
-
-				_tempIndex set [count _tempIndex, _indexArray select _foreachIndex];
-
-			} else {
-
-				if (_i == 0) then {
-					_indexName = _missionKey;
-				} else {
-					_indexName = format["%1_%2", _missionKey, _i];
-				};
-
-				_tempIndexDoc = [] call CBA_fnc_hashCreate;
-				[_tempIndexDoc, "_id", _indexName] call CBA_fnc_hashSet;
-				[_tempIndexDoc, "index", _tempIndex] call CBA_fnc_hashSet;
-
-				if (_i < count _indexRevs) then {
-					[_tempIndexDoc, "_rev", _indexRevs select _i] call CBA_fnc_hashSet;
-				};
-
-				_result = [_logic, "write", [_module, _tempIndexDoc, false, _indexName] ] call ALIVE_fnc_Data;
+        {
+            if ( ([str(_tempIndex)] call CBA_fnc_strLen) < DATA_INBOUND_LIMIT ) then {
 
                 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-				    ["ALiVE SYS_DATA_COUCHDB - SAVING DATA INDEX: %1 : %2",_indexName,_result] call ALIVE_fnc_dump;
+//                    ["ALiVE SYS_DATA_COUCHDB - BULK SAVE TEMP INDEX SIZE: %1",[str(_tempIndex)] call CBA_fnc_strLen] call ALIVE_fnc_dump;
                 };
 
-				_tempIndex = [];
-				_tempIndex set [count _tempIndex, _indexArray select _foreachIndex];
-				_i = _i + 1;
+                _tempIndex set [count _tempIndex, _indexArray select _foreachIndex];
 
-			};
+            } else {
 
-		} foreach _indexArray;
+                if (_i == 0) then {
+                    _indexName = _missionKey;
+                } else {
+                    _indexName = format["%1_%2", _missionKey, _i];
+                };
 
-		// Save the final index doc
+                _tempIndexDoc = [] call CBA_fnc_hashCreate;
+                [_tempIndexDoc, "_id", _indexName] call CBA_fnc_hashSet;
+                [_tempIndexDoc, "index", _tempIndex] call CBA_fnc_hashSet;
 
-		if (_i == 0) then {
-			_indexName = _missionKey;
-		} else {
-			_indexName = format["%1_%2", _missionKey, _i];
-		};
-		_tempIndexDoc = [] call CBA_fnc_hashCreate;
-		[_tempIndexDoc, "_id", _indexName] call CBA_fnc_hashSet;
-		[_tempIndexDoc, "index", _tempIndex] call CBA_fnc_hashSet;
-		if (_i < count _indexRevs) then {
-			[_tempIndexDoc, "_rev", _indexRevs select _i] call CBA_fnc_hashSet;
-		};
-		_result = [_logic, "write", [_module, _tempIndexDoc, false, _indexName] ] call ALIVE_fnc_Data;
+                if (_i < count _indexRevs) then {
+                    [_tempIndexDoc, "_rev", _indexRevs select _i] call CBA_fnc_hashSet;
+                };
 
-//		[_logic, "indexRevs", _indexRevs] call CBA_fnc_hashSet;
+                _result = [_logic, "write", [_module, _tempIndexDoc, false, _indexName] ] call ALIVE_fnc_Data;
+
+                if(ALiVE_SYS_DATA_DEBUG_ON) then {
+                    ["ALiVE SYS_DATA_COUCHDB - SAVING DATA INDEX: %1 : %2",_indexName,_result] call ALIVE_fnc_dump;
+                };
+
+                _tempIndex = [];
+                _tempIndex set [count _tempIndex, _indexArray select _foreachIndex];
+                _i = _i + 1;
+
+            };
+
+        } foreach _indexArray;
+
+        // Save the final index doc
+
+        if (_i == 0) then {
+            _indexName = _missionKey;
+        } else {
+            _indexName = format["%1_%2", _missionKey, _i];
+        };
+        _tempIndexDoc = [] call CBA_fnc_hashCreate;
+        [_tempIndexDoc, "_id", _indexName] call CBA_fnc_hashSet;
+        [_tempIndexDoc, "index", _tempIndex] call CBA_fnc_hashSet;
+        if (_i < count _indexRevs) then {
+            [_tempIndexDoc, "_rev", _indexRevs select _i] call CBA_fnc_hashSet;
+        };
+        _result = [_logic, "write", [_module, _tempIndexDoc, false, _indexName] ] call ALIVE_fnc_Data;
+
+//        [_logic, "indexRevs", _indexRevs] call CBA_fnc_hashSet;
 
         if(ALiVE_SYS_DATA_DEBUG_ON) then {
             ["ALiVE SYS_DATA_COUCHDB - SAVING DATA INDEX: %1",_indexName,_result] call ALIVE_fnc_dump;
@@ -145,19 +145,19 @@ if ( ([str(_newIndexDoc)] call CBA_fnc_strLen) > DATA_INBOUND_LIMIT ) then {
 
 } else {
 
-	// If exists, get revision number so we can overwrite it
-	_indexRevs = [_logic, "indexRevs", []] call CBA_fnc_hashGet;
-	if (count _indexRevs > 0) then {
-		[_newIndexDoc, "_rev", _indexRevs select 0] call CBA_fnc_hashSet;
-	};
+    // If exists, get revision number so we can overwrite it
+    _indexRevs = [_logic, "indexRevs", []] call CBA_fnc_hashGet;
+    if (count _indexRevs > 0) then {
+        [_newIndexDoc, "_rev", _indexRevs select 0] call CBA_fnc_hashSet;
+    };
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-	    ["ALiVE SYS_DATA_COUCHDB - SAVING NEW DATA INDEX:"] call ALIVE_fnc_dump;
+        ["ALiVE SYS_DATA_COUCHDB - SAVING NEW DATA INDEX:"] call ALIVE_fnc_dump;
         _newIndexDoc call ALIVE_fnc_inspectHash;
     };
 
-	// Write new index
-	_result = [_logic, "write", [_module, _newIndexDoc, _async, _missionKey]] call ALIVE_fnc_Data;
+    // Write new index
+    _result = [_logic, "write", [_module, _newIndexDoc, _async, _missionKey]] call ALIVE_fnc_Data;
 };
 //=============================================
 

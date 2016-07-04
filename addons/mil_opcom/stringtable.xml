@@ -3,66 +3,66 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_OPCOM">
-	<Original>Military AI Commander</Original>
+    <Original>Military AI Commander</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_COMMENT">
-	<Original>Virtual AI High Command</Original>
+    <Original>Virtual AI High Command</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_DEBUG">
-	<Original>Enable Debug:</Original>
+    <Original>Enable Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_DEBUG_COMMENT">
-	<Original>Enables Module Debug</Original>
+    <Original>Enables Module Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_PERSISTENT">
-	<Original>Persistent:</Original>
+    <Original>Persistent:</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_PERSISTENT_COMMENT">
-	<Original>Enables external Database persistence for AI Commander</Original>
+    <Original>Enables external Database persistence for AI Commander</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_CONTROLTYPE">
-	<Original>Control Type:</Original>
+    <Original>Control Type:</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_CONTROLTYPE_COMMENT">
-	<Original>Type of AI Commander control</Original>
+    <Original>Type of AI Commander control</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_OCCUPATION">
-	<Original>Installations (asymm.):</Original>
+    <Original>Installations (asymm.):</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_OCCUPATION_COMMENT">
-	<Original>Amount of pre-placed installations like IED factories, HQ (asymmetric mode only)</Original>
+    <Original>Amount of pre-placed installations like IED factories, HQ (asymmetric mode only)</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SIDE">
-	<Original>Side:</Original>
+    <Original>Side:</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SIDE_COMMENT">
-	<Original>AI Commanders side</Original>
+    <Original>AI Commanders side</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_REINFORCEMENTS">
-	<Original>Reinforcements:</Original>
+    <Original>Reinforcements:</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_REINFORCEMENTS_COMMENT">
-	<Original>Requires Military Logistics Module! Selects the threshold of the AI Commanders reinforcement requests (90% / 75% / 50% of original forces)</Original>
+    <Original>Requires Military Logistics Module! Selects the threshold of the AI Commanders reinforcement requests (90% / 75% / 50% of original forces)</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_FACTIONS">
-	<Original>Override Factions:</Original>
+    <Original>Override Factions:</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_FACTIONS_COMMENT">
-	<Original>Override AI Commander drop downs with f.e. ["BLU_F","BLU_G_F"]. Only use factions of one side!</Original>
+    <Original>Override AI Commander drop downs with f.e. ["BLU_F","BLU_G_F"]. Only use factions of one side!</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_FACTION">
-	<Original>Faction:</Original>
+    <Original>Faction:</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_FACTION_COMMENT">
-	<Original>AI Commander will control this faction. Multiselection is possible!</Original>
+    <Original>AI Commander will control this faction. Multiselection is possible!</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_USAGE">
-	<Original>Place a Military AI Commander module in the editor and select a faction from the dropdown. Custom factions can be entered in the “override default faction” box. Choose the Control Type in the drop down menu. By default, the AI Commander will take command of all available virtual units (profiles) for its faction. Therefore, it requires a minimum of one synced Placement Module and the Virtual AI module.</Original>
+    <Original>Place a Military AI Commander module in the editor and select a faction from the dropdown. Custom factions can be entered in the “override default faction” box. Choose the Control Type in the drop down menu. By default, the AI Commander will take command of all available virtual units (profiles) for its faction. Therefore, it requires a minimum of one synced Placement Module and the Virtual AI module.</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_INTELCHANCE">
-	<Original>INTEL:</Original>
+    <Original>INTEL:</Original>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_INTELCHANCE_COMMENT">
-	<Original>Some soldiers can carry viable information about nearby installations</Original>
+    <Original>Some soldiers can carry viable information about nearby installations</Original>
 </Key>
 </Container></Package></Project>

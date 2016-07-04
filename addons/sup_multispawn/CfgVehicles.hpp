@@ -8,8 +8,8 @@ class CfgVehicles {
                 author = MODULE_AUTHOR;
                 functionPriority = 210;
                 isGlobal = 2;
-				icon = "x\alive\addons\sup_multispawn\icon_sup_multispawn.paa";
-				picture = "x\alive\addons\sup_multispawn\icon_sup_multispawn.paa";
+                icon = "x\alive\addons\sup_multispawn\icon_sup_multispawn.paa";
+                picture = "x\alive\addons\sup_multispawn\icon_sup_multispawn.paa";
                 class Arguments
                 {
                         class debug
@@ -62,7 +62,7 @@ class CfgVehicles {
                                                 name = "Spawn in building";
                                                 value = "building";
                                         };
-                                        
+
                                         class none
                                         {
                                                 name = "None";
@@ -118,13 +118,13 @@ class CfgVehicles {
                         };
                 };
                 class ModuleDescription
-				{
-					description[] = {
-							"$STR_ALIVE_MULTISPAWN_COMMENT",
-							"",
-							"$STR_ALIVE_MULTISPAWN_USAGE"
-					};
-				};
+                {
+                    description[] = {
+                            "$STR_ALIVE_MULTISPAWN_COMMENT",
+                            "",
+                            "$STR_ALIVE_MULTISPAWN_USAGE"
+                    };
+                };
 
         };
 };

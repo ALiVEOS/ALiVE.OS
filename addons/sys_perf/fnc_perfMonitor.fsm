@@ -64,31 +64,31 @@ class FSM
            "_counter = _customCode select _customCount;" \n
            "" \n
            "if (_Players > 0) then {" \n
-           "	_data = _data + [ [""PLAYERS"", _Players]];" \n
+           "    _data = _data + [ [""PLAYERS"", _Players]];" \n
            "" \n
-           "	_customCounter = _counter select 0;" \n
-           "	switch (_customCounter) do {" \n
-           "		case ""triggers"": {_customValue = count allMissionObjects ""EmptyDetector"";};" \n
-           "		case ""objects"": {_customValue = count allMissionObjects ""All"";};" \n
-           "		case ""entities"": {_customValue = count entities ""All"";};" \n
-           "		default {_customValue = call compile format [""count %1"",_customCounter];};" \n
-           "	};" \n
-           "	_data = _data + [[_customCounter,_customValue]];" \n
+           "    _customCounter = _counter select 0;" \n
+           "    switch (_customCounter) do {" \n
+           "        case ""triggers"": {_customValue = count allMissionObjects ""EmptyDetector"";};" \n
+           "        case ""objects"": {_customValue = count allMissionObjects ""All"";};" \n
+           "        case ""entities"": {_customValue = count entities ""All"";};" \n
+           "        default {_customValue = call compile format [""count %1"",_customCounter];};" \n
+           "    };" \n
+           "    _data = _data + [[_customCounter,_customValue]];" \n
            "" \n
-           "	diag_log format[""perfMonitor.fsm message sent: %1"", _data];" \n
-           "					" \n
-           "	// Send data to server to be written to DB" \n
-           "	ALIVE_SYS_PERF_UPDATE_PERF = _data;" \n
-           "	publicVariableServer ""ALIVE_SYS_PERF_UPDATE_PERF"";" \n
+           "    diag_log format[""perfMonitor.fsm message sent: %1"", _data];" \n
+           "                    " \n
+           "    // Send data to server to be written to DB" \n
+           "    ALIVE_SYS_PERF_UPDATE_PERF = _data;" \n
+           "    publicVariableServer ""ALIVE_SYS_PERF_UPDATE_PERF"";" \n
            "};" \n
            "" \n
            "_customCount = _customCount + 1;" \n
            "if (_customCount == count _customCode) then {" \n
-           "	_customCount = 0;" \n
-           "	_customNext = diag_TickTime +  ((_customCode select _customCount) select 1);" \n
+           "    _customCount = 0;" \n
+           "    _customNext = diag_TickTime +  ((_customCode select _customCount) select 1);" \n
            "} else {" \n
-           "	_customINTERVAL = ((_customCode select _customCount) select 1) - (_counter select 1); " \n
-           "	_customNext = diag_TickTime + _customINTERVAL;" \n
+           "    _customINTERVAL = ((_customCode select _customCount) select 1) - (_counter select 1); " \n
+           "    _customNext = diag_TickTime + _customINTERVAL;" \n
            "};" \n
            "" \n
            ""/*%FSM</ACTION""">*/;
@@ -107,37 +107,37 @@ class FSM
            "_Players = {(alive _x)&&(isPlayer _x)} count _units;" \n
            "" \n
            "if (_Players > 0) then {" \n
-           "	// FPS & CPS" \n
-           "	_data = [ [""Type"",""Data""],[""FPS"",round (diag_fps*1000)] , [""FPSMIN"", round (diag_fpsmin*1000)],  [""CPS"",round((_c/_INTERVAL)*1000)] ];" \n
+           "    // FPS & CPS" \n
+           "    _data = [ [""Type"",""Data""],[""FPS"",round (diag_fps*1000)] , [""FPSMIN"", round (diag_fpsmin*1000)],  [""CPS"",round((_c/_INTERVAL)*1000)] ];" \n
            "" \n
-           "	_locAIs = {(alive _x)&&(local _x)} count _units;" \n
-           "	_remAIs = ({alive _x} count _units) - _Players - _locAIs;" \n
-           "	_data = _data + [ [""PLAYERS"", _Players],[""LOCAI"",_locAIs] , [""REMAI"",_remAIs ]];" \n
+           "    _locAIs = {(alive _x)&&(local _x)} count _units;" \n
+           "    _remAIs = ({alive _x} count _units) - _Players - _locAIs;" \n
+           "    _data = _data + [ [""PLAYERS"", _Players],[""LOCAI"",_locAIs] , [""REMAI"",_remAIs ]];" \n
            "" \n
-           "	// Profiles" \n
-           "	if !(isnil ""Alive_ProfileHandler"") then {" \n
-           "		private [""_active"",""_inactive"",""_unitCount"",""_activeCount"",""_inactiveCount"",""_unitCount"",""_vehicleCount""];" \n
-           "		_active = [ALIVE_profileHandler, ""getActiveEntities""] call ALIVE_fnc_profileHandler;" \n
-           "		 _activeCount = count _active;" \n
+           "    // Profiles" \n
+           "    if !(isnil ""Alive_ProfileHandler"") then {" \n
+           "        private [""_active"",""_inactive"",""_unitCount"",""_activeCount"",""_inactiveCount"",""_unitCount"",""_vehicleCount""];" \n
+           "        _active = [ALIVE_profileHandler, ""getActiveEntities""] call ALIVE_fnc_profileHandler;" \n
+           "         _activeCount = count _active;" \n
            " " \n
-           "		// not spawned" \n
-           "		_inactive = [ALIVE_profileHandler, ""getInActiveEntities""] call ALIVE_fnc_profileHandler;" \n
-           "		_inactiveCount = count _inactive;" \n
+           "        // not spawned" \n
+           "        _inactive = [ALIVE_profileHandler, ""getInActiveEntities""] call ALIVE_fnc_profileHandler;" \n
+           "        _inactiveCount = count _inactive;" \n
            "" \n
-           "		  // individual units" \n
-           "		 _unitCount = [ALIVE_profileHandler, ""getUnitCount""] call ALIVE_fnc_profileHandler;" \n
+           "          // individual units" \n
+           "         _unitCount = [ALIVE_profileHandler, ""getUnitCount""] call ALIVE_fnc_profileHandler;" \n
            "" \n
-           "		  // vehicles" \n
-           "		   _vehicleCount = [ALIVE_profileHandler, ""getVehicleCount""] call ALIVE_fnc_profileHandler;" \n
+           "          // vehicles" \n
+           "           _vehicleCount = [ALIVE_profileHandler, ""getVehicleCount""] call ALIVE_fnc_profileHandler;" \n
            " " \n
-           "		 _data = _data +  [ [""Active"", _activeCount],  [""Inactive"", _inactiveCount], [""Units"", _unitCount], [""PVehicles"", _vehicleCount]];" \n
-           "	};" \n
+           "         _data = _data +  [ [""Active"", _activeCount],  [""Inactive"", _inactiveCount], [""Units"", _unitCount], [""PVehicles"", _vehicleCount]];" \n
+           "    };" \n
            "" \n
-           "	diag_log format[""perfMonitor.fsm message sent: %1"", _data];" \n
-           "					" \n
-           "	// Send data to server to be written to DB" \n
-           "	ALIVE_SYS_PERF_UPDATE_PERF = _data;" \n
-           "	publicVariableServer ""ALIVE_SYS_PERF_UPDATE_PERF"";" \n
+           "    diag_log format[""perfMonitor.fsm message sent: %1"", _data];" \n
+           "                    " \n
+           "    // Send data to server to be written to DB" \n
+           "    ALIVE_SYS_PERF_UPDATE_PERF = _data;" \n
+           "    publicVariableServer ""ALIVE_SYS_PERF_UPDATE_PERF"";" \n
            "};" \n
            "" \n
            "_Next = diag_TickTime + _INTERVAL;" \n
@@ -153,7 +153,7 @@ class FSM
       name = "init";
       init = /*%FSM<STATEINIT""">*/"" \n
        "if !(isDedicated) exitWith {" \n
-       "	diag_log (""perfMonitor.fsm exiting - not dedicated server"");" \n
+       "    diag_log (""perfMonitor.fsm exiting - not dedicated server"");" \n
        "};" \n
        "" \n
        "diag_log (""perfMonitor.fsm started"");" \n
@@ -179,7 +179,7 @@ class FSM
        "_Next = diag_TickTime;" \n
        "" \n
        "if (count _customCode > 0) then {" \n
-       "	_customNext = diag_TickTime + ((_customCode select _customCount) select 1);" \n
+       "    _customNext = diag_TickTime + ((_customCode select _customCount) select 1);" \n
        "};" \n
        "" \n
        "_units =[];" \n

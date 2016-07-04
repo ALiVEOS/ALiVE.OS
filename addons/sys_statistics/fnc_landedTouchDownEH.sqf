@@ -20,7 +20,7 @@ _this select 1: INTEGER - airport
 
 Examples:
 (begin example)
-	player addEventHandler ["landedTouchDown", {_this call GVAR(fnc_landedTouchDownEH);}];
+    player addEventHandler ["landedTouchDown", {_this call GVAR(fnc_landedTouchDownEH);}];
 (end)
 
 See Also:
@@ -36,44 +36,44 @@ Tupolov
 
 #include "script_component.hpp"
 if (GVAR(ENABLED)) then {
-	private ["_ptime","_LandedInterval","_sidevehicle","_vehicletype","_factionvehicle","_data","_vehiclePos","_vehicle","_airport"];
+    private ["_ptime","_LandedInterval","_sidevehicle","_vehicletype","_factionvehicle","_data","_vehiclePos","_vehicle","_airport"];
 
-	// Set Data
-	_vehicle = _this select 0;
-	_airport = _this select 1;
+    // Set Data
+    _vehicle = _this select 0;
+    _airport = _this select 1;
 
-	diag_log format["LandedTouchDown: %1", _this];
+    diag_log format["LandedTouchDown: %1", _this];
 
-	if (isPlayer (driver _vehicle)) then {
-		// Check to see if vehicle is having a "bumpy" landing
-		_LandedInterval = time - (_vehicle getVariable [QGVAR(LandedTime),31]);
+    if (isPlayer (driver _vehicle)) then {
+        // Check to see if vehicle is having a "bumpy" landing
+        _LandedInterval = time - (_vehicle getVariable [QGVAR(LandedTime),31]);
 
-		diag_log format["Last landed %1 seconds ago (%2)", _LandedInterval, time];
+        diag_log format["Last landed %1 seconds ago (%2)", _LandedInterval, time];
 
-		if (_LandedInterval > 30) then {
-			_sidevehicle = side (group _vehicle); // group side is more reliable
+        if (_LandedInterval > 30) then {
+            _sidevehicle = side (group _vehicle); // group side is more reliable
 
-			_factionvehicle = getText (configFile >> "cfgFactionClasses" >> (faction _vehicle) >> "displayName");
+            _factionvehicle = getText (configFile >> "cfgFactionClasses" >> (faction _vehicle) >> "displayName");
 
-			_vehicletype = getText (configFile >> "cfgVehicles" >> (typeof _vehicle) >> "displayName");
-			_vehicleConfig = typeOf _vehicle;
+            _vehicletype = getText (configFile >> "cfgVehicles" >> (typeof _vehicle) >> "displayName");
+            _vehicleConfig = typeOf _vehicle;
 
-			_vehiclePos = mapgridposition _vehicle;
-			_vehicleGeoPos = position _vehicle;
+            _vehiclePos = mapgridposition _vehicle;
+            _vehicleGeoPos = position _vehicle;
 
-			_ptime = time;
-			_vehicle setVariable [QGVAR(LandedTime), _ptime, true];
+            _ptime = time;
+            _vehicle setVariable [QGVAR(LandedTime), _ptime, true];
 
-			// Log data
-			_data = [ ["Event","Landed"] , ["vehicleSide",_sidevehicle] , ["vehiclefaction",_factionvehicle] , ["vehicleType",_vehicleType] , ["vehiclePos",_vehiclePos] , ["vehicleGeoPos",_vehicleGeoPos] , ["vehicle",_vehicle] , ["Airport",_airport], ["vehicleConfig",_vehicleConfig] ];
+            // Log data
+            _data = [ ["Event","Landed"] , ["vehicleSide",_sidevehicle] , ["vehiclefaction",_factionvehicle] , ["vehicleType",_vehicleType] , ["vehiclePos",_vehiclePos] , ["vehicleGeoPos",_vehicleGeoPos] , ["vehicle",_vehicle] , ["Airport",_airport], ["vehicleConfig",_vehicleConfig] ];
 
-			_data = _data + [ ["Player",getplayeruid _vehicle] , ["PlayerName",name _vehicle], ["playerGroup", [(driver _vehicle)] call ALiVE_fnc_getPlayerGroup] ];
+            _data = _data + [ ["Player",getplayeruid _vehicle] , ["PlayerName",name _vehicle], ["playerGroup", [(driver _vehicle)] call ALiVE_fnc_getPlayerGroup] ];
 
-			// Send data to server to be written to DB
-			GVAR(UPDATE_EVENTS) = _data;
-			publicVariableServer QGVAR(UPDATE_EVENTS);
+            // Send data to server to be written to DB
+            GVAR(UPDATE_EVENTS) = _data;
+            publicVariableServer QGVAR(UPDATE_EVENTS);
 
-		};
-	};
+        };
+    };
 };
 // ====================================================================================

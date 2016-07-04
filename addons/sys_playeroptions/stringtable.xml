@@ -3,30 +3,30 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_playeroptions">
-	<Original>ALiVE Player Options</Original>
+    <Original>ALiVE Player Options</Original>
 </Key>
 <Key ID="STR_ALIVE_PLAYEROPTIONS_SHORT">
-	<Original>Player Options</Original>
+    <Original>Player Options</Original>
 </Key>
 <Key ID="STR_ALIVE_playeroptions_COMMENT">
-	<Original>Set in game player options such as view distance, respawn, player persistence, crew info, player tags and more</Original>
+    <Original>Set in game player options such as view distance, respawn, player persistence, crew info, player tags and more</Original>
 </Key>
 <Key ID="STR_ALIVE_playeroptionsPARAMS">
-	<Original>Template Parameters</Original>
+    <Original>Template Parameters</Original>
 </Key>
 <Key ID="STR_ALIVE_playeroptions_ERROR1">
-	<Original>Only one module template allowed</Original>
+    <Original>Only one module template allowed</Original>
 </Key>
 <Key ID="STR_ALIVE_playeroptionsPARAMS_COMMENT">
-	<Original>Over-ride default parameters for the Module Template</Original>
+    <Original>Over-ride default parameters for the Module Template</Original>
 </Key>
 <Key ID="STR_ALIVE_playeroptions_USAGE">
-	<Original>Place the module and configure player options</Original>
+    <Original>Place the module and configure player options</Original>
 </Key>
 <Key ID="STR_ALIVE_playeroptions_DEBUG">
-	<Original>Debug:</Original>
+    <Original>Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_playeroptions_DEBUG_COMMENT">
-	<Original>Enable Debug</Original>
+    <Original>Enable Debug</Original>
 </Key>
 </Container></Package></Project>

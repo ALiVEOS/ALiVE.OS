@@ -41,13 +41,13 @@ DEFAULT_PARAM(2,_args,nil);
 
 //Listener for special purposes
 if (!isnil QMOD(SYS_quickstart) && {MOD(SYS_quickstart) getvariable [QGVAR(LISTENER),false]}) then {
-	_blackOps = ["id"];
+    _blackOps = ["id"];
 
-	if !(_operation in _blackOps) then {
-	    _check = "nothing"; if !(isnil "_args") then {_check = _args};
+    if !(_operation in _blackOps) then {
+        _check = "nothing"; if !(isnil "_args") then {_check = _args};
 
-		["op: %1 | args: %2",_operation,_check] call ALiVE_fnc_DumpR;
-	};
+        ["op: %1 | args: %2",_operation,_check] call ALiVE_fnc_DumpR;
+    };
 };
 
 TRACE_3("SYS_quickstart",_logic, _operation, _args);
@@ -165,13 +165,13 @@ case "create": {
         };
 
         case "state": {
-        	if ((isnil "_args") || {!isServer}) exitwith {_result = GVAR(STORE)};
+            if ((isnil "_args") || {!isServer}) exitwith {_result = GVAR(STORE)};
 
             TRACE_1("ALiVE SYS quickstart state called",_logic);
 
 
             _result = GVAR(STORE);
-	    };
+        };
 
         case "destroy": {
             [[_logic, "destroyGlobal",_args],"ALIVE_fnc_quickstart",true, false] call BIS_fnc_MP;
@@ -182,7 +182,7 @@ case "create": {
                 [_logic, "debug", false] call MAINCLASS;
 
                 if (isServer) then {
-                		// if server
+                        // if server
                         MOD(SYS_quickstart) = _logic;
 
                         MOD(SYS_quickstart) setVariable ["super", nil];

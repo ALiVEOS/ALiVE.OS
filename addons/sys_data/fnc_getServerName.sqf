@@ -26,9 +26,9 @@ Peer Reviewed:
 private ["_response"];
 
 if (isNil QGVAR(ServerName)) then {
-	_response = ["ServerName"] call ALIVE_fnc_sendToPlugIn;
-	GVAR(ServerName) = _response;
+    _response = ["ServerName"] call ALIVE_fnc_sendToPlugIn;
+    GVAR(ServerName) = _response;
 } else {
-	_response = GVAR(ServerName);
+    _response = GVAR(ServerName);
 };
 _response;

@@ -1,5 +1,5 @@
 class CfgVehicles {
-	class ModuleAliveBase;
+    class ModuleAliveBase;
         class ADDON : ModuleAliveBase
         {
                 scope = 2;

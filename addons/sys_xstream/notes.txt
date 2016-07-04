@@ -54,7 +54,7 @@ Usage: Place the camera module and choose the following settings:
 - Sides to include: ALL, BLUFOR & IND, BLUFOR & OPFOR, OPFOR & IND, BLUFOR ONLY, OPFOR ONLY, IND ONLY
 - Choose Overall leader (select playable unit)
 - Capture Radio Conservations (requires ACRE)
-	- Set ACRE channel?
+    - Set ACRE channel?
 - Include Satellite Tracking Shots
 - Include Aerial Shots
 - Include Vehicle Shots

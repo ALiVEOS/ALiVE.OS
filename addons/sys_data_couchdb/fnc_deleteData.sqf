@@ -13,7 +13,7 @@ Array - Returns a response error or data in the form of key value pairs
 
 Examples:
 (begin example)
-	[ _logic, [ _module, [_key,_key etc], _uid ] ] call ALIVE_fnc_deleteData;
+    [ _logic, [ _module, [_key,_key etc], _uid ] ] call ALIVE_fnc_deleteData;
 (end)
 
 Author:
@@ -46,8 +46,8 @@ _rev = _args select 3;
 if (_rev == "MISSING" || _rev == "") exitWith {false};
 
 if (_uid != "") then {
-	// use doc id to grab document
-	_cmd = format ["SendJSONAsync ['DELETE','%1/%2?rev=%3',''", _module, _uid, _rev];
+    // use doc id to grab document
+    _cmd = format ["SendJSONAsync ['DELETE','%1/%2?rev=%3',''", _module, _uid, _rev];
 };
 
 // Add databaseName
@@ -72,10 +72,10 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 };
 
 /*
-	// Handle data error
-	private["_err"];
-	_err = format["The Couch database %1 did not respond with %2. The data returned was: %3", _databaseName, typeName _result, _result];
-	ERROR_WITH_TITLE(str _logic, _err);
+    // Handle data error
+    private["_err"];
+    _err = format["The Couch database %1 did not respond with %2. The data returned was: %3", _databaseName, typeName _result, _result];
+    ERROR_WITH_TITLE(str _logic, _err);
 */
 
 _response

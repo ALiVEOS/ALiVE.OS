@@ -20,12 +20,12 @@ _maxgetvd = (ADDON getVariable ["maxVD", 2]); // get the maximum view distance s
 _maxsetvd = parseNumber _maxgetvd; // convert the maximum variable to a number
 if (_maxsetvd == 0) then {_maxsetvd = 15000;};//if the maximum view distance has not been set i.e blank, then set it to 1000
 
-#define ESTABLISH_VDIST_SLIDER(DIALOG_GVAR,CTRL_NUMVD,RANGEMAX,INCREMENTER)	\
+#define ESTABLISH_VDIST_SLIDER(DIALOG_GVAR,CTRL_NUMVD,RANGEMAX,INCREMENTER)    \
 CTRL_NUMVD sliderSetRange [_minsetvd,_maxsetvd]; \
 CTRL_NUMVD sliderSetPosition INCREMENTER;\
 MAXVD = _maxsetvd;
 
-#define ESTABLISH_TDTL_SLIDER(DIALOG_GVAR,CTRL_NUMTD,RANGEMAX,INCREMENTER)	\
+#define ESTABLISH_TDTL_SLIDER(DIALOG_GVAR,CTRL_NUMTD,RANGEMAX,INCREMENTER)    \
 CTRL_NUMTD sliderSetRange [_minsettg, _maxsettg]; \
 sliderSetPosition [1913, terrainGrid];
 

@@ -3,74 +3,74 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_WEATHER">
-	<Original>Ambient Dynamic Weather</Original>
+    <Original>Ambient Dynamic Weather</Original>
 </Key>
 <Key ID="STR_ALIVE_WEATHER_COMMENT">
-	<Original>Dynamic Weather module</Original>
+    <Original>Dynamic Weather module</Original>
 </Key>
 <Key ID="STR_ALIVE_WEATHER_USAGE">
-	<Original>Place the Dynamic Weather module and choose between different climates! Find a high detailed set of adjustment options on the module to refine your mission!</Original>
+    <Original>Place the Dynamic Weather module and choose between different climates! Find a high detailed set of adjustment options on the module to refine your mission!</Original>
 </Key>
 <Key ID="STR_ALIVE_WEATHER_DEBUG">
-	<Original>Enable Debug:</Original>
+    <Original>Enable Debug:</Original>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_DEBUG_COMMENT">
-	<Original>Enables dynamic weather module debug mode</Original>
+    <Original>Enables dynamic weather module debug mode</Original>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_DEBUG_CYCLE">
-	<Original>Debug Output Delay:</Original>
+    <Original>Debug Output Delay:</Original>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_DEBUG_CYCLE_COMMENT">
-	<Original>Delay in seconds between each rpt output (Enable Debug must be enabled)</Original>
+    <Original>Delay in seconds between each rpt output (Enable Debug must be enabled)</Original>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_ERROR1">
-	<Original>Only one dynamic weather module can be used</Original>
+    <Original>Only one dynamic weather module can be used</Original>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_INITIAL">
-	<Original>Weather Climate:</Original>
+    <Original>Weather Climate:</Original>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_INITIAL_COMMENT">
-	<Original>For a complete local explanation please refer to ALiVE wiki
-	</Original>
+    <Original>For a complete local explanation please refer to ALiVE wiki
+    </Original>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_OVERRIDE">
-	<Original>Weather Override:</Original>
+    <Original>Weather Override:</Original>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_OVERRIDE_COMMENT">
-	<Original>Set initial weather to one of the override settings
-	</Original>
+    <Original>Set initial weather to one of the override settings
+    </Original>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_CYCLE_VARIANCE">
-	<Original>Cycle Variance:</Original>
+    <Original>Cycle Variance:</Original>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_CYCLE_VARIANCE_COMMENT">
-	<Original>Amount of variance to weather between weather cycles</Original>
+    <Original>Amount of variance to weather between weather cycles</Original>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_CYCLE_DELAY">
-	<Original>Cycle Delay:</Original>
+    <Original>Cycle Delay:</Original>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_CYCLE_DELAY_COMMENT">
-	<Original>Time in seconds between each weather cycle (minimum 1800 set by game engine)</Original>
+    <Original>Time in seconds between each weather cycle (minimum 1800 set by game engine)</Original>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_REAL_LOCATION">
-	<Original>Real Weather Loc:</Original>
+    <Original>Real Weather Loc:</Original>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_REAL_LOCATION_COMMENT">
-	<Original>For a complete list of valid Locales please refer to ALiVE wiki</Original>
+    <Original>For a complete list of valid Locales please refer to ALiVE wiki</Original>
 </Key>
 
 </Container></Package></Project>

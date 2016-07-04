@@ -37,11 +37,11 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
     [true, "ALiVE OPCOM - Saving data", "opper"] call ALIVE_fnc_timer;
 };
 
-	{
+    {
         if ([_x,"persistent",false] call ALIVE_fnc_HashGet) then {
-			_results pushback ([_x,"saveData"] call ALIVE_fnc_OPCOM);
+            _results pushback ([_x,"saveData"] call ALIVE_fnc_OPCOM);
         };
-	} foreach OPCOM_INSTANCES;
+    } foreach OPCOM_INSTANCES;
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     [false, "ALiVE OPCOM - Save data complete","opper"] call ALIVE_fnc_timer;

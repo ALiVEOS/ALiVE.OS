@@ -26,9 +26,9 @@ _amo = +(allMissionObjects "");
 STAT("Create Garbage Collector instance");
 _err = "Creating instance failed";
 if(isServer) then {
-	TEST_LOGIC = [nil, "create"] call ALIVE_fnc_GC;
+    TEST_LOGIC = [nil, "create"] call ALIVE_fnc_GC;
     ASSERT_DEFINED("TEST_LOGIC",_err);
-    
+
     publicVariable "TEST_LOGIC";
 };
 
@@ -44,10 +44,10 @@ sleep 10;
 STAT("Destroy Garbage Collector instance");
 _err = "Destruction of old instance failed...";
 if(isServer) then {
-	[_logic, "destroy"] call ALIVE_fnc_GC;
-	TEST_LOGIC = nil;
+    [_logic, "destroy"] call ALIVE_fnc_GC;
+    TEST_LOGIC = nil;
 } else {
-	waitUntil {isNull TEST_LOGIC};
+    waitUntil {isNull TEST_LOGIC};
 };
 ASSERT_TRUE(isnil "TEST_LOGIC", _err);
 

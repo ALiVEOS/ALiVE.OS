@@ -14,7 +14,7 @@ SCRIPT(test);
 LOG("=== Testing sys_GC ===");
 
 {
-	call compile preprocessFileLineNumbers format ["\x\alive\addons\sys_GC\tests\test_%1.sqf", _x];
+    call compile preprocessFileLineNumbers format ["\x\alive\addons\sys_GC\tests\test_%1.sqf", _x];
 } forEach TESTS;
 
 nil;
