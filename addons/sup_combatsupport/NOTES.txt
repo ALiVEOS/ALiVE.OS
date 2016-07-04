@@ -59,18 +59,18 @@ As a mission editor:
 - Enforce: check every 60 seconds that viewDistance/terrainGrid are correct settings
 - HC or Dedi - set ViewDistance/TerrainGrid
 - If not Auto
-	- If in vehicle or on map, suspend and set low TG (?)
-	- If in Air vehicle, suspend and set max VD
+    - If in vehicle or on map, suspend and set low TG (?)
+    - If in Air vehicle, suspend and set max VD
 - If FPS low and TG is not already low
-	- lower TG
+    - lower TG
 - If FPS low and VD is not already low
-	- step down VD
+    - step down VD
 - If FPS high and TG is not already low
-	- set TG low
+    - set TG low
 - If FPS high and VD is not already high
-	- step up VD
+    - step up VD
 - If FPS high and TG is not already high
-	- wait 60 sec then set TG high
+    - wait 60 sec then set TG high
 
 
 

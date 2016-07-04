@@ -3,69 +3,69 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_COMBATSUPPORT">
-	<Original>Player Combat Support</Original>
+    <Original>Player Combat Support</Original>
 </Key>
 <Key ID="STR_ALIVE_CS_COMMENT">
-	<Original>ALiVE Combat Support System (CAS/Artillery/Transport)</Original>
+    <Original>ALiVE Combat Support System (CAS/Artillery/Transport)</Original>
 </Key>
 <Key ID="STR_ALIVE_CS_ALLOW">
-	<Original>Call in Combat Support with:</Original>
+    <Original>Call in Combat Support with:</Original>
 </Key>
 <Key ID="STR_ALIVE_CAS_LIMIT_COMMENT">
-	<Original>Set the number of times CAS Asssets can be replenished</Original>
+    <Original>Set the number of times CAS Asssets can be replenished</Original>
 </Key>
 <Key ID="STR_ALIVE_CAS_LIMIT">
-	<Original>CAS Respawn Limit:</Original>
+    <Original>CAS Respawn Limit:</Original>
 </Key>
 <Key ID="STR_ALIVE_TRANS_LIMIT_COMMENT">
-	<Original>Set the number of times Transport Asssets can be replenished</Original>
+    <Original>Set the number of times Transport Asssets can be replenished</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTY_LIMIT">
-	<Original>Arty Respawn Limit:</Original>
+    <Original>Arty Respawn Limit:</Original>
 </Key>
 <Key ID="STR_ALIVE_ARTY_LIMIT_COMMENT">
-	<Original>Set the number of times Arty Asssets can be replenished</Original>
+    <Original>Set the number of times Arty Asssets can be replenished</Original>
 </Key>
 <Key ID="STR_ALIVE_CS_AUDIO">
-	<Original>Radio Messages (Audio):</Original>
+    <Original>Radio Messages (Audio):</Original>
 </Key>
 <Key ID="STR_ALIVE_CS_AUDIO_COMMENT">
-	<Original>Uses audible radio messages for support requests</Original>
+    <Original>Uses audible radio messages for support requests</Original>
 </Key>
 <Key ID="STR_ALIVE_TRANS_LIMIT">
-	<Original>Transport Respawn Limit:</Original>
+    <Original>Transport Respawn Limit:</Original>
 </Key>
 <Key ID="STR_ALIVE_CS_RESPAWN_COMMENT">
-	<Original>Set the amount of time before the CS Asset is replenished</Original>
+    <Original>Set the amount of time before the CS Asset is replenished</Original>
 </Key>
 <Key ID="STR_ALIVE_CS_RESPAWN">
-	<Original>Respawn Time:</Original>
+    <Original>Respawn Time:</Original>
 </Key>
 <Key ID="STR_ALIVE_CS_ALLOW_COMMENT">
-	<Original>Define the item the player must have to be able to use Combat Support i.e "LaserDesignator"</Original>
+    <Original>Define the item the player must have to be able to use Combat Support i.e "LaserDesignator"</Original>
 </Key>
 <Key ID="STR_ALIVE_CS_ENABLE">
-	<Original>Enable Combat Support</Original>
+    <Original>Enable Combat Support</Original>
 </Key>
 <Key ID="STR_ALIVE_CS_ENABLE_COMMENT">
-	<Original>Enables the use of Combat Support in Game</Original>
+    <Original>Enables the use of Combat Support in Game</Original>
 </Key>
 <Key ID="STR_ALIVE_CS_DISABLE">
-	<Original>Disable Combat Support</Original>
+    <Original>Disable Combat Support</Original>
 </Key>
 <Key ID="STR_ALIVE_CS_SIDE">
-	<Original>Select Side for Combat Support</Original>
+    <Original>Select Side for Combat Support</Original>
 </Key>
 <Key ID="STR_ALIVE_CS_SIDE_COMMENT">
-	<Original>Select Side for Combat Support</Original>
+    <Original>Select Side for Combat Support</Original>
 </Key>
 <Key ID="STR_ALIVE_CS_DISABLE_COMMENT">
-	<Original>Disable Combat Support in Game</Original>
+    <Original>Disable Combat Support in Game</Original>
 </Key>
 <Key ID="STR_ALIVE_CS_ERROR1">
-	<Original>Only one Combat Support module can be used</Original>
+    <Original>Only one Combat Support module can be used</Original>
 </Key>
 <Key ID="STR_ALIVE_CS_USAGE">
-	<Original>Place Module and set the settings accordingly! Sync to a SUP CAS or SUP Transport Module!</Original>
+    <Original>Place Module and set the settings accordingly! Sync to a SUP CAS or SUP Transport Module!</Original>
 </Key>
 </Container></Package></Project>

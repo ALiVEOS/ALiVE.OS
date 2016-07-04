@@ -4,10 +4,10 @@ _array = toArray _this;
 _return = [];
 
 {
-	if !(_forEachIndex in [0,1]) then
-	{
-		_return set [count _return, _x];
-	};
+    if !(_forEachIndex in [0,1]) then
+    {
+        _return set [count _return, _x];
+    };
 } forEach _array;
 
 toString _return;

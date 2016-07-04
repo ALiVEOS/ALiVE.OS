@@ -25,16 +25,16 @@ _sides = [WEST,EAST,RESISTANCE,CIVILIAN];
 
 //get side
 switch ((getNumber(configfile >> "CfgVehicles" >> _type >> "side"))) do {
-	case 0 : {_side = EAST};
-	case 1 : {_side = WEST};
-	case 2 : {_side = RESISTANCE};
-	default {_side = EAST};
+    case 0 : {_side = EAST};
+    case 1 : {_side = WEST};
+    case 2 : {_side = RESISTANCE};
+    default {_side = EAST};
 };
 
 //Exit if limit is reached
 if (ARTY_RESPAWN_LIMIT == 0) exitwith {
     _replen = format ["All units! We are out of arty assets"];
-	[[player,_replen,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+    [[player,_replen,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 };
 
 //Start respawning if not exited
@@ -44,15 +44,15 @@ ARTY_RESPAWN_LIMIT = ARTY_RESPAWN_LIMIT - 1;
 //Remove from all side-lists
 _toDelete = [];
 {
-		private ["_sideArray","_sideIn"];
+        private ["_sideArray","_sideIn"];
         _sideIn = _x;
-		_sideArray = NEO_radioLogic getVariable [format["NEO_radioArtyArray_%1", _sideIn],[]];
+        _sideArray = NEO_radioLogic getVariable [format["NEO_radioArtyArray_%1", _sideIn],[]];
         {
             if (count _units > 0) then {
                 _toDelete set [count _toDelete,_x];
 
                 _sideArray set [_foreachIndex, -1];
-				_sideArray = _sideArray - [-1];
+                _sideArray = _sideArray - [-1];
             };
         } foreach _sideArray;
         NEO_radioLogic setVariable [format["NEO_radioArtyArray_%1", _sideIn], _sideArray, true];
@@ -87,14 +87,14 @@ if (_side == WEST && _type == "BUS_MotInf_MortTeam") then {
     {
         private ["_veh"];
         _vehPos = [_pos, 15, _vehDir] call BIS_fnc_relPos; _vehPos set [2, 0];
-		_veh = createVehicle [_type, _vehPos, [], 0, "CAN_COLLIDE"];
-		_veh setDir _vehDir;
-		_veh setPosATL _vehPos;
-		[_veh, _grp] call BIS_fnc_spawnCrew;
-		_veh lock true;
-		_vehDir = _vehDir + 90;
+        _veh = createVehicle [_type, _vehPos, [], 0, "CAN_COLLIDE"];
+        _veh setDir _vehDir;
+        _veh setPosATL _vehPos;
+        [_veh, _grp] call BIS_fnc_spawnCrew;
+        _veh lock true;
+        _vehDir = _vehDir + 90;
 
-		_units set [count _units, _veh];
+        _units set [count _units, _veh];
         _artyBatteries pushback _veh;
 
         // set ownership flag for other modules
@@ -108,10 +108,10 @@ if (_side == WEST && _type == "BUS_MotInf_MortTeam") then {
 
 //Validate rounds
 {
-	if ((_x select 0) in _roundsUnit) then
-	{
-		_roundsAvailable set [count _roundsAvailable, _x];
-	};
+    if ((_x select 0) in _roundsUnit) then
+    {
+        _roundsAvailable set [count _roundsAvailable, _x];
+    };
 } forEach _rounds;
 
 leader _grp setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];

@@ -7,19 +7,19 @@ _veh = _casArray select (lbCurSel _casUnitLb) select 0;
 
 if
 (
-	!isNil { uinamespace getVariable "NEO_casMarkerCreated" }
-	&&
-	_veh getVariable "NEO_radioCasUnitStatus" != "KILLED"
-	&&
-	lbCurSel _casUnitLb != -1
-	&&
-	lbCurSel _casTaskLb != -1
+    !isNil { uinamespace getVariable "NEO_casMarkerCreated" }
+    &&
+    _veh getVariable "NEO_radioCasUnitStatus" != "KILLED"
+    &&
+    lbCurSel _casUnitLb != -1
+    &&
+    lbCurSel _casTaskLb != -1
 )
 then
 {
-	_casConfirmButton ctrlEnable true;
+    _casConfirmButton ctrlEnable true;
 }
 else
 {
-	_casConfirmButton ctrlEnable false;
+    _casConfirmButton ctrlEnable false;
 };

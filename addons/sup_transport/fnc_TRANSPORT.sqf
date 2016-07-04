@@ -50,7 +50,7 @@ ALIVE_coreLogic = _logic;
             _callsign = _logic getvariable ["transport_callsign",true];
             _type = _logic getvariable ["transport_type",true];
              CASPOS = _position; PublicVariable "CASPOS";
-_init =	compile (_logic getvariable ["Init",""]);
+_init =    compile (_logic getvariable ["Init",""]);
 
 
 

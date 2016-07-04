@@ -10,9 +10,9 @@ _chopper = _transportArray select (lbCurSel _transportUnitLb) select 0; if (!isN
 _chopper setVariable ["NEO_radioSmokeConfirmed", false, true];
 
 [
-	player,
-	"Negative, throwing another smoke. Over.",
-	"group"
+    player,
+    "Negative, throwing another smoke. Over.",
+    "group"
 ] call NEO_fnc_messageBroadcast;
 
 //Interface
