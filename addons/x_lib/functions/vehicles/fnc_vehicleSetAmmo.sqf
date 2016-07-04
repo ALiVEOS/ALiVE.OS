@@ -25,7 +25,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_vehicle","_ammo","_magazineClass","_roundCount","_roundMax"];
-	
+
 _vehicle = _this select 0;
 _ammo = _this select 1;
 
@@ -34,8 +34,8 @@ _ammo = _this select 1;
 
 // load according to passed ammo array
 {
-	_magazineClass = _x select 0;
-	_roundCount = _x select 1;
-	_roundMax = _x select 2;
-	_vehicle addMagazine [_magazineClass, _roundCount];
+    _magazineClass = _x select 0;
+    _roundCount = _x select 1;
+    _roundMax = _x select 2;
+    _vehicle addMagazine [_magazineClass, _roundCount];
 } forEach _ammo;

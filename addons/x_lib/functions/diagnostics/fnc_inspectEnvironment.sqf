@@ -24,7 +24,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_text","_date"];
-	
+
 _text = " ------------------ Inspecting Environment -------------------- ";
 [_text] call ALIVE_fnc_dump;
 
@@ -39,7 +39,7 @@ _text = " ------------------ Inspecting Environment -------------------- ";
 _date = date;
 [" date: %1-%2-%3 %4:%5", _date select 0, _date select 1, _date select 2, _date select 3, _date select 4] call ALIVE_fnc_dump;
 
-[" time: %1", daytime] call ALIVE_fnc_dump;	
+[" time: %1", daytime] call ALIVE_fnc_dump;
 
 [" overcast: %1", overcast] call ALIVE_fnc_dump;
 

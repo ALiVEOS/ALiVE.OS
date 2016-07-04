@@ -4,24 +4,24 @@
 Function: ALiVE_fnc_modDegrees
 
 Description:
-	Rounds a degree value to 0 <= X <= 360.
-	
+    Rounds a degree value to 0 <= X <= 360.
+
 Parameters:
-	0 - Degree number [number]
+    0 - Degree number [number]
 
 Returns:
-	Modulated degree [number]
+    Modulated degree [number]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
 
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 (((_this select 0) % 360) + 360) % 360

@@ -40,14 +40,14 @@ _pos = [];
 
 for "_i" from 1 to 3000 do {
         _pos = [(_position select 0) + _radius - random (2*_radius),(_position select 1) + _radius - random (2*_radius),0];
-        _pos = 	_pos isflatempty [
-                10,				//--- Minimal distance from another object
-                1,				//--- If 0, just check position. If >0, select new one
-                _maxgradient,			//--- Max gradient
-                _gradientarea,			//--- Gradient area
-                0,				//--- 0 for restricted water, 2 for required water,
-                false,				//--- True if some water can be in 25m radius
-                ObjNull				//--- Ignored object
+        _pos =     _pos isflatempty [
+                10,                //--- Minimal distance from another object
+                1,                //--- If 0, just check position. If >0, select new one
+                _maxgradient,            //--- Max gradient
+                _gradientarea,            //--- Gradient area
+                0,                //--- 0 for restricted water, 2 for required water,
+                false,                //--- True if some water can be in 25m radius
+                ObjNull                //--- Ignored object
         ];
         if (count _pos > 0) then {
                 _pos set [2,0];

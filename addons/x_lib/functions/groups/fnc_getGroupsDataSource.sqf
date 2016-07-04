@@ -20,7 +20,7 @@ _datasource = call ALiVE_fnc_getGroupsDataSource
 
 Author:
 ARJay
- 
+
 Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
@@ -45,40 +45,40 @@ _groups = allGroups;
     if !(isnull _x) then {
 
         _leaderFaction = faction leader _x;
-	    _leaderSide = _leaderFaction call ALiVE_fnc_FactionSide;
-	    _leaderSideNumber = [_leaderSide] call ALIVE_fnc_sideObjectToNumber;
+        _leaderSide = _leaderFaction call ALiVE_fnc_FactionSide;
+        _leaderSideNumber = [_leaderSide] call ALIVE_fnc_sideObjectToNumber;
 
-	    _matched = false;
+        _matched = false;
 
-	    if(_sideNumber == _leaderSideNumber) then {
+        if(_sideNumber == _leaderSideNumber) then {
             _matched = true;
         };
 
-	    if!(isNil "_faction") then {
-	        if(_faction == _leaderFaction) then {
+        if!(isNil "_faction") then {
+            if(_faction == _leaderFaction) then {
                 _matched = true;
-	        }else{
+            }else{
                 _matched = false;
-	        };
-	    };
+            };
+        };
 
-	    if(_matched) then {
+        if(_matched) then {
 
-	        _row = [];
-	        _labels = [];
+            _row = [];
+            _labels = [];
 
-	        _distance = floor (player distance leader _x);
+            _distance = floor (player distance leader _x);
 
-	        _labels pushback (format['%1 [%2m] ---------------------------------------------------------------------',_x,_distance]);
-	        _labels pushback ('');
-	        _labels pushback ('');
-	        _labels pushback ('');
+            _labels pushback (format['%1 [%2m] ---------------------------------------------------------------------',_x,_distance]);
+            _labels pushback ('');
+            _labels pushback ('');
+            _labels pushback ('');
 
-	        _row pushback (_labels);
+            _row pushback (_labels);
 
-	        _containsPlayers = false;
+            _containsPlayers = false;
 
-	        {
+            {
 
                 if(alive _x && isPlayer _x) then {
                     _containsPlayers = true;
@@ -172,9 +172,9 @@ _groups = allGroups;
             };
 
 
-	        {
+            {
 
-            	if(alive _x && _x != _leader) then {
+                if(alive _x && _x != _leader) then {
 
                     _row = [];
                     _labels = [];
@@ -246,9 +246,9 @@ _groups = allGroups;
 
                     };
 
-            	};
+                };
             } forEach units _x;
-	    };
+        };
     };
 } foreach _groups;
 

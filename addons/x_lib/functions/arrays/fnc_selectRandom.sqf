@@ -31,10 +31,10 @@ _bias = _this select 1;
 _result = [];
 _j = 0;
 {
-	for "_i" from 1 to _x do {
+    for "_i" from 1 to _x do {
         _result pushback (_choices select _j);
-	};
-	_j = _j + 1;
+    };
+    _j = _j + 1;
 } forEach _bias;
 
 //hint str _result;

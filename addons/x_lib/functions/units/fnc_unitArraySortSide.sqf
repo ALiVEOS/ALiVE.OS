@@ -27,7 +27,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_units","_err","_sideUnits","_side","_sideUnitsArray"];
-	
+
 _units = _this select 0;
 
 _err = format["unit array sort side requires an array of units - %1",_units];
@@ -41,15 +41,15 @@ _sideUnits = [] call ALIVE_fnc_hashCreate;
 [_sideUnits, "GUER", []] call ALIVE_fnc_hashSet;
 
 {
-	if!(isNull group _x) then {
-		_side = side group _x;
-	} else {
-		_side = side _x;
-	};
-	
-	_sideUnitsArray = [_sideUnits, format["%1",_side]] call ALIVE_fnc_hashGet;
-	_sideUnitsArray pushback _x;
-	
+    if!(isNull group _x) then {
+        _side = side group _x;
+    } else {
+        _side = side _x;
+    };
+
+    _sideUnitsArray = [_sideUnits, format["%1",_side]] call ALIVE_fnc_hashGet;
+    _sideUnitsArray pushback _x;
+
 } forEach _units;
 
 _sideUnits

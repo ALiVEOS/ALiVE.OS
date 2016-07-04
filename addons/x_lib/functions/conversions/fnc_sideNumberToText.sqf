@@ -29,9 +29,9 @@ if (typeName(_this) != "ARRAY") then {_this = [_this]};
 
 switch (_this select 0) do
 {
-	case 0: {"EAST"};
-	case 1: {"WEST"};	
-	case 2: {"GUER"};
-	case 3: {"CIV"};
-	default {""};
+    case 0: {"EAST"};
+    case 1: {"WEST"};
+    case 2: {"GUER"};
+    case 3: {"CIV"};
+    default {""};
 };

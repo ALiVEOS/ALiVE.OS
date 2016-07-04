@@ -20,11 +20,11 @@ Any - Returns the validated value
 Examples:
 (begin example)
 _result = [
-	_logic,
-	_operation,
-	_args,
-	"SYM",
-	["ASYM","SYM"]
+    _logic,
+    _operation,
+    _args,
+    "SYM",
+    ["ASYM","SYM"]
 ] call ALIVE_fnc_OOsimpleOperation;
 (end)
 
@@ -44,44 +44,44 @@ _limited = false;
 // are the option choices empty?
 if(typeName _choices == "ARRAY" &&
 {count _choices > 0}) then {
-	_limited = true;
+    _limited = true;
 };
 
 // is _args objNull (default)?
 if(typeName _logic == "OBJECT" &&
 {typeName _args == "OBJECT"} &&
 {isNull _args}) then {
-	// if so, grab the default value
-	_args = _logic getVariable [_operation, _default];
+    // if so, grab the default value
+    _args = _logic getVariable [_operation, _default];
 };
 // is _args Hash (default)?
 if(typeName _logic == "ARRAY" &&
 {typeName _args == "OBJECT"} &&
 {isNull _args}) then {
-	// if so, grab the default value
-	_args = [_logic, _operation, _default] call ALIVE_fnc_hashGet;
+    // if so, grab the default value
+    _args = [_logic, _operation, _default] call ALIVE_fnc_hashGet;
 };
 
 // is _args the right typeName?
 if(typeName _args != typeName _default) then {
-	// if so, grab the default value
-	_args = _default;
+    // if so, grab the default value
+    _args = _default;
 };
 
 if(_limited) then {
-	// check if _args is one of the choices
-	// otherwise default
-	if(!(_args in _choices)) then {_args = _default;};
+    // check if _args is one of the choices
+    // otherwise default
+    if(!(_args in _choices)) then {_args = _default;};
 };
 
 // set final value
 if(typeName _logic == "OBJECT") then {
-	_logic setVariable [_operation, _args];
+    _logic setVariable [_operation, _args];
 };
 // is _args Hash
 if(typeName _logic == "ARRAY") then {
-	// if so, grab the default value
-	[_logic, _operation, _args] call ALIVE_fnc_hashSet;
+    // if so, grab the default value
+    [_logic, _operation, _args] call ALIVE_fnc_hashSet;
 };
 
 //diag_log PFORMAT_2(_fnc_scriptNameParent,_operation,_args);

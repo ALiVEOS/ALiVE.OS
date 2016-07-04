@@ -4,27 +4,27 @@
 Function: ALiVE_fnc_uErase
 
 Description:
-	Erases a value from an array (objNull method).
-	
+    Erases a value from an array (objNull method).
+
 Parameters:
-	0 - Array [array]
-	1 - Index to erase [number]
+    0 - Array [array]
+    1 - Index to erase [number]
 
 Returns:
-	Array copy [array]
+    Array copy [array]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
-	- <ALiVE_fnc_erase>
-	- <ALiVE_fnc_uErase>
+    - <ALiVE_fnc_erase>
+    - <ALiVE_fnc_uErase>
 
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 private ["_arr"];

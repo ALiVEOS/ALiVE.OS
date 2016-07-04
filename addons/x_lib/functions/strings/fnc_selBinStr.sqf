@@ -4,25 +4,25 @@
 Function: ALiVE_fnc_selBinStr
 
 Description:
-	Selects an index value from a binary string.
-	
+    Selects an index value from a binary string.
+
 Parameters:
-	0 - Binary string [string]
-	1 - Binary string index [number]
+    0 - Binary string [string]
+    1 - Binary string index [number]
 
 Returns:
-	Index result [bool]
+    Index result [bool]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
 
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 private ["_binStrArr", "_index"];

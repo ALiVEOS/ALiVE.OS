@@ -25,7 +25,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_vehicle","_type","_result","_magazines","_magazinesDetail","_turrets","_magazine","_detail","_detailSplit","_ammoCount","_ammoMax"];
-	
+
 _vehicle = _this;
 
 _result = [];
@@ -41,19 +41,19 @@ _magazinesDetail = magazinesDetail _vehicle;
 //["turrets: %1",_turrets] call ALIVE_fnc_dump;
 
 for "_i" from 0 to (count _magazines)-1 do {
-	_magazine = [];
-	_magazine set [0, _magazines select _i];
-	_detail = _magazinesDetail select _i;
-	_detailSplit = [_detail, "("] call CBA_fnc_split;
-	_detail = _detailSplit select (count _detailSplit)-1;
-	_detailSplit = [_detail, "/"] call CBA_fnc_split;
-	_ammoCount = parseNumber(_detailSplit select 0);
-	_detail = _detailSplit select 1;
-	_detailSplit = [_detail, ")"] call CBA_fnc_split;
-	_ammoMax = parseNumber(_detailSplit select 0);
-	_magazine set [1, _ammoCount];
-	_magazine set [2, _ammoMax];
-	_result set [_i, _magazine];
+    _magazine = [];
+    _magazine set [0, _magazines select _i];
+    _detail = _magazinesDetail select _i;
+    _detailSplit = [_detail, "("] call CBA_fnc_split;
+    _detail = _detailSplit select (count _detailSplit)-1;
+    _detailSplit = [_detail, "/"] call CBA_fnc_split;
+    _ammoCount = parseNumber(_detailSplit select 0);
+    _detail = _detailSplit select 1;
+    _detailSplit = [_detail, ")"] call CBA_fnc_split;
+    _ammoMax = parseNumber(_detailSplit select 0);
+    _magazine set [1, _ammoCount];
+    _magazine set [2, _ammoMax];
+    _result set [_i, _magazine];
 };
 
 _result

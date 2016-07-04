@@ -20,7 +20,7 @@ _datasource = call ALiVE_fnc_getPlayersDataSource
 
 Author:
 ARJay
- 
+
 Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
@@ -36,12 +36,12 @@ _values = [];
 
 {
     if !(isnull _x) then {
-	    _playerSide = (faction _x) call ALiVE_fnc_FactionSide;
-	    _playerSideNumber = [_playerSide] call ALIVE_fnc_sideObjectToNumber;
-	    if(_sideNumber == _playerSideNumber) then {
-	        _options pushback (format["%1 - %2",name _x, group _x]);
-	        _values pushback (getPlayerUID _x);
-	    };
+        _playerSide = (faction _x) call ALiVE_fnc_FactionSide;
+        _playerSideNumber = [_playerSide] call ALIVE_fnc_sideObjectToNumber;
+        if(_sideNumber == _playerSideNumber) then {
+            _options pushback (format["%1 - %2",name _x, group _x]);
+            _values pushback (getPlayerUID _x);
+        };
     };
 } foreach allPlayers;
 

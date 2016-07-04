@@ -4,24 +4,24 @@
 Function: ALiVE_fnc_pop
 
 Description:
-	Removes a value from the end of the array.
-	
+    Removes a value from the end of the array.
+
 Parameters:
-	0 - Array [array]
+    0 - Array [array]
 
 Returns:
-	Array copy [array]
+    Array copy [array]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
 
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 private ["_arr", "_arrCount"];
@@ -30,7 +30,7 @@ _arrCount = count _arr;
 
 if (_arrCount > 0) then
 {
-	_arr resize (_arrCount - 1);
+    _arr resize (_arrCount - 1);
 };
 
 _arr

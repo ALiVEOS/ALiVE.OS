@@ -33,14 +33,14 @@ _currenttime = date;
 
 // Work out time in 4 digits
 if ((_currenttime select 4) < 10) then {
-	_minutes = "0" + str(_currenttime select 4);
+    _minutes = "0" + str(_currenttime select 4);
 } else {
-	_minutes = str(_currenttime select 4);
-	};
+    _minutes = str(_currenttime select 4);
+    };
 if ((_currenttime select 3) < 10) then {
-	_hours = "0" + str(_currenttime select 3);
+    _hours = "0" + str(_currenttime select 3);
 } else {
-	_hours = str(_currenttime select 3);
+    _hours = str(_currenttime select 3);
 };
 
 _gametime = format["%1%2", _hours, _minutes];
@@ -51,7 +51,7 @@ _groupID = [] call ALIVE_fnc_getGroupID;
 _operation = getText (missionConfigFile >> "OnLoadName");
 
 if (_operation == "") then {
-		_operation = missionName;
+        _operation = missionName;
 };
 
 [_hash, "gameTime", _gametime] call ALIVE_fnc_hashSet;

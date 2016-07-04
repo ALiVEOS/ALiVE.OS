@@ -24,18 +24,18 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_vehicle","_result","_group"];
-	
+
 _vehicle = _this;
 
 _result = [];
 
 {
-	if(alive _x) then {
-		_group = group _x;
-		if!(_group in _result) then {
-			_result pushback _group;
-		};
-	};
+    if(alive _x) then {
+        _group = group _x;
+        if!(_group in _result) then {
+            _result pushback _group;
+        };
+    };
 } forEach (crew _vehicle);
 
 _result

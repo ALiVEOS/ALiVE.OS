@@ -35,7 +35,7 @@ if (!(alive _unit) || {count _pos < 2}) exitwith {diag_log "domoveRemote failed 
 _unit setvariable [QGVAR(MOVEDESTINATION),_pos];
 
 if (local _unit) exitwith {
-	_unit doMove _pos;
+    _unit doMove _pos;
 };
 
 //if !local send to server to distribute

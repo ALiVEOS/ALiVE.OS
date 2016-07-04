@@ -34,24 +34,24 @@ PARAMS_3(_markers,_obj_array,_insideOnly);
 _result = _obj_array;
 
 {
-	_marker = _x;
-	if(_marker != "") then {
-		if(!(_marker call ALIVE_fnc_markerExists)) then {
-			[format["Validate locations marker (""%1"") does not exist",_marker]] call BIS_fnc_errorMsg;
-		} else {
-			_marker setMarkerAlpha 0;
-			if !(_foreachIndex > 0 && _insideOnly) then {_result = []};
-//			diag_log str(_marker);
-			{
-				private["_in"];
-				_in = [_x, _marker] call ALiVE_fnc_inArea;
-				if((!_insideOnly || _in) && !(!_insideOnly && _in)) then {
-					_result pushback _x;
-//					diag_log str(_result);
-				};
-			} forEach _obj_array;
-		};
-	};
+    _marker = _x;
+    if(_marker != "") then {
+        if(!(_marker call ALIVE_fnc_markerExists)) then {
+            [format["Validate locations marker (""%1"") does not exist",_marker]] call BIS_fnc_errorMsg;
+        } else {
+            _marker setMarkerAlpha 0;
+            if !(_foreachIndex > 0 && _insideOnly) then {_result = []};
+//            diag_log str(_marker);
+            {
+                private["_in"];
+                _in = [_x, _marker] call ALiVE_fnc_inArea;
+                if((!_insideOnly || _in) && !(!_insideOnly && _in)) then {
+                    _result pushback _x;
+//                    diag_log str(_result);
+                };
+            } forEach _obj_array;
+        };
+    };
 } forEach _markers;
 
 _result;

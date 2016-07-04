@@ -42,14 +42,14 @@ _tmp = _this param [0, objNull, [objNull]];
 _result = [str _tmp, ": "] call CBA_fnc_split;
 
 if(count _result > 1) then {
-	_result = [_result select 0, "# "] call CBA_fnc_split;
-	if(count _result > 1) then {
-		_result = parseNumber (_result select 1);
-	}else{
-		_result = parseNumber (_result select 0);
-	};
+    _result = [_result select 0, "# "] call CBA_fnc_split;
+    if(count _result > 1) then {
+        _result = parseNumber (_result select 1);
+    }else{
+        _result = parseNumber (_result select 0);
+    };
 } else {
-	_result = typeOf _tmp;
+    _result = typeOf _tmp;
 };
 
 //["r: %1",str _result] call ALIVE_fnc_dump;

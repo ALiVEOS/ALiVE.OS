@@ -4,26 +4,26 @@
 Function: ALiVE_fnc_allActors
 
 Description:
-	Returns all actors in the current mission.
+    Returns all actors in the current mission.
 
 Parameters:
-	0 - Actor group [group] (optional)
+    0 - Actor group [group] (optional)
 
 Returns:
-	Actor list [array]
+    Actor list [array]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
-	- <ALIVE_fnc_createActor>
-	- <ALIVE_fnc_sendActorMessage>
+    - <ALIVE_fnc_createActor>
+    - <ALIVE_fnc_sendActorMessage>
 
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 private ["_group"];
@@ -31,10 +31,10 @@ _group = [_this, 1, ["GROUP"], ALiVE_actors_mainGroup] call ALiVE_fnc_param;
 
 if (!isNil "_group") then
 {
-	units _group
+    units _group
 }
 else
 {
-	LOG_WARNING("ALiVE_fnc_allActors", "Attempted to list actors before the main actor group was created!");
-	[]
+    LOG_WARNING("ALiVE_fnc_allActors", "Attempted to list actors before the main actor group was created!");
+    []
 };

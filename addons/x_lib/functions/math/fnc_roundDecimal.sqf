@@ -4,25 +4,25 @@
 Function: ALiVE_fnc_roundDecimal
 
 Description:
-	Rounds a numerical value to a certain number of decimal places.
-	
+    Rounds a numerical value to a certain number of decimal places.
+
 Parameters:
-	0 - Decimal number [number]
-	1 - Decimal places [number]
+    0 - Decimal number [number]
+    1 - Decimal places [number]
 
 Returns:
-	Rounded decimal [number]
+    Rounded decimal [number]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
 
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 private ["_prec"];

@@ -27,7 +27,7 @@ Wolffy.au
 ---------------------------------------------------------------------------- */
 
 private ["_vehicle","_positions","_class","_turretEmptyCount","_playerTurretEmptyCount","_findRecurse","_turrets"];
-	
+
 _vehicle = _this select 0;
 
 _positions = [0,0,0,0,0,0];
@@ -40,61 +40,61 @@ _turretEmptyCount = 0;
 _playerTurretEmptyCount = 0;
 
 _findRecurse = {
-	private ["_root","_turret","_path","_currentPath","_hasGunner","_primaryGunner","_primaryObserver","_copilot","_isPersonTurret"];
-	
-	_root = (_this select 0);
-	_path = +(_this select 1);
-	
-	for "_i" from 0 to count _root -1 do {
-	
-		_turret = _root select _i;
-		
-		if (isClass _turret) then {
-			_currentPath = _path + [_i];
-			
-			_primaryGunner = false;
-			_primaryObserver = false;
-			_copilot = false;
-			_isPersonTurret = false;
+    private ["_root","_turret","_path","_currentPath","_hasGunner","_primaryGunner","_primaryObserver","_copilot","_isPersonTurret"];
 
-			if(getNumber(_turret >> "primaryGunner") == 1) then {
-				_primaryGunner = true;
-				_positions set [1, 1];
-			};
-			
-			if(getNumber(_turret >> "primaryObserver") == 1) then {
-				_primaryObserver = true;
-				_positions set [2, 1];
-			};
+    _root = (_this select 0);
+    _path = +(_this select 1);
 
-			if(getNumber(_turret >> "isCopilot") == 1) then {
-			    if(_vehicle == "B_Heli_Light_01_F") then {
-			        _copilot = true;
-			        _turretEmptyCount = _turretEmptyCount +1;
+    for "_i" from 0 to count _root -1 do {
+
+        _turret = _root select _i;
+
+        if (isClass _turret) then {
+            _currentPath = _path + [_i];
+
+            _primaryGunner = false;
+            _primaryObserver = false;
+            _copilot = false;
+            _isPersonTurret = false;
+
+            if(getNumber(_turret >> "primaryGunner") == 1) then {
+                _primaryGunner = true;
+                _positions set [1, 1];
+            };
+
+            if(getNumber(_turret >> "primaryObserver") == 1) then {
+                _primaryObserver = true;
+                _positions set [2, 1];
+            };
+
+            if(getNumber(_turret >> "isCopilot") == 1) then {
+                if(_vehicle == "B_Heli_Light_01_F") then {
+                    _copilot = true;
+                    _turretEmptyCount = _turretEmptyCount +1;
                 };
-			};
+            };
 
-			if(getNumber(_turret >> "isPersonTurret") == 1) then {
-			    _isPersonTurret = true;
-			};
+            if(getNumber(_turret >> "isPersonTurret") == 1) then {
+                _isPersonTurret = true;
+            };
 
-			if(!(_primaryGunner) && !(_primaryObserver) && !(_copilot)) then {
-				if!(_isPersonTurret) then {
-					_turretEmptyCount = _turretEmptyCount +1;
+            if(!(_primaryGunner) && !(_primaryObserver) && !(_copilot)) then {
+                if!(_isPersonTurret) then {
+                    _turretEmptyCount = _turretEmptyCount +1;
                 }else{
-                	_playerTurretEmptyCount = _playerTurretEmptyCount +1;
+                    _playerTurretEmptyCount = _playerTurretEmptyCount +1;
                 };
-			};
+            };
 
-			//["PG: %1 PO: %2", _primaryGunner,_primaryObserver] call ALIVE_fnc_dump;
-			
-			_turret = _turret >> "turrets";
-			
-			if (isClass _turret) then {
-				[_turret, _currentPath] call _findRecurse;
-			};
-		};
-	};
+            //["PG: %1 PO: %2", _primaryGunner,_primaryObserver] call ALIVE_fnc_dump;
+
+            _turret = _turret >> "turrets";
+
+            if (isClass _turret) then {
+                [_turret, _currentPath] call _findRecurse;
+            };
+        };
+    };
 };
 
 _turrets = (configFile >> "CfgVehicles" >> _vehicle >> "turrets");

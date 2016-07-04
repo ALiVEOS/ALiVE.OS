@@ -39,12 +39,12 @@ nil
 private ["_result"];
 
 if(
-	isNil "_this" ||
-	{typeName _this != "ARRAY"} ||
-	{count _this == 0} ||
-	{typeName (_this select 0) != "OBJECT"}
+    isNil "_this" ||
+    {typeName _this != "ARRAY"} ||
+    {count _this == 0} ||
+    {typeName (_this select 0) != "OBJECT"}
 ) then {
-	_this = [objNull, "create"];
+    _this = [objNull, "create"];
 };
 
 TRACE_1("baseClass - input",_this);
@@ -57,22 +57,22 @@ params [
 _result = true;
 
 switch(_operation) do {
-	default {
-		private["_err"];
-		_err = format["%1 does not support ""%2"" operation", _logic, _operation];
-		_err call ALiVE_fnc_logger;
-	};
-	case "create": {
-		// Create a module object for settings and persistence
-		_logic = createAgent ["LOGIC", [0,0], [], 0, "NONE"];
-		_logic setVariable ["class", ALIVE_fnc_baseClass];
-		_logic enableSimulation false;
-		_result = _logic;
-	};
-	case "destroy": {
-		_logic setVariable ["class", nil];
-		deleteVehicle _logic;
-	};
+    default {
+        private["_err"];
+        _err = format["%1 does not support ""%2"" operation", _logic, _operation];
+        _err call ALiVE_fnc_logger;
+    };
+    case "create": {
+        // Create a module object for settings and persistence
+        _logic = createAgent ["LOGIC", [0,0], [], 0, "NONE"];
+        _logic setVariable ["class", ALIVE_fnc_baseClass];
+        _logic enableSimulation false;
+        _result = _logic;
+    };
+    case "destroy": {
+        _logic setVariable ["class", nil];
+        deleteVehicle _logic;
+    };
 };
 TRACE_1("baseClass - output",_result);
 _result;

@@ -34,16 +34,16 @@ nil
 isHC = !isDedicated && {!hasInterface};
 
 if (isNil "headlessClients" && isServer) then {
-	headlessClients = [];
-	publicVariable "headlessClients";
+    headlessClients = [];
+    publicVariable "headlessClients";
 };
 
 if (isHC) then {
     [] spawn {
         waituntil {!isnil "headlessClients" && {!isNull player}};
-        
+
         headlessClients pushback player;
-		publicVariable "headlessClients";
+        publicVariable "headlessClients";
     };
 };
 

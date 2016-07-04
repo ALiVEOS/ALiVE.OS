@@ -4,27 +4,27 @@
 Function: ALiVE_fnc_estimateMemoryUsage
 
 Description:
-	Estimates the uncompressed memory usage of some data value.
-	
+    Estimates the uncompressed memory usage of some data value.
+
 Parameters:
-	0 - Data [any]
+    0 - Data [any]
 
 Returns:
-	Memory usage in bytes [number]
+    Memory usage in bytes [number]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
 
 Notes:
-	1. Will freeze the game on large data values, so use with caution.
+    1. Will freeze the game on large data values, so use with caution.
 
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 count toArray(str(_this select 0))

@@ -54,33 +54,33 @@ _cfgFindFaction = {
     _result = [];
 
     _findRecurse = {
-    	private ["_root","_class","_path","_currentPath","_currentFaction"];
+        private ["_root","_class","_path","_currentPath","_currentFaction"];
 
-    	_root = (_this select 0);
-    	_path = +(_this select 1);
+        _root = (_this select 0);
+        _path = +(_this select 1);
 
         _currentFaction = [_root >> "faction"] call ALIVE_fnc_getConfigValue;
 
-    	if!(isNil "_currentFaction") then {
-    	    if(_currentFaction == _faction) then {
-    	        _result pushback _root;
-    	    };
-    	};
+        if!(isNil "_currentFaction") then {
+            if(_currentFaction == _faction) then {
+                _result pushback _root;
+            };
+        };
 
-    	for "_i" from 0 to count _root -1 do {
+        for "_i" from 0 to count _root -1 do {
 
-    		_class = _root select _i;
+            _class = _root select _i;
 
-    		if (isClass _class) then {
-    			_currentPath = _path + [_i];
+            if (isClass _class) then {
+                _currentPath = _path + [_i];
 
-    			_className = configName _class;
+                _className = configName _class;
 
-    			_class = _root >> _className;
+                _class = _root >> _className;
 
-    			[_class, _currentPath] call _findRecurse;
-    		};
-    	};
+                [_class, _currentPath] call _findRecurse;
+            };
+        };
     };
 
     [_cfg, []] call _findRecurse;

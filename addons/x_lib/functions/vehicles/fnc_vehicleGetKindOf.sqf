@@ -26,33 +26,33 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_vehicle","_result"];
-	
+
 _vehicle = _this;
 _result = "Vehicle";
 
 if(_vehicle isKindOf "Car") then {
-	_result = "Car";
+    _result = "Car";
 };
 if(_vehicle isKindOf "Tank") then {
-	_result = "Tank";
+    _result = "Tank";
 };
 if(_vehicle isKindOf "Armored") then {
-	_result = "Armored";
+    _result = "Armored";
 };
 if(_vehicle isKindOf "Truck") then {
-	_result = "Truck";
-};					
+    _result = "Truck";
+};
 if(_vehicle isKindOf "Ship") then {
-	_result = "Ship";
+    _result = "Ship";
 };
 if(_vehicle isKindOf "Helicopter") then {
-	_result = "Helicopter";
+    _result = "Helicopter";
 };
 if(_vehicle isKindOf "Plane") then {
-	_result = "Plane";
+    _result = "Plane";
 };
 if(_vehicle isKindOf "StaticWeapon") then {
-	_result = "StaticWeapon";
+    _result = "StaticWeapon";
 };
 
 _result

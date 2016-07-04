@@ -14,10 +14,10 @@ Returns:
 
 Examples:
 (begin example)
-// dump variable 
+// dump variable
 [getPos player] call ALIVE_fnc_dumpMPH;
 
-// dump as format 
+// dump as format
 ["position: %1", getPos player] call ALIVE_fnc_dumpMPH;
 (end)
 
@@ -27,23 +27,23 @@ Author:
 ARJay, Highhead
 ---------------------------------------------------------------------------- */
 private ["_variable","_variableType","_output"];
-	
+
 _variable = _this select 0;
 _variableType = typename _variable;
 _output = "";
 
 if(count _this > 1) then {
-	_variable = format _this;
+    _variable = format _this;
 };
 
 if(isNil {_variableType}) then {
-	_output = ["IS NIL"];
+    _output = ["IS NIL"];
 } else {
-	if(_variableType == "STRING" || {_variableType == "TEXT"}) then {
-		_output = _variable;
-	} else {
-		_output = str _variable;
-	};
+    if(_variableType == "STRING" || {_variableType == "TEXT"}) then {
+        _output = _variable;
+    } else {
+        _output = str _variable;
+    };
 };
 
 diag_log _output;

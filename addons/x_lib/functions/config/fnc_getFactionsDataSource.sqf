@@ -20,7 +20,7 @@ _datasource = [] call ALiVE_fnc_getFactionsDataSource
 
 Author:
 ARJay
- 
+
 Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
@@ -34,22 +34,22 @@ _values = [];
 _factionConfig = (configfile >> "CfgFactionClasses");
 
 for "_i" from 0 to count _factionConfig -1 do {
-	_class = _factionConfig select _i;
+    _class = _factionConfig select _i;
 
-	if (isClass _class) then {
+    if (isClass _class) then {
 
         _classSide = getNumber(_class >> "side");
 
-	    if(_classSide >= 0 && _classSide < 3) then {
-	        _classSideText = [_classSide] call ALIVE_fnc_sideNumberToText;
+        if(_classSide >= 0 && _classSide < 3) then {
+            _classSideText = [_classSide] call ALIVE_fnc_sideNumberToText;
             _classSideText = [_classSideText] call ALIVE_fnc_sideTextToLong;
-	        _factionClass = configName _class;
+            _factionClass = configName _class;
             _factionName = getText(_class >> "displayName");
             _options pushback (format["%1 - %2",_factionName,_classSideText]);
             _values pushback _factionClass;
-	    };
+        };
 
-	};
+    };
 };
 
 _data set [0,_options];

@@ -55,59 +55,59 @@ _nonSims = ["parachute","house"];
 
 _allvehs = [];
 for "_y" from 1 to count(configFile >> "CfgVehicles") - 1 do {
-	_vehx = (configFile >> "CfgVehicles") select _y;
-	if(getNumber (_vehx >> "scope") >= 1) then {
-		if (!(getText(_vehx >> "simulation") in _nonsims)) then {
-			_cx = configName _vehx;
-			if ({(_cx isKindOf _x)} count _nonconfigs == 0) then {
-				if (getNumber(_vehx >> "TransportSoldier") >= _cargoslots) then {
-					if (!isNil "_fac") then {
-						_fx = getText(_vehx >> "faction");
-						switch(toUpper(typeName _fac)) do {
-							case "STRING": {
-								if(_fx == _fac) then {
-									if (!isnil "_type") then {
-										if (_cx isKindOf _type) then {
-	                                        if (_noWeapons) then {
-	                    						if ([_cx] call ALiVE_fnc_isArmed) then {_allvehs pushback _cx};
-	                                        } else {
+    _vehx = (configFile >> "CfgVehicles") select _y;
+    if(getNumber (_vehx >> "scope") >= 1) then {
+        if (!(getText(_vehx >> "simulation") in _nonsims)) then {
+            _cx = configName _vehx;
+            if ({(_cx isKindOf _x)} count _nonconfigs == 0) then {
+                if (getNumber(_vehx >> "TransportSoldier") >= _cargoslots) then {
+                    if (!isNil "_fac") then {
+                        _fx = getText(_vehx >> "faction");
+                        switch(toUpper(typeName _fac)) do {
+                            case "STRING": {
+                                if(_fx == _fac) then {
+                                    if (!isnil "_type") then {
+                                        if (_cx isKindOf _type) then {
+                                            if (_noWeapons) then {
+                                                if ([_cx] call ALiVE_fnc_isArmed) then {_allvehs pushback _cx};
+                                            } else {
                                                 _allvehs pushback _cx;
                                             };
-										};
-									} else {
-										if (_noWeapons) then {
-                    						if ([_cx] call ALiVE_fnc_isArmed) then {_allvehs pushback _cx};
+                                        };
+                                    } else {
+                                        if (_noWeapons) then {
+                                            if ([_cx] call ALiVE_fnc_isArmed) then {_allvehs pushback _cx};
                                         } else {
                                             _allvehs pushback _cx;
                                         };
-									};
-								};
-							};
-							case "ARRAY": {
-								if(_fx in _fac) then {
-									if (!isnil "_type") then {
-										if (_cx isKindOf _type) then {
-	                                        if (_noWeapons) then {
-	                    						if ([_cx] call ALiVE_fnc_isArmed) then {_allvehs pushback _cx};
-	                                        } else {
+                                    };
+                                };
+                            };
+                            case "ARRAY": {
+                                if(_fx in _fac) then {
+                                    if (!isnil "_type") then {
+                                        if (_cx isKindOf _type) then {
+                                            if (_noWeapons) then {
+                                                if ([_cx] call ALiVE_fnc_isArmed) then {_allvehs pushback _cx};
+                                            } else {
                                                 _allvehs pushback _cx;
                                             };
-										};
-									} else {
-										if (_noWeapons) then {
-                    						if ([_cx] call ALiVE_fnc_isArmed) then {_allvehs pushback _cx};
+                                        };
+                                    } else {
+                                        if (_noWeapons) then {
+                                            if ([_cx] call ALiVE_fnc_isArmed) then {_allvehs pushback _cx};
                                         } else {
                                             _allvehs pushback _cx;
                                         };
-									};
-								};
-							};
-						};
-					};
-				};
-			};
-		};
-	};
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+        };
+    };
 };
 
 call compile (format["%1 = %2",_searchbag,_allvehs]);

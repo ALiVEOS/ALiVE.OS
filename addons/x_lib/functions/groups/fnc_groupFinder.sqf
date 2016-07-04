@@ -39,16 +39,16 @@ _side = nil;
 
 // get all factions
 if(isNil QGVAR(ALLFACTIONS)) then {
-	GVAR(ALLFACTIONS) = [] call BIS_fnc_getFactions;
+    GVAR(ALLFACTIONS) = [] call BIS_fnc_getFactions;
 };
 
 // if default or selection by side
 if (typeName _fac == "ANY" || {typeName _fac == "SIDE"}) then {
-        
+
         if(typeName _fac == "SIDE") then {
                 _side = _fac;
         };
-        
+
         switch(_side) do {
                 case east: {
                         _sidex = 0;
@@ -63,7 +63,7 @@ if (typeName _fac == "ANY" || {typeName _fac == "SIDE"}) then {
                         _sidex = 3;
                 };
         };
-        
+
         {
                 _fx = getNumber(configFile >> "CfgFactionClasses" >> _x >> "side");
                 if (_fx == _sidex) then {
@@ -94,24 +94,24 @@ if(!isNil "_facs") then {
                         case civilian : {"Civilian"};
                         default {str _x};
                 };
-                
+
                 private ["_x"];
                 // Confirm there are units for this faction in this type
                 {
                     _typex = count(configFile >> "CfgGroups" >> _s >> _x);
                     for "_z" from 0 to _typex - 1 do {
-                        
+
                         _type = configName((configFile >> "CfgGroups" >> _s >> _x) select _z);
-                    
+
                         _grpx = count(configFile >> "CfgGroups" >> _s >> _x >> _type);
                         for "_y" from 1 to _grpx - 1 do {
-                         	_entry = configName((configFile >> "CfgGroups" >> _s >> _x >> _type) select _y);
-                            
+                             _entry = configName((configFile >> "CfgGroups" >> _s >> _x >> _type) select _y);
+
                             if (_entry find _find > -1) then {
                                 _grps pushback _entry;
                             };
                         };
-                	};
+                    };
                 } forEach _facs;
         } forEach [west,east,resistance,civilian];
 };

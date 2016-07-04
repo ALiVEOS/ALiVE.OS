@@ -13,7 +13,7 @@ Nothing
 
 Examples:
 (begin example)
-	[ _module, _msg] call ALIVE_fnc_sendHint;
+    [ _module, _msg] call ALIVE_fnc_sendHint;
 (end)
 
 Author:

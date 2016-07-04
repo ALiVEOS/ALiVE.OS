@@ -38,7 +38,7 @@ _value = _this select 0;
 _result = false;
 
 if ((typeName _value) == "ARRAY" && {(count _value) == 4} && {(typeName (_value select HASH_ID)) == (typeName TYPE_HASH)}) then {
-	_result = ((_value select HASH_ID) == TYPE_HASH);
+    _result = ((_value select HASH_ID) == TYPE_HASH);
 };
 
 _result;

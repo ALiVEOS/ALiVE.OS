@@ -43,15 +43,15 @@ _color = _this select 4;
 _alpha = _this select 5;
 
 _pos = [
-	((_start select 0) + (_end select 0)) / 2,
-	((_start select 1) + (_end select 1)) / 2,
-	((_start select 2) + (_end select 2)) / 2
+    ((_start select 0) + (_end select 0)) / 2,
+    ((_start select 1) + (_end select 1)) / 2,
+    ((_start select 2) + (_end select 2)) / 2
 ];
 
 
 _tmp = [
-	((_end select 0) - (_start select 0)),
-	((_end select 1) - (_start select 1))
+    ((_end select 0) - (_start select 0)),
+    ((_end select 1) - (_start select 1))
 ];
 
 _length = (_tmp select 0) * (_tmp select 0) + (_tmp select 1) * (_tmp select 1);
