@@ -49,21 +49,21 @@ _formation = "COLUMN";
 _profileSide = [_profile,"side"] call ALIVE_fnc_hashGet;
 
 switch(_profileSide) do {
-	case "EAST":{
-		_debugColor = "ColorRed";
-	};
-	case "WEST":{
-		_debugColor = "ColorBlue";
-	};
-	case "CIV":{
-		_debugColor = "ColorYellow";
-	};
-	case "GUER":{
-		_debugColor = "ColorGreen";
-	};
-	default {
-		_debugColor = "ColorRed";
-	};
+    case "EAST":{
+        _debugColor = "ColorRed";
+    };
+    case "WEST":{
+        _debugColor = "ColorBlue";
+    };
+    case "CIV":{
+        _debugColor = "ColorYellow";
+    };
+    case "GUER":{
+        _debugColor = "ColorGreen";
+    };
+    default {
+        _debugColor = "ColorRed";
+    };
 };
 
 // Add startpoint as waypoint
@@ -72,7 +72,7 @@ _profileWaypoint = [_startPos, 15, _type, _speed, 30, [], _formation, "NO CHANGE
 [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
 if (_debug) then {
-	[str(random 1000), _startPos, "ICON",[1,1],"COLOR:","ColorGreen","TYPE:","mil_dot","TEXT:",format ["Marine-%1-START",[_profile,"profileID"] call ALIVE_fnc_hashGet]] call CBA_fnc_createMarker;
+    [str(random 1000), _startPos, "ICON",[1,1],"COLOR:","ColorGreen","TYPE:","mil_dot","TEXT:",format ["Marine-%1-START",[_profile,"profileID"] call ALIVE_fnc_hashGet]] call CBA_fnc_createMarker;
 };
 
 
@@ -94,29 +94,29 @@ if (count _vehiclesInCommandOf > 0) then {
     [_profileWaypoint,"statements",["true","_disableSimulation = true;"]] call ALIVE_fnc_hashSet;
     [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
-	if (_debug  && count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) < 5) then {
-    	[str(random 1000), _objective, "ICON",[1,1],"COLOR:",_debugColor,"TYPE:","mil_dot","TEXT:",format ["Marine-%1-%2",[_profile,"profileID"] call ALIVE_fnc_hashGet, count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet)]] call CBA_fnc_createMarker;
+    if (_debug  && count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) < 5) then {
+        [str(random 1000), _objective, "ICON",[1,1],"COLOR:",_debugColor,"TYPE:","mil_dot","TEXT:",format ["Marine-%1-%2",[_profile,"profileID"] call ALIVE_fnc_hashGet, count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet)]] call CBA_fnc_createMarker;
     };
 };
 
 // Find other waypoints in the sea
 while {count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) < 5} do {
-	private ["_lastpos","_profileWaypoint"];
+    private ["_lastpos","_profileWaypoint"];
 
-	if (isNil "_gpos") then {
-		_lastpos = _startPos;
-	} else {
-		_lastpos = _gpos;
-	};
+    if (isNil "_gpos") then {
+        _lastpos = _startPos;
+    } else {
+        _lastpos = _gpos;
+    };
 
     // Find a new position in the sea (doesn't have to be closest)
     _gpos = [_startPos, false] call ALiVE_fnc_getClosestSea;
 
     if !(surfaceIsWater _gpos) then {
 
-		if (_debug) then {
-		    ["ALIVE SEA PATROL - ALERT NON WATER POSITION Pos: %1 - On Water: %2",  _gpos, surfaceIsWater _gpos] call ALIVE_fnc_dump;
-		};
+        if (_debug) then {
+            ["ALIVE SEA PATROL - ALERT NON WATER POSITION Pos: %1 - On Water: %2",  _gpos, surfaceIsWater _gpos] call ALIVE_fnc_dump;
+        };
         // Find a position that is definitely in water
         _gpos = [_gpos, 15, _radius, 20, 2, 10, 0, [], [_startPos,_startPos]] call bis_fnc_findSafePos;
     };
@@ -133,22 +133,22 @@ while {count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) < 5} do {
             [_profileWaypoint,"statements",["true","_disableSimulation = true;"]] call ALIVE_fnc_hashSet;
             [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
-			if (_debug  && count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) < 5) then {
-            	[str(random 1000), _gpos, "ICON",[1,1],"COLOR:",_debugColor,"TYPE:","mil_dot","TEXT:",format ["Marine-%1-%2",[_profile,"profileID"] call ALIVE_fnc_hashGet, count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet)]] call CBA_fnc_createMarker;
+            if (_debug  && count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) < 5) then {
+                [str(random 1000), _gpos, "ICON",[1,1],"COLOR:",_debugColor,"TYPE:","mil_dot","TEXT:",format ["Marine-%1-%2",[_profile,"profileID"] call ALIVE_fnc_hashGet, count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet)]] call CBA_fnc_createMarker;
             };
-		} else {
-			if (_debug) then {
-        		["ALIVE AMB SEA PATROL [WP] - ALERT WAYPOINT MUST CROSS LAND LastPos: %1 - New Pos: %2",  _lastpos, _gpos] call ALIVE_fnc_dump;
-			};
-		};
+        } else {
+            if (_debug) then {
+                ["ALIVE AMB SEA PATROL [WP] - ALERT WAYPOINT MUST CROSS LAND LastPos: %1 - New Pos: %2",  _lastpos, _gpos] call ALIVE_fnc_dump;
+            };
+        };
 
     } else {
-		if (_debug) then {
-        	["ALIVE AMB SEA PATROL [WP] - ALERT NON WATER POSITION Pos: %1 - On Water: %2",  _gpos, surfaceIsWater _gpos] call ALIVE_fnc_dump;
+        if (_debug) then {
+            ["ALIVE AMB SEA PATROL [WP] - ALERT NON WATER POSITION Pos: %1 - On Water: %2",  _gpos, surfaceIsWater _gpos] call ALIVE_fnc_dump;
         };
     };
 };
 
 if (_debug) then {
-	["ALIVE CP [%1] - Placing Sea Patrol: %2 at %3. On water: %4 with %5 waypoints",_faction, _seaPatrolGroup, _startPos, surfaceIsWater _startPos, count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet)] call ALIVE_fnc_dump;
+    ["ALIVE CP [%1] - Placing Sea Patrol: %2 at %3. On water: %4 with %5 waypoints",_faction, _seaPatrolGroup, _startPos, surfaceIsWater _startPos, count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet)] call ALIVE_fnc_dump;
 };

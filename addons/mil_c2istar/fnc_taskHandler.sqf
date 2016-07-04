@@ -479,9 +479,9 @@ switch(_operation) do {
                     _player = selectRandom (_taskPlayers select 0);
                     _player = [_player] call ALIVE_fnc_getPlayerByUID;
                 };
-                
-	            _position = position _player;
-	            _taskData set [6,_position];
+
+                _position = position _player;
+                _taskData set [6,_position];
             };
 
             _taskSet = ["init", _taskID, _taskData, [], _debug] call (call compile format["ALIVE_fnc_task%1",_taskType]);

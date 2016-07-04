@@ -45,48 +45,48 @@ _nextStateArgs = [];
 
 // DEBUG -------------------------------------------------------------------------------------
 //if(_debug) then {
-	["ALiVE Managed Script Command - [%1] called args: %2",_profileID,_args] call ALIVE_fnc_dump;
+    ["ALiVE Managed Script Command - [%1] called args: %2",_profileID,_args] call ALIVE_fnc_dump;
 //};
-// DEBUG -------------------------------------------------------------------------------------	
+// DEBUG -------------------------------------------------------------------------------------
 
 switch (_state) do {
-	case "init":{
-	
-		// DEBUG -------------------------------------------------------------------------------------
-		//if(_debug) then {
-			["ALiVE Managed Script Command - [%1] state: %2",_profileID,_state] call ALIVE_fnc_dump;
-		//};
-		// DEBUG -------------------------------------------------------------------------------------
-		
-		_nextState = "stateOne";
-		_nextStateArgs = _args + ["param3","param4"];
-		
-		[_commandState, _profileID, [_profile, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-	};
-	case "stateOne":{
-	
-		// DEBUG -------------------------------------------------------------------------------------
-		//if(_debug) then {
-			["ALiVE Managed Script Command - [%1] state: %2",_profileID,_state] call ALIVE_fnc_dump;
-		//};
-		// DEBUG -------------------------------------------------------------------------------------
-		
-		_nextState = "stateTwo";
-		_nextStateArgs = _args + ["param5","param6"];
-		
-		[_commandState, _profileID, [_profile, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-	};
-	case "stateTwo":{
-	
-		// DEBUG -------------------------------------------------------------------------------------
-		//if(_debug) then {
-			["ALiVE Managed Script Command - [%1] state: %2",_profileID,_state] call ALIVE_fnc_dump;
-		//};
-		// DEBUG -------------------------------------------------------------------------------------
-		
-		_nextState = "complete";
-		_nextStateArgs = [];
-		
-		[_commandState, _profileID, [_profile, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-	};
+    case "init":{
+
+        // DEBUG -------------------------------------------------------------------------------------
+        //if(_debug) then {
+            ["ALiVE Managed Script Command - [%1] state: %2",_profileID,_state] call ALIVE_fnc_dump;
+        //};
+        // DEBUG -------------------------------------------------------------------------------------
+
+        _nextState = "stateOne";
+        _nextStateArgs = _args + ["param3","param4"];
+
+        [_commandState, _profileID, [_profile, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+    };
+    case "stateOne":{
+
+        // DEBUG -------------------------------------------------------------------------------------
+        //if(_debug) then {
+            ["ALiVE Managed Script Command - [%1] state: %2",_profileID,_state] call ALIVE_fnc_dump;
+        //};
+        // DEBUG -------------------------------------------------------------------------------------
+
+        _nextState = "stateTwo";
+        _nextStateArgs = _args + ["param5","param6"];
+
+        [_commandState, _profileID, [_profile, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+    };
+    case "stateTwo":{
+
+        // DEBUG -------------------------------------------------------------------------------------
+        //if(_debug) then {
+            ["ALiVE Managed Script Command - [%1] state: %2",_profileID,_state] call ALIVE_fnc_dump;
+        //};
+        // DEBUG -------------------------------------------------------------------------------------
+
+        _nextState = "complete";
+        _nextStateArgs = [];
+
+        [_commandState, _profileID, [_profile, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+    };
 };

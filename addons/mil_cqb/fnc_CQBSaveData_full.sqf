@@ -43,14 +43,14 @@ _values = [];
 _data = [] call ALiVE_fnc_HashCreate;
 {
     if (call compile (_x getvariable ["CQB_persistent","false"])) then {
-		_state = [_x,"state"] call ALiVE_fnc_CQB;
-		_houses = [_state,"houses"] call ALiVE_fnc_HashGet;
-	
-		_keys = _keys + (_houses select 1);
-		_values = _values + (_houses select 2);
-		
-		_data set [1,_keys];
-		_data set [2,_values];
+        _state = [_x,"state"] call ALiVE_fnc_CQB;
+        _houses = [_state,"houses"] call ALiVE_fnc_HashGet;
+
+        _keys = _keys + (_houses select 1);
+        _values = _values + (_houses select 2);
+
+        _data set [1,_keys];
+        _data set [2,_values];
     };
 } foreach (MOD(CQB) getVariable ["instances",[]]);
 

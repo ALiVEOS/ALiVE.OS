@@ -29,15 +29,15 @@ item24[] = {"End_delete_group",1,250,-333.600098,194.266846,-243.600525,244.2668
 version=1;
 class LayoutItems
 {
-	class Item22
-	{
-		class ItemInfo
-		{
-			FontFace="Arial";
-			FontHeight=10;
-			lStyle=1;
-		};
-	};
+    class Item22
+    {
+        class ItemInfo
+        {
+            FontFace="Arial";
+            FontHeight=10;
+            lStyle=1;
+        };
+    };
 };
 link0[] = {0,1};
 link1[] = {1,2};
@@ -90,7 +90,7 @@ class FSM
        "// Contact: http://creobellum.org" \n
        "// Purpose: Move or patrol a unit to random house positions" \n
        "//" \n
-       "// The following code is an extract from Random Building Position Script v1.0 by Tophe of Östgöta Ops" \n
+       "// The following code is an extract from Random Building Position Script v1.0 by Tophe of ?stg?ta Ops" \n
        "// Usage:" \n
        "// Move unit to random house position within 10m" \n
        "// 0 = [this] execVM  ""scripts\crb_scripts\crB_HousePos.sqf"";" \n
@@ -99,11 +99,11 @@ class FSM
        "// 0 = [this, 50] execVM ""scripts\crb_scripts\crB_HousePos.sqf"";" \n
        "//" \n
        "// Patrol unit to random house positions within 50m with a maximum" \n
-       "// 	wait time 300 sec between positions" \n
+       "//     wait time 300 sec between positions" \n
        "// 0 = [this, 50, true] execVM ""scripts\crb_scripts\crB_HousePos.sqf"";" \n
        "//" \n
        "// Patrol unit to random house positions within 50m with a maximum" \n
-       "// 	wait time 600 sec between positions" \n
+       "//     wait time 600 sec between positions" \n
        "// 0 = [this, 50, true, 600] execVM ""scripts\crb_scripts\crB_HousePos.sqf"";" \n
        "//////////////////////////////////////////////////////////////////" \n
        "private [""_pos"",""_debug"",""_abort"",""_pat"",""_wait"",""_guardpost"",""_markers""];" \n
@@ -140,17 +140,17 @@ class FSM
        "_bldgpos = [_pos,_radius,""building""] call ALiVE_fnc_findNearHousePositions;" \n
        "" \n
        "if ((count _bldgpos) < (count units _grp)*1.2) then {" \n
-       "	_pat = true;" \n
+       "    _pat = true;" \n
        "} else {" \n
-       "	_bldgpos = [_bldgpos,[],{_x select 2},""DESCEND""] call ALiVE_fnc_SortBy;" \n
+       "    _bldgpos = [_bldgpos,[],{_x select 2},""DESCEND""] call ALiVE_fnc_SortBy;" \n
        "};" \n
        "" \n
        "//[""Buildingpos: %1 - units: %2 - patrol %3"",_posNo,_grpTH,_pat] call ALiVE_fnc_DumpR;" \n
        "" \n
        "if (count _bldgpos == 0) exitwith {" \n
-       "	diag_log format[""CQB error: Group %1 has no buildingpositions! Deleting..."",_grp];" \n
-       "	[_logic, ""delGroup"", _grp] call ALiVE_fnc_CQB;" \n
-       "	_abort = true;" \n
+       "    diag_log format[""CQB error: Group %1 has no buildingpositions! Deleting..."",_grp];" \n
+       "    [_logic, ""delGroup"", _grp] call ALiVE_fnc_CQB;" \n
+       "    _abort = true;" \n
        "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
@@ -278,33 +278,33 @@ class FSM
        "_grp setCombatMode ""YELLOW"";" \n
        "" \n
        "{" \n
-       "		_unit = _x;" \n
-       "		_HousePos = _unit getvariable [""HousePos"",nil];" \n
+       "        _unit = _x;" \n
+       "        _HousePos = _unit getvariable [""HousePos"",nil];" \n
        "" \n
-       "		if ((isnil ""_HousePos"") || {random 1 < 0.4}) then {" \n
-       "			" \n
-       "			if (_pat) then {" \n
-       "				_pos = [_pos,100] call CBA_fnc_Randpos;" \n
-       "			} else {" \n
-       "				_pos = _bldgpos select 0;" \n
+       "        if ((isnil ""_HousePos"") || {random 1 < 0.4}) then {" \n
+       "            " \n
+       "            if (_pat) then {" \n
+       "                _pos = [_pos,100] call CBA_fnc_Randpos;" \n
+       "            } else {" \n
+       "                _pos = _bldgpos select 0;" \n
        "" \n
-       "				_bldgpos pushback _pos;" \n
-       "				_bldgpos set [0,""x""];" \n
+       "                _bldgpos pushback _pos;" \n
+       "                _bldgpos set [0,""x""];" \n
        "" \n
-       "				_bldgpos = _bldgpos - [""x""];" \n
-       "			};" \n
+       "                _bldgpos = _bldgpos - [""x""];" \n
+       "            };" \n
        "" \n
-       "			_timeout = time;" \n
-       "			[_unit, _pos] call ALiVE_fnc_doMoveRemote;" \n
-       "			_unit setvariable [""HousePos"",_pos];" \n
-       "		};" \n
+       "            _timeout = time;" \n
+       "            [_unit, _pos] call ALiVE_fnc_doMoveRemote;" \n
+       "            _unit setvariable [""HousePos"",_pos];" \n
+       "        };" \n
        "} foreach (units _grp);" \n
        "" \n
        "deleteMarkerLocal _mkr;" \n
        "if(_debug) then {" \n
-       "	createMarkerLocal [_mkr, _leader];" \n
-       "	_mkr setMarkerShapeLocal ""ICON"";" \n
-       "	_mkr setMarkerTypeLocal ""mil_box"";" \n
+       "    createMarkerLocal [_mkr, _leader];" \n
+       "    _mkr setMarkerShapeLocal ""ICON"";" \n
+       "    _mkr setMarkerTypeLocal ""mil_box"";" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -434,7 +434,7 @@ class FSM
       name = "End";
       init = /*%FSM<STATEINIT""">*/"deleteMarkerLocal _mkr;" \n
        "if(_debug) then {" \n
-       "	format[""%1 aborting Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
+       "    format[""%1 aborting Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -448,18 +448,18 @@ class FSM
     {
       name = "Pass_FSM_and_End";
       init = /*%FSM<STATEINIT""">*/"if ({alive _x} count (units _grp) > 0) then {" \n
-       "    	_leaderNew = leader _grp;" \n
-       "	_fsm = ""\x\alive\addons\mil_cqb\HousePatrol.fsm"";" \n
-       "	_hdl = [_logic,_leaderNew, 50, true, 60] execFSM _fsm;" \n
-       "	_leader setVariable [""FSM"", [_hdl,_fsm], true];" \n
+       "        _leaderNew = leader _grp;" \n
+       "    _fsm = ""\x\alive\addons\mil_cqb\HousePatrol.fsm"";" \n
+       "    _hdl = [_logic,_leaderNew, 50, true, 60] execFSM _fsm;" \n
+       "    _leader setVariable [""FSM"", [_hdl,_fsm], true];" \n
        "" \n
-       "	if(_debug) then {" \n
-       "		format[""%1 killed - Passing Simple House Patrol FSM to %2"",  _leader,_leaderNew] call ALiVE_fnc_logger;" \n
-       "	};" \n
+       "    if(_debug) then {" \n
+       "        format[""%1 killed - Passing Simple House Patrol FSM to %2"",  _leader,_leaderNew] call ALiVE_fnc_logger;" \n
+       "    };" \n
        "} else {" \n
-       "	if(_debug) then {" \n
-       "		format[""%1 killed - Ending Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
-       "	};" \n
+       "    if(_debug) then {" \n
+       "        format[""%1 killed - Ending Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
+       "    };" \n
        "};" \n
        "deleteMarkerLocal _mkr;" \n
        "" \n
@@ -476,7 +476,7 @@ class FSM
       name = "End_1";
       init = /*%FSM<STATEINIT""">*/"deleteMarkerLocal _mkr;" \n
        "if(_debug) then {" \n
-       "	format[""%1 patrol over -  Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
+       "    format[""%1 patrol over -  Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
        "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
@@ -489,15 +489,15 @@ class FSM
     {
       name = "Move_home";
       init = /*%FSM<STATEINIT""">*/"{" \n
-       "	_unit = _x;" \n
-       "	_pos = _unit getvariable [""HousePos"",nil];" \n
-       "	if (isnil ""_pos"") then {_pos = _bldgpos call BIS_fnc_selectRandom};" \n
-       "	_timeout = time;" \n
+       "    _unit = _x;" \n
+       "    _pos = _unit getvariable [""HousePos"",nil];" \n
+       "    if (isnil ""_pos"") then {_pos = _bldgpos call BIS_fnc_selectRandom};" \n
+       "    _timeout = time;" \n
        "" \n
-       "	_unit setSpeedMode ""FULL"";" \n
-       "	_unit setbehaviour ""AWARE"";" \n
-       "	[_unit, _pos] call ALiVE_fnc_doMoveRemote;" \n
-       "	_unit setvariable [""HousePos"",nil];" \n
+       "    _unit setSpeedMode ""FULL"";" \n
+       "    _unit setbehaviour ""AWARE"";" \n
+       "    [_unit, _pos] call ALiVE_fnc_doMoveRemote;" \n
+       "    _unit setvariable [""HousePos"",nil];" \n
        "} foreach (units _grp);"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
@@ -543,7 +543,7 @@ class FSM
        "[_logic, ""delGroup"", _grp] call ALiVE_fnc_CQB;" \n
        "" \n
        "if(_debug) then {" \n
-       "	format[""%1 aborting Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
+       "    format[""%1 aborting Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
        "};" \n
        "" \n
        "deleteMarkerLocal _mkr;" \n

@@ -3,34 +3,34 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_MI">
-	<Original>Military Intelligence - DEPRECIATED! REMOVE FROM YOUR MISSIONS</Original>
+    <Original>Military Intelligence - DEPRECIATED! REMOVE FROM YOUR MISSIONS</Original>
 </Key>
 <Key ID="STR_ALIVE_MI_COMMENT">
-	<Original>Strategic Military Intelligence - DEPRECIATED! REMOVE FROM YOUR MISSIONS</Original>
+    <Original>Strategic Military Intelligence - DEPRECIATED! REMOVE FROM YOUR MISSIONS</Original>
 </Key>
 <Key ID="STR_ALIVE_MI_DEBUG">
-	<Original>Enable Debug:</Original>
+    <Original>Enable Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_MI_DEBUG_COMMENT">
-	<Original>Enables MI Module Debug</Original>
+    <Original>Enables MI Module Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE">
-	<Original>Intel Coverage:</Original>
+    <Original>Intel Coverage:</Original>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE_COMMENT">
-	<Original>Amount of intel reports generated</Original>
+    <Original>Amount of intel reports generated</Original>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE_LOW">
-	<Original>Low coverage of intel</Original>
+    <Original>Low coverage of intel</Original>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE_MEDIUM">
-	<Original>Medium coverage of intel</Original>
+    <Original>Medium coverage of intel</Original>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE_HIGH">
-	<Original>High coverage of intel</Original>
+    <Original>High coverage of intel</Original>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE_TOTAL">
-	<Original>Total coverage of intel</Original>
+    <Original>Total coverage of intel</Original>
 </Key>
 <Key ID="STR_ALIVE_MI_FRIENDLY_INTEL">
     <Original>Friendly Coverage:</Original>

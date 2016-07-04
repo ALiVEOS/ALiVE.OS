@@ -40,9 +40,9 @@ _logic = nil;
 
 STAT("Create MI instance");
 if(isServer) then {
-	_logic = [nil, "create"] call ALIVE_fnc_MI;
-	TEST_LOGIC = _logic;
-	publicVariable "TEST_LOGIC";
+    _logic = [nil, "create"] call ALIVE_fnc_MI;
+    TEST_LOGIC = _logic;
+    publicVariable "TEST_LOGIC";
 };
 STAT("Confirm new MI instance");
 waitUntil{!isNil "TEST_LOGIC"};

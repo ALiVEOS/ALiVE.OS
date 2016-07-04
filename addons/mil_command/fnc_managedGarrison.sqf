@@ -46,55 +46,55 @@ _garrisonRadius = _args select 0;
 _garrisonPosition = _args select 2;
 
 switch (_state) do {
-	case "init":{
-	
-		private ["_distanceToGarrison"];
+    case "init":{
 
-		_distanceToGarrison = _leader distance _garrisonPosition;
+        private ["_distanceToGarrison"];
 
-		// if close to garrison position
-		// do garrison, if not move there
+        _distanceToGarrison = _leader distance _garrisonPosition;
 
-		if(_distanceToGarrison > 50) then {
-		    _group addWaypoint [_garrisonPosition, 10];
+        // if close to garrison position
+        // do garrison, if not move there
 
-		    _nextState = "travel";
+        if(_distanceToGarrison > 50) then {
+            _group addWaypoint [_garrisonPosition, 10];
+
+            _nextState = "travel";
             _nextStateArgs = _args;
 
-		}else{
+        }else{
             _nextState = "garrison";
             _nextStateArgs = _args;
-		};
+        };
 
-		[_commandState, _profileID, [_profile, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-	};
-	case "travel":{
+        [_commandState, _profileID, [_profile, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+    };
+    case "travel":{
 
-		private ["_currentWaypoint","_waypoints","_waypointCount"];
+        private ["_currentWaypoint","_waypoints","_waypointCount"];
 
-		_currentWaypoint = currentWaypoint _group;
-		_waypoints = waypoints _group;
-		_waypointCount = count _waypoints;
+        _currentWaypoint = currentWaypoint _group;
+        _waypoints = waypoints _group;
+        _waypointCount = count _waypoints;
 
-		// wait until waypoints completed
+        // wait until waypoints completed
 
-		if(_currentWaypoint == _waypointCount) then {
+        if(_currentWaypoint == _waypointCount) then {
             _nextState = "garrison";
             _nextStateArgs = _args;
 
             [_commandState, _profileID, [_profile, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-		};
+        };
 
-	};
-	case "garrison":{
+    };
+    case "garrison":{
 
-	    // garrison units
+        // garrison units
 
-		[_group,_garrisonPosition,_garrisonRadius,false] call ALIVE_fnc_groupGarrison;
-		
-		_nextState = "complete";
-		_nextStateArgs = [];
-		
-		[_commandState, _profileID, [_profile, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-	};
+        [_group,_garrisonPosition,_garrisonRadius,false] call ALIVE_fnc_groupGarrison;
+
+        _nextState = "complete";
+        _nextStateArgs = [];
+
+        [_commandState, _profileID, [_profile, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+    };
 };

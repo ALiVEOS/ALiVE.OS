@@ -19,10 +19,10 @@ Examples:
 (begin example)
 // initialise main menu
 [
-	"player",
-	[221,[false,false,false]],
-	-9500,
-	["call ALIVE_fnc_IEDMenuDef","main"]
+    "player",
+    [221,[false,false,false]],
+    -9500,
+    ["call ALIVE_fnc_IEDMenuDef","main"]
 ] call CBA_fnc_flexiMenu_Add;
 (end)
 
@@ -47,11 +47,11 @@ _menuName = "";
 _menuRsc = "popup";
 
 if (typeName _params == typeName []) then {
-	if (count _params < 1) exitWith {diag_log format["Error: Invalid params: %1, %2", _this, __FILE__];};
-	_menuName = _params select 0;
-	_menuRsc = if (count _params > 1) then {_params select 1} else {_menuRsc};
+    if (count _params < 1) exitWith {diag_log format["Error: Invalid params: %1, %2", _this, __FILE__];};
+    _menuName = _params select 0;
+    _menuRsc = if (count _params > 1) then {_params select 1} else {_menuRsc};
 } else {
-	_menuName = _params;
+    _menuName = _params;
 };
 //-----------------------------------------------------------------------------
 /*
@@ -70,82 +70,82 @@ if (typeName _params == typeName []) then {
 */
 _menus =
 [
-	[
-		["main", "ALiVE", _menuRsc],
-		[
-		]
-	],
-	[
-		["adminOptions", "Admin Options", "popup"],
-		[
-		]
-	]
+    [
+        ["main", "ALiVE", _menuRsc],
+        [
+        ]
+    ],
+    [
+        ["adminOptions", "Admin Options", "popup"],
+        [
+        ]
+    ]
 ];
 
 if (_menuName == "IED") then {
-	_menus set [count _menus,
-		[
-			["IED", localize "STR_ALIVE_IED", "popup"],
-			[
-				[localize "STR_ALIVE_IED_DEBUG_ENABLE",
-					{[[ADDON, "debug", true],QUOTE(MAINCLASS), false, false, true] call BIS_fnc_MP},
-					"",
-					localize "STR_ALIVE_IED_DEBUG_COMMENT",
-					"",
-					-1,
-					!(ADDON getVariable ["debug", false]),
-					!(ADDON getVariable ["debug", false])
-				],
-				[localize "STR_ALIVE_IED_DEBUG_DISABLE",
-					{[[ADDON, "debug", false],QUOTE(MAINCLASS), false, false, true] call BIS_fnc_MP},
-					"",
-					localize "STR_ALIVE_IED_DEBUG_COMMENT",
-					"",
-					-1,
-					ADDON getVariable ["debug", false],
-					ADDON getVariable ["debug", false]
-				],
-				[localize "STR_ALIVE_IED_IED_THREAT_LEVEL",
-					{ uiNameSpace setVariable ["ALIVE_UI_SETVALUE_PARAMS",[ADDON, "IED_THREAT", "IED Threat Level", "Enter a valid number between 0 (no threat) and 350 (extreme threat)"]]; createDialog "ALIVE_ui_setNumberValue";},
-					"",
-					localize "STR_ALIVE_IED_IED_THREAT_COMMENT",
-					"",
-					-1,
-					true,
-					true
-				],
-				[localize "STR_ALIVE_IED_BOMBER_THREAT_LEVEL",
-					{ uiNameSpace setVariable ["ALIVE_UI_SETVALUE_PARAMS",[ADDON, "Bomber_Threat", "Suicide Bomber Threat", "Enter a valid number between 0 (no threat) and 50 (extreme threat)"]]; createDialog "ALIVE_ui_setNumberValue";},
-					"",
-					localize "STR_ALIVE_IED_BOMBER_THREAT_COMMENT",
-					"",
-					-1,
-					true,
-					true
-				],
-				[localize "STR_ALIVE_IED_VB_IED_THREAT_LEVEL",
-					{ uiNameSpace setVariable ["ALIVE_UI_SETVALUE_PARAMS",[ADDON, "VB_IED_Threat", "VB IED Threat Level", "Enter a valid number between 0 (no threat) and 70 (extreme threat)"]]; createDialog "ALIVE_ui_setNumberValue";},
-					"",
-					localize "STR_ALIVE_IED_VB_IED_THREAT_COMMENT",
-					"",
-					-1,
-					true,
-					true
-				]
-			]
-		]
-	];
+    _menus set [count _menus,
+        [
+            ["IED", localize "STR_ALIVE_IED", "popup"],
+            [
+                [localize "STR_ALIVE_IED_DEBUG_ENABLE",
+                    {[[ADDON, "debug", true],QUOTE(MAINCLASS), false, false, true] call BIS_fnc_MP},
+                    "",
+                    localize "STR_ALIVE_IED_DEBUG_COMMENT",
+                    "",
+                    -1,
+                    !(ADDON getVariable ["debug", false]),
+                    !(ADDON getVariable ["debug", false])
+                ],
+                [localize "STR_ALIVE_IED_DEBUG_DISABLE",
+                    {[[ADDON, "debug", false],QUOTE(MAINCLASS), false, false, true] call BIS_fnc_MP},
+                    "",
+                    localize "STR_ALIVE_IED_DEBUG_COMMENT",
+                    "",
+                    -1,
+                    ADDON getVariable ["debug", false],
+                    ADDON getVariable ["debug", false]
+                ],
+                [localize "STR_ALIVE_IED_IED_THREAT_LEVEL",
+                    { uiNameSpace setVariable ["ALIVE_UI_SETVALUE_PARAMS",[ADDON, "IED_THREAT", "IED Threat Level", "Enter a valid number between 0 (no threat) and 350 (extreme threat)"]]; createDialog "ALIVE_ui_setNumberValue";},
+                    "",
+                    localize "STR_ALIVE_IED_IED_THREAT_COMMENT",
+                    "",
+                    -1,
+                    true,
+                    true
+                ],
+                [localize "STR_ALIVE_IED_BOMBER_THREAT_LEVEL",
+                    { uiNameSpace setVariable ["ALIVE_UI_SETVALUE_PARAMS",[ADDON, "Bomber_Threat", "Suicide Bomber Threat", "Enter a valid number between 0 (no threat) and 50 (extreme threat)"]]; createDialog "ALIVE_ui_setNumberValue";},
+                    "",
+                    localize "STR_ALIVE_IED_BOMBER_THREAT_COMMENT",
+                    "",
+                    -1,
+                    true,
+                    true
+                ],
+                [localize "STR_ALIVE_IED_VB_IED_THREAT_LEVEL",
+                    { uiNameSpace setVariable ["ALIVE_UI_SETVALUE_PARAMS",[ADDON, "VB_IED_Threat", "VB IED Threat Level", "Enter a valid number between 0 (no threat) and 70 (extreme threat)"]]; createDialog "ALIVE_ui_setNumberValue";},
+                    "",
+                    localize "STR_ALIVE_IED_VB_IED_THREAT_COMMENT",
+                    "",
+                    -1,
+                    true,
+                    true
+                ]
+            ]
+        ]
+    ];
 };
 
 //-----------------------------------------------------------------------------
 _menuDef = [];
 {
-	if (_x select 0 select 0 == _menuName) exitWith {_menuDef = _x};
+    if (_x select 0 select 0 == _menuName) exitWith {_menuDef = _x};
 } forEach _menus;
 
 if (count _menuDef == 0) then {
-	hintC format ["Error: Menu not found: %1\n%2\n%3", str _menuName, if (_menuName == "") then {_this}else{""}, __FILE__];
-	diag_log format ["Error: Menu not found: %1, %2, %3", str _menuName, _this, __FILE__];
+    hintC format ["Error: Menu not found: %1\n%2\n%3", str _menuName, if (_menuName == "") then {_this}else{""}, __FILE__];
+    diag_log format ["Error: Menu not found: %1, %2, %3", str _menuName, _this, __FILE__];
 };
 
 _menuDef // return value

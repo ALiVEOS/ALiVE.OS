@@ -387,18 +387,18 @@ switch(_operation) do {
                                     _data pushBack [_x,_position];
                                 };
                             };
-							false;
+                            false;
                         } count _unitType;
                         _groups pushBack _data;
-						false;
+                        false;
                     } count ["infantry","motorized","mechanized","armored","air","sea","artillery","AAA"];
-					false;
+                    false;
                 };
             } count OPCOM_INSTANCES;
 
             // send the data back to the players SCOM tablet
 
-			_player = [_playerID] call ALIVE_fnc_getPlayerByUID;
+            _player = [_playerID] call ALIVE_fnc_getPlayerByUID;
 
             _event = ['SCOM_UPDATED', [_playerID,_side,_groups], "COMMAND_HANDLER", "OPS_GROUPS"] call ALIVE_fnc_event;
             _event remoteExecCall ["ALIVE_fnc_SCOMTabletEventToClient",_player];
@@ -588,7 +588,7 @@ switch(_operation) do {
                             if ([_profile,"active"] call ALiVE_fnc_hashGet) then {
                                 _group = _profile select 2 select 13;
                                 waitUntil {sleep 2;unitReady (leader _group)};
-                                [_profile, 'clearWaypoints'] call ALIVE_fnc_profileEntity;	//-- Needed because waypoint doesn't seem to complete when you use land command
+                                [_profile, 'clearWaypoints'] call ALIVE_fnc_profileEntity;    //-- Needed because waypoint doesn't seem to complete when you use land command
                                 if (_waypointType == "LAND OFF") then {(vehicle (leader _group)) land "LAND"} else {(vehicle (leader _group)) land "GET OUT"};
                                 sleep 60;
                                 deleteVehicle _helipad;

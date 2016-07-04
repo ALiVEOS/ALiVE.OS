@@ -31,10 +31,10 @@ _debug = _this select 4;
 _result = [];
 
 switch (_taskState) do {
-	case "init":{
+    case "init":{
 
-	    private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskPlayers","_taskEnemyFaction","_taskCurrent",
-	    "_taskApplyType","_taskEnemySide","_enemyClusters","_targetPosition"];
+        private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskPlayers","_taskEnemyFaction","_taskCurrent",
+        "_taskApplyType","_taskEnemySide","_enemyClusters","_targetPosition"];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;
@@ -55,7 +55,7 @@ switch (_taskState) do {
         if (count _taskPlayers == 0) exitwith {["C2ISTAR - Task Civ Assault - Wrong input for _taskPlayers!"] call ALiVE_fnc_Dump};
         if (_taskEnemyFaction == "") exitwith {["C2ISTAR - Task Civ Assault - Wrong input for _taskEnemyFaction!"] call ALiVE_fnc_Dump};
         if (_taskApplyType == "") exitwith {["C2ISTAR - Task Civ Assault - Wrong input for _taskApplyType!"] call ALiVE_fnc_Dump};
-        
+
         _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideObjectToNumber;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideNumberToText;
@@ -70,24 +70,24 @@ switch (_taskState) do {
             // try to get a position containing enemy
             _targetPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
 
-			// use selected map location or default player position
-            if (count _targetPosition == 0) then {            
-		        _targetPosition = [
-					_targetPosition, 
-					500, 
-					1500,
-					1, 
-					0, 
-					100,
-					0, 
-					[], 
-					[_targetPosition]
-				] call BIS_fnc_findSafePos;
+            // use selected map location or default player position
+            if (count _targetPosition == 0) then {
+                _targetPosition = [
+                    _targetPosition,
+                    500,
+                    1500,
+                    1,
+                    0,
+                    100,
+                    0,
+                    [],
+                    [_targetPosition]
+                ] call BIS_fnc_findSafePos;
             };
 
             // spawn a populated composition
             _targetPosition = [_targetPosition, 250] call ALIVE_fnc_findFlatArea;
-            
+
             [_targetPosition, "objectives", _taskEnemyFaction, 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
 
         };
@@ -178,8 +178,8 @@ switch (_taskState) do {
 
         };
 
-	};
-	case "Parent":{
+    };
+    case "Parent":{
 
     };
     case "Destroy":{
@@ -206,7 +206,7 @@ switch (_taskState) do {
 
             [_params,"lastState","Destroy"] call ALIVE_fnc_hashSet;
         };
-        
+
         //Only ever check every 30 seconds to allow enough time for units to spawn
         sleep 30;
 

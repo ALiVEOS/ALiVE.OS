@@ -91,18 +91,18 @@ params [
 _result = true;
 
 switch(_operation) do {
-	default {
-		_result = _this call SUPERCLASS;
-	};
-	case "destroy": {
-		if (isServer) then {
-			// if server
-			_logic setVariable ["super", nil];
-			_logic setVariable ["class", nil];
+    default {
+        _result = _this call SUPERCLASS;
+    };
+    case "destroy": {
+        if (isServer) then {
+            // if server
+            _logic setVariable ["super", nil];
+            _logic setVariable ["class", nil];
 
-			[_logic, "destroy"] call SUPERCLASS;
-		};
-	};
+            [_logic, "destroy"] call SUPERCLASS;
+        };
+    };
     case "debug": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["debug", _args];
@@ -151,7 +151,7 @@ switch(_operation) do {
     case "intelLimit": {
         _result = [_logic,_operation,_args,DEFAULT_SCOM_LIMIT,["SIDE","FACTION","ALL"]] call ALIVE_fnc_OOsimpleOperation;
     };
-	case "state": {
+    case "state": {
         _result = [_logic,_operation,_args,DEFAULT_STATE] call ALIVE_fnc_OOsimpleOperation;
     };
     case "side": {
@@ -167,15 +167,15 @@ switch(_operation) do {
         _result = [_logic,_operation,_args,DEFAULT_MARKER] call ALIVE_fnc_OOsimpleOperation;
     };
 
-	case "init": {
+    case "init": {
 
         //Only one init per instance is allowed
-    	if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SUP Command - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SUP Command - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
 
-    	//Start init
+        //Start init
         _logic setVariable ["initGlobal", false];
 
-	    private["_debug"];
+        private["_debug"];
 
         _logic setVariable ["super", SUPERCLASS];
         _logic setVariable ["class", MAINCLASS];
@@ -332,8 +332,8 @@ switch(_operation) do {
 
         [_logic, "start"] call MAINCLASS;
 
-	};
-	case "start": {
+    };
+    case "start": {
 
         // set module as startup complete
         _logic setVariable ["startupComplete", true];
@@ -345,8 +345,8 @@ switch(_operation) do {
 
         };
 
-	};
-	case "listen": {
+    };
+    case "listen": {
         private["_listenerID"];
 
         _listenerID = [ALIVE_eventLog, "addListener",[_logic, ["SCOM_UPDATED"]]] call ALIVE_fnc_eventLog;
@@ -482,7 +482,7 @@ switch(_operation) do {
         };
 
     };
-	case "tabletOnLoad": {
+    case "tabletOnLoad": {
 
         // on load of the tablet
         // restore state
@@ -573,9 +573,9 @@ switch(_operation) do {
         };
 
     };
-	case "tabletOnAction": {
+    case "tabletOnAction": {
 
-	    // The machine has an interface? Must be a MP client, SP client or a client that acts as host!
+        // The machine has an interface? Must be a MP client, SP client or a client that acts as host!
         if (hasInterface) then {
 
             if (isnil "_args") exitwith {};
@@ -1040,16 +1040,16 @@ switch(_operation) do {
                         _playerID = getPlayerUID player;
                         _requestID = format["%1_%2",_faction,floor(time)];
 
-						[nil,"opsOPCOMSelected", [_requestID,_playerID,_selectedValue]] remoteExecCall [QUOTE(ALIVE_fnc_commandHandler),2]; // need the raw speed
+                        [nil,"opsOPCOMSelected", [_requestID,_playerID,_selectedValue]] remoteExecCall [QUOTE(ALIVE_fnc_commandHandler),2]; // need the raw speed
 
-						/*
+                        /*
                         _event = ['OPS_OPCOM_SELECT', [_requestID,_playerID,_selectedValue], "SCOM"] call ALIVE_fnc_event;
                         if(isServer) then {
                             [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
                         }else{
                             [_event] remoteExecCall ["ALIVE_fnc_addEventToServer",2];
                         };
-						*/
+                        */
 
                         // show waiting until response comes back
 
@@ -1129,7 +1129,7 @@ switch(_operation) do {
                         _listValues = [_commandState,"opsGroupsValues"] call ALIVE_fnc_hashGet;
 
                         _selectedIndex = -1;
-						_dist = ((ctrlMapScale _map) * worldSize) / 100;
+                        _dist = ((ctrlMapScale _map) * worldSize) / 100;
 
                         {
                             _position = _x select 1;
@@ -1397,9 +1397,9 @@ switch(_operation) do {
                         _plannedWaypoints = [_commandState,"opsGroupPlannedWaypoints"] call ALIVE_fnc_hashGet;
                         _selectedProfile = [_commandState,"opsGroupSelectedProfile"] call ALIVE_fnc_hashGet;
 
-						// store position
+                        // store position
 
-						_plannedWaypoints pushback _position;
+                        _plannedWaypoints pushback _position;
 
                         // add to the waypoints array
 
@@ -1718,9 +1718,9 @@ switch(_operation) do {
                         [_event] remoteExecCall ["ALIVE_fnc_addEventToServer",2];
                     };
 
-					// clear planned waypoints
+                    // clear planned waypoints
 
-					[_commandState,"opsGroupPlannedWaypoints", []] call ALiVE_fnc_hashSet;
+                    [_commandState,"opsGroupPlannedWaypoints", []] call ALiVE_fnc_hashSet;
 
                     // show waiting until response comes back
 
@@ -2318,28 +2318,28 @@ switch(_operation) do {
                     };
                 };
 
-            	if (_display) then {
+                if (_display) then {
 
-            		_m = createMarkerLocal [format[MTEMPLATE, format["%1_active", _forEachIndex]], position (leader _x)];
-            		_m setMarkerSizeLocal [.7,.7];
+                    _m = createMarkerLocal [format[MTEMPLATE, format["%1_active", _forEachIndex]], position (leader _x)];
+                    _m setMarkerSizeLocal [.7,.7];
 
-            		switch (_leaderSide) do {
-            			case "EAST": {
-            				_m setMarkerTypeLocal "o_unknown";
-            				_m setMarkerColorLocal "ColorOPFOR";
-            			};
-            			case "WEST": {
-            				_m setMarkerTypeLocal "b_unknown";
-            				_m setMarkerColorLocal "ColorBLUFOR";
-            			};
-            			case "GUER": {
-            				_m setMarkerTypeLocal "x_unknown";
-            				_m setMarkerColorLocal "ColorIndependent";
-            			};
-            		};
+                    switch (_leaderSide) do {
+                        case "EAST": {
+                            _m setMarkerTypeLocal "o_unknown";
+                            _m setMarkerColorLocal "ColorOPFOR";
+                        };
+                        case "WEST": {
+                            _m setMarkerTypeLocal "b_unknown";
+                            _m setMarkerColorLocal "ColorBLUFOR";
+                        };
+                        case "GUER": {
+                            _m setMarkerTypeLocal "x_unknown";
+                            _m setMarkerColorLocal "ColorIndependent";
+                        };
+                    };
 
-            		_markers pushback _m;
-            	};
+                    _markers pushback _m;
+                };
 
             } forEach allGroups;
 */
@@ -3250,7 +3250,7 @@ switch(_operation) do {
         if(isServer) then {
             [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
         }else{
-		    [_event] remoteExecCall ["ALIVE_fnc_addEventToServer",2];
+            [_event] remoteExecCall ["ALIVE_fnc_addEventToServer",2];
         };
 
         // show waiting until response comes back
@@ -3299,7 +3299,7 @@ switch(_operation) do {
 
                 {
                     _position = _x;
-					_groupWaypoints pushback _position;
+                    _groupWaypoints pushback _position;
                 } forEach _waypoints;
 
                 [_commandState,"opsGroupSelectedProfile",_profile] call ALIVE_fnc_hashSet;
@@ -3425,7 +3425,7 @@ switch(_operation) do {
 
                     _position = _x select 0;
 
-					_groupWaypoints pushback _position;
+                    _groupWaypoints pushback _position;
 
                 } forEach _waypoints;
 
@@ -3541,11 +3541,11 @@ switch(_operation) do {
 
     };
 
-	case "opsDrawWaypoints": {
+    case "opsDrawWaypoints": {
         private ["_map","_commandState","_selectedProfile","_profilePos","_waypoint","_waypointPos",
         "_waypoints","_plannedWaypoints"];
 
-		disableSerialization;
+        disableSerialization;
 
         _map = _args select 0;
 
@@ -3606,11 +3606,11 @@ switch(_operation) do {
                             _x,
                             [0.502,1,0.635,1]
                         ];
-					};
+                    };
                 };
             } foreach _plannedWaypoints;
         };
-	};
+    };
 
     case "enableWaypointSelected": {
 
@@ -3794,7 +3794,7 @@ switch(_operation) do {
 
                 };
 
-				sleep 2;
+                sleep 2;
 
                 // revert camera and control back to player unit
 

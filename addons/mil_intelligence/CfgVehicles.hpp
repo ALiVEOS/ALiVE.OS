@@ -6,10 +6,10 @@ class CfgVehicles {
                 displayName = "$STR_ALIVE_MI";
                 function = "ALIVE_fnc_MIInit";
                 author = MODULE_AUTHOR;
-				functionPriority = 181;
+                functionPriority = 181;
                 isGlobal = 1;
-				icon = "x\alive\addons\mil_intelligence\icon_mil_MI.paa";
-				picture = "x\alive\addons\mil_intelligence\icon_mil_MI.paa";
+                icon = "x\alive\addons\mil_intelligence\icon_mil_MI.paa";
+                picture = "x\alive\addons\mil_intelligence\icon_mil_MI.paa";
                 class Arguments
                 {
                         class debug
@@ -31,7 +31,7 @@ class CfgVehicles {
                                         };
                                 };
                         };
-						class intelChance
+                        class intelChance
                         {
                                 displayName = "$STR_ALIVE_MI_INTEL_CHANCE";
                                 description = "$STR_ALIVE_MI_INTEL_CHANCE_COMMENT";
@@ -42,17 +42,17 @@ class CfgVehicles {
                                                 name = "$STR_ALIVE_MI_INTEL_CHANCE_LOW";
                                                 value = "0.1";
                                         };
-										class MEDIUM
+                                        class MEDIUM
                                         {
                                                 name = "$STR_ALIVE_MI_INTEL_CHANCE_MEDIUM";
                                                 value = "0.2";
                                         };
-										class HIGH
+                                        class HIGH
                                         {
                                                 name = "$STR_ALIVE_MI_INTEL_CHANCE_HIGH";
                                                 value = "0.4";
                                         };
-										class TOTAL
+                                        class TOTAL
                                         {
                                                 name = "$STR_ALIVE_MI_INTEL_CHANCE_TOTAL";
                                                 value = "1";

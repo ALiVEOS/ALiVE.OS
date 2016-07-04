@@ -1,17 +1,17 @@
 class CfgFunctions {
-	class PREFIX {
-		class COMPONENT {
-			class C2ISTAR {
-				description = "The main class";
-				file = "\x\alive\addons\mil_C2ISTAR\fnc_C2ISTAR.sqf";
-				recompile = RECOMPILE;
-			};
-			class C2ISTARInit {
-				description = "The module initialisation function";
-				file = "\x\alive\addons\mil_C2ISTAR\fnc_C2ISTARInit.sqf";
-				recompile = RECOMPILE;
-			};
-			class C2MenuDef {
+    class PREFIX {
+        class COMPONENT {
+            class C2ISTAR {
+                description = "The main class";
+                file = "\x\alive\addons\mil_C2ISTAR\fnc_C2ISTAR.sqf";
+                recompile = RECOMPILE;
+            };
+            class C2ISTARInit {
+                description = "The module initialisation function";
+                file = "\x\alive\addons\mil_C2ISTAR\fnc_C2ISTARInit.sqf";
+                recompile = RECOMPILE;
+            };
+            class C2MenuDef {
                 description = "The module menu definition";
                 file = "\x\alive\addons\mil_C2ISTAR\fnc_C2MenuDef.sqf";
                 recompile = RECOMPILE;
@@ -215,7 +215,7 @@ class CfgFunctions {
                 description = "Utility have all the entity profiles been destroyed";
                 file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetStateOfObjects.sqf";
                 recompile = RECOMPILE;
-            };            
+            };
             class taskCreateReward {
                 description = "Utility create a reward for task completion";
                 file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskCreateReward.sqf";
@@ -277,5 +277,5 @@ class CfgFunctions {
                 recompile = RECOMPILE;
             };
         };
-	};
+    };
 };

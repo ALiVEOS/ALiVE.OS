@@ -12,7 +12,7 @@ Array - List of all enterable houses
 
 Returns:
 Array - An array containing randomly selected strategic and non strategic
-buidlings including the maximum number of building positions for 
+buidlings including the maximum number of building positions for
 the building.
 
 Examples:
@@ -49,39 +49,39 @@ _nonstrathouses = [];
 
 { // forEach
     private ["_obj", "_isStrategic", "_houses"];
-	_obj = _x;
-	_isStrategic = (typeOf _obj) in _BuildingTypeStrategic;
-	_houses = if (_isStrategic) then {_strathouses} else {_nonstrathouses};
-    
+    _obj = _x;
+    _isStrategic = (typeOf _obj) in _BuildingTypeStrategic;
+    _houses = if (_isStrategic) then {_strathouses} else {_nonstrathouses};
+
     if (!(([_obj] call ALiVE_fnc_getBuildingPositions) isEqualTo []) && {!(_obj in _houses)}) then {
-		private ["_pos", "_collect"];
-        
-		_pos = getPosATL _obj;
-		_collect = true;
-		
+        private ["_pos", "_collect"];
+
+        _pos = getPosATL _obj;
+        _collect = true;
+
         // Are there TAOR or Blacklist markers?
         if (count (_whitezone + _blackzone) > 0) then {
             // Filter Whitezone
             {_collect = false; if ([_pos,_x] call ALiVE_fnc_inArea) exitWith {_collect = true}} forEach _whitezone;
-            
+
             // Filter Blackzone
             {if ([_pos, _x] call ALiVE_fnc_inArea) exitWith {_collect = false}} forEach _blackzone;
         };
-		
-		if (_collect) then {
-			
-			{ // forEach
-				private ["_dis"];
-				_dis = _pos distance (getposATL _x);
-				if ((_dis < _density) && {!_isStrategic || {_dis < 60}}) exitWith {
-					_collect = (random 1) < _CQB_spawn;
-				};
-			} forEach _houses;
-			
-			if (_collect) then {
-				_houses pushback _obj;
-			};
-		};
+
+        if (_collect) then {
+
+            { // forEach
+                private ["_dis"];
+                _dis = _pos distance (getposATL _x);
+                if ((_dis < _density) && {!_isStrategic || {_dis < 60}}) exitWith {
+                    _collect = (random 1) < _CQB_spawn;
+                };
+            } forEach _houses;
+
+            if (_collect) then {
+                _houses pushback _obj;
+            };
+        };
     };
 } forEach _spawnhouses;
 

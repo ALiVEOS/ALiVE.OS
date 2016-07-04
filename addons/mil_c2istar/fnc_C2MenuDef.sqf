@@ -19,10 +19,10 @@ Examples:
 (begin example)
 // initialise main menu
 [
-	"player",
-	[221,[false,false,false]],
-	-9500,
-	["call ALIVE_fnc_vdistMenuDef","main"]
+    "player",
+    [221,[false,false,false]],
+    -9500,
+    ["call ALIVE_fnc_vdistMenuDef","main"]
 ] call CBA_fnc_flexiMenu_Add;
 (end)
 
@@ -50,21 +50,21 @@ _userItems = [[MOD(MIL_C2ISTAR),"c2_item"] call ALIVE_fnc_C2ISTAR,"ALIVE_Tablet"
 _result = (({([toLower(str(_items + [_backpacks])), toLower(_x)] call CBA_fnc_find) > -1} count _userItems) > 0);
 
 if ([QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable) then {
-	_prUserItems = [[MOD(SUP_PLAYER_RESUPPLY),"pr_item"] call ALIVE_fnc_PR];
-	_otherResult = (({([toLower(str(_items + [_backpacks])), toLower(_x)] call CBA_fnc_find) > -1} count _prUserItems) > 0);
+    _prUserItems = [[MOD(SUP_PLAYER_RESUPPLY),"pr_item"] call ALIVE_fnc_PR];
+    _otherResult = (({([toLower(str(_items + [_backpacks])), toLower(_x)] call CBA_fnc_find) > -1} count _prUserItems) > 0);
 };
 
 if ([QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable) then {
-	_csUserItems = [NEO_radioLogic getVariable ["combatsupport_item","LaserDesignator"]];
-	_csResult = (({([toLower(str(_items + [_backpacks])), toLower(_x)] call CBA_fnc_find) > -1} count _csUserItems) > 0);
+    _csUserItems = [NEO_radioLogic getVariable ["combatsupport_item","LaserDesignator"]];
+    _csResult = (({([toLower(str(_items + [_backpacks])), toLower(_x)] call CBA_fnc_find) > -1} count _csUserItems) > 0);
 };
 
 if (typeName _params == typeName []) then {
-	if (count _params < 1) exitWith {diag_log format["Error: Invalid params: %1, %2", _this, __FILE__];};
-	_menuName = _params select 0;
-	_menuRsc = if (count _params > 1) then {_params select 1} else {_menuRsc};
+    if (count _params < 1) exitWith {diag_log format["Error: Invalid params: %1, %2", _this, __FILE__];};
+    _menuName = _params select 0;
+    _menuRsc = if (count _params > 1) then {_params select 1} else {_menuRsc};
 } else {
-	_menuName = _params;
+    _menuName = _params;
 };
 //-----------------------------------------------------------------------------
 /*
@@ -83,29 +83,29 @@ if (typeName _params == typeName []) then {
 */
 _menus =
 [
-	[
-		["main", "ALiVE", _menuRsc],
-		[
-			[localize "STR_ALIVE_C2ISTAR_COMMANDER" + " >",
-				"",
-				"",
-				localize "STR_ALIVE_C2ISTAR_COMMENT",
+    [
+        ["main", "ALiVE", _menuRsc],
+        [
+            [localize "STR_ALIVE_C2ISTAR_COMMANDER" + " >",
+                "",
+                "",
+                localize "STR_ALIVE_C2ISTAR_COMMENT",
                 ["call ALiVE_fnc_C2MenuDef", "C2ISTAR", 1],
                 -1,
                 true,
                 _result
-			]
-		]
-	]
+            ]
+        ]
+    ]
 ];
 
 if (_menuName == "C2ISTAR") then {
-    	_menus set [count _menus,
-		[
-        	["C2ISTAR", localize "STR_ALIVE_C2ISTAR", "popup"],
-			[
+        _menus set [count _menus,
+        [
+            ["C2ISTAR", localize "STR_ALIVE_C2ISTAR", "popup"],
+            [
 
-				["Personnel",
+                ["Personnel",
                     {["OPEN",[]] call ALIVE_fnc_GMTabletOnAction},
                     "",
                     localize "STR_ALIVE_GM_COMMENT",
@@ -123,26 +123,26 @@ if (_menuName == "C2ISTAR") then {
                      true,
                      _result
                 ],
-				["Logistics",
-					{["OPEN",[]] call ALIVE_fnc_PRTabletOnAction},
-					"",
-					localize "STR_ALIVE_PR_COMMENT",
-	                 "",
-	                 -1,
-	                 (MOD(Require) getVariable [format["ALIVE_MIL_LOG_AVAIL_%1", (side player)], false]),
-	                 [QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable && {_otherResult}
-				],
-				["Tasks",
+                ["Logistics",
+                    {["OPEN",[]] call ALIVE_fnc_PRTabletOnAction},
+                    "",
+                    localize "STR_ALIVE_PR_COMMENT",
+                     "",
+                     -1,
+                     (MOD(Require) getVariable [format["ALIVE_MIL_LOG_AVAIL_%1", (side player)], false]),
+                     [QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable && {_otherResult}
+                ],
+                ["Tasks",
 
-					{["OPEN",[]] call ALIVE_fnc_C2TabletOnAction},
-	                "",
-					localize "STR_ALIVE_C2ISTAR_COMMENT",
-	                 "",
-	                 -1,
-	                 true,
-	                 _result
-				],
-				["Operations",
+                    {["OPEN",[]] call ALIVE_fnc_C2TabletOnAction},
+                    "",
+                    localize "STR_ALIVE_C2ISTAR_COMMENT",
+                     "",
+                     -1,
+                     true,
+                     _result
+                ],
+                ["Operations",
                     {["OPEN_OPS",[]] call ALIVE_fnc_SCOMTabletOnAction},
                     "",
                     localize "STR_ALIVE_SCOM_OPS_COMMENT",
@@ -151,47 +151,47 @@ if (_menuName == "C2ISTAR") then {
                      true,
                      _result
                 ],
-				["Combat Support",
-					{["radio"] call ALIVE_fnc_radioAction},
-					"",
-					localize "STR_ALIVE_CS_COMMENT",
-	                 "",
-	                 -1,
-	                 true,
-	                 [QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable && {_csResult}
-				],
-				["Send SITREP",
-					{createDialog "RscDisplayALIVESITREP"},
-					"",
-					"",
-					"",
-	                 -1,
-	                 true,
-	                 _result
-				],
+                ["Combat Support",
+                    {["radio"] call ALIVE_fnc_radioAction},
+                    "",
+                    localize "STR_ALIVE_CS_COMMENT",
+                     "",
+                     -1,
+                     true,
+                     [QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable && {_csResult}
+                ],
+                ["Send SITREP",
+                    {createDialog "RscDisplayALIVESITREP"},
+                    "",
+                    "",
+                    "",
+                     -1,
+                     true,
+                     _result
+                ],
                 ["Send PATROLREP",
-					{createDialog "RscDisplayALIVEPATROLREP"},
-					"",
-					"",
-					"",
-	                 -1,
-	                 true,
-	                 _result
-				]
-			]
-		]
-	];
+                    {createDialog "RscDisplayALIVEPATROLREP"},
+                    "",
+                    "",
+                    "",
+                     -1,
+                     true,
+                     _result
+                ]
+            ]
+        ]
+    ];
 };
 
 //-----------------------------------------------------------------------------
 _menuDef = [];
 {
-	if (_x select 0 select 0 == _menuName) exitWith {_menuDef = _x};
+    if (_x select 0 select 0 == _menuName) exitWith {_menuDef = _x};
 } forEach _menus;
 
 if (count _menuDef == 0) then {
-	hintC format ["Error: Menu not found: %1\n%2\n%3", str _menuName, if (_menuName == "") then {_this}else{""}, __FILE__];
-	diag_log format ["Error: Menu not found: %1, %2, %3", str _menuName, _this, __FILE__];
+    hintC format ["Error: Menu not found: %1\n%2\n%3", str _menuName, if (_menuName == "") then {_this}else{""}, __FILE__];
+    diag_log format ["Error: Menu not found: %1, %2, %3", str _menuName, _this, __FILE__];
 };
 
 _menuDef // return value
