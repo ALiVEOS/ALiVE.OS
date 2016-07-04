@@ -96,10 +96,10 @@ switch(_operation) do {
         case "init": {
 
                 //Only one init per instance is allowed
-            	if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS PLAYER - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS PLAYER - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
 
-            	//Start init
-            	_logic setVariable ["initGlobal", false];
+                //Start init
+                _logic setVariable ["initGlobal", false];
 
                 /*
                 MODEL - no visual just reference data
@@ -163,8 +163,8 @@ switch(_operation) do {
                         MOD(sys_player) setVariable ["serverID", _serverID];
 
                         // Setup data handler
-                    	GVAR(datahandler) = [nil, "create"] call ALIVE_fnc_Data;
-                    	[GVAR(datahandler),"storeType",true] call ALIVE_fnc_Data;
+                        GVAR(datahandler) = [nil, "create"] call ALIVE_fnc_Data;
+                        [GVAR(datahandler),"storeType",true] call ALIVE_fnc_Data;
 
                         _missionName = [missionName, "%20", "-"] call CBA_fnc_replace;
 
@@ -341,7 +341,7 @@ switch(_operation) do {
 
         case "allowReset": {
                 _result = [_logic,_operation,_args,DEFAULT_RESET] call ALIVE_fnc_OOsimpleOperation;
-		};
+        };
         case "allowDiffClass": {
                 _result = [_logic,_operation,_args,DEFAULT_DIFFCLASS] call ALIVE_fnc_OOsimpleOperation;
         };
@@ -356,19 +356,19 @@ switch(_operation) do {
         };
         case "debug": {
                 if (typeName _args == "BOOL") then {
-                	_logic setVariable ["debug", _args];
+                    _logic setVariable ["debug", _args];
                 } else {
-                	_args = _logic getVariable ["debug", false];
+                    _args = _logic getVariable ["debug", false];
                 };
                 if (typeName _args == "STRING") then {
-                		if(_args == "true") then {_args = true;} else {_args = false;};
-                		_logic setVariable ["debug", _args];
+                        if(_args == "true") then {_args = true;} else {_args = false;};
+                        _logic setVariable ["debug", _args];
                 };
                 ASSERT_TRUE(typeName _args == "BOOL",str _args);
                 // _logic call ?
 
                 if(_args) then {
-                	// _logic call ?
+                    // _logic call ?
                 };
                 _result = _args;
         };
@@ -437,7 +437,7 @@ switch(_operation) do {
                     _result = _gearHash;
         };
         case "getPlayer": {
-        	       // Get player data from player store and apply to player object on client
+                   // Get player data from player store and apply to player object on client
                     private ["_playerHash","_unit"];
                     _unit  = _args select 0;
                     _owner = _args select 1;
@@ -460,7 +460,7 @@ switch(_operation) do {
         };
         case "getPlayerSaveTime": {
                     private ["_playerHash","_puid"];
-                	// Get the time of the last player save for a specific player
+                    // Get the time of the last player save for a specific player
                     _puid = _args select 0;
                     _playerHash = [GVAR(player_data), _puid] call ALIVE_fnc_hashGet;
                     _result =  [_playerHash, "lastSaveTime"] call ALIVE_fnc_hashGet;
@@ -475,7 +475,7 @@ switch(_operation) do {
                         _result = _playerHash;
         };
         case "checkPlayer": {
-        	       // Check to see if the player joining has the same class as the one stored in memory
+                   // Check to see if the player joining has the same class as the one stored in memory
                 private ["_unit","_type","_trigger"];
                 _unit = _args select 0;
                 _type = _args select 1;
@@ -514,7 +514,7 @@ switch(_operation) do {
             _result = _playerHash;
         };
         case "resetPlayer": {
-        	// Return the player state to the previous start state
+            // Return the player state to the previous start state
             private ["_playerHash","_unit","_gearHash"];
             _unit  = _args select 0;
 
@@ -540,7 +540,7 @@ switch(_operation) do {
                 [_logic, "debug", false] call MAINCLASS;
 
                 if (isServer) then {
-                		// if server
+                        // if server
 
                                 _logic setVariable ["super", nil];
                                 _logic setVariable ["class", nil];

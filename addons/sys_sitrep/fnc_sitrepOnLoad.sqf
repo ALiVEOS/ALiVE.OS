@@ -56,52 +56,52 @@ _vehControl = _display displayctrl VEH_LIST;
 _csControl = _display displayctrl CS_LIST;
 
 _state = [
-	["GREEN", 1],
-	["AMBER", 2],
-	["RED", 3]
+    ["GREEN", 1],
+    ["AMBER", 2],
+    ["RED", 3]
 ];
 
 {
-	_index = _ammoControl lbAdd (_x select 0);
-	_ammoControl lbSetData [_index, str(_x select 1)];
-	_index = _casControl lbAdd (_x select 0);
-	_casControl lbSetData [_index, str(_x select 1)];
-	_index = _vehControl lbAdd (_x select 0);
-	_vehControl lbSetData [_index, str(_x select 1)];
-	_index = _csControl lbAdd (_x select 0);
-	_csControl lbSetData [_index, str(_x select 1)];
+    _index = _ammoControl lbAdd (_x select 0);
+    _ammoControl lbSetData [_index, str(_x select 1)];
+    _index = _casControl lbAdd (_x select 0);
+    _casControl lbSetData [_index, str(_x select 1)];
+    _index = _vehControl lbAdd (_x select 0);
+    _vehControl lbSetData [_index, str(_x select 1)];
+    _index = _csControl lbAdd (_x select 0);
+    _csControl lbSetData [_index, str(_x select 1)];
 } foreach _state;
 
 
 // Eyes Only
 _eyesControl = _display displayctrl EYES_LIST;
 _eyes = [
-	["UNCLASSIFIED (PUBLIC)", "GLOBAL"],
-	[format ["CLASSIFIED Confidential (%1 ONLY)", side player], "SIDE"],
-	[format ["CLASSIFIED Secret (%1 ONLY)", getText (configFile >> "CfgFactionClasses" >> faction player >> "displayName")], "FACTION"],
-	[format ["CLASSIFIED Top Secret (%1 ONLY)", group player], "GROUP"],
-	["PRIVATE", "LOCAL"]
+    ["UNCLASSIFIED (PUBLIC)", "GLOBAL"],
+    [format ["CLASSIFIED Confidential (%1 ONLY)", side player], "SIDE"],
+    [format ["CLASSIFIED Secret (%1 ONLY)", getText (configFile >> "CfgFactionClasses" >> faction player >> "displayName")], "FACTION"],
+    [format ["CLASSIFIED Top Secret (%1 ONLY)", group player], "GROUP"],
+    ["PRIVATE", "LOCAL"]
 ];
 
 {
-	_index = _eyesControl lbAdd (_x select 0);
-	_eyesControl lbSetData [_index, (_x select 1)];
+    _index = _eyesControl lbAdd (_x select 0);
+    _eyesControl lbSetData [_index, (_x select 1)];
 } foreach _eyes;
 
 
 ///--- Initial icon set (after delay to distinguish icon/brush)
 [] spawn {
-		private ["_ammoControl","_casControl","_eyesControl"];
+        private ["_ammoControl","_casControl","_eyesControl"];
 
-		disableSerialization;
-		_eyesControl = (findDisplay 90001) displayCtrl EYES_LIST;
+        disableSerialization;
+        _eyesControl = (findDisplay 90001) displayCtrl EYES_LIST;
 
-		// Set UI controls to defaults
-		ctrlSetText [NAME_VALUE, str(player)];
-		ctrlSetText [DTG_VALUE, [date] call ALIVE_fnc_dateToDTG];
-		ctrlSetText [DATE_VALUE, [date] call ALIVE_fnc_dateToDTG];
-		ctrlSetText [LOC_VALUE, mapGridPosition (position player)];
-		lbSetCurSel [EYES_LIST, 1];
+        // Set UI controls to defaults
+        ctrlSetText [NAME_VALUE, str(player)];
+        ctrlSetText [DTG_VALUE, [date] call ALIVE_fnc_dateToDTG];
+        ctrlSetText [DATE_VALUE, [date] call ALIVE_fnc_dateToDTG];
+        ctrlSetText [LOC_VALUE, mapGridPosition (position player)];
+        lbSetCurSel [EYES_LIST, 1];
 
 };
 
@@ -109,22 +109,22 @@ _eyes = [
 _classInsideControls = configfile >> "RscDisplayALiVESITREP" >> "controls";
 
 for "_i" from 0 to (count _classInsideControls - 1) do {   //go to all subclasses
-	_current = _classInsideControls select _i;
+    _current = _classInsideControls select _i;
 
-	//do not toUpper texts inserted by player
-	if ( (configName(inheritsFrom(_current)) != "SITREP_RscEdit")
-		&& (configName(inheritsFrom(_current)) != "SITREP_RscText") ) then
-	{
-		//search inside main controls class
-		_idc = getnumber (_current >> "idc");
-		_control = _display displayctrl _idc;
-		// Set combos to 0
-		if (getnumber (_current >> "type") == 4) then {
-			_control lbSetCurSel 0;
-		} else {
-			_control ctrlSetText (toUpper (ctrlText _control));
-		};
+    //do not toUpper texts inserted by player
+    if ( (configName(inheritsFrom(_current)) != "SITREP_RscEdit")
+        && (configName(inheritsFrom(_current)) != "SITREP_RscText") ) then
+    {
+        //search inside main controls class
+        _idc = getnumber (_current >> "idc");
+        _control = _display displayctrl _idc;
+        // Set combos to 0
+        if (getnumber (_current >> "type") == 4) then {
+            _control lbSetCurSel 0;
+        } else {
+            _control ctrlSetText (toUpper (ctrlText _control));
+        };
 
-	};
+    };
 };
 //Sets all static texts toUpper---------------------------------------------------------------------------------------------

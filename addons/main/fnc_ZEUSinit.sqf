@@ -7,7 +7,7 @@ Function: ALIVE_fnc_ZEUSinit
 Description:
 Inits ZEUS including backwardcompatibility (to be removed after release)
 Sets a clientside loop that merges ZEUS module position globally with the local ZEUS camera position.
-This way all localities know about ZEUS modules position and server can spawn ALiVE AI when the curator 
+This way all localities know about ZEUS modules position and server can spawn ALiVE AI when the curator
 moves around with the cam without the use of PVS/PV/BUS and minimising network traffic.
 
 Notes:
@@ -47,19 +47,19 @@ ALiVE_fnc_ZeusRegister = {
 //Run loop only on clients
 if (hasInterface) then {
     [] spawn {
-		private ["_curatorLogic","_curatorCamPos"];
-		while {true} do {
-			_curatorLogic = getAssignedCuratorLogic player;
-		
-			if !(isnil "_curatorLogic") then {
-		 		if !(isnull curatorcamera) then {
-					_curatorCamPos = getposATL curatorcamera;
-					_curatorLogic setposATL _curatorCamPos;
-				} else {
-					_curatorLogic setposATL [-5000,-5000,5000];
-				};
-			};
-			sleep 1;
-		};
+        private ["_curatorLogic","_curatorCamPos"];
+        while {true} do {
+            _curatorLogic = getAssignedCuratorLogic player;
+
+            if !(isnil "_curatorLogic") then {
+                 if !(isnull curatorcamera) then {
+                    _curatorCamPos = getposATL curatorcamera;
+                    _curatorLogic setposATL _curatorCamPos;
+                } else {
+                    _curatorLogic setposATL [-5000,-5000,5000];
+                };
+            };
+            sleep 1;
+        };
     };
 };

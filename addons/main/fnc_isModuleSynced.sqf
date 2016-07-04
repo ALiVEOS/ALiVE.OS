@@ -34,12 +34,12 @@ _target = _this select 1;
 _result = false;
 
 for "_i" from 0 to ((count synchronizedObjects _source)-1) do {
-	private ["_obj","_mod"];
-    
+    private ["_obj","_mod"];
+
     _mod = (synchronizedObjects _source) select _i;
-    
+
     if ((typeof _mod) in _target) then {
-		_target = _target - [(typeof _mod)];
+        _target = _target - [(typeof _mod)];
     };
 };
 

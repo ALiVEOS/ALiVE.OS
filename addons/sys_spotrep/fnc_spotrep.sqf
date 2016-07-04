@@ -73,20 +73,20 @@ TRACE_3("SYS_spotrep",_logic, _operation, _args);
 
 switch (_operation) do {
 
-    	case "create": {
+        case "create": {
             if (isServer) then {
 
-	            // Ensure only one module is used
-	            if !(isNil QMOD(SYS_spotrep)) then {
-                	_logic = MOD(SYS_spotrep);
+                // Ensure only one module is used
+                if !(isNil QMOD(SYS_spotrep)) then {
+                    _logic = MOD(SYS_spotrep);
                     ERROR_WITH_TITLE(str _logic, localize "STR_ALIVE_spotrep_ERROR1");
-	            } else {
-	        		_logic = (createGroup sideLogic) createUnit ["ALiVE_SYS_spotrep", [0,0], [], 0, "NONE"];
+                } else {
+                    _logic = (createGroup sideLogic) createUnit ["ALiVE_SYS_spotrep", [0,0], [], 0, "NONE"];
                     MOD(SYS_spotrep) = _logic;
                 };
 
                 //Push to clients
-	            PublicVariable QMOD(SYS_spotrep);
+                PublicVariable QMOD(SYS_spotrep);
             };
 
             TRACE_1("Waiting for object to be ready",true);
@@ -95,9 +95,9 @@ switch (_operation) do {
 
             TRACE_1("Creating class on all localities",true);
 
-			// initialise module game logic on all localities
-			MOD(SYS_spotrep) setVariable ["super", QUOTE(SUPERCLASS)];
-			MOD(SYS_spotrep) setVariable ["class", QUOTE(MAINCLASS)];
+            // initialise module game logic on all localities
+            MOD(SYS_spotrep) setVariable ["super", QUOTE(SUPERCLASS)];
+            MOD(SYS_spotrep) setVariable ["class", QUOTE(MAINCLASS)];
 
             _result = MOD(SYS_spotrep);
         };
@@ -115,11 +115,11 @@ switch (_operation) do {
 
             TRACE_1("Creating data store",true);
 
-	        // Create logistics data storage in memory on all localities
-	        //GVAR(STORE) = [] call ALIVE_fnc_hashCreate;
+            // Create logistics data storage in memory on all localities
+            //GVAR(STORE) = [] call ALIVE_fnc_hashCreate;
 
             // Define module basics on server
-			if (isServer) then {
+            if (isServer) then {
                 _errorMessage = "Please include either the Requires ALiVE module! %1 %2";
                 _error1 = ""; _error2 = ""; //defaults
                 if(
@@ -128,7 +128,7 @@ switch (_operation) do {
                     [_errorMessage,_error1,_error2] call ALIVE_fnc_dumpR;
                 };
 
-				// Wait for disable log module to set module parameters
+                // Wait for disable log module to set module parameters
                 if (["AliVE_SYS_spotrepPARAMS"] call ALiVE_fnc_isModuleavailable) then {
                     waituntil {!isnil {MOD(SYS_spotrep) getvariable "DEBUG"}};
                 };
@@ -155,13 +155,13 @@ switch (_operation) do {
 
                 GVAR(STORE) call ALIVE_fnc_inspectHash;
 
-            	[_logic,"state",GVAR(STORE)] call ALiVE_fnc_spotrep;
+                [_logic,"state",GVAR(STORE)] call ALiVE_fnc_spotrep;
 
                 //Push to clients
                 PublicVariable QGVAR(STORE);
 
                 _logic setVariable ["init", true, true];
-			};
+            };
 
             /*
             CONTROLLER  - coordination
@@ -176,7 +176,7 @@ switch (_operation) do {
                 // Start any server-side processes that are needed
             };
 
-			TRACE_1("Spawning clientside processes",hasInterface);
+            TRACE_1("Spawning clientside processes",hasInterface);
 
             if (hasInterface) then {
                 // Start any client-side processes that are needed
@@ -333,7 +333,7 @@ switch (_operation) do {
         };
 
         case "addspotrep": {
-        	// Adds a spotrep to the store on the server and creates spotreps on necessary clients
+            // Adds a spotrep to the store on the server and creates spotreps on necessary clients
             // Expects a spotrepname and hash as input.
 
             private ["_spotrepName","_spotrepHash","_spotrep"];
@@ -473,7 +473,7 @@ switch (_operation) do {
                 [_logic, "debug", false] call MAINCLASS;
 
                 if (isServer) then {
-                		// if server
+                        // if server
                         MOD(SYS_spotrep) = _logic;
 
                         MOD(SYS_spotrep) setVariable ["super", nil];

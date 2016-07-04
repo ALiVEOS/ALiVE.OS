@@ -4,17 +4,17 @@ class cfgFunctions {
                         class marker {
                                 description = "The main class";
                                 file = "\x\alive\addons\sys_marker\fnc_marker.sqf";
-								recompile = RECOMPILE;
+                                recompile = RECOMPILE;
                         };
                         class markerInit {
                                 description = "The module initialisation function";
                                 file = "\x\alive\addons\sys_marker\fnc_markerInit.sqf";
-								recompile = RECOMPILE;
+                                recompile = RECOMPILE;
                         };
                         class markerParams {
                                 description = "Marker parameters";
                                 file = "\x\alive\addons\sys_marker\fnc_markerParams.sqf";
-								recompile = RECOMPILE;
+                                recompile = RECOMPILE;
                         };
                         class markerSaveData {
                                 description = "marker save data to DB";

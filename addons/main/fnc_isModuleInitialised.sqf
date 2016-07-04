@@ -36,13 +36,13 @@ waitUntil {
     {
         if (typeof _x in _waitModules) then {
             _startupComplete = _x getVariable ["startupComplete",false];
-            
+
             if !(_startupComplete) then {
                 _initialising = false;
             };
         };
     } foreach (entities "Module_F");
-	_initialising
+    _initialising
 };
 
 _initialising;

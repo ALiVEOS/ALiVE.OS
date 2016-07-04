@@ -29,12 +29,12 @@ if !(hasInterface) exitwith {};
 
 //If "Requires ALiVE"-module option is set to kick then kick - ignore devs
 if (MAJOR != 0) then {
-	[] spawn {
-	    waituntil {!(isnull player)};
-	    sleep 30;
-	    hint format["Warning: Your ALiVE version %1.%2.%3.%4 doesnt match the servers version!",MAJOR,MINOR,PATCHLVL,BUILD];
-	    sleep 10;
+    [] spawn {
+        waituntil {!(isnull player)};
+        sleep 30;
+        hint format["Warning: Your ALiVE version %1.%2.%3.%4 doesnt match the servers version!",MAJOR,MINOR,PATCHLVL,BUILD];
+        sleep 10;
 
-	    if (!isnil QMOD(VERSIONINGTYPE) && {MOD(VERSIONINGTYPE) == "kick"}) then {["LOSER",false,true] call BIS_fnc_endMission};
-	};
+        if (!isnil QMOD(VERSIONINGTYPE) && {MOD(VERSIONINGTYPE) == "kick"}) then {["LOSER",false,true] call BIS_fnc_endMission};
+    };
 };

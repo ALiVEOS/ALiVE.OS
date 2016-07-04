@@ -3,33 +3,33 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_sitrep">
-	<Original>sitrep Module</Original>
+    <Original>sitrep Module</Original>
 </Key>
 <Key ID="STR_ALIVE_sitrep_COMMENT">
-	<Original>Send a SITREP to be stored in game and on War Room</Original>
+    <Original>Send a SITREP to be stored in game and on War Room</Original>
 </Key>
 <Key ID="STR_ALIVE_sitrepPARAMS">
-	<Original>Template Parameters</Original>
+    <Original>Template Parameters</Original>
 </Key>
 <Key ID="STR_ALIVE_sitrep_ERROR1">
-	<Original>Only one module template allowed</Original>
+    <Original>Only one module template allowed</Original>
 </Key>
 <Key ID="STR_ALIVE_sitrepPARAMS_COMMENT">
-	<Original>Over-ride default parameters for the Module Template</Original>
+    <Original>Over-ride default parameters for the Module Template</Original>
 </Key>
 <Key ID="STR_ALIVE_sitrepPARAMS_USAGE">
-	<Original>Place the module and configure the over-rides</Original>
+    <Original>Place the module and configure the over-rides</Original>
 </Key>
 <Key ID="STR_ALIVE_sitrep_DEBUG">
-	<Original>Debug:</Original>
+    <Original>Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_sitrep_DEBUG_COMMENT">
-	<Original>Enable Debug</Original>
+    <Original>Enable Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_sitrep_DIALOG_TITLE">
-	<Original>ADVANCED SITREP</Original>
+    <Original>ADVANCED SITREP</Original>
 </Key>
 <Key ID="STR_ALIVE_sitrep_DIALOG_SITREP">
-	<Original>SITREP</Original>
+    <Original>SITREP</Original>
 </Key>
 </Container></Package></Project>

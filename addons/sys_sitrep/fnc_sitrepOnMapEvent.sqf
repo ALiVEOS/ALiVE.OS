@@ -14,7 +14,7 @@ _markerName = "MK" + str(random time + 1);
 
 
 if !(isNil QGVAR(mapStartMarker)) then {
-	deleteMarkerLocal GVAR(mapStartMarker);
+    deleteMarkerLocal GVAR(mapStartMarker);
 };
 
 _marker = createMarkerLocal [_markerName, _pos];

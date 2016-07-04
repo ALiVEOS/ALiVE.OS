@@ -4,22 +4,22 @@ class cfgFunctions {
                         class player {
                                 description = "The main class";
                                 file = "\x\alive\addons\sys_player\fnc_player.sqf";
-				recompile = RECOMPILE;
+                recompile = RECOMPILE;
                         };
                         class playerInit {
                                 description = "The module initialisation function";
                                 file = "\x\alive\addons\sys_player\fnc_playerInit.sqf";
-				recompile = RECOMPILE;
+                recompile = RECOMPILE;
                         };
                         class playerMenuDef {
                                 description = "The module menu definition";
                                 file = "\x\alive\addons\sys_player\fnc_playerMenuDef.sqf";
-				recompile = RECOMPILE;
+                recompile = RECOMPILE;
                         };
                         class getPlayer {
                                 description = "Gets player data from the store and applies it to the player object";
                                 file = "\x\alive\addons\sys_player\fnc_getPlayer.sqf";
-				recompile = RECOMPILE;
+                recompile = RECOMPILE;
                         };
                         class setPlayer {
                                 description = "Sets player data to the store";
@@ -34,7 +34,7 @@ class cfgFunctions {
                         class setGear {
                                 description = "Sets loadout data to a store";
                                 file = "\x\alive\addons\sys_player\fnc_setGear.sqf";
-				recompile = RECOMPILE;
+                recompile = RECOMPILE;
                         };
                         class player_OnPlayerDisconnected {
                                         description = "The module onPlayerDisconnected handler";

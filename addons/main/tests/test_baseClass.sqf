@@ -55,9 +55,9 @@ _logic = nil;
 
 STAT("Create instance");
 if(isServer) then {
-	_logic = [nil, "create"] call ALIVE_fnc_baseClass;
-	TEST_LOGIC = _logic;
-	publicVariable "TEST_LOGIC";
+    _logic = [nil, "create"] call ALIVE_fnc_baseClass;
+    TEST_LOGIC = _logic;
+    publicVariable "TEST_LOGIC";
 };
 STAT("Confirm new instance");
 waitUntil{!isNil "TEST_LOGIC"};
@@ -71,19 +71,19 @@ sleep 5;
 
 STAT("Destroy old instance");
 if(isServer) then {
-	[TEST_LOGIC, "destroy"] call ALIVE_fnc_baseClass;
-	missionNamespace setVariable ["TEST_LOGIC",nil];
+    [TEST_LOGIC, "destroy"] call ALIVE_fnc_baseClass;
+    missionNamespace setVariable ["TEST_LOGIC",nil];
 } else {
-	waitUntil{isNull TEST_LOGIC};
+    waitUntil{isNull TEST_LOGIC};
 };
 
 diag_log ((allMissionObjects "") - _amo);
 
 STAT("Create  instance");
 if(isServer) then {
-	_logic = [nil, "create"] call ALIVE_fnc_baseClass;
-	TEST_LOGIC2 = _logic;
-	publicVariable "TEST_LOGIC2";
+    _logic = [nil, "create"] call ALIVE_fnc_baseClass;
+    TEST_LOGIC2 = _logic;
+    publicVariable "TEST_LOGIC2";
 };
 
 STAT("Confirm second new  instance");
@@ -97,12 +97,12 @@ STAT("Sleeping before destroy");
 sleep 5;
 
 if(isServer) then {
-	STAT("Destroy old instance");
-	[TEST_LOGIC2, "destroy"] call ALIVE_fnc_baseClass;
-	missionNamespace setVariable ["TEST_LOGIC2",nil];
+    STAT("Destroy old instance");
+    [TEST_LOGIC2, "destroy"] call ALIVE_fnc_baseClass;
+    missionNamespace setVariable ["TEST_LOGIC2",nil];
 } else {
-	STAT("Confirm destroy instance 2");
-	waitUntil{isNull TEST_LOGIC2};
+    STAT("Confirm destroy instance 2");
+    waitUntil{isNull TEST_LOGIC2};
 };
 
 diag_log (allMissionObjects "") - _amo;

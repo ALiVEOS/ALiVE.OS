@@ -26,9 +26,9 @@ _logic = nil;
 
 STAT("Create Object instance");
 if(isServer) then {
-	_logic = [nil, "create"] call ALIVE_fnc_baseClass;
-	TEST_LOGIC = _logic;
-	publicVariable "TEST_LOGIC";
+    _logic = [nil, "create"] call ALIVE_fnc_baseClass;
+    TEST_LOGIC = _logic;
+    publicVariable "TEST_LOGIC";
 };
 STAT("Confirm new Cluster instance");
 waitUntil{!isNil "TEST_LOGIC"};
@@ -71,13 +71,13 @@ STAT("Sleeping before destroy");
 sleep 3;
 
 if(isServer) then {
-	STAT("Destroy old instance");
-	[_logic, "destroy"] call ALIVE_fnc_baseClass;
-	TEST_LOGIC2 = nil;
-	publicVariable "TEST_LOGIC2";
+    STAT("Destroy old instance");
+    [_logic, "destroy"] call ALIVE_fnc_baseClass;
+    TEST_LOGIC2 = nil;
+    publicVariable "TEST_LOGIC2";
 } else {
-	STAT("Confirm destroy instance 2");
-	waitUntil{isNull TEST_LOGIC2};
+    STAT("Confirm destroy instance 2");
+    waitUntil{isNull TEST_LOGIC2};
 };
 
 nil;

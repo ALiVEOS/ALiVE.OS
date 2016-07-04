@@ -34,7 +34,7 @@ _moduleID = [_logic, true] call ALIVE_fnc_dumpModuleInit;
 //_activated = [_this,2,true,[true]] call BIS_fnc_param;
 
 //if (_activated) then {
-	[_logic, "init",[]] call ALIVE_fnc_player;
+    [_logic, "init",[]] call ALIVE_fnc_player;
 //
 
 [_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;

@@ -5,7 +5,7 @@ SCRIPT(test_RequireALiVE);
 
 if !(isnil QGVAR(TEST_RequireALiVE)) exitwith {};
 
-GVAR(TEST_RequireALiVE) = true; 
+GVAR(TEST_RequireALiVE) = true;
 
 #define MAINCLASS ALiVE_fnc_ALiVEInit
 
@@ -47,11 +47,11 @@ _time = time;
 
 waituntil {
     _timeout = time - _time > 20;
-    
+
     (
-	    !isnil "ALiVE_SYS_LOGISTICS" &&
-	    {!isnil "ALiVE_SYS_GC"} &&
-	    {!isnil "ALiVE_SYS_MARKER"} &&
+        !isnil "ALiVE_SYS_LOGISTICS" &&
+        {!isnil "ALiVE_SYS_GC"} &&
+        {!isnil "ALiVE_SYS_MARKER"} &&
         {!isnil "ALiVE_SYS_NEWSFEED"} &&
         {!isnil "ALiVE_SYS_ADMINACTIONS"} &&
         {!isnil "ALiVE_SYS_SPOTREP"} &&
@@ -69,27 +69,27 @@ sleep 5;
 STAT("Destroying created module instances");
 {
     private ["_logic"];
-    
+
     _logic = _x select 0;
     _fnc = _x select 1;
     _type = typeOf _logic;
 
     _err = format["Destruction of %1 system instance failed",_type];
-	_succ = format["Destruction of %1 system instance completed",_type];
-    
+    _succ = format["Destruction of %1 system instance completed",_type];
+
     [_logic,"destroy",true] call _fnc;
-    
+
     sleep 3;
-    
+
     ASSERT_TRUE(isnull _logic, _err);
     if (isnull _logic) then {STAT(_succ)};
 } foreach [
-	[ALiVE_SYS_LOGISTICS, ALiVE_fnc_Logistics],
-	[ALiVE_SYS_GC, ALiVE_fnc_GC],
-	[ALiVE_SYS_NEWSFEED, ALiVE_fnc_NewsFeed],
-	[ALiVE_SYS_ADMINACTIONS, ALiVE_fnc_AdminActions],
-	[ALiVE_SYS_SPOTREP, ALiVE_fnc_SpotRep],
-	[ALiVE_SYS_MARKER, ALiVE_fnc_Marker]
+    [ALiVE_SYS_LOGISTICS, ALiVE_fnc_Logistics],
+    [ALiVE_SYS_GC, ALiVE_fnc_GC],
+    [ALiVE_SYS_NEWSFEED, ALiVE_fnc_NewsFeed],
+    [ALiVE_SYS_ADMINACTIONS, ALiVE_fnc_AdminActions],
+    [ALiVE_SYS_SPOTREP, ALiVE_fnc_SpotRep],
+    [ALiVE_SYS_MARKER, ALiVE_fnc_Marker]
 ];
 
 ALiVE_SYS_LOGISTICS = nil;
