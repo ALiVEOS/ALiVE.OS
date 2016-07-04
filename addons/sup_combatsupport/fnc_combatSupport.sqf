@@ -502,14 +502,17 @@ switch(_operation) do {
                             _code = _x select 5;
 
                             if (_class in ["BUS_Support_Mort","BUS_MotInf_MortTeam","OIA_MotInf_MortTeam","OI_support_Mort","HAF_MotInf_MortTeam","HAF_Support_Mort"]) then {
-                                private "_letter";
-                                _letter = _class select [0,1];
+                                // Force _unitCount to 1 to prevent spawning 3x3 units when _class is from CfgGroups
+                                _unitCount = 1;
+                                private _letter = _class select [0,1];
+
                                 switch (_letter) do {
                                     case "O" : {_tempclass = "O_Mortar_01_F"};
                                     case "B" : {_tempclass = "B_Mortar_01_F"};
                                     case "H" : {_tempclass = "I_Mortar_01_F"};
                                     default {_tempclass = "B_Mortar_01_F"};
                                 };
+
                                 _side = getNumber(configfile >> "CfgVehicles" >> _tempclass >> "side");
                             } else {
                                 _side = getNumber(configfile >> "CfgVehicles" >> _class >> "side");
@@ -522,7 +525,11 @@ switch(_operation) do {
                                 default {_side = EAST};
                             };
 
-                              _roundsUnit = _class call ALiVE_fnc_GetArtyRounds;
+                            if (!isNil "_tempclass") then {
+                                _roundsUnit = _tempclass call ALiVE_fnc_GetArtyRounds;
+                            } else {
+                                _roundsUnit = _class call ALiVE_fnc_GetArtyRounds;
+                            };
 
                             _roundsAvailable = [];
                             _canMove = if (_class in ["B_MBT_01_arty_F", "O_MBT_02_arty_F", "B_MBT_01_mlrs_F","O_Mortar_01_F", "B_Mortar_01_F","I_Mortar_01_F","BUS_Support_Mort","BUS_MotInf_MortTeam","OIA_MotInf_MortTeam","OI_support_Mort","HAF_MotInf_MortTeam","HAF_Support_Mort"]) then { true } else { false };
@@ -565,8 +572,14 @@ switch(_operation) do {
                                     // Add leader and assistant if a mortar weapon, in order to use BIS pack and unpack functions
                                     if (_class in ["O_Mortar_01_F", "B_Mortar_01_F","I_Mortar_01_F","BUS_Support_Mort","BUS_MotInf_MortTeam","OIA_MotInf_MortTeam","OI_support_Mort","HAF_MotInf_MortTeam","HAF_Support_Mort"]) then {
                                         private ["_tl","_sl","_newgrp","_cars"];
-                                        _tl = format ["%1_soldier_TL_F",_class select [0,1]];
-                                        _sl = format ["%1_soldier_F",_class select [0,1]];
+                                        private _prefix = _class select [0,1];
+
+                                        if (_prefix == "H") then {
+                                            _prefix = "I";
+                                        };
+
+                                        _tl = format ["%1_soldier_TL_F", _prefix];
+                                        _sl = format ["%1_soldier_F", _prefix];
                                         _newgrp = [_vehPos, _side, [_tl, _sl],[],[],[],[],[],_vehDir] call BIS_fnc_spawnGroup;
                                         (units _newgrp) joinSilent _grp;
 
@@ -584,7 +597,7 @@ switch(_operation) do {
                                             private "_car";
                                             _car = createVehicle [_cars select 0, [position (leader _grp),1,100,1,0,4,0] call bis_fnc_findSafePos, [], 0, "NONE"];
                                             _grp addVehicle _car;
-                                            _artyBatteries pushback _veh;
+                                            _artyBatteries pushback _car;
                                         };
                                     };
                                 };
