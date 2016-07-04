@@ -1,17 +1,17 @@
 class CfgFunctions {
-	class PREFIX {
-		class COMPONENT {
-			class PR {
-				description = "The main class";
-				file = "\x\alive\addons\sup_player_resupply\fnc_PR.sqf";
-				recompile = RECOMPILE;
-			};
-			class PRInit {
-				description = "The module initialisation function";
-				file = "\x\alive\addons\sup_player_resupply\fnc_PRInit.sqf";
-				recompile = RECOMPILE;
-			};
-			class PRMenuDef {
+    class PREFIX {
+        class COMPONENT {
+            class PR {
+                description = "The main class";
+                file = "\x\alive\addons\sup_player_resupply\fnc_PR.sqf";
+                recompile = RECOMPILE;
+            };
+            class PRInit {
+                description = "The module initialisation function";
+                file = "\x\alive\addons\sup_player_resupply\fnc_PRInit.sqf";
+                recompile = RECOMPILE;
+            };
+            class PRMenuDef {
                 description = "The module menu definition";
                 file = "\x\alive\addons\sup_player_resupply\fnc_PRMenuDef.sqf";
                 recompile = RECOMPILE;
@@ -37,5 +37,5 @@ class CfgFunctions {
                 recompile = RECOMPILE;
             };
         };
-	};
+    };
 };
