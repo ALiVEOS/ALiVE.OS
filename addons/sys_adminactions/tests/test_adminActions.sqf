@@ -27,9 +27,9 @@ _logic = nil;
 
 STAT("Create instance");
 if(isServer) then {
-	_logic = [nil, "create"] call ALIVE_fnc_adminActions;
-	TEST_LOGIC = _logic;
-	publicVariable "TEST_LOGIC";
+    _logic = [nil, "create"] call ALIVE_fnc_adminActions;
+    TEST_LOGIC = _logic;
+    publicVariable "TEST_LOGIC";
 };
 STAT("Confirm new instance");
 waitUntil{!isNil "TEST_LOGIC"};
@@ -58,10 +58,10 @@ sleep 5;
 
 STAT("Destroy old instance");
 if(isServer) then {
-	[_logic, "destroy"] call ALIVE_fnc_adminActions;
-	missionNamespace setVariable ["TEST_LOGIC",nil];
+    [_logic, "destroy"] call ALIVE_fnc_adminActions;
+    missionNamespace setVariable ["TEST_LOGIC",nil];
 } else {
-	waitUntil{isNull TEST_LOGIC};
+    waitUntil{isNull TEST_LOGIC};
 };
 
 diag_log (allMissionObjects "") - _amo;
