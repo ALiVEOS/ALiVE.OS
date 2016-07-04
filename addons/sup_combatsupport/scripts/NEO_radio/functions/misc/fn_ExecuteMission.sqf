@@ -37,33 +37,33 @@ sleep 2;
 
 [_battery,_targetPos,_ordnance] spawn {
 
-	_battery = _this select 0;
-	//Get position for ETA
-	_dummy = "Land_HelipadEmpty_F" createVehicleLocal (_this select 1);
-	_eta = (vehicle _battery) getArtilleryETA [getPos _dummy, _this select 2];
-	deleteVehicle _dummy;
-	//diag_log format["BATTERY: %1 due in %2 seconds", _battery, _eta];
+    _battery = _this select 0;
+    //Get position for ETA
+    _dummy = "Land_HelipadEmpty_F" createVehicleLocal (_this select 1);
+    _eta = (vehicle _battery) getArtilleryETA [getPos _dummy, _this select 2];
+    deleteVehicle _dummy;
+    //diag_log format["BATTERY: %1 due in %2 seconds", _battery, _eta];
 
-	sleep _eta;
+    sleep _eta;
 
-	_battery setVariable ["ARTY_SPLASH", true, true];
+    _battery setVariable ["ARTY_SPLASH", true, true];
 
 };
 
 if(_missionRoundCount == 1) then {
-	_battery DOArtilleryFire [_targetPos, _ordnance, _missionRoundCount];
+    _battery DOArtilleryFire [_targetPos, _ordnance, _missionRoundCount];
 
 } else {
-	{
-		private "_pos";
-		if (_dispersion > 50) then {
-			_pos = [_targetPos, _dispersion-50, round(random 360)] call BIS_fnc_relPos;
-		} else {
-			_pos = _targetPos;
-		};
-		_x DOArtilleryFire [_pos, _ordnance, _missionRoundCount/((group _battery) getVariable ["supportWeaponCount",3])];
-		sleep _rateOfFire;
-	} foreach _units;
+    {
+        private "_pos";
+        if (_dispersion > 50) then {
+            _pos = [_targetPos, _dispersion-50, round(random 360)] call BIS_fnc_relPos;
+        } else {
+            _pos = _targetPos;
+        };
+        _x DOArtilleryFire [_pos, _ordnance, _missionRoundCount/((group _battery) getVariable ["supportWeaponCount",3])];
+        sleep _rateOfFire;
+    } foreach _units;
 };
 
 _battery setVariable ["ARTY_COMPLETE", true, true];

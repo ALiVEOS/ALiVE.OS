@@ -50,7 +50,7 @@ switch(_operation) do {
                 /*
                 MODEL - no visual just reference data
                 - server side object only
-				- enabled/disabled
+                - enabled/disabled
                 */
 
                 // Ensure only one module is used
@@ -59,13 +59,13 @@ switch(_operation) do {
                 };
 
                 //Only one init per instance is allowed
-            	if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SUP COMBATSUPPORT - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SUP COMBATSUPPORT - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
 
-            	//Start init
-            	_logic setVariable ["initGlobal", false];
+                //Start init
+                _logic setVariable ["initGlobal", false];
 
                 //Load Functions on all localities and wait for the init to have passed
-				call ALiVE_fnc_combatSupportFncInit;
+                call ALiVE_fnc_combatSupportFncInit;
 
                 //Create basics on server
                 if (isServer) then {
@@ -84,85 +84,85 @@ switch(_operation) do {
                         _TRANS_SET_RESPAWN_LIMIT = NEO_radioLogic getvariable ["combatsupport_transportrespawnlimit","3"];
                         TRANS_RESPAWN_LIMIT = parsenumber(_TRANS_SET_RESPAWN_LIMIT);
                         _ARTY_SET_RESPAWN_LIMIT = NEO_radioLogic getvariable ["combatsupport_artyrespawnlimit","3"];
-						ARTY_RESPAWN_LIMIT = parsenumber(_ARTY_SET_RESPAWN_LIMIT);
+                        ARTY_RESPAWN_LIMIT = parsenumber(_ARTY_SET_RESPAWN_LIMIT);
 
                         _audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
 
-						_transportArrays = [];
-						_casArrays = [];
-						_artyArrays = [];
-						_sides = [WEST,EAST,RESISTANCE,CIVILIAN];
+                        _transportArrays = [];
+                        _casArrays = [];
+                        _artyArrays = [];
+                        _sides = [WEST,EAST,RESISTANCE,CIVILIAN];
 
-				        for "_i" from 0 to ((count synchronizedObjects _logic)-1) do {
+                        for "_i" from 0 to ((count synchronizedObjects _logic)-1) do {
 
                             _entry = vehicle ((synchronizedObjects _logic) select _i);
                             _type = _entry getvariable ["CS_TYPE","CAS"];
                             _cargoCount = getNumber(configFile >> "cfgVehicles" >> typeOf _entry >> "transportSoldier");
 
                             if (_entry isKindOf "Air") then {
-                            	switch (toLower(_type)) do {
+                                switch (toLower(_type)) do {
                                     case ("cas") : {
                                         private ["_position","_callsign","_type"];
 
                                         _callsign = _entry getvariable ["CS_CALLSIGN",groupID (group _entry)];
-	                                    _height = _entry getvariable ["CS_HEIGHT",0];
-	                                    _code = "";
+                                        _height = _entry getvariable ["CS_HEIGHT",0];
+                                        _code = "";
 
-	                                    _position = getposATL _entry;
-	                                    _id = [_position] call ALiVE_fnc_getNearestAirportID;
-	                                    _type = typeOf _entry;
-	                                    _direction =  getDir _entry;
+                                        _position = getposATL _entry;
+                                        _id = [_position] call ALiVE_fnc_getNearestAirportID;
+                                        _type = typeOf _entry;
+                                        _direction =  getDir _entry;
 
-	                                    _casArray = [_position,_direction, _type, _callsign, _id,_code,_height];
-	                                    _casArrays set [count _casArrays,_casArray];
+                                        _casArray = [_position,_direction, _type, _callsign, _id,_code,_height];
+                                        _casArrays set [count _casArrays,_casArray];
                                     };
 
                                     case ("transport") : {
-	                                    private ["_position","_callsign","_type","_slingloading"];
+                                        private ["_position","_callsign","_type","_slingloading"];
 
                                         _callsign = _entry getvariable ["CS_CALLSIGN",groupID (group _entry)];
-	                                    _height = _entry getvariable ["CS_HEIGHT",0];
-	                                    _code = "";
+                                        _height = _entry getvariable ["CS_HEIGHT",0];
+                                        _code = "";
 
-	                                    _position = getposATL _entry;
-	                                    _id = [_position] call ALiVE_fnc_getNearestAirportID;
-	                                    _type = typeOf _entry;
-	                                    _direction =  getDir _entry;
+                                        _position = getposATL _entry;
+                                        _id = [_position] call ALiVE_fnc_getNearestAirportID;
+                                        _type = typeOf _entry;
+                                        _direction =  getDir _entry;
                                         _slingloading = true;
-	                                    _transportArray = [_position,_direction,_type, _callsign,DEFAULT_TRANSPORT_TASKS,_code,_height,_slingloading];
-	                                    _transportArrays set [count _transportArrays,_transportArray];
+                                        _transportArray = [_position,_direction,_type, _callsign,DEFAULT_TRANSPORT_TASKS,_code,_height,_slingloading];
+                                        _transportArrays set [count _transportArrays,_transportArray];
                                     };
                                 };
                             } else {
                                 switch (tolower(_type)) do {
                                    case ("arty") : {
-	                                    private ["_position","_callsign","_type"];
+                                        private ["_position","_callsign","_type"];
 
-	                                    _position = getposATL _entry;
-					    				_direction =  getDir _entry;
-	                                    _class = typeOf _entry;
+                                        _position = getposATL _entry;
+                                        _direction =  getDir _entry;
+                                        _class = typeOf _entry;
 
-					   					_callsign = _entry getvariable ["CS_CALLSIGN",groupID (group _entry)];
+                                           _callsign = _entry getvariable ["CS_CALLSIGN",groupID (group _entry)];
 
-	                                    _he = ["HE",parsenumber(_entry getvariable ["CS_artillery_he","30"])];
-	                                    _illum = ["ILLUM",parsenumber(_entry getvariable ["CS_artillery_illum","30"])];
-	                                    _smoke = ["SMOKE",parsenumber(_entry getvariable ["CS_artillery_smoke","30"])];
-	                                    _guided = ["SADARM",parsenumber(_entry getvariable ["CS_artillery_guided","30"])];
-	                                    _cluster = ["CLUSTER",parsenumber(_entry getvariable ["CS_artillery_cluster","30"])];
-	                                    _lg = ["LASER",parsenumber(_entry getvariable ["CS_artillery_lg","30"])];
-	                                    _mine = ["MINE",parsenumber(_entry getvariable ["CS_artillery_atmine","30"])];
-	                                    _atmine = ["AT MINE",parsenumber(_entry getvariable ["CS_artillery_atmine","30"])];
-	                                    _rockets = ["ROCKETS",parsenumber(_entry getvariable ["CS_artillery_rockets","16"])];
+                                        _he = ["HE",parsenumber(_entry getvariable ["CS_artillery_he","30"])];
+                                        _illum = ["ILLUM",parsenumber(_entry getvariable ["CS_artillery_illum","30"])];
+                                        _smoke = ["SMOKE",parsenumber(_entry getvariable ["CS_artillery_smoke","30"])];
+                                        _guided = ["SADARM",parsenumber(_entry getvariable ["CS_artillery_guided","30"])];
+                                        _cluster = ["CLUSTER",parsenumber(_entry getvariable ["CS_artillery_cluster","30"])];
+                                        _lg = ["LASER",parsenumber(_entry getvariable ["CS_artillery_lg","30"])];
+                                        _mine = ["MINE",parsenumber(_entry getvariable ["CS_artillery_atmine","30"])];
+                                        _atmine = ["AT MINE",parsenumber(_entry getvariable ["CS_artillery_atmine","30"])];
+                                        _rockets = ["ROCKETS",parsenumber(_entry getvariable ["CS_artillery_rockets","16"])];
 
-	                                    _ordnance = [_he,_illum,_smoke,_guided,_cluster,_lg,_mine,_atmine, _rockets];
-										_code = "";
-	                                    _artyArray = [_position,_class, _callsign,3,_ordnance,_code];
-	                                    _artyArrays set [count _artyArrays,_artyArray];
+                                        _ordnance = [_he,_illum,_smoke,_guided,_cluster,_lg,_mine,_atmine, _rockets];
+                                        _code = "";
+                                        _artyArray = [_position,_class, _callsign,3,_ordnance,_code];
+                                        _artyArrays set [count _artyArrays,_artyArray];
                                     };
                                 };
                             };
 
-				            switch (typeOf ((synchronizedObjects _logic) select _i)) do {
+                            switch (typeOf ((synchronizedObjects _logic) select _i)) do {
                                 case ("ALiVE_sup_cas") : {
                                     private ["_position","_callsign","_type"];
 
@@ -250,20 +250,20 @@ switch(_operation) do {
                                     _artyArray = [_position,_class, _callsign,3,_ordnance,_code];
                                     _artyArrays set [count _artyArrays,_artyArray];
                                 };
-				            };
-				        };
+                            };
+                        };
 
-					    SUP_CASARRAYS  = _casArrays; PublicVariable "SUP_CASARRAYS";
-					    SUP_TRANSPORTARRAYS  = _transportArrays; PublicVariable "SUP_TRANSPORTARRAYS";
-					    SUP_ARTYARRAYS = _artyArrays; PublicVariable "SUP_ARTYARRAYS";
+                        SUP_CASARRAYS  = _casArrays; PublicVariable "SUP_CASARRAYS";
+                        SUP_TRANSPORTARRAYS  = _transportArrays; PublicVariable "SUP_TRANSPORTARRAYS";
+                        SUP_ARTYARRAYS = _artyArrays; PublicVariable "SUP_ARTYARRAYS";
 
                         {
-                        	NEO_radioLogic setVariable [format ["NEO_radioTrasportArray_%1", _x], [],true];
-							NEO_radioLogic setVariable [format ["NEO_radioCasArray_%1", _x], [],true];
-							NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _x], [],true];
-						} foreach _sides;
+                            NEO_radioLogic setVariable [format ["NEO_radioTrasportArray_%1", _x], [],true];
+                            NEO_radioLogic setVariable [format ["NEO_radioCasArray_%1", _x], [],true];
+                            NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _x], [],true];
+                        } foreach _sides;
 
-						private ["_t", "_c", "_a"];
+                        private ["_t", "_c", "_a"];
                         _t = [];
                         _c = [];
                         _a = [];
@@ -282,7 +282,7 @@ switch(_operation) do {
                             _height = _x select 6;
                             _slingloading = _x select 7;
 
-							_transportfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\transport.fsm";
+                            _transportfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\transport.fsm";
                             _faction = gettext(configfile >> "CfgVehicles" >> _type >> "faction");
                             _side = getNumber(configfile >> "CfgVehicles" >> _type >> "side");
 
@@ -298,15 +298,15 @@ switch(_operation) do {
                             _veh = nearestObjects [_pos, [_type], 5];
 
                             if (count _veh == 0) then {
-	                            _grp = createGroup _side;
-	                            _veh = createVehicle [_type, _pos, [], 0, "CAN_COLLIDE"];
-	                            _veh setDir _dir;
-	                            _veh setPosATL _pos;
+                                _grp = createGroup _side;
+                                _veh = createVehicle [_type, _pos, [], 0, "CAN_COLLIDE"];
+                                _veh setDir _dir;
+                                _veh setPosATL _pos;
 
-	                            If(_height > 0) then {_veh setposasl [getposASL _veh select 0, getposASL _veh select 1, _height]; _veh setVelocity [0,0,-1]} else {_veh setPosATL _pos};
+                                If(_height > 0) then {_veh setposasl [getposASL _veh select 0, getposASL _veh select 1, _height]; _veh setVelocity [0,0,-1]} else {_veh setPosATL _pos};
 
-	                            [_veh, _grp] call BIS_fnc_spawnCrew;
- 							} else {
+                                [_veh, _grp] call BIS_fnc_spawnCrew;
+                             } else {
                                 _veh = _veh select 0;
                                 _grp = group (driver _veh);
                             };
@@ -397,7 +397,7 @@ switch(_operation) do {
 
                         // CAS
 
-						{
+                        {
                             private ["_pos", "_dir", "_type", "_callsign", "_airport", "_code","_side"];
                             _pos = _x select 0; _pos set [2, 0];
                             _dir = _x select 1;
@@ -409,7 +409,7 @@ switch(_operation) do {
 
                             _faction = gettext(configfile >> "CfgVehicles" >> _type >> "faction");
                             _side = getNumber(configfile >> "CfgVehicles" >> _type >> "side");
-							_casfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\cas.fsm";
+                            _casfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\cas.fsm";
 
                             switch (_side) do {
                                 case 0 : {_side = EAST};
@@ -423,19 +423,19 @@ switch(_operation) do {
                             _veh = nearestObjects [_pos, [_type], 5];
 
                             if (count _veh == 0) then {
-	                            _grp = createGroup _side;
-	                            _veh = createVehicle [_type, _pos, [], 0, "CAN_COLLIDE"];
-	                            _veh setDir _dir;
-	                            _veh setPosATL _pos;
+                                _grp = createGroup _side;
+                                _veh = createVehicle [_type, _pos, [], 0, "CAN_COLLIDE"];
+                                _veh setDir _dir;
+                                _veh setPosATL _pos;
 
-	                            If(_height > 0) then {_veh setposasl [getposASL _veh select 0, getposASL _veh select 1, _height]; _veh setVelocity [0,0,-1]} else {_veh setPosATL _pos};
+                                If(_height > 0) then {_veh setposasl [getposASL _veh select 0, getposASL _veh select 1, _height]; _veh setVelocity [0,0,-1]} else {_veh setPosATL _pos};
 
-	                            if (getNumber(configFile >> "CfgVehicles" >> _type >> "isUav") == 1) then {
-	                            	createVehicleCrew _veh;
-	                            } else {
-	                            	[_veh, _grp] call BIS_fnc_spawnCrew;
-	                            };
- 							} else {
+                                if (getNumber(configFile >> "CfgVehicles" >> _type >> "isUav") == 1) then {
+                                    createVehicleCrew _veh;
+                                } else {
+                                    [_veh, _grp] call BIS_fnc_spawnCrew;
+                                };
+                             } else {
                                 _veh = _veh select 0;
                                 _grp = group (driver _veh);
                             };
@@ -472,7 +472,7 @@ switch(_operation) do {
 
                             } forEach _codeArray;
 
-							// Set Group ID
+                            // Set Group ID
                             [[(units _grp select 0),_callsign], "fnc_setGroupID", false, false] spawn BIS_fnc_MP;
 
                             // set ownership flag for other modules
@@ -655,14 +655,14 @@ switch(_operation) do {
 
 
 
-						for "_i" from 0 to ((count _sides)-1) do {
-							_sideIn = _sides select _i;
+                        for "_i" from 0 to ((count _sides)-1) do {
+                            _sideIn = _sides select _i;
 
-							{
-								if (!(_sideIn == _x) && {(_sideIn getfriend _x >= 0.6)}) then {
-									private ["_sideInArray","_xArray"];
-									_sideInArray = NEO_radioLogic getVariable format["NEO_radioTrasportArray_%1", _sideIn];
-									_xArray = NEO_radioLogic getVariable format["NEO_radioTrasportArray_%1", _x];
+                            {
+                                if (!(_sideIn == _x) && {(_sideIn getfriend _x >= 0.6)}) then {
+                                    private ["_sideInArray","_xArray"];
+                                    _sideInArray = NEO_radioLogic getVariable format["NEO_radioTrasportArray_%1", _sideIn];
+                                    _xArray = NEO_radioLogic getVariable format["NEO_radioTrasportArray_%1", _x];
 
                                     if (count _xArray > 0) then {
                                         _add = [];
@@ -675,9 +675,9 @@ switch(_operation) do {
                                         NEO_radioLogic setVariable [format ["NEO_radioTrasportArray_%1", _sideIn], _sideInArray + _add,true];
                                     };
 
-									private ["_sideInArray","_xArray"];
-									_sideInArray = NEO_radioLogic getVariable format["NEO_radioCasArray_%1", _sideIn];
-									_xArray = NEO_radioLogic getVariable format["NEO_radioCasArray_%1", _x];
+                                    private ["_sideInArray","_xArray"];
+                                    _sideInArray = NEO_radioLogic getVariable format["NEO_radioCasArray_%1", _sideIn];
+                                    _xArray = NEO_radioLogic getVariable format["NEO_radioCasArray_%1", _x];
 
                                     if (count _xArray > 0) then {
                                         _add = [];
@@ -690,9 +690,9 @@ switch(_operation) do {
                                         NEO_radioLogic setVariable [format ["NEO_radioCasArray_%1", _sideIn], _sideInArray + _add,true];
                                     };
 
-									private ["_sideInArray","_xArray"];
-									_sideInArray = NEO_radioLogic getVariable format["NEO_radioArtyArray_%1", _sideIn];
-									_xArray = NEO_radioLogic getVariable format["NEO_radioArtyArray_%1", _x];
+                                    private ["_sideInArray","_xArray"];
+                                    _sideInArray = NEO_radioLogic getVariable format["NEO_radioArtyArray_%1", _sideIn];
+                                    _xArray = NEO_radioLogic getVariable format["NEO_radioArtyArray_%1", _x];
 
                                     if (count _xArray > 0) then {
                                         _add = [];
@@ -704,14 +704,14 @@ switch(_operation) do {
                                         } foreach _xArray;
                                         NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _sideIn], _sideInArray + _add,true];
                                     };
-								};
-							} foreach _sides;
-						};
+                                };
+                            } foreach _sides;
+                        };
 
                         //Now PV the logic to all clients indicate its ready
                         _logic setVariable ["init", true,true];
                         publicVariable "NEO_radioLogic";
-               	};
+                   };
 
                 // and wait for game logic to initialise
                 // TODO merge into lazy evaluation
@@ -721,7 +721,7 @@ switch(_operation) do {
                 /*
                 VIEW - purely visual
                 */
-				NEO_radioLogic setVariable ["NEO_radioPlayerActionArray",
+                NEO_radioLogic setVariable ["NEO_radioPlayerActionArray",
                     [
                         [
                             ("<t color=""#700000"">" + ("Talk To Pilot") + "</t>"),
@@ -740,31 +740,31 @@ switch(_operation) do {
                     ]
                 ];
 
-	        	{player addAction _x} foreach (NEO_radioLogic getVariable "NEO_radioPlayerActionArray");
-				player addEventHandler ["Respawn", { {(_this select 0) addAction _x } foreach (NEO_radioLogic getVariable "NEO_radioPlayerActionArray") }];
+                {player addAction _x} foreach (NEO_radioLogic getVariable "NEO_radioPlayerActionArray");
+                player addEventHandler ["Respawn", { {(_this select 0) addAction _x } foreach (NEO_radioLogic getVariable "NEO_radioPlayerActionArray") }];
 
                 //if there is a real screen it must be a player so hand out the menu item
-				if (hasInterface) then {
-					//Initialise Functions and add respawn eventhandler
-					waituntil {(!(isnull player) && !(isnil "NEO_radioLogic"))};
+                if (hasInterface) then {
+                    //Initialise Functions and add respawn eventhandler
+                    waituntil {(!(isnull player) && !(isnil "NEO_radioLogic"))};
 
-					if (isNil "SELF_INTERACTION_KEY") then {SELF_INTERACTION_KEY = [221,[false,false,false]]};
+                    if (isNil "SELF_INTERACTION_KEY") then {SELF_INTERACTION_KEY = [221,[false,false,false]]};
 
-					// if A2 - ACE spectator enabled, seto to allow exit
-					if(!isNil "ace_fnc_startSpectator") then {ace_sys_spectator_can_exit_spectator = true};
+                    // if A2 - ACE spectator enabled, seto to allow exit
+                    if(!isNil "ace_fnc_startSpectator") then {ace_sys_spectator_can_exit_spectator = true};
 
-					// check if player has item defined in module TODO!
+                    // check if player has item defined in module TODO!
 
                     // initialise main menu
-				    [
-				            "player",
-				            [((["ALiVE", "openMenu"] call cba_fnc_getKeybind) select 5) select 0],
-				            -9500,
-				            [
-				                    "call ALIVE_fnc_CombatSupportMenuDef",
-				                    "main"
-				            ]
-				    ] call ALIVE_fnc_flexiMenu_Add;
+                    [
+                            "player",
+                            [((["ALiVE", "openMenu"] call cba_fnc_getKeybind) select 5) select 0],
+                            -9500,
+                            [
+                                    "call ALIVE_fnc_CombatSupportMenuDef",
+                                    "main"
+                            ]
+                    ] call ALIVE_fnc_flexiMenu_Add;
                 };
             };
         case "destroy": {

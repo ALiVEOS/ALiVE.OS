@@ -27,11 +27,11 @@ _arguments = [_task, _pos, 0, player];
 
 if (toUpper _task == "CIRCLE") then
 {
-	_arguments = [_task, _pos,_amnt, player];
+    _arguments = [_task, _pos,_amnt, player];
 };
 if (toUpper _task == "INSERTION") then
 {
-	_arguments = [_task, _pos,_amnt, player];
+    _arguments = [_task, _pos,_amnt, player];
 };
 
 //Player dialog
@@ -39,32 +39,32 @@ private ["_posTask", "_text"];
 _posTask = _pos call BIS_fnc_posToGrid;
 _text = switch (toUpper _task) do
 {
-	case "PICKUP" : { format ["%1, %2 requesting pickup at %3 %4 . Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
-	case "LAND" : { format ["%1, land at %3 %4. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
-	case "LAND (ENG OFF)" : { format ["%1, land at %3 %4. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
-	case "MOVE" : { format ["%1, move to %3 %4 and wait for orders. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
-	case "CIRCLE" : { format ["%1, move to %3 %4 and provide overwatch. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
-	case "RTB" : { format ["%1, return to base. Over.", _callsign, _callSignPlayer] };
-	case "INSERTION" : { format ["%1, move to %3 %4 for insertion. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
-	case "SLINGLOAD" : { format ["%1, move to %3 %4 for slingloading. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
-	case "UNHOOK" : { format ["%1, move to %3 %4 to deliver sling load. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "PICKUP" : { format ["%1, %2 requesting pickup at %3 %4 . Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "LAND" : { format ["%1, land at %3 %4. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "LAND (ENG OFF)" : { format ["%1, land at %3 %4. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "MOVE" : { format ["%1, move to %3 %4 and wait for orders. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "CIRCLE" : { format ["%1, move to %3 %4 and provide overwatch. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "RTB" : { format ["%1, return to base. Over.", _callsign, _callSignPlayer] };
+    case "INSERTION" : { format ["%1, move to %3 %4 for insertion. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "SLINGLOAD" : { format ["%1, move to %3 %4 for slingloading. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "UNHOOK" : { format ["%1, move to %3 %4 to deliver sling load. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
 };
 
 if (_audio) then {
-	player kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
-	leader _grp kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
-	if (toUpper _task != "UNHOOK") then {
-		player kbTell [leader _grp, "ALIVE_SUPP_protocol", "Transport_Request", "GROUP"];
-	} else {
-		player kbTell [leader _grp, "ALIVE_SUPP_protocol", "Drop_Request", "GROUP"];
-	};
+    player kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
+    leader _grp kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
+    if (toUpper _task != "UNHOOK") then {
+        player kbTell [leader _grp, "ALIVE_SUPP_protocol", "Transport_Request", "GROUP"];
+    } else {
+        player kbTell [leader _grp, "ALIVE_SUPP_protocol", "Drop_Request", "GROUP"];
+    };
 };
 
 if (_task == "SLINGLOAD" && !isNull getSlingLoad _unit || _task == "UNHOOK" && isNull getSlingLoad _unit) then {
-	// probably not supported
+    // probably not supported
 } else {
-	// Let side know over the raadio
-	[[player,_text,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+    // Let side know over the raadio
+    [[player,_text,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 };
 
 //New Task

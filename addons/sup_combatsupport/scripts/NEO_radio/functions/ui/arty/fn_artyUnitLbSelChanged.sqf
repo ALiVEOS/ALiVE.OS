@@ -4,10 +4,10 @@ _map = _display displayCtrl 655560;
 
 private
 [
-	"_artyArray", "_artyUnitLb", "_artyUnitText", "_artyHelpUnitText", "_artyConfirmButton", "_artyBaseButton", "_artyOrdnanceTypeText",
-	"_artyOrdnanceTypeLb", "_artyRateOfFireText", "_artyRateOfFireLb", "_artyRoundCountText", "_artyRoundCountLb", "_artyMoveButton",
-	"_artyDontMoveButton", "_artyDispersionText", "_artyDispersionSlider", "_artyRateDelayText", "_artyRateDelaySlider",
-	"_supportMarker", "_artyMarkers", "_battery", "_status", "_class", "_ord"
+    "_artyArray", "_artyUnitLb", "_artyUnitText", "_artyHelpUnitText", "_artyConfirmButton", "_artyBaseButton", "_artyOrdnanceTypeText",
+    "_artyOrdnanceTypeLb", "_artyRateOfFireText", "_artyRateOfFireLb", "_artyRoundCountText", "_artyRoundCountLb", "_artyMoveButton",
+    "_artyDontMoveButton", "_artyDispersionText", "_artyDispersionSlider", "_artyRateDelayText", "_artyRateDelaySlider",
+    "_supportMarker", "_artyMarkers", "_battery", "_status", "_class", "_ord"
 ];
 _artyArray = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", playerSide];
 _artyUnitLb = _display displayCtrl 655594;
@@ -37,26 +37,26 @@ _ord = _battery getVariable "NEO_radioArtyBatteryRounds";
 //Help Text
 _artyHelpUnitText ctrlSetStructuredText parseText (switch (toUpper _status) do
 {
-	case "NONE" : { "<t color='#627057' size='0.7' font='PuristaMedium'>Unit is available and waiting for fire mission</t>" };
-	case "KILLED" : { "<t color='#603234' size='0.7' font='PuristaMedium'>Unit is combat ineffective</t>" };
-	case "MISSION" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is on a fire mission</t>" };
-	case "MOVE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is on the move to get in range of target</t>" };
-	case "RTB" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is RTB</t>" };
-	case "RESPONSE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit waiting for response</t>" };
-	case "NOAMMO" : { "<t color='#603234' size='0.7' font='PuristaMedium>Unit is out of ammunition</t>" };
+    case "NONE" : { "<t color='#627057' size='0.7' font='PuristaMedium'>Unit is available and waiting for fire mission</t>" };
+    case "KILLED" : { "<t color='#603234' size='0.7' font='PuristaMedium'>Unit is combat ineffective</t>" };
+    case "MISSION" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is on a fire mission</t>" };
+    case "MOVE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is on the move to get in range of target</t>" };
+    case "RTB" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is RTB</t>" };
+    case "RESPONSE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit waiting for response</t>" };
+    case "NOAMMO" : { "<t color='#603234' size='0.7' font='PuristaMedium>Unit is out of ammunition</t>" };
 });
 
 if (_status == "RESPONSE") then
 {
-	_artyMoveButton ctrlEnable true; _artyMoveButton ctrlSetPosition [0.519796 * safezoneW + safezoneX, 0.6176 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _artyMoveButton ctrlCommit 0;
-	_artyMoveButton ctrlSetEventHandler ["ButtonClick", "_this call NEO_fnc_artyMoveButtons"];
-	_artyDontMoveButton ctrlEnable true; _artyDontMoveButton ctrlSetPosition [0.519796 * safezoneW + safezoneX, 0.584 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _artyDontMoveButton ctrlCommit 0;
-	_artyDontMoveButton ctrlSetEventHandler ["ButtonClick", "_this call NEO_fnc_artyMoveButtons"];
+    _artyMoveButton ctrlEnable true; _artyMoveButton ctrlSetPosition [0.519796 * safezoneW + safezoneX, 0.6176 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _artyMoveButton ctrlCommit 0;
+    _artyMoveButton ctrlSetEventHandler ["ButtonClick", "_this call NEO_fnc_artyMoveButtons"];
+    _artyDontMoveButton ctrlEnable true; _artyDontMoveButton ctrlSetPosition [0.519796 * safezoneW + safezoneX, 0.584 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _artyDontMoveButton ctrlCommit 0;
+    _artyDontMoveButton ctrlSetEventHandler ["ButtonClick", "_this call NEO_fnc_artyMoveButtons"];
 }
 else
 {
-	_artyMoveButton ctrlEnable false; _artyMoveButton ctrlSetPosition [safeZoneX + (safeZoneW / 1000), safeZoneY + (safeZoneH / 1.425), (safeZoneW / 1000), (safeZoneH / 1000)]; _artyMoveButton ctrlCommit 0;
-	_artyDontMoveButton ctrlEnable false; _artyDontMoveButton ctrlSetPosition [safeZoneX + (safeZoneW / 1000), safeZoneY + (safeZoneH / 1.375), (safeZoneW / 1000), (safeZoneH / 1000)];  _artyDontMoveButton ctrlCommit 0;
+    _artyMoveButton ctrlEnable false; _artyMoveButton ctrlSetPosition [safeZoneX + (safeZoneW / 1000), safeZoneY + (safeZoneH / 1.425), (safeZoneW / 1000), (safeZoneH / 1000)]; _artyMoveButton ctrlCommit 0;
+    _artyDontMoveButton ctrlEnable false; _artyDontMoveButton ctrlSetPosition [safeZoneX + (safeZoneW / 1000), safeZoneY + (safeZoneH / 1.375), (safeZoneW / 1000), (safeZoneH / 1000)];  _artyDontMoveButton ctrlCommit 0;
 };
 
 //Markers
@@ -70,49 +70,49 @@ uinamespace setVariable ["NEO_artyMarkerCreated", nil];
 
 if (!(_status in ["KILLED", "MISSION", "RTB", "MOVE", "RESPONSE", "NOAMMO"]) && count _ord > 0) then
 {
-	//Ordnance
-	_artyOrdnanceTypeText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>ORDNANCE</t>";
-	_artyOrdnanceTypeLb ctrlEnable true;
-	lbClear _artyOrdnanceTypeLb;
-	{
-		if ((_x select 1) >= 1) then
-		{
-			_artyOrdnanceTypeLb lbAdd (_x select 0);
+    //Ordnance
+    _artyOrdnanceTypeText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>ORDNANCE</t>";
+    _artyOrdnanceTypeLb ctrlEnable true;
+    lbClear _artyOrdnanceTypeLb;
+    {
+        if ((_x select 1) >= 1) then
+        {
+            _artyOrdnanceTypeLb lbAdd (_x select 0);
 
-		};
-	} forEach _ord;
+        };
+    } forEach _ord;
 
-	//Arty Markers
-	{
-		private ["_radius"];
-		_radius = _class call NEO_fnc_artyUnitFiringDistance;
+    //Arty Markers
+    {
+        private ["_radius"];
+        _radius = _class call NEO_fnc_artyUnitFiringDistance;
 
-		_x setMarkerPosLocal getPosATL _battery;
-		_x setMarkerShapeLocal "ELLIPSE";
-		_x setMarkerBrushlocal "SolidBorder";
+        _x setMarkerPosLocal getPosATL _battery;
+        _x setMarkerShapeLocal "ELLIPSE";
+        _x setMarkerBrushlocal "SolidBorder";
 
-		if (_forEachIndex == 0) then
-		{
-			_x setMarkerAlphaLocal 0.8;
-			_x setMarkerSizeLocal [_radius select 0, _radius select 0];
-			_x setMarkerColorLocal "ColorRed";
-		}
-		else
-		{
-			_x setMarkerAlphaLocal 0.3;
-			_x setMarkerSizeLocal [_radius select 1, _radius select 1];
-			_x setMarkerColorLocal "ColorGreen";
-		};
-	} forEach _artyMarkers;
+        if (_forEachIndex == 0) then
+        {
+            _x setMarkerAlphaLocal 0.8;
+            _x setMarkerSizeLocal [_radius select 0, _radius select 0];
+            _x setMarkerColorLocal "ColorRed";
+        }
+        else
+        {
+            _x setMarkerAlphaLocal 0.3;
+            _x setMarkerSizeLocal [_radius select 1, _radius select 1];
+            _x setMarkerColorLocal "ColorGreen";
+        };
+    } forEach _artyMarkers;
 
-	//Map Anim
-	ctrlMapAnimClear _map;
-	_map ctrlMapAnimAdd [0.5, 1, position _battery];
-	ctrlMapAnimCommit _map;
+    //Map Anim
+    ctrlMapAnimClear _map;
+    _map ctrlMapAnimAdd [0.5, 1, position _battery];
+    ctrlMapAnimCommit _map;
 
-	//EventHandlers
-	_artyOrdnanceTypeLb ctrlSetEventHandler ["LBSelChanged", "_this call NEO_fnc_artyConfirmButtonEnable; _this call NEO_fnc_artyOrdLbSelChanged"];
-	_map ctrlSetEventHandler ["MouseButtonDown", "_this call NEO_fnc_radioMapEvent"];
+    //EventHandlers
+    _artyOrdnanceTypeLb ctrlSetEventHandler ["LBSelChanged", "_this call NEO_fnc_artyConfirmButtonEnable; _this call NEO_fnc_artyOrdLbSelChanged"];
+    _map ctrlSetEventHandler ["MouseButtonDown", "_this call NEO_fnc_radioMapEvent"];
 };
 
 //Buttons

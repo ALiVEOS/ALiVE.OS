@@ -1,8 +1,8 @@
 private
 [
-	"_display", "_casUnitLb", "_casTaskLb", "_casFlyHeightSlider", "_casRadiusSlider", "_casArray", "_veh",
-	"_grp", "_callsign", "_callSignPlayer", "_task", "_marker", "_isPlane", "_pos", "_radius", "_flyInHeight",
-	"_Coord","_weapon"
+    "_display", "_casUnitLb", "_casTaskLb", "_casFlyHeightSlider", "_casRadiusSlider", "_casArray", "_veh",
+    "_grp", "_callsign", "_callSignPlayer", "_task", "_marker", "_isPlane", "_pos", "_radius", "_flyInHeight",
+    "_Coord","_weapon"
 ];
 _display = findDisplay 655555;
 _casUnitLb = _display displayCtrl 655582;
@@ -25,9 +25,9 @@ _pos set [2, 0];
 _radius = sliderPosition _casRadiusSlider;
 _flyInHeight = switch (sliderPosition _casFlyHeightSlider) do
 {
-	case 1 : { if (_isPlane) then { 150 } else { 50 } };
-	case 2 : { if (_isPlane) then { 250 } else { 100 } };
-	case 3 : { if (_isPlane) then { 500 } else { 150 } };
+    case 1 : { if (_isPlane) then { 150 } else { 50 } };
+    case 2 : { if (_isPlane) then { 250 } else { 100 } };
+    case 3 : { if (_isPlane) then { 500 } else { 150 } };
 };
 _coord = _pos call BIS_fnc_posToGrid;
 _weapon = (weapons _veh) select (lbCurSel _casAttackRunLB);
@@ -38,16 +38,16 @@ _veh setVariable ["NEO_radioCasNewTask", [_task, _pos, _radius, _flyInHeight, _w
 
 
 if (_audio) then {
-	player kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
-	leader _grp kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
+    player kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
+    leader _grp kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
 
-	if (_isPlane && (_task == "SAD" || _task == "ATTACK RUN")) then {
-		player kbTell [leader _grp, "ALIVE_SUPP_protocol", "CAS_Bombing_Request", "GROUP"];
-	} else {
-		player kbTell [leader _grp, "ALIVE_SUPP_protocol", "CAS_Heli_Request", "GROUP"];
-	};
+    if (_isPlane && (_task == "SAD" || _task == "ATTACK RUN")) then {
+        player kbTell [leader _grp, "ALIVE_SUPP_protocol", "CAS_Bombing_Request", "GROUP"];
+    } else {
+        player kbTell [leader _grp, "ALIVE_SUPP_protocol", "CAS_Heli_Request", "GROUP"];
+    };
 } else {
-	[[player,format["%1, %2 needs immediate CAS at %3%4. Over.", _callsign, _callSignPlayer, _coord select 0, _coord select 1],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+    [[player,format["%1, %2 needs immediate CAS at %3%4. Over.", _callsign, _callSignPlayer, _coord select 0, _coord select 1],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 };
 
 //Interface

@@ -180,8 +180,8 @@ class FSM
           condition=/*%FSM<CONDITION""">*/"!isNil { _veh getVariable ""NEO_radioCasNewTask"" }" \n
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"if(_restoreAmmo) then {" \n
-           "	_restoreAmmo = false;" \n
-           "	[_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
+           "    _restoreAmmo = false;" \n
+           "    [_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
            "};" \n
            "" \n
            "_taskArray = _veh getVariable ""NEO_radioCasNewTask"";" \n
@@ -253,8 +253,8 @@ class FSM
           condition=/*%FSM<CONDITION""">*/"!isNil { _veh getVariable ""NEO_radioCasNewTask"" }" \n
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"if(_restoreAmmo) then {" \n
-           "	_restoreAmmo = false;" \n
-           "	[_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
+           "    _restoreAmmo = false;" \n
+           "    [_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
            "};" \n
            "" \n
            "_taskArray = _veh getVariable ""NEO_radioCasNewTask"";" \n
@@ -360,24 +360,24 @@ class FSM
            "[_veh,_callsign,_pos, _audio, _player] spawn" \n
            "{" \n
            "private [""_veh"", ""_callsign"",""_pos""];" \n
-           "		_veh = _this select 0;" \n
-           "		_callsign = _this select 1;" \n
-           "		 _pos = _this select 2;" \n
-           "		_audio = _this select 3;" \n
-           "		_player = _this select 4;" \n
-           "		_coord = _pos call BIS_fnc_posToGrid;" \n
+           "        _veh = _this select 0;" \n
+           "        _callsign = _this select 1;" \n
+           "         _pos = _this select 2;" \n
+           "        _audio = _this select 3;" \n
+           "        _player = _this select 4;" \n
+           "        _coord = _pos call BIS_fnc_posToGrid;" \n
            "" \n
-           " 	 	sleep 5;" \n
+           "          sleep 5;" \n
            "" \n
-           "		if (_audio) then {" \n
-           "			if (_veh isKindOf ""Plane"") then {" \n
-           "				leader _veh kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Bombing_Acknowledged"", ""GROUP""];" \n
-           "			} else {" \n
-           "				leader _veh kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Heli_Acknowledged"", ""GROUP""];" \n
-           "			};	" \n
-           "		} else {" \n
-           "	 		 [[_veh, format[""Copy that, %1 is moving to %2%3 to provide CAS. Out."", _callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-           "		};" \n
+           "        if (_audio) then {" \n
+           "            if (_veh isKindOf ""Plane"") then {" \n
+           "                leader _veh kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Bombing_Acknowledged"", ""GROUP""];" \n
+           "            } else {" \n
+           "                leader _veh kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Heli_Acknowledged"", ""GROUP""];" \n
+           "            };    " \n
+           "        } else {" \n
+           "              [[_veh, format[""Copy that, %1 is moving to %2%3 to provide CAS. Out."", _callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "        };" \n
            "" \n
            "};" \n
            "" \n
@@ -426,8 +426,8 @@ class FSM
           condition=/*%FSM<CONDITION""">*/"!isNil { _veh getVariable ""NEO_radioCasNewTask"" }" \n
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"if(_restoreAmmo) then {" \n
-           "	_restoreAmmo = false;" \n
-           "	[_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
+           "    _restoreAmmo = false;" \n
+           "    [_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
            "};" \n
            "" \n
            "_taskArray = _veh getVariable ""NEO_radioCasNewTask"";" \n
@@ -480,19 +480,19 @@ class FSM
       name = "__2";
       init = /*%FSM<STATEINIT""">*/"[_veh,_callsign, _audio, _player] spawn" \n
        "{" \n
-       "		private [""_veh"", ""_callsign""];" \n
-       "		_veh = _this select 0;" \n
-       "		_callsign = _this select 1;" \n
-       "		_audio = _this select 2;" \n
-       "		_player = _this select 3;" \n
+       "        private [""_veh"", ""_callsign""];" \n
+       "        _veh = _this select 0;" \n
+       "        _callsign = _this select 1;" \n
+       "        _audio = _this select 2;" \n
+       "        _player = _this select 3;" \n
        "" \n
-       " 	 	sleep 5;" \n
+       "          sleep 5;" \n
        "" \n
-       "		if (_audio) then {" \n
-       "			leader _veh kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Heli_Accomplished"", ""GROUP""];	" \n
-       "		} else {" \n
-       " 			 [[_veh, format[""%1 is RTB. Out."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-       "		};" \n
+       "        if (_audio) then {" \n
+       "            leader _veh kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Heli_Accomplished"", ""GROUP""];    " \n
+       "        } else {" \n
+       "              [[_veh, format[""%1 is RTB. Out."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "        };" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -529,8 +529,8 @@ class FSM
           condition=/*%FSM<CONDITION""">*/"!isNil { _veh getVariable ""NEO_radioCasNewTask"" }" \n
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"if(_restoreAmmo) then {" \n
-           "	_restoreAmmo = false;" \n
-           "	[_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
+           "    _restoreAmmo = false;" \n
+           "    [_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
            "};" \n
            "" \n
            "_taskArray = _veh getVariable ""NEO_radioCasNewTask"";" \n
@@ -641,8 +641,8 @@ class FSM
           condition=/*%FSM<CONDITION""">*/"!isNil { _veh getVariable ""NEO_radioCasNewTask"" }" \n
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"if(_restoreAmmo) then {" \n
-           "	_restoreAmmo = false;" \n
-           "	[_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
+           "    _restoreAmmo = false;" \n
+           "    [_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
            "};" \n
            "" \n
            "_taskArray = _veh getVariable ""NEO_radioCasNewTask"";" \n
@@ -702,8 +702,8 @@ class FSM
           condition=/*%FSM<CONDITION""">*/"!isNil { _veh getVariable ""NEO_radioCasNewTask"" }" \n
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"if(_restoreAmmo) then {" \n
-           "	_restoreAmmo = false;" \n
-           "	[_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
+           "    _restoreAmmo = false;" \n
+           "    [_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
            "};" \n
            "" \n
            "_taskArray = _veh getVariable ""NEO_radioCasNewTask"";" \n
@@ -784,8 +784,8 @@ class FSM
           condition=/*%FSM<CONDITION""">*/"!isNil { _veh getVariable ""NEO_radioCasNewTask"" }" \n
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"if(_restoreAmmo) then {" \n
-           "	_restoreAmmo = false;" \n
-           "	[_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
+           "    _restoreAmmo = false;" \n
+           "    [_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
            "};" \n
            "" \n
            "_taskArray = _veh getVariable ""NEO_radioCasNewTask"";" \n
@@ -847,8 +847,8 @@ class FSM
           condition=/*%FSM<CONDITION""">*/"!isNil { _veh getVariable ""NEO_radioCasNewTask"" }" \n
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"if(_restoreAmmo) then {" \n
-           "	_restoreAmmo = false;" \n
-           "	[_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
+           "    _restoreAmmo = false;" \n
+           "    [_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
            "};" \n
            "" \n
            "_taskArray = _veh getVariable ""NEO_radioCasNewTask"";" \n
@@ -874,24 +874,24 @@ class FSM
     {
       name = "__7";
       init = /*%FSM<STATEINIT""">*/"[_veh,_callsign,_posCas, _audio, _player] spawn" \n
-       "{		" \n
+       "{        " \n
        "private [""_veh"", ""_callsign"",""_posCas""];" \n
-       "		_veh = _this select 0;" \n
-       "		_callsign = _this select 1;" \n
-       " 		_posCas = _this select 2;" \n
-       "		_audio = _this select 3;" \n
-       "		_player = _this select 4;" \n
-       "		_coord = _posCas call BIS_fnc_posToGrid;" \n
+       "        _veh = _this select 0;" \n
+       "        _callsign = _this select 1;" \n
+       "         _posCas = _this select 2;" \n
+       "        _audio = _this select 3;" \n
+       "        _player = _this select 4;" \n
+       "        _coord = _posCas call BIS_fnc_posToGrid;" \n
        "" \n
-       " 	 	sleep 5;" \n
+       "          sleep 5;" \n
        "" \n
-       "		if (_audio) then {" \n
-       "			leader _veh kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Heli_Acknowledged"", ""GROUP""];	" \n
-       "		};" \n
+       "        if (_audio) then {" \n
+       "            leader _veh kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Heli_Acknowledged"", ""GROUP""];    " \n
+       "        };" \n
        "" \n
-       "		sleep 2;" \n
-       "	" \n
-       "	[[_veh,format[""Copy that, %1 is moving to %2%3 to loiter. Out."",_callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "        sleep 2;" \n
+       "    " \n
+       "    [[_veh,format[""Copy that, %1 is moving to %2%3 to loiter. Out."",_callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -928,8 +928,8 @@ class FSM
           condition=/*%FSM<CONDITION""">*/"!isNil { _veh getVariable ""NEO_radioCasNewTask"" }" \n
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"if(_restoreAmmo) then {" \n
-           "	_restoreAmmo = false;" \n
-           "	[_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
+           "    _restoreAmmo = false;" \n
+           "    [_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
            "};" \n
            "" \n
            "_taskArray = _veh getVariable ""NEO_radioCasNewTask"";" \n
@@ -1006,8 +1006,8 @@ class FSM
           condition=/*%FSM<CONDITION""">*/"!isNil { _veh getVariable ""NEO_radioCasNewTask"" }" \n
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"if(_restoreAmmo) then {" \n
-           "	_restoreAmmo = false;" \n
-           "	[_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
+           "    _restoreAmmo = false;" \n
+           "    [_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
            "};" \n
            "" \n
            "_taskArray = _veh getVariable ""NEO_radioCasNewTask"";" \n
@@ -1033,35 +1033,35 @@ class FSM
     {
       name = "__9";
       init = /*%FSM<STATEINIT""">*/"[_veh,_callsign,_posCas, _audio, _player] spawn" \n
-       "{		" \n
+       "{        " \n
        "private [""_veh"", ""_callsign"",""_posCas""];" \n
-       "		_veh = _this select 0;" \n
-       "		_callsign = _this select 1;" \n
-       " 		_posCas = _this select 2;" \n
-       "		_audio = _this select 3;" \n
-       "		_player = _this select 4;" \n
-       "		_coord = _posCas call BIS_fnc_posToGrid;" \n
+       "        _veh = _this select 0;" \n
+       "        _callsign = _this select 1;" \n
+       "         _posCas = _this select 2;" \n
+       "        _audio = _this select 3;" \n
+       "        _player = _this select 4;" \n
+       "        _coord = _posCas call BIS_fnc_posToGrid;" \n
        "" \n
-       " 	 	sleep 5;" \n
+       "          sleep 5;" \n
        "" \n
-       "		if (_audio) then {" \n
-       "			if (_veh isKindOf ""Plane"") then {" \n
-       "				leader _veh kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Bombing_Acknowledged"", ""GROUP""];" \n
-       "			} else {" \n
-       "				leader _veh kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Heli_Acknowledged"", ""GROUP""];" \n
-       "			};" \n
-       "		};" \n
+       "        if (_audio) then {" \n
+       "            if (_veh isKindOf ""Plane"") then {" \n
+       "                leader _veh kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Bombing_Acknowledged"", ""GROUP""];" \n
+       "            } else {" \n
+       "                leader _veh kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Heli_Acknowledged"", ""GROUP""];" \n
+       "            };" \n
+       "        };" \n
        "" \n
-       "		sleep 2;" \n
-       "	" \n
-       "	[[_veh,format[""Copy that, %1 is moving into position to start attack run at %2%3. Out."",_callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "        sleep 2;" \n
+       "    " \n
+       "    [[_veh,format[""Copy that, %1 is moving into position to start attack run at %2%3. Out."",_callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "};" \n
        "" \n
        "_maxSpeed = getNumber(configfile >> ""CfgVehicles"" >> (typeof _veh) >> ""maxSpeed"");" \n
        "_radiusCasMult = 2;" \n
        "" \n
        "if(_maxSpeed > 300) then {" \n
-       "	_radiusCasMult = 4;" \n
+       "    _radiusCasMult = 4;" \n
        "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
@@ -1097,8 +1097,8 @@ class FSM
           condition=/*%FSM<CONDITION""">*/"!isNil { _veh getVariable ""NEO_radioCasNewTask"" }" \n
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"if(_restoreAmmo) then {" \n
-           "	_restoreAmmo = false;" \n
-           "	[_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
+           "    _restoreAmmo = false;" \n
+           "    [_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
            "};" \n
            "" \n
            "_taskArray = _veh getVariable ""NEO_radioCasNewTask"";" \n
@@ -1136,8 +1136,8 @@ class FSM
            "[_veh,_callsign] spawn" \n
            "{" \n
            "private [""_veh"", ""_callsign""];" \n
-           "		_veh = _this select 0;" \n
-           "		_callsign = _this select 1;" \n
+           "        _veh = _this select 0;" \n
+           "        _callsign = _this select 1;" \n
            "" \n
            "sleep 8;" \n
            "" \n
@@ -1158,86 +1158,86 @@ class FSM
        "[_veh,_callsign, _ammoCount,_grp,_ROE,_oldPos,_restoreAmmo,_weapon,_posCas,_radiusCas] spawn" \n
        "{" \n
        "private [""_veh"", ""_callsign"",""_ROE"",""_oldPos"",""_grp"",""_restoreAmmo"",""_target"",""_weapon"",""_sleep"",""_needsAlign"",""_parents"",""_casStart""];" \n
-       "		_veh = _this select 0;" \n
-       "		_callsign = _this select 1;" \n
-       "		_ammoCount = _this select 2;" \n
-       "		_grp = _this select 3;" \n
-       "		_ROE = _this select 4;" \n
-       "		_oldPos = _this select 5;" \n
-       "		_restoreAmmo = _this select 6;" \n
-       "		_weapon = _this select 7;" \n
-       "		_posCas = _this select 8;" \n
-       "		_radiusCas = _this select 9;" \n
+       "        _veh = _this select 0;" \n
+       "        _callsign = _this select 1;" \n
+       "        _ammoCount = _this select 2;" \n
+       "        _grp = _this select 3;" \n
+       "        _ROE = _this select 4;" \n
+       "        _oldPos = _this select 5;" \n
+       "        _restoreAmmo = _this select 6;" \n
+       "        _weapon = _this select 7;" \n
+       "        _posCas = _this select 8;" \n
+       "        _radiusCas = _this select 9;" \n
        "" \n
-       "		_needsAlign = false;" \n
-       "		_target = [_veh, _posCas, _radiusCas,_weapon] call NEO_fnc_pickCasTarget;" \n
+       "        _needsAlign = false;" \n
+       "        _target = [_veh, _posCas, _radiusCas,_weapon] call NEO_fnc_pickCasTarget;" \n
        "" \n
-       "		diag_log format[""Telling %1 to target %2 (%3 %4)"",_veh,_target, _posCas,_radiusCas];" \n
-       "		" \n
-       "		_parents = [ (configFile >> ""CfgWeapons"" >> _weapon),true] call BIS_fnc_returnParents;" \n
-       "		if( ""RocketPods"" in _parents) then {" \n
-       "			_sleep = 3;" \n
-       "		} else {" \n
-       "			if( ""MissileLauncher"" in _parents) then {" \n
-       "				_sleep = 12;" \n
-       "				_needsAlign = true;" \n
-       "			} else {" \n
-       "				if( ""MGunCore"" in _parents) then {" \n
-       "					_sleep = 0.3;" \n
-       "				} else {" \n
-       "					_sleep = 0.5;" \n
-       "				};" \n
-       "			};" \n
-       "		};" \n
-       "		_casStart = time;" \n
-       "		while { (_veh ammo _weapon) > 0 && alive _target && !(_veh getVariable[""NEO_radioCasUnitBreakOff"",false]) && _casStart > (time - 60) } do {" \n
-       "			_veh doWatch _target;" \n
-       "			_veh doTarget _target;" \n
-       "	" \n
-       "			waitUntil {_veh aimedAtTarget [_target] > .8};" \n
-       "			_veh fireAtTarget [_target];" \n
-       "			if( _sleep > 0.5 ) then { _veh doWatch objNull; };" \n
-       "			sleep _sleep;" \n
-       "			" \n
-       "			if(!alive _target) then {" \n
-       "				_target = [_veh, _posCas, _radiusCas,_weapon] call NEO_fnc_pickCasTarget;" \n
-       "				if( isNull _target ) then {" \n
-       "					// the requested area is clear; if we have time then look at a larger area to seem less brain dead" \n
-       "					_radiusCas = 2 * _radiusCas;" \n
-       "					_target = [_veh, _posCas, _radiusCas,_weapon] call NEO_fnc_pickCasTarget;" \n
-       "				};" \n
-       "				if(!isNull _target) then { diag_log format[""Telling %1 to target %2 (%3 %4)"",_veh,_target, _posCas,_radiusCas]; };" \n
-       "			};" \n
-       "		};" \n
+       "        diag_log format[""Telling %1 to target %2 (%3 %4)"",_veh,_target, _posCas,_radiusCas];" \n
+       "        " \n
+       "        _parents = [ (configFile >> ""CfgWeapons"" >> _weapon),true] call BIS_fnc_returnParents;" \n
+       "        if( ""RocketPods"" in _parents) then {" \n
+       "            _sleep = 3;" \n
+       "        } else {" \n
+       "            if( ""MissileLauncher"" in _parents) then {" \n
+       "                _sleep = 12;" \n
+       "                _needsAlign = true;" \n
+       "            } else {" \n
+       "                if( ""MGunCore"" in _parents) then {" \n
+       "                    _sleep = 0.3;" \n
+       "                } else {" \n
+       "                    _sleep = 0.5;" \n
+       "                };" \n
+       "            };" \n
+       "        };" \n
+       "        _casStart = time;" \n
+       "        while { (_veh ammo _weapon) > 0 && alive _target && !(_veh getVariable[""NEO_radioCasUnitBreakOff"",false]) && _casStart > (time - 60) } do {" \n
+       "            _veh doWatch _target;" \n
+       "            _veh doTarget _target;" \n
+       "    " \n
+       "            waitUntil {_veh aimedAtTarget [_target] > .8};" \n
+       "            _veh fireAtTarget [_target];" \n
+       "            if( _sleep > 0.5 ) then { _veh doWatch objNull; };" \n
+       "            sleep _sleep;" \n
+       "            " \n
+       "            if(!alive _target) then {" \n
+       "                _target = [_veh, _posCas, _radiusCas,_weapon] call NEO_fnc_pickCasTarget;" \n
+       "                if( isNull _target ) then {" \n
+       "                    // the requested area is clear; if we have time then look at a larger area to seem less brain dead" \n
+       "                    _radiusCas = 2 * _radiusCas;" \n
+       "                    _target = [_veh, _posCas, _radiusCas,_weapon] call NEO_fnc_pickCasTarget;" \n
+       "                };" \n
+       "                if(!isNull _target) then { diag_log format[""Telling %1 to target %2 (%3 %4)"",_veh,_target, _posCas,_radiusCas]; };" \n
+       "            };" \n
+       "        };" \n
        "" \n
-       "	[_veh,_oldPos] call ALiVE_fnc_doMoveRemote;" \n
-       "	// move the loiter point to here" \n
-       "	[_grp,0] setWaypointPosition [_oldPos,0];" \n
-       "	" \n
-       "	if (alive _veh) then {" \n
-       "		if( isNull _target) then {" \n
-       "				sleep 8;" \n
-       "				[[_veh,format[""%1 cannot engage any targets in the AO. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-       "		} else {" \n
-       "			if( (_veh ammo _weapon) == 0) then {" \n
-       "				[[_veh,format[""%1 is Winchester for %2. Returning to loiter position. Out."",_callsign,[configFile >> ""CfgWeapons"" >> _weapon] call bis_fnc_displayName],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-       "			} else {" \n
-       "				  [[_veh, format[""%1 has completed attack run, will loiter until further orders. Out."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-       "			};" \n
-       "		};" \n
-       "		" \n
-       "		// restore weapons" \n
-       "		if(_restoreAmmo) then {" \n
-       "			_restoreAmmo = false;" \n
-       "			[_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
-       "		};" \n
-       "		" \n
-       "		_veh doWatch objNull;" \n
-       "		_grp setCombatMode ""BLUE"";" \n
-       "		_grp setBehaviour ""CARELESS"";" \n
-       "		_grp setSpeedMode ""FULL"";" \n
-       "		_grp enableAttack false;" \n
-       "	};" \n
+       "    [_veh,_oldPos] call ALiVE_fnc_doMoveRemote;" \n
+       "    // move the loiter point to here" \n
+       "    [_grp,0] setWaypointPosition [_oldPos,0];" \n
+       "    " \n
+       "    if (alive _veh) then {" \n
+       "        if( isNull _target) then {" \n
+       "                sleep 8;" \n
+       "                [[_veh,format[""%1 cannot engage any targets in the AO. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "        } else {" \n
+       "            if( (_veh ammo _weapon) == 0) then {" \n
+       "                [[_veh,format[""%1 is Winchester for %2. Returning to loiter position. Out."",_callsign,[configFile >> ""CfgWeapons"" >> _weapon] call bis_fnc_displayName],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "            } else {" \n
+       "                  [[_veh, format[""%1 has completed attack run, will loiter until further orders. Out."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "            };" \n
+       "        };" \n
+       "        " \n
+       "        // restore weapons" \n
+       "        if(_restoreAmmo) then {" \n
+       "            _restoreAmmo = false;" \n
+       "            [_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
+       "        };" \n
+       "        " \n
+       "        _veh doWatch objNull;" \n
+       "        _grp setCombatMode ""BLUE"";" \n
+       "        _grp setBehaviour ""CARELESS"";" \n
+       "        _grp setSpeedMode ""FULL"";" \n
+       "        _grp enableAttack false;" \n
+       "    };" \n
        "};" \n
        "" \n
        "" \n
@@ -1276,8 +1276,8 @@ class FSM
           condition=/*%FSM<CONDITION""">*/"!isNil { _veh getVariable ""NEO_radioCasNewTask"" }" \n
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"if(_restoreAmmo) then {" \n
-           "	_restoreAmmo = false;" \n
-           "	[_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
+           "    _restoreAmmo = false;" \n
+           "    [_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
            "};" \n
            "" \n
            "_taskArray = _veh getVariable ""NEO_radioCasNewTask"";" \n

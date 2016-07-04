@@ -12,19 +12,19 @@ class RscPicture;
 ***************************/
 class NEO_RscBackground
 {
-	idc = -1;
-	type = 0;
-	style = 128;
-	colorbackground[] = {0,0,0,1};
-	colorText[] = {0,0,0,0};
-	font = "PuristaMedium";
-	sizeEx = 0;
-	moving = 0;
-	shadow =0;
-	x = "(safeZoneX + (safeZoneW / 1.8))";
-	y = "(safeZoneY + (safeZoneH / 3.25))";
-	w = "(safeZoneW / 3)";
-	h = "(safeZoneH / 2)";
+    idc = -1;
+    type = 0;
+    style = 128;
+    colorbackground[] = {0,0,0,1};
+    colorText[] = {0,0,0,0};
+    font = "PuristaMedium";
+    sizeEx = 0;
+    moving = 0;
+    shadow =0;
+    x = "(safeZoneX + (safeZoneW / 1.8))";
+    y = "(safeZoneY + (safeZoneH / 3.25))";
+    w = "(safeZoneW / 3)";
+    h = "(safeZoneH / 2)";
 };
 
 /***************************
@@ -32,21 +32,21 @@ Edit
 ***************************/
 class NEO_RscEdit
 {
-	idc = -1;
-	type = 2;
-	style = 0x00;
-	x = "1";
-	y = "1";
-	w = "safeZoneW / 25";
-	h = "safeZoneH / 30";
+    idc = -1;
+    type = 2;
+    style = 0x00;
+    x = "1";
+    y = "1";
+    w = "safeZoneW / 25";
+    h = "safeZoneH / 30";
 
-	sizeEx = 0.03;
-	font = "PuristaMedium";
-	text = "";
+    sizeEx = 0.03;
+    font = "PuristaMedium";
+    text = "";
 
-	colorText[] = {1,1,1,1};
-	autocomplete = 0;
-	colorSelection[] = {0,0,0,1};
+    colorText[] = {1,1,1,1};
+    autocomplete = 0;
+    colorSelection[] = {0,0,0,1};
 };
 
 /***************************
@@ -54,25 +54,25 @@ Text
 ***************************/
 class NEO_RscText
 {
-	idc = -1;
-	type = 13;
-	style = 0x00;
-	colorBackground[] = { 0, 0, 0, 0 };
-	size = "((safeZoneW / 75) + (safeZoneH / 225))";
-	x = "safeZoneX + (safeZoneW / 6)";
-	y = "safeZoneY + (safeZoneH / 6)";
-	w = "safeZoneW / 5";
-	h = "safeZoneH / 10";
-	text = "SUPPORT MENU";
-	class Attributes
-	{
-		font = "PuristaMedium";
-		color = "#C0C0C0";
-		align = "center";
-		valign = "middle";
-		shadow = true;
-		shadowColor = "#000000";
-	};
+    idc = -1;
+    type = 13;
+    style = 0x00;
+    colorBackground[] = { 0, 0, 0, 0 };
+    size = "((safeZoneW / 75) + (safeZoneH / 225))";
+    x = "safeZoneX + (safeZoneW / 6)";
+    y = "safeZoneY + (safeZoneH / 6)";
+    w = "safeZoneW / 5";
+    h = "safeZoneH / 10";
+    text = "SUPPORT MENU";
+    class Attributes
+    {
+        font = "PuristaMedium";
+        color = "#C0C0C0";
+        align = "center";
+        valign = "middle";
+        shadow = true;
+        shadowColor = "#000000";
+    };
 };
 
 /***************************
@@ -80,51 +80,51 @@ class NEO_RscText
 ***************************/
 class NEO_RscSlider
 {
-	idc = -1;
-	type = 43;
-	style = 0x400 + 0x10;
-	x = "safeZoneX + (safeZoneW / 5.6)";
-	y = "safeZoneY + (safeZoneH / 1.6)";
-	w = "safeZoneW / 5.5";
-	h = "safeZoneH / 40";
-	color[] = {1, 1, 1, 0.4};
-	colorActive[] = {1, 1, 1, 1};
-	colorDisabled[] = {1, 1, 1, 0.2};
-	arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
-	arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
-	border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
-	thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+    idc = -1;
+    type = 43;
+    style = 0x400 + 0x10;
+    x = "safeZoneX + (safeZoneW / 5.6)";
+    y = "safeZoneY + (safeZoneH / 1.6)";
+    w = "safeZoneW / 5.5";
+    h = "safeZoneH / 40";
+    color[] = {1, 1, 1, 0.4};
+    colorActive[] = {1, 1, 1, 1};
+    colorDisabled[] = {1, 1, 1, 0.2};
+    arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+    arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+    border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+    thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
 };
 
 /***************************
 //ListBox
 ***************************/
 class NEO_RscListBox {
-	type = 5;
-	style = 0 + 0x10;
-	font = "PuristaMedium";
-	sizeEx = (safeZoneH / 100) + (safeZoneH / 100);
-	x = "safeZoneX + (safeZoneW / 5)";
-	y = "safeZoneY + (safeZoneH / 2.25)";
-	w = "(safeZoneW / 10)";
-	h = "(safeZoneH / 17)";
-	color[] = {1, 1, 1, 1};
-	colorText[] = {0.95, 0.95, 0.95, 1};
-	colorScrollbar[] = {0.95, 0.95, 0.95, 1};
-	colorSelect[] = {0.023529, 0, 0.0313725, 1};
-	colorSelect2[] = {0.023529, 0, 0.0313725, 1};
-	colorSelectBackground[] = {0.58, 0.1147, 0.1108, 1};
-	colorSelectBackground2[] = {0.58, 0.1147, 0.1108, 1};
-	period = 1;
-	colorBackground[] = {0,0,0,0};
-	maxHistoryDelay = 1.0;
-	autoScrollSpeed = -1;
-	autoScrollDelay = 5;
-	autoScrollRewind = 0;
-	soundSelect[] = {"", 0.0, 1};
-	soundExpand[] = {"", 0.0, 1};
-	soundCollapse[] = {"", 0.0, 1};
-	colorDisabled[] = {0,0,0,0};
+    type = 5;
+    style = 0 + 0x10;
+    font = "PuristaMedium";
+    sizeEx = (safeZoneH / 100) + (safeZoneH / 100);
+    x = "safeZoneX + (safeZoneW / 5)";
+    y = "safeZoneY + (safeZoneH / 2.25)";
+    w = "(safeZoneW / 10)";
+    h = "(safeZoneH / 17)";
+    color[] = {1, 1, 1, 1};
+    colorText[] = {0.95, 0.95, 0.95, 1};
+    colorScrollbar[] = {0.95, 0.95, 0.95, 1};
+    colorSelect[] = {0.023529, 0, 0.0313725, 1};
+    colorSelect2[] = {0.023529, 0, 0.0313725, 1};
+    colorSelectBackground[] = {0.58, 0.1147, 0.1108, 1};
+    colorSelectBackground2[] = {0.58, 0.1147, 0.1108, 1};
+    period = 1;
+    colorBackground[] = {0,0,0,0};
+    maxHistoryDelay = 1.0;
+    autoScrollSpeed = -1;
+    autoScrollDelay = 5;
+    autoScrollRewind = 0;
+    soundSelect[] = {"", 0.0, 1};
+    soundExpand[] = {"", 0.0, 1};
+    soundCollapse[] = {"", 0.0, 1};
+    colorDisabled[] = {0,0,0,0};
       class ListScrollBar
   {
     color[] = {1, 1, 1, 0.6};
@@ -138,25 +138,25 @@ class NEO_RscListBox {
 };
 
 class NEO_RscGUIListBox : NEO_RscListBox {
-	color[] = {1, 1, 1, 1};
-	colorText[] = {1, 1, 1, 0.75};
-	colorScrollbar[] = {0.023529, 0, 0.0313725, 1};
-	colorSelect[] = {0.95, 0.95, 0.95, 1};
-	colorSelect2[] = {0.95, 0.95, 0.95, 1};
-	colorSelectBackground[] = {0.6, 0.839, 0.47, 0.3};
-	colorSelectBackground2[] = {0.6, 0.839, 0.47, 1};
-	period = 0;
-	sizeEx = (safeZoneH / 100) + (safeZoneH / 100);
+    color[] = {1, 1, 1, 1};
+    colorText[] = {1, 1, 1, 0.75};
+    colorScrollbar[] = {0.023529, 0, 0.0313725, 1};
+    colorSelect[] = {0.95, 0.95, 0.95, 1};
+    colorSelect2[] = {0.95, 0.95, 0.95, 1};
+    colorSelectBackground[] = {0.6, 0.839, 0.47, 0.3};
+    colorSelectBackground2[] = {0.6, 0.839, 0.47, 1};
+    period = 0;
+    sizeEx = (safeZoneH / 100) + (safeZoneH / 100);
 class ListScrollBar
-	{
-		color[] = {1, 1, 1, 0.6};
-		colorActive[] = {1, 1, 1, 1};
-		colorDisabled[] = {1, 1, 1, 0.3};
-		arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
-	arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
-	border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
-	thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
-	};
+    {
+        color[] = {1, 1, 1, 0.6};
+        colorActive[] = {1, 1, 1, 1};
+        colorDisabled[] = {1, 1, 1, 0.3};
+        arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+    arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+    border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+    thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+    };
 };
 
 /***************************
@@ -164,42 +164,42 @@ class ListScrollBar
 ***************************/
 class NEO_RscComboBox
 {
-	access = 0;
-	type = 4;
-	style = 0;
-	colorSelect[] = {0.023529,0,0.0313725,1};
-	colorText[] = {0.023529,0,0.0313725,1};
-	colorBackground[] = {0.95,0.95,0.95,1};
-	colorScrollbar[] = {0.023529,0,0.0313725,1};
-	soundSelect[] = {"",0.1,1};
-	soundExpand[] = {"",0.1,1};
-	soundCollapse[] = {"",0.1,1};
-	maxHistoryDelay = 1;
-	class ComboScrollBar
-	{
-		color[] = {1,1,1,0.6};
-		colorActive[] = {1,1,1,1};
-		colorDisabled[] = {1,1,1,0.3};
-		shadow = 0;
-		arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
-	arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
-	border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
-	thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
-	};
-	x = "safeZoneX + (safeZoneW / 8)";
-	y = "safeZoneY + (safeZoneH / 5)";
-	w = "(safeZoneW / 10)";
-	h = "(safeZoneH / 20)";
-	shadow = 0;
-	colorSelectBackground[] = {0.8784,0.8471,0.651,1};
-	arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
-	arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
-	wholeHeight = 0.45;
-	color[] = {0,0,0,0.6};
-	colorActive[] = {0,0,0,1};
-	colorDisabled[] = {0,0,0,0.3};
-	font = "PuristaMedium";
-	sizeEx = "(safeZoneH / 100) + (safeZoneH / 100)";
+    access = 0;
+    type = 4;
+    style = 0;
+    colorSelect[] = {0.023529,0,0.0313725,1};
+    colorText[] = {0.023529,0,0.0313725,1};
+    colorBackground[] = {0.95,0.95,0.95,1};
+    colorScrollbar[] = {0.023529,0,0.0313725,1};
+    soundSelect[] = {"",0.1,1};
+    soundExpand[] = {"",0.1,1};
+    soundCollapse[] = {"",0.1,1};
+    maxHistoryDelay = 1;
+    class ComboScrollBar
+    {
+        color[] = {1,1,1,0.6};
+        colorActive[] = {1,1,1,1};
+        colorDisabled[] = {1,1,1,0.3};
+        shadow = 0;
+        arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+    arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+    border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+    thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+    };
+    x = "safeZoneX + (safeZoneW / 8)";
+    y = "safeZoneY + (safeZoneH / 5)";
+    w = "(safeZoneW / 10)";
+    h = "(safeZoneH / 20)";
+    shadow = 0;
+    colorSelectBackground[] = {0.8784,0.8471,0.651,1};
+    arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+    arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+    wholeHeight = 0.45;
+    color[] = {0,0,0,0.6};
+    colorActive[] = {0,0,0,1};
+    colorDisabled[] = {0,0,0,0.3};
+    font = "PuristaMedium";
+    sizeEx = "(safeZoneH / 100) + (safeZoneH / 100)";
 };
 
 
@@ -208,56 +208,56 @@ class NEO_RscComboBox
 ***************************/
 class NEO_RscButton
 {
-	idc = -1;
-	type = 1;
-	style = 0x00;
-	default = 0;
-	shadow = 2;
-	x = "safeZoneX + (safeZoneW / 5)";
-	y = "safeZoneY + (safeZoneH / 1.525)";
-	w = "(safeZoneW / 12.5)";
-	h = "(safeZoneH / 20)";
+    idc = -1;
+    type = 1;
+    style = 0x00;
+    default = 0;
+    shadow = 2;
+    x = "safeZoneX + (safeZoneW / 5)";
+    y = "safeZoneY + (safeZoneH / 1.525)";
+    w = "(safeZoneW / 12.5)";
+    h = "(safeZoneH / 20)";
   colorBackgroundActive[] = {1, 1, 1, 0.4};
   colorBackgroundDisabled[] = {0, 0, 0, 0.5};
-	color[] = {0.8784, 0.8471, 0.651, 1.0};
-	color2[] = {0.95, 0.95, 0.95, 1};
-	colorBackground[] = {1, 1, 1, 1};
-	colorbackground2[] = {1, 1, 1, 0.4};
+    color[] = {0.8784, 0.8471, 0.651, 1.0};
+    color2[] = {0.95, 0.95, 0.95, 1};
+    colorBackground[] = {1, 1, 1, 1};
+    colorbackground2[] = {1, 1, 1, 0.4};
   colorText[] = {1, 1, 1, 1};
-	colorDisabled[] = {1, 1, 1, 0.25};
+    colorDisabled[] = {1, 1, 1, 0.25};
   colorShadow[] = {0, 0, 0, 1};
   colorBorder[] = {0, 0, 0, 1};
   borderSize = 0;
-	periodFocus = 1.2;
-	periodOver = 0.8;
+    periodFocus = 1.2;
+    periodOver = 0.8;
   offsetX = 0;
   offsetY = 0;
   offsetPressedX = 0;
   offsetPressedY = 0;
-	animTextureDefault = "#(argb,8,8,3)color(1,1,1,1)";
+    animTextureDefault = "#(argb,8,8,3)color(1,1,1,1)";
   animTextureDisabled = "#(argb,8,8,3)color(1,1,1,1)";
   animTextureFocused = "#(argb,8,8,3)color(1,1,1,1)";
   animTextureNormal = "#(argb,8,8,3)color(1,1,1,1)";
   animTextureOver = "#(argb,8,8,3)color(1,1,1,0.5)";
   animTexturePressed = "#(argb,8,8,3)color(1,1,1,1)";
-	period = 0.4;
-	font = "PuristaMedium";
-	size = "(safeZoneW / 125) + (safeZoneH / 125)";
-	text = "";
+    period = 0.4;
+    font = "PuristaMedium";
+    size = "(safeZoneW / 125) + (safeZoneH / 125)";
+    text = "";
  soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1};
  soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1};
  soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1};
  soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1};
-	textureNoShortcut = "";
-	action = "";
+    textureNoShortcut = "";
+    action = "";
 
-	class Attributes
-	{
-		font = "PuristaMedium";
-		color = "#E5E5E5";
-		align = "left";
-		shadow = "true";
-	};
+    class Attributes
+    {
+        font = "PuristaMedium";
+        color = "#E5E5E5";
+        align = "left";
+        shadow = "true";
+    };
 
 
 };
@@ -267,7 +267,7 @@ class NEO_RscButton
 ***********************/
 class NEO_RscMap
 {
-	 access = 0;
+     access = 0;
   alphaFadeEndScale = 0.4;
   alphaFadeStartScale = 0.35;
   colorBackground[] = {0.969,0.957,0.949,1};
@@ -331,10 +331,10 @@ class NEO_RscMap
   text = "#(argb,8,8,3)color(1,1,1,1)";
   type = 101;
   x = "(safeZoneX + (safeZoneW / 1.67))";
-	y = "(safeZoneY + (safeZoneH / 2.49))";
-	w = "(safeZoneW / 4.05)";
-	h = "(safeZoneH / 4.2)";
-	class ActiveMarker
+    y = "(safeZoneY + (safeZoneH / 2.49))";
+    w = "(safeZoneW / 4.05)";
+    h = "(safeZoneH / 4.2)";
+    class ActiveMarker
     {
     color[] = {0.3,0.1,0.9,1};
     size = 50;

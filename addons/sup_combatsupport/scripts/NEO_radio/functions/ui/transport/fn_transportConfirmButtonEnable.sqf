@@ -7,19 +7,19 @@ _chopper = _transportArray select (lbCurSel _transportUnitLb) select 0; if (!isN
 
 if
 (
-	!isNil { uinamespace getVariable "NEO_transportMarkerCreated" }
-	&&
-	_chopper getVariable "NEO_radioTrasportUnitStatus" != "KILLED"
-	&&
-	lbCurSel _transportUnitLb != -1
-	&&
-	lbCurSel _transportTaskLb != -1
+    !isNil { uinamespace getVariable "NEO_transportMarkerCreated" }
+    &&
+    _chopper getVariable "NEO_radioTrasportUnitStatus" != "KILLED"
+    &&
+    lbCurSel _transportUnitLb != -1
+    &&
+    lbCurSel _transportTaskLb != -1
 )
 then
 {
-	_transportConfirmButton ctrlEnable true;
+    _transportConfirmButton ctrlEnable true;
 }
 else
 {
-	_transportConfirmButton ctrlEnable false;
+    _transportConfirmButton ctrlEnable false;
 };

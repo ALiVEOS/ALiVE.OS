@@ -20,16 +20,16 @@ _sides = [WEST,EAST,RESISTANCE,CIVILIAN];
 
 //get side
 switch ((getNumber(configfile >> "CfgVehicles" >> _type >> "side"))) do {
-	case 0 : {_side = EAST};
-	case 1 : {_side = WEST};
-	case 2 : {_side = RESISTANCE};
-	default {_side = EAST};
+    case 0 : {_side = EAST};
+    case 1 : {_side = WEST};
+    case 2 : {_side = RESISTANCE};
+    default {_side = EAST};
 };
 
 //Exit if limit is reached
 if (TRANS_RESPAWN_LIMIT == 0) exitwith {
     _replen = format ["All units! We are out of transport assets"];
-	[[player,_replen,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+    [[player,_replen,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 };
 
 //Start respawning if not exited
@@ -38,13 +38,13 @@ TRANS_RESPAWN_LIMIT = TRANS_RESPAWN_LIMIT - 1;
 
 //Remove from all side-lists
 {
-		private ["_sideArray","_sideIn"];
+        private ["_sideArray","_sideIn"];
         _sideIn = _x;
-		_sideArray = NEO_radioLogic getVariable [format["NEO_radioTrasportArray_%1", _sideIn],[]];
+        _sideArray = NEO_radioLogic getVariable [format["NEO_radioTrasportArray_%1", _sideIn],[]];
         {
             if (isnull (_x select 0) || {((_x select 0) == _veh)}) then {
                 _sideArray set [_foreachIndex, -1];
-				_sideArray = _sideArray - [-1];
+                _sideArray = _sideArray - [-1];
             };
         } foreach _sideArray;
         NEO_radioLogic setVariable [format["NEO_radioTrasportArray_%1", _sideIn], _sideArray, true];
@@ -68,9 +68,9 @@ _veh setDir _dir;
 [_veh, _grp] call BIS_fnc_spawnCrew;
 
 If(_height > 0) then {
-	_veh setposASL [getposASL _veh select 0, getposASL _veh select 1, _height];
+    _veh setposASL [getposASL _veh select 0, getposASL _veh select 1, _height];
 } else {
-	_veh setPosATL _pos;
+    _veh setPosATL _pos;
 };
 _veh setVelocity [0,0,-1];
 _veh lockDriver true;
@@ -119,14 +119,14 @@ _veh setVariable ["NEO_transportAvailableTasks", _tasks, true];
 
 //Register to all friendly side-lists
 {
-	if (_side getfriend _x >= 0.6) then {
-		private ["_array"];
+    if (_side getfriend _x >= 0.6) then {
+        private ["_array"];
 
-		_array = NEO_radioLogic getVariable format["NEO_radioTrasportArray_%1", _x];
+        _array = NEO_radioLogic getVariable format["NEO_radioTrasportArray_%1", _x];
         _array set [count _array,[_veh, _grp, _callsign]];
 
         NEO_radioLogic setVariable [format["NEO_radioTrasportArray_%1", _x], _array,true];
-	};
+    };
 } foreach _sides;
 
 _audio = NEO_radioLogic getvariable ["combatsupport_audio",true];

@@ -69,15 +69,15 @@ item64[] = {"not_mortar",4,218,71.240044,1330.887329,161.240051,1380.887329,0.00
 version=1;
 class LayoutItems
 {
-	class Item37
-	{
-		class ItemInfo
-		{
-			FontFace="Arial";
-			FontHeight=10;
-			lStyle=1;
-		};
-	};
+    class Item37
+    {
+        class ItemInfo
+        {
+            FontFace="Arial";
+            FontHeight=10;
+            lStyle=1;
+        };
+    };
 };
 link0[] = {0,1};
 link1[] = {1,2};
@@ -175,8 +175,8 @@ class FSM
       name = "Start";
       init = /*%FSM<STATEINIT""">*/"private " \n
        "[" \n
-       "	""_units"",""_grp"", ""_callsign"", ""_pos"", ""_availableRounds"", ""_canMove""," \n
-       "	""_class"", ""_battery"", ""_leader"",""_unitCount""" \n
+       "    ""_units"",""_grp"", ""_callsign"", ""_pos"", ""_availableRounds"", ""_canMove""," \n
+       "    ""_class"", ""_battery"", ""_leader"",""_unitCount""" \n
        "];" \n
        "_units = _this select 0; _unitCount = count _units;" \n
        "_grp = _this select 1;" \n
@@ -194,9 +194,9 @@ class FSM
        "" \n
        "private " \n
        "[" \n
-       "	""_radiusMove"", ""_dirMove"", ""_posMove"", ""_isFlat"", ""_tries"", ""_delay"", ""_dummy""," \n
-       "	""_firingDistance"", ""_ammo"", ""_newAmmo"", ""_newAmmoIndex"", ""_newAmmoArray""," \n
-       "	""_classCopy""" \n
+       "    ""_radiusMove"", ""_dirMove"", ""_posMove"", ""_isFlat"", ""_tries"", ""_delay"", ""_dummy""," \n
+       "    ""_firingDistance"", ""_ammo"", ""_newAmmo"", ""_newAmmoIndex"", ""_newAmmoArray""," \n
+       "    ""_classCopy""" \n
        "];" \n
        "_classCopy = _class;" \n
        "_radiusMove = 0;" \n
@@ -214,7 +214,7 @@ class FSM
        "" \n
        "private " \n
        "[" \n
-       "	""_inRange"", ""_available"", ""_viable""" \n
+       "    ""_inRange"", ""_available"", ""_viable""" \n
        "];" \n
        "_inRange = false;" \n
        "_available = [];" \n
@@ -249,8 +249,8 @@ class FSM
       name = "main_loop";
       init = /*%FSM<STATEINIT""">*/"private " \n
        "[" \n
-       "	""_newTaskArray"", ""_missionType"", ""_ordnanceType"", ""_rateOfFire"", ""_durationOrCount"", " \n
-       "	""_dispersion"", ""_target"",""_class"",""_ordnance""" \n
+       "    ""_newTaskArray"", ""_missionType"", ""_ordnanceType"", ""_rateOfFire"", ""_durationOrCount"", " \n
+       "    ""_dispersion"", ""_target"",""_class"",""_ordnance""" \n
        "];" \n
        "_newTaskArray = [];" \n
        "_missionType = """";" \n
@@ -261,9 +261,9 @@ class FSM
        "_target = [];" \n
        "" \n
        "{" \n
-       "	_x setFuel 1;" \n
-       "	_x setDamage 0;" \n
-       "	_x setVehicleAmmo 1;" \n
+       "    _x setFuel 1;" \n
+       "    _x setDamage 0;" \n
+       "    _x setVehicleAmmo 1;" \n
        "} forEach _units;"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
@@ -388,34 +388,34 @@ class FSM
            "_newAmmoArray = _ammo;" \n
            "" \n
            "{" \n
-           "	private [""_round"", ""_count"", ""_countNew""];" \n
-           "	_round = _x select 0; " \n
-           "	_count = _x select 1; " \n
-           "	_newAmmoIndex = _forEachIndex;" \n
+           "    private [""_round"", ""_count"", ""_countNew""];" \n
+           "    _round = _x select 0; " \n
+           "    _count = _x select 1; " \n
+           "    _newAmmoIndex = _forEachIndex;" \n
            "" \n
-           "	if (_ordnanceType == _round) then  " \n
-           "	{" \n
-           "		_countNew = _count - _durationOrCount;" \n
-           "		if(_countNew > 0) then" \n
-           "		{" \n
+           "    if (_ordnanceType == _round) then  " \n
+           "    {" \n
+           "        _countNew = _count - _durationOrCount;" \n
+           "        if(_countNew > 0) then" \n
+           "        {" \n
            "" \n
-           "		_newAmmo = [_ordnanceType, _countNew];" \n
+           "        _newAmmo = [_ordnanceType, _countNew];" \n
            "" \n
-           "				if (count _newAmmo > 0) then" \n
-           "				{" \n
+           "                if (count _newAmmo > 0) then" \n
+           "                {" \n
            "" \n
-           "				_newAmmoArray set [_newAmmoIndex, _newAmmo];" \n
+           "                _newAmmoArray set [_newAmmoIndex, _newAmmo];" \n
            "" \n
-           "				};" \n
-           "		}" \n
-           "		else" \n
-           "		{" \n
+           "                };" \n
+           "        }" \n
+           "        else" \n
+           "        {" \n
            "" \n
-           "		_newAmmoArray set [_newAmmoIndex, ""DELETEPLEASE""];" \n
-           "		_newAmmoArray = _newAmmoArray - [""DELETEPLEASE""]" \n
-           "		" \n
-           "		};" \n
-           "	};" \n
+           "        _newAmmoArray set [_newAmmoIndex, ""DELETEPLEASE""];" \n
+           "        _newAmmoArray = _newAmmoArray - [""DELETEPLEASE""]" \n
+           "        " \n
+           "        };" \n
+           "    };" \n
            "} forEach _ammo;" \n
            "" \n
            "_battery setVariable [""NEO_radioArtyBatteryRounds"", _newAmmoArray, true];" \n
@@ -432,10 +432,10 @@ class FSM
       name = "__1";
       init = /*%FSM<STATEINIT""">*/"[(_units select 0), _callsign,_callsignPlayer, _player] spawn" \n
        "{" \n
-       "	private ""_msg"";" \n
-       "	sleep 5;" \n
-       "	_msg = format [""%1, Stand by for fire mission from %2. Out."",_this select 2, _this select 1];" \n
-       "	[[_this select 0, _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "    private ""_msg"";" \n
+       "    sleep 5;" \n
+       "    _msg = format [""%1, Stand by for fire mission from %2. Out."",_this select 2, _this select 1];" \n
+       "    [[_this select 0, _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "};" \n
        "" \n
        "_delay = time + 10;" \n
@@ -469,10 +469,10 @@ class FSM
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"private ""_msg"";" \n
            "if (_audio) then {" \n
-           "	leader (_units select 0) kbTell [_player, ""ALIVE_SUPP_protocol"", ""Artillery_Acknowledged"", ""GROUP""];	" \n
+           "    leader (_units select 0) kbTell [_player, ""ALIVE_SUPP_protocol"", ""Artillery_Acknowledged"", ""GROUP""];    " \n
            "} else {" \n
-           "	_msg = format [""%1, %2 is firing on target. Out."",_callsignPlayer, _callsign];" \n
-           "	[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "    _msg = format [""%1, %2 is firing on target. Out."",_callsignPlayer, _callsign];" \n
+           "    [[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
            "};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
@@ -511,10 +511,10 @@ class FSM
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"private ""_msg"";" \n
            "if (_audio) then {" \n
-           "	leader (_units select 0) kbTell [_player, ""ALIVE_SUPP_protocol"", ""Artillery_Accomplished"", ""GROUP""];" \n
+           "    leader (_units select 0) kbTell [_player, ""ALIVE_SUPP_protocol"", ""Artillery_Accomplished"", ""GROUP""];" \n
            "} else {" \n
-           "	_msg = format [""%1, Splash. Out."",_callsignPlayer, _callsign];" \n
-           "	[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "    _msg = format [""%1, Splash. Out."",_callsignPlayer, _callsign];" \n
+           "    [[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
            "};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
@@ -557,10 +557,10 @@ class FSM
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"private ""_msg"";" \n
            "if (_audio) then {" \n
-           "	leader (_units select 0) kbTell [_player, ""ALIVE_SUPP_protocol"", ""Artillery_Rounds_Complete"", ""GROUP""];" \n
+           "    leader (_units select 0) kbTell [_player, ""ALIVE_SUPP_protocol"", ""Artillery_Rounds_Complete"", ""GROUP""];" \n
            "} else {" \n
-           "	_msg = format [""%1, Battery %2 is rounds complete. Out."",_callsignPlayer, _callsign];" \n
-           "	[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "    _msg = format [""%1, Battery %2 is rounds complete. Out."",_callsignPlayer, _callsign];" \n
+           "    [[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
            "};" \n
            ""/*%FSM</ACTION""">*/;
         };
@@ -641,31 +641,31 @@ class FSM
           action=/*%FSM<ACTION""">*/"_battery setVariable [""NEO_radioArtyUnitStatus"", ""RTB"", true];" \n
            "" \n
            "// IF its a mortar team moving, get them to disassemble and pack up" \n
-           "if (	_grp getVariable [""mortar"", false]) then {" \n
+           "if (    _grp getVariable [""mortar"", false]) then {" \n
            "" \n
-           "	{" \n
-           "		[_grp, _x] call ALiVE_fnc_packMortar;" \n
-           "	} foreach (_grp getVariable [""supportWeaponArray"",[]]);" \n
+           "    {" \n
+           "        [_grp, _x] call ALiVE_fnc_packMortar;" \n
+           "    } foreach (_grp getVariable [""supportWeaponArray"",[]]);" \n
            "" \n
-           "	private ""_packedup"";" \n
-           "	_packedup = false;" \n
-           "	while { !(_packedup) } do" \n
-           "	{" \n
-           "		{" \n
-           "			_packedup = true;" \n
-           "			if !(_x getVariable [""packed"",false]) exitWith {_packedup = false};" \n
-           "		}foreach  (_grp getVariable [""supportWeaponArray"",[]]);" \n
-           "	};" \n
+           "    private ""_packedup"";" \n
+           "    _packedup = false;" \n
+           "    while { !(_packedup) } do" \n
+           "    {" \n
+           "        {" \n
+           "            _packedup = true;" \n
+           "            if !(_x getVariable [""packed"",false]) exitWith {_packedup = false};" \n
+           "        }foreach  (_grp getVariable [""supportWeaponArray"",[]]);" \n
+           "    };" \n
            "" \n
-           "	{" \n
-           "		_x enableAI ""MOVE""; _x enableAI ""ANIM"";" \n
-           "		[_x, [_pos, 50, random 360] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
-           "	} forEach (units _grp);" \n
+           "    {" \n
+           "        _x enableAI ""MOVE""; _x enableAI ""ANIM"";" \n
+           "        [_x, [_pos, 50, random 360] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "    } forEach (units _grp);" \n
            "" \n
            "} else {" \n
            "" \n
            "{" \n
-           "	[_x, [_pos, 20, random 360] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "    [_x, [_pos, 20, random 360] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
            "} forEach _units;" \n
            "" \n
            "};" \n
@@ -685,17 +685,17 @@ class FSM
           condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"if (count (_battery getVariable ""NEO_radioArtyBatteryRounds"") < 1) then" \n
            "{" \n
-           "	private ""_msg"";" \n
-           "	_battery setVariable [""NEO_radioArtyUnitStatus"", ""NOAMMO"", true];" \n
-           "	_msg = format[""%2, Battery %1 is out of ammo. Out."",_callsign, _callsignPlayer];" \n
-           "	[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "    private ""_msg"";" \n
+           "    _battery setVariable [""NEO_radioArtyUnitStatus"", ""NOAMMO"", true];" \n
+           "    _msg = format[""%2, Battery %1 is out of ammo. Out."",_callsign, _callsignPlayer];" \n
+           "    [[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
            "}" \n
            "else" \n
            "{" \n
-           "	private ""_msg"";" \n
-           "	_battery setVariable [""NEO_radioArtyUnitStatus"", ""NONE"", true];" \n
-           "	_msg = format[""%2, Battery %1 is ready for fire mission. Out"",_callsign, _callsignPlayer];" \n
-           "	[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "    private ""_msg"";" \n
+           "    _battery setVariable [""NEO_radioArtyUnitStatus"", ""NONE"", true];" \n
+           "    _msg = format[""%2, Battery %1 is ready for fire mission. Out"",_callsign, _callsignPlayer];" \n
+           "    [[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
            "};" \n
            ""/*%FSM</ACTION""">*/;
         };
@@ -748,33 +748,33 @@ class FSM
            "" \n
            "[(_units select 0), _callsign, side leader _grp, _battery,_callsignPlayer] spawn" \n
            "{" \n
-           "	private [""_msg""];" \n
-           "	sleep 5;" \n
-           "	_msg = format[""%1, Target is out of range of battery %2, would you like them to move into a good position? Over."",_this select 4,_this select 1];" \n
-           "	[[_this select 0, _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-           "	" \n
-           "	[_this select 0, _this select 1, _this select 3,_this select 4] spawn" \n
-           "	{" \n
-           "		private [""_unit"", ""_callsign"", ""_battery"",""_respmsg""];" \n
-           "		_unit = _this select 0;" \n
-           "		_callsign = _this select 1;" \n
-           "		_battery = _this select 2;" \n
-           "		_callsignPlayer = _this select 3;" \n
-           "		" \n
-           "		sleep 75;" \n
-           "		" \n
-           "		_respmsg = format[""%1, Should %2 move in range? Please respond. Over."",_callsignPlayer,_callsign];" \n
-           "		while { (_battery getVariable ""NEO_radioArtyUnitStatus"") == ""RESPONSE"" } do" \n
-           "		{" \n
-           "			[[" \n
-           "				_unit," \n
-           "				_respmsg," \n
-           "				""side""" \n
-           "			],"" NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-           "			" \n
-           "			sleep 75;" \n
-           "		};" \n
-           "	};" \n
+           "    private [""_msg""];" \n
+           "    sleep 5;" \n
+           "    _msg = format[""%1, Target is out of range of battery %2, would you like them to move into a good position? Over."",_this select 4,_this select 1];" \n
+           "    [[_this select 0, _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "    " \n
+           "    [_this select 0, _this select 1, _this select 3,_this select 4] spawn" \n
+           "    {" \n
+           "        private [""_unit"", ""_callsign"", ""_battery"",""_respmsg""];" \n
+           "        _unit = _this select 0;" \n
+           "        _callsign = _this select 1;" \n
+           "        _battery = _this select 2;" \n
+           "        _callsignPlayer = _this select 3;" \n
+           "        " \n
+           "        sleep 75;" \n
+           "        " \n
+           "        _respmsg = format[""%1, Should %2 move in range? Please respond. Over."",_callsignPlayer,_callsign];" \n
+           "        while { (_battery getVariable ""NEO_radioArtyUnitStatus"") == ""RESPONSE"" } do" \n
+           "        {" \n
+           "            [[" \n
+           "                _unit," \n
+           "                _respmsg," \n
+           "                ""side""" \n
+           "            ],"" NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "            " \n
+           "            sleep 75;" \n
+           "        };" \n
+           "    };" \n
            "};" \n
            ""/*%FSM</ACTION""">*/;
         };
@@ -789,10 +789,10 @@ class FSM
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"[(_units select 0), _callsignPlayer, _callsign] spawn" \n
            "{" \n
-           "	private ""_msg"";" \n
-           "	_msg = format [ ""%1, Target is out of range of battery %2, choose another target. Out."", _this select 1, _this select 2];" \n
-           "	sleep 5;" \n
-           "	[[_this select 0,_msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "    private ""_msg"";" \n
+           "    _msg = format [ ""%1, Target is out of range of battery %2, choose another target. Out."", _this select 1, _this select 2];" \n
+           "    sleep 5;" \n
+           "    [[_this select 0,_msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
            "};" \n
            ""/*%FSM</ACTION""">*/;
         };
@@ -855,15 +855,15 @@ class FSM
            "" \n
            "while { count _isFlat < 2 && _tries < 360 } do" \n
            "{" \n
-           "	_tries = _tries + 1;" \n
-           "	_dirMove = _dirMove + 1;" \n
-           "	_posMove = [_target, _radiusMove, _dirMove] call BIS_fnc_relPos;" \n
-           "	_isFlat = _posMove isflatempty [50,0,0.9,50,0,false,objNull];" \n
+           "    _tries = _tries + 1;" \n
+           "    _dirMove = _dirMove + 1;" \n
+           "    _posMove = [_target, _radiusMove, _dirMove] call BIS_fnc_relPos;" \n
+           "    _isFlat = _posMove isflatempty [50,0,0.9,50,0,false,objNull];" \n
            "};" \n
            "" \n
            "if (count _isFlat < 2) then" \n
            "{" \n
-           "	_isFlat = [_target, _radiusMove, ([_target, _leader] call BIS_fnc_dirTo)] call BIS_fnc_relPos;" \n
+           "    _isFlat = [_target, _radiusMove, ([_target, _leader] call BIS_fnc_dirTo)] call BIS_fnc_relPos;" \n
            "};" \n
            "" \n
            "_grp setVariable [""NEO_radioArtyNotInBase"", _isFlat];" \n
@@ -871,44 +871,44 @@ class FSM
            "// IF its a mortar team moving, get them to disassemble and pack up" \n
            "if ((typeOf (vehicle _battery)) in [""O_Mortar_01_F"", ""B_Mortar_01_F"",""I_Mortar_01_F""]) then {" \n
            "" \n
-           "	_grp setVariable [""mortar"", true];" \n
+           "    _grp setVariable [""mortar"", true];" \n
            "" \n
            "diag_log ""Battery is mortar, waiting for team to pack up mortars"";" \n
            "" \n
-           "	{" \n
-           "		[_grp, _x] call ALiVE_fnc_packMortar;" \n
-           "	} foreach (_grp getVariable [""supportWeaponArray"",[]]);" \n
+           "    {" \n
+           "        [_grp, _x] call ALiVE_fnc_packMortar;" \n
+           "    } foreach (_grp getVariable [""supportWeaponArray"",[]]);" \n
            "" \n
-           "	private ""_packedup"";" \n
-           "	_packedup = false;" \n
-           "	while { !(_packedup) } do" \n
-           "	{" \n
-           "		{" \n
-           "			_packedup = true;" \n
-           "			if !(_x getVariable [""packed"",false]) exitWith {_packedup = false};" \n
-           "		}foreach  (_grp getVariable [""supportWeaponArray"",[]]);" \n
-           "	};" \n
+           "    private ""_packedup"";" \n
+           "    _packedup = false;" \n
+           "    while { !(_packedup) } do" \n
+           "    {" \n
+           "        {" \n
+           "            _packedup = true;" \n
+           "            if !(_x getVariable [""packed"",false]) exitWith {_packedup = false};" \n
+           "        }foreach  (_grp getVariable [""supportWeaponArray"",[]]);" \n
+           "    };" \n
            "" \n
            "diag_log ""Mortar team have packed up mortars and are moving"";" \n
            "" \n
-           "	{" \n
-           "		[_x, [_isFlat, 50, random 360] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
-           "	} forEach (units _grp);" \n
+           "    {" \n
+           "        [_x, [_isFlat, 50, random 360] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "    } forEach (units _grp);" \n
            "" \n
            "} else {" \n
-           "	_grp setVariable [""mortar"", false];" \n
-           "	{" \n
-           "		[_x, [_isFlat, 50, random 360] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
-           "	} forEach _units;" \n
+           "    _grp setVariable [""mortar"", false];" \n
+           "    {" \n
+           "        [_x, [_isFlat, 50, random 360] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "    } forEach _units;" \n
            "" \n
            "};" \n
            "" \n
            "[(_units select 0), _callsign, _callsignPlayer] spawn" \n
            "{" \n
-           "	private ""_msg"";" \n
-           "	_msg = format[""Copy that %1, %2 moving in range of target, stand by. Out."", _this select 2, _this select 1];" \n
-           "	sleep 5;" \n
-           "	[[_this select 0, _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "    private ""_msg"";" \n
+           "    _msg = format[""Copy that %1, %2 moving in range of target, stand by. Out."", _this select 2, _this select 1];" \n
+           "    sleep 5;" \n
+           "    [[_this select 0, _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
            "};" \n
            ""/*%FSM</ACTION""">*/;
         };
@@ -925,10 +925,10 @@ class FSM
            "" \n
            "[(_units select 0), _callsignPlayer, _callsign] spawn" \n
            "{" \n
-           "	private ""_msg"";" \n
-           "	_msg = format[""Copy that %1, %2 aborting fire mission. Out."", _this select 1, _this select 2];" \n
-           "	sleep 5;" \n
-           "	[[_this select 0,_msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "    private ""_msg"";" \n
+           "    _msg = format[""Copy that %1, %2 aborting fire mission. Out."", _this select 1, _this select 2];" \n
+           "    sleep 5;" \n
+           "    [[_this select 0,_msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
            "};" \n
            ""/*%FSM</ACTION""">*/;
         };
@@ -978,18 +978,18 @@ class FSM
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"// IF its a mortar team, get them to assemble mortars" \n
            "" \n
-           "if (	_grp getVariable [""mortar"", false]) then {" \n
+           "if (    _grp getVariable [""mortar"", false]) then {" \n
            "" \n
-           "	private [""_oldUnits"",""_newUnits""];" \n
+           "    private [""_oldUnits"",""_newUnits""];" \n
            "" \n
-           "	_oldUnits = _grp getvariable [""supportWeaponArray"", []];" \n
+           "    _oldUnits = _grp getvariable [""supportWeaponArray"", []];" \n
            "" \n
-           "	_grp setvariable [""supportWeaponArray"", []];" \n
+           "    _grp setvariable [""supportWeaponArray"", []];" \n
            "" \n
-           "	{" \n
-           "		private ""_gunner"";" \n
-           "		_gunner = [_grp, _isFlat, _target, _x] call ALiVE_fnc_unpackMortar;" \n
-           "	} foreach _oldUnits;" \n
+           "    {" \n
+           "        private ""_gunner"";" \n
+           "        _gunner = [_grp, _isFlat, _target, _x] call ALiVE_fnc_unpackMortar;" \n
+           "    } foreach _oldUnits;" \n
            "" \n
            "};"/*%FSM</ACTION""">*/;
         };
@@ -1035,34 +1035,34 @@ class FSM
            "_newAmmoArray = _ammo;" \n
            "" \n
            "{" \n
-           "	private [""_round"", ""_count"", ""_countNew""];" \n
-           "	_round = _x select 0; " \n
-           "	_count = _x select 1; " \n
-           "	_newAmmoIndex = _forEachIndex;" \n
+           "    private [""_round"", ""_count"", ""_countNew""];" \n
+           "    _round = _x select 0; " \n
+           "    _count = _x select 1; " \n
+           "    _newAmmoIndex = _forEachIndex;" \n
            "" \n
-           "	if (_ordnanceType == _round) then  " \n
-           "	{" \n
-           "		_countNew = _count - _durationOrCount;" \n
-           "		if(_countNew > 0) then" \n
-           "		{" \n
+           "    if (_ordnanceType == _round) then  " \n
+           "    {" \n
+           "        _countNew = _count - _durationOrCount;" \n
+           "        if(_countNew > 0) then" \n
+           "        {" \n
            "" \n
-           "		_newAmmo = [_ordnanceType, _countNew];" \n
+           "        _newAmmo = [_ordnanceType, _countNew];" \n
            "" \n
-           "				if (count _newAmmo > 0) then" \n
-           "				{" \n
+           "                if (count _newAmmo > 0) then" \n
+           "                {" \n
            "" \n
-           "				_newAmmoArray set [_newAmmoIndex, _newAmmo];" \n
+           "                _newAmmoArray set [_newAmmoIndex, _newAmmo];" \n
            "" \n
-           "				};" \n
-           "		}" \n
-           "		else" \n
-           "		{" \n
+           "                };" \n
+           "        }" \n
+           "        else" \n
+           "        {" \n
            "" \n
-           "		_newAmmoArray set [_newAmmoIndex, ""DELETEPLEASE""];" \n
-           "		_newAmmoArray = _newAmmoArray - [""DELETEPLEASE""]" \n
-           "		" \n
-           "		};" \n
-           "	};" \n
+           "        _newAmmoArray set [_newAmmoIndex, ""DELETEPLEASE""];" \n
+           "        _newAmmoArray = _newAmmoArray - [""DELETEPLEASE""]" \n
+           "        " \n
+           "        };" \n
+           "    };" \n
            "} forEach _ammo;" \n
            "" \n
            "_battery setVariable [""NEO_radioArtyBatteryRounds"", _newAmmoArray, true];" \n
@@ -1119,34 +1119,34 @@ class FSM
            "" \n
            "// IF its a mortar team, get them to assemble mortars" \n
            "" \n
-           "if (	_grp getVariable [""mortar"", false]) then {" \n
+           "if (    _grp getVariable [""mortar"", false]) then {" \n
            "" \n
-           "	private [""_oldUnits""];" \n
+           "    private [""_oldUnits""];" \n
            "" \n
-           "	_oldUnits = _grp getvariable [""supportWeaponArray"", []];" \n
+           "    _oldUnits = _grp getvariable [""supportWeaponArray"", []];" \n
            "" \n
-           "	_grp setvariable [""supportWeaponArray"", []];" \n
+           "    _grp setvariable [""supportWeaponArray"", []];" \n
            "" \n
-           "	{" \n
-           "		private ""_gunner"";" \n
-           "		_gunner = [_grp, _isFlat, _target, _x] call ALiVE_fnc_unpackMortar;" \n
-           "	} foreach _oldUnits;" \n
+           "    {" \n
+           "        private ""_gunner"";" \n
+           "        _gunner = [_grp, _isFlat, _target, _x] call ALiVE_fnc_unpackMortar;" \n
+           "    } foreach _oldUnits;" \n
            "" \n
            "};" \n
            "" \n
            "if (count (_battery getVariable ""NEO_radioArtyBatteryRounds"") < 1) then" \n
            "{" \n
-           "	_battery setVariable [""NEO_radioArtyUnitStatus"", ""NOAMMO"", true];" \n
-           "	private ""_msg"";" \n
-           "	_msg = format [""%1, Battery %2 is at Base and out of ammo. Out."",_callsignPlayer, _callsign];" \n
-           "	[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "    _battery setVariable [""NEO_radioArtyUnitStatus"", ""NOAMMO"", true];" \n
+           "    private ""_msg"";" \n
+           "    _msg = format [""%1, Battery %2 is at Base and out of ammo. Out."",_callsignPlayer, _callsign];" \n
+           "    [[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
            "}" \n
            "else" \n
            "{" \n
-           "	_battery setVariable [""NEO_radioArtyUnitStatus"", ""NONE"", true];" \n
-           "	private ""_msg"";" \n
-           "	_msg = format [""%1, Battery %2 is at Base and ready for fire mission. Out."",_callsignPlayer, _callsign];" \n
-           "	[[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "    _battery setVariable [""NEO_radioArtyUnitStatus"", ""NONE"", true];" \n
+           "    private ""_msg"";" \n
+           "    _msg = format [""%1, Battery %2 is at Base and ready for fire mission. Out."",_callsignPlayer, _callsign];" \n
+           "    [[(_units select 0), _msg, ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
            "};" \n
            ""/*%FSM</ACTION""">*/;
         };
@@ -1218,34 +1218,34 @@ class FSM
            "_newAmmoArray = _ammo;" \n
            "" \n
            "{" \n
-           "	private [""_round"", ""_count"", ""_countNew""];" \n
-           "	_round = _x select 0; " \n
-           "	_count = _x select 1; " \n
-           "	_newAmmoIndex = _forEachIndex;" \n
+           "    private [""_round"", ""_count"", ""_countNew""];" \n
+           "    _round = _x select 0; " \n
+           "    _count = _x select 1; " \n
+           "    _newAmmoIndex = _forEachIndex;" \n
            "" \n
-           "	if (_ordnanceType == _round) then  " \n
-           "	{" \n
-           "		_countNew = _count - _durationOrCount;" \n
-           "		if(_countNew > 0) then" \n
-           "		{" \n
+           "    if (_ordnanceType == _round) then  " \n
+           "    {" \n
+           "        _countNew = _count - _durationOrCount;" \n
+           "        if(_countNew > 0) then" \n
+           "        {" \n
            "" \n
-           "		_newAmmo = [_ordnanceType, _countNew];" \n
+           "        _newAmmo = [_ordnanceType, _countNew];" \n
            "" \n
-           "				if (count _newAmmo > 0) then" \n
-           "				{" \n
+           "                if (count _newAmmo > 0) then" \n
+           "                {" \n
            "" \n
-           "				_newAmmoArray set [_newAmmoIndex, _newAmmo];" \n
+           "                _newAmmoArray set [_newAmmoIndex, _newAmmo];" \n
            "" \n
-           "				};" \n
-           "		}" \n
-           "		else" \n
-           "		{" \n
+           "                };" \n
+           "        }" \n
+           "        else" \n
+           "        {" \n
            "" \n
-           "		_newAmmoArray set [_newAmmoIndex, ""DELETEPLEASE""];" \n
-           "		_newAmmoArray = _newAmmoArray - [""DELETEPLEASE""]" \n
-           "		" \n
-           "		};" \n
-           "	};" \n
+           "        _newAmmoArray set [_newAmmoIndex, ""DELETEPLEASE""];" \n
+           "        _newAmmoArray = _newAmmoArray - [""DELETEPLEASE""]" \n
+           "        " \n
+           "        };" \n
+           "    };" \n
            "} forEach _ammo;" \n
            "" \n
            "_battery setVariable [""NEO_radioArtyBatteryRounds"", _newAmmoArray, true];" \n
