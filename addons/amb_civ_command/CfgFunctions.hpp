@@ -1,11 +1,11 @@
 class cfgFunctions {
-	class PREFIX {
-		class COMPONENT {
-			class civCommandRouter {
-				description = "civCommandRouter";
-				file = "\x\alive\addons\amb_civ_command\fnc_civCommandRouter.sqf";
-				recompile = RECOMPILE;
-			};
+    class PREFIX {
+        class COMPONENT {
+            class civCommandRouter {
+                description = "civCommandRouter";
+                file = "\x\alive\addons\amb_civ_command\fnc_civCommandRouter.sqf";
+                recompile = RECOMPILE;
+            };
             class selectCivilianCommand {
                 description = "Select a random civilian command from a list of available commands";
                 file = "\x\alive\addons\amb_civ_command\fnc_selectCivilianCommand.sqf";
@@ -100,8 +100,8 @@ class cfgFunctions {
                 description = "Sabotage a building";
                 file = "\x\alive\addons\amb_civ_command\fnc_cc_sabotage.sqf";
                 recompile = RECOMPILE;
-            };              
-                        
-		};
-	};
+            };
+
+        };
+    };
 };

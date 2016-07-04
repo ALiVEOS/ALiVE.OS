@@ -43,7 +43,7 @@ _nextStateArgs = [];
 
 // DEBUG -------------------------------------------------------------------------------------
 if(_debug) then {
-	["ALiVE Managed Script Command - [%1] called args: %2",_agentID,_args] call ALIVE_fnc_dump;
+    ["ALiVE Managed Script Command - [%1] called args: %2",_agentID,_args] call ALIVE_fnc_dump;
 };
 // DEBUG -------------------------------------------------------------------------------------
 
@@ -140,18 +140,18 @@ switch (_state) do {
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
     };
-	case "target":{
+    case "target":{
 
-	    private ["_target","_bomb1","_bomb2","_bomb3","_handle"];
+        private ["_target","_bomb1","_bomb2","_bomb3","_handle"];
 
-		// DEBUG -------------------------------------------------------------------------------------
-		if(_debug) then {
-			["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
-		};
-		// DEBUG -------------------------------------------------------------------------------------
+        // DEBUG -------------------------------------------------------------------------------------
+        if(_debug) then {
+            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        };
+        // DEBUG -------------------------------------------------------------------------------------
 
-		_target = _args select 0;
-		_bomb1 = _args select 1;
+        _target = _args select 0;
+        _bomb1 = _args select 1;
         _bomb2 = _args select 2;
         _bomb3 = _args select 3;
 
@@ -175,13 +175,13 @@ switch (_state) do {
 
                 waituntil {
                     sleep 0.5;
-                    
+
                     if (time - _timer > 15) then {[_agent, getPosATL _target] call ALiVE_fnc_doMoveRemote; _timer = time};
-                    
+
                     _distance = _agent distance _target;
-                    
+
                     //["SPAWNED SUICIDE distance: %1 alive: %2 condition: %3",_distance, (alive _agent), ((_distance < 5) || !(alive _agent))] call ALIVE_fnc_dump;
-                    
+
                     ((_distance < 5) || !(alive _agent))
                 };
 
@@ -213,8 +213,8 @@ switch (_state) do {
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
-	};
-	case "travel":{
+    };
+    case "travel":{
 
         private ["_target","_handle"];
 
@@ -241,16 +241,16 @@ switch (_state) do {
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
-	};
-	case "done":{
+    };
+    case "done":{
 
-	     private ["_bomb1","_bomb2","_bomb3"];
+         private ["_bomb1","_bomb2","_bomb3"];
 
-		// DEBUG -------------------------------------------------------------------------------------
-		if(_debug) then {
-			["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
-		};
-		// DEBUG -------------------------------------------------------------------------------------
+        // DEBUG -------------------------------------------------------------------------------------
+        if(_debug) then {
+            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        };
+        // DEBUG -------------------------------------------------------------------------------------
 
         if(count _args > 1) then {
             _bomb1 = _args select 1;
@@ -262,7 +262,7 @@ switch (_state) do {
             if!(isNull _bomb3) then { deleteVehicle _bomb3 };
         };
 
-		_agent setVariable ["ALIVE_agentBusy", false, false];
+        _agent setVariable ["ALIVE_agentBusy", false, false];
 
         if(alive _agent) then {
             _agent setCombatMode "WHITE";
@@ -270,9 +270,9 @@ switch (_state) do {
             _agent setSkill 0.1;
         };
 
-		_nextState = "complete";
-		_nextStateArgs = [];
+        _nextState = "complete";
+        _nextStateArgs = [];
 
-		[_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-	};
+        [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+    };
 };
