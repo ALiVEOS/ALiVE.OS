@@ -13,31 +13,31 @@ _markerName = "PR" + str(random time + 1);
 
 if (GVAR(mapState) == "START") then {
 
-	if !(isNil QGVAR(mapStartMarker)) then {
-		deleteMarkerLocal GVAR(mapStartMarker);
-	};
+    if !(isNil QGVAR(mapStartMarker)) then {
+        deleteMarkerLocal GVAR(mapStartMarker);
+    };
 
-	_marker = createMarkerLocal [_markerName, _pos];
-	GVAR(mapStartMarker) = _marker;
+    _marker = createMarkerLocal [_markerName, _pos];
+    GVAR(mapStartMarker) = _marker;
 
-	_text = "PATROLREP START";
-	GVAR(spos) = _pos;
-	ctrlSetText [SLOC_VALUE, mapGridPosition _pos];
-	GVAR(mapState) = "END";
+    _text = "PATROLREP START";
+    GVAR(spos) = _pos;
+    ctrlSetText [SLOC_VALUE, mapGridPosition _pos];
+    GVAR(mapState) = "END";
 
 } else {
 
-	if !(isNil QGVAR(mapEndMarker)) then {
-		 deleteMarkerLocal GVAR(mapEndMarker);
-	};
+    if !(isNil QGVAR(mapEndMarker)) then {
+         deleteMarkerLocal GVAR(mapEndMarker);
+    };
 
-	_marker = createMarkerLocal [_markerName, _pos];
-	GVAR(mapEndMarker) = _marker;
+    _marker = createMarkerLocal [_markerName, _pos];
+    GVAR(mapEndMarker) = _marker;
 
-	_text = "PATROLREP END";
-	GVAR(epos) = _pos;
-	ctrlSetText [ELOC_VALUE, mapGridPosition _pos];
-	GVAR(mapState) = "START";
+    _text = "PATROLREP END";
+    GVAR(epos) = _pos;
+    ctrlSetText [ELOC_VALUE, mapGridPosition _pos];
+    GVAR(mapState) = "START";
 };
 
 ctrlMapAnimClear _map;

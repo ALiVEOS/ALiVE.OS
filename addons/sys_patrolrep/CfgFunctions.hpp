@@ -4,17 +4,17 @@ class cfgFunctions {
                         class patrolrep {
                                 description = "The main class";
                                 file = "\x\alive\addons\sys_patrolrep\fnc_patrolrep.sqf";
-								recompile = RECOMPILE;
+                                recompile = RECOMPILE;
                         };
                         class patrolrepInit {
                                 description = "The module initialisation function";
                                 file = "\x\alive\addons\sys_patrolrep\fnc_patrolrepInit.sqf";
-								recompile = RECOMPILE;
+                                recompile = RECOMPILE;
                         };
                         class patrolrepParams {
                                 description = "patrolrep parameters";
                                 file = "\x\alive\addons\sys_patrolrep\fnc_patrolrepParams.sqf";
-								recompile = RECOMPILE;
+                                recompile = RECOMPILE;
                         };
                         class patrolrepSaveData {
                                 description = "patrolrep save data to DB";
