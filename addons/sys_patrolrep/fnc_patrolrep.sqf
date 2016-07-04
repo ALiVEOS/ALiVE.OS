@@ -78,20 +78,20 @@ TRACE_3("SYS_patrolrep",_logic, _operation, _args);
 
 switch (_operation) do {
 
-    	case "create": {
+        case "create": {
             if (isServer) then {
 
-	            // Ensure only one module is used
-	            if !(isNil QMOD(SYS_patrolrep)) then {
-                	_logic = MOD(SYS_patrolrep);
+                // Ensure only one module is used
+                if !(isNil QMOD(SYS_patrolrep)) then {
+                    _logic = MOD(SYS_patrolrep);
                     ERROR_WITH_TITLE(str _logic, localize "STR_ALIVE_patrolrep_ERROR1");
-	            } else {
-	        		_logic = (createGroup sideLogic) createUnit ["ALiVE_SYS_patrolrep", [0,0], [], 0, "NONE"];
+                } else {
+                    _logic = (createGroup sideLogic) createUnit ["ALiVE_SYS_patrolrep", [0,0], [], 0, "NONE"];
                     MOD(SYS_patrolrep) = _logic;
                 };
 
                 //Push to clients
-	            PublicVariable QMOD(SYS_patrolrep);
+                PublicVariable QMOD(SYS_patrolrep);
             };
 
             TRACE_1("Waiting for object to be ready",true);
@@ -100,9 +100,9 @@ switch (_operation) do {
 
             TRACE_1("Creating class on all localities",true);
 
-			// initialise module game logic on all localities
-			MOD(SYS_patrolrep) setVariable ["super", QUOTE(SUPERCLASS)];
-			MOD(SYS_patrolrep) setVariable ["class", QUOTE(MAINCLASS)];
+            // initialise module game logic on all localities
+            MOD(SYS_patrolrep) setVariable ["super", QUOTE(SUPERCLASS)];
+            MOD(SYS_patrolrep) setVariable ["class", QUOTE(MAINCLASS)];
 
             _result = MOD(SYS_patrolrep);
         };
@@ -120,11 +120,11 @@ switch (_operation) do {
 
             TRACE_1("Creating data store",true);
 
-	        // Create logistics data storage in memory on all localities
-	        //GVAR(STORE) = [] call ALIVE_fnc_hashCreate;
+            // Create logistics data storage in memory on all localities
+            //GVAR(STORE) = [] call ALIVE_fnc_hashCreate;
 
             // Define module basics on server
-			if (isServer) then {
+            if (isServer) then {
                 _errorMessage = "Please include either the Requires ALiVE module! %1 %2";
                 _error1 = ""; _error2 = ""; //defaults
                 if(
@@ -133,7 +133,7 @@ switch (_operation) do {
                     [_errorMessage,_error1,_error2] call ALIVE_fnc_dumpR;
                 };
 
-				// Wait for disable log module to set module parameters
+                // Wait for disable log module to set module parameters
                 if (["AliVE_SYS_patrolrepPARAMS"] call ALiVE_fnc_isModuleavailable) then {
                     waituntil {!isnil {MOD(SYS_patrolrep) getvariable "DEBUG"}};
                 };
@@ -160,13 +160,13 @@ switch (_operation) do {
 
                 GVAR(STORE) call ALIVE_fnc_inspectHash;
 
-            	[_logic,"state",GVAR(STORE)] call ALiVE_fnc_patrolrep;
+                [_logic,"state",GVAR(STORE)] call ALiVE_fnc_patrolrep;
 
                 //Push to clients
                 PublicVariable QGVAR(STORE);
 
                 _logic setVariable ["init", true, true];
-			};
+            };
 
             /*
             CONTROLLER  - coordination
@@ -181,7 +181,7 @@ switch (_operation) do {
                 // Start any server-side processes that are needed
             };
 
-			TRACE_1("Spawning clientside processes",hasInterface);
+            TRACE_1("Spawning clientside processes",hasInterface);
 
             if (hasInterface) then {
                 // Start any client-side processes that are needed
@@ -473,7 +473,7 @@ switch (_operation) do {
         };
 
         case "addpatrolrep": {
-        	// Adds a patrolrep to the store on the server and creates patrolreps on necessary clients
+            // Adds a patrolrep to the store on the server and creates patrolreps on necessary clients
             // Expects a patrolrepname and hash as input.
 
             private ["_patrolrepName","_patrolrepHash","_patrolrep"];
@@ -614,7 +614,7 @@ switch (_operation) do {
                 [_logic, "debug", false] call MAINCLASS;
 
                 if (isServer) then {
-                		// if server
+                        // if server
                         MOD(SYS_patrolrep) = _logic;
 
                         MOD(SYS_patrolrep) setVariable ["super", nil];
