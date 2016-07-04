@@ -29,11 +29,11 @@ nil
 private ["_file","_obj_array","_types","_clusters","_clusters_tmp","_size"];
 
 if(isNil "ALIVE_militaryHQBuildingTypes") then {
-	_file = "\x\alive\addons\main\static\staticData.sqf";
-	call compile preprocessFileLineNumbers _file;
+    _file = "\x\alive\addons\main\static\staticData.sqf";
+    call compile preprocessFileLineNumbers _file;
 };
-			
-			
+
+
 // Find HQ locations
 // ------------------------------------------------------------------
 private ["_clusters_hq","_clusters_copy_hq"];
@@ -43,7 +43,7 @@ private ["_clusters_hq","_clusters_copy_hq"];
 _clusters_hq = [ALIVE_militaryHQBuildingTypes] call ALIVE_fnc_findTargets;
 _clusters_hq = [_clusters_hq, "MIL", 50, "ColorRed"] call ALIVE_fnc_setTargets;
 _clusters_hq = [_clusters_hq] call ALIVE_fnc_consolidateClusters;
-			
+
 // Save the non consolidated clusters
 _clusters_copy_hq = [_clusters_hq] call ALIVE_fnc_copyClusters;
 
@@ -68,12 +68,12 @@ _clusters_air = _clusters_mil_air + _clusters_civ_air;
 _clusters_air = [_clusters_air] call ALIVE_fnc_consolidateClusters;
 
 // Save the non consolidated clusters
-_clusters_copy_air = [_clusters_air] call ALIVE_fnc_copyClusters;			
+_clusters_copy_air = [_clusters_air] call ALIVE_fnc_copyClusters;
 
 _clusters = _clusters + _clusters_air;
 _clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 
-			
+
 
 // Find mil heli locations
 // ------------------------------------------------------------------
@@ -97,7 +97,7 @@ _clusters_copy_heli = [_clusters_heli] call ALIVE_fnc_copyClusters;
 _clusters = _clusters + _clusters_heli;
 _clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 
-		
+
 
 // Find general military locations
 // ------------------------------------------------------------------
@@ -115,14 +115,14 @@ _clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 
 
 
-// Final Consolidation 
+// Final Consolidation
 // ------------------------------------------------------------------
 "MO - Consolidating Clusters" call ALiVE_fnc_logger;
 _clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 "MO - Locations Completed" call ALiVE_fnc_logger;
 
 {
-	[_x, "debug", true] call ALIVE_fnc_cluster;
+    [_x, "debug", true] call ALIVE_fnc_cluster;
 } forEach _clusters;
 
 
@@ -148,9 +148,9 @@ _exportString = _exportString + _result;
 
 
 if(count _clusters_copy_hq > 0) then {
-	_objectivesName = 'ALIVE_clustersMilHQ';
-	_result = [_clusters_copy_hq, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;				
-	_exportString = _exportString + _result;
+    _objectivesName = 'ALIVE_clustersMilHQ';
+    _result = [_clusters_copy_hq, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
+    _exportString = _exportString + _result;
 }else{
     _objectivesName = 'ALIVE_clustersMilHQ';
     _result = format['%1 = [] call ALIVE_fnc_hashCreate;',_objectivesName];
@@ -160,9 +160,9 @@ if(count _clusters_copy_hq > 0) then {
 _clusterCount = _clusterCount + count _clusters_copy_hq;
 
 if(count _clusters_copy_air > 0) then {
-	_objectivesName = 'ALIVE_clustersMilAir';
-	_result = [_clusters_copy_air, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;			
-	_exportString = _exportString + _result;
+    _objectivesName = 'ALIVE_clustersMilAir';
+    _result = [_clusters_copy_air, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
+    _exportString = _exportString + _result;
 }else{
     _objectivesName = 'ALIVE_clustersMilAir';
     _result = format['%1 = [] call ALIVE_fnc_hashCreate;',_objectivesName];
@@ -172,9 +172,9 @@ if(count _clusters_copy_air > 0) then {
 _clusterCount = _clusterCount + count _clusters_copy_air;
 
 if(count _clusters_copy_heli > 0) then {
-	_objectivesName = 'ALIVE_clustersMilHeli';
-	_result = [_clusters_copy_heli, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;				
-	_exportString = _exportString + _result;
+    _objectivesName = 'ALIVE_clustersMilHeli';
+    _result = [_clusters_copy_heli, _objectivesName, _clusterCount] call ALIVE_fnc_staticClusterOutput;
+    _exportString = _exportString + _result;
 }else{
     _objectivesName = 'ALIVE_clustersMilHeli';
     _result = format['%1 = [] call ALIVE_fnc_hashCreate;',_objectivesName];
