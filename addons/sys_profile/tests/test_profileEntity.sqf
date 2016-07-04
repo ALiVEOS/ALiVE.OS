@@ -55,9 +55,9 @@ _logic = nil;
 
 STAT("Create Profile instance");
 if(isServer) then {
-	_logic = [nil, "create"] call ALIVE_fnc_profileEntity;
-	TEST_LOGIC = _logic;
-	publicVariable "TEST_LOGIC";
+    _logic = [nil, "create"] call ALIVE_fnc_profileEntity;
+    TEST_LOGIC = _logic;
+    publicVariable "TEST_LOGIC";
 };
 
 
@@ -206,7 +206,7 @@ STAT("Spawn");
 _result = [_logic, "spawn"] call ALIVE_fnc_profileEntity;
 _err = "spawn";
 ASSERT_TRUE(typeName _result == "BOOL", _err);
-ASSERT_TRUE(count allUnits == _ai_count + 2, _err);  
+ASSERT_TRUE(count allUnits == _ai_count + 2, _err);
 
 
 STAT("Sleeping before despawn");
@@ -247,11 +247,11 @@ sleep 10;
 
 STAT("Destroy old Profile instance");
 if(isServer) then {
-	[_logic, "destroy"] call ALIVE_fnc_profileEntity;
-	TEST_LOGIC = nil;
-	publicVariable "TEST_LOGIC";
+    [_logic, "destroy"] call ALIVE_fnc_profileEntity;
+    TEST_LOGIC = nil;
+    publicVariable "TEST_LOGIC";
 } else {
-	waitUntil{isNull TEST_LOGIC};
+    waitUntil{isNull TEST_LOGIC};
 };
 
 nil;

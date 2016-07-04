@@ -27,7 +27,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_profileWaypoint", "_group","_setCurrent","_position","_radius","_type","_formation","_behaviour","_combatMode","_speed","_completionRadius","_timeout","_description","_attachVehicle","_attachObject","_waypointStatements","_waypoint"];
-	
+
 _profileWaypoint = _this select 0;
 _group = _this select 1;
 _setCurrent = if(count _this > 2) then {_this select 2} else {false};
@@ -59,26 +59,26 @@ _waypoint setWaypointSpeed _speed;
 
 if (_completionRadius >= 0) then
 {
-	_waypoint setWaypointCompletionRadius _completionRadius;
+    _waypoint setWaypointCompletionRadius _completionRadius;
 };
 
 if ((count _timeout) == 3) then
 {
-	_waypoint setWaypointTimeout _timeout;
+    _waypoint setWaypointTimeout _timeout;
 };
 
 if !(_attachVehicle == "") then
 {
-	_waypoint waypointAttachVehicle _attachVehicle;
+    _waypoint waypointAttachVehicle _attachVehicle;
 };
 
 if (typeName _waypointStatements == "ARRAY") then
 {
-	_waypoint setWaypointStatements _waypointStatements;
+    _waypoint setWaypointStatements _waypointStatements;
 };
 
 if(_setCurrent) then {
-	_group setCurrentWaypoint _waypoint;
+    _group setCurrentWaypoint _waypoint;
 };
 
 //["p wp to wp"] call ALIVE_fnc_dump;

@@ -15,15 +15,15 @@ item10[] = {"DONE",2,250,-190.715836,231.826080,-104.056488,278.485535,0.000000,
 version=1;
 class LayoutItems
 {
-	class Item2
-	{
-		class ItemInfo
-		{
-			FontFace="Arial";
-			FontHeight=10;
-			lStyle=1;
-		};
-	};
+    class Item2
+    {
+        class ItemInfo
+        {
+            FontFace="Arial";
+            FontHeight=10;
+            lStyle=1;
+        };
+    };
 };
 link0[] = {0,1};
 link1[] = {1,5};
@@ -132,8 +132,8 @@ class FSM
       name = "SPAWN";
       init = /*%FSM<STATEINIT""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
        "if(_debug) then {" \n
-       "	//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "	//[""ALIVE Spawn controller  - started cycling at %1 second iterations"",_spawnCycleTime] call ALIVE_fnc_dump;" \n
+       "    //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    //[""ALIVE Spawn controller  - started cycling at %1 second iterations"",_spawnCycleTime] call ALIVE_fnc_dump;" \n
        "};" \n
        "// DEBUG -------------------------------------------------------------------------------------" \n
        "" \n

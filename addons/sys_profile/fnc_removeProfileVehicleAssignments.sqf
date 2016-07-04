@@ -36,33 +36,33 @@ _keys = [];
 
 if(_profileType == "vehicle") then {
 
-	{	
-		_entityID = _x select 1;
-		_keys set [count _keys,_entityID];		
-	} forEach (_vehicleAssignments select 2);
-	
-	{
-		_entityID = _x;
-		_profileEntity = [ALIVE_profileHandler, "getProfile", _entityID] call ALIVE_fnc_profileHandler;
-        
+    {
+        _entityID = _x select 1;
+        _keys set [count _keys,_entityID];
+    } forEach (_vehicleAssignments select 2);
+
+    {
+        _entityID = _x;
+        _profileEntity = [ALIVE_profileHandler, "getProfile", _entityID] call ALIVE_fnc_profileHandler;
+
         if !(isnil "_profileEntity") then {
-			[_profileEntity,_profile,true] call ALIVE_fnc_removeProfileVehicleAssignment;
+            [_profileEntity,_profile,true] call ALIVE_fnc_removeProfileVehicleAssignment;
         };
-	} forEach _keys;
-	
+    } forEach _keys;
+
 }else{
 
-	{	
-		_vehicleID = _x select 1;
-		_keys set [count _keys,_entityID];		
-	} forEach (_vehicleAssignments select 2);
-	
-	{
-		_vehicleID = _x;
-		_profileVehicle = [ALIVE_profileHandler, "getProfile", _vehicleID] call ALIVE_fnc_profileHandler;
+    {
+        _vehicleID = _x select 1;
+        _keys set [count _keys,_entityID];
+    } forEach (_vehicleAssignments select 2);
+
+    {
+        _vehicleID = _x;
+        _profileVehicle = [ALIVE_profileHandler, "getProfile", _vehicleID] call ALIVE_fnc_profileHandler;
         if !(isnil "_profileVehicle") then {
-			[_profile,_profileVehicle,true] call ALIVE_fnc_removeProfileVehicleAssignment;
+            [_profile,_profileVehicle,true] call ALIVE_fnc_removeProfileVehicleAssignment;
         };
-	} forEach _keys;
-	
-};	
+    } forEach _keys;
+
+};

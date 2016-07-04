@@ -33,8 +33,8 @@ _vehicleAssignments = _this select 0;
 _profile = _this select 1;
 
 if(count (_vehicleAssignments select 1) > 0) then {
-	{
-		[_x, _profile] call ALIVE_fnc_profileVehicleAssignmentToVehicleAssignment;
+    {
+        [_x, _profile] call ALIVE_fnc_profileVehicleAssignmentToVehicleAssignment;
         sleep 0.5;
-	} forEach (_vehicleAssignments select 2);
+    } forEach (_vehicleAssignments select 2);
 };

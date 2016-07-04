@@ -34,7 +34,7 @@ _debug = if(count _this > 3) then {_this select 3} else {false};
 
 _players = [];
 if (isMultiplayer) then {
-	_players = allPlayers;
+    _players = allPlayers;
 } else {
     _players = [player];
 };
@@ -267,11 +267,11 @@ if!(isNil "_registeredProfile") then {
                     if(_leader getVariable ["profileID",""] == "") then {
 
                         {
-		                    _unit = _x;
-		                    _unitClasses pushback (typeOf _x);
-		                    _positions pushback (getPosATL _x);
-		                    _ranks pushback (rank _x);
-		                    _damages pushback (getDammage _x);
+                            _unit = _x;
+                            _unitClasses pushback (typeOf _x);
+                            _positions pushback (getPosATL _x);
+                            _ranks pushback (rank _x);
+                            _damages pushback (getDammage _x);
 
                             // set profile id on the unit
                             _unit setVariable ["profileID", _profileID];

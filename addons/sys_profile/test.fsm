@@ -36,10 +36,10 @@ class FSM
        "_damages = [];" \n
        "" \n
        "for ""_i"" from 0 to _countToSpawn do {" \n
-       "	_pos = [_position, (random(50)), random(360)] call BIS_fnc_relPos;" \n
-       "	_positions set [count _positions, _pos];" \n
-       "	_ranks set [count _ranks, ""CAPTAIN""];" \n
-       "	_damages set [count _damages, 0];" \n
+       "    _pos = [_position, (random(50)), random(360)] call BIS_fnc_relPos;" \n
+       "    _positions set [count _positions, _pos];" \n
+       "    _ranks set [count _ranks, ""CAPTAIN""];" \n
+       "    _damages set [count _damages, 0];" \n
        "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links

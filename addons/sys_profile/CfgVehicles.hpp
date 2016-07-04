@@ -8,8 +8,8 @@ class CfgVehicles {
                 author = MODULE_AUTHOR;
                 functionPriority = 60;
                 isGlobal = 2;
-				icon = "x\alive\addons\sys_profile\icon_sys_profile.paa";
-				picture = "x\alive\addons\sys_profile\icon_sys_profile.paa";
+                icon = "x\alive\addons\sys_profile\icon_sys_profile.paa";
+                picture = "x\alive\addons\sys_profile\icon_sys_profile.paa";
                 class Arguments
                 {
                         class debug
@@ -50,7 +50,7 @@ class CfgVehicles {
                                         };
                                 };
                         };
-						class syncronised
+                        class syncronised
                         {
                                 displayName = "$STR_ALIVE_PROFILE_SYSTEM_SYNC";
                                 description = "$STR_ALIVE_PROFILE_SYSTEM_SYNC_COMMENT";
@@ -69,11 +69,11 @@ class CfgVehicles {
                                         };
                                 };
                         };
-						class spawnRadius
+                        class spawnRadius
                         {
                                 displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS";
                                 description = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS_COMMENT";
-								defaultvalue = "1500";
+                                defaultvalue = "1500";
                         };
                         class spawnTypeHeliRadius
                         {

@@ -101,19 +101,19 @@ ALIVE_profileHandler = [nil, "create"] call ALIVE_fnc_profileHandler;
 [ALIVE_profileHandler, "init"] call ALIVE_fnc_profileHandler;
 
 if(count _sortedFlatEmptyPositions > 0) then {
-	_positions = _sortedFlatEmptyPositions;
+    _positions = _sortedFlatEmptyPositions;
 }else{
-	_positions = _sortedMeadowPositions;
+    _positions = _sortedMeadowPositions;
 };
 
 {
-	_position = _x;
-	_type = _testTypes call BIS_fnc_selectRandom; 
-	_faction = _testFactions call BIS_fnc_selectRandom;
-	_group = [_type,_faction] call ALIVE_fnc_configGetRandomGroup;
-	if!(_group == "FALSE") then {
-		[_group, _position] call ALIVE_fnc_createProfilesFromGroupConfig;
-	};
+    _position = _x;
+    _type = _testTypes call BIS_fnc_selectRandom;
+    _faction = _testFactions call BIS_fnc_selectRandom;
+    _group = [_type,_faction] call ALIVE_fnc_configGetRandomGroup;
+    if!(_group == "FALSE") then {
+        [_group, _position] call ALIVE_fnc_createProfilesFromGroupConfig;
+    };
 } forEach _positions;
 
 
@@ -125,5 +125,5 @@ _fakeLogic = [] call ALIVE_fnc_hashCreate;
 // start the profile controller FSM
 //[_fakeLogic,50] execFSM "\x\alive\addons\sys_profile\profileController.fsm";
 
-_handle = [_fakeLogic] execFSM "\x\alive\addons\sys_profile\profileSimulator.fsm";						
+_handle = [_fakeLogic] execFSM "\x\alive\addons\sys_profile\profileSimulator.fsm";
 _handle = [_fakeLogic,1000] execFSM "\x\alive\addons\sys_profile\profileSpawner.fsm";
