@@ -51,25 +51,25 @@ _getClosestLandFromSectors = {
             //_sectorData call ALIVE_fnc_inspectHash;
 
             _sectorTerrainSamples = [_sectorData, "terrainSamples"] call ALIVE_fnc_hashGet;
-			_samples = +([_sectorTerrainSamples, "land"] call ALIVE_fnc_hashGet);
-			
-			if(count _samples > 0) exitwith {
-				//["GCL got land samples: %1",_samples] call ALIVE_fnc_dump;
-		        
-		        _samples = [_samples,[_position],{
-					_x distance _Input0
-		    	},"ASCEND"] call ALiVE_fnc_SortBy;
-		        
-		        if (count _samples > 10) then {_samples resize 10};
-		        
-				_result = _samples select (floor(random((count _samples)-1)));
-			};
+            _samples = +([_sectorTerrainSamples, "land"] call ALIVE_fnc_hashGet);
+
+            if(count _samples > 0) exitwith {
+                //["GCL got land samples: %1",_samples] call ALIVE_fnc_dump;
+
+                _samples = [_samples,[_position],{
+                    _x distance _Input0
+                },"ASCEND"] call ALiVE_fnc_SortBy;
+
+                if (count _samples > 10) then {_samples resize 10};
+
+                _result = _samples select (floor(random((count _samples)-1)));
+            };
         } forEach _sectors;
     };
-    
+
     _result
 };
-	
+
 _position = _this select 0;
 //_radius = _this select 1;
 
@@ -89,28 +89,28 @@ _sectorTerrain = [_sectorData, "terrain"] call ALIVE_fnc_hashGet;
 // we can get a land position there
 if(_sectorTerrain == "SHORE") then {
 
-	//["GCL - sector terrain is shore"] call ALIVE_fnc_dump;
-    
+    //["GCL - sector terrain is shore"] call ALIVE_fnc_dump;
+
     //Worse results with BIS_fnc_Safepos when looking for a shore
     //_landPosition = [_position, 0, 500, 1, 0, 100, 1, [], [_position]] call BIS_fnc_findSafePos;
-    
+
     _sectorTerrainSamples = [_sectorData, "terrainSamples"] call ALIVE_fnc_hashGet;
-	_samples = +([_sectorTerrainSamples, "land"] call ALIVE_fnc_hashGet);
-    
+    _samples = +([_sectorTerrainSamples, "land"] call ALIVE_fnc_hashGet);
+
     //Some shores dont have land terrain samples, fallback to shore samples
     if!(count _samples > 0) then {_samples = +([_sectorTerrainSamples, "shore"] call ALIVE_fnc_hashGet)};
-	
-	if(count _samples > 0) then {
-		//["GCL got land samples: %1",_samples] call ALIVE_fnc_dump;
-        
+
+    if(count _samples > 0) then {
+        //["GCL got land samples: %1",_samples] call ALIVE_fnc_dump;
+
         _samples = [_samples,[_position],{
-			_x distance _Input0
-    	},"ASCEND"] call ALiVE_fnc_SortBy;
-        
+            _x distance _Input0
+        },"ASCEND"] call ALiVE_fnc_SortBy;
+
         if (count _samples > 10) then {_samples resize 10};
-        
-		_landPosition = _samples select (floor(random((count _samples)-1)));
-	};
+
+        _landPosition = _samples select (floor(random((count _samples)-1)));
+    };
 };
 
 // the positions sector is terrain sea
@@ -149,6 +149,6 @@ if(_sectorTerrain == "SEA") then {
             };
         };
     };
-};			
+};
 
 if !(isnil "_landPosition") then {_landPosition set [2,0]; _landPosition} else {_position};

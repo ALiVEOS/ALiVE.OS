@@ -58,19 +58,19 @@ diag_log format["Timer End %1",_timeEnd];
 
 _createMarker = {
         private ["_markerID","_position","_dimensions","_alpha","_color","_shape","_m"];
-				
-		_markerID = _this select 0;
-		_position = _this select 1;
-		_dimensions = _this select 2;
-		_color = _this select 3;
-		
-		_m = createMarkerLocal [_markerID, _position];
-		_m setMarkerShapeLocal "ICON";
-		_m setMarkerSizeLocal _dimensions;
-		_m setMarkerTypeLocal "mil_dot";
-		_m setMarkerColorLocal _color;
-		_m setMarkerTextLocal _markerID;
-		_m
+
+        _markerID = _this select 0;
+        _position = _this select 1;
+        _dimensions = _this select 2;
+        _color = _this select 3;
+
+        _m = createMarkerLocal [_markerID, _position];
+        _m setMarkerShapeLocal "ICON";
+        _m setMarkerSizeLocal _dimensions;
+        _m setMarkerTypeLocal "mil_dot";
+        _m setMarkerColorLocal _color;
+        _m setMarkerTextLocal _markerID;
+        _m
 };
 
 
@@ -168,10 +168,10 @@ _sortedLandPositions = [_playerSectorData, "terrain", [getPos player,"land"]] ca
 ["Sorted land positions: %1",_sortedLandPositions] call ALIVE_fnc_dump;
 
 if(count _sortedLandPositions > 0) then {
-	_nearestLandPosition = _sortedLandPositions select 0;
-	_m1 = ["Nearest Land",_nearestLandPosition,[1,1],"ColorBrown"] call _createMarker;
-	sleep 20;
-	deleteMarkerLocal _m1;
+    _nearestLandPosition = _sortedLandPositions select 0;
+    _m1 = ["Nearest Land",_nearestLandPosition,[1,1],"ColorBrown"] call _createMarker;
+    sleep 20;
+    deleteMarkerLocal _m1;
 };
 
 
@@ -180,10 +180,10 @@ _sortedShorePositions = [_playerSectorData, "terrain", [getPos player,"shore"]] 
 ["Sorted land positions: %1",_sortedShorePositions] call ALIVE_fnc_dump;
 
 if(count _sortedShorePositions > 0) then {
-	_nearestShorePosition = _sortedShorePositions select 0;
-	_m2 = ["Nearest Shore",_nearestShorePosition,[1,1],"ColorKhaki"] call _createMarker;
-	sleep 20;
-	deleteMarkerLocal _m2;
+    _nearestShorePosition = _sortedShorePositions select 0;
+    _m2 = ["Nearest Shore",_nearestShorePosition,[1,1],"ColorKhaki"] call _createMarker;
+    sleep 20;
+    deleteMarkerLocal _m2;
 };
 
 
@@ -193,10 +193,10 @@ _sortedSeaPositions = [_playerSectorData, "terrain", [getPos player,"sea"]] call
 ["Sorted sea positions: %1",_sortedSeaPositions] call ALIVE_fnc_dump;
 
 if(count _sortedSeaPositions > 0) then {
-	_nearestSeaPosition = _sortedSeaPositions select 0;
-	_m3 = ["Nearest Sea",_nearestSeaPosition,[1,1],"ColorBlue"] call _createMarker;
-	sleep 20;
-	deleteMarkerLocal _m3;
+    _nearestSeaPosition = _sortedSeaPositions select 0;
+    _m3 = ["Nearest Sea",_nearestSeaPosition,[1,1],"ColorBlue"] call _createMarker;
+    sleep 20;
+    deleteMarkerLocal _m3;
 };
 
 STAT("Sleeping before clear");
@@ -224,10 +224,10 @@ _sortedForestPositions = [_playerSectorData, "bestPlaces", [getPos player,"fores
 ["Sorted forest positions: %1",_sortedForestPositions] call ALIVE_fnc_dump;
 
 if(count _sortedForestPositions > 0) then {
-	_nearestForestPosition = _sortedForestPositions select 0;
-	_m1 = ["Nearest Forest",_nearestForestPosition,[1,1],"ColorGreen"] call _createMarker;
-	sleep 20;
-	deleteMarkerLocal _m1;
+    _nearestForestPosition = _sortedForestPositions select 0;
+    _m1 = ["Nearest Forest",_nearestForestPosition,[1,1],"ColorGreen"] call _createMarker;
+    sleep 20;
+    deleteMarkerLocal _m1;
 };
 
 /*
@@ -236,10 +236,10 @@ _sortedTreePositions = [_playerSectorData, "bestPlaces", [getPos player,"exposed
 ["Sorted exposed trees positions: %1",_sortedTreePositions] call ALIVE_fnc_dump;
 
 if(count _sortedTreePositions > 0) then {
-	_nearestTreePosition = _sortedTreePositions select 0;
-	_m2 = ["Nearest Exposed Tree",_nearestTreePosition,[1,1],"ColorRed"] call _createMarker;
-	sleep 20;
-	deleteMarkerLocal _m2;
+    _nearestTreePosition = _sortedTreePositions select 0;
+    _m2 = ["Nearest Exposed Tree",_nearestTreePosition,[1,1],"ColorRed"] call _createMarker;
+    sleep 20;
+    deleteMarkerLocal _m2;
 };
 */
 
@@ -248,10 +248,10 @@ _sortedHillPositions = [_playerSectorData, "bestPlaces", [getPos player,"exposed
 ["Sorted exposed hills positions: %1",_sortedHillPositions] call ALIVE_fnc_dump;
 
 if(count _sortedHillPositions > 0) then {
-	_nearestHillPosition = _sortedHillPositions select 0;
-	_m3 = ["Nearest Exposed Hill",_nearestHillPosition,[1,1],"ColorOrange"] call _createMarker;
-	sleep 20;
-	deleteMarkerLocal _m3;
+    _nearestHillPosition = _sortedHillPositions select 0;
+    _m3 = ["Nearest Exposed Hill",_nearestHillPosition,[1,1],"ColorOrange"] call _createMarker;
+    sleep 20;
+    deleteMarkerLocal _m3;
 };
 
 /*
@@ -260,10 +260,10 @@ _sortedMeadowPositions = [_playerSectorData, "bestPlaces", [getPos player,"meado
 ["Sorted meadow positions: %1",_sortedHillPositions] call ALIVE_fnc_dump;
 
 if(count _sortedMeadowPositions > 0) then {
-	_nearestMeadowPosition = _sortedMeadowPositions select 0;
-	_m4 = ["Nearest Meadow",_nearestMeadowPosition,[1,1],"ColorWhite"] call _createMarker;
-	sleep 20;
-	deleteMarkerLocal _m4;
+    _nearestMeadowPosition = _sortedMeadowPositions select 0;
+    _m4 = ["Nearest Meadow",_nearestMeadowPosition,[1,1],"ColorWhite"] call _createMarker;
+    sleep 20;
+    deleteMarkerLocal _m4;
 };
 
 
@@ -272,10 +272,10 @@ _sortedHousePositions = [_playerSectorData, "bestPlaces", [getPos player,"houses
 ["Sorted house positions: %1",_sortedHousePositions] call ALIVE_fnc_dump;
 
 if(count _sortedHousePositions > 0) then {
-	_nearestHousePosition = _sortedHousePositions select 0;
-	_m5 = ["Nearest House",_nearestHousePosition,[1,1],"ColorYellow"] call _createMarker;
-	sleep 20;
-	deleteMarkerLocal _m5;
+    _nearestHousePosition = _sortedHousePositions select 0;
+    _m5 = ["Nearest House",_nearestHousePosition,[1,1],"ColorYellow"] call _createMarker;
+    sleep 20;
+    deleteMarkerLocal _m5;
 };
 
 
@@ -284,10 +284,10 @@ _sortedSeaPositions = [_playerSectorData, "bestPlaces", [getPos player,"sea"]] c
 ["Sorted sea positions: %1",_sortedSeaPositions] call ALIVE_fnc_dump;
 
 if(count _sortedSeaPositions > 0) then {
-	_nearestSeaPosition = _sortedSeaPositions select 0;
-	_m6 = ["Nearest Sea",_nearestSeaPosition,[1,1],"ColorBlue"] call _createMarker;
-	sleep 20;
-	deleteMarkerLocal _m6;
+    _nearestSeaPosition = _sortedSeaPositions select 0;
+    _m6 = ["Nearest Sea",_nearestSeaPosition,[1,1],"ColorBlue"] call _createMarker;
+    sleep 20;
+    deleteMarkerLocal _m6;
 };
 */
 
@@ -315,8 +315,8 @@ _sortedFlatEmptyPositions = [_playerSectorData, "flatEmpty", [getPos player]] ca
 ["Sorted flat empty positions: %1",_sortedFlatEmptyPositions] call ALIVE_fnc_dump;
 
 if(count _sortedFlatEmptyPositions > 0) then {
-	_nearestFlatEmptyPosition = _sortedFlatEmptyPositions select 0;
-	_m = ["Nearest Flat Empty",_nearestFlatEmptyPosition,[1,1],"ColorRed"] call _createMarker;
+    _nearestFlatEmptyPosition = _sortedFlatEmptyPositions select 0;
+    _m = ["Nearest Flat Empty",_nearestFlatEmptyPosition,[1,1],"ColorRed"] call _createMarker;
 };
 
 STAT("Sleeping before clear");
@@ -343,10 +343,10 @@ _sortedRoadPositions = [_playerSectorData, "roads", [getPos player, "road"]] cal
 ["Sorted road positions: %1",_sortedRoadPositions] call ALIVE_fnc_dump;
 
 if(count _sortedRoadPositions > 0) then {
-	_nearestRoadPosition = _sortedRoadPositions select 0;
-	_m = ["Nearest Road",(_nearestRoadPosition select 0),[1,1],"ColorGreen"] call _createMarker;
-	sleep 10;
-	deleteMarkerLocal _m;
+    _nearestRoadPosition = _sortedRoadPositions select 0;
+    _m = ["Nearest Road",(_nearestRoadPosition select 0),[1,1],"ColorGreen"] call _createMarker;
+    sleep 10;
+    deleteMarkerLocal _m;
 };
 
 
@@ -355,10 +355,10 @@ _sortedCrossroadPositions = [_playerSectorData, "roads", [getPos player, "crossr
 ["Sorted road positions: %1",_sortedRoadPositions] call ALIVE_fnc_dump;
 
 if(count _sortedCrossroadPositions > 0) then {
-	_nearestCrossroadPosition = _sortedCrossroadPositions select 0;
-	_m = ["Nearest Crossroad",(_nearestCrossroadPosition select 0),[1,1],"ColorOrange"] call _createMarker;
-	sleep 10;
-	deleteMarkerLocal _m;
+    _nearestCrossroadPosition = _sortedCrossroadPositions select 0;
+    _m = ["Nearest Crossroad",(_nearestCrossroadPosition select 0),[1,1],"ColorOrange"] call _createMarker;
+    sleep 10;
+    deleteMarkerLocal _m;
 };
 
 
@@ -367,10 +367,10 @@ _sortedTerminusPositions = [_playerSectorData, "roads", [getPos player, "terminu
 ["Sorted road positions: %1",_sortedTerminusPositions] call ALIVE_fnc_dump;
 
 if(count _sortedTerminusPositions > 0) then {
-	_nearestTerminusPosition = _sortedTerminusPositions select 0;
-	_m = ["Nearest Terminus",(_nearestTerminusPosition select 0),[1,1],"ColorRed"] call _createMarker;
-	sleep 10;
-	deleteMarkerLocal _m;
+    _nearestTerminusPosition = _sortedTerminusPositions select 0;
+    _m = ["Nearest Terminus",(_nearestTerminusPosition select 0),[1,1],"ColorRed"] call _createMarker;
+    sleep 10;
+    deleteMarkerLocal _m;
 };
 
 STAT("Sleeping before clear");
@@ -398,19 +398,19 @@ ALIVE_profileHandler = [nil, "create"] call ALIVE_fnc_profileHandler;
 [ALIVE_profileHandler, "init"] call ALIVE_fnc_profileHandler;
 
 if(count _sortedFlatEmptyPositions > 0) then {
-	_positions = _sortedFlatEmptyPositions;
+    _positions = _sortedFlatEmptyPositions;
 }else{
-	_positions = _sortedMeadowPositions;
+    _positions = _sortedMeadowPositions;
 };
 
 {
-	_position = _x;
-	_type = _testTypes call BIS_fnc_selectRandom; 
-	_faction = _testFactions call BIS_fnc_selectRandom;
-	_group = [_type,_faction] call ALIVE_fnc_configGetRandomGroup;
-	if!(_group == "FALSE") then {
-		[_group, _position] call ALIVE_fnc_createProfilesFromGroupConfig;
-	};
+    _position = _x;
+    _type = _testTypes call BIS_fnc_selectRandom;
+    _faction = _testFactions call BIS_fnc_selectRandom;
+    _group = [_type,_faction] call ALIVE_fnc_configGetRandomGroup;
+    if!(_group == "FALSE") then {
+        [_group, _position] call ALIVE_fnc_createProfilesFromGroupConfig;
+    };
 } forEach _positions;
 
 
@@ -436,10 +436,10 @@ _sortedProfilePositions = [_playerSectorData, "entitiesBySide", [getPos player,"
 ["Sorted west profile positions: %1",_sortedProfilePositions] call ALIVE_fnc_dump;
 
 if(count _sortedProfilePositions > 0) then {
-	_nearestProfilePosition = _sortedProfilePositions select 0;
-	_m = ["Nearest West Profile",(_nearestProfilePosition select 1),[1,1],"ColorOrange"] call _createMarker;
-	sleep 20;
-	deleteMarkerLocal _m;
+    _nearestProfilePosition = _sortedProfilePositions select 0;
+    _m = ["Nearest West Profile",(_nearestProfilePosition select 1),[1,1],"ColorOrange"] call _createMarker;
+    sleep 20;
+    deleteMarkerLocal _m;
 };
 
 

@@ -45,19 +45,19 @@ ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
 _filteredSectors = [];
 
 {
-	_sector = _x;
-	_sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+    _sector = _x;
+    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
 
-	if(_clusterCategory in (_sectorData select 1)) then {
+    if(_clusterCategory in (_sectorData select 1)) then {
 
-		_clusterData = [_sectorData, _clusterCategory] call ALIVE_fnc_hashGet;
-		_clusterTypeData = [_clusterData, _clusterType] call ALIVE_fnc_hashGet;
+        _clusterData = [_sectorData, _clusterCategory] call ALIVE_fnc_hashGet;
+        _clusterTypeData = [_clusterData, _clusterType] call ALIVE_fnc_hashGet;
 
-		if(count _clusterTypeData > 0) then {
-			_filteredSectors set [count _filteredSectors, _sector];
-		};
-	};
-	
+        if(count _clusterTypeData > 0) then {
+            _filteredSectors set [count _filteredSectors, _sector];
+        };
+    };
+
 } forEach _sectors;
 
 _filteredSectors

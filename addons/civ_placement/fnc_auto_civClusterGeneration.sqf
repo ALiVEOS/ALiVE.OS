@@ -198,7 +198,7 @@ _clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 "CO - Locations Completed" call ALiVE_fnc_logger;
 
 {
-	[_x, "debug", true] call ALIVE_fnc_cluster;
+    [_x, "debug", true] call ALIVE_fnc_cluster;
 } forEach _clusters;
 
 
@@ -217,99 +217,99 @@ _pV = productVersion;
 
 _objectivesName = "ALIVE_clustersCiv";
 _result = [_clusters, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
-		diag_log _objectivesName;
+        diag_log _objectivesName;
 
 if(count _clusters_copy_hq > 0) then {
-	_objectivesName = "ALIVE_clustersCivHQ";
-	_result = [_clusters_copy_hq, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
-			diag_log _objectivesName;
+    _objectivesName = "ALIVE_clustersCivHQ";
+    _result = [_clusters_copy_hq, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+            diag_log _objectivesName;
 
 }else{
     _objectivesName = "ALIVE_clustersCivHQ";
-	_result = [_clusters_copy_comms, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
-			diag_log _objectivesName;
+    _result = [_clusters_copy_comms, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+            diag_log _objectivesName;
 };
 
 _clusterCount = _clusterCount + (count _clusters_copy_hq);
 
 if(count _clusters_copy_power > 0) then {
-	_objectivesName = "ALIVE_clustersCivPower";
-	_result = [_clusters_copy_power, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
-	diag_log _objectivesName;
+    _objectivesName = "ALIVE_clustersCivPower";
+    _result = [_clusters_copy_power, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+    diag_log _objectivesName;
 
 }else{
     _objectivesName = "ALIVE_clustersCivPower";
-	_result = [_clusters_copy_comms, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
-	diag_log _objectivesName;
+    _result = [_clusters_copy_comms, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+    diag_log _objectivesName;
 };
 
 _clusterCount = _clusterCount + (count _clusters_copy_power);
 
 if(count _clusters_copy_comms > 0) then {
-	_objectivesName = "ALIVE_clustersCivComms";
-	_result = [_clusters_copy_comms, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
-			diag_log _objectivesName;
+    _objectivesName = "ALIVE_clustersCivComms";
+    _result = [_clusters_copy_comms, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+            diag_log _objectivesName;
 
 }else{
     _objectivesName = "ALIVE_clustersCivComms";
-	"ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
+    "ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
 };
 
 _clusterCount = _clusterCount + (count _clusters_copy_comms);
 
 if(count _clusters_copy_marine > 0) then {
-	_objectivesName = "ALIVE_clustersCivMarine";
-	_result = [_clusters_copy_marine, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
-			diag_log _objectivesName;
+    _objectivesName = "ALIVE_clustersCivMarine";
+    _result = [_clusters_copy_marine, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+            diag_log _objectivesName;
 
 }else{
     _objectivesName = "ALIVE_clustersCivMarine";
-	"ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
+    "ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
 };
 
 _clusterCount = _clusterCount + (count _clusters_copy_marine);
 
 if(count _clusters_copy_rail > 0) then {
-	_objectivesName = "ALIVE_clustersCivRail";
-	_result = [_clusters_copy_rail, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
-			diag_log _objectivesName;
+    _objectivesName = "ALIVE_clustersCivRail";
+    _result = [_clusters_copy_rail, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+            diag_log _objectivesName;
 
 }else{
     _objectivesName = "ALIVE_clustersCivRail";
-	"ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
+    "ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
 };
 
 _clusterCount = _clusterCount + (count _clusters_copy_rail);
 
 if(count _clusters_copy_fuel > 0) then {
-	_objectivesName = "ALIVE_clustersCivFuel";
-	_result = [_clusters_copy_fuel, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
-		diag_log _objectivesName;
+    _objectivesName = "ALIVE_clustersCivFuel";
+    _result = [_clusters_copy_fuel, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+        diag_log _objectivesName;
 }else{
     _objectivesName = "ALIVE_clustersCivFuel";
-	"ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
+    "ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
 };
 
 _clusterCount = _clusterCount + (count _clusters_copy_fuel);
 
 if(count _clusters_copy_construction > 0) then {
-	_objectivesName = "ALIVE_clustersCivConstruction";
-	_result = [_clusters_copy_construction, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
-		diag_log _objectivesName;
+    _objectivesName = "ALIVE_clustersCivConstruction";
+    _result = [_clusters_copy_construction, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+        diag_log _objectivesName;
 }else{
     _objectivesName = "ALIVE_clustersCivConstruction";
-	"ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
+    "ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
 };
 
 _clusterCount = _clusterCount + (count _clusters_copy_construction);
 
 if(count _clusters_copy_settlement > 0) then {
-	_objectivesName = "ALIVE_clustersCivSettlement";
-	_result = [_clusters_copy_settlement, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
-		diag_log _objectivesName;
+    _objectivesName = "ALIVE_clustersCivSettlement";
+    _result = [_clusters_copy_settlement, _objectivesName, _clusterCount,"civ"] call ALIVE_fnc_auto_staticClusterOutput;
+        diag_log _objectivesName;
 }else{
     _objectivesName = "ALIVE_clustersCivSettlement";
-	"ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
+    "ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"civ",_objectivesName];
 };
 
 _clusterCount = _clusterCount + (count _clusters_copy_settlement);

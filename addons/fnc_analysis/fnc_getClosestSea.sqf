@@ -51,19 +51,19 @@ _sectorTerrain = [_sectorData, "terrain"] call ALIVE_fnc_hashGet;
 // we can get a sea position there
 if(_sectorTerrain == "SHORE" && _closest) then {
 
-	//["GCS - sector terrain is shore"] call ALIVE_fnc_dump;
-	_sectorTerrainSamples = [_sectorData, "terrainSamples"] call ALIVE_fnc_hashGet;
-	_samples = [_sectorTerrainSamples, "sea"] call ALIVE_fnc_hashGet;
+    //["GCS - sector terrain is shore"] call ALIVE_fnc_dump;
+    _sectorTerrainSamples = [_sectorData, "terrainSamples"] call ALIVE_fnc_hashGet;
+    _samples = [_sectorTerrainSamples, "sea"] call ALIVE_fnc_hashGet;
 
-	if(count _samples > 0) then {
-		//["GCS got sea samples: %1",_samples] call ALIVE_fnc_dump;
-		if (count _samples == 1) then {
-			_result = _samples select 0;
-		} else {
-			_result = _samples select (ceil(random (count _samples))-1);
-		};
-		_result set [2,0];
-	};
+    if(count _samples > 0) then {
+        //["GCS got sea samples: %1",_samples] call ALIVE_fnc_dump;
+        if (count _samples == 1) then {
+            _result = _samples select 0;
+        } else {
+            _result = _samples select (ceil(random (count _samples))-1);
+        };
+        _result set [2,0];
+    };
 };
 
 // the positions sector is terrain land
@@ -71,40 +71,40 @@ if(_sectorTerrain == "SHORE" && _closest) then {
 // if so spawn on a random sea position
 if(_sectorTerrain == "LAND" || !_closest) then {
 
-	//["GCS - sector terrain is land"] call ALIVE_fnc_dump;
-	_sectors = [ALIVE_sectorGrid, "surroundingSectors", _position] call ALIVE_fnc_sectorGrid;
+    //["GCS - sector terrain is land"] call ALIVE_fnc_dump;
+    _sectors = [ALIVE_sectorGrid, "surroundingSectors", _position] call ALIVE_fnc_sectorGrid;
 
-	_sectors = [_sectors, "sea"] call ALIVE_fnc_sectorFilterTerrain;
-	//["GCS - sea sectors %1", _sectors] call ALIVE_fnc_dump;
+    _sectors = [_sectors, "sea"] call ALIVE_fnc_sectorFilterTerrain;
+    //["GCS - sea sectors %1", _sectors] call ALIVE_fnc_dump;
 
-	if(count _sectors > 0) then {
-		_sectors = [_sectors,_position] call ALIVE_fnc_sectorSortDistance;
-		if (_closest || count _sectors == 1) then {
-			_sector = _sectors select 0;
-		} else {
-			//["GCS got sea sectors: %1",_sectors] call ALIVE_fnc_dump;
-			_sector = _sectors select (ceil(random (count _sectors/2))-1);
-		};
-		_sectorData = [_sector, "data"] call ALIVE_fnc_hashGet;
+    if(count _sectors > 0) then {
+        _sectors = [_sectors,_position] call ALIVE_fnc_sectorSortDistance;
+        if (_closest || count _sectors == 1) then {
+            _sector = _sectors select 0;
+        } else {
+            //["GCS got sea sectors: %1",_sectors] call ALIVE_fnc_dump;
+            _sector = _sectors select (ceil(random (count _sectors/2))-1);
+        };
+        _sectorData = [_sector, "data"] call ALIVE_fnc_hashGet;
 
         if (isnil "_sectorData") exitwith {_position};
 
-		_sectorTerrainSamples = [_sectorData, "terrainSamples"] call ALIVE_fnc_hashGet;
-		_samples = [_sectorTerrainSamples, "sea"] call ALIVE_fnc_hashGet;
+        _sectorTerrainSamples = [_sectorData, "terrainSamples"] call ALIVE_fnc_hashGet;
+        _samples = [_sectorTerrainSamples, "sea"] call ALIVE_fnc_hashGet;
 
-		if(count _samples > 0) then {
-			//["GCS got sea samples: %1",_samples] call ALIVE_fnc_dump;
-			if (count _samples == 1) then {
-				_result = _samples select 0;
-			} else {
-				_result = _samples select (ceil(random (count _samples))-1);
-			};
-			_result set [2,0];
-			//[str(random 1000), _result, "ICON",[1,1],"COLOR:","ColorRed","TYPE:","mil_dot"] call CBA_fnc_createMarker;
-		};
-	}else{
-		// not sure what to do here, they are out to sea...
-	};
+        if(count _samples > 0) then {
+            //["GCS got sea samples: %1",_samples] call ALIVE_fnc_dump;
+            if (count _samples == 1) then {
+                _result = _samples select 0;
+            } else {
+                _result = _samples select (ceil(random (count _samples))-1);
+            };
+            _result set [2,0];
+            //[str(random 1000), _result, "ICON",[1,1],"COLOR:","ColorRed","TYPE:","mil_dot"] call CBA_fnc_createMarker;
+        };
+    }else{
+        // not sure what to do here, they are out to sea...
+    };
 };
 
 _result

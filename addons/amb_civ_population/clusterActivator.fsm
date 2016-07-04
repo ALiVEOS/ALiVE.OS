@@ -50,15 +50,15 @@ item45[] = {"END_LOOP",4,218,-272.347015,721.650940,-182.347000,771.650940,0.000
 version=1;
 class LayoutItems
 {
-	class Item2
-	{
-		class ItemInfo
-		{
-			FontFace="Arial";
-			FontHeight=10;
-			lStyle=1;
-		};
-	};
+    class Item2
+    {
+        class ItemInfo
+        {
+            FontFace="Arial";
+            FontHeight=10;
+            lStyle=1;
+        };
+    };
 };
 link0[] = {0,1};
 link1[] = {1,5};
@@ -183,8 +183,8 @@ class FSM
       name = "TIMER";
       init = /*%FSM<STATEINIT""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
        "if(_debug) then {" \n
-       "	//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "	//[""ALIVE Cluster activator - timer last run:%1 cycle time: %2"",time - _lastSpawnTime,_spawnCycleTime] call ALIVE_fnc_dump;" \n
+       "    //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    //[""ALIVE Cluster activator - timer last run:%1 cycle time: %2"",time - _lastSpawnTime,_spawnCycleTime] call ALIVE_fnc_dump;" \n
        "};" \n
        "// DEBUG -------------------------------------------------------------------------------------"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -233,20 +233,20 @@ class FSM
        "" \n
        "{" \n
        "" \n
-       "	_cluster = _x;" \n
+       "    _cluster = _x;" \n
        "" \n
-       "	if!(isnil ""_cluster"") then {" \n
+       "    if!(isnil ""_cluster"") then {" \n
        "" \n
-       "		_position = _cluster select 2 select 2;" \n
+       "        _position = _cluster select 2 select 2;" \n
        "" \n
-       "		if ([_position, _spawnDistance, _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
-       "			_toSpawn set [count _toSpawn, _cluster];" \n
-       "		}else{" \n
-       "			if ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange > 0) then {" \n
-       "				 _toSpawn set [count _toSpawn, _cluster];" \n
-       "			};" \n
-       "		};" \n
-       "	};" \n
+       "        if ([_position, _spawnDistance, _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
+       "            _toSpawn set [count _toSpawn, _cluster];" \n
+       "        }else{" \n
+       "            if ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange > 0) then {" \n
+       "                 _toSpawn set [count _toSpawn, _cluster];" \n
+       "            };" \n
+       "        };" \n
+       "    };" \n
        "" \n
        "} forEach _block;" \n
        "" \n
@@ -255,23 +255,23 @@ class FSM
        "" \n
        "// DEBUG -------------------------------------------------------------------------------------" \n
        "if(_debug) then {" \n
-       "	//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "	//[""ALIVE Cluster activator - spawner analysis: %1 of %2"",_analysisCount,_countInactive] call ALIVE_fnc_dump;" \n
+       "    //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    //[""ALIVE Cluster activator - spawner analysis: %1 of %2"",_analysisCount,_countInactive] call ALIVE_fnc_dump;" \n
        "};" \n
        "// DEBUG -------------------------------------------------------------------------------------" \n
        "" \n
        "" \n
        "if(_analysisCount >= _countInactive) then {" \n
-       "	_analysisComplete = true;" \n
-       "	_countToSpawn = count _toSpawn;" \n
+       "    _analysisComplete = true;" \n
+       "    _countToSpawn = count _toSpawn;" \n
        "" \n
        "" \n
-       "	// DEBUG -------------------------------------------------------------------------------------" \n
-       "	if(_debug) then {" \n
-       "		//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "		//[""ALIVE Cluster activator - spawner analysis count to spawn: %1"",_countToSpawn] call ALIVE_fnc_dump;" \n
-       "	};" \n
-       "	// DEBUG -------------------------------------------------------------------------------------" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "    if(_debug) then {" \n
+       "        //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "        //[""ALIVE Cluster activator - spawner analysis count to spawn: %1"",_countToSpawn] call ALIVE_fnc_dump;" \n
+       "    };" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
        "" \n
        "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -337,8 +337,8 @@ class FSM
       name = "ACTIVATE_LOOP";
       init = /*%FSM<STATEINIT""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
        "if(_debug) then {" \n
-       "	//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "	//[""ALIVE Cluster activator - spawner loop %1 of %2"",_countToSpawn,_spawnCount] call ALIVE_fnc_dump;" \n
+       "    //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    //[""ALIVE Cluster activator - spawner loop %1 of %2"",_countToSpawn,_spawnCount] call ALIVE_fnc_dump;" \n
        "};" \n
        "// DEBUG -------------------------------------------------------------------------------------" \n
        "" \n
@@ -347,27 +347,27 @@ class FSM
        "_cluster = _toSpawn select _spawnCount;" \n
        "" \n
        "if!(isnil ""_cluster"") then {" \n
-       "	_clusterID = _cluster select 2 select 1;" \n
+       "    _clusterID = _cluster select 2 select 1;" \n
        "" \n
-       "	// DEBUG -------------------------------------------------------------------------------------" \n
-       "	if(_debug) then {" \n
-       "		//[""ALIVE Cluster activator - spawn [%1]"",_clusterID] call ALIVE_fnc_dump;			" \n
-       "	};" \n
-       "	// DEBUG -------------------------------------------------------------------------------------					" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "    if(_debug) then {" \n
+       "        //[""ALIVE Cluster activator - spawn [%1]"",_clusterID] call ALIVE_fnc_dump;            " \n
+       "    };" \n
+       "    // DEBUG -------------------------------------------------------------------------------------                    " \n
        "      " \n
-       "	if(_debug) then {" \n
-       "		[_cluster, ""debug"", true] call ALIVE_fnc_cluster;" \n
-       "	};" \n
+       "    if(_debug) then {" \n
+       "        [_cluster, ""debug"", true] call ALIVE_fnc_cluster;" \n
+       "    };" \n
        "" \n
-       "	[ALIVE_clusterHandler, ""setActive"", [_clusterID, _cluster]] call ALIVE_fnc_clusterHandler;" \n
+       "    [ALIVE_clusterHandler, ""setActive"", [_clusterID, _cluster]] call ALIVE_fnc_clusterHandler;" \n
        "" \n
-       "	_clusterAgents = [ALIVE_agentHandler, ""getAgentsByCluster"", _clusterID] call ALIVE_fnc_agentHandler;" \n
+       "    _clusterAgents = [ALIVE_agentHandler, ""getAgentsByCluster"", _clusterID] call ALIVE_fnc_agentHandler;" \n
        "" \n
-       "	if!(isNil ""_clusterAgents"") then {" \n
-       "		if(count _clusterAgents > 0) then {" \n
-       "			_inactiveAgents = _inactiveAgents + (_clusterAgents select 2);" \n
-       "		};" \n
-       "	};" \n
+       "    if!(isNil ""_clusterAgents"") then {" \n
+       "        if(count _clusterAgents > 0) then {" \n
+       "            _inactiveAgents = _inactiveAgents + (_clusterAgents select 2);" \n
+       "        };" \n
+       "    };" \n
        "};" \n
        "" \n
        "_spawnCount = _spawnCount + 1;"/*%FSM</STATEINIT""">*/;
@@ -406,19 +406,19 @@ class FSM
        "_block = [ALIVE_arrayBlockHandler,""getNextBlock"",[""activeClusters"",_activeClusters,30]] call ALIVE_fnc_arrayBlockHandler;" \n
        "" \n
        "{" \n
-       "	_cluster = _x;" \n
+       "    _cluster = _x;" \n
        "" \n
-       "	if!(isnil ""_cluster"") then {" \n
-       "		" \n
-       "		_position = _cluster select 2 select 2;" \n
-       "		_size = _cluster select 2 select 3;" \n
+       "    if!(isnil ""_cluster"") then {" \n
+       "        " \n
+       "        _position = _cluster select 2 select 2;" \n
+       "        _size = _cluster select 2 select 3;" \n
        "" \n
-       "		if !([_position, (_spawnDistance + (_size)/2), _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
-       "			if ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange == 0) then {" \n
-       "		           	_toDespawn set [count _toDespawn, _cluster];" \n
-       "			};" \n
-       "		};" \n
-       "	};" \n
+       "        if !([_position, (_spawnDistance + (_size)/2), _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
+       "            if ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange == 0) then {" \n
+       "                       _toDespawn set [count _toDespawn, _cluster];" \n
+       "            };" \n
+       "        };" \n
+       "    };" \n
        "} forEach _block;" \n
        "" \n
        "_analysisCount = _analysisCount + 30;" \n
@@ -426,23 +426,23 @@ class FSM
        "" \n
        "// DEBUG -------------------------------------------------------------------------------------" \n
        "if(_debug) then {" \n
-       "	//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "	//[""ALIVE Cluster activator - despawner analysis: %1 of %2"",_analysisCount,_countActive] call ALIVE_fnc_dump;" \n
+       "    //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    //[""ALIVE Cluster activator - despawner analysis: %1 of %2"",_analysisCount,_countActive] call ALIVE_fnc_dump;" \n
        "};" \n
        "// DEBUG -------------------------------------------------------------------------------------" \n
        "" \n
        "" \n
        "if(_analysisCount >= _countActive) then {" \n
-       "	_analysisComplete = true;" \n
-       "	_countToDespawn = count _toDespawn;" \n
+       "    _analysisComplete = true;" \n
+       "    _countToDespawn = count _toDespawn;" \n
        "" \n
        "" \n
-       "	// DEBUG -------------------------------------------------------------------------------------" \n
-       "	if(_debug) then {" \n
-       "		//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "		//[""ALIVE Cluster activator - despawner analysis count to despawn: %1"",_countToDespawn] call ALIVE_fnc_dump;" \n
-       "	};" \n
-       "	// DEBUG -------------------------------------------------------------------------------------" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "    if(_debug) then {" \n
+       "        //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "        //[""ALIVE Cluster activator - despawner analysis count to despawn: %1"",_countToDespawn] call ALIVE_fnc_dump;" \n
+       "    };" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
        "" \n
        "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -517,13 +517,13 @@ class FSM
        "_analysisComplete = false;" \n
        "" \n
        "if((_countActive == 0) && (_countInactive == 0)) then {" \n
-       "	_lastSpawnTime = time;" \n
+       "    _lastSpawnTime = time;" \n
        "};" \n
        "" \n
        "// DEBUG -------------------------------------------------------------------------------------" \n
        "if(_debug) then {" \n
-       "	//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "	//[""ALIVE Cluster activator - checking clusters to spawn: %1 despawn: %2"",_countActive,_countInactive] call ALIVE_fnc_dump;" \n
+       "    //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    //[""ALIVE Cluster activator - checking clusters to spawn: %1 despawn: %2"",_countActive,_countInactive] call ALIVE_fnc_dump;" \n
        "};" \n
        "// DEBUG -------------------------------------------------------------------------------------"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -568,8 +568,8 @@ class FSM
       name = "DESPAWN_LOOP";
       init = /*%FSM<STATEINIT""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
        "if(_debug) then {" \n
-       "	//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "	//[""ALIVE Cluster activator - despawner loop %1 of %2"",_countToDespawn,_despawnCount] call ALIVE_fnc_dump;" \n
+       "    //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    //[""ALIVE Cluster activator - despawner loop %1 of %2"",_countToDespawn,_despawnCount] call ALIVE_fnc_dump;" \n
        "};" \n
        "// DEBUG -------------------------------------------------------------------------------------" \n
        "" \n
@@ -578,27 +578,27 @@ class FSM
        "_cluster = _toDespawn select _despawnCount;" \n
        "" \n
        "if!(isnil ""_cluster"") then {" \n
-       "	_clusterID = _cluster select 2 select 1;" \n
+       "    _clusterID = _cluster select 2 select 1;" \n
        "" \n
-       "	// DEBUG -------------------------------------------------------------------------------------" \n
-       "	if(_debug) then {" \n
-       "		//[""ALIVE Cluster activator - despawn [%1]"",_clusterID] call ALIVE_fnc_dump;			" \n
-       "	};" \n
-       "	// DEBUG -------------------------------------------------------------------------------------				" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "    if(_debug) then {" \n
+       "        //[""ALIVE Cluster activator - despawn [%1]"",_clusterID] call ALIVE_fnc_dump;            " \n
+       "    };" \n
+       "    // DEBUG -------------------------------------------------------------------------------------                " \n
        "" \n
-       "	if(_debug) then {" \n
-       "		[_cluster, ""debug"", false] call ALIVE_fnc_cluster;" \n
-       "	};" \n
+       "    if(_debug) then {" \n
+       "        [_cluster, ""debug"", false] call ALIVE_fnc_cluster;" \n
+       "    };" \n
        "" \n
-       "	[ALIVE_clusterHandler, ""setInActive"", [_clusterID, _cluster]] call ALIVE_fnc_clusterHandler;" \n
+       "    [ALIVE_clusterHandler, ""setInActive"", [_clusterID, _cluster]] call ALIVE_fnc_clusterHandler;" \n
        "" \n
-       "	_clusterAgents = [ALIVE_agentHandler, ""getAgentsByCluster"", _clusterID] call ALIVE_fnc_agentHandler;" \n
+       "    _clusterAgents = [ALIVE_agentHandler, ""getAgentsByCluster"", _clusterID] call ALIVE_fnc_agentHandler;" \n
        "" \n
-       "	if!(isNil ""_clusterAgents"") then {" \n
-       "		if(count _clusterAgents > 0) then {" \n
-       "			_activeAgents = _activeAgents + (_clusterAgents select 2);" \n
-       "		};" \n
-       "	};" \n
+       "    if!(isNil ""_clusterAgents"") then {" \n
+       "        if(count _clusterAgents > 0) then {" \n
+       "            _activeAgents = _activeAgents + (_clusterAgents select 2);" \n
+       "        };" \n
+       "    };" \n
        "};" \n
        "" \n
        "_despawnCount = _despawnCount + 1;"/*%FSM</STATEINIT""">*/;
@@ -643,13 +643,13 @@ class FSM
        "_agentAnalysisComplete = false;" \n
        "" \n
        "if(_countInactive == 0) then {" \n
-       "	_lastSpawnTime = time;" \n
+       "    _lastSpawnTime = time;" \n
        "};" \n
        "" \n
        "// DEBUG -------------------------------------------------------------------------------------" \n
        "if(_debug) then {" \n
-       "	//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "	//[""ALIVE Cluster activator - checking profiles to spawn: %1"",_countInactive] call ALIVE_fnc_dump;" \n
+       "    //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    //[""ALIVE Cluster activator - checking profiles to spawn: %1"",_countInactive] call ALIVE_fnc_dump;" \n
        "};" \n
        "// DEBUG -------------------------------------------------------------------------------------"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -688,20 +688,20 @@ class FSM
        "" \n
        "{" \n
        "" \n
-       "	_cluster = _x;" \n
+       "    _cluster = _x;" \n
        "" \n
-       "	if!(isnil ""_cluster"") then {" \n
+       "    if!(isnil ""_cluster"") then {" \n
        "" \n
-       "		_position = _cluster select 2 select 2; " \n
+       "        _position = _cluster select 2 select 2; " \n
        "" \n
-       "		if ([_position, _spawnDistance, _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
-       "			_toSpawn set [count _toSpawn, _cluster];" \n
-       "		}else{" \n
-       "			if ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange > 0) then {" \n
-       "				 _toSpawn set [count _toSpawn, _cluster];" \n
-       "			};" \n
-       "		};" \n
-       "	};" \n
+       "        if ([_position, _spawnDistance, _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
+       "            _toSpawn set [count _toSpawn, _cluster];" \n
+       "        }else{" \n
+       "            if ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange > 0) then {" \n
+       "                 _toSpawn set [count _toSpawn, _cluster];" \n
+       "            };" \n
+       "        };" \n
+       "    };" \n
        "" \n
        "} forEach _block;" \n
        "" \n
@@ -710,23 +710,23 @@ class FSM
        "" \n
        "// DEBUG -------------------------------------------------------------------------------------" \n
        "if(_debug) then {" \n
-       "	//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "	//[""ALIVE Cluster activator - spawner analysis: %1 of %2"",_analysisCount,_countInactive] call ALIVE_fnc_dump;" \n
+       "    //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    //[""ALIVE Cluster activator - spawner analysis: %1 of %2"",_analysisCount,_countInactive] call ALIVE_fnc_dump;" \n
        "};" \n
        "// DEBUG -------------------------------------------------------------------------------------" \n
        "" \n
        "" \n
        "if(_analysisCount >= _countInactive) then {" \n
-       "	_analysisComplete = true;" \n
-       "	_countToSpawn = count _toSpawn;" \n
+       "    _analysisComplete = true;" \n
+       "    _countToSpawn = count _toSpawn;" \n
        "" \n
        "" \n
-       "	// DEBUG -------------------------------------------------------------------------------------" \n
-       "	if(_debug) then {" \n
-       "		//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "		//[""ALIVE Cluster activator - spawner analysis count to spawn: %1"",_countToSpawn] call ALIVE_fnc_dump;" \n
-       "	};" \n
-       "	// DEBUG -------------------------------------------------------------------------------------" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "    if(_debug) then {" \n
+       "        //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "        //[""ALIVE Cluster activator - spawner analysis count to spawn: %1"",_countToSpawn] call ALIVE_fnc_dump;" \n
+       "    };" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
        "" \n
        "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -745,16 +745,16 @@ class FSM
        "" \n
        "{" \n
        "" \n
-       "	_agent = _x;" \n
+       "    _agent = _x;" \n
        "" \n
-       "	if!(isnil ""_agent"") then {" \n
+       "    if!(isnil ""_agent"") then {" \n
        "" \n
-       "		_agentActive = _agent select 2 select 1;" \n
+       "        _agentActive = _agent select 2 select 1;" \n
        "" \n
-       "		if!(_agentActive) then {" \n
-       "			_agentsToSpawn set [count _agentsToSpawn, _agent];" \n
-       "		};		" \n
-       "	};" \n
+       "        if!(_agentActive) then {" \n
+       "            _agentsToSpawn set [count _agentsToSpawn, _agent];" \n
+       "        };        " \n
+       "    };" \n
        "" \n
        "} forEach _block;" \n
        "" \n
@@ -762,17 +762,17 @@ class FSM
        "" \n
        "" \n
        "if(_agentAnalysisCount >= count _inactiveAgents) then {" \n
-       "	_agentAnalysisComplete = true;" \n
-       "	_countToSpawn = count _agentsToSpawn;" \n
-       "	_spawnCount = 0;" \n
+       "    _agentAnalysisComplete = true;" \n
+       "    _countToSpawn = count _agentsToSpawn;" \n
+       "    _spawnCount = 0;" \n
        "" \n
        "" \n
-       "	// DEBUG -------------------------------------------------------------------------------------" \n
-       "	if(_debug) then {" \n
-       "		//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "		//[""ALIVE Cluster activator - agent spawn analysis count to spawn: %1"",_countToSpawn] call ALIVE_fnc_dump;" \n
-       "	};" \n
-       "	// DEBUG -------------------------------------------------------------------------------------" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "    if(_debug) then {" \n
+       "        //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "        //[""ALIVE Cluster activator - agent spawn analysis count to spawn: %1"",_countToSpawn] call ALIVE_fnc_dump;" \n
+       "    };" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
        "" \n
        "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -817,8 +817,8 @@ class FSM
       name = "SPAWN_LOOP";
       init = /*%FSM<STATEINIT""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
        "if(_debug) then {" \n
-       "	//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "	//[""ALIVE Cluster activator - spawner loop %1 of %2"",_countToSpawn,_spawnCount] call ALIVE_fnc_dump;" \n
+       "    //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    //[""ALIVE Cluster activator - spawner loop %1 of %2"",_countToSpawn,_spawnCount] call ALIVE_fnc_dump;" \n
        "};" \n
        "// DEBUG -------------------------------------------------------------------------------------" \n
        "" \n
@@ -827,16 +827,16 @@ class FSM
        "_agent = _agentsToSpawn select _spawnCount;" \n
        "" \n
        "if!(isnil ""_agent"") then {" \n
-       "	_agentID = _agent select 2 select 3;" \n
-       "	_type = _agent select 2 select 4;" \n
+       "    _agentID = _agent select 2 select 3;" \n
+       "    _type = _agent select 2 select 4;" \n
        "" \n
-       "	//[""TYPE: %1"",_type] call ALIVE_fnc_dump;" \n
+       "    //[""TYPE: %1"",_type] call ALIVE_fnc_dump;" \n
        "" \n
-       "	if(_type == ""agent"") then {" \n
-       "		[_agent, ""spawn""] call ALIVE_fnc_civilianAgent;	" \n
-       "	}else{" \n
-       "		[_agent, ""spawn""] call ALIVE_fnc_civilianVehicle;	" \n
-       "	};" \n
+       "    if(_type == ""agent"") then {" \n
+       "        [_agent, ""spawn""] call ALIVE_fnc_civilianAgent;    " \n
+       "    }else{" \n
+       "        [_agent, ""spawn""] call ALIVE_fnc_civilianVehicle;    " \n
+       "    };" \n
        "" \n
        "};" \n
        "" \n
@@ -877,16 +877,16 @@ class FSM
        "" \n
        "{" \n
        "" \n
-       "	_agent = _x;" \n
+       "    _agent = _x;" \n
        "" \n
-       "	if!(isnil ""_agent"") then {" \n
+       "    if!(isnil ""_agent"") then {" \n
        "" \n
-       "		_agentActive = _agent select 2 select 1;" \n
+       "        _agentActive = _agent select 2 select 1;" \n
        "" \n
-       "		if(_agentActive) then {" \n
-       "			_agentsToDespawn set [count _agentsToDespawn, _agent];" \n
-       "		};		" \n
-       "	};" \n
+       "        if(_agentActive) then {" \n
+       "            _agentsToDespawn set [count _agentsToDespawn, _agent];" \n
+       "        };        " \n
+       "    };" \n
        "" \n
        "} forEach _block;" \n
        "" \n
@@ -894,17 +894,17 @@ class FSM
        "" \n
        "" \n
        "if(_agentAnalysisCount >= count _activeAgents) then {" \n
-       "	_agentAnalysisComplete = true;" \n
-       "	_countToDespawn = count _agentsToDespawn;" \n
-       "	_despawnCount = 0;" \n
+       "    _agentAnalysisComplete = true;" \n
+       "    _countToDespawn = count _agentsToDespawn;" \n
+       "    _despawnCount = 0;" \n
        "" \n
        "" \n
-       "	// DEBUG -------------------------------------------------------------------------------------" \n
-       "	if(_debug) then {" \n
-       "		//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "		//[""ALIVE Cluster activator - agent despawn analysis count to spawn: %1"",_countToDespawn] call ALIVE_fnc_dump;" \n
-       "	};" \n
-       "	// DEBUG -------------------------------------------------------------------------------------" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "    if(_debug) then {" \n
+       "        //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "        //[""ALIVE Cluster activator - agent despawn analysis count to spawn: %1"",_countToDespawn] call ALIVE_fnc_dump;" \n
+       "    };" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
        "" \n
        "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -949,8 +949,8 @@ class FSM
       name = "SPAWN_LOOP_1";
       init = /*%FSM<STATEINIT""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
        "if(_debug) then {" \n
-       "	//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "	//[""ALIVE Cluster activator - despawner loop %1 of %2"",_countToDespawn,_despawnCount] call ALIVE_fnc_dump;" \n
+       "    //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    //[""ALIVE Cluster activator - despawner loop %1 of %2"",_countToDespawn,_despawnCount] call ALIVE_fnc_dump;" \n
        "};" \n
        "// DEBUG -------------------------------------------------------------------------------------" \n
        "" \n
@@ -959,17 +959,17 @@ class FSM
        "_agent = _agentsToDespawn select _despawnCount;" \n
        "" \n
        "if!(isnil ""_agent"") then {" \n
-       "	_agentID = _agent select 2 select 3;" \n
-       "	_type = _agent select 2 select 4;" \n
+       "    _agentID = _agent select 2 select 3;" \n
+       "    _type = _agent select 2 select 4;" \n
        "" \n
-       "	//[""TYPE: %1"",_type] call ALIVE_fnc_dump;" \n
+       "    //[""TYPE: %1"",_type] call ALIVE_fnc_dump;" \n
        "" \n
-       "	if(_type == ""agent"") then {" \n
-       "		[_agent, ""despawn""] call ALIVE_fnc_civilianAgent;	" \n
-       "	}else{" \n
-       "		[_agent, ""despawn""] call ALIVE_fnc_civilianVehicle;	" \n
-       "	};" \n
-       "	" \n
+       "    if(_type == ""agent"") then {" \n
+       "        [_agent, ""despawn""] call ALIVE_fnc_civilianAgent;    " \n
+       "    }else{" \n
+       "        [_agent, ""despawn""] call ALIVE_fnc_civilianVehicle;    " \n
+       "    };" \n
+       "    " \n
        "};" \n
        "" \n
        "_despawnCount = _despawnCount + 1;"/*%FSM</STATEINIT""">*/;

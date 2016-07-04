@@ -39,13 +39,13 @@ _ymin = 9999999;
 _xmax = 0;
 _ymax = 0;
 {
-	private["_xp","_yp"];
-	_xp = ((getPosATL _x) select 0);
-	_yp = ((getPosATL _x) select 1);
-	if(_xmin > _xp) then {_xmin = _xp;};
-	if(_ymin > _yp) then {_ymin = _yp;};
-	if(_xmax < _xp) then {_xmax = _xp;};
-	if(_ymax < _yp) then {_ymax = _yp;};
+    private["_xp","_yp"];
+    _xp = ((getPosATL _x) select 0);
+    _yp = ((getPosATL _x) select 1);
+    if(_xmin > _xp) then {_xmin = _xp;};
+    if(_ymin > _yp) then {_ymin = _yp;};
+    if(_xmax < _xp) then {_xmax = _xp;};
+    if(_ymax < _yp) then {_ymax = _yp;};
 } forEach _nodes;
 
 _result = [_xmin + ((_xmax - _xmin) / 2), _ymin + ((_ymax - _ymin) / 2)];

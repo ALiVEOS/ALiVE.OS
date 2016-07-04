@@ -40,30 +40,30 @@ TIMEREND
 STAT("POPULATE HASH");
 _value = ["one","two","three","four","five","six","seven","eight","nine","ten"];
 TIMERSTART
-for "_i" from 0 to _testIterations do {	
-	_result = [_hash, format["KEY%1",_i], _value] call ALIVE_fnc_hashSet;
+for "_i" from 0 to _testIterations do {
+    _result = [_hash, format["KEY%1",_i], _value] call ALIVE_fnc_hashSet;
 };
 TIMEREND
 
 STAT("GET FROM HASH");
 TIMERSTART
-for "_i" from 0 to _testIterations do {	
-	_result = [_hash, format["KEY%1",_i]] call ALIVE_fnc_hashGet;
+for "_i" from 0 to _testIterations do {
+    _result = [_hash, format["KEY%1",_i]] call ALIVE_fnc_hashGet;
 };
 TIMEREND
 
 STAT("UPDATE HASH");
 _value = ["one","two","three","four","five","six","seven","eight","nine","ten"];
 TIMERSTART
-for "_i" from 0 to _testIterations do {	
-	_result = [_hash, format["KEY%1",_i], _value] call ALIVE_fnc_hashSet;
+for "_i" from 0 to _testIterations do {
+    _result = [_hash, format["KEY%1",_i], _value] call ALIVE_fnc_hashSet;
 };
 TIMEREND
 
 STAT("REMOVE FROM HASH");
 TIMERSTART
-for "_i" from 0 to _testIterations do {	
-	_result = [_hash, format["KEY%1",_i]] call ALIVE_fnc_hashRem;
+for "_i" from 0 to _testIterations do {
+    _result = [_hash, format["KEY%1",_i]] call ALIVE_fnc_hashRem;
 };
 TIMEREND
 
@@ -79,30 +79,30 @@ TIMEREND
 STAT("POPULATE DICTIONARY");
 _value = ["one","two","three","four","five","six","seven","eight","nine","ten"];
 TIMERSTART
-for "_i" from 0 to _testIterations do {	
-	_result = [_dictionary, format["KEY%1",_i], _value] call Dictionary_fnc_set;
+for "_i" from 0 to _testIterations do {
+    _result = [_dictionary, format["KEY%1",_i], _value] call Dictionary_fnc_set;
 };
 TIMEREND
 
 STAT("GET FROM DICTIONARY");
 TIMERSTART
-for "_i" from 0 to _testIterations do {	
-	_result = [_dictionary, format["KEY%1",_i]] call Dictionary_fnc_get;
+for "_i" from 0 to _testIterations do {
+    _result = [_dictionary, format["KEY%1",_i]] call Dictionary_fnc_get;
 };
 TIMEREND
 
 STAT("UPDATE DICTIONARY");
 _value = ["one","two","three","four","five","six","seven","eight","nine","ten"];
 TIMERSTART
-for "_i" from 0 to _testIterations do {	
-	_result = [_dictionary, format["KEY%1",_i], _value] call Dictionary_fnc_set;
+for "_i" from 0 to _testIterations do {
+    _result = [_dictionary, format["KEY%1",_i], _value] call Dictionary_fnc_set;
 };
 TIMEREND
 
 STAT("REMOVE FROM DICTIONARY");
 TIMERSTART
-for "_i" from 0 to _testIterations do {	
-	_result = [_dictionary, format["KEY%1",_i]] call Dictionary_fnc_remove;
+for "_i" from 0 to _testIterations do {
+    _result = [_dictionary, format["KEY%1",_i]] call Dictionary_fnc_remove;
 };
 TIMEREND
 

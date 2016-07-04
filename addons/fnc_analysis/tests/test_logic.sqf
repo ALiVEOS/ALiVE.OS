@@ -38,10 +38,10 @@ diag_log format["TEST ITERATIONS: %1", _testIterations];
 _logics = [];
 STAT("CREATE LOGICS STANDARD");
 TIMERSTART
-for "_i" from 0 to _testIterations do {	
-	_pos = [0, 0, 0];
-	_logic = createAgent ["LOGIC", [0,0], [], 0, "NONE"];
-	_logics set [count _logics, _logic];
+for "_i" from 0 to _testIterations do {
+    _pos = [0, 0, 0];
+    _logic = createAgent ["LOGIC", [0,0], [], 0, "NONE"];
+    _logics set [count _logics, _logic];
 };
 TIMEREND
 
@@ -51,7 +51,7 @@ SLEEP 20;
 STAT("DELETE LOGICS");
 TIMERSTART
 {
-	deleteVehicle _x;
+    deleteVehicle _x;
 } forEach _logics;
 TIMEREND
 
@@ -59,11 +59,11 @@ TIMEREND
 _logics = [];
 STAT("CREATE LOGICS NO SIMULATION");
 TIMERSTART
-for "_i" from 0 to _testIterations do {	
-	_pos = [0, 0, 0];
-	_logic = createAgent ["LOGIC", [0,0], [], 0, "NONE"];
-	_logic enableSimulation false;
-	_logics set [count _logics, _logic];
+for "_i" from 0 to _testIterations do {
+    _pos = [0, 0, 0];
+    _logic = createAgent ["LOGIC", [0,0], [], 0, "NONE"];
+    _logic enableSimulation false;
+    _logics set [count _logics, _logic];
 };
 TIMEREND
 
@@ -73,7 +73,7 @@ SLEEP 20;
 STAT("DELETE LOGICS");
 TIMERSTART
 {
-	deleteVehicle _x;
+    deleteVehicle _x;
 } forEach _logics;
 TIMEREND
 
@@ -81,15 +81,15 @@ TIMEREND
 _logics = [];
 STAT("CREATE LOGICS NO AI");
 TIMERSTART
-for "_i" from 0 to _testIterations do {	
-	_pos = [0, 0, 0];
-	_logic = createAgent ["LOGIC", [0,0], [], 0, "NONE"];
-	_logic disableAI "TARGET";
-	_logic disableAI "AUTOTARGET";
-	_logic disableAI "MOVE";
-	_logic disableAI "ANIM";
-	_logic disableAI "FSM";	
-	_logics set [count _logics, _logic];
+for "_i" from 0 to _testIterations do {
+    _pos = [0, 0, 0];
+    _logic = createAgent ["LOGIC", [0,0], [], 0, "NONE"];
+    _logic disableAI "TARGET";
+    _logic disableAI "AUTOTARGET";
+    _logic disableAI "MOVE";
+    _logic disableAI "ANIM";
+    _logic disableAI "FSM";
+    _logics set [count _logics, _logic];
 };
 TIMEREND
 
@@ -99,7 +99,7 @@ SLEEP 20;
 STAT("DELETE LOGICS");
 TIMERSTART
 {
-	deleteVehicle _x;
+    deleteVehicle _x;
 } forEach _logics;
 TIMEREND
 
@@ -107,16 +107,16 @@ TIMEREND
 _logics = [];
 STAT("CREATE LOGICS NO AI NO SIMULATION");
 TIMERSTART
-for "_i" from 0 to _testIterations do {	
-	_pos = [0, 0, 0];
-	_logic = createAgent ["LOGIC", [0,0], [], 0, "NONE"];
-	_logic enableSimulation false;
-	_logic disableAI "TARGET";
-	_logic disableAI "AUTOTARGET";
-	_logic disableAI "MOVE";
-	_logic disableAI "ANIM";
-	_logic disableAI "FSM";	
-	_logics set [count _logics, _logic];
+for "_i" from 0 to _testIterations do {
+    _pos = [0, 0, 0];
+    _logic = createAgent ["LOGIC", [0,0], [], 0, "NONE"];
+    _logic enableSimulation false;
+    _logic disableAI "TARGET";
+    _logic disableAI "AUTOTARGET";
+    _logic disableAI "MOVE";
+    _logic disableAI "ANIM";
+    _logic disableAI "FSM";
+    _logics set [count _logics, _logic];
 };
 TIMEREND
 
@@ -126,7 +126,7 @@ SLEEP 20;
 STAT("DELETE LOGICS");
 TIMERSTART
 {
-	deleteVehicle _x;
+    deleteVehicle _x;
 } forEach _logics;
 TIMEREND
 
@@ -134,11 +134,11 @@ TIMEREND
 _logics = [];
 STAT("CREATE LOGICS NOT VISIBLE");
 TIMERSTART
-for "_i" from 0 to _testIterations do {	
-	_pos = [0, 0, 0];
-	_logic = createAgent ["LOGIC", [0,0], [], 0, "NONE"];
-	hideObject _logic; 
-	_logics set [count _logics, _logic];
+for "_i" from 0 to _testIterations do {
+    _pos = [0, 0, 0];
+    _logic = createAgent ["LOGIC", [0,0], [], 0, "NONE"];
+    hideObject _logic;
+    _logics set [count _logics, _logic];
 };
 TIMEREND
 
@@ -148,7 +148,7 @@ SLEEP 20;
 STAT("DELETE LOGICS");
 TIMERSTART
 {
-	deleteVehicle _x;
+    deleteVehicle _x;
 } forEach _logics;
 TIMEREND
 */

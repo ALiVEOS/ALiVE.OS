@@ -7,7 +7,7 @@ SCRIPT(auto_runMapAnalysis);
 
 // ----------------------------------------------------------------------------
 
-private ["_result","_err","_grid","_timeStart","_timeEnd","_plotter","_allSectors"];
+private ["_result","_err","_grid","_timeStart","_timeEnd","_plotter","_allSectors","_filetest","_FSMtest"];
 
 LOG("Testing Map Analysis");
 
@@ -44,9 +44,15 @@ diag_log format["Timer End %1",_timeEnd];
 
 //========================================
 
+_filetest = format["@ALiVE\indexing\%1\x\alive\addons\main\static\%1_staticData.sqf", worldName];
 
-_file = format["@ALiVE\indexing\%1\x\alive\addons\main\static\%1_staticData.sqf", worldName];
-call compile preprocessFileLineNumbers _file;
+diag_log format["COMPILING STATIC DATA %1", _filetest];
+
+call compile preprocessFileLineNumbers _filetest;
+
+diag_log format["COMPILED STATIC DATA - Civ Construction: %1", ALIVE_civilianConstructionBuildingTypes];
+
+diag_log format["RUNNING AUTO GRID MAP ANALYSIS SQF NOW... %1", time];
 
 _FSMtest = [] execFSM "\x\alive\addons\fnc_analysis\auto_gridMapAnalysis.fsm";
 

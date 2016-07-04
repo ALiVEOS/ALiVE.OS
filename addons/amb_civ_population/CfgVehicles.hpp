@@ -8,8 +8,8 @@ class CfgVehicles {
                 author = MODULE_AUTHOR;
                 functionPriority = 70;
                 isGlobal = 2;
-				icon = "x\alive\addons\amb_civ_population\icon_civ_pop.paa";
-				picture = "x\alive\addons\amb_civ_population\icon_civ_pop.paa";
+                icon = "x\alive\addons\amb_civ_population\icon_civ_pop.paa";
+                picture = "x\alive\addons\amb_civ_population\icon_civ_pop.paa";
                 class Arguments
                 {
                         class debug
@@ -31,11 +31,11 @@ class CfgVehicles {
                                         };
                                 };
                         };
-						class spawnRadius
+                        class spawnRadius
                         {
                                 displayName = "$STR_ALIVE_CIV_POP_SPAWN_RADIUS";
                                 description = "$STR_ALIVE_CIV_POP_SPAWN_RADIUS_COMMENT";
-								defaultvalue = "900";
+                                defaultvalue = "900";
                         };
                         class spawnTypeHeliRadius
                         {

@@ -35,27 +35,27 @@ _err = format["sector analysis flat empty requires an array of sectors - %1",_se
 ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
 
 {
-	_sector = _x;
-	_centerPosition = [_sector, "center"] call ALIVE_fnc_sector;
-	_dimensions = [_sector, "dimensions"] call ALIVE_fnc_sector;
-	
-	_radius = _dimensions select 0;
-	
-	_emptyPositions = [];
-	
-	if!(_vehicleClass == "false") then {
-		_position = _centerPosition findEmptyPosition[1, _radius, _vehicleClass];
-	}else{
-		_position = _centerPosition findEmptyPosition[1, _radius];
-	};	
-	
-	if(count _position > 0) then {
-		// minDistance, precicePos, maxGradient, gradientRadius, onWater, onShore
-		_position = _position isFlatEmpty[1,1,0.5,2,0,false];
-		_emptyPositions = [_position];	
-	};	
-	
-	// store the result of the analysis on the sector instance
-	[_sector, "data", ["flatEmpty",_emptyPositions]] call ALIVE_fnc_sector;
-	
+    _sector = _x;
+    _centerPosition = [_sector, "center"] call ALIVE_fnc_sector;
+    _dimensions = [_sector, "dimensions"] call ALIVE_fnc_sector;
+
+    _radius = _dimensions select 0;
+
+    _emptyPositions = [];
+
+    if!(_vehicleClass == "false") then {
+        _position = _centerPosition findEmptyPosition[1, _radius, _vehicleClass];
+    }else{
+        _position = _centerPosition findEmptyPosition[1, _radius];
+    };
+
+    if(count _position > 0) then {
+        // minDistance, precicePos, maxGradient, gradientRadius, onWater, onShore
+        _position = _position isFlatEmpty[1,1,0.5,2,0,false];
+        _emptyPositions = [_position];
+    };
+
+    // store the result of the analysis on the sector instance
+    [_sector, "data", ["flatEmpty",_emptyPositions]] call ALIVE_fnc_sector;
+
 } forEach _sectors;

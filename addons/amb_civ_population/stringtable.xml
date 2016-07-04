@@ -1,24 +1,24 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_CIV_POP">
-	<Original>Civilian Population</Original>
+    <Original>Civilian Population</Original>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_COMMENT">
-	<Original>Civilian Population System</Original>
+    <Original>Civilian Population System</Original>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_DEBUG">
-	<Original>Enable Debug:</Original>
+    <Original>Enable Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_DEBUG_COMMENT">
-	<Original>Enables Module Debug</Original>
+    <Original>Enables Module Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_SPAWN_RADIUS">
-	<Original>Spawn Radius:</Original>
+    <Original>Spawn Radius:</Original>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_SPAWN_RADIUS_COMMENT">
-	<Original>Sets the distance from players to spawn civilian units</Original>
+    <Original>Sets the distance from players to spawn civilian units</Original>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_ACTIVE_LIMITER">
     <Original>Active Limiter:</Original>
@@ -93,7 +93,7 @@
     <Original>Extreme</Original>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_ERROR1">
-	<Original>Only one Civilian Population System module can be used</Original>
+    <Original>Only one Civilian Population System module can be used</Original>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_CIVILIAN_ROLES">
     <Original>Civilian roles:</Original>

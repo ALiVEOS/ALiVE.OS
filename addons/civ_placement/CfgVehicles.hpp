@@ -6,10 +6,10 @@ class CfgVehicles {
                 displayName = "$STR_ALIVE_CP";
                 function = "ALIVE_fnc_CPInit";
                 author = MODULE_AUTHOR;
-				functionPriority = 100;
+                functionPriority = 100;
                 isGlobal = 1;
-				icon = "x\alive\addons\civ_placement\icon_civ_CP.paa";
-				picture = "x\alive\addons\civ_placement\icon_civ_CP.paa";
+                icon = "x\alive\addons\civ_placement\icon_civ_CP.paa";
+                picture = "x\alive\addons\civ_placement\icon_civ_CP.paa";
                 class Arguments
                 {
                         class debug
@@ -31,7 +31,7 @@ class CfgVehicles {
                                         };
                                 };
                         };
-						class taor
+                        class taor
                         {
                                 displayName = "$STR_ALIVE_CP_TAOR";
                                 description = "$STR_ALIVE_CP_TAOR_COMMENT";
@@ -92,7 +92,7 @@ class CfgVehicles {
                                         };
                                 };
                         };
-						class sizeFilter
+                        class sizeFilter
                         {
                                 displayName = "$STR_ALIVE_CP_SIZE_FILTER";
                                 description = "$STR_ALIVE_CP_SIZE_FILTER_COMMENT";
@@ -109,19 +109,19 @@ class CfgVehicles {
                                                 value = "250";
                                                 default = 1;
                                         };
-										class MEDIUM
+                                        class MEDIUM
                                         {
                                                 name = "$STR_ALIVE_CP_SIZE_FILTER_MEDIUM";
                                                 value = "400";
                                         };
-										class LARGE
+                                        class LARGE
                                         {
                                                 name = "$STR_ALIVE_CP_SIZE_FILTER_LARGE";
                                                 value = "700";
                                         };
                                 };
                         };
-						class priorityFilter
+                        class priorityFilter
                         {
                                 displayName = "$STR_ALIVE_CP_PRIORITY_FILTER";
                                 description = "$STR_ALIVE_CP_PRIORITY_FILTER_COMMENT";
@@ -138,19 +138,19 @@ class CfgVehicles {
                                                 name = "$STR_ALIVE_CP_PRIORITY_FILTER_LOW";
                                                 value = "10";
                                         };
-										class MEDIUM
+                                        class MEDIUM
                                         {
                                                 name = "$STR_ALIVE_CP_PRIORITY_FILTER_MEDIUM";
                                                 value = "30";
                                         };
-										class HIGH
+                                        class HIGH
                                         {
                                                 name = "$STR_ALIVE_CP_PRIORITY_FILTER_HIGH";
                                                 value = "40";
                                         };
                                 };
                         };
-						class withPlacement
+                        class withPlacement
                         {
                                 displayName = "$STR_ALIVE_CP_PLACEMENT";
                                 description = "$STR_ALIVE_CP_PLACEMENT_COMMENT";
@@ -169,18 +169,18 @@ class CfgVehicles {
                                         };
                                 };
                         };
-						class size
+                        class size
                         {
                                 displayName = "$STR_ALIVE_CP_SIZE";
                                 description = "$STR_ALIVE_CP_SIZE_COMMENT";
                                 class Values
                                 {
-										class BNx3
+                                        class BNx3
                                         {
                                                 name = "$STR_ALIVE_CP_SIZE_BNx3";
                                                 value = 1200;
                                         };
-										class BNx2
+                                        class BNx2
                                         {
                                                 name = "$STR_ALIVE_CP_SIZE_BNx2";
                                                 value = 800;
@@ -190,18 +190,18 @@ class CfgVehicles {
                                                 name = "$STR_ALIVE_CP_SIZE_BN";
                                                 value = 400;
                                         };
-										class CYx2
+                                        class CYx2
                                         {
                                                 name = "$STR_ALIVE_CP_SIZE_CYx2";
                                                 value = 200;
-												default = 1;
+                                                default = 1;
                                         };
                                         class CY
                                         {
                                                 name = "$STR_ALIVE_CP_SIZE_CY";
                                                 value = 100;
                                         };
-										class PLx2
+                                        class PLx2
                                         {
                                                 name = "$STR_ALIVE_CP_SIZE_PLx2";
                                                 value = 60;
@@ -223,7 +223,7 @@ class CfgVehicles {
                                         {
                                                 name = "$STR_ALIVE_CP_TYPE_RANDOM";
                                                 value = "Random";
-												default = 1;
+                                                default = 1;
                                         };
                                         class ARMOR
                                         {
@@ -276,19 +276,19 @@ class CfgVehicles {
                                                 name = "75%";
                                                 value = "0.75";
                                         };
-										class MEDIUM
+                                        class MEDIUM
                                         {
                                                 name = "50%";
                                                 value = "0.5";
                                         };
-										class LOW
+                                        class LOW
                                         {
                                                 name = "25%";
                                                 value = "0.25";
                                         };
                                 };
                         };
-                       	class roadblocks
+                           class roadblocks
                         {
                                 displayName = "$STR_ALIVE_CP_ROADBLOCKS";
                                 description = "$STR_ALIVE_CP_ROADBLOCKS_COMMENT";
@@ -315,12 +315,12 @@ class CfgVehicles {
                                                 name = "High";
                                                 value = "50";
                                         };
-										class MEDIUM
+                                        class MEDIUM
                                         {
                                                 name = "Medium";
                                                 value = "35";
                                         };
-										class LOW
+                                        class LOW
                                         {
                                                 name = "low";
                                                 value = "15";

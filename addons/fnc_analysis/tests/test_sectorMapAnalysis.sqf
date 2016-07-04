@@ -104,13 +104,13 @@ DEBUGON
 
 /*
 {
-	_sectorData = [_x,"data"] call ALIVE_fnc_hashGet;
-	_flatEmptyData = [_sectorData,"flatEmpty"] call ALIVE_fnc_hashGet;
-	
-	{
-		_vehicle = "B_APC_Tracked_01_rcws_F" createVehicle _x;
-		_vehicle setPos _x;
-	} forEach _flatEmptyData;
+    _sectorData = [_x,"data"] call ALIVE_fnc_hashGet;
+    _flatEmptyData = [_sectorData,"flatEmpty"] call ALIVE_fnc_hashGet;
+
+    {
+        _vehicle = "B_APC_Tracked_01_rcws_F" createVehicle _x;
+        _vehicle setPos _x;
+    } forEach _flatEmptyData;
 
 } forEach _allSectors;
 */

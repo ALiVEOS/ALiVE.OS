@@ -28,7 +28,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_sectors","_placeType","_filteredSectors","_sector","_sectorData","_bestPlaces","_err","_placesTypeData"];
-	
+
 _sectors = _this select 0;
 _placeType = _this select 1;
 
@@ -40,19 +40,19 @@ ASSERT_TRUE(typeName _placeType == "STRING",_err);
 _filteredSectors = [];
 
 {
-	_sector = _x;
-	_sectorData = [_sector, "data"] call ALIVE_fnc_sector;
-	
-	if("bestPlaces" in (_sectorData select 1)) then {
-		_bestPlaces = [_sectorData, "bestPlaces"] call ALIVE_fnc_hashGet;
-		
-		_placesTypeData = [_bestPlaces,_placeType] call ALIVE_fnc_hashGet;
-		
-		if (!(isnil "_placesTypeData") && {count _placesTypeData > 0}) then {
-			_filteredSectors set [count _filteredSectors, _sector];
-		};
-	};
-	
+    _sector = _x;
+    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+
+    if("bestPlaces" in (_sectorData select 1)) then {
+        _bestPlaces = [_sectorData, "bestPlaces"] call ALIVE_fnc_hashGet;
+
+        _placesTypeData = [_bestPlaces,_placeType] call ALIVE_fnc_hashGet;
+
+        if (!(isnil "_placesTypeData") && {count _placesTypeData > 0}) then {
+            _filteredSectors set [count _filteredSectors, _sector];
+        };
+    };
+
 } forEach _sectors;
 
 _filteredSectors

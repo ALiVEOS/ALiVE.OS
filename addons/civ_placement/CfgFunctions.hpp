@@ -11,7 +11,7 @@ class cfgFunctions {
                                 file = "\x\alive\addons\civ_placement\fnc_CPInit.sqf";
                                 recompile = RECOMPILE;
                         };
-			class civClusterGeneration {
+            class civClusterGeneration {
                                 description = "Generates static cluster output";
                                 file = "\x\alive\addons\civ_placement\fnc_civClusterGeneration.sqf";
                                 recompile = RECOMPILE;

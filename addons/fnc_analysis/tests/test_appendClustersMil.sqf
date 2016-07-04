@@ -46,8 +46,8 @@ diag_log format["Timer End %1",_timeEnd];
 //========================================
 
 if(isNil "ALIVE_civilianHQBuildingTypes") then {
-	_file = "\x\alive\addons\main\static\staticData.sqf";
-	call compile preprocessFileLineNumbers _file;
+    _file = "\x\alive\addons\main\static\staticData.sqf";
+    call compile preprocessFileLineNumbers _file;
 };
 
 
@@ -78,118 +78,118 @@ private ["_worldName","_file","_exportString","_gridData","_cluster","_clusterCe
 
 
 if(isNil "ALIVE_clustersMil" && isNil "ALIVE_loadedMilClusters") then {
-	_worldName = toLower(worldName);			
-	_file = format["\x\alive\addons\mil_placement\clusters\clusters.%1_mil.sqf", _worldName];		
-	call compile preprocessFileLineNumbers _file;
-	ALIVE_loadedMilClusters = true;
+    _worldName = toLower(worldName);
+    _file = format["\x\alive\addons\mil_placement\clusters\clusters.%1_mil.sqf", _worldName];
+    call compile preprocessFileLineNumbers _file;
+    ALIVE_loadedMilClusters = true;
 };
 
 _exportString = '';
 
 _gridData = [] call ALIVE_fnc_hashCreate;
-	
+
 {
-	_cluster = _x;
-	_clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
-	_clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-	_sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
-	_sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
-	
-	if(_sectorID in (_gridData select 1)) then {
-		_sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
-	}else{
-		_sectorData = [] call ALIVE_fnc_hashCreate;
-		[_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
-		[_sectorData, "air", []] call ALIVE_fnc_hashSet;
-		[_sectorData, "heli", []] call ALIVE_fnc_hashSet;
-	};
-	
-	_consolidated = [_sectorData, "consolidated"] call ALIVE_fnc_hashGet;
-	_consolidated set [count _consolidated, [_clusterCenter,_clusterID]];	
-	[_sectorData, "consolidated", _consolidated] call ALIVE_fnc_hashSet;
-	
-	//_sectorData call ALIVE_fnc_inspectHash;
-	
-	[_gridData, _sectorID, _sectorData] call ALIVE_fnc_hashSet;
+    _cluster = _x;
+    _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
+    _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
+    _sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
+    _sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
+
+    if(_sectorID in (_gridData select 1)) then {
+        _sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
+    }else{
+        _sectorData = [] call ALIVE_fnc_hashCreate;
+        [_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
+        [_sectorData, "air", []] call ALIVE_fnc_hashSet;
+        [_sectorData, "heli", []] call ALIVE_fnc_hashSet;
+    };
+
+    _consolidated = [_sectorData, "consolidated"] call ALIVE_fnc_hashGet;
+    _consolidated set [count _consolidated, [_clusterCenter,_clusterID]];
+    [_sectorData, "consolidated", _consolidated] call ALIVE_fnc_hashSet;
+
+    //_sectorData call ALIVE_fnc_inspectHash;
+
+    [_gridData, _sectorID, _sectorData] call ALIVE_fnc_hashSet;
 
 
 } forEach (ALIVE_clustersMil select 2);
 
 
 {
-	_cluster = _x;
-	_clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
-	_clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-	_sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
-	_sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
-	
-	if(_sectorID in (_gridData select 1)) then {
-		_sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
-	}else{
-		_sectorData = [] call ALIVE_fnc_hashCreate;
-		[_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
-		[_sectorData, "air", []] call ALIVE_fnc_hashSet;
-		[_sectorData, "heli", []] call ALIVE_fnc_hashSet;
-	};
-	
-	_air = [_sectorData, "air"] call ALIVE_fnc_hashGet;
-	_air set [count _air, [_clusterCenter,_clusterID]];	
-	[_sectorData, "air", _air] call ALIVE_fnc_hashSet;
-	
-	//_sectorData call ALIVE_fnc_inspectHash;
-	
-	[_gridData, _sectorID, _sectorData] call ALIVE_fnc_hashSet;
+    _cluster = _x;
+    _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
+    _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
+    _sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
+    _sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
+
+    if(_sectorID in (_gridData select 1)) then {
+        _sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
+    }else{
+        _sectorData = [] call ALIVE_fnc_hashCreate;
+        [_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
+        [_sectorData, "air", []] call ALIVE_fnc_hashSet;
+        [_sectorData, "heli", []] call ALIVE_fnc_hashSet;
+    };
+
+    _air = [_sectorData, "air"] call ALIVE_fnc_hashGet;
+    _air set [count _air, [_clusterCenter,_clusterID]];
+    [_sectorData, "air", _air] call ALIVE_fnc_hashSet;
+
+    //_sectorData call ALIVE_fnc_inspectHash;
+
+    [_gridData, _sectorID, _sectorData] call ALIVE_fnc_hashSet;
 
 
 } forEach (ALIVE_clustersMilAir select 2);
 
 
 {
-	_cluster = _x;
-	_clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
-	_clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-	_sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
-	_sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
-	
-	if(_sectorID in (_gridData select 1)) then {
-		_sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
-	}else{
-		_sectorData = [] call ALIVE_fnc_hashCreate;
-		[_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
-		[_sectorData, "air", []] call ALIVE_fnc_hashSet;
-		[_sectorData, "heli", []] call ALIVE_fnc_hashSet;
-	};
-	
-	_heli = [_sectorData, "heli"] call ALIVE_fnc_hashGet;
-	_heli set [count _heli, [_clusterCenter,_clusterID]];	
-	[_sectorData, "heli", _heli] call ALIVE_fnc_hashSet;
-	
-	//_sectorData call ALIVE_fnc_inspectHash;
-	
-	[_gridData, _sectorID, _sectorData] call ALIVE_fnc_hashSet;
+    _cluster = _x;
+    _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
+    _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
+    _sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
+    _sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
+
+    if(_sectorID in (_gridData select 1)) then {
+        _sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
+    }else{
+        _sectorData = [] call ALIVE_fnc_hashCreate;
+        [_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
+        [_sectorData, "air", []] call ALIVE_fnc_hashSet;
+        [_sectorData, "heli", []] call ALIVE_fnc_hashSet;
+    };
+
+    _heli = [_sectorData, "heli"] call ALIVE_fnc_hashGet;
+    _heli set [count _heli, [_clusterCenter,_clusterID]];
+    [_sectorData, "heli", _heli] call ALIVE_fnc_hashSet;
+
+    //_sectorData call ALIVE_fnc_inspectHash;
+
+    [_gridData, _sectorID, _sectorData] call ALIVE_fnc_hashSet;
 
 
 } forEach (ALIVE_clustersMilHeli select 2);
 
 
 {
-	_sectorID = _x;
-	_sectorData = [_gridData,_sectorID] call ALIVE_fnc_hashGet;	
+    _sectorID = _x;
+    _sectorData = [_gridData,_sectorID] call ALIVE_fnc_hashGet;
 
-	_consolidatedClusters = [_sectorData, "consolidated"] call ALIVE_fnc_hashGet;
-	_airClusters = [_sectorData, "air"] call ALIVE_fnc_hashGet;
-	_heliClusters = [_sectorData, "heli"] call ALIVE_fnc_hashGet;
-	
-	_exportString = _exportString + format['_sectorData = [ALIVE_gridData, "%1"] call ALIVE_fnc_hashGet;',_sectorID];
-	//_exportString = _exportString + '_sectorData = [_sector, "data"] call ALIVE_fnc_sector;';
-	
-	_exportString = _exportString + '_clustersMil = [] call ALIVE_fnc_hashCreate;';
-	_exportString = _exportString + format['[_clustersMil,"consolidated",%1] call ALIVE_fnc_hashSet;',_consolidatedClusters];
-	_exportString = _exportString + format['[_clustersMil,"air",%1] call ALIVE_fnc_hashSet;',_airClusters];
-	_exportString = _exportString + format['[_clustersMil,"heli",%1] call ALIVE_fnc_hashSet;',_heliClusters];
-	_exportString = _exportString + format['[_sectorData,"clustersMil",_clustersMil] call ALIVE_fnc_hashSet;'];
-	
-	_exportString = _exportString + format['[ALIVE_gridData, "%1", _sectorData] call ALIVE_fnc_hashSet;',_sectorID];	
+    _consolidatedClusters = [_sectorData, "consolidated"] call ALIVE_fnc_hashGet;
+    _airClusters = [_sectorData, "air"] call ALIVE_fnc_hashGet;
+    _heliClusters = [_sectorData, "heli"] call ALIVE_fnc_hashGet;
+
+    _exportString = _exportString + format['_sectorData = [ALIVE_gridData, "%1"] call ALIVE_fnc_hashGet;',_sectorID];
+    //_exportString = _exportString + '_sectorData = [_sector, "data"] call ALIVE_fnc_sector;';
+
+    _exportString = _exportString + '_clustersMil = [] call ALIVE_fnc_hashCreate;';
+    _exportString = _exportString + format['[_clustersMil,"consolidated",%1] call ALIVE_fnc_hashSet;',_consolidatedClusters];
+    _exportString = _exportString + format['[_clustersMil,"air",%1] call ALIVE_fnc_hashSet;',_airClusters];
+    _exportString = _exportString + format['[_clustersMil,"heli",%1] call ALIVE_fnc_hashSet;',_heliClusters];
+    _exportString = _exportString + format['[_sectorData,"clustersMil",_clustersMil] call ALIVE_fnc_hashSet;'];
+
+    _exportString = _exportString + format['[ALIVE_gridData, "%1", _sectorData] call ALIVE_fnc_hashSet;',_sectorID];
 
 } forEach (_gridData select 1);
 

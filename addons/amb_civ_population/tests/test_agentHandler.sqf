@@ -48,9 +48,9 @@ _logic = nil;
 
 STAT("Create Agent Handler instance");
 if(isServer) then {
-	ALIVE_agentHandler = [nil, "create"] call ALIVE_fnc_agentHandler;
-	TEST_LOGIC = ALIVE_agentHandler;
-	publicVariable "TEST_LOGIC";
+    ALIVE_agentHandler = [nil, "create"] call ALIVE_fnc_agentHandler;
+    TEST_LOGIC = ALIVE_agentHandler;
+    publicVariable "TEST_LOGIC";
 };
 
 
@@ -130,11 +130,11 @@ DEBUGON;
 
 STAT("Destroy old Profile Handler instance");
 if(isServer) then {
-	[_logic, "destroy"] call ALIVE_fnc_agentHandler;
-	TEST_LOGIC = nil;
-	publicVariable "TEST_LOGIC";
+    [_logic, "destroy"] call ALIVE_fnc_agentHandler;
+    TEST_LOGIC = nil;
+    publicVariable "TEST_LOGIC";
 } else {
-	waitUntil{isNull TEST_LOGIC};
+    waitUntil{isNull TEST_LOGIC};
 };
 
 nil;
