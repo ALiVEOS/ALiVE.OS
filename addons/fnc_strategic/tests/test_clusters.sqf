@@ -30,20 +30,20 @@ STAT("Create mock objects");
 _obj_array = [];
 createCenter sideLogic;
 {
-	_obj_array set [count _obj_array, (createGroup sideLogic) createUnit ["LOGIC", (player modelToWorld _x), [], 0, "NONE"]];
+    _obj_array set [count _obj_array, (createGroup sideLogic) createUnit ["LOGIC", (player modelToWorld _x), [], 0, "NONE"]];
 } forEach [
-	[-1200,-900],
-	[-900,-600],
-	[-600,-900],
-	[300,0],
-	[300,1200],
-	[600,900],
-	[900,600],
-	[900,400],
-	[400,1100],
-	[500,800],
-	[800,500],
-	[1000,400]
+    [-1200,-900],
+    [-900,-600],
+    [-600,-900],
+    [300,0],
+    [300,1200],
+    [600,900],
+    [900,600],
+    [900,400],
+    [400,1100],
+    [500,800],
+    [800,500],
+    [1000,400]
 ];
 _err = "create mock objects";
 ASSERT_DEFINED("_obj_array",_err);
@@ -102,7 +102,7 @@ _clusters = [_obj_array] call ALIVE_fnc_findClusters;
 _err = "finding clusters";
 ASSERT_TRUE(typeName _clusters == "ARRAY", _err);
 {
-	[_x, "debug", true] call ALIVE_fnc_cluster;
+    [_x, "debug", true] call ALIVE_fnc_cluster;
 } forEach _clusters;
 STAT("FindClusters completed");
 sleep 5;
@@ -117,7 +117,7 @@ STAT("ConsolidateClusters completed");
 sleep 5;
 
 {
-	[_x, "destroy"] call ALIVE_fnc_cluster;
+    [_x, "destroy"] call ALIVE_fnc_cluster;
 } forEach _clusters;
 
 STAT("Clean up markers");
@@ -125,8 +125,8 @@ STAT("Clean up markers");
 [_obj_array select 10, _obj_array select 6] call ALIVE_fnc_deleteLink;
 deleteMarker str _center;
 {
-	deleteMarker str _x;
-	deleteVehicle _x;
+    deleteMarker str _x;
+    deleteVehicle _x;
 } forEach _obj_array;
 
 diag_log (allMissionObjects "") - _amo;
