@@ -47,7 +47,7 @@ _vehicleID = [ALIVE_profileHandler, "getNextInsertVehicleID"] call ALIVE_fnc_pro
 _vehicleKind = _vehicleClass call ALIVE_fnc_vehicleGetKindOf;
 
 // create the profile for the vehicle
-								
+
 _profileVehicle = [nil, "create"] call ALIVE_fnc_profileVehicle;
 [_profileVehicle, "init"] call ALIVE_fnc_profileVehicle;
 [_profileVehicle, "profileID", format["%1-%2",_prefix,_vehicleID]] call ALIVE_fnc_profileVehicle;
@@ -64,11 +64,11 @@ if(count _cargo > 0) then {
 };
 
 if(_vehicleKind == "Plane" || _vehicleKind == "Helicopter") then {
-	[_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+    [_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
 };
 
 if!(_spawnGoodPosition) then {
-	[_profileVehicle, "despawnPosition", _position] call ALIVE_fnc_profileVehicle;
+    [_profileVehicle, "despawnPosition", _position] call ALIVE_fnc_profileVehicle;
 };
 
 [ALIVE_profileHandler, "registerProfile", _profileVehicle] call ALIVE_fnc_profileHandler;

@@ -32,32 +32,32 @@ _profile = _this select 1;
 _profileType = _profile select 2 select 5; //[_profile,"type"] call ALIVE_fnc_hashGet;
 
 _result = [];
-			
+
 {
-	if(_profileType == "vehicle") then {
-		_vehicle = _x select 1;
-	}else{
-		_vehicle = _x select 0;
-	};
-	
-	_assignment = _x select 2;
-	_drivers = count(_assignment select 0);
-	_commander = count(_assignment select 2);
-	
-	_inControlVehicle = false;
-					
-	if(_drivers > 0) then {
-		_inControlVehicle = true;
-	};
-	
-	if(_commander > 0) then {
-		_inControlVehicle = true;
-	};
-	
-	if(_inControlVehicle) then {
-		_result set [count _result, _vehicle]
-	};				
-	
+    if(_profileType == "vehicle") then {
+        _vehicle = _x select 1;
+    }else{
+        _vehicle = _x select 0;
+    };
+
+    _assignment = _x select 2;
+    _drivers = count(_assignment select 0);
+    _commander = count(_assignment select 2);
+
+    _inControlVehicle = false;
+
+    if(_drivers > 0) then {
+        _inControlVehicle = true;
+    };
+
+    if(_commander > 0) then {
+        _inControlVehicle = true;
+    };
+
+    if(_inControlVehicle) then {
+        _result set [count _result, _vehicle]
+    };
+
 } forEach (_assignments select 2);
 
 _result

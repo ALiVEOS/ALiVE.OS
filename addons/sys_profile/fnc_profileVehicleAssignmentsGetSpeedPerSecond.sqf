@@ -44,36 +44,36 @@ _unitCount = [_profile,"unitCount"] call ALIVE_fnc_profileEntity;
 
 // if there are some non mounted units return walking speed
 if(_countAssignedUnits < _unitCount || count(_vehiclesInCommandOf) == 0) then {
-	_result = _manSpeedArray;
+    _result = _manSpeedArray;
 }else{
-	// get the lowest speed from all assigned vehicles
-	_speeds = [];
-	{
-		_vehicleProfile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-        
+    // get the lowest speed from all assigned vehicles
+    _speeds = [];
+    {
+        _vehicleProfile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+
         if !(isnil "_vehicleProfile") then {
-			_vehicleClass = _vehicleProfile select 2 select 11; //[_vehicleProfile,"vehicleClass"] call ALIVE_fnc_hashGet;
-			_speedArray = _vehicleClass call ALIVE_fnc_vehicleGetSpeedPerSecond;
-			_speeds set [count _speeds, _speedArray];
+            _vehicleClass = _vehicleProfile select 2 select 11; //[_vehicleProfile,"vehicleClass"] call ALIVE_fnc_hashGet;
+            _speedArray = _vehicleClass call ALIVE_fnc_vehicleGetSpeedPerSecond;
+            _speeds set [count _speeds, _speedArray];
         };
-	} forEach _vehiclesInCommandOf;
-	
-	//["SPEEDS: %1",_speeds] call ALIVE_fnc_dump;	
-	
-	_getAverageSpeed = {
-		private ["_speeds","_speed"];	
-		_speeds = _this select 0;
-		_speed = _speeds select 0;
-		_speed
-	};
-	
-	_sortedSpeeds = [_speeds, {
-		([_this] call _getAverageSpeed)
-	}] call ALIVE_fnc_shellSort;
-	
-	//["SORTED SPEEDS: %1",_sortedSpeeds] call ALIVE_fnc_dump;	
-	
-	_result = _sortedSpeeds select 0;
+    } forEach _vehiclesInCommandOf;
+
+    //["SPEEDS: %1",_speeds] call ALIVE_fnc_dump;
+
+    _getAverageSpeed = {
+        private ["_speeds","_speed"];
+        _speeds = _this select 0;
+        _speed = _speeds select 0;
+        _speed
+    };
+
+    _sortedSpeeds = [_speeds, {
+        ([_this] call _getAverageSpeed)
+    }] call ALIVE_fnc_shellSort;
+
+    //["SORTED SPEEDS: %1",_sortedSpeeds] call ALIVE_fnc_dump;
+
+    _result = _sortedSpeeds select 0;
 };
 
 _result

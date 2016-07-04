@@ -69,5 +69,5 @@ _fakeLogic = [] call ALIVE_fnc_hashCreate;
 [_fakeLogic,"debug",true] call ALIVE_fnc_hashSet;
 
 
-_handle = [_fakeLogic] execFSM "\x\alive\addons\sys_profile\profileSimulator.fsm";						
+_handle = [_fakeLogic] execFSM "\x\alive\addons\sys_profile\profileSimulator.fsm";
 _handle = [_fakeLogic,200,5,5] execFSM "\x\alive\addons\sys_profile\profileSpawner.fsm";

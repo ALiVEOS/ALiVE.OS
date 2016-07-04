@@ -16,15 +16,15 @@ item11[] = {"WAIT",4,218,-313.421509,-89.343033,-223.421524,-39.343060,4.000000,
 version=1;
 class LayoutItems
 {
-	class Item2
-	{
-		class ItemInfo
-		{
-			FontFace="Arial";
-			FontHeight=10;
-			lStyle=1;
-		};
-	};
+    class Item2
+    {
+        class ItemInfo
+        {
+            FontFace="Arial";
+            FontHeight=10;
+            lStyle=1;
+        };
+    };
 };
 link0[] = {0,1};
 link1[] = {1,5};
@@ -107,7 +107,7 @@ class FSM
       name = "SWITCH";
       init = /*%FSM<STATEINIT""">*/"" \n
        "if(_pause) then {" \n
-       "	//[""ALIVE PROFILE SIMULATOR PAUSED""] call ALIVE_fnc_dump;" \n
+       "    //[""ALIVE PROFILE SIMULATOR PAUSED""] call ALIVE_fnc_dump;" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -153,8 +153,8 @@ class FSM
       init = /*%FSM<STATEINIT""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
        "/*" \n
        "if(_debug) then {" \n
-       "	//[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "	//[""ALIVE Simulated profile movement - started cycling at %1 second iterations"",_simulationCycleTime] call ALIVE_fnc_dump;" \n
+       "    //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    //[""ALIVE Simulated profile movement - started cycling at %1 second iterations"",_simulationCycleTime] call ALIVE_fnc_dump;" \n
        "};" \n
        "*/" \n
        "" \n

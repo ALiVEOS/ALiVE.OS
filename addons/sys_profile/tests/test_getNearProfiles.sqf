@@ -87,13 +87,13 @@ ALIVE_profileHandler = [nil, "create"] call ALIVE_fnc_profileHandler;
 [ALIVE_profileHandler, "init"] call ALIVE_fnc_profileHandler;
 
 {
-	_position = _x;
-	_type = _testTypes call BIS_fnc_selectRandom; 
-	_faction = _testFactions call BIS_fnc_selectRandom;
-	_group = [_type,_faction] call ALIVE_fnc_configGetRandomGroup;
-	if!(_group == "FALSE") then {
-		[_group, _position] call ALIVE_fnc_createProfilesFromGroupConfig;
-	};
+    _position = _x;
+    _type = _testTypes call BIS_fnc_selectRandom;
+    _faction = _testFactions call BIS_fnc_selectRandom;
+    _group = [_type,_faction] call ALIVE_fnc_configGetRandomGroup;
+    if!(_group == "FALSE") then {
+        [_group, _position] call ALIVE_fnc_createProfilesFromGroupConfig;
+    };
 } forEach _sortedFlatEmptyPositions;
 
 DEBUGON
@@ -106,19 +106,19 @@ TIMEREND
 _markers = [];
 
 {
-	//_x call ALIVE_fnc_inspectHash;
-	_position = _x select 2 select 2;		
-	_position = [_position, 5, random 360] call BIS_fnc_relPos;
+    //_x call ALIVE_fnc_inspectHash;
+    _position = _x select 2 select 2;
+    _position = [_position, 5, random 360] call BIS_fnc_relPos;
 
-	if(count _position > 0) then {
-		_m = createMarkerLocal [format["M1_%1", _forEachIndex], _position];
-		_m setMarkerShapeLocal "ICON";
-		_m setMarkerSizeLocal [1, 1];
-		_m setMarkerTypeLocal "hd_dot";
-		_m setMarkerColorLocal "ColorBlue";
+    if(count _position > 0) then {
+        _m = createMarkerLocal [format["M1_%1", _forEachIndex], _position];
+        _m setMarkerShapeLocal "ICON";
+        _m setMarkerSizeLocal [1, 1];
+        _m setMarkerTypeLocal "hd_dot";
+        _m setMarkerColorLocal "ColorBlue";
 
-		_markers set [count _markers, _m];			
-	};
+        _markers set [count _markers, _m];
+    };
 } forEach _profiles;
 
 
@@ -128,22 +128,22 @@ _profiles = [getPos player, 500, ["WEST","vehicle","Car"]] call ALIVE_fnc_getNea
 TIMEREND
 
 {
-	_position = _x select 2 select 2;		
-	_position = [_position, 5, random 360] call BIS_fnc_relPos;
+    _position = _x select 2 select 2;
+    _position = [_position, 5, random 360] call BIS_fnc_relPos;
 
-	if(count _position > 0) then {
-		_m = createMarkerLocal [format["M2_%1", _forEachIndex], _position];
-		_m setMarkerShapeLocal "ICON";
-		_m setMarkerSizeLocal [1, 1];
-		_m setMarkerTypeLocal "hd_dot";
-		_m setMarkerColorLocal "ColorGreen";
+    if(count _position > 0) then {
+        _m = createMarkerLocal [format["M2_%1", _forEachIndex], _position];
+        _m setMarkerShapeLocal "ICON";
+        _m setMarkerSizeLocal [1, 1];
+        _m setMarkerTypeLocal "hd_dot";
+        _m setMarkerColorLocal "ColorGreen";
 
-		_markers set [count _markers, _m];			
-	};
+        _markers set [count _markers, _m];
+    };
 } forEach _profiles;
 
 sleep 60;
 
 {
-	 deleteMarkerLocal _x;
+     deleteMarkerLocal _x;
 } forEach _markers;

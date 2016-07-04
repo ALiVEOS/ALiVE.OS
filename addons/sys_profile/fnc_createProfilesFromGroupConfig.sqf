@@ -57,24 +57,24 @@ if(count _config > 0) then {
 
     private ["_entityID","_side","_profileEntity","_classes","_positions","_damages","_ranks","_unit","_customMappings"];
 
-	//["CFG: %1",_config] call ALIVE_fnc_dump;
+    //["CFG: %1",_config] call ALIVE_fnc_dump;
 
-	_groupName = getText(_config >> "name");
-	_groupSide = getNumber(_config >> "side");
-	_groupFaction = getText(_config >> "faction");
+    _groupName = getText(_config >> "name");
+    _groupSide = getNumber(_config >> "side");
+    _groupFaction = getText(_config >> "faction");
 
-	if(_groupSide == 0) then {
+    if(_groupSide == 0) then {
         _groupSide = _groupFaction call ALiVE_fnc_factionSide;
         _groupSide = [_groupSide] call ALIVE_fnc_sideObjectToNumber;
     };
 
     /*
-	["CFG Name: %1",_groupName] call ALIVE_fnc_dump;
+    ["CFG Name: %1",_groupName] call ALIVE_fnc_dump;
     ["CFG Side: %1",_groupSide] call ALIVE_fnc_dump;
     ["CFG Faction: %1",_groupFaction] call ALIVE_fnc_dump;
     */
 
-	if(!isNil "ALIVE_factionCustomMappings") then {
+    if(!isNil "ALIVE_factionCustomMappings") then {
         if(_groupFaction in (ALIVE_factionCustomMappings select 1)) then {
             _customMappings = [ALIVE_factionCustomMappings, _groupFaction] call ALIVE_fnc_hashGet;
             _side = [_customMappings, "Side"] call ALIVE_fnc_hashGet;
@@ -86,146 +86,146 @@ if(count _config > 0) then {
         _side = _groupSide call ALIVE_fnc_sideNumberToText;
     };
 
-	_groupUnits = [];
-	_groupVehicles = [];
+    _groupUnits = [];
+    _groupVehicles = [];
 
     /*
-	["CFG Name: %1",_groupName] call ALIVE_fnc_dump;
+    ["CFG Name: %1",_groupName] call ALIVE_fnc_dump;
     ["CFG Side: %1",_side] call ALIVE_fnc_dump;
     ["CFG Faction: %1",_groupFaction] call ALIVE_fnc_dump;
     */
 
     if(_side == "INDEP") then {
-    	_side = "GUER";
+        _side = "GUER";
     };
 
-	// loop through the config for the group
-	for "_i" from 0 to count _config -1 do {
-		_class = (_config select _i);
-		if(isClass _class) then {
-			_rank = getText(_class >> "rank");
-			_vehicle = getText(_class >> "vehicle");
-			_vehicleType = _vehicle call ALIVE_fnc_configGetVehicleClass;
+    // loop through the config for the group
+    for "_i" from 0 to count _config -1 do {
+        _class = (_config select _i);
+        if(isClass _class) then {
+            _rank = getText(_class >> "rank");
+            _vehicle = getText(_class >> "vehicle");
+            _vehicleType = _vehicle call ALIVE_fnc_configGetVehicleClass;
 
-			//["CGROUP Name: %1 VehicleType: %2 vehicle: %3",_groupName,_vehicleType,_vehicle] call ALIVE_fnc_dump;
+            //["CGROUP Name: %1 VehicleType: %2 vehicle: %3",_groupName,_vehicleType,_vehicle] call ALIVE_fnc_dump;
 
-			// seperate vehicles and units in the group
-			//if((_vehicleType == "Car")||(_vehicleType == "Truck")||(_vehicleType == "Tank")||(_vehicleType == "Armored")||(_vehicleType == "Ship")||(_vehicleType == "Air")||(_vehicleType == "LIB_Medium_Tanks")||(_vehicleType == "LIB_Heavy_Tanks")) then {
-			if!(_vehicle isKindOf "Man") then {
-				_groupVehicles pushback [_vehicle,_rank];
-			} else {
-				_groupUnits pushback [_vehicle,_rank];
-			};
-		};
-	};
+            // seperate vehicles and units in the group
+            //if((_vehicleType == "Car")||(_vehicleType == "Truck")||(_vehicleType == "Tank")||(_vehicleType == "Armored")||(_vehicleType == "Ship")||(_vehicleType == "Air")||(_vehicleType == "LIB_Medium_Tanks")||(_vehicleType == "LIB_Heavy_Tanks")) then {
+            if!(_vehicle isKindOf "Man") then {
+                _groupVehicles pushback [_vehicle,_rank];
+            } else {
+                _groupUnits pushback [_vehicle,_rank];
+            };
+        };
+    };
 
-	//["CGROUP Vehicles: %1 Units: %2",_groupVehicles,_groupUnits] call ALIVE_fnc_dump;
-
-
-	// get counts of current profiles
-
-	_entityID = [ALIVE_profileHandler, "getNextInsertEntityID"] call ALIVE_fnc_profileHandler;
+    //["CGROUP Vehicles: %1 Units: %2",_groupVehicles,_groupUnits] call ALIVE_fnc_dump;
 
 
-	// create the group entity profile
+    // get counts of current profiles
 
-	_profileEntity = [nil, "create"] call ALIVE_fnc_profileEntity;
-	[_profileEntity, "init"] call ALIVE_fnc_profileEntity;
-	[_profileEntity, "profileID", format["%1-%2",_prefix,_entityID]] call ALIVE_fnc_profileEntity;
-	[_profileEntity, "position", _position] call ALIVE_fnc_profileEntity;
-	[_profileEntity, "side", _side] call ALIVE_fnc_profileEntity;
-	[_profileEntity, "faction", _groupFaction] call ALIVE_fnc_profileEntity;
-	[_profileEntity, "objectType", _groupClass] call ALIVE_fnc_profileEntity;
-	[_profileEntity, "busy", _busy] call ALIVE_fnc_profileEntity;
-
-	if!(_spawnGoodPosition) then {
-		[_profileEntity, "despawnPosition", _position] call ALIVE_fnc_profileEntity;
-	};
-
-	_groupProfiles pushback _profileEntity;
-	[ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
+    _entityID = [ALIVE_profileHandler, "getNextInsertEntityID"] call ALIVE_fnc_profileHandler;
 
 
-	// if there are vehicles for this group
+    // create the group entity profile
 
-	private ["_vehicleID","_vehicleClass","_vehicleRank","_crew","_profileVehicle","_vehiclePositions","_countCrewPositions","_vehiclePosition","_vehicleKind"];
+    _profileEntity = [nil, "create"] call ALIVE_fnc_profileEntity;
+    [_profileEntity, "init"] call ALIVE_fnc_profileEntity;
+    [_profileEntity, "profileID", format["%1-%2",_prefix,_entityID]] call ALIVE_fnc_profileEntity;
+    [_profileEntity, "position", _position] call ALIVE_fnc_profileEntity;
+    [_profileEntity, "side", _side] call ALIVE_fnc_profileEntity;
+    [_profileEntity, "faction", _groupFaction] call ALIVE_fnc_profileEntity;
+    [_profileEntity, "objectType", _groupClass] call ALIVE_fnc_profileEntity;
+    [_profileEntity, "busy", _busy] call ALIVE_fnc_profileEntity;
 
-	{
-		// create the profile for the vehicle
+    if!(_spawnGoodPosition) then {
+        [_profileEntity, "despawnPosition", _position] call ALIVE_fnc_profileEntity;
+    };
 
-		_vehicle = _x;
-		_vehicleID = [ALIVE_profileHandler, "getNextInsertVehicleID"] call ALIVE_fnc_profileHandler;
-		_vehicleClass = _vehicle select 0;
-		_vehicleRank = _vehicle select 1;
+    _groupProfiles pushback _profileEntity;
+    [ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
 
-		_vehicleKind = _vehicleClass call ALIVE_fnc_vehicleGetKindOf;
 
-		_vehiclePosition = _position getPos [(20 * ((_forEachIndex)+1)), random(360)];
+    // if there are vehicles for this group
 
-		if (_position select 2 > 50) then {
-			_vehiclePosition set [2, _position select 2]; // Make sure that you honour the original height if above 50
-		};
+    private ["_vehicleID","_vehicleClass","_vehicleRank","_crew","_profileVehicle","_vehiclePositions","_countCrewPositions","_vehiclePosition","_vehicleKind"];
 
-	    // ["V: %1 %2 %3 %4",_vehicle,_vehicleClass, _position select 2, _vehiclePosition select 2] call ALIVE_fnc_dump;
+    {
+        // create the profile for the vehicle
 
-		_profileVehicle = [nil, "create"] call ALIVE_fnc_profileVehicle;
-		[_profileVehicle, "init"] call ALIVE_fnc_profileVehicle;
-		[_profileVehicle, "profileID", format["%1-%2",_prefix,_vehicleID]] call ALIVE_fnc_profileVehicle;
-		[_profileVehicle, "vehicleClass", _vehicleClass] call ALIVE_fnc_profileVehicle;
-		[_profileVehicle, "position", _vehiclePosition] call ALIVE_fnc_profileVehicle;
-		[_profileVehicle, "direction", 0] call ALIVE_fnc_profileVehicle;
-		[_profileVehicle, "side", _side] call ALIVE_fnc_profileVehicle;
-		[_profileVehicle, "faction", _groupFaction] call ALIVE_fnc_profileVehicle;
-		[_profileVehicle, "damage", 0] call ALIVE_fnc_profileVehicle;
-		[_profileVehicle, "fuel", 1] call ALIVE_fnc_profileVehicle;
-		[_profileVehicle, "busy", _busy] call ALIVE_fnc_profileVehicle;
+        _vehicle = _x;
+        _vehicleID = [ALIVE_profileHandler, "getNextInsertVehicleID"] call ALIVE_fnc_profileHandler;
+        _vehicleClass = _vehicle select 0;
+        _vehicleRank = _vehicle select 1;
 
-		if(_vehicleKind == "Plane" || _vehicleKind == "Helicopter") then {
-			[_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
-		};
+        _vehicleKind = _vehicleClass call ALIVE_fnc_vehicleGetKindOf;
 
-		if!(_spawnGoodPosition) then {
-			[_profileVehicle, "despawnPosition", _vehiclePosition] call ALIVE_fnc_profileVehicle;
-		};
+        _vehiclePosition = _position getPos [(20 * ((_forEachIndex)+1)), random(360)];
 
-		_groupProfiles pushback _profileVehicle;
-		[ALIVE_profileHandler, "registerProfile", _profileVehicle] call ALIVE_fnc_profileHandler;
+        if (_position select 2 > 50) then {
+            _vehiclePosition set [2, _position select 2]; // Make sure that you honour the original height if above 50
+        };
 
-		// create crew members for the vehicle
+        // ["V: %1 %2 %3 %4",_vehicle,_vehicleClass, _position select 2, _vehiclePosition select 2] call ALIVE_fnc_dump;
 
-		_crew = _vehicleClass call ALIVE_fnc_configGetVehicleCrew;
-		_vehiclePositions = [_vehicleClass] call ALIVE_fnc_configGetVehicleEmptyPositions;
-		_countCrewPositions = 0;
+        _profileVehicle = [nil, "create"] call ALIVE_fnc_profileVehicle;
+        [_profileVehicle, "init"] call ALIVE_fnc_profileVehicle;
+        [_profileVehicle, "profileID", format["%1-%2",_prefix,_vehicleID]] call ALIVE_fnc_profileVehicle;
+        [_profileVehicle, "vehicleClass", _vehicleClass] call ALIVE_fnc_profileVehicle;
+        [_profileVehicle, "position", _vehiclePosition] call ALIVE_fnc_profileVehicle;
+        [_profileVehicle, "direction", 0] call ALIVE_fnc_profileVehicle;
+        [_profileVehicle, "side", _side] call ALIVE_fnc_profileVehicle;
+        [_profileVehicle, "faction", _groupFaction] call ALIVE_fnc_profileVehicle;
+        [_profileVehicle, "damage", 0] call ALIVE_fnc_profileVehicle;
+        [_profileVehicle, "fuel", 1] call ALIVE_fnc_profileVehicle;
+        [_profileVehicle, "busy", _busy] call ALIVE_fnc_profileVehicle;
 
-		//["VP: %1 %2",_vehiclePositions, count _vehiclePositions] call ALIVE_fnc_dump;
-		//_vehiclePositions call ALIVE_fnc_inspectArray;
+        if(_vehicleKind == "Plane" || _vehicleKind == "Helicopter") then {
+            [_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+        };
 
-		// count all non cargo positions
-		for "_i" from 0 to count _vehiclePositions -3 do {
-			_countCrewPositions = _countCrewPositions + (_vehiclePositions select _i);
-		};
+        if!(_spawnGoodPosition) then {
+            [_profileVehicle, "despawnPosition", _vehiclePosition] call ALIVE_fnc_profileVehicle;
+        };
 
-		// for all crew positions add units to the entity group
-		for "_i" from 0 to _countCrewPositions -1 do {
-			[_profileEntity, "addUnit", [_crew,_position,0,_vehicleRank]] call ALIVE_fnc_profileEntity;
-		};
+        _groupProfiles pushback _profileVehicle;
+        [ALIVE_profileHandler, "registerProfile", _profileVehicle] call ALIVE_fnc_profileHandler;
 
-		[_profileEntity,_profileVehicle] call ALIVE_fnc_createProfileVehicleAssignment;
+        // create crew members for the vehicle
 
-	} forEach _groupVehicles;
+        _crew = _vehicleClass call ALIVE_fnc_configGetVehicleCrew;
+        _vehiclePositions = [_vehicleClass] call ALIVE_fnc_configGetVehicleEmptyPositions;
+        _countCrewPositions = 0;
 
-	// create the group units
+        //["VP: %1 %2",_vehiclePositions, count _vehiclePositions] call ALIVE_fnc_dump;
+        //_vehiclePositions call ALIVE_fnc_inspectArray;
 
-	{
-		_unit = _x;
-		_class = _unit select 0;
-		_rank = _unit select 1;
-		[_profileEntity, "addUnit", [_class,_position,0,_rank]] call ALIVE_fnc_profileEntity;
-	} forEach _groupUnits;
+        // count all non cargo positions
+        for "_i" from 0 to count _vehiclePositions -3 do {
+            _countCrewPositions = _countCrewPositions + (_vehiclePositions select _i);
+        };
 
-	{
-	    [_profileEntity,_profileVehicle,true] call ALIVE_fnc_createProfileVehicleAssignment;
-	} forEach _groupVehicles;
+        // for all crew positions add units to the entity group
+        for "_i" from 0 to _countCrewPositions -1 do {
+            [_profileEntity, "addUnit", [_crew,_position,0,_vehicleRank]] call ALIVE_fnc_profileEntity;
+        };
+
+        [_profileEntity,_profileVehicle] call ALIVE_fnc_createProfileVehicleAssignment;
+
+    } forEach _groupVehicles;
+
+    // create the group units
+
+    {
+        _unit = _x;
+        _class = _unit select 0;
+        _rank = _unit select 1;
+        [_profileEntity, "addUnit", [_class,_position,0,_rank]] call ALIVE_fnc_profileEntity;
+    } forEach _groupUnits;
+
+    {
+        [_profileEntity,_profileVehicle,true] call ALIVE_fnc_createProfileVehicleAssignment;
+    } forEach _groupVehicles;
 
 };
 
