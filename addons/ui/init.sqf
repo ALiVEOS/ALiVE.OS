@@ -1,13 +1,13 @@
 #include "\x\alive\addons\ui\script_component.hpp"
 
 if (isDedicated) exitWith {false};
-	
+
 
 // list of all menu activation keys and associated types
 GVAR(typeMenuSources) = [];
 
 PREP_SUB(flexiMenu,keyDown);
-PREP_SUB(flexiMenu,keyUp);	
+PREP_SUB(flexiMenu,keyUp);
 PREP_SUB(flexiMenu,menu);
 PREP_SUB(flexiMenu,list);
 PREP_SUB(flexiMenu,getMenuDef);
@@ -32,5 +32,5 @@ GVAR(lastAccessTime) = 0;
         GVAR(keyDown_EHID) = ["keyDown", QUOTE(_this call FUNC(keyDown))] call CBA_fnc_addDisplayHandler;
         GVAR(keyUp_EHID) = ["keyUp", QUOTE(_this call FUNC(keyUp))] call CBA_fnc_addDisplayHandler;
 };
-	
+
 true
