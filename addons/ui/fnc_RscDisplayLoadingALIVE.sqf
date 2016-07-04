@@ -10,6 +10,6 @@ _display = _this select 0;
 _ctrlMission = _display displayctrl IDC_LOADING_MISSION;
 if (!(isnull _ctrlMission)) then {
 
-	_ctrlALIVELogo = _display displayctrl 1202;
-	_ctrlALIVELogo ctrlsettext "\x\alive\addons\UI\logo_alive.paa";
+    _ctrlALIVELogo = _display displayctrl 1202;
+    _ctrlALIVELogo ctrlsettext "\x\alive\addons\UI\logo_alive.paa";
 };

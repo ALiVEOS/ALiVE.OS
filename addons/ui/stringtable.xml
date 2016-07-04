@@ -3,9 +3,9 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_UI_TOOLTIP_LOGO_ABOUT">
-	<Original>ALiVE is an Arma 3 Mod that enhances MP play with a more strategic enemy, enhanced combat ambience, combat support, logistics and revolutionary mission persistence and online statistics. Please Donate at http://alivemod.com/#Donate</Original>
+    <Original>ALiVE is an Arma 3 Mod that enhances MP play with a more strategic enemy, enhanced combat ambience, combat support, logistics and revolutionary mission persistence and online statistics. Please Donate at http://alivemod.com/#Donate</Original>
 </Key>
 <Key ID="STR_ALIVE_UI_TOOLTIP_JOHARI_ABOUT">
-	<Original>A massive thank you to Johari, the band that created two incredible and exclusive tracks for ALiVE - This is War and Everest. Go to www.johariofficial.com for more!</Original>
+    <Original>A massive thank you to Johari, the band that created two incredible and exclusive tracks for ALiVE - This is War and Everest. Go to www.johariofficial.com for more!</Original>
 </Key>
 </Container></Package></Project>

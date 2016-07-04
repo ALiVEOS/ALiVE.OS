@@ -1,5 +1,5 @@
 class CfgGroupIcons {
-	class ALIVETourCas
+    class ALIVETourCas
     {
         name = "CAS";
         icon = "x\alive\addons\sys_tour\data\alive_icons_tour_cas.paa";

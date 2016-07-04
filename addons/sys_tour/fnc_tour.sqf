@@ -47,55 +47,55 @@ _args = [_this, 2, objNull, [objNull,[],"",0,true,false]] call BIS_fnc_param;
 _result = true;
 
 switch(_operation) do {
-	default {
-		_result = [_logic, _operation, _args] call SUPERCLASS;
-	};
-	case "destroy": {
-		[_logic, "debug", false] call MAINCLASS;
-		if (isServer) then {
-			// if server
-			_logic setVariable ["super", nil];
-			_logic setVariable ["class", nil];
-			
-			[_logic, "destroy"] call SUPERCLASS;
-		};
-	};
-	case "debug": {
-		if (typeName _args == "BOOL") then {
-			_logic setVariable ["debug", _args];
-		} else {
-			_args = _logic getVariable ["debug", false];
-		};
-		if (typeName _args == "STRING") then {
-			if(_args == "true") then {_args = true;} else {_args = false;};
-			_logic setVariable ["debug", _args];
-		};
-		ASSERT_TRUE(typeName _args == "BOOL",str _args);
-		
-		_result = _args;
-	};
-	case "init": {
+    default {
+        _result = [_logic, _operation, _args] call SUPERCLASS;
+    };
+    case "destroy": {
+        [_logic, "debug", false] call MAINCLASS;
+        if (isServer) then {
+            // if server
+            _logic setVariable ["super", nil];
+            _logic setVariable ["class", nil];
 
-		if (isServer) then {
-			_logic setVariable ["super", SUPERCLASS];
-			_logic setVariable ["class", MAINCLASS];
-			_logic setVariable ["moduleType", "ALIVE_TOUR"];
-			_logic setVariable ["startupComplete", false];
-			_logic setVariable ["selectionState", "start"];
-			_logic setVariable ["drawEventID", -1];
+            [_logic, "destroy"] call SUPERCLASS;
+        };
+    };
+    case "debug": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["debug", _args];
+        } else {
+            _args = _logic getVariable ["debug", false];
+        };
+        if (typeName _args == "STRING") then {
+            if(_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["debug", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
 
-			ALiVE_tourStarted = false;
+        _result = _args;
+    };
+    case "init": {
 
-			ALIVE_tourInstance = _logic;
+        if (isServer) then {
+            _logic setVariable ["super", SUPERCLASS];
+            _logic setVariable ["class", MAINCLASS];
+            _logic setVariable ["moduleType", "ALIVE_TOUR"];
+            _logic setVariable ["startupComplete", false];
+            _logic setVariable ["selectionState", "start"];
+            _logic setVariable ["drawEventID", -1];
 
-			[_logic, "setSelectionOptions"] call MAINCLASS;
+            ALiVE_tourStarted = false;
 
-			TRACE_1("After module init",_logic);
+            ALIVE_tourInstance = _logic;
 
-			[_logic, "start"] call MAINCLASS;
-		};
-	};
-	case "setSelectionOptions": {
+            [_logic, "setSelectionOptions"] call MAINCLASS;
+
+            TRACE_1("After module init",_logic);
+
+            [_logic, "start"] call MAINCLASS;
+        };
+    };
+    case "setSelectionOptions": {
 
         private["_selectionOptions"];
 
@@ -414,25 +414,25 @@ switch(_operation) do {
 
         _logic setVariable ["selectionOptions", _selectionOptions];
 
-	};
+    };
 
-	case "resetSelectionState": {
+    case "resetSelectionState": {
 
-	    private["_selectionOptions","_iconState"];
+        private["_selectionOptions","_iconState"];
 
-	    _selectionOptions = _logic getVariable "selectionOptions";
+        _selectionOptions = _logic getVariable "selectionOptions";
 
-	    {
+        {
             {
                 _iconState = _x select 2 select 3;
                 _iconState set [1,0];
                 _iconState set [2,0];
             } forEach _x;
-	    } forEach (_selectionOptions select 2);
+        } forEach (_selectionOptions select 2);
 
-	};
+    };
 
-	case "start": {
+    case "start": {
 
         if(isServer) then {
 
@@ -1008,15 +1008,15 @@ switch(_operation) do {
             _sortedShorePositions = [_playerSectorData, "terrain", [getPos player,"shore"]] call ALIVE_fnc_sectorDataSort;
 
             if(count _sortedShorePositions > 0) then {
-            	_nearestShorePosition = _sortedShorePositions select 0;
-            	_m2 = ["Nearest Shore",_nearestShorePosition,[1,1],"ColorKhaki"] call _createMarker;
+                _nearestShorePosition = _sortedShorePositions select 0;
+                _m2 = ["Nearest Shore",_nearestShorePosition,[1,1],"ColorKhaki"] call _createMarker;
 
-            	_line = "<t size='1'>Current analysis: nearest shore position</t><br/><br/>";
+                _line = "<t size='1'>Current analysis: nearest shore position</t><br/><br/>";
                 _currentCopy = format["%1%2",_baseCopy,_line];
                 ["setFullMapText",_currentCopy] call ALIVE_fnc_displayMenu;
 
-            	sleep 10;
-            	deleteMarkerLocal _m2;
+                sleep 10;
+                deleteMarkerLocal _m2;
             };
 
             private["_sortedSeaPositions","_nearestSeaPosition"];
@@ -1024,15 +1024,15 @@ switch(_operation) do {
             _sortedSeaPositions = [_playerSectorData, "terrain", [getPos player,"sea"]] call ALIVE_fnc_sectorDataSort;
 
             if(count _sortedSeaPositions > 0) then {
-            	_nearestSeaPosition = _sortedSeaPositions select 0;
-            	_m3 = ["Nearest Sea",_nearestSeaPosition,[1,1],"ColorBlue"] call _createMarker;
+                _nearestSeaPosition = _sortedSeaPositions select 0;
+                _m3 = ["Nearest Sea",_nearestSeaPosition,[1,1],"ColorBlue"] call _createMarker;
 
-            	_line = "<t size='1'>Current analysis: nearest sea position</t><br/><br/>";
+                _line = "<t size='1'>Current analysis: nearest sea position</t><br/><br/>";
                 _currentCopy = format["%1%2",_baseCopy,_line];
                 ["setFullMapText",_currentCopy] call ALIVE_fnc_displayMenu;
 
-            	sleep 10;
-            	deleteMarkerLocal _m3;
+                sleep 10;
+                deleteMarkerLocal _m3;
             };
 
 
@@ -1067,15 +1067,15 @@ switch(_operation) do {
             _sortedHillPositions = [_playerSectorData, "bestPlaces", [getPos player,"exposedHills"]] call ALIVE_fnc_sectorDataSort;
 
             if(count _sortedHillPositions > 0) then {
-            	_nearestHillPosition = _sortedHillPositions select 0;
-            	_m3 = ["Nearest Exposed Hill",_nearestHillPosition,[1,1],"ColorOrange"] call _createMarker;
+                _nearestHillPosition = _sortedHillPositions select 0;
+                _m3 = ["Nearest Exposed Hill",_nearestHillPosition,[1,1],"ColorOrange"] call _createMarker;
 
-            	_line = "<t size='1'>Current analysis: nearest exposed hill</t><br/><br/>";
+                _line = "<t size='1'>Current analysis: nearest exposed hill</t><br/><br/>";
                 _currentCopy = format["%1%2",_baseCopy,_line];
                 ["setFullMapText",_currentCopy] call ALIVE_fnc_displayMenu;
 
-            	sleep 10;
-            	deleteMarkerLocal _m3;
+                sleep 10;
+                deleteMarkerLocal _m3;
             };
 
 
@@ -1094,14 +1094,14 @@ switch(_operation) do {
             _sortedFlatEmptyPositions = [_playerSectorData, "flatEmpty", [getPos player]] call ALIVE_fnc_sectorDataSort;
 
             if(count _sortedFlatEmptyPositions > 0) then {
-            	_nearestFlatEmptyPosition = _sortedFlatEmptyPositions select 0;
-            	_m = ["Nearest Empty Space",_nearestFlatEmptyPosition,[1,1],"ColorRed"] call _createMarker;
+                _nearestFlatEmptyPosition = _sortedFlatEmptyPositions select 0;
+                _m = ["Nearest Empty Space",_nearestFlatEmptyPosition,[1,1],"ColorRed"] call _createMarker;
 
-            	_line = "<t size='1'>Current analysis: nearest empty space</t><br/><br/>";
+                _line = "<t size='1'>Current analysis: nearest empty space</t><br/><br/>";
                 _currentCopy = format["%1%2",_baseCopy,_line];
                 ["setFullMapText",_currentCopy] call ALIVE_fnc_displayMenu;
 
-            	sleep 10;
+                sleep 10;
                 deleteMarkerLocal _m;
             };
 
@@ -1121,15 +1121,15 @@ switch(_operation) do {
             _sortedRoadPositions = [_playerSectorData, "roads", [getPos player, "road"]] call ALIVE_fnc_sectorDataSort;
 
             if(count _sortedRoadPositions > 0) then {
-            	_nearestRoadPosition = _sortedRoadPositions select 0;
-            	_m = ["Nearest Road",(_nearestRoadPosition select 0),[1,1],"ColorGreen"] call _createMarker;
+                _nearestRoadPosition = _sortedRoadPositions select 0;
+                _m = ["Nearest Road",(_nearestRoadPosition select 0),[1,1],"ColorGreen"] call _createMarker;
 
-            	_line = "<t size='1'>Current analysis: nearest road</t><br/><br/>";
+                _line = "<t size='1'>Current analysis: nearest road</t><br/><br/>";
                 _currentCopy = format["%1%2",_baseCopy,_line];
                 ["setFullMapText",_currentCopy] call ALIVE_fnc_displayMenu;
 
-            	sleep 10;
-            	deleteMarkerLocal _m;
+                sleep 10;
+                deleteMarkerLocal _m;
             };
 
             private["_sortedCrossroadPositions","_nearestCrossroadPosition"];
@@ -1137,15 +1137,15 @@ switch(_operation) do {
             _sortedCrossroadPositions = [_playerSectorData, "roads", [getPos player, "crossroad"]] call ALIVE_fnc_sectorDataSort;
 
             if(count _sortedCrossroadPositions > 0) then {
-            	_nearestCrossroadPosition = _sortedCrossroadPositions select 0;
-            	_m = ["Nearest Crossroad",(_nearestCrossroadPosition select 0),[1,1],"ColorOrange"] call _createMarker;
+                _nearestCrossroadPosition = _sortedCrossroadPositions select 0;
+                _m = ["Nearest Crossroad",(_nearestCrossroadPosition select 0),[1,1],"ColorOrange"] call _createMarker;
 
-            	_line = "<t size='1'>Current analysis: nearest crossroad</t><br/><br/>";
+                _line = "<t size='1'>Current analysis: nearest crossroad</t><br/><br/>";
                 _currentCopy = format["%1%2",_baseCopy,_line];
                 ["setFullMapText",_currentCopy] call ALIVE_fnc_displayMenu;
 
-            	sleep 10;
-            	deleteMarkerLocal _m;
+                sleep 10;
+                deleteMarkerLocal _m;
             };
 
             private["_sortedTerminusPositions","_nearestTerminusPosition"];
@@ -1153,15 +1153,15 @@ switch(_operation) do {
             _sortedTerminusPositions = [_playerSectorData, "roads", [getPos player, "terminus"]] call ALIVE_fnc_sectorDataSort;
 
             if(count _sortedTerminusPositions > 0) then {
-            	_nearestTerminusPosition = _sortedTerminusPositions select 0;
-            	_m = ["Nearest Terminus",(_nearestTerminusPosition select 0),[1,1],"ColorRed"] call _createMarker;
+                _nearestTerminusPosition = _sortedTerminusPositions select 0;
+                _m = ["Nearest Terminus",(_nearestTerminusPosition select 0),[1,1],"ColorRed"] call _createMarker;
 
-            	_line = "<t size='1'>Current analysis: nearest road terminus</t><br/><br/>";
+                _line = "<t size='1'>Current analysis: nearest road terminus</t><br/><br/>";
                 _currentCopy = format["%1%2",_baseCopy,_line];
                 ["setFullMapText",_currentCopy] call ALIVE_fnc_displayMenu;
 
-            	sleep 10;
-            	deleteMarkerLocal _m;
+                sleep 10;
+                deleteMarkerLocal _m;
             };
 
             [ALIVE_sectorPlotter, "clear"] call ALIVE_fnc_plotSectors;
@@ -2306,7 +2306,7 @@ switch(_operation) do {
                     };
                 };
             };
-            
+
             ["closeSplash"] call ALIVE_fnc_displayMenu;
             */
 
