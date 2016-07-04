@@ -28,48 +28,48 @@ _amo = allMissionObjects "";
 
 STAT("Get array of id's and positions from object index");
 /*
-	"cargo",
-	"_tower",
-	"runway_end",
-	"runway_poj",
-	"runway_dirt",
-	"runway_main",
-	"runway_beton",
-	"runwayold",
-	"helipad",
-	"radar",
-	"hangar",
-	"shed_small_f"
+    "cargo",
+    "_tower",
+    "runway_end",
+    "runway_poj",
+    "runway_dirt",
+    "runway_main",
+    "runway_beton",
+    "runwayold",
+    "helipad",
+    "radar",
+    "hangar",
+    "shed_small_f"
 */
 /*
-	"dp_transformer_F",
-	"HighVoltageTower",
-	"PowerCable",
-	"PowerPole",
-	"PowerWire",
-	"PowLines_Transformer_F",
-	"spp_transformer_F"
+    "dp_transformer_F",
+    "HighVoltageTower",
+    "PowerCable",
+    "PowerPole",
+    "PowerWire",
+    "PowLines_Transformer_F",
+    "spp_transformer_F"
 */
 _obj_array = [
-	"hbarrier",
-	"razorwire",
-	"mil_wired",
-	"mil_wall",
-	"barrack",
-	"miloffices",
-	"bunker"
+    "hbarrier",
+    "razorwire",
+    "mil_wired",
+    "mil_wall",
+    "barrack",
+    "miloffices",
+    "bunker"
 ] call ALIVE_fnc_getObjectsByType;
 _err = "getObjectsByType";
 ASSERT_DEFINED("_obj_array",_err);
 ASSERT_TRUE(typeName _obj_array == "ARRAY", _err);
 ASSERT_TRUE(count _obj_array > 0,_err);
 {
-	LOG(_x);
+    LOG(_x);
         _m = createMarker [str _x, getPosATL _x];
-	_m setMarkerShape "Icon";
-	_m setMarkerSize [1, 1];
-	_m setMarkerType "mil_dot";
-	_m setMarkerColor "ColorGreen";
+    _m setMarkerShape "Icon";
+    _m setMarkerSize [1, 1];
+    _m setMarkerType "mil_dot";
+    _m setMarkerColor "ColorGreen";
 } forEach _obj_array;
 
 STAT("Test finding centre of cluster of objects");
@@ -90,7 +90,7 @@ _clusters = [_obj_array] call ALIVE_fnc_findClusters;
 _err = "finding clusters";
 ASSERT_TRUE(typeName _clusters == "ARRAY", _err);
 {
-	[_x, "debug", true] call ALIVE_fnc_cluster;
+    [_x, "debug", true] call ALIVE_fnc_cluster;
 } forEach _clusters;
 
 STAT("ConsolidateClusters function");
@@ -103,14 +103,14 @@ STAT("ConsolidateClusters completed");
 sleep 15;
 
 {
-	[_x, "destroy"] call ALIVE_fnc_cluster;
+    [_x, "destroy"] call ALIVE_fnc_cluster;
 } forEach _clusters;
 
 STAT("Clean up markers");
 deleteMarker str _center;
 {
-	deleteMarker str _x;
-	deleteVehicle _x;
+    deleteMarker str _x;
+    deleteVehicle _x;
 } forEach _obj_array;
 
 diag_log (allMissionObjects "") - _amo;

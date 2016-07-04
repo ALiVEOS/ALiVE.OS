@@ -77,7 +77,7 @@ ASSERT_TRUE(count _obj_array > 0,PFORMAT_1(_err,_obj_array));
         _m setMarkerSize [1, 1];
         _m setMarkerType "mil_dot";
         _m setMarkerColor "ColorBlue";
-	_ms set [count _ms, _m];
+    _ms set [count _ms, _m];
 } forEach _obj_array;
 
 STAT("Get array of all enterable houses across the map");
@@ -92,7 +92,7 @@ ASSERT_TRUE(count _obj_array > 0,PFORMAT_1(_err,_obj_array));
         _m setMarkerSize [1, 1];
         _m setMarkerType "mil_dot";
         _m setMarkerColor "ColorYellow";
-	_ms set [count _ms, _m];
+    _ms set [count _ms, _m];
 } forEach _obj_array;
 
 STAT("Get array of all house positions around the player");
@@ -107,7 +107,7 @@ ASSERT_TRUE(count _obj_array > 0,PFORMAT_1(_err,_obj_array));
         _m setMarkerSize [0.5, 0.5];
         _m setMarkerType "mil_dot";
         _m setMarkerColor "ColorRed";
-	_ms set [count _ms, _m];
+    _ms set [count _ms, _m];
 } forEach _obj_array;
 
 STAT("Get array of all indoor house positions around the player");
@@ -122,12 +122,12 @@ ASSERT_TRUE(count _obj_array > 0,PFORMAT_1(_err,_obj_array));
         _m setMarkerSize [0.5, 0.5];
         _m setMarkerType "mil_dot";
         _m setMarkerColor "ColorOrange";
-	_ms set [count _ms, _m];
+    _ms set [count _ms, _m];
 } forEach _obj_array;
 
 STAT("Clean up markers");
 {
-	deleteMarker _x;
+    deleteMarker _x;
 } forEach _ms;
 
 diag_log (allMissionObjects "") - _amo;
