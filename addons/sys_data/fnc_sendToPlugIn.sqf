@@ -43,16 +43,16 @@ TRACE_1("SEND TO PLUGIN: ", _response);
 
 
 if (typeName _response == "ARRAY") then {
-	if (count _response == 1) then {
-		_response = _response select 0;
-	};
+    if (count _response == 1) then {
+        _response = _response select 0;
+    };
 };
 
 
 // Need to check for errors here with new plugin grab 2nd and 3rd array values.
 if (([_response, "ERROR"] call CBA_fnc_find != -1 || [_response, "error"] call CBA_fnc_find != -1) && [_response, "terror"] call CBA_fnc_find == -1) then {
 
-	_response = "SYS_DATA_ERROR";
+    _response = "SYS_DATA_ERROR";
 };
 
 _response;

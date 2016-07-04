@@ -16,7 +16,7 @@ String - Returns a response error or confirmation of write
 
 Examples:
 (begin example)
-	_result = [_logic, "save", ["sys_player", GVAR(player_data), _missionKey, _ondisconnect]] call ALIVE_fnc_Data;
+    _result = [_logic, "save", ["sys_player", GVAR(player_data), _missionKey, _ondisconnect]] call ALIVE_fnc_Data;
 (end)
 
 Author:
@@ -41,16 +41,16 @@ _result = "";
 // For each record in the store, save the data to a document in the module table, unique key is the mission key + document key
 
 _saveData = {
-	private ["_documentID","_response"];
-	_documentID = _missionKey + "-" + _key;
+    private ["_documentID","_response"];
+    _documentID = _missionKey + "-" + _key;
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-	    ["ALiVE SYS_DATA_COUCHDB - SAVE DATA: %1 %2 %3", _missionKey, _key, _value] call ALIVE_fnc_dump;
+        ["ALiVE SYS_DATA_COUCHDB - SAVE DATA: %1 %2 %3", _missionKey, _key, _value] call ALIVE_fnc_dump;
     };
 
-	_response = [_logic, "write", [_module, _value, _async, _documentID] ] call ALIVE_fnc_Data;
+    _response = [_logic, "write", [_module, _value, _async, _documentID] ] call ALIVE_fnc_Data;
 
-	_result = _result + "," + _response;
+    _result = _result + "," + _response;
 };
 
 // For each hash, write to DB
@@ -62,7 +62,7 @@ _saveData = {
 _indexArray = [];
 
 _createIndex = {
-	_indexArray set [count _indexArray, _key];
+    _indexArray set [count _indexArray, _key];
 };
 [_data, _createIndex] call CBA_fnc_hashEachPair;
 
@@ -73,7 +73,7 @@ _newIndexDoc = [] call CBA_fnc_hashCreate;
 // If exists, get revision number so we can overwrite it
 _indexRev = [_logic, "indexRev", ""] call CBA_fnc_hashGet;
 if (_indexRev != "") then {
-	[_newIndexDoc, "_rev", _indexRev] call CBA_fnc_hashSet;
+    [_newIndexDoc, "_rev", _indexRev] call CBA_fnc_hashSet;
 };
 
 [_newIndexDoc, "index", _indexArray] call CBA_fnc_hashSet;

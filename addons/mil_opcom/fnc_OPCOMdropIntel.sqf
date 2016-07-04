@@ -52,37 +52,37 @@ _object setposATL ([_position,1] call CBA_fnc_Randpos);
 //["ALiVE OPCOM DropIntel TRACE object %1 created at %2 (%3)",typeOf _object, getposATL _object, _object] call ALiVE_fnc_DumpR;
 
 if (!isNull _object) then {
-    
+
     //Add Action globally
-	_args = [
-		"Read Intel", //Action Text
-		{_object = _this select 0; _caller = _this select 1; _params = _this select 3; openmap true; [_params select 0, 1500, _params select 1] call ALiVE_fnc_OPCOMToggleInstallations}, //Action Code
-		[_position,_side], //Params
-		1, //Prio
-		false, //showWindow
-		true, //hideOnUse
-		"", //showrtcut
-		"alive _target" //condition
-	];
+    _args = [
+        "Read Intel", //Action Text
+        {_object = _this select 0; _caller = _this select 1; _params = _this select 3; openmap true; [_params select 0, 1500, _params select 1] call ALiVE_fnc_OPCOMToggleInstallations}, //Action Code
+        [_position,_side], //Params
+        1, //Prio
+        false, //showWindow
+        true, //hideOnUse
+        "", //showrtcut
+        "alive _target" //condition
+    ];
     [[_object, _args],"addAction",true,true] call BIS_fnc_MP;
-    
+
     //["ALiVE OPCOM DropIntel TRACE action placed on object %1! All good!",_object] call ALiVE_fnc_DumpR;
     //_marker = [format["OPCOM_INTEL_%1", getposATL _object], getposATL _object,"ICON", [0.2,0.2],"ColorRed","INTEL", "n_installation", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal;
 
-	//Do cleanup!
-	[_unit,_object,_marker] spawn {
-	    
-	    _unit = _this select 0;
-	    _object = _this select 1;
+    //Do cleanup!
+    [_unit,_object,_marker] spawn {
+
+        _unit = _this select 0;
+        _object = _this select 1;
         _marker = _this select 2;
-	    
-	    waituntil {sleep 10; isNil "_unit" || {isNull _unit}};
-	    
+
+        waituntil {sleep 10; isNil "_unit" || {isNull _unit}};
+
         //["ALiVE OPCOM DropIntel TRACE deleting object %1! DropIntel finishing!",_object] call ALiVE_fnc_DumpR;
         //deleteMarker _marker;
-        
-	    deleteVehicle _object;
-	};
-	
-	_object
+
+        deleteVehicle _object;
+    };
+
+    _object
 };

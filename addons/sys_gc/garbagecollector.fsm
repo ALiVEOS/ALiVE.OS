@@ -74,10 +74,10 @@ class FSM
        "_queue = _collector getVariable [""queue"",[]];" \n
        "" \n
        "if (_auto && {time - _lastanalyze > _interval}) then {" \n
-       "	_handle = [_collector,""collect""] spawn ALiVE_fnc_GC;" \n
-       "	_lastAnalyze = time;" \n
+       "    _handle = [_collector,""collect""] spawn ALiVE_fnc_GC;" \n
+       "    _lastAnalyze = time;" \n
        "} else {" \n
-       "	_handle = [] spawn {};" \n
+       "    _handle = [] spawn {};" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -144,9 +144,9 @@ class FSM
       init = /*%FSM<STATEINIT""">*/"_handle = -1; " \n
        "" \n
        "if ((count allDead) < _threshold) then {" \n
-       "	_handle = [_collector,""process"",false] spawn ALiVE_fnc_GC;" \n
+       "    _handle = [_collector,""process"",false] spawn ALiVE_fnc_GC;" \n
        "} else {" \n
-       "	_handle = [_collector,""process"",true] spawn ALiVE_fnc_GC;" \n
+       "    _handle = [_collector,""process"",true] spawn ALiVE_fnc_GC;" \n
        "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links

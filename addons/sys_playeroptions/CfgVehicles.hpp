@@ -3,23 +3,23 @@ class CfgVehicles {
 
         class ADDON : ModuleAliveBase
         {
-        	scope = 2;
-        	displayName = "$STR_ALIVE_playeroptions";
-        	function = "ALIVE_fnc_playeroptionsInit";
-        	functionPriority = 200;
-        	isGlobal = 2;
-        	icon = "x\alive\addons\sys_playeroptions\icon_sys_playeroptions.paa";
-        	picture = "x\alive\addons\sys_playeroptions\icon_sys_playeroptions.paa";
-        	author = MODULE_AUTHOR;
+            scope = 2;
+            displayName = "$STR_ALIVE_playeroptions";
+            function = "ALIVE_fnc_playeroptionsInit";
+            functionPriority = 200;
+            isGlobal = 2;
+            icon = "x\alive\addons\sys_playeroptions\icon_sys_playeroptions.paa";
+            picture = "x\alive\addons\sys_playeroptions\icon_sys_playeroptions.paa";
+            author = MODULE_AUTHOR;
 
                 class ModuleDescription
-		{
-			description[] = {
-					"$STR_ALIVE_playeroptions_COMMENT",
-					"",
-					"$STR_ALIVE_playeroptions_USAGE"
-			};
-		};
+        {
+            description[] = {
+                    "$STR_ALIVE_playeroptions_COMMENT",
+                    "",
+                    "$STR_ALIVE_playeroptions_USAGE"
+            };
+        };
 
                 class Arguments
                 {

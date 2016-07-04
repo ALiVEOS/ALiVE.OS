@@ -14,7 +14,7 @@ SCRIPT(test-hashes);
 LOG("=== Testing Hashes ===");
 
 {
-	call compile preprocessFileLineNumbers format ["\x\ALIVE\addons\sys_data\tests\test_%1.sqf", _x];
+    call compile preprocessFileLineNumbers format ["\x\ALIVE\addons\sys_data\tests\test_%1.sqf", _x];
 } forEach TESTS;
 
 nil;

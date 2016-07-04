@@ -107,7 +107,7 @@ switch(_operation) do {
 
                 // Client init
                 } else {
-                	// any client side logic
+                    // any client side logic
                 };
 
                 // and wait for game logic to initialise
@@ -120,26 +120,26 @@ switch(_operation) do {
 
                 _logic setVariable ["bis_fnc_initModules_activate",true];
 
-				// Only on player clients
+                // Only on player clients
                 if (hasInterface) then {
-                    
-            	    CREWINFO_DEBUG = call compile (_logic getvariable ["debug","false"]);
-                  	CREWINFO_UILOC = call compile (_logic getvariable ["crewinfo_ui_setting","1"]);
-        	 		
+
+                    CREWINFO_DEBUG = call compile (_logic getvariable ["debug","false"]);
+                      CREWINFO_UILOC = call compile (_logic getvariable ["crewinfo_ui_setting","1"]);
+
                     Waituntil {!isnil "CREWINFO_DEBUG" && {!isnil "CREWINFO_UILOC"}};
 
-    				// DEBUG -------------------------------------------------------------------------------------
-						if(CREWINFO_DEBUG) then {
-							["ALIVE Crew Info - Starting..."] call ALIVE_fnc_dump;
-							if (CREWINFO_UILOC == 1) then {
-								["ALIVE Crew Info - Drawing UI right (%1)", CREWINFO_UILOC] call ALIVE_fnc_dump;
-							} else {
-								["ALIVE Crew Info - Drawing UI left (%1)", CREWINFO_UILOC] call ALIVE_fnc_dump;
-							};
-						};
-					// DEBUG -------------------------------------------------------------------------------------
+                    // DEBUG -------------------------------------------------------------------------------------
+                        if(CREWINFO_DEBUG) then {
+                            ["ALIVE Crew Info - Starting..."] call ALIVE_fnc_dump;
+                            if (CREWINFO_UILOC == 1) then {
+                                ["ALIVE Crew Info - Drawing UI right (%1)", CREWINFO_UILOC] call ALIVE_fnc_dump;
+                            } else {
+                                ["ALIVE Crew Info - Drawing UI left (%1)", CREWINFO_UILOC] call ALIVE_fnc_dump;
+                            };
+                        };
+                    // DEBUG -------------------------------------------------------------------------------------
 
-   					[] spawn ALIVE_fnc_crewinfoClient;
+                       [] spawn ALIVE_fnc_crewinfoClient;
                 };
 
                 _result = ADDON;

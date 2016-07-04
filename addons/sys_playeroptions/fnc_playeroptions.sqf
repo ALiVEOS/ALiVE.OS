@@ -43,20 +43,20 @@ TRACE_3(QUOTE(ADDON),_logic, _operation, _args);
 
 switch (_operation) do {
 
-    	case "create": {
+        case "create": {
             if (isServer) then {
 
-	            // Ensure only one module is used
-	            if !(isNil QUOTE(ADDON)) then {
-                	_logic = ADDON;
+                // Ensure only one module is used
+                if !(isNil QUOTE(ADDON)) then {
+                    _logic = ADDON;
                     ERROR_WITH_TITLE(str _logic, localize "STR_ALIVE_playeroptions_ERROR1");
-	            } else {
-	        		_logic = (createGroup sideLogic) createUnit ["ALiVE_SYS_playeroptions", [0,0], [], 0, "NONE"];
+                } else {
+                    _logic = (createGroup sideLogic) createUnit ["ALiVE_SYS_playeroptions", [0,0], [], 0, "NONE"];
                     ADDON = _logic;
                 };
 
                 //Push to clients
-	            PublicVariable QUOTE(ADDON);
+                PublicVariable QUOTE(ADDON);
             };
 
             TRACE_1("Waiting for object to be ready",true);
@@ -65,9 +65,9 @@ switch (_operation) do {
 
             TRACE_1("Creating class on all localities",true);
 
-			// initialise module game logic on all localities
-			ADDON setVariable ["super", QUOTE(SUPERCLASS)];
-			ADDON setVariable ["class", QUOTE(MAINCLASS)];
+            // initialise module game logic on all localities
+            ADDON setVariable ["super", QUOTE(SUPERCLASS)];
+            ADDON setVariable ["class", QUOTE(MAINCLASS)];
 
             _result = ADDON;
         };
@@ -92,7 +92,7 @@ switch (_operation) do {
             ADDON = _logic;
 
             // Define module basics on server
-			if (isServer) then {
+            if (isServer) then {
                 _errorMessage = "Please include either the Requires ALiVE module or the Profiles module! %1 %2";
                 _error1 = ""; _error2 = ""; //defaults
                 if(
@@ -102,7 +102,7 @@ switch (_operation) do {
                 };
 
                 _logic setVariable ["init", true, true];
-			};
+            };
 
             /*
             CONTROLLER  - coordination
@@ -186,7 +186,7 @@ switch (_operation) do {
                 [_logic, "debug", false] call MAINCLASS;
 
                 if (isServer) then {
-                		// if server
+                        // if server
                         ADDON = _logic;
 
                         ADDON setVariable ["super", nil];

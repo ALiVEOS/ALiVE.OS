@@ -80,17 +80,17 @@ switch(_operation) do {
                                 - enabled/disabled
                 */
 
-				//Create or assign existing Logic
+                //Create or assign existing Logic
                 if (isNil QUOTE(ADDON)) then {
                     // not needed when created via playeroptions
                     _logic = [_logic,"create"] call ALiVE_fnc_vDist;
                 };
 
                 //Only one init per instance is allowed
-            	if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS VIEWDISTANCE - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS VIEWDISTANCE - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
 
-				//Start init
-				_logic setVariable ["initGlobal", false];
+                //Start init
+                _logic setVariable ["initGlobal", false];
 
                 // and wait for game logic to initialise
                 // TODO merge into lazy evaluation
@@ -162,7 +162,7 @@ switch(_operation) do {
                 };
 
                 //End init
-            	_logic setVariable ["initGlobal", true];
+                _logic setVariable ["initGlobal", true];
 
                 _logic setVariable ["bis_fnc_initModules_activate",true];
 

@@ -16,7 +16,7 @@ String - Returns a response error or confirmation of write
 
 Examples:
 (begin example)
-	[ _logic, [ _module, [[key,value],[key,value],[key,value]], _async, _uid ] ] call ALIVE_fnc_writeData;
+    [ _logic, [ _module, [[key,value],[key,value],[key,value]], _async, _uid ] ] call ALIVE_fnc_writeData;
 (end)
 
 Author:
@@ -53,10 +53,10 @@ _data = _args select 1;
 
 // Add the async flag
 if (count _args > 2) then {
-	_async = _args select 2;
+    _async = _args select 2;
 } else {
-	_async = false;
-	_uid = "";
+    _async = false;
+    _uid = "";
 };
 
 _method = "POST";
@@ -68,7 +68,7 @@ _string = "";
 
 // If the UID is specified then add it to the URL
 if (count _args > 3) then {
-	_uid = _args select 3;
+    _uid = _args select 3;
 };
 
 // Add bulk docs tag
@@ -87,9 +87,9 @@ _module = _module + "/_bulk_docs";
 */
 
 if (!_async) then {
-	_cmd = format ["SendJSON ['%2','%1'", _module, _method];
+    _cmd = format ["SendJSON ['%2','%1'", _module, _method];
 } else {
-	_cmd = format ["SendJSONAsync ['%2','%1'", _module, _method];
+    _cmd = format ["SendJSONAsync ['%2','%1'", _module, _method];
 };
 
 //Create the bulk docs format
@@ -101,15 +101,15 @@ _docs = "";
 TRACE_1("",_bulkstart);
 
 _parse = {
-	private "_json";
-	// create the doc ID
-	[_value, "_id", _uid + "-" + _key] call ALIVE_fnc_hashSet;
+    private "_json";
+    // create the doc ID
+    [_value, "_id", _uid + "-" + _key] call ALIVE_fnc_hashSet;
 
-	// convert hash to JSON string
-	_json = [_logic, "convert", [_value]] call ALIVE_fnc_Data;
-	TRACE_1("",_json);
+    // convert hash to JSON string
+    _json = [_logic, "convert", [_value]] call ALIVE_fnc_Data;
+    TRACE_1("",_json);
 
-	_docs = _docs + _json + ",";
+    _docs = _docs + _json + ",";
 };
 
 // For each hash create a JSON string
@@ -136,9 +136,9 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 
 // Send JSON to plugin
 if (!_async) then {
-	_response = [_string] call ALIVE_fnc_sendToPlugIn; // if you need a returned UID then you have to go with synchronous op
+    _response = [_string] call ALIVE_fnc_sendToPlugIn; // if you need a returned UID then you have to go with synchronous op
 } else {
-	_response = [_string] call ALIVE_fnc_sendToPlugInAsync; //SendJSON is an async addin function so does not return a response until asked for a second time.
+    _response = [_string] call ALIVE_fnc_sendToPlugInAsync; //SendJSON is an async addin function so does not return a response until asked for a second time.
 };
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
@@ -151,12 +151,12 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 /*
 // Handle result of write
 if (typeName _response == "ARRAY") then {
-	_result = _response select 0;
+    _result = _response select 0;
 } else {
-	// Handle data error
-	private["_err"];
-	_err = format["The Couch database %1 did not respond with %2. The data returned was: %3", _databaseName, typeName _result, _result];
-	ERROR_WITH_TITLE(str _logic, _err);
+    // Handle data error
+    private["_err"];
+    _err = format["The Couch database %1 did not respond with %2. The data returned was: %3", _databaseName, typeName _result, _result];
+    ERROR_WITH_TITLE(str _logic, _err);
 };*/
 
 // Get UID of written record and add to result

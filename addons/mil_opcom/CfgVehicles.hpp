@@ -37,16 +37,16 @@ class CfgVehicles {
         class ModuleAliveBase;
         class ADDON : ModuleAliveBase
         {
-				scope = 2;
-				displayName = "$STR_ALIVE_OPCOM";
-				function = "ALIVE_fnc_OPCOMInit";
-				author = MODULE_AUTHOR;
-				functionPriority = 180;
-				isGlobal = 1;
-				icon = "x\alive\addons\mil_opcom\icon_mil_opcom.paa";
-				picture = "x\alive\addons\mil_opcom\icon_mil_opcom.paa";
+                scope = 2;
+                displayName = "$STR_ALIVE_OPCOM";
+                function = "ALIVE_fnc_OPCOMInit";
+                author = MODULE_AUTHOR;
+                functionPriority = 180;
+                isGlobal = 1;
+                icon = "x\alive\addons\mil_opcom\icon_mil_opcom.paa";
+                picture = "x\alive\addons\mil_opcom\icon_mil_opcom.paa";
 
-				class Arguments
+                class Arguments
                 {
                         class debug
                         {
@@ -105,7 +105,7 @@ class CfgVehicles {
                                                 name = "Occupation";
                                                 value = "occupation";
                                         };
-										class asymmetric
+                                        class asymmetric
                                         {
                                                 name = "Asymmetric";
                                                 value = "asymmetric";
@@ -130,23 +130,23 @@ class CfgVehicles {
                                                 name = "Low";
                                                 value = 25;
                                         };
-										class medium
+                                        class medium
                                         {
                                                 name = "Medium";
                                                 value = 50;
                                         };
-										class high
+                                        class high
                                         {
                                                 name = "High";
                                                 value = 75;
                                         };
-										class extreme
+                                        class extreme
                                         {
                                                 name = "Extreme";
                                                 value = 100;
-                                        };                                                                                 
+                                        };
                                 };
-                        };                        
+                        };
                         class reinforcements
                         {
                                 displayName = "$STR_ALIVE_OPCOM_REINFORCEMENTS";
@@ -223,7 +223,7 @@ class CfgVehicles {
                                                 name = "REBELS BLU";
                                                 value = "BLU_G_F";
                                         };
-		                                class REBELS_OPF
+                                        class REBELS_OPF
                                         {
                                                 name = "REBELS RED";
                                                 value = "OPF_G_F";
@@ -241,7 +241,7 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_OPCOM_FACTION_COMMENT";
                                 class Values
                                 {
-                                		class NONE
+                                        class NONE
                                         {
                                                 name = "NONE";
                                                 value = "NONE";
@@ -267,7 +267,7 @@ class CfgVehicles {
                                                 name = "REBELS BLU";
                                                 value = "BLU_G_F";
                                         };
-		                                class REBELS_OPF
+                                        class REBELS_OPF
                                         {
                                                 name = "REBELS RED";
                                                 value = "OPF_G_F";
@@ -280,7 +280,7 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_OPCOM_FACTION_COMMENT";
                                 class Values
                                 {
-                                		class NONE
+                                        class NONE
                                         {
                                                 name = "NONE";
                                                 value = "NONE";
@@ -306,7 +306,7 @@ class CfgVehicles {
                                                 name = "REBELS BLU";
                                                 value = "BLU_G_F";
                                         };
-		                                class REBELS_OPF
+                                        class REBELS_OPF
                                         {
                                                 name = "REBELS RED";
                                                 value = "OPF_G_F";
@@ -319,7 +319,7 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_OPCOM_FACTION_COMMENT";
                                 class Values
                                 {
-                                		class NONE
+                                        class NONE
                                         {
                                                 name = "NONE";
                                                 value = "NONE";
@@ -345,7 +345,7 @@ class CfgVehicles {
                                                 name = "REBELS BLU";
                                                 value = "BLU_G_F";
                                         };
-		                                class REBELS_OPF
+                                        class REBELS_OPF
                                         {
                                                 name = "REBELS RED";
                                                 value = "OPF_G_F";
@@ -359,41 +359,41 @@ class CfgVehicles {
                                 defaultValue = "";
                         };
                 };
-            	class ModuleDescription
-				{
-					//description = "$STR_ALIVE_OPCOM_COMMENT"; // Short description, will be formatted as structured text
-					description[] = {
-							"$STR_ALIVE_OPCOM_COMMENT",
-							"",
-							"$STR_ALIVE_OPCOM_USAGE"
-					};
-					sync[] = {"ALiVE_civ_placement","ALiVE_mil_placement","ALiVE_mil_intelligence","ALiVE_mil_logistics"}; // Array of synced entities (can contain base classes)
+                class ModuleDescription
+                {
+                    //description = "$STR_ALIVE_OPCOM_COMMENT"; // Short description, will be formatted as structured text
+                    description[] = {
+                            "$STR_ALIVE_OPCOM_COMMENT",
+                            "",
+                            "$STR_ALIVE_OPCOM_USAGE"
+                    };
+                    sync[] = {"ALiVE_civ_placement","ALiVE_mil_placement","ALiVE_mil_intelligence","ALiVE_mil_logistics"}; // Array of synced entities (can contain base classes)
 
-					class ALiVE_civ_placement
-					{
-						description[] = { // Multi-line descriptions are supported
-							"$STR_ALIVE_CP_COMMENT",
-							"",
-							"$STR_ALIVE_CP_USAGE"
-						};
-						position = 0; // Position is taken into effect
-						direction = 0; // Direction is taken into effect
-						optional = 1; // Synced entity is optional
-						duplicate = 1; // Multiple entities of this type can be synced
-					};
-					class ALiVE_mil_placement
-					{
-						description[] = { // Multi-line descriptions are supported
-							"$STR_ALIVE_MP_COMMENT",
-							"",
-							"$STR_ALIVE_MP_USAGE"
-						};
-						position = 0; // Position is taken into effect
-						direction = 0; // Direction is taken into effect
-						optional = 1; // Synced entity is optional
-						duplicate = 1; // Multiple entities of this type can be synced
-					};
-					class ALiVE_mil_logistics
+                    class ALiVE_civ_placement
+                    {
+                        description[] = { // Multi-line descriptions are supported
+                            "$STR_ALIVE_CP_COMMENT",
+                            "",
+                            "$STR_ALIVE_CP_USAGE"
+                        };
+                        position = 0; // Position is taken into effect
+                        direction = 0; // Direction is taken into effect
+                        optional = 1; // Synced entity is optional
+                        duplicate = 1; // Multiple entities of this type can be synced
+                    };
+                    class ALiVE_mil_placement
+                    {
+                        description[] = { // Multi-line descriptions are supported
+                            "$STR_ALIVE_MP_COMMENT",
+                            "",
+                            "$STR_ALIVE_MP_USAGE"
+                        };
+                        position = 0; // Position is taken into effect
+                        direction = 0; // Direction is taken into effect
+                        optional = 1; // Synced entity is optional
+                        duplicate = 1; // Multiple entities of this type can be synced
+                    };
+                    class ALiVE_mil_logistics
                     {
                         description[] = { // Multi-line descriptions are supported
                             "$STR_ALIVE_ML_COMMENT",
@@ -405,6 +405,6 @@ class CfgVehicles {
                         optional = 1; // Synced entity is optional
                         duplicate = 1; // Multiple entities of this type can be synced
                     };
-				};
+                };
         };
 };

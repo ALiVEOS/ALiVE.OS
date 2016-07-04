@@ -8,8 +8,8 @@ class CfgVehicles {
                 author = MODULE_AUTHOR;
                 functionPriority = 14;
                 isGlobal = 2;
-				icon = "x\alive\addons\sup_transport\icon_sup_transport.paa";
-				picture = "x\alive\addons\sup_transport\icon_sup_transport.paa";
+                icon = "x\alive\addons\sup_transport\icon_sup_transport.paa";
+                picture = "x\alive\addons\sup_transport\icon_sup_transport.paa";
                 class Arguments
                 {
                 class conv_debug_setting

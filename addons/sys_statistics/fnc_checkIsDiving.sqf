@@ -18,7 +18,7 @@ None
 
 Examples:
 (begin example)
-	[MOD(fnc_checkIsDiving), 30, [GVAR(ENABLED)]] call CBA_fnc_addPerFrameHandler;
+    [MOD(fnc_checkIsDiving), 30, [GVAR(ENABLED)]] call CBA_fnc_addPerFrameHandler;
 (end)
 
 See Also:
@@ -38,30 +38,30 @@ _params = _this select 0;
 _statsEnabled = (_params select 0);
 
 if (underwater player && isAbleToBreathe player) then {
-	_diving = player getVariable [QGVAR(isDiving),false];
+    _diving = player getVariable [QGVAR(isDiving),false];
 
-	// record dive start time
-	if !(_diving) then {
-		player setVariable [QGVAR(isDiving),true,false];
-		player setVariable [QGVAR(diveStartTime),diag_tickTime,false];
-	};
+    // record dive start time
+    if !(_diving) then {
+        player setVariable [QGVAR(isDiving),true,false];
+        player setVariable [QGVAR(diveStartTime),diag_tickTime,false];
+    };
 } else {
 
-	_diving = player getVariable [QGVAR(isDiving),false];
+    _diving = player getVariable [QGVAR(isDiving),false];
 
-	// Player has exited from dive - they may have surfaced also?
-	if (_diving) then {
+    // Player has exited from dive - they may have surfaced also?
+    if (_diving) then {
 
-		_diveStartTime = player getVariable [QGVAR(diveStartTime),diag_tickTime - 45];
-		_diveTime = round((diag_tickTime - _diveStartTime) / 60); // in minutes
+        _diveStartTime = player getVariable [QGVAR(diveStartTime),diag_tickTime - 45];
+        _diveTime = round((diag_tickTime - _diveStartTime) / 60); // in minutes
 
-		// Record Combat Dive
-		if (_statsEnabled) then {
-			[player,_diveTime] call GVAR(fnc_divingEH);
-		};
+        // Record Combat Dive
+        if (_statsEnabled) then {
+            [player,_diveTime] call GVAR(fnc_divingEH);
+        };
 
-		// Clear dive flag
-		player setVariable [QGVAR(isDiving),false,false];
-	};
+        // Clear dive flag
+        player setVariable [QGVAR(isDiving),false,false];
+    };
 };
 

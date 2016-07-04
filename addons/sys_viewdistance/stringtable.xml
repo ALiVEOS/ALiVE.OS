@@ -3,52 +3,52 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_VDIST">
-	<Original>View Settings</Original>
+    <Original>View Settings</Original>
 </Key>
 <Key ID="STR_ALIVE_VDIST_COMMENT">
-	<Original>View Distance Settings in Game</Original>
+    <Original>View Distance Settings in Game</Original>
 </Key>
 <Key ID="STR_ALIVE_VDIST_USAGE">
-	<Original>View Settings module allows you to dynamically change the appropriate view and terrain grid distance in game. You can also force a fixed View Distance by setting max and min values the same!</Original>
+    <Original>View Settings module allows you to dynamically change the appropriate view and terrain grid distance in game. You can also force a fixed View Distance by setting max and min values the same!</Original>
 </Key>
 <Key ID="STR_ALIVE_VDIST_MAX">
-	<Original>Max View Distance:</Original>
+    <Original>Max View Distance:</Original>
 </Key>
 <Key ID="STR_ALIVE_VDIST_MAX_COMMENT">
-	<Original>Maximum view distance allowed in Game</Original>
+    <Original>Maximum view distance allowed in Game</Original>
 </Key>
 <Key ID="STR_ALIVE_VDIST_ENABLED">
-	<Original>Set View Settings</Original>
+    <Original>Set View Settings</Original>
 </Key>
 <Key ID="STR_ALIVE_VDIST_ENABLED_COMMENT">
-	<Original>Set you View distance in Game</Original>
+    <Original>Set you View distance in Game</Original>
 </Key>
 <Key ID="STR_ALIVE_VDIST_MIN">
-	<Original>Min View Distance:</Original>
+    <Original>Min View Distance:</Original>
 </Key>
 <Key ID="STR_ALIVE_VDIST_MIN_COMMENT">
-	<Original>Minimum view distance allowed in Game</Original>
+    <Original>Minimum view distance allowed in Game</Original>
 </Key>
 <Key ID="STR_ALIVE_TGRID">
-	<Original>Terrain Grid</Original>
+    <Original>Terrain Grid</Original>
 </Key>
 <Key ID="STR_ALIVE_TGRID_COMMENT">
-	<Original>Terrain Grid Settings in Game</Original>
+    <Original>Terrain Grid Settings in Game</Original>
 </Key>
 <Key ID="STR_ALIVE_TGRID_MAX">
-	<Original>Max Terrain Grid:</Original>
+    <Original>Max Terrain Grid:</Original>
 </Key>
 <Key ID="STR_ALIVE_TGRID_MAX_COMMENT">
-	<Original>Maximum Terrain Grid allowed in Game 1 Low -> 5 High</Original>
+    <Original>Maximum Terrain Grid allowed in Game 1 Low -> 5 High</Original>
 </Key>
 <Key ID="STR_ALIVE_TGRID_MIN">
-	<Original>Min Terrain Grid:</Original>
+    <Original>Min Terrain Grid:</Original>
 </Key>
 <Key ID="STR_ALIVE_TGRID_MIN_COMMENT">
-	<Original>Minimum Terrain Grid allowed in Game 1 Low -> 5 High</Original>
+    <Original>Minimum Terrain Grid allowed in Game 1 Low -> 5 High</Original>
 </Key>
 <Key ID="STR_ALIVE_VDIST_ERROR1">
-	<Original>Only one View Distance module can be used</Original>
+    <Original>Only one View Distance module can be used</Original>
 </Key>
 
 </Container></Package></Project>

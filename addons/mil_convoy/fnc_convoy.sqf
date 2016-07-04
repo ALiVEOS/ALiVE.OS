@@ -48,54 +48,54 @@ DEFAULT_PARAM(1,_operation,"");
 DEFAULT_PARAM(2,_args,nil);
 
 
-switch(_operation) do {              
-		default {
+switch(_operation) do {
+        default {
                 private["_err"];
                 _err = format["%1 does not support %2 operation", _logic, _operation];
                 ERROR_WITH_TITLE(str _logic,_err);
         };
-		/*MODEL - no visual just reference data
-		- server side object only
-		- enabled/disabled
-		*/
-		// Ensure only one module is used
-		case "init": {  
-		
-				if (isServer) then {
-		 			 //Initialise module game logic on all localities (clientside spawn)
-		                _logic setVariable ["super", SUPERCLASS];
-		                _logic setVariable ["class", ALIVE_fnc_CONVOY];
-		                _logic setVariable ["init", true, true]; 
-		
-						_logic setvariable ["conv_intensity_setting",(parsenumber (_logic getvariable["conv_intensity_setting","1"])),true];
-						_logic setvariable ["conv_safearea_setting",(parsenumber (_logic getvariable["conv_safearea_setting","2000"])),true];
-						_logic setvariable ["conv_debug_setting",(call compile (_logic getvariable["conv_debug_setting","false"])),true];
-						_logic getvariable ["conv_factions_setting","OPF_F"];
-		
-						/*
-		                CONVOY_GLOBALDEBUG = _logic getvariable ["conv_debug_setting",false];
-		                CONVOY_safearea = _logic getvariable ["conv_safearea_setting",2000];
-						CONVOY_intensity = _logic getvariable ["conv_intensity_setting",1];
-						*/
+        /*MODEL - no visual just reference data
+        - server side object only
+        - enabled/disabled
+        */
+        // Ensure only one module is used
+        case "init": {
 
-						[_logic] call ALIVE_fnc_startConvoy;
-				};
-				
-				//Clients
-				if(!isDedicated && !isHC) then {};
-		};
+                if (isServer) then {
+                      //Initialise module game logic on all localities (clientside spawn)
+                        _logic setVariable ["super", SUPERCLASS];
+                        _logic setVariable ["class", ALIVE_fnc_CONVOY];
+                        _logic setVariable ["init", true, true];
 
-     	case "destroy": {
-			if (isServer) then {
+                        _logic setvariable ["conv_intensity_setting",(parsenumber (_logic getvariable["conv_intensity_setting","1"])),true];
+                        _logic setvariable ["conv_safearea_setting",(parsenumber (_logic getvariable["conv_safearea_setting","2000"])),true];
+                        _logic setvariable ["conv_debug_setting",(call compile (_logic getvariable["conv_debug_setting","false"])),true];
+                        _logic getvariable ["conv_factions_setting","OPF_F"];
 
-			// if server
-			_logic setVariable ["super", nil];
-			_logic setVariable ["class", nil];
-			_logic setVariable ["init", nil];
-			// and publicVariable to clients
-			MOD(convoy) = _logic;
-			publicVariable QMOD(convoy);
-		};
-	};
-       
+                        /*
+                        CONVOY_GLOBALDEBUG = _logic getvariable ["conv_debug_setting",false];
+                        CONVOY_safearea = _logic getvariable ["conv_safearea_setting",2000];
+                        CONVOY_intensity = _logic getvariable ["conv_intensity_setting",1];
+                        */
+
+                        [_logic] call ALIVE_fnc_startConvoy;
+                };
+
+                //Clients
+                if(!isDedicated && !isHC) then {};
+        };
+
+         case "destroy": {
+            if (isServer) then {
+
+            // if server
+            _logic setVariable ["super", nil];
+            _logic setVariable ["class", nil];
+            _logic setVariable ["init", nil];
+            // and publicVariable to clients
+            MOD(convoy) = _logic;
+            publicVariable QMOD(convoy);
+        };
+    };
+
 };

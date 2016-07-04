@@ -72,16 +72,16 @@ Company Types:
 - Heavy weapons/Combat Support Company administratively contains the specialized infantry platoons such as Reconnaissance Platoon, Pioneer Platoon, Headquarters and Signals Platoon, Anti-Armour Platoon, and Mortar Platoon
 - Support/Administration Support Company contains the support tradesmen which a battalion requires, such as cooks, vehicle technicians, supply, medics, etc.
 - Motorised Rifle Company mounted in BTR/BMP
-	- BTR rifle company consisted of a company headquarters, three motorised rifle platoons and a machine gun/antitank platoon with two PK machine guns and two AT-7 Saxhorn launchers for a total of 110 personnel and 12 BTRs
-	- BMP rifle company had the same number of personnel and carriers and also consisted of a company headquarters and three motorised rifle platoons but instead included a machine gun platoon with six RPK-74s
+    - BTR rifle company consisted of a company headquarters, three motorised rifle platoons and a machine gun/antitank platoon with two PK machine guns and two AT-7 Saxhorn launchers for a total of 110 personnel and 12 BTRs
+    - BMP rifle company had the same number of personnel and carriers and also consisted of a company headquarters and three motorised rifle platoons but instead included a machine gun platoon with six RPK-74s
 - Tank companies at 10 tanks, with three tanks in each platoon plus HQ tank
 - Headquarters and Service Company
-	- Service Platoon, consisting of S-4, Motor Transportation, Food Service, armorers, and Supply.
-	- Scout Sniper Platoon.
-	- Medical Platoon
+    - Service Platoon, consisting of S-4, Motor Transportation, Food Service, armorers, and Supply.
+    - Scout Sniper Platoon.
+    - Medical Platoon
 - Airborne - Airborne forces are generally composed of infantry and light, non-armored vehicles and guns
-	- Paratroopers - Infantry soldier landed by parachute from aircraft
-	- Air assault troops or airmobile infantry—transported to the battle by helicopter or by aircraft.
+    - Paratroopers - Infantry soldier landed by parachute from aircraft
+    - Air assault troops or airmobile infantry?transported to the battle by helicopter or by aircraft.
 ----------------------------------------
 Tupolov:
 OPCOM accepts input from mission maker. Mission maker is essentially 2 UP from player. 2 UP is the commander that says, here's the situation, I want you to defend/attack/occupy/counter insurgency/raid/invade X location. I expect a BN/coy/platoon with inf/mech/armour/air assets.

@@ -49,7 +49,7 @@ params [
 _result = true;
 
 switch(_operation) do {
-    case "init": {                
+    case "init": {
         if (isServer) then {
             // if server, initialise module game logic
             [_logic,"super"] call ALIVE_fnc_hashRem;
@@ -69,23 +69,23 @@ switch(_operation) do {
         };
     };
     case "destroy": {
-        
+
         [_logic, "debug", false] call MAINCLASS;
         if (isServer) then {
-            // if server			
+            // if server
             [_logic,"super"] call ALIVE_fnc_hashRem;
             [_logic,"class"] call ALIVE_fnc_hashRem;
-            
+
             [_logic, "destroy"] call SUPERCLASS;
         };
-        
+
     };
     case "debug": {
         if(typeName _args != "BOOL") then {
             _args = [_logic,"debug", false] call ALIVE_fnc_hashGet;
         } else {
             [_logic,"debug",_args] call ALIVE_fnc_hashSet;
-        };                
+        };
         _result = _args;
     };
     case "register": {
@@ -186,7 +186,7 @@ switch(_operation) do {
     };
     case "getModule": {
         private["_moduleID","_modules","_moduleIndex"];
-        
+
         if(typeName _args == "STRING") then {
             _moduleID = _args;
             _modules = [_logic, "modules"] call ALIVE_fnc_hashGet;
@@ -195,7 +195,7 @@ switch(_operation) do {
                 _result = [_modules, _moduleID] call ALIVE_fnc_hashGet;
             }else{
                 _result = nil;
-            };		
+            };
         };
     };
     case "getModules": {

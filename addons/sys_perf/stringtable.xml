@@ -3,22 +3,22 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_PERF">
-	<Original>Perf</Original>
+    <Original>Perf</Original>
 </Key>
 <Key ID="STR_ALIVE_DISABLE_PERF">
-	<Original>Disable Perf</Original>
+    <Original>Disable Perf</Original>
 </Key>
 <Key ID="STR_ALIVE_PERF_COMMENT">
-	<Original>Disable MP Perf recorded to ALiVE web service</Original>
+    <Original>Disable MP Perf recorded to ALiVE web service</Original>
 </Key>
 <Key ID="STR_ALIVE_PERF_ENABLE">
-	<Original>Enable Perf</Original>
+    <Original>Enable Perf</Original>
 </Key>
 <Key ID="STR_ALIVE_PERF_ENABLE_COMMENT">
-	<Original>Enable/Disable perf recording to the ALiVE web service</Original>
+    <Original>Enable/Disable perf recording to the ALiVE web service</Original>
 </Key>
 <Key ID="STR_ALIVE_PERF_ERROR1">
-	<Original>Only one perf module can be used</Original>
+    <Original>Only one perf module can be used</Original>
 </Key>
 
 </Container></Package></Project>
