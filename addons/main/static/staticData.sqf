@@ -6193,7 +6193,16 @@ ALIVE_RHSResupplyVehicleOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyVehicleOptions, "rhs_faction_rva", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyVehicleOptions, "rhs_faction_insurgents", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
 
-
+// RHS GREF.
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_cdf_air", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_cdf_air_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_cdf_ground", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_cdf_ground_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_cdf_ng", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_cdf_ng_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_chdkz", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_chdkz_g", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_nationalist", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
 
 ALIVE_RHSResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_RHSResupplyIndividualOptions, "PR_AIRDROP", [["<< Back","Men","MenDiver","MenRecon","MenSniper","MenSupport","RHS Infantry"],["<< Back","Men","MenDiver","MenRecon","MenSniper","MenSupport","rhs_vehclass_infantry"]]] call ALIVE_fnc_hashSet;
@@ -6219,6 +6228,16 @@ ALIVE_RHSResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyIndividualOptions, "rhs_faction_rva", ALIVE_RHSResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "rhs_faction_insurgents", ALIVE_RHSResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 
+// RHS GREF
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_cdf_air", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_cdf_air_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_cdf_ground", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_cdf_ground_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_cdf_ng", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_cdf_ng_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_chdkz", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_chdkz_g", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_nationalist", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
 
 
 ALIVE_RHSResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
@@ -6242,7 +6261,12 @@ ALIVE_RHSResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 	"rhs_group_rus_tv_90",
 	"rhs_group_rus_tv_2s3",
 	"rhs_group_indp_ins_bm21",
-	"rhs_group_indp_ins_72"
+	"rhs_group_indp_ins_72",
+    "rhs_group_cdf_b_72", "rhs_group_cdf_b_bm21",           // RHS GREF CDF (BLUFOR).
+    "rhs_group_indp_ins_72", "rhs_group_indp_ins_bm21",     // RHS GREF CHDKZ (OPFOR).
+    "rhs_group_cdf_72", "rhs_group_cdf_bm21",               // RHS GREF CDF (GUER)
+    "rhs_group_indp_ins_g_72", "rhs_group_indp_ins_g_bm21"  // RHS GREF CHDKZ (GUER).
+                                                            // RHS GREF NATIONALISTS (GUER) without entries.
 ]] call ALIVE_fnc_hashSet;
 [ALIVE_RHSResupplyGroupOptions, "PR_HELI_INSERT", [
 	"Armored",
@@ -6308,16 +6332,26 @@ ALIVE_RHSResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 	"rhs_group_rus_tv_80",
 	"rhs_group_rus_tv_90",
 	"rhs_group_rus_tv_2s3",
-	"rhs_group_indp_ins_uaz",
-	"rhs_group_indp_ins_ural",
-	"rhs_group_indp_ins_btr60",
-	"rhs_group_indp_ins_btr70",
-	"rhs_group_indp_ins_bmp1",
-	"rhs_group_indp_ins_bmp2",
-	"rhs_group_indp_ins_bmd1",
-	"rhs_group_indp_ins_bmd2",
-	"rhs_group_indp_ins_bm21",
-	"rhs_group_indp_ins_72"
+	"rhs_group_indp_ins_uaz",   // These are legacy entries and should be removed
+	"rhs_group_indp_ins_ural",  // These are legacy entries and should be removed
+	"rhs_group_indp_ins_btr60", // These are legacy entries and should be removed
+	"rhs_group_indp_ins_btr70", // These are legacy entries and should be removed
+	"rhs_group_indp_ins_bmp1",  // These are legacy entries and should be removed
+	"rhs_group_indp_ins_bmp2",  // These are legacy entries and should be removed
+	"rhs_group_indp_ins_bmd1",  // These are legacy entries and should be removed
+	"rhs_group_indp_ins_bmd2",  // These are legacy entries and should be removed
+	"rhs_group_indp_ins_bm21",  // These are legacy entries and should be removed
+	"rhs_group_indp_ins_72",    // These are legacy entries and should be removed
+    // RHS GREF CDF (BLUFOR).
+    "rhs_group_cdf_b_72", "rhs_group_cdf_b_bm21", "rhs_group_cdf_b_bmd1", "rhs_group_cdf_b_bmd2", "rhs_group_cdf_b_bmp1", "rhs_group_cdf_b_bmp2", "rhs_group_cdf_b_btr60", "rhs_group_cdf_b_btr70", "rhs_group_cdf_b_gaz66", "rhs_group_cdf_b_gaz66_para", "rhs_group_cdf_b_uaz", "rhs_group_cdf_b_ural",
+    // RHS GREF CHDKZ (OPFOR).
+    "rhs_group_indp_ins_72", "rhs_group_indp_ins_bm21", "rhs_group_indp_ins_bmd1", "rhs_group_indp_ins_bmd2", "rhs_group_indp_ins_bmp1", "rhs_group_indp_ins_bmp2", "rhs_group_indp_ins_btr60", "rhs_group_indp_ins_btr70", "rhs_group_indp_ins_gaz66", "rhs_group_indp_ins_uaz", "rhs_group_indp_ins_ural",
+    // RHS GREF CDF (GUER)
+    "rhs_group_cdf_72", "rhs_group_cdf_bm21", "rhs_group_cdf_bmd1", "rhs_group_cdf_bmd2", "rhs_group_cdf_bmp1", "rhs_group_cdf_bmp2", "rhs_group_cdf_btr60", "rhs_group_cdf_btr70", "rhs_group_cdf_gaz66", "rhs_group_cdf_gaz66_para", "rhs_group_cdf_uaz", "rhs_group_cdf_ural",
+    // RHS GREF CHDKZ (GUER).
+    "rhs_group_indp_ins_g_72", "rhs_group_indp_ins_g_bm21", "rhs_group_indp_ins_g_bmd1", "rhs_group_indp_ins_g_bmd2", "rhs_group_indp_ins_g_bmp1", "rhs_group_indp_ins_g_bmp2", "rhs_group_indp_ins_g_btr60", "rhs_group_indp_ins_g_btr70", "rhs_group_indp_ins_g_gaz66", "rhs_group_indp_ins_g_uaz",
+    // RHS GREF NATIONALISTS (GUER)
+    "rhs_group_indp_nat_ural", "rhs_group_national_uaz"
 ]] call ALIVE_fnc_hashSet;
 [ALIVE_RHSResupplyGroupOptions, "PR_STANDARD", ["Support"]] call ALIVE_fnc_hashSet;
 
@@ -6340,6 +6374,16 @@ ALIVE_RHSResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyGroupOptions, "rhs_faction_rva", ALIVE_RHSResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "rhs_faction_insurgents", ALIVE_RHSResupplyGroupOptions] call ALIVE_fnc_hashSet;
 
+// RHS GREF
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_cdf_air", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_cdf_air_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_cdf_ground", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_cdf_ground_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_cdf_ng", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_cdf_ng_b", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_chdkz", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_chdkz_g", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_nationalist", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
 
 
 // RHS USAF ----------------------------------------------------------------------------------------------------------------
@@ -7138,6 +7182,12 @@ rhs_faction_insurgents_typeMappings = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultAirTransport, "rhs_faction_insurgents", ["rhs_t72bb_chdkz"]] call ALIVE_fnc_hashSet;
 */
 
+// ------------------------------------------------------------------------------------------------------------------
+
+
+// RHS GREF -----------------------------------------------------------------------------------------------------
+
+#include ".\include\rhs_gref_compat.hpp"
 
 // ---------------------------------------------------------------------------------------------------------------------
 
