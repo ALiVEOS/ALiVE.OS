@@ -480,7 +480,7 @@ private [
     "_unitCount","_dmgPerUnitEven","_randomIndex","_randomIndexDamage","_randomDamage","_nextTarget","_entityInCommandOf",
     "_assignedVehicles","_hitPointCount","_dmgPerHitPointEven","_randomHitPointDmg","_vehicleClass","_indexesToRemove",
     "_totalHitpoints","_victimType","_victimID","_victimPos","_victimFaction","_victimSide","_killerSide","_event","_eventID",
-    "_targetToAttackID","_deadHitPoints","_randomHitPointNme"
+    "_targetToAttackID","_deadHitPoints","_randomHitPointNme","_vehCritical"
 ];
 
 _combatRate = [MOD(profileCombatHandler),"combatRate"] call ALiVE_fnc_hashGet;
@@ -561,6 +561,8 @@ _toBeKilled = [];
                                 _targetsToAttack pushback ([MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_profileHandler);
                             } foreach _targetVehiclesInCommandOf;
 
+                            reverse _targetsToAttack; // destroy vehicles in reverse order to avoid corrupting unit assignment indexes
+
                             if (count _targetsToAttack == 0) then {
                                 _targetsToAttack pushback _target; // entity shouldn't be attacked separately if it's in a vehicle
                             };
@@ -581,6 +583,7 @@ _toBeKilled = [];
 
                                 if (_targetToAttackType == "entity") then {
                                     _profileToAttackHealth = [_targetToAttack,"damages"] call ALiVE_fnc_hashGet;
+                                    _profileToAttackHealth = +_profileToAttackHealth; // must be copied so that "removeUnit" doesn't alter the new damage array
                                 } else {
                                     _profileToAttackHealth = [_targetToAttack,"damage"] call ALiVE_fnc_hashGet;
 
@@ -639,14 +642,11 @@ _toBeKilled = [];
                                         };
 
                                         if (_unitCount > 0) then {
-                                            _profileToAttackHealth = +_profileToAttackHealth; // must be copied so that "removeUnit" doesn't alter the new damage array
-
                                             {
                                                 [_targetToAttack,"removeUnit", _x] call ALiVE_fnc_profileEntity;
                                             } foreach _indexesToRemove;
 
                                             [_targetToAttack,"damages", _profileToAttackHealth] call ALiVE_fnc_hashSet;
-                                            _nextTargetDamageModifier = 0; // ensure main loop doesnt run again
                                         } else {
                                             _toBeKilled pushbackunique [_attacker,_targetToAttack];
                                             _targetsToAttack deleteAt 0;
@@ -685,10 +685,18 @@ _toBeKilled = [];
 
                                         // if all of the vehicles hitpoints are 0, vehicle is dead
 
+                                        _vehCritical = false;
                                         _deadHitPoints = 0;
-                                        {if ((_x select 1) == 1) then {_deadHitPoints = _deadHitPoints + 1}} foreach _profileToAttackHealth;
 
-                                        if (_deadHitPoints < floor ((count _profileToAttackHealth) * 0.90)) then {
+                                        {
+                                            if !((_x select 0) == "HitHull") then {
+                                                if ((_x select 1) == 1) then {_deadHitPoints = _deadHitPoints + 1};
+                                            } else {
+                                                if ((_x select 1) > 0.85) then {_vehCritical = true}; // HitHull damage of > 0.90 causes vehicle to explode upon spawn
+                                            };
+                                        } foreach _profileToAttackHealth;
+
+                                        if (_deadHitPoints < floor ((count _profileToAttackHealth) * 0.75) && {!_vehCritical}) then {
                                             [_targetToAttack,"damage", _profileToAttackHealth] call ALiVE_fnc_hashSet;
                                         } else {
                                             _toBeUnassigned pushbackunique [_target,_targetToAttack];
@@ -751,8 +759,24 @@ _toBeKilled = [];
 
 //[false, "ALiVE Profile Attack Simulation ending", format["profileClash_%1",_id]] call ALIVE_fnc_timer;
 
+private ["_vehAssignments","_vehicleID","_vehAssignment","_unitAssignments"];
+
 {
-    // remove crew from commanding entity
+     _x params ["_commandingEntity","_subordinateVehicle"];
+
+     // remove crew from commanding entity
+    _vehAssignments = [_commandingEntity,"vehicleAssignments"] call ALiVE_fnc_hashGet;
+    _vehicleID = _subordinateVehicle select 2 select 4;
+
+    _vehAssignment = [_vehAssignments,_vehicleID] call ALiVE_fnc_hashGet;
+    _unitAssignments = + (_vehAssignment select 2);
+    reverse _unitAssignments; // must remove in reverse order
+
+    {
+        {
+            [_commandingEntity,"removeUnit", _x] call ALiVE_fnc_profileEntity
+        } foreach _x;
+    } foreach _unitAssignments;
 
     // unassign vehicle from entity
     _x call ALIVE_fnc_removeProfileVehicleAssignment;
