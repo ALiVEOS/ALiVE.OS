@@ -29,47 +29,47 @@ titleText [msg,"PLAIN"]
 STAT(_err);
 
 _testConvert = {
-		private ["_err","_result"];
-		PARAMS_2(_type,_input);
-		_err = format["%1 conversion", _type];
-		
-		ASSERT_DEFINED("_type",_err);
-		ASSERT_TRUE(typeName _type == "STRING",_err);
-		
-		ASSERT_DEFINED("_input",_err);
-		ASSERT_TRUE(typeName _input == _type,typeName _input + " == " + _type);
-		
-		_result = _input call ALIVE_fnc_convertData;
-		ASSERT_DEFINED("_result",_err);
-		ASSERT_TRUE(typeName _result == "STRING",_err);
-		_result;
+        private ["_err","_result"];
+        PARAMS_2(_type,_input);
+        _err = format["%1 conversion", _type];
+
+        ASSERT_DEFINED("_type",_err);
+        ASSERT_TRUE(typeName _type == "STRING",_err);
+
+        ASSERT_DEFINED("_input",_err);
+        ASSERT_TRUE(typeName _input == _type,typeName _input + " == " + _type);
+
+        _result = _input call ALIVE_fnc_convertData;
+        ASSERT_DEFINED("_result",_err);
+        ASSERT_TRUE(typeName _result == "STRING",_err);
+        _result;
 };
 
 _testRestore = {
-		private ["_type","_err","_result","_test"];
-		PARAMS_2(_type,_test);
-		_err = format["%1 restore", _type];
-		
-		ASSERT_DEFINED("_type",_err);
-		ASSERT_TRUE(typeName _type == "STRING",_err);
-		
-		ASSERT_DEFINED("_test",_err);
-		ASSERT_TRUE(typeName _test == "STRING",_err);        
-		
-		_result = _test call ALIVE_fnc_restoreData;
-		ASSERT_DEFINED("_result",_err);
-		ASSERT_TRUE(typeName _result == _type,typeName _result + " == " + _type);
-		_result;
+        private ["_type","_err","_result","_test"];
+        PARAMS_2(_type,_test);
+        _err = format["%1 restore", _type];
+
+        ASSERT_DEFINED("_type",_err);
+        ASSERT_TRUE(typeName _type == "STRING",_err);
+
+        ASSERT_DEFINED("_test",_err);
+        ASSERT_TRUE(typeName _test == "STRING",_err);
+
+        _result = _test call ALIVE_fnc_restoreData;
+        ASSERT_DEFINED("_result",_err);
+        ASSERT_TRUE(typeName _result == _type,typeName _result + " == " + _type);
+        _result;
 };
 
 _processData = {
-		private["_result"];
-		PARAMS_1(_data);
-		copyToClipboard _data;
-		sleep 1;
-		_result = copyFromClipboard;
-		ASSERT_TRUE(typeName _result == "STRING","Process Data error");
-		_result;
+        private["_result"];
+        PARAMS_1(_data);
+        copyToClipboard _data;
+        sleep 1;
+        _result = copyFromClipboard;
+        ASSERT_TRUE(typeName _result == "STRING","Process Data error");
+        _result;
 };
 
 sleep 5;
@@ -267,9 +267,9 @@ ASSERT_TRUE(_result,str _original + " == " + str _restored);
 /*
 // Create empty vehicles
 _original = [
-		createVehicle ["MTVR", [4345.0229,3232.7737], [], 50, "NONE"],
-		createVehicle ["M1A1", [4345.0229,3232.7737], [], 50, "NONE"],
-		createVehicle ["MH60S", [4345.0229,3232.7737], [], 50, "NONE"]
+        createVehicle ["MTVR", [4345.0229,3232.7737], [], 50, "NONE"],
+        createVehicle ["M1A1", [4345.0229,3232.7737], [], 50, "NONE"],
+        createVehicle ["MH60S", [4345.0229,3232.7737], [], 50, "NONE"]
 ]
 */
 
@@ -294,13 +294,13 @@ score  (_this select 0);
 _animState = animationState _player;
 { lifestate  (_this select 0);},
 // crouch or kneel
-if (vehicle (_this select 0) != (_this select 0)) then { 
-		_result = [str(vehicle (_this select 0)), "REMOTE", 0] call CBA_fnc_find;  // http://dev-heaven.net/docs/cba/files/strings/fnc_find-sqf.html
-		if ( _result == -1 ) then {
-				if (driver (vehicle (_this select 0)) == (_this select 0)) then { _pseat = "driver"; };
-				if (gunner (vehicle (_this select 0)) == (_this select 0)) then { _pseat = "gunner"; };
-				if (commander (vehicle (_this select 0)) == (_this select 0)) then { _pseat = "commander"; };
-		};
+if (vehicle (_this select 0) != (_this select 0)) then {
+        _result = [str(vehicle (_this select 0)), "REMOTE", 0] call CBA_fnc_find;  // http://dev-heaven.net/docs/cba/files/strings/fnc_find-sqf.html
+        if ( _result == -1 ) then {
+                if (driver (vehicle (_this select 0)) == (_this select 0)) then { _pseat = "driver"; };
+                if (gunner (vehicle (_this select 0)) == (_this select 0)) then { _pseat = "gunner"; };
+                if (commander (vehicle (_this select 0)) == (_this select 0)) then { _pseat = "commander"; };
+        };
 };
 
 {rating  (_this select 0);},

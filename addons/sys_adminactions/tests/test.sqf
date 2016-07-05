@@ -14,7 +14,7 @@ SCRIPT(test-adminActions);
 LOG("=== Testing sys_adminActions ===");
 
 {
-	call compile preprocessFileLineNumbers format ["\x\alive\addons\sys_adminactions\tests\test_%1.sqf", _x];
+    call compile preprocessFileLineNumbers format ["\x\alive\addons\sys_adminactions\tests\test_%1.sqf", _x];
 } forEach TESTS;
 
 nil;

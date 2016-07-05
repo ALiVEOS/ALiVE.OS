@@ -90,11 +90,11 @@ TIMEREND
 
 STAT("Output sector data");
 {
-	_sector = _x;
-	_sectorData = [_sector, "data"] call ALIVE_fnc_sector;
-	_id = [_sector, "id"] call ALIVE_fnc_sector;
-	diag_log format["Sector: %1",_id];
-	_sectorData call ALIVE_fnc_inspectHash;
+    _sector = _x;
+    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+    _id = [_sector, "id"] call ALIVE_fnc_sector;
+    diag_log format["Sector: %1",_id];
+    _sectorData call ALIVE_fnc_inspectHash;
 } forEach _landSectors;
 
 

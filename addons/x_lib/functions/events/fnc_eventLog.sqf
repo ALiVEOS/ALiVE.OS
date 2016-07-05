@@ -196,7 +196,7 @@ switch(_operation) do {
             };
             _result = [_logic,"maxEvents"] call ALIVE_fnc_hashGet;
         };
-		case "addEvent": {
+        case "addEvent": {
             private["_event","_debug","_firstEvent","_maxEvents","_events","_eventsByType","_eventID","_type","_eventTypes",
             "_filteredListeners","_listeners","_listener","_class"];
 

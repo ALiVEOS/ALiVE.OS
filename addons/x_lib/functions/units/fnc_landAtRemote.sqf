@@ -35,7 +35,7 @@ if !(alive _unit) exitwith {diag_log "landAtRemote failed - dead/empty unit"};
 _unit setvariable [QGVAR(MOVEDESTINATION),getpos _unit];
 
 if (local _unit) exitwith {
-	_unit landAt _args;
+    _unit landAt _args;
 };
 
 //if !local send to server to distribute

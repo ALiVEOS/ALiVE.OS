@@ -4,41 +4,41 @@
 Function: ALiVE_fnc_decToBinArr
 
 Description:
-	Converts a decimal number to a binary array.
-	
+    Converts a decimal number to a binary array.
+
 Parameters:
-	0 - Decimal number [number]
+    0 - Decimal number [number]
 
 Returns:
-	Binary array [array]
+    Binary array [array]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
 
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 private ["_decimal", "_return"];
-_decimal	= _this select 0;
-_return		= [];
+_decimal    = _this select 0;
+_return        = [];
 
-if ((_decimal % 1) == 0) then // Needs to be a whole number 
+if ((_decimal % 1) == 0) then // Needs to be a whole number
 {
-	private ["_i"];
-	_i = 0;
-	
-	while {_decimal > 0} do
-	{
-		_return set [_i, (_decimal mod 2)];
-		_decimal = floor(_decimal / 2); // (_decimal - _rem) / 2
-		_i = _i + 1;
-	};
+    private ["_i"];
+    _i = 0;
+
+    while {_decimal > 0} do
+    {
+        _return set [_i, (_decimal mod 2)];
+        _decimal = floor(_decimal / 2); // (_decimal - _rem) / 2
+        _i = _i + 1;
+    };
 };
 
 _return

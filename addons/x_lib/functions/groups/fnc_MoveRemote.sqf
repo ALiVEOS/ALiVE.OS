@@ -35,7 +35,7 @@ if (!({alive _x} count (units _group) > 0) || {count _pos < 2}) exitwith {diag_l
 _group setvariable [QGVAR(MOVEDESTINATION),_pos];
 
 if (local _group) exitwith {
-	_group move _pos;
+    _group move _pos;
 };
 
 //if !local send to server to distribute

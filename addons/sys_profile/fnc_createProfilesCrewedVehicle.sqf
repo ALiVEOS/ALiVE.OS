@@ -70,7 +70,7 @@ _profileEntity = [nil, "create"] call ALIVE_fnc_profileEntity;
 [_profileEntity, "busy", _busy] call ALIVE_fnc_profileEntity;
 
 if!(_spawnGoodPosition) then {
-	[_profileEntity, "despawnPosition", _position] call ALIVE_fnc_profileEntity;
+    [_profileEntity, "despawnPosition", _position] call ALIVE_fnc_profileEntity;
 };
 
 _groupProfiles pushback _profileEntity;
@@ -81,7 +81,7 @@ private ["_vehicleKind","_vehicleID","_vehicleClass","_crew","_profileVehicle","
 _vehicleKind = _vehicleClass call ALIVE_fnc_vehicleGetKindOf;
 
 // create the profile for the vehicle
-								
+
 _profileVehicle = [nil, "create"] call ALIVE_fnc_profileVehicle;
 [_profileVehicle, "init"] call ALIVE_fnc_profileVehicle;
 [_profileVehicle, "profileID", format["%1-%2",_prefix,_vehicleID]] call ALIVE_fnc_profileVehicle;
@@ -103,18 +103,18 @@ if(count _slingload > 0) then {
 };
 
 if(_vehicleKind == "Plane" || _vehicleKind == "Helicopter") then {
-	[_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+    [_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
 };
 
 if!(_spawnGoodPosition) then {
-	[_profileVehicle, "despawnPosition", _position] call ALIVE_fnc_profileVehicle;
+    [_profileVehicle, "despawnPosition", _position] call ALIVE_fnc_profileVehicle;
 };
 
 if(_engineOn) then {
     [_profileVehicle, "engineOn", true] call ALIVE_fnc_profileVehicle;
 };
 
-_groupProfiles pushback _profileVehicle;	
+_groupProfiles pushback _profileVehicle;
 [ALIVE_profileHandler, "registerProfile", _profileVehicle] call ALIVE_fnc_profileHandler;
 
 // create crew members for the vehicle
@@ -125,12 +125,12 @@ _countCrewPositions = 0;
 
 // count all non cargo positions
 for "_i" from 0 to count _vehiclePositions -3 do {
-	_countCrewPositions = _countCrewPositions + (_vehiclePositions select _i);
+    _countCrewPositions = _countCrewPositions + (_vehiclePositions select _i);
 };
 
 // for all crew positions add units to the entity group
-for "_i" from 0 to _countCrewPositions -1 do {		
-	[_profileEntity, "addUnit", [_crew,_position,0,_rank]] call ALIVE_fnc_profileEntity;
+for "_i" from 0 to _countCrewPositions -1 do {
+    [_profileEntity, "addUnit", [_crew,_position,0,_rank]] call ALIVE_fnc_profileEntity;
 };
 
 [_profileEntity,_profileVehicle] call ALIVE_fnc_createProfileVehicleAssignment;

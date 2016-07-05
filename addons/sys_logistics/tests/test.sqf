@@ -14,7 +14,7 @@ SCRIPT(test);
 LOG("=== Testing sys_logistics ===");
 
 {
-	call compile preprocessFileLineNumbers format ["\x\alive\addons\sys_logistics\tests\test_%1.sqf", _x];
+    call compile preprocessFileLineNumbers format ["\x\alive\addons\sys_logistics\tests\test_%1.sqf", _x];
 } forEach TESTS;
 
 nil;

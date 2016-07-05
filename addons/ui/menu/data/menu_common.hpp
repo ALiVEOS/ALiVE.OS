@@ -1,77 +1,77 @@
 class AliveUI_RscBackground
 {
-	idc = -1; 
-	type = 0;
-	style = 128;
-	colorbackground[] = {0,0,0,1};
-	colorText[] = {0,0,0,0};
-	font = "PuristaMedium";
-	sizeEx = 0;
-	moving = 0;
-	shadow =0;
-	x = "(safeZoneX + (safeZoneW / 1.8))"; 
-	y = "(safeZoneY + (safeZoneH / 3.25))"; 
-	w = "(safeZoneW / 3)";
-	h = "(safeZoneH / 2)";
+    idc = -1;
+    type = 0;
+    style = 128;
+    colorbackground[] = {0,0,0,1};
+    colorText[] = {0,0,0,0};
+    font = "PuristaMedium";
+    sizeEx = 0;
+    moving = 0;
+    shadow =0;
+    x = "(safeZoneX + (safeZoneW / 1.8))";
+    y = "(safeZoneY + (safeZoneH / 3.25))";
+    w = "(safeZoneW / 3)";
+    h = "(safeZoneH / 2)";
 };
 
 class AliveUI_RscEdit
 {
-	idc = -1;
-	type = 2;
-	style = 0x00;
-	x = "1";
-	y = "1";
-	w = "safeZoneW / 25";
-	h = "safeZoneH / 30";
-	sizeEx = 0.03;
-	font = "PuristaMedium";
-	text = "";
-	colorText[] = {1,1,1,1};
-	autocomplete = 0;
-	colorSelection[] = {0,0,0,1};
-	colorDisabled[] = {};
+    idc = -1;
+    type = 2;
+    style = 0x00;
+    x = "1";
+    y = "1";
+    w = "safeZoneW / 25";
+    h = "safeZoneH / 30";
+    sizeEx = 0.03;
+    font = "PuristaMedium";
+    text = "";
+    colorText[] = {1,1,1,1};
+    autocomplete = 0;
+    colorSelection[] = {0,0,0,1};
+    colorDisabled[] = {};
 };
 
 class AliveUI_RscText
-{ 
-	idc = -1; 
-	type = 13; 
-	style = 0x00;
-	colorBackground[] = { 0, 0, 0, 0 };
-	size = "((safeZoneW / 75) + (safeZoneH / 225))";
-	x = "safeZoneX + (safeZoneW / 6)"; 
-	y = "safeZoneY + (safeZoneH / 6)"; 
-	w = "safeZoneW / 5"; 
-	h = "safeZoneH / 10";
-	text = "SUPPORT MENU";
-	class Attributes 
-	{ 
-		font = "PuristaMedium"; 
-		color = "#C0C0C0"; 
-		align = "center"; 
-		valign = "middle"; 
-		shadow = true; 
-		shadowColor = "#000000";
-	};
+{
+    idc = -1;
+    type = 13;
+    style = 0x00;
+    colorBackground[] = { 0, 0, 0, 0 };
+    size = "((safeZoneW / 75) + (safeZoneH / 225))";
+    x = "safeZoneX + (safeZoneW / 6)";
+    y = "safeZoneY + (safeZoneH / 6)";
+    w = "safeZoneW / 5";
+    h = "safeZoneH / 10";
+    text = "SUPPORT MENU";
+    class Attributes
+    {
+        font = "PuristaMedium";
+        color = "#C0C0C0";
+        align = "center";
+        valign = "middle";
+        shadow = true;
+        shadowColor = "#000000";
+    };
 };
 
 class AliveUI_RscSlider
-{ 
-	idc = -1;
-	type = 43;
-	style = 0x400 + 0x10;
-	x = "safeZoneX + (safeZoneW / 5.6)";
-	y = "safeZoneY + (safeZoneH / 1.6)";
-	w = "safeZoneW / 5.5";
-	h = "safeZoneH / 40";
-	color[] = {1, 1, 1, 0.4};
-	colorActive[] = {1, 1, 1, 1};
-	colorDisabled[] = {1, 1, 1, 0.2};
-	arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
-	arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
-	border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
-	thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+{
+    idc = -1;
+    type = 43;
+    style = 0x400 + 0x10;
+    x = "safeZoneX + (safeZoneW / 5.6)";
+    y = "safeZoneY + (safeZoneH / 1.6)";
+    w = "safeZoneW / 5.5";
+    h = "safeZoneH / 40";
+    color[] = {1, 1, 1, 0.4};
+    colorActive[] = {1, 1, 1, 1};
+    colorDisabled[] = {1, 1, 1, 0.2};
+    arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+    arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+    border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+    thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
 };
 
 class AliveUI_RscStructuredText
@@ -245,7 +245,7 @@ class AliveUI_RscButton
 };
 
 class AliveUI_RscMap
-{	
+{
     access = 0;
     alphaFadeEndScale = 0.4;
     alphaFadeStartScale = 0.35;
@@ -313,7 +313,7 @@ class AliveUI_RscMap
     y = "(safeZoneY + (safeZoneH / 2.49))";
     w = "(safeZoneW / 4.05)";
     h = "(safeZoneH / 4.2)";
-	class ActiveMarker
+    class ActiveMarker
     {
         color[] = {0.3,0.1,0.9,1};
         size = 50;

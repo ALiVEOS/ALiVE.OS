@@ -31,11 +31,11 @@ _debug = _this select 4;
 _result = [];
 
 switch (_taskState) do {
-	case "init":{
+    case "init":{
 
-	    private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
-	    "_taskApplyType","_taskEnemySide","_targetObjective","_targetPosition","_targetHQ","_targetDepot","_targetFactory","_targetBuildings",
-	    "_taskPlayers","_selectedBuilding"];
+        private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
+        "_taskApplyType","_taskEnemySide","_targetObjective","_targetPosition","_targetHQ","_targetDepot","_targetFactory","_targetBuildings",
+        "_taskPlayers","_selectedBuilding"];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;
@@ -74,17 +74,17 @@ switch (_taskState) do {
         _targetDepot = _targetObjective select 4;
         _targetFactory = _targetObjective select 5;
 
-		// ["pl %1 tar %2",getpos player, _targetPosition] call ALiVE_fnc_DumpR;
+        // ["pl %1 tar %2",getpos player, _targetPosition] call ALiVE_fnc_DumpR;
 
-		if(count _targetPosition == 0) exitwith {["C2ISTAR - Task InsurgencyDestroyAssets - No targets found!"] call ALiVE_fnc_Dump};
+        if(count _targetPosition == 0) exitwith {["C2ISTAR - Task InsurgencyDestroyAssets - No targets found!"] call ALiVE_fnc_Dump};
 
-		if(count _targetPosition == 0) exitwith {["C2ISTAR - Task InsurgencyDestroyAssets - No targets found!"] call ALiVE_fnc_Dump};
+        if(count _targetPosition == 0) exitwith {["C2ISTAR - Task InsurgencyDestroyAssets - No targets found!"] call ALiVE_fnc_Dump};
 
-		if(count _targetHQ == 0 && count _targetDepot == 0 && count _targetFactory == 0) exitwith {["C2ISTAR - Task InsurgencyDestroyAssets - No targets found!"] call ALiVE_fnc_Dump};
+        if(count _targetHQ == 0 && count _targetDepot == 0 && count _targetFactory == 0) exitwith {["C2ISTAR - Task InsurgencyDestroyAssets - No targets found!"] call ALiVE_fnc_Dump};
 
-		_targetBuildings = [];
+        _targetBuildings = [];
 
-		if(count _targetHQ > 0) then {
+        if(count _targetHQ > 0) then {
             _targetBuilding = [];
             _targetBuilding pushBack ["Recruitment HQ",_targetHQ];
             _targetBuildings pushBack _targetBuilding;
@@ -217,8 +217,8 @@ switch (_taskState) do {
 
         };
 
-	};
-	case "Parent":{
+    };
+    case "Parent":{
 
     };
     case "Destroy":{

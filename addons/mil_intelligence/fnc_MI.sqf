@@ -5,7 +5,7 @@ SCRIPT(MI);
 /* ----------------------------------------------------------------------------
 Function: ALIVE_fnc_MI
 Description:
-Military objectives 
+Military objectives
 
 Parameters:
 Nil or Object - If Nil, return a new instance. If Object, reference an existing instance.
@@ -51,39 +51,39 @@ params [
 _result = true;
 
 switch(_operation) do {
-	default {
-		_result = [_logic, _operation, _args] call SUPERCLASS;
-	};
-	case "destroy": {
-		[_logic, "debug", false] call MAINCLASS;
-		if (isServer) then {
-			// if server
-			_logic setVariable ["super", nil];
-			_logic setVariable ["class", nil];
-			
-			[_logic, "destroy"] call SUPERCLASS;
-		};
-		
-	};
-	case "debug": {
-		if (typeName _args == "BOOL") then {
-			_logic setVariable ["debug", _args];
-		} else {
-			_args = _logic getVariable ["debug", false];
-		};
-		if (typeName _args == "STRING") then {
-				if(_args == "true") then {_args = true;} else {_args = false;};
-				_logic setVariable ["debug", _args];
-		};
-		ASSERT_TRUE(typeName _args == "BOOL",str _args);
+    default {
+        _result = [_logic, _operation, _args] call SUPERCLASS;
+    };
+    case "destroy": {
+        [_logic, "debug", false] call MAINCLASS;
+        if (isServer) then {
+            // if server
+            _logic setVariable ["super", nil];
+            _logic setVariable ["class", nil];
 
-		_result = _args;
-	};
-	// Return the Intel Chance
-	case "intelChance": {
-		_result = [_logic,_operation,_args,DEFAULT_INTEL_CHANCE] call ALIVE_fnc_OOsimpleOperation;
-	};
-	// Return the Friendly Intel
+            [_logic, "destroy"] call SUPERCLASS;
+        };
+
+    };
+    case "debug": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["debug", _args];
+        } else {
+            _args = _logic getVariable ["debug", false];
+        };
+        if (typeName _args == "STRING") then {
+                if(_args == "true") then {_args = true;} else {_args = false;};
+                _logic setVariable ["debug", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
+    // Return the Intel Chance
+    case "intelChance": {
+        _result = [_logic,_operation,_args,DEFAULT_INTEL_CHANCE] call ALIVE_fnc_OOsimpleOperation;
+    };
+    // Return the Friendly Intel
     case "friendlyIntel": {
         _result = [_logic,_operation,_args,DEFAULT_FRIENDLY_INTEL] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -100,27 +100,27 @@ switch(_operation) do {
 
         _result = _args;
     };
-	// Main process
-	case "init": {
+    // Main process
+    case "init": {
 
         if (isServer) then {
-			// if server, initialise module game logic
-			_logic setVariable ["super", SUPERCLASS];
-			_logic setVariable ["class", MAINCLASS];
-			_logic setVariable ["moduleType", "ALIVE_MI"];
-			_logic setVariable ["startupComplete", false];
-			_logic setVariable ["listenerID", ""];
+            // if server, initialise module game logic
+            _logic setVariable ["super", SUPERCLASS];
+            _logic setVariable ["class", MAINCLASS];
+            _logic setVariable ["moduleType", "ALIVE_MI"];
+            _logic setVariable ["startupComplete", false];
+            _logic setVariable ["listenerID", ""];
 
-			[_logic,"start"] call MAINCLASS;
+            [_logic,"start"] call MAINCLASS;
         };
-	};
+    };
     case "start": {
         private["_friendlyIntel"];
 
         if !(["ALiVE_sys_profile"] call ALiVE_fnc_isModuleAvailable) exitwith {
             ["Profile System module not placed! Exiting..."] call ALiVE_fnc_DumpR;
         };
-        
+
         waituntil {!(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
 
         _friendlyIntel = [_logic, "friendlyIntel"] call MAINCLASS;
@@ -133,12 +133,12 @@ switch(_operation) do {
 
         _logic setVariable ["startupComplete", true];
     };
-	case "showFriendlies": {
+    case "showFriendlies": {
         private["_friendlyIntelRadius"];
 
-	    _friendlyIntelRadius = [_logic, "friendlyIntelRadius"] call MAINCLASS;
+        _friendlyIntelRadius = [_logic, "friendlyIntelRadius"] call MAINCLASS;
 
-	    _friendlyIntelRadius = parseNumber _friendlyIntelRadius;
+        _friendlyIntelRadius = parseNumber _friendlyIntelRadius;
 
         [ALIVE_liveAnalysis, "registerAnalysisJob", [10, 0, "showFriendlies", "showFriendlies", [_friendlyIntelRadius]]] call ALIVE_fnc_liveAnalysis;
     };

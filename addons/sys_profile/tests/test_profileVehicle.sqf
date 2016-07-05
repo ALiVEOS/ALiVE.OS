@@ -48,9 +48,9 @@ _logic = nil;
 
 STAT("Create Profile instance");
 if(isServer) then {
-	_logic = [nil, "create"] call ALIVE_fnc_profileVehicle;
-	TEST_LOGIC = _logic;
-	publicVariable "TEST_LOGIC";
+    _logic = [nil, "create"] call ALIVE_fnc_profileVehicle;
+    TEST_LOGIC = _logic;
+    publicVariable "TEST_LOGIC";
 };
 
 
@@ -152,11 +152,11 @@ sleep 40;
 
 STAT("Destroy old Profile instance");
 if(isServer) then {
-	[_logic, "destroy"] call ALIVE_fnc_profileVehicle;
-	TEST_LOGIC = nil;
-	publicVariable "TEST_LOGIC";
+    [_logic, "destroy"] call ALIVE_fnc_profileVehicle;
+    TEST_LOGIC = nil;
+    publicVariable "TEST_LOGIC";
 } else {
-	waitUntil{isNull TEST_LOGIC};
+    waitUntil{isNull TEST_LOGIC};
 };
 
 nil;

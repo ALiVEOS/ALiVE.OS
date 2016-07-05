@@ -99,7 +99,7 @@
 #define ProcTextGreen "#(argb,8,8,3)color(0,1,0,1)"
 #define ProcTextBlue "#(argb,8,8,3)color(0,0,1,1)"
 #define ProcTextOrange "#(argb,8,8,3)color(1,0.5,0,1)"
-#define ProcTextTransparent	"#(argb,8,8,3)color(0,0,0,0)"
+#define ProcTextTransparent    "#(argb,8,8,3)color(0,0,0,0)"
 
 ///////////////////////////////////////////////////////////////////////////
 /// Base Classes

@@ -4,7 +4,7 @@ class CfgVehicles {
         {
                 scope = 2;
                 displayName = "$STR_ALIVE_INDEXER";
-				function = "ALIVE_fnc_indexerInit";
+                function = "ALIVE_fnc_indexerInit";
                 functionPriority = 1;
                 isGlobal = 1;
                 isPersistent = 1;

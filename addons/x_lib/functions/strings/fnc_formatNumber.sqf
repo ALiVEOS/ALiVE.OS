@@ -4,26 +4,26 @@
 Function: ALiVE_fnc_formatNumber
 
 Description:
-	Adds zero-based padding to numbers, or shortens them to specification.
-	
+    Adds zero-based padding to numbers, or shortens them to specification.
+
 Parameters:
-	0 - Number [number:string]
-	1 - Integer Width [number] (optional)
-	2 - Decimal Width [number] (optional)
+    0 - Number [number:string]
+    1 - Integer Width [number] (optional)
+    2 - Decimal Width [number] (optional)
 
 Returns:
-	Formatted number [string]
+    Formatted number [string]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
 
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 private ["_number", "_intWidth", "_decWidth"];
@@ -40,24 +40,24 @@ _decIndex = _integer find 46;
 
 if (_decIndex >= 0) then // Decimal number
 {
-	for "_i" from (_decIndex + 1) to ((count _integer) - 1) do
-	{
-		[_decimal, (_integer select _i)] call ALiVE_fnc_push;
-	};
-	
-	_integer resize _decIndex;
-	
-	while {(count _decimal) < _decWidth} do
-	{
-		[_decimal, 48] call ALiVE_fnc_push;
-	};
-	
-	_decimal resize _decWidth;
+    for "_i" from (_decIndex + 1) to ((count _integer) - 1) do
+    {
+        [_decimal, (_integer select _i)] call ALiVE_fnc_push;
+    };
+
+    _integer resize _decIndex;
+
+    while {(count _decimal) < _decWidth} do
+    {
+        [_decimal, 48] call ALiVE_fnc_push;
+    };
+
+    _decimal resize _decWidth;
 };
 
 for "_i" from 1 to (_intWidth - (count _integer)) do
 {
-	_integer = [48] + _integer;
+    _integer = [48] + _integer;
 };
 
 _integer resize _intWidth;

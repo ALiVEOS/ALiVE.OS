@@ -9,7 +9,7 @@ SCRIPT(test-placement);
 LOG("=== Testing Mil Logistics ===");
 
 {
-	call compile preprocessFileLineNumbers format ["\x\alive\addons\mil_logistics\tests\test_%1.sqf", _x];
+    call compile preprocessFileLineNumbers format ["\x\alive\addons\mil_logistics\tests\test_%1.sqf", _x];
 } forEach TESTS;
 
 nil;

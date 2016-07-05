@@ -37,14 +37,14 @@ _code = {_object = _this select 0; _caller = _this select 1; _params = _this sel
 _condition = "alive _target" + "&&" + format["_target getvariable [%1,false]",str(_role)];
 
 _id = _object addAction [
-	_text,
-	_code,
-	_params,
-	1,
-	false,
-	true,
-	"",
-	_condition
+    _text,
+    _code,
+    _params,
+    1,
+    false,
+    true,
+    "",
+    _condition
 ];
 
 _role = "major";
@@ -54,14 +54,14 @@ _code = {_object = _this select 0; _caller = _this select 1; _params = _this sel
 _condition = "alive _target" + "&&" + format["_target getvariable [%1,false]",str(_role)];
 
 _id = _object addAction [
-	_text,
-	_code,
-	_params,
-	1,
-	false,
-	true,
-	"",
-	_condition
+    _text,
+    _code,
+    _params,
+    1,
+    false,
+    true,
+    "",
+    _condition
 ];
 
 _role = "priest";
@@ -71,14 +71,14 @@ _code = {_object = _this select 0; _caller = _this select 1; _params = _this sel
 _condition = "alive _target" + "&&" + format["_target getvariable [%1,false]",str(_role)];
 
 _id = _object addAction [
-	_text,
-	_code,
-	_params,
-	1,
-	false,
-	true,
-	"",
-	_condition
+    _text,
+    _code,
+    _params,
+    1,
+    false,
+    true,
+    "",
+    _condition
 ];
 
 _role = "muezzin";
@@ -88,14 +88,14 @@ _code = {_object = _this select 0; _caller = _this select 1; _params = _this sel
 _condition = "alive _target" + "&&" + format["_target getvariable [%1,false]",str(_role)];
 
 _id = _object addAction [
-	_text,
-	_code,
-	_params,
-	1,
-	false,
-	true,
-	"",
-	_condition
+    _text,
+    _code,
+    _params,
+    1,
+    false,
+    true,
+    "",
+    _condition
 ];
 
 _role = "politician";
@@ -105,14 +105,14 @@ _code = {_object = _this select 0; _caller = _this select 1; _params = _this sel
 _condition = "alive _target" + "&&" + format["_target getvariable [%1,false]",str(_role)];
 
 _id = _object addAction [
-	_text,
-	_code,
-	_params,
-	1,
-	false,
-	true,
-	"",
-	_condition
+    _text,
+    _code,
+    _params,
+    1,
+    false,
+    true,
+    "",
+    _condition
 ];
 
 _text = "Arrest";
@@ -121,14 +121,14 @@ _code = {_object = _this select 0; _caller = _this select 1; _params = _this sel
 _condition = "alive _target" + "&&" + "!(_target getvariable ['detained',false])";
 
 _id = _object addAction [
-	_text,
-	_code,
-	_params,
-	1,
-	false,
-	true,
-	"",
-	_condition
+    _text,
+    _code,
+    _params,
+    1,
+    false,
+    true,
+    "",
+    _condition
 ];
 
 _text = "Release";
@@ -137,14 +137,14 @@ _code = {_object = _this select 0; _caller = _this select 1; _params = _this sel
 _condition = "alive _target" + "&&" + "_target getvariable ['detained',false]";
 
 _id = _object addAction [
-	_text,
-	_code,
-	_params,
-	1,
-	false,
-	true,
-	"",
-	_condition
+    _text,
+    _code,
+    _params,
+    1,
+    false,
+    true,
+    "",
+    _condition
 ];
 
 _text = "Search";
@@ -153,31 +153,31 @@ _code = {_object = _this select 0; _caller = _this select 1; _params = _this sel
 _condition = "alive _target";
 
 _id = _object addAction [
-	_text,
-	_code,
-	_params,
-	1,
-	false,
-	true,
-	"",
-	_condition
+    _text,
+    _code,
+    _params,
+    1,
+    false,
+    true,
+    "",
+    _condition
 ];
 
 if (random 1 > 0.9) then {
-	_text = "Gather Intel";
-	_params = [];
-	_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; openmap true; [getposATL _object, 2000] call ALiVE_fnc_OPCOMToggleInstallations; _object setvariable ["intelGathered",true]};
-	_condition = "alive _target && {isnil {_target getvariable 'intelGathered'}}";
-	
-	_id = _object addAction [
-		_text,
-		_code,
-		_params,
-		1,
-		false,
-		true,
-		"",
-		_condition
-	];
+    _text = "Gather Intel";
+    _params = [];
+    _code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; openmap true; [getposATL _object, 2000] call ALiVE_fnc_OPCOMToggleInstallations; _object setvariable ["intelGathered",true]};
+    _condition = "alive _target && {isnil {_target getvariable 'intelGathered'}}";
+
+    _id = _object addAction [
+        _text,
+        _code,
+        _params,
+        1,
+        false,
+        true,
+        "",
+        _condition
+    ];
 };
 true;

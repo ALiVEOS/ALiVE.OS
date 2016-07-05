@@ -1,16 +1,16 @@
 class CfgFunctions {
-	class PREFIX {
-		class COMPONENT {
-			class GM {
-				description = "The main class";
-				file = "\x\alive\addons\sup_group_manager\fnc_GM.sqf";
-				recompile = RECOMPILE;
-			};
-			class GMInit {
-				description = "The module initialisation function";
-				file = "\x\alive\addons\sup_group_manager\fnc_GMInit.sqf";
-				recompile = RECOMPILE;
-			};
+    class PREFIX {
+        class COMPONENT {
+            class GM {
+                description = "The main class";
+                file = "\x\alive\addons\sup_group_manager\fnc_GM.sqf";
+                recompile = RECOMPILE;
+            };
+            class GMInit {
+                description = "The module initialisation function";
+                file = "\x\alive\addons\sup_group_manager\fnc_GMInit.sqf";
+                recompile = RECOMPILE;
+            };
             class GMTabletOnAction {
                 description = "The module Radio Action function";
                 file = "\x\alive\addons\sup_group_manager\fnc_GMTabletOnAction.sqf";
@@ -37,5 +37,5 @@ class CfgFunctions {
                 recompile = RECOMPILE;
             };
         };
-	};
+    };
 };

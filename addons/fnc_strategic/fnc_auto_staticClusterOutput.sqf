@@ -45,33 +45,33 @@ _result = true;
 "ALiVEClient" callExtension format['clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;',worldName,_type,_arrayName];
 {
 
-	_state = [_x, "state"] call ALIVE_fnc_cluster;
-	_nodes = [_state, "nodes"] call ALIVE_fnc_hashGet;
+    _state = [_x, "state"] call ALIVE_fnc_cluster;
+    _nodes = [_state, "nodes"] call ALIVE_fnc_hashGet;
 
-	if(count _nodes > 0) then {
+    if(count _nodes > 0) then {
 
-		"ALiVEClient" callExtension format['clusterData~%1|%2|_cluster = [nil, "create"] call ALIVE_fnc_cluster;',worldName,_type];
+        "ALiVEClient" callExtension format['clusterData~%1|%2|_cluster = [nil, "create"] call ALIVE_fnc_cluster;',worldName,_type];
 
-		"ALiVEClient" callExtension format['clusterData~%1|%2|_nodes = [];',worldName,_type];
-		{
-			if!(isNil "_x") then {
-				"ALiVEClient" callExtension format['clusterData~%1|%2|_nodes set [count _nodes, %3];',worldName,_type,_x];
-			};
-		} forEach _nodes;
-		"ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"nodes",_nodes] call ALIVE_fnc_hashSet;',worldName,_type];
-		"ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster, "state", _cluster] call ALIVE_fnc_cluster;',worldName,_type];
+        "ALiVEClient" callExtension format['clusterData~%1|%2|_nodes = [];',worldName,_type];
+        {
+            if!(isNil "_x") then {
+                "ALiVEClient" callExtension format['clusterData~%1|%2|_nodes set [count _nodes, %3];',worldName,_type,_x];
+            };
+        } forEach _nodes;
+        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"nodes",_nodes] call ALIVE_fnc_hashSet;',worldName,_type];
+        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster, "state", _cluster] call ALIVE_fnc_cluster;',worldName,_type];
 
-		"ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"clusterID","c_%3"] call ALIVE_fnc_hashSet;',worldName,_type,_count];
-		"ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"center",%3] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"center"] call ALIVE_fnc_hashGet];
-		"ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"size",%3] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"size"] call ALIVE_fnc_hashGet];
-		"ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"type","%3"] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"type"] call ALIVE_fnc_hashGet];
-		"ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"priority",%3] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"priority"] call ALIVE_fnc_hashGet];
-		"ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"debugColor","%3"] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"debugColor"] call ALIVE_fnc_hashGet];
+        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"clusterID","c_%3"] call ALIVE_fnc_hashSet;',worldName,_type,_count];
+        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"center",%3] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"center"] call ALIVE_fnc_hashGet];
+        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"size",%3] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"size"] call ALIVE_fnc_hashGet];
+        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"type","%3"] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"type"] call ALIVE_fnc_hashGet];
+        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"priority",%3] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"priority"] call ALIVE_fnc_hashGet];
+        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"debugColor","%3"] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"debugColor"] call ALIVE_fnc_hashGet];
 
-		"ALiVEClient" callExtension format['clusterData~%1|%2|[%3,"c_%4",_cluster] call ALIVE_fnc_hashSet;',worldName,_type,_arrayName,_count];
+        "ALiVEClient" callExtension format['clusterData~%1|%2|[%3,"c_%4",_cluster] call ALIVE_fnc_hashSet;',worldName,_type,_arrayName,_count];
 
-		_count = _count + 1;
-	};
+        _count = _count + 1;
+    };
 } forEach _clusters;
 
 _result

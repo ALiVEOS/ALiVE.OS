@@ -62,10 +62,10 @@ switch(_operation) do {
                 };
 
                 //Only one init per instance is allowed
-            	if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS PERF - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS PERF - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
 
-            	//Start init
-            	_logic setVariable ["initGlobal", false];
+                //Start init
+                _logic setVariable ["initGlobal", false];
 
                 if (isServer) then {
 
@@ -74,14 +74,14 @@ switch(_operation) do {
                         _logic setVariable ["class", MAINCLASS];
                         _logic setVariable ["init", true, true];
 
-						// and publicVariable to clients
+                        // and publicVariable to clients
                         MOD(perf) = _logic;
                         publicVariable QMOD(perf);
                 } else {
                         // any client side logic
                 };
 
-				TRACE_2("After module init",_logic, _logic getVariable "init");
+                TRACE_2("After module init",_logic, _logic getVariable "init");
 
                 // and wait for game logic to initialise
                 // TODO merge into lazy evaluation
@@ -94,7 +94,7 @@ switch(_operation) do {
                 - frequent check to modify menu and display status (ALIVE_fnc_adminActoinsmenuDef)
                 */
 
-		TRACE_2("Adding menu",isDedicated,isHC);
+        TRACE_2("Adding menu",isDedicated,isHC);
 
                 if(!isDedicated && !isHC) then {
                         // Initialise interaction key if undefined
@@ -106,7 +106,7 @@ switch(_operation) do {
                         // Initialise default map click command if undefined
                         ISNILS(DEFAULT_MAPCLICK,"");
 
-				TRACE_3("Menu pre-req",SELF_INTERACTION_KEY,ace_fnc_startSpectator,DEFAULT_MAPCLICK);
+                TRACE_3("Menu pre-req",SELF_INTERACTION_KEY,ace_fnc_startSpectator,DEFAULT_MAPCLICK);
 
                         // initialise main menu
                         [

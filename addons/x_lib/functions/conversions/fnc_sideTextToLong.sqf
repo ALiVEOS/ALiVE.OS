@@ -26,22 +26,22 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_side", "_result"];
-	
+
 _side = _this select 0;
 
 switch(_side) do {
-	case "WEST": {
-		_result = "BLUFOR";
-	};
-	case "EAST": {
-		_result = "OPFOR";
-	};
-	case "GUER": {
-		_result = "Independent";
-	};
-	case "CIV": {
-		_result = "Civilian";
-	};
+    case "WEST": {
+        _result = "BLUFOR";
+    };
+    case "EAST": {
+        _result = "OPFOR";
+    };
+    case "GUER": {
+        _result = "Independent";
+    };
+    case "CIV": {
+        _result = "Civilian";
+    };
     default {
         _result = "Civilian";
     };

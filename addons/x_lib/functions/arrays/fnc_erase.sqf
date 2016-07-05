@@ -4,27 +4,27 @@
 Function: ALiVE_fnc_erase
 
 Description:
-	Erases a value from an array (preserves order).
-	
+    Erases a value from an array (preserves order).
+
 Parameters:
-	0 - Array [array]
-	1 - Index to erase [number]
+    0 - Array [array]
+    1 - Index to erase [number]
 
 Returns:
-	Array copy [array]
+    Array copy [array]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
-	- <ALiVE_fnc_uErase>
-	- <ALiVE_fnc_oErase>
+    - <ALiVE_fnc_uErase>
+    - <ALiVE_fnc_oErase>
 
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 private ["_arr", "_arrCount"];
@@ -33,7 +33,7 @@ _arrCount = count _arr;
 
 for "_i" from (_this select 1) to (_arrCount - 2) do
 {
-	_arr set [_i, (_arr select (_i + 1))];
+    _arr set [_i, (_arr select (_i + 1))];
 };
 
 _arr resize (_arrCount - 1);

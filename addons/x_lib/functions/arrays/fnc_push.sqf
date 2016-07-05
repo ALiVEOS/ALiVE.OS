@@ -4,26 +4,26 @@
 Function: ALiVE_fnc_push
 
 Description:
-	Adds a value to the last of an array.
-	
+    Adds a value to the last of an array.
+
 Parameters:
-	0 - Array [array]
-	1 - Value to push [any]
+    0 - Array [array]
+    1 - Value to push [any]
 
 Returns:
-	Array copy [array]
+    Array copy [array]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
-	- <ALiVE_fnc_insert>
+    - <ALiVE_fnc_insert>
 
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 private ["_arr"];

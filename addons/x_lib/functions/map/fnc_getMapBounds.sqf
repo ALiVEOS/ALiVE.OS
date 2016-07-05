@@ -15,7 +15,7 @@ Scalar Map Size
 
 Examples:
 (begin example)
-// get bounds of map 
+// get bounds of map
 _size = [] call ALIVE_fnc_getMapBounds;
 (end)
 
@@ -31,8 +31,8 @@ private ["_result","_err"];
 _result = getNumber(configFile >> "CfgWorlds" >> worldName >> "MapSize");
 
 if(_result == 0) then {
-	_result = getArray(configFile >> "CfgWorlds" >> worldName >> "centerPosition");
-	_result = sqrt((_result select 0) ^ 2 + (_result select 1) ^ 2) / 0.68;
+    _result = getArray(configFile >> "CfgWorlds" >> worldName >> "centerPosition");
+    _result = sqrt((_result select 0) ^ 2 + (_result select 1) ^ 2) / 0.68;
 };
 _err = format["get map bounds config entry not vaild - %1",_result];
 ASSERT_TRUE(typeName _result == "SCALAR",_err);

@@ -4,25 +4,25 @@
 Function: ALiVE_fnc_dirTo
 
 Description:
-	Calculates the direction to a position from a position.
-	
+    Calculates the direction to a position from a position.
+
 Parameters:
-	0 - From object or position [any]
-	1 - To object or position [any]
+    0 - From object or position [any]
+    1 - To object or position [any]
 
 Returns:
-	Direction in degrees [number]
+    Direction in degrees [number]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
 
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 private ["_from", "_to"];

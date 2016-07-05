@@ -3,33 +3,33 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_patrolrep">
-	<Original>patrolrep Module</Original>
+    <Original>patrolrep Module</Original>
 </Key>
 <Key ID="STR_ALIVE_patrolrep_COMMENT">
-	<Original>Send a PATROLREP to be stored in game and on War Room</Original>
+    <Original>Send a PATROLREP to be stored in game and on War Room</Original>
 </Key>
 <Key ID="STR_ALIVE_patrolrepPARAMS">
-	<Original>Template Parameters</Original>
+    <Original>Template Parameters</Original>
 </Key>
 <Key ID="STR_ALIVE_patrolrep_ERROR1">
-	<Original>Only one module template allowed</Original>
+    <Original>Only one module template allowed</Original>
 </Key>
 <Key ID="STR_ALIVE_patrolrepPARAMS_COMMENT">
-	<Original>Over-ride default parameters for the Module Template</Original>
+    <Original>Over-ride default parameters for the Module Template</Original>
 </Key>
 <Key ID="STR_ALIVE_patrolrepPARAMS_USAGE">
-	<Original>Place the module and configure the over-rides</Original>
+    <Original>Place the module and configure the over-rides</Original>
 </Key>
 <Key ID="STR_ALIVE_patrolrep_DEBUG">
-	<Original>Debug:</Original>
+    <Original>Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_patrolrep_DEBUG_COMMENT">
-	<Original>Enable Debug</Original>
+    <Original>Enable Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_patrolrep_DIALOG_TITLE">
-	<Original>ADVANCED patrolrep</Original>
+    <Original>ADVANCED patrolrep</Original>
 </Key>
 <Key ID="STR_ALIVE_patrolrep_DIALOG_patrolrep">
-	<Original>patrolrep</Original>
+    <Original>patrolrep</Original>
 </Key>
 </Container></Package></Project>

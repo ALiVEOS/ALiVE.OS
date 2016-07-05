@@ -4,33 +4,33 @@
 Function: ALiVE_fnc_sideToText
 
 Description:
-	Converts a side to human-readable text.
-	
+    Converts a side to human-readable text.
+
 Parameters:
-	0 - Side [side]
+    0 - Side [side]
 
 Returns:
-	Side name [string]
+    Side name [string]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
 
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 switch (_this select 0) do
 {
-	case WEST: {'Blufor'};
-	case EAST: {'Opfor'};
-	case RESISTANCE: {'Independent'};
-	case CIVILIAN: {'Civilian'};
-	case SIDEENEMY: {'Renegade'};
-	case SIDEFRIENDLY: {'Friendlies'};
-	case default {'NULL'};
+    case WEST: {'Blufor'};
+    case EAST: {'Opfor'};
+    case RESISTANCE: {'Independent'};
+    case CIVILIAN: {'Civilian'};
+    case SIDEENEMY: {'Renegade'};
+    case SIDEFRIENDLY: {'Friendlies'};
+    case default {'NULL'};
 };

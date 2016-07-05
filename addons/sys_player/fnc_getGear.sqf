@@ -43,34 +43,34 @@ TRACE_2("SYS_PLAYER GET GEAR ON CLIENT", _player, _gearHash);
 
 if (local _player) then {
 
-	// Store the data on client in case of reset requested
-	_player setVariable [QGVAR(gear_data), _gearHash];
-	GVAR(gearResetAvailable) = true;
+    // Store the data on client in case of reset requested
+    _player setVariable [QGVAR(gear_data), _gearHash];
+    GVAR(gearResetAvailable) = true;
 
-	// Create Data Command Array
-	_data = GVAR(LOADOUT_DATA);
+    // Create Data Command Array
+    _data = GVAR(LOADOUT_DATA);
 
-	TRACE_5("SYS_PLAYER GET GEAR", count _data);
+    TRACE_5("SYS_PLAYER GET GEAR", count _data);
 
-	// Run data commands
-	{
-		private ["_key","_cmd","_value"];
-		_key = _x select 0;
-		_value = [_gearHash, _key] call CBA_fnc_hashGet;
-		_cmd = _x select 2;
+    // Run data commands
+    {
+        private ["_key","_cmd","_value"];
+        _key = _x select 0;
+        _value = [_gearHash, _key] call CBA_fnc_hashGet;
+        _cmd = _x select 2;
 
-		if (typeName _cmd != "STRING") then {
-			// Execute
-			[_player,_value] call _cmd;
+        if (typeName _cmd != "STRING") then {
+            // Execute
+            [_player,_value] call _cmd;
 
-			TRACE_3("SYS_PLAYER GET GEAR DATA", _player, _key, _value);
-		} else {
-			TRACE_1("SKIPPING GET GEAR CMD",_cmd);
-		};
+            TRACE_3("SYS_PLAYER GET GEAR DATA", _player, _key, _value);
+        } else {
+            TRACE_1("SKIPPING GET GEAR CMD",_cmd);
+        };
 
-	} foreach _data;
+    } foreach _data;
 
-	_result = true;
+    _result = true;
 };
 
 _result;

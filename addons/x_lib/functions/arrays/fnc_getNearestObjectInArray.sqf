@@ -42,11 +42,11 @@ ASSERT_TRUE(typeName _cluster == "ARRAY", _err);
 _minDistance = 999999;
 _minObject = nil;
 {
-	_distance = _point distance _x;
-	if (_point != _x && {_distance < _minDistance} && {_distance < _maxDistance}) then {
-		_minDistance = _distance;
-		_minObject = _x;
-	};
+    _distance = _point distance _x;
+    if (_point != _x && {_distance < _minDistance} && {_distance < _maxDistance}) then {
+        _minDistance = _distance;
+        _minObject = _x;
+    };
 } forEach _cluster;
 
 if(isNil "_minObject") then {_minObject = _point;};

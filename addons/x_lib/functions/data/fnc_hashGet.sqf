@@ -42,15 +42,15 @@ if (isnil "_hash" || {isnil "_key"} || {!(typeName _hash == "ARRAY")}) exitwith 
 };
 
 if(count _this > 2) then {
-	_default = _this select 2;
-	_result = [_hash, _key, _default] call CBA_fnc_hashGet;
+    _default = _this select 2;
+    _result = [_hash, _key, _default] call CBA_fnc_hashGet;
 } else {
-	_result = [_hash, _key] call CBA_fnc_hashGet;
+    _result = [_hash, _key] call CBA_fnc_hashGet;
 };
 // check for default value
 if(!(isNil "_result") && {typeName _result == "STRING"} && {_result == "UNDEF"} && {count _this > 2}) then {
-	_default = _this select 2;
-	_result = _default;
+    _default = _this select 2;
+    _result = _default;
 };
 
 if !(isnil "_result") then {_result} else {nil};

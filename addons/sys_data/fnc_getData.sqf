@@ -28,9 +28,9 @@ private ["_key", "_result"];
 _key = _this select 0;
 
 if (typeName _key == "STRING") then {
-	_result = [GVAR(mission_data), _key] call ALiVE_fnc_hashGet;
+    _result = [GVAR(mission_data), _key] call ALiVE_fnc_hashGet;
 } else {
-	_result = "ERROR";
+    _result = "ERROR";
 };
 
 _result;

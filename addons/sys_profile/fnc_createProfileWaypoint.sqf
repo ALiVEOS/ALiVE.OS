@@ -43,7 +43,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_position","_radius","_type","_formation","_behaviour","_combatMode","_speed","_completionRadius","_timeout","_description","_attachVehicle","_statements","_waypoint"];
-	
+
 _position = _this select 0;
 _radius = if(count _this > 1) then {_this select 1} else {0};
 _type = if(count _this > 2) then {_this select 2} else {"MOVE"};

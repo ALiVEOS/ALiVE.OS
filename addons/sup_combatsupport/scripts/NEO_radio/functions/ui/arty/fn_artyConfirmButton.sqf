@@ -1,8 +1,8 @@
 private
 [
-	"_display", "_artyArray", "_artyConfirmButton", "_artyUnitLb", "_artyOrdnanceTypeLb", "_artyRateOfFireLb",
-	"_artyRoundCountLb", "_artyDispersionSlider", "_artyRateDelaySlider", "_battery", "_status", "_supportMarker",
-	"_pos", "_type", "_ord", "_rate", "_count", "_dispersion", "_coord"
+    "_display", "_artyArray", "_artyConfirmButton", "_artyUnitLb", "_artyOrdnanceTypeLb", "_artyRateOfFireLb",
+    "_artyRoundCountLb", "_artyDispersionSlider", "_artyRateDelaySlider", "_battery", "_status", "_supportMarker",
+    "_pos", "_type", "_ord", "_rate", "_count", "_dispersion", "_coord"
 ];
 _display = findDisplay 655555;
 _artyArray = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", playerSide];
@@ -28,18 +28,18 @@ _ord = [_battery, _ordnanceType] CALL ALIVE_fnc_getArtyMagazineType;
 
 _rate = switch (_artyRateOfFireLb lbText (lbCurSel _artyRateOfFireLb)) do
 {
-	case "FULL" : { 0 };
-	case "SEMI-FULL" : { round (sliderPosition _artyRateDelaySlider) };
-	case DEFAULT { 0 };
+    case "FULL" : { 0 };
+    case "SEMI-FULL" : { round (sliderPosition _artyRateDelaySlider) };
+    case DEFAULT { 0 };
 };
 _count = switch (_artyRoundCountLb lbText (lbCurSel _artyRoundCountLb)) do
 {
-	case "1 ROUND" : { 1 };
-	case "3 ROUNDS" : { 3 };
-	case "6 ROUNDS" : { 6 };
-	case "12 ROUNDS" : { 12 };
-	case "24 ROUNDS" : { 24 };
-	case DEFAULT { 1 };
+    case "1 ROUND" : { 1 };
+    case "3 ROUNDS" : { 3 };
+    case "6 ROUNDS" : { 6 };
+    case "12 ROUNDS" : { 12 };
+    case "24 ROUNDS" : { 24 };
+    case DEFAULT { 1 };
 };
 _dispersion = sliderPosition _artyDispersionSlider;
 _coord = _pos call BIS_fnc_posToGrid;
@@ -51,10 +51,10 @@ _callsignPlayer = (format ["%1", group player]) call NEO_fnc_callsignFix;
 
 
 if (_audio) then {
-	player kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
-	_battery kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
+    player kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
+    _battery kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
 
-	player kbTell [_battery, "ALIVE_SUPP_protocol", "Artillery_Request", "GROUP"];
+    player kbTell [_battery, "ALIVE_SUPP_protocol", "Artillery_Request", "GROUP"];
 };
 
 

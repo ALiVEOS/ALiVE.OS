@@ -94,15 +94,15 @@ switch(_operation) do {
                 if (_logic getVariable ["playertags_style_setting","Modern"] == "None") exitWith {["ALiVE SYS PLAYERTAGS - Feature turned off! Exiting..."] call ALiVE_fnc_Dump};
 
                 //Only one init per instance is allowed
-            	if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS PLAYERTAGS - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS PLAYERTAGS - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
 
-            	//Start init
-            	_logic setVariable ["initGlobal", false];
+                //Start init
+                _logic setVariable ["initGlobal", false];
 
                 // Server init
                 if (isServer) then {
 
-                	//Define logic
+                    //Define logic
                     ADDON = _logic;
 
                     // if server, initialise module game logic
@@ -123,19 +123,19 @@ switch(_operation) do {
                 waitUntil {!isNil QUOTE(ADDON) && {ADDON getVariable ["init", false]}};
 
                 // Defaults
-            	playertags_debug = call compile (_logic getvariable ["debug","false"]);
-				playertags_group = call compile (_logic getvariable ["playertags_displaygroup_setting","true"]);
-				playertags_rank = call compile (_logic getvariable ["playertags_displayrank_setting","true"]);
-				playertags_invehicle = call compile (_logic getvariable ["playertags_invehicle_setting","false"]);
-				playertags_distance = _logic getvariable ["playertags_distance_setting",20];
-				playertags_tolerance = _logic getvariable ["playertags_tolerance_setting",0.75];
-				playertags_scale = _logic getvariable ["playertags_scale_setting",0.65];
-				playertags_namecolour = _logic getvariable ["playertags_namecolour_setting","#FFFFFF"];
-				playertags_groupcolour = _logic getvariable ["playertags_groupcolour_setting","#A8F000"];
-				playertags_thisgroupleadernamecolour = _logic getvariable ["playertags_thisgroupleadernamecolour_setting","#FFB300"];
-				playertags_thisgroupcolour =_logic getvariable ["playertags_thisgroupcolour_setting","#009D91"];
-				playertags_targetvehicles = call compile (_logic getvariable ["playertags_targets_setting","[""CAManBase"", ""Car"", ""Tank"", ""StaticWeapon"", ""Helicopter"", ""Plane""]"]);
-				playertags_height = _logic getvariable ["playertags_height_setting",1.1];
+                playertags_debug = call compile (_logic getvariable ["debug","false"]);
+                playertags_group = call compile (_logic getvariable ["playertags_displaygroup_setting","true"]);
+                playertags_rank = call compile (_logic getvariable ["playertags_displayrank_setting","true"]);
+                playertags_invehicle = call compile (_logic getvariable ["playertags_invehicle_setting","false"]);
+                playertags_distance = _logic getvariable ["playertags_distance_setting",20];
+                playertags_tolerance = _logic getvariable ["playertags_tolerance_setting",0.75];
+                playertags_scale = _logic getvariable ["playertags_scale_setting",0.65];
+                playertags_namecolour = _logic getvariable ["playertags_namecolour_setting","#FFFFFF"];
+                playertags_groupcolour = _logic getvariable ["playertags_groupcolour_setting","#A8F000"];
+                playertags_thisgroupleadernamecolour = _logic getvariable ["playertags_thisgroupleadernamecolour_setting","#FFB300"];
+                playertags_thisgroupcolour =_logic getvariable ["playertags_thisgroupcolour_setting","#009D91"];
+                playertags_targetvehicles = call compile (_logic getvariable ["playertags_targets_setting","[""CAManBase"", ""Car"", ""Tank"", ""StaticWeapon"", ""Helicopter"", ""Plane""]"]);
+                playertags_height = _logic getvariable ["playertags_height_setting",1.1];
 
                 GVAR(RADIUS) = _logic getvariable ["playertags_distance_setting",20];
                 GVAR(STYLE) = _logic getvariable ["playertags_style_setting","default"];
@@ -175,8 +175,8 @@ switch(_operation) do {
 
                 // Debug
                 if (GVAR(DEBUG)) then {
-					["ALIVE Player Tags - Menu Starting... Radius: %1, playertags_tolerance: %2, playertags_scale:, %3", playertags_distance, playertags_tolerance, playertags_scale] call ALIVE_fnc_dump;
-            	};
+                    ["ALIVE Player Tags - Menu Starting... Radius: %1, playertags_tolerance: %2, playertags_scale:, %3", playertags_distance, playertags_tolerance, playertags_scale] call ALIVE_fnc_dump;
+                };
 
                 /*
                 CONTROLLER  - coordination
@@ -195,18 +195,18 @@ switch(_operation) do {
                 _args = _logic getvariable [QGVAR(EH_DRAW3D),-1];
             } else {
                 if (_args) then {
-		        	_logic setvariable [QGVAR(EH_DRAW3D), addMissionEventHandler ["Draw3D", {
+                    _logic setvariable [QGVAR(EH_DRAW3D), addMissionEventHandler ["Draw3D", {
 
                         _onView = {true}; if (GVAR(ONVIEW)) then {_onView = {cursortarget == _x}};
 
-						{
+                        {
                             if ((_x distance player < GVAR(RADIUS)) && {call _onView} && {!(lineIntersects [eyePos player, eyePos _x, player, _x])}) then {
 
-					                private ["_icon","_color"];
+                                    private ["_icon","_color"];
 
-									_pos = visiblePosition _x; _pos set [2, (getPosATL _x select 2) + 2.1];
-									_width = 0.9; _height = 0.9;
-						            _name = name _x;
+                                    _pos = visiblePosition _x; _pos set [2, (getPosATL _x select 2) + 2.1];
+                                    _width = 0.9; _height = 0.9;
+                                    _name = name _x;
 
                                     switch (side _x) do {
                                         case (WEST) : {_color = [0.259,0.235,0.941,1]};
@@ -216,26 +216,26 @@ switch(_operation) do {
                                         default {_color = [0.259,0.235,0.941,1]};
                                     };
 
-					                switch (rank _x) do {
-										case ("PRIVATE") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\private_gs.paa"};
-										case ("SERGEANT") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\sergeant_gs.paa"};
-										case ("LIEUTENANT") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\lieutenant_gs.paa"};
-										case ("CAPTAIN") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\captain_gs.paa"};
-										case ("MAJOR") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\major_gs.paa"};
-										case ("COLONEL") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\colonel_gs.paa"};
-										case ("CORPORAL") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\general_gs.paa"};
-					                    default {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\private_gs.paa"};
-					                };
+                                    switch (rank _x) do {
+                                        case ("PRIVATE") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\private_gs.paa"};
+                                        case ("SERGEANT") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\sergeant_gs.paa"};
+                                        case ("LIEUTENANT") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\lieutenant_gs.paa"};
+                                        case ("CAPTAIN") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\captain_gs.paa"};
+                                        case ("MAJOR") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\major_gs.paa"};
+                                        case ("COLONEL") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\colonel_gs.paa"};
+                                        case ("CORPORAL") : {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\general_gs.paa"};
+                                        default {_icon = "a3\UI_F\data\GUI\Cfg\Ranks\private_gs.paa"};
+                                    };
 
-									drawIcon3D [_icon,_color,_pos,_width,_height,0,_name,0,0.04];
-								};
-						} foreach (getPosATL player nearEntities ["CAManBase",GVAR(RADIUS)]);
-					}]];
+                                    drawIcon3D [_icon,_color,_pos,_width,_height,0,_name,0,0.04];
+                                };
+                        } foreach (getPosATL player nearEntities ["CAManBase",GVAR(RADIUS)]);
+                    }]];
 
                     _args = _logic getvariable [QGVAR(EH_DRAW3D),-1];
                     _result = _args;
                 } else {
-                	removeMissionEventHandler ["Draw3D",_logic getvariable [QGVAR(EH_DRAW3D),-1]];
+                    removeMissionEventHandler ["Draw3D",_logic getvariable [QGVAR(EH_DRAW3D),-1]];
                 };
             };
         };

@@ -7,7 +7,7 @@
 if (isDedicated || !dialog) exitWith {};
 
 private['_handled', '_EHParams', '_control', '_dikCode', '_shiftKey', '_ctrlKey', '_altKey'];
-private['_menuDefs', "_caption", "_action", "_icon", "_tooltip", "_subMenu", "_shortcut", "_visible", "_enabled"]; 
+private['_menuDefs', "_caption", "_action", "_icon", "_tooltip", "_subMenu", "_shortcut", "_visible", "_enabled"];
 _EHParams = _this select 0;
 
 _control = _EHParams select 0;
@@ -24,22 +24,22 @@ _handled = false;
 _menuDefs = (_this select 1) call FUNC(getMenuDef);
 //-----------------------------------------------------------------------------
 { // forEach
-	_menuOption = [_menuDefs select 0, _x] call FUNC(getMenuOption);
+    _menuOption = [_menuDefs select 0, _x] call FUNC(getMenuOption);
 
-	//_caption = _menuOption select _flexiMenu_menuDef_ID_caption;
-	_action = _menuOption select _flexiMenu_menuDef_ID_action;
-	//_icon = _menuOption select _flexiMenu_menuDef_ID_icon;
-	//_tooltip = _menuOption select _flexiMenu_menuDef_ID_tooltip;
-	//_subMenu = _menuOption select _flexiMenu_menuDef_ID_subMenuSource;
-	_shortcut = _menuOption select _flexiMenu_menuDef_ID_shortcut;
-	_enabled = _menuOption select _flexiMenu_menuDef_ID_enabled;
-	_visible = _menuOption select _flexiMenu_menuDef_ID_visible;
+    //_caption = _menuOption select _flexiMenu_menuDef_ID_caption;
+    _action = _menuOption select _flexiMenu_menuDef_ID_action;
+    //_icon = _menuOption select _flexiMenu_menuDef_ID_icon;
+    //_tooltip = _menuOption select _flexiMenu_menuDef_ID_tooltip;
+    //_subMenu = _menuOption select _flexiMenu_menuDef_ID_subMenuSource;
+    _shortcut = _menuOption select _flexiMenu_menuDef_ID_shortcut;
+    _enabled = _menuOption select _flexiMenu_menuDef_ID_enabled;
+    _visible = _menuOption select _flexiMenu_menuDef_ID_visible;
 
-	if (_dikCode == _shortcut && _enabled != 0 && _visible != 0) exitWith
-	{
-		call compile _action;
-		_handled = true;
-	};
+    if (_dikCode == _shortcut && _enabled != 0 && _visible != 0) exitWith
+    {
+        call compile _action;
+        _handled = true;
+    };
 } forEach (_menuDefs select 1);
 
-_handled;  
+_handled;

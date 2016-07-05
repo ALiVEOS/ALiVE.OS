@@ -4,9 +4,9 @@ _map = _display displayCtrl 655560;
 
 private
 [
-	"_casArray", "_casUnitLb", "_casUnitText", "_casHelpUnitText", "_casConfirmButton", "_casBaseButton", "_casTaskLb", "_casTaskText",
-	"_casTaskHelpText", "_casFlyHeightSlider", "_casFlyHeighSliderText", "_casRadiusSlider", "_casRadiusSliderText", "_supportMarker",
-	"_veh", "_status"
+    "_casArray", "_casUnitLb", "_casUnitText", "_casHelpUnitText", "_casConfirmButton", "_casBaseButton", "_casTaskLb", "_casTaskText",
+    "_casTaskHelpText", "_casFlyHeightSlider", "_casFlyHeighSliderText", "_casRadiusSlider", "_casRadiusSliderText", "_supportMarker",
+    "_veh", "_status"
 ];
 _casArray = NEO_radioLogic getVariable format ["NEO_radioCasArray_%1", playerSide];
 _casUnitLb = _display displayCtrl 655582;
@@ -33,10 +33,10 @@ _status = _veh getVariable "NEO_radioCasUnitStatus";
 //Status Text
 _casHelpUnitText ctrlSetStructuredText parseText (switch (_status) do
 {
-	case "NONE" : { "<t color='#627057' size='0.7' font='PuristaMedium'>Unit is available and waiting for task</t>" };
-	case "KILLED" : { "<t color='#603234' size='0.7' font='PuristaMedium'>Unit is combat ineffective</t>" };
-	case "MISSION" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is on a mission, you may abort or change the current task</t>" };
-	case "RTB" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is RTB</t>" };
+    case "NONE" : { "<t color='#627057' size='0.7' font='PuristaMedium'>Unit is available and waiting for task</t>" };
+    case "KILLED" : { "<t color='#603234' size='0.7' font='PuristaMedium'>Unit is combat ineffective</t>" };
+    case "MISSION" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is on a mission, you may abort or change the current task</t>" };
+    case "RTB" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is RTB</t>" };
 });
 
 //Marker
@@ -46,11 +46,11 @@ _supportMarker setMarkerAlphaLocal 0;
 //Base Button
 if (_status == "RTB" || _status == "NONE" || _status == "KILLED" || getPosATL _veh select 2 < 10) then
 {
-	_casBaseButton ctrlEnable false;
+    _casBaseButton ctrlEnable false;
 }
 else
 {
-	_casBaseButton ctrlEnable true;
+    _casBaseButton ctrlEnable true;
 };
 
 //Re-initialize Controls
@@ -60,51 +60,51 @@ else
 
 if (_status != "KILLED") then
 {
-	//Targets Text
-	_casTaskText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>TASK</t>";
-	_casTaskHelpText ctrlSetStructuredText parseText "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Select a task</t>";
+    //Targets Text
+    _casTaskText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>TASK</t>";
+    _casTaskHelpText ctrlSetStructuredText parseText "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Select a task</t>";
 
-	//Tasks LB
-	_casTaskLb ctrlEnable true;
-	_sitRepButton ctrlEnable true;
-	lbClear _casTaskLb;
-	{
-		_casTaskLb lbAdd _x;
-	} forEach ["SAD","LOITER","ATTACK RUN"];
+    //Tasks LB
+    _casTaskLb ctrlEnable true;
+    _sitRepButton ctrlEnable true;
+    lbClear _casTaskLb;
+    {
+        _casTaskLb lbAdd _x;
+    } forEach ["SAD","LOITER","ATTACK RUN"];
 
-	//GPS
-	uinamespace setVariable ["NEO_casMarkerCreated", nil];
-	_supportMarker setMarkerAlphaLocal 0;
+    //GPS
+    uinamespace setVariable ["NEO_casMarkerCreated", nil];
+    _supportMarker setMarkerAlphaLocal 0;
 
-	//Sliders
-	_casFlyHeighSliderText ctrlSetText "Altitude: Med";
-	_casFlyHeighSliderText ctrlSetPosition [0.397304 * safezoneW + safezoneX, 0.514 * safezoneH + safezoneY, (0.105169 * safezoneW), (0.028 * safezoneH)];
-	_casFlyHeighSliderText ctrlCommit 0;
-	_casFlyHeightSlider ctrlSetPosition [0.402708 * safezoneW + safezoneX, 0.5508 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.0196 * safezoneH)];
-	_casFlyHeightSlider ctrlCommit 0;
+    //Sliders
+    _casFlyHeighSliderText ctrlSetText "Altitude: Med";
+    _casFlyHeighSliderText ctrlSetPosition [0.397304 * safezoneW + safezoneX, 0.514 * safezoneH + safezoneY, (0.105169 * safezoneW), (0.028 * safezoneH)];
+    _casFlyHeighSliderText ctrlCommit 0;
+    _casFlyHeightSlider ctrlSetPosition [0.402708 * safezoneW + safezoneX, 0.5508 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.0196 * safezoneH)];
+    _casFlyHeightSlider ctrlCommit 0;
 
-	_casFlyHeightSlider sliderSetRange [1, 3];
-	_casFlyHeightSlider sliderSetspeed [1, 1];
-	_casFlyHeightSlider sliderSetPosition 2;
-	_casFlyHeightSlider ctrlSetEventHandler ["SliderPosChanged",
-	"
-		private [""_slider"", ""_pos"", ""_casFlyHeightSliderText"", ""_text""];
-		_slider = _this select 0;
-		_pos = round (_this select 1);
-		_casFlyHeightSliderText = (findDisplay 655555) displayCtrl 655591;
-		_text = switch (_pos) do
-		{
-			case 1 : { ""Altitude: Low"" };
-			case 2 : { ""Altitude: Med"" };
-			case 3 : { ""Altitude: High"" };
-		};
+    _casFlyHeightSlider sliderSetRange [1, 3];
+    _casFlyHeightSlider sliderSetspeed [1, 1];
+    _casFlyHeightSlider sliderSetPosition 2;
+    _casFlyHeightSlider ctrlSetEventHandler ["SliderPosChanged",
+    "
+        private [""_slider"", ""_pos"", ""_casFlyHeightSliderText"", ""_text""];
+        _slider = _this select 0;
+        _pos = round (_this select 1);
+        _casFlyHeightSliderText = (findDisplay 655555) displayCtrl 655591;
+        _text = switch (_pos) do
+        {
+            case 1 : { ""Altitude: Low"" };
+            case 2 : { ""Altitude: Med"" };
+            case 3 : { ""Altitude: High"" };
+        };
 
-		_slider sliderSetPosition _pos;
-		_casFlyHeightSliderText ctrlSetText _text;
-	"];
+        _slider sliderSetPosition _pos;
+        _casFlyHeightSliderText ctrlSetText _text;
+    "];
 
-	//GPS
-	_map ctrlSetEventHandler ["MouseButtonDown", "_this call NEO_fnc_radioMapEvent"];
+    //GPS
+    _map ctrlSetEventHandler ["MouseButtonDown", "_this call NEO_fnc_radioMapEvent"];
 };
 
 //Confirm Button

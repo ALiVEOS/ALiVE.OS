@@ -16,7 +16,7 @@ String - Returns a response error or confirmation of write
 
 Examples:
 (begin example)
-	[ _logic, [ _module, [[key,value],[key,value],[key,value]], _async, _uid ] ] call ALIVE_fnc_updateData;
+    [ _logic, [ _module, [[key,value],[key,value],[key,value]], _async, _uid ] ] call ALIVE_fnc_updateData;
 (end)
 
 Author:
@@ -52,22 +52,22 @@ _async = _args select 2;
 _method = "PUT";
 
 if (count _args > 3) then {
-	_uid = _args select 3;
-	_module = format ["%1/%2", _module, _uid];
+    _uid = _args select 3;
+    _module = format ["%1/%2", _module, _uid];
 };
 
 
 // Check to see if ARRAY rather than CBA HASH has been passed as data
 if (typeName (_data select 0) != "STRING") then {
-	private ["_tmp"];
-	_tmp = [] call CBA_fnc_hashCreate;
-	{
-		private ["_key","_value"];
-		_key = _x select 0;
-		_value = _x select 1;
-		[_tmp, _key, _value] call CBA_fnc_hashSet;
-	} foreach _data;
-	_data = _tmp;
+    private ["_tmp"];
+    _tmp = [] call CBA_fnc_hashCreate;
+    {
+        private ["_key","_value"];
+        _key = _x select 0;
+        _value = _x select 1;
+        [_tmp, _key, _value] call CBA_fnc_hashSet;
+    } foreach _data;
+    _data = _tmp;
 };
 
 // From data passed create couchDB string
@@ -81,9 +81,9 @@ _string = "";
 // ["SendJSON ['POST', 'events', '{key:value,key:value}', 'arma3live'];
 
 if (!_async) then {
-	_cmd = format ["SendJSON ['%2','%1'", _module, _method];
+    _cmd = format ["SendJSON ['%2','%1'", _module, _method];
 } else {
-	_cmd = format ["SendJSONAsync ['%2','%1'", _module, _method];
+    _cmd = format ["SendJSONAsync ['%2','%1'", _module, _method];
 };
 
 _json = [_logic, "convert", [_data]] call ALIVE_fnc_Data;
@@ -104,9 +104,9 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 
 // Send JSON to plugin
 if (!_async) then {
-	_response = [_string] call ALIVE_fnc_sendToPlugIn; // if you need a returned UID then you have to go with synchronous op
+    _response = [_string] call ALIVE_fnc_sendToPlugIn; // if you need a returned UID then you have to go with synchronous op
 } else {
-	_response = [_string] call ALIVE_fnc_sendToPlugInAsync; //SendJSON is an async addin function so does not return a response until asked for a second time.
+    _response = [_string] call ALIVE_fnc_sendToPlugInAsync; //SendJSON is an async addin function so does not return a response until asked for a second time.
 };
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
@@ -119,12 +119,12 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 /*
 // Handle result of write
 if (typeName _response == "ARRAY") then {
-	_result = _response select 0;
+    _result = _response select 0;
 } else {
-	// Handle data error
-	private["_err"];
-	_err = format["The Couch database %1 did not respond with %2. The data returned was: %3", _databaseName, typeName _result, _result];
-	ERROR_WITH_TITLE(str _logic, _err);
+    // Handle data error
+    private["_err"];
+    _err = format["The Couch database %1 did not respond with %2. The data returned was: %3", _databaseName, typeName _result, _result];
+    ERROR_WITH_TITLE(str _logic, _err);
 };*/
 
 // Get UID of written record and add to result

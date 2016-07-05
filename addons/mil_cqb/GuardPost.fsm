@@ -80,9 +80,9 @@ class FSM
        "" \n
        "_stance = if (count _this > 3) then {_this select 3} else {""AUTO""};" \n
        "if (toUpper(_stance) in [""AUTO"",""UP"", ""MIDDLE"", ""DOWN""]) then {" \n
-       "	_unit setUnitPos _stance;" \n
+       "    _unit setUnitPos _stance;" \n
        "} else {" \n
-       "	_unit setUnitPos ""AUTO"";" \n
+       "    _unit setUnitPos ""AUTO"";" \n
        "};" \n
        "" \n
        "_lookvert = if (count _this > 4) then {_this select 4} else {false};" \n
@@ -116,7 +116,7 @@ class FSM
       name = "End";
       init = /*%FSM<STATEINIT""">*/"deleteMarkerLocal format[""GP:%1"", _unit];" \n
        "if(_debug) then {" \n
-       "	format[""%1 killed - ending Simple Guard Post FSM"",  _unit] call ALiVE_fnc_logger;" \n
+       "    format[""%1 killed - ending Simple Guard Post FSM"",  _unit] call ALiVE_fnc_logger;" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -135,23 +135,23 @@ class FSM
        "" \n
        "_zaxis = _pos select 2;" \n
        "if (_lookvert) then {" \n
-       "	_zaxis = (_pos select 2) + (random 15) - 5;" \n
+       "    _zaxis = (_pos select 2) + (random 15) - 5;" \n
        "};" \n
        "" \n
        "_pos = [" \n
-       "	(_pos select 0) + 50 * sin _dir," \n
-       "	(_pos select 1) + 50 * cos _dir," \n
-       "	_zaxis" \n
+       "    (_pos select 0) + 50 * sin _dir," \n
+       "    (_pos select 1) + 50 * cos _dir," \n
+       "    _zaxis" \n
        "];" \n
        "" \n
        "_unit doWatch _pos;" \n
        "" \n
        "deleteMarkerLocal format[""GP:%1"", _unit];" \n
        "if(_debug) then {" \n
-       "	createMarkerLocal [format[""GP:%1"", _unit], _pos];" \n
-       "	format[""GP:%1"", _unit] setMarkerShapeLocal ""ICON"";" \n
-       "	format[""GP:%1"", _unit] setMarkerTypeLocal ""hd_dot"";" \n
-       "	format[""GP:%1"", _unit] setMarkerDir _startdir;" \n
+       "    createMarkerLocal [format[""GP:%1"", _unit], _pos];" \n
+       "    format[""GP:%1"", _unit] setMarkerShapeLocal ""ICON"";" \n
+       "    format[""GP:%1"", _unit] setMarkerTypeLocal ""hd_dot"";" \n
+       "    format[""GP:%1"", _unit] setMarkerDir _startdir;" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -295,7 +295,7 @@ class FSM
        "" \n
        "deleteMarkerLocal format[""GP:%1"", _unit];" \n
        "if(_debug) then {" \n
-       "	format[""%1 aborting Simple Guard Post FSM"",  _unit] call ALiVE_fnc_logger;" \n
+       "    format[""%1 aborting Simple Guard Post FSM"",  _unit] call ALiVE_fnc_logger;" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;

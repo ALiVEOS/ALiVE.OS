@@ -4,17 +4,17 @@ class cfgFunctions {
                         class combatSupportFncInit {
                                 description = "The main class";
                                 file = "\x\alive\addons\sup_combatsupport\fnc_combatSupportFncInit.sqf";
-				                recompile = RECOMPILE;
+                                recompile = RECOMPILE;
                         };
                         class combatSupport {
                                 description = "The main class";
                                 file = "\x\alive\addons\sup_combatsupport\fnc_combatSupport.sqf";
-				                recompile = RECOMPILE;
+                                recompile = RECOMPILE;
                         };
                         class combatSupportInit {
                                 description = "The module initialisation function";
                                 file = "\x\alive\addons\sup_combatsupport\fnc_combatSupportInit.sqf";
-				                recompile = RECOMPILE;
+                                recompile = RECOMPILE;
                         };
                           class radioAction {
                                 description = "The module Radio Action function";
@@ -24,7 +24,7 @@ class cfgFunctions {
                         class combatSupportMenuDef {
                                 description = "The module menu definition";
                                 file = "\x\alive\addons\sup_combatsupport\fnc_combatSupportMenuDef.sqf";
-                				recompile = RECOMPILE;
+                                recompile = RECOMPILE;
                         };
                         class packMortar {
                                 description = "Enables a group to pack a mortar";

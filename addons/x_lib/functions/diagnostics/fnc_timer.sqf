@@ -28,7 +28,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_start","_message","_id","_timeStart","_timeEnd"];
-	
+
 _start = if(count _this > 0) then {_this select 0} else {false};
 _message = if(count _this > 1) then {_this select 1} else {""};
 _id = if(count _this > 2) then {_this select 2} else {""};
@@ -46,9 +46,9 @@ if!(_id == "") then {
     };
 }else{
     if(_start) then {
-    	ALIVE_timeStart = diag_tickTime;
+        ALIVE_timeStart = diag_tickTime;
     } else {
-    	_timeEnd = diag_tickTime - ALIVE_timeStart;
+        _timeEnd = diag_tickTime - ALIVE_timeStart;
     };
 };
 

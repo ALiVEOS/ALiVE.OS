@@ -26,16 +26,16 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_detailed","_text","_cfg","_item"];
-	
+
 _detailed = if(count _this > 0) then {_this select 0} else {false};
 
 _text = " ------------------ Inspecting Classes -------------------- ";
 [_text] call ALIVE_fnc_dump;
 
-["CfgWeapons", _detailed] call ALIVE_fnc_inspectConfig;	
-["CfgMagazines", _detailed] call ALIVE_fnc_inspectConfig;	
+["CfgWeapons", _detailed] call ALIVE_fnc_inspectConfig;
+["CfgMagazines", _detailed] call ALIVE_fnc_inspectConfig;
 ["CfgAmmo", _detailed] call ALIVE_fnc_inspectConfig;
-["CfgGlasses", _detailed] call ALIVE_fnc_inspectConfig;	
+["CfgGlasses", _detailed] call ALIVE_fnc_inspectConfig;
 ["CfgVehicles", _detailed] call ALIVE_fnc_inspectConfig;
 ["CfgMarkers", _detailed] call ALIVE_fnc_inspectConfig;
 

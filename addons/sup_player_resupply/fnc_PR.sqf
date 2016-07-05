@@ -103,20 +103,20 @@ _args = [_this, 2, objNull, [objNull,[],"",0,true,false]] call BIS_fnc_param;
 _result = true;
 
 switch(_operation) do {
-	default {
-		_result = [_logic, _operation, _args] call SUPERCLASS;
-	};
-	case "destroy": {
-		if (isServer) then {
-			// if server
-			_logic setVariable ["super", nil];
-			_logic setVariable ["class", nil];
+    default {
+        _result = [_logic, _operation, _args] call SUPERCLASS;
+    };
+    case "destroy": {
+        if (isServer) then {
+            // if server
+            _logic setVariable ["super", nil];
+            _logic setVariable ["class", nil];
 
-			[_logic, "destroy"] call SUPERCLASS;
-		};
-	};
+            [_logic, "destroy"] call SUPERCLASS;
+        };
+    };
 
-	case "pr_item": {
+    case "pr_item": {
         _result = [_logic,_operation,_args,DEFAULT_PR_ITEM] call ALIVE_fnc_OOsimpleOperation;
     };
     case "pr_restrictionType": {
@@ -167,7 +167,7 @@ switch(_operation) do {
     case "pr_audio": {
         _result = [_logic,_operation,_args,true] call ALIVE_fnc_OOsimpleOperation;
     };
-	case "countsAir": {
+    case "countsAir": {
         _result = [_logic,_operation,_args,DEFAULT_COUNT_AIR] call ALIVE_fnc_OOsimpleOperation;
     };
     case "countsInsert": {
@@ -189,7 +189,7 @@ switch(_operation) do {
         _result = [_logic,_operation,_args,DEFAULT_SCALAR] call ALIVE_fnc_OOsimpleOperation;
     };
 
-	case "state": {
+    case "state": {
         _result = [_logic,_operation,_args,DEFAULT_STATE] call ALIVE_fnc_OOsimpleOperation;
     };
     case "side": {
@@ -314,71 +314,71 @@ switch(_operation) do {
         _result = [_logic,_operation,_args,DEFAULT_MARKER] call ALIVE_fnc_OOsimpleOperation;
     };
 
-	case "blacklist": {
-	    if !(isnil "_args") then {
-			if(typeName _args == "STRING") then {
-	            if !(_args == "") then {
-					_args = [_args, " ", ""] call CBA_fnc_replace;
-	                _args = [_args, "[", ""] call CBA_fnc_replace;
-	                _args = [_args, "]", ""] call CBA_fnc_replace;
-	                _args = [_args, "'", ""] call CBA_fnc_replace;
-	                _args = [_args, """", ""] call CBA_fnc_replace;
-					_args = [_args, ","] call CBA_fnc_split;
+    case "blacklist": {
+        if !(isnil "_args") then {
+            if(typeName _args == "STRING") then {
+                if !(_args == "") then {
+                    _args = [_args, " ", ""] call CBA_fnc_replace;
+                    _args = [_args, "[", ""] call CBA_fnc_replace;
+                    _args = [_args, "]", ""] call CBA_fnc_replace;
+                    _args = [_args, "'", ""] call CBA_fnc_replace;
+                    _args = [_args, """", ""] call CBA_fnc_replace;
+                    _args = [_args, ","] call CBA_fnc_split;
 
-					if(count _args > 0) then {
-						_logic setVariable [_operation, _args];
-					};
-	            } else {
-	                _logic setVariable [_operation, []];
-	            };
-			} else {
-				if(typeName _args == "ARRAY") then {
-					_logic setVariable [_operation, _args];
-				};
-	        };
-	    };
+                    if(count _args > 0) then {
+                        _logic setVariable [_operation, _args];
+                    };
+                } else {
+                    _logic setVariable [_operation, []];
+                };
+            } else {
+                if(typeName _args == "ARRAY") then {
+                    _logic setVariable [_operation, _args];
+                };
+            };
+        };
 
-	    _args = _logic getVariable [_operation, DEFAULT_RESTRICTION_BLACKLIST];
-
-        _result = _args;
-	};
-
-	case "whitelist": {
-	    if !(isnil "_args") then {
-			if(typeName _args == "STRING") then {
-	            if !(_args == "") then {
-					_args = [_args, " ", ""] call CBA_fnc_replace;
-	                _args = [_args, "[", ""] call CBA_fnc_replace;
-	                _args = [_args, "]", ""] call CBA_fnc_replace;
-	                _args = [_args, "'", ""] call CBA_fnc_replace;
-	                _args = [_args, """", ""] call CBA_fnc_replace;
-					_args = [_args, ","] call CBA_fnc_split;
-
-					if(count _args > 0) then {
-						_logic setVariable [_operation, _args];
-					};
-	            } else {
-	                _logic setVariable [_operation, []];
-	            };
-			} else {
-				if(typeName _args == "ARRAY") then {
-					_logic setVariable [_operation, _args];
-				};
-	        };
-	    };
-
-	    _args = _logic getVariable [_operation, DEFAULT_RESTRICTION_WHITELIST];
+        _args = _logic getVariable [_operation, DEFAULT_RESTRICTION_BLACKLIST];
 
         _result = _args;
-	};
+    };
 
-	case "init": {
+    case "whitelist": {
+        if !(isnil "_args") then {
+            if(typeName _args == "STRING") then {
+                if !(_args == "") then {
+                    _args = [_args, " ", ""] call CBA_fnc_replace;
+                    _args = [_args, "[", ""] call CBA_fnc_replace;
+                    _args = [_args, "]", ""] call CBA_fnc_replace;
+                    _args = [_args, "'", ""] call CBA_fnc_replace;
+                    _args = [_args, """", ""] call CBA_fnc_replace;
+                    _args = [_args, ","] call CBA_fnc_split;
+
+                    if(count _args > 0) then {
+                        _logic setVariable [_operation, _args];
+                    };
+                } else {
+                    _logic setVariable [_operation, []];
+                };
+            } else {
+                if(typeName _args == "ARRAY") then {
+                    _logic setVariable [_operation, _args];
+                };
+            };
+        };
+
+        _args = _logic getVariable [_operation, DEFAULT_RESTRICTION_WHITELIST];
+
+        _result = _args;
+    };
+
+    case "init": {
 
         //Only one init per instance is allowed
-    	if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SUP RESUPPLY - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SUP RESUPPLY - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
 
-    	//Start init
-    	_logic setVariable ["initGlobal", false];
+        //Start init
+        _logic setVariable ["initGlobal", false];
 
         _logic setVariable ["super", SUPERCLASS];
         _logic setVariable ["class", MAINCLASS];
@@ -393,16 +393,16 @@ switch(_operation) do {
             call compile preprocessFileLineNumbers _file;
         };
 
-		// Set final blacklist
+        // Set final blacklist
         ALiVE_PR_BLACKLIST = ([_logic, "blacklist", _logic getVariable ["pr_restrictionBlacklist", DEFAULT_RESTRICTION_BLACKLIST]] call MAINCLASS) + ALiVE_PR_BLACKLIST + ALiVE_PLACEMENT_VEHICLEBLACKLIST;
 
-		// Set final whitelist
+        // Set final whitelist
         ALiVE_PR_WHITELIST = ([_logic, "whitelist", _logic getVariable ["pr_restrictionWhitelist", DEFAULT_RESTRICTION_WHITELIST]] call MAINCLASS) + ALiVE_PR_WHITELIST;
 
-		// Get on with it
+        // Get on with it
         [_logic, "start"] call MAINCLASS;
 
-		// The machine has an interface? Must be a MP client, SP client or a client that acts as host!
+        // The machine has an interface? Must be a MP client, SP client or a client that acts as host!
         if (hasInterface) then {
 
             _logic setVariable ["startupComplete", true];
@@ -629,8 +629,8 @@ switch(_operation) do {
             ] call ALiVE_fnc_flexiMenu_Add;
 
         };
-	};
-	case "start": {
+    };
+    case "start": {
 
         // set module as startup complete
         _logic setVariable ["startupComplete", true];
@@ -644,8 +644,8 @@ switch(_operation) do {
 
         };
 
-	};
-	case "listen": {
+    };
+    case "listen": {
         private["_listenerID"];
 
         _listenerID = [ALIVE_eventLog, "addListener",[_logic, ["LOGCOM_RESPONSE","LOGCOM_STATUS_RESPONSE"]]] call ALIVE_fnc_eventLog;
@@ -1246,7 +1246,7 @@ switch(_operation) do {
         };
 
     };
-	case "tabletOnLoad": {
+    case "tabletOnLoad": {
 
         // on load of the tablet
         // restore state
@@ -1335,9 +1335,9 @@ switch(_operation) do {
         };
 
     };
-	case "tabletOnAction": {
+    case "tabletOnAction": {
 
-	    // The machine has an interface? Must be a MP client, SP client or a client that acts as host!
+        // The machine has an interface? Must be a MP client, SP client or a client that acts as host!
         if (hasInterface) then {
 
             if (isnil "_args") exitwith {};

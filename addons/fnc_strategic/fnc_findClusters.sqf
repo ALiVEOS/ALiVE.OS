@@ -42,10 +42,10 @@ _points =+ _obj_array;
 _clusters = [];
 _result = objNull;
 while {count _points > 0} do {
-	// Create new cluster
+    // Create new cluster
     _cluster = [nil, "create"] call ALIVE_fnc_cluster;
     _clusters set [count _clusters, _cluster];
-	// Get first unclustered point
+    // Get first unclustered point
     _first = _points select 0;
     _nodes = [_first];
 

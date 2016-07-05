@@ -37,33 +37,33 @@ Tupolov
 #include "script_component.hpp"
 
 if (GVAR(ENABLED)) then {
-	private ["_sideunit","_diveTime","_unitType","_factionunit","_data","_unitPos","_unit"];
+    private ["_sideunit","_diveTime","_unitType","_factionunit","_data","_unitPos","_unit"];
 
-	// Set Data
-	_unit = _this select 0;
-	_diveTime = _this select 1;
+    // Set Data
+    _unit = _this select 0;
+    _diveTime = _this select 1;
 
-	//diag_log format["Diving: %1", _this];
+    //diag_log format["Diving: %1", _this];
 
-	if (local _unit && isPlayer _unit) then {
+    if (local _unit && isPlayer _unit) then {
 
-		_sideunit = side (group _unit); // group side is more reliable
+        _sideunit = side (group _unit); // group side is more reliable
 
-		_factionunit = getText (configFile >> "cfgFactionClasses" >> (faction _unit) >> "displayName");
+        _factionunit = getText (configFile >> "cfgFactionClasses" >> (faction _unit) >> "displayName");
 
-		_unitType = getText (configFile >> "cfgVehicles" >> (typeof _unit) >> "displayName");
+        _unitType = getText (configFile >> "cfgVehicles" >> (typeof _unit) >> "displayName");
 
-		_unitPos = mapgridposition _unit;
+        _unitPos = mapgridposition _unit;
 
-		_unitGeoPos = position _unit;
+        _unitGeoPos = position _unit;
 
-		// Log data
-		_data = [ ["Event","CombatDive"] , ["unitSide",_sideunit] , ["unitfaction",_factionunit] , ["unitType",_unitType] , ["unitPos",_unitPos] , ["unitGeoPos",_unitGeoPos] , ["unit",_unit] , ["diveTime",_diveTime] , ["Player",getplayeruid _unit], ["playerGroup", _unit getvariable [QGVAR(playerGroup), "Unknown"]] , ["PlayerName",name _unit] ];
+        // Log data
+        _data = [ ["Event","CombatDive"] , ["unitSide",_sideunit] , ["unitfaction",_factionunit] , ["unitType",_unitType] , ["unitPos",_unitPos] , ["unitGeoPos",_unitGeoPos] , ["unit",_unit] , ["diveTime",_diveTime] , ["Player",getplayeruid _unit], ["playerGroup", _unit getvariable [QGVAR(playerGroup), "Unknown"]] , ["PlayerName",name _unit] ];
 
-		// Send data to server to be written to DB
-		GVAR(UPDATE_EVENTS) = _data;
-		publicVariableServer QGVAR(UPDATE_EVENTS);
+        // Send data to server to be written to DB
+        GVAR(UPDATE_EVENTS) = _data;
+        publicVariableServer QGVAR(UPDATE_EVENTS);
 
-	};
+    };
 };
 // ====================================================================================

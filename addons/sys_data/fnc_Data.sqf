@@ -49,30 +49,30 @@ _ops = ["read","write","update","delete","load","save","convert","restore","bulk
 _result = true;
 
 if (_operation in _ops) then {
-		if !(GVAR(DISABLED)) then {
-			ASSERT_TRUE(typeName _args == "ARRAY", _args);
-			if(typeName _args == "ARRAY") then {
-				private ["_function","_script"];
-				_source = [_logic, "source"] call ALIVE_fnc_hashGet;
-				_script = format ["ALIVE_fnc_%1Data_%2", _operation, _source];
-				_function = call compile _script;
-				//TRACE_2("SYS_DATA: Operation Request - ",_source, _script);
-				_result = [_logic, _args] call _function;
-			} else {
-				private["_err"];
+        if !(GVAR(DISABLED)) then {
+            ASSERT_TRUE(typeName _args == "ARRAY", _args);
+            if(typeName _args == "ARRAY") then {
+                private ["_function","_script"];
+                _source = [_logic, "source"] call ALIVE_fnc_hashGet;
+                _script = format ["ALIVE_fnc_%1Data_%2", _operation, _source];
+                _function = call compile _script;
+                //TRACE_2("SYS_DATA: Operation Request - ",_source, _script);
+                _result = [_logic, _args] call _function;
+            } else {
+                private["_err"];
                 _err = format["%1 %2 operation requires an ARRAY as an argument not %3.", _logic, _operation, typeName _args];
                 ERROR_WITH_TITLE(str _logic,_err);
-				_result = "ERROR";
-			};
-		} else {
-			private["_err"];
+                _result = "ERROR";
+            };
+        } else {
+            private["_err"];
             _err = format["%1 %2 operation refused as module is disabled.", _logic, _operation];
             ERROR_WITH_TITLE(str _logic,_err);
-			_result = "ERROR";
-		};
+            _result = "ERROR";
+        };
 } else {
 
-	switch(_operation) do {
+    switch(_operation) do {
 
         case "create": {
                 /*
@@ -91,9 +91,9 @@ if (_operation in _ops) then {
                         [_logic, "storeType", true] call ALIVE_fnc_hashSet;
                         [_logic, "key", GVAR(GROUP_ID)] call ALIVE_fnc_hashSet;
 
-						TRACE_1("After module init",_logic);
+                        TRACE_1("After module init",_logic);
 
-						_result = _logic;
+                        _result = _logic;
 
                 } else {
                         // any client side logic
@@ -112,69 +112,69 @@ if (_operation in _ops) then {
                 */
         };
 
-		case "databaseName": {
-			ASSERT_TRUE(typeName _args == "STRING", _args);
-			if(typeName _args == "STRING") then {
-				_result = [_logic, _operation, _args] call ALIVE_fnc_hashSet;
-			} else {
-				private["_err"];
+        case "databaseName": {
+            ASSERT_TRUE(typeName _args == "STRING", _args);
+            if(typeName _args == "STRING") then {
+                _result = [_logic, _operation, _args] call ALIVE_fnc_hashSet;
+            } else {
+                private["_err"];
                 _err = format["%1 %2 operation requires a STRING as an argument not %3.", _logic, _operation, typeName _args];
                 ERROR_WITH_TITLE(str _logic,_err);
-			};
-		};
+            };
+        };
 
-		case "storeType": {
-			ASSERT_TRUE(typeName _args == "BOOL", _args);
-			if(typeName _args == "BOOL") then {
-				_result = [_logic, _operation, _args] call ALIVE_fnc_hashSet;
-			} else {
-				private["_err"];
+        case "storeType": {
+            ASSERT_TRUE(typeName _args == "BOOL", _args);
+            if(typeName _args == "BOOL") then {
+                _result = [_logic, _operation, _args] call ALIVE_fnc_hashSet;
+            } else {
+                private["_err"];
                 _err = format["%1 %2 operation requires a BOOL as an argument not %3.", _logic, _operation, typeName _args];
                 ERROR_WITH_TITLE(str _logic,_err);
-			};
-		};
+            };
+        };
 
-		case "setDataDictionary": {
-			ASSERT_TRUE(typeName _args == "ARRAY", _args);
-			if(typeName _args == "ARRAY") then {
-				private ["_missing"];
-				_missing = [ALIVE_DataDictionary, _args select 0, "MISSING"] call ALIVE_fnc_hashGet;
-				if (_missing == "MISSING") then {
-					_result = [ALIVE_DataDictionary, _args select 0, _args select 1] call ALIVE_fnc_hashSet;
-				};
-			} else {
-				private["_err"];
+        case "setDataDictionary": {
+            ASSERT_TRUE(typeName _args == "ARRAY", _args);
+            if(typeName _args == "ARRAY") then {
+                private ["_missing"];
+                _missing = [ALIVE_DataDictionary, _args select 0, "MISSING"] call ALIVE_fnc_hashGet;
+                if (_missing == "MISSING") then {
+                    _result = [ALIVE_DataDictionary, _args select 0, _args select 1] call ALIVE_fnc_hashSet;
+                };
+            } else {
+                private["_err"];
                 _err = format["%1 %2 operation requires an ARRAY as an argument not %3.", _logic, _operation, typeName _args];
                 ERROR_WITH_TITLE(str _logic,_err);
-				_result = false;
-			};
-		};
+                _result = false;
+            };
+        };
 
-		case "getDataDictionary": {
-			ASSERT_TRUE(typeName _args == "ARRAY", _args);
-			if(typeName _args == "ARRAY") then {
-				_result = [ALIVE_DataDictionary, _args select 0, "STRING"] call ALIVE_fnc_hashGet;
-			} else {
-				private["_err"];
+        case "getDataDictionary": {
+            ASSERT_TRUE(typeName _args == "ARRAY", _args);
+            if(typeName _args == "ARRAY") then {
+                _result = [ALIVE_DataDictionary, _args select 0, "STRING"] call ALIVE_fnc_hashGet;
+            } else {
+                private["_err"];
                 _err = format["%1 %2 operation requires an ARRAY as an argument not %3.", _logic, _operation, typeName _args];
                 ERROR_WITH_TITLE(str _logic,_err);
-				_result = false;
-			};
-		};
+                _result = false;
+            };
+        };
 
-		case "source": {
-			ASSERT_TRUE(typeName _args == "STRING", _args);
-			if(typeName _args == "STRING") then {
-				_result = [_logic, _operation, _args] call ALIVE_fnc_hashSet;
-			} else {
-				private["_err"];
+        case "source": {
+            ASSERT_TRUE(typeName _args == "STRING", _args);
+            if(typeName _args == "STRING") then {
+                _result = [_logic, _operation, _args] call ALIVE_fnc_hashSet;
+            } else {
+                private["_err"];
                 _err = format["%1 %2 operation requires a STRING as an argument not %3.", _logic, _operation, typeName _args];
                 ERROR_WITH_TITLE(str _logic,_err);
-				_result = false;
-			};
-		};
+                _result = false;
+            };
+        };
 
-		case "debug": {
+        case "debug": {
              ASSERT_TRUE(typeName _args == "BOOL", _args);
             if(typeName _args == "BOOL") then {
                 _result = [_logic, _operation, _args] call ALIVE_fnc_hashSet;
@@ -186,19 +186,19 @@ if (_operation in _ops) then {
         };
 
         case "destroy": {
-				[_logic, "debug", false] call MAINCLASS;
-				if (isServer) then {
-						// if server
-						[_logic, "destroy"] call SUPERCLASS;
-				};
+                [_logic, "debug", false] call MAINCLASS;
+                if (isServer) then {
+                        // if server
+                        [_logic, "destroy"] call SUPERCLASS;
+                };
 
-				_logic = nil;
+                _logic = nil;
         };
 
         default {
-			_result = [_logic, _operation, _args] call SUPERCLASS;
+            _result = [_logic, _operation, _args] call SUPERCLASS;
         };
-	};
+    };
 };
 // TRACE_1("SYS DATA - output",_result);
 _result;

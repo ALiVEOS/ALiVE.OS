@@ -132,7 +132,7 @@ _fakeLogic = [] call ALIVE_fnc_hashCreate;
 // start the profile controller FSM
 //[_fakeLogic,50] execFSM "\x\alive\addons\sys_profile\profileController.fsm";
 
-_handle = [_fakeLogic] execFSM "\x\alive\addons\sys_profile\profileSimulator.fsm";						
+_handle = [_fakeLogic] execFSM "\x\alive\addons\sys_profile\profileSimulator.fsm";
 
 
 STAT("Sleep for 10");
@@ -193,19 +193,19 @@ ASSERT_TRUE(typeName _result == "BOOL", _err);
 
 STAT("Destroy old Profile instance");
 if(isServer) then {
-	[_profileEntity, "destroy"] call ALIVE_fnc_profileEntity;
-	TEST_LOGIC = nil;
-	publicVariable "TEST_LOGIC";
+    [_profileEntity, "destroy"] call ALIVE_fnc_profileEntity;
+    TEST_LOGIC = nil;
+    publicVariable "TEST_LOGIC";
 } else {
-	waitUntil{isNull TEST_LOGIC};
+    waitUntil{isNull TEST_LOGIC};
 };
 
 
 STAT("Destroy old Profile Handler instance");
 if(isServer) then {
-	[ALIVE_profileHandler, "destroy"] call ALIVE_fnc_profileHandler;
-	TEST_LOGIC = nil;
-	publicVariable "TEST_LOGIC";
+    [ALIVE_profileHandler, "destroy"] call ALIVE_fnc_profileHandler;
+    TEST_LOGIC = nil;
+    publicVariable "TEST_LOGIC";
 } else {
-	waitUntil{isNull TEST_LOGIC};
+    waitUntil{isNull TEST_LOGIC};
 };

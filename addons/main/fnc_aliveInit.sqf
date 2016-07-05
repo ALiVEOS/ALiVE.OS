@@ -109,7 +109,7 @@ if !(_logic getVariable ["ALIVE_DISABLEMARKERS", false]) then {
 
 // Pause Modules
 if (_logic getVariable ["ALIVE_PAUSEMODULES", false]) then {
-	call ALiVE_fnc_pauseModulesAuto;
+    call ALiVE_fnc_pauseModulesAuto;
 };
 
 // Garbage Collector
@@ -126,8 +126,8 @@ _GC setVariable ["ALiVE_GC_INDIVIDUALTYPES", _logic getVariable ["ALiVE_GC_INDIV
 // Only on Server
 if (isServer) then {
     //Sets global type of Versioning (Kick or Warn)
-	MOD(VERSIONINGTYPE) = _logic getvariable [QMOD(VERSIONING),"warning"];
-	Publicvariable QMOD(VERSIONINGTYPE);
+    MOD(VERSIONINGTYPE) = _logic getvariable [QMOD(VERSIONING),"warning"];
+    Publicvariable QMOD(VERSIONINGTYPE);
 
     //Enables/Disables SP saving possibility, default value true due to out of mem crashes
     MOD(DISABLESAVE) = _logic getvariable [QMOD(DISABLESAVE),"true"];
@@ -143,16 +143,16 @@ if (isServer) then {
     [ALIVE_eventLog, "debug", false] call ALIVE_fnc_eventLog;
 
     //Waiting for the mandatory modules below, mind that not all modules need to be initialised before mission start
-	waitUntil {
-		[
-	        QMOD(amb_civ_placement),
-	        QMOD(mil_placement),
-	        QMOD(civ_placement),
-	        QMOD(mil_placement_custom),
+    waitUntil {
+        [
+            QMOD(amb_civ_placement),
+            QMOD(mil_placement),
+            QMOD(civ_placement),
+            QMOD(mil_placement_custom),
             QMOD(mil_cqb),
             QMOD(mil_OPCOM)
         ] call ALiVE_fnc_isModuleInitialised;
-	};
+    };
     //This is the last module init to be run, therefore indicates that init of the defined modules above has passed on server
     MOD(REQUIRE_INITIALISED) = true;
     Publicvariable QMOD(REQUIRE_INITIALISED);

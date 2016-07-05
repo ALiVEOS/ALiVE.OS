@@ -36,14 +36,14 @@ _factions = [];
 _factionClasses = (configFile >> "CfgFactionClasses");
 
 for "_i" from 1 to (count _factionClasses - 1) do {
-	private ["_element","_classSide"];
-	_element = _factionClasses select _i;
-	if (isclass _element) then {
-		_classSide = getnumber(_element >> "side");
-		if (_classSide == [_side] call ALIVE_fnc_sideTextToNumber) then {
-			_factions = _factions + [configname _element];
-		};
-	};
+    private ["_element","_classSide"];
+    _element = _factionClasses select _i;
+    if (isclass _element) then {
+        _classSide = getnumber(_element >> "side");
+        if (_classSide == [_side] call ALIVE_fnc_sideTextToNumber) then {
+            _factions = _factions + [configname _element];
+        };
+    };
 };
 
 

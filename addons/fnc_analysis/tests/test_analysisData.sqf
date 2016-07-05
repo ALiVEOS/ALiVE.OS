@@ -79,11 +79,11 @@ ASSERT_TRUE(typeName _surroundingSectors == "ARRAY", _err);
 
 
 {
-	if!(count _x == 0) then
-	{
-		[_x, "debug", false] call ALIVE_fnc_sector;
-	}
-	
+    if!(count _x == 0) then
+    {
+        [_x, "debug", false] call ALIVE_fnc_sector;
+    }
+
 } forEach _surroundingSectors;
 
 
@@ -123,11 +123,11 @@ TIMEREND
 
 STAT("Output sector data");
 {
-	_sector = _x;
-	_sectorData = [_sector, "data"] call ALIVE_fnc_sector;
-	_id = [_sector, "id"] call ALIVE_fnc_sector;
-	diag_log format["Sector: %1",_id];
-	_sectorData call ALIVE_fnc_inspectHash;
+    _sector = _x;
+    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+    _id = [_sector, "id"] call ALIVE_fnc_sector;
+    diag_log format["Sector: %1",_id];
+    _sectorData call ALIVE_fnc_inspectHash;
 } forEach _surroundingSectors;
 
 

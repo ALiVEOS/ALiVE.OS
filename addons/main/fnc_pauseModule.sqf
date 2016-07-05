@@ -8,7 +8,7 @@ Description:
 pauses the given module(s) after pause
 
 Parameters:
-Array with strings - pass modules like ["ALiVE_sys_profile","ALiVE_mil_OPCOM"] 
+Array with strings - pass modules like ["ALiVE_sys_profile","ALiVE_mil_OPCOM"]
 
 Examples:
 (begin example)
@@ -33,29 +33,29 @@ if !(isServer) exitwith {
 
 {
     private ["_mod","_handler","_mainclass"];
-    
+
     _mod = _x;
-    
+
     if (tolower(typeOf _mod) in _modules) then {
-        
-    	_handler = _mod getvariable ["handler",["",[],[],nil]];
+
+        _handler = _mod getvariable ["handler",["",[],[],nil]];
         _mainclass = _mod getvariable ["class",([_handler,"class"] call ALiVE_fnc_HashGet)];
-        
+
         if (typeName _mainClass == "STRING") then {_mainclass = compile _mainclass};
-        
-	    switch (typeOf _mod) do {
-            
+
+        switch (typeOf _mod) do {
+
             //Example for special cases if needed, add your module pause code in here
-	        case ("") : {};
-            
+            case ("") : {};
+
             //Default: Call "pause" operation of the module main class
-	        default {
+            default {
                 if (count (_handler select 1) > 0) then {
-			        [_handler,"pause",true] call _mainclass;
-				} else {
-			        [_mod,"pause",true] call _mainclass;
-			    };
+                    [_handler,"pause",true] call _mainclass;
+                } else {
+                    [_mod,"pause",true] call _mainclass;
+                };
             };
-	    };
+        };
     };
 } foreach (entities "Module_F");

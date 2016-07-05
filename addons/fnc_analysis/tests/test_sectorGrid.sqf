@@ -46,17 +46,17 @@ diag_log format["Timer End %1",_timeEnd];
 
 
 if(isNil "ALIVE_civilianHQBuildingTypes") then {
-	_file = "\x\alive\addons\main\static\staticData.sqf";
-	call compile preprocessFileLineNumbers _file;
+    _file = "\x\alive\addons\main\static\staticData.sqf";
+    call compile preprocessFileLineNumbers _file;
 };
 
 _logic = nil;
 
 STAT("Create SectorGrid instance");
 if(isServer) then {
-	_logic = [nil, "create"] call ALIVE_fnc_sectorGrid;
-	TEST_LOGIC = _logic;
-	publicVariable "TEST_LOGIC";
+    _logic = [nil, "create"] call ALIVE_fnc_sectorGrid;
+    TEST_LOGIC = _logic;
+    publicVariable "TEST_LOGIC";
 };
 
 
@@ -116,20 +116,20 @@ _err = "set surroundingSectors";
 ASSERT_TRUE(typeName _result == "ARRAY", _err);
 
 {
-	if!(count _x == 0) then
-	{
-		_nil = [_x, "debug", false] call ALIVE_fnc_sector;
-	}
-	
+    if!(count _x == 0) then
+    {
+        _nil = [_x, "debug", false] call ALIVE_fnc_sector;
+    }
+
 } forEach _result;
 
 sleep 5;
 
 {
-	if!(count _x == 0) then
-	{
-		_nil = [_x, "debug", true] call ALIVE_fnc_sector;
-	}
+    if!(count _x == 0) then
+    {
+        _nil = [_x, "debug", true] call ALIVE_fnc_sector;
+    }
 } forEach _result;
 
 
@@ -139,20 +139,20 @@ _err = "set sectorsInRadius";
 ASSERT_TRUE(typeName _result == "ARRAY", _err);
 
 {
-	if!(count _x == 0) then
-	{
-		_nil = [_x, "debug", false] call ALIVE_fnc_sector;
-	}
-	
+    if!(count _x == 0) then
+    {
+        _nil = [_x, "debug", false] call ALIVE_fnc_sector;
+    }
+
 } forEach _result;
 
 sleep 5;
 
 {
-	if!(count _x == 0) then
-	{
-		_nil = [_x, "debug", true] call ALIVE_fnc_sector;
-	}
+    if!(count _x == 0) then
+    {
+        _nil = [_x, "debug", true] call ALIVE_fnc_sector;
+    }
 } forEach _result;
 
 
@@ -162,20 +162,20 @@ _err = "set sectorsInRadius";
 ASSERT_TRUE(typeName _result == "ARRAY", _err);
 
 {
-	if!(count _x == 0) then
-	{
-		_nil = [_x, "debug", false] call ALIVE_fnc_sector;
-	}
-	
+    if!(count _x == 0) then
+    {
+        _nil = [_x, "debug", false] call ALIVE_fnc_sector;
+    }
+
 } forEach _result;
 
 sleep 5;
 
 {
-	if!(count _x == 0) then
-	{
-		_nil = [_x, "debug", true] call ALIVE_fnc_sector;
-	}
+    if!(count _x == 0) then
+    {
+        _nil = [_x, "debug", true] call ALIVE_fnc_sector;
+    }
 } forEach _result;
 
 
@@ -196,19 +196,19 @@ DEBUGOFF
 
 STAT("Destroy old instance");
 if(isServer) then {
-	[_logic, "destroy"] call ALIVE_fnc_sectorGrid;
-	TEST_LOGIC = nil;
-	publicVariable "TEST_LOGIC";
+    [_logic, "destroy"] call ALIVE_fnc_sectorGrid;
+    TEST_LOGIC = nil;
+    publicVariable "TEST_LOGIC";
 } else {
-	waitUntil{isNull TEST_LOGIC};
+    waitUntil{isNull TEST_LOGIC};
 };
 
 
 STAT("Create SectorGrid instance");
 if(isServer) then {
-	_logic = [nil, "create"] call ALIVE_fnc_sectorGrid;
-	TEST_LOGIC2 = _logic;
-	publicVariable "TEST_LOGIC2";
+    _logic = [nil, "create"] call ALIVE_fnc_sectorGrid;
+    TEST_LOGIC2 = _logic;
+    publicVariable "TEST_LOGIC2";
 };
 
 
@@ -222,7 +222,7 @@ ASSERT_TRUE(typeName _logic == "ARRAY", _err);
 
 STAT("Restore state on new instance");
 if(isServer) then {
-	_result = [_logic, "state", _state] call ALIVE_fnc_sectorGrid;
+    _result = [_logic, "state", _state] call ALIVE_fnc_sectorGrid;
 };
 
 
@@ -271,13 +271,13 @@ DEBUGOFF
 
 
 if(isServer) then {
-	STAT("Destroy old instance");
-	[_logic, "destroy"] call ALIVE_fnc_sectorGrid;
-	TEST_LOGIC2 = nil;
-	publicVariable "TEST_LOGIC2";
+    STAT("Destroy old instance");
+    [_logic, "destroy"] call ALIVE_fnc_sectorGrid;
+    TEST_LOGIC2 = nil;
+    publicVariable "TEST_LOGIC2";
 } else {
-	STAT("Confirm destroy instance 2");
-	waitUntil{isNull TEST_LOGIC2};
+    STAT("Confirm destroy instance 2");
+    waitUntil{isNull TEST_LOGIC2};
 };
 
 sleep 5;

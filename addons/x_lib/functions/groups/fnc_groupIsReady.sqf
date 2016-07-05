@@ -26,16 +26,16 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_group", "_result"];
-	
+
 _group = _this select 0;
 
 _result = true;
 
 {
-	if!(unitReady _x) exitwith
-	{
-		_result = false;
-	};
+    if!(unitReady _x) exitwith
+    {
+        _result = false;
+    };
 } forEach units _group;
 
 _result

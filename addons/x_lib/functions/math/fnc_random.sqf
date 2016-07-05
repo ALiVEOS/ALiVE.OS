@@ -4,24 +4,24 @@
 Function: ALiVE_fnc_random
 
 Description:
-	Generates a pseudo-random number.
-	
+    Generates a pseudo-random number.
+
 Parameters:
-	0 - Seed [number] (optional)
+    0 - Seed [number] (optional)
 
 Returns:
-	Random number [number]
+    Random number [number]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
 
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 (((2^8) + 1) * (if ((count _this) > 0) then {_this select 0} else {random(2^16)}) + ((2^11) + 1)) mod (2^16)

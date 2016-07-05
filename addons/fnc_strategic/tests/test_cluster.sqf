@@ -26,20 +26,20 @@ STAT("Create mock objects");
 _obj_array = [];
 createCenter sideLogic;
 {
-	_obj_array set [count _obj_array, (createGroup sideLogic) createUnit ["LOGIC", (player modelToWorld _x), [], 0, "NONE"]];
+    _obj_array set [count _obj_array, (createGroup sideLogic) createUnit ["LOGIC", (player modelToWorld _x), [], 0, "NONE"]];
 } forEach [
-	[-1200,-900],
-	[-900,-600],
-	[-600,-900],
-	[300,0],
-	[300,1200],
-	[600,900],
-	[900,600],
-	[900,400],
-	[400,1100],
-	[500,800],
-	[800,500],
-	[1000,400]
+    [-1200,-900],
+    [-900,-600],
+    [-600,-900],
+    [300,0],
+    [300,1200],
+    [600,900],
+    [900,600],
+    [900,400],
+    [400,1100],
+    [500,800],
+    [800,500],
+    [1000,400]
 ];
 _err = "create mock objects";
 ASSERT_DEFINED("_obj_array",_err);
@@ -70,9 +70,9 @@ _logic = nil;
 
 STAT("Create Cluster instance");
 if(isServer) then {
-	_logic = [nil, "create"] call ALIVE_fnc_cluster;
-	TEST_LOGIC = _logic;
-	publicVariable "TEST_LOGIC";
+    _logic = [nil, "create"] call ALIVE_fnc_cluster;
+    TEST_LOGIC = _logic;
+    publicVariable "TEST_LOGIC";
 };
 STAT("Confirm new Cluster instance");
 waitUntil{!isNil "TEST_LOGIC"};
@@ -157,18 +157,18 @@ sleep 10;
 
 STAT("Destroy old instance");
 if(isServer) then {
-	[_logic, "destroy"] call ALIVE_fnc_cluster;
-	TEST_LOGIC = nil;
-	publicVariable "TEST_LOGIC";
+    [_logic, "destroy"] call ALIVE_fnc_cluster;
+    TEST_LOGIC = nil;
+    publicVariable "TEST_LOGIC";
 } else {
-	waitUntil{isNull TEST_LOGIC};
+    waitUntil{isNull TEST_LOGIC};
 };
 
 STAT("Create Cluster instance");
 if(isServer) then {
-	_logic = [nil, "create"] call ALIVE_fnc_cluster;
-	TEST_LOGIC2 = _logic;
-	publicVariable "TEST_LOGIC2";
+    _logic = [nil, "create"] call ALIVE_fnc_cluster;
+    TEST_LOGIC2 = _logic;
+    publicVariable "TEST_LOGIC2";
 };
 STAT("Confirm new Cluster instance 2");
 waitUntil{!isNil "TEST_LOGIC2"};
@@ -181,7 +181,7 @@ DEBUGON
 
 STAT("Restore state on new instance");
 if(isServer) then {
-	[_logic, "state", _state] call ALIVE_fnc_cluster;
+    [_logic, "state", _state] call ALIVE_fnc_cluster;
 };
 
 STAT("Confirm restored state is still the same");
@@ -196,21 +196,21 @@ STAT("Sleeping before destroy");
 sleep 10;
 
 if(isServer) then {
-	STAT("Destroy old instance");
-	[_logic, "destroy"] call ALIVE_fnc_cluster;
-	TEST_LOGIC2 = nil;
-	publicVariable "TEST_LOGIC2";
+    STAT("Destroy old instance");
+    [_logic, "destroy"] call ALIVE_fnc_cluster;
+    TEST_LOGIC2 = nil;
+    publicVariable "TEST_LOGIC2";
 } else {
-	STAT("Confirm destroy instance 2");
-	waitUntil{isNull TEST_LOGIC2};
+    STAT("Confirm destroy instance 2");
+    waitUntil{isNull TEST_LOGIC2};
 };
 
 sleep 5;
 
 STAT("Clean up markers");
 {
-	deleteMarker str _x;
-	deleteVehicle _x;
+    deleteMarker str _x;
+    deleteVehicle _x;
 } forEach _obj_array;
 
 diag_log (allMissionObjects "") - _amo;

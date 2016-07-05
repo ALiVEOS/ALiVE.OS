@@ -48,10 +48,10 @@ _faction = faction _unit;
 
 //Select OPCOM
 {if ({_x == _faction} count ([_x,"factions",[]] call ALiVE_fnc_HashGet) > 0) exitwith {_logic = _x}} foreach OPCOM_instances;
-	
+
 switch (_state) do {
-	case ("attacking") : {_color = "COLORRED"};
-	case ("defending") : {_color = "COLORBLUE"};
+    case ("attacking") : {_color = "COLORRED"};
+    case ("defending") : {_color = "COLORBLUE"};
 };
 
 _objectives = []; {_objectives pushback _x} foreach ([_logic,"nearestObjectives",[_position,_state]] call ALiVE_fnc_OPCOM);

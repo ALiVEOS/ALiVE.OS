@@ -138,11 +138,11 @@ class FSM
        "_profiles = [_pos, 500, [_side,""entity""]] call ALIVE_fnc_getNearProfiles;" \n
        "{" \n
        "    if (typeName (_x select 2 select 4) == ""STRING"") then {" \n
-       "        	_entities set [count _entities,_x select 2 select 4];" \n
+       "            _entities set [count _entities,_x select 2 select 4];" \n
        "            " \n
        "            //player sidechat format[""Entities: %1, count total %2 val %3"",_entities,count _entities,(_x select 2 select 4)];" \n
-       "   		//diag_log format[""Entities: %1, count total %2 val %3"",_entities,count _entities,(_x select 2 select 4)];" \n
-       "    	};" \n
+       "           //diag_log format[""Entities: %1, count total %2 val %3"",_entities,count _entities,(_x select 2 select 4)];" \n
+       "        };" \n
        "        //sleep 0.03;" \n
        "} foreach _profiles;" \n
        "    "/*%FSM</STATEINIT""">*/;
@@ -259,38 +259,38 @@ class FSM
        "         _targetsTaken1 =  _result_tmp select 0;" \n
        "         _targetsTaken2 =  _result_tmp select 1;" \n
        "         " \n
-       "     	_targetsAttacked1 = [];" \n
+       "         _targetsAttacked1 = [];" \n
        "            _remover1 = [];" \n
        "{" \n
-       "	_targetID = _x select 0;" \n
-       "	_entities = _x select 1;" \n
-       "	" \n
-       "	if (({(_x select 0) == _targetID} count _targetsTaken2 > 0) && {(typename _x == ""ARRAY"")}) then {" \n
-       "		_targetsAttacked1 set [count _targetsAttacked1,_x];" \n
-       "		_remover1 set [count _remover1,_foreachIndex];" \n
-       "	};" \n
+       "    _targetID = _x select 0;" \n
+       "    _entities = _x select 1;" \n
+       "    " \n
+       "    if (({(_x select 0) == _targetID} count _targetsTaken2 > 0) && {(typename _x == ""ARRAY"")}) then {" \n
+       "        _targetsAttacked1 set [count _targetsAttacked1,_x];" \n
+       "        _remover1 set [count _remover1,_foreachIndex];" \n
+       "    };" \n
        "                //sleep 0.03;" \n
        "} foreach _targetsTaken1;" \n
        "" \n
        "_targetsAttacked2 = [];" \n
        "            _remover2 = [];" \n
        "{" \n
-       "	_targetID = _x select 0;" \n
-       "	_entities = _x select 1;" \n
-       "	" \n
-       "	if (({(_x select 0) == _targetID} count _targetsTaken1 > 0) && {(typename _x == ""ARRAY"")}) then {" \n
-       "		_targetsAttacked2 set [count _targetsAttacked2,_x];" \n
-       "		_remover2 set [count _remover2,_foreachIndex];" \n
-       "	};" \n
+       "    _targetID = _x select 0;" \n
+       "    _entities = _x select 1;" \n
+       "    " \n
+       "    if (({(_x select 0) == _targetID} count _targetsTaken1 > 0) && {(typename _x == ""ARRAY"")}) then {" \n
+       "        _targetsAttacked2 set [count _targetsAttacked2,_x];" \n
+       "        _remover2 set [count _remover2,_foreachIndex];" \n
+       "    };" \n
        "                //sleep 0.03;" \n
        "} foreach _targetsTaken2;" \n
        "            " \n
        "" \n
        "            {" \n
-       "            	if !(_x > ((count _targetsTaken1)-1)) then {" \n
-       "               		_targetsTaken1 set [_x,""x""];" \n
-       "               		_targetsTaken1 = _targetsTaken1 - [""x""];" \n
-       "            	};" \n
+       "                if !(_x > ((count _targetsTaken1)-1)) then {" \n
+       "                       _targetsTaken1 set [_x,""x""];" \n
+       "                       _targetsTaken1 = _targetsTaken1 - [""x""];" \n
+       "                };" \n
        "                //sleep 0.03;" \n
        "            } foreach _remover1;" \n
        "            " \n
@@ -298,8 +298,8 @@ class FSM
        "            " \n
        "            {" \n
        "                if !(_x > ((count _targetsTaken2)-1)) then {" \n
-       "               		_targetsTaken2 set [_x,""x""];" \n
-       "               		_targetsTaken2 = _targetsTaken2 - [""x""];" \n
+       "                       _targetsTaken2 set [_x,""x""];" \n
+       "                       _targetsTaken2 = _targetsTaken2 - [""x""];" \n
        "                };" \n
        "                //sleep 0.03;" \n
        "            } foreach _remover2;" \n
@@ -309,31 +309,31 @@ class FSM
        "         _result = [_targetsTaken1, _targetsAttacked1, _targetsTaken2, _targetsAttacked2,time];" \n
        "            [_logic,""clusteroccupation"",_result] call AliVE_fnc_HashSet;" \n
        "            " \n
-       "    		_targetsTaken = _result select 0;" \n
+       "            _targetsTaken = _result select 0;" \n
        "_targetsAttacked = _result select 1;" \n
        "_targetsTakenEnemy = _result select 2;" \n
        "_targetsAttackedEnemy = _result select 3;" \n
        "            " \n
        "            switch (_controltype) do {" \n
-       "	case (""invasion"") : {" \n
-       "		_prios = [" \n
-       "			[_targetsTaken,""reserve""]," \n
-       "			[_targetsTakenEnemy,""attack""]," \n
-       "			[_targetsAttackedEnemy,""defend""]" \n
-       "		];" \n
+       "    case (""invasion"") : {" \n
+       "        _prios = [" \n
+       "            [_targetsTaken,""reserve""]," \n
+       "            [_targetsTakenEnemy,""attack""]," \n
+       "            [_targetsAttackedEnemy,""defend""]" \n
+       "        ];" \n
        "                };" \n
        "                " \n
        "                case (""occupation"") : {" \n
-       "		_prios = [" \n
-       "			[_targetsTaken,""reserve""]," \n
-       "			[_targetsTakenEnemy,""attack""]," \n
-       "			[_targetsAttackedEnemy,""defend""]" \n
-       "		];" \n
+       "        _prios = [" \n
+       "            [_targetsTaken,""reserve""]," \n
+       "            [_targetsTakenEnemy,""attack""]," \n
+       "            [_targetsAttackedEnemy,""defend""]" \n
+       "        ];" \n
        "                };" \n
        "};" \n
        "            " \n
        "{" \n
-       "	[_logic,""setstatebyclusteroccupation"",[(_x select 0),(_x select 1)]] call ALiVE_fnc_OPCOM;" \n
+       "    [_logic,""setstatebyclusteroccupation"",[(_x select 0),(_x select 1)]] call ALiVE_fnc_OPCOM;" \n
        "} foreach _prios;"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links

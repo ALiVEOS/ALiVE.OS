@@ -30,10 +30,10 @@ _key = _this select 0;
 _value = _this select 1;
 
 if (typeName _key == "STRING" && [str(_value)] call CBA_fnc_strLen < 10000) then {
-	[GVAR(mission_data), _key, _value] call ALiVE_fnc_hashSet;
-	_result = true;
+    [GVAR(mission_data), _key, _value] call ALiVE_fnc_hashSet;
+    _result = true;
 } else {
-	_result = false;
+    _result = false;
 };
 
 _result;

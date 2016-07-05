@@ -15,30 +15,30 @@ _marker setMarkerAlphaLocal 1;
 
 switch (toUpper (_lb lbText (lbCurSel _lb))) do
 {
-	case "TRANSPORT" :
-	{
-		_marker setMarkerTextLocal "Transport";
-		_marker setMarkerTypeLocal "hd_Pickup";
-		
-		uinamespace setVariable ["NEO_transportMarkerCreated", _marker];
-		[] call NEO_fnc_transportConfirmButtonEnable;
-	};
-	
-	case "CAS" : 
-	{
-		_marker setMarkerTextLocal "CAS";
-		_marker setMarkerTypeLocal "hd_Destroy";
-		
-		uinamespace setVariable ["NEO_casMarkerCreated", _marker];
-		[] call NEO_fnc_casConfirmButtonEnable;
-	};
-	
-	case "ARTY" :
-	{
-		_marker setMarkerTextLocal "STRIKE";
-		_marker setMarkerTypeLocal "hd_Destroy";
-		
-		uinamespace setVariable ["NEO_artyMarkerCreated", _marker];
-		[] call NEO_fnc_artyConfirmButtonEnable;
-	};
+    case "TRANSPORT" :
+    {
+        _marker setMarkerTextLocal "Transport";
+        _marker setMarkerTypeLocal "hd_Pickup";
+
+        uinamespace setVariable ["NEO_transportMarkerCreated", _marker];
+        [] call NEO_fnc_transportConfirmButtonEnable;
+    };
+
+    case "CAS" :
+    {
+        _marker setMarkerTextLocal "CAS";
+        _marker setMarkerTypeLocal "hd_Destroy";
+
+        uinamespace setVariable ["NEO_casMarkerCreated", _marker];
+        [] call NEO_fnc_casConfirmButtonEnable;
+    };
+
+    case "ARTY" :
+    {
+        _marker setMarkerTextLocal "STRIKE";
+        _marker setMarkerTypeLocal "hd_Destroy";
+
+        uinamespace setVariable ["NEO_artyMarkerCreated", _marker];
+        [] call NEO_fnc_artyConfirmButtonEnable;
+    };
 };

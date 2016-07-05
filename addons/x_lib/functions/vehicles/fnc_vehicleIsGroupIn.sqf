@@ -27,17 +27,17 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_group", "_vehicle", "_result"];
-	
+
 _group = _this select 0;
 _vehicle = _this select 1;
 
 _result = true;
 
 {
-	if!(_x in _vehicle) then
-	{
-		_result = false;
-	};
+    if!(_x in _vehicle) then
+    {
+        _result = false;
+    };
 } forEach units _group;
 
 _result

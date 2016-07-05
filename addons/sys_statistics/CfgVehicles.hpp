@@ -7,8 +7,8 @@ class CfgVehicles {
                 isGlobal = 2;
                 functionPriority = 32;
 
-		icon = "x\alive\addons\sys_statistics\icon_sys_statistics.paa";
-		picture = "x\alive\addons\sys_statistics\icon_sys_statistics.paa";
+        icon = "x\alive\addons\sys_statistics\icon_sys_statistics.paa";
+        picture = "x\alive\addons\sys_statistics\icon_sys_statistics.paa";
                 class Arguments
                 {
                         class Condition
@@ -19,10 +19,10 @@ class CfgVehicles {
                         };
                 };
 
-				class Eventhandlers
-				{
-					init = "call ALIVE_fnc_statisticsDisable;";
-				};
+                class Eventhandlers
+                {
+                    init = "call ALIVE_fnc_statisticsDisable;";
+                };
 
         };
 };

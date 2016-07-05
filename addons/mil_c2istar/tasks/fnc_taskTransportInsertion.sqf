@@ -31,10 +31,10 @@ _debug = _this select 4;
 _result = [];
 
 switch (_taskState) do {
-	case "init":{
+    case "init":{
 
-	    private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
-	    "_taskApplyType","_taskEnemySide","_enemyClusters","_pickupPosition","_insertionPosition","_taskPlayers"];
+        private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
+        "_taskApplyType","_taskEnemySide","_enemyClusters","_pickupPosition","_insertionPosition","_taskPlayers"];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;
@@ -72,23 +72,23 @@ switch (_taskState) do {
 
             // spawn a populated composition
             if (count _pickupPosition == 0) then {
-				_pickupPosition = [
-					_pickupPosition, 
-					500, 
-					1500,
-					1, 
-					0, 
-					100,
-					0, 
-					[], 
-					[_pickupPosition]
-				] call BIS_fnc_findSafePos;
-			};
-            
-			_pickupPosition = [_pickupPosition, 250] call ALIVE_fnc_findFlatArea;
+                _pickupPosition = [
+                    _pickupPosition,
+                    500,
+                    1500,
+                    1,
+                    0,
+                    100,
+                    0,
+                    [],
+                    [_pickupPosition]
+                ] call BIS_fnc_findSafePos;
+            };
+
+            _pickupPosition = [_pickupPosition, 250] call ALIVE_fnc_findFlatArea;
             [_pickupPosition, "objectives", _taskFaction, 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
         };
-        
+
         // establish the location for the insertion task
         // get enemy cluster
 
@@ -100,23 +100,23 @@ switch (_taskState) do {
             // try to get a position containing enemy
             _insertionPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
 
-			// spawn a populated composition
+            // spawn a populated composition
             if (count _insertionPosition == 0) then {
-				_insertionPosition = [
-					_insertionPosition, 
-					500, 
-					1500,
-					1, 
-					0, 
-					100,
-					0, 
-					[], 
-					[_insertionPosition]
-				] call BIS_fnc_findSafePos;
-			};
+                _insertionPosition = [
+                    _insertionPosition,
+                    500,
+                    1500,
+                    1,
+                    0,
+                    100,
+                    0,
+                    [],
+                    [_insertionPosition]
+                ] call BIS_fnc_findSafePos;
+            };
 
-			_insertionPosition = [_insertionPosition, 250] call ALIVE_fnc_findFlatArea;
-			[_insertionPosition, "objectives", _taskEnemyFaction, 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+            _insertionPosition = [_insertionPosition, 250] call ALIVE_fnc_findFlatArea;
+            [_insertionPosition, "objectives", _taskEnemyFaction, 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
         };
 
         if (count _pickupPosition > 0 && {count _insertionPosition > 0}) then {
@@ -245,16 +245,16 @@ switch (_taskState) do {
 
         };
 
-	};
-	case "Parent":{
+    };
+    case "Parent":{
 
     };
-	case "Pickup":{
+    case "Pickup":{
 
-	    private["_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
-	    "_taskIDs","_lastState","_taskDialog","_profileID","_currentTaskDialog","_pickupReached","_pickupMarkerCreated"];
+        private["_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
+        "_taskIDs","_lastState","_taskDialog","_profileID","_currentTaskDialog","_pickupReached","_pickupMarkerCreated"];
 
-	    _taskID = _task select 0;
+        _taskID = _task select 0;
         _requestPlayerID = _task select 1;
         _taskSide = _task select 2;
         _taskPosition = _task select 3;

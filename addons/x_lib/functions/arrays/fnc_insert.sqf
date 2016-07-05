@@ -4,27 +4,27 @@
 Function: ALiVE_fnc_insert
 
 Description:
-	Inserts a value into the array at a specified index.
-	
+    Inserts a value into the array at a specified index.
+
 Parameters:
-	0 - Array [array]
-	1 - Insert index [number]
-	2 - Insert value [any]
+    0 - Array [array]
+    1 - Insert index [number]
+    2 - Insert value [any]
 
 Returns:
-	Array copy [array]
+    Array copy [array]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
-	- <ALiVE_fnc_push>
+    - <ALiVE_fnc_push>
 
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 private ["_arr", "_idx", "_arrCount"];
@@ -34,10 +34,10 @@ _arrCount = count _arr;
 
 for "_i" from 1 to (_arrCount - _idx) do
 {
-	private ["_offset"];
-	_offset = _arrCount - _i;
-	
-	_arr set [(_offset + 1), _offset];
+    private ["_offset"];
+    _offset = _arrCount - _i;
+
+    _arr set [(_offset + 1), _offset];
 };
 
 _arr set [_idx, (_this select 2)];

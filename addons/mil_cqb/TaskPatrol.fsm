@@ -81,7 +81,7 @@ class FSM
        "If anyone is interested, I've made some additions to Binesi's BIN_taskPatrol script." \n
        "Random initial patrol direction - I noticed every patrol started off in the same direction, so I've randomised it." \n
        "Fixed the 2D position / findSafePos errors" \n
-       "Added building positions as possible patrol locations using Random Building Position Script v1.0 by Tophe of Östgöta Ops" \n
+       "Added building positions as possible patrol locations using Random Building Position Script v1.0 by Tophe of ?stg?ta Ops" \n
        "Added check that BIS Functions has been initialised" \n
        "Only perform the house patrols if the squad leader is a man" \n
        "" \n
@@ -227,28 +227,28 @@ class FSM
       init = /*%FSM<STATEINIT""">*/"_unit = leader _grp;" \n
        "" \n
        "_posM = [" \n
-       "	_pos," \n
-       "	100," \n
-       "	_radius," \n
-       "	5," \n
-       "	0," \n
-       "	100," \n
-       "	0," \n
-       "	[]," \n
-       "	[_pos]" \n
+       "    _pos," \n
+       "    100," \n
+       "    _radius," \n
+       "    5," \n
+       "    0," \n
+       "    100," \n
+       "    0," \n
+       "    []," \n
+       "    [_pos]" \n
        "] call BIS_fnc_findSafePos;" \n
        "" \n
        "if(_patrol) then {" \n
-       "	_unit setSpeedMode ""LIMITED"";" \n
+       "    _unit setSpeedMode ""LIMITED"";" \n
        "};" \n
        "_grp setCombatMode ""YELLOW"";" \n
        "[_grp,_posM] call ALiVE_fnc_MoveRemote;" \n
        "" \n
        "deleteMarkerLocal format[""HP:%1"", _unit];" \n
        "if(_debug) then {" \n
-       "	createMarkerLocal [format[""HP:%1"", _unit], _pos];" \n
-       "	format[""HP:%1"", _unit] setMarkerShapeLocal ""ICON"";" \n
-       "	format[""HP:%1"", _unit] setMarkerTypeLocal ""mil_box"";" \n
+       "    createMarkerLocal [format[""HP:%1"", _unit], _pos];" \n
+       "    format[""HP:%1"", _unit] setMarkerShapeLocal ""ICON"";" \n
+       "    format[""HP:%1"", _unit] setMarkerTypeLocal ""mil_box"";" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -305,8 +305,8 @@ class FSM
     {
       name = "Guard_Post_if_Ma";
       init = /*%FSM<STATEINIT""">*/"if(vehicle _unit == _unit) then {" \n
-       "	_guardpost = [_unit, 270, ""SAFE"", ""AUTO"", true, 30, _debug] execFSM ""enemy\modules\CQB_POP\functions\GuardPost.fsm"";" \n
-       "	//_guardpost setFSMVariable [""_debug"", _debug];" \n
+       "    _guardpost = [_unit, 270, ""SAFE"", ""AUTO"", true, 30, _debug] execFSM ""enemy\modules\CQB_POP\functions\GuardPost.fsm"";" \n
+       "    //_guardpost setFSMVariable [""_debug"", _debug];" \n
        "};" \n
        "" \n
        "_wait = time + 5 +  (random _maxwait);" \n
@@ -365,7 +365,7 @@ class FSM
        "" \n
        "deleteMarkerLocal format[""HP:%1"", _unit];" \n
        "if(_debug) then {" \n
-       "	diag_log format[""%1 aborting Simple House Patrol FSM"",  _unit];" \n
+       "    diag_log format[""%1 aborting Simple House Patrol FSM"",  _unit];" \n
        "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
@@ -381,7 +381,7 @@ class FSM
        "" \n
        "deleteMarkerLocal format[""HP:%1"", _unit];" \n
        "if(_debug) then {" \n
-       "	diag_log format[""%1 killed - ending Simple House Patrol FSM"",  _unit];" \n
+       "    diag_log format[""%1 killed - ending Simple House Patrol FSM"",  _unit];" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -396,7 +396,7 @@ class FSM
       name = "End_2";
       init = /*%FSM<STATEINIT""">*/"deleteMarkerLocal format[""HP:%1"", _unit];" \n
        "if(_debug) then {" \n
-       "	diag_log format[""%1 patrol over -  Simple House Patrol FSM"",  _unit];" \n
+       "    diag_log format[""%1 patrol over -  Simple House Patrol FSM"",  _unit];" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;

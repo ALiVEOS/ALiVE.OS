@@ -135,18 +135,18 @@ params [
 _result = true;
 
 switch(_operation) do {
-	default {
-		_result = [_logic, _operation, _args] call SUPERCLASS;
-	};
-	case "destroy": {
-		if (isServer) then {
-			// if server
-			_logic setVariable ["super", nil];
-			_logic setVariable ["class", nil];
+    default {
+        _result = [_logic, _operation, _args] call SUPERCLASS;
+    };
+    case "destroy": {
+        if (isServer) then {
+            // if server
+            _logic setVariable ["super", nil];
+            _logic setVariable ["class", nil];
 
-			[_logic, "destroy"] call SUPERCLASS;
-		};
-	};
+            [_logic, "destroy"] call SUPERCLASS;
+        };
+    };
 
     case "debug": {
         if (typeName _args == "BOOL") then {
@@ -176,7 +176,7 @@ switch(_operation) do {
 
         _result = _args;
     };
-	case "c2_item": {
+    case "c2_item": {
         _result = [_logic,_operation,_args,DEFAULT_C2_ITEM] call ALIVE_fnc_OOsimpleOperation;
     };
     case "autoGenerateBlufor": {
@@ -350,7 +350,7 @@ switch(_operation) do {
 
     case "displayTraceGrid": {
         _result = [_logic,_operation,_args,DEFAULT_TRACEFILL] call ALIVE_fnc_OOsimpleOperation;
-    };    
+    };
 
     case "runEvery": {
         if(typeName _args == "STRING") then {
@@ -367,7 +367,7 @@ switch(_operation) do {
     };
 
 
-	case "state": {
+    case "state": {
         _result = [_logic,_operation,_args,DEFAULT_STATE] call ALIVE_fnc_OOsimpleOperation;
     };
     case "side": {
@@ -401,12 +401,12 @@ switch(_operation) do {
     };
 
 
-	case "init": {
+    case "init": {
 
         //Only one init per instance is allowed
-    	if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE MIL C2ISTAR - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE MIL C2ISTAR - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
 
-    	//Start init
+        //Start init
         _logic setVariable ["initGlobal", false];
 
         private["_debug"];
@@ -552,37 +552,37 @@ switch(_operation) do {
                 [_intel, "init"] call ALIVE_fnc_militaryIntel;
 
             };
-            
+
             // T.R.A.C.E. System
             private ["_grid","_markerType","_displayTraceGrid"];
-            
+
             _displayTraceGrid = [_logic, "displayTraceGrid"] call MAINCLASS;
-            
+
             if !(_displayTraceGrid == "None") then {
 
                 _grid = _logic getvariable "grid";
 
-	            if (isnil "_grid") then {
-	                _grid = [getposATL _logic, 30000, _displayTraceGrid] call ALiVE_fnc_createTraceGrid;
-	                _logic setvariable ["grid",_grid];
+                if (isnil "_grid") then {
+                    _grid = [getposATL _logic, 30000, _displayTraceGrid] call ALiVE_fnc_createTraceGrid;
+                    _logic setvariable ["grid",_grid];
 
-	                [_grid,_displayTraceGrid] spawn {
+                    [_grid,_displayTraceGrid] spawn {
 
-	                    waituntil {
-	                        sleep 30;
-	                        [_this select 0,_this select 1] call ALiVE_fnc_updateTraceGrid;
+                        waituntil {
+                            sleep 30;
+                            [_this select 0,_this select 1] call ALiVE_fnc_updateTraceGrid;
 
-	                    	isnil {MOD(MIL_C2ISTAR) getvariable "grid"};
-	                 	};
-	                 };
-	            };
+                            isnil {MOD(MIL_C2ISTAR) getvariable "grid"};
+                         };
+                     };
+                };
             } else {
                 _grid = _logic getvariable ["grid",[]];
 
                 {deleteMarker _x} foreach _grid;
 
                 _logic setvariable ["grid",nil];
-            };            
+            };
         };
 
 
@@ -732,8 +732,8 @@ switch(_operation) do {
 
         [_logic, "start"] call MAINCLASS;
 
-	};
-	case "start": {
+    };
+    case "start": {
 
         // set module as startup complete
         _logic setVariable ["startupComplete", true];
@@ -745,8 +745,8 @@ switch(_operation) do {
 
         };
 
-	};
-	case "listen": {
+    };
+    case "listen": {
         private["_listenerID"];
 
         _listenerID = [ALIVE_eventLog, "addListener",[_logic, ["TASKS_UPDATED"]]] call ALIVE_fnc_eventLog;
@@ -814,7 +814,7 @@ switch(_operation) do {
         };
 
     };
-	case "tabletOnLoad": {
+    case "tabletOnLoad": {
 
         // on load of the tablet
         // restore state
@@ -877,9 +877,9 @@ switch(_operation) do {
         };
 
     };
-	case "tabletOnAction": {
+    case "tabletOnAction": {
 
-	    // The machine has an interface? Must be a MP client, SP client or a client that acts as host!
+        // The machine has an interface? Must be a MP client, SP client or a client that acts as host!
         if (hasInterface) then {
 
             if (isnil "_args") exitwith {};
@@ -3027,13 +3027,13 @@ switch(_operation) do {
 
         _taskingState = [_logic,"taskingState"] call MAINCLASS;
         _currentTask = [_taskingState,"currentTaskListSelectedValue"] call ALIVE_fnc_hashGet;
-        
+
         [_logic,"taskSource",_currentTask select 12] call MAINCLASS;
         [_logic,"taskEditingDisabled",_currentTask select 13] call MAINCLASS;
 
-		if (count _currentTask > 14) then {
-	        [_logic,"taskRevision",_currentTask select 14] call MAINCLASS;
-	        [_logic,"taskID",_currentTask select 15] call MAINCLASS;
+        if (count _currentTask > 14) then {
+            [_logic,"taskRevision",_currentTask select 14] call MAINCLASS;
+            [_logic,"taskID",_currentTask select 15] call MAINCLASS;
         };
 
         _selectedPlayerListOptions = _currentTask select 7 select 1;

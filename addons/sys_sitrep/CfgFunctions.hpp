@@ -4,17 +4,17 @@ class cfgFunctions {
                         class sitrep {
                                 description = "The main class";
                                 file = "\x\alive\addons\sys_sitrep\fnc_sitrep.sqf";
-								recompile = RECOMPILE;
+                                recompile = RECOMPILE;
                         };
                         class sitrepInit {
                                 description = "The module initialisation function";
                                 file = "\x\alive\addons\sys_sitrep\fnc_sitrepInit.sqf";
-								recompile = RECOMPILE;
+                                recompile = RECOMPILE;
                         };
                         class sitrepParams {
                                 description = "sitrep parameters";
                                 file = "\x\alive\addons\sys_sitrep\fnc_sitrepParams.sqf";
-								recompile = RECOMPILE;
+                                recompile = RECOMPILE;
                         };
                         class sitrepSaveData {
                                 description = "sitrep save data to DB";

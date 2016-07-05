@@ -2,7 +2,7 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
-	<Key
+    <Key
             ID="STR_ALIVE_tablet">
             <Original>Combat Support Tablet</Original>
             <Original>Combat Support Tablet</Original>
@@ -14,15 +14,15 @@
             <Portuguese>Combat Support Tablet</Portuguese>
             <Russian>Combat Support Tablet</Russian>
             <Spanish>Combat Support Tablet</Spanish>
-	</Key>
-	<Key
+    </Key>
+    <Key
             ID="STR_ALIVE_tablet1">
             <Original>Enables the user to call in available Combat Support units.&lt;br/&gt;Unlimited number of uses&lt;br /&gt;Used by: Anyone</Original>
             <Original>Enables the user to call in available Combat Support units.&lt;br/&gt;Unlimited number of uses&lt;br /&gt;Used by: Anyone</Original>
-	</Key>
-	<Key
+    </Key>
+    <Key
             ID="STR_ALIVE_use_tablet0">
             <Original>&lt;t color='#9cf953'&gt;Use: &lt;/t&gt;Access Combat Support Tablet</Original>
             <Original>&lt;t color='#9cf953'&gt;Use: &lt;/t&gt;Access Combat Support Tablet</Original>
-	</Key>      
+    </Key>      
 </Container></Package></Project>

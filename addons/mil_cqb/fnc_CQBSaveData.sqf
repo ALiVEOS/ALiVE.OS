@@ -44,13 +44,13 @@ _values = [];
 _data = [] call ALiVE_fnc_HashCreate;
 {
     if (call compile (_x getvariable ["CQB_persistent","false"])) then {
-		_state = [_x,"state"] call ALiVE_fnc_CQB;
-	    _type = [_state,"instancetype"] call AliVE_fnc_HashGet;
-	    _id = format["CQB_%1_%2",_type,_foreachIndex];
-	
-	    [_state,"houses"] call ALiVE_fnc_HashRem;
-	
-		[_data,_id,_state] call ALiVE_fnc_HashSet;
+        _state = [_x,"state"] call ALiVE_fnc_CQB;
+        _type = [_state,"instancetype"] call AliVE_fnc_HashGet;
+        _id = format["CQB_%1_%2",_type,_foreachIndex];
+
+        [_state,"houses"] call ALiVE_fnc_HashRem;
+
+        [_data,_id,_state] call ALiVE_fnc_HashSet;
     };
 } foreach (MOD(CQB) getVariable ["instances",[]]);
 

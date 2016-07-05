@@ -28,7 +28,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_sectors","_position","_err","_getDistance","_sortedSectors","_sector"];
-	
+
 _sectors = _this select 0;
 _position = _this select 1;
 
@@ -38,15 +38,15 @@ _err = format["sector sort distance requires an array position - %1",_position];
 ASSERT_TRUE(typeName _position == "ARRAY",_err);
 
 _getDistance = {
-	private ["_sector", "_centerPosition", "_distance"];	
-	_sector = _this select 0;
-	_centerPosition = [_sector, "center"] call ALIVE_fnc_sector;	
-	_distance = _centerPosition distance _position;
-	_distance	
+    private ["_sector", "_centerPosition", "_distance"];
+    _sector = _this select 0;
+    _centerPosition = [_sector, "center"] call ALIVE_fnc_sector;
+    _distance = _centerPosition distance _position;
+    _distance
 };
 
 _sortedSectors = [_sectors, {
-	([_this] call _getDistance)
+    ([_this] call _getDistance)
 }] call ALIVE_fnc_shellSort;
 
 _sortedSectors

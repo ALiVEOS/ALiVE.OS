@@ -55,12 +55,12 @@ _sitreps =[];
 
 _spotlist = lbSelection _spotControl;
 {
-	_spotreps set [count _spotreps, lbText [SPOT_LIST, _x]];
+    _spotreps set [count _spotreps, lbText [SPOT_LIST, _x]];
 } foreach _spotlist;
 
 _sitlist = lbSelection _sitControl;
 {
-	_sitreps set [count _sitreps, lbText [SIT_LIST, _x]];
+    _sitreps set [count _sitreps, lbText [SIT_LIST, _x]];
 } foreach _sitlist;
 
 _ammo = lbText [AMMO_LIST, lbCurSel AMMO_LIST];
@@ -92,23 +92,23 @@ _cs = lbText [CS_LIST, lbCurSel CS_LIST];
 [_patrolrepHash, QGVAR(epos), GVAR(epos)] call ALIVE_fnc_hashSet;
 
 switch _eyes do {
-	case "SIDE" : {
-		[_patrolrepHash, QGVAR(localityValue), str(side (group player))] call ALIVE_fnc_hashSet;
-	};
-	case "GROUP" : {
-		[_patrolrepHash, QGVAR(localityValue), str (group player)] call ALIVE_fnc_hashSet;
-	};
-	case "FACTION" : {
-		[_patrolrepHash, QGVAR(localityValue), faction player] call ALIVE_fnc_hashSet;
-	};
+    case "SIDE" : {
+        [_patrolrepHash, QGVAR(localityValue), str(side (group player))] call ALIVE_fnc_hashSet;
+    };
+    case "GROUP" : {
+        [_patrolrepHash, QGVAR(localityValue), str (group player)] call ALIVE_fnc_hashSet;
+    };
+    case "FACTION" : {
+        [_patrolrepHash, QGVAR(localityValue), faction player] call ALIVE_fnc_hashSet;
+    };
 };
 
 if !(isNil QGVAR(mapStartMarker)) then {
-	deleteMarkerLocal GVAR(mapStartMarker);
+    deleteMarkerLocal GVAR(mapStartMarker);
 };
 
 if !(isNil QGVAR(mapEndMarker)) then {
-	deleteMarkerLocal GVAR(mapEndMarker);
+    deleteMarkerLocal GVAR(mapEndMarker);
 };
 
 // Create a patrolrep

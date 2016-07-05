@@ -96,7 +96,7 @@ if(!isNil "ALIVE_factionCustomMappings") then {
 };
 
 if(_side == "GUER") then {
-	_side = "INDEP";
+    _side = "INDEP";
 };
 
 // If someone accidentally defined mappings as groups revert back to basics

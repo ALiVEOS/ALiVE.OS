@@ -38,7 +38,7 @@ switch (typeName _object) do {
 _isArmed = false;
 
 if (_object isKindOf "CAManBase") then {
-	// Checks if default weapons[] is set with weapons
+    // Checks if default weapons[] is set with weapons
     _isArmed = count ((getArray(configfile >> "CfgVehicles" >> _object >> "weapons")) - ["Throw","Put","FakeWeapon"]) > 0;
 } else {
     if (_object isKindOf "AllVehicles") then {

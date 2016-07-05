@@ -1,72 +1,72 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_AMBCP">
-	<Original>Civilian Placement</Original>
+    <Original>Civilian Placement</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_COMMENT">
-	<Original>Ambient Civilian Placement</Original>
+    <Original>Ambient Civilian Placement</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_DEBUG">
-	<Original>Enable Debug:</Original>
+    <Original>Enable Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_DEBUG_COMMENT">
-	<Original>Enables CP Module Debug</Original>
+    <Original>Enables CP Module Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_TAOR">
-	<Original>TAOR Marker:</Original>
+    <Original>TAOR Marker:</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_TAOR_COMMENT">
-	<Original>Tactical Area Operation Responsibility Marker</Original>
+    <Original>Tactical Area Operation Responsibility Marker</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_BLACKLIST">
-	<Original>Blacklist Marker:</Original>
+    <Original>Blacklist Marker:</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_BLACKLIST_COMMENT">
-	<Original>Exclusion Marker</Original>
+    <Original>Exclusion Marker</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER">
-	<Original>Objective Size Filter:</Original>
+    <Original>Objective Size Filter:</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_COMMENT">
-	<Original>Filter objectives less than selected size</Original>
+    <Original>Filter objectives less than selected size</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_NONE">
-	<Original>Do not filter</Original>
+    <Original>Do not filter</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_SMALL">
-	<Original>Ignore small objectives</Original>
+    <Original>Ignore small objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_MEDIUM">
-	<Original>Ignore small + medium objectives</Original>
+    <Original>Ignore small + medium objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_LARGE">
-	<Original>Only huge objectives</Original>
+    <Original>Only huge objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER">
-	<Original>Objective Priority Filter:</Original>
+    <Original>Objective Priority Filter:</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER_COMMENT">
-	<Original>Filter objectives less than selected priority</Original>
+    <Original>Filter objectives less than selected priority</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER_NONE">
-	<Original>Do not filter</Original>
+    <Original>Do not filter</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER_LOW">
-	<Original>Ignore low priority objectives</Original>
+    <Original>Ignore low priority objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER_MEDIUM">
-	<Original>Ignore low + medium priority objectives</Original>
+    <Original>Ignore low + medium priority objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER_HIGH">
-	<Original>Only high priority objectives</Original>
+    <Original>Only high priority objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_FACTION">
-	<Original>Force Faction:</Original>
+    <Original>Force Faction:</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_FACTION_COMMENT">
-	<Original>Faction of the units to be placed (CIV_F,mod_faction_name)</Original>
+    <Original>Faction of the units to be placed (CIV_F,mod_faction_name)</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PLACEMENT_MULTIPLIER">
     <Original>Placement Level</Original>
@@ -111,7 +111,7 @@
     <Original>Ambient vehicles pulled from this faction (CIV_F,mod_faction_name)</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_USAGE">
-	<Original>Define the settings on the module, place optional TAOR / Blacklist markers!</Original>
+    <Original>Define the settings on the module, place optional TAOR / Blacklist markers!</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_CIVILIAN_ROLES">
     <Original>Civilian roles:</Original>

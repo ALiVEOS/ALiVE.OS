@@ -171,9 +171,9 @@ class FSM
       name = "react";
       init = /*%FSM<STATEINIT""">*/"private " \n
        "[" \n
-       "	""_chopper"", ""_grp"", ""_callsign"", ""_base"", ""_dir"",""_height"",""_type"",""_respawn"",""_code"",""_h"", ""_task"", ""_pos"", ""_posLand""," \n
-       "	""_timeOut"", ""_delay"", ""_smoke"", ""_smokeColor"", ""_posSmoke"",	""_goodToLand"", " \n
-       "	""_dirCircle"", ""_radiusCircle"", ""_alt"",""_speechSaid"", ""_speechSaidSmoke"", ""_heliHs""" \n
+       "    ""_chopper"", ""_grp"", ""_callsign"", ""_base"", ""_dir"",""_height"",""_type"",""_respawn"",""_code"",""_h"", ""_task"", ""_pos"", ""_posLand""," \n
+       "    ""_timeOut"", ""_delay"", ""_smoke"", ""_smokeColor"", ""_posSmoke"",    ""_goodToLand"", " \n
+       "    ""_dirCircle"", ""_radiusCircle"", ""_alt"",""_speechSaid"", ""_speechSaidSmoke"", ""_heliHs""" \n
        "];" \n
        "_chopper = _this select 0;" \n
        "_grp = _this select 1;" \n
@@ -214,10 +214,10 @@ class FSM
        "" \n
        "//Optimization" \n
        "{" \n
-       "	_x disableAi ""FSM"";" \n
-       "	_x disableAi ""TARGET"";" \n
-       "	_x disableAi ""AUTOTARGET"";" \n
-       "	_x setSkill 1;" \n
+       "    _x disableAi ""FSM"";" \n
+       "    _x disableAi ""TARGET"";" \n
+       "    _x disableAi ""AUTOTARGET"";" \n
+       "    _x setSkill 1;" \n
        "} forEach units _grp;" \n
        "" \n
        "//Vehicle Status" \n
@@ -275,8 +275,8 @@ class FSM
        "{" \n
        "if (TRANS_RESPAWN_LIMIT = 0) then {" \n
        "" \n
-       " _replen = format [""All Units we are unable to replensih any CAS Assets. Out""]; 	" \n
-       "	" \n
+       " _replen = format [""All Units we are unable to replensih any CAS Assets. Out""];     " \n
+       "    " \n
        "[[player,_replen,""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "" \n
        "} else {*/" \n
@@ -354,20 +354,20 @@ class FSM
            "" \n
            "//Dialog from pilot" \n
            "[_chopper,_callsign,_pos, _audio, _player] spawn" \n
-           "{		" \n
+           "{        " \n
            "private [""_chopper"", ""_callsign"",""_pos""];" \n
-           "		_chopper = _this select 0;" \n
-           "		_callsign = _this select 1;" \n
-           " 		_pos = _this select 2;" \n
-           "		_audio = _this select 3;" \n
-           "		_player = _this select 4;" \n
-           "		_coord = _pos call BIS_fnc_posToGrid;" \n
+           "        _chopper = _this select 0;" \n
+           "        _callsign = _this select 1;" \n
+           "         _pos = _this select 2;" \n
+           "        _audio = _this select 3;" \n
+           "        _player = _this select 4;" \n
+           "        _coord = _pos call BIS_fnc_posToGrid;" \n
            "" \n
-           "		sleep 5;" \n
-           "		if (_audio) then {" \n
-           "			leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_LZ_Selected"", ""GROUP""];	" \n
-           "		};" \n
-           " 	 	[[ _chopper,format[ ""Copy that, %1 is inbound to provide overwatch at %2 %3. Out."",_callsign,_coord select 0, _coord select 1], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;	" \n
+           "        sleep 5;" \n
+           "        if (_audio) then {" \n
+           "            leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_LZ_Selected"", ""GROUP""];    " \n
+           "        };" \n
+           "          [[ _chopper,format[ ""Copy that, %1 is inbound to provide overwatch at %2 %3. Out."",_callsign,_coord select 0, _coord select 1], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;    " \n
            " " \n
            "};" \n
            "[_chopper] spawn {  " \n
@@ -479,46 +479,46 @@ class FSM
            "" \n
            "if (count _heliHs > 0) then" \n
            "{" \n
-           "	_posLand = getPosATL (_heliHs select 0);" \n
+           "    _posLand = getPosATL (_heliHs select 0);" \n
            "}" \n
            "else" \n
            "{" \n
-           "	_posLand = _pos isflatempty [sizeOf typeOf _chopper, 0, 0.5, sizeOf typeOf _chopper, 0, false, _chopper];" \n
-           "	" \n
-           "	if (count _posLand < 2) then" \n
-           "	{" \n
-           "		_heliHs = nearestObjects [_pos, [""Land_HelipadSquare_F"",""Land_HelipadRescue_F"",""Land_HelipadCivil_F"",""Land_HelipadCircle_F"",""Land_HelipadEmpty_F"",""HeliH"", ""HeliHCivil"", ""HeliHRescue""], 100];" \n
+           "    _posLand = _pos isflatempty [sizeOf typeOf _chopper, 0, 0.5, sizeOf typeOf _chopper, 0, false, _chopper];" \n
+           "    " \n
+           "    if (count _posLand < 2) then" \n
+           "    {" \n
+           "        _heliHs = nearestObjects [_pos, [""Land_HelipadSquare_F"",""Land_HelipadRescue_F"",""Land_HelipadCivil_F"",""Land_HelipadCircle_F"",""Land_HelipadEmpty_F"",""HeliH"", ""HeliHCivil"", ""HeliHRescue""], 100];" \n
            "" \n
-           "		if (count _heliHs > 0) then" \n
-           "		{" \n
-           "			_posLand = getPosATL (_heliHs select 0);" \n
-           "		}" \n
-           "		else" \n
-           "		{" \n
-           "			private [""_dir"", ""_dist""];" \n
-           "			_dir = 0;" \n
-           "			_dist = 10;" \n
-           "			" \n
-           "			while { _dist <= 250 } do" \n
-           "			{" \n
-           "				_posLand = ([_pos, _dist, _dir] call BIS_fnc_relPos) isflatempty [sizeOf typeOf _chopper, 0, 0.5, sizeOf typeOf _chopper, 0, false, _chopper];" \n
-           "				if (count _posLand > 0) exitWith {};" \n
-           "				" \n
-           "				_dir = _dir + 1;" \n
-           "				" \n
-           "				if (_dir >= 360) then " \n
-           "				{" \n
-           "					_dir = 0;" \n
-           "					_dist = _dist + 10;" \n
-           "				};" \n
-           "			};" \n
-           "			" \n
-           "			if (count _posLand < 2) then" \n
-           "			{" \n
-           "				_posLand = _pos;" \n
-           "			};" \n
-           "		};" \n
-           "	};" \n
+           "        if (count _heliHs > 0) then" \n
+           "        {" \n
+           "            _posLand = getPosATL (_heliHs select 0);" \n
+           "        }" \n
+           "        else" \n
+           "        {" \n
+           "            private [""_dir"", ""_dist""];" \n
+           "            _dir = 0;" \n
+           "            _dist = 10;" \n
+           "            " \n
+           "            while { _dist <= 250 } do" \n
+           "            {" \n
+           "                _posLand = ([_pos, _dist, _dir] call BIS_fnc_relPos) isflatempty [sizeOf typeOf _chopper, 0, 0.5, sizeOf typeOf _chopper, 0, false, _chopper];" \n
+           "                if (count _posLand > 0) exitWith {};" \n
+           "                " \n
+           "                _dir = _dir + 1;" \n
+           "                " \n
+           "                if (_dir >= 360) then " \n
+           "                {" \n
+           "                    _dir = 0;" \n
+           "                    _dist = _dist + 10;" \n
+           "                };" \n
+           "            };" \n
+           "            " \n
+           "            if (count _posLand < 2) then" \n
+           "            {" \n
+           "                _posLand = _pos;" \n
+           "            };" \n
+           "        };" \n
+           "    };" \n
            "};" \n
            "" \n
            "_posLand set [2, 0];" \n
@@ -588,28 +588,28 @@ class FSM
       name = "__1";
       init = /*%FSM<STATEINIT""">*/"if (!_speechSaid) then" \n
        "{" \n
-       "	_speechSaid = true;" \n
-       "	" \n
-       "	[_chopper,_callsign,_pos, _audio, _player] spawn" \n
-       "	{" \n
-       "		private [""_chopper"", ""_callsign"",""_pos""];" \n
-       "		_chopper = _this select 0;" \n
-       "		_callsign = _this select 1;" \n
-       "		 _pos = _this select 2;" \n
-       "		_audio = _this select 3;" \n
-       "		_player = _this select 4;" \n
-       "		_coord = _pos call BIS_fnc_posToGrid;" \n
-       "		sleep 6;" \n
+       "    _speechSaid = true;" \n
+       "    " \n
+       "    [_chopper,_callsign,_pos, _audio, _player] spawn" \n
+       "    {" \n
+       "        private [""_chopper"", ""_callsign"",""_pos""];" \n
+       "        _chopper = _this select 0;" \n
+       "        _callsign = _this select 1;" \n
+       "         _pos = _this select 2;" \n
+       "        _audio = _this select 3;" \n
+       "        _player = _this select 4;" \n
+       "        _coord = _pos call BIS_fnc_posToGrid;" \n
+       "        sleep 6;" \n
        "" \n
-       "		if (_audio) then {" \n
-       "			leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_Acknowledged"", ""GROUP""];	" \n
-       "		};" \n
+       "        if (_audio) then {" \n
+       "            leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_Acknowledged"", ""GROUP""];    " \n
+       "        };" \n
        "" \n
-       "		sleep 2;" \n
-       "			" \n
-       "		[[_chopper, format[""%1 is moving to %2%3 for pickup. Out."",_callsign,_coord select 0, _coord select 1], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "        sleep 2;" \n
+       "            " \n
+       "        [[_chopper, format[""%1 is moving to %2%3 for pickup. Out."",_callsign,_coord select 0, _coord select 1], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "" \n
-       "	};" \n
+       "    };" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -681,35 +681,35 @@ class FSM
       name = "__2";
       init = /*%FSM<STATEINIT""">*/"if (!_speechSaidSmoke) then" \n
        "{" \n
-       "	_speechSaidSmoke = true;" \n
-       "	" \n
-       "	if (sunOrMoon == 0) then {" \n
-       "		[[_chopper,	format[""%1 has arrived at pickup point, deploy IR marker to confirm landing position. Over."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-       "	} else {" \n
+       "    _speechSaidSmoke = true;" \n
+       "    " \n
+       "    if (sunOrMoon == 0) then {" \n
+       "        [[_chopper,    format[""%1 has arrived at pickup point, deploy IR marker to confirm landing position. Over."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "    } else {" \n
        "" \n
-       "		[[_chopper,	format[""%1 has arrived at pickup point, pop smoke to confirm landing position. Over."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "        [[_chopper,    format[""%1 has arrived at pickup point, pop smoke to confirm landing position. Over."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "" \n
-       "	};" \n
+       "    };" \n
        "" \n
-       "	[_chopper, _callsign] spawn" \n
-       "	{" \n
-       "		private [""_chopper"", ""_callsign""];" \n
-       "		_chopper = _this select 0;" \n
-       "		_callsign = _this select 1;" \n
+       "    [_chopper, _callsign] spawn" \n
+       "    {" \n
+       "        private [""_chopper"", ""_callsign""];" \n
+       "        _chopper = _this select 0;" \n
+       "        _callsign = _this select 1;" \n
        "" \n
        "" \n
-       "		sleep 75;" \n
-       "		" \n
-       "		while { (_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""SMOKE"" } do" \n
-       "		{" \n
-       "			if (sunOrMoon == 0) then {" \n
-       "				[[ _chopper, format[""%1 is still waiting for that IR marker. Over."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-       "			} else {" \n
-       "				[[ _chopper, format[""%1 is still waiting for that smoke. Over."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-       "			};" \n
-       "			sleep 75;" \n
-       "		};" \n
-       "	};" \n
+       "        sleep 75;" \n
+       "        " \n
+       "        while { (_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""SMOKE"" } do" \n
+       "        {" \n
+       "            if (sunOrMoon == 0) then {" \n
+       "                [[ _chopper, format[""%1 is still waiting for that IR marker. Over."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "            } else {" \n
+       "                [[ _chopper, format[""%1 is still waiting for that smoke. Over."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "            };" \n
+       "            sleep 75;" \n
+       "        };" \n
+       "    };" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -759,9 +759,9 @@ class FSM
           precondition = /*%FSM<CONDPRECONDITION""">*/"private [""_smoke""];" \n
            "" \n
            "if (sunOrMoon == 0) then {" \n
-           "	_smoke = _pos nearObjects [""B_IRStrobe"", 250] select 0;" \n
+           "    _smoke = _pos nearObjects [""B_IRStrobe"", 250] select 0;" \n
            "} else {" \n
-           "	_smoke = _pos nearObjects [""SmokeShell"", 250] select 0;" \n
+           "    _smoke = _pos nearObjects [""SmokeShell"", 250] select 0;" \n
            "};" \n
            "" \n
            "" \n
@@ -854,9 +854,9 @@ class FSM
            "" \n
            "//Smoke color" \n
            "if (sunOrMoon == 0) then {" \n
-           "	_smokeColor = ""Infrared"";" \n
+           "    _smokeColor = ""Infrared"";" \n
            "} else {" \n
-           "	_smokeColor = _smoke call NEO_fnc_smokeColor;" \n
+           "    _smokeColor = _smoke call NEO_fnc_smokeColor;" \n
            "};" \n
            "" \n
            "//Move Chopper H to land position" \n
@@ -885,29 +885,29 @@ class FSM
       name = "__4";
       init = /*%FSM<STATEINIT""">*/"//We see smoke" \n
        "if (sunOrMoon == 0) then {" \n
-       "	[[_chopper,	format [""We see %1 marker, do you confirm? Over."", _smokeColor],	""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "    [[_chopper,    format [""We see %1 marker, do you confirm? Over."", _smokeColor],    ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "} else {" \n
-       "	[[_chopper,	format [""We see %1 smoke, do you confirm? Over."", _smokeColor],	""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "    [[_chopper,    format [""We see %1 smoke, do you confirm? Over."", _smokeColor],    ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "};" \n
        "" \n
        "[_chopper, _callsign, _smokeColor] spawn" \n
        "{" \n
-       "	private [""_chopper"", ""_callsign"", ""_smokeColor""];" \n
-       "	_chopper = _this select 0;" \n
-       "	_callsign = _this select 1;" \n
-       "	_smokeColor = _this select 2;" \n
-       "	" \n
-       "	sleep 75;" \n
-       "	" \n
-       "	while { (_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""SMOKECONF"" } do" \n
-       "	{" \n
-       "		if (sunOrMoon == 0) then {" \n
-       "			[[_chopper, format [""This is %1, please respond, is that %1 marker yours? Over."", _smokeColor],""group""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-       "		} else {" \n
-       "			[[_chopper, format [""This is %1, please respond, is that %1 smoke yours? Over."", _smokeColor],""group""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-       "		};" \n
-       "		sleep 75;" \n
-       "	};" \n
+       "    private [""_chopper"", ""_callsign"", ""_smokeColor""];" \n
+       "    _chopper = _this select 0;" \n
+       "    _callsign = _this select 1;" \n
+       "    _smokeColor = _this select 2;" \n
+       "    " \n
+       "    sleep 75;" \n
+       "    " \n
+       "    while { (_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""SMOKECONF"" } do" \n
+       "    {" \n
+       "        if (sunOrMoon == 0) then {" \n
+       "            [[_chopper, format [""This is %1, please respond, is that %1 marker yours? Over."", _smokeColor],""group""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "        } else {" \n
+       "            [[_chopper, format [""This is %1, please respond, is that %1 smoke yours? Over."", _smokeColor],""group""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "        };" \n
+       "        sleep 75;" \n
+       "    };" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -973,23 +973,23 @@ class FSM
       name = "__5";
       init = /*%FSM<STATEINIT""">*/"if (_task != ""RTB"") then" \n
        "{" \n
-       "	[_chopper, _goodToLand] spawn" \n
-       "	{" \n
-       "		sleep 4;" \n
-       "		" \n
-       "		private [""_chopper"", ""_goodToLand""];" \n
-       "		_chopper = _this select 0;" \n
-       "		_goodToLand = _this select 1;" \n
-       "		" \n
-       "		if (!_goodToLand) then" \n
-       "		{" \n
-       "				[[_chopper,""Copy that, pop another marker to confirm LZ. Out."",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-       "		}" \n
-       "		else" \n
-       "		{" \n
-       "			[[_chopper,""Copy that, secure LZ. Out."",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-       "		};" \n
-       "	};" \n
+       "    [_chopper, _goodToLand] spawn" \n
+       "    {" \n
+       "        sleep 4;" \n
+       "        " \n
+       "        private [""_chopper"", ""_goodToLand""];" \n
+       "        _chopper = _this select 0;" \n
+       "        _goodToLand = _this select 1;" \n
+       "        " \n
+       "        if (!_goodToLand) then" \n
+       "        {" \n
+       "                [[_chopper,""Copy that, pop another marker to confirm LZ. Out."",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "        }" \n
+       "        else" \n
+       "        {" \n
+       "            [[_chopper,""Copy that, secure LZ. Out."",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "        };" \n
+       "    };" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -1196,19 +1196,19 @@ class FSM
     {
       name = "__8";
       init = /*%FSM<STATEINIT""">*/"[_chopper,_callsign, _audio, _player] spawn" \n
-       "{		" \n
+       "{        " \n
        "private [""_chopper"", ""_callsign""];" \n
-       "		_chopper = _this select 0;" \n
-       "		_callsign = _this select 1;" \n
-       "		_audio = _this select 2;" \n
-       "		_player = _this select 3;" \n
+       "        _chopper = _this select 0;" \n
+       "        _callsign = _this select 1;" \n
+       "        _audio = _this select 2;" \n
+       "        _player = _this select 3;" \n
        "" \n
-       "		sleep 5;" \n
-       "		if (_audio) then {" \n
-       "			leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_LZ_Selected"", ""GROUP""];	" \n
-       "		};" \n
-       "	" \n
-       "	[[_chopper,format[""Copy that, %1 is RTB. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "        sleep 5;" \n
+       "        if (_audio) then {" \n
+       "            leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_LZ_Selected"", ""GROUP""];    " \n
+       "        };" \n
+       "    " \n
+       "    [[_chopper,format[""Copy that, %1 is RTB. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -1327,20 +1327,20 @@ class FSM
       name = "__10";
       init = /*%FSM<STATEINIT""">*/"[_chopper,_callsign,_pos, _audio, _player] spawn" \n
        "{" \n
-       "		private [""_chopper"", ""_callsign""];" \n
-       "		_chopper = _this select 0;" \n
-       "		_callsign = _this select 1;" \n
-       "	 _pos = _this select 2;" \n
+       "        private [""_chopper"", ""_callsign""];" \n
+       "        _chopper = _this select 0;" \n
+       "        _callsign = _this select 1;" \n
+       "     _pos = _this select 2;" \n
        "_audio = _this select 3;" \n
-       "		_player = _this select 4;" \n
-       "		_coord = _pos call BIS_fnc_posToGrid;" \n
+       "        _player = _this select 4;" \n
+       "        _coord = _pos call BIS_fnc_posToGrid;" \n
        "" \n
-       "		sleep 5;" \n
-       "		if (_audio) then {" \n
-       "			leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_LZ_Selected"", ""GROUP""];	" \n
-       "		};" \n
-       "	" \n
-       "	[[_chopper,format[""Copy that, %1 is landing at %2 %3. Out."",_callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "        sleep 5;" \n
+       "        if (_audio) then {" \n
+       "            leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_LZ_Selected"", ""GROUP""];    " \n
+       "        };" \n
+       "    " \n
+       "    [[_chopper,format[""Copy that, %1 is landing at %2 %3. Out."",_callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -1408,8 +1408,8 @@ class FSM
       name = "__11";
       init = /*%FSM<STATEINIT""">*/"switch (_task) do" \n
        "{" \n
-       "	case ""HOVER"" : {[[_chopper,format[""%1 is awaiting new orders. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP; };" \n
-       "	default { [[_chopper,format[""%1 is landing at coordinates. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP; };" \n
+       "    case ""HOVER"" : {[[_chopper,format[""%1 is awaiting new orders. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP; };" \n
+       "    default { [[_chopper,format[""%1 is landing at coordinates. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP; };" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -1459,21 +1459,21 @@ class FSM
     {
       name = "__12";
       init = /*%FSM<STATEINIT""">*/"[_chopper,_callsign,_pos, _audio, _player] spawn" \n
-       "{		" \n
+       "{        " \n
        "private [""_chopper"", ""_callsign"",""_pos""];" \n
-       "		_chopper = _this select 0;" \n
-       "		_callsign = _this select 1;" \n
-       " 		_pos = _this select 2;" \n
-       "		_audio = _this select 3;" \n
-       "		_player = _this select 4;" \n
-       "		_coord = _pos call BIS_fnc_posToGrid;" \n
+       "        _chopper = _this select 0;" \n
+       "        _callsign = _this select 1;" \n
+       "         _pos = _this select 2;" \n
+       "        _audio = _this select 3;" \n
+       "        _player = _this select 4;" \n
+       "        _coord = _pos call BIS_fnc_posToGrid;" \n
        "" \n
-       "	sleep 5;" \n
-       "		if (_audio) then {" \n
-       "			leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_LZ_Selected"", ""GROUP""];	" \n
-       "		} else {" \n
-       "			[[_chopper,format[""Copy that, %1 is moving to %2%3. Out."",_callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-       "		};	" \n
+       "    sleep 5;" \n
+       "        if (_audio) then {" \n
+       "            leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_LZ_Selected"", ""GROUP""];    " \n
+       "        } else {" \n
+       "            [[_chopper,format[""Copy that, %1 is moving to %2%3. Out."",_callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "        };    " \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -1636,9 +1636,9 @@ class FSM
            "" \n
            "if (!_speechSaid) then" \n
            "{" \n
-           "	_speechSaid = true;" \n
+           "    _speechSaid = true;" \n
            "" \n
-           "	[[_chopper, format [""This is %1, we are at %2 %3, circling the AO. Out."", _callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+           "    [[_chopper, format [""This is %1, we are at %2 %3, circling the AO. Out."", _callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
            "};" \n
            ""/*%FSM</ACTION""">*/;
         };
@@ -1651,22 +1651,22 @@ class FSM
     {
       name = "__15";
       init = /*%FSM<STATEINIT""">*/"[_chopper,_callsign,_pos, _audio, _player] spawn" \n
-       "{		" \n
+       "{        " \n
        "private [""_chopper"", ""_callsign"",""_pos""];" \n
-       "		_chopper = _this select 0;" \n
-       "		_callsign = _this select 1;" \n
-       "		_pos = _this select 2;" \n
-       "		_audio = _this select 3;" \n
-       "		_player = _this select 4;" \n
-       "		_coord = _pos call BIS_fnc_posToGrid;" \n
-       "		sleep 5;" \n
-       "		if (_audio) then {" \n
-       "			leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_Acknowledged"", ""GROUP""];	" \n
-       "		};" \n
-       "	" \n
-       "	sleep 2;" \n
-       "	" \n
-       "	[[_chopper,format[""Copy that, %1 is moving to %2%3 for Insertion. Out."",_callsign,_coord select 0, _coord select 1 ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "        _chopper = _this select 0;" \n
+       "        _callsign = _this select 1;" \n
+       "        _pos = _this select 2;" \n
+       "        _audio = _this select 3;" \n
+       "        _player = _this select 4;" \n
+       "        _coord = _pos call BIS_fnc_posToGrid;" \n
+       "        sleep 5;" \n
+       "        if (_audio) then {" \n
+       "            leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_Acknowledged"", ""GROUP""];    " \n
+       "        };" \n
+       "    " \n
+       "    sleep 2;" \n
+       "    " \n
+       "    [[_chopper,format[""Copy that, %1 is moving to %2%3 for Insertion. Out."",_callsign,_coord select 0, _coord select 1 ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -1729,10 +1729,10 @@ class FSM
       name = "__16";
       init = /*%FSM<STATEINIT""">*/"" \n
        "if (_audio) then {" \n
-       "	leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_Accomplished"", ""GROUP""];	" \n
+       "    leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_Accomplished"", ""GROUP""];    " \n
        "} else {" \n
-       "	[[_chopper,""Prepare for Insertion. Out."",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-       "};	" \n
+       "    [[_chopper,""Prepare for Insertion. Out."",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "};    " \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
@@ -1756,12 +1756,12 @@ class FSM
       name = "__17";
       init = /*%FSM<STATEINIT""">*/"_chopper spawn" \n
        "{" \n
-       "	sleep 15;" \n
-       "		if (_audio) then {" \n
-       "			leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_Accomplished"", ""GROUP""];	" \n
-       "		} else {" \n
-       "			[[_this,""Go!. Go! Go!"",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-       "		};		" \n
+       "    sleep 15;" \n
+       "        if (_audio) then {" \n
+       "            leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_Accomplished"", ""GROUP""];    " \n
+       "        } else {" \n
+       "            [[_this,""Go!. Go! Go!"",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "        };        " \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -1811,22 +1811,22 @@ class FSM
     {
       name = "__18";
       init = /*%FSM<STATEINIT""">*/"[_chopper,_callsign,_pos, _audio, _player] spawn" \n
-       "{		" \n
+       "{        " \n
        "private [""_chopper"", ""_callsign"",""_pos""];" \n
-       "		_chopper = _this select 0;" \n
-       "		_callsign = _this select 1;" \n
-       "		_pos = _this select 2;" \n
-       "		_audio = _this select 3;" \n
-       "		_player = _this select 4;" \n
-       "		_coord = _pos call BIS_fnc_posToGrid;" \n
-       "	sleep random(7);" \n
-       "		if (_audio) then {" \n
-       "			leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_Acknowledged"", ""GROUP""];	" \n
-       "		};" \n
-       "	" \n
-       "	sleep random(5);" \n
-       "	" \n
-       "	[[_chopper,format[""Copy that, %1 is moving to %2%3 to provide air lift capability. Out."",_callsign,_coord select 0, _coord select 1 ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "        _chopper = _this select 0;" \n
+       "        _callsign = _this select 1;" \n
+       "        _pos = _this select 2;" \n
+       "        _audio = _this select 3;" \n
+       "        _player = _this select 4;" \n
+       "        _coord = _pos call BIS_fnc_posToGrid;" \n
+       "    sleep random(7);" \n
+       "        if (_audio) then {" \n
+       "            leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_Acknowledged"", ""GROUP""];    " \n
+       "        };" \n
+       "    " \n
+       "    sleep random(5);" \n
+       "    " \n
+       "    [[_chopper,format[""Copy that, %1 is moving to %2%3 to provide air lift capability. Out."",_callsign,_coord select 0, _coord select 1 ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "};" \n
        "" \n
        "" \n
@@ -1889,22 +1889,22 @@ class FSM
     {
       name = "__19";
       init = /*%FSM<STATEINIT""">*/"[_chopper,_callsign,_pos, _audio, _player] spawn" \n
-       "{		" \n
+       "{        " \n
        "private [""_chopper"", ""_callsign"",""_pos""];" \n
-       "		_chopper = _this select 0;" \n
-       "		_callsign = _this select 1;" \n
-       "		_pos = _this select 2;" \n
-       "		_audio = _this select 3;" \n
-       "		_player = _this select 4;" \n
-       "		_coord = _pos call BIS_fnc_posToGrid;" \n
-       "	sleep random(7);" \n
-       "		if (_audio) then {" \n
-       "			leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Drop_Acknowledged"", ""GROUP""];	" \n
-       "		};" \n
-       "	" \n
-       "	sleep random(5);" \n
-       "	" \n
-       "	[[_chopper,format[""Copy that, %1 is moving to %2%3 to deliver supply drop. Out."",_callsign,_coord select 0, _coord select 1 ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "        _chopper = _this select 0;" \n
+       "        _callsign = _this select 1;" \n
+       "        _pos = _this select 2;" \n
+       "        _audio = _this select 3;" \n
+       "        _player = _this select 4;" \n
+       "        _coord = _pos call BIS_fnc_posToGrid;" \n
+       "    sleep random(7);" \n
+       "        if (_audio) then {" \n
+       "            leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Drop_Acknowledged"", ""GROUP""];    " \n
+       "        };" \n
+       "    " \n
+       "    sleep random(5);" \n
+       "    " \n
+       "    [[_chopper,format[""Copy that, %1 is moving to %2%3 to deliver supply drop. Out."",_callsign,_coord select 0, _coord select 1 ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "};" \n
        "" \n
        "" \n
@@ -1966,7 +1966,7 @@ class FSM
     {
       name = "__20";
       init = /*%FSM<STATEINIT""">*/"[[_chopper,format[""%1 has the cargo attached and they are ready to move. Over."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-       "	" \n
+       "    " \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
@@ -2015,9 +2015,9 @@ class FSM
     {
       name = "__21";
       init = /*%FSM<STATEINIT""">*/"if (_audio) then {" \n
-       "	leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Bombing_Accomplished"", ""GROUP""];	" \n
+       "    leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Bombing_Accomplished"", ""GROUP""];    " \n
        "} else {" \n
-       "	[[_chopper,format[""%1 has delivered the payload. They are RTB. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "    [[_chopper,format[""%1 has delivered the payload. They are RTB. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "};" \n
        "" \n
        "_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""RTB"", true];" \n
@@ -2028,7 +2028,7 @@ class FSM
        "_audio = _this select 1;" \n
        "sleep 5;" \n
        "if (_audio) then {" \n
-       "	[[_chopper,format[""Copy that %1. You are RTB. Out."",groupid group _chopper],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "    [[_chopper,format[""Copy that %1. You are RTB. Out."",groupid group _chopper],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "};" \n
        "while {" \n
        "(_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""RTB"" } do" \n
@@ -2159,9 +2159,9 @@ class FSM
     {
       name = "__24";
       init = /*%FSM<STATEINIT""">*/"if (_task == ""SLINGLOAD"") then {" \n
-       "	[[_chopper,format[""%1 cannot comply with your request, they are already slingloading cargo. Out."",_callsign ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "    [[_chopper,format[""%1 cannot comply with your request, they are already slingloading cargo. Out."",_callsign ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "} else {" \n
-       "	[[_chopper,format[""%1 cannot comply with your request, they are not slingloading any cargo. Out."",_callsign ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;	" \n
+       "    [[_chopper,format[""%1 cannot comply with your request, they are not slingloading any cargo. Out."",_callsign ],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;    " \n
        "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links

@@ -27,7 +27,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_sectors","_side","_unitCountMin","_unitCountMax","_err","_filteredSectors","_sector","_sectorData","_unitData","_units"];
-	
+
 _sectors = _this select 0;
 _side = _this select 1;
 _unitCountMin = _this select 2;
@@ -45,15 +45,15 @@ ASSERT_TRUE(typeName _unitCountMax == "SCALAR",_err);
 _filteredSectors = [];
 
 {
-	_sector = _x;
-	_sectorData = [_sector, "data"] call ALIVE_fnc_sector;
-	_unitData = [_sectorData, "units"] call ALIVE_fnc_hashGet;
-	_units = [_unitData, _side] call ALIVE_fnc_hashGet;
-	
-	if(count _units > 0 && count _units > _unitCountMin &&  count _units < _unitCountMax) then {
-		_filteredSectors set [count _filteredSectors, _sector];
-	};
-	
+    _sector = _x;
+    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+    _unitData = [_sectorData, "units"] call ALIVE_fnc_hashGet;
+    _units = [_unitData, _side] call ALIVE_fnc_hashGet;
+
+    if(count _units > 0 && count _units > _unitCountMin &&  count _units < _unitCountMax) then {
+        _filteredSectors set [count _filteredSectors, _sector];
+    };
+
 } forEach _sectors;
 
 _filteredSectors

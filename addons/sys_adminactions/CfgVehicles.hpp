@@ -6,7 +6,7 @@ class CfgVehicles {
                 displayName = "$STR_ALIVE_ADMINACTIONS";
                 function = "ALIVE_fnc_emptyInit";
                 author = MODULE_AUTHOR;
-				functionPriority = 42;
+                functionPriority = 42;
                 isGlobal = 2;
                 icon = "x\alive\addons\sys_adminactions\icon_sys_adminactions.paa";
                 picture = "x\alive\addons\sys_adminactions\icon_sys_adminactions.paa";

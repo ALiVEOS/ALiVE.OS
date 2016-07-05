@@ -8,15 +8,15 @@ item3[] = {"SWITCH",2,4346,-191.784912,-93.250328,-101.784897,-43.250317,0.00000
 version=1;
 class LayoutItems
 {
-	class Item2
-	{
-		class ItemInfo
-		{
-			FontFace="Arial";
-			FontHeight=10;
-			lStyle=1;
-		};
-	};
+    class Item2
+    {
+        class ItemInfo
+        {
+            FontFace="Arial";
+            FontHeight=10;
+            lStyle=1;
+        };
+    };
 };
 link0[] = {0,1};
 link1[] = {1,3};

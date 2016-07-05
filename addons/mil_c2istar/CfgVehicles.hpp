@@ -6,10 +6,10 @@ class CfgVehicles {
                 displayName = "$STR_ALIVE_C2ISTAR";
                 function = "ALIVE_fnc_C2ISTARInit";
                 author = MODULE_AUTHOR;
-				functionPriority = 150;
+                functionPriority = 150;
                 isGlobal = 1;
-				icon = "x\alive\addons\mil_C2ISTAR\icon_mil_C2.paa";
-				picture = "x\alive\addons\mil_C2ISTAR\icon_mil_C2.paa";
+                icon = "x\alive\addons\mil_C2ISTAR\icon_mil_C2.paa";
+                picture = "x\alive\addons\mil_C2ISTAR\icon_mil_C2.paa";
                 class Arguments
                 {
                     class debug
@@ -423,33 +423,33 @@ class CfgVehicles {
                                             name = "Solid";
                                             value = "Solid";
                                     };
-									class Horizontal
-									{
-											name = "Horizontal";
-											value = "Horizontal";
-									};
-									class Vertical
-									{
-											name = "Vertical";
-											value = "Vertical";
-									};
-									class FDiagonal
-									{
-											name = "F-Diagonal";
-											value = "FDiagonal";
-									};
-									class BDiagonal
-									{
-											name = "B-Diagonal";
-											value = "BDiagonal";
-									};
-									class Cross
-									{
-											name = "Cross";
-											value = "Cross";
-									};
+                                    class Horizontal
+                                    {
+                                            name = "Horizontal";
+                                            value = "Horizontal";
+                                    };
+                                    class Vertical
+                                    {
+                                            name = "Vertical";
+                                            value = "Vertical";
+                                    };
+                                    class FDiagonal
+                                    {
+                                            name = "F-Diagonal";
+                                            value = "FDiagonal";
+                                    };
+                                    class BDiagonal
+                                    {
+                                            name = "B-Diagonal";
+                                            value = "BDiagonal";
+                                    };
+                                    class Cross
+                                    {
+                                            name = "Cross";
+                                            value = "Cross";
+                                    };
                             };
-                    };                    
+                    };
                     class displayPlayerSectors
                     {
                             displayName = "$STR_ALIVE_C2ISTAR_DISPLAY_PLAYER_SECTORS";

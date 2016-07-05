@@ -22,7 +22,7 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 private ["_unit","_getInUnit","_profileID","_profile"];
-	
+
 _unit = _this select 0;
 _getInUnit = _this select 2;
 

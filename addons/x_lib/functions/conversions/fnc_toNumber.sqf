@@ -4,27 +4,27 @@
 Function: ALiVE_fnc_toNumber
 
 Description:
-	Extracts a number value from an expression.
-	
+    Extracts a number value from an expression.
+
 Parameters:
-	0 - Expression [anything]
+    0 - Expression [anything]
 
 Returns:
-	Value [number]
+    Value [number]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
 
 Notes:
-	1. Not safe for user input.
+    1. Not safe for user input.
 
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 private ["_val"];
@@ -32,22 +32,22 @@ _val = _this select 0;
 
 if (typeName(_val) == "STRING") then
 {
-	_val = compile _val;
+    _val = compile _val;
 };
 
 if (typeName(_val) == "CODE") then
 {
-	_val = call _val;
+    _val = call _val;
 };
 
 if (typeName(_val) == "BOOL") then
 {
-	_val = if (_val) then {1} else {0};
+    _val = if (_val) then {1} else {0};
 };
 
 if (typeName(_val) != "SCALAR") then
 {
-	_val = -1;
+    _val = -1;
 };
 
 _val

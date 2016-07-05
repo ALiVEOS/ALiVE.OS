@@ -81,18 +81,18 @@ _args = [_this, 2, objNull, [objNull,[],"",0,true,false]] call BIS_fnc_param;
 _result = true;
 
 switch(_operation) do {
-	default {
-		_result = [_logic, _operation, _args] call SUPERCLASS;
-	};
-	case "destroy": {
-		if (isServer) then {
-			// if server
-			_logic setVariable ["super", nil];
-			_logic setVariable ["class", nil];
+    default {
+        _result = [_logic, _operation, _args] call SUPERCLASS;
+    };
+    case "destroy": {
+        if (isServer) then {
+            // if server
+            _logic setVariable ["super", nil];
+            _logic setVariable ["class", nil];
 
-			[_logic, "destroy"] call SUPERCLASS;
-		};
-	};
+            [_logic, "destroy"] call SUPERCLASS;
+        };
+    };
     case "debug": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["debug", _args];
@@ -111,7 +111,7 @@ switch(_operation) do {
         _result = [_logic,_operation,_args,DEFAULT_GM_LIMIT,["SIDE","FACTION"]] call ALIVE_fnc_OOsimpleOperation;
     };
 
-	case "state": {
+    case "state": {
         _result = [_logic,_operation,_args,DEFAULT_STATE] call ALIVE_fnc_OOsimpleOperation;
     };
     case "side": {
@@ -127,15 +127,15 @@ switch(_operation) do {
         _result = [_logic,_operation,_args,DEFAULT_MARKER] call ALIVE_fnc_OOsimpleOperation;
     };
 
-	case "init": {
+    case "init": {
 
         //Only one init per instance is allowed
-    	if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SUP GM - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SUP GM - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
 
-    	//Start init
+        //Start init
         _logic setVariable ["initGlobal", false];
 
-	    private["_debug"];
+        private["_debug"];
 
         _logic setVariable ["super", SUPERCLASS];
         _logic setVariable ["class", MAINCLASS];
@@ -226,8 +226,8 @@ switch(_operation) do {
 
         [_logic, "start"] call MAINCLASS;
 
-	};
-	case "start": {
+    };
+    case "start": {
 
         // set module as startup complete
         _logic setVariable ["startupComplete", true];
@@ -239,8 +239,8 @@ switch(_operation) do {
 
         };
 
-	};
-	case "listen": {
+    };
+    case "listen": {
         private["_listenerID"];
 
         _listenerID = [ALIVE_eventLog, "addListener",[_logic, ["GROUPS_UPDATED"]]] call ALIVE_fnc_eventLog;
@@ -316,7 +316,7 @@ switch(_operation) do {
         };
 
     };
-	case "tabletOnLoad": {
+    case "tabletOnLoad": {
 
         // on load of the tablet
         // restore state
@@ -379,9 +379,9 @@ switch(_operation) do {
         };
 
     };
-	case "tabletOnAction": {
+    case "tabletOnAction": {
 
-	    // The machine has an interface? Must be a MP client, SP client or a client that acts as host!
+        // The machine has an interface? Must be a MP client, SP client or a client that acts as host!
         if (hasInterface) then {
 
             if (isnil "_args") exitwith {};

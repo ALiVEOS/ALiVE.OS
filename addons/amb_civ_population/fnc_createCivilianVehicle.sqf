@@ -48,7 +48,7 @@ _vehicleID = format["agent_%1",[ALIVE_agentHandler, "getNextInsertID"] call ALIV
 _vehicleKind = _vehicleClass call ALIVE_fnc_vehicleGetKindOf;
 
 // create the profile for the vehicle
-								
+
 _civilianVehicle = [nil, "create"] call ALIVE_fnc_civilianVehicle;
 [_civilianVehicle, "init"] call ALIVE_fnc_civilianVehicle;
 [_civilianVehicle, "agentID", _vehicleID] call ALIVE_fnc_civilianVehicle;

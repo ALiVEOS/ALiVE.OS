@@ -35,10 +35,10 @@ MOD(player_count) = 0;
 
 onPlayerDisconnected {
 
-	TRACE_1("OPD DATA",_this);
+    TRACE_1("OPD DATA",_this);
 
-	if (_name != "__SERVER__") then {
-    	MOD(player_count) = MOD(player_count) - 1;
+    if (_name != "__SERVER__") then {
+        MOD(player_count) = MOD(player_count) - 1;
     };
 
 };
@@ -46,20 +46,20 @@ onPlayerDisconnected {
 
 ALiVE_fnc_onPlayerConnected = {
 
-	TRACE_1("OPC DATA",_this);
+    TRACE_1("OPC DATA",_this);
 //    ["OPC DATA",_this] call ALiVE_fnc_dump;
 
-	if !(isNil QMOD(sys_statistics)) then {
-		// Stats module onPlayerConnected call
-		[_id, _name, _uid, _owner, _jip] call ALIVE_fnc_stats_onPlayerConnected;
-	};
+    if !(isNil QMOD(sys_statistics)) then {
+        // Stats module onPlayerConnected call
+        [_id, _name, _uid, _owner, _jip] call ALIVE_fnc_stats_onPlayerConnected;
+    };
 
-	if !(isNil QMOD(sys_player)) then {
-		// sys_player module onPlayerConnected call
-		[_id, _name, _uid, _owner, _jip] call ALIVE_fnc_player_onPlayerConnected;
-	};
+    if !(isNil QMOD(sys_player)) then {
+        // sys_player module onPlayerConnected call
+        [_id, _name, _uid, _owner, _jip] call ALIVE_fnc_player_onPlayerConnected;
+    };
 
-	if !(isNil 'ALIVE_profileHandler') then {
+    if !(isNil 'ALIVE_profileHandler') then {
         // Profiles module onPlayerDisconnected call
         [_id, _name, _uid, _owner, _jip] call ALIVE_fnc_profile_onPlayerConnected;
     };
@@ -89,8 +89,8 @@ ALiVE_fnc_onPlayerConnected = {
         [_id, _name, _uid, _owner, _jip] call ALIVE_fnc_patrolrepOnPlayerConnected;
     };
 
-	if (_name != "__SERVER__") then {
-    	MOD(player_count) = MOD(player_count) + 1;
+    if (_name != "__SERVER__") then {
+        MOD(player_count) = MOD(player_count) + 1;
     };
 };
 

@@ -58,42 +58,42 @@ private ["_result"];
 TRACE_1("ML - input",_this);
 
 params [
-	["_logic", objNull, [objNull]],
-	["_operation", "", [""]],
-	["_args", objNull, [objNull,[],"",0,true,false]]
+    ["_logic", objNull, [objNull]],
+    ["_operation", "", [""]],
+    ["_args", objNull, [objNull,[],"",0,true,false]]
 ];
 _result = true;
 
 switch(_operation) do {
-	default {
-		_result = [_logic, _operation, _args] call SUPERCLASS;
-	};
-	case "destroy": {
-		[_logic, "debug", false] call MAINCLASS;
-		if (isServer) then {
-			// if server
-			_logic setVariable ["super", nil];
-			_logic setVariable ["class", nil];
-			_logic setVariable ["markers", []];
+    default {
+        _result = [_logic, _operation, _args] call SUPERCLASS;
+    };
+    case "destroy": {
+        [_logic, "debug", false] call MAINCLASS;
+        if (isServer) then {
+            // if server
+            _logic setVariable ["super", nil];
+            _logic setVariable ["class", nil];
+            _logic setVariable ["markers", []];
 
-			[_logic, "destroy"] call SUPERCLASS;
-		};
-	};
-	case "debug": {
-		if (typeName _args == "BOOL") then {
-			_logic setVariable ["debug", _args];
-		} else {
-			_args = _logic getVariable ["debug", false];
-		};
-		if (typeName _args == "STRING") then {
-				if(_args == "true") then {_args = true;} else {_args = false;};
-				_logic setVariable ["debug", _args];
-		};
-		ASSERT_TRUE(typeName _args == "BOOL",str _args);
+            [_logic, "destroy"] call SUPERCLASS;
+        };
+    };
+    case "debug": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["debug", _args];
+        } else {
+            _args = _logic getVariable ["debug", false];
+        };
+        if (typeName _args == "STRING") then {
+                if(_args == "true") then {_args = true;} else {_args = false;};
+                _logic setVariable ["debug", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
 
-		_result = _args;
-	};
-	case "persistent": {
+        _result = _args;
+    };
+    case "persistent": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["persistent", _args];
         } else {
@@ -107,7 +107,7 @@ switch(_operation) do {
 
         _result = _args;
     };
-	case "pause": {
+    case "pause": {
         if(typeName _args != "BOOL") then {
             // if no new value was provided return current setting
             _args = [_logic,"pause",objNull,false] call ALIVE_fnc_OOsimpleOperation;
@@ -125,8 +125,8 @@ switch(_operation) do {
         };
         _result = _args;
     };
-	case "createMarker": {
-	    private["_position","_faction","_text","_markers","_debugColor","_markerID","_m"];
+    case "createMarker": {
+        private["_position","_faction","_text","_markers","_debugColor","_markerID","_m"];
 
         _position = _args select 0;
         _faction = _args select 1;
@@ -175,8 +175,8 @@ switch(_operation) do {
         };
 
         _logic setVariable ["markers", _markers];
-	};
-	case "side": {
+    };
+    case "side": {
         _result = [_logic,_operation,_args,DEFAULT_SIDE] call ALIVE_fnc_OOsimpleOperation;
     };
     case "factions": {
@@ -299,37 +299,37 @@ switch(_operation) do {
 
         _result = _logic getVariable [_operation, DEFAULT_FORCE_POOL];
     };
-	// Main process
-	case "init": {
+    // Main process
+    case "init": {
         if (isServer) then {
 
             private ["_debug","_forcePool","_type","_allowInfantry","_allowMechanised","_allowMotorised","_allowArmour","_allowHeli","_allowPlane"];
 
-			// if server, initialise module game logic
-			_logic setVariable ["super", SUPERCLASS];
-			_logic setVariable ["class", MAINCLASS];
-			_logic setVariable ["moduleType", "ALIVE_ML"];
-			_logic setVariable ["startupComplete", false];
-			_logic setVariable ["listenerID", ""];
-			_logic setVariable ["registryID", ""];
-			_logic setVariable ["initialAnalysisComplete", false];
-			_logic setVariable ["analysisInProgress", false];
-			_logic setVariable ["eventQueue", [] call ALIVE_fnc_hashCreate];
+            // if server, initialise module game logic
+            _logic setVariable ["super", SUPERCLASS];
+            _logic setVariable ["class", MAINCLASS];
+            _logic setVariable ["moduleType", "ALIVE_ML"];
+            _logic setVariable ["startupComplete", false];
+            _logic setVariable ["listenerID", ""];
+            _logic setVariable ["registryID", ""];
+            _logic setVariable ["initialAnalysisComplete", false];
+            _logic setVariable ["analysisInProgress", false];
+            _logic setVariable ["eventQueue", [] call ALIVE_fnc_hashCreate];
 
-			_debug = [_logic, "debug"] call MAINCLASS;
-			_forcePool = [_logic, "forcePool"] call MAINCLASS;
-			_type = [_logic, "type"] call MAINCLASS;
+            _debug = [_logic, "debug"] call MAINCLASS;
+            _forcePool = [_logic, "forcePool"] call MAINCLASS;
+            _type = [_logic, "type"] call MAINCLASS;
 
-			if(typeName _forcePool == "STRING") then {
+            if(typeName _forcePool == "STRING") then {
                 _forcePool = parseNumber _forcePool;
             };
 
-			if(_forcePool == 10) then {
+            if(_forcePool == 10) then {
                 [_logic, "forcePool", 1000] call MAINCLASS;
                 [_logic, "forcePoolType", "DYNAMIC"] call MAINCLASS;
-			};
+            };
 
-			_allowInfantry = [_logic, "allowInfantryReinforcement"] call MAINCLASS;
+            _allowInfantry = [_logic, "allowInfantryReinforcement"] call MAINCLASS;
             _allowMechanised = [_logic, "allowMechanisedReinforcement"] call MAINCLASS;
             _allowMotorised = [_logic, "allowMotorisedReinforcement"] call MAINCLASS;
             _allowArmour = [_logic, "allowArmourReinforcement"] call MAINCLASS;
@@ -360,35 +360,35 @@ switch(_operation) do {
                 [ALIVE_MLGlobalRegistry, "debug", _debug] call ALIVE_fnc_MLGlobalRegistry;
             };
 
-			TRACE_1("After module init",_logic);
+            TRACE_1("After module init",_logic);
 
             [_logic,"start"] call MAINCLASS;
         };
-	};
-	case "start": {
+    };
+    case "start": {
         if (isServer) then {
 
-			private ["_debug","_modules","_module","_worldName","_file","_moduleObject"];
+            private ["_debug","_modules","_module","_worldName","_file","_moduleObject"];
 
-			_debug = [_logic, "debug"] call MAINCLASS;
-
-
-			// DEBUG -------------------------------------------------------------------------------------
-			if(_debug) then {
-				["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-				["ALIVE ML - Startup"] call ALIVE_fnc_dump;
-			};
-			// DEBUG -------------------------------------------------------------------------------------
+            _debug = [_logic, "debug"] call MAINCLASS;
 
 
-			// check modules are available
+            // DEBUG -------------------------------------------------------------------------------------
+            if(_debug) then {
+                ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
+                ["ALIVE ML - Startup"] call ALIVE_fnc_dump;
+            };
+            // DEBUG -------------------------------------------------------------------------------------
+
+
+            // check modules are available
             if !(["ALiVE_sys_profile","ALiVE_mil_opcom"] call ALiVE_fnc_isModuleAvailable) exitwith {
                 ["Military Logistics reports that Virtual AI module or OPCOM module not placed! Exiting..."] call ALiVE_fnc_DumpR;
             };
-			waituntil {!(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
+            waituntil {!(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
 
             // if civ cluster data not loaded, load it
-			if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
+            if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
                 _worldName = toLower(worldName);
                 _file = format["\x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
                 call compile preprocessFileLineNumbers _file;
@@ -408,66 +408,66 @@ switch(_operation) do {
             // get all synced modules
             _modules = [];
 
-			for "_i" from 0 to ((count synchronizedObjects _logic)-1) do {
-				_moduleObject = (synchronizedObjects _logic) select _i;
+            for "_i" from 0 to ((count synchronizedObjects _logic)-1) do {
+                _moduleObject = (synchronizedObjects _logic) select _i;
 
                 waituntil {_module = _moduleObject getVariable "handler"; !(isnil "_module")};
                 _module = _moduleObject getVariable "handler";
-				_modules set [count _modules, _module];
-			};
+                _modules set [count _modules, _module];
+            };
 
 
-			// DEBUG -------------------------------------------------------------------------------------
-			if(_debug) then {
-				["ALIVE ML - Startup completed"] call ALIVE_fnc_dump;
-				["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-			};
-			// DEBUG -------------------------------------------------------------------------------------
+            // DEBUG -------------------------------------------------------------------------------------
+            if(_debug) then {
+                ["ALIVE ML - Startup completed"] call ALIVE_fnc_dump;
+                ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
+            };
+            // DEBUG -------------------------------------------------------------------------------------
 
 
-			_logic setVariable ["startupComplete", true];
+            _logic setVariable ["startupComplete", true];
 
-			if(count _modules > 0) then {
+            if(count _modules > 0) then {
 
-			    // start listening for logcom events
+                // start listening for logcom events
                 [_logic,"listen"] call MAINCLASS;
 
-			    // start initial analysis
-				[_logic, "initialAnalysis", _modules] call MAINCLASS;
-			}else{
-				["ALIVE ML - Warning no OPCOM modules synced to Military Logistics module, nothing to do.."] call ALIVE_fnc_dumpR;
+                // start initial analysis
+                [_logic, "initialAnalysis", _modules] call MAINCLASS;
+            }else{
+                ["ALIVE ML - Warning no OPCOM modules synced to Military Logistics module, nothing to do.."] call ALIVE_fnc_dumpR;
 
-			};
+            };
         };
-	};
-	case "initialAnalysis": {
+    };
+    case "initialAnalysis": {
         if (isServer) then {
 
-			private ["_debug","_modules","_module","_modulesFactions","_moduleSide","_moduleFactions","_modulesObjectives","_moduleFactionBreakdowns",
-			"_faction","_factionBreakdown","_objectives"];
+            private ["_debug","_modules","_module","_modulesFactions","_moduleSide","_moduleFactions","_modulesObjectives","_moduleFactionBreakdowns",
+            "_faction","_factionBreakdown","_objectives"];
 
-			_modules = _args;
+            _modules = _args;
 
-			_debug = [_logic, "debug"] call MAINCLASS;
-			_modulesFactions = [];
-			_modulesObjectives = [];
+            _debug = [_logic, "debug"] call MAINCLASS;
+            _modulesFactions = [];
+            _modulesObjectives = [];
 
-			// get objectives and modules settings from syncronised OPCOM instances
-			// should only be 1...
-			{
-				_module = _x;
-				_moduleSide = [_module,"side"] call ALiVE_fnc_HashGet;
+            // get objectives and modules settings from syncronised OPCOM instances
+            // should only be 1...
+            {
+                _module = _x;
+                _moduleSide = [_module,"side"] call ALiVE_fnc_HashGet;
 
                 // Register side with clients
                 MOD(Require) setVariable [format["ALIVE_MIL_LOG_AVAIL_%1", _moduleSide], true, true];
 
-				_moduleFactions = [_module,"factions"] call ALiVE_fnc_HashGet;
+                _moduleFactions = [_module,"factions"] call ALiVE_fnc_HashGet;
 
                 // store side
-				[_logic, "side", _moduleSide] call MAINCLASS;
+                [_logic, "side", _moduleSide] call MAINCLASS;
 
                 // get the objectives from the module
-				_objectives = [];
+                _objectives = [];
 
                 waituntil {
                     sleep 10;
@@ -484,10 +484,10 @@ switch(_operation) do {
                     [ALIVE_globalForcePool,_x,0] call ALIVE_fnc_hashSet;
                 } forEach _moduleFactions;
 
-			} forEach _modules;
+            } forEach _modules;
 
-			[_logic, "factions", _modulesFactions] call MAINCLASS;
-			[_logic, "objectives", _modulesObjectives] call MAINCLASS;
+            [_logic, "factions", _modulesFactions] call MAINCLASS;
+            [_logic, "objectives", _modulesObjectives] call MAINCLASS;
 
             // register the module
             [ALIVE_MLGlobalRegistry,"register",_logic] call ALIVE_fnc_MLGlobalRegistry;
@@ -497,9 +497,9 @@ switch(_operation) do {
 
             // trigger main processing loop
             [_logic, "monitor"] call MAINCLASS;
-		};
-	};
-	case "listen": {
+        };
+    };
+    case "listen": {
         private["_listenerID"];
 
         _listenerID = [ALIVE_eventLog, "addListener",[_logic, ["LOGCOM_REQUEST","LOGCOM_STATUS_REQUEST","LOGCOM_CANCEL_REQUEST"]]] call ALIVE_fnc_eventLog;

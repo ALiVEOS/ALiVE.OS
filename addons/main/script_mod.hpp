@@ -24,34 +24,34 @@
 */
 
 // Set a default debug mode for the component here (See documentation on how to default to each of the modes).
-//	#define DEBUG_ENABLED_MAIN
-//	#define DEBUG_ENABLED_SYS_ADMINACTIONS
-//	#define DEBUG_ENABLED_FNC_STRATEGIC
-//	#define DEBUG_ENABLED_mil_cqb
-//	#define DEBUG_ENABLED_SYS_NEWSFEED
-//	#define DEBUG_ENABLED_SYS_LOGISTICS
-//	#define DEBUG_ENABLED_SYS_DATA
-//	#define DEBUG_ENABLED_SYS_DATA_COUCHDB
-//	#define DEBUG_ENABLED_SYS_STATISTICS
-//	#define DEBUG_ENABLED_MIL_STRATEGIC
-//	#define DEBUG_ENABLED_SYS_PROFILE
-//	#define DEBUG_ENABLED_SYS_SIMULATION
-//	#define DEBUG_ENABLED_SYS_PLAYER
-//	#define DEBUG_ENABLED_SYS_playeroptions
-//	#define DEBUG_ENABLED_SYS_viewdistance
-//	#define DEBUG_ENABLED_SYS_playertags
-//	#define DEBUG_ENABLED_SYS_crewinfo
-//	#define DEBUG_ENABLED_SYS_PERF
-//	#define DEBUG_ENABLED_SYS_marker
-//	#define DEBUG_ENABLED_SYS_spotrep
-//	#define DEBUG_ENABLED_SYS_sitrep
-//	#define DEBUG_ENABLED_MIL_C2ISTAR
-//	#define DEBUG_ENABLED_SYS_patrolrep
-//	#define DEBUG_ENABLED_SUP_GROUP_MANAGER
-//	#define DEBUG_ENABLED_SUP_COMMAND
-//	#define DEBUG_ENABLED_X_LIB
-//	#define DEBUG_ENABLED_mil_ied
-//	#define DEBUG_ENABLED_sup_submarine
+//    #define DEBUG_ENABLED_MAIN
+//    #define DEBUG_ENABLED_SYS_ADMINACTIONS
+//    #define DEBUG_ENABLED_FNC_STRATEGIC
+//    #define DEBUG_ENABLED_mil_cqb
+//    #define DEBUG_ENABLED_SYS_NEWSFEED
+//    #define DEBUG_ENABLED_SYS_LOGISTICS
+//    #define DEBUG_ENABLED_SYS_DATA
+//    #define DEBUG_ENABLED_SYS_DATA_COUCHDB
+//    #define DEBUG_ENABLED_SYS_STATISTICS
+//    #define DEBUG_ENABLED_MIL_STRATEGIC
+//    #define DEBUG_ENABLED_SYS_PROFILE
+//    #define DEBUG_ENABLED_SYS_SIMULATION
+//    #define DEBUG_ENABLED_SYS_PLAYER
+//    #define DEBUG_ENABLED_SYS_playeroptions
+//    #define DEBUG_ENABLED_SYS_viewdistance
+//    #define DEBUG_ENABLED_SYS_playertags
+//    #define DEBUG_ENABLED_SYS_crewinfo
+//    #define DEBUG_ENABLED_SYS_PERF
+//    #define DEBUG_ENABLED_SYS_marker
+//    #define DEBUG_ENABLED_SYS_spotrep
+//    #define DEBUG_ENABLED_SYS_sitrep
+//    #define DEBUG_ENABLED_MIL_C2ISTAR
+//    #define DEBUG_ENABLED_SYS_patrolrep
+//    #define DEBUG_ENABLED_SUP_GROUP_MANAGER
+//    #define DEBUG_ENABLED_SUP_COMMAND
+//    #define DEBUG_ENABLED_X_LIB
+//    #define DEBUG_ENABLED_mil_ied
+//    #define DEBUG_ENABLED_sup_submarine
 
 // Set automated tests
 // #define AUTOMATED_TESTS QUOTE(MAIN),QUOTE(SYS_LOGISTICS),QUOTE(SYS_GC),QUOTE(MIL_CQB),QUOTE(MIL_OPCOM)

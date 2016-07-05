@@ -11,7 +11,7 @@
 //  of this distribution removed or modified without express written consent   //
 //  of the developer. For further licensing details please refer to the End    //
 //  User License Agreement provided within this PBO file. Any questions or     //
-//  comments, please contact:             				       //
+//  comments, please contact:                                    //
 //                    http://alivemod.com/                    //
 //                                                                             //
 ///////////////////////////////////////////////////////////////////////////////// 
@@ -44,5 +44,5 @@ Handles dynamic weather
 | Contact details |
 #=================#
 
-Page:	http://alivemod.com/
+Page:    http://alivemod.com/
 

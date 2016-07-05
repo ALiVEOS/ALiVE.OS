@@ -27,7 +27,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_sectors","_elevationMin","_elevationMax","_err","_filteredSectors","_sector","_sectorData","_elevationData"];
-	
+
 _sectors = _this select 0;
 _elevationMin = _this select 1;
 _elevationMax = _this select 2;
@@ -42,17 +42,17 @@ ASSERT_TRUE(typeName _elevationMax == "SCALAR",_err);
 _filteredSectors = [];
 
 {
-	_sector = _x;
-	_sectorData = [_sector, "data"] call ALIVE_fnc_sector;
-	
-	if("elevation" in (_sectorData select 1)) then {
-		_elevationData = [_sectorData, "elevation"] call ALIVE_fnc_hashGet;
-		
-		if(_elevationData >= _elevationMin && _elevationData <= _elevationMax) then {
-			_filteredSectors set [count _filteredSectors, _sector];
-		};
-	};
-	
+    _sector = _x;
+    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+
+    if("elevation" in (_sectorData select 1)) then {
+        _elevationData = [_sectorData, "elevation"] call ALIVE_fnc_hashGet;
+
+        if(_elevationData >= _elevationMin && _elevationData <= _elevationMax) then {
+            _filteredSectors set [count _filteredSectors, _sector];
+        };
+    };
+
 } forEach _sectors;
 
 _filteredSectors

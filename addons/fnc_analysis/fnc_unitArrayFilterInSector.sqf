@@ -40,9 +40,9 @@ ASSERT_TRUE(typeName _sector == "ARRAY",_err);
 _inSectorUnits = [];
 
 {
-	if([_sector, "within", getPos _x] call ALIVE_fnc_sector) then {
-		_inSectorUnits set [count _inSectorUnits, _x];
-	};		
+    if([_sector, "within", getPos _x] call ALIVE_fnc_sector) then {
+        _inSectorUnits set [count _inSectorUnits, _x];
+    };
 } forEach _units;
 
 _inSectorUnits

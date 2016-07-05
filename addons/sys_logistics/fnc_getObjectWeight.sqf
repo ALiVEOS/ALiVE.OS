@@ -30,16 +30,16 @@ _objects = _this;
 _sum = 0;
 
 _types = [
-		["Truck_F",1000],
-		["Car",800],
-		["Tank",6500],
-		["Air",327],
-		["Ship",750],
-		["Reammobox_F",200],
-		["Static",400],
-		["ThingX",7],
-		["Man",200],
-		["StaticWeapon",60]
+        ["Truck_F",1000],
+        ["Car",800],
+        ["Tank",6500],
+        ["Air",327],
+        ["Ship",750],
+        ["Reammobox_F",200],
+        ["Static",400],
+        ["ThingX",7],
+        ["Man",200],
+        ["StaticWeapon",60]
 ];
 
 {
@@ -48,8 +48,8 @@ _types = [
     _object = _x;
 
     switch (typeName _object) do {
-		case ("OBJECT") : {_type = typeOf _object; _weight = getMass _object};
-		case ("STRING") : {_type = _object; _weight = getNumber(configfile >> "CfgVehicles" >> _type >> "mass")};
+        case ("OBJECT") : {_type = typeOf _object; _weight = getMass _object};
+        case ("STRING") : {_type = _object; _weight = getNumber(configfile >> "CfgVehicles" >> _type >> "mass")};
     };
 
     if (_weight == 0) then {{if (_type isKindOf (_x select 0)) exitwith {_weight = (getNumber(configFile >> "CfgVehicles" >> _type >> "mapSize")) * (_x select 1)}} foreach _types};

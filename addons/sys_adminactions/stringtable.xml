@@ -3,57 +3,57 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_ADMINACTIONS">
-	<Original>Admin Actions</Original>
-	<German>Admin Aktionen</German>
-	<Italian>Azioni Admin</Italian>
+    <Original>Admin Actions</Original>
+    <German>Admin Aktionen</German>
+    <Italian>Azioni Admin</Italian>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_COMMENT">
-	<Original>Server admin functions</Original>
+    <Original>Server admin functions</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_OPTIONS">
-	<Original>Module Settings</Original>
+    <Original>Module Settings</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_OPTIONS_COMMENT">
-	<Original>Adjust ALiVE module settings, i.e. debug, as necessary</Original>
+    <Original>Adjust ALiVE module settings, i.e. debug, as necessary</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_GHOST">
-	<Original>Allow Ghosting:</Original>
+    <Original>Allow Ghosting:</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_GHOST_ENABLE">
-	<Original>Enable Ghosting</Original>
+    <Original>Enable Ghosting</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_GHOST_DISABLE">
-	<Original>Disable Ghosting</Original>
+    <Original>Disable Ghosting</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_GHOST_COMMENT">
-	<Original>Allow server admins to be ignored by AI</Original>
+    <Original>Allow server admins to be ignored by AI</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_TELEPORT">
-	<Original>Allow Teleport:</Original>
+    <Original>Allow Teleport:</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_TELEPORT_ENABLE">
-	<Original>Enable Teleporting</Original>
+    <Original>Enable Teleporting</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_TELEPORTUNITS">
-	<Original>Teleport Units</Original>
+    <Original>Teleport Units</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_TELEPORTUNITS_COMMENT">
-	<Original>Teleports the given units to the desired position</Original>
+    <Original>Teleports the given units to the desired position</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_TELEPORT_DISABLE">
-	<Original>Disable Teleporting</Original>
+    <Original>Disable Teleporting</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_TELEPORT_COMMENT">
-	<Original>Allow server admins to teleport anywhere on the map</Original>
+    <Original>Allow server admins to teleport anywhere on the map</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_MARK_UNITS">
-	<Original>Mark Units:</Original>
+    <Original>Mark Units:</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_MARK_UNITS_ENABLE">
-	<Original>Activate Marking Units</Original>
+    <Original>Activate Marking Units</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_MARK_UNITS_COMMENT">
-	<Original>Allow server admins to mark units positions for 15 seconds</Original>
+    <Original>Allow server admins to mark units positions for 15 seconds</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_PROFILES_DEBUG">
     <Original>Debug Profile System:</Original>
@@ -77,22 +77,22 @@
     <Original>Create profiles from non profiles units and vehicles.</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_CONSOLE">
-	<Original>Allow Debug:</Original>
+    <Original>Allow Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_CONSOLE_ENABLE">
-	<Original>Debug Console</Original>
+    <Original>Debug Console</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_CONSOLE_COMMENT">
-	<Original>Open the debug console</Original>
+    <Original>Open the debug console</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_ERROR1">
-	<Original>Only one Admin Actions module can be used</Original>
+    <Original>Only one Admin Actions module can be used</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_USAGE">
     <Original>Place an admin actions module to give the server admin or single player admin functions like teleport, ghost and run scripts.</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_OPCOM_TOGGLEINSTALLATIONS">
-	<Original>Toggle OPCOM installations</Original>
+    <Original>Toggle OPCOM installations</Original>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_OPCOM_TOGGLEINSTALLATIONS_COMMENT">
     <Original>Displays markers at installations</Original>

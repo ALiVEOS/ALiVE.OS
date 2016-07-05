@@ -56,18 +56,18 @@ _instances = (ALiVE_CQB getVariable ["instances",[]]);
 
 {[_x,"active",false] call ALiVE_fnc_CQB} foreach _instances;
 {
-	private ["_state","_logic"];
-	_logic  = _x;
-    
+    private ["_state","_logic"];
+    _logic  = _x;
+
     if (call compile (_logic getvariable ["CQB_persistent","false"])) then {
-		_state = [_logic,"state"] call ALiVE_fnc_CQB;
-		
-		["ALiVE LOAD CQB DATA APPLYING STATE!"] call ALIVE_fnc_dumpMPH;
-		[_state,"houses",_data] call ALiVE_fnc_HashSet;
-		
-		//_state call ALIVE_fnc_inspectHash;
-		
-		[_logic,"state",_state] call ALiVE_fnc_CQB;
+        _state = [_logic,"state"] call ALiVE_fnc_CQB;
+
+        ["ALiVE LOAD CQB DATA APPLYING STATE!"] call ALIVE_fnc_dumpMPH;
+        [_state,"houses",_data] call ALiVE_fnc_HashSet;
+
+        //_state call ALIVE_fnc_inspectHash;
+
+        [_logic,"state",_state] call ALiVE_fnc_CQB;
     };
 } foreach (ALiVE_CQB getVariable ["instances",[]]);
 {[_x,"active",true] call ALiVE_fnc_CQB} foreach _instances;

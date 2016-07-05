@@ -49,33 +49,33 @@ DEFAULT_PARAM(2,_args,nil);
 
 switch(_operation) do {
             case "init": {                
-		/*
-		MODEL - no visual just reference data
-		- server side object only
-		- enabled/disabled
-		*/
-		
-		// Ensure only one module is used
-		if (isServer && !(isNil "ALIVE_convoy") exitWith {
-			ERROR_WITH_TITLE(str _logic, localize "STR_ALIVE_CONVOY_ERROR1");
-		};
-		if (isServer) then {
-			MOD(convoy) = _logic;
-			publicVariable QMOD(convoy);
+        /*
+        MODEL - no visual just reference data
+        - server side object only
+        - enabled/disabled
+        */
+        
+        // Ensure only one module is used
+        if (isServer && !(isNil "ALIVE_convoy") exitWith {
+            ERROR_WITH_TITLE(str _logic, localize "STR_ALIVE_CONVOY_ERROR1");
+        };
+        if (isServer) then {
+            MOD(convoy) = _logic;
+            publicVariable QMOD(convoy);
 
- 			 //Initialise module game logic on all localities (clientside spawn)
+              //Initialise module game logic on all localities (clientside spawn)
                 _logic setVariable ["super", SUPERCLASS];
                 _logic setVariable ["class", ALIVE_fnc_CONVOY];
                 _logic setVariable ["init", true, true];
             
 
                 _CONVOY_intensity = _logic getvariable ["conv_intensity_setting",1];
-				if (typename (_CONVOY_intensity) == "STRING") then {_CONVOY_intensity = call compile _CONVOY_intensity};
+                if (typename (_CONVOY_intensity) == "STRING") then {_CONVOY_intensity = call compile _CONVOY_intensity};
             CONVOY_intensity = _CONVOY_intensity;
 diag_log format["Convoy Instensity: %1", CONVOY_intensity];
 
                  CONVOY_safearea = _logic getvariable ["conv_safearea_setting",2000];
-				if (typename (CONVOY_safearea) == "STRING") then {CONVOY_safearea = call compile CONVOY_safearea};
+                if (typename (CONVOY_safearea) == "STRING") then {CONVOY_safearea = call compile CONVOY_safearea};
                 _logic setVariable ["convoy_safearea", CONVOY_safearea];
 diag_log format["Safe Area: %1", CONVOY_safearea];
 
@@ -87,44 +87,44 @@ diag_log format["FActions: %1", factionsConvoy];
                 if (typename (CONVOY_GLOBALDEBUG) == "STRING") then {CONVOY_GLOBALDEBUG = call compile CONVOY_GLOBALDEBUG};
 diag_log format["DEBUG: %1", CONVOY_GLOBALDEBUG];
 
-               	if (isServer && {!(isNil QMOD(CONVOY))}) exitWith {
+                   if (isServer && {!(isNil QMOD(CONVOY))}) exitWith {
                         ERROR_WITH_TITLE(str _logic, localize "STR_ALIVE_CONVOY_ERROR1");
                
 } else {
-			// if client clean up client side game logics as they will transfer
-			// to servers on client disconnect
-			// deleteVehicle _logic;
-		};
+            // if client clean up client side game logics as they will transfer
+            // to servers on client disconnect
+            // deleteVehicle _logic;
+        };
 
-			// and wait for game logic to initialise
-		// TODO merge into lazy evaluation
-		waitUntil {!isNil QMOD(convoy)};
-		waitUntil {MOD(convoy) getVariable ["init", false]};        
+            // and wait for game logic to initialise
+        // TODO merge into lazy evaluation
+        waitUntil {!isNil QMOD(convoy)};
+        waitUntil {MOD(convoy) getVariable ["init", false]};        
 
-		/*
-		VIEW - purely visual
-		- initialise 
-		*/
-		// Waituntil {!(isnil "REVIVE_DEBUG")};
-		  if(!isDedicated && !isHC) then {
-		call ALIVE_fnc_startConvoy;
-		  };
-
-
+        /*
+        VIEW - purely visual
+        - initialise 
+        */
+        // Waituntil {!(isnil "REVIVE_DEBUG")};
+          if(!isDedicated && !isHC) then {
+        call ALIVE_fnc_startConvoy;
+          };
 
 
 
-     	case "destroy": {
-		if (isServer) then {
-			// if server
-			_logic setVariable ["super", nil];
-			_logic setVariable ["class", nil];
-			_logic setVariable ["init", nil];
-			// and publicVariable to clients
-			MOD(convoy) = _logic;
-			publicVariable QMOD(convoy);
-		};
-	};
+
+
+         case "destroy": {
+        if (isServer) then {
+            // if server
+            _logic setVariable ["super", nil];
+            _logic setVariable ["class", nil];
+            _logic setVariable ["init", nil];
+            // and publicVariable to clients
+            MOD(convoy) = _logic;
+            publicVariable QMOD(convoy);
+        };
+    };
         default {
                 private["_err"];
                 _err = format["%1 does not support %2 operation", _logic, _operation];

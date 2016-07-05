@@ -5,27 +5,27 @@ SCRIPT(realTimeToDTG);
 Function: ALiVE_fnc_realTimeToDTG
 
 Description:
-	Formats a real time (from server) to a DTG specification
-	
+    Formats a real time (from server) to a DTG specification
+
 Parameters:
-	None
+    None
 
 Returns:
-	Formatted date [string]
+    Formatted date [string]
 
 Attributes:
-	N/A
+    N/A
 
 Examples:
-	N/A
+    N/A
 
 See Also:
 
 Notes:
-	1. Format is DTG atm
-	
+    1. Format is DTG atm
+
 Author:
-	Naught
+    Naught
 ---------------------------------------------------------------------------- */
 
 private ["_result","_year","_month","_day","_hour","_min","_datet"];

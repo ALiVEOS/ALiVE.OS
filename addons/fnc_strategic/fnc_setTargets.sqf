@@ -40,9 +40,9 @@ params [
 ["Setting targets"] call ALIVE_fnc_dump;
 
 {
-	[_x, "type", _type] call ALIVE_fnc_cluster;
-	[_x, "priority", _priority] call ALIVE_fnc_cluster;
-	[_x, "debugColor", _debugColour] call ALIVE_fnc_hashSet;
+    [_x, "type", _type] call ALIVE_fnc_cluster;
+    [_x, "priority", _priority] call ALIVE_fnc_cluster;
+    [_x, "debugColor", _debugColour] call ALIVE_fnc_hashSet;
 } forEach _clusters;
 
 ["Targets Set"] call ALIVE_fnc_dump;

@@ -1,22 +1,22 @@
 class cfgFunctions {
-	class PREFIX {
-		class COMPONENT {
-			class civilianPopulationSystemInit {
-				description = "civilianPopulationSystemInit";
-				file = "\x\alive\addons\amb_civ_population\fnc_civilianPopulationSystemInit.sqf";
-				recompile = RECOMPILE;
-			};
-			class civilianPopulationSystem {
-				description = "civilianPopulationSystem";
-				file = "\x\alive\addons\amb_civ_population\fnc_civilianPopulationSystem.sqf";
-				recompile = RECOMPILE;
-			};
+    class PREFIX {
+        class COMPONENT {
+            class civilianPopulationSystemInit {
+                description = "civilianPopulationSystemInit";
+                file = "\x\alive\addons\amb_civ_population\fnc_civilianPopulationSystemInit.sqf";
+                recompile = RECOMPILE;
+            };
+            class civilianPopulationSystem {
+                description = "civilianPopulationSystem";
+                file = "\x\alive\addons\amb_civ_population\fnc_civilianPopulationSystem.sqf";
+                recompile = RECOMPILE;
+            };
             class civilianPopulationMenuDef {
                 description = "civilianPopulationMenuDef";
                 file = "\x\alive\addons\amb_civ_population\fnc_civilianPopulationMenuDef.sqf";
                 recompile = RECOMPILE;
             };
-			class clusterHandler {
+            class clusterHandler {
                 description = "clusterHandler";
                 file = "\x\alive\addons\amb_civ_population\fnc_clusterHandler.sqf";
                 recompile = RECOMPILE;
@@ -101,6 +101,6 @@ class cfgFunctions {
                 file = "\x\alive\addons\amb_civ_population\fnc_selectRoleAction.sqf";
                 recompile = RECOMPILE;
             };
-		};
-	};
+        };
+    };
 };

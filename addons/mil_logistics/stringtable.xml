@@ -3,16 +3,16 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_ML">
-	<Original>Military Logistics</Original>
+    <Original>Military Logistics</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_COMMENT">
-	<Original>Strategic Military Logistics</Original>
+    <Original>Strategic Military Logistics</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_DEBUG">
-	<Original>Enable Debug:</Original>
+    <Original>Enable Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_DEBUG_COMMENT">
-	<Original>Enables ML Module Debug</Original>
+    <Original>Enables ML Module Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_ML_PERSISTENT">
     <Original>Persistent:</Original>

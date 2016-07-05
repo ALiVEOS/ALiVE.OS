@@ -9,7 +9,7 @@ SCRIPT(test-strategic);
 LOG("=== Testing Strategic ===");
 
 {
-	call compile preprocessFileLineNumbers format ["\x\alive\addons\fnc_strategic\tests\test_%1.sqf", _x];
+    call compile preprocessFileLineNumbers format ["\x\alive\addons\fnc_strategic\tests\test_%1.sqf", _x];
 } forEach TESTS;
 
 nil;

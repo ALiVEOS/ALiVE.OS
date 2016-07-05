@@ -48,9 +48,9 @@ _logic = nil;
 
 STAT("Create Profile Handler instance");
 if(isServer) then {
-	ALIVE_profileHandler = [nil, "create"] call ALIVE_fnc_profileHandler;
-	TEST_LOGIC = ALIVE_profileHandler;
-	publicVariable "TEST_LOGIC";
+    ALIVE_profileHandler = [nil, "create"] call ALIVE_fnc_profileHandler;
+    TEST_LOGIC = ALIVE_profileHandler;
+    publicVariable "TEST_LOGIC";
 };
 
 
@@ -298,11 +298,11 @@ sleep 10;
 
 STAT("Destroy old Profile Handler instance");
 if(isServer) then {
-	[_logic, "destroy"] call ALIVE_fnc_profileHandler;
-	TEST_LOGIC = nil;
-	publicVariable "TEST_LOGIC";
+    [_logic, "destroy"] call ALIVE_fnc_profileHandler;
+    TEST_LOGIC = nil;
+    publicVariable "TEST_LOGIC";
 } else {
-	waitUntil{isNull TEST_LOGIC};
+    waitUntil{isNull TEST_LOGIC};
 };
 
 nil;

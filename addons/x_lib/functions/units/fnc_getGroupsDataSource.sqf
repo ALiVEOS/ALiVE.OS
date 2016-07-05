@@ -20,7 +20,7 @@ _datasource = call ALiVE_fnc_getGroupsDataSource
 
 Author:
 ARJay
- 
+
 Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
@@ -38,28 +38,28 @@ _groups = allGroups;
 {
     if !(isnull _x) then {
 
-	    _leaderSide = (faction leader _x) call ALiVE_fnc_FactionSide;
-	    _leaderSideNumber = [_leaderSide] call ALIVE_fnc_sideObjectToNumber;
+        _leaderSide = (faction leader _x) call ALiVE_fnc_FactionSide;
+        _leaderSideNumber = [_leaderSide] call ALIVE_fnc_sideObjectToNumber;
 
-	    if(_sideNumber == _leaderSideNumber) then {
+        if(_sideNumber == _leaderSideNumber) then {
 
-	        _row = [];
-	        _labels = [];
+            _row = [];
+            _labels = [];
 
-	        _labels pushback (format['%1',_x]);
-	        _labels pushback ('----------------------');
-	        _labels pushback ('----------');
-	        _labels pushback ('----');
+            _labels pushback (format['%1',_x]);
+            _labels pushback ('----------------------');
+            _labels pushback ('----------');
+            _labels pushback ('----');
 
-	        _row pushback (_labels);
+            _row pushback (_labels);
 
-	        _rows pushback (_row);
+            _rows pushback (_row);
 
-	        _values pushback (_x);
+            _values pushback (_x);
 
-	        {
+            {
 
-            	if(alive _x) then {
+                if(alive _x) then {
 
                     _row = [];
                     _labels = [];
@@ -109,9 +109,9 @@ _groups = allGroups;
 
                     _values pushback (_x);
 
-            	};
+                };
             } forEach units _x;
-	    };
+        };
     };
 } foreach _groups;
 

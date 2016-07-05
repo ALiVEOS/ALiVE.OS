@@ -29,8 +29,8 @@ private ["_class","_hasArtyScanner","_maxElev"];
 _class = _this select 0;
 
 switch (typeName _class) do {
-	case ("OBJECT") : {_class = typeOf _class};
-	case ("STRING") : {_class = _class};
+    case ("OBJECT") : {_class = typeOf _class};
+    case ("STRING") : {_class = _class};
 };
 
 _maxElev = getNumber(configfile >> "CfgVehicles" >> _class >> "Turrets" >> "MainTurret" >> "maxElev");

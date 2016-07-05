@@ -21,54 +21,54 @@ diag_log ["TEST("+str player+": "+msg]; \
 titleText [msg,"PLAIN"]
 
 #define CREATE_TEST_LOGIC if(isServer) then { \
-	_logic = [nil, "create"] call ALIVE_fnc_cluster; \
-	TEST_LOGIC = _logic; \
-	publicVariable "TEST_LOGIC"; \
+    _logic = [nil, "create"] call ALIVE_fnc_cluster; \
+    TEST_LOGIC = _logic; \
+    publicVariable "TEST_LOGIC"; \
 }; \
 waitUntil{!isNil "TEST_LOGIC"}; \
 [TEST_LOGIC, "debug", true] call ALIVE_fnc_cluster;
 
 #define CREATE_TEST_LOGIC2 if(isServer) then { \
-	_logic = [nil, "create"] call ALIVE_fnc_cluster; \
-	TEST_LOGIC2 = _logic; \
-	publicVariable "TEST_LOGIC2"; \
+    _logic = [nil, "create"] call ALIVE_fnc_cluster; \
+    TEST_LOGIC2 = _logic; \
+    publicVariable "TEST_LOGIC2"; \
 }; \
 waitUntil{!isNil "TEST_LOGIC2"}; \
 [TEST_LOGIC2, "debug", true] call ALIVE_fnc_cluster;
 
 #define CREATE_TEST_LOGIC3 if(isServer) then { \
-	_logic = [nil, "create"] call ALIVE_fnc_cluster; \
-	TEST_LOGIC3 = _logic; \
-	publicVariable "TEST_LOGIC3"; \
+    _logic = [nil, "create"] call ALIVE_fnc_cluster; \
+    TEST_LOGIC3 = _logic; \
+    publicVariable "TEST_LOGIC3"; \
 }; \
 waitUntil{!isNil "TEST_LOGIC3"}; \
 [TEST_LOGIC3, "debug", true] call ALIVE_fnc_cluster;
 
 #define DELETE_TEST_LOGIC if(isServer) then { \
-	[TEST_LOGIC, "destroy"] call ALIVE_fnc_cluster; \
-	TEST_LOGIC = nil; \
-	publicVariable "TEST_LOGIC"; \
+    [TEST_LOGIC, "destroy"] call ALIVE_fnc_cluster; \
+    TEST_LOGIC = nil; \
+    publicVariable "TEST_LOGIC"; \
 } else { \
-	STAT("Confirm destroy instance"); \
-	waitUntil{isNull TEST_LOGIC}; \
+    STAT("Confirm destroy instance"); \
+    waitUntil{isNull TEST_LOGIC}; \
 };
 
 #define DELETE_TEST_LOGIC2 if(isServer) then { \
-	[TEST_LOGIC2, "destroy"] call ALIVE_fnc_cluster; \
-	TEST_LOGIC2 = nil; \
-	publicVariable "TEST_LOGIC2"; \
+    [TEST_LOGIC2, "destroy"] call ALIVE_fnc_cluster; \
+    TEST_LOGIC2 = nil; \
+    publicVariable "TEST_LOGIC2"; \
 } else { \
-	STAT("Confirm destroy instance"); \
-	waitUntil{isNull TEST_LOGIC2}; \
+    STAT("Confirm destroy instance"); \
+    waitUntil{isNull TEST_LOGIC2}; \
 };
 
 #define DELETE_TEST_LOGIC3 if(isServer) then { \
-	[TEST_LOGIC3, "destroy"] call ALIVE_fnc_cluster; \
-	TEST_LOGIC3 = nil; \
-	publicVariable "TEST_LOGIC3"; \
+    [TEST_LOGIC3, "destroy"] call ALIVE_fnc_cluster; \
+    TEST_LOGIC3 = nil; \
+    publicVariable "TEST_LOGIC3"; \
 } else { \
-	STAT("Confirm destroy instance"); \
-	waitUntil{isNull TEST_LOGIC3}; \
+    STAT("Confirm destroy instance"); \
+    waitUntil{isNull TEST_LOGIC3}; \
 };
 
 _amo = allMissionObjects "";
@@ -77,14 +77,14 @@ STAT("Create mock objects");
 _obj_array = [];
 createCenter sideLogic;
 {
-	_obj_array set [count _obj_array, (createGroup sideLogic) createUnit ["LOGIC", (player modelToWorld _x), [], 0, "NONE"]];
+    _obj_array set [count _obj_array, (createGroup sideLogic) createUnit ["LOGIC", (player modelToWorld _x), [], 0, "NONE"]];
 } forEach [
-	[-300,100],
-	[-200,300],
-	[-100,400],
-	[0,500],
-	[100,700],
-	[200,500]
+    [-300,100],
+    [-200,300],
+    [-100,400],
+    [0,500],
+    [100,700],
+    [200,500]
 ];
 _err = "create mock objects";
 ASSERT_DEFINED("_obj_array",_err);
@@ -101,14 +101,14 @@ STAT("Create Seperated Clusters");
 CREATE_TEST_LOGIC
 CREATE_TEST_LOGIC2
 [TEST_LOGIC, "nodes", [
-	_obj_array select 0,
-	_obj_array select 1,
-	_obj_array select 2
+    _obj_array select 0,
+    _obj_array select 1,
+    _obj_array select 2
 ]] call ALIVE_fnc_cluster;
 [TEST_LOGIC2, "nodes", [
-	_obj_array select 3,
-	_obj_array select 4,
-	_obj_array select 5
+    _obj_array select 3,
+    _obj_array select 4,
+    _obj_array select 5
 ]] call ALIVE_fnc_cluster;
 
 STAT("ConsolidateClusters function");
@@ -131,14 +131,14 @@ STAT("Create Seperated Clusters 2");
 CREATE_TEST_LOGIC
 CREATE_TEST_LOGIC2
 [TEST_LOGIC, "nodes", [
-	_obj_array select 0,
-	_obj_array select 1,
-	_obj_array select 2
+    _obj_array select 0,
+    _obj_array select 1,
+    _obj_array select 2
 ]] call ALIVE_fnc_cluster;
 [TEST_LOGIC2, "nodes", [
-	_obj_array select 3,
-	_obj_array select 4,
-	_obj_array select 5
+    _obj_array select 3,
+    _obj_array select 4,
+    _obj_array select 5
 ]] call ALIVE_fnc_cluster;
 
 STAT("ConsolidateClusters function");
@@ -163,19 +163,19 @@ CREATE_TEST_LOGIC
 CREATE_TEST_LOGIC2
 CREATE_TEST_LOGIC3
 [TEST_LOGIC, "nodes", [
-	_obj_array select 0,
-	_obj_array select 1,
-	_obj_array select 2
+    _obj_array select 0,
+    _obj_array select 1,
+    _obj_array select 2
 ]] call ALIVE_fnc_cluster;
 [TEST_LOGIC2, "nodes", [
-	_obj_array select 2,
-	_obj_array select 3,
-	_obj_array select 4
+    _obj_array select 2,
+    _obj_array select 3,
+    _obj_array select 4
 ]] call ALIVE_fnc_cluster;
 [TEST_LOGIC3, "nodes", [
-	_obj_array select 3,
-	_obj_array select 4,
-	_obj_array select 5
+    _obj_array select 3,
+    _obj_array select 4,
+    _obj_array select 5
 ]] call ALIVE_fnc_cluster;
 
 STAT("ConsolidateClusters function");
@@ -196,19 +196,19 @@ CREATE_TEST_LOGIC
 CREATE_TEST_LOGIC2
 CREATE_TEST_LOGIC3
 [TEST_LOGIC, "nodes", [
-	_obj_array select 0,
-	_obj_array select 1,
-	_obj_array select 2
+    _obj_array select 0,
+    _obj_array select 1,
+    _obj_array select 2
 ]] call ALIVE_fnc_cluster;
 [TEST_LOGIC2, "nodes", [
-	_obj_array select 2,
-	_obj_array select 3,
-	_obj_array select 4
+    _obj_array select 2,
+    _obj_array select 3,
+    _obj_array select 4
 ]] call ALIVE_fnc_cluster;
 [TEST_LOGIC3, "nodes", [
-	_obj_array select 3,
-	_obj_array select 4,
-	_obj_array select 5
+    _obj_array select 3,
+    _obj_array select 4,
+    _obj_array select 5
 ]] call ALIVE_fnc_cluster;
 
 STAT("ConsolidateClusters function");
@@ -228,14 +228,14 @@ STAT("Create Engulfed Clusters");
 CREATE_TEST_LOGIC
 CREATE_TEST_LOGIC2
 [TEST_LOGIC, "nodes", [
-	_obj_array select 0,
-	_obj_array select 4,
-	_obj_array select 5
+    _obj_array select 0,
+    _obj_array select 4,
+    _obj_array select 5
 ]] call ALIVE_fnc_cluster;
 [TEST_LOGIC2, "nodes", [
-	_obj_array select 1,
-	_obj_array select 2,
-	_obj_array select 3
+    _obj_array select 1,
+    _obj_array select 2,
+    _obj_array select 3
 ]] call ALIVE_fnc_cluster;
 
 STAT("ConsolidateClusters function");
@@ -257,14 +257,14 @@ STAT("Create Engulfed Clusters 2");
 CREATE_TEST_LOGIC
 CREATE_TEST_LOGIC2
 [TEST_LOGIC, "nodes", [
-	_obj_array select 0,
-	_obj_array select 4,
-	_obj_array select 5
+    _obj_array select 0,
+    _obj_array select 4,
+    _obj_array select 5
 ]] call ALIVE_fnc_cluster;
 [TEST_LOGIC2, "nodes", [
-	_obj_array select 1,
-	_obj_array select 2,
-	_obj_array select 3
+    _obj_array select 1,
+    _obj_array select 2,
+    _obj_array select 3
 ]] call ALIVE_fnc_cluster;
 
 STAT("ConsolidateClusters function");
@@ -286,14 +286,14 @@ STAT("Create Partial Overlapped Clusters");
 CREATE_TEST_LOGIC
 CREATE_TEST_LOGIC2
 [TEST_LOGIC, "nodes", [
-	_obj_array select 0,
-	_obj_array select 1,
-	_obj_array select 3
+    _obj_array select 0,
+    _obj_array select 1,
+    _obj_array select 3
 ]] call ALIVE_fnc_cluster;
 [TEST_LOGIC2, "nodes", [
-	_obj_array select 2,
-	_obj_array select 4,
-	_obj_array select 5
+    _obj_array select 2,
+    _obj_array select 4,
+    _obj_array select 5
 ]] call ALIVE_fnc_cluster;
 
 STAT("ConsolidateClusters function");
@@ -315,14 +315,14 @@ STAT("Create Partial Overlapped Clusters 2");
 CREATE_TEST_LOGIC
 CREATE_TEST_LOGIC2
 [TEST_LOGIC, "nodes", [
-	_obj_array select 0,
-	_obj_array select 1,
-	_obj_array select 3
+    _obj_array select 0,
+    _obj_array select 1,
+    _obj_array select 3
 ]] call ALIVE_fnc_cluster;
 [TEST_LOGIC2, "nodes", [
-	_obj_array select 2,
-	_obj_array select 4,
-	_obj_array select 5
+    _obj_array select 2,
+    _obj_array select 4,
+    _obj_array select 5
 ]] call ALIVE_fnc_cluster;
 
 STAT("ConsolidateClusters function");
@@ -344,14 +344,14 @@ STAT("Create Majority Overlapped Clusters");
 CREATE_TEST_LOGIC
 CREATE_TEST_LOGIC2
 [TEST_LOGIC, "nodes", [
-	_obj_array select 0,
-	_obj_array select 1,
-	_obj_array select 5
+    _obj_array select 0,
+    _obj_array select 1,
+    _obj_array select 5
 ]] call ALIVE_fnc_cluster;
 [TEST_LOGIC2, "nodes", [
-	_obj_array select 2,
-	_obj_array select 3,
-	_obj_array select 4
+    _obj_array select 2,
+    _obj_array select 3,
+    _obj_array select 4
 ]] call ALIVE_fnc_cluster;
 
 STAT("ConsolidateClusters function");
@@ -373,14 +373,14 @@ STAT("Create Majority Overlapped Clusters 2");
 CREATE_TEST_LOGIC
 CREATE_TEST_LOGIC2
 [TEST_LOGIC, "nodes", [
-	_obj_array select 0,
-	_obj_array select 1,
-	_obj_array select 5
+    _obj_array select 0,
+    _obj_array select 1,
+    _obj_array select 5
 ]] call ALIVE_fnc_cluster;
 [TEST_LOGIC2, "nodes", [
-	_obj_array select 2,
-	_obj_array select 3,
-	_obj_array select 4
+    _obj_array select 2,
+    _obj_array select 3,
+    _obj_array select 4
 ]] call ALIVE_fnc_cluster;
 
 STAT("ConsolidateClusters function");
@@ -400,8 +400,8 @@ DELETE_TEST_LOGIC2
 
 STAT("Clean up markers");
 {
-	deleteMarker str _x;
-	deleteVehicle _x;
+    deleteMarker str _x;
+    deleteVehicle _x;
 } forEach _obj_array;
 
 diag_log (allMissionObjects "") - _amo;

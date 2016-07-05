@@ -13,7 +13,7 @@ Array - Returns a response error or data in the form of key value pairs
 
 Examples:
 (begin example)
-	[ _logic, [ _module, [_uids] ] ] call ALIVE_fnc_readData;
+    [ _logic, [ _module, [_uids] ] ] call ALIVE_fnc_readData;
 (end)
 
 Author:
@@ -47,9 +47,9 @@ _cmd = format ["SendBulkJSON ['POST','%1'", _module];
 
 // Add mission key to each doc
 {
-	private ["_temp"];
-	_temp = _key + "-" + _x;
-	_dockeys set [_forEachIndex, _temp];
+    private ["_temp"];
+    _temp = _key + "-" + _x;
+    _dockeys set [_forEachIndex, _temp];
 } foreach _uids;
 
 // Use the index array to create a JSON string of doc ids
@@ -76,33 +76,33 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 // From response create key/value pair arrays
 if (_response == "READY" || _response == "OK") then {
 
-	// Now poll data stack until all documents are collected
-	private ["_data","_temp"];
-	_data = "";
-	_temp = [] call ALiVE_fnc_hashCreate;
-	_json = format ["GetBulkJSON ['%1']", _module];
-	While {_data != "END"} do {
-		private ["_tempDoc","_id"];
-		_data = [_json] call ALIVE_fnc_sendToPlugIn;
-		TRACE_1("COUCH DATA", _data);
-		if (_data == "SYS_DATA_ERROR") exitWith {diag_log format["There was an error loading data! Report it to ALiVE Devs. Module: %1, Key: %2, Records: %3",_module, _key, _uids];};
-			if (_data != "END") then{
-				_tempDoc = [_logic, "restore", [_data]] call ALIVE_fnc_Data;
-				//["TEMPDOC DUMP %1",_tempDoc] call ALiVE_fnc_dump;
-				_id = [_tempDoc,"_id"] call ALiVE_fnc_hashGet;
-				[_temp, _id, _tempDoc] call ALiVE_fnc_hashSet;
-			};
-	};
+    // Now poll data stack until all documents are collected
+    private ["_data","_temp"];
+    _data = "";
+    _temp = [] call ALiVE_fnc_hashCreate;
+    _json = format ["GetBulkJSON ['%1']", _module];
+    While {_data != "END"} do {
+        private ["_tempDoc","_id"];
+        _data = [_json] call ALIVE_fnc_sendToPlugIn;
+        TRACE_1("COUCH DATA", _data);
+        if (_data == "SYS_DATA_ERROR") exitWith {diag_log format["There was an error loading data! Report it to ALiVE Devs. Module: %1, Key: %2, Records: %3",_module, _key, _uids];};
+            if (_data != "END") then{
+                _tempDoc = [_logic, "restore", [_data]] call ALIVE_fnc_Data;
+                //["TEMPDOC DUMP %1",_tempDoc] call ALiVE_fnc_dump;
+                _id = [_tempDoc,"_id"] call ALiVE_fnc_hashGet;
+                [_temp, _id, _tempDoc] call ALiVE_fnc_hashSet;
+            };
+    };
 
-	// Restore original module index (without mission key) for each document
-	_result = [] call ALiVE_fnc_hashCreate;
-	{
-		private ["_mkey","_record"];
-		_mkey = _key + "-" + _x;
+    // Restore original module index (without mission key) for each document
+    _result = [] call ALiVE_fnc_hashCreate;
+    {
+        private ["_mkey","_record"];
+        _mkey = _key + "-" + _x;
 
-		_record = [_temp, _mkey] call ALiVE_fnc_hashGet;
-		if!(isNil "_record") then {
-		    [_result, _x, _record] call ALiVE_fnc_hashSet;
+        _record = [_temp, _mkey] call ALiVE_fnc_hashGet;
+        if!(isNil "_record") then {
+            [_result, _x, _record] call ALiVE_fnc_hashSet;
         }else{
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
@@ -111,27 +111,27 @@ if (_response == "READY" || _response == "OK") then {
 
             (_temp select 1) call ALIVE_fnc_inspectArray;
         };
-	} foreach _uids;
+    } foreach _uids;
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-	    ["ALiVE SYS_DATA_COUCHDB - BULK READ RESULT: %1",[str(_result)] call CBA_fnc_strLen] call ALIVE_fnc_dump;
+        ["ALiVE SYS_DATA_COUCHDB - BULK READ RESULT: %1",[str(_result)] call CBA_fnc_strLen] call ALIVE_fnc_dump;
     };
 
 
 } else {
-	_result = _response;
+    _result = _response;
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-	    ["ALiVE SYS_DATA_COUCHDB - BULK READ RESULT: %1",_result] call ALIVE_fnc_dump;
+        ["ALiVE SYS_DATA_COUCHDB - BULK READ RESULT: %1",_result] call ALIVE_fnc_dump;
     };
 };
 
 
 /*
-	// Handle data error
-	private["_err"];
-	_err = format["The Couch database %1 did not respond with %2. The data returned was: %3", _databaseName, typeName _result, _result];
-	ERROR_WITH_TITLE(str _logic, _err);
+    // Handle data error
+    private["_err"];
+    _err = format["The Couch database %1 did not respond with %2. The data returned was: %3", _databaseName, typeName _result, _result];
+    ERROR_WITH_TITLE(str _logic, _err);
 */
 
 _result;

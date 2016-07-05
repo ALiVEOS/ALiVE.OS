@@ -8,8 +8,8 @@ class CfgVehicles {
                 author = MODULE_AUTHOR;
                 functionPriority = 120;
                 isGlobal = 2;
-				icon = "x\alive\addons\mil_cqb\icon_mil_cqb.paa";
-				picture = "x\alive\addons\mil_cqb\icon_mil_cqb.paa";
+                icon = "x\alive\addons\mil_cqb\icon_mil_cqb.paa";
+                picture = "x\alive\addons\mil_cqb\icon_mil_cqb.paa";
                 class Arguments
                 {
                         class CQB_debug_setting
@@ -290,40 +290,40 @@ class CfgVehicles {
                         };
                 };
                 class ModuleDescription
-				{
-					//description = "$STR_ALIVE_CQB_COMMENT"; // Short description, will be formatted as structured text
-					description[] = {
-							"$STR_ALIVE_CQB_COMMENT",
-							"",
-							"$STR_ALIVE_CQB_USAGE"
-					};
-					sync[] = {"ALiVE_civ_placement","ALiVE_mil_placement"}; // Array of synced entities (can contain base classes)
+                {
+                    //description = "$STR_ALIVE_CQB_COMMENT"; // Short description, will be formatted as structured text
+                    description[] = {
+                            "$STR_ALIVE_CQB_COMMENT",
+                            "",
+                            "$STR_ALIVE_CQB_USAGE"
+                    };
+                    sync[] = {"ALiVE_civ_placement","ALiVE_mil_placement"}; // Array of synced entities (can contain base classes)
 
-					class ALiVE_civ_placement
-					{
-						description[] = { // Multi-line descriptions are supported
-							"$STR_ALIVE_CP_COMMENT",
-							"",
-							"$STR_ALIVE_CP_USAGE"
-						};
-						position = 0; // Position is taken into effect
-						direction = 0; // Direction is taken into effect
-						optional = 1; // Synced entity is optional
-						duplicate = 1; // Multiple entities of this type can be synced
-					};
-					class ALiVE_mil_placement
-					{
-						description[] = { // Multi-line descriptions are supported
-							"$STR_ALIVE_MP_COMMENT",
-							"",
-							"$STR_ALIVE_MP_USAGE"
-						};
-						position = 0; // Position is taken into effect
-						direction = 0; // Direction is taken into effect
-						optional = 1; // Synced entity is optional
-						duplicate = 1; // Multiple entities of this type can be synced
-					};
-				};
+                    class ALiVE_civ_placement
+                    {
+                        description[] = { // Multi-line descriptions are supported
+                            "$STR_ALIVE_CP_COMMENT",
+                            "",
+                            "$STR_ALIVE_CP_USAGE"
+                        };
+                        position = 0; // Position is taken into effect
+                        direction = 0; // Direction is taken into effect
+                        optional = 1; // Synced entity is optional
+                        duplicate = 1; // Multiple entities of this type can be synced
+                    };
+                    class ALiVE_mil_placement
+                    {
+                        description[] = { // Multi-line descriptions are supported
+                            "$STR_ALIVE_MP_COMMENT",
+                            "",
+                            "$STR_ALIVE_MP_USAGE"
+                        };
+                        position = 0; // Position is taken into effect
+                        direction = 0; // Direction is taken into effect
+                        optional = 1; // Synced entity is optional
+                        duplicate = 1; // Multiple entities of this type can be synced
+                    };
+                };
 
         };
 };

@@ -33,19 +33,19 @@ if (count _this == 4) then {_this set [count _this, true]};
 
 // convert any single key items (eg: DIK_A) into a key array [key, [shift,ctrl,alt]]
 for "_i" from 0 to (count (_this select _flexiMenu_typeMenuSources_ID_DIKCodes) - 1) do {
-	_key = (_this select _flexiMenu_typeMenuSources_ID_DIKCodes) select _i;
-	// if not an already an array (eg: simple DIK integer)
-	if (typeName _key != typeName []) then {
-		_key = [_key, [false,false,false]];
-		(_this select _flexiMenu_typeMenuSources_ID_DIKCodes) set [_i, _key];
-	};
+    _key = (_this select _flexiMenu_typeMenuSources_ID_DIKCodes) select _i;
+    // if not an already an array (eg: simple DIK integer)
+    if (typeName _key != typeName []) then {
+        _key = [_key, [false,false,false]];
+        (_this select _flexiMenu_typeMenuSources_ID_DIKCodes) set [_i, _key];
+    };
 };
 
 TRACE_2("",_key,_flexiMenu_typeMenuSources_ID_DIKCodes);
 
 // Check for duplicate record and then warn and ignore.
 if (({str _x == str _this} count (_this select _flexiMenu_typeMenuSources_ID_DIKCodes)) > 0) exitWith {
-	diag_log format ["Warning: duplicate record, ignoring. %1 (%2)", _this, __FILE__];
+    diag_log format ["Warning: duplicate record, ignoring. %1 (%2)", _this, __FILE__];
 };
 
 GVAR(typeMenuSources) set [count GVAR(typeMenuSources), _this];
@@ -54,7 +54,7 @@ GVAR(typeMenuSources) set [count GVAR(typeMenuSources), _this];
 // reverse the order of sorting, so highest priority is at the top
 _list = [];
 for "_e" from (count GVAR(typeMenuSources) - 1) to 0 step -1 do {
-	_list set [count _list, GVAR(typeMenuSources) select _e];
+    _list set [count _list, GVAR(typeMenuSources) select _e];
 };
 GVAR(typeMenuSources) = _list;
 diag_log format["FlexiMenu ADD: %1", QUOTE(GVAR(display))];

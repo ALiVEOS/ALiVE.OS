@@ -18,10 +18,10 @@ Rules: OPCOM looks for strategic locations within 2km sq marker zone, defined re
 - Identify top level of hierarchy - Btl Co, Coy Co
 
 - Within logic placement, where is nearest:
-	a3\structures_f\mil\cargo\cargo_hq_v1_f.p3d
-	a3\structures_f\mil\cargo\cargo_hq_v2_f.p3d
-	a3\structures_f\mil\offices\miloffices_v1_f.p3d
-	- If greater than 1km(?) setup HQ composition
+    a3\structures_f\mil\cargo\cargo_hq_v1_f.p3d
+    a3\structures_f\mil\cargo\cargo_hq_v2_f.p3d
+    a3\structures_f\mil\offices\miloffices_v1_f.p3d
+    - If greater than 1km(?) setup HQ composition
 
 
 

@@ -52,24 +52,24 @@ if(count _road > 1) then
 
     _findRecurse = {
 
-    	_iterationCount = _iterationCount + 1;
+        _iterationCount = _iterationCount + 1;
 
-    	_road = _this select 0;
-    	_series = _this select 1;
+        _road = _this select 0;
+        _series = _this select 1;
 
-    	if!(_road in _series) then {
-    	    _series pushback _road;
-    	};
+        if!(_road in _series) then {
+            _series pushback _road;
+        };
 
-    	if(count _series == _positionCount || _iterationCount == _positionCount) then {
-    	    breakTo "main";
-    	};
+        if(count _series == _positionCount || _iterationCount == _positionCount) then {
+            breakTo "main";
+        };
 
-    	_connectedRoads = roadsConnectedTo _road;
+        _connectedRoads = roadsConnectedTo _road;
 
-    	{
-    	    [_x,_series] call _findRecurse;
-    	} forEach _connectedRoads;
+        {
+            [_x,_series] call _findRecurse;
+        } forEach _connectedRoads;
 
     };
 

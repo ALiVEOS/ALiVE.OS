@@ -120,7 +120,7 @@ _clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 "MO - Locations Completed" call ALiVE_fnc_logger;
 
 {
-	[_x, "debug", true] call ALIVE_fnc_cluster;
+    [_x, "debug", true] call ALIVE_fnc_cluster;
 } forEach _clusters;
 
 
@@ -145,9 +145,9 @@ _clusterCount = _clusterCount + count _clusters;
 
 
 if(count _clusters_copy_hq > 0) then {
-	_objectivesName = "ALIVE_clustersMilHQ";
-	_result = [_clusters_copy_hq, _objectivesName, _clusterCount,"mil"] call ALIVE_fnc_auto_staticClusterOutput;
-	diag_log _objectivesName;
+    _objectivesName = "ALIVE_clustersMilHQ";
+    _result = [_clusters_copy_hq, _objectivesName, _clusterCount,"mil"] call ALIVE_fnc_auto_staticClusterOutput;
+    diag_log _objectivesName;
 }else{
     _objectivesName = "ALIVE_clustersMilHQ";
     "ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"mil",_objectivesName];
@@ -156,9 +156,9 @@ if(count _clusters_copy_hq > 0) then {
 _clusterCount = _clusterCount + count _clusters_copy_hq;
 
 if(count _clusters_copy_air > 0) then {
-	_objectivesName = "ALIVE_clustersMilAir";
-	_result = [_clusters_copy_air, _objectivesName, _clusterCount,"mil"] call ALIVE_fnc_auto_staticClusterOutput;
-		diag_log _objectivesName;
+    _objectivesName = "ALIVE_clustersMilAir";
+    _result = [_clusters_copy_air, _objectivesName, _clusterCount,"mil"] call ALIVE_fnc_auto_staticClusterOutput;
+        diag_log _objectivesName;
 }else{
     _objectivesName = "ALIVE_clustersMilAir";
     "ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"mil",_objectivesName];
@@ -167,9 +167,9 @@ if(count _clusters_copy_air > 0) then {
 _clusterCount = _clusterCount + count _clusters_copy_air;
 
 if(count _clusters_copy_heli > 0) then {
-	_objectivesName = "ALIVE_clustersMilHeli";
-	_result = [_clusters_copy_heli, _objectivesName, _clusterCount,"mil"] call ALIVE_fnc_auto_staticClusterOutput;
-		diag_log _objectivesName;
+    _objectivesName = "ALIVE_clustersMilHeli";
+    _result = [_clusters_copy_heli, _objectivesName, _clusterCount,"mil"] call ALIVE_fnc_auto_staticClusterOutput;
+        diag_log _objectivesName;
 }else{
     _objectivesName = "ALIVE_clustersMilHeli";
     "ALiVEClient" callExtension format["clusterData~%1|%2|%3 = [] call ALIVE_fnc_hashCreate;",worldName,"mil",_objectivesName];

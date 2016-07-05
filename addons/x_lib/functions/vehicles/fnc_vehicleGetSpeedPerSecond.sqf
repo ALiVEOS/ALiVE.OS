@@ -25,7 +25,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_vehicle","_result","_maxSpeed","_speedPerSecond"];
-	
+
 _vehicle = _this;
 _result = [];
 

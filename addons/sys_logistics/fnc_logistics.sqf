@@ -42,33 +42,33 @@ DEFAULT_PARAM(2,_args,nil);
 
 //Listener for special purposes
 if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {
-	_blackOps = ["id"];
+    _blackOps = ["id"];
 
-	if !(_operation in _blackOps) then {
-	    _check = "nothing"; if !(isnil "_args") then {_check = _args};
+    if !(_operation in _blackOps) then {
+        _check = "nothing"; if !(isnil "_args") then {_check = _args};
 
-		["op: %1 | args: %2",_operation,_check] call ALiVE_fnc_DumpR;
-	};
+        ["op: %1 | args: %2",_operation,_check] call ALiVE_fnc_DumpR;
+    };
 };
 
 TRACE_3("SYS_LOGISTICS",_logic, _operation, _args);
 
 switch (_operation) do {
 
-    	case "create": {
+        case "create": {
             if (isServer) then {
 
-	            // Ensure only one module is used
-	            if !(isNil QMOD(SYS_LOGISTICS)) then {
-                	_logic = MOD(SYS_LOGISTICS);
+                // Ensure only one module is used
+                if !(isNil QMOD(SYS_LOGISTICS)) then {
+                    _logic = MOD(SYS_LOGISTICS);
                     ERROR_WITH_TITLE(str _logic, localize "STR_ALIVE_LOGISTICS_ERROR1");
-	            } else {
-	        		_logic = (createGroup sideLogic) createUnit ["ALiVE_SYS_LOGISTICS", [0,0], [], 0, "NONE"];
+                } else {
+                    _logic = (createGroup sideLogic) createUnit ["ALiVE_SYS_LOGISTICS", [0,0], [], 0, "NONE"];
                     MOD(SYS_LOGISTICS) = _logic;
                 };
 
                 //Push to clients
-	            PublicVariable QMOD(SYS_LOGISTICS);
+                PublicVariable QMOD(SYS_LOGISTICS);
             };
 
             TRACE_1("Waiting for object to be ready",true);
@@ -77,9 +77,9 @@ switch (_operation) do {
 
             TRACE_1("Creating class on all localities",true);
 
-			// initialise module game logic on all localities
-			MOD(SYS_LOGISTICS) setVariable ["super", QUOTE(SUPERCLASS)];
-			MOD(SYS_LOGISTICS) setVariable ["class", QUOTE(MAINCLASS)];
+            // initialise module game logic on all localities
+            MOD(SYS_LOGISTICS) setVariable ["super", QUOTE(SUPERCLASS)];
+            MOD(SYS_LOGISTICS) setVariable ["class", QUOTE(MAINCLASS)];
 
             _result = MOD(SYS_LOGISTICS);
         };
@@ -89,10 +89,10 @@ switch (_operation) do {
             private ["_exit"];
 
             //Only one init per instance is allowed
-        	if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS LOGISTICS - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+            if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS LOGISTICS - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
 
-        	//Start init
-        	_logic setVariable ["initGlobal", false];
+            //Start init
+            _logic setVariable ["initGlobal", false];
 
             //["%1 - Initialisation started...",_logic] call ALiVE_fnc_Dump;
 
@@ -113,8 +113,8 @@ switch (_operation) do {
 
             TRACE_1("Creating data store",true);
 
-	        // Create logistics data storage in memory on all localities
-	        GVAR(STORE) = [] call ALIVE_fnc_hashCreate;
+            // Create logistics data storage in memory on all localities
+            GVAR(STORE) = [] call ALIVE_fnc_hashCreate;
 
             // load static data
             if(isNil "ALiVE_STATIC_DATA_LOADED") then {
@@ -150,7 +150,7 @@ switch (_operation) do {
             GVAR(LIFTABLE) = [["Helicopter"],["Car","Ship","Truck_F"],[] + (_logic getvariable ["BLACKLIST",[]])];
 
             //Define actions on all localities (just in case)
-			GVAR(ACTIONS) = {
+            GVAR(ACTIONS) = {
                 private ["_logic"];
 
                 _logic = MOD(SYS_LOGISTICS);
@@ -166,10 +166,10 @@ switch (_operation) do {
 
                 player setvariable [QGVAR(ACTIONS),true];
                 true;
-			};
+            };
 
-			// Define module basics on server
-			if (isServer) then {
+            // Define module basics on server
+            if (isServer) then {
 
                 // Reset states with provided data;
                 if !(_logic getvariable ["DISABLEPERSISTENCE",false]) then {
@@ -177,16 +177,16 @@ switch (_operation) do {
                         waituntil {!isnil QMOD(SYS_DATA) && {MOD(SYS_DATA) getvariable ["startupComplete",false]}};
                     };
 
-	                _state = call ALiVE_fnc_logisticsLoadData;
+                    _state = call ALiVE_fnc_logisticsLoadData;
 
-	                if !(typeName _state == "BOOL") then {
-	                    GVAR(STORE) = _state;
-	                };
+                    if !(typeName _state == "BOOL") then {
+                        GVAR(STORE) = _state;
+                    };
                 };
 
                 GVAR(STORE) call ALIVE_fnc_inspectHash;
 
-            	[_logic,"state",GVAR(STORE)] call ALiVE_fnc_logistics;
+                [_logic,"state",GVAR(STORE)] call ALiVE_fnc_logistics;
 
                 /*
                 //Hack for hideObjectGlobal not working prior to mission runtime, thanks BIS
@@ -198,7 +198,7 @@ switch (_operation) do {
                 */
 
                 _logic setVariable ["init", true, true];
-			};
+            };
 
             /*
             CONTROLLER  - coordination
@@ -215,7 +215,7 @@ switch (_operation) do {
                 //[_logic,"setEH",[_logic,"allObjects"] call ALiVE_fnc_logistics] call ALiVE_fnc_logistics;
             };
 
-			TRACE_1("Spawning clientside processes",hasInterface);
+            TRACE_1("Spawning clientside processes",hasInterface);
 
             if (hasInterface) then {
                 // Set eventhandlers for player
@@ -229,9 +229,9 @@ switch (_operation) do {
             - frequent check to modify menu and display status (ALIVE_fnc_logisticsmenuDef)
             */
 
-			TRACE_1("Adding menu on clients",hasInterface);
+            TRACE_1("Adding menu on clients",hasInterface);
 
-			// The machine has an interface? Must be a MP client, SP client or a client that acts as host!
+            // The machine has an interface? Must be a MP client, SP client or a client that acts as host!
             if (hasInterface) then {
 
                 // Initialise interaction key if undefined
@@ -282,24 +282,24 @@ switch (_operation) do {
             };
 
             {
-            	private ["_args","_id","_cont"];
+                private ["_args","_id","_cont"];
 
                 //Ensure object is existing and not profiled
                 if (!(isnil "_x") && {!(isNull _x)} && {isnil {_x getVariable "profileID"}}) then {
-	                _id = [_logic,"id",_x] call ALiVE_fnc_logistics;
-					_args = [GVAR(STORE),_id] call ALiVE_fnc_HashGet;
+                    _id = [_logic,"id",_x] call ALiVE_fnc_logistics;
+                    _args = [GVAR(STORE),_id] call ALiVE_fnc_HashGet;
 
                     //Create objecthash and add to store if not existing yet
-		            if (isnil "_args") then {
-		                _args = [] call ALIVE_fnc_hashCreate;
-		                [GVAR(STORE),_id,_args] call ALiVE_fnc_HashSet;
-		            };
+                    if (isnil "_args") then {
+                        _args = [] call ALIVE_fnc_hashCreate;
+                        [GVAR(STORE),_id,_args] call ALiVE_fnc_HashSet;
+                    };
 
                     //Set static data
-	                [_args,QGVAR(ID),_id] call ALiVE_fnc_HashSet;
-		            [_args,QGVAR(TYPE),typeof _x] call ALiVE_fnc_HashSet;
-		            [_args,QGVAR(POSITION),getposATL _x] call ALiVE_fnc_HashSet;
-		            [_args,QGVAR(VECDIRANDUP),[vectorDir _x,vectorUp _x]] call ALiVE_fnc_HashSet;
+                    [_args,QGVAR(ID),_id] call ALiVE_fnc_HashSet;
+                    [_args,QGVAR(TYPE),typeof _x] call ALiVE_fnc_HashSet;
+                    [_args,QGVAR(POSITION),getposATL _x] call ALiVE_fnc_HashSet;
+                    [_args,QGVAR(VECDIRANDUP),[vectorDir _x,vectorUp _x]] call ALiVE_fnc_HashSet;
                     [_args,QGVAR(CARGO),[_x] call ALiVE_fnc_getObjectCargo] call ALiVE_fnc_HashSet;
                     [_args,QGVAR(FUEL),[_x] call ALiVE_fnc_getObjectFuel] call ALiVE_fnc_HashSet;
                     [_args,QGVAR(DAMAGE),[_x] call ALiVE_fnc_getObjectDamage] call ALiVE_fnc_HashSet;
@@ -311,7 +311,7 @@ switch (_operation) do {
                         [_args,QGVAR(CONTAINER)] call ALiVE_fnc_HashRem;
                     };
 
-		            //_args call ALiVE_fnc_InspectHash;
+                    //_args call ALiVE_fnc_InspectHash;
                 };
             } foreach _objects;
 
@@ -319,7 +319,7 @@ switch (_operation) do {
         };
 
         case "removeObject": {
-			if (isnil "_args") exitwith {};
+            if (isnil "_args") exitwith {};
 
             if !(isServer) exitwith {
                 [[_logic, _operation, _args],"ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
@@ -339,7 +339,7 @@ switch (_operation) do {
             _object setvariable [QGVAR(CONTAINER),nil,true];
             _object setvariable [QGVAR(CARGO),nil,true];
 
-			[GVAR(STORE),_id] call ALiVE_fnc_HashRem;
+            [GVAR(STORE),_id] call ALiVE_fnc_HashRem;
             _object setvariable [QGVAR(ID),nil,true];
 
             //GVAR(STORE) call ALiVE_fnc_InspectHash;
@@ -353,11 +353,11 @@ switch (_operation) do {
             private ["_object","_id"];
 
             _object = [_args, 0, objNull, [objNull,""]] call BIS_fnc_param;
-			_id = _object getvariable QGVAR(ID);
+            _id = _object getvariable QGVAR(ID);
 
             if (isnil "_id") then {
-				_id = format["%1_%2%3",typeof _object, floor(getposATL _object select 0),floor(getposATL _object select 1)];
-				_object setvariable [QGVAR(ID),_id,true];
+                _id = format["%1_%2%3",typeof _object, floor(getposATL _object select 0),floor(getposATL _object select 1)];
+                _object setvariable [QGVAR(ID),_id,true];
             };
 
             _result = _id;
@@ -369,7 +369,7 @@ switch (_operation) do {
             private ["_object","_container","_objectID","_containerID"];
 
             _object = [_args, 0, objNull, [objNull]] call BIS_fnc_param;
-			_container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
+            _container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
 
             _objectID = [_logic,"id",_object] call ALiVE_fnc_logistics;
             _containerID = [_logic,"id",_container] call ALiVE_fnc_logistics;
@@ -392,7 +392,7 @@ switch (_operation) do {
             private ["_object","_container","_objectID","_containerID"];
 
             _object = [_args, 0, objNull, [objNull]] call BIS_fnc_param;
-			_container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
+            _container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
 
             _objectID = [_logic,"id",_object] call ALiVE_fnc_logistics;
             _containerID = [_logic,"id",_container] call ALiVE_fnc_logistics;
@@ -409,7 +409,7 @@ switch (_operation) do {
             _result = _object;
         };
 
-		case "stowObject": {
+        case "stowObject": {
             if (isnil "_args") exitwith {};
 
             //Do it globally so all clients are updated correctly all the time
@@ -420,7 +420,7 @@ switch (_operation) do {
             private ["_object","_container","_objectID","_containerID"];
 
             _object = [_args, 0, objNull, [objNull]] call BIS_fnc_param;
-			_container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
+            _container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
 
             _objectID = [_logic,"id",_object] call ALiVE_fnc_logistics;
             _containerID = [_logic,"id",_container] call ALiVE_fnc_logistics;
@@ -432,9 +432,9 @@ switch (_operation) do {
             _object setvariable [QGVAR(CONTAINER),_container,true];
             _container setvariable [QGVAR(CARGO),(_container getvariable [QGVAR(CARGO),[]]) + [_object],true];
 
-			if (isMultiplayer && isServer) then {_object hideObjectGlobal true; _object enableSimulationGlobal false} else {_object hideObject true; _object enableSimulation false};
+            if (isMultiplayer && isServer) then {_object hideObjectGlobal true; _object enableSimulationGlobal false} else {_object hideObject true; _object enableSimulation false};
 
-			[_logic,"updateObject",[_container,_object]] call ALIVE_fnc_logistics;
+            [_logic,"updateObject",[_container,_object]] call ALIVE_fnc_logistics;
 
             _result = _container;
         };
@@ -445,7 +445,7 @@ switch (_operation) do {
             private ["_object","_container","_objectID","_containerID"];
 
             _object = [_args, 0, objNull, [objNull]] call BIS_fnc_param;
-			_container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
+            _container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
 
             _objectID = [_logic,"id",_object] call ALiVE_fnc_logistics;
             _containerID = [_logic,"id",_container] call ALiVE_fnc_logistics;
@@ -466,17 +466,17 @@ switch (_operation) do {
             private ["_object","_container","_objectID","_containerID"];
 
             _object = [_args, 0, objNull, [objNull]] call BIS_fnc_param;
-			_container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
+            _container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
 
             _objectID = [_logic,"id",_object] call ALiVE_fnc_logistics;
             _containerID = [_logic,"id",_container] call ALiVE_fnc_logistics;
 
-			if ([_object,_container] call ALiVE_fnc_canStow) exitwith {};
+            if ([_object,_container] call ALiVE_fnc_canStow) exitwith {};
 
             _object setvariable [QGVAR(CONTAINER),nil,true];
             _container setvariable [QGVAR(CARGO),(_container getvariable [QGVAR(CARGO),[]]) - [_object],true];
 
-			if (isMultiplayer && isServer) then {_object hideObjectGlobal false; _object enableSimulationGlobal true} else {_object hideObject false; _object enableSimulation true};
+            if (isMultiplayer && isServer) then {_object hideObjectGlobal false; _object enableSimulationGlobal true} else {_object hideObject false; _object enableSimulation true};
 
             _object setpos (
             [
@@ -494,7 +494,7 @@ switch (_operation) do {
                 ]
             ] call BIS_fnc_findSafePos);
 
-			[_logic,"updateObject",[_container,_object]] call ALIVE_fnc_logistics;
+            [_logic,"updateObject",[_container,_object]] call ALIVE_fnc_logistics;
 
             _result = _container;
         };
@@ -505,7 +505,7 @@ switch (_operation) do {
             private ["_object","_container","_objectID","_containerID"];
 
             _object = [_args, 0, objNull, [objNull]] call BIS_fnc_param;
-			_container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
+            _container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
 
             _objectID = [_logic,"id",_object] call ALiVE_fnc_logistics;
             _containerID = [_logic,"id",_container] call ALiVE_fnc_logistics;
@@ -521,7 +521,7 @@ switch (_operation) do {
             private ["_object","_container","_objectID","_containerID"];
 
             _object = [_args, 0, objNull, [objNull]] call BIS_fnc_param;
-			_container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
+            _container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
 
             _objectID = [_logic,"id",_object] call ALiVE_fnc_logistics;
             _containerID = [_logic,"id",_container] call ALiVE_fnc_logistics;
@@ -529,15 +529,15 @@ switch (_operation) do {
             if !([_object,_container] call ALiVE_fnc_canTow) exitwith {};
 
             _object attachTo [_container, [
-				0,
-				(boundingBox _container select 0 select 1) + (boundingBox _container select 0 select 1) + 2,
-				(boundingBox _container select 0 select 2) - (boundingBox _container select 0 select 2) + 0.4
-			]];
+                0,
+                (boundingBox _container select 0 select 1) + (boundingBox _container select 0 select 1) + 2,
+                (boundingBox _container select 0 select 2) - (boundingBox _container select 0 select 2) + 0.4
+            ]];
 
             _object setvariable [QGVAR(CONTAINER),_container,true];
             _container setvariable [QGVAR(CARGO_TOW),(_container getvariable [QGVAR(CARGO_TOW),[]]) + [_object],true];
 
-			[[_logic,"updateObject",[_container,_object]],"ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
+            [[_logic,"updateObject",[_container,_object]],"ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
 
             _result = _container;
         };
@@ -548,7 +548,7 @@ switch (_operation) do {
             private ["_object","_container","_objectID","_containerID"];
 
             _object = [_args, 0, objNull, [objNull]] call BIS_fnc_param;
-			_container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
+            _container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
 
             _objectID = [_logic,"id",_object] call ALiVE_fnc_logistics;
             _containerID = [_logic,"id",_container] call ALiVE_fnc_logistics;
@@ -572,17 +572,17 @@ switch (_operation) do {
             private ["_object","_container","_objectID","_containerID"];
 
             _object = [_args, 0, objNull, [objNull]] call BIS_fnc_param;
-			_container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
+            _container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
 
             _objectID = [_logic,"id",_object] call ALiVE_fnc_logistics;
             _containerID = [_logic,"id",_container] call ALiVE_fnc_logistics;
 
             if !([_object,_container] call ALiVE_fnc_canLift) exitwith {};
 
-			_object attachTo [
-            	_container,
-            	[0,0,(boundingBox _container select 0 select 2) - (boundingBox _object select 0 select 2) - (getPos _container select 2) + 0.5]
-			];
+            _object attachTo [
+                _container,
+                [0,0,(boundingBox _container select 0 select 2) - (boundingBox _object select 0 select 2) - (getPos _container select 2) + 0.5]
+            ];
 
             _object setvariable [QGVAR(CONTAINER),_container,true];
             _container setvariable [QGVAR(CARGO_LIFT),(_container getvariable [QGVAR(CARGO_LIFT),[]]) + [_object],true];
@@ -598,7 +598,7 @@ switch (_operation) do {
             private ["_object","_container","_objectID","_containerID"];
 
             _object = [_args, 0, objNull, [objNull]] call BIS_fnc_param;
-			_container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
+            _container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
 
             _objectID = [_logic,"id",_object] call ALiVE_fnc_logistics;
             _containerID = [_logic,"id",_container] call ALiVE_fnc_logistics;
@@ -616,87 +616,87 @@ switch (_operation) do {
             _result = _container;
         };
 
-		case "fillContainer": {
-			if (isnil "_args") exitwith {};
+        case "fillContainer": {
+            if (isnil "_args") exitwith {};
 
-			//Do it globally so all clients are updated correctly all the time
-			if !(isServer) exitwith {
-			    [[_logic, _operation, _args],"ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
-			};
+            //Do it globally so all clients are updated correctly all the time
+            if !(isServer) exitwith {
+                [[_logic, _operation, _args],"ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
+            };
 
-			private ["_container","_containerID","_list"];
+            private ["_container","_containerID","_list"];
 
-			_container = [_args, 0, objNull, [objNull]] call BIS_fnc_param;
-			_list = [_args, 1, [], [[]]] call BIS_fnc_param;
+            _container = [_args, 0, objNull, [objNull]] call BIS_fnc_param;
+            _list = [_args, 1, [], [[]]] call BIS_fnc_param;
 
-			if (count _list == 0) exitwith {};
+            if (count _list == 0) exitwith {};
 
-			_containerID = [_logic,"id",_container] call ALiVE_fnc_logistics;
+            _containerID = [_logic,"id",_container] call ALiVE_fnc_logistics;
 
-			{
-			    private ["_object","_objectID"];
+            {
+                private ["_object","_objectID"];
 
-				_object = _x createVehicle ([getposATL _container,50] call CBA_fnc_RandPos);
-				_objectID = [_logic,"id",_object] call ALiVE_fnc_logistics;
+                _object = _x createVehicle ([getposATL _container,50] call CBA_fnc_RandPos);
+                _objectID = [_logic,"id",_object] call ALiVE_fnc_logistics;
 
-			    _object setvariable [QGVAR(CONTAINER),_container,true];
-				_container setvariable [QGVAR(CARGO),(_container getvariable [QGVAR(CARGO),[]]) + [_object],true];
+                _object setvariable [QGVAR(CONTAINER),_container,true];
+                _container setvariable [QGVAR(CARGO),(_container getvariable [QGVAR(CARGO),[]]) + [_object],true];
 
-				if (isMultiplayer && isServer) then {_object hideObjectGlobal true; _object enableSimulationGlobal false} else {_object hideObject true; _object enableSimulation false};
+                if (isMultiplayer && isServer) then {_object hideObjectGlobal true; _object enableSimulationGlobal false} else {_object hideObject true; _object enableSimulation false};
 
-			    _list set [_foreachIndex,_object];
-			} foreach _list;
+                _list set [_foreachIndex,_object];
+            } foreach _list;
 
-			[_logic,"updateObject",[_container] + _list] call ALIVE_fnc_logistics;
+            [_logic,"updateObject",[_container] + _list] call ALIVE_fnc_logistics;
 
-			_result = _list;
+            _result = _list;
         };
 
-		case "clearContainer": {
-			if (isnil "_args") exitwith {};
+        case "clearContainer": {
+            if (isnil "_args") exitwith {};
 
-			//Do it globally so all clients are updated correctly all the time
-			if !(isServer) exitwith {
-			    [[_logic, _operation, _args],"ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
-			};
+            //Do it globally so all clients are updated correctly all the time
+            if !(isServer) exitwith {
+                [[_logic, _operation, _args],"ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
+            };
 
-			private ["_container","_containerID"];
+            private ["_container","_containerID"];
 
-			_container = [[_args], 0, objNull, [objNull]] call BIS_fnc_param;
-			_containerID = [_logic,"id",_container] call ALiVE_fnc_logistics;
+            _container = [[_args], 0, objNull, [objNull]] call BIS_fnc_param;
+            _containerID = [_logic,"id",_container] call ALiVE_fnc_logistics;
 
-			_list = _container getvariable [QGVAR(CARGO),[]];
+            _list = _container getvariable [QGVAR(CARGO),[]];
 
-			if (count _list == 0) exitwith {};
+            if (count _list == 0) exitwith {};
 
-			{[_logic,"removeObject",_x] call ALIVE_fnc_logistics; deleteVehicle _x} foreach _list;
+            {[_logic,"removeObject",_x] call ALIVE_fnc_logistics; deleteVehicle _x} foreach _list;
 
-			_container setvariable [QGVAR(CARGO),[],true];
+            _container setvariable [QGVAR(CARGO),[],true];
 
-			[_logic,"updateObject",[_container]] call ALIVE_fnc_logistics;
+            [_logic,"updateObject",[_container]] call ALIVE_fnc_logistics;
 
-			_result = _list;
+            _result = _list;
         };
 
         case "addAction": {
-	        private ["_object","_operation","_id","_condition","_text","_input","_container","_die"];
+            private ["_object","_operation","_id","_condition","_text","_input","_container","_die"];
 
-			_object = [_args, 0, objNull, [objNull,[]]] call BIS_fnc_param;
-			_operation = [_args, 1, "", [""]] call BIS_fnc_param;
+            _object = [_args, 0, objNull, [objNull,[]]] call BIS_fnc_param;
+            _operation = [_args, 1, "", [""]] call BIS_fnc_param;
 
-			switch (typename _object) do {
-			    case ("ARRAY") : {_object = _object select 0};
-			    default {};
-			};
+            switch (typename _object) do {
+                case ("ARRAY") : {_object = _object select 0};
+                default {};
+            };
 
-			switch (_operation) do {
-				case ("carryObject") : {
+            switch (_operation) do {
+                case ("carryObject") : {
                     _text = "Carry object";
-                	_input = "cursortarget";
+                    _input = "cursortarget";
                     _container = "_this select 1";
                     _condition = "alive _target && {cursortarget distance _target < 5} && {isnil {cursortarget getvariable 'ALiVE_SYS_LOGISTICS_CONTAINER'}} && {[cursortarget,_target] call ALiVE_fnc_canCarry}";
-				};
-			    case ("dropObject") : {
+                };
+                case ("dropObject") : {
                     _text = "Drop object";
                     _input = "call {private ['_objs','_player','_result']; _player = _this select 1; _objs = attachedObjects _player; {if (!isnull _x) exitwith {_result = _x}} foreach _objs; if (isnil '_result') then {_result = (_player getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) select 0}; if !(isnil '_result') then {_result}}";
                     _container = "_this select 1";
@@ -737,54 +737,54 @@ switch (_operation) do {
                     _input = "attachedObjects (vehicle (_this select 1)) select 0";
                     _container = "vehicle (_this select 1)";
                     _condition = "alive _target && {(getposATL (vehicle _target) select 2) > 10} && {(getposATL (vehicle _target) select 2) < 20} && {count ((vehicle _target) getvariable ['ALiVE_SYS_LOGISTICS_CARGO_LIFT',[]]) > 0}";
-            	};
+                };
                 default {_die = true};
-			};
+            };
 
             if !(isnil "_die") exitwith {_result = -1};
 
-			_id = _object addAction [
-				_text,
-				{[MOD(SYS_LOGISTICS),(_this select 3 select 0),[call compile (_this select 3 select 1), call compile (_this select 3 select 2)]] call ALiVE_fnc_logistics},
-				[_operation,_input,_container],
-				1,
-				false,
-				true,
-				"",
-				_condition
-			];
+            _id = _object addAction [
+                _text,
+                {[MOD(SYS_LOGISTICS),(_this select 3 select 0),[call compile (_this select 3 select 1), call compile (_this select 3 select 2)]] call ALiVE_fnc_logistics},
+                [_operation,_input,_container],
+                1,
+                false,
+                true,
+                "",
+                _condition
+            ];
 
             _object setvariable [format["ALiVE_SYS_LOGISTICS_%1",_operation],_id];
 
-			_result = _id;
+            _result = _id;
         };
 
         case "removeAction": {
             if (isnil "_args") exitwith {};
 
-	        private ["_object","_operation","_id"];
+            private ["_object","_operation","_id"];
 
-			_object = [_args, 0, objNull, [objNull,[]]] call BIS_fnc_param;
-			_operation = [_args, 1, "", [""]] call BIS_fnc_param;
+            _object = [_args, 0, objNull, [objNull,[]]] call BIS_fnc_param;
+            _operation = [_args, 1, "", [""]] call BIS_fnc_param;
 
-			_id = _object getvariable [format["ALiVE_SYS_LOGISTICS_%1",_operation],-1];
+            _id = _object getvariable [format["ALiVE_SYS_LOGISTICS_%1",_operation],-1];
             _object setvariable [format["ALiVE_SYS_LOGISTICS_%1",_operation],nil];
             _object removeAction _id;
 
-			_result = _id;
+            _result = _id;
         };
 
         case "addActions": {
             if !(hasInterface) exitwith {};
 
-			_result = call GVAR(ACTIONS);
+            _result = call GVAR(ACTIONS);
         };
 
         case "removeActions": {
 
             _args = [_this, 2, player, [objNull]] call BIS_fnc_param;
 
-			if !(hasInterface) exitwith {
+            if !(hasInterface) exitwith {
                 [[_logic, _operation, _args],"ALIVE_fnc_logistics", owner _args, false] call BIS_fnc_MP;
             };
 
@@ -797,9 +797,9 @@ switch (_operation) do {
             [_logic,"removeAction",[_args,"liftObject"]] call ALiVE_fnc_logistics;
             [_logic,"removeAction",[_args,"releaseObject"]] call ALiVE_fnc_logistics;
 
-			_args setvariable [QGVAR(ACTIONS),nil];
+            _args setvariable [QGVAR(ACTIONS),nil];
 
-			_result = false;
+            _result = false;
         };
 
         case "setEH" : {
@@ -807,7 +807,7 @@ switch (_operation) do {
 
             private ["_objects"];
 
-			switch (typeName _args) do {
+            switch (typeName _args) do {
                 case ("OBJECT") : {_objects = [_args]};
                 case ("ARRAY") : {_objects = _args};
                 default {_objects = _args};
@@ -818,47 +818,47 @@ switch (_operation) do {
 
                 _object = _x;
 
-				//All Localities
+                //All Localities
                 _object setvariable [QGVAR(EH_KILLED), _object getvariable [QGVAR(EH_KILLED), _object addEventHandler ["Killed", {
 
-	                    _object = _this select 0;
+                        _object = _this select 0;
 
-	                    if (isPlayer _object && {vehicle _object == _object}) then {
-	                        //Drop object if player is carrying while beeing killed
-	                        {[MOD(SYS_LOGISTICS),"dropObject",[_x,_object]] call ALIVE_fnc_logistics} foreach (_object getvariable [QGVAR(CARGO),[]]);
+                        if (isPlayer _object && {vehicle _object == _object}) then {
+                            //Drop object if player is carrying while beeing killed
+                            {[MOD(SYS_LOGISTICS),"dropObject",[_x,_object]] call ALIVE_fnc_logistics} foreach (_object getvariable [QGVAR(CARGO),[]]);
 
-	                        //Deactivate actions
-	                    	[MOD(SYS_LOGISTICS),"removeActions",_object] call ALIVE_fnc_logistics;
-	                    };
+                            //Deactivate actions
+                            [MOD(SYS_LOGISTICS),"removeActions",_object] call ALIVE_fnc_logistics;
+                        };
 
-	                    //Remove object from store
-	                    [MOD(SYS_LOGISTICS),"removeObject",_object] call ALIVE_fnc_logistics;
+                        //Remove object from store
+                        [MOD(SYS_LOGISTICS),"removeObject",_object] call ALIVE_fnc_logistics;
 
-	                    if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {
-	                        ["ALiVE SYS LOGISTICS EH Killed firing"] call ALiVE_fnc_DumpR;
-	                    };
-				}]]];
+                        if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {
+                            ["ALiVE SYS LOGISTICS EH Killed firing"] call ALiVE_fnc_DumpR;
+                        };
+                }]]];
 
-	            //Clientside only section
-				if (hasInterface) then {
-					//apply these EHs on players
-					_object setvariable [QGVAR(EH_INVENTORYCLOSED), _object getvariable [QGVAR(EH_INVENTORYCLOSED), _object addEventHandler ["InventoryClosed", {[ALiVE_SYS_LOGISTICS,"updateObject",[_this select 1, _this select 0]] call ALIVE_fnc_logistics; if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {["ALiVE SYS LOGISTICS EH InventoryClosed firing"] call ALiVE_fnc_DumpR}}]]];
-				};
+                //Clientside only section
+                if (hasInterface) then {
+                    //apply these EHs on players
+                    _object setvariable [QGVAR(EH_INVENTORYCLOSED), _object getvariable [QGVAR(EH_INVENTORYCLOSED), _object addEventHandler ["InventoryClosed", {[ALiVE_SYS_LOGISTICS,"updateObject",[_this select 1, _this select 0]] call ALIVE_fnc_logistics; if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {["ALiVE SYS LOGISTICS EH InventoryClosed firing"] call ALiVE_fnc_DumpR}}]]];
+                };
 
                 //Serverside only section
                 if (isServer) then {
-		            //apply these EHs on vehicles
-		            if ({_object isKindOf _x} count ["LandVehicle","Air","Ship"] > 0) then {
-		            	_object setvariable [QGVAR(EH_GETOUT), _object getvariable [QGVAR(EH_GETOUT), _object addEventHandler ["GetOut", {if (isPlayer (_this select 2) && {!((_this select 1) == "cargo")}) then {[ALiVE_SYS_LOGISTICS,"updateObject",[_this select 0]] call ALIVE_fnc_logistics; if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {["ALiVE SYS LOGISTICS EH Getout firing"] call ALiVE_fnc_DumpR}}}]]];
-		            };
-	            };
+                    //apply these EHs on vehicles
+                    if ({_object isKindOf _x} count ["LandVehicle","Air","Ship"] > 0) then {
+                        _object setvariable [QGVAR(EH_GETOUT), _object getvariable [QGVAR(EH_GETOUT), _object addEventHandler ["GetOut", {if (isPlayer (_this select 2) && {!((_this select 1) == "cargo")}) then {[ALiVE_SYS_LOGISTICS,"updateObject",[_this select 0]] call ALIVE_fnc_logistics; if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {["ALiVE SYS LOGISTICS EH Getout firing"] call ALiVE_fnc_DumpR}}}]]];
+                    };
+                };
             } foreach _objects;
 
             _result = _objects;
         };
 
         case "allObjects" : {
-			if (isnil "_args" || {isnull _args}) then {_args = []};
+            if (isnil "_args" || {isnull _args}) then {_args = []};
 
             private ["_position","_radius","_list","_objects"];
 
@@ -868,12 +868,12 @@ switch (_operation) do {
 
             _objects = [];
             {
-            	private ["_object"];
+                private ["_object"];
 
-	            _object = _x;
-	            if ((_x distance _position <= _radius) && {({_object iskindOf _x} count _list) > 0}) then {
-	                _objects set [count _objects,_object];
-	            };
+                _object = _x;
+                if ((_x distance _position <= _radius) && {({_object iskindOf _x} count _list) > 0}) then {
+                    _objects set [count _objects,_object];
+                };
             } foreach (allMissionObjects "");
 
             _result = _objects;
@@ -885,11 +885,11 @@ switch (_operation) do {
 
         case "destroyGlobal": {
 
-        	MOD(SYS_LOGISTICS) = _logic;
+            MOD(SYS_LOGISTICS) = _logic;
 
             //Remove Actions on clients
             if (hasInterface) then {
-                	{[_logic,"removeAction",[player,_x]] call ALiVE_fnc_logistics} foreach ["carryObject","dropObject","stowObjects","unloadObjects","towObject","untowObject","liftObject","releaseObject"];
+                    {[_logic,"removeAction",[player,_x]] call ALiVE_fnc_logistics} foreach ["carryObject","dropObject","stowObjects","unloadObjects","towObject","untowObject","liftObject","releaseObject"];
 
                     // remove main menu
                     [
@@ -956,14 +956,14 @@ switch (_operation) do {
                 if !(isnil "_args") then {
                     private ["_pos","_vDirUp","_container","_cargo"];
 
-					TRACE_1("ALiVE SYS LOGISTICS Resetting state of existing object!",_x);
+                    TRACE_1("ALiVE SYS LOGISTICS Resetting state of existing object!",_x);
 
                     //apply values
-		            _x setposATL ([_args,QGVAR(POSITION)] call ALiVE_fnc_HashGet);
+                    _x setposATL ([_args,QGVAR(POSITION)] call ALiVE_fnc_HashGet);
                     _x setVectorDirAndUp ([_args,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
 
                     //remove in next step
-					_existing set [count _existing,_id];
+                    _existing set [count _existing,_id];
                 };
             } foreach _startObjects;
 
@@ -978,12 +978,12 @@ switch (_operation) do {
 
                     TRACE_1("ALiVE SYS LOGISTICS Creating non existing object from store!",_x);
 
-					_object = _type createVehicle ([_args,QGVAR(POSITION)] call ALiVE_fnc_hashGet);
-	                _object setvariable [QGVAR(ID),_x,true];
-	            	_object setposATL ([_args,QGVAR(POSITION)] call ALiVE_fnc_HashGet);
-	                _object setVectorDirAndUp ([_args,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
+                    _object = _type createVehicle ([_args,QGVAR(POSITION)] call ALiVE_fnc_hashGet);
+                    _object setvariable [QGVAR(ID),_x,true];
+                    _object setposATL ([_args,QGVAR(POSITION)] call ALiVE_fnc_HashGet);
+                    _object setVectorDirAndUp ([_args,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
 
-	                _createdObjects set [count _createdObjects,_object];
+                    _createdObjects set [count _createdObjects,_object];
                 } else {
                     TRACE_1("ALiVE SYS LOGISTICS Removing non-existing unit from store!",_x);
 
@@ -998,7 +998,7 @@ switch (_operation) do {
                 if !(isnil "_args") then {
 
                     TRACE_1("ALiVE SYS LOGISTICS Resetting cargo for object!",_x);
-                	[_x,_args] call ALiVE_fnc_setObjectState;
+                    [_x,_args] call ALiVE_fnc_setObjectState;
                 };
              } foreach (_startObjects + _createdObjects);
 
@@ -1006,34 +1006,34 @@ switch (_operation) do {
         };
 
         case "convertData": {
-    		if (isnil "_args") exitwith {};
+            if (isnil "_args") exitwith {};
 
-			private ["_data","_convertedData","_selection_1","_selection_2"];
+            private ["_data","_convertedData","_selection_1","_selection_2"];
 
-			_data = _args;
+            _data = _args;
 
             if !(typeName _data == "ARRAY" && {count _data > 2} && {count (_data select 2) > 0}) exitwith {_result = _data};
 
             _dataSet = [
-				[QGVAR(ID),"ASL_ID"],
-				[QGVAR(TYPE),"ASL_TY"],
-				[QGVAR(POSITION),"ASL_PO"],
-				[QGVAR(VECDIRANDUP),"ASL_VD"],
-				[QGVAR(CARGO),"ASL_CA"],
-				[QGVAR(FUEL),"ASL_FU"],
-				[QGVAR(DAMAGE),"ASL_DA"],
-				[QGVAR(CONTAINER),"ASL_CO"],
-				["_rev","_rev"]
+                [QGVAR(ID),"ASL_ID"],
+                [QGVAR(TYPE),"ASL_TY"],
+                [QGVAR(POSITION),"ASL_PO"],
+                [QGVAR(VECDIRANDUP),"ASL_VD"],
+                [QGVAR(CARGO),"ASL_CA"],
+                [QGVAR(FUEL),"ASL_FU"],
+                [QGVAR(DAMAGE),"ASL_DA"],
+                [QGVAR(CONTAINER),"ASL_CO"],
+                ["_rev","_rev"]
             ];
 
             _convertedData = [] call ALIVE_fnc_hashCreate;
 
             if (isnil {[(_data select 2 select 0),"ASL_ID"] call ALiVE_fnc_HashGet}) then {
-				_selection_1 = {_x select 1};
-				_selection_2 = {_x select 0};
+                _selection_1 = {_x select 1};
+                _selection_2 = {_x select 0};
             } else {
-				_selection_1 = {_x select 0};
-				_selection_2 = {_x select 1};
+                _selection_1 = {_x select 0};
+                _selection_2 = {_x select 1};
             };
 
             {
@@ -1056,32 +1056,32 @@ switch (_operation) do {
 
         case "blacklist": {
             if !(isnil "_args") then {
-				if(typeName _args == "STRING") then {
+                if(typeName _args == "STRING") then {
                     if !(_args == "") then {
-						_args = [_args, " ", ""] call CBA_fnc_replace;
+                        _args = [_args, " ", ""] call CBA_fnc_replace;
                         _args = [_args, "[", ""] call CBA_fnc_replace;
                         _args = [_args, "]", ""] call CBA_fnc_replace;
                         _args = [_args, "'", ""] call CBA_fnc_replace;
                         _args = [_args, """", ""] call CBA_fnc_replace;
-						_args = [_args, ","] call CBA_fnc_split;
+                        _args = [_args, ","] call CBA_fnc_split;
 
-						if(count _args > 0) then {
-							_logic setVariable [_operation, _args];
-						};
+                        if(count _args > 0) then {
+                            _logic setVariable [_operation, _args];
+                        };
                     } else {
                         _logic setVariable [_operation, DEFAULT_BLACKLIST];
                     };
-				} else {
-					if(typeName _args == "ARRAY") then {
-						_logic setVariable [_operation, _args];
-					};
-	            };
+                } else {
+                    if(typeName _args == "ARRAY") then {
+                        _logic setVariable [_operation, _args];
+                    };
+                };
             } else {
                 _logic setVariable [_operation, DEFAULT_BLACKLIST];
             };
 
             _result = _logic getVariable [_operation, DEFAULT_BLACKLIST];
-		};
+        };
 
         default {
             _result = [_logic, _operation, _args] call SUPERCLASS;

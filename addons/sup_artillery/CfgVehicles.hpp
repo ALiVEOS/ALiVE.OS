@@ -8,8 +8,8 @@ class CfgVehicles {
                 author = MODULE_AUTHOR;
                 functionPriority = 161;
                 isGlobal = 2;
-				icon = "x\alive\addons\sup_cas\icon_sup_cas.paa";
-				picture = "x\alive\addons\sup_cas\icon_sup_cas.paa";
+                icon = "x\alive\addons\sup_cas\icon_sup_cas.paa";
+                picture = "x\alive\addons\sup_cas\icon_sup_cas.paa";
                 class Arguments
                 {
                         class artillery_callsign
@@ -87,14 +87,14 @@ class CfgVehicles {
                                 defaultValue = "";
                         };
                 };
-				class ModuleDescription
-				{
-					//description = "$STR_ALIVE_ARTILLERY_COMMENT"; // Short description, will be formatted as structured text
-					description[] = {
-						"$STR_ALIVE_ARTILLERY_COMMENT",
-						"",
-						"$STR_ALIVE_ARTILLERY_USAGE"
-					};
-				};
-		};
+                class ModuleDescription
+                {
+                    //description = "$STR_ALIVE_ARTILLERY_COMMENT"; // Short description, will be formatted as structured text
+                    description[] = {
+                        "$STR_ALIVE_ARTILLERY_COMMENT",
+                        "",
+                        "$STR_ALIVE_ARTILLERY_USAGE"
+                    };
+                };
+        };
 };

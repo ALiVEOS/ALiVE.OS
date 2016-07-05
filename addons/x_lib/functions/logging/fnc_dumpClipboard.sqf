@@ -15,7 +15,7 @@ Returns:
 Examples:
 (begin example)
 
-// dump as format 
+// dump as format
 ["position: %1", getPos player] call ALIVE_fnc_dumpClipboard;
 
 // flush to clipboard
@@ -28,7 +28,7 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 private ["_variable","_variableType","_output"];
-	
+
 _variable = _this select 0;
 _variableType = typename _variable;
 _output = "";

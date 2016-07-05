@@ -31,9 +31,9 @@ _side = _this select 0;
 
 switch (_side) do
 {
-	case EAST: {0};
-	case WEST: {1};
-	case RESISTANCE: {2};
-	case CIVILIAN: {3};
+    case EAST: {0};
+    case WEST: {1};
+    case RESISTANCE: {2};
+    case CIVILIAN: {3};
     default {3};
 };
