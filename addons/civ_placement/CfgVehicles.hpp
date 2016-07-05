@@ -101,6 +101,11 @@ class CfgVehicles {
                                         class NONE
                                         {
                                                 name = "$STR_ALIVE_CP_SIZE_FILTER_NONE";
+                                                value = "0";
+                                        };
+                                        class VERYSMALL
+                                        {
+                                                name = "$STR_ALIVE_CP_SIZE_FILTER_VERYSMALL";
                                                 value = "160";
                                         };
                                         class SMALL

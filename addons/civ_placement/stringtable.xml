@@ -60,10 +60,13 @@
     <Original>Objective Size Filter:</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_COMMENT">
-    <Original>Filter objectives less than selected size</Original>
+    <Original>Filter objectives less than selected size. Danger! Not filtering may melt your computer.</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_NONE">
     <Original>Do not filter</Original>
+</Key>
+<Key ID="STR_ALIVE_CP_SIZE_FILTER_VERYSMALL">
+    <Original>Ignore tiny objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_SMALL">
     <Original>Ignore small objectives</Original>
