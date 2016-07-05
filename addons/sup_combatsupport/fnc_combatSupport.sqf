@@ -346,7 +346,13 @@ switch(_operation) do {
                             [[(units _grp select 0),_callsign], "fnc_setGroupID", false, false] spawn BIS_fnc_MP;
 
                             // Check vehicle can slingload
-                            _slingloading = [(configFile >> "CfgVehicles" >> _type >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue > 0 && _slingloading;
+                            private "_slingvalue";
+                            _slingvalue = [(configFile >> "CfgVehicles" >> _type >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue;
+                            if (!isNil "_slingvalue" && _slingloading) then {
+                                _slingloading = _slingvalue > 0;
+                            } else {
+                                _slingloading = false;
+                            };
 
                             // Spawn containers and cargo nets if slingloading is enabled?
                             if (_slingloading) then {
