@@ -4595,8 +4595,8 @@ If (_fileExists) then {
 
 	};
 
-	// FSF - Nziwasogo (5), Dariyah (7), Gunkizli(8)
-	if(_worldName == "pja305" || _worldName == "pja307" || _worldName == "pja308") then {
+	// FSF - Nziwasogo (5), Dariyah (7)
+	if(_worldName == "pja305" || _worldName == "pja307") then {
 
 	    ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
 	        "hangar"
