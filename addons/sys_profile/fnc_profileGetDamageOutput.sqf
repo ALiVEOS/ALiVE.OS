@@ -200,13 +200,8 @@ if ((_attacker select 2 select 5) == "entity") then {               // [_attacke
                             _critChance = 0.15;
                             _critDamage = 1;
                         } else {
-                            _accuracyModifier = (_attackDistance / 100000); // grab some value via config to make this more realistic and dynamic (mortars less accurate than mlrs)..?
-
                             // main gun
-                            _hitChance = 0.225;     // splash
-                            _damageOutput = 0.1;    // splash
-                            _critChance = 0.25;     // direct
-                            _critDamage = 2;        // direct
+                            _accuracyModifier = (_attackDistance / 100000);
 
                             _hitChance = 0.35 - _accuracyModifier;
                             _damageOutput = 0.15;
@@ -216,9 +211,9 @@ if ((_attacker select 2 select 5) == "entity") then {               // [_attacke
                     };
                     default {
                         _hitChance = 0.70;
-                        _damageOutput = 0.25;
-                        _critChance = 0.15;
-                        _critDamage = 1.1;
+                        _damageOutput = 0.20;
+                        _critChance = 0.2;
+                        _critDamage = 1.75;
                     };
                 };
             };
@@ -241,14 +236,287 @@ if ((_attacker select 2 select 5) == "entity") then {               // [_attacke
                 _critMultiplier = 2;
             };
             default {
-
+                _hitChance = 0.80;
+                _damageOutput = 0.15;
+                _critChance = 0.15;
+                _critDamage = 1;
             };
         };
 
     } else {
-_damageOutput = 0.2;
+
         // victim is in vehicle(s)
         // figure damage of veh vs veh
+
+        private _attackerObjectType = toLower (_attacker select 2 select 6);    // [_attacker,"objectType"] call ALiVE_fnc_hashGet
+        private _victimObjectType = toLower (_victim select 2 select 6);        // [_victim,"objectType"] call ALiVE_fnc_hashGet
+
+        switch (_attackerObjectType) do {
+            case "car": {
+                switch true do {
+                    case (_victimObjectType in ["car","truck"]): {
+                        _hitChance = 0.825;
+                        _damageOutput = 0.22;
+                        _critChance = 0.2;
+                        _critDamage = 0.8;
+                    };
+                    case (_victimObjectType in ["armored","tank"]): {
+                        _hitChance = 0.85;
+                        _damageOutput = 0.075;
+                        _critChance = 0.1;
+                        _critDamage = 0.5;
+                    };
+                    case (_victimObjectType == "ship"): {
+                        _hitChance = 0.65;
+                        _damageOutput = 0.25;
+                        _critChance = 0.2;
+                        _critDamage = 1.2;
+                    };
+                    case (_victimObjectType in ["helicopter","plane"]): {
+                        _hitChance = 0.25;
+                        _damageOutput = 0.28;
+                        _critChance = 0.1;
+                        _critDamage = 2;
+                    };
+                };
+            };
+            case "truck": {
+                switch true do {
+                    case (_victimObjectType in ["car","truck"]): {
+                        _hitChance = 0.825;
+                        _damageOutput = 0.24;
+                        _critChance = 0.2;
+                        _critDamage = 0.9;
+                    };
+                    case (_victimObjectType in ["armored","tank"]): {
+                        _hitChance = 0.85;
+                        _damageOutput = 0.085;
+                        _critChance = 0.1;
+                        _critDamage = 0.6;
+                    };
+                    case (_victimObjectType == "ship"): {
+                        _hitChance = 0.65;
+                        _damageOutput = 0.27;
+                        _critChance = 0.2;
+                        _critDamage = 1.3;
+                    };
+                    case (_victimObjectType in ["helicopter","plane"]): {
+                        _hitChance = 0.25;
+                        _damageOutput = 0.30;
+                        _critChance = 0.1;
+                        _critDamage = 2.1;
+                    };
+                };
+            };
+            case "armored": {
+                switch true do {
+                    case (_victimObjectType in ["car","truck"]): {
+                        _hitChance = 0.6;
+                        _damageOutput = 0.4;
+                        _critChance = 0.1;
+                        _critDamage = 1.3;
+                    };
+                    case (_victimObjectType in ["armored","tank"]): {
+                        _hitChance = 0.65;
+                        _damageOutput = 0.2;
+                        _critChance = 0.125;
+                        _critDamage = 1;
+                    };
+                    case (_victimObjectType == "ship"): {
+                        _hitChance = 0.35;
+                        _damageOutput = 0.5;
+                        _critChance = 0.075;
+                        _critDamage = 2;
+                    };
+                    case (_victimObjectType in ["helicopter","plane"]): {
+                        _hitChance = 0.25;
+                        _damageOutput = 0.4;
+                        _critChance = 0.1;
+                        _critDamage = 0.8;
+                    };
+                };
+            };
+            case "tank": {
+                private _attackerVehicleClass = _attacker select 2 select 11; // [_attacker,"vehicleClass"] call ALiVE_fnc_hashGet
+
+                switch true do {
+                    case ([_attackerVehicleClass] call ALiVE_fnc_isAA): {
+                        if (_victimObjectType in ["helicopter","plane"]) then {
+                            _hitChance = 0.38;
+                            _damageOutput = 0.3;
+                            _critChance = 0.25;
+                            _critDamage = 1;
+                        } else {
+                            _hitChance = 0.80;
+                            _damageOutput = 0.15;
+                            _critChance = 0.15;
+                            _critDamage = 0.5;
+                        };
+                    };
+                    case ([_attackerVehicleClass] call ALiVE_fnc_isArtillery): {
+                        _attackerPos = _attacker select 2 select 2; // [_attacker,"position"] call ALiVE_fnc_hashGet
+                        _victimPos = _victim select 2 select 2;     // [_victim,"position"] call ALiVE_fnc_hashGet
+                        _attackDistance = _attackerPos distance2D _victimPos;
+
+                        if (_attackDistance < 300) then {
+                            // secondary weapon
+                                switch true do {
+                                    case (_victimObjectType in ["car","truck"]): {
+                                        _hitChance = 0.825;
+                                        _damageOutput = 0.24;
+                                        _critChance = 0.2;
+                                        _critDamage = 1.4;
+                                    };
+                                    case (_victimObjectType in ["armored","tank"]): {
+                                        _hitChance = 0.85;
+                                        _damageOutput = 0.085;
+                                        _critChance = 0.1;
+                                        _critDamage = 0.2;
+                                    };
+                                    case (_victimObjectType == "ship"): {
+                                        _hitChance = 0.45;
+                                        _damageOutput = 0.3;
+                                        _critChance = 0.2;
+                                        _critDamage = 1.2;
+                                    };
+                                    case (_victimObjectType in ["helicopter","plane"]): {
+                                        _hitChance = 0.15;
+                                        _damageOutput = 0.5;
+                                        _critChance = 0.4;
+                                        _critDamage = 1.7;
+                                    };
+                                };
+                        } else {
+                            // main gun
+                            _accuracyModifier = (_attackDistance / 100000);
+
+                            switch true do {
+                                case (_victimObjectType in ["car","truck"]): {
+                                    _hitChance = 0.35 - _accuracyModifier;
+                                    _damageOutput = 0.4;
+                                    _critChance = _hitChance / 2.3;
+                                    _critDamage = 0.8;
+                                };
+                                case (_victimObjectType in ["armored","tank"]): {
+                                    _hitChance = 0.35 - _accuracyModifier;
+                                    _damageOutput = 0.3;
+                                    _critChance = _hitChance / 2.3;
+                                    _critDamage = 0.5;
+                                };
+                                case (_victimObjectType == "ship"): {
+                                    _hitChance = 0.35 - _accuracyModifier;
+                                    _damageOutput = 0.7;
+                                    _critChance = _hitChance / 2.3;
+                                    _critDamage = 1.4;
+                                };
+                                case (_victimObjectType in ["helicopter","plane"]): {
+                                    _hitChance = 0.01; // why not
+                                    _damageOutput = 0.15;
+                                    _critChance = 1;
+                                    _critDamage = 20;
+                                };
+                            };
+                        };
+                    };
+                    default {
+                        _hitChance = 0.70;
+                        _damageOutput = 0.20;
+                        _critChance = 0.2;
+                        _critDamage = 1.75;
+                    };
+                };
+            };
+            case "ship": {
+                switch true do {
+                    case (_victimObjectType in ["car","truck"]): {
+                        _hitChance = 0.75;
+                        _damageOutput = 0.25;
+                        _critChance = 0.2;
+                        _critDamage = 1.4;
+                    };
+                    case (_victimObjectType in ["armored","tank"]): {
+                        _hitChance = 0.85;
+                        _damageOutput = 0.11;
+                        _critChance = 0.1;
+                        _critDamage = 1;
+                    };
+                    case (_victimObjectType == "ship"): {
+                        _hitChance = 0.65;
+                        _damageOutput = 0.25;
+                        _critChance = 0.2;
+                        _critDamage = 1.2;
+                    };
+                    case (_victimObjectType in ["helicopter","plane"]): {
+                        _hitChance = 0.25;
+                        _damageOutput = 0.35;
+                        _critChance = 0.1;
+                        _critDamage = 2;
+                    };
+                };
+            };
+            case "helicopter": {
+                switch true do {
+                    case (_victimObjectType in ["car","truck"]): {
+                        _hitChance = 0.7;
+                        _damageOutput = 0.3;
+                        _critChance = 0.18;
+                        _critDamage = 1.5;
+                    };
+                    case (_victimObjectType in ["armored","tank"]): {
+                        _hitChance = 0.75;
+                        _damageOutput = 0.225;
+                        _critChance = 0.14;
+                        _critDamage = 1.5;
+                    };
+                    case (_victimObjectType == "ship"): {
+                        _hitChance = 0.5;
+                        _damageOutput = 0.2;
+                        _critChance = 0.1;
+                        _critDamage = 2;
+                    };
+                    case (_victimObjectType in ["helicopter","plane"]): {
+                        _hitChance = 0.25;
+                        _damageOutput = 0.24;
+                        _critChance = 0.3;
+                        _critDamage = 1.7;
+                    };
+                };
+            };
+            case "plane": {
+                switch true do {
+                    case (_victimObjectType in ["car","truck"]): {
+                        _hitChance = 0.4;
+                        _damageOutput = 0.7;
+                        _critChance = 0.2;
+                        _critDamage = 1;
+                    };
+                    case (_victimObjectType in ["armored","tank"]): {
+                        _hitChance = 0.47;
+                        _damageOutput = 0.4;
+                        _critChance = 0.18;
+                        _critDamage = 1.3;
+                    };
+                    case (_victimObjectType == "ship"): {
+                        _hitChance = 0.3;
+                        _damageOutput = 0.5;
+                        _critChance = 0.35;
+                        _critDamage = 1.5;
+                    };
+                    case (_victimObjectType in ["helicopter","plane"]): {
+                        _hitChance = 0.2;
+                        _damageOutput = 0.8;
+                        _critChance = 0.3;
+                        _critDamage = 2;
+                    };
+                };
+            };
+            default {
+                _hitChance = 0.65;
+                _damageOutput = 0.2;
+                _critChance = 0.125;
+                _critDamage = 1;
+            };
+        };
 
     };
 
