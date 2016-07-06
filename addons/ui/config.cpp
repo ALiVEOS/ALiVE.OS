@@ -107,10 +107,10 @@ class RscDisplayMain: RscStandardDisplay
             idc = 1202;
             text = "\x\alive\addons\UI\logo_alive_white.paa";
             tooltip = "$STR_ALIVE_UI_TOOLTIP_LOGO_ABOUT";
-            x = "safezoneX + safezoneW - 5.2 *             (            ((safezoneW / safezoneH) min 1.2) / 40)";
-            y = "21 *             (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) +             (safezoneY + safezoneH -             (            ((safezoneW / safezoneH) min 1.2) / 1.2))";
-            w = "3 *             (            ((safezoneW / safezoneH) min 1.2) / 40)";            
-            h = "1.5 *             (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";    
+            x = "safezoneX + safezoneW -        6.5 *   (pixelW * pixelGrid * 2) -  (4 * pixelH)";
+            y = "safezoneY + safezoneH - (3 *       2 +     1) *    (pixelH * pixelGrid * 2) - 4.5 *    (4 * pixelH)";
+            w = "3 *            (           ((safezoneW / safezoneH) min 1.2) / 40)";           
+            h = "1.5 *          (           (           ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";    
         };
     };
 };
