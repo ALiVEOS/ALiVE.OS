@@ -803,7 +803,10 @@ switch(_operation) do {
 
                 case "Marking": {
 
-                    private["_opcoms","_profilesBySide","_knownEnemiesBySide"];
+                    private[
+                        "_opcoms","_profilesBySide","_knownEnemiesBySide","_opcom","_profileByType",
+                        "_profIDs","_typeData","_profile","_profilePosition","_attackID"
+                    ];
 
                     // get inactive profiles available by limit set on intel
 
@@ -834,20 +837,21 @@ switch(_operation) do {
                         };
 
                         {
-                            private _opcom = _x;
-                            private _profileByType = [];
-                            private _side = [_opcom,"side","WEST"] call ALiVE_fnc_hashGet;
+                            _opcom = _x;
+                            _profileByType = [];
+                            _side = [_opcom,"side","WEST"] call ALiVE_fnc_hashGet;
 
                             {
-                                private _profIDs = [_opcom,_x,[]] call ALiVE_fnc_hashGet;
-                                private _typeData = [];
+                                _profIDs = [_opcom,_x,[]] call ALiVE_fnc_hashGet;
+                                _typeData = [];
 
                                 {
-                                    private _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                    _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
 
                                     if !(isnil "_profile") then {
-                                        private _profilePosition = _profile select 2 select 2;
-                                        _typeData pushback _profilePosition;
+                                        _profilePosition = _profile select 2 select 2;
+                                        _attackID = [_profile,"attackID", ""] call ALiVE_fnc_hashGet;
+                                        _typeData pushback [_profilePosition,_attackID];
                                     };
                                 } foreach _profIDs;
 
