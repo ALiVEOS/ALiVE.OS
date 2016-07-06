@@ -360,7 +360,7 @@ switch(_operation) do {
                                 _containers = [ALIVE_factionDefaultContainers,_faction,[]] call ALIVE_fnc_hashGet;
 
                                 if(count _containers == 0) then {
-                                    _containers = [ALIVE_sideDefaultContainers,_side] call ALIVE_fnc_hashGet;
+                                    _containers = [ALIVE_sideDefaultContainers,str(_side),[]] call ALIVE_fnc_hashGet;
                                 };
 
                                 If (count _containers > 0) then {
