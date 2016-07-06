@@ -34,6 +34,13 @@ ALIVE_factionDefaultResupplyVehicleOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyVehicleOptions, "BLU_G_F", ALIVE_globalDefaultResupplyVehicleOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyVehicleOptions, "CIV_F", ALIVE_globalDefaultResupplyVehicleOptions] call ALIVE_fnc_hashSet;
 
+// APEX
+[ALIVE_factionDefaultResupplyVehicleOptions, "OPF_T_F", ALIVE_globalDefaultResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "IND_C_F", ALIVE_globalDefaultResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "BLU_T_F", ALIVE_globalDefaultResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "BLU_CTRG_F", ALIVE_globalDefaultResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "Gendarmerie", ALIVE_globalDefaultResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+
 
 ALIVE_globalDefaultResupplyDefenceStoreOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_globalDefaultResupplyDefenceStoreOptions, "PR_AIRDROP", [["<< Back","Static","Fortifications","Tents","Military"],["<< Back","Static","Fortifications","Tents","Structures_Military"]]] call ALIVE_fnc_hashSet;
@@ -56,6 +63,12 @@ ALIVE_factionDefaultResupplyDefenceStoreOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyDefenceStoreOptions, "BLU_G_F", ALIVE_globalDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyDefenceStoreOptions, "CIV_F", ALIVE_globalDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
 
+// APEX
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "OPF_T_F", ALIVE_globalDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "IND_C_F", ALIVE_globalDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "BLU_T_F", ALIVE_globalDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "BLU_CTRG_F", ALIVE_globalDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "Gendarmerie", ALIVE_globalDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
 
 ALIVE_globalDefaultResupplyCombatSuppliesOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_globalDefaultResupplyCombatSuppliesOptions, "PR_AIRDROP", [["<< Back","Ammo"],["<< Back","Ammo"]]] call ALIVE_fnc_hashSet;
@@ -78,6 +91,13 @@ ALIVE_factionDefaultResupplyCombatSuppliesOptions = [] call ALIVE_fnc_hashCreate
 [ALIVE_factionDefaultResupplyCombatSuppliesOptions, "BLU_G_F", ALIVE_globalDefaultResupplyCombatSuppliesOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyCombatSuppliesOptions, "CIV_F", ALIVE_globalDefaultResupplyCombatSuppliesOptions] call ALIVE_fnc_hashSet;
 
+// APEX
+[ALIVE_factionDefaultResupplyCombatSuppliesOptions, "OPF_T_F", ALIVE_globalDefaultResupplyCombatSuppliesOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyCombatSuppliesOptions, "IND_C_F", ALIVE_globalDefaultResupplyCombatSuppliesOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyCombatSuppliesOptions, "BLU_T_F", ALIVE_globalDefaultResupplyCombatSuppliesOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyCombatSuppliesOptions, "BLU_CTRG_F", ALIVE_globalDefaultResupplyCombatSuppliesOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyCombatSuppliesOptions, "Gendarmerie", ALIVE_globalDefaultResupplyCombatSuppliesOptions] call ALIVE_fnc_hashSet;
+
 ALIVE_globalDefaultResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_globalDefaultResupplyIndividualOptions, "PR_AIRDROP", [["<< Back","Men","MenDiver","MenRecon","MenSniper","MenSupport"],["<< Back","Men","MenDiver","MenRecon","MenSniper","MenSupport"]]] call ALIVE_fnc_hashSet;
 [ALIVE_globalDefaultResupplyIndividualOptions, "PR_HELI_INSERT", [["<< Back","Men","MenDiver","MenRecon","MenSniper","MenSupport"],["<< Back","Men","MenDiver","MenRecon","MenSniper","MenSupport"]]] call ALIVE_fnc_hashSet;
@@ -99,6 +119,12 @@ ALIVE_factionDefaultResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyIndividualOptions, "BLU_G_F", ALIVE_globalDefaultResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "CIV_F", ALIVE_globalDefaultResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 
+// APEX
+[ALIVE_factionDefaultResupplyIndividualOptions, "OPF_T_F", ALIVE_globalDefaultResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "IND_C_F", ALIVE_globalDefaultResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "BLU_T_F", ALIVE_globalDefaultResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "BLU_CTRG_F", ALIVE_globalDefaultResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "Gendarmerie", ALIVE_globalDefaultResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 
 // THE FOLLOWING IS A BLACKLIST
 
@@ -122,5 +148,12 @@ ALIVE_factionDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyGroupOptions, "BLU_F", ALIVE_globalDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "BLU_G_F", ALIVE_globalDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "CIV_F", ALIVE_globalDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+
+//APEX
+[ALIVE_factionDefaultResupplyGroupOptions, "OPF_T_F", ALIVE_globalDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "IND_C_F", ALIVE_globalDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "BLU_T_F", ALIVE_globalDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "BLU_CTRG_F", ALIVE_globalDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "Gendarmerie", ALIVE_globalDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 
 // OVER

@@ -109,5 +109,28 @@ ALiVE_MIL_CQB_UNITBLACKLIST = ALiVE_MIL_CQB_CUSTOM_UNITBLACKLIST +
     "C_Driver_3_F",
     "C_Driver_4_F",
     "C_Marshal_F",
-    "C_man_pilot_F"
+    "C_man_pilot_F",
+
+     // APEX
+    "B_T_Crew_F",
+    "B_T_Pilot_F",
+    "B_T_Helicrew_F",
+    "B_T_diver_F",
+    "B_T_diver_TL_F",
+    "B_T_diver_exp_F",
+    "B_UAV_AI",
+
+    "B_CTRG_Miller_F",
+
+    "O_T_helipilot_F",
+    "O_T_diver_F",
+    "O_T_diver_TL_F",
+    "O_T_diver_exp_F",
+    "O_T_crew_F",
+    "O_T_Pilot_F",
+    "O_T_helicrew_F",
+
+    "I_C_helipilot_F",
+    "I_C_pilot_F",
+    "I_C_Soldier_Camo_F"
 ];
