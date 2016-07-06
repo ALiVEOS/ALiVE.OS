@@ -2130,103 +2130,163 @@ switch(_operation) do {
                     // create markers for each profile type
 
                     {
-                        _position = _x;
+                        _x params ["_position","_attackID"];
                         _profileMarker = format["%1_inf",_typePrefix];
 
                         _m = createMarkerLocal [format[MTEMPLATE,_profileCount], _position];
                         _m setMarkerShapeLocal "ICON";
-                        _m setMarkerSizeLocal [0.5,0.5];
+                        _m setMarkerSizeLocal [0.6,0.6];
                         _m setMarkerTypeLocal _profileMarker;
                         _m setMarkerColorLocal _color;
 
                         _markers pushback _m;
                         _profileCount = _profileCount + 1;
+
+                        if (_attackID != "") then {
+                            _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
+                            _m setMarkerShapeLocal "ICON";
+                            _m setMarkerSizeLocal [0.6,0.6];
+                            _m setMarkerTypeLocal "mil_warning";
+                            _m setMarkerColorLocal _color;
+                            _m setMarkerTextLocal "Combat";
+                            _markers pushback _m;
+                        };
 
                         false
                     } count _infantry;
 
                     {
-                        _position = _x;
+                        _x params ["_position","_attackID"];
                         _profileMarker = format["%1_motor_inf",_typePrefix];
 
                         _m = createMarkerLocal [format[MTEMPLATE, _profileCount], _position];
                         _m setMarkerShapeLocal "ICON";
-                        _m setMarkerSizeLocal [0.5,0.5];
+                        _m setMarkerSizeLocal [0.6,0.6];
                         _m setMarkerTypeLocal _profileMarker;
                         _m setMarkerColorLocal _color;
 
                         _markers pushback _m;
                         _profileCount = _profileCount + 1;
+
+                        if (_attackID != "") then {
+                            _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
+                            _m setMarkerShapeLocal "ICON";
+                            _m setMarkerSizeLocal [0.6,0.6];
+                            _m setMarkerTypeLocal "mil_warning";
+                            _m setMarkerColorLocal _color;
+                            _m setMarkerTextLocal "Combat";
+                            _markers pushback _m;
+                        };
 
                         false
                     } count _motorised;
 
                     {
-                        _position = _x;
+                        _x params ["_position","_attackID"];
                         _profileMarker = format["%1_mech_inf",_typePrefix];
 
                         _m = createMarkerLocal [format[MTEMPLATE, _profileCount], _position];
                         _m setMarkerShapeLocal "ICON";
-                        _m setMarkerSizeLocal [0.5,0.5];
+                        _m setMarkerSizeLocal [0.6,0.6];
                         _m setMarkerTypeLocal _profileMarker;
                         _m setMarkerColorLocal _color;
 
                         _markers pushback _m;
                         _profileCount = _profileCount + 1;
+
+                        if (_attackID != "") then {
+                            _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
+                            _m setMarkerShapeLocal "ICON";
+                            _m setMarkerSizeLocal [0.6,0.6];
+                            _m setMarkerTypeLocal "mil_warning";
+                            _m setMarkerColorLocal _color;
+                            _m setMarkerTextLocal "Combat";
+                            _markers pushback _m;
+                        };
 
                         false
                     } count _mechanized;
 
                     {
-                        _position = _x;
+                        _x params ["_position","_attackID"];
                         _profileMarker = format["%1_armor",_typePrefix];
 
                         _m = createMarkerLocal [format[MTEMPLATE, _profileCount], _position];
                         _m setMarkerShapeLocal "ICON";
-                        _m setMarkerSizeLocal [0.5,0.5];
+                        _m setMarkerSizeLocal [0.6,0.6];
                         _m setMarkerTypeLocal _profileMarker;
                         _m setMarkerColorLocal _color;
 
                         _markers pushback _m;
                         _profileCount = _profileCount + 1;
+
+                        if (_attackID != "") then {
+                            _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
+                            _m setMarkerShapeLocal "ICON";
+                            _m setMarkerSizeLocal [0.6,0.6];
+                            _m setMarkerTypeLocal "mil_warning";
+                            _m setMarkerColorLocal _color;
+                            _m setMarkerTextLocal "Combat";
+                            _markers pushback _m;
+                        };
 
                         false
                     } count _armor;
 
                     {
-                        _position = _x;
+                        _x params ["_position","_attackID"];
                         _profileMarker = format["%1_air",_typePrefix];
 
                         _m = createMarkerLocal [format[MTEMPLATE, _profileCount], _position];
                         _m setMarkerShapeLocal "ICON";
-                        _m setMarkerSizeLocal [0.5,0.5];
+                        _m setMarkerSizeLocal [0.6,0.6];
                         _m setMarkerTypeLocal _profileMarker;
                         _m setMarkerColorLocal _color;
 
                         _markers pushback _m;
                         _profileCount = _profileCount + 1;
+
+                        if (_attackID != "") then {
+                            _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
+                            _m setMarkerShapeLocal "ICON";
+                            _m setMarkerSizeLocal [0.6,0.6];
+                            _m setMarkerTypeLocal "mil_warning";
+                            _m setMarkerColorLocal _color;
+                            _m setMarkerTextLocal "Combat";
+                            _markers pushback _m;
+                        };
 
                         false
                     } count _air;
 
                     {
-                        _position = _x;
+                        _x params ["_position","_attackID"];
                         _profileMarker = format["%1_unknown",_typePrefix];
 
                         _m = createMarkerLocal [format[MTEMPLATE, _profileCount], _position];
                         _m setMarkerShapeLocal "ICON";
-                        _m setMarkerSizeLocal [0.5,0.5];
+                        _m setMarkerSizeLocal [0.6,0.6];
                         _m setMarkerTypeLocal _profileMarker;
                         _m setMarkerColorLocal _color;
 
                         _markers pushback _m;
                         _profileCount = _profileCount + 1;
 
+                        if (_attackID != "") then {
+                            _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
+                            _m setMarkerShapeLocal "ICON";
+                            _m setMarkerSizeLocal [0.6,0.6];
+                            _m setMarkerTypeLocal "mil_warning";
+                            _m setMarkerColorLocal _color;
+                            _m setMarkerTextLocal "Combat";
+                            _markers pushback _m;
+                        };
+
                         false
                     } count _sea;
 
                     {
-                        _position = _x;
+                        _x params ["_position","_attackID"];
                         _profileMarker = format["%1_art",_typePrefix];
 
                         _m = createMarkerLocal [format[MTEMPLATE, _profileCount], _position];
@@ -2238,11 +2298,21 @@ switch(_operation) do {
                         _markers pushback _m;
                         _profileCount = _profileCount + 1;
 
+                        if (_attackID != "") then {
+                            _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
+                            _m setMarkerShapeLocal "ICON";
+                            _m setMarkerSizeLocal [0.75,0.75];
+                            _m setMarkerTypeLocal "mil_warning";
+                            _m setMarkerColorLocal _color;
+                            _m setMarkerTextLocal "Combat";
+                            _markers pushback _m;
+                        };
+
                         false
                     } count _artillery;
 
                     {
-                        _position = _x;
+                        _x params ["_position","_attackID"];
                         _profileMarker = format["%1_mech_inf",_typePrefix];
 
                         _m = createMarkerLocal [format[MTEMPLATE, _profileCount], _position];
@@ -2253,6 +2323,16 @@ switch(_operation) do {
 
                         _markers pushback _m;
                         _profileCount = _profileCount + 1;
+
+                        if (_attackID != "") then {
+                            _m = createMarkerLocal [format[MTEMPLATE,_attackID], [_position select 0,(_position select 1) + 15]];
+                            _m setMarkerShapeLocal "ICON";
+                            _m setMarkerSizeLocal [0.75,0.75];
+                            _m setMarkerTypeLocal "mil_warning";
+                            _m setMarkerColorLocal _color;
+                            _m setMarkerTextLocal "Combat";
+                            _markers pushback _m;
+                        };
 
                         false
                     } count _AAA;
