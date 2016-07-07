@@ -1,11 +1,11 @@
-/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, insurgency">*/
+/*%FSM<COMPILE "G:\Program Files (x86)\Poseidon-SQF-Editor\Poseidon\Data\Packages\Bin\fsmEditor\scriptedFSM.cfg, insurgency">*/
 /*%FSM<HEAD>*/
 /*
 item0[] = {"INIT",0,250,-717.630066,-1005.371277,-627.630066,-955.371338,0.000000,"INIT"};
 item1[] = {"INIT_COMPLETE",4,218,-720.395935,-937.944458,-630.395935,-887.944458,0.000000,"INIT" \n "COMPLETE"};
 item2[] = {"INIT_INFO",2,250,-720.879761,-873.838257,-630.879761,-823.838257,0.000000,"INIT INFO"};
-item3[] = {"",7,210,-52.802883,324.913116,-44.802883,332.913116,0.000000,""};
-item4[] = {"ANALYZE_OBJECTIV",2,4346,-720.879822,-549.151001,-630.879822,-499.151001,0.000000,"ANALYZE" \n "OBJECTIVE"};
+item3[] = {"",7,210,30.010620,610.996094,38.010620,618.996094,0.000000,""};
+item4[] = {"ANALYZE_OBJECTIV",2,250,-720.879822,-549.151001,-630.879822,-499.151001,0.000000,"ANALYZE" \n "OBJECTIVE"};
 item5[] = {"ATTACK",4,218,-928.976746,-250.825409,-838.976746,-200.825378,1.000000,"ATTACK"};
 item6[] = {"DEFEND",4,218,-806.225098,-252.264771,-716.225098,-202.264740,2.000000,"DEFEND"};
 item7[] = {"TERRORIZE",4,218,-650.359680,-253.024353,-560.359680,-203.024323,3.000000,"TERRORIZE"};
@@ -25,15 +25,17 @@ item20[] = {"SECTION_READY",4,218,-723.792175,348.889465,-633.792175,398.889465,
 item21[] = {"EXECUTE_ACTIONS",2,250,-721.889343,429.850464,-631.889343,479.850464,0.000000,"EXECUTE" \n "ACTIONS"};
 item22[] = {"ACTIONS_FULFILLE",4,218,-718.649292,502.751404,-628.649292,552.751343,1.000000,"ACTIONS" \n "FULFILLED"};
 item23[] = {"DETERMINE_SUCCES",2,250,-717.763367,591.371216,-627.763367,641.371216,0.000000,"DETERMINE" \n "SUCCESS"};
-item24[] = {"SUCCESS",4,218,-1420.703369,594.125183,-1330.703369,644.125183,1.000000,"SUCCESS"};
-item25[] = {"FAIL",4,218,45.247391,594.838806,135.247589,644.838501,0.000000,"FAIL"};
-item26[] = {"",7,210,-1047.392578,-149.660080,-1039.392578,-141.660049,0.000000,""};
+item24[] = {"SUCCESS",4,218,-1086.939819,591.615662,-996.939819,641.615662,1.000000,"SUCCESS"};
+item25[] = {"FAIL",4,218,-393.915039,589.819763,-303.914917,639.819580,0.000000,"FAIL"};
+item26[] = {"",7,210,-1489.064575,613.227966,-1481.064575,621.227966,0.000000,""};
 item27[] = {"NO_GROUPS",4,218,-978.413635,72.215881,-888.414001,122.215843,0.000000,"NO" \n "GROUPS"};
 item28[] = {"RESET",2,250,-858.935120,-677.046692,-768.935242,-627.046387,0.000000,"RESET"};
 item29[] = {"DELAY",4,218,-721.785156,-677.785828,-631.785156,-627.785828,0.000000,"DELAY"};
 item30[] = {"RESET_1",2,250,-557.855774,-676.293335,-467.856445,-626.293030,0.000000,"RESET"};
 item31[] = {"ACTIONS_EXECUTIN",4,218,-969.264343,432.824890,-879.264343,482.824890,0.000000,"ACTIONS" \n "EXECUTING"};
 item32[] = {"IDLE",4,218,-920.655945,-363.002319,-830.655945,-313.002289,20.000000,"IDLE"};
+item33[] = {"EXIT",4,218,-179.589508,-871.612854,-89.589325,-821.612854,99.000000,"EXIT"};
+item34[] = {"END",1,4346,-179.605621,-745.501648,-89.605438,-695.501343,0.000000,"END"};
 link0[] = {0,1};
 link1[] = {1,2};
 link2[] = {2,29};
@@ -71,12 +73,15 @@ link33[] = {25,3};
 link34[] = {26,28};
 link35[] = {27,26};
 link36[] = {28,29};
-link37[] = {29,4};
-link38[] = {30,29};
-link39[] = {31,26};
-link40[] = {32,26};
-globals[] = {0.000000,0,0,0,16777215,640,480,1,135,6316128,1,-998.090088,-372.667175,18.127726,-1155.673096,414,777,1};
-window[] = {0,-1,-1,-1,-1,996,88,1640,88,1,431};
+link37[] = {28,33};
+link38[] = {29,4};
+link39[] = {30,29};
+link40[] = {30,33};
+link41[] = {31,26};
+link42[] = {32,26};
+link43[] = {33,34};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,137,6316128,1,-1434.610596,75.843719,94.666382,-1510.454346,718,763,1};
+window[] = {0,-1,-1,-1,-1,1081,380,1932,173,1,736};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -1596,6 +1601,16 @@ class FSM
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
       {
+        /*%FSM<LINK "EXIT">*/
+        class EXIT
+        {
+          priority = 99.000000;
+          to="END";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_exitFSM"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
         /*%FSM<LINK "DELAY">*/
         class DELAY
         {
@@ -1627,6 +1642,16 @@ class FSM
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
       {
+        /*%FSM<LINK "EXIT">*/
+        class EXIT
+        {
+          priority = 99.000000;
+          to="END";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_exitFSM"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
         /*%FSM<LINK "DELAY">*/
         class DELAY
         {
@@ -1650,10 +1675,22 @@ class FSM
       };
     };
     /*%FSM</STATE>*/
+    /*%FSM<STATE "END">*/
+    class END
+    {
+      name = "END";
+      init = /*%FSM<STATEINIT""">*/"[_OPCOM_HANDLER,""OPCOM_FSM""] call ALiVE_fnc_HashRem;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
   };
   initState="INIT";
   finalStates[] =
   {
+    "END"
   };
 };
 /*%FSM</COMPILE>*/

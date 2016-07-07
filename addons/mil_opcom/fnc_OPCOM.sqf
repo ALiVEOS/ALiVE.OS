@@ -1395,13 +1395,16 @@ switch(_operation) do {
             _opcomFSM = [_logic, "OPCOM_FSM",-1] call ALiVE_fnc_HashGet;
             _tacomFSM = [_logic, "TACOM_FSM",-1] call ALiVE_fnc_HashGet;
 
-            _tacomFSM setFSMvariable ["_exitFSM",true];
-            _opcomFSM setFSMvariable ["_exitFSM",true];
-            _opcomFSM setFSMvariable ["_busy",false];
-            _tacomFSM setFSMvariable ["_busy",false];
-
-            waituntil {sleep 1; isnil {[_logic, "TACOM_FSM"] call ALiVE_fnc_HashGet}};
-            waituntil {sleep 1; isnil {[_logic, "OPCOM_FSM"] call ALiVE_fnc_HashGet}};
+            if (_tacomFSM != -1) then {
+                _tacomFSM setFSMvariable ["_exitFSM",true];
+                _tacomFSM setFSMvariable ["_busy",false];
+                waituntil {sleep 1; isnil {[_this select 0, "TACOM_FSM"] call ALiVE_fnc_HashGet}};
+            };
+            if (_opcomFSM != -1) then {
+                _opcomFSM setFSMvariable ["_exitFSM",true];
+                _opcomFSM setFSMvariable ["_busy",false];
+                waituntil {sleep 1; isnil {[_this select 0, "OPCOM_FSM"] call ALiVE_fnc_HashGet}};
+            };
 
             ["ALiVE OPCOM stopped..."] call ALiVE_fnc_Dump;
 
