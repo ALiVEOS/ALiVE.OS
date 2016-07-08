@@ -48,13 +48,13 @@ _custom = _this select 1;
     [">>>>>>>>>>>>>>>>>> Starting indexing for %1 map", worldName] call ALiVE_fnc_dump;
 
     // Create parsed objects file for map
-    [">>>>>>>>>>>>>>>>>> Calling DeWRP to get list of objects"] call ALiVE_fnc_dump;
+    [">>>>>>>>>>>>>>>>>> Creating a list of objects (excluding blacklist)"] call ALiVE_fnc_dump;
     _result = "ALiVEClient" callExtension format["StartIndex~%1|%2",_path, worldName];
     //_result = "SUCCESS";
 
     If (_result != "SUCCESS") exitwith {
-        [">>>>>>>>>>>>>>>>>> There was a problem, exiting indexing"] call ALiVE_fnc_dump;
-        ["ALiVE Map Indexer","There was a problem, exiting indexing"] call ALiVE_fnc_sendHint;
+        [">>>>>>>>>>>>>>>>>> There was a problem, exiting indexing: %1", _result] call ALiVE_fnc_dump;
+        ["ALiVE Map Indexer","There was a problem, exiting indexing, check RPT"] call ALiVE_fnc_sendHint;
     };
 
     // Load in new object array
