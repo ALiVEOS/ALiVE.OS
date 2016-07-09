@@ -906,8 +906,14 @@ switch(_operation) do {
                         _nodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
                         //[_x, "debug", true] call ALIVE_fnc_cluster;
                         {
-                            _position = position _x;
-                            _direction = direction _x;
+                            if (_x isKindOf "HeliH") then {
+                                _position = position _x;
+                                _direction = direction _x;
+                            } else {
+                                _helipad = nearestObject [position _x, "HeliH"];
+                                _position = position _helipad;
+                                _direction = direction _helipad;
+                            };
                             _vehicleClass = _heliClasses call BIS_fnc_selectRandom;
                             if(random 1 > 0.8) then {
                                 [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
