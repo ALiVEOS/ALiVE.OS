@@ -17,7 +17,6 @@ ALIVE_mapBounds = [] call ALIVE_fnc_hashCreate;
 [ALIVE_mapBounds, "fata", 11000] call ALIVE_fnc_hashSet;
 [ALIVE_mapBounds, "hellskitchen", 6000] call ALIVE_fnc_hashSet;
 [ALIVE_mapBounds, "hellskitchens", 6000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "pja305", 21000] call ALIVE_fnc_hashSet;
 [ALIVE_mapBounds, "Celle", 11000] call ALIVE_fnc_hashSet;
 [ALIVE_mapBounds, "Takistan", 13000] call ALIVE_fnc_hashSet;
 [ALIVE_mapBounds, "praa_av", 6000] call ALIVE_fnc_hashSet;
@@ -3743,115 +3742,6 @@ If (_fileExists) then {
 
         ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + [
             "house"
-        ];
-
-        ALIVE_civilianPopulationBuildingTypes = ALIVE_civilianSettlementBuildingTypes;
-
-    };
-
-    // FSF - Nziwasogo (5)
-    if(_worldName == "pja305") then {
-
-        ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
-            "hangar"
-        ];
-
-        ALIVE_militaryParkingBuildingTypes = ALIVE_militaryParkingBuildingTypes + [
-            "fortified"
-        ];
-
-        ALIVE_militarySupplyBuildingTypes = ALIVE_militarySupplyBuildingTypes + [
-            "barrack",
-            "mil_house",
-            "mil_controltower",
-            "fortified"
-        ];
-
-        ALIVE_militaryHQBuildingTypes = ALIVE_militaryHQBuildingTypes + [
-            "barrack",
-            "mil_house",
-            "mil_guardhouse",
-            "mil_controltower"
-        ];
-
-        ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [
-
-        ];
-
-        ALIVE_civilianAirBuildingTypes = ALIVE_civilianAirBuildingTypes + [
-            "ss_hangar",
-            "hangar_2",
-            "hangar"
-        ];
-
-        ALIVE_militaryHeliBuildingTypes = ALIVE_militaryHeliBuildingTypes + [
-
-        ];
-
-        ALIVE_civilianHeliBuildingTypes = ALIVE_civilianHeliBuildingTypes + [
-
-        ];
-
-        ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [
-            "vez",
-            "watchtower",
-            "fortified"
-        ];
-
-        ALIVE_civilianHQBuildingTypes = ALIVE_civilianHQBuildingTypes + [
-            "a_office01",
-            "a_office02"
-        ];
-
-        ALIVE_civilianPowerBuildingTypes = ALIVE_civilianPowerBuildingTypes + [
-            "pec_",
-            "powerstation",
-            "trafostanica"
-        ];
-
-        ALIVE_civilianCommsBuildingTypes = ALIVE_civilianCommsBuildingTypes + [
-            "illuminanttower",
-            "vysilac_fm",
-            "telek"
-        ];
-
-        ALIVE_civilianMarineBuildingTypes = ALIVE_civilianMarineBuildingTypes + [
-            "crane",
-            "wtower",
-            "najezd",
-            "cargo"
-        ];
-
-        ALIVE_civilianRailBuildingTypes = ALIVE_civilianRailBuildingTypes + [
-            "stationhouse"
-        ];
-
-        ALIVE_civilianFuelBuildingTypes = ALIVE_civilianFuelBuildingTypes + [
-            "fuelstation",
-            "expedice",
-            "indpipe",
-            "komin",
-            "ind_tankbig",
-            "fuel_tank_big"
-        ];
-
-        ALIVE_civilianConstructionBuildingTypes = ALIVE_civilianConstructionBuildingTypes + [
-            "ind_mlyn_01",
-            "ind_pec_01",
-            "wip",
-            "sawmillpen",
-            "workshop",
-            "coltan"
-        ];
-
-        ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + [
-            "hospital",
-            "dum",
-            "shed",
-            "hut",
-            "house",
-            "minaret",
-            "mosque"
         ];
 
         ALIVE_civilianPopulationBuildingTypes = ALIVE_civilianSettlementBuildingTypes;
