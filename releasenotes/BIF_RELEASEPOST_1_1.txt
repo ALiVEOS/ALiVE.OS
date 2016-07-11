@@ -1,0 +1,68 @@
+[center][url=https://github.com/ALiVEOS/ALiVE.OS.git][img=http://i.imgur.com/RFX0nkZ.jpg][/url][/center]
+[center][b][url=http://alivemod.com/]ALiVEmod.com[/url]
+[size=4]The next generation dynamic persistent mission addon for ArmA3[/size][/b][/center]
+
+[center][b]Release 1.0.8[/b][/center]
+
+[b]Apex Features![/b]
+We're as excited by the Apex release as everyone else and have been working hard to ensure ALiVE supports the expansion.  This major release brings compatability with Apex and the Tanoa map as well as new features, major overhauls of existing functionality and several fixes and tweaks.
+
+[u]Military Logistics Overhaul[/u]
+Tupolov has been elbows deep in the Logistics code.  Military Logistics and the associated Player Combat Logistics requests have been reworked to be more streamlined and reliable.  When the Virtual AI Commander requests Battle Casualty Replacements, the Logistics Commander will determine the best method of delivery to the front line dependent on the route and type of units requested.  For example, if there is water in the way he will prefer airborne insertion using transport helicopters, slingloading light vehicles and dropping infantry.  Regular profiles will still move across water though - nothing we can do about that at the moment.
+
+Transport helicopters can now sling load light vehicles giving more flexibility to both players and AI.  When placing Combat Support Transport units, mission editors can select whether the helicopter is capable of sling loading.  Note that the ability to lift objects and vehicles is still dependent on the size and weight - a littlebird will not be able to lift a tank!  A number of cargo boxes will automatically be added that can be filled with kit and underslung for convenience (we're aware that this may not be to everyone's taste but it's a placeholder until we figure out a slicker method of providing slingable transport crates).  Before ordering a transport heli to pick up an object, players should take care to ensure the surrounding area is clear so the AI pilot knows which object to pick up.  It helps to put a marker on the map over the object to be lifted to assist with accurate selection.  As this is a new feature it is prone to bugs so please report any issues on our bug tracker on github.
+
+[u]Virtual Battle Overhaul[/u]
+SpyderBlack has introduced the first part of a major enhancement to the virtual battles between profiled units.  The relative strength of units is now taken into account in every engagement and virtual entities will take damage and casualties as the battle progresses, so even if they defeat the enemy they may be in a reduced state. The overall outcome is that virtual battles tend to be longer, larger in scale and players can immediately see the impact when units spawn into the visual world.  Additionally, AI Commanders can now task air units to provide Close Air Support for virtual battles and future plans include the ability to request artillery and reinforcements from nearby units to assist in the battle.
+
+[u]Intelligence[/u]
+We are working on developing more feedback to players to indicate what is going on behind the scenes in the Virtual world.  Eventually this will take the form of an Intelligence Overhaul, reworking the rather disjointed map indications into a more realistic and comprehensive intel suite integrated into the C2ISTAR tablet.  For now though, we have added some indications of when a virtual battle is taking place so players know where to go to get in on the action.
+
+[u]More Maps[/u]
+Friznit has been working closely with members of the community to index more maps.  The momentum is really beginning to build with the indexing tools and we are cracking through the [url=https://github.com/ALiVEOS/ALiVE.OS/issues/9]backlog[/url].  New maps indices have been added for Diyala, Sugar Lake, Nogova, Sarugao A3, Bozcaada and of course Tanoa.  We have also updated the indices for N'Ziwasogo v0.94, Al Rayak v0043.  More to follow soon!  Instructions for using the Map Indexer can be found [url=http://alivemod.com/wiki/index.php/Map_Indexing]on our wiki[/url]
+
+
+[center][b][url=http://alivemod.com/#Download]Download[/url][/b]
+
+Grab the latest version from [url=http://alivemod.com/#Download]ALiVEmod.com[/url]
+Also available from PlayWithSix, ArmAholic and Steam (Usually within 24 hours of this post)[/center]
+
+Please note that as with all updates, if you have an issue loading a mission made with a previous version of ALiVE, delete and replace the modules in that mission.
+
+
+[center][b][url=http://alivemod.com/#ALiVEWarRoom]Join the War Room Now![/url][/b][/center]
+
+[b]Manual[/b]
+Please refer to the [url=http://www.alivemod.com/wiki]ALiVE Wiki[/url]. All the info you need is there. If anything is missing or unclear, please let us know.
+
+[b]Are you using Linux?[/b]
+ALiVE is fully supported on a Linux Dedicated Server (as well as Windows). In fact the ALiVE Official Server for testing is running Ubuntu. Here are some tips on getting ALiVE running smoothly on Linux and integrated with War Room - [url=http://www.alivemod.com/forum/1916-setting-up-linux-dedi-server]http://www.alivemod.com/forum/1916-setting-up-linux-dedi-server[/url]
+
+[b]Support Forum[/b]
+For direct support and feedback from the ALiVE dev team, join us on our forum at [url=http://alivemod.com/forum/]http://alivemod.com/forum/[/url].
+[b]Please avoid posting issues/questions related to bugs etc on this thread. Devs and support will answer questions on our forum.[/b]
+
+[b]Release Highlights[/b]
+[LIST]
+[*]Added BIS radio messages to Combat & Logistics Support Requests[/*]
+[*]Added ability to delete SITREPs and Patrol Report markers(Default Shift+Del).  Reports will be removed from notes after mission restart[/*]
+[*]Military Logistics overhauled[/*]
+[*]Virtual AI battle mechanics overhauled[/*]
+[*]Added Map Indices: Diyala, Sugar Lake, Nogova, Sarugao A3, Bozcaada, Tanoa[/*]
+[*]Re-indexed: N'Ziwasogo v0.94, Al Rayak v0043
+[*]Enhanced Virtual AI spawning speed and fluidity[/*]
+[/LIST]
+See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
+
+[b]Acknowledgements and Thanks[/b]
+Particular thanks to all those on our support forum who have worked closely with us to identify bugs, provide logs and generally help us improve ALiVE. Your assistance is valuable and your dedication to ALiVE makes it all worth the effort!
+
+[b]Disclaimer[/b]
+We may need to prune the persistent database data from the War Room, eliminating data that is older than 6-12 months. The ALiVE War Room database is run on a voluntary basis at a cost to the ALiVE development team. No guarantees can be given on the mission data stored or the availability of the service. We apologise for any downtime that may impact your MP persistent missions.
+
+[b]ALiVE has transformed my Arma 3 experience, how can I thank you?[/b]
+Please consider making a contribution to our server costs if you enjoy ALiVE! It costs us $65 per month to run our War Room website and the ALiVE Database servers and every little helps. Donate here [url=http://www.alivemod.com/#Donate]http://www.alivemod.com/#Donate[/url]
+
+Special thanks to everyone here for supporting us with donations to the ALiVE mod development effort.
+
+Have fun!
