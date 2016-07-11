@@ -208,16 +208,36 @@ class CfgVehicles {
                                                 value = "BLU_F";
                                                 default = 1;
                                         };
+                                        class NATOPACIFIC
+                                        {
+                                                name = "NATO (Pacific)";
+                                                value = "BLU_T_F";
+                                        };
+                                        class NATO_CTRG
+                                        {
+                                                name = "NATO (CTRG)";
+                                                value = "BLU_CTRG_F";
+                                        };                                         
                                         class IRAN
                                         {
                                                 name = "CSAT";
                                                 value = "OPF_F";
                                         };
+                                        class IRANPACIFIC
+                                        {
+                                                name = "CSAT (Pacific)";
+                                                value = "OPF_T_F";
+                                        };                                        
                                         class GREEKARMY
                                         {
                                                 name = "AAF";
                                                 value = "IND_F";
                                         };
+                                        class SYNDIKAT
+                                        {
+                                                name = "Syndikat";
+                                                value = "IND_C_F";
+                                        };                                        
                                         class REBELS_BLU
                                         {
                                                 name = "REBELS BLU";
@@ -241,27 +261,41 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_OPCOM_FACTION_COMMENT";
                                 class Values
                                 {
-                                        class NONE
-                                        {
-                                                name = "NONE";
-                                                value = "NONE";
-                                                default = 1;
-                                        };
                                         class NATO
                                         {
                                                 name = "NATO";
                                                 value = "BLU_F";
                                         };
+                                        class NATOPACIFIC
+                                        {
+                                                name = "NATO (Pacific)";
+                                                value = "BLU_T_F";
+                                        };
+                                        class NATO_CTRG
+                                        {
+                                                name = "NATO (CTRG)";
+                                                value = "BLU_CTRG_F";
+                                        };                                         
                                         class IRAN
                                         {
                                                 name = "CSAT";
                                                 value = "OPF_F";
                                         };
+                                        class IRANPACIFIC
+                                        {
+                                                name = "CSAT (Pacific)";
+                                                value = "OPF_T_F";
+                                        };                                        
                                         class GREEKARMY
                                         {
                                                 name = "AAF";
                                                 value = "IND_F";
                                         };
+                                        class SYNDIKAT
+                                        {
+                                                name = "Syndikat";
+                                                value = "IND_C_F";
+                                        };                                        
                                         class REBELS_BLU
                                         {
                                                 name = "REBELS BLU";
@@ -271,6 +305,12 @@ class CfgVehicles {
                                         {
                                                 name = "REBELS RED";
                                                 value = "OPF_G_F";
+                                        };
+                                        class NONE
+                                        {
+                                                name = "NONE";
+                                                value = "NONE";
+                                                default = 1;
                                         };
                                 };
                         };
@@ -280,27 +320,41 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_OPCOM_FACTION_COMMENT";
                                 class Values
                                 {
-                                        class NONE
-                                        {
-                                                name = "NONE";
-                                                value = "NONE";
-                                                default = 1;
-                                        };
-                                        class NATO
+class NATO
                                         {
                                                 name = "NATO";
                                                 value = "BLU_F";
                                         };
+                                        class NATOPACIFIC
+                                        {
+                                                name = "NATO (Pacific)";
+                                                value = "BLU_T_F";
+                                        };
+                                        class NATO_CTRG
+                                        {
+                                                name = "NATO (CTRG)";
+                                                value = "BLU_CTRG_F";
+                                        };                                         
                                         class IRAN
                                         {
                                                 name = "CSAT";
                                                 value = "OPF_F";
                                         };
+                                        class IRANPACIFIC
+                                        {
+                                                name = "CSAT (Pacific)";
+                                                value = "OPF_T_F";
+                                        };                                        
                                         class GREEKARMY
                                         {
                                                 name = "AAF";
                                                 value = "IND_F";
                                         };
+                                        class SYNDIKAT
+                                        {
+                                                name = "Syndikat";
+                                                value = "IND_C_F";
+                                        };                                        
                                         class REBELS_BLU
                                         {
                                                 name = "REBELS BLU";
@@ -310,6 +364,12 @@ class CfgVehicles {
                                         {
                                                 name = "REBELS RED";
                                                 value = "OPF_G_F";
+                                        };
+                                        class NONE
+                                        {
+                                                name = "NONE";
+                                                value = "NONE";
+                                                default = 1;
                                         };
                                 };
                         };
@@ -319,27 +379,41 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_OPCOM_FACTION_COMMENT";
                                 class Values
                                 {
-                                        class NONE
-                                        {
-                                                name = "NONE";
-                                                value = "NONE";
-                                                default = 1;
-                                        };
                                         class NATO
                                         {
                                                 name = "NATO";
                                                 value = "BLU_F";
                                         };
+                                        class NATOPACIFIC
+                                        {
+                                                name = "NATO (Pacific)";
+                                                value = "BLU_T_F";
+                                        };
+                                        class NATO_CTRG
+                                        {
+                                                name = "NATO (CTRG)";
+                                                value = "BLU_CTRG_F";
+                                        };                                         
                                         class IRAN
                                         {
                                                 name = "CSAT";
                                                 value = "OPF_F";
                                         };
+                                        class IRANPACIFIC
+                                        {
+                                                name = "CSAT (Pacific)";
+                                                value = "OPF_T_F";
+                                        };                                        
                                         class GREEKARMY
                                         {
                                                 name = "AAF";
                                                 value = "IND_F";
                                         };
+                                        class SYNDIKAT
+                                        {
+                                                name = "Syndikat";
+                                                value = "IND_C_F";
+                                        };                                        
                                         class REBELS_BLU
                                         {
                                                 name = "REBELS BLU";
@@ -349,6 +423,12 @@ class CfgVehicles {
                                         {
                                                 name = "REBELS RED";
                                                 value = "OPF_G_F";
+                                        };
+                                        class NONE
+                                        {
+                                                name = "NONE";
+                                                value = "NONE";
+                                                default = 1;
                                         };
                                 };
                         };
