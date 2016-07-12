@@ -2814,7 +2814,11 @@ switch(_operation) do {
         // Display Current Force Pool
         private ["_forcePool","_forcePoolStatus"];
         _forcePoolStatus = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ForcePool);
-        _forcePool = [ALIVE_globalForcePool,faction player] call ALIVE_fnc_hashGet;
+        if (!isNil "ALIVE_globalForcePool") then {
+            _forcePool = [ALIVE_globalForcePool,faction player,0] call ALIVE_fnc_hashGet;
+        } else {
+            _forcePool = "WAITING...";
+        };
         _forcePoolStatus ctrlSetText format["Current Force Pool: %1",_forcePool];
         _forcePoolStatus ctrlShow true;
 
