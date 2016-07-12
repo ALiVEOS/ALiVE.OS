@@ -2,15 +2,15 @@
 [center][b][url=http://alivemod.com/]ALiVEmod.com[/url]
 [size=4]The next generation dynamic persistent mission addon for ArmA3[/size][/b][/center]
 
-[center][b]Release 1.0.8[/b][/center]
+[center][b]Release 1.1.0[/b][/center]
 
 [b]Apex Features![/b]
-We're as excited by the Apex release as everyone else and have been working hard to ensure ALiVE supports the expansion.  This major release brings compatability with Apex and the Tanoa map as well as new features, major overhauls of existing functionality and several fixes and tweaks.
+We're as excited by the Apex release as everyone else and have been working hard to ensure ALiVE supports the expansion.  This major release brings compatability with Apex and the Tanoa map as well as new features, major overhauls of existing functionality and several fixes and tweaks. ALiVE modules now allow mission makers to choose the APEX factions. The appropriate faction vehicles, weapons and supplies are spawned where necessary along with faction groups. ALiVE also includes a "map index" of Tanoa in order for ALiVE AI commanders to operate throughout the AO. Many thanks to the Bohemia Interactive and specifically their Tools Commissioner Julien Vida for providing us with a critical data export.
 
 [u]Military Logistics Overhaul[/u]
-Tupolov has been elbows deep in the Logistics code.  Military Logistics and the associated Player Combat Logistics requests have been reworked to be more streamlined and reliable.  When the Virtual AI Commander requests Battle Casualty Replacements, the Logistics Commander will determine the best method of delivery to the front line dependent on the route and type of units requested.  For example, if there is water in the way he will prefer airborne insertion using transport helicopters, slingloading light vehicles and dropping infantry.  Regular profiles will still move across water though - nothing we can do about that at the moment.
+Tupolov has been elbows deep in the Logistics code.  Military Logistics and the associated Player Combat Logistics requests have been reworked to be more streamlined and reliable.  When the Virtual AI Commander requests Battle Casualty Replacements, the Logistics Commander will determine the best method of delivery to the front line dependent on the route and type of units requested.  For example, if there is water in the way he will prefer airborne insertion using transport helicopters, slingloading light vehicles and dropping infantry. 
 
-Transport helicopters can now sling load light vehicles giving more flexibility to both players and AI.  When placing Combat Support Transport units, mission editors can select whether the helicopter is capable of sling loading.  Note that the ability to lift objects and vehicles is still dependent on the size and weight - a littlebird will not be able to lift a tank!  A number of cargo boxes will automatically be added that can be filled with kit and underslung for convenience (we're aware that this may not be to everyone's taste but it's a placeholder until we figure out a slicker method of providing slingable transport crates).  Before ordering a transport heli to pick up an object, players should take care to ensure the surrounding area is clear so the AI pilot knows which object to pick up.  It helps to put a marker on the map over the object to be lifted to assist with accurate selection.  As this is a new feature it is prone to bugs so please report any issues on our bug tracker on github.
+Transport helicopters can now sling load light vehicles and containers giving more flexibility to both players and AI.  When placing Combat Support Transport units, mission editors can select whether the helicopter is capable of sling loading.  Note that the ability to lift objects and vehicles is still dependent on the size and weight - a littlebird will not be able to lift a tank!  A number of cargo boxes will automatically be added that can be filled with kit and underslung for convenience (we're aware that this may not be to everyone's taste but it's a placeholder until we figure out a slicker method of providing slingable transport crates).  Before ordering a transport heli to pick up an object, players should take care to ensure the surrounding area is clear so the AI pilot knows which object to pick up.  It helps to put a marker on the map over the object to be lifted to assist with accurate selection.  As this is a new feature it is prone to bugs so please report any issues on our bug tracker on github.
 
 [u]Virtual Battle Overhaul[/u]
 SpyderBlack has introduced the first part of a major enhancement to the virtual battles between profiled units.  The relative strength of units is now taken into account in every engagement and virtual entities will take damage and casualties as the battle progresses, so even if they defeat the enemy they may be in a reduced state. The overall outcome is that virtual battles tend to be longer, larger in scale and players can immediately see the impact when units spawn into the visual world.  Additionally, AI Commanders can now task air units to provide Close Air Support for virtual battles and future plans include the ability to request artillery and reinforcements from nearby units to assist in the battle.
@@ -21,14 +21,12 @@ We are working on developing more feedback to players to indicate what is going 
 [u]More Maps[/u]
 Friznit has been working closely with members of the community to index more maps.  The momentum is really beginning to build with the indexing tools and we are cracking through the [url=https://github.com/ALiVEOS/ALiVE.OS/issues/9]backlog[/url].  New maps indices have been added for Diyala, Sugar Lake, Nogova, Sarugao A3, Bozcaada and of course Tanoa.  We have also updated the indices for N'Ziwasogo v0.94, Al Rayak v0043.  More to follow soon!  Instructions for using the Map Indexer can be found [url=http://alivemod.com/wiki/index.php/Map_Indexing]on our wiki[/url]
 
-
 [center][b][url=http://alivemod.com/#Download]Download[/url][/b]
 
 Grab the latest version from [url=http://alivemod.com/#Download]ALiVEmod.com[/url]
 Also available from PlayWithSix, ArmAholic and Steam (Usually within 24 hours of this post)[/center]
 
 Please note that as with all updates, if you have an issue loading a mission made with a previous version of ALiVE, delete and replace the modules in that mission.
-
 
 [center][b][url=http://alivemod.com/#ALiVEWarRoom]Join the War Room Now![/url][/b][/center]
 
@@ -45,12 +43,13 @@ For direct support and feedback from the ALiVE dev team, join us on our forum at
 [b]Release Highlights[/b]
 [LIST]
 [*]Added BIS radio messages to Combat & Logistics Support Requests[/*]
-[*]Added ability to delete SITREPs and Patrol Report markers(Default Shift+Del).  Reports will be removed from notes after mission restart[/*]
+[*]Added ability to delete SITREPs and Patrol Report markers (Default Shift+Del).  Reports will be removed from notes after mission restart[/*]
 [*]Military Logistics overhauled[/*]
 [*]Virtual AI battle mechanics overhauled[/*]
 [*]Added Map Indices: Diyala, Sugar Lake, Nogova, Sarugao A3, Bozcaada, Tanoa[/*]
 [*]Re-indexed: N'Ziwasogo v0.94, Al Rayak v0043
 [*]Enhanced Virtual AI spawning speed and fluidity[/*]
+[*]Bug fixes and minor enhancements[/*]
 [/LIST]
 See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
 
