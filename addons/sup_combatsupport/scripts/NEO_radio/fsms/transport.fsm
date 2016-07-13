@@ -1,4 +1,4 @@
-/*%FSM<COMPILE "G:\Program Files (x86)\Poseidon-SQF-Editor\Poseidon\Data\Packages\Bin\fsmEditor\scriptedFSM.cfg, transport">*/
+/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, transport">*/
 /*%FSM<HEAD>*/
 /*
 item0[] = {"react",0,250,-39.125454,36.278599,50.874546,86.278595,0.000000,"react"};
@@ -48,7 +48,7 @@ item43[] = {"__14",2,250,506.656189,418.252380,596.656372,468.252380,0.000000,""
 item44[] = {"circle_around",4,218,505.904175,528.194092,595.904175,578.194092,0.000000,"circle around"};
 item45[] = {"insertion",4,218,883.858765,349.619659,973.858765,399.619659,0.000000,"insertion"};
 item46[] = {"__15",2,250,876.583252,438.693390,966.583252,488.693451,0.000000,""};
-item47[] = {"at_insertion",4,218,885.664551,522.563660,975.664551,572.563660,0.000000,"at insertion"};
+item47[] = {"at_insertion",4,4314,885.664551,522.563660,975.664551,572.563660,0.000000,"at insertion"};
 item48[] = {"__16",2,250,906.067444,620.030151,996.067444,670.030151,0.000000,""};
 item49[] = {"At_roping_point",4,218,912.881775,715.185608,1002.881775,765.185608,0.000000,"At roping point"};
 item50[] = {"__17",2,250,536.356384,708.025879,626.355835,758.025879,0.000000,""};
@@ -59,7 +59,7 @@ item54[] = {"UNHOOK",4,218,1186.683960,349.877991,1276.683960,399.877991,0.00000
 item55[] = {"__19",2,250,1183.981445,684.108337,1273.981445,734.108276,0.000000,""};
 item56[] = {"unhooked",4,218,1181.604248,774.595581,1271.604248,824.595581,0.000000,"unhooked"};
 item57[] = {"__20",2,250,1049.166382,849.991333,1139.166382,899.991333,0.000000,""};
-item58[] = {"__21",2,4346,1185.907104,883.400879,1275.907104,933.400879,0.000000,""};
+item58[] = {"__21",2,250,1185.907104,883.400879,1275.907104,933.400879,0.000000,""};
 item59[] = {"__22",2,250,1041.955566,451.457031,1131.955566,501.457031,0.000000,""};
 item60[] = {"Viable",4,218,1046.889648,558.483643,1136.889648,608.483643,0.000000,"Viable"};
 item61[] = {"__23",2,250,1187.947144,450.078339,1277.947144,500.078339,0.000000,""};
@@ -157,8 +157,8 @@ link87[] = {61,63};
 link88[] = {62,55};
 link89[] = {63,64};
 link90[] = {64,4};
-globals[] = {0.000000,0,0,0,0,640,480,1,41,6316128,1,-166.938843,1363.046997,1400.909424,-235.779587,889,951,1};
-window[] = {2,-1,-1,-32000,-32000,887,150,1410,150,3,907};
+globals[] = {0.000000,0,0,0,0,640,480,1,41,6316128,1,525.222900,1301.971924,1055.114746,285.354370,889,881,1};
+window[] = {2,-1,-1,-32000,-32000,912,175,1435,175,3,907};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -1659,7 +1659,9 @@ class FSM
        "        _audio = _this select 3;" \n
        "        _player = _this select 4;" \n
        "        _coord = _pos call BIS_fnc_posToGrid;" \n
+       "" \n
        "        sleep 5;" \n
+       "" \n
        "        if (_audio) then {" \n
        "            leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_Acknowledged"", ""GROUP""];    " \n
        "        };" \n
@@ -1714,10 +1716,12 @@ class FSM
           priority = 0.000000;
           to="__16";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"_chopper call ALiVE_fnc_unitReadyRemote" \n
-           ""/*%FSM</CONDITION""">*/;
-          action=/*%FSM<ACTION""">*/"_chopper flyinheight _alt;" \n
-           ""/*%FSM</ACTION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_chopper call ALiVE_fnc_unitReadyRemote;"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"[_chopper,_alt] spawn {" \n
+           "	params [""_chopper"",""_alt""];" \n
+           "	sleep 1;" \n
+           "    _chopper flyinheight _alt;" \n
+           "};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
       };
@@ -1727,13 +1731,11 @@ class FSM
     class __16
     {
       name = "__16";
-      init = /*%FSM<STATEINIT""">*/"" \n
-       "if (_audio) then {" \n
+      init = /*%FSM<STATEINIT""">*/"if (_audio) then {" \n
        "    leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_Accomplished"", ""GROUP""];    " \n
        "} else {" \n
        "    [[_chopper,""Prepare for Insertion. Out."",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-       "};    " \n
-       ""/*%FSM</STATEINIT""">*/;
+       "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
       {
@@ -1754,16 +1756,16 @@ class FSM
     class __17
     {
       name = "__17";
-      init = /*%FSM<STATEINIT""">*/"_chopper spawn" \n
+      init = /*%FSM<STATEINIT""">*/"[_chopper,_audio,_player] spawn" \n
        "{" \n
+       "    params [""_chopper"",""_audio"",""_player""];" \n
        "    sleep 15;" \n
        "        if (_audio) then {" \n
        "            leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""Transport_Accomplished"", ""GROUP""];    " \n
        "        } else {" \n
-       "            [[_this,""Go!. Go! Go!"",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "            [[_chopper,""Go!. Go! Go!"",""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "        };        " \n
-       "};" \n
-       ""/*%FSM</STATEINIT""">*/;
+       "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
       {
@@ -2209,7 +2211,7 @@ class FSM
   initState="react";
   finalStates[] =
   {
-    "end1"
+    "end1",
   };
 };
 /*%FSM</COMPILE>*/
