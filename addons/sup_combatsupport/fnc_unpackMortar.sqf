@@ -32,6 +32,7 @@ private _assembleTo = "";
 private _disassembleTo = [];
 private _backpacks = [];
 
+// TODO: Extract to seperate script?
 {
     private _backpack = unitBackpack _x;
 
@@ -103,12 +104,11 @@ _assistant action ["PutBag"];
 _timeout = time + 5;
 while {!isNull (unitBackpack _assistant)} do {
     if (time >= _timeout) exitWith {
-        // TODO: handle timeout
+        _assistantBackpack = createVehicle [typeOf _assistantBackpack, position _assistant, [], 0, "NONE"];
+        removeBackpackGlobal _assistant;
     };
     sleep 0.1;
 };
-
-_gunner action ["Assemble", _assistantBackpack];
 
 private _assembledEH = _gunner addEventHandler ["WeaponAssembled", {
     private _unit = _this param [0, objNull];
@@ -117,16 +117,36 @@ private _assembledEH = _gunner addEventHandler ["WeaponAssembled", {
     _unit setVariable ["assembledWeapon", _weapon];
 }];
 
+_gunner action ["Assemble", _assistantBackpack];
+
 _timeout = time + 5;
 while {isNull _weapon} do {
     if (time >= _timeout) exitWith {
-        // TODO: handle timeout
+        _weapon = createVehicle [_assembleTo, position _gunner, [], 0, "NONE"];
+        removeBackpackGlobal _gunner;
     };
+
     _weapon = _gunner getVariable ["assembledWeapon", objNull];
     sleep 0.1;
 };
 
 _gunner removeEventHandler ["WeaponAssembled", _assembledEH];
+
+// Cleanup possible remaining backpacks
+private _weaponHolders = nearestObjects [position _gunner, ["GroundWeaponHolder"], 25];
+
+{
+    private _weaponHolder = _x param [0, objNull];
+    private _weaponHolderBackpacks = backpackCargo _weaponHolder;
+
+    {
+        private _backpack = _x param [0, objNull];
+
+        if (_backpack in _weaponHolderBackpacks) exitWith {
+            deleteVehicle _weaponHolder;
+        };
+    } forEach _disassembleTo;
+} forEach _weaponHolders;
 
 private _dirTo = [position _weapon, _targetPos] call BIS_fnc_dirTo;
 _weapon setDir _dirTo;
