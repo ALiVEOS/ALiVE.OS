@@ -37,8 +37,8 @@ BLU_G_F_typeMappings = [] call ALIVE_fnc_hashCreate;
 BLU_GEN_F_mappings = [] call ALIVE_fnc_hashCreate;
 [BLU_GEN_F_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
 [BLU_GEN_F_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
-[BLU_GEN_F_mappings, "FactionName", "Gendarmarie"] call ALIVE_fnc_hashSet;
-[BLU_GEN_F_mappings, "GroupFactionName", "BLU_GEN_F"] call ALIVE_fnc_hashSet;
+[BLU_GEN_F_mappings, "FactionName", "BLU_GEN_F"] call ALIVE_fnc_hashSet;
+[BLU_GEN_F_mappings, "GroupFactionName", "Gendarmerie"] call ALIVE_fnc_hashSet;
 
 BLU_GEN_F_typeMappings = [] call ALIVE_fnc_hashCreate;
 [BLU_GEN_F_typeMappings, "Air", "Air"] call ALIVE_fnc_hashSet;
@@ -51,7 +51,7 @@ BLU_GEN_F_typeMappings = [] call ALIVE_fnc_hashCreate;
 [BLU_GEN_F_typeMappings, "Support", "Support"] call ALIVE_fnc_hashSet;
 
 [BLU_GEN_F_mappings, "GroupFactionTypes", BLU_GEN_F_typeMappings] call ALIVE_fnc_hashSet;
-[ALIVE_factionCustomMappings, "Gendarmarie", BLU_GEN_F_mappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "BLU_GEN_F", BLU_GEN_F_mappings] call ALIVE_fnc_hashSet;
 // ---------------------------------------------------------------------------------------------------------------------
 
 
