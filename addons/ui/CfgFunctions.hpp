@@ -28,6 +28,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\ui\fnc_RscDisplayMPInterruptALiVE.sqf";
                 recompile = RECOMPILE;
             };
+            class copyFactionClasses {
+                description = "Copy faction classes from selected objects in 3DEN to clipboard";
+                file = "\x\alive\addons\ui\fnc_copyFactionClasses.sqf";
+                recompile = RECOMPILE;
+            };
         };
     };
 };

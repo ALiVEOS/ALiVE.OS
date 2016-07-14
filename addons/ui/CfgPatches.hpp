@@ -5,7 +5,7 @@ class CfgPatches {
         units[] = {};
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
-        requiredAddons[] = {"ALIVE_main"};
+        requiredAddons[] = {"ALIVE_main", "3DEN"};
         versionDesc = "ALiVE";
         //versionAct = "['UI',_this] execVM '\x\alive\addons\main\about.sqf';";
         VERSION_CONFIG;
