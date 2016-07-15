@@ -70,6 +70,8 @@ switch(_operation) do {
                 //Create basics on server
                 if (isServer) then {
 
+                        waitUntil {!isnil "ALiVE_STATIC_DATA_LOADED"};
+
                         // if server, initialise module game logic
                         _logic setVariable ["super", SUPERCLASS];
                         _logic setVariable ["class", ALIVE_fnc_combatSupport];
