@@ -113,4 +113,44 @@
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Naval_OIA_sentryTeam_Boat0">
     <Original>Sentry Team (Speed Boat)</Original>
 </Key>
+
+<Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfSentry0">
+	<Original>Sentry</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfSquad0">
+	<Original>Rifle Squad</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfSquad_Weapons0">
+	<Original>Weapons Squad</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfTeam0">
+	<Original>Fire Team</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfTeam_AA0">
+	<Original>Air-defense Team</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfTeam_AT0">
+	<Original>Anti-armor Team</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfWepTeam0">
+	<Original>Weapons Team</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfSupTeam0">
+	<Original>Support Team</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfHQ0">
+	<Original>Infantry HQ</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_ReconSentry0">
+	<Original>Recon Sentry</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_Support_CLS0">
+	<Original>Support Team (CLS)</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_Support_ENG0">
+	<Original>Support Team (Engineer)</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_Support_EOD0">
+	<Original>Support Team (EOD)</Original>
+</Key>
 </Container></Package></Project>
