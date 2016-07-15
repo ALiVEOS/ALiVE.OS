@@ -1862,8 +1862,505 @@ class CfgGroups
                 };
             };
         };
+
+        class IND_G_F {
+            name = "INDFIA";
+            class Infantry {
+                name = "Infantry";
+                class HRG_InfSentry {
+                    name = "$STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfSentry0";  // name = "Sentry";
+                    side = 2;
+                    faction = "IND_G_F";
+                    rarityGroup = 0.3;
+                    class Unit0 {
+                        side = 2;
+                        vehicle = "I_Soldier_GL_F";
+                        rank = "CORPORAL";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_F";
+                        rank = "PRIVATE";
+                        position[] = {5,-5,0};
+                    };
+                };
+                class HRG_InfSquad {
+                    name = "$STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfSquad0";  // name = "Rifle Squad";
+                    side = 2;
+                    faction = "IND_G_F";
+                    rarityGroup = 0.3;
+                    class Unit0 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_SL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {5,-5,0};
+                    };
+                    class Unit2 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_AR_F";
+                        rank = "CORPORAL";
+                        position[] = {-5,-5,0};
+                    };
+                    class Unit3 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_LAT_F";
+                        rank = "PRIVATE";
+                        position[] = {10,-10,0};
+                    };
+                    class Unit4 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_A_F";
+                        rank = "PRIVATE";
+                        position[] = {-10,-10,0};
+                    };
+                    class Unit5 {
+                        side = 2;
+                        vehicle = "I_G_medic_F";
+                        rank = "CORPORAL";
+                        position[] = {15,-15,0};
+                    };
+                    class Unit6 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_F";
+                        rank = "PRIVATE";
+                        position[] = {-15,-15,0};
+                    };
+                    class Unit7 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_F";
+                        rank = "PRIVATE";
+                        position[] = {20,-20,0};
+                    };
+                };
+                class HRG_InfSquad_Weapons {
+                    name = "$STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfSquad_Weapons0";  // name = "Weapons Squad";
+                    side = 2;
+                    faction = "IND_G_F";
+                    rarityGroup = 0.3;
+                    class Unit0 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_SL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_AR_F";
+                        rank = "SERGEANT";
+                        position[] = {5,-5,0};
+                    };
+                    class Unit2 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_AR_F";
+                        rank = "CORPORAL";
+                        position[] = {-5,-5,0};
+                    };
+                    class Unit3 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_LAT_F";
+                        rank = "SERGEANT";
+                        position[] = {10,-10,0};
+                    };
+                    class Unit4 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_LAT_F";
+                        rank = "CORPORAL";
+                        position[] = {-10,-10,0};
+                    };
+                    class Unit5 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_F";
+                        rank = "PRIVATE";
+                        position[] = {-15,-15,0};
+                    };
+                    class Unit6 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_A_F";
+                        rank = "PRIVATE";
+                        position[] = {15,-15,0};
+                    };
+                    class Unit7 {
+                        side = 2;
+                        vehicle = "I_G_medic_F";
+                        rank = "PRIVATE";
+                        position[] = {20,-20,0};
+                    };
+                };
+                class HRG_InfTeam {
+                    name = "$STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfTeam0";  // name = "Fire Team";
+                    side = 2;
+                    faction = "IND_G_F";
+                    rarityGroup = 0.3;
+                    class Unit0 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_AR_F";
+                        rank = "CORPORAL";
+                        position[] = {5,-5,0};
+                    };
+                    class Unit2 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_GL_F";
+                        rank = "PRIVATE";
+                        position[] = {-5,-5,0};
+                    };
+                    class Unit3 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_LAT_F";
+                        rank = "PRIVATE";
+                        position[] = {10,-10,0};
+                    };
+                };
+                class HRG_InfTeam_AA {
+                    name = "$STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfTeam_AA0";  // name = "Air-defense Team";
+                    side = 2;
+                    faction = "IND_G_F";
+                    rarityGroup = 0.3;
+                    class Unit0 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_AR_F";
+                        rank = "CORPORAL";
+                        position[] = {5,-5,0};
+                    };
+                    class Unit2 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_LAT_F";
+                        rank = "PRIVATE";
+                        position[] = {-5,-5,0};
+                    };
+                    class Unit3 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_A_F";
+                        rank = "PRIVATE";
+                        position[] = {10,-10,0};
+                    };
+                };
+                class HRG_InfTeam_AT {
+                    name = "$STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfTeam_AT0";  // name = "Anti-armor Team";
+                    side = 2;
+                    faction = "IND_G_F";
+                    rarityGroup = 0.3;
+                    class Unit0 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_LAT_F";
+                        rank = "CORPORAL";
+                        position[] = {5,-5,0};
+                    };
+                    class Unit2 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_LAT_F";
+                        rank = "PRIVATE";
+                        position[] = {-5,-5,0};
+                    };
+                    class Unit3 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_A_F";
+                        rank = "PRIVATE";
+                        position[] = {10,-10,0};
+                    };
+                };
+                class HRG_InfWepTeam
+                {
+                    name = "$STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfWepTeam0";  // name = "Weapons Team";
+                    side = 2;
+                    faction = "IND_G_F";
+                    rarityGroup = 0.3;
+                    class Unit0 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,5,0};
+                    };
+                    class Unit1 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_AR_F";
+                        rank = "CORPORAL";
+                        position[] = {3,0,0};
+                    };
+                    class Unit2 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_LAT_F";
+                        rank = "PRIVATE";
+                        position[] = {5,0,0};
+                    };
+                    class Unit3 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_F";
+                        rank = "PRIVATE";
+                        position[] = {7,0,0};
+                    };
+                };
+                class HRG_InfSupTeam {
+                    name = "$STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfSupTeam0"; // name = "Support Team";
+                    side = 2;
+                    faction = "IND_G_F";
+                    rarityGroup = 0.3;
+                    class Unit0 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,5,0};
+                    };
+                    class Unit1 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_LAT_F";
+                        rank = "CORPORAL";
+                        position[] = {3,0,0};
+                    };
+                    class Unit2 {
+                        side = 2;
+                        vehicle = "I_G_medic_F";
+                        rank = "PRIVATE";
+                        position[] = {5,0,0};
+                    };
+                    class Unit3 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_M_F";
+                        rank = "PRIVATE";
+                        position[] = {7,0,0};
+                    };
+                };
+                class HRG_InfHQ {
+                    name = "$STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfHQ0";  // name = "Infantry HQ";
+                    side = 2;
+                    faction = "IND_G_F";
+                    rarityGroup = 0;
+                    class Unit0 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_SL_F";
+                        rank = "LIEUTENANT";
+                        position[] = {0,5,0};
+                    };
+                    class Unit1 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {3,0,0};
+                    };
+                    class Unit2 {
+                        side = 2;
+                        vehicle = "I_G_medic_F";
+                        rank = "CORPORAL";
+                        position[] = {5,0,0};
+                    };
+                    class Unit3 {
+                        side = 2;
+                        vehicle = "I_G_engineer_F";
+                        rank = "PRIVATE";
+                        position[] = {7,0,0};
+                    };
+                    class Unit4 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_F";
+                        rank = "PRIVATE";
+                        position[] = {9,0,0};
+                    };
+                };
+                class HRG_ReconSentry {
+                    name = "$STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_ReconSentry0"; // name = "Recon Sentry";
+                    side = 2;
+                    faction = "IND_G_F";
+                    rarityGroup = 0;
+                    class Unit0 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_F";
+                        rank = "CORPORAL";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_F";
+                        rank = "PRIVATE";
+                        position[] = {5,-5,0};
+                    };
+                };
+            };
+            class Motorized_MTP {
+                name = "Motorized Infantry";
+                class HRG_MotInf_Team {
+                    name = "$STR_A3_CfgGroups_Independant_OPF_F_Motorized_MTP_HRG_MotInf_Team0"; // name = "Motorized Patrol";
+                    side = 2;
+                    faction = "IND_G_F";
+                    rarityGroup = 0.2;
+                    class Unit0 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1 {
+                        side = 2;
+                        vehicle = "I_G_Offroad_01_F";
+                        rank = "SERGEANT";
+                        position[] = {0,-10,0};
+                    };
+                    class Unit2 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_AR_F";
+                        rank = "CORPORAL";
+                        position[] = {5,-5,0};
+                    };
+                    class Unit3 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_LAT_F";
+                        rank = "CORPORAL";
+                        position[] = {-5,-5,0};
+                    };
+                    class Unit4 {
+                        side = 2;
+                        vehicle = "I_G_medic_F";
+                        rank = "CORPORAL";
+                        position[] = {10,-10,0};
+                    };
+                    class Unit5 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_F";
+                        rank = "CORPORAL";
+                        position[] = {-10,-10,0};
+                    };
+                };
+                class HRG_Technicals {
+                    name = "$STR_A3_CfgGroups_Independant_OPF_F_Motorized_MTP_HRG_Technicals0"; // name = "Technicals";
+                    side = 2;
+                    faction = "IND_G_F";
+                    rarityGroup = 0.2;
+                    class Unit0 {
+                        side = 2;
+                        vehicle = "I_G_Offroad_01_armed_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1 {
+                        side = 2;
+                        vehicle = "I_G_Offroad_01_armed_F";
+                        rank = "SERGEANT";
+                        position[] = {10,-10,0};
+                    };
+                    class Unit2 {
+                        side = 2;
+                        vehicle = "I_G_Offroad_01_armed_F";
+                        rank = "CORPORAL";
+                        position[] = {-10,-10,0};
+                    };
+                };
+            };
+            class Support {
+                name = "Support Infantry";
+                class HRG_Support_CLS {
+                    name = "$STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_Support_CLS0";  // name = "Support Team (CLS)";
+                    side = 2;
+                    faction = "IND_G_F";
+                    rarityGroup = 0.1;
+                    class Unit0 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_AR_F";
+                        rank = "CORPORAL";
+                        position[] = {5,-5,0};
+                    };
+                    class Unit2 {
+                        side = 2;
+                        vehicle = "I_G_medic_F";
+                        rank = "PRIVATE";
+                        position[] = {-5,-5,0};
+                    };
+                    class Unit3 {
+                        side = 2;
+                        vehicle = "I_G_medic_F";
+                        rank = "PRIVATE";
+                        position[] = {10,-10,0};
+                    };
+                };
+                class HRG_Support_ENG {
+                    name = "$STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_Support_ENG0";  // name = "Support Team (Engineer)";
+                    side = 2;
+                    faction = "IND_G_F";
+                    rarityGroup = 0.1;
+                    class Unit0 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_F";
+                        rank = "CORPORAL";
+                        position[] = {5,-5,0};
+                    };
+                    class Unit2 {
+                        side = 2;
+                        vehicle = "I_G_engineer_F";
+                        rank = "PRIVATE";
+                        position[] = {-5,-5,0};
+                    };
+                    class Unit3 {
+                        side = 2;
+                        vehicle = "I_G_engineer_F";
+                        rank = "PRIVATE";
+                        position[] = {10,-10,0};
+                    };
+                };
+                class HRG_Support_EOD {
+                    name = "$STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_Support_EOD0";  // name = "Support Team (EOD)";
+                    side = 2;
+                    faction = "IND_G_F";
+                    rarityGroup = 0.1;
+                    class Unit0 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1 {
+                        side = 2;
+                        vehicle = "I_G_Soldier_F";
+                        rank = "CORPORAL";
+                        position[] = {5,-5,0};
+                    };
+                    class Unit2 {
+                        side = 2;
+                        vehicle = "I_G_engineer_F";
+                        rank = "PRIVATE";
+                        position[] = {-5,-5,0};
+                    };
+                    class Unit3 {
+                        side = 2;
+                        vehicle = "I_G_engineer_F";
+                        rank = "PRIVATE";
+                        position[] = {10,-10,0};
+                    };
+                };
+            };
+        };
     };
 };
-
-
-
