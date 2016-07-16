@@ -41,4 +41,10 @@
 <Key ID="STR_ALIVE_TRANSPORT_SLINGLOADING_DESC">
     <Original>If selected enables slingloading of vehicles and containers, containers are spawned near transport chopper.</Original>
 </Key>
+<Key ID="STR_ALIVE_TRANSPORT_CONTAINERS">
+    <Original>No. of Containers</Original>
+</Key>
+<Key ID="STR_ALIVE_TRANSPORT_CONTAINERS_DESC">
+    <Original>Number of containers to be spawned for slingloading purposes</Original>
+</Key>
 </Container></Package></Project>

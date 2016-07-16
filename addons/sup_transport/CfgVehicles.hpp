@@ -58,6 +58,14 @@ class CfgVehicles {
                                         };
                                 };
                         };
+
+                        class transport_containers
+                        {
+                                displayName = "$STR_ALIVE_TRANSPORT_CONTAINERS";
+                                description = "$STR_ALIVE_TRANSPORT_CONTAINERS_DESC";
+                                typeName = "NUMBER";
+                                defaultValue=0;
+                        };
                 };
                 class ModuleDescription
                 {

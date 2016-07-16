@@ -182,7 +182,7 @@ switch(_operation) do {
                                     _casArrays set [count _casArrays,_casArray];
                                 };
                                 case ("ALiVE_SUP_TRANSPORT") : {
-                                    private ["_position","_callsign","_type","_slingloading"];
+                                    private ["_position","_callsign","_type","_slingloading","_containers","_tasks"];
 
                                     _position = getposATL ((synchronizedObjects _logic) select _i);
                                     _callsign = ((synchronizedObjects _logic) select _i) getvariable ["transport_callsign","FRIZ ONE"];
@@ -195,6 +195,8 @@ switch(_operation) do {
 
 
                                     _slingloading = ((synchronizedObjects _logic) select _i) getvariable ["transport_slingloading",true];
+                                    _containers = ((synchronizedObjects _logic) select _i) getvariable ["transport_containers",0];
+
 
                                     LOG(_slingloading);
 
@@ -204,7 +206,7 @@ switch(_operation) do {
                                         _tasks = DEFAULT_TRANSPORT_TASKS;
                                     };
 
-                                    _transportArray = [_position,_direction,_type, _callsign,DEFAULT_TRANSPORT_TASKS,_code,_height,_slingloading];
+                                    _transportArray = [_position,_direction,_type, _callsign,_tasks,_code,_height,_slingloading, _containers];
                                     _transportArrays set [count _transportArrays,_transportArray];
                                 };
                                 case ("ALiVE_sup_artillery") : {
@@ -274,7 +276,7 @@ switch(_operation) do {
                         // Transport
 
                         {
-                            private ["_pos", "_dir", "_type", "_callsign", "_tasks", "_code","_Height","_side","_slingloading"];
+                            private ["_pos", "_dir", "_type", "_callsign", "_tasks", "_code","_Height","_side","_slingloading","_cont"];
                             _pos = _x select 0; _pos set [2, 0];
                             _dir = _x select 1;
                             _type = _x select 2;
@@ -283,6 +285,7 @@ switch(_operation) do {
                             _code =  _x select 5;
                             _height = _x select 6;
                             _slingloading = _x select 7;
+                            _cont = _x select 8;
 
                             _transportfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\transport.fsm";
                             _faction = gettext(configfile >> "CfgVehicles" >> _type >> "faction");
@@ -357,8 +360,8 @@ switch(_operation) do {
                             };
 
                             // Spawn containers and cargo nets if slingloading is enabled?
-                            if (_slingloading) then {
-
+                            if (_cont > 0) then {
+                                private ["_containers"];
                                 _containers = [ALIVE_factionDefaultContainers,_faction,[]] call ALIVE_fnc_hashGet;
 
                                 if(count _containers == 0) then {
@@ -366,24 +369,25 @@ switch(_operation) do {
                                 };
 
                                 If (count _containers > 0) then {
-                                    {
-                                        for "_i" from 1 to 3 do { // 3 of each container
-                                            private ["_veh","_position"];
-                                            _position = [
-                                                _pos,
-                                                (sizeOf _type),
-                                                (sizeOf _type) + (sizeOf _x) * 2,
-                                                (sizeOf _x),
-                                                0,
-                                                0.5,
-                                                0,
-                                                [],
-                                                [_pos getpos [25, random(360)],
-                                                _pos getpos [25, random(360)]]
-                                            ] call bis_fnc_findSafePos;
-                                            _veh = createVehicle [_x, _position, [], 5, "NONE"];
-                                        };
-                                    }foreach _containers;
+
+                                    for "_i" from 1 to _cont do {
+                                        private ["_veh","_position","_container"];
+                                        _container = selectRandom _containers;
+                                        _position = [
+                                            _pos,
+                                            (sizeOf _type),
+                                            (sizeOf _type) + (sizeOf _container) * 2,
+                                            (sizeOf _container),
+                                            0,
+                                            0.5,
+                                            0,
+                                            [],
+                                            [_pos getpos [25, random(360)],
+                                            _pos getpos [25, random(360)]]
+                                        ] call bis_fnc_findSafePos;
+                                        _veh = createVehicle [_container, _position, [], 5, "NONE"];
+                                    };
+
                                 };
 
                             };
