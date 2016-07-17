@@ -27,31 +27,38 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_className","_configPath","_result","_item","_comp","_name","_foundComp"];
+private ["_className","_configPaths","_configPath","_result","_item","_comp","_name","_foundComp"];
 
 _className = _this select 0;
 
-_configPath = configFile >> "CfgGroups" >> "Empty" >> "ALIVE";
+_configPaths = [
+    configFile >> "CfgGroups" >> "Empty" >> "ALIVE",
+    missionConfigFile >> "CfgGroups" >> "Empty" >> "ALIVE"
+];
 
 scopeName "main";
 
-for "_i" from 0 to ((count _configPath) - 1) do
 {
-    _item = _configPath select _i;
-    if (isClass _item) then {
-        for "_i" from 0 to ((count _item) - 1) do
-        {
-            _comp = _item select _i;
-            if (isClass _comp) then {
-                _name = configName _comp;
-                if(_className == _name) then {
-                    _foundComp = _comp;
-                    breakTo "main";
+    _configPath = _x;
+
+    for "_i" from 0 to ((count _configPath) - 1) do
+    {
+        _item = _configPath select _i;
+        if (isClass _item) then {
+            for "_i" from 0 to ((count _item) - 1) do
+            {
+                _comp = _item select _i;
+                if (isClass _comp) then {
+                    _name = configName _comp;
+                    if(_className == _name) then {
+                        _foundComp = _comp;
+                        breakTo "main";
+                    };
                 };
             };
         };
     };
-};
+} foreach _configPaths;
 
 if!(isNil "_foundComp") then {
     _result = _comp;
