@@ -130,7 +130,7 @@ switch(_operation) do {
                                         _id = [_position] call ALiVE_fnc_getNearestAirportID;
                                         _type = typeOf _entry;
                                         _direction =  getDir _entry;
-                                        _slingloading = true;
+                                        _slingloading = _entry getvariable ["CS_SLINGLOADING", true];
                                         _transportArray = [_position,_direction,_type, _callsign,DEFAULT_TRANSPORT_TASKS,_code,_height,_slingloading];
                                         _transportArrays set [count _transportArrays,_transportArray];
                                     };
