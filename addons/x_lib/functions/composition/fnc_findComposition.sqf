@@ -32,8 +32,8 @@ private ["_className","_configPaths","_configPath","_result","_item","_comp","_n
 _className = _this select 0;
 
 _configPaths = [
-    configFile >> "CfgGroups" >> "Empty" >> "ALIVE",
-    missionConfigFile >> "CfgGroups" >> "Empty" >> "ALIVE"
+    missionConfigFile >> "CfgGroups" >> "Empty" >> "ALIVE",
+    configFile >> "CfgGroups" >> "Empty" >> "ALIVE"
 ];
 
 scopeName "main";
