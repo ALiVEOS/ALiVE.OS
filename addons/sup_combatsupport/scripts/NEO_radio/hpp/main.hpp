@@ -267,6 +267,23 @@ class NEO_resourceRadio
                         };*/
                 };
 
+                // Slingloading object combo
+                class NEO_radioTransportObjectCb : NEO_RscComboBox
+                {
+                        idc = 655580;
+                        x = 0.281002 * safezoneW + safezoneX;
+                        y = 0.5504 * safezoneH + safezoneY;
+                        w = safeZoneW / 1000;
+                        h = safeZoneH / 1000;
+                        colorSelectBackground[] = {0.384,0.439,0.341,1};
+                        colorSelect[] = {0.023529, 0, 0.0313725, 1.000};
+                        colorText[] = {0.384,0.439,0.341,1};
+                        colorBackground[] = {0.094,0.09,0.094,1};
+                        colorScrollbar[] = {0.384,0.439,0.341,1};
+                        sizeEx = (safeZoneW / 75) + (safeZoneH / 275);
+                        rowHeight = (safeZoneW / 75) + (safeZoneH / 275);
+                };
+
                 //Properties Text
                 class NEO_radioTransportPropertiesText : NEO_radioTransportCircleSliderText
                 {
