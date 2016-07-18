@@ -45,14 +45,21 @@ _worldName = worldName;
 
 // Load map static data
 // check file exists, if not then load hardcoded
-_fileExists = [format["x\alive\addons\main\static\%1_staticData.sqf", toLower(worldName)]] call ALiVE_fnc_fileExists;
+_fileExists = false;
 
-If (_fileExists) then {
-    ["ALiVE LOADING MAP DATA: %1",_worldName] call ALIVE_fnc_dump;
-    _file = format["x\alive\addons\main\static\%1_staticData.sqf", toLower(worldName)];
-    call compile preprocessFileLineNumbers _file;
-} else {
-    ["ALiVE SETTING UP MAP (HARD CODED): %1",_worldName] call ALIVE_fnc_dump;
+if (!isDedicated) then {
+    _fileExists = [format["x\alive\addons\main\static\%1_staticData.sqf", toLower(worldName)]] call ALiVE_fnc_fileExists;
+
+    If (_fileExists) then {
+        ["ALiVE LOADING MAP DATA: %1",_worldName] call ALIVE_fnc_dump;
+        _file = format["x\alive\addons\main\static\%1_staticData.sqf", toLower(worldName)];
+        call compile preprocessFileLineNumbers _file;
+    };
+};
+
+if (!_fileExists) then {
+
+    ["ALiVE SETTING UP MAP: %1",_worldName] call ALIVE_fnc_dump;
 
     ALIVE_airBuildingTypes = [];
     ALIVE_militaryParkingBuildingTypes = [];
@@ -1663,7 +1670,6 @@ If (_fileExists) then {
         ];
 
     };
-
 
     // Namalsk
     if(_worldName == "Namalsk") then {
@@ -4380,4 +4386,9 @@ If (_fileExists) then {
         ALIVE_civilianConstructionBuildingTypes = ALIVE_civilianConstructionBuildingTypes + ["a3\structures_f\ind\windmill\i_windmill01_f.p3d","a3\structures_f\ind\shed\shed_big_f.p3d","a3\structures_f\ind\shed\u_shed_ind_f.p3d","a3\structures_f\ind\crane\crane_f.p3d","a3\structures_f\ind\shed\i_shed_ind_f.p3d","a3\structures_f\ind\concretemixingplant\cmp_shed_f.p3d","a3\structures_f\households\wip\unfinished_building_01_f.p3d","jbad_structures\ind\hangar_2\jbad_hangar_2.p3d","a3\structures_f\ind\dieselpowerplant\dp_smallfactory_f.p3d","a3\structures_f\ind\concretemixingplant\cmp_tower_f.p3d","a3\structures_f\ind\concretemixingplant\cmp_hopper_f.p3d","a3\structures_f\ind\factory\factory_tunnel_f.p3d","jbad_structures\afghan_houses_c\jbad_house_c_2.p3d","a3\structures_f\dominants\wip\wip_f.p3d","a3\structures_f\ind\dieselpowerplant\dp_mainfactory_f.p3d","a3\structures_f\ind\reservoirtank\reservoirtower_f.p3d","jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_conv1_10.p3d","jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_hopper.p3d","jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_conv1_main.p3d","jbad_structures\ind\ind_shed\jbad_ind_shed_01.p3d","a3\structures_f\ind\factory\factory_conv1_main_f.p3d","a3\structures_f\ind\factory\factory_main_f.p3d","a3\structures_f\ind\factory\factory_conv2_f.p3d","a3\structures_f\ind\factory\factory_hopper_f.p3d","a3\structures_f\ind\factory\factory_conv1_10_f.p3d","a3\structures_f\ind\dieselpowerplant\dp_mainfactory_addon1_f.p3d","jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_conv1_end.p3d","jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_conv2.p3d","jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_tunnel.p3d","jbad_structures\afghan_house_a\a_buildingwip\jbad_a_buildingwip.p3d"];
     };
 
+    if (count ALIVE_civilianPopulationBuildingTypes == 0) then { // if no buildings try loading from file
+        ["MAP NOT INDEXED OR DEDI SERVER FILE LOAD... ALiVE LOADING MAP DATA: %1",_worldName] call ALIVE_fnc_dump;
+        _file = format["x\alive\addons\main\static\%1_staticData.sqf", toLower(worldName)];
+        call compile preprocessFileLineNumbers _file;
+    };
 };
