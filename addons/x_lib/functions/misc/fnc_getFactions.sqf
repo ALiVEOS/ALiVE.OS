@@ -32,8 +32,8 @@ nil
 private _factions = [];
 
 private _configPaths = [
-    missionConfigFile,
-    configFile
+    missionConfigFile >> "CfgFactionClasses",
+    configFile >> "CfgFactionClasses"
 ];
 
 {
@@ -43,7 +43,7 @@ private _configPaths = [
         _faction = _configPath select _i;
 
         if (isClass _faction) then {
-            _factions pushback _faction;
+            _factions pushback (configname _faction);
         };
     };
 } foreach _configPaths;
