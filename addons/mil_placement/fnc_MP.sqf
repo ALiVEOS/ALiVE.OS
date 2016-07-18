@@ -149,7 +149,7 @@ switch(_operation) do {
     };
     // Determine force faction
     case "faction": {
-        _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call BIS_fnc_getFactions] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_getFactions] call ALIVE_fnc_OOsimpleOperation;
     };
     // Return the Ambient Vehicle Amount
     case "ambientVehicleAmount": {
@@ -679,7 +679,7 @@ switch(_operation) do {
             _placeHelis = [_logic, "placeHelis"] call MAINCLASS;
             _placeSupplies = [_logic, "placeSupplies"] call MAINCLASS;
 
-            _factionConfig = (configFile >> "CfgFactionClasses" >> _faction);
+            _factionConfig = _faction call ALiVE_fnc_getFactionConfig;
             _factionSideNumber = getNumber(_factionConfig >> "side");
             _side = _factionSideNumber call ALIVE_fnc_sideNumberToText;
             _countProfiles = 0;
