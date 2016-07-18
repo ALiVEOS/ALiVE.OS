@@ -30,6 +30,14 @@ class CfgMissions
             overviewText = "This is the basic quick start mission featured in the ALiVE documentation and Wiki (alivemod.com)";
             author = "ALiVE Mod Team";                    
         };
+        class Showcase_Getting_Started_APEX
+        {
+            briefingName = "ALiVE | Quick Start APEX";
+            directory = "x\alive\addons\missions\showcases\basic.tanoa";
+            overviewPicture = "x\alive\addons\missions\logo_alive.paa";
+            overviewText = "This is the basic quick start mission (on Tanoa) featured in the ALiVE documentation and Wiki (alivemod.com)";
+            author = "ALiVE Mod Team";                    
+        };        
         class Showcase_Divide_And_Rule
         {
             briefingName = "ALiVE | Divide and Rule";
@@ -64,7 +72,15 @@ class CfgMissions
             overviewPicture = "x\alive\addons\missions\logo_alive.paa";
             overviewText = "This is the basic quick start mission featured in the ALiVE documentation and Wiki (alivemod.com)";
             author = "ALiVE Mod Team";                    
-        };        
+        };
+        class MP_COOP_Getting_Started_APEX
+        {
+            briefingName = "ALiVE | Quick Start APEX (COOP 10)";
+            directory = "x\alive\addons\missions\showcases\basic.tanoa";
+            overviewPicture = "x\alive\addons\missions\logo_alive.paa";
+            overviewText = "This is the basic quick start mission (on Tanoa) featured in the ALiVE documentation and Wiki (alivemod.com)";
+            author = "ALiVE Mod Team";                    
+        };                 
         class MP_COOP_Air_Assault
         {
             briefingName = "ALiVE | Air Assault (COOP 8)";
