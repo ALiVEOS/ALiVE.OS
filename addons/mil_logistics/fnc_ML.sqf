@@ -281,6 +281,9 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "limitTransportToFaction": {
+        _result = [_logic,_operation,_args,false] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "type": {
         if(typeName _args == "STRING") then {
             _logic setVariable [_operation, parseNumber _args];
@@ -336,6 +339,7 @@ switch(_operation) do {
             _allowHeli = [_logic, "allowHeliReinforcement"] call MAINCLASS;
             _allowPlane = [_logic, "allowPlaneReinforcement"] call MAINCLASS;
 
+            _limitTransportToFaction = [_logic, "limitTransportToFaction"] call MAINCLASS;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
@@ -349,6 +353,7 @@ switch(_operation) do {
                 ["ALIVE ML - Allow armour requests: %1",_allowArmour] call ALIVE_fnc_dump;
                 ["ALIVE ML - Allow heli requests: %1",_allowHeli] call ALIVE_fnc_dump;
                 ["ALIVE ML - Allow plane requests: %1",_allowPlane] call ALIVE_fnc_dump;
+                ["ALIVE ML - Limit air assets to faction only: %1",_limitTransportToFaction] call ALIVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1687,7 +1692,7 @@ switch(_operation) do {
          "_eventTransportProfiles","_eventTransportVehiclesProfiles","_playerRequested","_playerRequestProfiles","_reinforcementPriorityTotal"
          ,"_reinforcementType","_reinforcementAvailable","_reinforcementPrimaryObjective","_event",
          "_eventID","_eventQueue","_forcePool","_logEvent","_playerID","_requestID","_payload","_emptyVehicles",
-         "_staticIndividuals","_joinIndividuals","_reinforceIndividuals","_staticGroups","_joinGroups","_reinforceGroups"];
+         "_staticIndividuals","_joinIndividuals","_reinforceIndividuals","_staticGroups","_joinGroups","_reinforceGroups","_limitTransportToFaction"];
 
         _debug = [_logic, "debug"] call MAINCLASS;
         _registryID = [_logic, "registryID"] call MAINCLASS;
@@ -1696,6 +1701,8 @@ switch(_operation) do {
 
         _side = [_logic, "side"] call MAINCLASS;
         _eventQueue = [_logic, "eventQueue"] call MAINCLASS;
+
+        _limitTransportToFaction = [_logic, "limitTransportToFaction"] call MAINCLASS;
 
         _eventID = [_event, "id"] call ALIVE_fnc_hashGet;
         _eventData = [_event, "data"] call ALIVE_fnc_hashGet;
@@ -1822,7 +1829,7 @@ switch(_operation) do {
 
                         _slingAvailable = false; // slingloading is available as a service
                         _airTrans = [ALIVE_factionDefaultAirTransport,_eventFaction,[]] call ALIVE_fnc_hashGet;
-                        if(count _airTrans == 0) then {
+                        if(count _airTrans == 0 && !_limitTransportToFaction) then {
                              _airTrans = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
                         };
                         // Check helicopters can slingload
@@ -1844,6 +1851,8 @@ switch(_operation) do {
                         If (_eventType == "HELI_INSERT" && _eventForceMotorised > 0 && !_slingAvailable && _noHeavy) then {_eventType = "AIRDROP";};
 
                         if (_water && !_noHeavy) then {_eventType = "STANDARD"}; // COULD DELIVER TO NEAREST BEACH?
+
+                        if (count _airTrans == 0) then {_eventType = "STANDARD"};
 
                         // Choose start position
                         if(_eventType == "STANDARD" || _eventType == "HELI_INSERT") then {
