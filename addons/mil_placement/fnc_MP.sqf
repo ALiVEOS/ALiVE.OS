@@ -962,11 +962,35 @@ switch(_operation) do {
 
                         //[_x, "debug", true] call ALIVE_fnc_cluster;
                         {
-                            private "_pavement";
-                            _position = position _x;
-                            _direction = direction _x;
-                            _vehicleClass = _airClasses call BIS_fnc_selectRandom;
                             if(random 1 > 0.66) then {
+
+                                // Find safe place to put aircraft
+                                private ["_pavement","_runway"];
+                                if ([typeOf _x, "hangar"] call CBA_fnc_find != -1 || [typeOf _x, "Hangar"] call CBA_fnc_find != -1) then {
+                                    _position = position _x;
+                                    _direction = direction _x;
+                                } else { // find a taxiway
+                                    _runway = [];
+                                    {
+                                        if (([str(_x),"taxiway"] call CBA_fnc_find != -1 && typeof _x == "")) then {
+                                            _runway pushback _x;
+                                        };
+                                    } foreach (nearestObjects [position _x, [], 100]);
+                                    if (count _runway > 0) then {
+                                        // diag_log format["Cannot find hangar, choosing safe taxiway from: %1", _runway];
+                                        _pavement = selectRandom _runway;
+                                        _position = position _pavement;
+                                        _direction = direction _pavement;
+                                    } else {
+                                        // Find safe place near by
+                                        // diag_log format["Cannot find hangar or taxiway, looking for safe place to put aircraft %1", _x];
+                                        _position = [position _x, 25, 100, 4, 0, 0.2, 0] call BIS_fnc_findSafePos;
+                                        _direction = direction _x;
+                                    };
+                                };
+
+                                // Place Aircraft
+                                _vehicleClass = _airClasses call BIS_fnc_selectRandom;
                                 [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
                                 _countProfiles = _countProfiles + 1;
                                 _countUncrewedAir =_countUncrewedAir + 1;
