@@ -29,7 +29,7 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private _faction = [];
+private _factions = [];
 
 private _configPaths = [
     missionConfigFile,
@@ -42,5 +42,10 @@ private _configPaths = [
     for "_i" from 0 to (count _configPath - 1) do {
         _faction = _configPath select _i;
 
+        if (isClass _faction) then {
+            _factions pushback _faction;
+        };
     };
 } foreach _configPaths;
+
+_factions
