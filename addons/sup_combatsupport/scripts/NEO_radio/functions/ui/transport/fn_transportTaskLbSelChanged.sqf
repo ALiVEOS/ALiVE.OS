@@ -97,7 +97,7 @@ _task = switch (_lb lbText _index) do
             if ( count (getArray (configFile >> "CfgVehicles" >> typeOf _x >> "slingLoadCargoMemoryPoints")) > 0 ) then
             {
                 private ["_idx"];
-                diag_log _x;
+                // diag_log _x;
                 _idx = _objectLb lbAdd (getText (configFile >> "CfgVehicles" >> typeOf _x >> "displayName"));
                 // _objectLb lbSetPicture [_idx, (getText (configFile >> "CfgVehicles" >> typeOf _x >> "picture"))];
                 _objectLb lbSetData [_idx, str(getpos _x)];
