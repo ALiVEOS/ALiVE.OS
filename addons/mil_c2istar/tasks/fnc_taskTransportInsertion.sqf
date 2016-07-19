@@ -131,10 +131,25 @@ switch (_taskState) do {
 
             _group = ["Infantry",_taskFaction] call ALIVE_fnc_configGetRandomGroup;
 
-            //_profile = [_group, _pickupPosition, random(360), true, _taskFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
-            _profile = ["BUS_InfSquad", _pickupPosition, random(360), true, _taskFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+            // If no group try side?
+            if (typeName _group == "BOOL") then {
+                _factions = _taskSide call ALiVE_fnc_getSideFactions;
+                {
+                    _group = ["Infantry",_x] call ALIVE_fnc_configGetRandomGroup;
+                    if !(typeName _group == "BOOL") exitWith {_taskFaction = _x;};
+                } foreach _factions;
+            };
 
-            _profileID = _profile select 0 select 2 select 4;
+            // If can't find group allocate null profileID
+            if !(typeName _group == "BOOL") then {
+
+                _profile = [_group, _pickupPosition, random(360), true, _taskFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+                _profileID = _profile select 0 select 2 select 4;
+
+            } else {
+
+                _profileID = "";
+            };
 
             // select the random text
 
