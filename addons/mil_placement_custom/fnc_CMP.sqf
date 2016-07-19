@@ -124,7 +124,7 @@ switch(_operation) do {
         _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
     };
     case "faction": {
-        _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_getFactions] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
     };
     case "size": {
         _result = [_logic,_operation,_args,DEFAULT_SIZE] call ALIVE_fnc_OOsimpleOperation;
@@ -295,7 +295,7 @@ switch(_operation) do {
             _createHQ = [_logic, "createHQ"] call MAINCLASS;
             _placeHelis = [_logic, "placeHelis"] call MAINCLASS;
             _placeSupplies = [_logic, "placeSupplies"] call MAINCLASS;
-            _factionConfig = _faction call ALiVE_fnc_getFactionConfig;
+            _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
             _factionSideNumber = getNumber(_factionConfig >> "side");
             _side = _factionSideNumber call ALIVE_fnc_sideNumberToText;
             _countProfiles = 0;

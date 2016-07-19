@@ -1,8 +1,8 @@
 #include <\x\alive\addons\x_lib\script_component.hpp>
-SCRIPT(getFactions);
+SCRIPT(configGetFactions);
 
 /* ----------------------------------------------------------------------------
-Function: ALiVE_fnc_getFactions
+Function: ALiVE_fnc_configGetFactions
 
 Description:
 Returns all config factions
@@ -16,7 +16,7 @@ Array - All factions
 
 Examples:
 (begin example)
-_side = [] call ALiVE_fnc_getFactions;
+_side = [] call ALiVE_fnc_configGetFactions;
 (end)
 
 See Also:

@@ -1,8 +1,8 @@
 #include <\x\alive\addons\x_lib\script_component.hpp>
-SCRIPT(getFactionConfig);
+SCRIPT(configGetFactionClass);
 
 /* ----------------------------------------------------------------------------
-Function: ALiVE_fnc_getFactionConfig
+Function: ALiVE_fnc_configGetFactionClass
 
 Description:
 Returns config path of given faction
@@ -16,7 +16,7 @@ Config Path - path to faction config
 
 Examples:
 (begin example)
-_side = "OPF_F" call ALiVE_fnc_getFactionConfig;
+_side = "OPF_F" call ALiVE_fnc_configGetFactionClass;
 (end)
 
 See Also:
@@ -29,9 +29,7 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private "_path";
-
-_path = missionConfigFile >> "CfgFactionClasses" >> _this;
+private _path = missionConfigFile >> "CfgFactionClasses" >> _this;
 
 if !(isClass _path) then {_path = configFile >> "CfgFactionClasses" >> _this};
 

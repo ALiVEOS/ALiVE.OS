@@ -1,8 +1,8 @@
 #include <\x\alive\addons\x_lib\script_component.hpp>
-SCRIPT(RandomGroupByType);
+SCRIPT(randomGroupByType);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_spawnRandomGroupByType
+Function: ALIVE_fnc_randomGroupByType
 
 Description:
 Compiles a group of units/vehicles of type Infantry,Motorized,Mechanized,Armored,Air
@@ -18,7 +18,7 @@ created group
 
 Examples:
 (begin example)
-_grp = [getPos player,WEST,"Motorized","BLU_F"] call ALIVE_fnc_spawnRandomGroupByType;
+_grp = [getPos player,WEST,"Motorized","BLU_F"] call ALIVE_fnc_randomGroupByType;
 (end)
 
 See Also:
@@ -27,12 +27,9 @@ Author:
 Wolffy, Highhead
 ---------------------------------------------------------------------------- */
 
-private ["_logic","_pos","_side","_type","_i","_group","_facs","_unit","_leader","_unittype","_newpos"];
+private ["_logic","_i","_group","_unit","_leader","_unittype","_newpos"];
 
-_pos = _this select 0;
-_side = _this select 1;
-_type = _this select 2;
-_facs = _this select 3;
+params ["_pos","_side","_type","_facs"];
 
 _group = creategroup _side;
 
@@ -91,5 +88,5 @@ if (_type == "Man") then {
     };
 };
 
-["ALIVE-%1 group with name %4 and %2 units created at %3.", time, count units _group, _pos, _group] call ALiVE_fnc_Dump;
+//["ALIVE-%1 group with name %4 and %2 units created at %3.", time, count units _group, _pos, _group] call ALiVE_fnc_Dump;
 _group;

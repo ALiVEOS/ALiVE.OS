@@ -328,6 +328,34 @@ class configFindEntries
     recompile = RECOMPILE;
 };
 
+class configGetFactionClass
+{
+    file = "\x\alive\addons\x_lib\functions\config\fnc_configGetFactionClass.sqf";
+    ext = ".sqf";
+    recompile = RECOMPILE;
+};
+
+class configGetFactionGroups
+{
+    file = "\x\alive\addons\x_lib\functions\config\fnc_configGetFactionGroups.sqf";
+    ext = ".sqf";
+    recompile = RECOMPILE;
+};
+
+class configGetFactions
+{
+    file = "\x\alive\addons\x_lib\functions\config\fnc_configGetFactions.sqf";
+    ext = ".sqf";
+    recompile = RECOMPILE;
+};
+
+class configGetFactionUnitsByGroups
+{
+    file = "\x\alive\addons\x_lib\functions\config\fnc_configGetFactionUnitsByGroups.sqf";
+    ext = ".sqf";
+    recompile = RECOMPILE;
+};
+
 class configGetVehicleClass
 {
     file = "\x\alive\addons\x_lib\functions\config\fnc_configGetVehicleClass.sqf";
@@ -1241,20 +1269,6 @@ class sortBy
 class getEnvironment
 {
     file = "\x\alive\addons\x_lib\functions\misc\fnc_getEnvironment.sqf";
-    ext = ".sqf";
-    recompile = RECOMPILE;
-};
-
-class getFactionConfig
-{
-    file = "\x\alive\addons\x_lib\functions\misc\fnc_getFactionConfig.sqf";
-    ext = ".sqf";
-    recompile = RECOMPILE;
-};
-
-class getFactions
-{
-    file = "\x\alive\addons\x_lib\functions\misc\fnc_getFactions.sqf";
     ext = ".sqf";
     recompile = RECOMPILE;
 };

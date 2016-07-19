@@ -25,7 +25,7 @@ Author:
 Wolffy.au
 ---------------------------------------------------------------------------- */
 
-private ["_id","_fac","_allvehs","_vehx","_fx","_cx","_cargoslots","_type","_noWeapons","_nonconfigs","_nonsims","_err"];
+private ["_id","_fac","_allvehs","_vehx","_cx","_cargoslots","_type","_noWeapons","_nonconfigs","_nonsims","_facUnits","_err"];
 
 PARAMS_1(_cargoslots);
 _err = "cargo slots not valid";
@@ -53,6 +53,13 @@ if !(isnil {call compile _searchBag}) exitwith {call compile _searchBag};
 _nonConfigs = ["StaticWeapon","CruiseMissile1","CruiseMissile2","Chukar_EP1","Chukar","Chukar_AllwaysEnemy_EP1"];
 _nonSims = ["parachute","house"];
 
+if (typename _fac == "STRING") then {
+    _facUnits = _fac call ALiVE_fnc_configGetFactionUnitsByGroups;
+} else {
+    _facUnits = [];
+    {_facUnits append (_fac call ALiVE_fnc_configGetFactionUnitsByGroups)} foreach _fac;
+};
+
 _allvehs = [];
 for "_y" from 1 to count(configFile >> "CfgVehicles") - 1 do {
     _vehx = (configFile >> "CfgVehicles") select _y;
@@ -62,44 +69,20 @@ for "_y" from 1 to count(configFile >> "CfgVehicles") - 1 do {
             if ({(_cx isKindOf _x)} count _nonconfigs == 0) then {
                 if (getNumber(_vehx >> "TransportSoldier") >= _cargoslots) then {
                     if (!isNil "_fac") then {
-                        _fx = getText(_vehx >> "faction");
-                        switch(toUpper(typeName _fac)) do {
-                            case "STRING": {
-                                if(_fx == _fac) then {
-                                    if (!isnil "_type") then {
-                                        if (_cx isKindOf _type) then {
-                                            if (_noWeapons) then {
-                                                if ([_cx] call ALiVE_fnc_isArmed) then {_allvehs pushback _cx};
-                                            } else {
-                                                _allvehs pushback _cx;
-                                            };
-                                        };
+                        if (_cx in _facUnits) then {
+                            if (!isnil "_type") then {
+                                if (_cx isKindOf _type) then {
+                                    if (_noWeapons) then {
+                                        if ([_cx] call ALiVE_fnc_isArmed) then {_allvehs pushback _cx};
                                     } else {
-                                        if (_noWeapons) then {
-                                            if ([_cx] call ALiVE_fnc_isArmed) then {_allvehs pushback _cx};
-                                        } else {
-                                            _allvehs pushback _cx;
-                                        };
+                                        _allvehs pushback _cx;
                                     };
                                 };
-                            };
-                            case "ARRAY": {
-                                if(_fx in _fac) then {
-                                    if (!isnil "_type") then {
-                                        if (_cx isKindOf _type) then {
-                                            if (_noWeapons) then {
-                                                if ([_cx] call ALiVE_fnc_isArmed) then {_allvehs pushback _cx};
-                                            } else {
-                                                _allvehs pushback _cx;
-                                            };
-                                        };
-                                    } else {
-                                        if (_noWeapons) then {
-                                            if ([_cx] call ALiVE_fnc_isArmed) then {_allvehs pushback _cx};
-                                        } else {
-                                            _allvehs pushback _cx;
-                                        };
-                                    };
+                            } else {
+                                if (_noWeapons) then {
+                                    if ([_cx] call ALiVE_fnc_isArmed) then {_allvehs pushback _cx};
+                                } else {
+                                    _allvehs pushback _cx;
                                 };
                             };
                         };
@@ -110,6 +93,6 @@ for "_y" from 1 to count(configFile >> "CfgVehicles") - 1 do {
     };
 };
 
-call compile (format["%1 = %2",_searchbag,_allvehs]);
+//call compile (format["%1 = %2",_searchbag,_allvehs]);
 
 _allvehs;

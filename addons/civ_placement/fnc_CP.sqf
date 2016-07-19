@@ -157,7 +157,7 @@ switch(_operation) do {
     };
     // Determine force faction
     case "faction": {
-        _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_getFactions] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
     };
     // Return TAOR marker
     case "taor": {
@@ -665,7 +665,7 @@ switch(_operation) do {
             _size = parseNumber([_logic, "size"] call MAINCLASS);
             _roadBlocks = parsenumber([_logic, "roadBlocks"] call MAINCLASS);
 
-            _factionConfig = _faction call ALiVE_fnc_getFactionConfig;
+            _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
             _factionSideNumber = getNumber(_factionConfig >> "side");
             _side = _factionSideNumber call ALIVE_fnc_sideNumberToText;
             _countProfiles = 0;

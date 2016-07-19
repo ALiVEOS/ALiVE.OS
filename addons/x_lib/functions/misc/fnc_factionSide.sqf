@@ -29,7 +29,7 @@ nil
 ---------------------------------------------------------------------------- */
 private ["_side"];
 
-switch (getnumber(configfile >> "CfgFactionClasses" >> _this >> "side")) do {
+switch (getnumber((_this call ALiVE_fnc_configGetFactionClass) >> "side")) do {
     case 0 : {_side = EAST};
     case 1 : {_side = WEST};
     case 2 : {_side = RESISTANCE};
