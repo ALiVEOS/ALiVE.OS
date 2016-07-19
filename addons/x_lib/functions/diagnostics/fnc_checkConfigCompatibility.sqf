@@ -190,7 +190,7 @@ _text = "Checking faction has a direct relationship to CfgGroups entry";
 [_text] call _dump;
 
 
-_config = configfile >> "CfgGroups" >> _sideToText >> _faction;
+_config = _faction call ALiVE_fnc_configGetFactionGroups;
 
 if(count _config > 0) then {
     ["faction found in CfgGroups >> %2 >> %1",_faction,_sideToText] call _dump;
@@ -247,7 +247,7 @@ if(_groupToFactionMappingOK || _factionToGroupMappingOK && (count _factionGroups
 
     _cfgGroupFactionName = _splitEntry select 3;
 
-    _config = configfile >> "CfgGroups" >> _sideToText >> _cfgGroupFactionName;
+    _config = _cfgGroupFactionName call ALiVE_fnc_configGetFactionGroups;
 
     _standardCategories = ["Infantry","SpecOps","Support","Motorized","Mechanized","Armored","Air"];
 

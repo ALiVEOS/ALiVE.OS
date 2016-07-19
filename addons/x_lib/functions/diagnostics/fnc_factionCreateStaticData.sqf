@@ -121,7 +121,7 @@ private ["_factionToGroupMappingOK","_factionGroups"];
 
 _factionToGroupMappingOK = false;
 
-_config = configfile >> "CfgGroups" >> _sideToText >> _faction;
+_config = _faction call ALiVE_fnc_configGetFactionGroups;
 
 if(count _config > 0) then {
     _factionToGroupMappingOK = true;
@@ -154,7 +154,7 @@ _factionCategoryGroups = [] call ALIVE_fnc_hashCreate;
 
 if(_factionToGroupMappingOK) then {
 
-    _config = configfile >> "CfgGroups" >> _sideToText >> _faction;
+    _config = _faction call ALiVE_fnc_configGetFactionGroups;
 
     _arrayContent = "";
 

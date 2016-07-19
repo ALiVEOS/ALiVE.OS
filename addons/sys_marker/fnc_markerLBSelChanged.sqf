@@ -95,7 +95,7 @@ switch _idc do {
         _temp = [_class, "/"] call CBA_fnc_split;
         _side = _temp select 2;
         _faction = _temp select 3;
-        _config = (configFile >> "CfgGroups" >> _side >> _faction);
+        _config = _faction call ALiVE_fnc_configGetFactionGroups;
         for "_i" from 0 to count _config -1 do {
             private ["_type","_f"];
             _type = _config select _i;
