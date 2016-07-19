@@ -43,14 +43,24 @@ switch(_rewardType) do {
             _factionName = getText(configfile >> "CfgFactionClasses" >> _taskFaction >> "displayName");
             _forcePool = [ALIVE_globalForcePool,_taskFaction] call ALIVE_fnc_hashGet;
 
-            _forcePool = _forcePool + _reward;
+            if (isNil "_forcePool") then {
+                _factions = _taskSide call ALiVE_fnc_getSideFactions;
+                {
+                    _forcePool = [ALIVE_globalForcePool,_x] call ALIVE_fnc_hashGet;
+                    if (!isnil "_forcePool") exitWith {};
+                } foreach _factions;
+            };
 
-            [ALIVE_globalForcePool,_taskFaction,_forcePool] call ALIVE_fnc_hashSet;
+            if (!isNil "_forcePool") then {
+                _forcePool = _forcePool + _reward;
 
-            // send a message to all side players from HQ
-            _message = format["%1 available reinforcement level increased: %2",_factionName,_forcePool];
-            _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,"HQ"];
-            [_taskSide,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                [ALIVE_globalForcePool,_taskFaction,_forcePool] call ALIVE_fnc_hashSet;
+
+                // send a message to all side players from HQ
+                _message = format["%1 available reinforcement level increased: %2",_factionName,_forcePool];
+                _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,"HQ"];
+                [_taskSide,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+            };
 
         };
     };
