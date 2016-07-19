@@ -174,7 +174,7 @@ switch(_operation) do {
 
                                 [GVAR(STORE),_id,_factionData] call ALiVE_fnc_HashSet;
                             };
-                        } foreach ([] call BIS_fnc_getFactions);
+                        } foreach ([] call ALiVE_fnc_configGetFactions);
 
                         PublicVariable QGVAR(DEBUG);
                         PublicVariable QGVAR(MULTISPAWN_TYPE);

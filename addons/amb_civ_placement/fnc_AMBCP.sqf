@@ -111,7 +111,7 @@ switch(_operation) do {
     };
     // Determine force faction
     case "faction": {
-        _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call BIS_fnc_getFactions] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
     };
     // Return TAOR marker
     case "taor": {
@@ -159,7 +159,7 @@ switch(_operation) do {
     };
     // Ambient vehicle faction
     case "ambientVehicleFaction": {
-        _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call BIS_fnc_getFactions] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
     };
     // Return the objectives as an array of clusters
     case "objectives": {

@@ -39,7 +39,7 @@ _side = nil;
 
 // get all factions
 if(isNil QGVAR(ALLFACTIONS)) then {
-    GVAR(ALLFACTIONS) = [] call BIS_fnc_getFactions;
+    GVAR(ALLFACTIONS) = [] call ALiVE_fnc_configGetFactions;
 };
 
 // if default or selection by side
