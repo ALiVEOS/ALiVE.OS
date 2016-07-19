@@ -604,7 +604,7 @@ switch(_operation) do {
             _ambientVehicleAmount = parseNumber([_logic, "ambientVehicleAmount"] call MAINCLASS);
             _ambientVehicleFaction = [_logic, "ambientVehicleFaction"] call MAINCLASS;
 
-            _factionConfig = (configFile >> "CfgFactionClasses" >> _faction);
+            _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
             _factionSideNumber = getNumber(_factionConfig >> "side");
             _side = _factionSideNumber call ALIVE_fnc_sideNumberToText;
             _sideObject = [_side] call ALIVE_fnc_sideTextToObject;

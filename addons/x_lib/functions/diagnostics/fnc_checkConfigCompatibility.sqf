@@ -161,7 +161,7 @@ _text = "Checking faction is found in CfgFactionClasses";
 [_text] call _dump;
 
 
-_config = configfile >> "CfgFactionClasses" >> _faction;
+_config = _faction call ALiVE_fnc_configGetFactionClass;
 
 if(count _config > 0) then {
     _displayName = [_config >> "displayName"] call _cfgValue;

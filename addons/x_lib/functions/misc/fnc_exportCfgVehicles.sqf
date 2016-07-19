@@ -162,7 +162,7 @@ switch tolower _mode do {
                         };
                         diag_log format["{'type':'%1',", _newType];
                         diag_log format["'side':'%1',", [_side] call ALiVE_fnc_sideNumberToText];
-                        diag_log format["'faction':'%1',", [(configFile >> "CfgFactionClasses" >> _faction >> "displayName")] call ALiVE_fnc_getConfigValue];
+                        diag_log format["'faction':'%1',", [((_faction call ALiVE_fnc_configGetFactionClass) >> "displayName")] call ALiVE_fnc_getConfigValue];
                         diag_log format["'class':'%1',", _class];
                         diag_log format["'name':'%1'},", _disName];
                     };

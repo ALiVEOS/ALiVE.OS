@@ -65,7 +65,7 @@ if (typeName _fac == "ANY" || {typeName _fac == "SIDE"}) then {
         };
 
         {
-                _fx = getNumber(configFile >> "CfgFactionClasses" >> _x >> "side");
+                _fx = getNumber((_x call ALiVE_fnc_configGetFactionClass) >> "side");
                 if (_fx == _sidex) then {
                         _facs pushback _x;
                 };

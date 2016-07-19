@@ -31,8 +31,8 @@ if (GVAR(ENABLED)) then {
             _sideTarget = side (group _target); // group side is more reliable
             _sidesource = side _source;
 
-            _factionsource = getText (configFile >> "cfgFactionClasses" >> (faction _source) >> "displayName");
-            _factionTarget = getText (configFile >> "cfgFactionClasses" >> (faction _target) >> "displayName");
+            _factionsource = getText (((faction _source) call ALiVE_fnc_configGetFactionClass) >> "displayName");
+            _factionTarget = getText (((faction _target) call ALiVE_fnc_configGetFactionClass) >> "displayName");
 
             _targettype = getText (configFile >> "cfgVehicles" >> (typeof _target) >> "displayName");
             _sourcetype = getText (configFile >> "cfgVehicles" >> (typeof _source) >> "displayName");
