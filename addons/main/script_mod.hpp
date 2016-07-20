@@ -6,7 +6,7 @@
 #define MINOR 1
 #define PATCHLVL 1
 // BUILD should be YYMMDDR eg 1311211
-#define BUILD 1607191
+#define BUILD 1607201
 
 #define CLUSTERBUILD "Arma 3","Arma3",162,137494,"Stable"
 
