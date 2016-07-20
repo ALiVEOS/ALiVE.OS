@@ -251,20 +251,20 @@ class CfgVehicles {
                         {
                                 displayName = "$STR_ALIVE_ML_LIMIT";
                                 description = "$STR_ALIVE_ML_LIMIT_COMMENT";
-                                typeName = "BOOL";
                                 class Values
                                 {
-                                        class Yes
-                                        {
-                                                name = "Faction Only";
-                                                value = true;
-                                        };
                                         class No
                                         {
                                                 name = "Side and Faction";
                                                 value = false;
                                                 default = 1;
                                         };
+                                        class Yes
+                                        {
+                                                name = "Faction Only";
+                                                value = true;
+                                        };
+
                                 };
                         };
                 };
