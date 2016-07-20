@@ -6,6 +6,11 @@ _index = _this select 1;
 _slider = _display displayCtrl 655578;
 _sliderText = _display displayCtrl 655579;
 _objectLb = _display displayCtrl 655580;
+
+_transportArray = NEO_radioLogic getVariable format ["NEO_radioTrasportArray_%1", playerSide];
+_transportUnitLb = _display displayCtrl 655568;
+_chopper = _transportArray select (lbCurSel _transportUnitLb) select 0; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" }) then { _chopper = vehicle player };
+
 _show = switch (toUpper (_lb lbText _index)) do
 {
     case "PICKUP" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to location and wait for a smoke visual and confirmation (EVAC)</t>" };
@@ -14,7 +19,7 @@ _show = switch (toUpper (_lb lbText _index)) do
     case "MOVE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to designated position and wait for further orders</t>" };
     case "CIRCLE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to designated coordinates and circle the area clockwise till further notice</t>" };
     case "INSERTION" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to designated coordinates and will hover for rope insertion</t>" };
-    case "SLINGLOAD" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to designated coordinates and slingload nearest available object</t>" };
+    case "SLINGLOAD" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to designated coordinates and slingload nearest available object.</t>" };
     case "UNHOOK" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to designated coordinates and unhook current slingload</t>" };
 };
 
@@ -94,8 +99,7 @@ _task = switch (_lb lbText _index) do
 
         _nearestObjects = nearestObjects [_pos, [], 100];
         {
-            if ( count (getArray (configFile >> "CfgVehicles" >> typeOf _x >> "slingLoadCargoMemoryPoints")) > 0 ) then
-            {
+            if ( count (getArray (configFile >> "CfgVehicles" >> typeOf _x >> "slingLoadCargoMemoryPoints")) > 0  && ([_x] call ALiVE_fnc_getObjectWeight < [(configFile >> "CfgVehicles" >> typeOf _chopper >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue)) then {
                 private ["_idx"];
                 // diag_log _x;
                 _idx = _objectLb lbAdd (getText (configFile >> "CfgVehicles" >> typeOf _x >> "displayName"));
