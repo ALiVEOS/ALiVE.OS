@@ -21,7 +21,7 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_taskDialog","_taskSide","_taskFaction","_rewardData","_rewardType","_reward"];
+private ["_taskDialog","_taskSide","_taskFaction","_rewardData","_rewardType","_reward","_event"];
 
 _taskDialog = _this select 0;
 _taskSide = _this select 1;
@@ -65,3 +65,6 @@ switch(_rewardType) do {
         };
     };
 };
+
+ _event = ["TASK_SUCCEEDED", [_taskDialog,_taskSide,_taskFaction,_rewardData], "C2ISTAR"] call ALIVE_fnc_event;
+[ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
