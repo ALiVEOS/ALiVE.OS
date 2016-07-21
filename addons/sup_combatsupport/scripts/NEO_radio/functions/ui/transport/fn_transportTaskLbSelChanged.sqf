@@ -36,6 +36,7 @@ _task = switch (_lb lbText _index) do
     {
         _objectLb ctrlSetPosition [safeZoneX + (safeZoneW / 2.275), safeZoneY + (safeZoneH / 1.45), (safeZoneW / 1000), (safeZoneH / 1000)];
         _objectLb ctrlCommit 0;
+        _objectLb ctrlEnable false;
         _slider ctrlSetPosition [0.281002 * safezoneW + safezoneX, 0.5504 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.0196 * safezoneH)];
         _slider ctrlCommit 0;
         _sliderText ctrlSetText "Radius: 200/300";
@@ -59,6 +60,7 @@ _task = switch (_lb lbText _index) do
     {
         _objectLb ctrlSetPosition [safeZoneX + (safeZoneW / 2.275), safeZoneY + (safeZoneH / 1.45), (safeZoneW / 1000), (safeZoneH / 1000)];
         _objectLb ctrlCommit 0;
+        _objectLb ctrlEnable false;
         _slider ctrlSetPosition [0.281002 * safezoneW + safezoneX, 0.5504 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.0196 * safezoneH)];
         _slider ctrlCommit 0;
         _sliderText ctrlSetText "Height: 20/50";
@@ -124,6 +126,7 @@ _task = switch (_lb lbText _index) do
     {
         _objectLb ctrlSetPosition [safeZoneX + (safeZoneW / 2.275), safeZoneY + (safeZoneH / 1.45), (safeZoneW / 1000), (safeZoneH / 1000)];
         _objectLb ctrlCommit 0;
+        _objectLb ctrlEnable false;
         _slider ctrlSetPosition [safeZoneX + (safeZoneW / 2.275), safeZoneY + (safeZoneH / 1.45), (safeZoneW / 1000), (safeZoneH / 1000)];
         _slider ctrlCommit 0;
         _sliderText ctrlSetText "";
