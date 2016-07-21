@@ -22,6 +22,55 @@ if (hasInterface) then {
 
     ["ALiVE | Quick Start APEX - Running ClientInit..."] call ALiVE_fnc_Dump;
 
+    player createDiaryRecord ["Diary", ["Mission",
+"<font size='18'>COMMANDER'S INTENT</font><br />Draxl Company, NRF16 are established at <marker name='respawn_west'>FOB JOHNSTON</marker>. Commander’s Intent is for the Company Force Recon Team, call sign RAIDER ONE, to destroy weapons and materiel throughout the Area of Operations in order to disrupt enemy operations.<br />
+<br />
+<font size='18'>TASK ORG</font><br />
+Force Recon Team (RAIDER-ONE) has Hunter MRAP, AH-6 Light Utility Helicopter, UAVs and assault boats available to deploy as the local commander sees fit.<br />
+    <br />
+EAGLE-ONE (AH-99) and EAGLE-TWO (V-44) attack aircraft are on call for Close Air Support.<br />
+    <br />
+RODEO-TWO (UH-80) and RODEO-THREE (CH-67) medium-heavy utility helicopters are on call for transport and logistics tasks.<br />
+<br />
+<font size='18'>COORD</font><br />
+NRF SIGINT will provide periodic updates on suspected enemy activity via map overlay.<br />
+    <br />
+Local Comd has full tactical autonomy to conduct operations as he sees fit but may request specific taskings from CROSSROAD via the Command Tablet uplink.<br />
+    <br />
+Logistics Demands may be submitted to CROSSROAD for resupply of equipment and Combat Supplies.<br />
+    <br />
+Battle Casualty Replacements (including respawn) will arrive at the FOB.<br />
+    <br />
+Recon team is encouraged to submit SITREPs, SPOTREPs and Patrol Reports via the Command Tablet in order to facilitate Command and Control.<br />
+    <br />
+<font size='18'>ADMINISTRATION</font><br />
+Zeus access is available for Local Comd.<br />
+Administration Actions are available for Local Comd."
+    ]];
+
+        player createDiaryRecord ["Diary", ["Situation",
+"<font size='18'>HQ NATO RESPONSE FORCE 16</font><br />
+<br />
+FOB JOHNSTON, BALA AIRFIELD, SW TANOA, GR 021035<br />
+<br />
+Weather: Clear. Visibility 2km+. First Light 0630<br />
+<br />
+<font size='18'>ENEMY FORCES</font><br />
+Intel indicates that a CSAT Combined Arms Armoured Battalion has occupied strategic locations around the main island of Tanoa. The main body of forces are established in defensive positions in the vicinity of vital logistics hubs, including Aeroport de Tanoa in the south and La Rochelle Aerodrome and Blue Pearl Industrial Port in the North East. In the south island St George airstrip and the bridge crossing at Harcourt are also occupied. SIGINT indicates that enemy HQ is likely to be in the vicinity of Georgetown and subsequently heavily defended.<br />
+    <br />
+CSAT are supported by the local Syndikat faction, believed to be in approx Company strength but spread thinly across the island. Their modus operandi is to occupy civilian establishments from where they establish points of control and act as a force multiplier for CSAT.<br />
+    <br />
+CIVPOP is present in small numbers and are mostly those that are too afraid to leave their homes and belongings. They do not pose a threat and are largely ambivalent to local and NATO forces. It goes without saying, avoid civilian casualties.    <br />    <br />
+<font size='18'>FRIENDLY FORCES</font><br />
+NATO Response Force 16 consists of a NATO Combined Arms Armoured Company (Draxl Company - HQ callsign CROSSROAD), including special forces reconnaissance elements (RAIDER), close air (EAGLE) and rotary wing support units (RODEO).<br />
+<br />
+NATO forces are located at the <marker name='respawn_west'>Bala Airstrip</marker>, which has been secured as a ""beachhead"" onto the Horizon Islands. The company size force will secure and consolidate their position around Bala Airstrip, while special forces elements and support units look to opportunistically disrupt OPFOR operations on the main island.
+"]];
+
+    player createDiaryRecord ["Diary", ["Overview",
+        "NATO forces must intervene in the widening insurgency situation on the Horizon Islands. NATO has established a <marker name='respawn_west'>FOB</marker> in the SW of Tanoa. Lead your CTRG team in distrupting Syndikat and CSAT as they try to secure the main island."
+    ]];
+
     //Intro
     [] spawn {
         enableRadio false;
