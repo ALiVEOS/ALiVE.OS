@@ -153,4 +153,75 @@
 <Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_Support_EOD0">
 	<Original>Support Team (EOD)</Original>
 </Key>
+<Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Motorized_MTP_HRG_MotInf_Team0">
+    <Original>Motorized Patrol</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Motorized_MTP_HRG_Technicals0">
+    <Original>Technicals</Original>
+</Key>
+
+// APEX
+<Key ID="str_a3_cfggroups_east_OPF_T_F_infantry_O_T_infwepteam0">
+    <Original>Weapons Team</Original>
+</Key>
+<Key ID="str_a3_cfggroups_east_OPF_T_F_infantry_O_T_infsupteam0">
+    <Original>Support Team</Original>
+</Key>
+<Key ID="str_a3_cfggroups_east_OPF_T_F_infantry_O_T_infhq0">
+    <Original>Infantry HQ</Original>
+</Key>
+<Key ID="str_a3_cfggroups_east_OPF_T_F_infantry_O_T_infsniper0">
+    <Original>Sniper Team</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_T_F_Motorized_MTP_O_T_MotInfSection0">
+    <Original>Motorized Section</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_T_F_Motorized_MTP_O_T_MotInf_ATV0">
+    <Original>Motorized ATV Team</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_T_F_Motorized_MTP_O_T_MotInf_HQ0">
+    <Original>Motorized HQ</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_T_F_Motorized_MTP_O_T_MotInf_Transport0">
+    <Original>Motorized Transport</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_Section10">
+    <Original>Mechanized 1st Rifle Section</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_Section20">
+    <Original>Mechanized 2nd Rifle Section</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_Section30">
+    <Original>Mechanized 3rd Rifle Section</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_CoyHQ0">
+    <Original>Mechanized Company HQ</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_SectionAT0">
+    <Original>Mechanized Anti-Tank Section</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_SectionMG0">
+    <Original>Mechanized Weapons Section</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_T_F_Air_O_T_PO30_Squadron0">
+    <Original>PO-30 Squadron</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_T_F_Air_O_T_VTOL_Transport0">
+    <Original>Y-32 (VTOL) Transport</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_T_F_Mech0">
+    <Original>Mechanized Infantry</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_T_F_Air0">
+    <Original>Air</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_T_F_Naval">
+    <Original>Naval (Pacific)</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_West_BLU_T_F_Naval">
+    <Original>Naval (Pacific)</Original>
+</Key>
+<Key ID="STR_A3_CfgGroups_East_OPF_T_F_Naval_O_T_sentryTeam_Boat0">
+    <Original>Sentry Team (Speed Boat)</Original>
+</Key>
 </Container></Package></Project>
