@@ -20,10 +20,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={12191.201,369.76682,13636.063};
-		dir[]={-0.47596565,-0.4254272,-0.76988274};
-		up[]={-0.22381644,0.90488124,-0.36203113};
-		aside[]={-0.85066622,1.3001554e-006,0.52590662};
+		pos[]={2129.8621,20.600784,3429.1074};
+		dir[]={0.69196045,-0.48666948,-0.53347051};
+		up[]={0.38557023,0.87346745,-0.29725409};
+		aside[]={-0.61063123,1.3697427e-006,-0.7920472};
 	};
 };
 binarizationWanted=0;
@@ -7617,7 +7617,7 @@ class Mission
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={2153.8306,14.946152,3420.0874};
+				position[]={2153.376,14.946152,3419.8191};
 				angles[]={0,5.6161008,0};
 			};
 			side="Empty";
@@ -7633,7 +7633,7 @@ class Mission
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={2147.7769,14.943693,3414.5278};
+				position[]={2148.2983,14.946152,3413.7642};
 				angles[]={0,5.6161008,0};
 			};
 			side="Empty";
@@ -7643,14 +7643,13 @@ class Mission
 			};
 			id=171;
 			type="B_CTRG_LSV_01_light_F";
-			atlOffset=-0.0024585724;
 		};
 		class Item81
 		{
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={2141.6018,14.946152,3409.8218};
+				position[]={2141.8135,14.946152,3408.9543};
 				angles[]={0,5.6161008,0};
 			};
 			side="Empty";
@@ -7666,7 +7665,7 @@ class Mission
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={2135.2876,14.946152,3404.9976};
+				position[]={2136.0051,14.946152,3403.678};
 				angles[]={0,5.6161008,0};
 			};
 			side="Empty";
