@@ -26,11 +26,11 @@ if (hasInterface) then {
 "<font size='18'>COMMANDER'S INTENT</font><br />Draxl Company, NRF16 are established at <marker name='respawn_west'>FOB JOHNSTON</marker>. Commander’s Intent is for the Company Force Recon Team, call sign RAIDER ONE, to destroy weapons and materiel throughout the Area of Operations in order to disrupt enemy operations.<br />
 <br />
 <font size='18'>TASK ORG</font><br />
-Force Recon Team (RAIDER-ONE) has Hunter MRAP, AH-6 Light Utility Helicopter, UAVs and assault boats available to deploy as the local commander sees fit.<br />
+Force Recon Team (RAIDER-ONE) has Hunter MRAP, Prowler LSV, AH-6 Light Utility Helicopter, UAVs and assault <marker name='marker_8'>boats</marker> available to deploy as the local commander sees fit.<br />
     <br />
-EAGLE-ONE (AH-99) and EAGLE-TWO (V-44) attack aircraft are on call for Close Air Support.<br />
+EAGLE-ONE (AH-99) and EAGLE-TWO (V-44) attack <marker name='cas'>aircraft</marker> are on call for Close Air Support.<br />
     <br />
-RODEO-TWO (UH-80) and RODEO-THREE (CH-67) medium-heavy utility helicopters are on call for transport and logistics tasks.<br />
+RODEO-TWO (UH-80) and RODEO-THREE (CH-67) medium-heavy utility <marker name='marker_5'>helicopters</marker> are on call for transport and logistics tasks.<br />
 <br />
 <font size='18'>COORD</font><br />
 NRF SIGINT will provide periodic updates on suspected enemy activity via map overlay.<br />
@@ -52,11 +52,12 @@ Administration Actions are available for Local Comd."
 "<font size='18'>HQ NATO RESPONSE FORCE 16</font><br />
 <br />
 FOB JOHNSTON, BALA AIRFIELD, SW TANOA, GR 021035<br />
-<br />
 Weather: Clear. Visibility 2km+. First Light 0630<br />
 <br />
 <font size='18'>ENEMY FORCES</font><br />
-Intel indicates that a CSAT Combined Arms Armoured Battalion has occupied strategic locations around the main island of Tanoa. The main body of forces are established in defensive positions in the vicinity of vital logistics hubs, including Aeroport de Tanoa in the south and La Rochelle Aerodrome and Blue Pearl Industrial Port in the North East. In the south island St George airstrip and the bridge crossing at Harcourt are also occupied. SIGINT indicates that enemy HQ is likely to be in the vicinity of Georgetown and subsequently heavily defended.<br />
+Intel indicates that a CSAT Combined Arms Armoured Battalion has occupied strategic locations around the <marker name='main_island'>main island</marker> of Tanoa. The main body of forces are established in defensive positions in the vicinity of vital logistics hubs, including <marker name='aeroport'>Aeroport de Tanoa</marker> in the south and <marker name='rochelle'>La Rochelle Aerodrome</marker> and <marker name='bpi'>Blue Pearl Industrial Port</marker> in the North East. In the south island <marker name='airstrip'>St George airstrip</marker> and the bridge crossing at <marker name='harcourt'>Harcourt</marker> are also occupied. SIGINT indicates that enemy HQ is likely to be in the vicinity of <marker name='georgetown'>Georgetown</marker> and subsequently heavily defended.<br />
+    <br />
+CSAT forces are well supplied and supported by airflift resupply into <marker name='rochelle'>La Rochelle Aerodrome</marker> in the north. Air transport assets are available to move CSAT infantry around the islands. HUMINT suggests CSAT may have attack helicopter capability available on the main island. Finally, CSAT have a number of armed coastal patrols using SDV, Assault Boats and divers.<br />
     <br />
 CSAT are supported by the local Syndikat faction, believed to be in approx Company strength but spread thinly across the island. Their modus operandi is to occupy civilian establishments from where they establish points of control and act as a force multiplier for CSAT.<br />
     <br />
