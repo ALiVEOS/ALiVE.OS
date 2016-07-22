@@ -964,6 +964,961 @@ class CfgGroups
                 };
             };
         };
+        class OPF_T_F
+        {
+            class Infantry
+            {
+                class O_T_InfSquad
+                {
+                    rarityGroup = 0.5;
+                };
+                class O_T_InfSquad_Weapons
+                {
+                    rarityGroup = 0.5;
+                };
+                class O_T_InfTeam
+                {
+                    rarityGroup = 0.3;
+                };
+                class O_T_InfTeam_AT
+                {
+                    rarityGroup = 0.1;
+                };
+                class O_T_InfSentry
+                {
+                    rarityGroup = 0.5;
+                };
+                class O_T_InfWepTeam
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_T_F_Infantry_O_T_InfWepTeam0";
+                    side = 0;
+                    faction = "OPF_T_F";
+                    rarityGroup = 0.3;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,5,0};
+                    };
+                    class Unit1 // TODO - Should be Heavy MG
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_AR_F";
+                        rank = "CORPORAL";
+                        position[] = {3,0,0};
+                    };
+                    class Unit2
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_LAT_F";
+                        rank = "PRIVATE";
+                        position[] = {5,0,0};
+                    };
+                    class Unit3
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_F";
+                        rank = "PRIVATE";
+                        position[] = {7,0,0};
+                    };
+                };
+                class O_T_InfSupTeam
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_T_F_Infantry_O_T_InfSupTeam0";
+                    side = 0;
+                    faction = "OPF_T_F";
+                    rarityGroup = 0.3;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,5,0};
+                    };
+                    class Unit1 // TODO - Should be Heavy AT
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_LAT_F";
+                        rank = "CORPORAL";
+                        position[] = {3,0,0};
+                    };
+                    class Unit2
+                    {
+                        side = 0;
+                        vehicle = "O_T_medic_F";
+                        rank = "PRIVATE";
+                        position[] = {5,0,0};
+                    };
+                    class Unit3
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_M_F";
+                        rank = "PRIVATE";
+                        position[] = {7,0,0};
+                    };
+                };
+                class O_T_InfHQ
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_T_F_Infantry_O_T_InfHQ0";
+                    side = 0;
+                    faction = "OPF_T_F";
+                    rarityGroup = 0.1;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_SL_F";
+                        rank = "LIEUTENANT";
+                        position[] = {0,5,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {3,0,0};
+                    };
+                    class Unit2
+                    {
+                        side = 0;
+                        vehicle = "O_T_medic_F";
+                        rank = "CORPORAL";
+                        position[] = {5,0,0};
+                    };
+                    class Unit3
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_repair_F";
+                        rank = "PRIVATE";
+                        position[] = {7,0,0};
+                    };
+                    class Unit4
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_F";
+                        rank = "PRIVATE";
+                        position[] = {9,0,0};
+                    };
+                };
+                class O_T_InfSniper
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_T_F_Infantry_O_T_InfSniper0";
+                    side = 0;
+                    faction = "OPF_T_F";
+                    rarityGroup = 0.05;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_sniper_F";
+                        rank = "LIEUTENANT";
+                        position[] = {0,5,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "O_T_spotter_F";
+                        rank = "SERGEANT";
+                        position[] = {3,0,0};
+                    };
+                };
+            };
+            class SpecOps
+            {
+                class O_T_diverTeam
+                {
+                    rarityGroup = 0.3;
+                };
+                class O_T_diverTeam_Boat
+                {
+                    rarityGroup = 0.3;
+                };
+            };
+            class Support
+            {
+                class O_T_support_CLS
+                {
+                    rarityGroup = 0.1;
+                };
+                class O_T_support_EOD
+                {
+                    rarityGroup = 0.1;
+                };
+                class O_T_support_ENG
+                {
+                    rarityGroup = 0.1;
+                };
+            };
+            class Motorized_MTP
+            {
+                class O_T_MotInf_Team
+                {
+                    rarityGroup = 0.3;
+                };
+                class O_T_MotInf_AT
+                {
+                    rarityGroup = 0.1;
+                };
+                class O_T_MotInf_Section
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_T_F_Motorized_MTP_O_T_MotInfSection0";
+                    side = 0;
+                    faction = "OPF_T_F";
+                    rarityGroup = 0.5;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,5,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle="O_T_MRAP_02_hmg_ghex_F";
+                        rank = "SERGEANT";
+                        position[] = {-5,0,0};
+                    };
+                    class Unit2
+                    {
+                        side = 0;
+                        vehicle = "O_T_MRAP_02_gmg_ghex_F";
+                        rank = "CORPORAL";
+                        position[] = {-5,-7,0};
+                    };
+                    class Unit3
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_AR_F";
+                        rank = "CORPORAL";
+                        position[] = {3,0,0};
+                    };
+                    class Unit4 // TODO - Should be Heavy AT
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_LAT_F";
+                        rank = "PRIVATE";
+                        position[] = {5,0,0};
+                    };
+                    class Unit5
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_AR_F";
+                        rank = "PRIVATE";
+                        position[] = {7,0,0};
+                    };
+                    class Unit6
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_LAT_F";
+                        rank = "PRIVATE";
+                        position[] = {9,0,0};
+                    };
+                    class Unit7
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_F";
+                        rank = "PRIVATE";
+                        position[] = {11,0,0};
+                    };
+                };
+                class O_T_MotInf_ATV
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_T_F_Motorized_MTP_O_T_MotInf_ATV0";
+                    faction = "OPF_T_F";
+                    side = 0;
+                    rarityGroup = 0.2;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_Quadbike_ALIVE";
+                        rank = "SERGEANT";
+                        position[] = {-5,0,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "O_Quadbike_ALIVE";
+                        rank = "CORPORAL";
+                        position[] = {-5,-7,0};
+                    };
+                };
+                class O_T_MotInf_HQ
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_T_F_Motorized_MTP_O_T_MotInf_HQ0";
+                    side = 0;
+                    faction = "OPF_T_F";
+                    rarityGroup = 0.1;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_SL_F";
+                        rank = "LIEUTENANT";
+                        position[] = {0,5,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "O_T_MRAP_02_ghex_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit2
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {3,0,0};
+                    };
+                    class Unit3
+                    {
+                        side = 0;
+                        vehicle = "O_T_Medic_F";
+                        rank = "CORPORAL";
+                        position[] = {5,0,0};
+                    };
+                    class Unit4
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_repair_F";
+                        rank = "PRIVATE";
+                        position[] = {7,0,0};
+                    };
+                };
+                class O_T_MotInf_Transport
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_T_F_Motorized_MTP_O_T_MotInf_Transport0";
+                    side = 0;
+                    faction = "OPF_T_F";
+                    rarityGroup = 0.5;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_SL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {5,-5,0};
+                    };
+                    class Unit2
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_AR_F";
+                        rank = "CORPORAL";
+                        position[] = {-5,-5,0};
+                    };
+                    class Unit3
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_AR_F";
+                        rank = "PRIVATE";
+                        position[] = {10,-10,0};
+                    };
+                    class Unit4
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_AAR_F";
+                        rank = "PRIVATE";
+                        position[] = {-10,-10,0};
+                    };
+                    class Unit5
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_LAT_F";
+                        rank = "CORPORAL";
+                        position[] = {15,-15,0};
+                    };
+                    class Unit6
+                    {
+                        side = 0;
+                        vehicle = "O_T_medic_F";
+                        rank = "PRIVATE";
+                        position[] = {-15,-15,0};
+                    };
+                    class Unit7
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_F";
+                        rank = "PRIVATE";
+                        position[] = {20,-20,0};
+                    };
+                    class Unit8
+                    {
+                        side = 0;
+                        vehicle="O_T_Truck_03_covered_ghex_F";
+                        rank = "PRIVATE";
+                        position[] = {-20,-20,0};
+                    };
+                };
+            };
+            class Mechanized
+            {
+                name = "$STR_A3_CfgGroups_East_OPF_T_F_Mech0";
+                class O_T_MechInf_Section1
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_Section10";
+                    faction = "OPF_T_F";
+                    rarityGroup = 0.9;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_SL_F";
+                        rank = "LIEUTENANT";
+                        position[] = {0,5,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_SL_F";
+                        rank = "SERGEANT";
+                        position[] = {3,0,0};
+                    };
+                    class Unit2
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_TL_F";
+                        rank = "CORPORAL";
+                        position[] = {5,0,0};
+                    };
+                    class Unit3
+                    {
+                        side = 0;
+                        vehicle = "O_T_APC_Wheeled_02_rcws_ghex_F";
+                        rank = "PRIVATE";
+                        position[] = {-5,0,0};
+                    };
+                    class Unit4
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_AR_F";
+                        rank = "PRIVATE";
+                        position[] = {7,0,0};
+                    };
+                    class Unit5
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_GL_F";
+                        rank = "PRIVATE";
+                        position[] = {9,0,0};
+                    };
+                    class Unit6
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_LAT_F";
+                        rank = "PRIVATE";
+                        position[] = {11,0,0};
+                    };
+                    class Unit7
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_A_F";
+                        rank = "PRIVATE";
+                        position[] = {13,0,0};
+                    };
+                    class Unit8
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_M_F";
+                        rank = "PRIVATE";
+                        position[] = {15,0,0};
+                    };
+                };
+                class O_T_MechInf_Section2
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_Section20";
+                    faction = "OPF_T_F";
+                    rarityGroup = 0.9;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_SL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,5,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_SL_F";
+                        rank = "SERGEANT";
+                        position[] = {3,0,0};
+                    };
+                    class Unit2
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_TL_F";
+                        rank = "CORPORAL";
+                        position[] = {5,0,0};
+                    };
+                    class Unit3
+                    {
+                        side = 0;
+                        vehicle = "O_T_APC_Wheeled_02_rcws_ghex_F";
+                        rank = "PRIVATE";
+                        position[] = {-5,0,0};
+                    };
+                    class Unit4
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_AR_F";
+                        rank = "PRIVATE";
+                        position[] = {7,0,0};
+                    };
+                    class Unit5
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_GL_F";
+                        rank = "PRIVATE";
+                        position[] = {9,0,0};
+                    };
+                    class Unit6
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_LAT_F";
+                        rank = "PRIVATE";
+                        position[] = {11,0,0};
+                    };
+                    class Unit7
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_A_F";
+                        rank = "PRIVATE";
+                        position[] = {13,0,0};
+                    };
+                    class Unit8
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_repair_F";
+                        rank = "PRIVATE";
+                        position[] = {15,0,0};
+                    };
+                };
+                class O_T_MechInf_Section3
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_Section30";
+                    faction = "OPF_T_F";
+                    rarityGroup = 0.9;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_SL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,5,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_TL_F";
+                        rank = "CORPORAL";
+                        position[] = {3,0,0};
+                    };
+                    class Unit2
+                    {
+                        side = 0;
+                        vehicle = "O_T_APC_Wheeled_02_rcws_ghex_F";
+                        rank = "PRIVATE";
+                        position[] = {-5,0,0};
+                    };
+                    class Unit3
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_AR_F";
+                        rank = "PRIVATE";
+                        position[] = {5,0,0};
+                    };
+                    class Unit4
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_GL_F";
+                        rank = "PRIVATE";
+                        position[] = {7,0,0};
+                    };
+                    class Unit5
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_LAT_F";
+                        rank = "PRIVATE";
+                        position[] = {9,0,0};
+                    };
+                    class Unit6
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_A_F";
+                        rank = "PRIVATE";
+                        position[] = {11,0,0};
+                    };
+                    class Unit7
+                    {
+                        side = 0;
+                        vehicle = "O_T_medic_F";
+                        rank = "PRIVATE";
+                        position[] = {13,0,0};
+                    };
+                };
+                class O_T_MechInf_CoyHQ
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_CoyHQ0";
+                    faction = "OPF_T_F";
+                    rarityGroup = 0.1;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_officer_F";
+                        rank = "CAPTAIN";
+                        position[] = {0,5,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "O_T_officer_F";
+                        rank = "LIEUTENANT";
+                        position[] = {3,0,0};
+                    };
+                    class Unit2
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_SL_F";
+                        rank = "SERGEANT";
+                        position[] = {5,0,0};
+                    };
+                    class Unit3
+                    {
+                        side = 0;
+                        vehicle = "O_T_APC_Wheeled_02_rcws_ghex_F";
+                        rank = "PRIVATE";
+                        position[] = {-5,0,0};
+                    };
+                    class Unit4
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_repair_F";
+                        rank = "PRIVATE";
+                        position[] = {7,0,0};
+                    };
+                };
+                class O_T_MechInf_SectionAT
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_SectionAT0";
+                    faction = "OPF_T_F";
+                    rarityGroup = 0.5;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_SL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,5,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_TL_F";
+                        rank = "CORPORAL";
+                        position[] = {3,0,0};
+                    };
+                    class Unit2
+                    {
+                        side = 0;
+                        vehicle = "O_T_APC_Wheeled_02_rcws_ghex_F";
+                        rank = "PRIVATE";
+                        position[] = {-5,0,0};
+                    };
+                    class Unit3
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_AT_F";
+                        rank = "PRIVATE";
+                        position[] = {5,0,0};
+                    };
+                    class Unit4
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_AT_F";
+                        rank = "PRIVATE";
+                        position[] = {7,0,0};
+                    };
+                    class Unit5
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_AT_F";
+                        rank = "PRIVATE";
+                        position[] = {9,0,0};
+                    };
+                    class Unit6
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_A_F";
+                        rank = "PRIVATE";
+                        position[] = {11,0,0};
+                    };
+                    class Unit7
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_A_F";
+                        rank = "PRIVATE";
+                        position[] = {13,0,0};
+                    };
+                };
+                class O_T_MechInf_SectionMG
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_SectionMG0";
+                    faction = "OPF_T_F";
+                    rarityGroup = 0.5;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_SL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,5,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_TL_F";
+                        rank = "CORPORAL";
+                        position[] = {3,0,0};
+                    };
+                    class Unit2
+                    {
+                        side = 0;
+                        vehicle = "O_T_APC_Wheeled_02_rcws_ghex_F";
+                        rank = "PRIVATE";
+                        position[] = {-5,0,0};
+                    };
+                    class Unit3
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_AR_F";
+                        rank = "PRIVATE";
+                        position[] = {5,0,0};
+                    };
+                    class Unit4
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_AR_F";
+                        rank = "PRIVATE";
+                        position[] = {7,0,0};
+                    };
+                    class Unit5
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_AR_F";
+                        rank = "PRIVATE";
+                        position[] = {9,0,0};
+                    };
+                    class Unit6
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_A_F";
+                        rank = "PRIVATE";
+                        position[] = {11,0,0};
+                    };
+                    class Unit7
+                    {
+                        side = 0;
+                        vehicle = "O_T_Soldier_A_F";
+                        rank = "PRIVATE";
+                        position[] = {13,0,0};
+                    };
+                };
+            };
+            class Air
+            {
+                name = "$STR_A3_CfgGroups_East_OPF_T_F_Air0";
+                class O_T_PO30_Squadron
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_T_F_Air_O_T_PO30_Squadron0";
+                    side = 0;
+                    faction = "OPF_T_F";
+                    rarityGroup = 0.1;
+                    minAltitude = 40;
+                    maxAltitude = 100;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_Heli_Attack_02_F";
+                        rank = "CAPTAIN";
+                        position[] = {0,15,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "O_Heli_Attack_02_F";
+                        rank = "LIEUTENANT";
+                        position[] = {15,0,0};
+                    };
+                };
+                class O_T_VTOL_Transport
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_T_F_Air_O_T_VTOL_Transport0";
+                    side = 0;
+                    faction = "OPF_T_F";
+                    rarityGroup = 0.5;
+                    minAltitude = 60;
+                    maxAltitude = 150;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_VTOL_02_infantry_ghex_F";
+                        rank = "CAPTAIN";
+                        position[] = {0,15,0};
+                    };
+                };
+            };
+            class Naval
+            {
+                name = "$STR_A3_CfgGroups_East_OPF_T_F_Naval";
+                class O_T_sentryTeam_SpeedBoat
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_T_F_Naval_O_T_sentryTeam_Boat0";
+                    side = 0;
+                    faction = "OPF_T_F";
+                    icon = "\A3\ui_f\data\map\markers\nato\o_naval.paa";
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "O_T_Boat_Armed_01_hmg_F";
+                        rank = "PRIVATE";
+                        position[] = {-32,-57,0};
+                    };
+                };
+                class O_T_diverTeam
+                {
+                    name = "$STR_A3_CfgGroups_West_BLU_F_SpecOps_BUS_diverTeam0";
+                    side = 0;
+                    faction = "OPF_T_F";
+                    icon = "\A3\ui_f\data\map\markers\nato\o_naval.paa";
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_diver_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "O_T_diver_exp_F";
+                        rank = "CORPORAL";
+                        position[] = {5,-5,0};
+                    };
+                    class Unit2
+                    {
+                        side = 0;
+                        vehicle = "O_T_diver_F";
+                        rank = "PRIVATE";
+                        position[] = {-5,-5,0};
+                    };
+                    class Unit3
+                    {
+                        side = 0;
+                        vehicle = "O_T_diver_F";
+                        rank = "PRIVATE";
+                        position[] = {10,-10,0};
+                    };
+                };
+                class O_T_diverTeam_Boat
+                {
+                    name = "$STR_A3_CfgGroups_West_BLU_F_SpecOps_BUS_diverTeam_Boat0";
+                    side = 0;
+                    faction = "OPF_T_F";
+                    icon = "\A3\ui_f\data\map\markers\nato\o_naval.paa";
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_diver_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "O_T_diver_exp_F";
+                        rank = "CORPORAL";
+                        position[] = {5,-5,0};
+                    };
+                    class Unit2
+                    {
+                        side = 0;
+                        vehicle = "O_T_diver_F";
+                        rank = "PRIVATE";
+                        position[] = {-5,-5,0};
+                    };
+                    class Unit3
+                    {
+                        side = 0;
+                        vehicle = "O_T_diver_F";
+                        rank = "PRIVATE";
+                        position[] = {10,-10,0};
+                    };
+                    class Unit4
+                    {
+                        side = 0;
+                        vehicle = "O_T_Boat_Transport_01_F";
+                        rank = "PRIVATE";
+                        position[] = {-32,-57,0};
+                    };
+                };
+                class O_T_diverTeam_SDV
+                {
+                    name = "$STR_A3_CfgGroups_West_BLU_F_SpecOps_BUS_diverTeam_SDV0";
+                    side = 0;
+                    faction = "OPF_T_F";
+                    icon = "\A3\ui_f\data\map\markers\nato\o_naval.paa";
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_T_diver_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "O_T_diver_exp_F";
+                        rank = "CORPORAL";
+                        position[] = {5,-5,0};
+                    };
+                    class Unit2
+                    {
+                        side = 0;
+                        vehicle = "O_T_diver_F";
+                        rank = "PRIVATE";
+                        position[] = {-6,-6,0};
+                    };
+                    class Unit3
+                    {
+                        side = 0;
+                        vehicle = "O_T_diver_F";
+                        rank = "PRIVATE";
+                        position[] = {11,-11,0};
+                    };
+                    class Unit4
+                    {
+                        side = 0;
+                        vehicle = "O_SDV_01_F";
+                        rank = "PRIVATE";
+                        position[] = {-16,-16,0};
+                    };
+                    class Unit5
+                    {
+                        side = 0;
+                        vehicle = "O_SDV_01_F";
+                        rank = "PRIVATE";
+                        position[] = {21,-21,0};
+                    };
+                };
+            };
+        };
         class OPF_G_F
         {
             name = "OPFIA";
@@ -1705,7 +2660,163 @@ class CfgGroups
                 };
             };
         };
+        // Need to add VTOL groups for BLU_T_F
+        class BLU_T_F
+        {
+            class Naval
+            {
+                name = "$STR_A3_CfgGroups_West_BLU_T_F_Naval";
+                class B_T_sentryTeam_SpeedBoat
+                {
+                    name = "$STR_A3_CfgGroups_East_OPF_F_Naval_OIA_sentryTeam_Boat0";
+                    side = 0;
+                    faction = "BLU_T_F";
+                    icon = "\A3\ui_f\data\map\markers\nato\b_naval.paa";
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "B_T_soldier_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "B_T_Boat_Armed_01_minigun_F";
+                        rank = "PRIVATE";
+                        position[] = {-32,-57,0};
+                    };
+                };
+                class B_T_DiverTeam
+                {
+                    name = "$STR_A3_CfgGroups_West_BLU_F_SpecOps_BUS_DiverTeam0";
+                    side = 1;
+                    faction = "BLU_T_F";
+                    icon = "\A3\ui_f\data\map\markers\nato\b_naval.paa";
+                    class Unit0
+                    {
+                        side = 1;
+                        vehicle = "B_T_diver_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1
+                    {
+                        side = 1;
+                        vehicle = "B_T_diver_exp_F";
+                        rank = "CORPORAL";
+                        position[] = {5,-5,0};
+                    };
+                    class Unit2
+                    {
+                        side = 1;
+                        vehicle = "B_T_diver_F";
+                        rank = "PRIVATE";
+                        position[] = {-5,-5,0};
+                    };
+                    class Unit3
+                    {
+                        side = 1;
+                        vehicle = "B_T_diver_F";
+                        rank = "PRIVATE";
+                        position[] = {10,-10,0};
+                    };
+                };
+                class B_T_DiverTeam_Boat
+                {
+                    name = "$STR_A3_CfgGroups_West_BLU_F_SpecOps_BUS_DiverTeam_Boat0";
+                    side = 1;
+                    faction = "BLU_T_F";
+                    icon = "\A3\ui_f\data\map\markers\nato\b_naval.paa";
+                    class Unit0
+                    {
+                        side = 1;
+                        vehicle = "B_T_diver_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1
+                    {
+                        side = 1;
+                        vehicle = "B_T_diver_exp_F";
+                        rank = "CORPORAL";
+                        position[] = {5,-5,0};
+                    };
+                    class Unit2
+                    {
+                        side = 1;
+                        vehicle = "B_T_diver_F";
+                        rank = "PRIVATE";
+                        position[] = {-5,-5,0};
+                    };
+                    class Unit3
+                    {
+                        side = 1;
+                        vehicle = "B_T_diver_F";
+                        rank = "PRIVATE";
+                        position[] = {10,-10,0};
+                    };
+                    class Unit4
+                    {
+                        side = 1;
+                        vehicle = "B_T_Boat_Transport_01_F";
+                        rank = "PRIVATE";
+                        position[] = {-32,-57,0};
+                    };
+                };
+                class B_T_DiverTeam_SDV
+                {
+                    name = "$STR_A3_cfggroups_West_BLU_F_SpecOps_BUS_DiverTeam_SDV0";
+                    side = 1;
+                    faction = "BLU_T_F";
+                    icon = "\A3\ui_f\data\map\markers\nato\b_naval.paa";
+                    class Unit0
+                    {
+                        side = 1;
+                        vehicle = "B_T_diver_TL_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1
+                    {
+                        side = 1;
+                        vehicle = "B_T_diver_exp_F";
+                        rank = "CORPORAL";
+                        position[] = {5,-5,0};
+                    };
+                    class Unit2
+                    {
+                        side = 1;
+                        vehicle = "B_T_diver_F";
+                        rank = "PRIVATE";
+                        position[] = {-6,-6,0};
+                    };
+                    class Unit3
+                    {
+                        side = 1;
+                        vehicle = "B_T_diver_F";
+                        rank = "PRIVATE";
+                        position[] = {11,-11,0};
+                    };
+                    class Unit4
+                    {
+                        side = 1;
+                        vehicle = "B_SDV_01_F";
+                        rank = "PRIVATE";
+                        position[] = {-16,-16,0};
+                    };
+                    class Unit5
+                    {
+                        side = 1;
+                        vehicle = "B_SDV_01_F";
+                        rank = "PRIVATE";
+                        position[] = {21,-21,0};
+                    };
+                };
+            };
+        };
     };
+
     class Indep
     {
         class IND_F
@@ -2202,7 +3313,7 @@ class CfgGroups
             class Motorized_MTP {
                 name = "Motorized Infantry";
                 class HRG_MotInf_Team {
-                    name = "$STR_A3_CfgGroups_Independant_OPF_F_Motorized_MTP_HRG_MotInf_Team0"; // name = "Motorized Patrol";
+                    name = "$STR_A3_CfgGroups_Independant_IND_G_F_Motorized_MTP_HRG_MotInf_Team0"; // name = "Motorized Patrol";
                     side = 2;
                     faction = "IND_G_F";
                     rarityGroup = 0.2;
@@ -2244,7 +3355,7 @@ class CfgGroups
                     };
                 };
                 class HRG_Technicals {
-                    name = "$STR_A3_CfgGroups_Independant_OPF_F_Motorized_MTP_HRG_Technicals0"; // name = "Technicals";
+                    name = "$STR_A3_CfgGroups_Independant_IND_G_F_Motorized_MTP_HRG_Technicals0"; // name = "Technicals";
                     side = 2;
                     faction = "IND_G_F";
                     rarityGroup = 0.2;
@@ -2362,5 +3473,7 @@ class CfgGroups
                 };
             };
         };
+
+        // NEED TO ADD IND_C_F from APEX
     };
 };
