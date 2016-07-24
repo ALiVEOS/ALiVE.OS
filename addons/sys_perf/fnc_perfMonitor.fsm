@@ -20,7 +20,7 @@ link7[] = {5,4};
 link8[] = {6,4};
 link9[] = {7,0};
 globals[] = {0.000000,0,0,0,0,640,480,1,21,6316128,1,-259.638550,234.638489,-190.527527,-596.800171,1157,1004,1};
-window[] = {2,-1,-1,-1,-1,870,104,1126,104,3,1175};
+window[] = {2,-1,-1,-1,-1,896,130,1152,130,3,1175};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -75,7 +75,12 @@ class FSM
                                          "        case ""objects"": {_customValue = count allMissionObjects ""All"";};" \n
                                          "        case ""entities"": {_customValue = count entities ""All"";};" \n
                                          "        case ""activeScripts"": {" \n
-                                         "            private _activeScripts = diag_activeScripts;" \n
+                                         "            private _activeScripts = [0, 0, 0, 0];" \n
+                                         "" \n
+                                         "            if ((productVersion select 2) >= 163) then {" \n
+                                         "                _activeScripts = diag_activeScripts;" \n
+                                         "            };" \n
+                                         "" \n
                                          "            private _activeScriptsSpawn = _activeScripts select 0;" \n
                                          "            private _activeScriptsExecVM = _activeScripts select 1;" \n
                                          "            private _activeScriptsExec = _activeScripts select 2;" \n
