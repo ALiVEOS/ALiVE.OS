@@ -1,8 +1,8 @@
 #include <\x\alive\addons\x_lib\script_component.hpp>
-SCRIPT(RandomGroup);
+SCRIPT(randomGroup);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_spawnRandomGroup
+Function: ALIVE_fnc_randomGroup
 
 Description:
 Spawns a random group by config type and faction
@@ -17,7 +17,7 @@ created group
 
 Examples:
 (begin example)
-_grp = [getPos player,"Motorized","BLU_F"] call ALIVE_fnc_getRandomManNear;
+_grp = [getPos player,"Motorized","BLU_F"] call ALIVE_fnc_randomGroup;
 (end)
 
 See Also:
@@ -43,7 +43,7 @@ _facs = [];
 _side = nil;
 // get all factions
 if(isNil QGVAR(ALLFACTIONS)) then {
-    GVAR(ALLFACTIONS) = [] call BIS_fnc_getFactions;
+    GVAR(ALLFACTIONS) = [] call ALiVE_fnc_configGetFactions;
     //hint str CONVOY_ALLFACS;
 };
 // if default or selection by side
@@ -68,7 +68,7 @@ if(typeName _fac == "ANY" || typeName _fac == "SIDE") then {
         };
 
         {
-                _fx = getNumber(configFile >> "CfgFactionClasses" >> _x >> "side");
+                _fx = getNumber((_x call ALiVE_fnc_configGetFactionClass) >> "side");
                 if (_fx == _sidex) then {
                         _facs pushback _x;
                 };
@@ -100,7 +100,7 @@ if(!isNil "_facs") then {
                 private ["_x"];
                 // Confirm there are units for this faction in this type
                 {
-                        _grpx = count(configFile >> "CfgGroups" >> _s >> _x >> _type);
+                        _grpx = count((_x call ALiVE_fnc_configGetFactionGroups) >> _type);
                         for "_y" from 1 to _grpx - 1 do {
                                 if (!(_x in _facx)) then {
                                         _facx pushback _x;
@@ -120,7 +120,7 @@ if !(count _facs == 0) then {
     _fac = _facs select floor(random count _facs);
 
     if(isNil "_side") then {
-            _sidex = getNumber(configFile >> "CfgFactionClasses" >> _fac >> "side");
+            _sidex = getNumber((_fac call ALiVE_fnc_configGetFactionClass) >> "side");
             _side = nil;
             switch(_sidex) do {
                     case 0: {
@@ -141,18 +141,19 @@ if !(count _facs == 0) then {
 
     _grps = [];
     _s = switch(_side) do {
-            case resistance: {"Guerrila";};
+            case resistance: {"Indep";};
             case civilian: {"Civilian";};
             default {str _side;};
     };
 
     //hint str _s;
-    _grpx = count(configFile >> "CfgGroups" >> _s >> _fac >> _type);
+    _grpx = count((_fac call ALiVE_fnc_configGetFactionGroups) >> _type);
     for "_y" from 1 to _grpx - 1 do {
-            private "_cx";
-            _cx = configName ((configFile >> "CfgGroups" >> _s >> _fac >> _type) select _y);
+            private ["_facGroupCfg","_cx"];
+            _facGroupCfg = _fac call ALiVE_fnc_configGetFactionGroups;
+            _cx = configName ((_facGroupCfg >> _type) select _y);
             if ( {(_cx == _x)} count _nonConfigs == 0 ) then {
-                _grps pushback ((configFile >> "CfgGroups" >> _s >> _fac >> _type) select _y);
+                _grps pushback ((_facGroupCfg >> _type) select _y);
             };
     };
     //hint str _grps;

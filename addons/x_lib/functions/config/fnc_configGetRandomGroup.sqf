@@ -18,7 +18,7 @@ String group name
 Examples:
 (begin example)
 // get random group config group
-_result = [] call ALIVE_fnc_configGetRandomGroup;
+_result = ["Infantry","OPF_F"] call ALIVE_fnc_configGetRandomGroup;
 (end)
 
 See Also:
@@ -27,11 +27,13 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_type","_typeg","_faction","_side","_factionConfig","_factionSide","_typeConfig","_groups","_class","_countUnits", "_unit","_group","_groupName","_customMappings","_groupFactionTypes","_customGroup","_mappedType"];
+private ["_factionConfig","_factionSide","_typeConfig","_groups","_class","_countUnits", "_unit","_group","_groupName","_customMappings","_groupFactionTypes","_customGroup","_mappedType"];
 
-_type = if(count _this > 0) then {_this select 0} else {"Infantry"};
-_faction = if(count _this > 1) then {_this select 1} else {"OPF_F"};
-_side = if(count _this > 2) then {_this select 2} else {"EAST"};
+params [
+    ["_type","Infantry"],
+    ["_faction","OPF_F"],
+    ["_side","EAST"]
+];
 
 // ["Side: %1 Type: %2 Faction: %3",_side,_type,_faction] call ALIVE_fnc_dump;
 
@@ -73,24 +75,28 @@ if(!isNil "ALIVE_factionCustomMappings") then {
 
                 } else {
                     ["Warning Side: %1 Faction: %3 could not find a %2 group",_side,_type,_faction] call ALIVE_fnc_dump;
-                    _factionConfig = (configFile >> "CfgFactionClasses" >> _faction);
+                    _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
+
                     _factionSide = getNumber(_factionConfig >> "side");
                     _side = _factionSide call ALIVE_fnc_sideNumberToText;
                 };
             } else {
                 ["Warning Side: %1 Faction: %3 maybe incorrectly configured for ALiVE (Group Type: %2)",_side,_type,_faction] call ALIVE_fnc_dump;
-                _factionConfig = (configFile >> "CfgFactionClasses" >> _faction);
+                _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
+
                 _factionSide = getNumber(_factionConfig >> "side");
                 _side = _factionSide call ALIVE_fnc_sideNumberToText;
             };
         };
     }else{
-        _factionConfig = (configFile >> "CfgFactionClasses" >> _faction);
+        _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
+
         _factionSide = getNumber(_factionConfig >> "side");
         _side = _factionSide call ALIVE_fnc_sideNumberToText;
     };
 }else{
-    _factionConfig = (configFile >> "CfgFactionClasses" >> _faction);
+    _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
+
     _factionSide = getNumber(_factionConfig >> "side");
     _side = _factionSide call ALIVE_fnc_sideNumberToText;
 };
@@ -108,7 +114,8 @@ if(typename _type == "ARRAY") then {
 
 if!(_customGroup) then {
 
-    _typeConfig = (configFile >> "CfgGroups" >> _side >> _faction >> _type);
+    _typeConfig = (_faction call ALiVE_fnc_configGetFactionGroups) >> _type;
+
     _groups = [];
 
     // ["Config: %1",_typeConfig] call ALIVE_fnc_dump;

@@ -40,7 +40,7 @@ switch(_rewardType) do {
 
             // send radio broadcast
             _sideObject = [_taskSide] call ALIVE_fnc_sideTextToObject;
-            _factionName = getText(configfile >> "CfgFactionClasses" >> _taskFaction >> "displayName");
+            _factionName = getText((_taskFaction call ALiVE_fnc_configGetFactionClass) >> "displayName");
             _forcePool = [ALIVE_globalForcePool,_taskFaction] call ALIVE_fnc_hashGet;
 
             if (isNil "_forcePool") then {

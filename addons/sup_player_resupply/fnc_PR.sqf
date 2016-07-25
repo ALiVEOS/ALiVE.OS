@@ -2109,7 +2109,7 @@ switch(_operation) do {
                         _vehsize = [(configFile >> "CfgVehicles" >> _class >> "mapSize")] call ALiVE_fnc_getConfigValue;
                         _weight = [_class] call ALIVE_fnc_getObjectWeight;
                         _faction = [(configFile >> "CfgVehicles" >> _class >> "faction")] call ALiVE_fnc_getConfigValue;
-                        _faction = [(configFile >> "CfgFactionClasses" >> _faction >> "displayname")] call ALiVE_fnc_getConfigValue;
+                        _faction = [((_faction call ALiVE_fnc_configGetFactionClass) >> "displayname")] call ALiVE_fnc_getConfigValue;
                         _side = [[[(configFile >> "CfgVehicles" >> _class >> "side")] call ALiVE_fnc_getConfigValue] call ALIVE_fnc_sideNumberToText] call ALIVE_fnc_sideTextToLong;
                     };
 

@@ -151,7 +151,7 @@ switch(_operation) do {
                     };
 
                     _side = "EAST";
-                    switch (getNumber(configfile >> "CfgFactionClasses" >> _factions select 0 >> "side")) do {
+                    switch (getNumber(((_factions select 0) call ALiVE_fnc_configGetFactionClass) >> "side")) do {
                         case 0 : {_side = "EAST"};
                         case 1 : {_side = "WEST"};
                         case 2 : {_side = "GUER"};
@@ -380,7 +380,7 @@ switch(_operation) do {
                     //Still there? Awesome, check if there are different sides within the factions
                     _errorMessage = "There are different sides within this OPCOM %1! Please only select one side per OPCOM!%2";
                     _error1 = _side; _error2 = ""; _exit = false;  //defaults
-                    _exit = !(({(getNumber(configfile >> "CfgFactionClasses" >> (_factions select 0) >> "side")) == (getNumber(configfile >> "CfgFactionClasses" >> _x >> "side"))} count _factions) == (count _factions));
+                    _exit = !(({(getNumber(((_factions select 0) call ALiVE_fnc_configGetFactionClass) >> "side")) == (getNumber((_x call ALiVE_fnc_configGetFactionClass) >> "side"))} count _factions) == (count _factions));
                     if (_exit) exitwith {
                         [_errorMessage,_error1,_error2] call ALIVE_fnc_dumpR;
                     };

@@ -65,7 +65,7 @@ _faction = _this select 0;
 
     private ["_config","_factionOK","_displayName","_side","_sideToText","_spawnPosition"];
 
-    _config = configfile >> "CfgFactionClasses" >> _faction;
+    _config = _faction call ALiVE_fnc_configGetFactionClass;
     _factionOK = false;
 
     if(count _config > 0) then {

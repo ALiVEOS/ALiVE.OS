@@ -34,8 +34,8 @@ if (GVAR(ENABLED)) then {
         _sideWounded = side (group _wounded); // group side is more reliable
         _sidesource = side _source;
 
-        _factionsource = getText (configFile >> "cfgFactionClasses" >> (faction _source) >> "displayName");
-        _factionwounded = getText (configFile >> "cfgFactionClasses" >> (faction _wounded) >> "displayName");
+        _factionsource = getText (((faction _source) call ALiVE_fnc_configGetFactionClass) >> "displayName");
+        _factionwounded = getText (((faction _wounded) call ALiVE_fnc_configGetFactionClass) >> "displayName");
 
         _woundedtype = getText (configFile >> "cfgVehicles" >> (typeof _wounded) >> "displayName");
         _sourcetype = getText (configFile >> "cfgVehicles" >> (typeof _source) >> "displayName");

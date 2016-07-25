@@ -328,6 +328,34 @@ class configFindEntries
     recompile = RECOMPILE;
 };
 
+class configGetFactionClass
+{
+    file = "\x\alive\addons\x_lib\functions\config\fnc_configGetFactionClass.sqf";
+    ext = ".sqf";
+    recompile = RECOMPILE;
+};
+
+class configGetFactionGroups
+{
+    file = "\x\alive\addons\x_lib\functions\config\fnc_configGetFactionGroups.sqf";
+    ext = ".sqf";
+    recompile = RECOMPILE;
+};
+
+class configGetFactions
+{
+    file = "\x\alive\addons\x_lib\functions\config\fnc_configGetFactions.sqf";
+    ext = ".sqf";
+    recompile = RECOMPILE;
+};
+
+class configGetFactionUnitsByGroups
+{
+    file = "\x\alive\addons\x_lib\functions\config\fnc_configGetFactionUnitsByGroups.sqf";
+    ext = ".sqf";
+    recompile = RECOMPILE;
+};
+
 class configGetVehicleClass
 {
     file = "\x\alive\addons\x_lib\functions\config\fnc_configGetVehicleClass.sqf";

@@ -73,8 +73,8 @@ if (GVAR(ENABLED)) then {
         _sideKilled = side (group _killed); // group side is more reliable
         _sideKiller = side _killer;
 
-        _factionKiller = getText (configFile >> "cfgFactionClasses" >> (faction _killer) >> "displayName");
-        _factionKilled = getText (configFile >> "cfgFactionClasses" >> (faction _killed) >> "displayName");
+        _factionKiller = getText (((faction _killer) call ALiVE_fnc_configGetFactionClass) >> "displayName");
+        _factionKilled = getText (((faction _killed) call ALiVE_fnc_configGetFactionClass) >> "displayName");
 
         _killedtype = getText (configFile >> "cfgVehicles" >> (typeof _killed) >> "displayName");
         _killertype = getText (configFile >> "cfgVehicles" >> (typeof _killer) >> "displayName");

@@ -1918,7 +1918,7 @@ switch(_operation) do {
                         ["closeSplash"] call ALIVE_fnc_displayMenu;
 
                         _nearestTown = [_position] call ALIVE_fnc_taskGetNearestLocationName;
-                        _factionName = getText(configfile >> "CfgFactionClasses" >> _faction >> "displayName");
+                        _factionName = getText((_faction call ALiVE_fnc_configGetFactionClass) >> "displayName");
 
                         _title = "<t size='1.5' color='#68a7b7' shadow='1'>OPCOM Troops</t><br/>";
                         _text = format["%1<t>%2 group %3 near %4</t> %5",_title,_factionName,_group,_nearestTown,_action];
@@ -2075,7 +2075,7 @@ switch(_operation) do {
 
 
                         _nearestTown = [_position] call ALIVE_fnc_taskGetNearestLocationName;
-                        _factionName = getText(configfile >> "CfgFactionClasses" >> _faction >> "displayName");
+                        _factionName = getText((_faction call ALiVE_fnc_configGetFactionClass) >> "displayName");
 
                         _title = "<t size='1.5' color='#68a7b7' shadow='1'>Military Objective</t><br/>";
                         _text = format["%1<t>Objective near %2 initially held by: %3</t>",_title,_nearestTown,_factionName];
@@ -2138,7 +2138,7 @@ switch(_operation) do {
                     ["closeSplash"] call ALIVE_fnc_displayMenu;
 
                     _nearestTown = [_position] call ALIVE_fnc_taskGetNearestLocationName;
-                    _factionName = getText(configfile >> "CfgFactionClasses" >> _faction >> "displayName");
+                    _factionName = getText((_faction call ALiVE_fnc_configGetFactionClass) >> "displayName");
 
                     _title = "<t size='1.5' color='#68a7b7' shadow='1'>Military Objective</t><br/>";
                     _text = format["%1<t>Objective near %2 initially held by: %3</t>",_title,_nearestTown,_factionName];
@@ -2413,7 +2413,7 @@ switch(_operation) do {
                         ["closeSplash"] call ALIVE_fnc_displayMenu;
 
                         _nearestTown = [_position] call ALIVE_fnc_taskGetNearestLocationName;
-                        _factionName = getText(configfile >> "CfgFactionClasses" >> _faction >> "displayName");
+                        _factionName = getText((_faction call ALiVE_fnc_configGetFactionClass) >> "displayName");
 
                         _title = "<t size='1.5' color='#68a7b7' shadow='1'>CQB Units</t><br/>";
                         _text = format["%1<t>%2 units near %3</t><br/>",_title,_factionName,_nearestTown];
@@ -2588,7 +2588,7 @@ switch(_operation) do {
                             [_logic, "createDynamicCamera", [_duration,player,_unit,_target]] call MAINCLASS;
 
                             _nearestTown = [_position] call ALIVE_fnc_taskGetNearestLocationName;
-                            _factionName = getText(configfile >> "CfgFactionClasses" >> _faction >> "displayName");
+                            _factionName = getText((_faction call ALiVE_fnc_configGetFactionClass) >> "displayName");
 
                             _title = "<t size='1.5' color='#68a7b7' shadow='1'>Civilian</t><br/>";
                             _text = format["%1<t>%2 is %3 near %4</t><br/>",_title,name _unit,_action,_nearestTown];
@@ -2898,7 +2898,7 @@ switch(_operation) do {
                                     if!(isNil "_unit") then {
 
                                         _nearestTown = [_position] call ALIVE_fnc_taskGetNearestLocationName;
-                                        _factionName = getText(configfile >> "CfgFactionClasses" >> _faction >> "displayName");
+                                        _factionName = getText((_faction call ALiVE_fnc_configGetFactionClass) >> "displayName");
 
                                         _title = "<t size='1.5' color='#68a7b7' shadow='1'>Joining Group</t><br/>";
                                         _text = format["%1<t>%2 group %3 near %4</t> %5",_title,_factionName,_group,_nearestTown,_action];

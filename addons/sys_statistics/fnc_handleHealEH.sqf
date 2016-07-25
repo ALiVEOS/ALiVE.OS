@@ -29,8 +29,8 @@ if (GVAR(ENABLED)) then {
         _sidepatient = side (group _patient); // group side is more reliable
         _sidemedic = side _medic;
 
-        _factionmedic = getText (configFile >> "cfgFactionClasses" >> (faction _medic) >> "displayName");
-        _factionpatient = getText (configFile >> "cfgFactionClasses" >> (faction _patient) >> "displayName");
+        _factionmedic = getText (((faction _medic) call ALiVE_fnc_configGetFactionClass) >> "displayName");
+        _factionpatient = getText (((faction _patient) call ALiVE_fnc_configGetFactionClass) >> "displayName");
 
         _patienttype = getText (configFile >> "cfgVehicles" >> (typeof _patient) >> "displayName");
         _medictype = getText (configFile >> "cfgVehicles" >> (typeof _medic) >> "displayName");

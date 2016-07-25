@@ -37,7 +37,7 @@ if(_side == "GUER") then {
     _side = "INDEP";
 };
 
-_configPath = configfile >> "CfgGroups" >> _side >> _faction;
+_configPath = _faction call ALiVE_fnc_configGetFactionGroups;
 
 _sortedGroups = [] call ALIVE_fnc_hashCreate;
 _categories = [] call ALIVE_fnc_hashCreate;

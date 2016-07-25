@@ -4013,7 +4013,7 @@ switch(_operation) do {
 
                 // send radio broadcast
                 _sideObject = [_eventSide] call ALIVE_fnc_sideTextToObject;
-                _factionName = getText(configfile >> "CfgFactionClasses" >> _eventFaction >> "displayName");
+                _factionName = getText((_eventFaction call ALiVE_fnc_configGetFactionClass) >> "displayName");
                 _forcePool = [ALIVE_globalForcePool,_eventFaction] call ALIVE_fnc_hashGet;
 
                 // send a message to all side players from HQ

@@ -23,12 +23,12 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_class","_findRecurse"];
+private ["_findRecurse"];
 
 ALIVE_groupConfig = [] call ALIVE_fnc_hashCreate;
 
 _findRecurse = {
-    private ["_root","_class","_path","_currentPath","_className"];
+    private ["_root","_path","_class","_currentPath","_className"];
 
     _root = (_this select 0);
     _path = +(_this select 1);
@@ -44,9 +44,10 @@ _findRecurse = {
             if(count _currentPath == 4) then {
                 // Hack to add support for factions
                 private "_faction";
-                _faction = configname ((configHierarchy _class) select 3);
+                _configHierarchy = configHierarchy _class;
+                _faction = configname (_configHierarchy select 3);
                 _className = format ["%1_%2", _faction, _className];
-                [ALIVE_groupConfig, _className, _currentPath] call ALIVE_fnc_hashSet;
+                [ALIVE_groupConfig, _className, [_configHierarchy select 0,_currentPath]] call ALIVE_fnc_hashSet;
             };
 
             [_class, _currentPath] call _findRecurse;
@@ -54,6 +55,5 @@ _findRecurse = {
     };
 };
 
-_class = (configFile >> "CfgGroups");
-
-[_class, []] call _findRecurse;
+[missionConfigFile >> "CfgGroups", []] call _findRecurse;
+[configFile >> "CfgGroups", []] call _findRecurse;

@@ -63,6 +63,10 @@ composition
 
 config
 
+    ALiVE_fnc_configGetFactionClass
+    ALiVE_fnc_configGetFactionGroups
+    ALiVE_fnc_configGetFactions
+    ALiVE_fnc_configGetFactionUnitsByGroups
     ALiVE_fnc_configGetGroup
     ALiVE_fnc_configGetRandomGroup
     ALiVE_fnc_configGetVehicleClass
