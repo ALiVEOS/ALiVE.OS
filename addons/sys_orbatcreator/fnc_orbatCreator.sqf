@@ -350,6 +350,8 @@ switch(_operation) do {
                 private _classList_tree = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_CLASSLIST_LIST_UNITS);
                 _classList_tree ctrlShow true;
 
+                [_logic,"enableBackground", true] call MAINCLASS;
+
             };
 
             case "Group_Editor": {
@@ -376,6 +378,156 @@ switch(_operation) do {
             case "Group_Editor": {
 
             };
+        };
+
+    };
+
+    case "getUnitsByFaction": {
+
+        private [
+            "_factionConfig","_factionConfigName","_entry","_entryScope",
+            "_entrySide","_entryFaction","_factionUnits","_entryDisplayName",
+            "_entryConfigName"
+        ];
+
+        private _tmpHash = [] call ALiVE_fnc_hashCreate;
+
+        _result = +_tmpHash;
+
+        private _allFactions = [] call ALiVE_fnc_configGetFactions;
+
+        // build factions list
+
+        {
+            _factionConfig = _x call ALiVE_fnc_configGetFactionClass;
+            _factionSide = getNumber (_factionConfig >> "side");
+
+            if (_factionSide >= 0 && {_factionSide <= 2}) then {
+                _factionConfigName = configName _factionConfig;
+
+                [_result,_factionConfigName, +_tmpHash] call ALiVE_fnc_hashSet;
+            };
+        } foreach _allFactions;
+
+        // set unit classes to factions
+
+        private _configPath = configFile >> "CfgVehicles";
+        for "_i" from 0 to (count _configPath - 1) do {
+
+            _entry = _configPath select _i;
+
+            if (isClass _entry) then {
+
+                _entryScope = getNumber (_entry >> "scope");
+
+                if (_entryScope >= 2) then {
+                    _entrySide = getNumber (_entry >> "side");
+
+                    if (_entrySide <= 2 && {_entrySide >= 0}) then {
+                        _entryFaction = getText (_entry >> "faction");
+
+                        _factionUnits = nil;
+                        _factionUnits = [_result,_entryFaction] call ALiVE_fnc_hashGet;
+
+                        if (!isnil "_factionUnits") then {
+                            _entryDisplayName = getText (_entry >> "displayName");
+                            _entryConfigName = configName _entry;
+
+                            [_factionUnits,_entryDisplayName, _entryConfigName] call ALiVE_fnc_hashSet;
+                        };
+                    };
+                };
+            };
+
+        };
+
+    };
+
+    case "getFactionGroups": {
+
+        private [
+            "_groupCategory","_groupCategoryName","_groupCategoryGroups","_group",
+            "_groupConfigName","_groupName","_groupSide","_groupFaction","_units",
+            "_groupHash","_unit","_unitSide","_unitVehicle","_unitRank","_unitPosition",
+            "_unitHash"
+        ];
+
+        private _faction = _args;
+        private _factionGroupCategories = _faction call ALiVE_fnc_configGetFactionGroups;
+
+        private _tmpHash = [] call ALiVE_fnc_hashCreate;
+
+        private _ALiVE_compatibleGroups = +_tmpHash;
+        private _ALiVE_incompatibleGroups = +_tmpHash;
+
+        _result = +_tmpHash;
+        [_result,"ALiVE_compatible", _ALiVE_compatibleGroups] call ALiVE_fnc_hashSet;
+        [_result,"ALiVE_incompatible", _ALiVE_incompatibleGroups] call ALiVE_fnc_hashSet;
+
+        for "_i" from 0 to (count _factionGroupCategories - 1) do {
+
+            _groupCategory = _factionGroupCategories select _i;
+
+            if (isClass _groupCategory) then {
+
+                _groupCategoryName = configName _groupCategory;
+                _groupCategoryGroups = +_tmpHash;
+
+                for "_i" from 0 to (count _groupCategory - 1) do {
+
+                    _group = _groupCategory select _i;
+
+                    if (isClass _group) then {
+
+                        _groupConfigName = configName _group;
+                        _groupName = getText (_group >> "name");
+                        _groupSide = getNumber (_group >> "side");
+                        _groupFaction = getText (_group >> "faction");
+                        //_rarityGroup = getNumber (_group >> "rarityGroup");
+
+                        _units = [];
+
+                        for "_i" from 0 to (count _group - 1) do {
+
+                            _unit = _group select _i;
+
+                            if (isClass _unit) then {
+                                _unitSide = getNumber (_unit >> "side");
+                                _unitVehicle = getText (_unit >> "vehicle");
+                                _unitRank = getText (_unit >> "rank");
+                                _unitPosition = getArray (_unit >> "position");
+
+                                _unitHash = +_tmpHash;
+                                [_unitHash,"side", _unitSide] call ALiVE_fnc_hashSet;
+                                [_unitHash,"vehicle", _unitVehicle] call ALiVE_fnc_hashSet;
+                                [_unitHash,"rank", _unitRank] call ALiVE_fnc_hashSet;
+                                [_unitHash,"position", _unitPosition] call ALiVE_fnc_hashSet;
+
+                                _units pushback _unitHash;
+                            };
+
+                        };
+
+                        _groupHash = +_tmpHash;
+                        [_groupHash,"name", _groupName] call ALiVE_fnc_hashSet;
+                        [_groupHash,"side", _groupSide] call ALiVE_fnc_hashSet;
+                        [_groupHash,"faction", _groupFaction] call ALiVE_fnc_hashSet;
+                        [_groupHash,"units", _units] call ALiVE_fnc_hashSet;
+
+                        [_groupCategoryGroups,_groupConfigName,_groupHash] call ALiVE_fnc_hashSet;
+
+                    };
+
+                };
+
+                if (_groupCategoryName in ALIVE_COMPATIBLE_GROUP_CATEGORIES) then {
+                    [_ALiVE_compatibleGroups,_groupCategoryName,_groupCategoryGroups] call ALiVE_fnc_hashSet;
+                } else {
+                    [_ALiVE_incompatibleGroups,_groupCategoryName,_groupCategoryGroups] call ALiVE_fnc_hashSet;
+                };
+
+            };
+
         };
 
     };
@@ -544,151 +696,18 @@ switch(_operation) do {
 
     };
 
-    case "getUnitsByFaction": {
+    case "enableBackground": {
 
-        private [
-            "_factionConfig","_factionConfigName","_entry","_entryScope",
-            "_entrySide","_entryFaction","_factionUnits","_entryDisplayName",
-            "_entryConfigName"
-        ];
+        private _enable = _args;
 
-        private _tmpHash = [] call ALiVE_fnc_hashCreate;
+        if (_enable) then {
+            _pos = getPos player;
+            _pos set [2,500];
 
-        _result = +_tmpHash;
-
-        private _allFactions = [] call ALiVE_fnc_configGetFactions;
-
-        // build factions list
-
-        {
-            _factionConfig = _x call ALiVE_fnc_configGetFactionClass;
-            _factionSide = getNumber (_factionConfig >> "side");
-
-            if (_factionSide >= 0 && {_factionSide <= 2}) then {
-                _factionConfigName = configName _factionConfig;
-
-                [_result,_factionConfigName, +_tmpHash] call ALiVE_fnc_hashSet;
-            };
-        } foreach _allFactions;
-
-        // set unit classes to factions
-
-        private _configPath = configFile >> "CfgVehicles";
-        for "_i" from 0 to (count _configPath - 1) do {
-
-            _entry = _configPath select _i;
-
-            if (isClass _entry) then {
-
-                _entryScope = getNumber (_entry >> "scope");
-
-                if (_entryScope >= 2) then {
-                    _entrySide = getNumber (_entry >> "side");
-
-                    if (_entrySide <= 2 && {_entrySide >= 0}) then {
-                        _entryFaction = getText (_entry >> "faction");
-
-                        _factionUnits = nil;
-                        _factionUnits = [_result,_entryFaction] call ALiVE_fnc_hashGet;
-
-                        if (!isnil "_factionUnits") then {
-                            _entryDisplayName = getText (_entry >> "displayName");
-                            _entryConfigName = configName _entry;
-
-                            [_factionUnits,_entryDisplayName, _entryConfigName] call ALiVE_fnc_hashSet;
-                        };
-                    };
-                };
-            };
-
-        };
-
-    };
-
-    case "getFactionGroups": {
-
-        private [
-            "_groupCategory","_groupCategoryName","_groupCategoryGroups","_group",
-            "_groupConfigName","_groupName","_groupSide","_groupFaction","_units",
-            "_groupHash","_unit","_unitSide","_unitVehicle","_unitRank","_unitPosition",
-            "_unitHash"
-        ];
-
-        private _faction = _args;
-        private _factionGroupCategories = _faction call ALiVE_fnc_configGetFactionGroups;
-
-        private _tmpHash = [] call ALiVE_fnc_hashCreate;
-
-        private _ALiVE_compatibleGroups = +_tmpHash;
-        private _ALiVE_incompatibleGroups = +_tmpHash;
-
-        _result = +_tmpHash;
-        [_result,"ALiVE_compatible", _ALiVE_compatibleGroups] call ALiVE_fnc_hashSet;
-        [_result,"ALiVE_incompatible", _ALiVE_incompatibleGroups] call ALiVE_fnc_hashSet;
-
-        for "_i" from 0 to (count _factionGroupCategories - 1) do {
-
-            _groupCategory = _factionGroupCategories select _i;
-
-            if (isClass _groupCategory) then {
-
-                _groupCategoryName = configName _groupCategory;
-                _groupCategoryGroups = +_tmpHash;
-
-                for "_i" from 0 to (count _groupCategory - 1) do {
-
-                    _group = _groupCategory select _i;
-
-                    if (isClass _group) then {
-
-                        _groupConfigName = configName _group;
-                        _groupName = getText (_group >> "name");
-                        _groupSide = getNumber (_group >> "side");
-                        _groupFaction = getText (_group >> "faction");
-                        //_rarityGroup = getNumber (_group >> "rarityGroup");
-
-                        _units = [];
-
-                        for "_i" from 0 to (count _group - 1) do {
-
-                            _unit = _group select _i;
-
-                            if (isClass _unit) then {
-                                _unitSide = getNumber (_unit >> "side");
-                                _unitVehicle = getText (_unit >> "vehicle");
-                                _unitRank = getText (_unit >> "rank");
-                                _unitPosition = getArray (_unit >> "position");
-
-                                _unitHash = +_tmpHash;
-                                [_unitHash,"side", _unitSide] call ALiVE_fnc_hashSet;
-                                [_unitHash,"vehicle", _unitVehicle] call ALiVE_fnc_hashSet;
-                                [_unitHash,"rank", _unitRank] call ALiVE_fnc_hashSet;
-                                [_unitHash,"position", _unitPosition] call ALiVE_fnc_hashSet;
-
-                                _units pushback _unitHash;
-                            };
-
-                        };
-
-                        _groupHash = +_tmpHash;
-                        [_groupHash,"name", _groupName] call ALiVE_fnc_hashSet;
-                        [_groupHash,"side", _groupSide] call ALiVE_fnc_hashSet;
-                        [_groupHash,"faction", _groupFaction] call ALiVE_fnc_hashSet;
-                        [_groupHash,"units", _units] call ALiVE_fnc_hashSet;
-
-                        [_groupCategoryGroups,_groupConfigName,_groupHash] call ALiVE_fnc_hashSet;
-
-                    };
-
-                };
-
-                if (_groupCategoryName in ALIVE_COMPATIBLE_GROUP_CATEGORIES) then {
-                    [_ALiVE_compatibleGroups,_groupCategoryName,_groupCategoryGroups] call ALiVE_fnc_hashSet;
-                } else {
-                    [_ALiVE_incompatibleGroups,_groupCategoryName,_groupCategoryGroups] call ALiVE_fnc_hashSet;
-                };
-
-            };
+            _background = createVehicle ["Sphere_3DEN",[0,0,0],[],0,"none"];
+            _background setObjectTexture [0, "x\alive\addons\ui\alive_bg.paa"];
+            _background setPosATL _pos;
+        } else {
 
         };
 
