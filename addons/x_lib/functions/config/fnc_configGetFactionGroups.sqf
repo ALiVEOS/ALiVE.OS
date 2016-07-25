@@ -29,16 +29,27 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private _factionSide = _this call ALiVE_fnc_factionSide;
+private _faction = _this;
+private _factionSide = _faction call ALiVE_fnc_factionSide;
 
-if (_factionSide == RESISTANCE) then {
-    _factionSide = "Indep";
-} else {
-    _factionSide = str _factionSide;
+if (!isnil "ALiVE_factionCustomMappings") then {
+    if (_faction in (ALiVE_factionCustomMappings select 1)) then {
+        private _factionData = [ALiVE_factionCustomMappings, _faction] call ALiVE_fnc_hashGet;
+        _factionSide = [_factionData,"GroupSideName"] call ALiVE_fnc_hashGet;
+        _faction = [_factionData,"GroupFactionName"] call ALiVE_fnc_hashGet;
+    };
 };
 
-private _path = missionConfigFile >> "CfgGroups" >> _factionSide >> _this;
+if !(_factionSide isEqualType "") then {
+    if (_factionSide isEqualTo RESISTANCE) then {
+        _factionSide = "Indep";
+    } else {
+        _factionSide = str _factionSide;
+    };
+};
 
-if !(isClass _path) then {_path = configFile >> "CfgGroups" >> _factionSide >> _this};
+private _path = missionConfigFile >> "CfgGroups" >> _factionSide >> _faction;
+
+if !(isClass _path) then {_path = configFile >> "CfgGroups" >> _factionSide >> _faction};
 
 _path
