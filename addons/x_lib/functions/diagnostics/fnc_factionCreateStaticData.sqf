@@ -104,7 +104,7 @@ private ["_factionOK","_text","_config","_displayName","_side","_sideToText"];
 
 _factionOK = false;
 
-_config = configfile >> "CfgFactionClasses" >> _faction;
+_config = _faction call ALiVE_fnc_configGetFactionClass;
 
 if(count _config > 0) then {
     _displayName = [_config >> "displayName"] call ALIVE_fnc_getConfigValue;
@@ -121,7 +121,7 @@ private ["_factionToGroupMappingOK","_factionGroups"];
 
 _factionToGroupMappingOK = false;
 
-_config = configfile >> "CfgGroups" >> _sideToText >> _faction;
+_config = _faction call ALiVE_fnc_configGetFactionGroups;
 
 if(count _config > 0) then {
     _factionToGroupMappingOK = true;
@@ -154,7 +154,7 @@ _factionCategoryGroups = [] call ALIVE_fnc_hashCreate;
 
 if(_factionToGroupMappingOK) then {
 
-    _config = configfile >> "CfgGroups" >> _sideToText >> _faction;
+    _config = _faction call ALiVE_fnc_configGetFactionGroups;
 
     _arrayContent = "";
 

@@ -53,7 +53,7 @@ if (GVAR(ENABLED)) then {
         if (_LandedInterval > 30) then {
             _sidevehicle = side (group _vehicle); // group side is more reliable
 
-            _factionvehicle = getText (configFile >> "cfgFactionClasses" >> (faction _vehicle) >> "displayName");
+            _factionvehicle = getText (((faction _vehicle) call ALiVE_fnc_configGetFactionClass) >> "displayName");
 
             _vehicletype = getText (configFile >> "cfgVehicles" >> (typeof _vehicle) >> "displayName");
             _vehicleConfig = typeOf _vehicle;

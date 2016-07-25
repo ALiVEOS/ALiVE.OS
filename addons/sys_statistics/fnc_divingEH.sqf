@@ -49,7 +49,7 @@ if (GVAR(ENABLED)) then {
 
         _sideunit = side (group _unit); // group side is more reliable
 
-        _factionunit = getText (configFile >> "cfgFactionClasses" >> (faction _unit) >> "displayName");
+        _factionunit = getText (((faction _unit) call ALiVE_fnc_configGetFactionClass) >> "displayName");
 
         _unitType = getText (configFile >> "cfgVehicles" >> (typeof _unit) >> "displayName");
 

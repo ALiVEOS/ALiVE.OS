@@ -75,39 +75,27 @@ if(!isNil "ALIVE_factionCustomMappings") then {
 
                 } else {
                     ["Warning Side: %1 Faction: %3 could not find a %2 group",_side,_type,_faction] call ALIVE_fnc_dump;
-                    _factionConfig = (configFile >> "CfgFactionClasses" >> _faction);
-                    if !(isClass _factionConfig) then {
-                        _factionConfig = (missionConfigFile >> "CfgFactionClasses" >> _faction);
-                    };
+                    _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
 
                     _factionSide = getNumber(_factionConfig >> "side");
                     _side = _factionSide call ALIVE_fnc_sideNumberToText;
                 };
             } else {
                 ["Warning Side: %1 Faction: %3 maybe incorrectly configured for ALiVE (Group Type: %2)",_side,_type,_faction] call ALIVE_fnc_dump;
-                _factionConfig = (configFile >> "CfgFactionClasses" >> _faction);
-                if !(isClass _factionConfig) then {
-                    _factionConfig = (missionConfigFile >> "CfgFactionClasses" >> _faction);
-                };
+                _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
 
                 _factionSide = getNumber(_factionConfig >> "side");
                 _side = _factionSide call ALIVE_fnc_sideNumberToText;
             };
         };
     }else{
-        _factionConfig = (configFile >> "CfgFactionClasses" >> _faction);
-        if !(isClass _factionConfig) then {
-            _factionConfig = (missionconfigfile >> "CfgFactionClasses" >> _faction);
-        };
+        _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
 
         _factionSide = getNumber(_factionConfig >> "side");
         _side = _factionSide call ALIVE_fnc_sideNumberToText;
     };
 }else{
-    _factionConfig = (configFile >> "CfgFactionClasses" >> _faction);
-    if !(isClass _factionConfig) then {
-        _factionConfig = (missionConfigFile >> "CfgFactionClasses" >> _faction);
-    };
+    _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
 
     _factionSide = getNumber(_factionConfig >> "side");
     _side = _factionSide call ALIVE_fnc_sideNumberToText;
@@ -126,10 +114,7 @@ if(typename _type == "ARRAY") then {
 
 if!(_customGroup) then {
 
-    _typeConfig = (configFile >> "CfgGroups" >> _side >> _faction >> _type);
-    if !(isClass _typeConfig) then {
-        _typeConfig = (missionConfigFile >> "CfgGroups" >> _side >> _faction >> _type);
-    };
+    _typeConfig = (_faction call ALiVE_fnc_configGetFactionGroups) >> _type;
 
     _groups = [];
 

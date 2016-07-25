@@ -160,7 +160,7 @@ if (isDedicated && GVAR(ENABLED)) then {
                     _class = getText (configFile >> "cfgVehicles" >> (typeof _unit) >> "displayName");
                     _damage = damage _unit;
                     _side = side (group _unit);
-                    _fac = getText (configFile >> "cfgFactionClasses" >> (faction _unit) >> "displayName");
+                    _fac = getText (((faction _unit) call ALiVE_fnc_configGetFactionClass) >> "displayName");
 
                     _icon = switch (_side) do
                     {

@@ -3828,7 +3828,7 @@ switch(_operation) do {
 
                 _faction = faction _unit;
                 _nearestTown = [position _unit] call ALIVE_fnc_taskGetNearestLocationName;
-                _factionName = getText(configfile >> "CfgFactionClasses" >> _faction >> "displayName");
+                _factionName = getText((_faction call ALiVE_fnc_configGetFactionClass) >> "displayName");
 
                 _title = "<t size='1.5' color='#68a7b7' shadow='1'>Joining Group</t><br/>";
                 _text = format["%1<t>%2 group %3 near %4</t>",_title,_factionName,_group,_nearestTown];
@@ -3931,7 +3931,7 @@ switch(_operation) do {
 
                 _faction = faction _unit;
                 _nearestTown = [position _unit] call ALIVE_fnc_taskGetNearestLocationName;
-                _factionName = getText(configfile >> "CfgFactionClasses" >> _faction >> "displayName");
+                _factionName = getText((_faction call ALiVE_fnc_configGetFactionClass) >> "displayName");
 
                 _title = "<t size='1.5' color='#68a7b7' shadow='1'>Group</t><br/>";
                 _text = format["%1<t>%2 group %3 near %4</t>",_title,_factionName,_group,_nearestTown];

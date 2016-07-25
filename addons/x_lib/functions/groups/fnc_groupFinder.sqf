@@ -39,7 +39,7 @@ _side = nil;
 
 // get all factions
 if(isNil QGVAR(ALLFACTIONS)) then {
-    GVAR(ALLFACTIONS) = [] call BIS_fnc_getFactions;
+    GVAR(ALLFACTIONS) = [] call ALiVE_fnc_configGetFactions;
 };
 
 // if default or selection by side
@@ -65,7 +65,7 @@ if (typeName _fac == "ANY" || {typeName _fac == "SIDE"}) then {
         };
 
         {
-                _fx = getNumber(configFile >> "CfgFactionClasses" >> _x >> "side");
+                _fx = getNumber((_x call ALiVE_fnc_configGetFactionClass) >> "side");
                 if (_fx == _sidex) then {
                         _facs pushback _x;
                 };
@@ -98,14 +98,14 @@ if(!isNil "_facs") then {
                 private ["_x"];
                 // Confirm there are units for this faction in this type
                 {
-                    _typex = count(configFile >> "CfgGroups" >> _s >> _x);
+                    _typex = count(_x call ALiVE_fnc_configGetFactionGroups);
                     for "_z" from 0 to _typex - 1 do {
 
-                        _type = configName((configFile >> "CfgGroups" >> _s >> _x) select _z);
+                        _type = configName((_x call ALiVE_fnc_configGetFactionGroups) select _z);
 
-                        _grpx = count(configFile >> "CfgGroups" >> _s >> _x >> _type);
+                        _grpx = count((_x call ALiVE_fnc_configGetFactionGroups) >> _type);
                         for "_y" from 1 to _grpx - 1 do {
-                             _entry = configName((configFile >> "CfgGroups" >> _s >> _x >> _type) select _y);
+                             _entry = configName(((_x call ALiVE_fnc_configGetFactionGroups) >> _type) select _y);
 
                             if (_entry find _find > -1) then {
                                 _grps pushback _entry;
