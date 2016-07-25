@@ -316,7 +316,7 @@ class display3DEN {
                 items[] += {"ALIVE_LogFaction"};
             };
             class ALIVE_LogFaction {
-                text = "Log Faction Classes to Clipboard";
+                text = "Log faction classes to clipboard";
                 conditionShow = "selectedObject";
                 action = "[get3DENSelected 'object'] call ALIVE_fnc_copyFactionClasses;";
             };
