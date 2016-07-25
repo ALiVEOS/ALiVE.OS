@@ -9,7 +9,7 @@ class CfgPatches {
         //versionAct = "['GRP_A3',_this] execVM '\x\alive\addons\main\about.sqf';";
         VERSION_CONFIG;
         author = MODULE_AUTHOR;
-        authors[] = {"Wolffy_au"};
+        authors[] = {"Wolffy_au","SpyderBlack"};
         authorUrl = "http://alivemod.com/";
     };
 };
