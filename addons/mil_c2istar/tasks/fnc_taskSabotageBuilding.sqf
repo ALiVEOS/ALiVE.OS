@@ -2,7 +2,7 @@
 SCRIPT(taskSabotageBuilding);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_taskDestroyInfantry
+Function: ALIVE_fnc_taskSabotageBuilding
 
 Description:
 Assault Task
