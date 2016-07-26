@@ -135,7 +135,14 @@ switch (_taskState) do {
 
                     _targetPosition = [_targetPosition,500] call ALiVE_fnc_findFlatArea;
 
-                    [_targetPosition, "camps", _taskEnemyFaction, 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+                    //[_targetPosition, "camps", _taskEnemyFaction, 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+                    private ["_category","_compType"];
+                    _compType = "Military";
+                    If (_taskEnemySide == "GUER") then {
+                        _compType = "Guerrilla";
+                    };
+                    [_targetPosition, _compType, ["HQ", "Outposts", "FieldHQ", "Camps"], _taskEnemyFaction, ["Medium"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+
                 };
             } else {
                 _targetPosition = [_taskLocation,500] call ALiVE_fnc_findFlatArea;
@@ -143,7 +150,13 @@ switch (_taskState) do {
         } else {
             _targetPosition = _taskLocation;
 
-            [_targetPosition, "camps", _taskEnemyFaction, 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+            private ["_category","_compType"];
+            _compType = "Military";
+            If (_taskEnemySide == RESISTANCE) then {
+                _compType = "Guerrilla";
+            };
+            _category = selectRandom ["HQ", "Outposts", "FieldHQ", "Camps"];
+            [_targetPosition, _compType, _category, _taskEnemyFaction, "Medium", 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
         };
 
         if!(isNil "_targetPosition") then {

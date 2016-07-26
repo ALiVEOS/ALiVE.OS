@@ -108,13 +108,23 @@ for "_j" from 1 to (count _roadpoints) do {
         [format["roadblock_%1", _id], _roadpos, "Icon", [1,1], "TYPE:", "mil_dot", "TEXT:", "RoadBlock",  "GLOBAL"] call CBA_fnc_createMarker;
     };
 
-    If (!isNil "ALiVE_compositions_roadblocks") then {
-        _checkpointComp = ALiVE_compositions_roadblocks;
-    } else {
-        _checkpointComp = [ALiVE_compositions, "roadblocks"] call ALiVE_fnc_hashGet;
+    // Get a composition
+    _compType = "Military";
+
+    If (_fac call ALiVE_fnc_factionSide == RESISTANCE) then {
+        _compType = "Guerrilla";
     };
 
-    _checkpoint = [_checkpointComp call BIS_fnc_selectRandom] call ALiVE_fnc_findComposition;
+    If (!isNil "ALiVE_compositions_roadblocks") then {
+        _checkpoint = [ALiVE_compositions_roadblocks call BIS_fnc_selectRandom, _CompType] call ALiVE_fnc_findComposition;
+    } else {
+        private ["_cat","_size"];
+        _cat = ["Checkpoint"];
+        _size = ["Medium","Small"];
+        _checkpoint = selectRandom ([_compType, _cat, _size] call ALiVE_fnc_getCompositions);
+    };
+
+    // Spawn compositions
     [_checkpoint,_roadpos,_direction] spawn {[_this select 0, position (_this select 1), _this select 2] call ALiVE_fnc_spawnComposition};
 
     // Place a vehicle
