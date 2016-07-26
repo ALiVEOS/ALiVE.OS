@@ -301,30 +301,28 @@ switch(_operation) do {
             _countProfiles = 0;
             _position = position _logic;
 
+            // Load static data
+            if(isNil "ALiVE_STATIC_DATA_LOADED") then {
+                _file = "\x\alive\addons\main\static\staticData.sqf";
+                call compile preprocessFileLineNumbers _file;
+            };
+
             // Spawn the composition
 
-            if (typeName _composition == "STRING" && _composition != "false") then {
+            if (typeName _composition == "STRING" && _composition != "") then {
+                private ["_compType"];
 
-                private ["_bisCompositions","_configPath"];
-
-                _bisCompositions = ["OutpostA","OutpostB","OutpostC","OutpostD","OutpostE","OutpostF"];
-
-                if(_composition in _bisCompositions) then {
-
-                    _configPath = configFile >> "CfgGroups" >> "Empty" >> "Military" >> "Outposts";
-                    _composition = _configPath >> _composition;
-                     [_composition, _position, direction _logic] call ALIVE_fnc_spawnComposition;
-
-                }else{
-
-                    _composition = [_composition] call ALIVE_fnc_findComposition;
-
-                    if(count _composition > 0) then {
-                        [_composition, _position, direction _logic] call ALIVE_fnc_spawnComposition;
-                    };
-
+                // Get a composition
+                _compType = "Military";
+                If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                    _compType = "Guerrilla";
                 };
 
+                _composition = [_composition, _compType] call ALIVE_fnc_findComposition;
+
+                if(count _composition > 0) then {
+                    [_composition, _position, direction _logic] call ALIVE_fnc_spawnComposition;
+                };
             };
 
 
@@ -335,13 +333,6 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
-
-            // Load static data
-
-            if(isNil "ALiVE_STATIC_DATA_LOADED") then {
-                _file = "\x\alive\addons\main\static\staticData.sqf";
-                call compile preprocessFileLineNumbers _file;
-            };
 
             // assign the objective to OPCOMS
             /*

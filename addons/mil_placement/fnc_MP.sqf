@@ -768,7 +768,7 @@ switch(_operation) do {
                 _modulePosition = position _logic;
 
                 if(_countHQClusters > 0) then {
-                    private ["_compType"];
+                    private ["_compType","_HQ"];
                     if(_countHQClusters > 1) then {
                         _sortedData = [_HQClusters,[],{_modulePosition distance ([_x, "center"] call ALIVE_fnc_hashGet)},"ASCEND"] call ALiVE_fnc_SortBy;
                         _closestHQCluster = _sortedData select 0;
