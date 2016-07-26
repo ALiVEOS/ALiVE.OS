@@ -198,7 +198,7 @@ class orbatCreator_RscTree {
                 rowHeight = 0.5;
 	colorBorder[] = {0,0,0,0};
 	colorBackground[] = {0.2,0.2,0.2,1};
-	colorSelect[] = {1,0.5,0,1};
+	colorSelect[] = {1,0.5,0,0.75};
 	colorMarked[] = {1,0.5,0,0.5};
 	colorMarkedSelected[] = {1,0.5,0,1};
 	sizeEx = 0.05;

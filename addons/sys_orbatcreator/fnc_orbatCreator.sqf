@@ -37,25 +37,25 @@ nil
 
 // display components
 
-#define OC_DISPLAY_ORBAT        8000
-#define OC_DISPLAY_UNITEDITOR   9000
+#define OC_DISPLAY_ORBAT                        8000
+#define OC_DISPLAY_UNITEDITOR                   9000
 
 // interface elements
 
-#define OC_ORBAT_FACTIONLIST        8008
-#define OC_ORBAT_BUTTON_BIG_ONE     8005
-#define OC_ORBAT_BUTTON_BIG_TWO     8006
-#define OC_ORBAT_BUTTON_BIG_THREE   8007
-#define OC_ORBAT_GROUPS_TREE        8009
+#define OC_ORBAT_FACTIONLIST                    8008
+#define OC_ORBAT_BUTTON_BIG_ONE                 8005
+#define OC_ORBAT_BUTTON_BIG_TWO                 8006
+#define OC_ORBAT_BUTTON_BIG_THREE               8007
+#define OC_ORBAT_GROUPS_TREE                    8009
 
-#define OC_UNITEDITOR_BUTTON_BIG_ONE            9005
-#define OC_UNITEDITOR_BUTTON_BIG_TWO            9006
-#define OC_UNITEDITOR_BUTTON_BIG_THREE          9007
-#define OC_UNITEDITOR_CLASSLIST_BUTTON_ONE      9009
-#define OC_UNITEDITOR_CLASSLIST_BUTTON_TWO      9010
-#define OC_UNITEDITOR_CLASSLIST_BUTTON_THREE    9011
-#define OC_UNITEDITOR_CLASSLIST_BUTTON_FOUR     9012
-#define OC_UNITEDITOR_CLASSLIST_LIST_UNITS      9008
+#define OC_UNITEDITOR_BUTTON_BIG_ONE            9007
+#define OC_UNITEDITOR_BUTTON_BIG_TWO            9008
+#define OC_UNITEDITOR_BUTTON_BIG_THREE          9009
+#define OC_UNITEDITOR_CLASSLIST_BUTTON_ONE      9011
+#define OC_UNITEDITOR_CLASSLIST_BUTTON_TWO      9012
+#define OC_UNITEDITOR_CLASSLIST_BUTTON_THREE    9013
+#define OC_UNITEDITOR_CLASSLIST_BUTTON_FOUR     9014
+#define OC_UNITEDITOR_CLASSLIST_LIST_UNITS      9010
 
 // control Macros
 
@@ -109,7 +109,7 @@ switch(_operation) do {
         // load static data
 
         if (isnil "ALiVE_STATIC_DATA_LOADED") then {
-            _file = "\x\alive\addons\main\static\staticData.sqf";
+            private _file = "\x\alive\addons\main\static\staticData.sqf";
             call compile preprocessFileLineNumbers _file;
         };
 
@@ -165,7 +165,11 @@ switch(_operation) do {
 
         [_state,"factions", _factions] call ALiVE_fnc_hashSet;
 
-        [_state,"unitEditor_background", objNull] call ALiVE_fnc_hashSet;
+        [_state,"orbatViewer_selectedFaction", ""] call ALiVE_fnc_hashSet;
+
+        [_state,"unitEditor_interfaceBackground", objNull] call ALiVE_fnc_hashSet;
+        [_state,"unitEditor_interfaceCamera", objNull] call ALiVE_fnc_hashSet;
+        [_state,"unitEditor_activeUnitObject", objNull] call ALiVE_fnc_hashSet;
 
         private _customUnits = +_tmpHash;
         [_state,"customUnits", _customUnits] call ALiVE_fnc_hashSet;
@@ -173,6 +177,31 @@ switch(_operation) do {
         MOD(orbatCreator) = _logic;
 
         [_logic,"start"] spawn MAINCLASS;
+
+    };
+
+    case "start": {
+
+        waitUntil {time > 0 && {!isnull player} && {!isnil "ALiVE_STATIC_DATA_LOADED"}};
+
+        [_logic,"openInterface", "ORBAT_Viewer"] spawn MAINCLASS;
+        ["Preload"] call BIS_fnc_arsenal;
+
+        // initialise main menu
+
+        [
+            "player",
+            [((["ALiVE", "openMenu"] call cba_fnc_getKeybind) select 5) select 0],
+            -9500,
+            [
+                "call ALiVE_fnc_orbatCreatorMenuDef",
+                "main"
+            ]
+        ] call ALIVE_fnc_flexiMenu_Add;
+
+        // set module as startup complete
+
+        _logic setVariable ["startupComplete", true];
 
     };
 
@@ -211,19 +240,6 @@ switch(_operation) do {
 
     };
 
-    case "start": {
-
-        waitUntil {time > 0 && {!isnull player} && {!isnil "ALiVE_STATIC_DATA_LOADED"}};
-
-        [_logic,"openInterface", "ORBAT_Viewer"] spawn MAINCLASS;
-        ["Preload"] call BIS_fnc_arsenal;
-
-        // set module as startup complete
-
-        _logic setVariable ["startupComplete", true];
-
-    };
-
     case "openInterface": {
 
         private _interface = _args;
@@ -241,6 +257,7 @@ switch(_operation) do {
             };
             case "Group_Editor": {
                 closeDialog 0;
+                sleep 0.001; // bis pls
                 createDialog "ALiVE_orbatCreator_interface_groupEditor";
             };
         };
@@ -260,7 +277,7 @@ switch(_operation) do {
                 private ["_faction","_factionConfig","_factionSide","_factionName","_index"];
 
                 private _display = findDisplay OC_DISPLAY_ORBAT;
-                _display displayAddEventHandler ["onUnload", "['onUnload', 'ORBAT_Viewer'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _display displayAddEventHandler ["unload", "['onUnload', 'ORBAT_Viewer'] call ALiVE_fnc_orbatCreatorOnAction"];
 
                 // init faction list
 
@@ -289,12 +306,12 @@ switch(_operation) do {
 
                 private _button1 = OC_getControl(OC_DISPLAY_ORBAT,OC_ORBAT_BUTTON_BIG_ONE);
                 _button1 ctrlSetText "Unit Editor";
-                _button1 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'Unit_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _button1 ctrlSetEventHandler ["MouseButtonDown","['Unit_Editor'] call ALiVE_fnc_orbatCreatorOpenInterface"];
                 _button1 ctrlShow true;
 
                 private _button2 = OC_getControl(OC_DISPLAY_ORBAT,OC_ORBAT_BUTTON_BIG_TWO);
                 _button2 ctrlSetText "Group Editor";
-                _button2 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'Group_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _button2 ctrlSetEventHandler ["MouseButtonDown","['Group_Editor'] call ALiVE_fnc_orbatCreatorOpenInterface"];
                 _button2 ctrlShow true;
 
                 private _button3 = OC_getControl(OC_DISPLAY_ORBAT,OC_ORBAT_BUTTON_BIG_THREE);
@@ -306,16 +323,19 @@ switch(_operation) do {
 
             case "Unit_Editor": {
 
+                private _display = findDisplay OC_DISPLAY_UNITEDITOR;
+                _display displayAddEventHandler ["unload", "['onUnload', 'Unit_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
+
                 // init buttons
 
                 private _button1 = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_BUTTON_BIG_ONE);
                 _button1 ctrlSetText "ORBAT Viewer";
-                _button1 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'ORBAT_Viewer'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _button1 ctrlSetEventHandler ["MouseButtonDown","['ORBAT_Viewer'] call ALiVE_fnc_orbatCreatorOpenInterface"];
                 _button1 ctrlShow true;
 
                 private _button2 = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_BUTTON_BIG_TWO);
                 _button2 ctrlSetText "Group Editor";
-                _button2 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'Group_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _button2 ctrlSetEventHandler ["MouseButtonDown","['Group_Editor'] call ALiVE_fnc_orbatCreatorOpenInterface"];
                 _button2 ctrlShow true;
 
                 private _button3 = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_BUTTON_BIG_THREE);
@@ -341,8 +361,8 @@ switch(_operation) do {
                 _classList_button3 ctrlShow true;
 
                 private _classList_button4 = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_CLASSLIST_BUTTON_FOUR);
-                _classList_button3 ctrlSetText "Delete";
-                _classList_button3 ctrlSetEventHandler ["MouseButtonDown","[] call ALiVE_fnc_orbatCreatorOnAction"];
+                _classList_button4 ctrlSetText "Delete";
+                _classList_button4 ctrlSetEventHandler ["MouseButtonDown","[] call ALiVE_fnc_orbatCreatorOnAction"];
                 _classList_button4 ctrlShow true;
 
                 // init unit class list
@@ -368,12 +388,24 @@ switch(_operation) do {
 
         private _interface = _args;
 
+        private _state = [_logic,"state"] call MAINCLASS;
+
         switch (_interface) do {
             case "ORBAT_Viewer": {
 
             };
             case "Unit_Editor": {
+                private _interfaceCamera = [_state,"unitEditor_interfaceCamera"] call ALiVE_fnc_hashGet;
+                private _interfaceBackground = [_state,"unitEditor_interfaceBackground"] call ALiVE_fnc_hashGet;
+                private _activeUnit = [_state,"unitEditor_activeUnitObject"] call ALiVE_fnc_hashGet;
 
+                _interfaceCamera cameraEffect ["terminate","back"];
+                camDestroy _interfaceCamera;
+
+                deleteVehicle _activeUnit;
+                deleteVehicle _interfaceBackground;
+
+                [player,"FIRST_PERSON"] call ALIVE_fnc_switchCamera;
             };
             case "Group_Editor": {
 
@@ -694,21 +726,59 @@ switch(_operation) do {
 
         [_logic,"treeAddDataSourcesArray", [_tree,_factionDataSources]] call MAINCLASS;
 
+        [_state,"orbatViewer_selectedFaction", _faction] call ALiVE_fnc_hashSet;
+
     };
 
     case "enableBackground": {
 
         private _enable = _args;
 
+        private _state = [_logic,"state"] call MAINCLASS;
+
         if (_enable) then {
-            _pos = getPos player;
+            private _pos = getPos player;
             _pos set [2,500];
 
-            _background = createVehicle ["Sphere_3DEN",[0,0,0],[],0,"none"];
-            _background setObjectTexture [0, "x\alive\addons\ui\alive_bg.paa"];
-            _background setPosATL _pos;
-        } else {
+            // init background
 
+            private _background = createVehicle ["Sphere_3DEN",[0,0,0],[],0,"none"];
+            _background setPosATL _pos;
+            _background setDir 0;
+
+            [_state,"unitEditor_interfaceBackground", _background] call ALiVE_fnc_hashSet;
+
+            // init camera
+
+            private _tempUnit = createVehicle [typeOf player,position player,[],0,"none"];
+            _tempUnit setPosATL _pos;
+            _tempUnit setDir 0;
+            _tempUnit switchMove (animationState player);
+            _tempUnit switchAction "playerstand";
+            _tempUnit setFace (face player);
+            _tempUnit enableSimulation false;
+
+            [_state,"unitEditor_activeUnitObject", _tempUnit] call ALiVE_fnc_hashSet;
+
+            private _target = _tempUnit modelToWorld [0,4,1.6];
+
+            private _cam = "camera" camCreate _pos;
+            _cam camSetFov 0.35;
+            _cam setDir (_cam getRelDir _tempUnit);
+            _cam camSetTarget _target;
+            _cam camSetRelPos [-0.05,1,0.15];
+            _cam cameraEffect ["Internal", "Back"];
+            _cam camcommit 0;
+
+            showcinemaborder false;
+
+            [_state,"unitEditor_interfaceCamera", _cam] call ALiVE_fnc_hashSet;
+        } else {
+            private _interfaceBackground = [_state,"unitEditor_interfaceBackground"] call ALiVE_fnc_hashGet;
+            deleteVehicle _interfaceBackground;
+
+            private _interfaceCamera = [_state,"unitEditor_interfaceCamera"] call ALiVE_fnc_hashGet;
+            deleteVehicle _interfaceCamera;
         };
 
     };

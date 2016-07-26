@@ -1,10 +1,10 @@
 #include <\x\alive\addons\sys_orbatcreator\script_component.hpp>
-SCRIPT(orbatCreatorOnUnload);
+SCRIPT(orbatCreatorOpenInterface);
 
 /* ----------------------------------------------------------------------------
-Function: ALiVE_fnc_orbatCreatorOnUnload
+Function: ALiVE_fnc_orbatCreatorOpenInterface
 Description:
-Handles orbat creator interface events
+Handles opening of orbat creator interfaces
 
 Parameters:
 String - Operation
@@ -23,4 +23,4 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-[MOD(orbatCreator),_this select 0, _this select 1] call ALiVE_fnc_orbatCreator;
+[MOD(orbatCreator),"openInterface", _this select 0] spawn ALiVE_fnc_orbatCreator;

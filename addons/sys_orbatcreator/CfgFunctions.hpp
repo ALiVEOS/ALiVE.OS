@@ -20,9 +20,27 @@ class CfgFunctions {
                 recompile = RECOMPILE;
             };
 
+            class orbatCreatorMenuDef {
+                description = "This function controls the View portion of the orbat creator";
+                file = "\x\alive\addons\sys_orbatcreator\fnc_orbatCreatorMenuDef.sqf";
+                recompile = RECOMPILE;
+            };
+
+            class orbatCreatorOpenInterface {
+                description = "Handles opening of orbat creator interfaces";
+                file = "\x\alive\addons\sys_orbatcreator\fnc_orbatCreatorOpenInterface.sqf";
+                recompile = RECOMPILE;
+            };
+
             class orbatCreatorOnAction {
                 description = "Handles orbat creator interface events";
                 file = "\x\alive\addons\sys_orbatcreator\fnc_orbatCreatorOnAction.sqf";
+                recompile = RECOMPILE;
+            };
+
+            class orbatCreatorUnit {
+                description = "Main handler for custom units for the orbat creator";
+                file = "\x\alive\addons\sys_orbatcreator\fnc_orbatCreatorUnit.sqf";
                 recompile = RECOMPILE;
             };
 

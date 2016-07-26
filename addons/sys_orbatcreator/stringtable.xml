@@ -5,6 +5,9 @@
 <Key ID="STR_ALIVE_ORBATCREATOR">
     <Original>ORBAT Creator</Original>
 </Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_COMMENT">
+    <Original>Open the ORBAT Creator</Original>
+</Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_DEBUG">
     <Original>Enable Debug:</Original>
 </Key>

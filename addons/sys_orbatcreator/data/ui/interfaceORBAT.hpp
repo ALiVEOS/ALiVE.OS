@@ -3,7 +3,7 @@ class ALiVE_orbatCreator_interface_orbatViewer {
 
     class controlsBackground {
 
-        class interfaceMain_background: orbatCreator_RscPicture {
+        class orbatViewer_background: orbatCreator_RscPicture {
             idc = 8001;
             text = "x\alive\addons\ui\alive_bg.paa";
             x = -14.5 * GUI_GRID_W + GUI_GRID_X;
@@ -13,7 +13,7 @@ class ALiVE_orbatCreator_interface_orbatViewer {
             colorBackground[] = {0.714,0.843,0.659,1};
         };
 
-        class interfaceMain_header: orbatCreator_RscText {
+        class orbatViewer_header: orbatCreator_RscText {
             idc = 8002;
 
             text = "";
@@ -24,7 +24,7 @@ class ALiVE_orbatCreator_interface_orbatViewer {
             colorBackground[] = {0.576,0.769,0.49,1};
         };
 
-        class interfaceMain_header_title: orbatCreator_RscText {
+        class orbatViewer_header_title: orbatCreator_RscText {
             idc = 8002;
 
             text = "Order of Battle Viewer";
@@ -35,7 +35,7 @@ class ALiVE_orbatCreator_interface_orbatViewer {
             colorBackground[] = {0,0,0,0};
         };
 
-        class interfaceMain_headerLogo: orbatCreator_RscPicture {
+        class orbatViewer_headerLogo: orbatCreator_RscPicture {
             idc = 8003;
             style = 48;
             text = "\x\alive\addons\sys_orbatcreator\data\images\banner_alive.paa";
@@ -45,22 +45,30 @@ class ALiVE_orbatCreator_interface_orbatViewer {
             h = 1.98 * GUI_GRID_H;
         };
 
-        class interfaceMain_title_faction: orbatCreator_RscText {
+        class orbatViewer_title_faction: orbatCreator_RscText {
             idc = 8004;
             text = "Faction:";
-            x = -9.5 * GUI_GRID_W + GUI_GRID_X;
+            x = -13.5 * GUI_GRID_W + GUI_GRID_X;
             y = -3.1 * GUI_GRID_H + GUI_GRID_Y;
             w = 5.5 * GUI_GRID_W;
             h = 2 * GUI_GRID_H;
             colorBackground[] = {-1,-1,-1,0};
             sizeEx = 1.5 * GUI_GRID_H;
         };
-
     };
 
     class controls {
 
-        class interfaceMain_button_big_1: orbatCreator_RscButton {
+        class orbatViewer_combo_faction: orbatCreator_RscCombo {
+            idc = 8008;
+            x = -7.5 * GUI_GRID_W + GUI_GRID_X;
+            y = -2.6 * GUI_GRID_H + GUI_GRID_Y;
+            w = 10 * GUI_GRID_W;
+            h = 1.25 * GUI_GRID_H;
+            sizeEx = 0.04;
+        };
+
+        class orbatViewer_button_big_1: orbatCreator_RscButton {
             idc = 8005;
 
             text = "";
@@ -71,7 +79,7 @@ class ALiVE_orbatCreator_interface_orbatViewer {
             sizeEx = 1 * GUI_GRID_H;
         };
 
-        class interfaceMain_button_big_2: orbatCreator_RscButton {
+        class orbatViewer_button_big_2: orbatCreator_RscButton {
             idc = 8006;
 
             text = "";
@@ -82,7 +90,7 @@ class ALiVE_orbatCreator_interface_orbatViewer {
             sizeEx = 1 * GUI_GRID_H;
         };
 
-        class interfaceMain_button_big_3: orbatCreator_RscButton {
+        class orbatViewer_button_big_3: orbatCreator_RscButton {
             idc = 8007;
 
             text = "";
@@ -93,16 +101,7 @@ class ALiVE_orbatCreator_interface_orbatViewer {
             sizeEx = 1 * GUI_GRID_H;
         };
 
-        class interfaceMain_combo_faction: orbatCreator_RscCombo {
-            idc = 8008;
-            x = -3.5 * GUI_GRID_W + GUI_GRID_X;
-            y = -2.6 * GUI_GRID_H + GUI_GRID_Y;
-            w = 10 * GUI_GRID_W;
-            h = 1.25 * GUI_GRID_H;
-            sizeEx = 0.04;
-        };
-
-        class interfaceMain_button_ORBAT: orbatCreator_RscTree {
+        class orbatViewer_button_ORBAT: orbatCreator_RscTree {
             idc = 8009;
 
             x = -14 * GUI_GRID_W + GUI_GRID_X;
