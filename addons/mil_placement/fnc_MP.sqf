@@ -768,7 +768,7 @@ switch(_operation) do {
                 _modulePosition = position _logic;
 
                 if(_countHQClusters > 0) then {
-
+                    private ["_compType"];
                     if(_countHQClusters > 1) then {
                         _sortedData = [_HQClusters,[],{_modulePosition distance ([_x, "center"] call ALIVE_fnc_hashGet)},"ASCEND"] call ALiVE_fnc_SortBy;
                         _closestHQCluster = _sortedData select 0;
@@ -781,9 +781,17 @@ switch(_operation) do {
 
                     _flatPos = [_pos,_size] call ALiVE_fnc_findFlatArea;
 
-                    _compositions = [ALiVE_compositions, "FieldHQ",[ALiVE_compositions, "HQ",[]] call ALiVE_fnc_hashGet] call ALiVE_fnc_hashGet;
+                    // Get a composition
+                    _compType = "Military";
+                    If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                        _compType = "Guerrilla";
+                    };
+                    _HQ = selectRandom ([_compType, ["FieldHQ"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
 
-                    _HQ = [_compositions call BIS_fnc_selectRandom] call ALiVE_fnc_findComposition;
+                    if (isNil "_HQ") then {
+                        _HQ = selectRandom ([_compType, ["HQ","FieldHQ"], ["Medium","Small"], _faction] call ALiVE_fnc_getCompositions);
+                    };
+
                     _nearRoads = _flatpos nearRoads 1000;
                     _direction = if (count _nearRoads > 0) then {direction (_nearRoads select 0)} else {random 360};
 
@@ -803,7 +811,7 @@ switch(_operation) do {
                     if(_debug) then {
                         [_flatPos, 4] call ALIVE_fnc_placeDebugMarker;
 
-                        ["ALIVE MP - Field HQ building created: %1",[_logic, "FieldHQBuilding"] call MAINCLASS] call ALIVE_fnc_dump;
+                        ["ALIVE MP - Field HQ created: %1 - %2", configName _HQ, [_logic, "FieldHQBuilding"] call MAINCLASS] call ALIVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
                 } else {
@@ -930,6 +938,7 @@ switch(_operation) do {
                 };
             };
 
+            // TODO if placehelis is true, but no helis placed - create heliports
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
@@ -1175,6 +1184,13 @@ switch(_operation) do {
             _countAir = 0;
             _countSpecOps = 0;
 
+
+
+            // DEBUG -------------------------------------------------------------------------------------
+            if(_debug) then {
+                ["ALIVE MP [%1] - TYPE: %2", _faction, _type] call ALiVE_fnc_dump;
+            };
+            // DEBUG -------------------------------------------------------------------------------------
             // Force Composition
             switch(_type) do {
                 case "Armored": {
@@ -1443,7 +1459,7 @@ switch(_operation) do {
                     };
                 } forEach _clusters;
             }else{
-                ["ALIVE MP - Warning no usable groups found to use the faction used may be faulty."] call ALIVE_fnc_dumpR;
+                ["ALIVE MP - Warning no usable groups found to use, the faction (%1) may be faulty.", _faction] call ALIVE_fnc_dumpR;
             };
 
             // DEBUG -------------------------------------------------------------------------------------

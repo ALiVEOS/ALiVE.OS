@@ -293,6 +293,13 @@ class findComposition
     recompile = RECOMPILE;
 };
 
+class getCompositions
+{
+    file = "\x\alive\addons\x_lib\functions\composition\fnc_getCompositions.sqf";
+    ext = ".sqf";
+    recompile = RECOMPILE;
+};
+
 class spawnComposition
 {
     file = "\x\alive\addons\x_lib\functions\composition\fnc_spawnComposition.sqf";

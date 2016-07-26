@@ -31,7 +31,7 @@ ARJay
 private ["_className","_configPaths","_configPath","_result","_item","_comp","_name","_foundComp","_cat"];
 
 _className = _this select 0;
-_cat = _this select 1;
+_cat = if (count _this > 1) then {_this select 1;} else {"Military";};
 
 _configPaths = [
     missionConfigFile >> "CfgGroups" >> "Empty" >> _cat,

@@ -9,16 +9,28 @@ Spawn a composition
 Spawns a random populated composition
 
 Parameters:
-Config - group
-Array - position
-Scalar - direction
+Position - Array
+Type - String - Civilian, Military, Guerrilla
+Category - String
+
+    Civilian Categories - airports, checkpoints, construction, constructionSupplies, comms, fuel, general, heliports, industrial, marine, mining_oil, power, rail, settlements
+    Guerrilla Categories - camps, checkpoints, constructionsupplies, comms, fieldhq, fort, fuel, hq, marine, medical, outposts, power, supports
+    Military Categories - airports, camps, checkpoints, constructionsupplies, comms, crashsites, fieldhq, fort, fuel, heliports, hq, marine, medical, outposts, power, supports
+
+Size - String (Large, Medium, Small, ANY)
+Faction - String (OPTIONAL)
+Infantry groups - Integer (OPTIONAL)
+Mot Groups - Integer (OPTIONAL)
+Mech Groups - Integer (OPTIONAL)
+Armoured Groups - Integer (OPTIONAL)
+SpecOps Groups - Integer (OPTIONAL)
 
 Returns:
 
 Examples:
 (begin example)
-// spawn a composition from the objectives category with 2 OPF_F groups
-_result = [_position, "objectives", "OPF_F", 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+// spawn a fortification composition of any size with 2 OPF_F groups
+_result = [_position, "Military", "Fort", "OPF_F", "ANY", 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
 (end)
 
 See Also:
@@ -28,23 +40,24 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_position","_category","_faction","_countInfantry","_countMotorized","_countMechanized","_countArmored","_countSpecOps",
-"_compositions","_composition","_groups","_motorizedGroups","_infantryGroups","_groupCount","_totalCount","_guardGroup","_guards","_group"];
+"_compositions","_composition","_groups","_motorizedGroups","_infantryGroups","_groupCount","_totalCount","_guardGroup","_guards","_group","_size","_type"];
 
 _position = _this select 0;
-_category = _this select 1;
-_faction = _this select 2;
-_countInfantry = if(count _this > 3) then {_this select 3} else { random(3) };
-_countMotorized = if(count _this > 4) then {_this select 4} else { 0 };
-_countMechanized = if(count _this > 5) then {_this select 5} else { 0 };
-_countArmored = if(count _this > 6) then {_this select 6} else { 0 };
-_countSpecOps = if(count _this > 7) then {_this select 7} else { 0 };
+_type = _this select 1;
+_category = _this select 2;
+_faction = _this select 3;
+_size = if(count _this > 4) then {_this select 4} else {[]}; // Large, Medium, Small
+_countInfantry = if(count _this > 5) then {_this select 5} else { random(3) };
+_countMotorized = if(count _this > 6) then {_this select 6} else { 0 };
+_countMechanized = if(count _this > 7) then {_this select 7} else { 0 };
+_countArmored = if(count _this > 8) then {_this select 8} else { 0 };
+_countSpecOps = if(count _this > 9) then {_this select 9} else { 0 };
 
 // Spawn a composition
 
-_compositions = [ALIVE_compositions,_category] call ALIVE_fnc_hashGet;
-_composition = selectRandom _compositions;
+_compositions = [_type, _category, _size, _faction] call ALiVE_fnc_getCompositions;
 
-_composition = [_composition] call ALIVE_fnc_findComposition;
+_composition = selectRandom _compositions;
 
 if(count _composition > 0) then {
     [_composition, _position, random 360] call ALIVE_fnc_spawnComposition;

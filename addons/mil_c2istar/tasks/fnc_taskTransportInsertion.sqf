@@ -65,7 +65,7 @@ switch (_taskState) do {
         _pickupPosition = [_taskLocation,_taskLocationType,_taskSide] call ALIVE_fnc_taskGetSideCluster;
 
         if(count _pickupPosition == 0) then {
-
+            private ["_category","_compType"];
             // no enemy occupied cluster found
             // try to get a position containing enemy
             _pickupPosition = [_taskLocation,_taskLocationType,_taskSide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
@@ -86,7 +86,15 @@ switch (_taskState) do {
             };
 
             _pickupPosition = [_pickupPosition, 250] call ALIVE_fnc_findFlatArea;
-            [_pickupPosition, "objectives", _taskFaction, 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+            _compType = "Military";
+            If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                _compType = "Guerrilla";
+                _category = ["Comms", "Fort", "Outposts", "Supports"];
+            } else {
+                _category = ["Comms", "Fort", "Heliports", "Outposts", "Supports"];
+            };
+
+            [_pickupPosition, _compType, _category, _taskFaction, ["Medium","Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
         };
 
         // establish the location for the insertion task
@@ -95,7 +103,7 @@ switch (_taskState) do {
         _insertionPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideCluster;
 
         if(count _insertionPosition == 0) then {
-
+            private ["_category","_compType"];
             // no enemy occupied cluster found
             // try to get a position containing enemy
             _insertionPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
@@ -116,7 +124,15 @@ switch (_taskState) do {
             };
 
             _insertionPosition = [_insertionPosition, 250] call ALIVE_fnc_findFlatArea;
-            [_insertionPosition, "objectives", _taskEnemyFaction, 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+            _compType = "Military";
+            If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                _compType = "Guerrilla";
+                _category = ["Comms", "Fort", "Outposts", "Supports"];
+            } else {
+                _category = ["Comms", "Fort", "Heliports", "Outposts", "Supports"];
+            };
+
+            [_pickupPosition, _compType, _category, _taskFaction, ["Medium","Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
         };
 
         if (count _pickupPosition > 0 && {count _insertionPosition > 0}) then {
