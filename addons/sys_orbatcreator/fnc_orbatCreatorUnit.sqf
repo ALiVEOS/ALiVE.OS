@@ -50,16 +50,22 @@ switch(_operation) do {
 
     case "init": {
 
-        [_logic,"inheritsFrom", []] call ALiVE_fnc_hashSet;
+        [_logic,"super", QUOTE(SUPERCLASS)] call ALiVE_fnc_hashSet;
+        [_logic,"class", QUOTE(MAINCLASS)] call ALiVE_fnc_hashSet;
 
-        [_logic,"classname", ""] call MAINCLASS;
+        [_logic,"inheritsFrom", ""] call ALiVE_fnc_hashSet;
+        [_logic,"side", 0] call ALiVE_fnc_hashSet;
+        [_logic,"faction", ""] call ALiVE_fnc_hashSet;
+
+        [_logic,"configName", ""] call MAINCLASS;
+        [_logic,"displayName", ""] call MAINCLASS;
         [_logic,"loadout", []] call MAINCLASS;
 
     };
 
     case "inheritsFrom": {
 
-        if (typename _args == "ARRAY") then {
+        if (typename _args == "STRING") then {
             [_logic,_operation,_args] call ALiVE_fnc_hashSet;
             _result = _args;
         } else {
@@ -68,7 +74,40 @@ switch(_operation) do {
 
     };
 
-    case "classname": {
+    case "side": {
+
+        if (typename _args == "STRING") then {
+            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _result = _args;
+        } else {
+            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+        };
+
+    };
+
+    case "faction": {
+
+        if (typename _args == "STRING") then {
+            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _result = _args;
+        } else {
+            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+        };
+
+    };
+
+    case "configName": {
+
+        if (typename _args == "STRING") then {
+            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _result = _args;
+        } else {
+            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+        };
+
+    };
+
+    case "displayName": {
 
         if (typename _args == "STRING") then {
             [_logic,_operation,_args] call ALiVE_fnc_hashSet;
