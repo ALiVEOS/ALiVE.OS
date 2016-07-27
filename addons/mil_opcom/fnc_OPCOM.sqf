@@ -1383,7 +1383,7 @@ switch(_operation) do {
                     _TACOM_FSM setFSMvariable ["_pause",_args];
                     _OPCOM_FSM setFSMvariable ["_pause",_args];
 
-                    ["ALiVE Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_DumpR;
+                    ["ALiVE Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_Dump;
             };
             _result = _args;
         };
