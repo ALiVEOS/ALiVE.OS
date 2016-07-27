@@ -248,8 +248,8 @@ class orbatCreator_RscListBox : RscListBox {
     colorRsc_Rscrollbar[] = {1,0,0,0};
     colorSelect[] = {0,0,0,1};
     colorSelect2[] = {0,0,0,1};
-    colorSelectBackground[] = {0.95,0.95,0.95,1};
-    colorSelectBackground2[] = {1,1,1,0.5};
+    colorSelectBackground[] = {1,0.5,0,0.75};
+    colorSelectBackground2[] = {1,0.5,0,0.75};
     colorBackground[] = {0,0,0,0.3};
     font = "PuristaMedium";
     sizeEx = 0.035;
