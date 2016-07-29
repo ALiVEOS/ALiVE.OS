@@ -111,6 +111,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetClosestPlayerDistanceToDestination.sqf";
                 recompile = RECOMPILE;
             };
+            class taskGetClosestPlayerToPosition {
+                description = "Utility get the closest player to the position";
+                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetClosestPlayerToPosition.sqf";
+                recompile = RECOMPILE;
+            };
             class taskIsAreaClearOfEnemies {
                 description = "Utility check if there are any enemies in the area";
                 file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskIsAreaClearOfEnemies.sqf";
@@ -249,6 +254,16 @@ class CfgFunctions {
             class taskTransportInsertion {
                 description = "Task Transport Insertion";
                 file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskTransportInsertion.sqf";
+                recompile = RECOMPILE;
+            };
+            class taskRescue {
+                description = "Task Rescue";
+                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskRescue.sqf";
+                recompile = RECOMPILE;
+            };
+            class taskCSAR {
+                description = "Task Combat Search and Rescue";
+                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskCSAR.sqf";
                 recompile = RECOMPILE;
             };
             class taskDestroyVehicles {
