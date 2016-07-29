@@ -47,7 +47,7 @@ class ALiVE_orbatCreator_interface_unitEditor {
         };
 
         class unitEditor_title_customUnits: orbatCreator_RscText {
-            idc = 90016;
+            idc = 9016;
             style = 0 + 0x02;
 
             text = "Custom Units";
@@ -162,7 +162,7 @@ class ALiVE_orbatCreator_interface_unitEditor {
     };
 };
 
-
+/*
 // create unit
 
 
@@ -246,7 +246,7 @@ class ALiVE_orbatCreator_interface_unitEditor_createUnit {
 
         class unitEditor_createUnit_side_input: orbatCreator_RscCombo {
             idc = 10008;
-            x = 15.5 * GUI_GRID_W + GUI_GRID_X;
+            x = 17 * GUI_GRID_W + GUI_GRID_X;
             y = 1.65 * GUI_GRID_H + GUI_GRID_Y;
             w = 14.5 * GUI_GRID_W;
             h = 1.5 * GUI_GRID_H;
@@ -254,7 +254,7 @@ class ALiVE_orbatCreator_interface_unitEditor_createUnit {
 
         class unitEditor_createUnit_faction_input: orbatCreator_RscCombo {
             idc = 10009;
-            x = 15.5 * GUI_GRID_W + GUI_GRID_X;
+            x = 17 * GUI_GRID_W + GUI_GRID_X;
             y = 5.15 * GUI_GRID_H + GUI_GRID_Y;
             w = 14.5 * GUI_GRID_W;
             h = 1.5 * GUI_GRID_H;
@@ -262,7 +262,7 @@ class ALiVE_orbatCreator_interface_unitEditor_createUnit {
 
         class unitEditor_createUnit_parentClasses_input: orbatCreator_RscListbox {
             idc = 10010;
-            x = 15.5 * GUI_GRID_W + GUI_GRID_X;
+            x = 17 * GUI_GRID_W + GUI_GRID_X;
             y = 9 * GUI_GRID_H + GUI_GRID_Y;
             w = 14.5 * GUI_GRID_W;
             h = 8.5 * GUI_GRID_H;
@@ -270,7 +270,7 @@ class ALiVE_orbatCreator_interface_unitEditor_createUnit {
 
         class unitEditor_createUnit_displayName_input: orbatCreator_RscEdit {
             idc = 10011;
-            x = 15.5 * GUI_GRID_W + GUI_GRID_X;
+            x = 17 * GUI_GRID_W + GUI_GRID_X;
             y = 19.1 * GUI_GRID_H + GUI_GRID_Y;
             w = 14.5 * GUI_GRID_W;
             h = 1.5 * GUI_GRID_H;
@@ -278,7 +278,7 @@ class ALiVE_orbatCreator_interface_unitEditor_createUnit {
 
         class unitEditor_createUnit_classname_input: orbatCreator_RscEdit {
             idc = 10012;
-            x = 15.5 * GUI_GRID_W + GUI_GRID_X;
+            x = 17 * GUI_GRID_W + GUI_GRID_X;
             y = 22.1 * GUI_GRID_H + GUI_GRID_Y;
             w = 14.5 * GUI_GRID_W;
             h = 1.5 * GUI_GRID_H;
@@ -305,4 +305,298 @@ class ALiVE_orbatCreator_interface_unitEditor_createUnit {
         };
 
     };
+};
+*/
+
+
+// create unit
+
+
+class ALiVE_orbatCreator_interface_unitEditor_createUnit {
+    idd = 10000;
+
+    class controlsBackground {
+
+        class unitEditor_createUnit_background: orbatCreator_RscText {
+            idc = 10001;
+            x = 4 * GUI_GRID_W + GUI_GRID_X;
+            y = 2 * GUI_GRID_H + GUI_GRID_Y;
+            w = 35 * GUI_GRID_W;
+            h = 22 * GUI_GRID_H;
+            colorBackground[] = {-1,-1,-1,1};
+        };
+
+        class unitEditor_createUnit_header: orbatCreator_RscText {
+            idc = 10002;
+            text = "Create Unit";
+            x = 4 * GUI_GRID_W + GUI_GRID_X;
+            y = 1.05 * GUI_GRID_H + GUI_GRID_Y;
+            w = 35 * GUI_GRID_W;
+            h = 1 * GUI_GRID_H;
+            colorBackground[] = {"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.3843])","(profilenamespace getvariable ['GUI_BCG_RGB_G',0.7019])","(profilenamespace getvariable ['GUI_BCG_RGB_B',0.8862])",0.7};
+            sizeEx = 1 * GUI_GRID_H;
+        };
+
+        class unitEditor_createUnit_header_divider_center: orbatCreator_RscText {
+            idc = 10003;
+            x = 22 * GUI_GRID_W + GUI_GRID_X;
+            y = 2.4 * GUI_GRID_H + GUI_GRID_Y;
+            w = 0.05 * GUI_GRID_W;
+            h = 21.2 * GUI_GRID_H;
+            colorBackground[] = {1,1,1,1};
+        };
+
+        class unitEditor_createUnit_input_title_name: orbatCreator_RscText {
+            idc = 1003;
+            text = "Name";
+            x = 4.5 * GUI_GRID_W + GUI_GRID_X;
+            y = 3 * GUI_GRID_H + GUI_GRID_Y;
+            w = 4.5 * GUI_GRID_W;
+            h = 1.5 * GUI_GRID_H;
+        };
+
+        class unitEditor_createUnit_input_title_classname: orbatCreator_RscText {
+            idc = 10004;
+            text = "Classname";
+            x = 4.5 * GUI_GRID_W + GUI_GRID_X;
+            y = 6 * GUI_GRID_H + GUI_GRID_Y;
+            w = 5.5 * GUI_GRID_W;
+            h = 1.5 * GUI_GRID_H;
+        };
+
+        class unitEditor_createUnit_input_title_side: orbatCreator_RscText {
+            idc = 10005;
+            text = "Side";
+            x = 4.5 * GUI_GRID_W + GUI_GRID_X;
+            y = 11 * GUI_GRID_H + GUI_GRID_Y;
+            w = 5 * GUI_GRID_W;
+            h = 1.5 * GUI_GRID_H;
+        };
+
+        class unitEditor_createUnit_input_title_faction: orbatCreator_RscText {
+            idc = 10006;
+            text = "Faction";
+            x = 4.5 * GUI_GRID_W + GUI_GRID_X;
+            y = 14 * GUI_GRID_H + GUI_GRID_Y;
+            w = 5 * GUI_GRID_W;
+            h = 1.5 * GUI_GRID_H;
+        };
+
+        class unitEditor_createUnit_input_header_unittype: orbatCreator_RscText {
+            idc = 10007;
+            text = "Unit Type";
+            x = 28 * GUI_GRID_W + GUI_GRID_X;
+            y = 2.5 * GUI_GRID_H + GUI_GRID_Y;
+            w = 5.5 * GUI_GRID_W;
+            h = 2 * GUI_GRID_H;
+            sizeEx = 1.3 * GUI_GRID_H;
+        };
+
+        class unitEditor_createUnit_input_title_unittype_side: orbatCreator_RscText {
+            idc = 10008;
+            text = "Side";
+            x = 23 * GUI_GRID_W + GUI_GRID_X;
+            y = 6 * GUI_GRID_H + GUI_GRID_Y;
+            w = 5 * GUI_GRID_W;
+            h = 1.5 * GUI_GRID_H;
+        };
+
+        class unitEditor_createUnit_input_title_unittype_faction: orbatCreator_RscText {
+            idc = 10009;
+            text = "Faction";
+            x = 23 * GUI_GRID_W + GUI_GRID_X;
+            y = 9 * GUI_GRID_H + GUI_GRID_Y;
+            w = 5 * GUI_GRID_W;
+            h = 1.5 * GUI_GRID_H;
+        };
+
+    };
+
+    class controls {
+
+        class unitEditor_createUnit_input_field_name: orbatCreator_RscEdit {
+            idc = 10010;
+            x = 10 * GUI_GRID_W + GUI_GRID_X;
+            y = 3.15 * GUI_GRID_H + GUI_GRID_Y;
+            w = 10.5 * GUI_GRID_W;
+            h = 1.25 * GUI_GRID_H;
+            colorBackground[] = {0.2,0.2,0.2,1};
+        };
+
+        class unitEditor_createUnit_input_field_classname: orbatCreator_RscEdit {
+            idc = 10011;
+            x = 10 * GUI_GRID_W + GUI_GRID_X;
+            y = 6.15 * GUI_GRID_H + GUI_GRID_Y;
+            w = 10.5 * GUI_GRID_W;
+            h = 1.25 * GUI_GRID_H;
+            colorBackground[] = {0.2,0.2,0.2,1};
+        };
+
+        class unitEditor_createUnit_input_field_side: orbatCreator_RscCombo {
+            idc = 10012;
+            x = 10 * GUI_GRID_W + GUI_GRID_X;
+            y = 11.15 * GUI_GRID_H + GUI_GRID_Y;
+            w = 10.5 * GUI_GRID_W;
+            h = 1.25 * GUI_GRID_H;
+            colorBackground[] = {0.2,0.2,0.2,1};
+        };
+
+        class unitEditor_createUnit_input_field_faction: orbatCreator_RscCombo {
+            idc = 10013;
+            x = 10 * GUI_GRID_W + GUI_GRID_X;
+            y = 14.15 * GUI_GRID_H + GUI_GRID_Y;
+            w = 10.5 * GUI_GRID_W;
+            h = 1.25 * GUI_GRID_H;
+            colorBackground[] = {0.2,0.2,0.2,1};
+        };
+
+        class unitEditor_createUnit_input_field_unittype_side: orbatCreator_RscCombo {
+            idc = 10014;
+            x = 27.5 * GUI_GRID_W + GUI_GRID_X;
+            y = 6.15 * GUI_GRID_H + GUI_GRID_Y;
+            w = 10.5 * GUI_GRID_W;
+            h = 1.25 * GUI_GRID_H;
+            colorBackground[] = {0.2,0.2,0.2,1};
+        };
+
+        class unitEditor_createUnit_input_field_unittype_faction: orbatCreator_RscCombo {
+            idc = 10015;
+            x = 27.5 * GUI_GRID_W + GUI_GRID_X;
+            y = 9.15 * GUI_GRID_H + GUI_GRID_Y;
+            w = 10.5 * GUI_GRID_W;
+            h = 1.25 * GUI_GRID_H;
+            colorBackground[] = {0.2,0.2,0.2,1};
+        };
+
+        class unitEditor_createUnit_input_field_unittype_units: orbatCreator_RscListbox {
+            idc = 10016;
+            x = 23 * GUI_GRID_W + GUI_GRID_X;
+            y = 12 * GUI_GRID_H + GUI_GRID_Y;
+            w = 15 * GUI_GRID_W;
+            h = 11 * GUI_GRID_H;
+            colorBackground[] = {0.2,0.2,0.2,1};
+        };
+
+        class unitEditor_createUnit_button_cancel: orbatCreator_RscButton {
+            idc = 10017;
+            text = "Cancel";
+            x = 4 * GUI_GRID_W + GUI_GRID_X;
+            y = 24.25 * GUI_GRID_H + GUI_GRID_Y;
+            w = 18 * GUI_GRID_W;
+            h = 1 * GUI_GRID_H;
+            colorBackground[] = {-1,-1,-1,1};
+        };
+
+        class unitEditor_createUnit_button_confirm: orbatCreator_RscButton {
+            idc = 10018;
+            text = "Confirm";
+            x = 22.5 * GUI_GRID_W + GUI_GRID_X;
+            y = 24.25 * GUI_GRID_H + GUI_GRID_Y;
+            w = 16.5 * GUI_GRID_W;
+            h = 1 * GUI_GRID_H;
+            colorBackground[] = {-1,-1,-1,1};
+        };
+
+    };
+};
+
+class ALiVE_orbatCreator_interface_unitEditor_editUnit : ALiVE_orbatCreator_interface_unitEditor_createUnit {
+
+    class controlsBackground {
+
+        class unitEditor_createUnit_background: orbatCreator_RscText {
+            idc = 10001;
+            x = 4 * GUI_GRID_W + GUI_GRID_X;
+            y = 2 * GUI_GRID_H + GUI_GRID_Y;
+            w = 35 * GUI_GRID_W;
+            h = 22 * GUI_GRID_H;
+            colorBackground[] = {-1,-1,-1,1};
+        };
+
+        class unitEditor_createUnit_header: orbatCreator_RscText {
+            idc = 10002;
+            text = "Edit Unit";
+            x = 4 * GUI_GRID_W + GUI_GRID_X;
+            y = 1.05 * GUI_GRID_H + GUI_GRID_Y;
+            w = 35 * GUI_GRID_W;
+            h = 1 * GUI_GRID_H;
+            colorBackground[] = {"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.3843])","(profilenamespace getvariable ['GUI_BCG_RGB_G',0.7019])","(profilenamespace getvariable ['GUI_BCG_RGB_B',0.8862])",0.7};
+            sizeEx = 1 * GUI_GRID_H;
+        };
+
+        class unitEditor_createUnit_header_divider_center: orbatCreator_RscText {
+            idc = 10003;
+            x = 22 * GUI_GRID_W + GUI_GRID_X;
+            y = 2.4 * GUI_GRID_H + GUI_GRID_Y;
+            w = 0.05 * GUI_GRID_W;
+            h = 21.2 * GUI_GRID_H;
+            colorBackground[] = {1,1,1,1};
+        };
+
+        class unitEditor_createUnit_input_title_name: orbatCreator_RscText {
+            idc = 1003;
+            text = "Name : ";
+            x = 4.5 * GUI_GRID_W + GUI_GRID_X;
+            y = 3 * GUI_GRID_H + GUI_GRID_Y;
+            w = 4.5 * GUI_GRID_W;
+            h = 1.5 * GUI_GRID_H;
+        };
+
+        class unitEditor_createUnit_input_title_classname: orbatCreator_RscText {
+            idc = 10004;
+            text = "Classname";
+            x = 4.5 * GUI_GRID_W + GUI_GRID_X;
+            y = 6 * GUI_GRID_H + GUI_GRID_Y;
+            w = 5.5 * GUI_GRID_W;
+            h = 1.5 * GUI_GRID_H;
+        };
+
+        class unitEditor_createUnit_input_title_side: orbatCreator_RscText {
+            idc = 10005;
+            text = "Side";
+            x = 4.5 * GUI_GRID_W + GUI_GRID_X;
+            y = 11 * GUI_GRID_H + GUI_GRID_Y;
+            w = 5 * GUI_GRID_W;
+            h = 1.5 * GUI_GRID_H;
+        };
+
+        class unitEditor_createUnit_input_title_faction: orbatCreator_RscText {
+            idc = 10006;
+            text = "Faction";
+            x = 4.5 * GUI_GRID_W + GUI_GRID_X;
+            y = 14 * GUI_GRID_H + GUI_GRID_Y;
+            w = 5 * GUI_GRID_W;
+            h = 1.5 * GUI_GRID_H;
+        };
+
+        class unitEditor_createUnit_input_header_unittype: orbatCreator_RscText {
+            idc = 10007;
+            text = "Unit Type";
+            x = 28 * GUI_GRID_W + GUI_GRID_X;
+            y = 2.5 * GUI_GRID_H + GUI_GRID_Y;
+            w = 5.5 * GUI_GRID_W;
+            h = 2 * GUI_GRID_H;
+            sizeEx = 1.3 * GUI_GRID_H;
+        };
+
+        class unitEditor_createUnit_input_title_unittype_side: orbatCreator_RscText {
+            idc = 10008;
+            text = "Side";
+            x = 23 * GUI_GRID_W + GUI_GRID_X;
+            y = 6 * GUI_GRID_H + GUI_GRID_Y;
+            w = 5 * GUI_GRID_W;
+            h = 1.5 * GUI_GRID_H;
+        };
+
+        class unitEditor_createUnit_input_title_unittype_faction: orbatCreator_RscText {
+            idc = 10009;
+            text = "Faction";
+            x = 23 * GUI_GRID_W + GUI_GRID_X;
+            y = 9 * GUI_GRID_H + GUI_GRID_Y;
+            w = 5 * GUI_GRID_W;
+            h = 1.5 * GUI_GRID_H;
+        };
+
+    };
+
 };
