@@ -30,6 +30,10 @@ _taskID = _this select 3;
 _taskType = _this select 4;
 _type = if(count _this > 5) then {_this select 5} else {""};
 
+if (typeName _taskSide == "STRING") then {
+    _taskSide = [_taskSide] call ALiVE_fnc_sideTextToObject;
+};
+
 switch(_taskSide) do {
     case EAST:{
         _colour = "ColorRed";
@@ -54,6 +58,12 @@ _markerDefinition = [];
 switch(_taskType) do {
     case "HVT":{
         _markerDefinition = [_taskPosition,_taskID,_colour,"HVT","mil_objective",[1,1],1,"ICON"];
+    };
+    case "hostage":{
+        _markerDefinition = [_taskPosition,_taskID,_colour,"Hostage","mil_objective",[1,1],1,"ICON"];
+    };
+    case "csar":{
+        _markerDefinition = [_taskPosition,_taskID,_colour,"Beacon","mil_warning",[1,1],1,"ICON"];
     };
     case "vehicle":{
 
@@ -95,7 +105,7 @@ switch(_taskType) do {
 
         _markerDefinition = [_taskPosition,_taskID,_colour,"Target Infantry",_icon,[1,1],1,"ICON"];
     };
-    
+
     case "building":{
 
         _icon = format["%1_inf",_typePrefix];

@@ -148,6 +148,124 @@ _options set [count _options,_tasksData];
 
 [ALIVE_generatedTasks, "Assassination", ["HVT Assassination",_options]] call ALIVE_fnc_hashSet;
 
+// Rescue Task
+
+_options = [];
+
+_tasksData = [] call ALIVE_fnc_hashCreate;
+
+_taskData = [] call ALIVE_fnc_hashCreate;
+[_taskData,"title","Hostage Rescue"] call ALIVE_fnc_hashSet;
+[_taskData,"description","Rescue the hostage before they are killed."] call ALIVE_fnc_hashSet;
+[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
+
+_taskData = [] call ALIVE_fnc_hashCreate;
+[_taskData,"title","Rescue the hostage"] call ALIVE_fnc_hashSet;
+[_taskData,"description","We have received HUMINT that indicates enemy forces have captured an allied commander in the vicinity of %1. You are to find and recover the officer as quickly as possible!"] call ALIVE_fnc_hashSet;
+[_taskData,"chat_start",[["HQ","HUMINT indicates enemy forces have captured an allied commander in the vicinity of %1. Find and recover the officer as quickly as possible!"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_update",[["HQ","All callsigns, SITREP, hostage (%1) location has been confirmed at GR%2. Int indicates enemy forces will execute hostage within the hour."],["PLAYERS","Roger, Out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_success",[["PLAYERS","The package is secure, Over"],["HQ","Roger, well done, Out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_failed",[["HQ","Mission aborted, hostage has been killed, Over"],["PLAYERS","Dammit! Rest in peace, we're RTB, Out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_cancelled",[["PLAYERS","Callsign compromised, mission aborted, Over"],["HQ","Roger, break contact and withdraw. Send SITREP when ready, Out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
+[_tasksData,"Rescue",_taskData] call ALIVE_fnc_hashSet;
+
+_taskData = [] call ALIVE_fnc_hashCreate;
+[_taskData,"title","Return Hostage"] call ALIVE_fnc_hashSet;
+[_taskData,"description","Escort the hostage to the safe location near %1."] call ALIVE_fnc_hashSet;
+[_taskData,"chat_start",[["HQ","Immediately escort package to safe house near %1"],["PLAYERS","Roger, moving now, Out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_failed",[["HQ","Hostage has been killed, abort mission and RTB immediately, Over"],["PLAYERS","Roger Out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_success",[["PLAYERS","Package has been returned to the safe location"],["HQ","Roger, great job! Well done, Out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
+[_tasksData,"Return",_taskData] call ALIVE_fnc_hashSet;
+
+_options set [count _options,_tasksData];
+
+[ALIVE_generatedTasks, "Rescue", ["Hostage Rescue",_options]] call ALIVE_fnc_hashSet;
+
+// Combat Search and Rescue Tasks
+
+_options = [];
+
+// Downed Pilot
+_tasksData = [] call ALIVE_fnc_hashCreate;
+_taskData = [] call ALIVE_fnc_hashCreate;
+[_taskData,"title","Combat Search and Rescue"] call ALIVE_fnc_hashSet;
+[_taskData,"description","Rescue downed crew isolated behind enemy lines."] call ALIVE_fnc_hashSet;
+[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
+
+_taskData = [] call ALIVE_fnc_hashCreate;
+[_taskData,"title","Locate Crew"] call ALIVE_fnc_hashSet;
+[_taskData,"description","We have received reports that a %1 has been shot down in enemy territory. It is believed the crew ejected and landed in the vicinity of %2. Conduct a thorough search in order to locate, secure and recover any survivors as quickly as possible!"] call ALIVE_fnc_hashSet;
+[_taskData,"chat_start",[["HQ","Reports confirmed! %1 has been shot down over enemy territory. Move immediately to locate and rescue surviving crew."],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_update",[["HQ","All callsigns, SITREP. We've picked up an emergency beacon at grid %1. Beacon has been authenticated. Look for IR strobe. Proceed with urgency."],["PLAYERS","Roger, Out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_success",[["PLAYERS","Crew secured, we are RTB, Over"],["HQ","Roger, well done, Out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_failed",[["HQ","Mission aborted. Crew have been killed, Over"],["PLAYERS","Roger, we are RTB, out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_cancelled",[["PLAYERS","Callsign compromised, mission aborted, Over"],["HQ","Roger, break contact and withdraw. Send SITREP when ready, out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
+[_tasksData,"Rescue",_taskData] call ALIVE_fnc_hashSet;
+
+_taskData = [] call ALIVE_fnc_hashCreate;
+[_taskData,"title","Secure Survivors"] call ALIVE_fnc_hashSet;
+[_taskData,"description","Recover the survivors and ensure the position is safe prior to extraction."] call ALIVE_fnc_hashSet;
+[_taskData,"chat_start",[["HQ","Int indicates enemy forces are rapidly closing on your position. It is essential that you secure the area, prepare to defend,  over."],["PLAYERS","Roger, we are preparing to defend. Out."]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_clear",[["HQ","SIGINT indicates enemy forces within 200m of your position. It is essential that you clear the area, over."],["PLAYERS","Roger, we are preparing to clear. Out."]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_success",[["PLAYERS","Crew are safe, area is clear and objective is secure, Over"],["HQ","Roger, prepare to recover crew to safe location, Out."]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_failed",[["HQ","Mission aborted, crew have been killed, Over"],["PLAYERS","Roger, we are RTB, Out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
+[_tasksData,"DefenceWave",_taskData] call ALIVE_fnc_hashSet;
+
+_taskData = [] call ALIVE_fnc_hashCreate;
+[_taskData,"title","Return Survivors"] call ALIVE_fnc_hashSet;
+[_taskData,"description","Return the surviving crew to safe location near %1."] call ALIVE_fnc_hashSet;
+[_taskData,"chat_start",[["HQ","Return surviving crew to safe location near %1"],["PLAYERS","Roger, moving now, out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_failed",[["HQ","Surviving crew have been killed, abort mission and RTB immediately, Over"],["PLAYERS","Roger, out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_success",[["PLAYERS","Crew has been returned to base, over."],["HQ","Roger, great job! Well done, Out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
+[_tasksData,"Return",_taskData] call ALIVE_fnc_hashSet;
+
+_options set [count _options,_tasksData];
+
+// Crashsite
+_tasksData = [] call ALIVE_fnc_hashCreate;
+_taskData = [] call ALIVE_fnc_hashCreate;
+[_taskData,"title","Combat Search and Rescue"] call ALIVE_fnc_hashSet;
+[_taskData,"description","Secure crashsite and rescue surviving crew."] call ALIVE_fnc_hashSet;
+[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
+
+_taskData = [] call ALIVE_fnc_hashCreate;
+[_taskData,"title","Locate and Rescue Crew"] call ALIVE_fnc_hashSet;
+[_taskData,"description","We have confirmation that a %1 has crashed in enemy territory near %2. SIGINT indicates there are survivors. Secure and rescue survivors as quickly as possible!"] call ALIVE_fnc_hashSet;
+[_taskData,"chat_start",[["HQ","Confirmed! A %1 has been shot down over enemy territory and crashed near %2. Secure and rescue the crew as quickly as possible!"],["PLAYERS","Roger, moving now, Out."]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_success",[["PLAYERS","Crew has been found alive but injured, Over"],["HQ","Roger, well done, Out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_failed",[["HQ","Mission aborted, crew have been killed, Over"],["PLAYERS","Sorry to hear that, we are RTB, Out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_cancelled",[["PLAYERS","Callsign compromised, mission aborted, Over"],["HQ","Roger, break contact and withdraw. Send SITREP when ready, Out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
+[_tasksData,"Rescue",_taskData] call ALIVE_fnc_hashSet;
+
+_taskData = [] call ALIVE_fnc_hashCreate;
+[_taskData,"title","Secure Crash Site"] call ALIVE_fnc_hashSet;
+[_taskData,"description","Ensure the vehicle is destroyed and secure the position before extracting."] call ALIVE_fnc_hashSet;
+[_taskData,"chat_start",[["HQ","Int indicates enemy forces are rapidly closing on your position. Prepare to hold the position, over."],["PLAYERS","Roger, securing crash site now, Out."]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_clear",[["HQ","SIGINT indicates enemy forces within 200m of your position. It is essential that you clear the area, over."],["PLAYERS","Roger, we are preparing to clear. Out."]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_success",[["PLAYERS","Vehicle is destroyed and objective is secure, Over"],["HQ","Roger, prepare to recover crew to safe location, Out."]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_failed",[["HQ","Mission aborted, crew have been killed, Over"],["PLAYERS","Roger, we are RTB, Out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
+[_tasksData,"DefenceWave",_taskData] call ALIVE_fnc_hashSet;
+
+_taskData = [] call ALIVE_fnc_hashCreate;
+[_taskData,"title","Return Survivors"] call ALIVE_fnc_hashSet;
+[_taskData,"description","Return the surviving crew to our location near %1."] call ALIVE_fnc_hashSet;
+[_taskData,"chat_start",[["HQ","Return surviving crew to our location near %1"],["PLAYERS","Roger, moving now, Out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_failed",[["HQ","Surviving crew have been killed, abort mission and RTB immediately, Over"],["PLAYERS","Roger, Out."]]] call ALIVE_fnc_hashSet;
+[_taskData,"chat_success",[["PLAYERS","Crew has been returned to base, over."],["HQ","Roger, great job! Well done, Out"]]] call ALIVE_fnc_hashSet;
+[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
+[_tasksData,"Return",_taskData] call ALIVE_fnc_hashSet;
+
+_options set [count _options,_tasksData];
+
+[ALIVE_generatedTasks, "CSAR", ["Combat Search and Rescue",_options]] call ALIVE_fnc_hashSet;
+
 // Troop Insertion Task
 
 _options = [];
