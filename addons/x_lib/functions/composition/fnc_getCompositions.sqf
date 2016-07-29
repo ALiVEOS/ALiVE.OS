@@ -40,6 +40,8 @@ _cat = if (typeName (_this select 1) == "ARRAY") then {_this select 1} else {[_t
 _size = if (typeName (_this select 2) == "ARRAY") then {_this select 2} else {[_this select 2]};
 if (count _this > 3) then {
     if (typeName (_this select 3) == "ARRAY") then {_faction = _this select 3} else {_faction = [_this select 3]};
+} else {
+    _faction = [];
 };
 
 if (!isNil "ALiVE_mapCompositionType") then {
