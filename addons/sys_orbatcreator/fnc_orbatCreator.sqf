@@ -68,6 +68,7 @@ nil
 #define OC_CREATEUNIT_INPUT_UNITTYPE_UNITS      10016
 #define OC_CREATEUNIT_BUTTON_CANCEL             10017
 #define OC_CREATEUNIT_BUTTON_CONFIRM            10018
+#define OC_CREATEUNIT_BUTTON_AUTOGEN_CLASSNAME  10019
 
 #define
 
@@ -300,13 +301,13 @@ switch(_operation) do {
 
             case "Create_Unit": {
 
-                createDialog "ALiVE_orbatCreator_interface_unitEditor_createUnit";
+                createDialog "ALiVE_orbatCreator_interface_createUnit";
 
             };
 
             case "Unit_Editor_Edit_Properties": {
 
-                createDialog "ALiVE_orbatCreator_interface_unitEditor_editUnit";
+                createDialog "ALiVE_orbatCreator_interface_editUnit";
 
             };
 
@@ -340,7 +341,7 @@ switch(_operation) do {
 
                 // init faction list
 
-                private _factionList = OC_getControl(OC_DISPLAY_ORBAT,OC_ORBAT_FACTIONS_LIST);
+                private _factionList = OC_getControl( OC_DISPLAY_ORBAT , OC_ORBAT_FACTIONS_LIST );
                 private _allFactions = [] call ALiVE_fnc_configGetFactions;
 
                 {
@@ -363,17 +364,17 @@ switch(_operation) do {
 
                 // init buttons
 
-                private _button1 = OC_getControl(OC_DISPLAY_ORBAT,OC_ORBAT_BUTTON_BIG_ONE);
+                private _button1 = OC_getControl( OC_DISPLAY_ORBAT , OC_ORBAT_BUTTON_BIG_ONE );
                 _button1 ctrlSetText "Unit Editor";
                 _button1 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'Unit_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
                 _button1 ctrlShow true;
 
-                private _button2 = OC_getControl(OC_DISPLAY_ORBAT,OC_ORBAT_BUTTON_BIG_TWO);
+                private _button2 = OC_getControl( OC_DISPLAY_ORBAT , OC_ORBAT_BUTTON_BIG_TWO );
                 _button2 ctrlSetText "Group Editor";
                 _button2 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'Group_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
                 _button2 ctrlShow true;
 
-                private _button3 = OC_getControl(OC_DISPLAY_ORBAT,OC_ORBAT_BUTTON_BIG_THREE);
+                private _button3 = OC_getControl( OC_DISPLAY_ORBAT , OC_ORBAT_BUTTON_BIG_THREE );
                 _button3 ctrlSetText "Generate Config";
                 _button3 ctrlSetEventHandler ["MouseButtonDown","['generateConfig', 'ORBAT_Viewer'] call ALiVE_fnc_orbatCreatorOnAction"];
                 _button3 ctrlShow true;
@@ -387,12 +388,12 @@ switch(_operation) do {
 
                 // init class list
 
-                private _classList = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_CLASSLIST_LIST);
+                private _classList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
                 _classList ctrlSetEventHandler ["lbSelChanged","['onUnitEditorUnitListChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
                 // init faction list
 
-                private _factionList = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_FACTIONS_LIST);
+                private _factionList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_FACTIONS_LIST );
                 private _allFactions = [] call ALiVE_fnc_configGetFactions;
 
                 {
@@ -415,17 +416,17 @@ switch(_operation) do {
 
                 // init buttons
 
-                private _button1 = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_BUTTON_BIG_ONE);
+                private _button1 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_BUTTON_BIG_ONE );
                 _button1 ctrlSetText "ORBAT Viewer";
                 _button1 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'ORBAT_Viewer'] call ALiVE_fnc_orbatCreatorOnAction"];
                 _button1 ctrlShow true;
 
-                private _button2 = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_BUTTON_BIG_TWO);
+                private _button2 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_BUTTON_BIG_TWO );
                 _button2 ctrlSetText "Group Editor";
                 _button2 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'Group_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
                 _button2 ctrlShow true;
 
-                private _button3 = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_BUTTON_BIG_THREE);
+                private _button3 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_BUTTON_BIG_THREE );
                 _button3 ctrlSetText "Generate Config";
                 _button3 ctrlSetTooltip "Export selected units to clipboard";
                 _button3 ctrlSetEventHandler ["MouseButtonDown","['generateConfig', 'Unit_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
@@ -433,26 +434,26 @@ switch(_operation) do {
 
                 // init class list
 
-                private _classList_button1 = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_CLASSLIST_BUTTON_ONE);
+                private _classList_button1 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_ONE );
                 _classList_button1 ctrlSetText "New";
                 _classList_button1 ctrlSetTooltip "Create new unit for selected faction";
                 _classList_button1 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'Create_Unit'] call ALiVE_fnc_orbatCreatorOnAction"];
                 _classList_button1 ctrlShow true;
 
-                private _classList_button2 = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_CLASSLIST_BUTTON_TWO);
+                private _classList_button2 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_TWO );
                 _classList_button2 ctrlSetText "Edit Loadout";
                 _classList_button2 ctrlSetTooltip "Edit selected unit in the arsenal";
                 _classList_button2 ctrlSetEventHandler ["MouseButtonDown","['onUnitEditorEditLoadoutClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
                 _classList_button2 ctrlShow true;
                 _classList_button2 ctrlEnable false;
 
-                private _classList_button3 = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_CLASSLIST_BUTTON_THREE);
+                private _classList_button3 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_THREE );
                 _classList_button3 ctrlSetText "Edit Properties";
                 _classList_button3 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'Unit_Editor_Edit_Properties'] call ALiVE_fnc_orbatCreatorOnAction"];
                 _classList_button3 ctrlShow true;
                 _classList_button3 ctrlEnable false;
 
-                private _classList_button4 = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_CLASSLIST_BUTTON_FOUR);
+                private _classList_button4 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_FOUR );
                 _classList_button4 ctrlSetText "Delete";
                 _classList_button4 ctrlSetTooltip "Delete selected unit";
                 _classList_button4 ctrlSetEventHandler ["MouseButtonDown","['unitEditorDeleteClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
@@ -479,20 +480,20 @@ switch(_operation) do {
 
                 // init unit type class list
 
-                private _classList = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_UNITTYPE_UNITS);
+                private _classList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_UNITS );
                 _classList ctrlSetEventHandler ["lbSelChanged","['onCreateUnitUnitTypeClassChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
                 // init faction lists
 
-                private _unitTypeFactionList = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_UNITTYPE_FACTION);
+                private _unitTypeFactionList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_FACTION );
                 _unitTypeFactionList ctrlSetEventHandler ["lbSelChanged","['onCreateUnitUnitTypeFactionChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
                 // init side lists
 
-                private _sideList = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_SIDE);
+                private _sideList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_SIDE );
                 _sideList ctrlSetEventHandler ["lbSelChanged","['onCreateUnitSideChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
-                private _unitTypeSideList = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_UNITTYPE_SIDE);
+                private _unitTypeSideList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_SIDE );
                 _unitTypeSideList ctrlSetEventHandler ["lbSelChanged","['onCreateUnitUnitTypeSideChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
                 for "_i" from 0 to 2 do {
@@ -513,25 +514,22 @@ switch(_operation) do {
                 };
 
                 private _selectedFaction = [_state,"unitEditor_selectedFaction"] call ALiVE_fnc_hashGet;
-                private _factionList = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_FACTION);
-                private _unitTypeFactionList = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_UNITTYPE_FACTION);
+                private _factionList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_FACTION );
+                private _unitTypeFactionList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_FACTION );
 
-                for "_i" from 0 to (lbSize _factionList - 1) do {
-                    _factionIndex = _factionList lbData _i;
-
-                    if (_factionIndex == _selectedFaction) exitWith {
-                        _factionList lbSetCurSel _i;
-                        _unitTypeFactionList lbSetCurSel _i;
-                    };
-                };
+                [_factionList,_selectedFaction] call ALiVE_fnc_listSelectData;
+                [_unitTypeFactionList,_selectedFaction] call ALiVE_fnc_listSelectData;
 
                 // init buttons
 
-                private _buttonOK = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_BUTTON_CONFIRM);
+                private _buttonOK = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_BUTTON_CONFIRM );
                 _buttonOK ctrlSetEventHandler ["MouseButtonDown","['onCreateUnitConfirmClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
-                private _buttonCancel = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_BUTTON_CANCEL);
+                private _buttonCancel = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_BUTTON_CANCEL );
                 _buttonCancel ctrlSetEventHandler ["MouseButtonDown","['onCreateUnitCancelClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+
+                private _buttonAutogen = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_BUTTON_AUTOGEN_CLASSNAME );
+                _buttonAutogen ctrlSetEventHandler ["MouseButtonDown","['onCreateUnitAutogenerateClassnameClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
             };
 
@@ -545,7 +543,7 @@ switch(_operation) do {
                 // get selected unit data
 
                 private _state = [_logic,"state"] call MAINCLASS;
-                private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;copyToClipboard str _customUnits;
+                private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
                 private _selectedUnit = [_state,"unitEditor_selectedUnit"] call ALiVE_fnc_hashGet;
                 private _selectedUnitData = [_customUnits,_selectedUnit] call ALiVE_fnc_hashGet;
 
@@ -557,8 +555,8 @@ switch(_operation) do {
 
                 // match input fields to unit properties
 
-                private _displayNameInput = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_DISPLAYNAME);
-                private _classnameInput = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_CLASSNAME);
+                private _displayNameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_DISPLAYNAME );
+                private _classnameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_CLASSNAME );
 
                 _displayNameInput ctrlSetText _unitDisplayName;
                 _classnameInput ctrlSetText _unitConfigName;
@@ -567,12 +565,12 @@ switch(_operation) do {
 
                 // init unit type class list
 
-                private _classList = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_UNITTYPE_UNITS);
+                private _classList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_UNITS );
                 _classList ctrlSetEventHandler ["lbSelChanged","['onCreateUnitUnitTypeClassChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
                 // init side / faction lists
 
-                private _sideList = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_SIDE);
+                private _sideList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_SIDE );
                 _sideList ctrlSetEventHandler ["lbSelChanged","['onCreateUnitSideChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
                 for "_i" from 0 to 2 do {
@@ -588,22 +586,15 @@ switch(_operation) do {
                     };
                 };
 
-                private _factionList = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_FACTION);
-
-                for "_i" from 0 to (lbSize _factionList) do {
-                    _indexFaction = _factionList lbData _i;
-
-                    if (_indexFaction == _unitFaction) exitwith {
-                        _factionList lbSetCurSel _i;
-                    };
-                };
+                private _factionList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_FACTION );
+                [_factionList,_unitFaction] call ALiVE_fnc_listSelectData;
 
                 // init unit type side / faction lists
 
-                private _unitTypeSideList = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_UNITTYPE_SIDE);
+                private _unitTypeSideList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_SIDE );
                 _unitTypeSideList ctrlSetEventHandler ["lbSelChanged","['onCreateUnitUnitTypeSideChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
-                private _unitTypeFactionList = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_UNITTYPE_FACTION);
+                private _unitTypeFactionList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_FACTION );
                 _unitTypeFactionList ctrlSetEventHandler ["lbSelChanged","['onCreateUnitUnitTypeFactionChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
                 // get parent unit side / faction
@@ -634,17 +625,11 @@ switch(_operation) do {
 
                 [_logic,"displaySideFactionsInList", [_unitTypeFactionList,_unitParentSide]] call MAINCLASS;
 
-                private _unitTypeFactionList = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_UNITTYPE_FACTION);
+                private _unitTypeFactionList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_FACTION );
+                [_unitTypeFactionList,_unitParentFaction] call ALiVE_fnc_listSelectData;
 
-                for "_i" from 0 to (lbSize _unitTypeFactionList) do {
-                    _indexFaction = _unitTypeFactionList lbData _i;
+                private _classList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_UNITS );
 
-                    if (_indexFaction == _unitParentFaction) exitwith {
-                        _unitTypeFactionList lbSetCurSel _i;
-                    };
-                };
-
-                private _classList = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_UNITTYPE_UNITS);
                 for "_i" from 0 to (lbSize _classList - 1) do {
                     private _indexUnit = _classList lbData _i;
 
@@ -653,21 +638,18 @@ switch(_operation) do {
                     };
                 };
 
-                for "_i" from 0 to (lbSize _classList - 1) do {
-                    private _indexUnit = _classList lbData _i;
-
-                    if (_indexUnit == _unitParent) exitWith {
-                        _classList lbSetCurSel _i;
-                    };
-                };
+                [_classList,_unitParent] call ALiVE_fnc_listSelectData;
 
                 // init buttons
 
-                private _buttonOK = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_BUTTON_CONFIRM);
+                private _buttonOK = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_BUTTON_CONFIRM );
                 _buttonOK ctrlSetEventHandler ["MouseButtonDown","['onEditUnitConfirmClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
-                private _buttonCancel = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_BUTTON_CANCEL);
+                private _buttonCancel = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_BUTTON_CANCEL );
                 _buttonCancel ctrlSetEventHandler ["MouseButtonDown","['onEditUnitCancelClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+
+                private _buttonAutogen = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_BUTTON_AUTOGEN_CLASSNAME );
+                _buttonAutogen ctrlSetEventHandler ["MouseButtonDown","['onCreateUnitAutogenerateClassnameClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
             };
 
@@ -1100,7 +1082,7 @@ switch(_operation) do {
         private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
         private _factionData = [_factions,_faction] call ALiVE_fnc_hashGet;
 
-        private _tree = OC_getControl(OC_DISPLAY_ORBAT,OC_ORBAT_GROUPS_TREE);
+        private _tree = OC_getControl( OC_DISPLAY_ORBAT , OC_ORBAT_GROUPS_TREE );
         tvClear _tree;
         _tree ctrlShow true;
 
@@ -1217,7 +1199,7 @@ switch(_operation) do {
 
             // populate list
 
-            private _unitList = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_CLASSLIST_LIST);
+            private _unitList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
             lbClear _unitList;
 
             {
@@ -1246,8 +1228,8 @@ switch(_operation) do {
 
         private _vehicle = _args;
 
-        private _buttonEditLoadout = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_CLASSLIST_BUTTON_TWO);
-        private _buttonEditProperties = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_CLASSLIST_BUTTON_THREE);
+        private _buttonEditLoadout = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_TWO );
+        private _buttonEditProperties = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_THREE );
 
         private _state = [_logic,"state"] call MAINCLASS;
         private _cam = [_state,"unitEditor_interfaceCamera"] call ALiVE_fnc_hashGet;
@@ -1255,7 +1237,7 @@ switch(_operation) do {
 
         // get unit data
 
-        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet; copyToClipboard str _customUnits;
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
         private _customUnit = [_customUnits,_selectedUnitClassname] call ALiVE_fnc_hashGet;
         private _customUnitLoadout = [_customUnit,"loadout"] call ALiVE_fnc_hashGet;
         private _customUnitParent = [_customUnit,"inheritsFrom"] call ALiVE_fnc_hashGet;
@@ -1276,7 +1258,7 @@ switch(_operation) do {
             _configPath = configFile >> "CfgVehicles" >> _customUnitParent;
 
         };
-systemchat format ["Viewing : %1", _customUnitParent];
+
         // delete existing vehicle
 
         private _activeUnit = [_state,"unitEditor_activeUnitObject"] call ALiVE_fnc_hashGet;
@@ -1407,24 +1389,13 @@ systemchat format ["Viewing : %1", _customUnitParent];
 
         // get faction index to select
 
-        private _factionList = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_FACTIONS_LIST);
-
-        for "_i" from 0 to (lbSize _factionList) do {
-            if ((_factionList lbData _i) == _customUnitFaction) then {
-                _factionList lbSetCurSel _i;
-            };
-        };
+        private _factionList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_FACTIONS_LIST );
+        [_factionList,_customUnitFaction] call ALiVE_fnc_listSelectData;
 
         // get unit classname to select
 
-        private _classList = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_CLASSLIST_LIST);
-
-        for "_i" from 0 to (lbSize _classList) do {
-            if ((_classList lbData _i) == _unitClassname) then {
-                _classList lbSetCurSel _i;              // triggers lbOnSel event
-                _classList lbSetSelected [_i,true];     // properly selects items in multi-selection lb's
-            };
-        };
+        private _classList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
+        [_classList,_unitClassname, true] call ALiVE_fnc_listSelectData;
 
     };
 
@@ -1433,7 +1404,7 @@ systemchat format ["Viewing : %1", _customUnitParent];
         private _state = [_logic,"state"] call MAINCLASS;
         private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
 
-        private _unitList = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_CLASSLIST_LIST);
+        private _unitList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
 
         // get selected units
 
@@ -1502,7 +1473,7 @@ systemchat format ["Viewing : %1", _customUnitParent];
         private _sideNum = OC_ctrlGetSelData(_list);
         _sideNum = call compile _sideNum;
 
-        private _factionList = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_FACTION);
+        private _factionList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_FACTION );
         [_logic,"displaySideFactionsInList", [_factionList,_sideNum]] call MAINCLASS;
 
     };
@@ -1518,7 +1489,7 @@ systemchat format ["Viewing : %1", _customUnitParent];
         private _sideNum = OC_ctrlGetSelData(_list);
         _sideNum = call compile _sideNum;
 
-        private _factionList = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_UNITTYPE_FACTION);
+        private _factionList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_FACTION );
         [_logic,"displaySideFactionsInList", [_factionList,_sideNum]] call MAINCLASS;
 
     };
@@ -1564,7 +1535,7 @@ systemchat format ["Viewing : %1", _customUnitParent];
 
         // populate list
 
-        private _classList = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_UNITTYPE_UNITS);
+        private _classList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_UNITS );
         lbClear _classList;
 
         {
@@ -1574,15 +1545,125 @@ systemchat format ["Viewing : %1", _customUnitParent];
             _classList lbSetData [_index, _configName];
         } foreach _assetsToDisplay;
 
-        private _buttonOK = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_BUTTON_CONFIRM);
+        private _buttonOK = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_BUTTON_CONFIRM );
         _buttonOK ctrlEnable false;
 
     };
 
     case "onCreateUnitUnitTypeClassChanged": {
 
-        private _buttonOK = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_BUTTON_CONFIRM);
+        private _buttonOK = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_BUTTON_CONFIRM );
         _buttonOK ctrlEnable true;
+
+    };
+
+    case "onCreateUnitAutogenerateClassnameClicked": {
+
+        private _side = call compile OC_getSelData( OC_CREATEUNIT_INPUT_SIDE );
+        private _faction = OC_getSelData( OC_CREATEUNIT_INPUT_FACTION );
+
+        // parse display name to get classname
+
+        private _inputDisplayName = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_DISPLAYNAME );
+        private _displayName = ctrlText _inputDisplayName;
+
+        private _generatedClassname = [_logic,"generateClassname", [_side,_faction,_displayName]] call MAINCLASS;
+
+        private _inputClassname = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_CLASSNAME );
+        _inputClassname ctrlSetText _generatedClassname;
+
+    };
+
+    case "generateClassname": {
+
+        _args params ["_side","_faction","_displayName"];
+
+        _side = [_logic,"convertSideToNum", _side] call MAINCLASS;
+        private _sideText = [_side] call ALiVE_fnc_sideNumberToText;
+        private _sideTextLong = [_sideText] call ALiVE_fnc_sideTextToLong;
+        _sideTextLong = [_sideTextLong] call CBA_fnc_leftTrim;
+        private _sidePrefix = _sideTextLong select [0,1];
+
+        private _factionPrefix = [_faction," ",""] call CBA_fnc_replace;
+        _factionPrefix = [_faction,"_",""] call CBA_fnc_replace;
+
+        private _autogenClassname = [_logic,"displayNameToClassname", _displayName] call MAINCLASS;
+
+        // get number postfix
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+        private _customUnitClassnames = _customUnits select 1;
+
+        private _postNum = 1;
+        private _autogenClassnameNoNum = format ["%1_%2_%3", _sidePrefix, _factionPrefix, _autogenClassname];
+
+        if (_postNum < 10) then {
+            _autogenClassname = format ["%1_0%2", _autogenClassnameNoNum, _postNum];
+        } else {
+            _autogenClassname = format ["%1_%2", _autogenClassnameNoNum, _postNum];
+        };
+
+        while {_autogenClassname in _customUnitClassnames} do {
+            _postNum = _postNum + 1;
+
+            if (_postNum < 10) then {
+                _autogenClassname = format ["%1_0%2", _autogenClassnameNoNum, _postNum];
+            } else {
+                _autogenClassname = format ["%1_%2", _autogenClassnameNoNum, _postNum];
+            };
+        };
+
+        // format result
+
+        _result = _autogenClassname
+
+    };
+
+    case "displayNameToClassname": {
+
+        private _displayName = _args;
+        private _displayNameArray = toArray _displayName;
+        private _displayNameSize = count _displayNameArray;
+
+        private _validChars = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','1','2','3','4','5','6','7','8','9','0'];
+
+        private _currIndex = 0;
+        private _currString = "";
+        private _classnameComponents = [];
+
+        while {_currIndex != _displayNameSize} do {
+
+            _nextChar = _displayNameArray select _currIndex;
+            _nextChar = toLower (toString [_nextChar]);
+
+            if (_nextChar in _validChars) then {
+                _currString = _currString + _nextChar;
+
+                // if letter is last in name, finish string
+                if (_currIndex + 1 == _displayNameSize) then {
+                    _classnameComponents pushback _currString;
+                };
+            } else {
+                if (count _currString > 1) then {
+                    _classnameComponents pushback _currString;
+                    _currString = "";
+                };
+            };
+
+            _currIndex = _currIndex + 1;
+
+        };
+
+        _result = "";
+
+        {
+            if (_result != "") then {
+                _result = format ["%1_%2", _result, _x];
+            } else {
+                _result = _x;
+            };
+        } foreach _classnameComponents;
 
     };
 
@@ -1592,19 +1673,20 @@ systemchat format ["Viewing : %1", _customUnitParent];
 
         // get side/faction
 
-        private _side = call compile OC_getSelData(OC_CREATEUNIT_INPUT_SIDE);
-        private _faction = OC_getSelData(OC_CREATEUNIT_INPUT_FACTION);
+        private _side = call compile OC_getSelData( OC_CREATEUNIT_INPUT_SIDE );
+        private _faction = OC_getSelData( OC_CREATEUNIT_INPUT_FACTION );
 
         // get displayname/configname
 
-        private _displayNameInput = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_DISPLAYNAME);
-        private _classnameInput = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_CLASSNAME);
+        private _displayNameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_DISPLAYNAME );
+        private _classnameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_CLASSNAME );
         private _displayName = ctrlText _displayNameInput;
         private _classname = ctrlText _classnameInput;
+        _classname = [_classname," ","_"] call CBA_fnc_replace;
 
         // get parent class
 
-        private _parentClass = OC_getSelData(OC_CREATEUNIT_INPUT_UNITTYPE_UNITS);
+        private _parentClass = OC_getSelData( OC_CREATEUNIT_INPUT_UNITTYPE_UNITS );
         private _loadout = [];
 
         if (_parentClass isKindOf "Man") then {
@@ -1630,7 +1712,7 @@ systemchat format ["Viewing : %1", _customUnitParent];
 
         closeDialog 0;
 
-        private _factionList = OC_getControl(OC_DISPLAY_UNITEDITOR,OC_UNITEDITOR_FACTIONS_LIST);
+        private _factionList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_FACTIONS_LIST );
         _factionList lbSetCurSel (lbCurSel _factionList);
 
     };
@@ -1652,14 +1734,14 @@ systemchat format ["Viewing : %1", _customUnitParent];
         private _selectedUnit = [_state,"unitEditor_selectedUnit"] call ALiVE_fnc_hashGet;
         private _selectedUnitData = [_customUnits,_selectedUnit] call ALiVE_fnc_hashGet;
 
-        private _displayNameInput = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_DISPLAYNAME);
-        private _classnameInput = OC_getControl(OC_DISPLAY_CREATEUNIT,OC_CREATEUNIT_INPUT_CLASSNAME);
+        private _displayNameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_DISPLAYNAME );
+        private _classnameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_CLASSNAME );
         private _displayName = ctrlText _displayNameInput;
         private _configName = ctrlText _classnameInput;
 
-        private _side = call compile OC_getSelData(OC_CREATEUNIT_INPUT_SIDE);
-        private _faction = OC_getSelData(OC_CREATEUNIT_INPUT_FACTION);
-        private _parentClass = OC_getSelData(OC_CREATEUNIT_INPUT_UNITTYPE_UNITS);
+        private _side = call compile OC_getSelData( OC_CREATEUNIT_INPUT_SIDE );
+        private _faction = OC_getSelData( OC_CREATEUNIT_INPUT_FACTION );
+        private _parentClass = OC_getSelData( OC_CREATEUNIT_INPUT_UNITTYPE_UNITS );
 
         private _unitSide = [_selectedUnitData,"side"] call ALiVE_fnc_hashGet;
         private _unitFaction = [_selectedUnitData,"faction"] call ALiVE_fnc_hashGet;
@@ -1676,6 +1758,8 @@ systemchat format ["Viewing : %1", _customUnitParent];
         };
 
         if (_configName != _unitConfigName) then {
+            _configName = [_configName," ","_"] call CBA_fnc_replace;
+
             [_selectedUnitData,"configName", _configName] call ALiVE_fnc_hashSet;
 
             [_customUnits,_unitConfigName] call ALiVE_fnc_hashRem;
@@ -1713,6 +1797,7 @@ systemchat format ["Viewing : %1", _customUnitParent];
 
     };
 
+
     // config generation
 
 
@@ -1724,13 +1809,37 @@ systemchat format ["Viewing : %1", _customUnitParent];
 
             case "Unit_Editor": {
 
-
+                private _classList = OC_getControl( OC_DISPLAY_UNITEDITOR, OC_UNITEDITOR_CLASSLIST_LIST );
+                private _selectedIndices = lbSelection _classList;
 
             };
 
         };
 
     };
+
+    case "exportCustomUnit": {
+
+        private ["_nextChar","_rangeEnd"];
+
+        private _unit = _args;
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+
+        if (_unit isEqualType "") then {
+            _unit = [_customUnits,_unit] call ALiVE_fnc_hashGet;
+        };
+
+        if (isnil "_unit") exitWith {
+            ["[ALiVE] Orbat Creator : exportCustomUnit - Unit is undefined, exiting. Called from %1", _fnc_scriptNameParent] call ALiVE_fnc_Dump;
+        };
+
+
+
+    };
+
 };
 
 TRACE_1("Orbat Creator - output", _result);

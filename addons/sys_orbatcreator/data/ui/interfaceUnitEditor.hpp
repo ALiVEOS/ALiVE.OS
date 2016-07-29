@@ -162,157 +162,11 @@ class ALiVE_orbatCreator_interface_unitEditor {
     };
 };
 
-/*
-// create unit
-
-
-class ALiVE_orbatCreator_interface_unitEditor_createUnit {
-    idd = 10000;
-
-    class controlsBackground {
-
-        class unitEditor_createUnit_background: orbatCreator_RscText {
-            idc = 10001;
-            x = 5 * GUI_GRID_W + GUI_GRID_X;
-            y = -1 * GUI_GRID_H + GUI_GRID_Y;
-            w = 28 * GUI_GRID_W;
-            h = 26.5 * GUI_GRID_H;
-            colorBackground[] = {0.2,0.2,0.2,1};
-        };
-
-        class unitEditor_createUnit_header: orbatCreator_RscText {
-            idc = 10002;
-            text = "Create Unit";
-            x = 5 * GUI_GRID_W + GUI_GRID_X;
-            y = -2 * GUI_GRID_H + GUI_GRID_Y;
-            w = 28 * GUI_GRID_W;
-            h = 1 * GUI_GRID_H;
-            colorBackground[] = {"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.3843])","(profilenamespace getvariable ['GUI_BCG_RGB_G',0.7019])","(profilenamespace getvariable ['GUI_BCG_RGB_B',0.8862])",0.7};
-        };
-
-        class unitEditor_createUnit_side_text: orbatCreator_RscText {
-            idc = 10003;
-            text = "Side";
-            x = 7 * GUI_GRID_W + GUI_GRID_X;
-            y = 1.5 * GUI_GRID_H + GUI_GRID_Y;
-            w = 4 * GUI_GRID_W;
-            h = 1.5 * GUI_GRID_H;
-            sizeEx = 1.3 * GUI_GRID_H;
-        };
-
-        class unitEditor_createUnit_faction_text: orbatCreator_RscText {
-            idc = 10004;
-            text = "Faction";
-            x = 7 * GUI_GRID_W + GUI_GRID_X;
-            y = 5 * GUI_GRID_H + GUI_GRID_Y;
-            w = 4.75 * GUI_GRID_W;
-            h = 1.5 * GUI_GRID_H;
-            sizeEx = 1.3 * GUI_GRID_H;
-        };
-
-        class unitEditor_createUnit_parentClasses_text: orbatCreator_RscText {
-            idc = 10005;
-            text = "Parent Class";
-            x = 7 * GUI_GRID_W + GUI_GRID_X;
-            y = 8.5 * GUI_GRID_H + GUI_GRID_Y;
-            w = 7 * GUI_GRID_W;
-            h = 1.5 * GUI_GRID_H;
-            sizeEx = 1 * GUI_GRID_H;
-        };
-
-        class unitEditor_createUnit_displayName_text: orbatCreator_RscText {
-            idc = 10006;
-            text = "Display Name";
-            x = 7 * GUI_GRID_W + GUI_GRID_X;
-            y = 19.1 * GUI_GRID_H + GUI_GRID_Y;
-            w = 8.5 * GUI_GRID_W;
-            h = 1.5 * GUI_GRID_H;
-            sizeEx = 1.3 * GUI_GRID_H;
-        };
-
-        class unitEditor_createUnit_classname_text: orbatCreator_RscText {
-            idc = 10007;
-            text = "Classname";
-            x = 7 * GUI_GRID_W + GUI_GRID_X;
-            y = 22.1 * GUI_GRID_H + GUI_GRID_Y;
-            w = 7.5 * GUI_GRID_W;
-            h = 1.5 * GUI_GRID_H;
-            sizeEx = 1.3 * GUI_GRID_H;
-        };
-
-    };
-
-    class controls {
-
-        class unitEditor_createUnit_side_input: orbatCreator_RscCombo {
-            idc = 10008;
-            x = 17 * GUI_GRID_W + GUI_GRID_X;
-            y = 1.65 * GUI_GRID_H + GUI_GRID_Y;
-            w = 14.5 * GUI_GRID_W;
-            h = 1.5 * GUI_GRID_H;
-        };
-
-        class unitEditor_createUnit_faction_input: orbatCreator_RscCombo {
-            idc = 10009;
-            x = 17 * GUI_GRID_W + GUI_GRID_X;
-            y = 5.15 * GUI_GRID_H + GUI_GRID_Y;
-            w = 14.5 * GUI_GRID_W;
-            h = 1.5 * GUI_GRID_H;
-        };
-
-        class unitEditor_createUnit_parentClasses_input: orbatCreator_RscListbox {
-            idc = 10010;
-            x = 17 * GUI_GRID_W + GUI_GRID_X;
-            y = 9 * GUI_GRID_H + GUI_GRID_Y;
-            w = 14.5 * GUI_GRID_W;
-            h = 8.5 * GUI_GRID_H;
-        };
-
-        class unitEditor_createUnit_displayName_input: orbatCreator_RscEdit {
-            idc = 10011;
-            x = 17 * GUI_GRID_W + GUI_GRID_X;
-            y = 19.1 * GUI_GRID_H + GUI_GRID_Y;
-            w = 14.5 * GUI_GRID_W;
-            h = 1.5 * GUI_GRID_H;
-        };
-
-        class unitEditor_createUnit_classname_input: orbatCreator_RscEdit {
-            idc = 10012;
-            x = 17 * GUI_GRID_W + GUI_GRID_X;
-            y = 22.1 * GUI_GRID_H + GUI_GRID_Y;
-            w = 14.5 * GUI_GRID_W;
-            h = 1.5 * GUI_GRID_H;
-        };
-
-        class unitEditor_button_ok: orbatCreator_RscButton {
-            idc = 10013;
-            text = "OK";
-            x = 5 * GUI_GRID_W + GUI_GRID_X;
-            y = 26 * GUI_GRID_H + GUI_GRID_Y;
-            w = 13.5 * GUI_GRID_W;
-            h = 1 * GUI_GRID_H;
-            colorBackground[] = {0,0,0,1};
-        };
-
-        class unitEditor_button_cancel: orbatCreator_RscButton {
-            idc = 10014;
-            text = "Cancel";
-            x = 19.5 * GUI_GRID_W + GUI_GRID_X;
-            y = 26 * GUI_GRID_H + GUI_GRID_Y;
-            w = 13.5 * GUI_GRID_W;
-            h = 1 * GUI_GRID_H;
-            colorBackground[] = {0,0,0,1};
-        };
-
-    };
-};
-*/
-
 
 // create unit
 
 
-class ALiVE_orbatCreator_interface_unitEditor_createUnit {
+class ALiVE_orbatCreator_interface_createUnit {
     idd = 10000;
 
     class controlsBackground {
@@ -420,6 +274,7 @@ class ALiVE_orbatCreator_interface_unitEditor_createUnit {
             y = 3.15 * GUI_GRID_H + GUI_GRID_Y;
             w = 10.5 * GUI_GRID_W;
             h = 1.25 * GUI_GRID_H;
+            sizeEx = 0.0325;
             colorBackground[] = {0.2,0.2,0.2,1};
         };
 
@@ -429,6 +284,7 @@ class ALiVE_orbatCreator_interface_unitEditor_createUnit {
             y = 6.15 * GUI_GRID_H + GUI_GRID_Y;
             w = 10.5 * GUI_GRID_W;
             h = 1.25 * GUI_GRID_H;
+            sizeEx = 0.0325;
             colorBackground[] = {0.2,0.2,0.2,1};
         };
 
@@ -497,10 +353,21 @@ class ALiVE_orbatCreator_interface_unitEditor_createUnit {
             colorBackground[] = {-1,-1,-1,1};
         };
 
+        class unitEditor_createUnit_button_autogen_classname: orbatCreator_RscButton {
+            idc = 10019;
+            text = "Autogenerate Classname";
+            x = 10 * GUI_GRID_W + GUI_GRID_X;
+            y = 8 * GUI_GRID_H + GUI_GRID_Y;
+            w = 10.5 * GUI_GRID_W;
+            h = 1.25 * GUI_GRID_H;
+            colorBackground[] = {0.2,0.2,0.2,1};
+            sizeEx = 0.85 * GUI_GRID_H;
+        };
+
     };
 };
 
-class ALiVE_orbatCreator_interface_unitEditor_editUnit : ALiVE_orbatCreator_interface_unitEditor_createUnit {
+class ALiVE_orbatCreator_interface_editUnit : ALiVE_orbatCreator_interface_createUnit {
 
     class controlsBackground {
 

@@ -164,7 +164,7 @@ class orbatCreator_RscButton : RscButton {
     colorSelect2[] = {0.4,0.416,0.42,1};
     colorFocused[] = {0.4,0.416,0.42,1};
     colorBackground[] = {0.4,0.416,0.42,1};
-    colorBackgroundActive[] = {0.8,0.8,0.8,1};
+    colorBackgroundActive[] = {0.4,0.416,0.42,1};
     colorBackgroundDisabled[] = {0.4,0.416,0.42,0.7};
     class Attributes {
         font = "RobotoCondensed";
