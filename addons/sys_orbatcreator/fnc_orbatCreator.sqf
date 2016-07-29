@@ -1320,6 +1320,10 @@ switch(_operation) do {
                 waitUntil {!isNull (findDisplay -1)};
                 disableSerialization;
 
+                // a3\addons\ui_f\hpp\defineResinclDesign
+
+                // set button actions
+
                 private _closeButton = findDisplay -1 displayCtrl 44448;
                 _closeButton ctrlSetText "Cancel Changes";
                 (ctrlParent _closeButton) displayAddEventHandler ["Unload", "['onUnitEditorArsenalClosed', false] spawn ALiVE_fnc_orbatCreatorOnAction"];
@@ -1329,6 +1333,20 @@ switch(_operation) do {
                 _ctrlButtonOK ctrlEnable true;
                 _ctrlButtonOK ctrlSetText "Save Changes";
                 _ctrlButtonOK buttonSetAction "['onUnitEditorArsenalClosed', true] spawn ALiVE_fnc_orbatCreatorOnAction";
+
+                // hide unneeded buttons
+
+                _ctrlButtonSave = findDisplay -1 displayctrl 44146;
+                _ctrlButtonSave ctrlEnable false;
+
+                _ctrlButtonLoad = findDisplay -1 displayctrl 44147;
+                _ctrlButtonLoad ctrlEnable false;
+
+                _ctrlButtonExport = findDisplay -1 displayctrl 44148;
+                _ctrlButtonExport ctrlEnable false;
+
+                _ctrlButtonImportant = findDisplay -1 displayctrl 44149;
+                _ctrlButtonImportant ctrlEnable false;
 
             };
 
