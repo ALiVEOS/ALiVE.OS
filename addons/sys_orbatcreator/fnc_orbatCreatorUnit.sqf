@@ -76,7 +76,7 @@ switch(_operation) do {
 
     case "side": {
 
-        if (typename _args == "STRING") then {
+        if (typename _args == "SCALAR") then {
             [_logic,_operation,_args] call ALiVE_fnc_hashSet;
             _result = _args;
         } else {

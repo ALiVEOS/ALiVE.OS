@@ -73,7 +73,7 @@ _menus =
         ["main", "ALiVE", _menuRsc],
         [
             [localize "STR_ALIVE_ORBATCREATOR",
-                {["ORBAT_Viewer"] spawn ALiVE_fnc_orbatCreatorOpenInterface},
+                {["openInterface", "ORBAT_Viewer"] spawn ALiVE_fnc_orbatCreatorOnAction},
                 "",
                 localize "STR_ALIVE_ORBATCREATOR_COMMENT",
                  "",

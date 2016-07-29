@@ -23,4 +23,4 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-[MOD(orbatCreator),_this select 0, _this select 1] call ALiVE_fnc_orbatCreator;
+[MOD(orbatCreator),"onAction", _this] call ALiVE_fnc_orbatCreator;

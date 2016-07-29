@@ -26,12 +26,6 @@ class CfgFunctions {
                 recompile = RECOMPILE;
             };
 
-            class orbatCreatorOpenInterface {
-                description = "Handles opening of orbat creator interfaces";
-                file = "\x\alive\addons\sys_orbatcreator\fnc_orbatCreatorOpenInterface.sqf";
-                recompile = RECOMPILE;
-            };
-
             class orbatCreatorOnAction {
                 description = "Handles orbat creator interface events";
                 file = "\x\alive\addons\sys_orbatcreator\fnc_orbatCreatorOnAction.sqf";
