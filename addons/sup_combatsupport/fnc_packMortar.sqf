@@ -15,7 +15,7 @@ SCRIPT(packMortar);
     _this select 1: the weapon (option if weapon registered as "supportWeaponSetup" variable)
 */
 private _group = _this param [0, grpNull];
-private _weapon = _this param [0, objNull];
+private _weapon = _this param [1, objNull];
 
 if (isNull _group || isNull _weapon) exitWith {};
 
