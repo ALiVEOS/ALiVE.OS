@@ -69,6 +69,7 @@ nil
 #define OC_CREATEUNIT_BUTTON_CANCEL             10017
 #define OC_CREATEUNIT_BUTTON_CONFIRM            10018
 #define OC_CREATEUNIT_BUTTON_AUTOGEN_CLASSNAME  10019
+#define OC_CREATEUNIT_INSTRUCTIONS              10020
 
 #define
 
@@ -1687,6 +1688,18 @@ switch(_operation) do {
 
     case "onCreateUnitConfirmClicked": {
 
+        // validate prerequisites
+
+        private _instructions = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INSTRUCTIONS );
+
+        private _displayNameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_DISPLAYNAME );
+        private _classnameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_CLASSNAME );
+        private _displayName = ctrlText _displayNameInput;
+        private _classname = ctrlText _classnameInput;
+
+        if (_displayName == "") exitWith {_instructions ctrlSetText "Display name cannot be left blank"};
+        if (_classname == "") exitWith {_instructions ctrlSetText "Class name cannot be left blank"};
+
         private _state = [_logic,"state"] call MAINCLASS;
 
         // get side/faction
@@ -1696,10 +1709,6 @@ switch(_operation) do {
 
         // get displayname/configname
 
-        private _displayNameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_DISPLAYNAME );
-        private _classnameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_CLASSNAME );
-        private _displayName = ctrlText _displayNameInput;
-        private _classname = ctrlText _classnameInput;
         _classname = [_classname," ","_"] call CBA_fnc_replace;
 
         // get parent class
@@ -1747,6 +1756,18 @@ switch(_operation) do {
 
     case "onEditUnitConfirmClicked": {
 
+        // validate prerequisites
+
+        private _instructions = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INSTRUCTIONS );
+
+        private _displayNameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_DISPLAYNAME );
+        private _classnameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_CLASSNAME );
+        private _displayName = ctrlText _displayNameInput;
+        private _classname = ctrlText _classnameInput;
+
+        if (_displayName == "") exitWith {_instructions ctrlSetText "Display name cannot be left blank"};
+        if (_classname == "") exitWith {_instructions ctrlSetText "Class name cannot be left blank"};
+
         private _state = [_logic,"state"] call MAINCLASS;
         private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
         private _selectedUnit = [_state,"unitEditor_selectedUnit"] call ALiVE_fnc_hashGet;
@@ -1779,6 +1800,7 @@ switch(_operation) do {
             _configName = [_configName," ","_"] call CBA_fnc_replace;
 
             [_selectedUnitData,"configName", _configName] call ALiVE_fnc_hashSet;
+            _selectedUnit = _configName; // enables proper re-selection once menu closes
 
             [_customUnits,_unitConfigName] call ALiVE_fnc_hashRem;
             [_customUnits,_configName,_selectedUnitData] call ALiVE_fnc_hashSet;

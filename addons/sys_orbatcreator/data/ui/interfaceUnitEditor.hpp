@@ -264,6 +264,14 @@ class ALiVE_orbatCreator_interface_createUnit {
             h = 1.5 * GUI_GRID_H;
         };
 
+        class unitEditor_createUnit_instructions: orbatCreator_RscStructuredText {
+            idc = 10020;
+            x = 4.5 * GUI_GRID_W + GUI_GRID_X;
+            y = 16.5 * GUI_GRID_H + GUI_GRID_Y;
+            w = 16 * GUI_GRID_W;
+            h = 6.5 * GUI_GRID_H;
+        };
+
     };
 
     class controls {
@@ -462,6 +470,14 @@ class ALiVE_orbatCreator_interface_editUnit : ALiVE_orbatCreator_interface_creat
             y = 9 * GUI_GRID_H + GUI_GRID_Y;
             w = 5 * GUI_GRID_W;
             h = 1.5 * GUI_GRID_H;
+        };
+
+        class unitEditor_createUnit_instructions: orbatCreator_RscStructuredText {
+            idc = 10020;
+            x = 4.5 * GUI_GRID_W + GUI_GRID_X;
+            y = 16.5 * GUI_GRID_H + GUI_GRID_Y;
+            w = 16 * GUI_GRID_W;
+            h = 6.5 * GUI_GRID_H;
         };
 
     };
