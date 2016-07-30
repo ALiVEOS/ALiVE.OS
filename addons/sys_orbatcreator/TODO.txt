@@ -1,0 +1,6 @@
+In Edit Unit dialog
+Do not allow a unit to inherit another custom unit that somehow down the line, inherits the unit currently being edited
+
+Add role dropdown menu in unit creation/edit dialog that allows the user to pick the units "role" attribute
+
+_indent + _indent --> should be var _doubleIndent

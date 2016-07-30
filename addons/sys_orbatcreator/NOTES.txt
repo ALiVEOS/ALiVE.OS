@@ -1,0 +1,21 @@
+faction = "BLU_F";
+Items[] = {"FirstAidKit"};
+linkedItems[] = {"V_PlateCarrier1_rgr","H_HelmetB","ItemMap","ItemCompass","ItemWatch","ItemRadio","NVGoggles"};
+magazines[] = {"30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","16Rnd_9x21_Mag","16Rnd_9x21_Mag","16Rnd_9x21_Mag","SmokeShell","SmokeShellGreen","Chemlight_green","Chemlight_green","HandGrenade","HandGrenade"};
+uniformClass = "U_B_CombatUniform_mcam";
+uniformAccessories[] = {}; // ???
+weapons[] = {"arifle_MX_ACO_pointer_F","hgun_P07_F","Throw","Put"};
+
+// these are the same as above
+RespawnItems[] = {"FirstAidKit"};
+respawnLinkedItems[] = {"V_PlateCarrier1_rgr","H_HelmetB","ItemMap","ItemCompass","ItemWatch","ItemRadio","NVGoggles"};
+respawnMagazines[] = {"30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","30Rnd_65x39_caseless_mag","16Rnd_9x21_Mag","16Rnd_9x21_Mag","16Rnd_9x21_Mag","SmokeShell","SmokeShellGreen","Chemlight_green","Chemlight_green","HandGrenade","HandGrenade"};
+respawnWeapons[] = {"arifle_MX_ACO_pointer_F","hgun_P07_F","Throw","Put"};
+
+role = "Rifleman";
+
+
+
+
+
+hiddenSelections[] = {"Camo","insignia"};

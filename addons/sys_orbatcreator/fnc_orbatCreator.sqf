@@ -1225,6 +1225,39 @@ switch(_operation) do {
 
     };
 
+    case "getRealUnitClass": {
+
+        private _unit = _args;
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+        private _found = false;
+
+        if (_unit isEqualType "") then {
+            if (isClass (configFile >> "CfgVehicles" >> _unit)) exitWith {
+                _result = _unit;
+                _found = true;
+            };
+
+            _unit = [_customUnits,_unit] call ALiVE_fnc_hashGet;
+        };
+
+        if (!_found) then {
+            private _unitParent = [_unit,"inheritsFrom"] call ALiVE_fnc_hashGet;
+            private _configPath = configFile >> "CfgVehicles" >> _unitParent;
+
+            while {!isClass _configPath} do {
+                __unitParentEntry = [_customUnits,_unitParent] call ALiVE_fnc_hashGet;
+                _unitParent = [__unitParentEntry,"inheritsFrom"] call ALiVE_fnc_hashGet;
+                _configPath = configFile >> "CfgVehicles" >> _unitParent;
+
+            };
+
+            _result = _unitParent;
+        };
+
+    };
+
     case "unitEditorDisplayVehicle": {
 
         private _vehicle = _args;
@@ -1240,8 +1273,8 @@ switch(_operation) do {
 
         private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
         private _customUnit = [_customUnits,_selectedUnitClassname] call ALiVE_fnc_hashGet;
+        private _customUnitConfigName = [_customUnit,"configName"] call ALiVE_fnc_hashGet;
         private _customUnitLoadout = [_customUnit,"loadout"] call ALiVE_fnc_hashGet;
-        private _customUnitParent = [_customUnit,"inheritsFrom"] call ALiVE_fnc_hashGet;
 
         private _customUnitSide = [_customUnit,"side"] call ALiVE_fnc_hashGet;
         private _customSideText = [_customUnitSide] call ALiVE_fnc_sideNumberToText;
@@ -1250,15 +1283,7 @@ switch(_operation) do {
         // if custom unit parent is another custom unit
         // keep going up the inheritance tree until you find a real unit
 
-        private _configPath = configFile >> "CfgVehicles" >> _customUnitParent;
-
-        while {!isClass _configPath} do {
-
-            _customUnitParentEntry = [_customUnits,_customUnitParent] call ALiVE_fnc_hashGet;
-            _customUnitParent = [_customUnitParentEntry,"inheritsFrom"] call ALiVE_fnc_hashGet;
-            _configPath = configFile >> "CfgVehicles" >> _customUnitParent;
-
-        };
+        _customUnitConfigName = [_logic,"getRealUnitClass", _customUnitConfigName] call MAINCLASS;
 
         // delete existing vehicle
 
@@ -1267,8 +1292,8 @@ switch(_operation) do {
 
         // spawn vehicle
 
-        if (_customUnitParent isKindOf "Man") then {
-            _activeUnit = (createGroup _customUnitSideObject) createUnit [_customUnitParent, [0,0,0], [], 0, "NONE"];
+        if (_customUnitConfigName isKindOf "Man") then {
+            _activeUnit = (createGroup _customUnitSideObject) createUnit [_customUnitConfigName, [0,0,0], [], 0, "NONE"];
             _activeUnit setPosASL _pos;
             _activeUnit enableSimulation false;
             _activeUnit setDir 0;
@@ -1281,12 +1306,12 @@ switch(_operation) do {
 
             _buttonEditLoadout ctrlEnable true;
         } else {
-            _activeUnit = _customUnitParent createVehicle [0,0,0];
+            _activeUnit = _customUnitConfigName createVehicle [0,0,0];
             _activeUnit setPosASL _pos;
             _activeUnit enableSimulation false;
             _activeUnit setDir 0;
 
-            _cam camSetRelPos [0, (sizeOf _customUnitParent) * 0.65, (sizeOf _customUnitParent) * 0.1];
+            _cam camSetRelPos [0, (sizeOf _customUnitConfigName) * 0.65, (sizeOf _customUnitConfigName) * 0.1];
             _cam camSetFov 0.5;
 
             _buttonEditLoadout ctrlEnable false;
@@ -1645,7 +1670,10 @@ switch(_operation) do {
         private _displayNameArray = toArray _displayName;
         private _displayNameSize = count _displayNameArray;
 
-        private _validChars = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','1','2','3','4','5','6','7','8','9','0'];
+        private _validChars = [
+            'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+            '1','2','3','4','5','6','7','8','9','0'
+        ];
 
         private _currIndex = 0;
         private _currString = "";
@@ -1849,8 +1877,34 @@ switch(_operation) do {
 
             case "Unit_Editor": {
 
-                private _classList = OC_getControl( OC_DISPLAY_UNITEDITOR, OC_UNITEDITOR_CLASSLIST_LIST );
+                private ["_unitExportString"];
+
+                private _classList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
                 private _selectedIndices = lbSelection _classList;
+                private _selectedUnits = [];
+
+                {
+                    _selectedUnits pushback (_classList lbData _x);
+                } foreach _selectedIndices;
+
+                private _result = "";
+                private _newLine = toString [13,10];
+
+                // autogen start
+
+                _result = _result + "class CfgVehicles {";
+
+                {
+                    _unitExportString = [_logic,"exportCustomUnit", _x] call MAINCLASS;
+                    _result = _result + _newLine + _newLine + _unitExportString + _newLine;
+                } foreach _selectedUnits;
+
+                _result = _result + _newLine + "};";
+
+                // autogen end
+
+                systemchat "Data copied to clipboard";
+                copyToClipboard _result;
 
             };
 
@@ -1876,7 +1930,86 @@ switch(_operation) do {
             ["[ALiVE] Orbat Creator : exportCustomUnit - Unit is undefined, exiting. Called from %1", _fnc_scriptNameParent] call ALiVE_fnc_Dump;
         };
 
+        // get unit data
 
+        private _unitConfigName = [_unit,"configName"] call ALiVE_fnc_hashGet;
+        private _unitParent = [_unit,"inheritsFrom"] call ALiVE_fnc_hashGet;
+        private _unitDisplayName = [_unit,"displayName"] call ALiVE_fnc_hashGet;
+        private _unitSide = [_unit,"side"] call ALiVE_fnc_hashGet;
+        private _unitFaction = [_unit,"faction"] call ALiVE_fnc_hashGet;
+        private _unitLoadout = [_unit,"loadout"] call ALiVE_fnc_hashGet;
+
+        // format result
+
+        _result = "";
+        private _newLine = toString [13,10];
+        private _indent = "    ";
+
+        _result = _result + _indent + ("class " + _unitConfigName + " : " + _unitParent + " {");
+
+        // properties
+
+        _result = _result + _newLine + _indent +_indent + ("displayName = " + str _unitDisplayName + ";");
+        _result = _result + _newLine + _indent + _indent + ("side = " + str _unitSide + ";");
+        _result = _result + _newLine + _indent + _indent + ("faction = " + str _unitFaction + ";");
+
+        // loadout
+        // create unit for easy data collection
+
+        private _tmpUnitClass = [_logic,"getRealUnitClass", _unitConfigName] call MAINCLASS;
+        private _tmpUnitSideText = [_unitSide] call ALiVE_fnc_sideNumberToText;
+        private _tmpUnitSideObject = [_tmpUnitSideText] call ALiVE_fnc_sideTextToObject;
+        private _tmpUnit = (createGroup _tmpUnitSideObject) createUnit [_tmpUnitClass, [0,0,0], [], 0, "NONE"];
+        _tmpUnit setUnitLoadout _unitLoadout;
+
+        private _tmpUnitItems = [_logic,"arrayToConfigArrayString", items _tmpUnit] call MAINCLASS;
+
+        private _tmpUnitLinkedItems = assignedItems _tmpUnit;
+        private _tmpUnitHeadgear = headgear _tmpUnit;
+        private _tmpUnitGoggles = goggles _tmpUnit;
+        if (_tmpUnitHeadgear != "") then {_tmpUnitLinkedItems pushback _tmpUnitHeadgear};
+        if (_tmpUnitGoggles != "") then {_tmpUnitLinkedItems pushback _tmpUnitGoggles};
+
+        private _tmpUnitLinkedItems = [_logic,"arrayToConfigArrayString", _tmpUnitLinkedItems] call MAINCLASS;
+        private _tmpUnitMagazines = [_logic,"arrayToConfigArrayString", magazines _tmpUnit] call MAINCLASS;
+        private _tmpUnitWeapons = [_logic,"arrayToConfigArrayString", weapons _tmpUnit + ["Throw","Put"]] call MAINCLASS;
+
+        _result = _result + _newLine;
+        _result = _result + _newLine + _indent + _indent + ("Items[] = " + _tmpUnitItems + ";");
+        _result = _result + _newLine + _indent + _indent + ("linkedItems[] = " + _tmpUnitLinkedItems + ";");
+        _result = _result + _newLine + _indent + _indent + ("magazines[] = " + _tmpUnitMagazines + ";");
+        _result = _result + _newLine + _indent + _indent + ("weapons[] = " + _tmpUnitWeapons + ";");
+
+        // respawn variants
+
+        _result = _result + _newLine;
+        _result = _result + _newLine + _indent + _indent + ("RespawnItems[] = " + _tmpUnitItems + ";");
+        _result = _result + _newLine + _indent + _indent + ("respawnLinkedItems[] = " + _tmpUnitLinkedItems + ";");
+        _result = _result + _newLine + _indent + _indent + ("respawnMagazines[] = " + _tmpUnitMagazines + ";");
+        _result = _result + _newLine + _indent + _indent + ("respawnWeapons[] = " + _tmpUnitWeapons + ";");
+
+        _result = _result + _newLine;
+        _result = _result + _newLine + _indent + _indent + ("uniformClass = " + str uniform _tmpUnit + ";");
+        _result = _result + _newLine + _indent + _indent + ("role = " + str "Rifleman" + ";");
+
+        _result = _result + _newLine + (_indent + "};");
+
+    };
+
+    case "arrayToConfigArrayString": {
+
+        private _array = _args;
+        _result = "{";
+
+        {
+            if (_forEachIndex > 0) then {
+                _result = _result + ", " + str _x + " ";
+            } else {
+                _result = _result + " " + str _x + " ";
+            };
+        } foreach _array;
+
+        _result = _result + "}";
 
     };
 
