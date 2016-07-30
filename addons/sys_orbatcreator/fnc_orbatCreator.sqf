@@ -538,7 +538,7 @@ switch(_operation) do {
 
                 private [
                     "_sideNum","_sideText","_sideTextLong","_index","_indexFaction",
-                    "_unitParentSide","_unitParentFaction"
+                    "_unitParentSide","_unitParentFaction","_indexUnit"
                 ];
 
                 // get selected unit data
@@ -629,15 +629,25 @@ switch(_operation) do {
                 private _unitTypeFactionList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_FACTION );
                 [_unitTypeFactionList,_unitParentFaction] call ALiVE_fnc_listSelectData;
 
+                // init classlist
+
                 private _classList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_UNITS );
+                private _children = [_logic,"getCustomUnitChildren", _selectedUnit] call MAINCLASS;
 
+                // prevent self inheritence
+
+                private _indicesToDelete = [];
                 for "_i" from 0 to (lbSize _classList - 1) do {
-                    private _indexUnit = _classList lbData _i;
+                    _indexUnit = _classList lbData _i;
 
-                    if (_indexUnit == _selectedUnit) exitWith {
-                        _classList lbDelete _i;
+                    if (_indexUnit == _selectedUnit || {_indexUnit in _children}) then {
+                        _indicesToDelete pushback _i;
                     };
                 };
+
+                {
+                    _classList lbDelete (_x - _forEachIndex); // make sure the index stays accurate after deleting indices
+                } foreach _indicesToDelete;
 
                 [_classList,_unitParent] call ALiVE_fnc_listSelectData;
 
@@ -926,6 +936,52 @@ switch(_operation) do {
         private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
 
         _result = [_customUnits,_classname] call ALiVE_fnc_hashGet;
+
+    };
+
+    case "getCustomUnitChildren": {
+
+        private ["_entryParent","_entryClass","_childrenFound","_entries"];
+
+        private _classname = _args;
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+
+        private _allEntries = [];
+        {
+            _entryParent = [_x,"inheritsFrom"] call ALiVE_fnc_hashGet;
+            _entryClass = [_x,"configName"] call ALiVE_fnc_hashGet;
+
+            if (_entryClass != _classname) then {
+                _allEntries pushback [_entryParent,_entryClass];
+            };
+        } foreach (_customUnits select 2);
+
+        _result = [];
+        private _exit = false;
+
+        while {!_exit} do {
+            _childrenFound = 0;
+            _entries = [];
+
+            {
+                _x params ["_parentClass","_class"];
+
+                if (_parentClass == _classname || {_parentClass in _result}) then {
+                    _result pushback _class;
+                    _childrenFound = _childrenFound + 1;
+                } else {
+                    _entries pushback _x;
+                };
+            } foreach _allEntries;
+
+            _allEntries = _entries;
+
+            if (_childrenFound == 0) then {
+                _exit = true;
+            };
+        };
 
     };
 
@@ -1784,17 +1840,10 @@ switch(_operation) do {
 
     case "onEditUnitConfirmClicked": {
 
-        // validate prerequisites
+        // unit is being edited
+        // user has clicked confirm to save changes
 
-        private _instructions = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INSTRUCTIONS );
-
-        private _displayNameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_DISPLAYNAME );
-        private _classnameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_CLASSNAME );
-        private _displayName = ctrlText _displayNameInput;
-        private _classname = ctrlText _classnameInput;
-
-        if (_displayName == "") exitWith {_instructions ctrlSetText "Display name cannot be left blank"};
-        if (_classname == "") exitWith {_instructions ctrlSetText "Class name cannot be left blank"};
+        private ["_parentLoadout"];
 
         private _state = [_logic,"state"] call MAINCLASS;
         private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
@@ -1804,7 +1853,7 @@ switch(_operation) do {
         private _displayNameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_DISPLAYNAME );
         private _classnameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_CLASSNAME );
         private _displayName = ctrlText _displayNameInput;
-        private _configName = ctrlText _classnameInput;
+        private _classname = ctrlText _classnameInput;
 
         private _side = call compile OC_getSelData( OC_CREATEUNIT_INPUT_SIDE );
         private _faction = OC_getSelData( OC_CREATEUNIT_INPUT_FACTION );
@@ -1816,6 +1865,15 @@ switch(_operation) do {
         private _unitDisplayName = [_selectedUnitData,"displayName"] call ALiVE_fnc_hashGet;
         private _unitConfigName = [_selectedUnitData,"configName"] call ALiVE_fnc_hashGet;
 
+        // validate prerequisites
+
+        private _instructions = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INSTRUCTIONS );
+
+        if (_displayName == "") exitWith {_instructions ctrlSetText "Display name cannot be left blank"};
+        if (_classname == "") exitWith {_instructions ctrlSetText "Class name cannot be left blank"};
+
+        // prerequisites verified, begin saving
+
         // if unit side/faction changes
         // user is responsible for correcting groups
         // Change????? or maybe log an error?????
@@ -1824,14 +1882,14 @@ switch(_operation) do {
             [_selectedUnitData,"displayName", _displayName] call ALiVE_fnc_hashSet;
         };
 
-        if (_configName != _unitConfigName) then {
-            _configName = [_configName," ","_"] call CBA_fnc_replace;
+        if (_classname != _unitConfigName) then {
+            _classname = [_classname," ","_"] call CBA_fnc_replace;
 
-            [_selectedUnitData,"configName", _configName] call ALiVE_fnc_hashSet;
-            _selectedUnit = _configName; // enables proper re-selection once menu closes
+            [_selectedUnitData,"configName", _classname] call ALiVE_fnc_hashSet;
+            _selectedUnit = _classname; // enables proper re-selection once menu closes
 
             [_customUnits,_unitConfigName] call ALiVE_fnc_hashRem;
-            [_customUnits,_configName,_selectedUnitData] call ALiVE_fnc_hashSet;
+            [_customUnits,_classname,_selectedUnitData] call ALiVE_fnc_hashSet;
         };
 
         if (_side != _unitSide) then {
@@ -1844,7 +1902,16 @@ switch(_operation) do {
 
         if (_parentClass != _unitParentClass) then {
             [_selectedUnitData,"inheritsFrom", _parentClass] call ALiVE_fnc_hashSet;
-            [_selectedUnitData,"loadout", getUnitLoadout _parentClass] call ALiVE_fnc_hashSet;
+
+            private _parentEntry = [_customUnits,_parentClass] call ALiVE_fnc_hashGet;
+
+            if (!isnil "_parentEntry") then {
+                _parentLoadout = [_parentEntry,"loadout"] call ALiVE_fnc_hashGet;
+            } else {
+                _parentLoadout = getUnitLoadout _parentClass;
+            };
+
+            [_selectedUnitData,"loadout", _parentLoadout] call ALiVE_fnc_hashSet;
         };
 
         closeDialog 0;
@@ -1903,7 +1970,7 @@ switch(_operation) do {
 
                 // autogen end
 
-                systemchat "Data copied to clipboard";
+                systemchat "Config data copied to clipboard";
                 copyToClipboard _result;
 
             };
@@ -1945,7 +2012,13 @@ switch(_operation) do {
         private _newLine = toString [13,10];
         private _indent = "    ";
 
-        _result = _result + _indent + ("class " + _unitConfigName + " : " + _unitParent + " {");
+        _result = _result + _indent + "class " + _unitConfigName;
+
+        if (_unitParent != "") then {
+            _result = _result + " : " + _unitParent;
+        };
+
+        _result = _result + " {";
 
         // properties
 
