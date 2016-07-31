@@ -189,6 +189,9 @@ switch(_operation) do {
         private _customUnits = +_tmpHash;
         [_state,"customUnits", _customUnits] call ALiVE_fnc_hashSet;
 
+        private _configUnits = +_tmpHash;
+        [_state,"configUnits", _configUnits] call ALiVE_fnc_hashSet;
+
         [_state,"unitEditor_interfaceBackground", objNull] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_interfaceCamera", objNull] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_activeUnitPosition", [0,0,0]] call ALiVE_fnc_hashSet;
@@ -1744,6 +1747,7 @@ switch(_operation) do {
                 _currString = _currString + _nextChar;
 
                 // if letter is last in name, finish string
+
                 if (_currIndex + 1 == _displayNameSize) then {
                     _classnameComponents pushback _currString;
                 };
@@ -1825,6 +1829,45 @@ switch(_operation) do {
 
         private _factionList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_FACTIONS_LIST );
         _factionList lbSetCurSel (lbCurSel _factionList);
+
+    };
+
+    case "convertFactionConfigUnitsToCustomUnits": {
+
+        private _faction = _args;
+
+        if (_faction isEqualType "") then {
+
+            private ["_asset","_assetConfig","_assetSide","_assetFaction","_assetDisplayName","_assetLoadout"];
+
+            private _state = [_logic,"state"] call MAINCLASS;
+
+            private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
+            private _factionData = [_factions,_faciton] call ALiVE_fnc_hashGet;
+            private _factionAssets = [_factionData,"assets"] call ALiVE_fnc_hashGet;
+
+            private _configUnits = [_state,"configUnits"] call ALiVE_fnc_hashGet;
+
+            {
+                _asset = _x;
+                _assetConfig = configFile >> "CfgVehicles" >> _asset;
+                _assetSide = getNumber (_assetConfig >> "side");
+                _assetFaction = getText (_assetConfig >> "faction");
+                _assetDisplayName = getText (_assetConfig >> "displayName");
+                _assetLoadout = getUnitLoadout _asset;
+
+                _newUnit = [nil,"create"] call ALiVE_fnc_orbatCreatorUnit;
+                [_newUnit,"init"] call ALiVE_fnc_orbatCreatorUnit;
+                [_newUnit,"inheritsFrom", _asset] call ALiVE_fnc_orbatCreatorUnit;
+                [_newUnit,"side", _assetSide] call ALiVE_fnc_hashSet;
+                [_newUnit,"faction", _assetFaction] call ALiVE_fnc_hashSet;
+                [_newUnit,"displayName", _assetDisplayName] call ALiVE_fnc_hashSet;
+                [_newUnit,"configName", _asset] call ALiVE_fnc_hashSet;
+                [_newUnit,"loadout", _assetLoadout] call ALiVE_fnc_hashSet;
+
+            } foreach _factionAssets;
+
+        };
 
     };
 
@@ -1940,11 +1983,16 @@ switch(_operation) do {
 
         private _mode = _args;
 
+        private _state = [_logic,"state"] call MAINCLASS;
+
         switch (_mode) do {
 
             case "Unit_Editor": {
 
-                private ["_unitExportString"];
+                private ["_unit","_unitParentConfigName","_unitExportString"];
+
+                private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+                private _forwardDeclared = [];
 
                 private _classList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
                 private _selectedIndices = lbSelection _classList;
@@ -1955,11 +2003,28 @@ switch(_operation) do {
                 } foreach _selectedIndices;
 
                 private _result = "";
+                private _indent = "    ";
                 private _newLine = toString [13,10];
 
                 // autogen start
 
                 _result = _result + "class CfgVehicles {";
+
+                // forward declare inherited units
+
+                _result = _result + _newLine;
+
+                {
+                    _unit = [_customUnits,_x] call ALiVE_fnc_hashGet;
+                    _unitParentConfigName = [_unit,"inheritsFrom"] call ALiVE_fnc_hashGet;
+
+                    if !(_unitParentConfigName in _forwardDeclared && {!(_unitParentConfigName in _selectedUnits)}) then {
+                        _result = _result + _newLine + _indent + "class " + _unitParentConfigName + ";";
+                        _forwardDeclared pushback _unitParentConfigName;
+                    };
+                } foreach _selectedUnits;
+
+                // export units
 
                 {
                     _unitExportString = [_logic,"exportCustomUnit", _x] call MAINCLASS;
@@ -2038,8 +2103,10 @@ switch(_operation) do {
         private _tmpUnitItems = [_logic,"arrayToConfigArrayString", items _tmpUnit] call MAINCLASS;
 
         private _tmpUnitLinkedItems = assignedItems _tmpUnit;
+        private _tmpUnitVest = vest _tmpUnit;
         private _tmpUnitHeadgear = headgear _tmpUnit;
         private _tmpUnitGoggles = goggles _tmpUnit;
+        if (_tmpUnitVest != "") then {_tmpUnitLinkedItems pushback _tmpUnitVest};
         if (_tmpUnitHeadgear != "") then {_tmpUnitLinkedItems pushback _tmpUnitHeadgear};
         if (_tmpUnitGoggles != "") then {_tmpUnitLinkedItems pushback _tmpUnitGoggles};
 
@@ -2056,14 +2123,14 @@ switch(_operation) do {
         // respawn variants
 
         _result = _result + _newLine;
-        _result = _result + _newLine + _indent + _indent + ("RespawnItems[] = " + _tmpUnitItems + ";");
+        _result = _result + _newLine + _indent + _indent + ("respawnItems[] = " + _tmpUnitItems + ";");
         _result = _result + _newLine + _indent + _indent + ("respawnLinkedItems[] = " + _tmpUnitLinkedItems + ";");
         _result = _result + _newLine + _indent + _indent + ("respawnMagazines[] = " + _tmpUnitMagazines + ";");
         _result = _result + _newLine + _indent + _indent + ("respawnWeapons[] = " + _tmpUnitWeapons + ";");
 
         _result = _result + _newLine;
         _result = _result + _newLine + _indent + _indent + ("uniformClass = " + str uniform _tmpUnit + ";");
-        _result = _result + _newLine + _indent + _indent + ("role = " + str "Rifleman" + ";");
+        //_result = _result + _newLine + _indent + _indent + ("role = " + str "Rifleman" + ";");
 
         _result = _result + _newLine + (_indent + "};");
 
