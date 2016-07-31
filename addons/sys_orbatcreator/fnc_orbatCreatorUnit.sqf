@@ -59,9 +59,17 @@ switch(_operation) do {
 
         [_logic,"configName", ""] call MAINCLASS;
         [_logic,"displayName", ""] call MAINCLASS;
+
+        // man properties
+
         [_logic,"loadout", []] call MAINCLASS;
 
+        // vehicle properties
+
+        [_logic,"crew", ""] call MAINCLASS;
+
     };
+
 
     case "inheritsFrom": {
 
@@ -121,6 +129,17 @@ switch(_operation) do {
     case "loadout": {
 
         if (typename _args == "ARRAY") then {
+            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _result = _args;
+        } else {
+            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+        };
+
+    };
+
+    case "crew": {
+
+        if (typename _args == "STRING") then {
             [_logic,_operation,_args] call ALiVE_fnc_hashSet;
             _result = _args;
         } else {
