@@ -1394,7 +1394,7 @@ switch(_operation) do {
             // hide buttons
 
             for "_i" from 9001 to 9016 do {
-                ctrlShow [_i, false]; // hardcoded idc's for sanity
+                ctrlShow [_i, false]; // hardcoded idca for sanity
             };
 
             // open interface
@@ -1989,11 +1989,6 @@ switch(_operation) do {
 
             case "Unit_Editor": {
 
-                private ["_unitClass","_unit","_unitParentConfigName","_unitExportString"];
-
-                private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
-                private _forwardDeclared = [];
-
                 private _classList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
                 private _selectedIndices = lbSelection _classList;
                 private _selectedUnits = [];
@@ -2002,54 +1997,7 @@ switch(_operation) do {
                     _selectedUnits pushback (_classList lbData _x);
                 } foreach _selectedIndices;
 
-                private _result = "";
-                private _indent = "    ";
-                private _newLine = toString [13,10];
-
-                // autogen start
-
-                _result = _result + "class CfgVehicles {";
-
-                // reorder units to maintain timely definitions
-
-                private _unitsToExport = [];
-
-                {
-                    _unitClass = _x;
-                    _unit = [_customUnits,_unitClass] call ALiVE_fnc_hashGet;
-                    _unitParentConfigName = [_unit,"inheritsFrom"] call ALiVE_fnc_hashGet;
-
-                    if (_unitParentConfigName in _selectedUnits) then {
-                        _unitsToExport pushbackunique _unitParentConfigName;
-                    };
-
-                    _unitsToExport pushbackunique _unitClass;
-                } foreach _selectedUnits;
-
-                // forward declare non-local inherited units
-
-                _result = _result + _newLine;
-
-                {
-                    _unit = [_customUnits,_x] call ALiVE_fnc_hashGet;
-                    _unitParentConfigName = [_unit,"inheritsFrom"] call ALiVE_fnc_hashGet;
-
-                    if (!(_unitParentConfigName in _forwardDeclared) && {!(_unitParentConfigName in _unitsToExport)}) then {
-                        _result = _result + _newLine + _indent + "class " + _unitParentConfigName + ";";
-                        _forwardDeclared pushback _unitParentConfigName;
-                    };
-                } foreach _unitsToExport;
-
-                // export units
-
-                {
-                    _unitExportString = [_logic,"exportCustomUnit", _x] call MAINCLASS;
-                    _result = _result + _newLine + _newLine + _unitExportString + _newLine;
-                } foreach _unitsToExport;
-
-                _result = _result + _newLine + "};";
-
-                // autogen end
+                _result = [_logic,"exportCustomUnits", _selectedUnits] call MAINCLASS;
 
                 systemchat "Config data copied to clipboard";
                 copyToClipboard _result;
@@ -2057,6 +2005,68 @@ switch(_operation) do {
             };
 
         };
+
+    };
+
+    case "exportCustomUnits": {
+
+        private ["_unitClass","_unit","_unitParentConfigName","_unitExportString"];
+
+        private _unitclasses = _args;
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+        private _forwardDeclared = [];
+
+        _result = "";
+        private _indent = "    ";
+        private _newLine = toString [13,10];
+
+        // forward declare eventhandler class for forceAdding uniforms
+
+        _result = _result + "class EventHandlers;";
+        _result = _result + _newLine + "class CBA_Extended_EventHandlers_base;";
+
+        _result = _result + _newLine + _newLine + "class CfgVehicles {" + _newLine;
+
+        // reorder units to maintain timely definitions
+
+        private _unitsToExport = [];
+
+        {
+            _unitClass = _x;
+            _unit = [_customUnits,_unitClass] call ALiVE_fnc_hashGet;
+            _unitParentConfigName = [_unit,"inheritsFrom"] call ALiVE_fnc_hashGet;
+
+            if (_unitParentConfigName in _unitclasses) then {
+                _unitsToExport pushbackunique _unitParentConfigName;
+            };
+
+            _unitsToExport pushbackunique _unitClass;
+        } foreach _unitclasses;
+
+        // forward declare non-local inherited units
+
+        _result = _result + _newLine;
+        {
+            _unit = [_customUnits,_x] call ALiVE_fnc_hashGet;
+            _unitParentConfigName = [_unit,"inheritsFrom"] call ALiVE_fnc_hashGet;
+
+            if (!(_unitParentConfigName in _forwardDeclared) && {!(_unitParentConfigName in _unitsToExport)}) then {
+                _result = _result + _indent + "class " + _unitParentConfigName + ";" + _newLine;
+                _forwardDeclared pushback _unitParentConfigName;
+            };
+        } foreach _unitsToExport;
+        _result = _result + _newLine;
+
+        // export units
+
+        {
+            _unitExportString = [_logic,"exportCustomUnit", _x] call MAINCLASS;
+            _result = _result + _unitExportString + _newLine + _newLine;
+        } foreach _unitsToExport;
+
+        _result = _result + "};";
 
     };
 
@@ -2080,18 +2090,17 @@ switch(_operation) do {
 
         // get unit data
 
-        private _unitConfigName = [_unit,"configName"] call ALiVE_fnc_hashGet;
+        private _newLine = toString [13,10];
+        private _indent = "    ";
+        _result = "";
+
+        // start export
+
         private _unitParent = [_unit,"inheritsFrom"] call ALiVE_fnc_hashGet;
+        private _unitConfigName = [_unit,"configName"] call ALiVE_fnc_hashGet;
         private _unitDisplayName = [_unit,"displayName"] call ALiVE_fnc_hashGet;
         private _unitSide = [_unit,"side"] call ALiVE_fnc_hashGet;
         private _unitFaction = [_unit,"faction"] call ALiVE_fnc_hashGet;
-        private _unitLoadout = [_unit,"loadout"] call ALiVE_fnc_hashGet;
-
-        // format result
-
-        _result = "";
-        private _newLine = toString [13,10];
-        private _indent = "    ";
 
         _result = _result + _indent + "class " + _unitConfigName;
 
@@ -2101,11 +2110,52 @@ switch(_operation) do {
 
         _result = _result + " {";
 
-        // properties
+        // general properties
 
-        _result = _result + _newLine + _indent +_indent + ("displayName = " + str _unitDisplayName + ";");
+        _result = _result + _newLine + _indent + _indent + ("author = " + str profileName + ";");
+        _result = _result + _newLine + _indent + _indent + ("displayName = " + str _unitDisplayName + ";");
         _result = _result + _newLine + _indent + _indent + ("side = " + str _unitSide + ";");
         _result = _result + _newLine + _indent + _indent + ("faction = " + str _unitFaction + ";");
+
+        // get type-specific properties
+
+        private _unitRealConfigName = [_logic,"getRealUnitClass", _unitConfigName] call MAINCLASS;
+        if (_unitRealConfigName isKindOf "Man") then {
+            _result = _result + _newLine + _newLine + ([_logic,"exportCustomUnitMan", _unit] call MAINCLASS);
+        } else {
+            _result = _result + ([_logic,"exportCustomUnitVehicle", _unit] call MAINCLASS);
+        };
+
+        // finish export
+
+        _result = _result + _newLine + _indent + "};";
+
+    };
+
+    case "exportCustomUnitMan": {
+
+        private _unit = _args;
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+
+        if (_unit isEqualType "") then {
+            _unit = [_customUnits,_unit] call ALiVE_fnc_hashGet;
+        };
+
+        // get unit data
+
+        private _unitConfigName = [_unit,"configName"] call ALiVE_fnc_hashGet;
+        private _unitSide = [_unit,"side"] call ALiVE_fnc_hashGet;
+        private _unitLoadout = [_unit,"loadout"] call ALiVE_fnc_hashGet;
+
+        // format result
+
+        private _newLine = toString [13,10];
+        private _indent = "    ";
+        private _eventHandlers = [];
+        _eventHandlers pushback ("class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {}");
+        _result = "";
 
         // loadout
         // create unit for easy data collection
@@ -2118,6 +2168,8 @@ switch(_operation) do {
 
         private _tmpUnitItems = [_logic,"arrayToConfigArrayString", items _tmpUnit] call MAINCLASS;
 
+        private _tmpUnitUniform = uniform _tmpUnit;
+        private _tmpUnitBackpack = backpack _tmpUnit;
         private _tmpUnitLinkedItems = assignedItems _tmpUnit;
         private _tmpUnitVest = vest _tmpUnit;
         private _tmpUnitHeadgear = headgear _tmpUnit;
@@ -2129,6 +2181,17 @@ switch(_operation) do {
         private _tmpUnitLinkedItems = [_logic,"arrayToConfigArrayString", _tmpUnitLinkedItems] call MAINCLASS;
         private _tmpUnitMagazines = [_logic,"arrayToConfigArrayString", magazines _tmpUnit] call MAINCLASS;
         private _tmpUnitWeapons = [_logic,"arrayToConfigArrayString", weapons _tmpUnit + ["Throw","Put"]] call MAINCLASS;
+
+        private _tmpUnitUniformWearer = getText (configFile >> "CfgWeapons" >> _tmpUnitUniform >> "ItemInfo" >> "uniformClass");
+        private _tmpUnitUniformSide = getNumber (configFile >> "CfgVehicles" >> _tmpUnitUniformWearer >> "side");
+
+        if (_tmpUnitUniformSide == _unitSide) then {
+            _result = _result + _indent + _indent + ("uniformClass = " + str uniform _tmpUnit + ";") + _newLine;
+        } else {
+            _eventHandlers pushback ("init = " + """" + "(_this select 0) forceAddUniform " + "'" + _tmpUnitUniform + "'" + """");
+        };
+
+        _result = _result + _indent + _indent + ("backpack = " + str _tmpUnitBackpack + ";");
 
         _result = _result + _newLine;
         _result = _result + _newLine + _indent + _indent + ("Items[] = " + _tmpUnitItems + ";");
@@ -2144,11 +2207,51 @@ switch(_operation) do {
         _result = _result + _newLine + _indent + _indent + ("respawnMagazines[] = " + _tmpUnitMagazines + ";");
         _result = _result + _newLine + _indent + _indent + ("respawnWeapons[] = " + _tmpUnitWeapons + ";");
 
-        _result = _result + _newLine;
-        _result = _result + _newLine + _indent + _indent + ("uniformClass = " + str uniform _tmpUnit + ";");
+        //_result = _result + _newLine;
         //_result = _result + _newLine + _indent + _indent + ("role = " + str "Rifleman" + ";");
 
-        _result = _result + _newLine + (_indent + "};");
+        // event handlers
+
+        _result = _result + _newLine + _newLine + _indent + _indent + ("class EventHandlers : EventHandlers {");
+        {
+            _result = _result + _newLine + _indent + _indent + _indent + _x + ";";
+        } foreach _eventHandlers;
+        _result = _result + _newLine + _indent + _indent + "};";
+
+    };
+
+    case "exportCustomUnitVehicle": {
+
+        private _unit = _args;
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+
+        if (_unit isEqualType "") then {
+            _unit = [_customUnits,_unit] call ALiVE_fnc_hashGet;
+        };
+
+        // get unit data
+
+        private _unitConfigName = [_unit,"configName"] call ALiVE_fnc_hashGet;
+        private _unitSide = [_unit,"side"] call ALiVE_fnc_hashGet;
+
+        // format result
+
+        private _newLine = toString [13,10];
+        private _indent = "    ";
+        private _eventHandlers = [];
+        _eventHandlers pushback ("class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {}");
+        _result = "";
+
+        // event handlers
+
+        _result = _result + _newLine + _indent + _indent + ("class EventHandlers : EventHandlers {");
+        {
+            _result = _result + _newLine + _indent + _indent + _indent + _x + ";";
+        } foreach _eventHandlers;
+        _result = _result + _newLine + _indent + _indent + "};";
 
     };
 
