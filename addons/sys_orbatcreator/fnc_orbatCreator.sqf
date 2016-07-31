@@ -1989,7 +1989,7 @@ switch(_operation) do {
 
             case "Unit_Editor": {
 
-                private ["_unit","_unitParentConfigName","_unitExportString"];
+                private ["_unitClass","_unit","_unitParentConfigName","_unitExportString"];
 
                 private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
                 private _forwardDeclared = [];
@@ -2010,7 +2010,23 @@ switch(_operation) do {
 
                 _result = _result + "class CfgVehicles {";
 
-                // forward declare inherited units
+                // reorder units to maintain timely definitions
+
+                private _unitsToExport = [];
+
+                {
+                    _unitClass = _x;
+                    _unit = [_customUnits,_unitClass] call ALiVE_fnc_hashGet;
+                    _unitParentConfigName = [_unit,"inheritsFrom"] call ALiVE_fnc_hashGet;
+
+                    if (_unitParentConfigName in _selectedUnits) then {
+                        _unitsToExport pushbackunique _unitParentConfigName;
+                    };
+
+                    _unitsToExport pushbackunique _unitClass;
+                } foreach _selectedUnits;
+
+                // forward declare non-local inherited units
 
                 _result = _result + _newLine;
 
@@ -2018,18 +2034,18 @@ switch(_operation) do {
                     _unit = [_customUnits,_x] call ALiVE_fnc_hashGet;
                     _unitParentConfigName = [_unit,"inheritsFrom"] call ALiVE_fnc_hashGet;
 
-                    if !(_unitParentConfigName in _forwardDeclared && {!(_unitParentConfigName in _selectedUnits)}) then {
+                    if (!(_unitParentConfigName in _forwardDeclared) && {!(_unitParentConfigName in _unitsToExport)}) then {
                         _result = _result + _newLine + _indent + "class " + _unitParentConfigName + ";";
                         _forwardDeclared pushback _unitParentConfigName;
                     };
-                } foreach _selectedUnits;
+                } foreach _unitsToExport;
 
                 // export units
 
                 {
                     _unitExportString = [_logic,"exportCustomUnit", _x] call MAINCLASS;
                     _result = _result + _newLine + _newLine + _unitExportString + _newLine;
-                } foreach _selectedUnits;
+                } foreach _unitsToExport;
 
                 _result = _result + _newLine + "};";
 

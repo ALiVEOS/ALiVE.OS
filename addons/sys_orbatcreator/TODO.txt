@@ -2,5 +2,3 @@ In Edit Unit dialog
 Do not allow a unit to inherit another custom unit that somehow down the line, inherits the unit currently being edited
 
 Add role dropdown menu in unit creation/edit dialog that allows the user to pick the units "role" attribute
-
-Exporting Unit - attempt to reorder units so that any custom units that are inherited by other custom units are defined before their children
