@@ -3,17 +3,17 @@ class cfgFunctions {
                 class COMPONENT {
                         class playeroptions {
                                 description = "The main class";
-                                file = "\x\alive\addons\sys_playeroptions\fnc_playeroptions.sqf";
+																file = PATHTO_FUNC(playeroptions);
                                 recompile = RECOMPILE;
                         };
                         class playeroptionsInit {
                                 description = "The module initialisation function";
-                                file = "\x\alive\addons\sys_playeroptions\fnc_playeroptionsInit.sqf";
+																file = PATHTO_FUNC(playeroptionsInit);
                                 recompile = RECOMPILE;
                         };
                         class playeroptionsMenuDef {
                                 description = "The menu definition function";
-                                file = "\x\alive\addons\sys_playeroptions\fnc_playeroptionsMenuDef.sqf";
+																file = PATHTO_FUNC(playeroptionsMenuDef);
                                                                 recompile = RECOMPILE;
                         };
                 };

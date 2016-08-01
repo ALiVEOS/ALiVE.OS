@@ -3,47 +3,47 @@ class cfgFunctions {
                 class COMPONENT {
                         class CQB {
                                 description = "The main class";
-                                file = "\x\alive\addons\mil_cqb\fnc_CQB.sqf";
+																file = PATHTO_FUNC(CQB);
                                 recompile = RECOMPILE;
                         };
                         class CQBInit {
                                 description = "The module initialisation function";
-                                file = "\x\alive\addons\mil_cqb\fnc_CQBInit.sqf";
+																file = PATHTO_FUNC(CQBInit);
                                 recompile = RECOMPILE;
                         };
                         class CQBsortStrategicHouses {
                                 description = "The CQB blacklist function";
-                                file = "\x\alive\addons\mil_cqb\fnc_CQBsortStrategicHouses.sqf";
+																file = PATHTO_FUNC(CQBsortStrategicHouses);
                                 recompile = RECOMPILE;
                         };
                         class CQBSaveData {
                                 description = "CQB save data to DB";
-                                file = "\x\alive\addons\mil_cqb\fnc_CQBSaveData.sqf";
+																file = PATHTO_FUNC(CQBSaveData);
                                 recompile = RECOMPILE;
                         };
                         class CQBLoadData {
                                 description = "CQB load data to DB";
-                                file = "\x\alive\addons\mil_cqb\fnc_CQBLoadData.sqf";
+																file = PATHTO_FUNC(CQBLoadData);
                                 recompile = RECOMPILE;
                         };
                         class CQBMenuDef {
                                 description = "CQB Menu Definition";
-                                file = "\x\alive\addons\mil_cqb\fnc_CQBMenuDef.sqf";
-                                                                recompile = RECOMPILE;
+																file = PATHTO_FUNC(CQBMenuDef);
+                                recompile = RECOMPILE;
                         };
                         class addCQBPositions {
                                 description = "Enables CQB positions within the given radius of a position";
-                                file = "\x\alive\addons\mil_cqb\fnc_addCQBPositions.sqf";
+																file = PATHTO_FUNC(addCQBPositions);
                                 recompile = RECOMPILE;
                         };
                         class removeCQBPositions{
                                 description = "Disables CQB positions within the given radius of a position";
-                                file = "\x\alive\addons\mil_cqb\fnc_removeCQBPositions.sqf";
+																file = PATHTO_FUNC(removeCQBPositions);
                                 recompile = RECOMPILE;
                         };
                         class resetCQB {
                                 description = "Resets CQB to run in the background without houses";
-                                file = "\x\alive\addons\mil_cqb\fnc_resetCQB.sqf";
+																file = PATHTO_FUNC(resetCQB);
                                 recompile = RECOMPILE;
                         };
                 };

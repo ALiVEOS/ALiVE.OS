@@ -3,22 +3,22 @@ class CfgFunctions {
         class COMPONENT {
             class xStream {
                 description = "The main class";
-                file = "\x\alive\addons\sys_xstream\fnc_xstream.sqf";
+								file = PATHTO_FUNC(xstream);
                 recompile = RECOMPILE;
             };
             class xStreamInit {
                 description = "The module initialisation function";
-                file = "\x\alive\addons\sys_xstream\fnc_xStreamInit.sqf";
+								file = PATHTO_FUNC(xStreamInit);
                 recompile = RECOMPILE;
             };
             class xStreamMenuDef {
                 description = "The module menu definition";
-                file = "\x\alive\addons\sys_xstream\fnc_xStreamMenuDef.sqf";
+								file = PATHTO_FUNC(xStreamMenuDef);
                 recompile = RECOMPILE;
             };
             class camera {
                 description = "The module camera function";
-                file = "\x\alive\addons\sys_xstream\fnc_camera.sqf";
+								file = PATHTO_FUNC(camera);
                 recompile = RECOMPILE;
             };
         };

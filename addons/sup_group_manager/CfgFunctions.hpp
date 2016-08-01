@@ -3,37 +3,37 @@ class CfgFunctions {
         class COMPONENT {
             class GM {
                 description = "The main class";
-                file = "\x\alive\addons\sup_group_manager\fnc_GM.sqf";
+								file = PATHTO_FUNC(GM);
                 recompile = RECOMPILE;
             };
             class GMInit {
                 description = "The module initialisation function";
-                file = "\x\alive\addons\sup_group_manager\fnc_GMInit.sqf";
+								file = PATHTO_FUNC(GMInit);
                 recompile = RECOMPILE;
             };
             class GMTabletOnAction {
                 description = "The module Radio Action function";
-                file = "\x\alive\addons\sup_group_manager\fnc_GMTabletOnAction.sqf";
+								file = PATHTO_FUNC(GMTabletOnAction);
                 recompile = RECOMPILE;
             };
             class GMTabletOnLoad {
                 description = "The module tablet on load function";
-                file = "\x\alive\addons\sup_group_manager\fnc_GMTabletOnLoad.sqf";
+								file = PATHTO_FUNC(GMTabletOnLoad);
                 recompile = RECOMPILE;
             };
             class GMTabletOnUnLoad {
                 description = "The module tablet on unload function";
-                file = "\x\alive\addons\sup_group_manager\fnc_GMTabletOnUnLoad.sqf";
+								file = PATHTO_FUNC(GMTabletOnUnLoad);
                 recompile = RECOMPILE;
             };
             class GMTabletEventToClient {
                 description = "Call the tablet on the client from the server";
-                file = "\x\alive\addons\sup_group_manager\fnc_GMTabletEventToClient.sqf";
+								file = PATHTO_FUNC(GMTabletEventToClient);
                 recompile = RECOMPILE;
             };
             class groupHandler {
                 description = "Group Handler";
-                file = "\x\alive\addons\sup_group_manager\fnc_groupHandler.sqf";
+								file = PATHTO_FUNC(groupHandler);
                 recompile = RECOMPILE;
             };
         };

@@ -3,102 +3,102 @@ class cfgFunctions {
         class COMPONENT {
             class civCommandRouter {
                 description = "civCommandRouter";
-                file = "\x\alive\addons\amb_civ_command\fnc_civCommandRouter.sqf";
+                file = PATHTO_FUNC(civCommandRouter);
                 recompile = RECOMPILE;
             };
             class selectCivilianCommand {
                 description = "Select a random civilian command from a list of available commands";
-                file = "\x\alive\addons\amb_civ_command\fnc_selectCivilianCommand.sqf";
+                file = PATHTO_FUNC(selectCivilianCommand);
                 recompile = RECOMPILE;
             };
             class cc_randomMovement {
                 description = "Random movement within a given radius";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_randomMovement.sqf";
+                file = PATHTO_FUNC(cc_randomMovement);
                 recompile = RECOMPILE;
             };
             class cc_idle {
                 description = "Idle command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_idle.sqf";
+                file = PATHTO_FUNC(cc_idle);
                 recompile = RECOMPILE;
             };
             class cc_housework {
                 description = "Housework command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_housework.sqf";
+                file = PATHTO_FUNC(cc_housework);
                 recompile = RECOMPILE;
             };
             class cc_sleep {
                 description = "Sleep command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_sleep.sqf";
+                file = PATHTO_FUNC(cc_sleep);
                 recompile = RECOMPILE;
             };
             class cc_campfire {
                 description = "Campfire command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_campfire.sqf";
+                file = PATHTO_FUNC(cc_campfire);
                 recompile = RECOMPILE;
             };
             class cc_observe {
                 description = "Observe command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_observe.sqf";
+                file = PATHTO_FUNC(cc_observe);
                 recompile = RECOMPILE;
             };
             class cc_suicide {
                 description = "Suicide command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_suicide.sqf";
+                file = PATHTO_FUNC(cc_suicide);
                 recompile = RECOMPILE;
             };
             class cc_rogue {
                 description = "Rogue command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_rogue.sqf";
+                file = PATHTO_FUNC(cc_rogue);
                 recompile = RECOMPILE;
             };
             class cc_journey {
                 description = "Random journey command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_journey.sqf";
+                file = PATHTO_FUNC(cc_journey);
                 recompile = RECOMPILE;
             };
             class cc_driveTo {
                 description = "Drive to command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_driveTo.sqf";
+                file = PATHTO_FUNC(cc_driveTo);
                 recompile = RECOMPILE;
             };
             class cc_startMeeting {
                 description = "Start meeting command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_startMeeting.sqf";
+                file = PATHTO_FUNC(cc_startMeeting);
                 recompile = RECOMPILE;
             };
             class cc_joinMeeting {
                 description = "Join meeting command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_joinMeeting.sqf";
+                file = PATHTO_FUNC(cc_joinMeeting);
                 recompile = RECOMPILE;
             };
             class cc_startGathering {
                 description = "Start gathering command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_startGathering.sqf";
+                file = PATHTO_FUNC(cc_startGathering);
                 recompile = RECOMPILE;
             };
             class cc_joinGathering {
                 description = "Join gathering command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_joinGathering.sqf";
+                file = PATHTO_FUNC(cc_joinGathering);
                 recompile = RECOMPILE;
             };
             class cc_suicideTarget {
                 description = "Targeted Suicide command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_suicideTarget.sqf";
+                file = PATHTO_FUNC(cc_suicideTarget);
                 recompile = RECOMPILE;
             };
             class cc_rogueTarget {
                 description = "Targeted Rogue command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_rogueTarget.sqf";
+                file = PATHTO_FUNC(cc_rogueTarget);
                 recompile = RECOMPILE;
             };
             class cc_getWeapons {
                 description = "Get weapons from depot command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_getWeapons.sqf";
+                file = PATHTO_FUNC(cc_getWeapons);
                 recompile = RECOMPILE;
             };
             class cc_sabotage {
                 description = "Sabotage a building";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_sabotage.sqf";
+                file = PATHTO_FUNC(cc_sabotage);
                 recompile = RECOMPILE;
             };
 

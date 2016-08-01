@@ -3,77 +3,77 @@ class cfgFunctions {
                 class COMPONENT {
                         class IED {
                                 description = "The main class";
-                                file = "\x\alive\addons\mil_ied\fnc_ied.sqf";
+																file = PATHTO_FUNC(ied);
                                 recompile = RECOMPILE;
                         };
                         class IEDInit {
                                 description = "The module initialisation function";
-                                file = "\x\alive\addons\mil_ied\fnc_iedInit.sqf";
+																file = PATHTO_FUNC(iedInit);
                                 recompile = RECOMPILE;
                         };
                         class IEDMenuDef {
                                 description = "The module menu definition";
-                                file = "\x\alive\addons\mil_ied\fnc_iedMenuDef.sqf";
+																file = PATHTO_FUNC(iedMenuDef);
                                 recompile = RECOMPILE;
                         };
                         class createBomber {
                                 description = "Create an ambient suicide bomber";
-                                file = "\x\alive\addons\mil_ied\fnc_createBomber.sqf";
+																file = PATHTO_FUNC(createBomber);
                                 recompile = RECOMPILE;
                         };
                         class RemoveBomber {
                                 description = "Remove a suicide bomber";
-                                file = "\x\alive\addons\mil_ied\fnc_removeBomber.sqf";
+																file = PATHTO_FUNC(removeBomber);
                                 recompile = RECOMPILE;
                         };
                         class RemoveIED {
                                 description = "Remove an IED";
-                                file = "\x\alive\addons\mil_ied\fnc_removeIED.sqf";
+																file = PATHTO_FUNC(removeIED);
                                 recompile = RECOMPILE;
                         };
                         class placeIED {
                                 description = "Find a suitable location for an IED";
-                                file = "\x\alive\addons\mil_ied\fnc_placeIED.sqf";
+																file = PATHTO_FUNC(placeIED);
                                 recompile = RECOMPILE;
                         };
                         class placeVBIED {
                                 description = "Find a suitable location for an IED";
-                                file = "\x\alive\addons\mil_ied\fnc_placeVBIED.sqf";
+																file = PATHTO_FUNC(placeVBIED);
                                                                 recompile = RECOMPILE;
                         };
                         class armIED {
                                 description = "Arm an IED";
-                                file = "\x\alive\addons\mil_ied\fnc_armIED.sqf";
+																file = PATHTO_FUNC(armIED);
                                 recompile = RECOMPILE;
                         };
                         class createVBIED {
                                 description = "Create a VB-IED";
-                                file = "\x\alive\addons\mil_ied\fnc_createVBIED.sqf";
+																file = PATHTO_FUNC(createVBIED);
                                 recompile = RECOMPILE;
                         };
                         class disarmIED {
                                 description = "Disarm a IED";
-                                file = "\x\alive\addons\mil_ied\fnc_disarmIED.sqf";
+																file = PATHTO_FUNC(disarmIED);
                                 recompile = RECOMPILE;
                         };
                         class detectIED {
                                 description = "Detect a IED";
-                                file = "\x\alive\addons\mil_ied\fnc_detectIED.sqf";
+																file = PATHTO_FUNC(detectIED);
                                 recompile = RECOMPILE;
                         };
                         class createIED {
                                 description = "Create an IED";
-                                file = "\x\alive\addons\mil_ied\fnc_createIED.sqf";
+																file = PATHTO_FUNC(createIED);
                                 recompile = RECOMPILE;
                         };
                         class addActionIED {
                                 description = "Add an action to an IED";
-                                file = "\x\alive\addons\mil_ied\fnc_addActionIED.sqf";
+																file = PATHTO_FUNC(addActionIED);
                                 recompile = RECOMPILE;
                         };
                         class removeActionIED {
                                 description = "Remove an action from an IED";
-                                file = "\x\alive\addons\mil_ied\fnc_removeActionIED.sqf";
+																file = PATHTO_FUNC(removeActionIED);
                                 recompile = RECOMPILE;
                         };
                 };

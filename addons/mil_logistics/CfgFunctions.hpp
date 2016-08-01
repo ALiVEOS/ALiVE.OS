@@ -3,27 +3,27 @@ class cfgFunctions {
                 class COMPONENT {
                         class ML {
                                 description = "The main class";
-                                file = "\x\alive\addons\mil_logistics\fnc_ML.sqf";
+																file = PATHTO_FUNC(ML);
                                 recompile = RECOMPILE;
                         };
                         class MLInit {
                                 description = "The module initialisation function";
-                                file = "\x\alive\addons\mil_logistics\fnc_MLInit.sqf";
+																file = PATHTO_FUNC(MLInit);
                                 recompile = RECOMPILE;
                         };
                         class MLGlobalRegistry {
                                 description = "Handles global module registry and forcepools";
-                                file = "\x\alive\addons\mil_logistics\fnc_MLGlobalRegistry.sqf";
+																file = PATHTO_FUNC(MLGlobalRegistry);
                                 recompile = RECOMPILE;
                         };
                         class MLLoadData {
                                 description = "Load persistent data";
-                                file = "\x\alive\addons\mil_logistics\fnc_MLLoadData.sqf";
+																file = PATHTO_FUNC(MLLoadData);
                                 recompile = RECOMPILE;
                         };
                         class MLSaveData {
                                 description = "Save persistent data";
-                                file = "\x\alive\addons\mil_logistics\fnc_MLSaveData.sqf";
+																file = PATHTO_FUNC(MLSaveData);
                                 recompile = RECOMPILE;
                         };
                 };

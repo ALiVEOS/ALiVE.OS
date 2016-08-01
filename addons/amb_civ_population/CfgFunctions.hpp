@@ -3,102 +3,102 @@ class cfgFunctions {
         class COMPONENT {
             class civilianPopulationSystemInit {
                 description = "civilianPopulationSystemInit";
-                file = "\x\alive\addons\amb_civ_population\fnc_civilianPopulationSystemInit.sqf";
+                file = PATHTO_FUNC(civilianPopulationSystemInit);
                 recompile = RECOMPILE;
             };
             class civilianPopulationSystem {
                 description = "civilianPopulationSystem";
-                file = "\x\alive\addons\amb_civ_population\fnc_civilianPopulationSystem.sqf";
+                file = PATHTO_FUNC(civilianPopulationSystem);
                 recompile = RECOMPILE;
             };
             class civilianPopulationMenuDef {
                 description = "civilianPopulationMenuDef";
-                file = "\x\alive\addons\amb_civ_population\fnc_civilianPopulationMenuDef.sqf";
+                file = PATHTO_FUNC(civilianPopulationMenuDef);
                 recompile = RECOMPILE;
             };
             class clusterHandler {
                 description = "clusterHandler";
-                file = "\x\alive\addons\amb_civ_population\fnc_clusterHandler.sqf";
+                file = PATHTO_FUNC(clusterHandler);
                 recompile = RECOMPILE;
             };
             class civilianAgent {
                 description = "civilianAgent";
-                file = "\x\alive\addons\amb_civ_population\fnc_civilianAgent.sqf";
+                file = PATHTO_FUNC(civilianAgent);
                 recompile = RECOMPILE;
             };
             class civilianVehicle {
                 description = "civilianVehicle";
-                file = "\x\alive\addons\amb_civ_population\fnc_civilianVehicle.sqf";
+                file = PATHTO_FUNC(civilianVehicle);
                 recompile = RECOMPILE;
             };
             class createCivilianVehicle {
                 description = "createCivilianVehicle";
-                file = "\x\alive\addons\amb_civ_population\fnc_createCivilianVehicle.sqf";
+                file = PATHTO_FUNC(createCivilianVehicle);
                 recompile = RECOMPILE;
             };
             class agentKilledEventHandler {
                 description = "agentKilledEventHandler";
-                file = "\x\alive\addons\amb_civ_population\fnc_agentKilledEventHandler.sqf";
+                file = PATHTO_FUNC(agentKilledEventHandler);
                 recompile = RECOMPILE;
             };
             class agentGetInEventHandler {
                 description = "agentGetInEventHandler";
-                file = "\x\alive\addons\amb_civ_population\fnc_agentGetInEventHandler.sqf";
+                file = PATHTO_FUNC(agentGetInEventHandler);
                 recompile = RECOMPILE;
             };
             class agentHandler {
                 description = "agentHandler";
-                file = "\x\alive\addons\amb_civ_population\fnc_agentHandler.sqf";
+                file = PATHTO_FUNC(agentHandler);
                 recompile = RECOMPILE;
             };
             class addAmbientRoomMusic {
                 description = "addAmbientRoomMusic";
-                file = "\x\alive\addons\amb_civ_population\fnc_addAmbientRoomMusic.sqf";
+                file = PATHTO_FUNC(addAmbientRoomMusic);
                 recompile = RECOMPILE;
             };
             class clientAddAmbientRoomMusic {
                 description = "clientAddAmbientRoomMusic";
-                file = "\x\alive\addons\amb_civ_population\fnc_clientAddAmbientRoomMusic.sqf";
+                file = PATHTO_FUNC(clientAddAmbientRoomMusic);
                 recompile = RECOMPILE;
             };
             class addAmbientRoomLight {
                 description = "addAmbientRoomLight";
-                file = "\x\alive\addons\amb_civ_population\fnc_addAmbientRoomLight.sqf";
+                file = PATHTO_FUNC(addAmbientRoomLight);
                 recompile = RECOMPILE;
             };
             class clientAddAmbientRoomLight {
                 description = "clientAddAmbientRoomLight";
-                file = "\x\alive\addons\amb_civ_population\fnc_clientAddAmbientRoomLight.sqf";
+                file = PATHTO_FUNC(clientAddAmbientRoomLight);
                 recompile = RECOMPILE;
             };
             class agentSelectSpeedMode {
                 description = "agentSelectSpeedMode";
-                file = "\x\alive\addons\amb_civ_population\fnc_agentSelectSpeedMode.sqf";
+                file = PATHTO_FUNC(agentSelectSpeedMode);
                 recompile = RECOMPILE;
             };
             class getAgentEnemyNear {
                 description = "getAgentEnemyNear";
-                file = "\x\alive\addons\amb_civ_population\fnc_getAgentEnemyNear.sqf";
+                file = PATHTO_FUNC(getAgentEnemyNear);
                 recompile = RECOMPILE;
             };
             class getGlobalPosture {
                 description = "getGlobalPosture";
-                file = "\x\alive\addons\amb_civ_population\fnc_getGlobalPosture.sqf";
+                file = PATHTO_FUNC(getGlobalPosture);
                 recompile = RECOMPILE;
             };
             class getAgentData {
                 description = "getAgentData";
-                file = "\x\alive\addons\amb_civ_population\fnc_getAgentData.sqf";
+                file = PATHTO_FUNC(getAgentData);
                 recompile = RECOMPILE;
             };
             class addCivilianActions {
                 description = "addCivilianActions";
-                file = "\x\alive\addons\amb_civ_population\fnc_addCivilianActions.sqf";
+                file = PATHTO_FUNC(addCivilianActions);
                 recompile = RECOMPILE;
             };
             class selectRoleAction {
                 description = "addCivilianActions";
-                file = "\x\alive\addons\amb_civ_population\fnc_selectRoleAction.sqf";
+                file = PATHTO_FUNC(selectRoleAction);
                 recompile = RECOMPILE;
             };
         };

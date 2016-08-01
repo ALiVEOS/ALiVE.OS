@@ -3,202 +3,202 @@ class cfgFunctions {
         class COMPONENT {
             class sector {
                 description = "sector";
-                file = "\x\alive\addons\fnc_analysis\fnc_sector.sqf";
+                file = PATHTO_FUNC(sector);
                 recompile = RECOMPILE;
             };
             class sectorGrid {
                 description = "sectorGrid";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorGrid.sqf";
+                file = PATHTO_FUNC(sectorGrid);
                 recompile = RECOMPILE;
             };
             class sectorSubGrid {
                 description = "sectorSubGrid";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorSubGrid.sqf";
+                file = PATHTO_FUNC(sectorSubGrid);
                 recompile = RECOMPILE;
             };
             class sectorPlot {
                 description = "sectorPlot";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorPlot.sqf";
+                file = PATHTO_FUNC(sectorPlot);
                 recompile = RECOMPILE;
             };
             class plotSectors {
                 description = "plotSectors";
-                file = "\x\alive\addons\fnc_analysis\fnc_plotSectors.sqf";
+                file = PATHTO_FUNC(plotSectors);
                 recompile = RECOMPILE;
             };
             class gridAnalysisProfileEntity {
                 description = "gridAnalysisProfileEntity";
-                file = "\x\alive\addons\fnc_analysis\fnc_gridAnalysisProfileEntity.sqf";
+                file = PATHTO_FUNC(gridAnalysisProfileEntity);
                 recompile = RECOMPILE;
             };
             class gridAnalysisProfileVehicle {
                 description = "gridAnalysisProfileVehicle";
-                file = "\x\alive\addons\fnc_analysis\fnc_gridAnalysisProfileVehicle.sqf";
+                file = PATHTO_FUNC(gridAnalysisProfileVehicle);
                 recompile = RECOMPILE;
             };
             class gridAnalysisActive {
                 description = "gridAnalysisActive";
-                file = "\x\alive\addons\fnc_analysis\fnc_gridAnalysisActive.sqf";
+                file = PATHTO_FUNC(gridAnalysisActive);
                 recompile = RECOMPILE;
             };
             class sectorFilterProfiles {
                 description = "sectorFilterProfiles";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorFilterProfiles.sqf";
+                file = PATHTO_FUNC(sectorFilterProfiles);
                 recompile = RECOMPILE;
             };
             class gridMapAnalysis {
                 description = "gridMapAnalysis";
-                file = "\x\alive\addons\fnc_analysis\fnc_gridMapAnalysis.sqf";
+                file = PATHTO_FUNC(gridMapAnalysis);
                 recompile = RECOMPILE;
             };
             class auto_gridMapAnalysis {
                 description = "auto_gridMapAnalysis";
-                file = "\x\alive\addons\fnc_analysis\fnc_auto_gridMapAnalysis.sqf";
+                file = PATHTO_FUNC(auto_gridMapAnalysis);
                 recompile = RECOMPILE;
             };
             class sectorAnalysisBestPlaces {
                 description = "sectorAnalysisBestPlaces";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorAnalysisBestPlaces.sqf";
+                file = PATHTO_FUNC(sectorAnalysisBestPlaces);
                 recompile = RECOMPILE;
             };
             class sectorFilterBestPlaces {
                 description = "sectorFilterBestPlaces";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorFilterBestPlaces.sqf";
+                file = PATHTO_FUNC(sectorFilterBestPlaces);
                 recompile = RECOMPILE;
             };
             class sectorAnalysisFlatEmpty {
                 description = "sectorAnalysisFlatEmpty";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorAnalysisFlatEmpty.sqf";
+                file = PATHTO_FUNC(sectorAnalysisFlatEmpty);
                 recompile = RECOMPILE;
             };
             class sectorFilterFlatEmpty {
                 description = "sectorFilterFlatEmpty";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorFilterFlatEmpty.sqf";
+                file = PATHTO_FUNC(sectorFilterFlatEmpty);
                 recompile = RECOMPILE;
             };
             class sectorAnalysisUnits {
                 description = "sectorAnalysisUnits";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorAnalysisUnits.sqf";
+                file = PATHTO_FUNC(sectorAnalysisUnits);
                 recompile = RECOMPILE;
             };
             class sectorFilterUnits {
                 description = "sectorFilterUnits";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorFilterUnits.sqf";
+                file = PATHTO_FUNC(sectorFilterUnits);
                 recompile = RECOMPILE;
             };
             class sectorFilterClusters {
                 description = "sectorFilterClusters";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorFilterClusters.sqf";
+                file = PATHTO_FUNC(sectorFilterClusters);
                 recompile = RECOMPILE;
             };
             class sectorAnalysisTerrain {
                 description = "sectorAnalysisTerrain";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorAnalysisTerrain.sqf";
+                file = PATHTO_FUNC(sectorAnalysisTerrain);
                 recompile = RECOMPILE;
             };
             class sectorAnalysisClustersMil {
                 description = "sectorAnalysisClustersMil";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorAnalysisClustersMil.sqf";
+                file = PATHTO_FUNC(sectorAnalysisClustersMil);
                 recompile = RECOMPILE;
             };
             class sectorAnalysisClustersCiv {
                 description = "sectorAnalysisClustersCiv";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorAnalysisClustersCiv.sqf";
+                file = PATHTO_FUNC(sectorAnalysisClustersCiv);
                 recompile = RECOMPILE;
             };
             class sectorFilterTerrain {
                 description = "sectorFilterTerrain";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorFilterTerrain.sqf";
+                file = PATHTO_FUNC(sectorFilterTerrain);
                 recompile = RECOMPILE;
             };
             class sectorAnalysisElevation {
                 description = "sectorAnalysisElevation";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorAnalysisElevation.sqf";
+                file = PATHTO_FUNC(sectorAnalysisElevation);
                 recompile = RECOMPILE;
             };
             class sectorFilterElevation {
                 description = "sectorFilterElevation";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorFilterElevation.sqf";
+                file = PATHTO_FUNC(sectorFilterElevation);
                 recompile = RECOMPILE;
             };
             class sectorAnalysisRoads {
                 description = "sectorAnalysisRoads";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorAnalysisRoads.sqf";
+                file = PATHTO_FUNC(sectorAnalysisRoads);
                 recompile = RECOMPILE;
             };
             class sectorFilterRoads {
                 description = "sectorFilterRoads";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorFilterRoads.sqf";
+                file = PATHTO_FUNC(sectorFilterRoads);
                 recompile = RECOMPILE;
             };
             class sectorSortDistance {
                 description = "sectorSortDistance";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorSortDistance.sqf";
+                file = PATHTO_FUNC(sectorSortDistance);
                 recompile = RECOMPILE;
             };
             class gridImportStaticMapAnalysis {
                 description = "gridImportStaticMapAnalysis";
-                file = "\x\alive\addons\fnc_analysis\fnc_gridImportStaticMapAnalysis.sqf";
+                file = PATHTO_FUNC(gridImportStaticMapAnalysis);
                 recompile = RECOMPILE;
             };
             class sectorDataSort {
                 description = "sectorDataSort";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorDataSort.sqf";
+                file = PATHTO_FUNC(sectorDataSort);
                 recompile = RECOMPILE;
             };
             class sectorDataMerge {
                 description = "sectorDataMerge";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorDataMerge.sqf";
+                file = PATHTO_FUNC(sectorDataMerge);
                 recompile = RECOMPILE;
             };
             class unitArrayFilterInSector {
                 description = "unitArrayFilterInSector";
-                file = "\x\alive\addons\fnc_analysis\fnc_unitArrayFilterInSector.sqf";
+                file = PATHTO_FUNC(unitArrayFilterInSector);
                 recompile = RECOMPILE;
             };
             class getClosestLand {
                 description = "getClosestLand";
-                file = "\x\alive\addons\fnc_analysis\fnc_getClosestLand.sqf";
+                file = PATHTO_FUNC(getClosestLand);
                 recompile = RECOMPILE;
             };
             class getClosestSea {
                 description = "getClosestSea";
-                file = "\x\alive\addons\fnc_analysis\fnc_getClosestSea.sqf";
+                file = PATHTO_FUNC(getClosestSea);
                 recompile = RECOMPILE;
             };
             class getClosestRoad {
                 description = "getClosestRoad";
-                file = "\x\alive\addons\fnc_analysis\fnc_getClosestRoad.sqf";
+                file = PATHTO_FUNC(getClosestRoad);
                 recompile = RECOMPILE;
             };
             class getClosestInActive {
                 description = "getClosestInActive";
-                file = "\x\alive\addons\fnc_analysis\fnc_getClosestInActive.sqf";
+                file = PATHTO_FUNC(getClosestInActive);
                 recompile = RECOMPILE;
             };
             class sectorFilterActive {
                 description = "sectorFilterActive";
-                file = "\x\alive\addons\fnc_analysis\fnc_sectorFilterActive.sqf";
+                file = PATHTO_FUNC(sectorFilterActive);
                 recompile = RECOMPILE;
             };
             class getPositionDistancePlayers {
                 description = "getPositionDistancePlayers";
-                file = "\x\alive\addons\fnc_analysis\fnc_getPositionDistancePlayers.sqf";
+                file = PATHTO_FUNC(getPositionDistancePlayers);
                 recompile = RECOMPILE;
             };
             class liveAnalysis {
                 description = "liveAnalysis";
-                file = "\x\alive\addons\fnc_analysis\fnc_liveAnalysis.sqf";
+                file = PATHTO_FUNC(liveAnalysis);
                 recompile = RECOMPILE;
             };
             class battlefieldAnalysis {
                 description = "battlefieldAnalysis";
-                file = "\x\alive\addons\fnc_analysis\fnc_battlefieldAnalysis.sqf";
+                file = PATHTO_FUNC(battlefieldAnalysis);
                 recompile = RECOMPILE;
             };
             class militaryIntel {
                 description = "militaryIntel";
-                file = "\x\alive\addons\fnc_analysis\fnc_militaryIntel.sqf";
+                file = PATHTO_FUNC(militaryIntel);
                 recompile = RECOMPILE;
             };
         };

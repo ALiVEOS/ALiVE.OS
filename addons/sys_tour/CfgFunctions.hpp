@@ -3,12 +3,12 @@ class CfgFunctions {
         class COMPONENT {
             class tour {
                 description = "The main class";
-                file = "\x\alive\addons\sys_tour\fnc_tour.sqf";
+								file = PATHTO_FUNC(tour);
                 recompile = RECOMPILE;
             };
             class tourInit {
                 description = "The module initialisation function";
-                file = "\x\alive\addons\sys_tour\fnc_tourInit.sqf";
+								file = PATHTO_FUNC(tourInit);
                 recompile = RECOMPILE;
             };
         };

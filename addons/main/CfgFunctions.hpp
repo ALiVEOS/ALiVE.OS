@@ -3,67 +3,67 @@ class cfgFunctions {
         class COMPONENT {
             class buttonAbort {
                 description = "Calls any scripts required when the user disconnects";
-                file = "\x\alive\addons\main\fnc_buttonAbort.sqf";
+                file = PATHTO_FUNC(buttonAbort);
                 recompile = RECOMPILE;
             };
             class aliveInit {
                 description = "ALiVE init function";
-                file = "\x\alive\addons\main\fnc_aliveInit.sqf";
+                file = PATHTO_FUNC(aliveInit);
                 recompile = RECOMPILE;
             };
             class Nuke {
                 description = "Fires a Nuke at given position";
-                file = "\x\alive\addons\main\fnc_Nuke.sqf";
+                file = PATHTO_FUNC(Nuke);
                 recompile = RECOMPILE;
             };
             class isModuleSynced {
                 description = "Checks if modules are synced";
-                file = "\x\alive\addons\main\fnc_isModuleSynced.sqf";
+                file = PATHTO_FUNC(isModuleSynced);
                 recompile = RECOMPILE;
             };
             class isModuleAvailable {
                 description = "Checks if modules are available";
-                file = "\x\alive\addons\main\fnc_isModuleAvailable.sqf";
+                file = PATHTO_FUNC(isModuleAvailable);
                 recompile = RECOMPILE;
             };
             class versioning {
                 description = "Warns or kicks players on version mismatch";
-                file = "\x\alive\addons\main\fnc_versioning.sqf";
+                file = PATHTO_FUNC(versioning);
                 recompile = RECOMPILE;
             };
             class isModuleInitialised {
                 description = "Checks if given modules are initialised";
-                file = "\x\alive\addons\main\fnc_isModuleInitialised.sqf";
+                file = PATHTO_FUNC(isModuleInitialised);
                 recompile = RECOMPILE;
             };
             class pauseModule {
                 description = "Pauses given module(s)";
-                file = "\x\alive\addons\main\fnc_pauseModule.sqf";
+                file = PATHTO_FUNC(pauseModule);
                 recompile = RECOMPILE;
             };
             class unPauseModule {
                 description = "activates given module(s) after pausing";
-                file = "\x\alive\addons\main\fnc_unPauseModule.sqf";
+                file = PATHTO_FUNC(unPauseModule);
                 recompile = RECOMPILE;
             };
             class pauseModulesAuto {
                 description = "Adds EHs to pause all main modules if no players are on server";
-                file = "\x\alive\addons\main\fnc_pauseModulesAuto.sqf";
+                file = PATHTO_FUNC(pauseModulesAuto);
                 recompile = RECOMPILE;
             };
             class ZEUSinit {
                 description = "Initialises Zeus for ALiVE";
-                file = "\x\alive\addons\main\fnc_ZEUSinit.sqf";
+                file = PATHTO_FUNC(ZEUSinit);
                 recompile = RECOMPILE;
             };
             class mainTablet {
                 description = "ALiVE Main Tablet";
-                file = "\x\alive\addons\main\fnc_mainTablet.sqf";
+                file = PATHTO_FUNC(mainTablet);
                 recompile = RECOMPILE;
             };
             class AI_Distributor {
                 description = "Distributes AI to all headless clients";
-                file = "\x\alive\addons\main\fnc_AI_Distributor.sqf";
+                file = PATHTO_FUNC(AI_Distributor);
                 recompile = RECOMPILE;
             };
         };

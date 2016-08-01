@@ -3,57 +3,57 @@ class cfgFunctions {
                 class COMPONENT {
                         class patrolrep {
                                 description = "The main class";
-                                file = "\x\alive\addons\sys_patrolrep\fnc_patrolrep.sqf";
+																file = PATHTO_FUNC(patrolrep);
                                 recompile = RECOMPILE;
                         };
                         class patrolrepInit {
                                 description = "The module initialisation function";
-                                file = "\x\alive\addons\sys_patrolrep\fnc_patrolrepInit.sqf";
+																file = PATHTO_FUNC(patrolrepInit);
                                 recompile = RECOMPILE;
                         };
                         class patrolrepParams {
                                 description = "patrolrep parameters";
-                                file = "\x\alive\addons\sys_patrolrep\fnc_patrolrepParams.sqf";
+																file = PATHTO_FUNC(patrolrepParams);
                                 recompile = RECOMPILE;
                         };
                         class patrolrepSaveData {
                                 description = "patrolrep save data to DB";
-                                file = "\x\alive\addons\sys_patrolrep\fnc_patrolrepSaveData.sqf";
+																file = PATHTO_FUNC(patrolrepSaveData);
                                                                 recompile = RECOMPILE;
                         };
                         class patrolrepLoadData {
                                 description = "patrolrep load data to DB";
-                                file = "\x\alive\addons\sys_patrolrep\fnc_patrolrepLoadData.sqf";
+																file = PATHTO_FUNC(patrolrepLoadData);
                                                                 recompile = RECOMPILE;
                         };
                         class patrolrepDeleteData {
                                 description = "patrolrep delete data from DB";
-                                file = "\x\alive\addons\sys_patrolrep\fnc_patrolrepDeleteData.sqf";
+																file = PATHTO_FUNC(patrolrepDeleteData);
                                                                 recompile = RECOMPILE;
                         };
                         class patrolrepOnPlayerConnected {
                                 description = "Handles on player connected event";
-                                file = "\x\alive\addons\sys_patrolrep\fnc_patrolrepOnPlayerConnected.sqf";
+																file = PATHTO_FUNC(patrolrepOnPlayerConnected);
                                                                 recompile = RECOMPILE;
                         };
                         class patrolrepCreateDiaryRecord {
                                 description = "Adds a patrolrep to a diary record";
-                                file = "\x\alive\addons\sys_patrolrep\fnc_patrolrepCreateDiaryRecord.sqf";
+																file = PATHTO_FUNC(patrolrepCreateDiaryRecord);
                                                                 recompile = RECOMPILE;
                         };
                         class patrolrepOnLoad {
                                 description = "patrolrep on load for dialog";
-                                file = "\x\alive\addons\sys_patrolrep\fnc_patrolrepOnLoad.sqf";
+																file = PATHTO_FUNC(patrolrepOnLoad);
                                                                 recompile = RECOMPILE;
                         };
                         class patrolrepButtonAction {
                                 description = "patrolrep button action for dialog";
-                                file = "\x\alive\addons\sys_patrolrep\fnc_patrolrepButtonAction.sqf";
+																file = PATHTO_FUNC(patrolrepButtonAction);
                                                                 recompile = RECOMPILE;
                         };
                         class patrolrepOnMapEvent {
                                 description = "patrolrep on map event for dialog";
-                                file = "\x\alive\addons\sys_patrolrep\fnc_patrolrepOnMapEvent.sqf";
+																file = PATHTO_FUNC(patrolrepOnMapEvent);
                                                                 recompile = RECOMPILE;
                         };
                 };

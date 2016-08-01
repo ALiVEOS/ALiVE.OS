@@ -3,32 +3,32 @@ class cfgFunctions {
                 class COMPONENT {
                         class MI {
                                 description = "The main class";
-                                file = "\x\alive\addons\mil_intelligence\fnc_MI.sqf";
+																file = PATHTO_FUNC(MI);
                                 recompile = RECOMPILE;
                         };
                         class MIInit {
                                 description = "The module initialisation function";
-                                file = "\x\alive\addons\mil_intelligence\fnc_MIInit.sqf";
+																file = PATHTO_FUNC(MIInit);
                                 recompile = RECOMPILE;
                         };
                         class SD {
                                 description = "The main class";
-                                file = "\x\alive\addons\mil_intelligence\fnc_SD.sqf";
+																file = PATHTO_FUNC(SD);
                                 recompile = RECOMPILE;
                         };
                         class SDInit {
                                 description = "The module initialisation function";
-                                file = "\x\alive\addons\mil_intelligence\fnc_SDInit.sqf";
+																file = PATHTO_FUNC(SDInit);
                                 recompile = RECOMPILE;
                         };
                         class PSD {
                                 description = "The main class";
-                                file = "\x\alive\addons\mil_intelligence\fnc_PSD.sqf";
+																file = PATHTO_FUNC(PSD);
                                 recompile = RECOMPILE;
                         };
                         class PSDInit {
                                 description = "The module initialisation function";
-                                file = "\x\alive\addons\mil_intelligence\fnc_PSDInit.sqf";
+																file = PATHTO_FUNC(PSDInit);
                                 recompile = RECOMPILE;
                         };
                 };

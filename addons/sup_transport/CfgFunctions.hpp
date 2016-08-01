@@ -3,12 +3,12 @@ class cfgFunctions {
                 class COMPONENT {
                         class TRANSPORT {
                                 description = "The main class";
-                                file = "\x\alive\addons\sup_transport\fnc_TRANSPORT.sqf";
+																file = PATHTO_FUNC(TRANSPORT);
                 recompile = RECOMPILE;
                         };
                         class TRANSPORTInit {
                                 description = "The module initialisation function";
-                                file = "\x\alive\addons\sup_transport\fnc_TRANSPORTInit.sqf";
+																file = PATHTO_FUNC(TRANSPORTInit);
                 recompile = RECOMPILE;
                         };
                    };

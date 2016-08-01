@@ -3,17 +3,17 @@ class cfgFunctions {
                 class COMPONENT {
                         class playertags {
                                 description = "The main class";
-                                file = "\x\alive\addons\sys_playertags\fnc_playertags.sqf";
+																file = PATHTO_FUNC(playertags);
                                                                 recompile = RECOMPILE;
                         };
                         class playertagsInit {
                                 description = "The module initialisation function";
-                                file = "\x\alive\addons\sys_playertags\fnc_playertagsInit.sqf";
+																file = PATHTO_FUNC(playertagsInit);
                                                                 recompile = RECOMPILE;
                         };
                         class playertagsMenuDef {
                                 description = "The module menu definition";
-                                file = "\x\alive\addons\sys_playertags\fnc_playertagsMenuDef.sqf";
+																file = PATHTO_FUNC(playertagsMenuDef);
                                                                 recompile = RECOMPILE;
                         };
                                                 class playertagsRecognise {

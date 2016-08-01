@@ -3,12 +3,12 @@ class cfgFunctions {
                 class COMPONENT {
                         class CAS {
                                 description = "The main class";
-                                file = "\x\alive\addons\sup_cas\fnc_CAS.sqf";
+																file = PATHTO_FUNC(CAS);
                 recompile = RECOMPILE;
                         };
                         class CASInit {
                                 description = "The module initialisation function";
-                                file = "\x\alive\addons\sup_cas\fnc_CASInit.sqf";
+																file = PATHTO_FUNC(CASInit);
                 recompile = RECOMPILE;
                         };
                    };

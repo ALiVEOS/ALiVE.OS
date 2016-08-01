@@ -3,22 +3,22 @@ class cfgFunctions {
                 class COMPONENT {
                         class MP {
                                 description = "The main class";
-                                file = "\x\alive\addons\mil_placement\fnc_MP.sqf";
+																file = PATHTO_FUNC(MP);
                                 recompile = RECOMPILE;
                         };
                         class MPInit {
                                 description = "The module initialisation function";
-                                file = "\x\alive\addons\mil_placement\fnc_MPInit.sqf";
+																file = PATHTO_FUNC(MPInit);
                                 recompile = RECOMPILE;
                         };
             class milClusterGeneration {
                                 description = "Generates static cluster output";
-                                file = "\x\alive\addons\mil_placement\fnc_milClusterGeneration.sqf";
+																file = PATHTO_FUNC(milClusterGeneration);
                                 recompile = RECOMPILE;
                         };
                         class auto_milClusterGeneration {
                                 description = "Auto generates static cluster output";
-                                file = "\x\alive\addons\mil_placement\fnc_auto_milClusterGeneration.sqf";
+																file = PATHTO_FUNC(auto_milClusterGeneration);
                                 recompile = RECOMPILE;
                         };
                 };

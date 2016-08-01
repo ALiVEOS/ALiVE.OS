@@ -1,84 +1,84 @@
-class cfgFunctions {
+class CfgFunctions {
     class PREFIX {
         class COMPONENT {
             class getNearestClusterInArray {
                 description = "Returns the nearest cluster to the given cluster from a list of clusters";
-                file = "\x\alive\addons\fnc_strategic\fnc_getNearestClusterInArray.sqf";
+								file = PATHTO_FUNC(getNearestClusterInArray);
                 recompile = RECOMPILE;
             };
             class findClusterCenter {
                 description = "Return the centre position of an object cluster";
-                file = "\x\alive\addons\fnc_strategic\fnc_findClusterCenter.sqf";
+								file = PATHTO_FUNC(findClusterCenter);
                 recompile = RECOMPILE;
             };
             class consolidateClusters {
                 description = "Merge cluster objects if they are within close proximity";
-                file = "\x\alive\addons\fnc_strategic\fnc_consolidateClusters.sqf";
+								file = PATHTO_FUNC(consolidateClusters);
                 recompile = RECOMPILE;
             };
             class findClusters {
                 description = "Returns a list of object clusters";
-                file = "\x\alive\addons\fnc_strategic\fnc_findClusters.sqf";
+								file = PATHTO_FUNC(findClusters);
                 recompile = RECOMPILE;
             };
             class cluster {
                 description = "Builds clusters";
-                file = "\x\alive\addons\fnc_strategic\fnc_cluster.sqf";
+								file = PATHTO_FUNC(cluster);
                 recompile = RECOMPILE;
             };
             class findTargets {
                 description = "Identify targets within the TAOR";
-                file = "\x\alive\addons\fnc_strategic\fnc_findTargets.sqf";
+								file = PATHTO_FUNC(findTargets);
                 recompile = RECOMPILE;
             };
             class setTargets {
                 description = "Set basic params on clusters";
-                file = "\x\alive\addons\fnc_strategic\fnc_setTargets.sqf";
+								file = PATHTO_FUNC(setTargets);
                 recompile = RECOMPILE;
             };
             class clustersInsideMarker {
                 description = "Return list of clusters inside a marker";
-                file = "\x\alive\addons\fnc_strategic\fnc_clustersInsideMarker.sqf";
+								file = PATHTO_FUNC(clustersInsideMarker);
                 recompile = RECOMPILE;
             };
             class clustersOutsideMarker {
                 description = "Return list of clusters outside a marker";
-                file = "\x\alive\addons\fnc_strategic\fnc_clustersOutsideMarker.sqf";
+								file = PATHTO_FUNC(clustersOutsideMarker);
                 recompile = RECOMPILE;
             };
             class staticClusterOutput {
                 description = "Returns clusters in string format for static file storage";
-                file = "\x\alive\addons\fnc_strategic\fnc_staticClusterOutput.sqf";
+								file = PATHTO_FUNC(staticClusterOutput);
                 recompile = RECOMPILE;
             };
             class auto_staticClusterOutput {
                 description = "Returns clusters in string format for static file storage";
-                file = "\x\alive\addons\fnc_strategic\fnc_auto_staticClusterOutput.sqf";
+								file = PATHTO_FUNC(auto_staticClusterOutput);
                 recompile = RECOMPILE;
             };
             class copyClusters {
                 description = "Duplicate an array of clusters";
-                file = "\x\alive\addons\fnc_strategic\fnc_copyClusters.sqf";
+								file = PATHTO_FUNC(copyClusters);
                 recompile = RECOMPILE;
             };
             class generateParkingPositions {
                 description = "Generate parking positions for cluster nodes";
-                file = "\x\alive\addons\fnc_strategic\fnc_generateParkingPositions.sqf";
+								file = PATHTO_FUNC(generateParkingPositions);
                 recompile = RECOMPILE;
             };
             class generateParkingPosition {
                 description = "Generate parking position for building";
-                file = "\x\alive\addons\fnc_strategic\fnc_generateParkingPosition.sqf";
+								file = PATHTO_FUNC(generateParkingPosition);
                 recompile = RECOMPILE;
             };
             class getParkingPosition {
                 description = "Gets a parking position for a building";
-                file = "\x\alive\addons\fnc_strategic\fnc_getParkingPosition.sqf";
+								file = PATHTO_FUNC(getParkingPosition);
                 recompile = RECOMPILE;
             };
             class findBuildingsInClusterNodes {
                 description = "Find building names in cluster nodes";
-                file = "\x\alive\addons\fnc_strategic\fnc_findBuildingsInClusterNodes.sqf";
+								file = PATHTO_FUNC(findBuildingsInClusterNodes);
                 recompile = RECOMPILE;
             };
         };

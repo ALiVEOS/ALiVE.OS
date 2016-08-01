@@ -3,57 +3,57 @@ class cfgFunctions {
                 class COMPONENT {
                         class marker {
                                 description = "The main class";
-                                file = "\x\alive\addons\sys_marker\fnc_marker.sqf";
+																file = PATHTO_FUNC(marker);
                                 recompile = RECOMPILE;
                         };
                         class markerInit {
                                 description = "The module initialisation function";
-                                file = "\x\alive\addons\sys_marker\fnc_markerInit.sqf";
+																file = PATHTO_FUNC(markerInit);
                                 recompile = RECOMPILE;
                         };
                         class markerParams {
                                 description = "Marker parameters";
-                                file = "\x\alive\addons\sys_marker\fnc_markerParams.sqf";
+																file = PATHTO_FUNC(markerParams);
                                 recompile = RECOMPILE;
                         };
                         class markerSaveData {
                                 description = "marker save data to DB";
-                                file = "\x\alive\addons\sys_marker\fnc_markerSaveData.sqf";
+																file = PATHTO_FUNC(markerSaveData);
                                                                 recompile = RECOMPILE;
                         };
                         class markerLoadData {
                                 description = "marker load data to DB";
-                                file = "\x\alive\addons\sys_marker\fnc_markerLoadData.sqf";
+																file = PATHTO_FUNC(markerLoadData);
                                                                 recompile = RECOMPILE;
                         };
                         class markerDeleteData {
                                 description = "marker delete data from DB";
-                                file = "\x\alive\addons\sys_marker\fnc_markerDeleteData.sqf";
+																file = PATHTO_FUNC(markerDeleteData);
                                                                 recompile = RECOMPILE;
                         };
                         class markerOnLoad{
                                 description = "Onload for Dialog";
-                                file = "\x\alive\addons\sys_marker\fnc_markerOnLoad.sqf";
+																file = PATHTO_FUNC(markerOnLoad);
                                                                 recompile = RECOMPILE;
                         };
                         class markerOnPlayerConnected{
                                 description = "Handles on player connected event";
-                                file = "\x\alive\addons\sys_marker\fnc_markerOnPlayerConnected.sqf";
+																file = PATHTO_FUNC(markerOnPlayerConnected);
                                                                 recompile = RECOMPILE;
                         };
                         class markerLBSelChanged{
                                 description = "LBSelChanged for Dialog";
-                                file = "\x\alive\addons\sys_marker\fnc_markerLBSelChanged.sqf";
+																file = PATHTO_FUNC(markerLBSelChanged);
                                                                 recompile = RECOMPILE;
                         };
                         class markerCheckedChanged{
                                 description = "CheckedChanged for Dialog";
-                                file = "\x\alive\addons\sys_marker\fnc_markerCheckedChanged.sqf";
+																file = PATHTO_FUNC(markerCheckedChanged);
                                                                 recompile = RECOMPILE;
                         };
                         class markerButtonAction{
                                 description = "Button Action for Dialog";
-                                file = "\x\alive\addons\sys_marker\fnc_markerButtonAction.sqf";
+																file = PATHTO_FUNC(markerButtonAction);
                                                                 recompile = RECOMPILE;
                         };
                 };
