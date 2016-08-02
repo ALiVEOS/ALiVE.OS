@@ -1,71 +1,19 @@
 class CfgFunctions {
     class PREFIX {
         class COMPONENT {
-            class C2ISTAR {
-                description = "The main class";
-		            file = PATHTO_FUNC(C2ISTAR);
-                recompile = RECOMPILE;
-            };
-            class C2ISTARInit {
-                description = "The module initialisation function";
-		            file = PATHTO_FUNC(C2ISTARInit);
-                recompile = RECOMPILE;
-            };
-            class C2MenuDef {
-                description = "The module menu definition";
-		            file = PATHTO_FUNC(C2MenuDef);
-                recompile = RECOMPILE;
-            };
-            class C2TabletOnAction {
-                description = "The module Radio Action function";
-		            file = PATHTO_FUNC(C2TabletOnAction);
-                recompile = RECOMPILE;
-            };
-            class C2TabletOnLoad {
-                description = "The module tablet on load function";
-		            file = PATHTO_FUNC(C2TabletOnLoad);
-                recompile = RECOMPILE;
-            };
-            class C2TabletOnUnLoad {
-                description = "The module tablet on unload function";
-		            file = PATHTO_FUNC(C2TabletOnUnLoad);
-                recompile = RECOMPILE;
-            };
-            class C2TabletEventToClient {
-                description = "Call the tablet on the client from the server";
-		            file = PATHTO_FUNC(C2TabletEventToClient);
-                recompile = RECOMPILE;
-            };
-            class C2OnPlayerConnected {
-                description = "On player connected handler";
-		            file = PATHTO_FUNC(C2OnPlayerConnected);
-                recompile = RECOMPILE;
-            };
-            class taskHandler {
-                description = "Task Handler";
-		            file = PATHTO_FUNC(taskHandler);
-                recompile = RECOMPILE;
-            };
-            class taskHandlerClient {
-                description = "Task Handler Client";
-		            file = PATHTO_FUNC(taskHandlerClient);
-                recompile = RECOMPILE;
-            };
-            class taskHandlerEventToClient {
-                description = "Task Handler Event To Client";
-		            file = PATHTO_FUNC(taskHandlerEventToClient);
-                recompile = RECOMPILE;
-            };
-            class taskHandlerLoadData {
-                description = "Task Handler Load Data";
-		            file = PATHTO_FUNC(taskHandlerLoadData);
-                recompile = RECOMPILE;
-            };
-            class taskHandlerSaveData {
-                description = "Task Handler Save Data";
-		            file = PATHTO_FUNC(taskHandlerSaveData);
-                recompile = RECOMPILE;
-            };
+            FUNC_FILEPATH(C2ISTAR,"The main class");
+            FUNC_FILEPATH(C2ISTARInit,"The module initialisation function");
+            FUNC_FILEPATH(C2MenuDef,"The module menu definition");
+            FUNC_FILEPATH(C2TabletOnAction,"The module Radio Action function");
+            FUNC_FILEPATH(C2TabletOnLoad,"The module tablet on load function");
+            FUNC_FILEPATH(C2TabletOnUnLoad,"The module tablet on unload function");
+            FUNC_FILEPATH(C2TabletEventToClient,"Call the tablet on the client from the server");
+            FUNC_FILEPATH(C2OnPlayerConnected,"On player connected handler");
+            FUNC_FILEPATH(taskHandler,"Task Handler");
+            FUNC_FILEPATH(taskHandlerClient,"Task Handler Client");
+            FUNC_FILEPATH(taskHandlerEventToClient,"Task Handler Event To Client");
+            FUNC_FILEPATH(taskHandlerLoadData,"Task Handler Load Data");
+            FUNC_FILEPATH(taskHandlerSaveData,"Task Handler Save Data");
             class taskGetSideCluster {
                 description = "Utility get side cluster for tasks";
 		            file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetSideCluster.sqf";

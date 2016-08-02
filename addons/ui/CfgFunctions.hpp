@@ -18,21 +18,9 @@ class CfgFunctions {
 								file = "\x\alive\addons\ui\menu\fnc_displayMenu.sqf";
                 recompile = RECOMPILE;
             };
-            class RscDisplayLoadingALiVE {
-                description = "Hook loading screen";
-								file = PATHTO_FUNC(RscDisplayLoadingALiVE);
-                recompile = RECOMPILE;
-            };
-            class RscDisplayMPInterruptALiVE {
-                description = "Hook MP interrupt screen";
-								file = PATHTO_FUNC(RscDisplayMPInterruptALiVE);
-                recompile = RECOMPILE;
-            };
-            class copyFactionClasses {
-                description = "Copy faction classes from selected objects in 3DEN to clipboard";
-								file = PATHTO_FUNC(copyFactionClasses);
-                recompile = RECOMPILE;
-            };
+            FUNC_FILEPATH(RscDisplayLoadingALiVE,"Hook loading screen");
+            FUNC_FILEPATH(RscDisplayMPInterruptALiVE,"Hook MP interrupt screen");
+            FUNC_FILEPATH(copyFactionClasses,"Copy faction classes from selected objects in 3DEN to clipboard");
         };
     };
 };

@@ -1,61 +1,17 @@
 class cfgFunctions {
         class PREFIX {
                 class COMPONENT {
-                        class marker {
-                                description = "The main class";
-																file = PATHTO_FUNC(marker);
-                                recompile = RECOMPILE;
-                        };
-                        class markerInit {
-                                description = "The module initialisation function";
-																file = PATHTO_FUNC(markerInit);
-                                recompile = RECOMPILE;
-                        };
-                        class markerParams {
-                                description = "Marker parameters";
-																file = PATHTO_FUNC(markerParams);
-                                recompile = RECOMPILE;
-                        };
-                        class markerSaveData {
-                                description = "marker save data to DB";
-																file = PATHTO_FUNC(markerSaveData);
-                                                                recompile = RECOMPILE;
-                        };
-                        class markerLoadData {
-                                description = "marker load data to DB";
-																file = PATHTO_FUNC(markerLoadData);
-                                                                recompile = RECOMPILE;
-                        };
-                        class markerDeleteData {
-                                description = "marker delete data from DB";
-																file = PATHTO_FUNC(markerDeleteData);
-                                                                recompile = RECOMPILE;
-                        };
-                        class markerOnLoad{
-                                description = "Onload for Dialog";
-																file = PATHTO_FUNC(markerOnLoad);
-                                                                recompile = RECOMPILE;
-                        };
-                        class markerOnPlayerConnected{
-                                description = "Handles on player connected event";
-																file = PATHTO_FUNC(markerOnPlayerConnected);
-                                                                recompile = RECOMPILE;
-                        };
-                        class markerLBSelChanged{
-                                description = "LBSelChanged for Dialog";
-																file = PATHTO_FUNC(markerLBSelChanged);
-                                                                recompile = RECOMPILE;
-                        };
-                        class markerCheckedChanged{
-                                description = "CheckedChanged for Dialog";
-																file = PATHTO_FUNC(markerCheckedChanged);
-                                                                recompile = RECOMPILE;
-                        };
-                        class markerButtonAction{
-                                description = "Button Action for Dialog";
-																file = PATHTO_FUNC(markerButtonAction);
-                                                                recompile = RECOMPILE;
-                        };
-                };
-        };
+												FUNC_FILEPATH(marker,"The main class");
+												FUNC_FILEPATH(markerInit,"The module initialisation function");
+												FUNC_FILEPATH(markerParams,"Marker parameters");
+												FUNC_FILEPATH(markerSaveData,"marker save data to DB");
+												FUNC_FILEPATH(markerLoadData,"marker load data to DB");
+												FUNC_FILEPATH(markerDeleteData,"marker delete data from DB");
+												FUNC_FILEPATH(markerOnLoad,"Onload for Dialog");
+												FUNC_FILEPATH(markerOnPlayerConnected,"Handles on player connected event");
+												FUNC_FILEPATH(markerLBSelChanged,"LBSelChanged for Dialog");
+												FUNC_FILEPATH(markerCheckedChanged,"CheckedChanged for Dialog");
+												FUNC_FILEPATH(markerButtonAction,"Button Action for Dialog");
+								};
+				};
 };

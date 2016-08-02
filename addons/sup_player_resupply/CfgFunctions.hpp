@@ -1,41 +1,13 @@
 class CfgFunctions {
     class PREFIX {
         class COMPONENT {
-            class PR {
-                description = "The main class";
-								file = PATHTO_FUNC(PR);
-                recompile = RECOMPILE;
-            };
-            class PRInit {
-                description = "The module initialisation function";
-								file = PATHTO_FUNC(PRInit);
-                recompile = RECOMPILE;
-            };
-            class PRMenuDef {
-                description = "The module menu definition";
-								file = PATHTO_FUNC(PRMenuDef);
-                recompile = RECOMPILE;
-            };
-            class PRTabletOnAction {
-                description = "The module Radio Action function";
-								file = PATHTO_FUNC(PRTabletOnAction);
-                recompile = RECOMPILE;
-            };
-            class PRTabletOnLoad {
-                description = "The module tablet on load function";
-								file = PATHTO_FUNC(PRTabletOnLoad);
-                recompile = RECOMPILE;
-            };
-            class PRTabletOnUnLoad {
-                description = "The module tablet on unload function";
-								file = PATHTO_FUNC(PRTabletOnUnLoad);
-                recompile = RECOMPILE;
-            };
-            class PRTabletEventToClient {
-                description = "Call the tablet on the client from the server";
-								file = PATHTO_FUNC(PRTabletEventToClient);
-                recompile = RECOMPILE;
-            };
-        };
-    };
+						FUNC_FILEPATH(PR,"The main class");
+						FUNC_FILEPATH(PRInit,"The module initialisation function");
+						FUNC_FILEPATH(PRMenuDef,"The module menu definition");
+						FUNC_FILEPATH(PRTabletOnAction,"The module Radio Action function");
+						FUNC_FILEPATH(PRTabletOnLoad,"The module tablet on load function");
+						FUNC_FILEPATH(PRTabletOnUnLoad,"The module tablet on unload function");
+						FUNC_FILEPATH(PRTabletEventToClient,"Call the tablet on the client from the server");
+				};
+		};
 };

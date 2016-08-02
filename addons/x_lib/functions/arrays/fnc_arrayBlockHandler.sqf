@@ -39,8 +39,6 @@ nil
 #define SUPERCLASS ALIVE_fnc_baseClassHash
 #define MAINCLASS ALIVE_fnc_arrayBlockHandler
 
-private ["_result"];
-
 TRACE_1("arrayBlockHandler - input",_this);
 
 params [
@@ -48,7 +46,7 @@ params [
     ["_operation", "", [""]],
     ["_args", objNull, [objNull,[],"",0,true,false]]
 ];
-_result = true;
+private _result = true;
 
 #define MTEMPLATE "ALiVE_ARRAY_BLOCK_%1"
 
@@ -81,16 +79,11 @@ switch(_operation) do {
                 */
         };
         case "getNextBlock": {
-                private ["_blockKey","_sourceArray","_blockLimit","_pointers","_currentPointer","_profiles","_limit","_block"];
-
-                _blockKey = _args select 0;
-                _sourceArray = _args select 1;
-                _blockLimit = _args select 2;
-
-                _pointers = [_logic,"pointers"] call ALIVE_fnc_hashGet;
+                private ["_currentPointer"];
+                _args params ["_blockkey","_sourceArray","_blockLimit"];
+                private _pointers = [_logic,"pointers"] call ALIVE_fnc_hashGet;
 
                 //_pointers call ALIVE_fnc_inspectHash;
-
                 if(_blockKey in (_pointers select 1)) then {
                     _currentPointer = [_pointers,_blockKey] call ALIVE_fnc_hashGet;
                 }else{
@@ -98,7 +91,7 @@ switch(_operation) do {
                     [_pointers,_blockKey,_currentPointer] call ALIVE_fnc_hashSet;
                 };
 
-                _limit = count _sourceArray;
+                private _limit = count _sourceArray;
 
                 if((_currentPointer + _blockLimit) >= _limit) then {
                     [_pointers,_blockKey,0] call ALIVE_fnc_hashSet;
@@ -106,8 +99,7 @@ switch(_operation) do {
                     _limit = _currentPointer + _blockLimit;
                     [_pointers,_blockKey,_limit] call ALIVE_fnc_hashSet;
                 };
-
-                _block = [];
+                private _block = [];
                 for "_i" from _currentPointer to (_limit)-1 do {
                     _block pushback (_sourceArray select _i);
                 };
@@ -115,34 +107,35 @@ switch(_operation) do {
                 _result = _block;
         };
         case "state": {
-                private["_state"];
 
-                if(typeName _args != "ARRAY") then {
+                if !(_args isEqualType []) then {
 
                         // Save state
 
-                        _state = [] call ALIVE_fnc_hashCreate;
+                        private _state = [] call ALIVE_fnc_hashCreate;
 
                         // BaseClassHash CHANGE
                         // loop the class hash and set vars on the state hash
                         {
-                            if(!(_x == "super") && !(_x == "class")) then {
-                                [_state,_x,[_logic,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-                            };
-                        } forEach (_logic select 1);
+                          if(!(_x == "super") && !(_x == "class")) then {
+                            [_state,_x,[_logic,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                          };
+                          false
+                        } count (_logic select 1);
 
                         _result = _state;
 
                 } else {
-                        ASSERT_TRUE(typeName _args == "ARRAY",str typeName _args);
+                        ASSERT_TRUE((_args isEqualType []),str typeName _args);
 
                         // Restore state
 
                         // BaseClassHash CHANGE
                         // loop the passed hash and set vars on the class hash
                         {
-                            [_logic,_x,[_args,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-                        } forEach (_args select 1);
+                          [_logic,_x,[_args,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                          false
+                        } count (_args select 1);
                 };
         };
         default {
@@ -150,4 +143,4 @@ switch(_operation) do {
         };
 };
 TRACE_1("arrayBlockHandler - output",_result);
-_result;
+_result
