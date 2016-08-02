@@ -1,266 +1,58 @@
 class cfgFunctions {
     class PREFIX {
         class COMPONENT {
-            class profileSystemInit {
-                description = "profileSystemInit";
-                file = "\x\alive\addons\sys_profile\fnc_profileSystemInit.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileSystem {
-                description = "profileSystem";
-                file = "\x\alive\addons\sys_profile\fnc_profileSystem.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileHandler {
-                description = "profileHandler";
-                file = "\x\alive\addons\sys_profile\fnc_profileHandler.sqf";
-                recompile = RECOMPILE;
-            };
-            class profile {
-                description = "profile";
-                file = "\x\alive\addons\sys_profile\fnc_profile.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileEntity {
-                description = "profileEntity";
-                file = "\x\alive\addons\sys_profile\fnc_profileEntity.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileMenuDef {
-                description = "profileMenuDef";
-                file = "\x\alive\addons\sys_profile\fnc_profileMenuDef.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileVehicle {
-                description = "profileVehicle";
-                file = "\x\alive\addons\sys_profile\fnc_profileVehicle.sqf";
-                recompile = RECOMPILE;
-            };
-            class createProfilesFromGroupConfig {
-                description = "createProfilesFromGroupConfig";
-                file = "\x\alive\addons\sys_profile\fnc_createProfilesFromGroupConfig.sqf";
-                recompile = RECOMPILE;
-            };
-            class createProfilesCrewedVehicle {
-                description = "createProfilesCrewedVehicle";
-                file = "\x\alive\addons\sys_profile\fnc_createProfilesCrewedVehicle.sqf";
-                recompile = RECOMPILE;
-            };
-            class createProfileVehicle {
-                description = "createProfileVehicle";
-                file = "\x\alive\addons\sys_profile\fnc_createProfileVehicle.sqf";
-                recompile = RECOMPILE;
-            };
-            class createProfileEntity {
-                description = "createProfileEntity";
-                file = "\x\alive\addons\sys_profile\fnc_createProfileEntity.sqf";
-                recompile = RECOMPILE;
-            };
-            class createProfilesFromUnits {
-                description = "createProfilesFromUnits";
-                file = "\x\alive\addons\sys_profile\fnc_createProfilesFromUnits.sqf";
-                recompile = RECOMPILE;
-            };
-            class createProfilesFromUnitsRuntime {
-                description = "createProfilesFromUnitsRuntime";
-                file = "\x\alive\addons\sys_profile\fnc_createProfilesFromUnitsRuntime.sqf";
-                recompile = RECOMPILE;
-            };
-            class createProfilesFromPlayers {
-                description = "createProfilesFromPlayers";
-                file = "\x\alive\addons\sys_profile\fnc_createProfilesFromPlayers.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileKilledEventHandler {
-                description = "profileKilledEventHandler";
-                file = "\x\alive\addons\sys_profile\fnc_profileKilledEventHandler.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileGetInEventHandler {
-                description = "profileGetInEventHandler";
-                file = "\x\alive\addons\sys_profile\fnc_profileGetInEventHandler.sqf";
-                recompile = RECOMPILE;
-            };
-            class createProfileWaypoint {
-                description = "createProfileWaypoint";
-                file = "\x\alive\addons\sys_profile\fnc_createProfileWaypoint.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileWaypointsToWaypoints {
-                description = "profileWaypointsToWaypoints";
-                file = "\x\alive\addons\sys_profile\fnc_profileWaypointsToWaypoints.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileWaypointToWaypoint {
-                description = "profileWaypointToWaypoint";
-                file = "\x\alive\addons\sys_profile\fnc_profileWaypointToWaypoint.sqf";
-                recompile = RECOMPILE;
-            };
-            class waypointsToProfileWaypoints {
-                description = "waypointsToProfileWaypoints";
-                file = "\x\alive\addons\sys_profile\fnc_waypointsToProfileWaypoints.sqf";
-                recompile = RECOMPILE;
-            };
-            class waypointToProfileWaypoint {
-                description = "waypointToProfileWaypoint";
-                file = "\x\alive\addons\sys_profile\fnc_waypointToProfileWaypoint.sqf";
-                recompile = RECOMPILE;
-            };
-            class createProfileVehicleAssignment {
-                description = "createProfileVehicleAssignment";
-                file = "\x\alive\addons\sys_profile\fnc_createProfileVehicleAssignment.sqf";
-                recompile = RECOMPILE;
-            };
-            class removeProfileVehicleAssignments {
-                description = "removeProfileVehicleAssignments";
-                file = "\x\alive\addons\sys_profile\fnc_removeProfileVehicleAssignments.sqf";
-                recompile = RECOMPILE;
-            };
-            class removeProfileVehicleAssignment {
-                description = "removeProfileVehicleAssignment";
-                file = "\x\alive\addons\sys_profile\fnc_removeProfileVehicleAssignment.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileVehicleAssignmentGetUsedIndexes {
-                description = "profileVehicleAssignmentGetUsedIndexes";
-                file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentGetUsedIndexes.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileVehicleAssignmentGetEmptyPositions {
-                description = "profileVehicleAssignmentGetEmptyPositions";
-                file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentGetEmptyPositions.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileVehicleAssignmentsToVehicleAssignments {
-                description = "profileVehicleAssignmentsToVehicleAssignments";
-                file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentsToVehicleAssignments.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileVehicleAssignmentToVehicleAssignment {
-                description = "profileVehicleAssignmentToVehicleAssignment";
-                file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentToVehicleAssignment.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileVehicleAssignmentIndexesToUnits {
-                description = "profileVehicleAssignmentIndexesToUnits";
-                file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentIndexesToUnits.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileVehicleAssignmentsGetInCommand {
-                description = "profileVehicleAssignmentsGetInCommand";
-                file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentsGetInCommand.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileVehicleAssignmentsGetInCargo {
-                description = "profileVehicleAssignmentsGetInCargo";
-                file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentsGetInCargo.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileVehicleAssignmentsSetAllPositions {
-                description = "profileVehicleAssignmentsSetAllPositions";
-                file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentsSetAllPositions.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileVehicleAssignmentsGetSpeedPerSecond {
-                description = "profileVehicleAssignmentsGetSpeedPerSecond";
-                file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentsGetSpeedPerSecond.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileVehicleAssignmentsGetCount {
-                description = "profileVehicleAssignmentsGetCount";
-                file = "\x\alive\addons\sys_profile\fnc_profileVehicleAssignmentsGetCount.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileGetGoodSpawnPosition {
-                description = "profileGetGoodSpawnPosition";
-                file = "\x\alive\addons\sys_profile\fnc_profileGetGoodSpawnPosition.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileGetAnyLinkedInRange {
-                description = "profileGetAnyLinkedInRange";
-                file = "\x\alive\addons\sys_profile\fnc_profileGetAnyLinkedInRange.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileSimulator {
-                description = "profileSimulator";
-                file = "\x\alive\addons\sys_profile\fnc_profileSimulator.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileSpawner {
-                description = "profileSpawner";
-                file = "\x\alive\addons\sys_profile\fnc_profileSpawner.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileDespawner {
-                description = "profileDespawner";
-                file = "\x\alive\addons\sys_profile\fnc_profileDespawner.sqf";
-                recompile = RECOMPILE;
-            };
-            class getNearProfiles {
-                description = "getNearProfiles";
-                file = "\x\alive\addons\sys_profile\fnc_getNearProfiles.sqf";
-                recompile = RECOMPILE;
-            };
-            class vehicleAssignmentsGetLinkedProfiles {
-                description = "vehicleAssignmentsGetLinkedProfiles";
-                file = "\x\alive\addons\sys_profile\fnc_vehicleAssignmentsGetLinkedProfiles.sqf";
-                recompile = RECOMPILE;
-            };
-            class vehicleAssignmentsToProfileVehicleAssignments {
-                description = "vehicleAssignmentsToProfileVehicleAssignments";
-                file = "\x\alive\addons\sys_profile\fnc_vehicleAssignmentsToProfileVehicleAssignments.sqf";
-                recompile = RECOMPILE;
-            };
-            class vehicleAssignmentToProfileVehicleAssignment {
-                description = "vehicleAssignmentToProfileVehicleAssignment";
-                file = "\x\alive\addons\sys_profile\fnc_vehicleAssignmentToProfileVehicleAssignment.sqf";
-                recompile = RECOMPILE;
-            };
-            class getInActiveEntitiesForMarking {
-                description = "getInActiveEntitiesForMarking";
-                file = "\x\alive\addons\sys_profile\fnc_getInActiveEntitiesForMarking.sqf";
-                recompile = RECOMPILE;
-            };
-            class profile_onPlayerConnected {
-                description = "profile_onPlayerConnected";
-                file = "\x\alive\addons\sys_profile\fnc_profile_onPlayerConnected.sqf";
-                recompile = RECOMPILE;
-            };
-            class profile_onPlayerDisconnected {
-                description = "profile_onPlayerDisconnected";
-                file = "\x\alive\addons\sys_profile\fnc_profile_onPlayerDisconnected.sqf";
-                recompile = RECOMPILE;
-            };
-            class profilesSaveData {
-                description = "profilesSaveData";
-                file = "\x\alive\addons\sys_profile\fnc_profilesSaveData.sqf";
-                recompile = RECOMPILE;
-            };
-            class profilesLoadData {
-                description = "profilesLoadData";
-                file = "\x\alive\addons\sys_profile\fnc_profilesLoadData.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileAttack {
-                description = "profileAttack";
-                file = "\x\alive\addons\sys_profile\fnc_profileAttack.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileBattle {
-                description = "profileBattle";
-                file = "\x\alive\addons\sys_profile\fnc_profileBattle.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileCombatHandler {
-                description = "profileCombatHandler";
-                file = "\x\alive\addons\sys_profile\fnc_profileCombatHandler.sqf";
-                recompile = RECOMPILE;
-            };
-            class profileGetDamageOutput {
-                description = "profileGetDamageOutput";
-                file = "\x\alive\addons\sys_profile\fnc_profileGetDamageOutput.sqf";
-                recompile = RECOMPILE;
-            };
-        };
-    };
+						FUNC_FILEPATH(profileSystemInit,"profileSystemInit");
+						FUNC_FILEPATH(profileSystem,"profileSystem");
+						FUNC_FILEPATH(profileHandler,"profileHandler");
+						FUNC_FILEPATH(profile,"profile");
+						FUNC_FILEPATH(profileEntity,"profileEntity");
+						FUNC_FILEPATH(profileMenuDef,"profileMenuDef");
+						FUNC_FILEPATH(profileVehicle,"profileVehicle");
+						FUNC_FILEPATH(createProfilesFromGroupConfig,"createProfilesFromGroupConfig");
+						FUNC_FILEPATH(createProfilesCrewedVehicle,"createProfilesCrewedVehicle");
+						FUNC_FILEPATH(createProfileVehicle,"createProfileVehicle");
+						FUNC_FILEPATH(createProfileEntity,"createProfileEntity");
+						FUNC_FILEPATH(createProfilesFromUnits,"createProfilesFromUnits");
+						FUNC_FILEPATH(createProfilesFromUnitsRuntime,"createProfilesFromUnitsRuntime");
+						FUNC_FILEPATH(createProfilesFromPlayers,"createProfilesFromPlayers");
+						FUNC_FILEPATH(profileKilledEventHandler,"profileKilledEventHandler");
+						FUNC_FILEPATH(profileGetInEventHandler,"profileGetInEventHandler");
+						FUNC_FILEPATH(createProfileWaypoint,"createProfileWaypoint");
+						FUNC_FILEPATH(profileWaypointsToWaypoints,"profileWaypointsToWaypoints");
+						FUNC_FILEPATH(profileWaypointToWaypoint,"profileWaypointToWaypoint");
+						FUNC_FILEPATH(waypointsToProfileWaypoints,"waypointsToProfileWaypoints");
+						FUNC_FILEPATH(waypointToProfileWaypoint,"waypointToProfileWaypoint");
+						FUNC_FILEPATH(createProfileVehicleAssignment,"createProfileVehicleAssignment");
+						FUNC_FILEPATH(removeProfileVehicleAssignments,"removeProfileVehicleAssignments");
+						FUNC_FILEPATH(removeProfileVehicleAssignment,"removeProfileVehicleAssignment");
+						FUNC_FILEPATH(profileVehicleAssignmentGetUsedIndexes,"profileVehicleAssignmentGetUsedIndexes");
+						FUNC_FILEPATH(profileVehicleAssignmentGetEmptyPositions,"profileVehicleAssignmentGetEmptyPositions");
+						FUNC_FILEPATH(profileVehicleAssignmentsToVehicleAssignments,"profileVehicleAssignmentsToVehicleAssignments");
+						FUNC_FILEPATH(profileVehicleAssignmentToVehicleAssignment,"profileVehicleAssignmentToVehicleAssignment");
+						FUNC_FILEPATH(profileVehicleAssignmentIndexesToUnits,"profileVehicleAssignmentIndexesToUnits");
+						FUNC_FILEPATH(profileVehicleAssignmentsGetInCommand,"profileVehicleAssignmentsGetInCommand");
+						FUNC_FILEPATH(profileVehicleAssignmentsGetInCargo,"profileVehicleAssignmentsGetInCargo");
+						FUNC_FILEPATH(profileVehicleAssignmentsSetAllPositions,"profileVehicleAssignmentsSetAllPositions");
+						FUNC_FILEPATH(profileVehicleAssignmentsGetSpeedPerSecond,"profileVehicleAssignmentsGetSpeedPerSecond");
+						FUNC_FILEPATH(profileVehicleAssignmentsGetCount,"profileVehicleAssignmentsGetCount");
+						FUNC_FILEPATH(profileGetGoodSpawnPosition,"profileGetGoodSpawnPosition");
+						FUNC_FILEPATH(profileGetAnyLinkedInRange,"profileGetAnyLinkedInRange");
+						FUNC_FILEPATH(profileSimulator,"profileSimulator");
+						FUNC_FILEPATH(profileSpawner,"profileSpawner");
+						FUNC_FILEPATH(profileDespawner,"profileDespawner");
+						FUNC_FILEPATH(getNearProfiles,"getNearProfiles");
+						FUNC_FILEPATH(vehicleAssignmentsGetLinkedProfiles,"vehicleAssignmentsGetLinkedProfiles");
+						FUNC_FILEPATH(vehicleAssignmentsToProfileVehicleAssignments,"vehicleAssignmentsToProfileVehicleAssignments");
+						FUNC_FILEPATH(vehicleAssignmentToProfileVehicleAssignment,"vehicleAssignmentToProfileVehicleAssignment");
+						FUNC_FILEPATH(getInActiveEntitiesForMarking,"getInActiveEntitiesForMarking");
+						FUNC_FILEPATH(profile_onPlayerConnected,"profile_onPlayerConnected");
+						FUNC_FILEPATH(profile_onPlayerDisconnected,"profile_onPlayerDisconnected");
+						FUNC_FILEPATH(profilesSaveData,"profilesSaveData");
+						FUNC_FILEPATH(profilesLoadData,"profilesLoadData");
+						FUNC_FILEPATH(profileAttack,"profileAttack");
+						FUNC_FILEPATH(profileBattle,"profileBattle");
+						FUNC_FILEPATH(profileCombatHandler,"profileCombatHandler");
+						FUNC_FILEPATH(profileGetDamageOutput,"profileGetDamageOutput");
+				};
+		};
 };

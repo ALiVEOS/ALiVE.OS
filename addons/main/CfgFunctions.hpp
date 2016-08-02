@@ -1,71 +1,19 @@
 class cfgFunctions {
     class PREFIX {
         class COMPONENT {
-            class buttonAbort {
-                description = "Calls any scripts required when the user disconnects";
-                file = "\x\alive\addons\main\fnc_buttonAbort.sqf";
-                recompile = RECOMPILE;
-            };
-            class aliveInit {
-                description = "ALiVE init function";
-                file = "\x\alive\addons\main\fnc_aliveInit.sqf";
-                recompile = RECOMPILE;
-            };
-            class Nuke {
-                description = "Fires a Nuke at given position";
-                file = "\x\alive\addons\main\fnc_Nuke.sqf";
-                recompile = RECOMPILE;
-            };
-            class isModuleSynced {
-                description = "Checks if modules are synced";
-                file = "\x\alive\addons\main\fnc_isModuleSynced.sqf";
-                recompile = RECOMPILE;
-            };
-            class isModuleAvailable {
-                description = "Checks if modules are available";
-                file = "\x\alive\addons\main\fnc_isModuleAvailable.sqf";
-                recompile = RECOMPILE;
-            };
-            class versioning {
-                description = "Warns or kicks players on version mismatch";
-                file = "\x\alive\addons\main\fnc_versioning.sqf";
-                recompile = RECOMPILE;
-            };
-            class isModuleInitialised {
-                description = "Checks if given modules are initialised";
-                file = "\x\alive\addons\main\fnc_isModuleInitialised.sqf";
-                recompile = RECOMPILE;
-            };
-            class pauseModule {
-                description = "Pauses given module(s)";
-                file = "\x\alive\addons\main\fnc_pauseModule.sqf";
-                recompile = RECOMPILE;
-            };
-            class unPauseModule {
-                description = "activates given module(s) after pausing";
-                file = "\x\alive\addons\main\fnc_unPauseModule.sqf";
-                recompile = RECOMPILE;
-            };
-            class pauseModulesAuto {
-                description = "Adds EHs to pause all main modules if no players are on server";
-                file = "\x\alive\addons\main\fnc_pauseModulesAuto.sqf";
-                recompile = RECOMPILE;
-            };
-            class ZEUSinit {
-                description = "Initialises Zeus for ALiVE";
-                file = "\x\alive\addons\main\fnc_ZEUSinit.sqf";
-                recompile = RECOMPILE;
-            };
-            class mainTablet {
-                description = "ALiVE Main Tablet";
-                file = "\x\alive\addons\main\fnc_mainTablet.sqf";
-                recompile = RECOMPILE;
-            };
-            class AI_Distributor {
-                description = "Distributes AI to all headless clients";
-                file = "\x\alive\addons\main\fnc_AI_Distributor.sqf";
-                recompile = RECOMPILE;
-            };
+            FUNC_FILEPATH(buttonAbort,"Calls any scripts required when the user disconnects");
+            FUNC_FILEPATH(aliveInit,"ALiVE init function");
+            FUNC_FILEPATH(Nuke,"Fires a Nuke at a given position");
+            FUNC_FILEPATH(isModuleSynced,"Checks if modules are synced");
+            FUNC_FILEPATH(isModuleAvailable,"Checks if modules are available");
+            FUNC_FILEPATH(versioning,"Warns or kicks players on a version mismatch");
+            FUNC_FILEPATH(isModuleInitialised,"Checks if given modules are initialised");
+            FUNC_FILEPATH(pauseModule,"Pauses given module(s)");
+            FUNC_FILEPATH(unPauseModule,"Activates given module(s) after pausing");
+            FUNC_FILEPATH(pauseModulesAuto,"Adds EHs to pause all main modules if no players are on server");
+            FUNC_FILEPATH(ZEUSinit,"Initialises Zeus for ALiVE");
+            FUNC_FILEPATH(mainTablet,"ALiVE Main Tablet");
+            FUNC_FILEPATH(AI_Distributor,"Distributes AI to all headless clients");
         };
     };
 };
