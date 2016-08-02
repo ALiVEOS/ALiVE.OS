@@ -2,7 +2,7 @@
 SCRIPT(Artillery);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_Artillery
+Function: ALIVE_fnc_artillery
 Description:
 Artillery module.
 

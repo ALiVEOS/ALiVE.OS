@@ -4,7 +4,7 @@ class CfgVehicles {
         {
                 scope = 2;
                 displayName = "$STR_ALIVE_ARTILLERY";
-                function = "ALIVE_fnc_ARTILLERYInit";
+                function = "ALIVE_fnc_artilleryInit";
                 author = MODULE_AUTHOR;
                 functionPriority = 161;
                 isGlobal = 2;
