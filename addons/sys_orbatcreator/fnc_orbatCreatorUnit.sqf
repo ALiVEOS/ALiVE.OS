@@ -70,7 +70,6 @@ switch(_operation) do {
 
     };
 
-
     case "inheritsFrom": {
 
         if (typename _args == "STRING") then {

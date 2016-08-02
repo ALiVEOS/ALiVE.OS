@@ -37,39 +37,61 @@ nil
 
 // display components
 
-#define OC_DISPLAY_ORBAT                        8000
-#define OC_DISPLAY_UNITEDITOR                   9000
-#define OC_DISPLAY_CREATEUNIT                   10000
+#define OC_DISPLAY_ORBAT                            8000
+#define OC_DISPLAY_UNITEDITOR                       9000
+#define OC_DISPLAY_CREATEUNIT                       10000
+#define OC_DISPLAY_GROUPEDITOR                      11000
 
 // interface elements
 
-#define OC_ORBAT_FACTIONS_LIST                  8008
-#define OC_ORBAT_BUTTON_BIG_ONE                 8005
-#define OC_ORBAT_BUTTON_BIG_TWO                 8006
-#define OC_ORBAT_BUTTON_BIG_THREE               8007
-#define OC_ORBAT_GROUPS_TREE                    8009
+#define OC_ORBAT_FACTIONS_LIST                      8008
+#define OC_ORBAT_BUTTON_BIG_ONE                     8005
+#define OC_ORBAT_BUTTON_BIG_TWO                     8006
+#define OC_ORBAT_BUTTON_BIG_THREE                   8007
+#define OC_ORBAT_GROUPS_TREE                        8009
 
-#define OC_UNITEDITOR_BUTTON_BIG_ONE            9008
-#define OC_UNITEDITOR_BUTTON_BIG_TWO            9009
-#define OC_UNITEDITOR_BUTTON_BIG_THREE          9010
-#define OC_UNITEDITOR_CLASSLIST_BUTTON_ONE      9012
-#define OC_UNITEDITOR_CLASSLIST_BUTTON_TWO      9013
-#define OC_UNITEDITOR_CLASSLIST_BUTTON_THREE    9014
-#define OC_UNITEDITOR_CLASSLIST_BUTTON_FOUR     9015
-#define OC_UNITEDITOR_CLASSLIST_LIST            9011
-#define OC_UNITEDITOR_FACTIONS_LIST             9007
+#define OC_UNITEDITOR_BUTTON_BIG_ONE                9008
+#define OC_UNITEDITOR_BUTTON_BIG_TWO                9009
+#define OC_UNITEDITOR_BUTTON_BIG_THREE              9010
+#define OC_UNITEDITOR_CLASSLIST_BUTTON_ONE          9012
+#define OC_UNITEDITOR_CLASSLIST_BUTTON_TWO          9013
+#define OC_UNITEDITOR_CLASSLIST_BUTTON_THREE        9014
+#define OC_UNITEDITOR_CLASSLIST_BUTTON_FOUR         9015
+#define OC_UNITEDITOR_CLASSLIST_LIST                9011
+#define OC_UNITEDITOR_FACTIONS_LIST                 9007
 
-#define OC_CREATEUNIT_INPUT_DISPLAYNAME         10010
-#define OC_CREATEUNIT_INPUT_CLASSNAME           10011
-#define OC_CREATEUNIT_INPUT_SIDE                10012
-#define OC_CREATEUNIT_INPUT_FACTION             10013
-#define OC_CREATEUNIT_INPUT_UNITTYPE_SIDE       10014
-#define OC_CREATEUNIT_INPUT_UNITTYPE_FACTION    10015
-#define OC_CREATEUNIT_INPUT_UNITTYPE_UNITS      10016
-#define OC_CREATEUNIT_BUTTON_CANCEL             10017
-#define OC_CREATEUNIT_BUTTON_CONFIRM            10018
-#define OC_CREATEUNIT_BUTTON_AUTOGEN_CLASSNAME  10019
-#define OC_CREATEUNIT_INSTRUCTIONS              10020
+#define OC_CREATEUNIT_INPUT_DISPLAYNAME             10010
+#define OC_CREATEUNIT_INPUT_CLASSNAME               10011
+#define OC_CREATEUNIT_INPUT_SIDE                    10012
+#define OC_CREATEUNIT_INPUT_FACTION                 10013
+#define OC_CREATEUNIT_INPUT_UNITTYPE_SIDE           10014
+#define OC_CREATEUNIT_INPUT_UNITTYPE_FACTION        10015
+#define OC_CREATEUNIT_INPUT_UNITTYPE_UNITS          10016
+#define OC_CREATEUNIT_BUTTON_CANCEL                 10017
+#define OC_CREATEUNIT_BUTTON_CONFIRM                10018
+#define OC_CREATEUNIT_BUTTON_AUTOGEN_CLASSNAME      10019
+#define OC_CREATEUNIT_INSTRUCTIONS                  10020
+
+#define OC_GROUPEDITOR_FACTIONS_LIST                11008
+#define OC_GROUPEDITOR_BUTTON_BIG_ONE               11009
+#define OC_GROUPEDITOR_BUTTON_BIG_TWO               11010
+#define OC_GROUPEDITOR_BUTTON_BIG_THREE             11011
+#define OC_GROUPEDITOR_ASSETS_INPUT_CATEGORY        11012
+#define OC_GROUPEDITOR_ASSETS_LIST_UNITS            11013
+#define OC_GROUPEDITOR_ASSETS_BUTTON_ONE            11014
+#define OC_GROUPEDITOR_ASSETS_BUTTON_TWO            11015
+#define OC_GROUPEDITOR_ASSETS_BUTTON_THREE          11016
+#define OC_GROUPEDITOR_GROUPS_INPUT_CATEGORY        11017
+#define OC_GROUPEDITOR_GROUPS_LIST_GROUPS           11018
+#define OC_GROUPEDITOR_GROUPS_BUTTON_ONE            11019
+#define OC_GROUPEDITOR_GROUPS_BUTTON_TWO            11020
+#define OC_GROUPEDITOR_GROUPS_BUTTON_THREE          11021
+#define OC_GROUPEDITOR_SELECTEDGROUP_HEADER         11007
+#define OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS     11022
+#define OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_ONE     11023
+#define OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_TWO     11024
+#define OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_THREE   11025
+#define OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_FOUR    11026
 
 #define
 
@@ -189,15 +211,16 @@ switch(_operation) do {
         private _customUnits = +_tmpHash;
         [_state,"customUnits", _customUnits] call ALiVE_fnc_hashSet;
 
-        private _configUnits = +_tmpHash;
-        [_state,"configUnits", _configUnits] call ALiVE_fnc_hashSet;
-
         [_state,"unitEditor_interfaceBackground", objNull] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_interfaceCamera", objNull] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_activeUnitPosition", [0,0,0]] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_activeUnitObject", objNull] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_selectedFaction", ""] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_selectedUnit", ""] call ALiVE_fnc_hashSet;
+
+        [_state,"groupEditor_selectedFaction", ""] call ALiVE_fnc_hashSet;
+        [_state,"groupEditor_selectedGroupCategory", ""] call ALiVE_fnc_hashSet;
+        [_state,"groupEditor_selectedGroup", ""] call ALiVE_fnc_hashSet;
 
         MOD(orbatCreator) = _logic;
 
@@ -463,6 +486,8 @@ switch(_operation) do {
                 _classList_button4 ctrlSetEventHandler ["MouseButtonDown","['unitEditorDeleteClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
                 _classList_button4 ctrlShow true;
 
+                // create gray background and camera
+
                 [_logic,"enableUnitEditorBackground", true] call MAINCLASS;
 
             };
@@ -669,7 +694,121 @@ switch(_operation) do {
 
             case "Group_Editor": {
 
+                private _display = findDisplay OC_DISPLAY_GROUPEDITOR;
+                _display displayAddEventHandler ["unload", "['onUnload', 'Group_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
 
+                // init buttons
+
+                private _button1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_BUTTON_BIG_ONE );
+                _button1 ctrlSetText "ORBAT Viewer";
+                _button1 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'ORBAT_Viewer'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _button1 ctrlShow true;
+
+                private _button2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_BUTTON_BIG_TWO );
+                _button2 ctrlSetText "Unit Editor";
+                _button2 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'Unit_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _button2 ctrlShow true;
+
+                private _button3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_BUTTON_BIG_THREE );
+                _button3 ctrlSetText "Generate Config";
+                _button3 ctrlSetTooltip "Export selected groups to clipboard";
+                _button3 ctrlSetEventHandler ["MouseButtonDown","['generateConfig', 'Group_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _button3 ctrlShow true;
+
+                // init group list
+
+                private _groupCategoryList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_INPUT_CATEGORY );
+                _groupCategoryList ctrlSetEventHandler ["lbSelChanged","['onGroupEditorGroupCategorySelected', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                _groupCategoryList ctrlShow true;
+
+                private _groupsList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_LIST_GROUPS );
+                _groupsList ctrlSetEventHandler ["lbSelChanged","['onGroupEditorGroupSelected', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                _groupsList ctrlShow true;
+
+                private _groupsButton1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_ONE );
+                _groupsButton1 ctrlSetText "New";
+                _groupsButton1 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorGroupsNewClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                _groupsButton1 ctrlShow false;
+
+                private _groupsButton2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_TWO );
+                _groupsButton2 ctrlSetText "Edit";
+                _groupsButton2 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorGroupsEditClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _groupsButton2 ctrlShow false;
+
+                private _groupsButton3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_THREE );
+                _groupsButton3 ctrlSetText "Delete";
+                _groupsButton3 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorGroupsDeleteClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _groupsButton3 ctrlShow false;
+
+                // init asset list
+
+                private _assetButton1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_ONE );
+                _assetButton1 ctrlSetText "Add to Selected Group";
+                _assetButton1 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorAssetAddClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _assetButton1 ctrlShow false;
+
+                private _assetButton2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_TWO );
+                _assetButton2 ctrlSetText "Open in Unit Editor";
+                _assetButton2 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorAssetEditClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _assetButton2 ctrlShow false;
+
+                private _assetButton3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_THREE );
+                _assetButton3 ctrlSetText "";
+                //_assetButton3 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorAssetClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _assetButton3 ctrlShow false;
+
+                // init selected group list
+
+                private _selectedGroupUnitList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS );
+                _selectedGroupUnitList ctrlSetEventHandler ["lbSelChanged","['onGroupEditorSelectedGroupUnitChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+
+                private _selectedGroupButton1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_ONE );
+                _selectedGroupButton1 ctrlSetText "Edit Group";
+                _selectedGroupButton1 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorSelectedGroupClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _selectedGroupButton1 ctrlShow false;
+
+                private _selectedGroupButton2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_TWO );
+                _selectedGroupButton2 ctrlSetText "";
+                _selectedGroupButton2 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorSelectedGroupClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _selectedGroupButton2 ctrlShow false;
+
+                private _selectedGroupButton3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_THREE );
+                _selectedGroupButton3 ctrlSetText "Open Unit in Unit Editor";
+                _selectedGroupButton3 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorSelectedGroupClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _selectedGroupButton3 ctrlShow false;
+
+                private _selectedGroupButton4 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_FOUR );
+                _selectedGroupButton4 ctrlSetText "Remove Unit From Group";
+                _selectedGroupButton4 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorSelectedGroupClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _selectedGroupButton4 ctrlShow false;
+
+                // init faction list
+                // init last for events to fire properly on opening
+
+                private _factionList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_FACTIONS_LIST );
+                private _allFactions = [] call ALiVE_fnc_configGetFactions;
+
+                {
+                    _faction = _x;
+                    _factionConfig = _x call ALiVE_fnc_configGetFactionClass;
+                    _factionSide = getNumber (_factionConfig >> "side");
+
+                    if (_factionSide <= 2 && {_factionSide >= 0}) then {
+                        _factionName = getText (_factionConfig >> "displayName");
+                        _factionName = format ["%1 - %2", _factionName, _faction];
+                        _index = _factionList lbAdd _factionName;
+                        _factionList lbSetData [_index,_x];
+                    };
+                } foreach _allFactions;
+
+                lbSort [_factionList, "ASC"];
+
+                _factionList ctrlSetEventHandler ["lbSelChanged","['onGroupEditorFactionChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                _factionList lbSetCurSel 0;
+
+                // create gray background and camera
+
+                [_logic,"enableUnitEditorBackground", true] call MAINCLASS;
 
             };
 
@@ -695,6 +834,13 @@ switch(_operation) do {
 
                 [_logic,"enableUnitEditorBackground", false] call MAINCLASS;
 
+                [_state,"unitEditor_interfaceBackground", objNull] call ALiVE_fnc_hashSet;
+                [_state,"unitEditor_interfaceCamera", objNull] call ALiVE_fnc_hashSet;
+                [_state,"unitEditor_activeUnitPosition", [0,0,0]] call ALiVE_fnc_hashSet;
+                [_state,"unitEditor_activeUnitObject", objNull] call ALiVE_fnc_hashSet;
+                [_state,"unitEditor_selectedFaction", ""] call ALiVE_fnc_hashSet;
+                [_state,"unitEditor_selectedUnit", ""] call ALiVE_fnc_hashSet;
+
             };
 
             case "Create_Unit": {
@@ -711,7 +857,11 @@ switch(_operation) do {
 
             case "Group_Editor": {
 
+                [_logic,"enableUnitEditorBackground", false] call MAINCLASS;
 
+                [_state,"groupEditor_selectedFaction", ""] call ALiVE_fnc_hashSet;
+                [_state,"groupEditor_selectedGroupCategory", ""] call ALiVE_fnc_hashSet;
+                [_state,"groupEditor_selectedGroup", ""] call ALiVE_fnc_hashSet;
 
             };
 
@@ -846,6 +996,7 @@ switch(_operation) do {
                         };
 
                         _groupHash = +_tmpHash;
+                        [_groupHash,"configName", _groupConfigName] call ALiVE_fnc_hashSet;
                         [_groupHash,"name", _groupName] call ALiVE_fnc_hashSet;
                         [_groupHash,"side", _groupSide] call ALiVE_fnc_hashSet;
                         [_groupHash,"faction", _groupFaction] call ALiVE_fnc_hashSet;
@@ -866,6 +1017,12 @@ switch(_operation) do {
             };
 
         };
+
+        {
+            if !(_x in (_ALiVE_compatibleGroups select 1)) then {
+                [_ALiVE_compatibleGroups,_x, +_tmpHash] call ALiVE_fnc_hashSet;
+            };
+        } foreach ALIVE_COMPATIBLE_GROUP_CATEGORIES;
 
     };
 
@@ -988,6 +1145,10 @@ switch(_operation) do {
 
     };
 
+
+    // orbat viewer
+
+
     case "getFactionGroupsDataSources": {
 
         private ["_groupCategoryName","_groupCategoryData","_groupCategoryDataSource"];
@@ -1069,8 +1230,8 @@ switch(_operation) do {
         private ["_unit","_unitDataSource"];
         _args params ["_groupClassname","_groupHash"];
 
-        private _groupName = _groupHash select 2 select 0;      // [_groupHash,"name"] call ALiVE_fnc_hashGet;
-        private _groupUnits = _groupHash select 2 select 3;     // [_groupHash,"units"] call ALiVE_fnc_hashGet;
+        private _groupName = [_groupHash,"name"] call ALiVE_fnc_hashGet;
+        private _groupUnits = [_groupHash,"units"] call ALiVE_fnc_hashGet;
 
         private _unitDataSources = [];
 
@@ -1091,10 +1252,10 @@ switch(_operation) do {
 
         private _unitHash = _args;
 
-        private _unitSide = _unitHash select 2 select 0;        // [_unitHash,"side"] call ALiVE_fnc_hashGet;
-        private _unitVehicle = _unitHash select 2 select 1;     // [_unitHash,"vehicle"] call ALiVE_fnc_hashGet;
-        private _unitRank = _unitHash select 2 select 2;        // [_unitHash,"rank"] call ALiVE_fnc_hashGet;
-        private _unitPosition = _unitHash select 2 select 3;    // [_unitHash,"position"] call ALiVE_fnc_hashGet;
+        private _unitSide = [_unitHash,"side"] call ALiVE_fnc_hashGet;
+        private _unitVehicle = [_unitHash,"vehicle"] call ALiVE_fnc_hashGet;
+        private _unitRank = [_unitHash,"rank"] call ALiVE_fnc_hashGet;
+        private _unitPosition = [_unitHash,"position"] call ALiVE_fnc_hashGet;
 
         private _vehicleConfig = configFile >> "CfgVehicles" >> _unitVehicle;
         private _unitDisplayName = getText (_vehicleConfig >> "displayName");
@@ -1128,6 +1289,22 @@ switch(_operation) do {
             _tree tvSetPicture [_index,_image];
 
             [_logic,"treeAddDataSourcesArray", [_tree,_children,_index + [_forEachIndex]]] call MAINCLASS;
+        } foreach _dataSource;
+
+    };
+
+    case "listAddDataSourcesArray": {
+
+        private ["_index"];
+
+        _args params ["_list","_dataSource"];
+
+        {
+            _x params ["_text","_data","_image"];
+
+            _index = _tree lbAdd _text;
+            _tree tvSetData [_index,_data];
+            _tree tvSetPicture [_index,_image];
         } foreach _dataSource;
 
     };
@@ -1843,7 +2020,7 @@ switch(_operation) do {
             private _state = [_logic,"state"] call MAINCLASS;
 
             private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
-            private _factionData = [_factions,_faciton] call ALiVE_fnc_hashGet;
+            private _factionData = [_factions,_faction] call ALiVE_fnc_hashGet;
             private _factionAssets = [_factionData,"assets"] call ALiVE_fnc_hashGet;
 
             private _configUnits = [_state,"configUnits"] call ALiVE_fnc_hashGet;
@@ -1972,6 +2149,289 @@ switch(_operation) do {
     case "onEditUnitCancelClicked": {
 
         closeDialog 0;
+
+    };
+
+
+    // group editor
+
+
+    case "onGroupEditorFactionChanged": {
+
+        _args params ["_list","_index"];
+
+        private _faction = OC_ctrlGetSelData( _list );
+
+        private _state = [_logic,"state"] call MAINCLASS;
+
+        [_logic,"groupEditorDisplayFactionGroupCategories", _faction] call MAINCLASS;
+        [_logic,"groupEditorDisplayFactionAssets", _faction] call MAINCLASS;
+
+    };
+
+    case "groupEditorDisplayFactionGroupCategories": {
+
+        private ["_index"];
+
+        private _faction = _args;
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        [_state,"groupEditor_selectedFaction", _faction] call ALiVE_fnc_hashSet;
+
+        private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
+        private _factionData = [_factions,_faction] call ALiVE_fnc_hashGet;
+        private _factionGroups = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
+
+        private _compatibleGroups = [_factionGroups,"ALiVE_compatible"] call ALiVE_fnc_hashGet;
+        private _incompatibleGroups = [_factionGroups,"ALiVE_incompatible"] call ALiVE_fnc_hashGet;
+
+        // add categories to list
+
+        private _categoryList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_INPUT_CATEGORY );
+        lbClear _categoryList;
+
+        {
+            _index = _categoryList lbAdd _x;
+            _categoryList lbSetData [_index,_x];
+        } foreach ((_compatibleGroups select 1) + (_incompatibleGroups select 1));
+
+        if (lbSize _categoryList > 0) then {
+            _categoryList lbSetCurSel 0;
+        };
+
+    };
+
+    case "groupEditorDisplayFactionAssets": {
+
+        private _faction = _args;
+
+    };
+
+    case "onGroupEditorGroupCategorySelected": {
+
+        _args params ["_list","_index"];
+
+        private _groupCategory = OC_ctrlGetSelData( _list );
+
+        private _state = [_logic,"state"] call MAINCLASS;
+
+        [_logic,"groupEditorDisplayFactionGroupsInCategory", _groupCategory] call MAINCLASS;
+
+    };
+
+    case "groupEditorDisplayFactionGroupsInCategory": {
+
+        private ["_group","_groupDisplayName","_groupConfigName","_index"];
+
+        private _groupCategory = _args;
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        [_state,"groupEditor_selectedGroupCategory", _groupCategory] call ALiVE_fnc_hashSet;
+
+        private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _factionData = [_factions,_faction] call ALiVE_fnc_hashGet;
+        private _factionGroups = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
+
+        private _compatibleGroupCategories = [_factionGroups,"ALiVE_compatible"] call ALiVE_fnc_hashGet;
+        private _incompatibleGroupCategories = [_factionGroups,"ALiVE_incompatible"] call ALiVE_fnc_hashGet;
+
+        private _groups = [_compatibleGroupCategories,_groupCategory] call ALiVE_fnc_hashGet;
+        if (isnil "_groups") then {
+            _groups = [_incompatibleGroupCategories,_groupCategory] call ALiVE_fnc_hashGet;
+        };
+
+        // reset active group list
+
+        private _selectedGroupHeader = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_HEADER);
+        _selectedGroupHeader ctrlSetText "";
+
+        private _selectedGroupUnitList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS );
+        lbClear _selectedGroupUnitList;
+
+        private _selectedGroupButton1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_ONE );
+        _selectedGroupButton1 ctrlShow false;
+
+        private _selectedGroupButton2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_TWO );
+        _selectedGroupButton2 ctrlShow false;
+
+        private _selectedGroupButton3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_THREE );
+        _selectedGroupButton3 ctrlShow false;
+
+        private _selectedGroupButton4 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_FOUR );
+        _selectedGroupButton4 ctrlShow false;
+
+        // reset group list buttons
+
+        private _groupsButton2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_TWO );
+        _groupsButton2 ctrlEnable false;
+
+        // add groups to list
+
+        private _groupList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_LIST_GROUPS );
+        lbClear _groupList;
+
+        {
+            _group = _x;
+            _groupDisplayName = [_group,"name"] call ALiVE_fnc_hashGet;
+            _groupConfigName = [_group,"configName"] call ALiVE_fnc_hashGet;
+
+            _index = _groupList lbAdd _groupDisplayName;
+            _groupList lbSetData [_index,_groupConfigName];
+        } foreach (_groups select 2);
+
+        private _selectedGroupHeader = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_HEADER);
+        _selectedGroupHeader ctrlSetText "";
+
+        if (lbSize _groupList > 0) then {
+            _groupList lbSetCurSel 0;
+        };
+
+    };
+
+    case "onGroupEditorGroupSelected": {
+
+        _args params ["_list","_index"];
+
+        private _group = OC_ctrlGetSelData( _list );
+
+        // enable buttons
+
+        private _button1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_ONE );
+        _button1 ctrlShow true;
+
+        private _button2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_TWO );
+        _button2 ctrlShow true;
+        _button2 ctrlEnable true;
+
+        private _button3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_THREE );
+        _button3 ctrlShow true;
+
+        [_logic,"groupEditorDisplayGroupUnits", _group] call MAINCLASS;
+
+    };
+
+    case "groupEditorDisplayGroupUnits": {
+
+        private ["_unitData","_unitClass","_unitRank","_unitPosition","_unitDisplayName","_tooltip","_index"];
+
+        private _group = _args;
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        [_state,"groupEditor_selectedGroup", _group] call ALiVE_fnc_hashSet;
+
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+        private _customUnitClasses = _customUnits select 1;
+
+        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
+
+        private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
+        private _factionData = [_factions,_faction] call ALiVE_fnc_hashGet;
+        private _factionGroups = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
+
+        private _compatibleGroups = [_factionGroups,"ALiVE_compatible"] call ALiVE_fnc_hashGet;
+        private _incompatibleGroups = [_factionGroups,"ALiVE_incompatible"] call ALiVE_fnc_hashGet;
+
+        private _groupCategory = [_compatibleGroups,_category] call ALiVE_fnc_hashGet;
+        if (isnil "_groupCategory") then {
+            _groupCategory = [_incompatibleGroups,_category] call ALiVE_fnc_hashGet;
+        };
+
+        private _groupData = [_groupCategory,_group] call ALiVE_fnc_hashGet;
+        private _groupName = [_groupData,"name"] call ALiVE_fnc_hashGet;
+        private _groupUnits = [_groupData,"units"] call ALiVE_fnc_hashGet;
+
+        // set header
+
+        private _selectedGroupHeader = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_HEADER);
+        _selectedGroupHeader ctrlSetText _groupName;
+        _selectedGroupHeader ctrlShow true;
+
+        // set units to list
+
+        private _selectedGroupUnitList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS );
+        lbClear _selectedGroupUnitList;
+        _selectedGroupUnitList ctrlShow true;
+
+        {
+            _unitData = _x;
+            _unitConfigName = [_unitData,"vehicle"] call ALiVE_fnc_hashGet;
+            _unitRank = [_unitData,"rank"] call ALiVE_fnc_hashGet;
+            _unitPosition = [_unitData,"position"] call ALiVE_fnc_hashGet;
+
+            if (_unitConfigName in _customUnitClasses) then {
+                _unit = [_customUnitClasses,_unitConfigName] call ALiVE_fnc_hashGet;
+                _unitDisplayName = [_unit,"displayName"] call ALiVE_fnc_hashGet;
+            } else {
+                _unitDisplayName = getText (configFile >> "CfgVehicles" >> _unitConfigName >> "displayName");
+            };
+
+            _tooltip = format ["Rank: %1\nPosition: %2\nClass: %3", _unitRank, _unitPosition, _unitConfigName];
+
+            _index = _selectedGroupUnitList lbAdd _unitDisplayName;
+            _selectedGroupUnitList lbSetData [_index,_unitConfigName];
+            _selectedGroupUnitList lbSetTooltip [_index,_tooltip];
+        } foreach _groupUnits;
+
+        // init buttons
+
+        private _button1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_ONE );
+        _button1 ctrlShow true;
+
+        //private _button2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_TWO );
+        //_button2 ctrlShow true;
+
+    };
+
+    case "onGroupEditorSelectedGroupUnitChanged": {
+
+        _args params ["_list","_index"];
+
+        private _unit = OC_ctrlGetSelData( _list );
+
+        // enable buttons
+
+        private _button3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_THREE );
+        _button3 ctrlShow true;
+
+        private _button4 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_FOUR );
+        _button4 ctrlShow true;
+
+        // TODO: unified approach to spawning units
+        // and handling camera movement
+
+        // spawn selected unit onto screen
+
+    };
+
+    case "onGroupEditorGroupsNewClicked": {
+
+
+
+    };
+
+    case "onGroupEditorGroupsEditClicked": {
+
+
+
+    };
+
+    case "onGroupEditorGroupsDeleteClicked": {
+
+
+
+    };
+
+    case "onGroupEditorAssetAddClicked": {
+
+
+
+    };
+
+    case "onGroupEditorAssetEditClicked": {
+
+
 
     };
 
