@@ -68,7 +68,7 @@ class ALiVE_orbatCreator_interface_orbatViewer {
             sizeEx = 0.04;
         };
 
-        class orbatViewer_button_big_1: orbatCreator_RscButton {
+        class orbatViewer_button_big_1: orbatCreator_RscButtonBig {
             idc = 8005;
 
             text = "";
@@ -79,7 +79,7 @@ class ALiVE_orbatCreator_interface_orbatViewer {
             sizeEx = 1 * GUI_GRID_H;
         };
 
-        class orbatViewer_button_big_2: orbatCreator_RscButton {
+        class orbatViewer_button_big_2: orbatCreator_RscButtonBig {
             idc = 8006;
 
             text = "";
@@ -90,7 +90,7 @@ class ALiVE_orbatCreator_interface_orbatViewer {
             sizeEx = 1 * GUI_GRID_H;
         };
 
-        class orbatViewer_button_big_3: orbatCreator_RscButton {
+        class orbatViewer_button_big_3: orbatCreator_RscButtonBig {
             idc = 8007;
 
             text = "";

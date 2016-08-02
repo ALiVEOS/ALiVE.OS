@@ -153,19 +153,16 @@ class orbatCreator_RscFrame : RscFrame {
     type = 0;
 };
 
-class orbatCreator_RscButton : RscButton {
+class orbatCreator_RscButtonBig : RscButton {
     access = 0;
-    style = 2;
     type = 1;
     text = "";
-    colorText[] = {1,1,1,1};
-    colorDisabled[] = {1,1,1,0.25};
     colorSelect[] = {0.4,0.416,0.42,1};
     colorSelect2[] = {0.4,0.416,0.42,1};
     colorFocused[] = {0.4,0.416,0.42,1};
     colorBackground[] = {0.4,0.416,0.42,1};
-    colorBackgroundActive[] = {0.4,0.416,0.42,1};
-    colorBackgroundDisabled[] = {0.4,0.416,0.42,0.7};
+    colorBackgroundActive[] = {1,1,1,.7};
+    colorBackgroundDisabled[] = {1,1,1,.7};
     class Attributes {
         font = "RobotoCondensed";
         color = "#C0C0C0";
@@ -177,8 +174,37 @@ class orbatCreator_RscButton : RscButton {
     font = "RobotoCondensed";
     sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)";
     borderSize = 0;
-    colorBorder[] = {0,0,0,1};
     colorShadow[] = {0,0,0,0};
+    colorBorder[] = {0,0,0,1};
+    style = 2;
+};
+
+class orbatCreator_RscButton : RscButton {
+    access = 0;
+    type = 1;
+    text = "";
+    colorText[] = {1,1,1,1};
+    colorDisabled[] = {1,1,1,0.25};
+    colorSelect[] = {0,0,0,0.5};
+    colorSelect2[] = {0,0,0,0.5};
+    colorFocused[] = {0,0,0,.5};
+    colorBackground[] = {0,0,0,0.5};
+    colorBackgroundDisabled[] = {0,0,0,0.5};
+    colorBackgroundActive[] = {1,1,1,.7};
+    class Attributes {
+        font = "RobotoCondensed";
+        color = "#C0C0C0";
+        align = "center";
+        valign = "middle";
+        shadow = false;
+        shadowColor = "#000000";
+    };
+    font = "RobotoCondensed";
+    sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)";
+    borderSize = 0;
+    colorShadow[] = {0,0,0,0};
+    colorBorder[] = {0,0,0,1};
+    style = 2;
 };
 
 class orbatCreator_RscTree {

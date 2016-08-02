@@ -71,7 +71,7 @@ class ALiVE_orbatCreator_interface_unitEditor {
             sizeEx = 0.04;
         };
 
-        class unitEditor_button_big_one: orbatCreator_RscButton {
+        class unitEditor_button_big_one: orbatCreator_RscButtonBig {
             idc = 9008;
 
             text = "";
@@ -82,7 +82,7 @@ class ALiVE_orbatCreator_interface_unitEditor {
             sizeEx = 1 * GUI_GRID_H;
         };
 
-        class unitEditor_button_big_two: orbatCreator_RscButton {
+        class unitEditor_button_big_two: orbatCreator_RscButtonBig {
             idc = 9009;
 
             text = "";
@@ -93,7 +93,7 @@ class ALiVE_orbatCreator_interface_unitEditor {
             sizeEx = 1 * GUI_GRID_H;
         };
 
-        class unitEditor_button_big_three: orbatCreator_RscButton {
+        class unitEditor_button_big_three: orbatCreator_RscButtonBig {
             idc = 9010;
 
             text = "";
@@ -361,7 +361,7 @@ class ALiVE_orbatCreator_interface_createUnit {
             colorBackground[] = {-1,-1,-1,1};
         };
 
-        class unitEditor_createUnit_button_autogen_classname: orbatCreator_RscButton {
+        class unitEditor_createUnit_button_autogen_classname: orbatCreator_RscButtonBig {
             idc = 10019;
             text = "Autogenerate Classname";
             x = 10 * GUI_GRID_W + GUI_GRID_X;
