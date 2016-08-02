@@ -40,7 +40,13 @@ private _result = true;
 
 switch (_operation) do {
     case "init": {
-        [] call ALIVE_fnc_artillery_init;
+        _logic setVariable ["super", SUPERCLASS];
+        _logic setVariable ["class", MAINCLASS];
+
+        // Defaults
+        _logic setVariable ["group", grpNull];
+        _logic setVariable ["moveToPos", objNull];
+        _logic setVariable ["fireMission", objNull];
     };
 
     /****************
@@ -48,7 +54,7 @@ switch (_operation) do {
      ****************/
     case "fireMission": {
         if (isNull _args) then {
-            _result = [_logic, "fireMission"] call ALIVE_fnc_hashGet;
+            _result = _logic getVariable ["fireMission", objNull];
         } else {
             private _position = _args param [0, [0,0,0], [[]], 3];
             private _roundType = _args param [1, "", [""]];
@@ -68,11 +74,11 @@ switch (_operation) do {
             [_fireMission, "roundsShot", -1] call ALIVE_fnc_hashSet;
             [_fireMission, "nextRoundTime", -1] call ALIVE_fnc_hashSet;
 
-            [_logic, "fireMission", _fireMission] call ALIVE_fnc_hashSet;
+            _logic setVariable ["fireMission", _fireMission];
         };
     };
     case "position": {
-        private _group = [_logic, "group"] call ALIVE_fnc_hashGet;
+        private _group = _logic getVariable ["group", grpNull];
         _result = position (leader _group);
     };
 
@@ -80,16 +86,17 @@ switch (_operation) do {
      ** METHODS **
      *************/
     case "execute": {
-        private _group = [_logic, "group"] call ALIVE_fnc_hashGet;
+        private _group = _logic getVariable ["group", grpNull];
         private _units = (units _group) select {vehicle _x != _x && {gunner _x == _x}};
-        private _fireMission = [_logic, "fireMission"] call ALIVE_fnc_hashGet;
+        private _fireMission = _logic getVariable ["fireMission", objNull];
         [_fireMission, "units", _units] call ALIVE_fnc_hashSet;
         [_fireMission, "unitIndex", 0] call ALIVE_fnc_hashSet;
         [_fireMission, "roundsShot", 0] call ALIVE_fnc_hashSet;
-        [_logic, "fireMission", _fireMission] call ALIVE_fnc_hashSet; // TODO: Is this needed?
+
+        _logic setVariable ["fireMission", _fireMission];
     };
     case "fire": {
-        private _fireMission = [_logic, "fireMission"] call ALIVE_fnc_hashGet;
+        private _fireMission = _logic getVariable ["fireMission", objNull];
         private _roundsShot = [_fireMission, "roundsShot"] call ALIVE_fnc_hashGet;
         private _units = [_fireMission, "units"] call ALIVE_fnc_hashGet;
         private _unitIndex = [_fireMission, "unitIndex"] call ALIVE_fnc_hashGet;
@@ -113,43 +120,46 @@ switch (_operation) do {
         [_fireMission, "nextRoundTime", time + _delay] call ALIVE_fnc_hashSet;
         [_fireMission, "unitIndex", _unitIndex] call ALIVE_fnc_hashSet;
         [_fireMission, "roundsShot", _roundsShot + 1] call ALIVE_fnc_hashSet;
-        [_logic, "fireMission", _fireMission] call ALIVE_fnc_hashSet; // TODO: Is this needed?
+
+        _logic setVariable ["fireMission", _fireMission];
     };
     case "fireNextRound": {
-        private _fireMission = [_logic, "fireMission"] call ALIVE_fnc_hashGet;
+        private _fireMission = _logic getVariable ["fireMission", objNull];
         private _nextRoundTime = [_fireMission, "nextRoundTime"] call ALIVE_fnc_hashGet;
         _result = (time >= _nextRoundTime);
     };
     case "hasFireMission": {
-        private _fireMission = [_logic, "fireMission"] call ALIVE_fnc_hashGet;
-        _result = (count _fireMission == 3);
+        private _fireMission = _logic getVariable ["fireMission", objNull];
+        _result = (!isNull _fireMission);
     };
     case "isFireMissionComplete": {
-        private _fireMission = [_logic, "fireMission"] call ALIVE_fnc_hashGet;
+        private _fireMission = _logic getVariable ["fireMission", objNull];
         private _roundCount = [_fireMission, "roundCount"] call ALIVE_fnc_hashGet;
         private _roundsShot = [_fireMission, "roundsShot"] call ALIVE_fnc_hashGet;
         _result = (_roundsShot >= _roundCount);
     };
     case "inPosition": {
-        private _group = [_logic, "group"] call ALIVE_fnc_hashGet;
+        private _group = _logic getVariable ["group", grpNull];
         _result = _group getVariable ["sup_artillery_inPosition", false];
     };
     case "inRange": {
-        private _fireMission = [_logic, "fireMission"] call ALIVE_fnc_hashGet;
-        private _group = [_logic, "group"] call ALIVE_fnc_hashGet;
+        private _fireMission = _logic getVariable ["fireMission", objNull];
+        private _group = _logic getVariable ["group", grpNull];
         private _units = (units _group) select {vehicle _x != _x && {gunner _x == _x}};
         _result = _position inRangeOfArtillery [_units, _fireMission select 1];
     };
     case "move": {
-        private _group = [_logic, "group"] call ALIVE_fnc_hashGet;
+        private _group = _logic getVariable ["group", grpNull];
         private _position = [];
 
         if (!isNull _args && {count _args == 3}) then {
-            [_logic, "moveToPos", _args] call ALIVE_fnc_hashSet;
+            _logic setVariable ["moveToPos", _args];
             _position = _args;
         } else {
-            _position = [_logic, "moveToPos"] call ALIVE_fnc_hashGet;
+            _position = _logic getVariable ["moveToPos", objNull];
         };
+
+        _group setVariable ["sup_artillery_inPosition", false];
 
         private _waypoint = _group addWaypoint [_position, 0];
         _waypoint setWaypointType "MOVE";
@@ -159,22 +169,19 @@ switch (_operation) do {
             "true",
             "(group _this) setVariable ['sup_artillery_inPosition', true]"
         ];
-
-        _group setVariable ["sup_artillery_inPosition", false];
     };
 
     /******************
      ** STATEMACHINE **
      ******************/
     case "onIdle": {
-        private _group = [_logic, "group"] call ALIVE_fnc_hashGet;
+        private _group = _logic getVariable ["group", grpNull];
         _group setVariable ["sup_artillery_inPosition", true];
-        [_logic, "moveToPos", objNull] call ALIVE_fnc_hashSet;
-
+        _logic setVariable ["moveToPos", objNull];
     };
     case "onActive": {
         if (!([_logic, "inRange"] call MAINCLASS)) then {
-            [_logic, "moveToPos", [0,0,0]] call ALIVE_fnc_hashSet; // TODO: Figure out best firing position
+            _logic setVariable ["moveToPos", [0,0,0]]; // TODO: Figure out best firing position
         };
     };
     case "onFire": {
@@ -187,7 +194,7 @@ switch (_operation) do {
         [_logic, "execute"] call MAINCLASS;
     };
     case "onReturnToBase": {
-        [_logic, "move", [0,0,0]] call MAINCLASS; // TODO: Find (best) RTB position
+        [_logic, "move", position _logic] call MAINCLASS; // TODO: Find (best) RTB position
     };
 };
 
