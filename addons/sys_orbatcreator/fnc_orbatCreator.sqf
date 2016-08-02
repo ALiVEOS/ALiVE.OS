@@ -694,6 +694,8 @@ switch(_operation) do {
 
             case "Group_Editor": {
 
+                private ["_index"];
+
                 private _display = findDisplay OC_DISPLAY_GROUPEDITOR;
                 _display displayAddEventHandler ["unload", "['onUnload', 'Group_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
 
@@ -742,6 +744,17 @@ switch(_operation) do {
 
                 // init asset list
 
+                private _assetCategoryList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_INPUT_CATEGORY );
+                _assetCategoryList ctrlSetEventHandler ["lbSelChanged","['onGroupEditorAssetCategoryChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                {
+                    _index = _assetCategoryList lbAdd (_x select 0);
+                    _assetCategoryList lbSetData [_index,str (_x select 1)];
+                } foreach [["Men",["Man"]],["Cars",["Car"]],["APCs",["Wheeled_APC_F","APC_Wheeled_01_base_F","APC_Tracked_01_base_F"]],["Tanks",["Tank"]],["Planes",["Plane"]],["Helicopters",["Helicopter"]],["Ships",["Ship"]],["Static",["StaticWeapon"]]];
+
+                private _assetList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_LIST_UNITS );
+                _assetList ctrlSetEventHandler ["lbSelChanged","['onGroupEditorAssetListChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                _assetList ctrlShow true;
+
                 private _assetButton1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_ONE );
                 _assetButton1 ctrlSetText "Add to Selected Group";
                 _assetButton1 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorAssetAddClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
@@ -749,7 +762,7 @@ switch(_operation) do {
 
                 private _assetButton2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_TWO );
                 _assetButton2 ctrlSetText "Open in Unit Editor";
-                _assetButton2 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorAssetEditClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _assetButton2 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorAssetEditUnitClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
                 _assetButton2 ctrlShow false;
 
                 private _assetButton3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_THREE );
@@ -774,7 +787,7 @@ switch(_operation) do {
 
                 private _selectedGroupButton3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_THREE );
                 _selectedGroupButton3 ctrlSetText "Open Unit in Unit Editor";
-                _selectedGroupButton3 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorSelectedGroupClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _selectedGroupButton3 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorSelectedGroupEditUnitClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
                 _selectedGroupButton3 ctrlShow false;
 
                 private _selectedGroupButton4 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_FOUR );
@@ -833,13 +846,6 @@ switch(_operation) do {
             case "Unit_Editor": {
 
                 [_logic,"enableUnitEditorBackground", false] call MAINCLASS;
-
-                [_state,"unitEditor_interfaceBackground", objNull] call ALiVE_fnc_hashSet;
-                [_state,"unitEditor_interfaceCamera", objNull] call ALiVE_fnc_hashSet;
-                [_state,"unitEditor_activeUnitPosition", [0,0,0]] call ALiVE_fnc_hashSet;
-                [_state,"unitEditor_activeUnitObject", objNull] call ALiVE_fnc_hashSet;
-                [_state,"unitEditor_selectedFaction", ""] call ALiVE_fnc_hashSet;
-                [_state,"unitEditor_selectedUnit", ""] call ALiVE_fnc_hashSet;
 
             };
 
@@ -1017,6 +1023,8 @@ switch(_operation) do {
             };
 
         };
+
+        // add any missing ALiVE compatible group categories
 
         {
             if !(_x in (_ALiVE_compatibleGroups select 1)) then {
@@ -1457,7 +1465,7 @@ switch(_operation) do {
 
         private _selectedUnitClassname = OC_ctrlGetSelData(_list);
 
-        [_logic,"unitEditorDisplayVehicle", _selectedUnitClassname] call MAINCLASS;
+        [_logic,"displayVehicle", _selectedUnitClassname] call MAINCLASS;
 
     };
 
@@ -1494,8 +1502,9 @@ switch(_operation) do {
 
     };
 
-    case "unitEditorDisplayVehicle": {
+    case "displayVehicle": {
 
+        private ["_sideObject","_loadout","_activeUnit"];
         private _vehicle = _args;
 
         private _buttonEditLoadout = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_TWO );
@@ -1508,18 +1517,25 @@ switch(_operation) do {
         // get unit data
 
         private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
-        private _customUnit = [_customUnits,_selectedUnitClassname] call ALiVE_fnc_hashGet;
-        private _customUnitConfigName = [_customUnit,"configName"] call ALiVE_fnc_hashGet;
-        private _customUnitLoadout = [_customUnit,"loadout"] call ALiVE_fnc_hashGet;
+        private _customUnit = [_customUnits,_vehicle] call ALiVE_fnc_hashGet;
 
-        private _customUnitSide = [_customUnit,"side"] call ALiVE_fnc_hashGet;
-        private _customSideText = [_customUnitSide] call ALiVE_fnc_sideNumberToText;
-        private _customUnitSideObject = [_customSideText] call ALiVE_fnc_sideTextToObject;
+        if (!isnil "_customUnit") then {
+            _vehicle = [_customUnit,"configName"] call ALiVE_fnc_hashGet;
+            _loadout = [_customUnit,"loadout"] call ALiVE_fnc_hashGet;
 
-        // if custom unit parent is another custom unit
-        // keep going up the inheritance tree until you find a real unit
+            private _customUnitSide = [_customUnit,"side"] call ALiVE_fnc_hashGet;
+            private _customSideText = [_customUnitSide] call ALiVE_fnc_sideNumberToText;
+            _sideObject = [_customSideText] call ALiVE_fnc_sideTextToObject;
 
-        _customUnitConfigName = [_logic,"getRealUnitClass", _customUnitConfigName] call MAINCLASS;
+            // if custom unit parent is another custom unit
+            // keep going up the inheritance tree until you find a real unit
+
+            _vehicle = [_logic,"getRealUnitClass", _vehicle] call MAINCLASS;
+        } else {
+            private _configPath = configFile >> "CfgVehicles" >> _vehicle;
+            private _side = getNumber (_configPath >> "side");
+            _sideObject = [_side] call ALiVE_fnc_sideTextToObject;
+        };
 
         // delete existing vehicle
 
@@ -1528,30 +1544,32 @@ switch(_operation) do {
 
         // spawn vehicle
 
-        if (_customUnitConfigName isKindOf "Man") then {
-            _activeUnit = (createGroup _customUnitSideObject) createUnit [_customUnitConfigName, [0,0,0], [], 0, "NONE"];
+        if (_vehicle isKindOf "Man") then {
+            _activeUnit = (createGroup _sideObject) createUnit [_vehicle, [0,0,0], [], 0, "NONE"];
             _activeUnit setPosASL _pos;
             _activeUnit enableSimulation false;
             _activeUnit setDir 0;
             _activeUnit switchMove (animationState player);
             _activeUnit switchAction "playerstand";
 
-            _activeUnit setUnitLoadout _customUnitLoadout;
+            _activeUnit setUnitLoadout _loadout;
             _cam camSetRelPos [-0.05,1,0.15];
             _cam camSetFov 0.35;
 
             _buttonEditLoadout ctrlEnable true;
         } else {
-            _activeUnit = _customUnitConfigName createVehicle [0,0,0];
+            _activeUnit = _vehicle createVehicle [0,0,0];
             _activeUnit setPosASL _pos;
             _activeUnit enableSimulation false;
             _activeUnit setDir 0;
 
-            _cam camSetRelPos [0, (sizeOf _customUnitConfigName) * 0.65, (sizeOf _customUnitConfigName) * 0.1];
+            _cam camSetRelPos [0, (sizeOf _vehicle) * 0.65, (sizeOf _vehicle) * 0.1];
             _cam camSetFov 0.5;
 
             _buttonEditLoadout ctrlEnable false;
         };
+
+        _activeUnit setDir 25;
 
         _cam camCommit 0;
         _buttonEditProperties ctrlEnable true;
@@ -2009,40 +2027,34 @@ switch(_operation) do {
 
     };
 
-    case "convertFactionConfigUnitsToCustomUnits": {
+    case "convertConfigUnitToCustomUnit": {
 
-        private _faction = _args;
+        private _unit = _args;
 
-        if (_faction isEqualType "") then {
+        if (_unit isEqualType "") then {
 
-            private ["_asset","_assetConfig","_assetSide","_assetFaction","_assetDisplayName","_assetLoadout"];
+            private ["_unitConfig","_unitConfigName","_unitSide","_unitFaction","_unitDisplayName","_unitLoadout"];
 
             private _state = [_logic,"state"] call MAINCLASS;
+            private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
 
-            private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
-            private _factionData = [_factions,_faction] call ALiVE_fnc_hashGet;
-            private _factionAssets = [_factionData,"assets"] call ALiVE_fnc_hashGet;
+            _unitConfig = configFile >> "CfgVehicles" >> _unit;
+            _unitConfigName = configName _unitConfig;
+            _unitSide = getNumber (_unitConfig >> "side");
+            _unitFaction = getText (_unitConfig >> "faction");
+            _unitDisplayName = getText (_unitConfig >> "displayName");
+            _unitLoadout = getUnitLoadout _asset;
 
-            private _configUnits = [_state,"configUnits"] call ALiVE_fnc_hashGet;
+            _newUnit = [nil,"create"] call ALiVE_fnc_orbatCreatorUnit;
+            [_newUnit,"init"] call ALiVE_fnc_orbatCreatorUnit;
+            [_newUnit,"inheritsFrom", ""] call ALiVE_fnc_orbatCreatorUnit; // should be array
+            [_newUnit,"side", _unitSide] call ALiVE_fnc_hashSet;
+            [_newUnit,"faction", _unitFaction] call ALiVE_fnc_hashSet;
+            [_newUnit,"displayName", _unitDisplayName] call ALiVE_fnc_hashSet;
+            [_newUnit,"configName", _unitConfigName] call ALiVE_fnc_hashSet;
+            [_newUnit,"loadout", _unitLoadout] call ALiVE_fnc_hashSet;
 
-            {
-                _asset = _x;
-                _assetConfig = configFile >> "CfgVehicles" >> _asset;
-                _assetSide = getNumber (_assetConfig >> "side");
-                _assetFaction = getText (_assetConfig >> "faction");
-                _assetDisplayName = getText (_assetConfig >> "displayName");
-                _assetLoadout = getUnitLoadout _asset;
-
-                _newUnit = [nil,"create"] call ALiVE_fnc_orbatCreatorUnit;
-                [_newUnit,"init"] call ALiVE_fnc_orbatCreatorUnit;
-                [_newUnit,"inheritsFrom", _asset] call ALiVE_fnc_orbatCreatorUnit;
-                [_newUnit,"side", _assetSide] call ALiVE_fnc_hashSet;
-                [_newUnit,"faction", _assetFaction] call ALiVE_fnc_hashSet;
-                [_newUnit,"displayName", _assetDisplayName] call ALiVE_fnc_hashSet;
-                [_newUnit,"configName", _asset] call ALiVE_fnc_hashSet;
-                [_newUnit,"loadout", _assetLoadout] call ALiVE_fnc_hashSet;
-
-            } foreach _factionAssets;
+            [_customUnits,_unitConfigName, _newUnit] call ALiVE_fnc_hashSet;
 
         };
 
@@ -2199,11 +2211,94 @@ switch(_operation) do {
             _categoryList lbSetCurSel 0;
         };
 
+        // reset category list
+
+        private _assetCategories = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_INPUT_CATEGORY );
+        _assetCategories lbSetCurSel 0;
+
     };
 
-    case "groupEditorDisplayFactionAssets": {
+    case "onGroupEditorAssetCategoryChanged": {
 
-        private _faction = _args;
+        _args params ["_list","_index"];
+
+        private _category = call compile OC_ctrlGetSelData( _list );
+
+        [_logic,"groupEditorDisplayFactionAssetsInCategory", _category] call MAINCLASS;
+
+    };
+
+    case "groupEditorDisplayFactionAssetsInCategory": {
+
+        private ["_unit","_displayName","_configName","_realUnit","_add","_index"];
+
+        private _category = _args;
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+
+        private _factionData = [_factions,_faction] call ALiVE_fnc_hashGet;
+        private _factionAssets = [_factionData,"assets"] call ALiVE_fnc_hashGet;
+        private _customUnits = [_logic,"getCustomUnitsByFaction", _faction] call MAINCLASS;
+
+        // set units to list
+
+        private _assetList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_LIST_UNITS );
+        lbClear _assetList;
+
+        {
+            _unit = _x;
+            _displayName = [_unit,"displayName"] call ALiVE_fnc_hashGet;
+            _configName = [_unit,"configName"] call ALiVE_fnc_hashGet;
+            _realUnit = [_logic,"getRealUnitClass", _configName] call MAINCLASS;
+
+            _add = false;
+            {if (_realUnit isKindOf _x) then {_add = true}} foreach _category;
+
+            if (_add) then {
+                _index = _assetList lbAdd _displayName;
+                _assetList lbSetData [_index,_configName];
+            };
+        } foreach _customUnits;
+
+        private _factionAssetDisplayNames = _factionAssets select 1;
+        private _factionAssetConfigNames = _factionAssets select 2;
+
+        for "_i" from 0 to (count _factionAssetDisplayNames - 1) do {
+            _displayName = _factionAssetDisplayNames select _i;
+            _configName = _factionAssetConfigNames select _i;
+
+            _add = false;
+            {if (_configName isKindOf _x) then {_add = true}} foreach _category;
+
+            if (_add) then {
+                _index = _assetList lbAdd _displayName;
+                _assetList lbSetData [_index, _configName];
+            };
+        };
+
+        if (lbSize _assetList > 0) then {
+            _assetList lbSetCurSel 0;
+        };
+
+    };
+
+    case "onGroupEditorAssetListChanged": {
+
+        _args params ["_list","_index"];
+
+        private _unit = OC_ctrlGetSelData( _list );
+
+        [_logic,"displayVehicle", _unit] call MAINCLASS;
+
+        // enable buttons
+
+        private _button1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_ONE );
+        _button1 ctrlShow true;
+
+        private _button2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_TWO );
+        _button2 ctrlShow true;
 
     };
 
@@ -2285,6 +2380,7 @@ switch(_operation) do {
 
         if (lbSize _groupList > 0) then {
             _groupList lbSetCurSel 0;
+            _groupList lbSetSelected [0,true];
         };
 
     };
@@ -2390,6 +2486,8 @@ switch(_operation) do {
 
         private _unit = OC_ctrlGetSelData( _list );
 
+        [_logic,"displayVehicle", _unit] call MAINCLASS;
+
         // enable buttons
 
         private _button3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_THREE );
@@ -2402,6 +2500,19 @@ switch(_operation) do {
         // and handling camera movement
 
         // spawn selected unit onto screen
+
+    };
+
+    case "onGroupEditorSelectedGroupEditUnitClicked": {
+
+        private _unit = OC_getSelData( OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS );
+
+        [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
+
+        _unit spawn {
+            sleep 0.1; // delay needed
+            [ALiVE_orbatCreator,"unitEditorSelectUnit", _this] call MAINCLASS;
+        };
 
     };
 
@@ -2419,18 +2530,103 @@ switch(_operation) do {
 
     case "onGroupEditorGroupsDeleteClicked": {
 
+        private _groupList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_LIST_GROUPS );
+        private _selectedIndices = lbSelection _groupList;
+        private _selectedGroups = [];
 
+        {
+            _selectedGroups pushback (_groupList lbData _x);
+        } foreach _selectedIndices;
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
+
+        {
+            [_logic,"factionRemoveCategoryGroup", [_faction,_category,_x]] call MAINCLASS;
+        } foreach _selectedGroups;
+
+        // update list
+
+        [_logic,"groupEditorDisplayFactionGroupsInCategory", _category] call MAINCLASS;
+
+    };
+
+    case "factionRemoveCategoryGroup": {
+
+        _args params ["_faction","_category","_group"];
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
+
+        private _factionData = [_factions,_faction] call ALiVE_fnc_hashGet;
+        private _factionGroups = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
+        private _compatibleGroups = [_factionGroups,"ALiVE_compatible"] call ALiVE_fnc_hashGet;
+        private _incompatibleGroups = [_factionGroups,"ALiVE_incompatible"] call ALiVE_fnc_hashGet;
+
+        private _groupCategory = [_compatibleGroups,_category] call ALiVE_fnc_hashGet;
+
+        if (isnil "_groupCategory") then {
+            _groupCategory = [_incompatibleGroups,_category] call ALiVE_fnc_hashGet;
+        };
+
+        if (!isnil "_groupCategory") then {
+            [_groupCategory,_group] call ALiVE_fnc_hashRem;
+        };
 
     };
 
     case "onGroupEditorAssetAddClicked": {
 
+        private _asset = OC_getSelData( OC_GROUPEDITOR_ASSETS_LIST_UNITS );
 
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
+        private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
+
+        private _group = [_logic,"factionGetCategoryGroup", [_faction,_category,_group]] call MAINCLASS;
 
     };
 
-    case "onGroupEditorAssetEditClicked": {
+    case "factionGetCategoryGroup": {
 
+        _args params ["_faction","_category","_group"];
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
+
+        private _factionData = [_factions,_faction] call ALiVE_fnc_hashGet;
+        private _factionGroups = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
+        private _compatibleGroups = [_factionGroups,"ALiVE_compatible"] call ALiVE_fnc_hashGet;
+        private _incompatibleGroups = [_factionGroups,"ALiVE_incompatible"] call ALiVE_fnc_hashGet;
+
+        private _groupCategory = [_compatibleGroups,_category] call ALiVE_fnc_hashGet;
+
+        if (isnil "_groupCategory") then {
+            _groupCategory = [_incompatibleGroups,_category] call ALiVE_fnc_hashGet;
+        };
+
+        _result = [_groupCategory,_group] call ALiVE_fnc_hashGet;
+
+    };
+
+    case "groupAddUnit": {
+
+        _args params ["_group","_unit"];
+
+    };
+
+    case "onGroupEditorAssetEditUnitClicked": {
+
+        private _asset = OC_getSelData( OC_GROUPEDITOR_ASSETS_LIST_UNITS );
+
+        [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
+
+        _asset spawn {
+            sleep 0.1; // delay needed
+            [ALiVE_orbatCreator,"unitEditorSelectUnit", _this] call MAINCLASS;
+        };
 
 
     };
