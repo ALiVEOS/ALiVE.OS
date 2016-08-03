@@ -57,6 +57,10 @@ for "_i" from 0 to (lbSize _list - 1) do {
             _list lbSetSelected [_i, true];
             _selected pushback _i;
         };
+    } else {
+        if (_multiselection) then {
+            _list lbSetSelected [_i, false];
+        };
     };
 };
 

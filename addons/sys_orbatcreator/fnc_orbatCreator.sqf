@@ -240,7 +240,7 @@ switch(_operation) do {
 
         waitUntil {time > 0 && {!isnull player} && {!isnil "ALiVE_STATIC_DATA_LOADED"}};
 
-        [_logic,"openInterface", "ORBAT_Viewer"] call MAINCLASS;
+        [_logic,"openInterface", "ORBAT_Viewer"] spawn MAINCLASS;
         ["Preload"] call BIS_fnc_arsenal;
 
         // initialise main menu
@@ -855,12 +855,7 @@ switch(_operation) do {
                 private _factionGroupCategories = [];
 
                 private _factionData = [_factions,_faction] call ALiVE_fnc_hashGet;
-                private _factionGroups = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
-                private _compatibleGroupCategories = [_factionGroups,"ALiVE_compatible"] call ALiVE_fnc_hashGet;
-                private _incompatibleGroupCategories = [_factionGroups,"ALiVE_incompatible"] call ALiVE_fnc_hashGet;
-
-                _factionGroupCategories append (_compatibleGroupCategories select 1);
-                _factionGroupCategories append (_incompatibleGroupCategories select 1);
+                private _factionGroupCategories = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
 
                 // init category list
 
@@ -869,7 +864,7 @@ switch(_operation) do {
                 {
                     _index = _inputCategory lbAdd _x;
                     _inputCategory lbSetData [_index,_x];
-                } foreach _factionGroupCategories;
+                } foreach (_factionGroupCategories select 1);
 
                 private _selectedCategory = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
                 [_inputCategory,_selectedCategory] call ALiVE_fnc_listSelectData;
@@ -973,6 +968,11 @@ switch(_operation) do {
 
     };
 
+
+    // helper functions
+    // init
+
+
     case "getUnitsByFaction": {
 
         private [
@@ -1040,20 +1040,17 @@ switch(_operation) do {
             "_groupCategory","_groupCategoryName","_groupCategoryGroups","_group",
             "_groupConfigName","_groupName","_groupSide","_groupFaction","_units",
             "_groupHash","_unit","_unitSide","_unitVehicle","_unitRank","_unitPosition",
-            "_unitHash"
+            "_unitHash","_category","_found","_index"
         ];
 
         private _faction = _args;
+
         private _factionGroupCategories = _faction call ALiVE_fnc_configGetFactionGroups;
+        private _groupCategories = [];
 
         private _tmpHash = [] call ALiVE_fnc_hashCreate;
 
-        private _ALiVE_compatibleGroups = +_tmpHash;
-        private _ALiVE_incompatibleGroups = +_tmpHash;
-
         _result = +_tmpHash;
-        [_result,"ALiVE_compatible", _ALiVE_compatibleGroups] call ALiVE_fnc_hashSet;
-        [_result,"ALiVE_incompatible", _ALiVE_incompatibleGroups] call ALiVE_fnc_hashSet;
 
         for "_i" from 0 to (count _factionGroupCategories - 1) do {
 
@@ -1112,11 +1109,8 @@ switch(_operation) do {
 
                 };
 
-                if (_groupCategoryName in ALIVE_COMPATIBLE_GROUP_CATEGORIES) then {
-                    [_ALiVE_compatibleGroups,_groupCategoryName,_groupCategoryGroups] call ALiVE_fnc_hashSet;
-                } else {
-                    [_ALiVE_incompatibleGroups,_groupCategoryName,_groupCategoryGroups] call ALiVE_fnc_hashSet;
-                };
+                //[_result,_groupCategoryName,_groupCategoryGroups] call ALiVE_fnc_hashSet;
+                _groupCategories pushback [_groupCategoryName,_groupCategoryGroups];
 
             };
 
@@ -1125,22 +1119,44 @@ switch(_operation) do {
         // add any missing ALiVE compatible group categories
 
         {
-            if !(_x in (_ALiVE_compatibleGroups select 1)) then {
-                [_ALiVE_compatibleGroups,_x, +_tmpHash] call ALiVE_fnc_hashSet;
+            _category = _x;
+            _found = false;
+
+            {if ((_x select 0) == _category) exitwith {_found = true}} foreach _groupCategories;
+
+            if (!_found) then {
+                _groupCategories pushback [_x,+_tmpHash];
             };
         } foreach ALIVE_COMPATIBLE_GROUP_CATEGORIES;
 
+        // reorder categories
+
+        private _categoryOrder = ["Infantry","SpecOps","Motorized","Motorized_MTP","Support","Mechanized","Armored","Artillery","Naval","Air"];
+
+        private _compatibleGroupCategoryData = [];
+        private _incompatibleGroupData = [];
+
+        {
+            _x params ["_categoryName","_categoryGroups"];
+
+            _index = _categoryOrder find _categoryName;
+
+            if (_index != -1) then {
+                _compatibleGroupCategoryData set [_index, _x];
+            } else {
+                _incompatibleGroupData pushback _x;
+            };
+        } foreach _groupCategories;
+
+        {[_result,_x select 0, _x select 1] call ALiVE_fnc_hashSet} foreach _compatibleGroupCategoryData;
+        {[_result,_x select 0, _x select 1] call ALiVE_fnc_hashSet} foreach _incompatibleGroupData;
+
     };
 
-    case "convertSideToNum": {
 
-        switch (typename _args) do {
-            case "OBJECT": {_result = [_args] call ALiVE_fnc_sideObjectToNumber};
-            case "STRING": {_result = [_args] call ALiVE_fnc_sideTextToNumber};
-            default {_result = _args};
-        };
+    // helper functions
+    // factions
 
-    };
 
     case "getFactionsBySide": {
 
@@ -1159,6 +1175,25 @@ switch(_operation) do {
         } foreach (_factions select 2);
 
     };
+
+    case "getFactionData": {
+
+        private _faction = _args;
+
+        if (_faction isEqualType "") then {
+
+            private _state = [_logic,"state"] call MAINCLASS;
+            private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
+            _result = [_factions,_faction] call ALiVE_fnc_hashGet;
+
+        };
+
+    };
+
+
+    // helper functions
+    // custom units
+
 
     case "getCustomUnitsByFaction": {
 
@@ -1251,17 +1286,246 @@ switch(_operation) do {
 
     };
 
-    case "getFactionData": {
 
-        private _faction = _args;
+    // helper functions
+    // groups
 
-        if (_faction isEqualType "") then {
 
-            private _state = [_logic,"state"] call MAINCLASS;
-            private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
-            _result = [_factions,_faction] call ALiVE_fnc_hashGet;
+    case "getFactionCategoryGroup": {
+
+        _args params ["_faction","_category","_group"];
+
+        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+        private _factionGroupCategories = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
+        private _groupCategory = [_factionGroupCategories,_category] call ALiVE_fnc_hashGet;
+
+        _result = [_groupCategory,_group] call ALiVE_fnc_hashGet;
+
+    };
+
+    case "factionRemoveCategoryGroup": {
+
+        _args params ["_faction","_category","_group"];
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
+
+        private _factionData = [_factions,_faction] call ALiVE_fnc_hashGet;
+        private _factionGroupCategories = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
+        private _groupCategory = [_factionGroupCategories,_category] call ALiVE_fnc_hashGet;
+
+        [_groupCategory,_group] call ALiVE_fnc_hashRem;
+
+    };
+
+    case "groupAddUnit": {
+
+        private ["_unitPosX","_unitPosY"];
+
+        _args params ["_group","_unit"];
+
+        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+        private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
+
+        private _units = [_group,"units"] call ALiVE_fnc_hashGet;
+        private _unitCount = count _units;
+
+        private _unitPosition = [_logic,"groupGenerateUnitPosition", [_group,_unit]] call MAINCLASS;
+
+        private _newUnit = [] call ALiVE_fnc_hashCreate;
+        [_newUnit,"vehicle", _unit] call ALiVE_fnc_hashSet;
+        [_newUnit,"rank", if (_unitCount > 0) then {"PRIVATE"} else {"SERGEANT"}] call ALiVE_fnc_hashSet;
+        [_newUnit,"side", _factionSide] call ALiVE_fnc_hashSet;
+        [_newUnit,"position", _unitPosition] call ALiVE_fnc_hashSet;
+
+        _units pushback _newUnit;
+
+    };
+
+    case "groupRemoveUnit": {
+
+        _args params ["_group","_unitIndex"];
+
+        private _units = [_group,"units"] call ALiVE_fnc_hashGet;
+        _units deleteAt _unitIndex;
+
+    };
+
+    case "groupGenerateUnitPosition": {
+
+        _args params ["_group","_unit"];
+
+        _result = [0,0,0];
+
+        private _units = [_group,"units"] call ALiVE_fnc_hashGet;
+        private _unitCount = count _units;
+
+        if (_unitCount > 0) then {
+            private _prevUnit = _units select (_unitCount - 1);
+            private _prevUnitPos = [_prevUnit,"position"] call ALiVE_fnc_hashGet;
+
+            private _realUnit = [_logic,"getRealUnitClass", _unit] call MAINCLASS;
+
+            if (_realUnit isKindOf "Man") then {
+                if ((_unitCount % 2) == 0) then {
+                    _unitPosX = - (_prevUnitPos select 0);
+                    _unitPosY = _prevUnitPos select 1;
+                } else {
+                    if (_unitCount == 1) then {
+                        _unitPosX = 5;
+                        _unitPosY = -5;
+                    } else {
+                        _unitPosX = - ((_prevUnitPos select 0) - 5);
+                        _unitPosY = (_prevUnitPos select 1) - 5;
+                    };
+                };
+            } else {
+                private _realUnitVeh = _realUnit createVehicle [0,0,0];
+                private _bbr = boundingBoxReal _realUnitVeh;
+                deleteVehicle _realUnitVeh;
+
+                _bbr params ["_p1","_p2"];
+                private _width = abs ((_p2 select 0) - (_p1 select 0));
+                private _length = abs ((_p2 select 1) - (_p1 select 1));
+
+                if ((_unitCount % 2) == 0) then {
+                    _unitPosX = - (_prevUnitPos select 0);
+                    _unitPosY = _prevUnitPos select 1;
+                } else {
+                    if (_unitCount == 1) then {
+                        _unitPosX = round (5 max (_width * 1.5));
+                        _unitPosY = - (round (5 max (_length * 1.5)));
+                    } else {
+                        _unitPosX = - ((_prevUnitPos select 0) - (round (5 max (_width * 1.5))));
+                        _unitPosY = (_prevUnitPos select 0) - (round (5 max (_length * 1.5)));
+                    };
+                };
+            };
+
+            _result set [0,_unitPosX];
+            _result set [1,_unitPosY];
+        };
+
+    };
+
+
+    // helper functions
+    // misc
+
+
+    case "convertSideToNum": {
+
+        switch (typename _args) do {
+            case "OBJECT": {_result = [_args] call ALiVE_fnc_sideObjectToNumber};
+            case "STRING": {_result = [_args] call ALiVE_fnc_sideTextToNumber};
+            default {_result = _args};
+        };
+
+    };
+
+    case "treeAddDataSourcesArray": {
+
+        _args params ["_tree","_dataSource",["_index",[]]];
+
+        {
+            _x params ["_text","_data","_image","_children"];
+
+            _tree tvAdd [_index,_text];
+            _tree tvSetData [_index,_data];
+            _tree tvSetPicture [_index,_image];
+
+            [_logic,"treeAddDataSourcesArray", [_tree,_children,_index + [_forEachIndex]]] call MAINCLASS;
+        } foreach _dataSource;
+
+    };
+
+    case "listAddDataSourcesArray": {
+
+        private ["_index"];
+
+        _args params ["_list","_dataSource"];
+
+        {
+            _x params ["_text","_data","_image"];
+
+            _index = _tree lbAdd _text;
+            _tree tvSetData [_index,_data];
+            _tree tvSetPicture [_index,_image];
+        } foreach _dataSource;
+
+    };
+
+    case "displaySideFactionsInList": {
+
+        private ["_factionDisplayName","_factionConfigName","_index"];
+
+        _args params ["_list","_side"];
+
+        private _factions = [_logic,"getFactionsBySide", _side] call MAINCLASS;
+        lbClear _list;
+
+        {
+            _factionDisplayName = [_x,"displayName"] call ALiVE_fnC_hashGet;
+            _factionConfigName = [_x,"configName"] call ALiVE_fnc_hashGet;
+
+            _index = _list lbAdd _factionDisplayName;
+            _list lbSetData [_index, _factionConfigName];
+        } foreach _factions;
+
+        if (lbSize _list > 0) then {
+            _list lbSetCurSel 0;
+        };
+
+    };
+
+    case "displayNameToClassname": {
+
+        private _displayName = _args;
+        private _displayNameArray = toArray _displayName;
+        private _displayNameSize = count _displayNameArray;
+
+        private _validChars = [
+            'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+            '1','2','3','4','5','6','7','8','9','0'
+        ];
+
+        private _currIndex = 0;
+        private _currString = "";
+        private _classnameComponents = [];
+
+        while {_currIndex != _displayNameSize} do {
+
+            _nextChar = _displayNameArray select _currIndex;
+            _nextChar = toLower (toString [_nextChar]);
+
+            if (_nextChar in _validChars) then {
+                _currString = _currString + _nextChar;
+
+                // if letter is last in name, finish string
+
+                if (_currIndex + 1 == _displayNameSize) then {
+                    _classnameComponents pushback _currString;
+                };
+            } else {
+                if (count _currString > 1) then {
+                    _classnameComponents pushback _currString;
+                    _currString = "";
+                };
+            };
+
+            _currIndex = _currIndex + 1;
 
         };
+
+        _result = "";
+
+        {
+            if (_result != "") then {
+                _result = format ["%1_%2", _result, _x];
+            } else {
+                _result = _x;
+            };
+        } foreach _classnameComponents;
 
     };
 
@@ -1274,51 +1538,34 @@ switch(_operation) do {
         private ["_groupCategoryName","_groupCategoryData","_groupCategoryDataSource"];
 
         private _faction = _args;
-        _result = [];
 
         if (_faction isEqualType "") then {
-            private _state = [_logic,"state"] call MAINCLASS;
-            private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
-            _faction = [_factions,_faction] call ALiVE_fnc_hashGet;
+            _faction = [_logic,"getFactionData", _faction] call MAINCLASS;
         };
 
         private _factionGroupCategories = [_faction,"groupsByCategory"] call ALiVE_fnc_hashGet;
-        private _compatibleGroups = [_factionGroupCategories,"ALiVE_compatible"] call ALiVE_fnc_hashGet;
-        private _incompatibleGroups = [_factionGroupCategories,"ALiVE_incompatible"] call ALiVE_fnc_hashGet;
+        private _factionGroupCategoryNames = _factionGroupCategories select 1;
+        private _factionGroupCategoryDatas = _factionGroupCategories select 2;
 
-        // get ALiVE compatible group categories
+        private _compatibleGroupCategories = [];
+        private _incompatibleGroupCategories = [];
 
-        private _groupCategories = [];
-
-        private _compatibleGroupCategoryNames = _compatibleGroups select 1;
-        private _compatibleGroupCategoryData = _compatibleGroups select 2;
-
-        for "_i" from 0 to (count _compatibleGroupCategoryNames - 1) do {
-            _groupCategoryName = _compatibleGroupCategoryNames select _i;
-            _groupCategoryData = _compatibleGroupCategoryData select _i;
+        for "_i" from 0 to (count _factionGroupCategoryNames - 1) do {
+            _groupCategoryName = _factionGroupCategoryNames select _i;
+            _groupCategoryData = _factionGroupCategoryDatas select _i;
 
             _groupCategoryDataSource = [_logic,"getGroupCategoryDataSource", [_groupCategoryName,_groupCategoryData]] call MAINCLASS;
-            _groupCategories pushback _groupCategoryDataSource;
+
+            if (_groupCategoryName in ALIVE_COMPATIBLE_GROUP_CATEGORIES) then {
+                _compatibleGroupCategories pushback _groupCategoryDataSource;
+            } else {
+                _incompatibleGroupCategories pushback _groupCategoryDataSource;
+            };
         };
 
-        _result pushback ["ALiVE Compatible Groups", "", "", _groupCategories];
-
-        // get ALiVE incompatible group categories
-
-        _groupCategories = [];
-
-        private _incompatibleGroupCategoryNames = _incompatibleGroups select 1;
-        private _incompatibleGroupCategoryData = _incompatibleGroups select 2;
-
-        for "_i" from 0 to (count _incompatibleGroupCategoryNames - 1) do {
-            _groupCategoryName = _incompatibleGroupCategoryNames select _i;
-            _groupCategoryData = _incompatibleGroupCategoryData select _i;
-
-            _groupCategoryDataSource = [_logic,"getGroupCategoryDataSource", [_groupCategoryName,_groupCategoryData]] call MAINCLASS;
-            _groupCategories pushback _groupCategoryDataSource;
-        };
-
-        _result pushback ["ALiVE Incompatible Groups", "", "", _groupCategories];
+        _result = [];
+        _result pushback ["ALiVE Compatible Groups", "", "", _compatibleGroupCategories];
+        _result pushback ["ALiVE Incompatible Groups", "", "", _incompatibleGroupCategories];
 
     };
 
@@ -1394,38 +1641,6 @@ switch(_operation) do {
         ];
 
         _result = [_unitDisplayName, _unitVehicle, "", _unitProperties];
-
-    };
-
-    case "treeAddDataSourcesArray": {
-
-        _args params ["_tree","_dataSource",["_index",[]]];
-
-        {
-            _x params ["_text","_data","_image","_children"];
-
-            _tree tvAdd [_index,_text];
-            _tree tvSetData [_index,_data];
-            _tree tvSetPicture [_index,_image];
-
-            [_logic,"treeAddDataSourcesArray", [_tree,_children,_index + [_forEachIndex]]] call MAINCLASS;
-        } foreach _dataSource;
-
-    };
-
-    case "listAddDataSourcesArray": {
-
-        private ["_index"];
-
-        _args params ["_list","_dataSource"];
-
-        {
-            _x params ["_text","_data","_image"];
-
-            _index = _tree lbAdd _text;
-            _tree tvSetData [_index,_data];
-            _tree tvSetPicture [_index,_image];
-        } foreach _dataSource;
 
     };
 
@@ -1769,7 +1984,7 @@ switch(_operation) do {
         // thanks to BIS Arsenal for closing my dialog automatically
 
         closeDialog 0;
-        [_logic,"openInterface", "Unit_Editor"] call MAINCLASS;
+        [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
 
         // reselect unit
 
@@ -1847,31 +2062,8 @@ switch(_operation) do {
     };
 
 
-    // unit editor - create unit
+    // create unit
 
-
-    case "displaySideFactionsInList": {
-
-        private ["_factionDisplayName","_factionConfigName","_index"];
-
-        _args params ["_list","_side"];
-
-        private _factions = [_logic,"getFactionsBySide", _side] call MAINCLASS;
-        lbClear _list;
-
-        {
-            _factionDisplayName = [_x,"displayName"] call ALiVE_fnC_hashGet;
-            _factionConfigName = [_x,"configName"] call ALiVE_fnc_hashGet;
-
-            _index = _list lbAdd _factionDisplayName;
-            _list lbSetData [_index, _factionConfigName];
-        } foreach _factions;
-
-        if (lbSize _list > 0) then {
-            _list lbSetCurSel 0;
-        };
-
-    };
 
     case "onCreateUnitSideChanged": {
 
@@ -2030,57 +2222,6 @@ switch(_operation) do {
 
     };
 
-    case "displayNameToClassname": {
-
-        private _displayName = _args;
-        private _displayNameArray = toArray _displayName;
-        private _displayNameSize = count _displayNameArray;
-
-        private _validChars = [
-            'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
-            '1','2','3','4','5','6','7','8','9','0'
-        ];
-
-        private _currIndex = 0;
-        private _currString = "";
-        private _classnameComponents = [];
-
-        while {_currIndex != _displayNameSize} do {
-
-            _nextChar = _displayNameArray select _currIndex;
-            _nextChar = toLower (toString [_nextChar]);
-
-            if (_nextChar in _validChars) then {
-                _currString = _currString + _nextChar;
-
-                // if letter is last in name, finish string
-
-                if (_currIndex + 1 == _displayNameSize) then {
-                    _classnameComponents pushback _currString;
-                };
-            } else {
-                if (count _currString > 1) then {
-                    _classnameComponents pushback _currString;
-                    _currString = "";
-                };
-            };
-
-            _currIndex = _currIndex + 1;
-
-        };
-
-        _result = "";
-
-        {
-            if (_result != "") then {
-                _result = format ["%1_%2", _result, _x];
-            } else {
-                _result = _x;
-            };
-        } foreach _classnameComponents;
-
-    };
-
     case "onCreateUnitConfirmClicked": {
 
         // validate prerequisites
@@ -2140,6 +2281,8 @@ switch(_operation) do {
     };
 
     case "convertConfigUnitToCustomUnit": {
+
+        // TODO: function incomplete
 
         private _unit = _args;
 
@@ -2304,10 +2447,7 @@ switch(_operation) do {
 
         private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
         private _factionData = [_factions,_faction] call ALiVE_fnc_hashGet;
-        private _factionGroups = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
-
-        private _compatibleGroups = [_factionGroups,"ALiVE_compatible"] call ALiVE_fnc_hashGet;
-        private _incompatibleGroups = [_factionGroups,"ALiVE_incompatible"] call ALiVE_fnc_hashGet;
+        private _factionGroupCategories = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
 
         // add categories to list
 
@@ -2317,7 +2457,7 @@ switch(_operation) do {
         {
             _index = _categoryList lbAdd _x;
             _categoryList lbSetData [_index,_x];
-        } foreach ((_compatibleGroups select 1) + (_incompatibleGroups select 1));
+        } foreach (_factionGroupCategories select 1);
 
         if (lbSize _categoryList > 0) then {
             _categoryList lbSetCurSel 0;
@@ -2466,28 +2606,22 @@ switch(_operation) do {
         private _groupCategory = _args;
 
         private _state = [_logic,"state"] call MAINCLASS;
+        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+
         [_state,"groupEditor_selectedGroupCategory", _groupCategory] call ALiVE_fnc_hashSet;
 
         // if display was forced
         // select category
+
         private _categoryList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_INPUT_CATEGORY );
         private _currentCategory = OC_ctrlGetSelData( _categoryList );
         if (_currentCategory != _groupCategory) exitWith {
             [_categoryList,_groupCategory] call ALiVE_fnc_listSelectData;
         };
 
-        private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
-        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
-        private _factionData = [_factions,_faction] call ALiVE_fnc_hashGet;
-        private _factionGroups = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
-
-        private _compatibleGroupCategories = [_factionGroups,"ALiVE_compatible"] call ALiVE_fnc_hashGet;
-        private _incompatibleGroupCategories = [_factionGroups,"ALiVE_incompatible"] call ALiVE_fnc_hashGet;
-
-        private _groups = [_compatibleGroupCategories,_groupCategory] call ALiVE_fnc_hashGet;
-        if (isnil "_groups") then {
-            _groups = [_incompatibleGroupCategories,_groupCategory] call ALiVE_fnc_hashGet;
-        };
+        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+        private _factionGroupCategories = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
+        private _groups = [_factionGroupCategories,_groupCategory] call ALiVE_fnc_hashGet;
 
         // reset active group list
 
@@ -2603,7 +2737,7 @@ switch(_operation) do {
             _unitPosition = [_unitData,"position"] call ALiVE_fnc_hashGet;
 
             if (_unitConfigName in _customUnitClasses) then {
-                _unit = [_customUnitClasses,_unitConfigName] call ALiVE_fnc_hashGet;
+                _unit = [_customUnits,_unitConfigName] call ALiVE_fnc_hashGet;
                 _unitDisplayName = [_unit,"displayName"] call ALiVE_fnc_hashGet;
             } else {
                 _unitDisplayName = getText (configFile >> "CfgVehicles" >> _unitConfigName >> "displayName");
@@ -2655,7 +2789,7 @@ switch(_operation) do {
 
     case "onGroupEditorSelectedGroupEditGroupClicked": {
 
-        [_logic,"openInterface", "Edit_Group"] call MAINCLASS;
+        [_logic,"openInterface", "Edit_Group"] spawn MAINCLASS;
 
     };
 
@@ -2663,7 +2797,7 @@ switch(_operation) do {
 
         private _unit = OC_getSelData( OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS );
 
-        [_logic,"openInterface", "Unit_Editor"] call MAINCLASS;
+        [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
 
         _unit spawn {
             sleep 0.1; // delay needed
@@ -2693,13 +2827,13 @@ switch(_operation) do {
 
     case "onGroupEditorGroupsNewClicked": {
 
-        [_logic,"openInterface", "Create_Group"] call MAINCLASS;
+        [_logic,"openInterface", "Create_Group"] spawn MAINCLASS;
 
     };
 
     case "onGroupEditorGroupsEditClicked": {
 
-        [_logic,"openInterface", "Edit_Group"] call MAINCLASS;
+        [_logic,"openInterface", "Edit_Group"] spawn MAINCLASS;
 
     };
 
@@ -2727,30 +2861,6 @@ switch(_operation) do {
 
     };
 
-    case "factionRemoveCategoryGroup": {
-
-        _args params ["_faction","_category","_group"];
-
-        private _state = [_logic,"state"] call MAINCLASS;
-        private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
-
-        private _factionData = [_factions,_faction] call ALiVE_fnc_hashGet;
-        private _factionGroups = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
-        private _compatibleGroups = [_factionGroups,"ALiVE_compatible"] call ALiVE_fnc_hashGet;
-        private _incompatibleGroups = [_factionGroups,"ALiVE_incompatible"] call ALiVE_fnc_hashGet;
-
-        private _groupCategory = [_compatibleGroups,_category] call ALiVE_fnc_hashGet;
-
-        if (isnil "_groupCategory") then {
-            _groupCategory = [_incompatibleGroups,_category] call ALiVE_fnc_hashGet;
-        };
-
-        if (!isnil "_groupCategory") then {
-            [_groupCategory,_group] call ALiVE_fnc_hashRem;
-        };
-
-    };
-
     case "onGroupEditorAssetAddUnitClicked": {
 
         private _asset = OC_getSelData( OC_GROUPEDITOR_ASSETS_LIST_UNITS );
@@ -2769,120 +2879,11 @@ switch(_operation) do {
 
     };
 
-    case "getFactionCategoryGroup": {
-
-        _args params ["_faction","_category","_group"];
-
-        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
-        private _factionGroups = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
-        private _compatibleGroups = [_factionGroups,"ALiVE_compatible"] call ALiVE_fnc_hashGet;
-        private _incompatibleGroups = [_factionGroups,"ALiVE_incompatible"] call ALiVE_fnc_hashGet;
-
-        private _groupCategory = [_compatibleGroups,_category] call ALiVE_fnc_hashGet;
-
-        if (isnil "_groupCategory") then {
-            _groupCategory = [_incompatibleGroups,_category] call ALiVE_fnc_hashGet;
-        };
-
-        _result = [_groupCategory,_group] call ALiVE_fnc_hashGet;
-
-    };
-
-    case "groupAddUnit": {
-
-        private ["_unitPosX","_unitPosY"];
-
-        _args params ["_group","_unit"];
-
-        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
-        private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
-
-        private _units = [_group,"units"] call ALiVE_fnc_hashGet;
-        private _unitCount = count _units;
-
-        private _unitPosition = [_logic,"groupGenerateUnitPosition", [_group,_unit]] call MAINCLASS;
-
-        private _newUnit = [] call ALiVE_fnc_hashCreate;
-        [_newUnit,"vehicle", _unit] call ALiVE_fnc_hashSet;
-        [_newUnit,"rank", if (_unitCount > 0) then {"PRIVATE"} else {"SERGEANT"}] call ALiVE_fnc_hashSet;
-        [_newUnit,"side", _factionSide] call ALiVE_fnc_hashSet;
-        [_newUnit,"position", _unitPosition] call ALiVE_fnc_hashSet;
-
-        _units pushback _newUnit;
-
-    };
-
-    case "groupGenerateUnitPosition": {
-
-        _args params ["_group","_unit"];
-
-        _result = [0,0,0];
-
-        private _units = [_group,"units"] call ALiVE_fnc_hashGet;
-        private _unitCount = count _units;
-
-        if (_unitCount > 0) then {
-            private _prevUnit = _units select (_unitCount - 1);
-            private _prevUnitPos = [_prevUnit,"position"] call ALiVE_fnc_hashGet;
-
-            private _realUnit = [_logic,"getRealUnitClass", _unit] call MAINCLASS;
-
-            if (_realUnit isKindOf "Man") then {
-                if ((_unitCount % 2) == 0) then {
-                    _unitPosX = - (_prevUnitPos select 0);
-                    _unitPosY = _prevUnitPos select 1;
-                } else {
-                    if (_unitCount == 1) then {
-                        _unitPosX = 5;
-                        _unitPosY = -5;
-                    } else {
-                        _unitPosX = - ((_prevUnitPos select 0) - 5);
-                        _unitPosY = (_prevUnitPos select 1) - 5;
-                    };
-                };
-            } else {
-                private _realUnitVeh = _realUnit createVehicle [0,0,0];
-                private _bbr = boundingBoxReal _realUnitVeh;
-                deleteVehicle _realUnitVeh;
-
-                _bbr params ["_p1","_p2"];
-                private _width = abs ((_p2 select 0) - (_p1 select 0));
-                private _length = abs ((_p2 select 1) - (_p1 select 1));
-
-                if ((_unitCount % 2) == 0) then {
-                    _unitPosX = - (_prevUnitPos select 0);
-                    _unitPosY = _prevUnitPos select 1;
-                } else {
-                    if (_unitCount == 1) then {
-                        _unitPosX = round (5 max (_width * 1.5));
-                        _unitPosY = - (round (5 max (_length * 1.5)));
-                    } else {
-                        _unitPosX = - ((_prevUnitPos select 0) - (round (5 max (_width * 1.5))));
-                        _unitPosY = (_prevUnitPos select 0) - (round (5 max (_length * 1.5)));
-                    };
-                };
-            };
-
-            _result set [0,_unitPosX];
-            _result set [1,_unitPosY];
-        };
-
-    };
-
-    case "groupRemoveUnit": {
-
-        _args params ["_group","_unitIndex"];
-
-        private _units = [_group,"units"] call ALiVE_fnc_hashGet;
-        _units deleteAt _unitIndex;
-
-    };
-
     case "onGroupEditorAssetEditUnitClicked": {
 
         private _asset = OC_getSelData( OC_GROUPEDITOR_ASSETS_LIST_UNITS );
 
-        [_logic,"openInterface", "Unit_Editor"] call MAINCLASS;
+        [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
 
         _asset spawn {
             sleep 0.1; // delay needed
@@ -2939,10 +2940,7 @@ switch(_operation) do {
 
         private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
         private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
-        private _factionGroups = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
-
-        private _compatibleGroupCategories = [_factionGroups,"ALiVE_compatible"] call ALiVE_fnc_hashGet;
-        private _incompatibleGroupCategories = [_factionGroups,"ALiVE_incompatible"] call ALiVE_fnc_hashGet;
+        private _factionGroupCategories = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
 
         private _instructions = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INSTRUCTIONS );
 
@@ -2962,13 +2960,8 @@ switch(_operation) do {
 
         private _groupCategory = OC_getSelData( OC_CREATEGROUP_INPUT_CATEGORY );
 
-        private _groupsInCategory = [_compatibleGroupCategories,_groupCategory] call ALiVE_fnc_hashGet;
-
-        if (isnil "_groupsInCategory") then {
-            _groupsInCategory = [_incompatibleGroupCategories,_groupCategory] call ALiVE_fnc_hashGet;
-        };
-
-        _groupClassnamesInCategory = _groupsInCategory select 1;
+        private _groupsInCategory = [_factionGroupCategories,_groupCategory] call ALiVE_fnc_hashGet;
+        private _groupClassnamesInCategory = _groupsInCategory select 1;
 
         if (_groupClassName in _groupClassnamesInCategory) exitWith {
             _instructions ctrlSetText "A group with that classname already exists in the selected category";
@@ -2991,6 +2984,9 @@ switch(_operation) do {
 
         [_logic,"groupEditorDisplayFactionGroupsInCategory", _groupCategory] call MAINCLASS;
 
+        private _groupList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_LIST_GROUPS );
+        [_groupList,_groupClassName, true] call ALiVE_fnc_listSelectData;
+
     };
 
 
@@ -3006,15 +3002,8 @@ switch(_operation) do {
         private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
 
         private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
-        private _factionGroups = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
-        private _compatibleGroupCategories = [_factionGroups,"ALiVE_compatible"] call ALiVE_fnc_hashGet;
-        private _incompatibleGroupCategores = [_factionGroups,"ALiVE_incompatible"] call ALiVE_fnc_hashGet;
-
-        private _groupCategory = [_compatibleGroupCategories,_category] call ALiVE_fnc_hashGet;
-
-        if (isnil "_groupCategory") then {
-            _groupCategory = [_incompatibleGroupCategores,_category] call ALiVE_fnc_hashGet;
-        };
+        private _factionGroupCategories = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
+        private _groupCategory = [_factionGroupCategories,_category] call ALiVE_fnc_hashGet;
 
         private _groupData = [_logic,"getFactionCategoryGroup", [_faction,_category,_group]] call MAINCLASS;
         private _groupName = [_groupData,"name"] call ALiVE_fnc_hashGet;
@@ -3022,10 +3011,29 @@ switch(_operation) do {
 
         private _inputName = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_NAME );
         private _inputClassname = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_CLASSNAME );
+        private _instructions = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INSTRUCTIONS );
 
         private _newGroupName = ctrlText _inputName;
         private _newGroupClassname = ctrlText _inputClassname;
         private _newCategory = OC_getSelData( OC_CREATEGROUP_INPUT_CATEGORY );
+
+        // verify names aren't blank
+
+        if (_newGroupName == "") exitWith {
+            _instructions ctrlSetText "Group name cannot be blank";
+        };
+
+        if (_newGroupClassname == "") exitWith {
+            _instructions ctrlSetText "Class name cannot be blank";
+        };
+
+        _newGroupCategory = [_factionGroupCategories,_newCategory] call ALiVE_fnc_hashGet;
+        private _groupClassnamesInNewCategory = _newGroupCategory select 1;
+        if (!(_newGroupCategory isEqualTo _groupCategory) && {_newGroupClassname in _groupClassnamesInNewCategory}) exitWith {
+            _instructions ctrlSetText "A group with that classname already exists in the selected category";
+        };
+
+        // verification complete
 
         if (_newGroupName != _groupName) then {
             [_groupData,"name", _newGroupName] call ALiVE_fnc_hashSet;
@@ -3042,20 +3050,16 @@ switch(_operation) do {
 
         if (_newCategory != _category) then {
             [_groupCategory,_groupConfigName] call ALiVE_fnc_hashRem;
-
-            _groupCategory = [_compatibleGroupCategories,_newCategory] call ALiVE_fnc_hashGet;
-
-            if (isnil "_groupCategory") then {
-                _groupCategory = [_incompatibleGroupCategores,_newCategory] call ALiVE_fnc_hashGet;
-            };
-
-            [_groupCategory,_groupConfigName,_groupData] call ALiVE_fnc_hashSet;
+            [_newGroupCategory,_groupConfigName,_groupData] call ALiVE_fnc_hashSet;
             _category = _newCategory;
         };
 
         closeDialog 0;
 
         [_logic,"groupEditorDisplayFactionGroupsInCategory", _category] call MAINCLASS;
+
+        private _groupList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_LIST_GROUPS );
+        [_groupList,_groupConfigName, true] call ALiVE_fnc_listSelectData;
 
     };
 
@@ -3088,9 +3092,28 @@ switch(_operation) do {
 
             };
 
+            case "Group_Editor": {
+
+                private _groupList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_LIST_GROUPS );
+                private _selectedIndices = lbSelection _groupList;
+                private _selectedGroups = [];
+
+                {
+                    _selectedGroups pushback (_groupList lbData _x);
+                } foreach _selectedIndices;
+
+                _result = [_logic,"exportCustomGroups", _selectedGroups] call MAINCLASS;
+
+                systemchat "Config data copied to clipboard";
+                copyToClipboard _result;
+
+            };
+
         };
 
     };
+
+    // CfgVehicles
 
     case "exportCustomUnits": {
 
@@ -3338,6 +3361,64 @@ switch(_operation) do {
         _result = _result + _newLine + _indent + _indent + "};";
 
     };
+
+    // CfgGroups
+
+    case "exportFactionCustomGroupsCategory": {
+
+        _args params ["_faction","_category",["_groups",[],[[]]]];
+
+        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+
+        if (!isnil "_factionData") then {
+
+            private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
+
+            if (count _groups > 0) then {
+                private _factionGroupCategories = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
+                private _groupCategory = [_factionGroupCategories,_category] call ALiVE_fnc_hashGet;
+
+                _groups = _groupCategory select 1;
+            };
+
+            private _groupDatas = [];
+            {
+                _groupData = [_logic,"getFactionCategoryGroup", [_faction,_category,_x]] call MAINCLASS;
+            } foreach _groups;
+
+            // begin autogen
+
+            private _sideText = [_factionSide] call ALiVE_fnc_sideNumberToText;
+
+            private _newLine = toString [13,10];
+            private _indent = "    ";
+            _result = "";
+
+            // begin side output
+
+            _result = _result + "class " + _sideText + " {" + _newLine + _newLine;
+
+            // begin faction output
+
+            _result = _result + _indent + "class " + _faction + " {" + _newLine + _newLine;
+
+            // begin groups ouput
+
+            private _groupsOutputString = [_logic,"exportCustomGroups", _groupDatas] call MAINCLASS;
+
+            // finish faction output
+
+            _result = _result + _indent + "};" + _newLine + _newLine;
+
+            // finish side output
+
+            _result = _result + "};";
+
+        };
+
+    };
+
+    // config generation helpers
 
     case "arrayToConfigArrayString": {
 

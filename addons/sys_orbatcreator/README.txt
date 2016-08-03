@@ -38,7 +38,10 @@ SpyderBlack
 | Rough component description |
 #=============================#
 
-Create and edit ORBATS
+Create you own faction, equip the units, configure the groups,
+and automatically export the config code to put it all in game.
+Additionally, view faction groupings and which factions are compatible
+with ALiVE
 
 #=================#
 | Contact details |

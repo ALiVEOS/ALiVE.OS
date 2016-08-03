@@ -325,9 +325,9 @@ class ALiVE_orbatCreator_interface_createGroup {
         class createGroup_instructions: orbatCreator_RscStructuredText {
             idc = 12011;
             x = 9 * GUI_GRID_W + GUI_GRID_X;
-            y = 14 * GUI_GRID_H + GUI_GRID_Y;
+            y = 15 * GUI_GRID_H + GUI_GRID_Y;
             w = 19 * GUI_GRID_W;
-            h = 6 * GUI_GRID_H;
+            h = 5 * GUI_GRID_H;
         };
 
     };
@@ -463,9 +463,9 @@ class ALiVE_orbatCreator_interface_editGroup : ALiVE_orbatCreator_interface_crea
         class createGroup_instructions: orbatCreator_RscStructuredText {
             idc = 12011;
             x = 9 * GUI_GRID_W + GUI_GRID_X;
-            y = 14 * GUI_GRID_H + GUI_GRID_Y;
+            y = 15 * GUI_GRID_H + GUI_GRID_Y;
             w = 19 * GUI_GRID_W;
-            h = 6 * GUI_GRID_H;
+            h = 5 * GUI_GRID_H;
         };
 
     };
