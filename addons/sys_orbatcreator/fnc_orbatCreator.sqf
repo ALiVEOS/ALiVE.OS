@@ -3260,8 +3260,8 @@ switch(_operation) do {
 
         private _newLine = toString [13,10];
         private _indent = "    ";
-        private _eventHandlers = [];
-        _eventHandlers pushback ("class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {}");
+        private _eventHandlers = [] call ALiVE_fnc_hashCreate;
+        //_eventHandlers pushback ("class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {}");
         _result = "";
 
         // loadout
@@ -3295,8 +3295,40 @@ switch(_operation) do {
         if (_tmpUnitUniformSide == _unitSide) then {
             _result = _result + _indent + _indent + ("uniformClass = " + str uniform _tmpUnit + ";") + _newLine;
         } else {
-            _eventHandlers pushback ("init = " + """" + "(_this select 0) forceAddUniform " + "'" + _tmpUnitUniform + "'" + """");
+            _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
+            _initEventHandler = _initEventHandler + "(_this select 0) forceAddUniform " + "'" + _tmpUnitUniform + "'" + ";";
+
+            [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
         };
+
+        // persist weapon items
+
+        _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
+        private _primaryWeaponItems = primaryWeaponItems _tmpUnit;
+        private _secondarWeaponItems = secondaryWeaponItems _tmpUnit;
+        private _handgunWeaponItems = handgunItems _tmpUnit;
+
+        {
+            if (_x != "") then {
+                _initEventHandler = _initEventHandler + "(_this select 0) addPrimaryWeaponItem " + "'" + _x + "'" + ";";
+            };
+        } foreach _primaryWeaponItems;
+
+        {
+            if (_x != "") then {
+                _initEventHandler = _initEventHandler + "(_this select 0) addSecondaryWeaponItem " + "'" + _x + "'" + ";";
+            };
+        } foreach _secondarWeaponItems;
+
+        {
+            if (_x != "") then {
+                _initEventHandler = _initEventHandler + "(_this select 0) addHandgunItem " + "'" + _x + "'" + ";";
+            };
+        } foreach _handgunWeaponItems;
+
+        [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
+
+        // persist gear
 
         _result = _result + _indent + _indent + ("backpack = " + str _tmpUnitBackpack + ";");
 
@@ -3319,12 +3351,31 @@ switch(_operation) do {
 
         // event handlers
 
-        _result = _result + _newLine + _newLine + _indent + _indent + ("class EventHandlers : EventHandlers {");
-        {
-            _result = _result + _newLine + _indent + _indent + _indent + _x + ";";
-        } foreach _eventHandlers;
+        //_result = _result + _newLine + _newLine + _indent + _indent + ("class EventHandlers : EventHandlers {");
+        //{
+        //    _result = _result + _newLine + _indent + _indent + _indent + _x + ";";
+        //} foreach _eventHandlers;
+
+        // event handlers
+
+        _result = _result + _newLine + _newLine + _indent + _indent + "class EventHandlers : EventHandlers {";
+        _result = _result + _newLine + _indent + _indent + _indent + "class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {}";
+
+        private _eventHandlerTypes = _eventHandlers select 1;
+        private _eventHandlerStrings = _eventHandlers select 2;
+
+        for "_i" from 0 to (count _eventHandlerTypes - 1) do {
+            _eventHandlerType = _eventHandlerTypes select _i;
+            _eventHandlerStatements = _eventHandlerStrings select _i;
+
+            _EHString = _eventHandlerType + " = " + """" + _eventHandlerStatements + """" + ";";
+
+            _result = _result + _newLine + _indent + _indent + _indent + _EHString;
+        };
+
         _result = _result + _newLine + _indent + _indent + "};";
 
+        deleteVehicle _tmpUnit;
     };
 
     case "exportCustomUnitVehicle": {
