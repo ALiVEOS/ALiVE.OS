@@ -1438,6 +1438,50 @@ switch(_operation) do {
 
     };
 
+    case "setCustomUnitClassname": {
+
+        private ["_category","_group","_groupUnits","_groupUnit","_groupUnitVehicle"];
+
+        _args params ["_unit","_classname"];
+
+        if (_unit isEqualType "") then {
+            _unit = [_logic,"getCustomUnit", _unit] call MAINCLASS;
+        };
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+
+        private _unitClassname = [_unit,"configName"] call ALiVE_fnc_hashGet;
+        private _unitFaction = [_unit,"faction"] call ALiVE_fnc_hashGet;
+
+        private _factionData = [_logic,"getFactionData", _unitFaction] call MAINCLASS;
+        private _factionGroupCategories = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
+
+        {
+            _category = _x;
+
+            {
+                _group = _x;
+                _groupUnits = [_group,"units"] call ALiVE_fnc_hashGet;
+
+                {
+                    _groupUnit = _x;
+                    _groupUnitVehicle = [_groupUnit,"vehicle"] call ALiVE_fnc_hashGet;
+
+                    if (_groupUnitVehicle == _unitClassname) then {
+                        [_groupUnit,"vehicle", _classname] call ALiVE_fnc_hashSet;
+                    };
+                } foreach _groupUnits;
+            } foreach (_category select 2);
+        } foreach (_factionGroupCategories select 2);
+
+        [_unit,"configName", _classname] call ALiVE_fnc_hashSet;
+
+        [_customUnits,_unitClassname] call ALiVE_fnc_hashRem;
+        [_customUnits,_classname, _unit] call ALiVE_fnc_hashSet;
+
+    };
+
 
     // helper functions
     // groups
@@ -2712,11 +2756,8 @@ switch(_operation) do {
         if (_classname != _unitConfigName) then {
             _classname = [_classname," ","_"] call CBA_fnc_replace;
 
-            [_selectedUnitData,"configName", _classname] call ALiVE_fnc_hashSet;
+            [_logic,"setCustomUnitClassname", [_unitConfigName,_classname]] call MAINCLASS;
             _selectedUnit = _classname; // enables proper re-selection once menu closes
-
-            [_customUnits,_unitConfigName] call ALiVE_fnc_hashRem;
-            [_customUnits,_classname,_selectedUnitData] call ALiVE_fnc_hashSet;
         };
 
         if (_side != _unitSide) then {
@@ -3447,6 +3488,17 @@ switch(_operation) do {
 
         switch (_mode) do {
 
+            case "Faction_Editor": {
+
+                private _faction = [_state,"factionEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+
+                _result = [_logic,"exportFaction", _faction] call MAINCLASS;
+
+                systemchat "Config data copied to clipboard";
+                copyToClipboard _result;
+
+            };
+
             case "Unit_Editor": {
 
                 private _classList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
@@ -3803,9 +3855,11 @@ switch(_operation) do {
         private _indent = "    ";
         _result = "";
 
-        _result = _result + "class " + _sideText + " {" + _newLine;
-        _result = _result + _indent + "class " + _faction + " {" + _newLine + _newLine;
-        _result = _result + _string;
+        _result = _result + "class CfgGroups {" + _newLine;
+        _result = _result + _indent + "class " + _sideText + " {" + _newLine;
+        _result = _result + _indent + _indent + "class " + _faction + " {" + _newLine + _newLine;
+        _result = _result + _indent + _string;
+        _result = _result + _indent + _indent + "};" + _newLine;
         _result = _result + _indent + "};" + _newLine;
         _result = _result + "};";
 
@@ -3864,14 +3918,15 @@ switch(_operation) do {
 
             private _newLine = toString [13,10];
             private _indent = "    ";
-            private _indentOuter = _indent + _indent + _indent;
-            private _indentInner = _indent + _indent + _indent + _indent;
+            private _indentOuter = _indent + _indent + _indent + _indent;
+            private _indentInner = _indentOuter + _indent;
             _result = "";
 
             _result = _result + _indentOuter + "class " + _groupConfigName + " {" + _newLine;
             _result = _result + _indentInner + "name = " + str _groupDisplayName + ";" + _newLine;
             _result = _result + _indentInner + "side = " + str _groupSide + ";" + _newLine;
             _result = _result + _indentInner + "faction = " + str _groupFaction + ";" + _newLine;
+            _result = _result + _indentInner + "rarityGroup = 0.5;" + _newLine;
 
             _result = _result + _newLine;
 
@@ -3884,7 +3939,7 @@ switch(_operation) do {
                 _unitVehicle = [_unit,"vehicle"] call ALiVE_fnc_hashGet;
 
                 _result = _result + _indentInner + "class Unit" + str _forEachIndex + " {" + _newLine;
-                _result = _result + _indentInner + _indent + "position = " + _unitPosition + ";" + _newLine;
+                _result = _result + _indentInner + _indent + "position[] = " + _unitPosition + ";" + _newLine;
                 _result = _result + _indentInner + _indent + "rank = " + str _unitRank + ";" + _newLine;
                 _result = _result + _indentInner + _indent + "side = " + str _unitSide + ";" + _newLine;
                 _result = _result + _indentInner + _indent + "vehicle = " + str _unitVehicle + ";" + _newLine;
@@ -3893,6 +3948,94 @@ switch(_operation) do {
 
             _result = _result + _indentOuter + "};" + _newLine;
         };
+
+    };
+
+    case "exportFaction": {
+
+        private _faction = _args;
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+
+        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+
+        private _factionConfigName = [_factionData,"configName"] call ALiVE_fnc_hashGet;
+        private _factionDisplayName = [_factionData,"displayName"] call ALiVE_fnc_hashGet;
+        private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
+        private _factionFlag = [_factionData,"flag"] call ALiVE_fnc_hashGet;
+        private _factionIcon = [_factionData,"icon"] call ALiVE_fnc_hashGet;
+        private _factionPriority = [_factionData,"priority"] call ALiVE_fnc_hashGet;
+
+        if (_factionIcon == "") then {
+            _factionIcon = _factionFlag;
+        };
+
+        private _factionGroupCategories = [_factionData,"groupsByCategory"] call ALiVE_fnc_hashGet;
+        private _categoryGroupPairs = [];
+
+        private _factionGroupCategoryNames = _factionGroupCategories select 1;
+        private _factionGroupCategoryDatas = _factionGroupCategories select 2;
+
+        for "_i" from 0 to (count _factionGroupCategoryNames - 1) do {
+            _categoryName = _factionGroupCategoryNames select _i;
+            _categoryGroups = (_factionGroupCategoryDatas select _i) select 1;
+
+            _categoryGroupPairs pushback [_categoryName,_categoryGroups];
+        };
+
+        private _newLine = toString [13,10];
+        private _indent = "    ";
+        _result = "";
+
+        // start autogen
+
+        // CfgFactionClasses
+
+        _result = _result + "class CfgFactionClasses {" + _newLine;
+        _result = _result + _indent + "class " + _factionConfigName + " {" + _newLine;
+        _result = _result + _indent + _indent + "displayName = " + str _factionDisplayName + ";" + _newLine;
+        _result = _result + _indent + _indent + "side = " + str _factionSide + ";" + _newLine;
+        _result = _result + _indent + _indent + "flag = " + str _factionFlag + ";" + _newLine;
+        _result = _result + _indent + _indent + "icon = " + str _factionIcon + ";" + _newLine;
+        _result = _result + _indent + _indent + "priority = " + str _factionPriority + ";" + _newLine;
+        _result = _result + _indent + "};" + _newLine;
+        _result = _result + "};";
+
+        // CfgGroups
+
+        _result = _result + _newLine + _newLine;
+        private _CFGgroups = "";
+        {
+            _groupCategoryExportString = [_logic,"exportFactionCategoryGroups", [_faction] + _x] call MAINCLASS;
+            _CFGgroups = _CFGgroups + _groupCategoryExportString + _newLine;
+        } foreach _categoryGroupPairs;
+
+        _CFGgroups = [_logic,"formatGroupsExportStringToFaction", [_faction,_CFGgroups]] call MAINCLASS;
+
+        _result = _result + _CFGgroups;
+
+        // CfgVehicles
+
+        private _factionCustomUnits = [];
+
+        {
+            _customUnit = _x;
+            _customUnitFaction = [_customUnit,"faction"] call ALiVE_fnc_hashGet;
+            _customUnitConfigName = [_customUnit,"configName"] call ALiVE_fnc_hashGet;
+
+            if (_customUnitFaction == _faction) then {
+                _factionCustomUnits pushback _customUnitConfigName;
+            };
+        } foreach (_customUnits select 2);
+
+        if (count _factionCustomUnits > 0) then {
+            _result = _result + _newLine + _newLine;
+            private _CFGvehicles = [_logic,"exportCustomUnits", _factionCustomUnits] call MAINCLASS;
+            _result = _result + _CFGvehicles;
+        };
+
+        // end autogen
 
     };
 
