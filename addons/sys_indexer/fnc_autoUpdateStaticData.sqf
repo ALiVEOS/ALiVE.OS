@@ -21,9 +21,9 @@ _categories = [
     "ALIVE_militaryHeliBuildingTypes",
     "ALIVE_civilianHeliBuildingTypes",
 
-    "ALIVE_civilianPopulationBuildingTypes",
+    "ALIVE_civilianSettlementBuildingTypes",    
     "ALIVE_civilianHQBuildingTypes",
-    "ALIVE_civilianSettlementBuildingTypes",
+    "ALIVE_civilianPopulationBuildingTypes",
 
     "ALIVE_civilianPowerBuildingTypes",
     "ALIVE_civilianCommsBuildingTypes",
