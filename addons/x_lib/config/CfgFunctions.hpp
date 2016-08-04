@@ -1427,6 +1427,13 @@ class hintS
     recompile = RECOMPILE;
 };
 
+class listSelectData
+{
+    file = "\x\alive\addons\x_lib\functions\ui\fnc_listSelectData.sqf";
+    ext = ".sqf";
+    recompile = RECOMPILE;
+};
+
 class radioBroadcast
 {
     file = "\x\alive\addons\x_lib\functions\ui\fnc_radioBroadcast.sqf";

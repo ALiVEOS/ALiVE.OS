@@ -1,0 +1,1 @@
+Add role dropdown menu in unit creation/edit dialog that allows the user to pick the units "role" attribute
