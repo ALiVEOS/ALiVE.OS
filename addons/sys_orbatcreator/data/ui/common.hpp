@@ -89,6 +89,9 @@ class orbatCreator_RscCombo {
     colorText[] = {0.95,0.95,0.95,1};
     colorBackground[] = {0,0,0,1};
     color_Rscrollbar[] = {1,0,0,1};
+    colorPicture[] = {1,1,1,1};
+    colorPictureSelected[] = {1,1,1,1};
+    colorPictureDisabled[] = {1,1,1,1};
     soundSelect[] =
     {
         "\A3\ui_f\data\sound\RscCombo\soundSelect",

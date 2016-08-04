@@ -66,25 +66,22 @@ switch(_operation) do {
 
         // CfgGroups
 
-        /*
-            _groupCategories = +_tmpHash;
-            [_groupCategories,"Infantry", +_tmpHash] call ALiVE_fnc_hashSet;
-            [_groupCategories,"Motorized", +_tmpHash] call ALiVE_fnc_hashSet;
-            [_groupCategories,"Mechanized", +_tmpHash] call ALiVE_fnc_hashSet;
-            [_groupCategories,"Armored", +_tmpHash] call ALiVE_fnc_hashSet;
-            [_groupCategories,"SpecOps", +_tmpHash] call ALiVE_fnc_hashSet;
-            [_groupCategories,"Support", +_tmpHash] call ALiVE_fnc_hashSet;
-            [_groupCategories,"Air", +_tmpHash] call ALiVE_fnc_hashSet;
-        */
-
-        private _groupsByCategory = [] call ALiVE_fnc_hashCreate;
-        [_groupsByCategory,"ALiVE_compatible", +_tmpHash] call ALiVE_fnc_hashSet;
-        [_groupsByCategory,"ALiVE_incompatible", +_tmpHash] call ALiVE_fnc_hashSet;
-
+        _groupsByCategory = +_tmpHash;
+        [_groupsByCategory,"Infantry", +_tmpHash] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"SpecOps", +_tmpHash] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"Motorized", +_tmpHash] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"Motorized_MTP", +_tmpHash] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"Support", +_tmpHash] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"Mechanized", +_tmpHash] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"Armored", +_tmpHash] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"Artillery", +_tmpHash] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"Naval", +_tmpHash] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"Air", +_tmpHash] call ALiVE_fnc_hashSet;
         [_logic,"groupsByCategory", _groupsByCategory] call MAINCLASS;
 
         // units / vehicles
-        private _assets = [] call ALiVE_fnc_hashCreate;
+
+        private _assets = +_tmpHash;
         [_logic,"assets", _assets] call MAINCLASS;
 
     };
