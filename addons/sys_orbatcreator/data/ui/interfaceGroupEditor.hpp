@@ -219,7 +219,7 @@ class ALiVE_orbatCreator_interface_groupEditor {
             sizeEx = 0.85 * GUI_GRID_H;
         };
 
-        class groupEditor_selectedGroup_button_1: orbatCreator_RscButton {
+        class groupEditor_selectedGroup_input_unitRank: orbatCreator_RscCombo {
             idc = 11023;
             text = "";
             x = 30 * GUI_GRID_W + GUI_GRID_X;
@@ -227,6 +227,7 @@ class ALiVE_orbatCreator_interface_groupEditor {
             w = 7.5 * GUI_GRID_W;
             h = 1 * GUI_GRID_H;
         };
+
         class groupEditor_selectedGroup_button_2: orbatCreator_RscButton {
             idc = 11024;
             text = "";
@@ -235,6 +236,7 @@ class ALiVE_orbatCreator_interface_groupEditor {
             w = 7.5 * GUI_GRID_W;
             h = 1 * GUI_GRID_H;
         };
+
         class groupEditor_selectedGroup_button_3: orbatCreator_RscButton {
             idc = 11025;
             text = "";
@@ -244,6 +246,7 @@ class ALiVE_orbatCreator_interface_groupEditor {
             h = 1 * GUI_GRID_H;
             sizeEx = 0.8 * GUI_GRID_H;
         };
+
         class groupEditor_selectedGroup_button_4: orbatCreator_RscButton {
             idc = 11026;
             text = "";

@@ -55,8 +55,6 @@ switch(_operation) do {
 
         private _tmpHash = [] call ALiVE_fnc_hashCreate;
 
-        [_logic,"inheritsFrom", []] call MAINCLASS;
-
         // CfgFactionClass
 
         [_logic,"configName", ""] call MAINCLASS;
@@ -88,17 +86,6 @@ switch(_operation) do {
         // units / vehicles
         private _assets = [] call ALiVE_fnc_hashCreate;
         [_logic,"assets", _assets] call MAINCLASS;
-
-    };
-
-    case "inheritsFrom": {
-
-        if (typename _args == "ARRAY") then {
-            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
-            _result = _args;
-        } else {
-            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
-        };
 
     };
 
