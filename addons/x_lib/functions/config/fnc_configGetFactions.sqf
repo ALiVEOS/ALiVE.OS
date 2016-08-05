@@ -29,6 +29,8 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
+private ["_faction"];
+
 private _factions = [];
 
 private _configPaths = [
