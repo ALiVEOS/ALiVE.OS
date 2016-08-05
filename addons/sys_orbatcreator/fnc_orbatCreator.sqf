@@ -587,7 +587,7 @@ switch(_operation) do {
 
                 private _classList_button4 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_FOUR );
                 _classList_button4 ctrlSetText "Delete";
-                _classList_button4 ctrlSetTooltip "Delete selected unit";
+                _classList_button4 ctrlSetTooltip "Delete selected units";
                 _classList_button4 ctrlSetEventHandler ["MouseButtonDown","['unitEditorDeleteClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
                 _classList_button4 ctrlShow true;
 
@@ -1833,7 +1833,8 @@ switch(_operation) do {
 
         private _validChars = [
             'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
-            '1','2','3','4','5','6','7','8','9','0'
+            '1','2','3','4','5','6','7','8','9','0',
+            '_'
         ];
 
         private _currIndex = 0;
@@ -1843,9 +1844,9 @@ switch(_operation) do {
         while {_currIndex != _displayNameSize} do {
 
             _nextChar = _displayNameArray select _currIndex;
-            _nextChar = toLower (toString [_nextChar]);
+            _nextChar = toString [_nextChar];
 
-            if (_nextChar in _validChars) then {
+            if ((toLower _nextChar) in _validChars) then {
                 _currString = _currString + _nextChar;
 
                 // if letter is last in name, finish string
@@ -2775,6 +2776,7 @@ switch(_operation) do {
         if (_classname == "") exitWith {_instructions ctrlSetText "Class name cannot be left blank"};
 
         private _state = [_logic,"state"] call MAINCLASS;
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
 
         // get side/faction
 
@@ -2790,18 +2792,24 @@ switch(_operation) do {
         private _parentClass = OC_getSelData( OC_CREATEUNIT_INPUT_UNITTYPE_UNITS );
         private _loadout = [];
 
-        if (_parentClass isKindOf "Man") then {
-            // spawn parent class and get loadout
-            // enables init events to fire
+        private _realParentClass = [_logic,"getRealUnitClass", _parentClass] call MAINCLASS;
+        if (_realParentClass isKindOf "Man") then {
 
-            private _realParentClass = [_logic,"getRealUnitClass", _parentClass] call MAINCLASS;
-            private _sideText = [_side] call ALiVE_fnc_sideNumberToText;
-            private _sideObject = [_sideText] call ALiVE_fnc_sideTextToObject;
-            private _realParentUnit = (createGroup _sideObject) createUnit [_realParentClass, [0,0,0], [], 0, "NONE"];
+            if (_parentClass in (_customUnits select 1)) then {
+                private _parentClassEntry = [_customUnits,_parentClass] call ALiVE_fnc_hashGet;
+                _loadout = [_parentClassEntry,"loadout"] call ALiVE_fnc_hashGet;
+            } else {
+                // spawn parent class and get loadout
+                // enables init events to fire
 
-            _loadout = getUnitLoadout _realParentUnit;
+                private _sideText = [_side] call ALiVE_fnc_sideNumberToText;
+                private _sideObject = [_sideText] call ALiVE_fnc_sideTextToObject;
+                private _realParentUnit = (createGroup _sideObject) createUnit [_realParentClass, [0,0,0], [], 0, "NONE"];
 
-            deleteVehicle _realParentUnit;
+                _loadout = getUnitLoadout _realParentUnit;
+
+                deleteVehicle _realParentUnit;
+            };
         };
 
         // create new custom unit
@@ -2912,10 +2920,6 @@ switch(_operation) do {
 
         // prerequisites verified, begin saving
 
-        // if unit side/faction changes
-        // user is responsible for correcting groups
-        // Change????? or maybe log an error?????
-
         if (_displayName != _unitDisplayName) then {
             [_selectedUnitData,"displayName", _displayName] call ALiVE_fnc_hashSet;
         };
@@ -2938,15 +2942,32 @@ switch(_operation) do {
         if (_parentClass != _unitParentClass) then {
             [_selectedUnitData,"inheritsFrom", _parentClass] call ALiVE_fnc_hashSet;
 
-            private _parentEntry = [_customUnits,_parentClass] call ALiVE_fnc_hashGet;
+            private _realParentClass = [_logic,"getRealUnitClass", _unitParentClass] call MAINCLASS;
+            if (_realParentClass isKindOf "Man") then {
 
-            if (!isnil "_parentEntry") then {
-                _parentLoadout = [_parentEntry,"loadout"] call ALiVE_fnc_hashGet;
+                if (_parentClass in (_customUnits select 1)) then {
+                    private _parentEntry = [_customUnits,_parentClass] call ALiVE_fnc_hashGet;
+                    _parentLoadout = [_parentEntry,"loadout"] call ALiVE_fnc_hashGet;
+                } else {
+                    // create unit to give EH's chance to fire
+
+                    private _parentClassConfig = configFile >> "CfgVehicles" >> _parentClass;
+                    private _parentClassSide = getNumber (_parentClassConfig >> "side");
+                    private _parentClassSideText = [_parentClassSide] call ALiVE_fnc_sideNumberToText;
+                    private _parentClassSideObject = [_parentClassSideText] call ALiVE_fnc_sideTextToObject;
+
+                    private _parentClassUnit = (creategroup _parentClassSideObject) createUnit [_parentClass, [0,0,0], [], 0, "NONE"];
+                    _parentLoadout = getUnitLoadout _parentClassUnit;
+                    deleteVehicle _parentClassUnit;
+                };
+
+                [_selectedUnitData,"loadout", _parentLoadout] call ALiVE_fnc_hashSet;
+
             } else {
-                _parentLoadout = getUnitLoadout _parentClass;
-            };
 
-            [_selectedUnitData,"loadout", _parentLoadout] call ALiVE_fnc_hashSet;
+                [_selectedUnitData,"loadout", []] call ALiVE_fnc_hashSet;
+
+            };
         };
 
         closeDialog 0;
@@ -3131,9 +3152,10 @@ switch(_operation) do {
     case "onGroupEditorSelectedGroupListDragEnd": {
 
         private _state = [_logic,"state"] call MAINCLASS;
+        private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
         private _draggedAsset = [_state,"groupEditor_assetListDragTarget"] call ALiVE_fnc_hashGet;
 
-        if (_draggedAsset != "") then {
+        if (_group != "" && {_draggedAsset != ""}) then {
             private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
             private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
             private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
@@ -3551,7 +3573,7 @@ switch(_operation) do {
 
         _groupName = [_logic,"displayNameToClassname", _groupName] call MAINCLASS;
 
-        _result = format ["%1_%2_group_%3", _faction, _category, _groupName];
+        _result = format ["%1_%2_%3", _faction, _category, _groupName];
         _result = toLower _result;
 
     };
@@ -3608,6 +3630,7 @@ switch(_operation) do {
         [_newGroup,"side", _factionSide] call ALiVE_fnc_hashSet;
         [_newGroup,"faction", _faction] call ALiVE_fnc_hashSet;
         [_newGroup,"icon", _groupIcon] call ALiVE_fnc_hashSet;
+        [_newGroup,"rarityGroup", 0.5] call ALiVE_fnc_hashSet;
         [_newGroup,"units", []] call ALiVE_fnc_hashSet;
 
         [_groups,_groupClassName, _newGroup] call ALiVE_fnc_hashSet;
