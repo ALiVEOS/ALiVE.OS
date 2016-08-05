@@ -25,7 +25,7 @@ Author:
 Wolffy.au
 ---------------------------------------------------------------------------- */
 
-private ["_id","_fac","_allvehs","_vehx","_cx","_cargoslots","_type","_noWeapons","_nonconfigs","_nonsims","_facUnits","_err"];
+private ["_id","_fac","_allvehs","_entry","_entryConfigName","_cargoslots","_type","_noWeapons","_nonconfigs","_nonsims","_facUnits","_err"];
 
 PARAMS_1(_cargoslots);
 _err = "cargo slots not valid";
@@ -54,35 +54,68 @@ _nonConfigs = ["StaticWeapon","CruiseMissile1","CruiseMissile2","Chukar_EP1","Ch
 _nonSims = ["parachute","house"];
 
 if (typename _fac == "STRING") then {
-    _facUnits = _fac call ALiVE_fnc_configGetFactionUnitsByGroups;
+    private _factionConfigMission = missionConfigFile >> "CfgFactionClasses" >> _fac;
+
+    if (isClass _factionConfigMission) then {
+        _facUnits = _fac call ALiVE_fnc_configGetFactionUnitsByGroups;
+    };
 } else {
     _facUnits = [];
-    {_facUnits append (_fac call ALiVE_fnc_configGetFactionUnitsByGroups)} foreach _fac;
+    {
+        private _factionConfigMission = missionConfigFile >> "CfgFactionClasses" >> _x;
+
+        if (isClass _factionConfigMission) then {
+            _facUnits append (_x call ALiVE_fnc_configGetFactionUnitsByGroups);
+        };
+    } foreach _fac;
 };
 
 _allvehs = [];
+
 for "_y" from 1 to count(configFile >> "CfgVehicles") - 1 do {
-    _vehx = (configFile >> "CfgVehicles") select _y;
-    if(getNumber (_vehx >> "scope") >= 1) then {
-        if (!(getText(_vehx >> "simulation") in _nonsims)) then {
-            _cx = configName _vehx;
-            if ({(_cx isKindOf _x)} count _nonconfigs == 0) then {
-                if (getNumber(_vehx >> "TransportSoldier") >= _cargoslots) then {
-                    if (!isNil "_fac") then {
-                        if (_cx in _facUnits) then {
+    _entry = (configFile >> "CfgVehicles") select _y;
+
+    if(getNumber (_entry >> "scope") >= 1) then {
+        if (!(getText(_entry >> "simulation") in _nonsims)) then {
+            _entryConfigName = configName _entry;
+
+            if ({(_entryConfigName isKindOf _x)} count _nonconfigs == 0) then {
+                if (getNumber(_entry >> "TransportSoldier") >= _cargoslots) then {
+                    _entryFaction = getText (_entry >> "faction");
+
+                    if (_fac isEqualType []) then {
+                        if (_entryFaction in _fac || {!isnil "_facUnits" && {_entryConfigName in _facUnits}}) then {
                             if (!isnil "_type") then {
-                                if (_cx isKindOf _type) then {
+                                if (_entryConfigName isKindOf _type) then {
                                     if (_noWeapons) then {
-                                        if ([_cx] call ALiVE_fnc_isArmed) then {_allvehs pushback _cx};
+                                        if ([_entryConfigName] call ALiVE_fnc_isArmed) then {_allvehs pushback _entryConfigName};
                                     } else {
-                                        _allvehs pushback _cx;
+                                        _allvehs pushback _entryConfigName;
                                     };
                                 };
                             } else {
                                 if (_noWeapons) then {
-                                    if ([_cx] call ALiVE_fnc_isArmed) then {_allvehs pushback _cx};
+                                    if ([_entryConfigName] call ALiVE_fnc_isArmed) then {_allvehs pushback _entryConfigName};
                                 } else {
-                                    _allvehs pushback _cx;
+                                    _allvehs pushback _entryConfigName;
+                                };
+                            };
+                        };
+                    } else {
+                        if (_entryFaction == _fac || {!isnil "_facUnits" && {_entryConfigName in _facUnits}}) then {
+                            if (!isnil "_type") then {
+                                if (_entryConfigName isKindOf _type) then {
+                                    if (_noWeapons) then {
+                                        if ([_entryConfigName] call ALiVE_fnc_isArmed) then {_allvehs pushback _entryConfigName};
+                                    } else {
+                                        _allvehs pushback _entryConfigName;
+                                    };
+                                };
+                            } else {
+                                if (_noWeapons) then {
+                                    if ([_entryConfigName] call ALiVE_fnc_isArmed) then {_allvehs pushback _entryConfigName};
+                                } else {
+                                    _allvehs pushback _entryConfigName;
                                 };
                             };
                         };
@@ -95,4 +128,4 @@ for "_y" from 1 to count(configFile >> "CfgVehicles") - 1 do {
 
 //call compile (format["%1 = %2",_searchbag,_allvehs]);
 
-_allvehs;
+_allvehs
