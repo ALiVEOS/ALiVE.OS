@@ -810,19 +810,19 @@ switch(_operation) do {
                 } foreach [["Men",["Man"]],["Cars",["Car"]],["APCs",["Wheeled_APC_F","APC_Wheeled_01_base_F","APC_Tracked_01_base_F"]],["Tanks",["Tank"]],["Planes",["Plane"]],["Helicopters",["Helicopter"]],["Ships",["Ship"]],["Static",["StaticWeapon"]]];
 
                 private _assetList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_LIST_UNITS );
-                _assetList ctrlSetEventHandler ["LBSelChanged","['onGroupEditorAssetListChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                _assetList ctrlSetEventHandler ["LBSelChanged","['onGroupEditorAssetSelected', _this] call ALiVE_fnc_orbatCreatorOnAction"];
                 _assetList ctrlSetEventHandler ["LBDrag","['onGroupEditorAssetListDragStart', _this] call ALiVE_fnc_orbatCreatorOnAction"];
                 _assetList ctrlShow true;
 
                 private _assetButton1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_ONE );
                 _assetButton1 ctrlSetText "Add to Selected Group";
                 _assetButton1 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorAssetAddUnitClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
-                _assetButton1 ctrlShow false;
+                _assetButton1 ctrlEnable false;
 
                 private _assetButton2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_TWO );
                 _assetButton2 ctrlSetText "Open in Unit Editor";
                 _assetButton2 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorAssetEditUnitClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
-                _assetButton2 ctrlShow false;
+                _assetButton2 ctrlEnable false;
 
                 private _assetButton3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_THREE );
                 _assetButton3 ctrlSetText "";
@@ -2864,6 +2864,14 @@ switch(_operation) do {
 
         private _category = call compile OC_ctrlGetSelData( _list );
 
+        // disable buttons
+
+        private _button1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_ONE );
+        _button1 ctrlEnable false;
+
+        private _button2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_TWO );
+        _button2 ctrlEnable false;
+
         [_logic,"groupEditorDisplayFactionAssetsInCategory", _category] call MAINCLASS;
 
     };
@@ -2910,7 +2918,7 @@ switch(_operation) do {
             _configName = _factionAssetConfigNames select _i;
 
             _add = false;
-            {if (_configName isKindOf _x) then {_add = true}} foreach _category;
+            {if (_configName isKindOf _x) exitWith {_add = true}} foreach _category;
 
             if (_add) then {
                 _index = _assetList lbAdd _displayName;
@@ -2924,7 +2932,7 @@ switch(_operation) do {
 
     };
 
-    case "onGroupEditorAssetListChanged": {
+    case "onGroupEditorAssetSelected": {
 
         _args params ["_list","_index"];
 
@@ -2932,13 +2940,18 @@ switch(_operation) do {
 
         [_logic,"displayVehicle", _unit] call MAINCLASS;
 
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
+
         // enable buttons
 
-        private _button1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_ONE );
-        _button1 ctrlShow true;
+        if (_group != "") then {
+            private _button1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_ONE );
+            _button1 ctrlEnable true;
+        };
 
         private _button2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_TWO );
-        _button2 ctrlShow true;
+        _button2 ctrlEnable true;
 
     };
 
@@ -3010,6 +3023,11 @@ switch(_operation) do {
         private _groupCategory = [_logic,"getFactionGroupCategory", [_faction,_groupCategory]] call MAINCLASS;
         private _groups = [_groupCategory,"groups"] call ALiVE_fnc_hashGet;
 
+        // reset asset list
+
+        private _assetButton1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_ONE );
+        _assetButton1 ctrlEnable false;
+
         // reset active group list
 
         private _selectedGroupHeader = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_HEADER);
@@ -3034,6 +3052,9 @@ switch(_operation) do {
 
         private _groupsButton2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_TWO );
         _groupsButton2 ctrlEnable false;
+
+        private _button3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_THREE );
+        _button3 ctrlEnable false;
 
         // add groups to list
 
@@ -3067,15 +3088,22 @@ switch(_operation) do {
         private _group = OC_ctrlGetSelData( _list );
 
         // enable buttons
+        // asset list
+
+        private _assetButton1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_ASSETS_BUTTON_ONE );
+        _assetButton1 ctrlEnable true;
+
+        // enable buttons
+        // group list
 
         private _button1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_ONE );
-        _button1 ctrlShow true;
+        _button1 ctrlEnable true;
 
         private _button2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_TWO );
         _button2 ctrlEnable true;
 
         private _button3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_THREE );
-        _button3 ctrlShow true;
+        _button3 ctrlEnable true;
 
         private _state = [_logic,"state"] call MAINCLASS;
         private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
@@ -3109,6 +3137,20 @@ switch(_operation) do {
         private _selectedGroupHeader = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_HEADER);
         _selectedGroupHeader ctrlSetText _groupName;
         _selectedGroupHeader ctrlShow true;
+
+        // hide buttons
+
+        private _unitRank = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_INPUT_UNITRANK );
+        _unitRank ctrlShow false;
+
+        private _button1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_TWO );
+        _button1 ctrlShow false;
+
+        private _button2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_THREE );
+        _button2 ctrlShow false;
+
+        private _button3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_FOUR );
+        _button3 ctrlShow false;
 
         // set units to list
 
@@ -3291,12 +3333,16 @@ switch(_operation) do {
         private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
         private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
 
-        private _groupData = [_logic,"getFactionCategoryGroup", [_faction,_category,_group]] call MAINCLASS;
-        [_logic,"groupAddUnit", [_groupData,_asset]] call MAINCLASS;
+        if (_group != "") then {
 
-        // update list
+            private _groupData = [_logic,"getFactionCategoryGroup", [_faction,_category,_group]] call MAINCLASS;
+            [_logic,"groupAddUnit", [_groupData,_asset]] call MAINCLASS;
 
-        [_logic,"groupEditorDisplayGroupUnits", _groupData] call MAINCLASS;
+            // update list
+
+            [_logic,"groupEditorDisplayGroupUnits", _groupData] call MAINCLASS;
+
+        };
 
     };
 
