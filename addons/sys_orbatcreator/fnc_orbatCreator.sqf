@@ -1729,6 +1729,8 @@ switch(_operation) do {
 
         _classname = [_logic,"displayNameToClassname", _classname] call MAINCLASS;
 
+        _result = _classname;
+
     };
 
 
@@ -2620,7 +2622,7 @@ switch(_operation) do {
 
         // get displayname/configname
 
-        _classname = [_classname," ","_"] call CBA_fnc_replace;
+        _classname = [_logic,"validateClassname", _classname] call MAINCLASS;
 
         // get parent class
 
@@ -3462,7 +3464,7 @@ switch(_operation) do {
         };
 
         if (_newGroupClassname != _groupConfigName) then {
-            _newGroupClassname =
+            _newGroupClassname = [_logic,"validateClassname", _newGroupClassname] call MAINCLASS;
             [_groupData,"configName", _newGroupClassname] call ALiVE_fnc_hashSet;
 
             [_currentCategoryGroups,_groupConfigName] call ALiVE_fnc_hashRem;
