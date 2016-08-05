@@ -228,6 +228,8 @@ switch(_operation) do {
         private _customUnits = +_tmpHash;
         [_state,"customUnits", _customUnits] call ALiVE_fnc_hashSet;
 
+        [_state,"selectedFaction", ""] call ALiVE_fnc_hashSet;
+
         [_state,"unitEditor_interfaceBackground", objNull] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_interfaceCamera", objNull] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_activeUnitPosition", [0,0,0]] call ALiVE_fnc_hashSet;
@@ -458,7 +460,13 @@ switch(_operation) do {
                 lbSort [_factionList, "ASC"];
 
                 _factionList ctrlSetEventHandler ["LBSelChanged","['onFactionEditorFactionChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-                _factionList lbSetCurSel 0;
+
+                private _selectedFactionGlobal = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+                if (_selectedFactionGlobal == "") then {
+                    _factionList lbSetCurSel 0;
+                } else {
+                    [_factionList,_selectedFactionGlobal] call ALiVE_fnc_listSelectData;
+                };
 
                 // init buttons
 
@@ -498,7 +506,13 @@ switch(_operation) do {
                 lbSort [_factionList, "ASC"];
 
                 _factionList ctrlSetEventHandler ["LBSelChanged","['onUnitEditorFactionChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-                _factionList lbSetCurSel 0;
+
+                private _selectedFactionGlobal = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+                if (_selectedFactionGlobal == "") then {
+                    _factionList lbSetCurSel 0;
+                } else {
+                    [_factionList,_selectedFactionGlobal] call ALiVE_fnc_listSelectData;
+                };
 
                 // init buttons
 
@@ -868,7 +882,13 @@ switch(_operation) do {
                 lbSort [_factionList, "ASC"];
 
                 _factionList ctrlSetEventHandler ["lbSelChanged","['onGroupEditorFactionChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-                _factionList lbSetCurSel 0;
+
+                private _selectedFactionGlobal = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+                if (_selectedFactionGlobal == "") then {
+                    _factionList lbSetCurSel 0;
+                } else {
+                    [_factionList,_selectedFactionGlobal] call ALiVE_fnc_listSelectData;
+                };
 
                 // create gray background and camera
 
@@ -1864,6 +1884,7 @@ switch(_operation) do {
 
         private _state = [_logic,"state"] call MAINCLASS;
         [_state,"factionEditor_selectedFaction", _faction] call ALiVE_fnc_hashSet;
+        [_state,"selectedFaction", _faction] call ALiVE_fnc_hashSet;
 
         [_logic,"factionEditorDisplayFaction", _faction] call MAINCLASS;
 
@@ -2157,6 +2178,7 @@ switch(_operation) do {
             } foreach _units;
 
             [_state,"unitEditor_selectedFaction", _faction] call ALiVE_fnc_hashSet;
+            [_state,"selectedFaction", _faction] call ALiVE_fnc_hashSet;
 
         };
 
@@ -2828,6 +2850,7 @@ switch(_operation) do {
 
         private _state = [_logic,"state"] call MAINCLASS;
         [_state,"groupEditor_selectedFaction", _faction] call ALiVE_fnc_hashSet;
+        [_state,"selectedFaction", _faction] call ALiVE_fnc_hashSet;
 
         private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
         private _factionData = [_factions,_faction] call ALiVE_fnc_hashGet;
