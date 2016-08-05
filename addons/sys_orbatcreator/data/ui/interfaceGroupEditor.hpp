@@ -325,12 +325,23 @@ class ALiVE_orbatCreator_interface_createGroup {
             sizeEx = 1 * GUI_GRID_H;
         };
 
+        class createGroup_input_icon_title: orbatCreator_RscText {
+            idc = 12013;
+
+            text = "Icon";
+            x = 9 * GUI_GRID_W + GUI_GRID_X;
+            y = 15 * GUI_GRID_H + GUI_GRID_Y;
+            w = 6 * GUI_GRID_W;
+            h = 2.5 * GUI_GRID_H;
+            sizeEx = 1 * GUI_GRID_H;
+        };
+
         class createGroup_instructions: orbatCreator_RscStructuredText {
             idc = 12011;
             x = 9 * GUI_GRID_W + GUI_GRID_X;
-            y = 15 * GUI_GRID_H + GUI_GRID_Y;
+            y = 18 * GUI_GRID_H + GUI_GRID_Y;
             w = 19 * GUI_GRID_W;
-            h = 5 * GUI_GRID_H;
+            h = 2 * GUI_GRID_H;
         };
 
     };
@@ -391,6 +402,15 @@ class ALiVE_orbatCreator_interface_createGroup {
             text = "Autogen Classname";
             x = 15 * GUI_GRID_W + GUI_GRID_X;
             y = 10 * GUI_GRID_H + GUI_GRID_Y;
+            w = 13 * GUI_GRID_W;
+            h = 1.25 * GUI_GRID_H;
+            colorBackground[] = {0.2,0.2,0.2,1};
+        };
+
+        class createGroup_input_icon_combo: orbatCreator_RscCombo {
+            idc = 12014;
+            x = 15 * GUI_GRID_W + GUI_GRID_X;
+            y = 15.75 * GUI_GRID_H + GUI_GRID_Y;
             w = 13 * GUI_GRID_W;
             h = 1.25 * GUI_GRID_H;
             colorBackground[] = {0.2,0.2,0.2,1};
@@ -463,12 +483,23 @@ class ALiVE_orbatCreator_interface_editGroup : ALiVE_orbatCreator_interface_crea
             sizeEx = 1 * GUI_GRID_H;
         };
 
+        class createGroup_input_icon_title: orbatCreator_RscText {
+            idc = 12013;
+
+            text = "Icon";
+            x = 9 * GUI_GRID_W + GUI_GRID_X;
+            y = 15 * GUI_GRID_H + GUI_GRID_Y;
+            w = 6 * GUI_GRID_W;
+            h = 2.5 * GUI_GRID_H;
+            sizeEx = 1 * GUI_GRID_H;
+        };
+
         class createGroup_instructions: orbatCreator_RscStructuredText {
             idc = 12011;
             x = 9 * GUI_GRID_W + GUI_GRID_X;
-            y = 15 * GUI_GRID_H + GUI_GRID_Y;
+            y = 18 * GUI_GRID_H + GUI_GRID_Y;
             w = 19 * GUI_GRID_W;
-            h = 5 * GUI_GRID_H;
+            h = 2 * GUI_GRID_H;
         };
 
     };

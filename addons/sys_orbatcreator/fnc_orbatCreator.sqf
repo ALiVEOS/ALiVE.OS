@@ -104,6 +104,7 @@ nil
 #define OC_CREATEGROUP_INPUT_NAME                       12006
 #define OC_CREATEGROUP_INPUT_CLASSNAME                  12007
 #define OC_CREATEGROUP_INPUT_CATEGORY                   12008
+#define OC_CREATEGROUP_INPUT_ICON                       12014
 #define OC_CREATEGROUP_INPUT_BUTTON_CANCEL              12010
 #define OC_CREATEGROUP_INPUT_BUTTON_CONFIRM             12009
 #define OC_CREATEGROUP_INSTRUCTIONS                     12011
@@ -118,6 +119,10 @@ nil
 // general macros
 
 #define ALIVE_COMPATIBLE_GROUP_CATEGORIES   ["Infantry","SpecOps","Motorized","Motorized_MTP","Mechanized","Armored","Artillery","Naval","Air","Support"]
+
+#define COLOR_SIDE_EAST [profilenamespace getvariable ["Map_OPFOR_R",0],profilenamespace getvariable ["Map_OPFOR_G",1],profilenamespace getvariable ["Map_OPFOR_B",1],profilenamespace getvariable ["Map_OPFOR_A",0.8]]
+#define COLOR_SIDE_WEST [profilenamespace getvariable ["Map_BLUFOR_R",0],profilenamespace getvariable ["Map_BLUFOR_G",1],profilenamespace getvariable ["Map_BLUFOR_B",1],profilenamespace getvariable ["Map_BLUFOR_A",0.8]]
+#define COLOR_SIDE_GUER [profilenamespace getvariable ["Map_Independent_R",0],profilenamespace getvariable ["Map_Independent_G",1],profilenamespace getvariable ["Map_Independent_B",1],profilenamespace getvariable ["Map_Independent_A",0.8]]
 
 
 TRACE_1("Orbat Creator - input", _this);
@@ -396,7 +401,8 @@ switch(_operation) do {
                 private [
                     "_faction","_factionDisplayName","_factionConfigName","_factionFlag",
                     "_index","_sideText","_sideTextLong","_marker","_markerClass","_markerName",
-                    "_markerIcon"
+                    "_markerIcon","_factionConfig","_factionConfigFlag","_factionConfigDisplayName",
+                    "_factionConfigMarkerName"
                 ];
 
                 private _display = findDisplay OC_DISPLAY_FACTIONEDITOR;
@@ -418,6 +424,7 @@ switch(_operation) do {
 
                 private _inputFlag = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_INPUT_FLAG );
 
+                private _allFlags = [];
                 private _markerPath = configFile >> "CfgMarkers";
 
                 for "_i" from 0 to (count _markerPath - 1) do {
@@ -430,12 +437,36 @@ switch(_operation) do {
                             _markerName = getText (_marker >> "name");
                             _markerIcon = getText (_marker >> "icon");
 
-                            _index = _inputFlag lbAdd _markerName;
-                            _inputFlag lbSetData [_index,_markerIcon];
-                            _inputFlag lbSetPicture [_index,_markerIcon];
+                            _allFlags pushback [_markerName,_markerIcon];
                         };
                     };
                 };
+
+                private _factionPath = configFile >> "CfgFactionClasses";
+
+                for "_i" from 0 to (count _factionPath - 1) do {
+                    _factionConfig = _factionPath select _i;
+
+                    if (isClass _factionConfig) then {
+                        _factionConfigSide = getNumber (_factionConfig >> "side");
+                        _factionConfigFlag = getText (_factionConfig >> "flag");
+
+                        if (_factionConfigSide >= 0 && {_factionConfigSide <= 2} && {!(_factionConfigFlag in _allFlags)}) then {
+                            _factionConfigDisplayName = getText (_factionConfig >> "displayName");
+                            _factionConfigMarkerName = format ["Flag - %1", _factionConfigDisplayName];
+
+                            _allFlags pushback [_factionConfigMarkerName,_factionConfigFlag];
+                        };
+                    };
+                };
+
+                {
+                    _x params ["_name","_path"];
+
+                    _index = _inputFlag lbAdd _name;
+                    _inputFlag lbSetData [_index,_path];
+                    _inputFlag lbSetPicture [_index,_path];
+                } foreach _allFlags;
 
                 // init faction list
 
@@ -898,10 +929,15 @@ switch(_operation) do {
 
             case "Create_Group": {
 
-                private ["_index"];
+                private [
+                    "_marker","_markerClass","_markerDisplayName","_markerIcon","_index",
+                    "_sideMarkerClass","_sideColor","_sidePrefix","_icon"
+                ];
 
                 private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+
                 private _factionData = [_logic,"getFactionData",_faction] call MAINCLASS;
+                private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
                 private _factionGroupCategories = [_factionData,"groupCategories"] call ALiVE_fnc_hashGet;
 
                 // init category list
@@ -915,6 +951,99 @@ switch(_operation) do {
 
                 private _selectedCategory = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
                 [_inputCategory,_selectedCategory] call ALiVE_fnc_listSelectData;
+
+                // init icon list
+
+                private _inputIcon = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_ICON );
+
+                private _colorSideEAST = COLOR_SIDE_EAST;
+                private _colorSideWEST = COLOR_SIDE_WEST;
+                private _colorSideGUER = COLOR_SIDE_GUER;
+
+                switch (_factionSide) do {
+                    case 0: {
+                        _sideMarkerClass = "NATO_OPFOR";
+                        _sideColor = _colorSideEAST;
+                        _sidePrefix = 'o';
+                    };
+                    case 1: {
+                        _sideMarkerClass = "NATO_BLUFOR";
+                        _sideColor = _colorSideWEST;
+                        _sidePrefix = 'b';
+                    };
+                    case 2: {
+                        _sideMarkerClass = "NATO_Independent";
+                        _sideColor = _colorSideGUER;
+                        _sidePrefix = 'n';
+                    };
+                    default {"NATO_BLUFOR"};
+                };
+
+                private _markerPath = configFile >> "CfgMarkers";
+                private _markerBlacklist = ["Installation","HQ"];
+
+                for "_i" from 0 to (count _markerPath - 1) do {
+
+                    _marker = _markerPath select _i;
+                    _markerClass = getText (_marker >> "markerClass");
+
+                    if (_markerClass == _sideMarkerClass) then {
+                        _markerDisplayName = getText (_marker >> "name");
+
+                        if !(_markerDisplayName in _markerBlacklist) then {
+                            _markerIcon = getText (_marker >> "icon");
+
+                            _index = _inputIcon lbAdd _markerDisplayName;
+                            _inputIcon lbSetData [_index,_markerIcon];
+                            _inputIcon lbSetPicture [_index,_markerIcon];
+                            _inputIcon lbSetPictureColor [_index,_sideColor];
+                            _inputIcon lbSetPictureColorSelected [_index,_sideColor];
+                        };
+                    };
+
+                };
+
+                // select default icon based on selected group category
+
+                switch (_selectedCategory) do {
+                    case "Infantry": {
+                        _icon = "inf";
+                    };
+                    case "SpecOps": {
+                        _icon = "recon";
+                    };
+                    case "Motorized": {
+                        _icon = "motor_inf";
+                    };
+                    case "Motorized_MTP": {
+                        _icon = "motor_inf";
+                    };
+                    case "Support": {
+                        _icon = "support";
+                    };
+                    case "Mechanized": {
+                        _icon = "mech_inf";
+                    };
+                    case "Armored": {
+                        _icon = "armor";
+                    };
+                    case "Artillery": {
+                        _icon = "art";
+                    };
+                    case "Naval": {
+                        _icon = "naval";
+                    };
+                    case "Air": {
+                        _icon = "air";
+                    };
+
+                    default {
+                        _icon = "unknown";
+                    };
+                };
+
+                _icon = format ["\A3\ui_f\data\map\markers\nato\%1_%2.paa", _sidePrefix, _icon];
+                [_inputIcon,_icon] call ALiVE_fnc_listSelectData;
 
                 // init buttons
 
@@ -940,6 +1069,7 @@ switch(_operation) do {
                 private _groupData = [_logic,"getFactionCategoryGroup", [_faction,_category,_group]] call MAINCLASS;
                 private _groupName = [_groupData,"name"] call ALiVE_fnc_hashGet;
                 private _groupConfigName = [_groupData,"configName"] call ALiVE_fnc_hashGet;
+                private _groupIcon = [_groupData,"icon"] call ALiVE_fnc_hashGet;
 
                 private _inputName = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_NAME );
                 private _inputClassname = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_CLASSNAME );
@@ -947,6 +1077,9 @@ switch(_operation) do {
 
                 _inputName ctrlSetText _groupName;
                 _inputClassname ctrlSetText _groupConfigName;
+
+                private _inputIcon = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_ICON );
+                [_inputIcon,_groupIcon] call ALiVE_fnc_listSelectData;
 
                 private _buttonConfirm = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_BUTTON_CONFIRM );
                 _buttonConfirm ctrlSetEventHandler ["MouseButtonDown","['onEditGroupConfirmClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
@@ -1979,6 +2112,7 @@ switch(_operation) do {
         [_newFaction,"configName", _factionConfigName] call ALiVE_fnc_orbatCreatorFaction;
         [_newFaction,"displayName", _factionDisplayName] call ALiVE_fnc_orbatCreatorFaction;
         [_newFaction,"flag", _randomFlag] call ALiVE_fnc_hashSet;
+        [_newFaction,"icon", _randomFlag] call ALiVE_fnc_hashSet;
 
         [_logic,"addFaction", _newFaction] call MAINCLASS;
 
@@ -2051,6 +2185,7 @@ switch(_operation) do {
 
         if (_newFlag != _factionFlag) then {
             [_factionData,"flag", _newFlag] call ALiVE_fnc_hashSet;
+            [_factionData,"icon", _newFlag] call ALiVE_fnc_hashSet;
             _changed = true;
         };
 
@@ -2548,6 +2683,10 @@ switch(_operation) do {
 
         private _buttonOK = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_BUTTON_CONFIRM );
         _buttonOK ctrlEnable false;
+
+        if (lbSize _classList > 0) then {
+            _classList lbSetCurSel 0;
+        };
 
     };
 
@@ -3433,6 +3572,8 @@ switch(_operation) do {
 
         private _instructions = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INSTRUCTIONS );
 
+        private _groupIcon = OC_getSelData( OC_CREATEGROUP_INPUT_ICON );
+
         private _inputName = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_NAME );
         private _groupName = ctrlText _inputName;
 
@@ -3466,6 +3607,7 @@ switch(_operation) do {
         [_newGroup,"configName", _groupClassName] call ALiVE_fnc_hashSet;
         [_newGroup,"side", _factionSide] call ALiVE_fnc_hashSet;
         [_newGroup,"faction", _faction] call ALiVE_fnc_hashSet;
+        [_newGroup,"icon", _groupIcon] call ALiVE_fnc_hashSet;
         [_newGroup,"units", []] call ALiVE_fnc_hashSet;
 
         [_groups,_groupClassName, _newGroup] call ALiVE_fnc_hashSet;
@@ -3498,6 +3640,7 @@ switch(_operation) do {
         private _groupData = [_currentCategoryGroups,_group] call ALiVE_fnc_hashGet;
         private _groupName = [_groupData,"name"] call ALiVE_fnc_hashGet;
         private _groupConfigName = [_groupData,"configName"] call ALiVE_fnc_hashGet;
+        private _groupIcon = [_groupData,"icon"] call ALiVE_fnc_hashGet;
 
         private _inputName = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_NAME );
         private _inputClassname = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_CLASSNAME );
@@ -3506,6 +3649,7 @@ switch(_operation) do {
         private _newGroupName = ctrlText _inputName;
         private _newGroupClassname = ctrlText _inputClassname;
         private _newCategory = OC_getSelData( OC_CREATEGROUP_INPUT_CATEGORY );
+        private _newIcon = OC_getSelData( OC_CREATEGROUP_INPUT_ICON );
 
         // verify names aren't blank
 
@@ -3539,6 +3683,10 @@ switch(_operation) do {
             [_currentCategoryGroups,_groupConfigName] call ALiVE_fnc_hashRem;
             [_currentCategoryGroups,_newGroupClassname,_groupData] call ALiVE_fnc_hashSet;
             _groupConfigName = _newGroupClassname;
+        };
+
+        if (_newIcon != _groupIcon) then {
+            [_groupData,"icon", _newIcon] call ALiVE_fnc_hashSet;
         };
 
         if (_newCategory != _category) then {
