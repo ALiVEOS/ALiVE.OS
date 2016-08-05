@@ -57,32 +57,78 @@ switch(_operation) do {
 
         // CfgFactionClass
 
-        [_logic,"configName", ""] call MAINCLASS;
-        [_logic,"displayName", ""] call MAINCLASS;
-        [_logic,"flag", ""] call MAINCLASS;
-        [_logic,"icon", ""] call MAINCLASS;
-        [_logic,"priority", 0] call MAINCLASS;
-        [_logic,"side", 0] call MAINCLASS;
+        [_logic,"configName", ""] call ALiVE_fnc_hashSet;
+        [_logic,"displayName", ""] call ALiVE_fnc_hashSet;
+        [_logic,"flag", ""] call ALiVE_fnc_hashSet;
+        [_logic,"icon", ""] call ALiVE_fnc_hashSet;
+        [_logic,"priority", 0] call ALiVE_fnc_hashSet;
+        [_logic,"side", 0] call ALiVE_fnc_hashSet;
 
         // CfgGroups
 
-        _groupsByCategory = +_tmpHash;
-        [_groupsByCategory,"Infantry", +_tmpHash] call ALiVE_fnc_hashSet;
-        [_groupsByCategory,"SpecOps", +_tmpHash] call ALiVE_fnc_hashSet;
-        [_groupsByCategory,"Motorized", +_tmpHash] call ALiVE_fnc_hashSet;
-        [_groupsByCategory,"Motorized_MTP", +_tmpHash] call ALiVE_fnc_hashSet;
-        [_groupsByCategory,"Support", +_tmpHash] call ALiVE_fnc_hashSet;
-        [_groupsByCategory,"Mechanized", +_tmpHash] call ALiVE_fnc_hashSet;
-        [_groupsByCategory,"Armored", +_tmpHash] call ALiVE_fnc_hashSet;
-        [_groupsByCategory,"Artillery", +_tmpHash] call ALiVE_fnc_hashSet;
-        [_groupsByCategory,"Naval", +_tmpHash] call ALiVE_fnc_hashSet;
-        [_groupsByCategory,"Air", +_tmpHash] call ALiVE_fnc_hashSet;
-        [_logic,"groupsByCategory", _groupsByCategory] call MAINCLASS;
+        private _groupCategory = +_tmpHash;
+        [_groupCategory,"name",""] call ALiVE_fnc_hashSet;
+        [_groupCategory,"configName", ""] call ALiVE_fnc_hashSet;
+        [_groupCategory,"groups", +_tmpHash] call ALiVE_fnc_hashSet;
+
+        private _groupsByCategory = +_tmpHash;
+
+        private _groupCategoryInfantry = +_groupCategory;
+        [_groupCategoryInfantry,"name", "Infantry"] call ALiVE_fnc_hashSet;
+        [_groupCategoryInfantry,"configName", "Infantry"] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"Infantry", _groupCategoryInfantry] call ALiVE_fnc_hashSet;
+
+        private _groupCategorySpecOps = +_groupCategory;
+        [_groupCategorySpecOps,"name", "Special Forces"] call ALiVE_fnc_hashSet;
+        [_groupCategorySpecOps,"configName", "SpecOps"] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"SpecOps", +_groupCategorySpecOps] call ALiVE_fnc_hashSet;
+
+        private _groupCategoryMotorized = +_groupCategory;
+        [_groupCategoryMotorized,"name", "Motorized Infantry"] call ALiVE_fnc_hashSet;
+        [_groupCategoryMotorized,"configName", "Motorized"] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"Motorized", _groupCategoryMotorized] call ALiVE_fnc_hashSet;
+
+        private _groupCategoryMotorizedMTP = +_groupCategory;
+        [_groupCategoryMotorizedMTP,"name", "Motorized Infantry (MTP)"] call ALiVE_fnc_hashSet;
+        [_groupCategoryMotorizedMTP,"configName","Motorized_MTP"] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"Motorized_MTP", +_groupCategoryMotorizedMTP] call ALiVE_fnc_hashSet;
+
+        private _groupCategorySupport = +_groupCategory;
+        [_groupCategorySupport,"name", "Support Infantry"] call ALiVE_fnc_hashSet;
+        [_groupCategorySupport,"configName", "Support"] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"Support", _groupCategorySupport] call ALiVE_fnc_hashSet;
+
+        private _groupCategoryMechanized = +_groupCategory;
+        [_groupCategoryMechanized,"name", "Mechanized Infantry"] call ALiVE_fnc_hashSet;
+        [_groupCategoryMechanized,"configName", "Mechanized"] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"Mechanized", _groupCategoryMechanized] call ALiVE_fnc_hashSet;
+
+        private _groupCategoryArmored = +_groupCategory;
+        [_groupCategoryArmored,"name", "Armor"] call ALiVE_fnc_hashSet;
+        [_groupCategoryArmored,"configName", "Armored"] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"Armored", _groupCategoryArmored] call ALiVE_fnc_hashSet;
+
+        private _groupCategoryArtillery = +_groupCategory;
+        [_groupCategoryArtillery,"name", "Artillery"] call ALiVE_fnc_hashSet;
+        [_groupCategoryArtillery,"configName", "Artillery"] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"Artillery", _groupCategoryArtillery] call ALiVE_fnc_hashSet;
+
+        private _groupCategoryNaval = +_groupCategory;
+        [_groupCategoryNaval,"name", "Naval"] call ALiVE_fnc_hashSet;
+        [_groupCategoryNaval,"configName", "Naval"] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"Naval", _groupCategoryNaval] call ALiVE_fnc_hashSet;
+
+        private _groupCategoryAir = +_groupCategory;
+        [_groupCategoryAir,"name", "Air"] call ALiVE_fnc_hashSet;
+        [_groupCategoryAir,"configName", "Air"] call ALiVE_fnc_hashSet;
+        [_groupsByCategory,"Air", _groupCategoryAir] call ALiVE_fnc_hashSet;
+
+        [_logic,"groupCategories", _groupsByCategory] call ALiVE_fnc_hashSet;
 
         // units / vehicles
 
         private _assets = +_tmpHash;
-        [_logic,"assets", _assets] call MAINCLASS;
+        [_logic,"assets", _assets] call ALiVE_fnc_hashSet;
 
     };
 
@@ -152,7 +198,7 @@ switch(_operation) do {
 
     };
 
-    case "groupsByCategory": {
+    case "groupCategories": {
 
         if (typename _args == "ARRAY") then {
             [_logic,_operation,_args] call ALiVE_fnc_hashSet;
