@@ -1,40 +1,28 @@
 class cfgFunctions {
         class PREFIX {
                 class COMPONENT {
-                        class playertags {
-                                description = "The main class";
-                                file = "\x\alive\addons\sys_playertags\fnc_playertags.sqf";
-                                                                recompile = RECOMPILE;
-                        };
-                        class playertagsInit {
-                                description = "The module initialisation function";
-                                file = "\x\alive\addons\sys_playertags\fnc_playertagsInit.sqf";
-                                                                recompile = RECOMPILE;
-                        };
-                        class playertagsMenuDef {
-                                description = "The module menu definition";
-                                file = "\x\alive\addons\sys_playertags\fnc_playertagsMenuDef.sqf";
-                                                                recompile = RECOMPILE;
-                        };
-                                                class playertagsRecognise {
+												FUNC_FILEPATH(playertags,"The main class");
+												FUNC_FILEPATH(playertagsInit,"The module initialisation function");
+												FUNC_FILEPATH(playertagsMenuDef,"The module menu definition");
+                        class playertagsRecognise {
                                 description = "The condition script";
                                 file = "\x\alive\addons\sys_playertags\playertags_recognise.sqf";
-                                                                recompile = RECOMPILE;
+                                recompile = RECOMPILE;
                         };
-                                                class playertagsRecogniseHandler {
+                        class playertagsRecogniseHandler {
                                 description = "The handler script";
                                 file = "\x\alive\addons\sys_playertags\playertags_recogniseHandler.sqf";
-                                                                recompile = RECOMPILE;
+                                recompile = RECOMPILE;
                         };
-                                                class playertagsRecogniseOverlayCtrl {
+                        class playertagsRecogniseOverlayCtrl {
                                 description = "The overlay control";
                                 file = "\x\alive\addons\sys_playertags\playertags_recogniseOverlayCtrl.sqf";
-                                                                recompile = RECOMPILE;
+                                recompile = RECOMPILE;
                         };
-                                                class playertagsGenerateLabelText {
+                        class playertagsGenerateLabelText {
                                 description = "The label control";
                                 file = "\x\alive\addons\sys_playertags\playertags_generateLabelText.sqf";
-                                                                recompile = RECOMPILE;
+                                recompile = RECOMPILE;
                         };
                 };
         };

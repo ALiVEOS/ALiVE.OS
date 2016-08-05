@@ -1,107 +1,26 @@
 class cfgFunctions {
     class PREFIX {
         class COMPONENT {
-            class civCommandRouter {
-                description = "civCommandRouter";
-                file = "\x\alive\addons\amb_civ_command\fnc_civCommandRouter.sqf";
-                recompile = RECOMPILE;
-            };
-            class selectCivilianCommand {
-                description = "Select a random civilian command from a list of available commands";
-                file = "\x\alive\addons\amb_civ_command\fnc_selectCivilianCommand.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_randomMovement {
-                description = "Random movement within a given radius";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_randomMovement.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_idle {
-                description = "Idle command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_idle.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_housework {
-                description = "Housework command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_housework.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_sleep {
-                description = "Sleep command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_sleep.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_campfire {
-                description = "Campfire command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_campfire.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_observe {
-                description = "Observe command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_observe.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_suicide {
-                description = "Suicide command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_suicide.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_rogue {
-                description = "Rogue command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_rogue.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_journey {
-                description = "Random journey command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_journey.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_driveTo {
-                description = "Drive to command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_driveTo.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_startMeeting {
-                description = "Start meeting command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_startMeeting.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_joinMeeting {
-                description = "Join meeting command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_joinMeeting.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_startGathering {
-                description = "Start gathering command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_startGathering.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_joinGathering {
-                description = "Join gathering command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_joinGathering.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_suicideTarget {
-                description = "Targeted Suicide command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_suicideTarget.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_rogueTarget {
-                description = "Targeted Rogue command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_rogueTarget.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_getWeapons {
-                description = "Get weapons from depot command";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_getWeapons.sqf";
-                recompile = RECOMPILE;
-            };
-            class cc_sabotage {
-                description = "Sabotage a building";
-                file = "\x\alive\addons\amb_civ_command\fnc_cc_sabotage.sqf";
-                recompile = RECOMPILE;
-            };
-
-        };
-    };
+						FUNC_FILEPATH(civCommandRouter,"civCommandRouter");
+						FUNC_FILEPATH(selectCivilianCommand,"Select a random civilian command from a list of available commands");
+						FUNC_FILEPATH(cc_randomMovement,"Random movement within a given radius");
+						FUNC_FILEPATH(cc_idle,"Idle command");
+						FUNC_FILEPATH(cc_housework,"Housework command");
+						FUNC_FILEPATH(cc_sleep,"Sleep command");
+						FUNC_FILEPATH(cc_campfire,"Campfire command");
+						FUNC_FILEPATH(cc_observe,"Observe command");
+						FUNC_FILEPATH(cc_suicide,"Suicide command");
+						FUNC_FILEPATH(cc_rogue,"Rogue command");
+						FUNC_FILEPATH(cc_journey,"Random journey command");
+						FUNC_FILEPATH(cc_driveTo,"Drive to command");
+						FUNC_FILEPATH(cc_startMeeting,"Start meeting command");
+						FUNC_FILEPATH(cc_joinMeeting,"Join meeting command");
+						FUNC_FILEPATH(cc_startGathering,"Start gathering command");
+						FUNC_FILEPATH(cc_joinGathering,"Join gathering command");
+						FUNC_FILEPATH(cc_suicideTarget,"Targeted Suicide command");
+						FUNC_FILEPATH(cc_rogueTarget,"Targeted Rogue command");
+						FUNC_FILEPATH(cc_getWeapons,"Get weapons from depot command");
+						FUNC_FILEPATH(cc_sabotage,"Sabotage a building");
+				};
+		};
 };
