@@ -53,14 +53,14 @@ if !(isnil {call compile _searchBag}) exitwith {call compile _searchBag};
 _nonConfigs = ["StaticWeapon","CruiseMissile1","CruiseMissile2","Chukar_EP1","Chukar","Chukar_AllwaysEnemy_EP1"];
 _nonSims = ["parachute","house"];
 
+_facUnits = [];
 if (typename _fac == "STRING") then {
     private _factionConfigMission = missionConfigFile >> "CfgFactionClasses" >> _fac;
 
     if (isClass _factionConfigMission) then {
-        _facUnits = _fac call ALiVE_fnc_configGetFactionUnitsByGroups;
+        _facUnits append (_fac call ALiVE_fnc_configGetFactionUnitsByGroups);
     };
 } else {
-    _facUnits = [];
     {
         private _factionConfigMission = missionConfigFile >> "CfgFactionClasses" >> _x;
 
@@ -84,7 +84,7 @@ for "_y" from 1 to count(configFile >> "CfgVehicles") - 1 do {
                     _entryFaction = getText (_entry >> "faction");
 
                     if (_fac isEqualType []) then {
-                        if (_entryFaction in _fac || {!isnil "_facUnits" && {_entryConfigName in _facUnits}}) then {
+                        if (_entryFaction in _fac || {_entryConfigName in _facUnits}) then {
                             if (!isnil "_type") then {
                                 if (_entryConfigName isKindOf _type) then {
                                     if (_noWeapons) then {
@@ -102,7 +102,7 @@ for "_y" from 1 to count(configFile >> "CfgVehicles") - 1 do {
                             };
                         };
                     } else {
-                        if (_entryFaction == _fac || {!isnil "_facUnits" && {_entryConfigName in _facUnits}}) then {
+                        if (_entryFaction == _fac || {_entryConfigName in _facUnits}) then {
                             if (!isnil "_type") then {
                                 if (_entryConfigName isKindOf _type) then {
                                     if (_noWeapons) then {
