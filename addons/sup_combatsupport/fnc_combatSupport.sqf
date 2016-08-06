@@ -712,8 +712,15 @@ switch(_operation) do {
 
                             NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _side], _a, true];
 
-                        } forEach SUP_ARTYARRAYS;
+                        //} forEach SUP_ARTYARRAYS;
+                        } forEach [];
 
+                        for "_i" from 0 to ((count synchronizedObjects _logic)-1) do {
+                            if (typeOf ((synchronizedObjects _logic) select _i) == "ALiVE_sup_artillery") then {
+                                private _artyLogic = (synchronizedObjects _logic) select _i;
+                                [_artyLogic, "spawn"] call ALIVE_fnc_artillery;
+                            };
+                        };
 
 
 

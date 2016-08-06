@@ -34,9 +34,11 @@ marceldev89
 
 private _logic = param [0, objNull, [objNull, []]];
 private _operation = param [1, "", [""]];
-private _args = param [2, objNull, [objNull, [], "", 0, true, false]];
+private _args = param [2, [], [objNull, [], "", 0, true, false]];
 
 private _result = true;
+
+diag_log format ["###### %1: _logic: %2, _operation: %3, _args: %4", "ALIVE_fnc_artillery", _logic, _operation, _args];
 
 switch (_operation) do {
     case "init": {
@@ -44,16 +46,16 @@ switch (_operation) do {
         _logic setVariable ["class", MAINCLASS];
 
         // Defaults
-        _logic setVariable ["group", grpNull];
+        /* _logic setVariable ["group", grpNull]; */
         _logic setVariable ["moveToPos", objNull];
-        _logic setVariable ["fireMission", objNull];
+        _logic setVariable ["fireMission", []];
     };
 
     /****************
      ** PROPERTIES **
      ****************/
     case "fireMission": {
-        if (isNull _args) then {
+        if (count _args == 0) then {
             _result = _logic getVariable ["fireMission", objNull];
         } else {
             private _position = _args param [0, [0,0,0], [[]], 3];
@@ -87,11 +89,13 @@ switch (_operation) do {
      *************/
     case "execute": {
         private _group = _logic getVariable ["group", grpNull];
-        private _units = (units _group) select {vehicle _x != _x && {gunner _x == _x}};
+        private _units = (units _group) select {vehicle _x != _x && {gunner (vehicle _x) == _x}};
         private _fireMission = _logic getVariable ["fireMission", objNull];
+        private _fireMissionPos = [_fireMission, "position"] call ALIVE_fnc_hashGet;
         [_fireMission, "units", _units] call ALIVE_fnc_hashSet;
         [_fireMission, "unitIndex", 0] call ALIVE_fnc_hashSet;
         [_fireMission, "roundsShot", 0] call ALIVE_fnc_hashSet;
+        _units doWatch _fireMissionPos;
 
         _logic setVariable ["fireMission", _fireMission];
     };
@@ -130,7 +134,7 @@ switch (_operation) do {
     };
     case "hasFireMission": {
         private _fireMission = _logic getVariable ["fireMission", objNull];
-        _result = (!isNull _fireMission);
+        _result = (count _fireMission > 0);
     };
     case "isFireMissionComplete": {
         private _fireMission = _logic getVariable ["fireMission", objNull];
@@ -144,19 +148,21 @@ switch (_operation) do {
     };
     case "inRange": {
         private _fireMission = _logic getVariable ["fireMission", objNull];
+        private _position = [_fireMission, "position"] call ALIVE_fnc_hashGet;
+        private _roundType = [_fireMission, "roundType"] call ALIVE_fnc_hashGet;
         private _group = _logic getVariable ["group", grpNull];
-        private _units = (units _group) select {vehicle _x != _x && {gunner _x == _x}};
-        _result = _position inRangeOfArtillery [_units, _fireMission select 1];
+        private _units = (units _group) select {vehicle _x != _x && {gunner (vehicle _x) == _x}};
+        _result = _position inRangeOfArtillery [_units, _roundType];
     };
     case "move": {
         private _group = _logic getVariable ["group", grpNull];
         private _position = [];
 
-        if (!isNull _args && {count _args == 3}) then {
-            _logic setVariable ["moveToPos", _args];
-            _position = _args;
-        } else {
+        if (count _args == 0) then {
             _position = _logic getVariable ["moveToPos", objNull];
+        } else {
+            _position = _args param [0, [0,0,0], [[]], 3];
+            _logic setVariable ["moveToPos", _position];
         };
 
         _group setVariable ["sup_artillery_inPosition", false];
@@ -167,8 +173,39 @@ switch (_operation) do {
         _waypoint setWaypointSpeed "NORMAL";
         _waypoint setWaypointStatements [
             "true",
-            "(group _this) setVariable ['sup_artillery_inPosition', true]"
+            "(group this) setVariable ['sup_artillery_inPosition', true]"
         ];
+        diag_log format["_group: %1, _position: %2, _waypoint: %3", _group, _position, _waypoint];
+    };
+    case "spawn": {
+        private _position = position _logic;
+        private _type = _logic getVariable ["artillery_type", ""];
+        private _callsign = _logic getVariable ["artillery_callsign", ""];
+        private _code = _logic getVariable ["artillery_code", ""];
+
+        private _side = _type call ALIVE_fnc_classSide;
+        private _group = createGroup _side;
+
+        for "_i" from 0 to 2 do {
+            // TODO: Spawn vehicles in proper fancy formation (see CfgFormations)
+            private _vehiclePosition = _position getPos [15 * _i, (getDir _logic) * _i];
+            private _vehicle = createVehicle [_type, _vehiclePosition, [], 0, "NONE"];
+            _vehicle setDir (getDir _logic);
+            _vehicle lock true;
+            [_vehicle, _group] call BIS_fnc_spawnCrew;
+        };
+
+        _group setVariable ["logic", _logic];
+        _logic setVariable ["group", _group];
+
+        if (isNil "ALIVE_sup_artillery_stateMachine") then {
+            ALIVE_sup_artillery_stateMachine_list = [];
+            ALIVE_sup_artillery_stateMachine = [
+                configFile >> "ArtilleryStateMachine"
+            ] call CBA_statemachine_fnc_createFromConfig;
+        };
+
+        ALIVE_sup_artillery_stateMachine_list pushBack _logic;
     };
 
     /******************
@@ -194,7 +231,12 @@ switch (_operation) do {
         [_logic, "execute"] call MAINCLASS;
     };
     case "onReturnToBase": {
-        [_logic, "move", position _logic] call MAINCLASS; // TODO: Find (best) RTB position
+        private _group = _logic getVariable ["group", grpNull];
+        private _units = (units _group) select {vehicle _x != _x && {gunner (vehicle _x) == _x}};
+        _units doWatch objNull;
+
+        _logic setVariable ["fireMission", []];
+        [_logic, "move", [position _logic]] call MAINCLASS; // TODO: Find (best) RTB position
     };
 };
 
