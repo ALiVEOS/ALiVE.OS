@@ -127,8 +127,10 @@ switch(_operation) do {
 
         // units / vehicles
 
-        private _assets = +_tmpHash;
-        [_logic,"assets", _assets] call ALiVE_fnc_hashSet;
+        [_logic,"assetCategories",[]] call ALiVE_fnc_hashSet;
+        [_logic,"assets", []] call ALiVE_fnc_hashSet;
+
+        [_logic,"assetsImportedConfig", false] call ALiVE_fnc_hashSet;
 
     };
 
@@ -210,6 +212,17 @@ switch(_operation) do {
     };
 
     case "assets": {
+
+        if (typename _args == "ARRAY") then {
+            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _result = _args;
+        } else {
+            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+        };
+
+    };
+
+    case "assetCategories": {
 
         if (typename _args == "ARRAY") then {
             [_logic,_operation,_args] call ALiVE_fnc_hashSet;
