@@ -119,7 +119,7 @@ class RscDisplayMPInterrupt: RscStandardDisplay
 {
     class controls
     {
-        delete ButtonAbort;
+
         class ALiVETitle: RscTitle
         {
             idc = 599;
@@ -158,16 +158,6 @@ class RscDisplayMPInterrupt: RscStandardDisplay
             w = "15 *             (            ((safezoneW / safezoneH) min 1.2) / 40)";
             h = "1 *             (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
             action = "['SAVE'] call alive_fnc_buttonAbort";
-        };
-        class ALIVEButtonAbort: RscButtonMenu
-        {
-            idc = 199;
-            text = "$STR_DISP_INT_ABORT";
-            x = "1 *             (            ((safezoneW / safezoneH) min 1.2) / 40) +             (safezoneX)";
-            y = "20.8 *             (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) +             (safezoneY + safezoneH -             (            ((safezoneW / safezoneH) min 1.2) / 1.2))";
-            w = "15 *             (            ((safezoneW / safezoneH) min 1.2) / 40)";
-            h = "1 *             (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
-            action = "['ABORT'] call alive_fnc_buttonAbort";
         };
         class DebugConsole: RscDebugConsole
         {
