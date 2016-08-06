@@ -30,7 +30,7 @@ SpyderBlack
 private "_selected";
 params [
     ["_list", controlNull, [controlNull]],
-    ["_data","",[""]],
+    ["_data","",["",[]]],
     ["_multiselection", false, [false]]
 ];
 
@@ -44,23 +44,27 @@ scopename "main";
 
 for "_i" from 0 to (lbSize _list - 1) do {
 
-    if ((_list lbData _i) == _data) then {
-        if (!_multiselection) then {
+    if (_multiselection) then {
+        if ((_list lbData _i) in _data) then {
+            _list lbSetSelected [_i, true];
+            _selected pushback _i;
+        } else {
+            _list lbSetSelected [_i, false];
+        };
+    } else {
+        if ((_list lbData _i) == _data) then {
             _list lbSetCurSel _i;
             _selected = _i;
             breakTo "main";
-        } else {
-            if (_selected isEqualTo []) then {
-                _list lbSetCurSel _i; // this triggers onSel events
-            };
+        };
+    };
+};
 
-            _list lbSetSelected [_i, true];
-            _selected pushback _i;
-        };
-    } else {
-        if (_multiselection) then {
-            _list lbSetSelected [_i, false];
-        };
+if (_selected isEqualType []) then {
+    private _countSelected = count _selected;
+
+    if (_countSelected > 0) then {
+        _list lbSetCurSel (_selected select (_countSelected - 1)); // this triggers onSel events
     };
 };
 

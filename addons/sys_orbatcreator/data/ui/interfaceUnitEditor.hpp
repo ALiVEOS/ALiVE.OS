@@ -52,7 +52,7 @@ class ALiVE_orbatCreator_interface_unitEditor {
 
             text = "Custom Units";
             x = -13.5 * GUI_GRID_W + GUI_GRID_X;
-            y = 2.45 * GUI_GRID_H + GUI_GRID_Y;
+            y = 1.45 * GUI_GRID_H + GUI_GRID_Y;
             w = 16 * GUI_GRID_W;
             h = 1.75 * GUI_GRID_H;
             colorBackground[] = {0.2,0.2,0.2,1};
@@ -108,7 +108,7 @@ class ALiVE_orbatCreator_interface_unitEditor {
             idc = 9011;
             style = 16 + 0x20;
             x = -13.5 * GUI_GRID_W + GUI_GRID_X;
-            y = 4 * GUI_GRID_H + GUI_GRID_Y;
+            y = 3 * GUI_GRID_H + GUI_GRID_Y;
             w = 16 * GUI_GRID_W;
             h = 16.3 * GUI_GRID_H;
             colorBorder[] = {0,0,0,1};
@@ -118,44 +118,60 @@ class ALiVE_orbatCreator_interface_unitEditor {
         class unitEditor_button_unitClasses_one: orbatCreator_RscButton {
             idc = 9012;
 
-            text = "";
             x = -13.5 * GUI_GRID_W + GUI_GRID_X;
-            y = 21 * GUI_GRID_H + GUI_GRID_Y;
+            y = 19.5 * GUI_GRID_H + GUI_GRID_Y;
             w = 16 * GUI_GRID_W;
-            h = 1.5 * GUI_GRID_H;
+            h = 1.25 * GUI_GRID_H;
             sizeEx = 1 * GUI_GRID_H;
         };
 
         class unitEditor_button_unitClasses_two: orbatCreator_RscButton {
             idc = 9013;
 
-            text = "";
             x = -13.5 * GUI_GRID_W + GUI_GRID_X;
-            y = 23 * GUI_GRID_H + GUI_GRID_Y;
+            y = 21 * GUI_GRID_H + GUI_GRID_Y;
             w = 16 * GUI_GRID_W;
-            h = 1.5 * GUI_GRID_H;
+            h = 1.25 * GUI_GRID_H;
             sizeEx = 1 * GUI_GRID_H;
         };
 
         class unitEditor_button_unitClasses_three: orbatCreator_RscButton {
             idc = 9014;
 
-            text = "";
             x = -13.5 * GUI_GRID_W + GUI_GRID_X;
-            y = 25 * GUI_GRID_H + GUI_GRID_Y;
+            y = 22.5 * GUI_GRID_H + GUI_GRID_Y;
             w = 16 * GUI_GRID_W;
-            h = 1.5 * GUI_GRID_H;
+            h = 1.25 * GUI_GRID_H;
             sizeEx = 1 * GUI_GRID_H;
         };
 
         class unitEditor_button_unitClasses_four: orbatCreator_RscButton {
             idc = 9015;
 
-            text = "";
+            x = -13.5 * GUI_GRID_W + GUI_GRID_X;
+            y = 24 * GUI_GRID_H + GUI_GRID_Y;
+            w = 16 * GUI_GRID_W;
+            h = 1.25 * GUI_GRID_H;
+            sizeEx = 1 * GUI_GRID_H;
+        };
+
+        class unitEditor_button_unitClasses_five: orbatCreator_RscButton {
+            idc = 9017;
+
+            x = -13.5 * GUI_GRID_W + GUI_GRID_X;
+            y = 25.5 * GUI_GRID_H + GUI_GRID_Y;
+            w = 16 * GUI_GRID_W;
+            h = 1.25 * GUI_GRID_H;
+            sizeEx = 1 * GUI_GRID_H;
+        };
+
+        class unitEditor_button_unitClasses_six: orbatCreator_RscButton {
+            idc = 9018;
+
             x = -13.5 * GUI_GRID_W + GUI_GRID_X;
             y = 27 * GUI_GRID_H + GUI_GRID_Y;
             w = 16 * GUI_GRID_W;
-            h = 1.5 * GUI_GRID_H;
+            h = 1.25 * GUI_GRID_H;
             sizeEx = 1 * GUI_GRID_H;
         };
 
@@ -176,7 +192,7 @@ class ALiVE_orbatCreator_interface_createUnit {
             x = 4 * GUI_GRID_W + GUI_GRID_X;
             y = 2 * GUI_GRID_H + GUI_GRID_Y;
             w = 35 * GUI_GRID_W;
-            h = 22 * GUI_GRID_H;
+            h = 22.5 * GUI_GRID_H;
             colorBackground[] = {-1,-1,-1,1};
         };
 
@@ -332,10 +348,19 @@ class ALiVE_orbatCreator_interface_createUnit {
             colorBackground[] = {0.2,0.2,0.2,1};
         };
 
+        class unitEditor_createUnit_input_field_unittype_category: orbatCreator_RscCombo {
+            idc = 10021;
+            x = 23 * GUI_GRID_W + GUI_GRID_X;
+            y = 11 * GUI_GRID_H + GUI_GRID_Y;
+            w = 15 * GUI_GRID_W;
+            h = 1.25 * GUI_GRID_H;
+            colorBackground[] = {0.2,0.2,0.2,1};
+        };
+
         class unitEditor_createUnit_input_field_unittype_units: orbatCreator_RscListbox {
             idc = 10016;
             x = 23 * GUI_GRID_W + GUI_GRID_X;
-            y = 12 * GUI_GRID_H + GUI_GRID_Y;
+            y = 12.5 * GUI_GRID_H + GUI_GRID_Y;
             w = 15 * GUI_GRID_W;
             h = 11 * GUI_GRID_H;
             colorBackground[] = {0.2,0.2,0.2,1};
@@ -345,8 +370,8 @@ class ALiVE_orbatCreator_interface_createUnit {
             idc = 10017;
             text = "Cancel";
             x = 4 * GUI_GRID_W + GUI_GRID_X;
-            y = 24.25 * GUI_GRID_H + GUI_GRID_Y;
-            w = 18 * GUI_GRID_W;
+            y = 24.75 * GUI_GRID_H + GUI_GRID_Y;
+            w = 17.75 * GUI_GRID_W;
             h = 1 * GUI_GRID_H;
             colorBackground[] = {-1,-1,-1,1};
         };
@@ -354,9 +379,9 @@ class ALiVE_orbatCreator_interface_createUnit {
         class unitEditor_createUnit_button_confirm: orbatCreator_RscButton {
             idc = 10018;
             text = "Confirm";
-            x = 22.5 * GUI_GRID_W + GUI_GRID_X;
-            y = 24.25 * GUI_GRID_H + GUI_GRID_Y;
-            w = 16.5 * GUI_GRID_W;
+            x = 22.25 * GUI_GRID_W + GUI_GRID_X;
+            y = 24.75 * GUI_GRID_H + GUI_GRID_Y;
+            w = 16.75 * GUI_GRID_W;
             h = 1 * GUI_GRID_H;
             colorBackground[] = {-1,-1,-1,1};
         };
