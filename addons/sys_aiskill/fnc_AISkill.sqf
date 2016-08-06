@@ -383,7 +383,7 @@ switch(_operation) do {
             (count _skillFactionsExpert == 0) &&
             (count _customSkillFactions == 0)
         ) then {
-            _skillFactionsRegular = ["OPF_F","BLU_F","BLU_GL_F","IND_F"];
+            _skillFactionsRegular = ["OPF_F","OPF_G_F","OPF_T_F","BLU_F","BLU_G_F","BLU_T_F","BLU_CTRG_F","IND_F","IND_G_F","IND_C_F"];
         };
 
         // min abil, max abil, aim acc, aim shake, aim speed, end, sdist, stime, cour, reload, comm, gen
