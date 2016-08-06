@@ -4,6 +4,14 @@
 #define GUI_GRID_H  (0.04)
 #define GUI_GRID_WAbs (1)
 #define GUI_GRID_HAbs (1)
+/*
+#define GUI_GRID_X	(safezoneX)
+#define GUI_GRID_Y	(safezoneY)
+#define GUI_GRID_W	(safezoneW / 40)
+#define GUI_GRID_H	(safezoneH / 25)
+#define GUI_GRID_WAbs	(safezoneW)
+#define GUI_GRID_HAbs	(safezoneH)
+*/
 
 class RscText;
 class RscButton;
