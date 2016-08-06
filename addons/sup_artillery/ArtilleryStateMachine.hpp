@@ -1,5 +1,5 @@
 class ArtilleryStateMachine {
-    list = "";
+    list = "ALIVE_sup_artillery_stateMachine_list";
 
     class Idle {
         onState = "";
@@ -14,8 +14,8 @@ class ArtilleryStateMachine {
     };
 
     class Active {
-        onState = "[_this, 'onActive'] call ALIVE_fnc_artillery";
-        onStateEntered = "";
+        onState = "";
+        onStateEntered = "[_this, 'onActive'] call ALIVE_fnc_artillery";
         onStateLeaving = "";
 
         class InRange {
@@ -32,8 +32,8 @@ class ArtilleryStateMachine {
     };
 
     class Move {
-        onState = "[_this, 'onMove'] call ALIVE_fnc_artillery";
-        onStateEntered = "";
+        onState = "";
+        onStateEntered = "[_this, 'onMove'] call ALIVE_fnc_artillery";
         onStateLeaving = "";
 
         class InPosition {
@@ -50,9 +50,15 @@ class ArtilleryStateMachine {
     };
 
     class Execute {
-        onState = "[_this, 'onExecute'] call ALIVE_fnc_artillery";
-        onStateEntered = "";
+        onState = "";
+        onStateEntered = "[_this, 'onExecute'] call ALIVE_fnc_artillery";
         onStateLeaving = "";
+
+        class Fire {
+            targetState = "Fire";
+            condition = "[_this, 'fireNextRound'] call ALIVE_fnc_artillery";
+            onTransition = "";
+        };
 
         class Abort {
             targetState = "ReturnToBase";
@@ -62,8 +68,8 @@ class ArtilleryStateMachine {
     };
 
     class Fire {
-        onState = "[_this, 'onFire'] call ALIVE_fnc_artillery";
-        onStateEntered = "";
+        onState = "";
+        onStateEntered = "[_this, 'onFire'] call ALIVE_fnc_artillery";
         onStateLeaving = "";
 
         class FireMissionComplete {
@@ -92,8 +98,8 @@ class ArtilleryStateMachine {
     };
 
     class ReturnToBase {
-        onState = "[_this, 'onReturnToBase'] call ALIVE_fnc_artillery";
-        onStateEntered = "";
+        onState = "";
+        onStateEntered = "[_this, 'onReturnToBase'] call ALIVE_fnc_artillery";
         onStateLeaving = "";
 
         class AtBase {
