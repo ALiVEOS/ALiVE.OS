@@ -115,22 +115,22 @@ ALiVE_MIL_CQB_UNITBLACKLIST = ALiVE_MIL_CQB_CUSTOM_UNITBLACKLIST +
     "B_T_Crew_F",
     "B_T_Pilot_F",
     "B_T_Helicrew_F",
-    "B_T_diver_F",
-    "B_T_diver_TL_F",
-    "B_T_diver_exp_F",
+    "B_T_Diver_F",
+    "B_T_Diver_TL_F",
+    "B_T_Diver_exp_F",
     "B_UAV_AI",
 
     "B_CTRG_Miller_F",
 
-    "O_T_helipilot_F",
-    "O_T_diver_F",
-    "O_T_diver_TL_F",
-    "O_T_diver_exp_F",
-    "O_T_crew_F",
+    "O_T_Helipilot_F",
+    "O_T_Diver_F",
+    "O_T_Diver_TL_F",
+    "O_T_Diver_exp_F",
+    "O_T_Crew_F",
     "O_T_Pilot_F",
-    "O_T_helicrew_F",
+    "O_T_Helicrew_F",
 
-    "I_C_helipilot_F",
-    "I_C_pilot_F",
+    "I_C_Helipilot_F",
+    "I_C_Pilot_F",
     "I_C_Soldier_Camo_F"
 ];
