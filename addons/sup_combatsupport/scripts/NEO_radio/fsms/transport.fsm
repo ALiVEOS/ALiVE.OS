@@ -543,9 +543,9 @@ class FSM
           action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""RTB"", true];" \n
            "" \n
            "// Remove all current waypoints to avoid any conflicts" \n
-           "{" \n
-           "    deleteWaypoint _x;" \n
-           "} foreach waypoints (group _chopper);" \n
+           "while {(count (waypoints (group _chopper))) > 1} do {" \n
+           "    deleteWaypoint ((waypoints (group _chopper)) select 1);" \n
+           "};" \n
            "" \n
            "[_chopper] spawn {  " \n
            "private [""_chopper""];" \n
