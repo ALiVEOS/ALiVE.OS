@@ -90,7 +90,7 @@ class ALiVE_orbatCreator_interface_factionEditor {
             y = 0.822 * safezoneH + safezoneY;
             w = 0.065625 * safezoneW;
             h = 0.042 * safezoneH;
-            sizeEx = 0.035;
+            sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.9);
         };
 
         class orbatViewer_factions_title_flag: orbatCreator_RscText {
@@ -114,7 +114,6 @@ class ALiVE_orbatCreator_interface_factionEditor {
             y = 0.066 * safezoneH + safezoneY;
             w = 0.160417 * safezoneW;
             h = 0.056 * safezoneH;
-            sizeEx = 1 * GUI_GRID_H;
         };
 
         class orbatViewer_button_big_2: orbatCreator_RscButtonBig {
@@ -125,7 +124,6 @@ class ALiVE_orbatCreator_interface_factionEditor {
             y = 0.066 * safezoneH + safezoneY;
             w = 0.160417 * safezoneW;
             h = 0.056 * safezoneH;
-            sizeEx = 1 * GUI_GRID_H;
         };
 
         class orbatViewer_button_big_3: orbatCreator_RscButtonBig {
@@ -136,7 +134,6 @@ class ALiVE_orbatCreator_interface_factionEditor {
             y = 0.066 * safezoneH + safezoneY;
             w = 0.160417 * safezoneW;
             h = 0.056 * safezoneH;
-            sizeEx = 1 * GUI_GRID_H;
         };
 
         class orbatViewer_factions_list_factions: orbatCreator_RscListbox {

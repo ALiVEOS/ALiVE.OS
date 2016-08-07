@@ -4,14 +4,6 @@
 #define GUI_GRID_H  (0.04)
 #define GUI_GRID_WAbs (1)
 #define GUI_GRID_HAbs (1)
-/*
-#define GUI_GRID_X	(safezoneX)
-#define GUI_GRID_Y	(safezoneY)
-#define GUI_GRID_W	(safezoneW / 40)
-#define GUI_GRID_H	(safezoneH / 25)
-#define GUI_GRID_WAbs	(safezoneW)
-#define GUI_GRID_HAbs	(safezoneH)
-*/
 
 class RscText;
 class RscButton;
@@ -53,7 +45,7 @@ class orbatCreator_RscPicture {
     colorBackground[] ={0,0,0,0};
     colorText[] ={1,1,1,1};
     font = "TahomaB";
-    sizeEx = 0;
+    sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)";
     lineSpacing = 0;
     text = "";
     fixedWidth = 0;
@@ -86,7 +78,7 @@ class orbatCreator_RscEdit {
     style = "0x00 + 0x40";
     font = "PuristaMedium";
     shadow = 2;
-    sizeEx = 0.0375;
+    sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)"
     canModify = 1;
 };
 
@@ -158,7 +150,7 @@ class orbatCreator_RscFrame : RscFrame {
     colorText[] = {1,1,1,1};
     font = "PuristaMedium";
     shadow = 2;
-    sizeEx = 0.02;
+    sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)";
     style = 0x40;
     text = "";
     type = 0;
@@ -238,7 +230,7 @@ class orbatCreator_RscTree {
 	colorSelect[] = {1,0.5,0,0.75};
 	colorMarked[] = {1,0.5,0,0.5};
 	colorMarkedSelected[] = {1,0.5,0,1};
-	sizeEx = 0.05;
+	sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)";
 	font = "RobotoCondensed";
 	shadow = 1;
 	colorText[] = {1,1,1,1};
@@ -289,7 +281,7 @@ class orbatCreator_RscListBox : RscListBox {
     colorSelectBackground2[] = {1,0.5,0,0.75};
     colorBackground[] = {0,0,0,0.3};
     font = "PuristaMedium";
-    sizeEx = 0.035;
+    sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)";
     colorShadow[] = {0,0,0,0.5};
     color[] = {1,1,1,1};
     period = 1.2;
