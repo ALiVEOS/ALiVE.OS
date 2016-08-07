@@ -328,6 +328,13 @@ class configFindEntries
     recompile = RECOMPILE;
 };
 
+class configGetDifferences
+{
+    file = "\x\alive\addons\x_lib\functions\config\fnc_configGetDifferences.sqf";
+    ext = ".sqf";
+    recompile = RECOMPILE;
+};
+
 class configGetFactionClass
 {
     file = "\x\alive\addons\x_lib\functions\config\fnc_configGetFactionClass.sqf";
@@ -408,6 +415,13 @@ class configGetVehicleTurrets
 class configGetWeaponMagazines
 {
     file = "\x\alive\addons\x_lib\functions\config\fnc_configGetWeaponMagazines.sqf";
+    ext = ".sqf";
+    recompile = RECOMPILE;
+};
+
+class configProperties
+{
+    file = "\x\alive\addons\x_lib\functions\config\fnc_configProperties.sqf";
     ext = ".sqf";
     recompile = RECOMPILE;
 };
