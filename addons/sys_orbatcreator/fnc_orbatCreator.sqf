@@ -234,12 +234,13 @@ switch(_operation) do {
 
         [_state,"factions", _factions] call ALiVE_fnc_hashSet;
 
-        [_state,"factionEditor_selectedFaction", ""] call ALiVE_fnc_hashSet;
-
         private _customUnits = +_tmpHash;
         [_state,"customUnits", _customUnits] call ALiVE_fnc_hashSet;
 
         [_state,"selectedFaction", ""] call ALiVE_fnc_hashSet;
+        [_state,"switchingInterfaces", false] call ALiVE_fnc_hashSet;
+
+        [_state,"factionEditor_selectedFaction", ""] call ALiVE_fnc_hashSet;
 
         [_state,"unitEditor_interfaceBackground", objNull] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_interfaceCamera", objNull] call ALiVE_fnc_hashSet;
@@ -262,6 +263,8 @@ switch(_operation) do {
     case "start": {
 
         waitUntil {time > 0 && {!isnull player} && {!isnil "ALiVE_STATIC_DATA_LOADED"}};
+
+        [_logic,"enableUnitEditorBackground", true] call MAINCLASS;
 
         [_logic,"openInterface", "Faction_Editor"] spawn MAINCLASS;
         ["Preload"] call BIS_fnc_arsenal;
@@ -339,6 +342,8 @@ switch(_operation) do {
 
         private _interface = _args;
 
+        private _state = [_logic,"state"] call MAINCLASS;
+
         switch (_interface) do {
 
             case "Faction_Editor": {
@@ -392,6 +397,8 @@ switch(_operation) do {
         };
 
         [_logic,"onLoad", _interface] call MAINCLASS;
+
+        [_state,"switchingInterfaces", false] call ALiVE_fnc_hashSet;
 
     };
 
@@ -477,17 +484,17 @@ switch(_operation) do {
                 // init faction list
 
                 private _factionButton1 = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_BUTTON_ONE );
-                _factionButton1 ctrlSetEventHandler ["MouseButtonDown","['onFactionEditorFactionNewClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _factionButton1 ctrlSetEventHandler ["MouseButtonDown","['onFactionEditorFactionNewClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
                 _factionButton1 ctrlSetTooltip "Create a new faction.";
                 _factionButton1 ctrlSetText "New";
 
                 private _factionButton2 = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_BUTTON_TWO );
-                _factionButton2 ctrlSetEventHandler ["MouseButtonDown","['onFactionEditorFactionDeleteClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _factionButton2 ctrlSetEventHandler ["MouseButtonDown","['onFactionEditorFactionDeleteClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
                 _factionButton2 ctrlSetTooltip "Delete selected faction   Warning: Will delete the faction, its units, and its groups.";
                 _factionButton2 ctrlSetText "Delete";
 
                 private _factionButton3 = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_BUTTON_THREE );
-                _factionButton3 ctrlSetEventHandler ["MouseButtonDown","['onFactionEditorFactionSaveClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _factionButton3 ctrlSetEventHandler ["MouseButtonDown","['onFactionEditorFactionSaveClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
                 _factionButton3 ctrlSetTooltip "Save Faction Properties";
                 _factionButton3 ctrlSetText "Save";
 
@@ -509,12 +516,12 @@ switch(_operation) do {
 
                 private _button1 = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_BUTTON_BIG_ONE );
                 _button1 ctrlSetText "Unit Editor";
-                _button1 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'Unit_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _button1 ctrlSetEventHandler ["MouseButtonDown","['onFactionEditorUnitEditorClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
                 _button1 ctrlShow true;
 
                 private _button2 = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_BUTTON_BIG_TWO );
                 _button2 ctrlSetText "Group Editor";
-                _button2 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'Group_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _button2 ctrlSetEventHandler ["MouseButtonDown","['onFactionEditorGroupEditorClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
                 _button2 ctrlShow true;
 
                 private _button3 = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_BUTTON_BIG_THREE );
@@ -548,12 +555,12 @@ switch(_operation) do {
 
                 private _button1 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_BUTTON_BIG_ONE );
                 _button1 ctrlSetText "Faction Editor";
-                _button1 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'Faction_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _button1 ctrlSetEventHandler ["MouseButtonDown","['onUnitEditorFactionEditorClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
                 _button1 ctrlShow true;
 
                 private _button2 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_BUTTON_BIG_TWO );
                 _button2 ctrlSetText "Group Editor";
-                _button2 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'Group_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _button2 ctrlSetEventHandler ["MouseButtonDown","['onUnitEditorGroupEditorClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
                 _button2 ctrlShow true;
 
                 private _button3 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_BUTTON_BIG_THREE );
@@ -776,12 +783,12 @@ switch(_operation) do {
 
                 private _button1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_BUTTON_BIG_ONE );
                 _button1 ctrlSetText "Faction Editor";
-                _button1 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'Faction_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _button1 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorFactionEditorClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
                 _button1 ctrlShow true;
 
                 private _button2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_BUTTON_BIG_TWO );
                 _button2 ctrlSetText "Unit Editor";
-                _button2 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'Unit_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _button2 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorUnitEditorClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
                 _button2 ctrlShow true;
 
                 private _button3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_BUTTON_BIG_THREE );
@@ -1062,18 +1069,23 @@ switch(_operation) do {
         private _interface = _args;
 
         private _state = [_logic,"state"] call MAINCLASS;
+        private _switchingInterfaces = [_state,"switchingInterfaces"] call ALiVE_fnc_hashGet;
 
         switch (_interface) do {
 
             case "Faction_Editor": {
 
-
+                if (!_switchingInterfaces) then {
+                    [_logic,"enableUnitEditorBackground", false] call MAINCLASS;
+                };
 
             };
 
             case "Unit_Editor": {
 
-                [_logic,"enableUnitEditorBackground", false] call MAINCLASS;
+                if (!_switchingInterfaces) then {
+                    [_logic,"enableUnitEditorBackground", false] call MAINCLASS;
+                };
 
             };
 
@@ -1091,11 +1103,13 @@ switch(_operation) do {
 
             case "Group_Editor": {
 
-                [_logic,"enableUnitEditorBackground", false] call MAINCLASS;
-
                 [_state,"groupEditor_selectedFaction", ""] call ALiVE_fnc_hashSet;
                 [_state,"groupEditor_selectedGroupCategory", ""] call ALiVE_fnc_hashSet;
                 [_state,"groupEditor_selectedGroup", ""] call ALiVE_fnc_hashSet;
+
+                if (!_switchingInterfaces) then {
+                    [_logic,"enableUnitEditorBackground", false] call MAINCLASS;
+                };
 
             };
 
@@ -2205,6 +2219,24 @@ switch(_operation) do {
     // faction editor
 
 
+    case "onFactionEditorUnitEditorClicked": {
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        [_state,"switchingInterfaces", true] call ALiVE_fnc_hashSet;
+
+        [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
+
+    };
+
+    case "onFactionEditorGroupEditorClicked": {
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        [_state,"switchingInterfaces", true] call ALiVE_fnc_hashSet;
+
+        [_logic,"openInterface", "Group_Editor"] spawn MAINCLASS;
+
+    };
+
     case "getFactionGroupsDataSources": {
 
         private ["_groupCategory","_groupCategoryConfigName","_groupCategoryDataSource"];
@@ -2519,6 +2551,23 @@ switch(_operation) do {
     // unit editor
 
 
+    case "onUnitEditorFactionEditorClicked": {
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        [_state,"switchingInterfaces", true] call ALiVE_fnc_hashSet;
+
+        [_logic,"openInterface", "Faction_Editor"] spawn MAINCLASS;
+
+    };
+
+    case "onUnitEditorGroupEditorClicked": {
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        [_state,"switchingInterfaces", true] call ALiVE_fnc_hashSet;
+
+        [_logic,"openInterface", "Group_Editor"] spawn MAINCLASS;
+
+    };
 
     case "enableUnitEditorBackground": {
 
@@ -3306,6 +3355,24 @@ switch(_operation) do {
     // group editor
 
 
+    case "onGroupEditorFactionEditorClicked": {
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        [_state,"switchingInterfaces", true] call ALiVE_fnc_hashSet;
+
+        [_logic,"openInterface", "Faction_Editor"] spawn MAINCLASS;
+
+    };
+
+    case "onGroupEditorUnitEditorClicked": {
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        [_state,"switchingInterfaces", true] call ALiVE_fnc_hashSet;
+
+        [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
+
+    };
+
     case "onGroupEditorFactionChanged": {
 
         _args params ["_list","_index"];
@@ -4054,6 +4121,8 @@ switch(_operation) do {
 
                 _result = [_logic,"exportFaction", _faction] call MAINCLASS;
 
+                _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
+
                 systemchat "Config data copied to clipboard";
                 copyToClipboard _result;
 
@@ -4070,6 +4139,8 @@ switch(_operation) do {
                 } foreach _selectedIndices;
 
                 _result = [_logic,"exportCustomUnits", _selectedUnits] call MAINCLASS;
+
+                _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
 
                 systemchat "Config data copied to clipboard";
                 copyToClipboard _result;
@@ -4094,6 +4165,8 @@ switch(_operation) do {
 
                 _result = [_logic,"exportGroupsInCategory", [_factionGroupCategory,_groups]] call MAINCLASS;
                 _result = [_logic,"formatGroupCategoriesToFaction", [_faction,_result]] call MAINCLASS;
+
+                _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
 
                 systemchat "Config data copied to clipboard";
                 copyToClipboard _result;
@@ -4147,24 +4220,17 @@ switch(_operation) do {
 
         // forward declare non-local inherited units
 
-        private _unitsToSkip = [];
-
         _result = _result + _newLine;
         {
             _unitConfigName = _x;
             _unit = [_customUnits,_unitConfigName] call ALiVE_fnc_hashGet;
             _unitParentConfigName = [_unit,"inheritsFrom"] call ALiVE_fnc_hashGet;
 
-            if !(_unitConfigName == _unitParentConfigName) then {
-                if (!(_unitParentConfigName in _forwardDeclared) && {!(_unitParentConfigName in _unitsToExport)}) then {
-                    _result = _result + _indent + "class " + _unitParentConfigName + ";" + _newLine;
-                    _forwardDeclared pushback _unitParentConfigName;
-                };
-            } else {
-                _unitsToSkip pushback _unitConfigName;
+            if (!(_unitParentConfigName in _forwardDeclared) && {!(_unitParentConfigName in _unitsToExport)}) then {
+                _result = _result + _indent + "class " + _unitParentConfigName + ";" + _newLine;
+                _forwardDeclared pushback _unitParentConfigName;
             };
         } foreach _unitsToExport;
-        _unitsToExport = _unitsToExport - _unitsToSkip;
 
         _result = _result + _newLine;
 
@@ -4233,6 +4299,13 @@ switch(_operation) do {
             _result = _result + _newLine + _newLine + ([_logic,"exportCustomUnitMan", _unit] call MAINCLASS);
         } else {
             _result = _result + ([_logic,"exportCustomUnitVehicle", _unit] call MAINCLASS);
+        };
+
+        // if unit is overwriting a config unit
+        // find all properties it must fill to be complete
+
+        if (_unitParent == _unitConfigName) then {
+
         };
 
         // finish export
@@ -4657,6 +4730,35 @@ switch(_operation) do {
         } foreach _array;
 
         _result = _result + "}";
+
+    };
+
+    case "formatFullExportToComment": {
+
+        private _output = _args;
+
+        private _productVersion = productVersion;
+        _productVersion params ["_productName","_productNameShort","_productVersion","_productBuild","_productBranch","_modsEnabled","_productPlatform"];
+
+        private _outputProperties = format [" Generated with %1 version %2.%3 on %4 branch", _productName, _productVersion, _productBuild, _productBranch];
+
+        private _newLine = toString [13,10];
+        private _indent = "    ";
+        _result = "";
+
+        private _comment = "";
+        private _commentShort = "//";
+        private _commentLong = "";
+        for "_i" from 0 to 40 do {_commentLong = _commentLong + _commentShort};
+
+        _comment = _comment + _commentLong + _newLine;
+        _comment = _comment + _commentShort + " Config Automatically Generated by ALiVE ORBAT Creator" + _newLine;
+        _comment = _comment + _commentShort + _outputProperties + _newLine;
+        _comment = _comment + _commentLong + _newLine;
+
+        _result = _result + _comment;
+        _result = _result + _newLine;
+        _result = _result + _output;
 
     };
 
