@@ -238,7 +238,6 @@ switch(_operation) do {
         [_state,"customUnits", _customUnits] call ALiVE_fnc_hashSet;
 
         [_state,"selectedFaction", ""] call ALiVE_fnc_hashSet;
-        [_state,"switchingInterfaces", false] call ALiVE_fnc_hashSet;
 
         [_state,"factionEditor_selectedFaction", ""] call ALiVE_fnc_hashSet;
 
@@ -248,6 +247,8 @@ switch(_operation) do {
         [_state,"unitEditor_activeUnitObject", objNull] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_selectedFaction", ""] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_selectedUnit", ""] call ALiVE_fnc_hashSet;
+        [_state,"unitEditor_unitToSelect", ""] call ALiVE_fnc_hashSet;
+        [_state,"unitEditor_arsenalOpen", false] call ALiVE_fnc_hashSet;
 
         [_state,"groupEditor_selectedFaction", ""] call ALiVE_fnc_hashSet;
         [_state,"groupEditor_selectedGroupCategory", ""] call ALiVE_fnc_hashSet;
@@ -263,8 +264,6 @@ switch(_operation) do {
     case "start": {
 
         waitUntil {time > 0 && {!isnull player} && {!isnil "ALiVE_STATIC_DATA_LOADED"}};
-
-        [_logic,"enableUnitEditorBackground", true] call MAINCLASS;
 
         [_logic,"openInterface", "Faction_Editor"] spawn MAINCLASS;
         ["Preload"] call BIS_fnc_arsenal;
@@ -352,6 +351,14 @@ switch(_operation) do {
                 sleep 0.001; // bis pls
                 createDialog "ALiVE_orbatCreator_interface_factionEditor";
 
+                // if reopening orbat creator
+                // init background
+
+                private _background = [_state,"unitEditor_interfaceBackground"] call ALiVE_fnc_hashGet;
+                if (isnull _background) then {
+                    [_logic,"enableUnitEditorBackground", true] call MAINCLASS;
+                };
+
             };
 
             case "Unit_Editor": {
@@ -398,8 +405,6 @@ switch(_operation) do {
 
         [_logic,"onLoad", _interface] call MAINCLASS;
 
-        [_state,"switchingInterfaces", false] call ALiVE_fnc_hashSet;
-
     };
 
     case "onLoad": {
@@ -419,7 +424,7 @@ switch(_operation) do {
                 ];
 
                 private _display = findDisplay OC_DISPLAY_FACTIONEDITOR;
-                _display displayAddEventHandler ["unload", "['onUnload', 'Faction_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _display displayAddEventHandler ["unload", "['onUnload', ['Faction_Editor',_this]] call ALiVE_fnc_orbatCreatorOnAction"];
 
                 // init side list
 
@@ -535,7 +540,7 @@ switch(_operation) do {
             case "Unit_Editor": {
 
                 private _display = findDisplay OC_DISPLAY_UNITEDITOR;
-                _display displayAddEventHandler ["unload", "['onUnload', 'Unit_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _display displayAddEventHandler ["unload", "['onUnload', ['Unit_Editor',_this]] call ALiVE_fnc_orbatCreatorOnAction"];
 
                 // init class list
 
@@ -621,9 +626,20 @@ switch(_operation) do {
                     [_factionList,_selectedFactionGlobal] call ALiVE_fnc_listSelectData;
                 };
 
-                // create gray background and camera
+                private _unitToSelect = [_state,"unitEditor_unitToSelect"] call ALiVE_fnc_hashGet;
 
-                [_logic,"enableUnitEditorBackground", true] call MAINCLASS;
+                if (_unitToSelect != "") then {
+                    [_classList,[_unitToSelect], true] call ALiVE_fnc_listSelectData;
+                    [_state,"unitEditor_unitToSelect", ""] call ALiVE_fnc_hashSet;
+                };
+
+                _cam = [_state,"unitEditor_interfaceCamera"] call ALiVE_fnc_hashGet;
+
+                if !(isnull _cam) then {
+                    _cam cameraEffect ["Internal", "Back"];
+                } else {
+                    [_logic,"enableUnitEditorBackground", true] call MAINCLASS;
+                };
 
             };
 
@@ -777,7 +793,7 @@ switch(_operation) do {
                 private ["_index"];
 
                 private _display = findDisplay OC_DISPLAY_GROUPEDITOR;
-                _display displayAddEventHandler ["unload", "['onUnload', 'Group_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _display displayAddEventHandler ["unload", "['onUnload', ['Group_Editor',_this]] call ALiVE_fnc_orbatCreatorOnAction"];
 
                 // init buttons
 
@@ -894,10 +910,6 @@ switch(_operation) do {
                 } else {
                     [_factionList,_selectedFactionGlobal] call ALiVE_fnc_listSelectData;
                 };
-
-                // create gray background and camera
-
-                [_logic,"enableUnitEditorBackground", true] call MAINCLASS;
 
             };
 
@@ -1066,16 +1078,17 @@ switch(_operation) do {
 
     case "onUnload": {
 
-        private _interface = _args;
+        _args params ["_interface","_eventData"];
+
+        _eventData params ["_display","_exitCode"];
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _switchingInterfaces = [_state,"switchingInterfaces"] call ALiVE_fnc_hashGet;
 
         switch (_interface) do {
 
             case "Faction_Editor": {
 
-                if (!_switchingInterfaces) then {
+                if (_exitCode == 2) then {
                     [_logic,"enableUnitEditorBackground", false] call MAINCLASS;
                 };
 
@@ -1083,8 +1096,12 @@ switch(_operation) do {
 
             case "Unit_Editor": {
 
-                if (!_switchingInterfaces) then {
-                    [_logic,"enableUnitEditorBackground", false] call MAINCLASS;
+                if (_exitCode == 2) then {
+                    private _arsenalOpen = [_state,"unitEditor_arsenalOpen"] call ALiVE_fnc_hashGet;
+
+                    if (!_arsenalOpen) then {
+                        [_logic,"enableUnitEditorBackground", false] call MAINCLASS;
+                    };
                 };
 
             };
@@ -1107,7 +1124,7 @@ switch(_operation) do {
                 [_state,"groupEditor_selectedGroupCategory", ""] call ALiVE_fnc_hashSet;
                 [_state,"groupEditor_selectedGroup", ""] call ALiVE_fnc_hashSet;
 
-                if (!_switchingInterfaces) then {
+                if (_exitCode == 2) then {
                     [_logic,"enableUnitEditorBackground", false] call MAINCLASS;
                 };
 
@@ -1527,7 +1544,7 @@ switch(_operation) do {
 
         private [
             "_customUnit","_customUnitConfigName","_customUnitDisplayName","_realUnit","_realUnitEditorSubCategory",
-            "_index","_assetConfigName","_assetConfig","_assetEditorSubcategory","_assetDisplayName"
+            "_index","_assetConfigName","_assetConfig","_assetEditorSubcategory","_assetDisplayName","_customUnitFaction"
         ];
 
         _args params ["_faction","_category","_list",["_toExclude",[],[]]];
@@ -1541,15 +1558,21 @@ switch(_operation) do {
 
         {
             _customUnit = _x;
-            _customUnitConfigName = [_customUnit,"configName"] call ALiVE_fnc_hashGet;
-            _customUnitDisplayName = [_customUnit,"displayName"] call ALiVE_fnc_hashGet;
+            _customUnitFaction = [_customUnit,"faction"] call ALiVE_fnc_hashGet;
 
-            _realUnit = [_logic,"getRealUnitClass", _customUnitConfigName] call MAINCLASS;
-            _realUnitEditorSubCategory = getText (_cfgVehicles >> _realUnit >> "editorSubcategory");
+            if (_customUnitFaction == _faction) then {
 
-            if (_realUnitEditorSubCategory == _category && {!(_customUnitConfigName in _toExclude)}) then {
-                _index = _list lbAdd _customUnitDisplayName;
-                _list lbSetData [_index,_customUnitConfigName];
+                _customUnitConfigName = [_customUnit,"configName"] call ALiVE_fnc_hashGet;
+                _customUnitDisplayName = [_customUnit,"displayName"] call ALiVE_fnc_hashGet;
+
+                _realUnit = [_logic,"getRealUnitClass", _customUnitConfigName] call MAINCLASS;
+                _realUnitEditorSubCategory = getText (_cfgVehicles >> _realUnit >> "editorSubcategory");
+
+                if (_realUnitEditorSubCategory == _category && {!(_customUnitConfigName in _toExclude)}) then {
+                    _index = _list lbAdd _customUnitDisplayName;
+                    _list lbSetData [_index,_customUnitConfigName];
+                };
+
             };
         } foreach (_customUnits select 2);
 
@@ -1890,39 +1913,43 @@ switch(_operation) do {
             private _state = [_logic,"state"] call MAINCLASS;
             private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
 
-            private _unitConfig = configFile >> "CfgVehicles" >> _unit;
-            private _unitDisplayName = getText (_unitConfig >> "displayName");
-            private _unitSide = getNumber (_unitConfig >> "side");
-            private _unitFaction = getText (_unitConfig >> "faction");
-            private _unitLoadout = [];
-            private _unitCrew = "";
+                if !(_unit in (_customUnits select 1)) then {
 
-            if (_unit isKindOf "Man") then {
-                // spawn unit to get loadout
-                // give EH's chance to fire
+                private _unitConfig = configFile >> "CfgVehicles" >> _unit;
+                private _unitDisplayName = getText (_unitConfig >> "displayName");
+                private _unitSide = getNumber (_unitConfig >> "side");
+                private _unitFaction = getText (_unitConfig >> "faction");
+                private _unitLoadout = [];
+                private _unitCrew = "";
 
-                private _unitSideText = [_unitSide] call ALiVE_fnc_sideNumberToText;
-                private _unitSideObject = [_unitSideText] call ALiVE_fnc_sideTextToObject;
+                if (_unit isKindOf "Man") then {
+                    // spawn unit to get loadout
+                    // give EH's chance to fire
 
-                private _realUnit = (createGroup _unitSideObject) createUnit [_unit, [0,0,0], [], 0, "NONE"];
-                _unitLoadout = getUnitLoadout _realUnit;
+                    private _unitSideText = [_unitSide] call ALiVE_fnc_sideNumberToText;
+                    private _unitSideObject = [_unitSideText] call ALiVE_fnc_sideTextToObject;
 
-                [_logic,"deleteUnit", _realUnit] call MAINCLASS;
-            } else {
-                _unitCrew = getText (_unitConfig >> "crew");
+                    private _realUnit = (createGroup _unitSideObject) createUnit [_unit, [0,0,0], [], 0, "NONE"];
+                    _unitLoadout = getUnitLoadout _realUnit;
+
+                    [_logic,"deleteUnit", _realUnit] call MAINCLASS;
+                } else {
+                    _unitCrew = getText (_unitConfig >> "crew");
+                };
+
+                private _newUnit = [nil,"create"] call ALiVE_fnc_orbatCreatorUnit;
+                [_newUnit,"init"] call ALiVE_fnc_orbatCreatorUnit;
+                [_newUnit,"configName", _unit] call ALiVE_fnc_hashSet;
+                [_newUnit,"displayName", _unitDisplayName] call ALiVE_fnc_hashSet;
+                [_newUnit,"inheritsFrom", _unit] call ALiVE_fnc_hashSet;
+                [_newUnit,"side", _unitSide] call ALiVE_fnc_hashSet;
+                [_newUnit,"faction", _unitFaction] call ALiVE_fnc_hashSet;
+                [_newUnit,"loadout", _unitLoadout] call ALiVE_fnc_hashSet;
+                [_newUnit,"crew", _unitCrew] call ALiVE_fnc_hashSet;
+
+                [_logic,"addCustomUnit", _newUnit] call MAINCLASS;
+
             };
-
-            private _newUnit = [nil,"create"] call ALiVE_fnc_orbatCreatorUnit;
-            [_newUnit,"init"] call ALiVE_fnc_orbatCreatorUnit;
-            [_newUnit,"configName", _unit] call ALiVE_fnc_hashSet;
-            [_newUnit,"displayName", _unitDisplayName] call ALiVE_fnc_hashSet;
-            [_newUnit,"inheritsFrom", _unit] call ALiVE_fnc_hashSet;
-            [_newUnit,"side", _unitSide] call ALiVE_fnc_hashSet;
-            [_newUnit,"faction", _unitFaction] call ALiVE_fnc_hashSet;
-            [_newUnit,"loadout", _unitLoadout] call ALiVE_fnc_hashSet;
-            [_newUnit,"crew", _unitCrew] call ALiVE_fnc_hashSet;
-
-            [_logic,"addCustomUnit", _newUnit] call MAINCLASS;
 
         };
 
@@ -2222,7 +2249,6 @@ switch(_operation) do {
     case "onFactionEditorUnitEditorClicked": {
 
         private _state = [_logic,"state"] call MAINCLASS;
-        [_state,"switchingInterfaces", true] call ALiVE_fnc_hashSet;
 
         [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
 
@@ -2231,7 +2257,6 @@ switch(_operation) do {
     case "onFactionEditorGroupEditorClicked": {
 
         private _state = [_logic,"state"] call MAINCLASS;
-        [_state,"switchingInterfaces", true] call ALiVE_fnc_hashSet;
 
         [_logic,"openInterface", "Group_Editor"] spawn MAINCLASS;
 
@@ -2554,7 +2579,6 @@ switch(_operation) do {
     case "onUnitEditorFactionEditorClicked": {
 
         private _state = [_logic,"state"] call MAINCLASS;
-        [_state,"switchingInterfaces", true] call ALiVE_fnc_hashSet;
 
         [_logic,"openInterface", "Faction_Editor"] spawn MAINCLASS;
 
@@ -2563,7 +2587,6 @@ switch(_operation) do {
     case "onUnitEditorGroupEditorClicked": {
 
         private _state = [_logic,"state"] call MAINCLASS;
-        [_state,"switchingInterfaces", true] call ALiVE_fnc_hashSet;
 
         [_logic,"openInterface", "Group_Editor"] spawn MAINCLASS;
 
@@ -2759,8 +2782,8 @@ switch(_operation) do {
 
             // hide buttons
 
-            for "_i" from 9001 to 9016 do {
-                ctrlShow [_i, false]; // hardcoded idca for sanity
+            for "_i" from 9001 to 9018 do {
+                ctrlShow [_i, false]; // hardcoded idcs for sanity
             };
 
             // open interface
@@ -2796,10 +2819,12 @@ switch(_operation) do {
                 _ctrlButtonExport = findDisplay -1 displayctrl 44148;
                 _ctrlButtonExport ctrlEnable false;
 
-                _ctrlButtonImportant = findDisplay -1 displayctrl 44149;
-                _ctrlButtonImportant ctrlEnable false;
+                _ctrlButtonImport = findDisplay -1 displayctrl 44149;
+                _ctrlButtonImport ctrlEnable false;
 
             };
+
+            [_state,"unitEditor_arsenalOpen", true] call ALiVE_fnc_hashSet;
 
         };
 
@@ -2816,6 +2841,7 @@ switch(_operation) do {
         private _saveChanges = _args;
 
         private _state = [_logic,"state"] call MAINCLASS;
+        private _selectedUnitClassname = [_state,"unitEditor_selectedUnit"] call ALiVE_fnc_hashGet;
 
         // reset camera
 
@@ -2823,7 +2849,6 @@ switch(_operation) do {
             private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
             private _activeUnit = [_state,"unitEditor_activeUnitObject"] call ALiVE_fnc_hashGet;
 
-            private _selectedUnitClassname = [_state,"unitEditor_selectedUnit"] call ALiVE_fnc_hashGet;
             private _selectedUnitData = [_customUnits,_selectedUnitClassname] call ALiVE_fnc_hashGet;
 
             private _newLoadout = getUnitLoadout _activeUnit;
@@ -2831,19 +2856,16 @@ switch(_operation) do {
         };
 
         // reopen interface
-        // thanks to BIS Arsenal for closing my dialog automatically
+        // if user pressed escape it closed all open dialogs -- bis pls
 
         closeDialog 0;
         [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
 
         // update list
 
-        private _selectedUnit = [_state,"unitEditor_selectedUnit"] call ALiVE_fnc_hashGet;
+        [_state,"unitEditor_unitToSelect", _selectedUnitClassname] call ALiVE_fnc_hashSet;
 
-        _selectedUnit spawn {
-            sleep 0.1; // delay needed
-            [ALiVE_orbatCreator,"unitEditorSelectUnit", _this] call MAINCLASS;
-        };
+        [_state,"unitEditor_arsenalOpen", false] call ALiVE_fnc_hashSet;
 
     };
 
@@ -3102,6 +3124,7 @@ switch(_operation) do {
         // validate prerequisites
 
         private _instructions = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INSTRUCTIONS );
+        private _parentUnitList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_UNITS );
 
         private _displayNameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_DISPLAYNAME );
         private _classnameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_CLASSNAME );
@@ -3110,6 +3133,7 @@ switch(_operation) do {
 
         if (_displayName == "") exitWith {_instructions ctrlSetText "Display name cannot be left blank"};
         if (_classname == "") exitWith {_instructions ctrlSetText "Class name cannot be left blank"};
+        if (lbCurSel _parentUnitList == -1) exitWith {_instructions ctrlSetText "A unit type must be selected from the list"};
 
         private _state = [_logic,"state"] call MAINCLASS;
         private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
@@ -3358,7 +3382,6 @@ switch(_operation) do {
     case "onGroupEditorFactionEditorClicked": {
 
         private _state = [_logic,"state"] call MAINCLASS;
-        [_state,"switchingInterfaces", true] call ALiVE_fnc_hashSet;
 
         [_logic,"openInterface", "Faction_Editor"] spawn MAINCLASS;
 
@@ -3367,7 +3390,6 @@ switch(_operation) do {
     case "onGroupEditorUnitEditorClicked": {
 
         private _state = [_logic,"state"] call MAINCLASS;
-        [_state,"switchingInterfaces", true] call ALiVE_fnc_hashSet;
 
         [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
 
@@ -3820,12 +3842,16 @@ switch(_operation) do {
 
         private _unit = OC_getSelData( OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS );
 
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+
+        if !(_unit in (_customUnits select 1)) then {
+            [_logic,"importUnitFromConfig", _unit] call MAINCLASS;
+        };
+
         [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
 
-        _unit spawn {
-            sleep 0.1;
-            [ALiVE_orbatCreator,"unitEditorSelectUnit", _this] call MAINCLASS;
-        };
+        [_state,"unitEditor_unitToSelect", _unit] call ALiVE_fnc_hashSet;
 
     };
 
@@ -3910,13 +3936,16 @@ switch(_operation) do {
 
         private _asset = OC_getSelData( OC_GROUPEDITOR_ASSETS_LIST_UNITS );
 
-        [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
 
-        _asset spawn {
-            sleep 0.1;
-            [ALiVE_orbatCreator,"unitEditorSelectUnit", _this] call MAINCLASS;
+        if !(_asset in (_customUnits select 1)) then {
+            [_logic,"importUnitFromConfig", _asset] call MAINCLASS;
         };
 
+        [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
+
+        [_state,"unitEditor_unitToSelect", _asset] call ALiVE_fnc_hashSet;
 
     };
 
@@ -4226,6 +4255,10 @@ switch(_operation) do {
             _unit = [_customUnits,_unitConfigName] call ALiVE_fnc_hashGet;
             _unitParentConfigName = [_unit,"inheritsFrom"] call ALiVE_fnc_hashGet;
 
+            if (_unitParentConfigName == _unitConfigName) then {
+                _unitParentConfigName = configname (inheritsFrom (configFile >> "CfgVehicles" >> _unitParentConfigName));
+            };
+
             if (!(_unitParentConfigName in _forwardDeclared) && {!(_unitParentConfigName in _unitsToExport)}) then {
                 _result = _result + _indent + "class " + _unitParentConfigName + ";" + _newLine;
                 _forwardDeclared pushback _unitParentConfigName;
@@ -4276,6 +4309,12 @@ switch(_operation) do {
         private _unitDisplayName = [_unit,"displayName"] call ALiVE_fnc_hashGet;
         private _unitSide = [_unit,"side"] call ALiVE_fnc_hashGet;
         private _unitFaction = [_unit,"faction"] call ALiVE_fnc_hashGet;
+        private _fillMissingAttributes = false;
+
+        if (_unitParent == _unitConfigName) then {
+            _unitParent = configname (inheritsFrom (configFile >> "CfgVehicles" >> _unitParent));
+            _fillMissingAttributes = true;
+        };
 
         _result = _result + _indent + "class " + _unitConfigName;
 
@@ -4296,17 +4335,52 @@ switch(_operation) do {
 
         private _unitRealConfigName = [_logic,"getRealUnitClass", _unitConfigName] call MAINCLASS;
         if (_unitRealConfigName isKindOf "Man") then {
-            _result = _result + _newLine + _newLine + ([_logic,"exportCustomUnitMan", _unit] call MAINCLASS);
+            private _unitExportString = [_logic,"exportCustomUnitMan", _unit] call MAINCLASS;
+            _result = _result + _newLine + _newLine + _unitExportString;
         } else {
-            _result = _result + ([_logic,"exportCustomUnitVehicle", _unit] call MAINCLASS);
+            private _unitExportString = [_logic,"exportCustomUnitVehicle", _unit] call MAINCLASS;
+            _result = _result + _unitExportString;
         };
 
         // if unit is overwriting a config unit
         // find all properties it must fill to be complete
 
-        if (_unitParent == _unitConfigName) then {
+        if (_fillMissingAttributes) then {
+            private _cfgVehicles = configFile >> "CfgVehicles";
 
+            private _baseClass = _cfgVehicles >> _unitConfigName;
+            private _parentClass = _cfgVehicles >> _unitParent;
+            private _attributesToFill = [_baseClass,_parentClass] call ALiVE_fnc_configGetDifferences;
+            _attributesToFill call ALiVE_fnc_inspectArray;
+
+            _result = _result + _newLine;
+            _result = _result + _indent + _indent + "// Autofilled values" + _newLine;
+
+            // hard coded blacklist to prevent re-defining attributes defined during exportation
+            // this (along with exportation in general) could probably be done in a more automated way
+            // that takes effort though so this'll do for now
+
+            private _attributeBlacklist = [
+                "author","displayname","side","faction","uniformclass","backpack",
+                "items","linkeditems","magazines","weapons","respawnitems","respawnlinkeditems",
+                "respawnmagazines","respawnweapons","eventhandlers","crew","cba_extended_hventHandlers"
+            ];
+
+            {
+                _x params ["_attribute","_value"];
+
+                if !((toLower _attribute) in _attributeBlacklist) then {
+                    _attributeString = [_logic,"getAttributeExportString", [2,_attribute,_value]] call MAINCLASS;
+                    _result = _result + _attributeString;
+                };
+            } foreach _attributesToFill;
         };
+
+        // custom attributes
+
+        _result = _result + _newLine;
+        _result = _result + _indent + _indent + "// custom attributes (do not delete)" + _newLine;
+        _result = _result + _indent + _indent + "generatedByALiVEOrbatCreator = true;" + _newLine;
 
         // finish export
 
@@ -4719,17 +4793,62 @@ switch(_operation) do {
     case "arrayToConfigArrayString": {
 
         private _array = _args;
-        _result = "{";
 
-        {
-            if (_forEachIndex > 0) then {
-                _result = _result + ", " + str _x + " ";
-            } else {
-                _result = _result + " " + str _x + " ";
+        if (_array isEqualType []) then {
+
+            _result = "{";
+
+            {
+                if (_forEachIndex > 0) then {
+                    _result = _result + ", " + str _x + " ";
+                } else {
+                    _result = _result + " " + str _x + " ";
+                };
+            } foreach _array;
+
+            _result = _result + "}";
+
+        };
+
+    };
+
+    case "getAttributeExportString": {
+
+        _args params ["_level","_attribute","_value"];
+
+        private _newLine = toString [13,10];
+        private _indent = "    ";
+
+        private _indentOuter = "";
+        for "_i" from 0 to (_level - 1) do {_indentOuter = _indentOuter + _indent};
+
+        private _indentInner = _indentOuter + _indent;
+        _result = "";
+
+        if ([_value] call CBA_fnc_isHash) then {
+            private _subAttributes = _value select 1;
+            private _subValues = _value select 2;
+
+            _result = _result + _newLine;
+            _result = _result + _indentOuter + "class " + _attribute + " {" + _newLine;
+
+            for "_i" from 0 to (count _subAttributes - 1) do {
+                _subAttribute = _subAttributes select _i;
+                _subValue = _subValues select _i;
+
+                _attributeString = [_logic,"getAttributeExportString", [_level + 1,_subAttribute,_subValue]] call MAINCLASS;
+                _result = _result + _indentOuter + _attributeString;
             };
-        } foreach _array;
 
-        _result = _result + "}";
+            _result = _result + _indentOuter + "};" + _newLine;
+        } else {
+            if (_value isEqualType []) then {
+                private _valueString = [_logic,"arrayToConfigArrayString", _value] call MAINCLASS;
+                _result = _result + _indentOuter + _attribute + "[]" + " = " + _valueString + ";" + _newLine;
+            } else {
+                _result = _result + _indentOuter + _attribute + " = " + str _value + ";" + _newLine;
+            };
+        };
 
     };
 
