@@ -78,7 +78,7 @@ class orbatCreator_RscEdit {
     style = "0x00 + 0x40";
     font = "PuristaMedium";
     shadow = 2;
-    sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)"
+    sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)";
     canModify = 1;
 };
 
