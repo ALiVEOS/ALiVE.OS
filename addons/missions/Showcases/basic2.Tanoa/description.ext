@@ -1,0 +1,10 @@
+author = ALiVE Mod Team || Mission by Tupolov;
+onLoadIntroTime = 1;
+onLoadMissionTime = 1;
+onLoadName = ALiVE | APEX Getting Started;
+
+aiKills = 0;
+briefing = 1;
+debriefing = 1;
+enableDebugConsole = 1;
+allowFunctionsRecompile = 1;
