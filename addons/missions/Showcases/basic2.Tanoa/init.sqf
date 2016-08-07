@@ -102,8 +102,9 @@ NATO forces are located at the <marker name='respawn_west'>Bala Airstrip</marker
         titleText ["A L i V E   |   G E T T I N G  S T A R T E D", "BLACK IN",10];
         10 fadesound 0.9;
         _cam CamCommit 20;
-        sleep 5;
-        sleep 15;
+        sleep 10;
+
+        sleep 10;
 
         _cam CameraEffect ["Terminate","Back"];
         CamDestroy _cam;
