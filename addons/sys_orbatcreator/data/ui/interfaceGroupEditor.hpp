@@ -206,6 +206,15 @@ class ALiVE_orbatCreator_interface_groupEditor {
             h = 0.035 * safezoneH;
         };
 
+        class groupEditor_availableGroups_button_4: orbatCreator_RscButton {
+            idc = 11027;
+
+            x = 40 * GUI_GRID_W + GUI_GRID_X;
+            y = 21.5 * GUI_GRID_H + GUI_GRID_Y;
+            w = 13.5 * GUI_GRID_W;
+            h = 1.25 * GUI_GRID_H;
+        };
+
         class groupEditor_selectedGroup_list_units: orbatCreator_RscListbox {
             idc = 11022;
             x = 0.244792 * safezoneW + safezoneX;

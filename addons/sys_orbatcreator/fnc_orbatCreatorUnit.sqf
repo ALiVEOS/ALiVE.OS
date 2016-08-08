@@ -67,6 +67,7 @@ switch(_operation) do {
         // vehicle properties
 
         [_logic,"crew", ""] call MAINCLASS;
+        [_logic,"texture", ""] call MAINCLASS;
 
     };
 
@@ -137,6 +138,17 @@ switch(_operation) do {
     };
 
     case "crew": {
+
+        if (typename _args == "STRING") then {
+            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _result = _args;
+        } else {
+            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+        };
+
+    };
+
+    case "texture": {
 
         if (typename _args == "STRING") then {
             [_logic,_operation,_args] call ALiVE_fnc_hashSet;

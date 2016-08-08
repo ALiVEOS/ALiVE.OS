@@ -493,3 +493,142 @@ class ALiVE_orbatCreator_interface_editUnit : ALiVE_orbatCreator_interface_creat
     };
 
 };
+
+
+// edit vehicle
+
+
+class ALiVE_orbatCreator_interface_editVehicle {
+    idd = 13000;
+
+    class controlsBackground {
+
+        class unitEditor_editVehicle_bottom_controlbar_background: orbatCreator_RscText {
+            idc = 13001;
+            x = 0.0114583 * safezoneW + safezoneX;
+            y = 0.934 * safezoneH + safezoneY;
+            w = 0.969792 * safezoneW;
+            h = 0.035 * safezoneH;
+            colorBackground[] = {-1,-1,-1,1};
+        };
+
+        class unitEditor_editVehicle_left_icon_one: orbatCreator_RscPicture {
+            idc = 13002;
+            text = "";
+            x = 0.0114583 * safezoneW + safezoneX;
+            y = 0.024 * safezoneH + safezoneY;
+            w = 0.04375 * safezoneW;
+            h = 0.07 * safezoneH;
+            colorBackground[] = {1,1,1,1};
+        };
+
+        class unitEditor_editVehicle_left_icon_two: orbatCreator_RscPicture {
+            idc = 13003;
+            text = "";
+            x = 0.0114583 * safezoneW + safezoneX;
+            y = 0.122 * safezoneH + safezoneY;
+            w = 0.04375 * safezoneW;
+            h = 0.07 * safezoneH;
+            colorBackground[] = {1,1,1,1};
+        };
+
+        class unitEditor_editVehicle_left_icon_three: orbatCreator_RscPicture {
+            idc = 13004;
+            text = "";
+            x = 0.0114583 * safezoneW + safezoneX;
+            y = 0.22 * safezoneH + safezoneY;
+            w = 0.04375 * safezoneW;
+            h = 0.07 * safezoneH;
+            colorBackground[] = {1,1,1,1};
+        };
+
+    };
+
+    class controls {
+
+        class unitEditor_editVehicle_left_button_one: orbatCreator_RscButton {
+            idc = 13006;
+            text = "";
+            x = 0.0114583 * safezoneW + safezoneX;
+            y = 0.024 * safezoneH + safezoneY;
+            w = 0.04375 * safezoneW;
+            h = 0.07 * safezoneH;
+            colorBackground[] = {0,0,0,1};
+        };
+
+        class unitEditor_editVehicle_left_button_two: orbatCreator_RscButton {
+            idc = 13007;
+            text = "";
+            x = 0.0114583 * safezoneW + safezoneX;
+            y = 0.122 * safezoneH + safezoneY;
+            w = 0.04375 * safezoneW;
+            h = 0.07 * safezoneH;
+            colorBackground[] = {0,0,0,1};
+        };
+
+        class unitEditor_editVehicle_left_button_three: orbatCreator_RscButton {
+            idc = 13008;
+            text = "";
+            x = 0.0114583 * safezoneW + safezoneX;
+            y = 0.22 * safezoneH + safezoneY;
+            w = 0.04375 * safezoneW;
+            h = 0.07 * safezoneH;
+            colorBackground[] = {0,0,0,1};
+        };
+
+        class unitEditor_editVehicle_left_list_one: orbatCreator_RscListbox {
+            idc = 13005;
+            x = 0.0625 * safezoneW + safezoneX;
+            y = 0.024 * safezoneH + safezoneY;
+            w = 0.211458 * safezoneW;
+            h = 0.434 * safezoneH;
+        };
+
+        class unitEditor_editVehicle_left_list_two: orbatCreator_RscListBox {
+            idc = 13012;
+
+            x = 0.0625 * safezoneW + safezoneX;
+            y = 0.122 * safezoneH + safezoneY;
+            w = 0.211458 * safezoneW;
+            h = 0.434 * safezoneH;
+        };
+
+        class unitEditor_editVehicle_left_list_three: orbatCreator_RscListBox {
+            idc = 13013;
+
+            x = 0.0625 * safezoneW + safezoneX;
+            y = 0.22 * safezoneH + safezoneY;
+            w = 0.211458 * safezoneW;
+            h = 0.434 * safezoneH;
+        };
+
+        class unitEditor_editVehicle_bottom_controlbar_cancel: orbatCreator_RscButton {
+            idc = 13009;
+            text = "Cancel Changes";
+            x = 0.0114583 * safezoneW + safezoneX;
+            y = 0.934 * safezoneH + safezoneY;
+            w = 0.175 * safezoneW;
+            h = 0.035 * safezoneH;
+            colorBackground[] = {-1,-1,-1,1};
+        };
+
+        class unitEditor_editVehicle_bottom_controlbar_reset: orbatCreator_RscButton {
+            idc = 13010;
+            text = "Reset to Original";
+            x = 0.208333 * safezoneW + safezoneX;
+            y = 0.934 * safezoneH + safezoneY;
+            w = 0.175 * safezoneW;
+            h = 0.035 * safezoneH;
+        };
+
+        class unitEditor_editVehicle_bottom_controlbar_save: orbatCreator_RscButton {
+            idc = 13011;
+            text = "Save Changes";
+            x = 0.80625 * safezoneW + safezoneX;
+            y = 0.934 * safezoneH + safezoneY;
+            w = 0.175 * safezoneW;
+            h = 0.035 * safezoneH;
+        };
+
+    };
+};
