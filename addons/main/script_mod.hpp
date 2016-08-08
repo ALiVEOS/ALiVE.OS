@@ -24,7 +24,7 @@
 */
 
 // Set a default debug mode for the component here (See documentation on how to default to each of the modes).
-    #define DEBUG_ENABLED_MAIN
+//    #define DEBUG_ENABLED_MAIN
 //    #define DEBUG_ENABLED_SYS_ADMINACTIONS
 //    #define DEBUG_ENABLED_FNC_STRATEGIC
 //    #define DEBUG_ENABLED_mil_cqb
@@ -36,7 +36,7 @@
 //    #define DEBUG_ENABLED_MIL_STRATEGIC
 //    #define DEBUG_ENABLED_SYS_PROFILE
 //    #define DEBUG_ENABLED_SYS_SIMULATION
-    #define DEBUG_ENABLED_SYS_PLAYER
+//    #define DEBUG_ENABLED_SYS_PLAYER
 //    #define DEBUG_ENABLED_SYS_playeroptions
 //    #define DEBUG_ENABLED_SYS_viewdistance
 //    #define DEBUG_ENABLED_SYS_playertags
