@@ -1,13 +1,25 @@
     class ConstructionLarge
     {
-        name = "Construction (Large)";
+        name = $STR_ZEC_ConstructionLarge;
     };
     class ConstructionMedium
     {
-        name = "Construction (Medium)";
+        name = $STR_ZEC_ConstructionMedium;
     };
     class ConstructionSmall
     {
-        name = "Construction (Small)";
+        name = $STR_ZEC_ConstructionSmall;
+    };
 
+    class ConstructionSuppliesLarge
+    {
+        name = $STR_ZEC_ConstructionSuppliesLarge;
+    };
+    class ConstructionSuppliesMedium
+    {
+        name = $STR_ZEC_ConstructionSuppliesMedium;
+    };
+    class ConstructionSuppliesSmall
+    {
+        name = $STR_ZEC_ConstructionSuppliesSmall;
     };

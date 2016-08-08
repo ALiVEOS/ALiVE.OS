@@ -1,15 +1,13 @@
     class RailLarge
     {
-        name = "Rail (Large)";
-
+        name = $STR_ZEC_RailLarge;
     };
     class RailMedium
     {
-        name = "Rail (Medium)";
-
+        name = $STR_ZEC_RailMedium;
     };
     class RailSmall
     {
-        name = "Rail (Small)";
+        name = $STR_ZEC_RailSmall;
 
     };

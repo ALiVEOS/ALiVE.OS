@@ -4,7 +4,7 @@
 
 #include "urban\checkpoints.hpp"
 
-#include "urban\constructionsupplies.hpp"
+#include "urban\construction.hpp"
 
 #include "urban\comms.hpp"
 
@@ -30,3 +30,4 @@
 
 #include "urban\supports.hpp"
 
+#include "urban\supplies.hpp"

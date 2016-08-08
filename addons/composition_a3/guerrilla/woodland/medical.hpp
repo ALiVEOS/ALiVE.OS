@@ -1,12 +1,12 @@
     class MedicalLarge
     {
-        name = "Medical (Large)";
+        name = $STR_ZEC_MedicalLarge;
     };
     class MedicalMedium
     {
-        name = "Medical (Medium)";
+        name = $STR_ZEC_MedicalMedium;
     };
     class MedicalSmall
     {
-        name = "Medical (Small)";
+        name = $STR_ZEC_MedicalSmall;
     };

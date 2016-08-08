@@ -1,12 +1,12 @@
     class OutpostsLarge
     {
-        name = "Outposts (Large)";
+        name = $STR_ZEC_OutpostsLarge;
     };
     class OutpostsMedium
     {
-        name = "Outposts (Medium)";
+        name = $STR_ZEC_OutpostsMedium;
     };
     class OutpostsSmall
     {
-        name = "Outposts (Small)";
+        name = $STR_ZEC_OutpostsSmall;
     };

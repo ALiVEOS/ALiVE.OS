@@ -1,13 +1,13 @@
-    class Checkpoints_BarricadesLarge
+    class CheckpointsBarricadesLarge
     {
-        name = "Checkpoints & Barricades (Large)";
+        name = $STR_ZEC_CheckpointsBarricadesLarge;
     };
-    class Checkpoints_BarricadesMedium
+    class CheckpointsBarricadesMedium
     {
-        name = "Checkpoints & Barricades (Medium)";
+        name = $STR_ZEC_CheckpointsBarricadesMedium;
     };
-    class Checkpoints_BarricadesSmall
+    class CheckpointsBarricadesSmall
     {
-        name = "Checkpoints & Barricades (Small)";
+        name = $STR_ZEC_CheckpointsBarricadesSmall;
 
     };

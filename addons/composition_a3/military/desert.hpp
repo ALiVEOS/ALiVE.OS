@@ -4,7 +4,7 @@
 
 #include "desert\checkpoints.hpp"
 
-#include "desert\constructionsupplies.hpp"
+#include "desert\construction.hpp"
 
 #include "desert\comms.hpp"
 
@@ -30,3 +30,4 @@
 
 #include "desert\supports.hpp"
 
+#include "desert\supplies.hpp"

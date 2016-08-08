@@ -1,13 +1,13 @@
     class HQLarge
     {
-        name = "HQ (Large)";
+        name = $STR_ZEC_HqLarge;
     };
     class HQMedium
     {
-        name = "HQ (Medium)";
+        name = $STR_ZEC_HqMedium;
     };
     class HQSmall
     {
-        name = "HQ (Small)";
+        name = $STR_ZEC_HqSmall;
 
     };

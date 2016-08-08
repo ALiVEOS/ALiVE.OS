@@ -16,7 +16,7 @@
 
 #include "urban\marine.hpp"
 
-#include "urban\mining_oil.hpp"
+#include "urban\mining.hpp"
 
 #include "urban\power.hpp"
 
