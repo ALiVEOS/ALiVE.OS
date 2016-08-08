@@ -821,12 +821,20 @@ switch(_operation) do {
 
             if (count _landClusters > 0) then {
                 {
+                    private ["_compType","_composition","_pos"];
                     _pos = [_x,"center"] call ALiVE_fnc_HashGet;
 
-                    _compositions = [ALIVE_compositions,"camps"] call ALIVE_fnc_hashGet;
-                    _composition = _compositions call BIS_fnc_selectRandom;
+                    // Get a composition
+                    _compType = "Military";
+                    If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                        _compType = "Guerrilla";
+                    };
 
-                    _composition = [_composition] call ALIVE_fnc_findComposition;
+                    _composition = selectRandom ([_compType, ["Camps","Outposts"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
+
+                    if (isNil "_composition") then {
+                        _composition = selectRandom ([_compType, ["Camps","Outposts"], ["Medium","Small"], _faction] call ALiVE_fnc_getCompositions);
+                    };
 
                     if(count _composition > 0) then {
                         [_composition, _pos, random 360] call ALIVE_fnc_spawnComposition;
