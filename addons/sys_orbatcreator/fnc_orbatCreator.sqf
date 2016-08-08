@@ -40,6 +40,7 @@ nil
 #define OC_DISPLAY_FACTIONEDITOR                    8000
 #define OC_DISPLAY_UNITEDITOR                       9000
 #define OC_DISPLAY_CREATEUNIT                       10000
+#define OC_DISPLAY_EDITVEHICLE                      13000
 #define OC_DISPLAY_GROUPEDITOR                      11000
 #define OC_DISPLAY_CREATEGROUP                      12000
 
@@ -83,6 +84,19 @@ nil
 #define OC_CREATEUNIT_BUTTON_AUTOGEN_CLASSNAME      10019
 #define OC_CREATEUNIT_INSTRUCTIONS                  10020
 
+#define OC_EDITVEHICLE_LEFT_ICON_ONE                13002
+#define OC_EDITVEHICLE_LEFT_ICON_TWO                13003
+#define OC_EDITVEHICLE_LEFT_ICON_THREE              13004
+#define OC_EDITVEHICLE_LEFT_BUTTON_ONE              13006
+#define OC_EDITVEHICLE_LEFT_BUTTON_TWO              13007
+#define OC_EDITVEHICLE_LEFT_BUTTON_THREE            13008
+#define OC_EDITVEHICLE_LEFT_LIST_ONE                13005
+#define OC_EDITVEHICLE_LEFT_LIST_TWO                13012
+#define OC_EDITVEHICLE_LEFT_LIST_THREE              13013
+#define OC_EDITVEHICLE_CONTROLBAR_CANCEL            13009
+#define OC_EDITVEHICLE_CONTROLBAR_RESET             13010
+#define OC_EDITVEHICLE_CONTROLBAR_SAVE              13011
+
 #define OC_GROUPEDITOR_FACTIONS_LIST                11008
 #define OC_GROUPEDITOR_BUTTON_BIG_ONE               11009
 #define OC_GROUPEDITOR_BUTTON_BIG_TWO               11010
@@ -97,6 +111,7 @@ nil
 #define OC_GROUPEDITOR_GROUPS_BUTTON_ONE            11019
 #define OC_GROUPEDITOR_GROUPS_BUTTON_TWO            11020
 #define OC_GROUPEDITOR_GROUPS_BUTTON_THREE          11021
+#define OC_GROUPEDITOR_GROUPS_BUTTON_FOUR           11027
 #define OC_GROUPEDITOR_SELECTEDGROUP_HEADER         11007
 #define OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS     11022
 #define OC_GROUPEDITOR_SELECTEDGROUP_INPUT_UNITRANK 11023
@@ -250,6 +265,10 @@ switch(_operation) do {
         [_state,"unitEditor_unitToSelect", ""] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_arsenalOpen", false] call ALiVE_fnc_hashSet;
 
+        [_state,"editVehicle_vehicle", ""] call ALiVE_fnc_hashSet;
+        [_state,"editVehicle_selectedCrew", ""] call ALiVE_fnc_hashSet;
+        [_state,"editVehicle_selectedTexture", []] call ALiVE_fnc_hashSet;
+
         [_state,"groupEditor_selectedFaction", ""] call ALiVE_fnc_hashSet;
         [_state,"groupEditor_selectedGroupCategory", ""] call ALiVE_fnc_hashSet;
         [_state,"groupEditor_selectedGroup", ""] call ALiVE_fnc_hashSet;
@@ -378,6 +397,12 @@ switch(_operation) do {
             case "Unit_Editor_Edit_Properties": {
 
                 createDialog "ALiVE_orbatCreator_interface_editUnit";
+
+            };
+
+            case "Edit_Vehicle": {
+
+                createDialog "ALiVE_orbatCreator_interface_editVehicle";
 
             };
 
@@ -788,6 +813,67 @@ switch(_operation) do {
 
             };
 
+            case "Edit_Vehicle": {
+
+                // init bottom control bar
+
+                private _controlBar_bottom_cancel = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_CONTROLBAR_CANCEL );
+                _controlBar_bottom_cancel ctrlSetEventHandler ["MouseButtonDown","['onEditVehicleCancelClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+
+                private _controlBar_bottom_reset = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_CONTROLBAR_RESET );
+                _controlBar_bottom_reset ctrlSetEventHandler ["MouseButtonDown","['onEditVehicleResetClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+
+                private _controlBar_bottom_save = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_CONTROLBAR_SAVE );
+                _controlBar_bottom_save ctrlSetEventHandler ["MouseButtonDown","['onEditVehicleSaveClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+
+                // init left side buttons
+
+                private _left_icon_one = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_ICON_ONE );
+                _left_icon_one ctrlSetText "\A3\Ui_f\data\GUI\Rsc\RscDisplayGarage\crew_ca.paa";
+
+                private _left_button_one = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_BUTTON_ONE );
+                _left_button_one ctrlSetEventHandler ["MouseButtonDown","['onEditVehicleCrewClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                _left_button_one ctrlSetTooltip "Crew";
+
+                private _left_list_one = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_ONE );
+                _left_list_one ctrlSetEventHandler ["lbSelChanged","['onEditVehicleCrewChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                _left_list_one ctrlshow false;
+
+                private _left_icon_two = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_ICON_TWO );
+                _left_icon_two ctrlSetText "\A3\Ui_f\data\GUI\Rsc\RscDisplayGarage\textureSources_ca.paa";
+
+                private _left_button_two = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_BUTTON_TWO );
+                _left_button_two ctrlSetEventHandler ["MouseButtonDown","['onEditVehicleAppearanceClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                _left_button_two ctrlSetTooltip "Appearance";
+
+                private _left_list_two = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_TWO );
+                _left_list_two ctrlSetEventHandler ["lbSelChanged","['onEditVehicleAppearanceSelected', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                _left_list_two ctrlshow false;
+
+                private _left_icon_three = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_ICON_THREE );
+                _left_icon_three ctrlshow false;
+
+                private _left_button_three = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_BUTTON_THREE );
+                _left_button_three ctrlshow false;
+
+                private _left_list_three = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_THREE );
+                _left_list_three ctrlSetEventHandler ["lbSelChanged","['onEditVehicleListThreeSelected', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                _left_list_three ctrlshow false;
+
+                // init selected items
+
+                private _selectedVehicle = [_state,"unitEditor_selectedUnit"] call ALiVE_fnc_hashGet;
+                private _selectedVehicleData = [_logic,"getCustomUnit", _selectedVehicle] call MAINCLASS;
+
+                private _selectedVehicleCrew = [_selectedVehicleData,"crew"] call ALiVE_fnc_hashGet;
+                private _selectedVehicleTexture = [_selectedVehicleData,"texture"] call ALiVE_fnc_hashGet;
+
+                [_state,"editVehicle_vehicle", _selectedVehicle] call ALiVE_fnc_hashSet;
+                [_state,"editVehicle_selectedCrew", _selectedVehicleCrew] call ALiVE_fnc_hashSet;
+                [_state,"editVehicle_selectedTexture", _selectedVehicleTexture] call ALiVE_fnc_hashSet;
+
+            };
+
             case "Group_Editor": {
 
                 private ["_index"];
@@ -835,9 +921,14 @@ switch(_operation) do {
                 _groupsButton2 ctrlEnable false;
 
                 private _groupsButton3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_THREE );
-                _groupsButton3 ctrlSetText "Delete";
-                _groupsButton3 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorGroupsDeleteClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _groupsButton3 ctrlSetText "Copy";
+                _groupsButton3 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorGroupsCopyClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
                 _groupsButton3 ctrlShow true;
+
+                private _groupsButton4 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_FOUR );
+                _groupsButton4 ctrlSetText "Delete";
+                _groupsButton4 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorGroupsDeleteClicked'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _groupsButton4 ctrlShow true;
 
                 // init asset list
 
@@ -873,10 +964,22 @@ switch(_operation) do {
 
                 private _selectedGroupUnitRank = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_INPUT_UNITRANK );
                 _selectedGroupUnitRank ctrlSetEventHandler ["LBSelChanged","['onGroupEditorSelectedGroupUnitRankChangedClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-                {
-                    _index = _selectedGroupUnitRank lbAdd _x;
-                    _selectedGroupUnitRank lbSetData [_index, toUpper _x];
-                } foreach ["Colonel","Major","Captain","Lieutenant","Sergeant","Corporal","Private"];
+
+                private _cfgRanks = configFile >> "CfgRanks";
+
+                // process in reverse order to have higher ranks higher in the list
+                for "_i" from (count _cfgRanks - 1) to 0 step -1 do {
+                    _rank = _cfgRanks select _i;
+                    _rankDisplayName = getText (_rank >> "displayName");
+                    _rankImage = getText (_rank >> "texture");
+
+                    if (_rankDisplayName != "General") then {
+                        _index = _selectedGroupUnitRank lbAdd _rankDisplayName;
+                        _selectedGroupUnitRank lbSetData [_index,toUpper _rankDisplayName];
+                        _selectedGroupUnitRank lbSetPicture [_index,_rankImage];
+                    };
+                };
+
                 _selectedGroupUnitRank ctrlShow false;
 
                 private _selectedGroupButton2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_TWO );
@@ -1113,6 +1216,12 @@ switch(_operation) do {
             };
 
             case "Unit_Editor_Edit_Properties": {
+
+
+
+            };
+
+            case "Edit_Vehicle": {
 
 
 
@@ -1409,7 +1518,7 @@ switch(_operation) do {
                     _unit = _x;
 
                     [_unit,"side", _side] call ALiVE_fnc_hashSet;
-                } foreach _units;
+                } foreach _groupUnits;
 
                 [_group,"side", _side] call ALiVE_fnc_hashSet;
             } foreach (_groupsInCategory select 2);
@@ -1552,6 +1661,7 @@ switch(_operation) do {
         lbClear _list;
 
         private _cfgVehicles = configFile >> "CfgVehicles";
+        private _classesAdded = [];
 
         private _state = [_logic,"state"] call MAINCLASS;
         private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
@@ -1571,6 +1681,8 @@ switch(_operation) do {
                 if (_realUnitEditorSubCategory == _category && {!(_customUnitConfigName in _toExclude)}) then {
                     _index = _list lbAdd _customUnitDisplayName;
                     _list lbSetData [_index,_customUnitConfigName];
+
+                    _classesAdded pushback _customUnitConfigName;
                 };
 
             };
@@ -1584,7 +1696,7 @@ switch(_operation) do {
             _assetConfig = _cfgVehicles >> _assetConfigName;
             _assetEditorSubcategory = getText (_assetConfig >> "editorSubcategory");
 
-            if (_assetEditorSubcategory == _category && {!(_assetConfigName in _toExclude)}) then {
+            if (_assetEditorSubcategory == _category && {!(_assetConfigName in _toExclude)} && {!(_assetConfigName in _classesAdded)}) then {
                 _assetDisplayName = getText (_assetConfig >> "displayName");
 
                 _index = _list lbAdd _assetDisplayName;
@@ -1806,9 +1918,14 @@ switch(_operation) do {
         private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
         private _customUnit = [_customUnits,_vehicle] call ALiVE_fnc_hashGet;
 
+        private _crew = "";
+        private _texture = [];
+
         if (!isnil "_customUnit") then {
             _vehicle = [_customUnit,"configName"] call ALiVE_fnc_hashGet;
             _loadout = [_customUnit,"loadout"] call ALiVE_fnc_hashGet;
+            _crew = [_customUnit,"crew"] call ALiVE_fnc_hashGet;
+            _texture = [_customUnit,"texture"] call ALiVE_fnc_hashGet;
 
             private _customUnitSide = [_customUnit,"side"] call ALiVE_fnc_hashGet;
             private _customSideText = [_customUnitSide] call ALiVE_fnc_sideNumberToText;
@@ -1820,6 +1937,9 @@ switch(_operation) do {
             private _side = getNumber (_configPath >> "side");
             private _sideText = [_side] call ALiVE_fnc_sideNumberToText;
             _sideObject = [_sideText] call ALiVE_fnc_sideTextToObject;
+
+            _crew = getText (_configPath >> "crew");
+            _texture = (getArray (_configPath >> "textureList")) select 0;
         };
 
         // delete existing vehicle
@@ -1845,6 +1965,8 @@ switch(_operation) do {
             _activeUnit setPosASL _pos;
             _activeUnit enableSimulation false;
             _activeUnit setDir 0;
+
+            [_logic,"setVehicleTexure", [_activeUnit,_texture]] call MAINCLASS;
 
             _cam camSetRelPos [0, (sizeOf _vehicle) * 0.65, (sizeOf _vehicle) * 0.1];
             _cam camSetFov 0.5;
@@ -2100,6 +2222,36 @@ switch(_operation) do {
 
     };
 
+    case "copyCategoryGroup": {
+
+        _args params ["_category","_group"];
+
+        private _categoryGroups = [_category,"groups"] call ALiVE_fnc_hashGet;
+        private _groupClasses = _categoryGroups select 1;
+
+        private _groupConfigName = [_group,"configName"] call ALiVE_fnc_hashGet;
+        private _groupDisplayName = [_group,"name"] call ALiVE_fnc_hashGet;
+
+        private _numPrefix = 1;
+        private _newGroupConfigName = format ["%1_copy_%2", _groupConfigName, _numPrefix];
+
+        while {_newGroupConfigName in _groupClasses} do {
+            _numPrefix = _numPrefix + 1;
+            _newGroupConfigName = format ["%1_copy_%2", _groupConfigName, _numPrefix];
+        };
+
+        private _newGroupDisplayName = format ["%1 Copy %2", _groupDisplayName, _numPrefix];
+
+        private _newGroup = +_group;
+        [_newGroup,"configName", _newGroupConfigName] call ALiVE_fnc_hashSet;
+        [_newGroup,"name", _newGroupDisplayName] call ALiVE_fnc_hashSet;
+
+        [_categoryGroups,_newGroupConfigName,_newGroup] call ALiVE_fnc_hashSet;
+
+        _result = _newGroupConfigName;
+
+    };
+
 
     // helper functions
     // misc
@@ -2239,6 +2391,57 @@ switch(_operation) do {
         private _group = group _unit;
         deleteVehicle _unit;
         deleteGroup _group;
+
+    };
+
+    case "getVehicleTextureSources": {
+
+        private _vehicle = _args;
+
+        if (_vehicle isEqualType "") then {
+
+            private _vehicleConfig = configFile >> "CfgVehicles" >> _vehicle;
+
+            if (isClass _vehicleConfig) then {
+
+                private ["_textureSource","_textureSourceDisplayName","_textureSourceTextures"];
+
+                _result = [];
+
+                private _textureSources = _vehicleConfig >> "textureSources";
+
+                for "_i" from 0 to (count _textureSources - 1) do {
+                    _textureSource = _textureSources select _i;
+                    _textureSourceConfigName = configName _textureSource;
+                    _textureSourceDisplayName = getText (_textureSource >> "displayName");
+                    _textureSourceTextures = getArray (_textureSource >> "textures");
+
+                    _result pushback [_textureSourceConfigName,_textureSourceDisplayName,_textureSourceTextures];
+                };
+
+            };
+
+        };
+
+    };
+
+    case "getVehicleTextureArray": {
+
+        _args params ["_vehicle","_texture"];
+
+        _result = getArray (configFile >> "CfgVehicles" >> _vehicle >> "textureSources" >> _texture >> "textures");
+
+    };
+
+    case "setVehicleTexure": {
+
+        _args params ["_vehicle","_texture"];
+
+        private _textureArray = [_logic,"getVehicleTextureArray", [typeof _vehicle,_texture]] call MAINCLASS;
+
+        {
+            _vehicle setObjectTexture [_forEachIndex, _textureArray select _forEachIndex];
+        } foreach _textureArray;
 
     };
 
@@ -2765,9 +2968,8 @@ switch(_operation) do {
         } else {
 
             _unitListbutton2 ctrlSetText "Edit Vehicle";
-            _unitListbutton2 ctrlSetTooltip "Edit selected vehicle - Coming Soon";
+            _unitListbutton2 ctrlSetTooltip "Edit selected vehicle";
             _unitListbutton2 ctrlSetEventHandler ["MouseButtonDown","['onUnitEditorEditVehicleClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-            _unitListbutton2 ctrlEnable false;
 
         };
 
@@ -2832,7 +3034,7 @@ switch(_operation) do {
 
     case "onUnitEditorEditVehicleClicked": {
 
-
+        [_logic,"openInterface", "Edit_Vehicle"] spawn MAINCLASS;
 
     };
 
@@ -3151,6 +3353,8 @@ switch(_operation) do {
 
         private _parentClass = OC_getSelData( OC_CREATEUNIT_INPUT_UNITTYPE_UNITS );
         private _loadout = [];
+        private _crew = "";
+        private _texture = "";
 
         private _realParentClass = [_logic,"getRealUnitClass", _parentClass] call MAINCLASS;
         if (_realParentClass isKindOf "Man") then {
@@ -3170,6 +3374,10 @@ switch(_operation) do {
 
                 [_logic,"deleteUnit", _realParentUnit] call MAINCLASS;
             };
+        } else {
+            private _realParentConfig = configFile >> "CfgVehicles" >> _realParentClass;
+            _crew = getText (_realParentConfig >> "crew");
+            _texture = (getArray (_realParentConfig >> "textureList")) select 0;
         };
 
         // create new custom unit
@@ -3182,6 +3390,8 @@ switch(_operation) do {
         [_newUnit,"displayName", _displayName] call ALiVE_fnc_orbatCreatorUnit;
         [_newUnit,"configName", _classname] call ALiVE_fnc_orbatCreatorUnit;
         [_newUnit,"loadout", _loadout] call ALiVE_fnc_orbatCreatorUnit;
+        [_newUnit,"crew", _crew] call ALiVE_fnc_orbatCreatorUnit;
+        [_newUnit,"texture", _texture] call ALiVE_fnc_orbatCreatorUnit;
 
         private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
         [_customUnits,_classname,_newUnit] call ALiVE_fnc_hashSet;
@@ -3372,6 +3582,209 @@ switch(_operation) do {
 
         private _unitList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
         [_unitList,[_selectedUnit], true] call ALiVE_fnc_listSelectData;
+
+    };
+
+
+    // edit vehicle
+
+
+    case "onEditVehicleCancelClicked": {
+
+        closeDialog 0;
+
+    };
+
+    case "onEditVehicleResetClicked": {
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _vehicle = [_state,"editVehicle_vehicle"] call ALiVE_fnc_hashGet;
+
+        private _realVehicle = [_logic,"getRealUnitClass", _vehicle] call MAINCLASS;
+        private _realVehicleConfig = configFile >> "CfgVehicles" >> _realVehicle;
+
+        private _realVehicleCrew = getText (_realVehicleConfig >> "crew");
+        private _realVehicleTexture = (getArray (_realVehicleConfig >> "textureList")) select 0;
+
+        [_state,"editVehicle_selectedCrew", _realVehicleCrew] call ALiVE_fnc_hashSet;
+        [_state,"editVehicle_selectedTexture", _realVehicleTexture] call ALiVE_fnc_hashSet;
+
+        private _left_list_one = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_ONE );
+        _left_list_one ctrlshow false;
+
+        private _left_list_two = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_TWO );
+        _left_list_two ctrlshow false;
+
+        private _left_list_three = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_THREE );
+        _left_list_three ctrlshow false;
+
+    };
+
+    case "onEditVehicleSaveClicked": {
+
+        private _state = [_logic,"state"] call MAINCLASS;
+
+        private _vehicle = [_state,"editVehicle_vehicle"] call ALiVE_fnc_hashGet;
+        private _crew = [_state,"editVehicle_selectedCrew"] call ALiVE_fnc_hashGet;
+        private _texture = [_state,"editVehicle_selectedTexture"] call ALiVE_fnc_hashGet;
+
+        private _vehicleData = [_logic,"getCustomUnit", _vehicle] call MAINCLASS;
+        private _vehicleCrew = [_vehicleData,"crew"] call ALiVE_fnc_hashGet;
+        private _vehicleTexture = [_vehicleData,"texture"] call ALiVE_fnc_hashGet;
+
+        if (_crew != _vehicleCrew) then {
+            [_vehicleData,"crew", _crew] call ALiVE_fnc_hashSet;
+        };
+
+        if !(_texture == _vehicleTexture) then {
+            [_vehicleData,"texture", _texture] call ALiVE_fnc_hashSet;
+        };
+
+        closeDialog 0;
+
+    };
+
+    case "onEditVehicleCrewClicked": {
+
+        private [
+            "_customUnit","_customUnitFaction","_customUnitConfigName","_customUnitRealUnit",
+            "_customUnitDisplayName","_index","_assetConfigName","_assetConfig","_assetDisplayName"
+        ];
+
+        private _left_list_one = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_ONE );
+
+        if (ctrlShown _left_list_one) then {
+            _left_list_one ctrlshow false;
+
+            private _left_list_two = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_TWO );
+            _left_list_two ctrlshow false;
+
+            private _left_list_three = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_THREE );
+            _left_list_three ctrlshow false;
+        } else {
+            _left_list_one ctrlshow true;
+
+            private _left_list_two = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_TWO );
+            _left_list_two ctrlshow false;
+
+            private _left_list_three = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_THREE );
+            _left_list_three ctrlshow false;
+        };
+
+        lbClear _left_list_one;
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _faction = [_state,"unitEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+
+        {
+            _customUnit = _x;
+            _customUnitFaction = [_customUnit,"faction"] call ALiVE_fnc_hashGet;
+            _customUnitConfigName = [_customUnit,"configName"] call ALiVE_fnc_hashGet;
+
+            if (_customUnitFaction == _faction) then {
+                _customUnitRealUnit = [_logic,"getRealUnitClass", _customUnitConfigName] call MAINCLASS;
+
+                if (_customUnitRealUnit isKindOf "Man") then {
+                    _customUnitDisplayName = [_customUnit,"displayName"] call ALiVE_fnc_hashGet;
+
+                    _index = _left_list_one lbAdd _customUnitDisplayName;
+                    _left_list_one lbSetData [_index,_customUnitConfigName];
+                };
+            };
+        } foreach (_customUnits select 2);
+
+        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+        private _factionAssets = [_factionData,"assets"] call ALiVE_fnc_hashGet;
+
+        private _cfgVehicles = configFile >> "CfgVehicles";
+
+        {
+            _assetConfigName = _x;
+
+            if (_assetConfigName isKindOf "Man") then {
+                _assetConfig = _cfgVehicles >> _assetConfigName;
+                _assetDisplayName = getText (_assetConfig >> "displayName");
+
+                _index = _left_list_one lbAdd _assetDisplayName;
+                _left_list_one lbSetData [_index,_assetConfigName];
+            };
+        } foreach _factionAssets;
+
+        private _selectedCrew = [_state,"editVehicle_selectedCrew"] call ALiVE_fnc_hashGet;
+        [_left_list_one,_selectedCrew] call ALiVE_fnc_listSelectData;
+
+    };
+
+    case "onEditVehicleCrewChanged": {
+
+        _args params ["_list","_index"];
+
+        private _unit = OC_ctrlGetSelData( _list );
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        [_state,"editVehicle_selectedCrew", _unit] call ALiVE_fnc_hashSet;
+
+    };
+
+    case "onEditVehicleAppearanceClicked": {
+
+        private ["_index"];
+
+        private _left_list_two = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_TWO );
+
+        if (ctrlShown _left_list_two) then {
+            _left_list_two ctrlshow false;
+
+            private _left_list_one = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_ONE );
+            _left_list_one ctrlshow false;
+
+            private _left_list_three = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_THREE );
+            _left_list_three ctrlshow false;
+        } else {
+            _left_list_two ctrlshow true;
+
+            private _left_list_one = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_ONE );
+            _left_list_one ctrlshow false;
+
+            private _left_list_three = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_THREE );
+            _left_list_three ctrlshow false;
+        };
+
+        private _state = [_logic,"state"] call MAINCLASS;
+
+        private _selectedVehicle = [_state,"editVehicle_vehicle"] call ALiVE_fnc_hashGet;
+        private _realVehClass = [_logic,"getRealUnitClass", _selectedVehicle] call MAINCLASS;
+
+        private _textures = [_logic,"getVehicleTextureSources", _realVehClass] call MAINCLASS;
+
+        lbClear _left_list_two;
+
+        {
+            _x params ["_textureConfigName","_textureDisplayName","_textureArray"];
+
+            _index = _left_list_two lbAdd _textureDisplayName;
+            _left_list_two lbSetData [_index, _textureConfigName];
+        } foreach _textures;
+
+        private _selectedTexture = [_state,"editVehicle_selectedTexture"] call ALiVE_fnc_hashGet;
+        [_left_list_two,str _selectedTexture] call ALiVE_fnc_listSelectData;
+
+    };
+
+    case "onEditVehicleAppearanceSelected": {
+
+        _args params ["_list","_index"];
+
+        private _selectedTexture = OC_ctrlGetSelData( _list );
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _activeObject = [_state,"unitEditor_activeUnitObject"] call ALiVE_fnc_hashGet;
+
+        [_state,"editVehicle_selectedTexture", _selectedTexture] call ALiVE_fnc_hashSet;
+
+        [_logic,"setVehicleTexure", [_activeObject,_selectedTexture]] call MAINCLASS;
 
     };
 
@@ -3638,6 +4051,9 @@ switch(_operation) do {
         private _button3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_THREE );
         _button3 ctrlEnable false;
 
+        private _button4 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_FOUR );
+        _button4 ctrlEnable false;
+
         // add groups to list
 
         private _groupList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_LIST_GROUPS );
@@ -3686,6 +4102,9 @@ switch(_operation) do {
 
         private _button3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_THREE );
         _button3 ctrlEnable true;
+
+        private _button4 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_BUTTON_FOUR );
+        _button4 ctrlEnable true;
 
         private _state = [_logic,"state"] call MAINCLASS;
         private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
@@ -3883,6 +4302,40 @@ switch(_operation) do {
     case "onGroupEditorGroupsEditClicked": {
 
         [_logic,"openInterface", "Edit_Group"] spawn MAINCLASS;
+
+    };
+
+    case "onGroupEditorGroupsCopyClicked": {
+
+        private ["_groupData","_groupClassname"];
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
+        private _categoryData = [_logic,"getFactionGroupCategory", [_faction,_category]] call MAINCLASS;
+
+        private _groupList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_LIST_GROUPS );
+
+        // get selected groups
+
+        private _selectedIndices = lbSelection _groupList;
+        private _selectedGroups = [];
+
+        {
+            _selectedGroups pushback (_groupList lbData _x);
+        } foreach _selectedIndices;
+
+        private _newGroupClasses = [];
+        {
+            _groupData = [_logic,"getFactionCategoryGroup", [_faction,_category,_x]] call MAINCLASS;
+            _groupClassname = [_logic,"copyCategoryGroup", [_categoryData,_groupData]] call MAINCLASS;
+            _newGroupClasses pushback _groupClassname;
+        } foreach _selectedGroups;
+
+        // update list
+
+        [_logic,"groupEditorDisplayFactionGroupsInCategory", _category] call MAINCLASS;
+        [_groupList,_newGroupClasses, true] call ALiVE_fnc_listSelectData;
 
     };
 
@@ -4326,10 +4779,11 @@ switch(_operation) do {
 
         // general properties
 
-        _result = _result + _newLine + _indent + _indent + ("author = " + str profileName + ";");
-        _result = _result + _newLine + _indent + _indent + ("displayName = " + str _unitDisplayName + ";");
-        _result = _result + _newLine + _indent + _indent + ("side = " + str _unitSide + ";");
-        _result = _result + _newLine + _indent + _indent + ("faction = " + str _unitFaction + ";");
+        _result = _result + _newLine;
+        _result = _result + _indent + _indent + ("author = " + str profileName + ";") + _newLine;
+        _result = _result + _indent + _indent + ("displayName = " + str _unitDisplayName + ";") + _newLine;
+        _result = _result + _indent + _indent + ("side = " + str _unitSide + ";") + _newLine;
+        _result = _result + _indent + _indent + ("faction = " + str _unitFaction + ";") + _newLine;
 
         // get type-specific properties
 
@@ -4363,7 +4817,8 @@ switch(_operation) do {
             private _attributeBlacklist = [
                 "author","displayname","side","faction","uniformclass","backpack",
                 "items","linkeditems","magazines","weapons","respawnitems","respawnlinkeditems",
-                "respawnmagazines","respawnweapons","eventhandlers","crew","cba_extended_hventHandlers"
+                "respawnmagazines","respawnweapons","eventhandlers","crew","cba_extended_hventHandlers",
+                "texturelist"
             ];
 
             {
@@ -4535,6 +4990,9 @@ switch(_operation) do {
 
         private _unitConfigName = [_unit,"configName"] call ALiVE_fnc_hashGet;
         private _unitSide = [_unit,"side"] call ALiVE_fnc_hashGet;
+        private _unitCrew = [_unit,"crew"] call ALiVE_fnc_hashGet;
+        private _unitTexture = [_unit,"texture"] call ALiVE_fnc_hashGet;
+        _unitTexture = [_logic,"arrayToConfigArrayString",[_unitTexture,1]] call MAINCLASS;
 
         // format result
 
@@ -4543,6 +5001,13 @@ switch(_operation) do {
         private _eventHandlers = [];
         _eventHandlers pushback ("class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {}");
         _result = "";
+
+        _result = _result + _newLine;
+        _result = _result + _indent + _indent + "crew = " + str _unitCrew + ";" + _newLine;
+
+        if (_unitTexture != (str ({ "" , 1 }))) then {
+            _result = _result + _indent + _indent +"textureList[] = " + _unitTexture + ";" + _newLine;
+        };
 
         // event handlers
 

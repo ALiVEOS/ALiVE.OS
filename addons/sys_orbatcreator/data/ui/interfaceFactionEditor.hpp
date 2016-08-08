@@ -147,7 +147,7 @@ class ALiVE_orbatCreator_interface_factionEditor {
         class orbatViewer_groups_tree: orbatCreator_RscTree {
             idc = 8015;
 
-            x = 0.339583 * safezoneW + safezoneX;
+            x = 0.295833 * safezoneW + safezoneX;
             y = 0.178 * safezoneH + safezoneY;
             w = 0.65625 * safezoneW;
             h = 0.82152 * safezoneH;
