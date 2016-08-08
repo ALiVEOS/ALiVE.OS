@@ -1601,16 +1601,47 @@ switch(_operation) do {
 
     case "getFactionAssetCategories": {
 
+        private ["_customUnit","_customUnitFaction","_asset","_assetConfig","_assetEditorSubcategory"];
+
         private _faction = _args;
 
-        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
-        private _factionAssetCategories = [_factionData,"assetCategories"] call ALiVE_fnc_hashGet;
+        _result = [];
 
-        _result = _factionAssetCategories;
+        private _cfgVehicles = configFile >> "CfgVehicles";
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+
+        {
+            _customUnit = _x;
+            _customUnitFaction = [_customUnit,"faction"] call ALiVE_fnc_hashGet;
+
+            if (_customUnitFaction == _faction) then {
+                private _customUnitConfigName = [_customUnit,"configName"] call ALiVE_fnc_hashGet;
+                private _realUnitClass = [_logic,"getRealUnitClass", _customUnitConfigName] call MAINCLASS;
+                private _realUnitConfig = _cfgVehicles >> _realUnitClass;
+                private _realUnitEditorSubCategory = getText (_realUnitConfig >> "editorSubcategory");
+
+                _result pushbackunique _realUnitEditorSubCategory;
+            };
+        } foreach (_customUnits select 2);
+
+        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+        private _factionAssets = [_factionData,"assets"] call ALiVE_fnc_hashGet;
+
+        {
+            _asset = _x;
+            _assetConfig = _cfgVehicles >> _asset;
+            _assetEditorSubcategory = getText (_assetConfig >> "editorSubcategory");
+
+            _result pushbackunique _assetEditorSubcategory;
+        } foreach _factionAssets;
 
     };
 
     case "getFactionAssetCategoriesByName": {
+
+        private ["_category","_categoryConfig","_categoryDisplayName"];
 
         private _faction = _args;
 
