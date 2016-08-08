@@ -1,13 +1,13 @@
     class CampsLarge
     {
-        name = "Camps (Large)";
+        name = $STR_ZEC_CampsLarge;
     };
     class CampsMedium
     {
-        name = "Camps (Medium)";
+        name = $STR_ZEC_CampsMedium;
     };
     class CampsSmall
     {
-        name = "Camps (Small)";
+        name = $STR_ZEC_CampsSmall;
 
     };

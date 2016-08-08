@@ -1,15 +1,12 @@
     class SettlementsLarge
     {
-        name = "Settlements (Large)";
-
+        name = $STR_ZEC_SettlementsLarge;
     };
     class SettlementsMedium
     {
-        name = "Settlements (Medium)";
-
+        name = $STR_ZEC_SettlementsMedium;
     };
     class SettlementsSmall
     {
-        name = "Settlements (Small)";
-
+        name = $STR_ZEC_SettlementsSmall;
     };

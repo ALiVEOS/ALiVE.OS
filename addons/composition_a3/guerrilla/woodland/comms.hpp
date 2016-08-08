@@ -1,14 +1,14 @@
     class CommunicationsLarge
     {
-        name = "Communications (Large)";
+        name = $STR_ZEC_CommunicationsLarge;
     };
     class CommunicationsMedium
     {
-        name = "Communications (Medium)";
+        name = $STR_ZEC_CommunicationsMedium;
 
     };
     class CommunicationsSmall
     {
-        name = "Communications (Small)";
+        name = $STR_ZEC_CommunicationsSmall;
 
     };

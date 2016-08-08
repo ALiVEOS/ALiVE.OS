@@ -1,8 +1,10 @@
+#include "woodland\airports.hpp"
+
 #include "woodland\camps.hpp"
 
 #include "woodland\checkpoints.hpp"
 
-#include "woodland\constructionsupplies.hpp"
+#include "woodland\construction.hpp"
 
 #include "woodland\comms.hpp"
 
@@ -11,6 +13,8 @@
 #include "woodland\fort.hpp"
 
 #include "woodland\fuel.hpp"
+
+#include "woodland\heliports.hpp"
 
 #include "woodland\hq.hpp"
 
@@ -24,26 +28,4 @@
 
 #include "woodland\supports.hpp"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#include "woodland\supplies.hpp"

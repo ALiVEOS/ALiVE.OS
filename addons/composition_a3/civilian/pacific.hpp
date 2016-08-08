@@ -16,7 +16,7 @@
 
 #include "pacific\marine.hpp"
 
-#include "pacific\mining_oil.hpp"
+#include "pacific\mining.hpp"
 
 #include "pacific\power.hpp"
 

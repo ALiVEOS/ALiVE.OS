@@ -1,8 +1,10 @@
+#include "pacific\airports.hpp"
+
 #include "pacific\camps.hpp"
 
 #include "pacific\checkpoints.hpp"
 
-#include "pacific\constructionsupplies.hpp"
+#include "pacific\construction.hpp"
 
 #include "pacific\comms.hpp"
 
@@ -11,6 +13,8 @@
 #include "pacific\fort.hpp"
 
 #include "pacific\fuel.hpp"
+
+#include "pacific\heliports.hpp"
 
 #include "pacific\hq.hpp"
 
@@ -24,26 +28,4 @@
 
 #include "pacific\supports.hpp"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#include "pacific\supplies.hpp"

@@ -16,7 +16,7 @@
 
 #include "woodland\marine.hpp"
 
-#include "woodland\mining_oil.hpp"
+#include "woodland\mining.hpp"
 
 #include "woodland\power.hpp"
 
