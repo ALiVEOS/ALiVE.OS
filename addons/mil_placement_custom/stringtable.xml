@@ -66,7 +66,7 @@
     <Original>Spawn Composition:</Original>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_COMMENT">
-    <Original>Spawn a composition at the objective location</Original>
+    <Original>Enter in the classname of a composition > Go to Config Viewer, CfgGroups > Empty and copy the classname</Original>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_A">
     <Original>BIS - Camp Audacity</Original>

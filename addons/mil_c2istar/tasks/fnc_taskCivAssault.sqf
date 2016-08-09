@@ -66,6 +66,7 @@ switch (_taskState) do {
         _targetPosition = [_taskLocation,_taskLocationType,_taskEnemySide,"CIV"] call ALIVE_fnc_taskGetSideCluster;
 
         if(count _targetPosition == 0 || {_taskLocationType == "Map" && {_targetPosition distance _taskLocation > 1000}}) then {
+            private ["_category","_compType"];
             // no enemy occupied cluster found
             // try to get a position containing enemy
             _targetPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
@@ -88,7 +89,11 @@ switch (_taskState) do {
             // spawn a populated composition
             _targetPosition = [_targetPosition, 250] call ALIVE_fnc_findFlatArea;
 
-            [_targetPosition, "objectives", _taskEnemyFaction, 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+            _compType = "Military";
+            If (_taskEnemySide == "GUER") then {
+                _compType = "Guerrilla";
+            };
+            [_targetPosition, _compType, ["HQ", "Outposts", "Supports", "FieldHQ", "Fort", "Comms", "Power", "Fuel"], _taskEnemyFaction, ["Medium"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
 
         };
 

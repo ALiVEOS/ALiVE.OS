@@ -1708,9 +1708,7 @@ switch(_operation) do {
 
                                     [_logic,"autoGenerateTasks",_generate] call MAINCLASS;
                                 };
-
-                            }
-
+                            };
                         };
 
                     } forEach (_managedTasks select 2);

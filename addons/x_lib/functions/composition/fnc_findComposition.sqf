@@ -9,6 +9,7 @@ Reads CfgGroups to find named alive composition
 
 Parameters:
 String - class name
+String - Category name i.e. Civilian, Military, Guerilla
 
 Returns:
 Config - composition
@@ -18,7 +19,7 @@ Array - empty array if not found
 Examples:
 (begin example)
 //
-_result = [] call ALIVE_fnc_findComposition;
+_result = ["L_NatoCheckpoint","Military"] call ALiVE_fnc_findComposition;
 (end)
 
 See Also:
@@ -27,13 +28,14 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_className","_configPaths","_configPath","_result","_item","_comp","_name","_foundComp"];
+private ["_className","_configPaths","_configPath","_result","_item","_comp","_name","_foundComp","_cat"];
 
 _className = _this select 0;
+_cat = if (count _this > 1) then {_this select 1;} else {"Military";};
 
 _configPaths = [
-    missionConfigFile >> "CfgGroups" >> "Empty" >> "ALIVE",
-    configFile >> "CfgGroups" >> "Empty" >> "ALIVE"
+    missionConfigFile >> "CfgGroups" >> "Empty" >> _cat,
+    configFile >> "CfgGroups" >> "Empty" >> _cat
 ];
 
 scopeName "main";
