@@ -33,7 +33,7 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_className","_configPaths","_configPath","_result","_item","_comp","_name","_size","_cat","_faction","_compType"];
+private ["_className","_configPaths","_configPath","_result","_item","_comp","_name","_size","_cat","_faction","_compType","_enemyFactions"];
 
 _compType = _this select 0;
 _cat = if (typeName (_this select 1) == "ARRAY") then {_this select 1} else {[_this select 1]};
@@ -43,6 +43,8 @@ if (count _this > 3) then {
 } else {
     _faction = [];
 };
+
+_enemyFactions = [];
 
 if (!isNil "ALiVE_mapCompositionType") then {
     _env = ALiVE_mapCompositionType;
@@ -71,6 +73,20 @@ _configPaths = [
     configFile >> "CfgGroups" >> "Empty" >> _compType
 ];
 
+// Get enemy factions
+if (_faction select 0 != "any") then {
+    private ["_enemySide","_friendlySide"];
+    _friendlySide = (_faction select 0) call ALiVE_fnc_factionSide;
+    diag_log _friendlySide;
+    _enemySide = EAST;
+    if (_friendlySide == EAST) then {_enemySide = WEST;} else {_enemySide = EAST;};
+    if (_friendlySide == RESISTANCE && [_friendlySide, WEST] call BIS_fnc_sideIsEnemy) then {_enemySide = EAST;} else {_enemySide = WEST;};
+    _enemySide = [_enemySide] call ALIVE_fnc_sideObjectToNumber;
+    _enemySide = [_enemySide] call ALIVE_fnc_sideNumberToText;
+    _enemyFactions = _enemySide call ALiVE_fnc_getSideFactions;
+    // diag_log _enemyFactions;
+};
+
 scopeName "main";
 
 {
@@ -91,9 +107,10 @@ scopeName "main";
                     // diag_log str(_comp);
                     if (isClass _comp) then {
 
-                        // TODO FACTION SEARCH
-                            _result pushback _comp;
-
+                            if ({(configName _comp) find _x != -1} count _enemyFactions == 0 ||  _faction select 0 == "any" ) then {
+                                diag_log (configName _comp);
+                                _result pushback _comp;
+                            };
                     };
                 };
             };
