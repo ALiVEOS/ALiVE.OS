@@ -16,7 +16,7 @@ Array - Category name(s) - leave [] for any
     Military Categories - airports, camps, checkpoints, constructionsupplies, comms, crashsites, fieldhq, fort, fuel, heliports, hq, marine, medical, outposts, power, supports
 
 Array - Size - ["Large","Medium","Small"] - leave [] for any size
-Array - Faction(s) (Optional) - leave [] for any size
+Array - Faction (Optional) - leave [] for any size
 
 Returns:
 Array - Of composition configs, empty array if nothing found
@@ -75,16 +75,28 @@ _configPaths = [
 
 // Get enemy factions
 if (_faction select 0 != "any") then {
-    private ["_enemySide","_friendlySide"];
-    _friendlySide = (_faction select 0) call ALiVE_fnc_factionSide;
-    diag_log _friendlySide;
-    _enemySide = EAST;
-    if (_friendlySide == EAST) then {_enemySide = WEST;} else {_enemySide = EAST;};
-    if (_friendlySide == RESISTANCE && [_friendlySide, WEST] call BIS_fnc_sideIsEnemy) then {_enemySide = EAST;} else {_enemySide = WEST;};
-    _enemySide = [_enemySide] call ALIVE_fnc_sideObjectToNumber;
-    _enemySide = [_enemySide] call ALIVE_fnc_sideNumberToText;
-    _enemyFactions = _enemySide call ALiVE_fnc_getSideFactions;
-    // diag_log _enemyFactions;
+    {
+        private ["_enemySide","_friendlySide"];
+        _friendlySide = _x call ALiVE_fnc_factionSide;
+        _enemySide = [EAST];
+        if (_friendlySide == EAST) then {_enemySide = [WEST,RESISTANCE];} else {_enemySide = [EAST];};
+        if (_friendlySide == EAST && [RESISTANCE, WEST] call BIS_fnc_sideIsEnemy) then {_enemySide = [WEST];};
+        if (_friendlySide == RESISTANCE && [RESISTANCE, WEST] call BIS_fnc_sideIsEnemy) then {_enemySide = [WEST];};
+        {
+            private ["_enemy"];
+            _enemy = _x;
+            _enemy = [_enemy] call ALIVE_fnc_sideObjectToNumber;
+            _enemy = [_enemy] call ALIVE_fnc_sideNumberToText;
+            {
+                if !(_x in _enemyFactions) then {
+                    _enemyFactions pushback _x;
+                };
+            } foreach (_enemy call ALiVE_fnc_getSideFactions);
+            diag_log format["FRIEND %1",_friendlySide];
+            diag_log format["ENEMY %1",_enemy];
+        } foreach _enemySide;
+    } foreach _faction;
+    diag_log _enemyFactions;
 };
 
 scopeName "main";
