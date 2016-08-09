@@ -205,6 +205,7 @@
 		[_taskData,"chat_start",[["HQ","Int indicates enemy forces are rapidly closing on your position. It is essential that you secure the area, prepare to defend,  over."],["PLAYERS","Roger, we are preparing to defend. Out."]]] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_clear",[["HQ","SIGINT indicates enemy forces within 200m of your position. It is essential that you clear the area, over."],["PLAYERS","Roger, we are preparing to clear. Out."]]] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_success",[["PLAYERS","Crew are safe, area is clear and objective is secure, Over"],["HQ","Roger, prepare to recover crew to safe location, Out."]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_leftArea",[["PLAYERS","Crew are safe, we are clear of the area and moving to extract, Over"],["HQ","Roger, move crew to safe location, Out."]]] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_failed",[["HQ","Mission aborted, crew have been killed, Over"],["PLAYERS","Roger, we are RTB, Out"]]] call ALIVE_fnc_hashSet;
 		[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
 		[_tasksData,"DefenceWave",_taskData] call ALIVE_fnc_hashSet;
@@ -243,6 +244,7 @@
 		[_taskData,"chat_start",[["HQ","Int indicates enemy forces are rapidly closing on your position. Prepare to hold the position, over."],["PLAYERS","Roger, securing crash site now, Out."]]] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_clear",[["HQ","SIGINT indicates enemy forces within 200m of your position. It is essential that you clear the area, over."],["PLAYERS","Roger, we are preparing to clear. Out."]]] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_success",[["PLAYERS","Vehicle is destroyed and objective is secure, Over"],["HQ","Roger, prepare to recover crew to safe location, Out."]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_leftArea",[["PLAYERS","Crew are safe, we are clear of the area and moving to extract, Over"],["HQ","Roger, move crew to safe location, Out."]]] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_failed",[["HQ","Mission aborted, crew have been killed, Over"],["PLAYERS","Roger, we are RTB, Out"]]] call ALIVE_fnc_hashSet;
 		[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
 		[_tasksData,"DefenceWave",_taskData] call ALIVE_fnc_hashSet;

@@ -504,7 +504,7 @@ switch (_taskState) do {
 
         private["_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
         "_areaClear","_lastState","_taskDialog","_missileStrikeCreated","_atmosphereCreated","_currentTaskDialog","_taskEnemyFaction",
-        "_taskEnemySide","_currentWave","_lastWave","_totalWaves","_enemyFaction","_entityProfileIDs","_defend","_areaClear","_firstCheck"];
+        "_taskEnemySide","_currentWave","_lastWave","_totalWaves","_enemyFaction","_entityProfileIDs","_defend","_areaClear","_firstCheck","_dwentityProfileIDs"];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;
@@ -526,7 +526,8 @@ switch (_taskState) do {
         _lastWave = [_params,"lastWave"] call ALIVE_fnc_hashGet;
         _totalWaves = [_params,"totalWaves"] call ALIVE_fnc_hashGet;
         _enemyFaction = [_params,"enemyFaction"] call ALIVE_fnc_hashGet;
-        _entityProfileIDs = [_params,"DWentityProfileIDs"] call ALIVE_fnc_hashGet;
+        _entityProfileIDs = [_params,"entityProfileIDs",[]] call ALIVE_fnc_hashGet;
+        _dwentityProfileIDs = [_params,"DWentityProfileIDs",[]] call ALIVE_fnc_hashGet;
         _defend = [_params,"defend"] call ALIVE_fnc_hashGet;
         _firstCheck = [_params,"firstCheck",true] call ALIVE_fnc_hashGet;
 
@@ -624,10 +625,11 @@ switch (_taskState) do {
 
         }else{
 
-            private["_entitiesState","_allDestroyed"];
+            private["_dwentitiesState","_allDestroyed"];
 
-            _entitiesState = [_entityProfileIDs] call ALIVE_fnc_taskGetStateOfEntityProfiles;
-            _allDestroyed = [_entitiesState,"allDestroyed",true] call ALIVE_fnc_hashGet;
+            _dwentitiesState = [_dwentityProfileIDs] call ALIVE_fnc_taskGetStateOfEntityProfiles;
+
+            _allDestroyed = [_dwentitiesState,"allDestroyed",false] call ALIVE_fnc_hashGet;
 
             ["FIGHTING WAVE : %1",_currentWave] call ALIVE_fnc_dump;
 
@@ -665,9 +667,47 @@ switch (_taskState) do {
                     };
 
                 };
-
             };
 
+            // Check to see if players and crew are still at Crash Site/recovery area
+            private "_atTaskPosition";
+            _atTaskPosition = [_taskPosition, _taskPlayers, 200] call ALIVE_fnc_taskHavePlayersReachedDestination;
+
+            If !(_atTaskPosition) then {
+                _taskIDs = [_params,"taskIDs"] call ALIVE_fnc_hashGet;
+                [_params,"nextTask",_taskIDs select 3] call ALIVE_fnc_hashSet;
+
+                _task set [8,"Succeeded"];
+                _task set [10, "N"];
+                _result = _task;
+
+                [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+
+                ["chat_leftArea",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+
+                [_currentTaskDialog,_taskSide,_taskFaction] call ALIVE_fnc_taskCreateReward;
+            };
+
+            // Check to see if Crew are still alive
+            private["_dead"];
+
+            _entitiesState = [_entityProfileIDs] call ALIVE_fnc_taskGetStateOfEntityProfiles;
+            _dead = [_entitiesState,"allDestroyed"] call ALIVE_fnc_hashGet;
+
+            // task is completed successfully
+            if (_dead) then {
+
+                // profile is dead
+
+                [_params,"nextTask",""] call ALIVE_fnc_hashSet;
+
+                _task set [8,"Failed"];
+                _task set [10, "N"];
+                _result = _task;
+
+                ["chat_failed",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+
+            };
         };
     };
 
