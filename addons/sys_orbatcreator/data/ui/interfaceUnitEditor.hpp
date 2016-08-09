@@ -553,7 +553,7 @@ class ALiVE_orbatCreator_interface_editVehicle {
             y = 0.024 * safezoneH + safezoneY;
             w = 0.04375 * safezoneW;
             h = 0.07 * safezoneH;
-            colorBackground[] = {0,0,0,1};
+            colorBackground[] = {0,0,0,0.5};
         };
 
         class unitEditor_editVehicle_left_button_two: orbatCreator_RscButton {
@@ -563,7 +563,7 @@ class ALiVE_orbatCreator_interface_editVehicle {
             y = 0.122 * safezoneH + safezoneY;
             w = 0.04375 * safezoneW;
             h = 0.07 * safezoneH;
-            colorBackground[] = {0,0,0,1};
+            colorBackground[] = {0,0,0,0.5};
         };
 
         class unitEditor_editVehicle_left_button_three: orbatCreator_RscButton {
@@ -573,7 +573,7 @@ class ALiVE_orbatCreator_interface_editVehicle {
             y = 0.22 * safezoneH + safezoneY;
             w = 0.04375 * safezoneW;
             h = 0.07 * safezoneH;
-            colorBackground[] = {0,0,0,1};
+            colorBackground[] = {0,0,0,0.5};
         };
 
         class unitEditor_editVehicle_left_list_one: orbatCreator_RscListbox {
@@ -610,15 +610,6 @@ class ALiVE_orbatCreator_interface_editVehicle {
             w = 0.175 * safezoneW;
             h = 0.035 * safezoneH;
             colorBackground[] = {-1,-1,-1,1};
-        };
-
-        class unitEditor_editVehicle_bottom_controlbar_reset: orbatCreator_RscButton {
-            idc = 13010;
-            text = "Reset to Original";
-            x = 0.208333 * safezoneW + safezoneX;
-            y = 0.934 * safezoneH + safezoneY;
-            w = 0.175 * safezoneW;
-            h = 0.035 * safezoneH;
         };
 
         class unitEditor_editVehicle_bottom_controlbar_save: orbatCreator_RscButton {
