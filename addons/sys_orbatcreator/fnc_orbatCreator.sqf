@@ -3096,31 +3096,37 @@ switch(_operation) do {
         private _saveChanges = _args;
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _selectedUnitClassname = [_state,"unitEditor_selectedUnit"] call ALiVE_fnc_hashGet;
+        private _arsenalOpen = [_state,"unitEditor_arsenalOpen"] call ALiVE_fnc_hashGet;
 
-        // reset camera
+        if (_arsenalOpen) then {
 
-        if (_saveChanges) then {
-            private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
-            private _activeUnit = [_state,"unitEditor_activeUnitObject"] call ALiVE_fnc_hashGet;
+            private _selectedUnitClassname = [_state,"unitEditor_selectedUnit"] call ALiVE_fnc_hashGet;
 
-            private _selectedUnitData = [_customUnits,_selectedUnitClassname] call ALiVE_fnc_hashGet;
+            // reset camera
 
-            private _newLoadout = getUnitLoadout _activeUnit;
-            [_selectedUnitData,"loadout", _newLoadout] call ALiVE_fnc_hashSet;
+            if (_saveChanges) then {
+                private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+                private _activeUnit = [_state,"unitEditor_activeUnitObject"] call ALiVE_fnc_hashGet;
+
+                private _selectedUnitData = [_customUnits,_selectedUnitClassname] call ALiVE_fnc_hashGet;
+
+                private _newLoadout = getUnitLoadout _activeUnit;
+                [_selectedUnitData,"loadout", _newLoadout] call ALiVE_fnc_hashSet;
+            };
+
+            // reopen interface
+            // if user pressed escape it closed all open dialogs -- bis pls
+
+            closeDialog 0;
+            [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
+
+            // update list
+
+            [_state,"unitEditor_unitToSelect", _selectedUnitClassname] call ALiVE_fnc_hashSet;
+
+            [_state,"unitEditor_arsenalOpen", false] call ALiVE_fnc_hashSet;
+
         };
-
-        // reopen interface
-        // if user pressed escape it closed all open dialogs -- bis pls
-
-        closeDialog 0;
-        [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
-
-        // update list
-
-        [_state,"unitEditor_unitToSelect", _selectedUnitClassname] call ALiVE_fnc_hashSet;
-
-        [_state,"unitEditor_arsenalOpen", false] call ALiVE_fnc_hashSet;
 
     };
 
