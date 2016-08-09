@@ -620,19 +620,24 @@ switch(_operation) do {
                 _classList_button3 ctrlShow true;
                 _classList_button3 ctrlEnable false;
 
+                /*
                 private _classList_button4 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_FOUR );
                 _classList_button4 ctrlSetText "Copy";
                 _classList_button4 ctrlSetTooltip "Create new unit from selected unit (No Inheritance)";
                 _classList_button4 ctrlSetEventHandler ["MouseButtonDown","['unitEditorCopyClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
                 _classList_button4 ctrlShow true;
                 _classList_button4 ctrlEnable false;
+                */
+
+                private _classList_button4 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_FOUR );
+                _classList_button4 ctrlSetText "Delete";
+                _classList_button4 ctrlSetTooltip "Delete selected units";
+                _classList_button4 ctrlSetEventHandler ["MouseButtonDown","['unitEditorDeleteClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                _classList_button4 ctrlShow true;
+                _classList_button4 ctrlEnable false;
 
                 private _classList_button5 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_FIVE );
-                _classList_button5 ctrlSetText "Delete";
-                _classList_button5 ctrlSetTooltip "Delete selected units";
-                _classList_button5 ctrlSetEventHandler ["MouseButtonDown","['unitEditorDeleteClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-                _classList_button5 ctrlShow true;
-                _classList_button5 ctrlEnable false;
+                _classList_button5 ctrlShow false;
 
                 private _classList_button6 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_SIX );
                 _classList_button6 ctrlSetText "Import Units From Config";
