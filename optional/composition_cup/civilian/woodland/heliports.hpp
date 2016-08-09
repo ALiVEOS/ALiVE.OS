@@ -1,15 +1,12 @@
     class HeliportsLarge
     {
-        name = "Heliports (Large)";
-
+        name = $STR_ZECCUP_HeliportsLarge;
     };
     class HeliportsMedium
     {
-        name = "Heliports (Medium)";
-
+        name = $STR_ZECCUP_HeliportsMedium;
     };
     class HeliportsSmall
     {
-        name = "Heliports (Small)";
-
+        name = $STR_ZECCUP_HeliportsSmall;
     };

@@ -4,7 +4,7 @@
 
 #include "woodland\checkpoints.hpp"
 
-#include "woodland\constructionsupplies.hpp"
+#include "woodland\construction.hpp"
 
 #include "woodland\comms.hpp"
 
@@ -30,3 +30,4 @@
 
 #include "woodland\supports.hpp"
 
+#include "woodland\supplies.hpp"

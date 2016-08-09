@@ -1,13 +1,13 @@
     class MarineLarge
     {
-        name = "Marine (Large)";
+        name = $STR_ZECCUP_MarineLarge;
     };
     class MarineMedium
     {
-        name = "Marine (Medium)";
+        name = $STR_ZECCUP_MarineMedium;
 
     };
     class MarineSmall
     {
-        name = "Marine (Small)";
+        name = $STR_ZECCUP_MarineSmall;
     };
