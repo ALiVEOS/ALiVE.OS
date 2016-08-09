@@ -396,7 +396,7 @@
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
 	[_taskData,"title","Patrol %1"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","We received intelligence about an insurgents near %1! Patrol the Area!"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","We received intelligence about insurgents near %1! Patrol the Area!"] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_start",[["HQ","We received intelligence about insurgent activity near %1! Patrol the area!"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_success",[["PLAYERS","The patrol has been completed!"],["HQ","Roger that, well done!"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"reward",["forcePool",10]] call ALIVE_fnc_hashSet;
@@ -419,8 +419,8 @@
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
 	[_taskData,"title","Destroy the %1"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","We received intelligence about an insurgents %1 near %2! Destroy the building!"] call ALIVE_fnc_hashSet;
-	[_taskData,"chat_start",[["HQ","We received intelligence about a insurgent %1 near %2! Destory the building!"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"description","We received intelligence about an insurgent %1 near %2! Destroy the building!"] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","We received intelligence about an insurgent %1 near %2! Destory the building!"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_success",[["PLAYERS","The building has been destroyed!"],["HQ","Roger that, well done!"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"reward",["forcePool",10]] call ALIVE_fnc_hashSet;
 	[_tasksData,"Destroy",_taskData] call ALIVE_fnc_hashSet;
