@@ -2067,7 +2067,7 @@ switch(_operation) do {
             private _state = [_logic,"state"] call MAINCLASS;
             private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
 
-                if !(_unit in (_customUnits select 1)) then {
+            if !(_unit in (_customUnits select 1)) then {
 
                 private _unitConfig = configFile >> "CfgVehicles" >> _unit;
                 private _unitDisplayName = getText (_unitConfig >> "displayName");
@@ -2075,6 +2075,7 @@ switch(_operation) do {
                 private _unitFaction = getText (_unitConfig >> "faction");
                 private _unitLoadout = [];
                 private _unitCrew = "";
+                private _unitTexture = "";
 
                 if (_unit isKindOf "Man") then {
                     // spawn unit to get loadout
@@ -2089,6 +2090,9 @@ switch(_operation) do {
                     [_logic,"deleteUnit", _realUnit] call MAINCLASS;
                 } else {
                     _unitCrew = getText (_unitConfig >> "crew");
+                    _unitTexture = getText (_unitConfig >> "ALiVE_orbatCreator_texture");
+
+                    [_logic,"deleteUnit", _realUnit] call MAINCLASS;
                 };
 
                 private _newUnit = [nil,"create"] call ALiVE_fnc_orbatCreatorUnit;
@@ -2100,6 +2104,7 @@ switch(_operation) do {
                 [_newUnit,"faction", _unitFaction] call ALiVE_fnc_hashSet;
                 [_newUnit,"loadout", _unitLoadout] call ALiVE_fnc_hashSet;
                 [_newUnit,"crew", _unitCrew] call ALiVE_fnc_hashSet;
+                [_newUnit,"texture", _unitTexture] call ALiVE_fnc_hashSet;
 
                 [_logic,"addCustomUnit", _newUnit] call MAINCLASS;
 
@@ -3416,8 +3421,8 @@ switch(_operation) do {
         private _texture = "";
 
         private _realParentClass = [_logic,"getRealUnitClass", _parentClass] call MAINCLASS;
-        if (_realParentClass isKindOf "Man") then {
 
+        if (_realParentClass isKindOf "Man") then {
             if (_parentClass in (_customUnits select 1)) then {
                 private _parentClassEntry = [_customUnits,_parentClass] call ALiVE_fnc_hashGet;
                 _loadout = [_parentClassEntry,"loadout"] call ALiVE_fnc_hashGet;
@@ -3436,7 +3441,7 @@ switch(_operation) do {
         } else {
             private _realParentConfig = configFile >> "CfgVehicles" >> _realParentClass;
             _crew = getText (_realParentConfig >> "crew");
-            _texture = (getArray (_realParentConfig >> "textureList")) select 0;
+            _texture = getText (_realParentConfig >> "ALiVE_orbatCreator_texture");
         };
 
         // create new custom unit
@@ -4824,6 +4829,7 @@ switch(_operation) do {
         private _unitDisplayName = [_unit,"displayName"] call ALiVE_fnc_hashGet;
         private _unitSide = [_unit,"side"] call ALiVE_fnc_hashGet;
         private _unitFaction = [_unit,"faction"] call ALiVE_fnc_hashGet;
+        private _unitTexture = [_unit,"texture"] call ALiVE_fnc_hashGet;
         private _fillMissingAttributes = false;
 
         if (_unitParent == _unitConfigName) then {
@@ -4867,7 +4873,6 @@ switch(_operation) do {
             private _baseClass = _cfgVehicles >> _unitConfigName;
             private _parentClass = _cfgVehicles >> _unitParent;
             private _attributesToFill = [_baseClass,_parentClass] call ALiVE_fnc_configGetDifferences;
-            _attributesToFill call ALiVE_fnc_inspectArray;
 
             _result = _result + _newLine;
             _result = _result + _indent + _indent + "// Autofilled values" + _newLine;
@@ -4880,7 +4885,7 @@ switch(_operation) do {
                 "author","displayname","side","faction","uniformclass","backpack",
                 "items","linkeditems","magazines","weapons","respawnitems","respawnlinkeditems",
                 "respawnmagazines","respawnweapons","eventhandlers","crew","cba_extended_hventHandlers",
-                "generatedbyaliveorbatcreator"
+                "alive_orbatcreator_owned","alive_orbatcreator_texture"
             ];
 
             {
@@ -4897,7 +4902,11 @@ switch(_operation) do {
 
         _result = _result + _newLine;
         _result = _result + _indent + _indent + "// custom attributes (do not delete)" + _newLine;
-        _result = _result + _indent + _indent + "generatedByALiVEOrbatCreator = true;" + _newLine;
+        _result = _result + _indent + _indent + "ALiVE_orbatCreator_owned = true;" + _newLine;
+
+        if (_unitTexture != "") then {
+            _result = _result + _indent + _indent + "ALiVE_orbatCreator_texture = " + str _unitTexture + ";" + _newLine;
+        };
 
         // finish export
 
@@ -4934,7 +4943,7 @@ switch(_operation) do {
 
         private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
         _initEventHandler = _initEventHandler + "removeAllPrimaryWeaponItems (_this select 0)" + ";";
-        _initEventHandler = _initEventHandler + "{(_this select 0) removeSecondaryWeaponItem _x} foreach (secondaryWeaponItems (_this select 0));" + ";";
+        _initEventHandler = _initEventHandler + "{(_this select 0) removeSecondaryWeaponItem _x} foreach (secondaryWeaponItems (_this select 0))" + ";";
         _initEventHandler = _initEventHandler + "removeAllHandgunItems (_this select 0)" + ";";
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
 
@@ -5077,7 +5086,7 @@ switch(_operation) do {
         if (count _unitTextureArray > 0) then {
             private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
             {
-                _initEventHandler = _initEventHandler + "(_this select 0) setObjectTexture " + str [_forEachIndex, str _x] + ";";
+                _initEventHandler = _initEventHandler + "(_this select 0) setObjectTextureGlobal " + str [_forEachIndex, str _x] + ";";
             } foreach _unitTextureArray;
             [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
         };
