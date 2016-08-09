@@ -114,11 +114,11 @@ if (_faction select 0 != "any") then {
                     _enemyFactions pushback _x;
                 };
             } foreach (_enemy call ALiVE_fnc_getSideFactions);
-             diag_log format["FRIEND %1",_friendlySide];
-             diag_log format["ENEMY %1",_enemy];
+            // diag_log format["FRIEND %1",_friendlySide];
+            // diag_log format["ENEMY %1",_enemy];
         } foreach _enemySide;
     } foreach _faction;
-     diag_log _enemyFactions;
+    // diag_log _enemyFactions;
 };
 
 scopeName "main";
