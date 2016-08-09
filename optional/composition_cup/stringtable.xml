@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+
+<Key ID="STR_ALIVE_COMPOSITION_hq">
+    <Original>HQ</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_smallHQOutpost1">
+    <Original>HQ Outpost 1 [Small]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_largeMedicalHQ1">
+    <Original>Medical HQ 1 [Large]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_fieldHQ1">
+    <Original>Field HQ [Large]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_camps">
+    <Original>Camps</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_smallConvoyCamp1">
+    <Original>Convoy Camp 1 [Small]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_smallMilitaryCamp1">
+    <Original>Military Camp 1 [Small]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_smallMortarCamp1">
+    <Original>Mortar Camp 1 [Small]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_mediumAACamp1">
+    <Original>AA Camp 1 [Medium]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_mediumMilitaryCamp1">
+    <Original>Mil Camp 1 [Medium]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_mediumMGCamp1">
+    <Original>MG Camp 1 [Medium]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_mediumMGCamp2">
+    <Original>MG Camp 2 [Medium]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_mediumMGCamp3">
+    <Original>MG Camp 3 [Medium]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_mediumAirstation1">
+    <Original>Airstation 1 [Medium]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_power">
+    <Original>Power</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_communications">
+    <Original>Communications</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_communicationCamp1">
+    <Original>Comm Camp 1 [Medium]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_fuel">
+    <Original>Fuel</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_smallFuelStation1">
+    <Original>Fuel Station 1 [Small]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_mediumFuelSilo1">
+    <Original>Fuel Silo 1 [Medium]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_marine">
+    <Original>Marine</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_constructionSupplies">
+    <Original>Construct Supplies</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_bagFenceKit1">
+    <Original>Bag Fence [KIT]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_hbarrierKit1">
+    <Original>H-Barrier [Kit 1]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_hbarrierKit2">
+    <Original>H-Barrier [Kit 2]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_hbarrierWallKit1">
+    <Original>H-Barrier Wall [Kit 1]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_hbarrierWallKit2">
+    <Original>H-Barrier Wall [Kit 2]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_settlement">
+    <Original>Settlement</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_crashsites">
+    <Original>Crashsites</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_smallOspreyCrashsite1">
+    <Original>Osprey site 1 [Small]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_smallAH99Crashsite1">
+    <Original>AH-99 site 1 [Small]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_mediumc192Crash1">
+    <Original>C192 site 1 [Medium]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_objectives">
+    <Original>Objectives</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_largeMilitaryOutpost1">
+    <Original>Mil Outpost 1 [Large]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_mediumMilitaryOutpost1">
+    <Original>Mil Outpost 1 [Medium]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_hugeSupplyOutpost1">
+    <Original>Sup Outpost 1 [Huge]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_hugeMilitaryOutpost1">
+    <Original>Mil Outpost 1 [Huge]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_other">
+    <Original>Other</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_smallATNest1">
+    <Original>AT Nest 1 [Small]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_smallMGNest1">
+    <Original>MG Nest 1 [Small]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_smallCheckpoint1">
+    <Original>Checkpoint 1 [Small]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_smallRoadblock1">
+    <Original>Roadblock 1 [Small]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_mediumCheckpoint1">
+    <Original>Checkpoint 1 [Medium]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_mediumCheckpoint2">
+    <Original>Checkpoint 2 [Medium]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_smallCheckpoint2">
+    <Original>Checkpoint 2 [Small]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_smallRoadblock2">
+    <Original>Roadblock 2 [Small]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_smallCheckpoint3">
+    <Original>Checkpoint 3 [Small]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_largeGarbageCamp1">
+    <Original>Garbage Camp 1 [Large]</Original>
+</Key>
+<Key ID="STR_ALIVE_COMPOSITION_IEDFactory1">
+    <Original>IED Factory 1 [Small]</Original>
+</Key>
+
+</Container></Package></Project>
