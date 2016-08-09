@@ -4,9 +4,9 @@
     };
     class CheckpointsBarricadesMedium
     {
-        name = $STR_ZECCUP_CheckpointsBarricadesMedium
+        name = $STR_ZECCUP_CheckpointsBarricadesMedium;
     };
     class CheckpointsBarricadesSmall
     {
-        name = $STR_ZECCUP_CheckpointsBarricadesSmall
+        name = $STR_ZECCUP_CheckpointsBarricadesSmall;
     };

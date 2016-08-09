@@ -4,7 +4,7 @@
     };
     class CheckpointsBarricadesMedium
     {
-        name = $STR_ZECCUP_CheckpointsBarricadesMedium
+        name = $STR_ZECCUP_CheckpointsBarricadesMedium;
 		class VehicleBunker_CUP_O_RU {
 			name = $STR_ZECCUP_MilitaryWoodland_CheckpointsBarricadesMedium_VehicleBunker_CUP_O_RU; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
@@ -197,7 +197,7 @@
 	};
     class CheckpointsBarricadesSmall
     {
-        name = $STR_ZECCUP_CheckpointsBarricadesSmall
+        name = $STR_ZECCUP_CheckpointsBarricadesSmall;
 		class SandbagNet_CUP_O_RU {
 			name = $STR_ZECCUP_MilitaryWoodland_CheckpointsBarricadesSmall_SandbagNet_CUP_O_RU; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
