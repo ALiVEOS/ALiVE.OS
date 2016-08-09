@@ -12,8 +12,8 @@ String - Type - Civilian, Military, Guerrilla
 Array - Category name(s) - leave [] for any
 
     Civilian Categories - airports, checkpoints, construction, constructionSupplies, comms, fuel, general, heliports, industrial, marine, mining_oil, power, rail, settlements
-    Guerrilla Categories - camps, checkpoints, constructionsupplies, comms, fieldhq, fort, fuel, hq, marine, medical, outposts, power, supports
-    Military Categories - airports, camps, checkpoints, constructionsupplies, comms, crashsites, fieldhq, fort, fuel, heliports, hq, marine, medical, outposts, power, supports
+    Guerrilla Categories - camps, checkpoints, constructionsupplies, comms, fieldhq, fort, fuel, hq, marine, medical, outposts, power, supports, supplies
+    Military Categories - airports, camps, checkpoints, constructionsupplies, comms, crashsites, fieldhq, fort, fuel, heliports, hq, marine, medical, outposts, power, supports, supplies
 
 Array - Size - ["Large","Medium","Small"] - leave [] for any size
 Array - Faction (Optional) - leave [] for any size
@@ -78,10 +78,32 @@ if (_faction select 0 != "any") then {
     {
         private ["_enemySide","_friendlySide"];
         _friendlySide = _x call ALiVE_fnc_factionSide;
-        _enemySide = [EAST];
-        if (_friendlySide == EAST) then {_enemySide = [WEST,RESISTANCE];} else {_enemySide = [EAST];};
-        if (_friendlySide == EAST && [RESISTANCE, WEST] call BIS_fnc_sideIsEnemy) then {_enemySide = [WEST];};
-        if (_friendlySide == RESISTANCE && [RESISTANCE, WEST] call BIS_fnc_sideIsEnemy) then {_enemySide = [WEST];};
+        _enemySide = [];
+        switch (_friendlySide) do {
+            case EAST : {
+                _enemySide = [WEST];
+                if ([RESISTANCE, EAST] call BIS_fnc_sideIsEnemy) then {
+                    _enemySide pushback RESISTANCE;
+                };
+            };
+            case WEST: {
+                _enemySide = [EAST];
+                if ([RESISTANCE, WEST] call BIS_fnc_sideIsEnemy) then {
+                    _enemySide pushback RESISTANCE;
+                };
+            };
+            case RESISTANCE: {
+                if ([WEST, RESISTANCE] call BIS_fnc_sideIsEnemy) then {
+                    _enemySide pushback WEST;
+                };
+                if ([EAST, RESISTANCE] call BIS_fnc_sideIsEnemy) then {
+                    _enemySide pushback EAST;
+                };
+            };
+            default {
+                _enemySide = [EAST];
+            };
+        };
         {
             private ["_enemy"];
             _enemy = _x;
@@ -92,11 +114,11 @@ if (_faction select 0 != "any") then {
                     _enemyFactions pushback _x;
                 };
             } foreach (_enemy call ALiVE_fnc_getSideFactions);
-            diag_log format["FRIEND %1",_friendlySide];
-            diag_log format["ENEMY %1",_enemy];
+             diag_log format["FRIEND %1",_friendlySide];
+             diag_log format["ENEMY %1",_enemy];
         } foreach _enemySide;
     } foreach _faction;
-    diag_log _enemyFactions;
+     diag_log _enemyFactions;
 };
 
 scopeName "main";
@@ -120,7 +142,7 @@ scopeName "main";
                     if (isClass _comp) then {
 
                             if ({(configName _comp) find _x != -1} count _enemyFactions == 0 ||  _faction select 0 == "any" ) then {
-                                diag_log (configName _comp);
+                                // diag_log (configName _comp);
                                 _result pushback _comp;
                             };
                     };
@@ -131,7 +153,17 @@ scopeName "main";
 } foreach _configPaths;
 
 if (count _result == 0) then {
+    private ["_temp"];
+    if (!isNil "ALiVE_mapCompositionType") then {
+        // If we can't find any compositions for the current environment i.e. desert/woodland then check urban
+        _temp = ALiVE_mapCompositionType;
+        ALiVE_mapCompositionType = nil;
+    };
     _result = [_compType,_cat,[]] call ALiVE_fnc_getCompositions;
+    if (!isNil "_temp") then {
+        // Set the env back to what it was for other composition searches
+        ALiVE_mapCompositionType = _temp;
+    };
 };
 
 ["Found %1 compositions for %2", count _result, _this] call ALiVE_fnc_dump;
