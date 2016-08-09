@@ -33,6 +33,8 @@ _config = _this select 0;
 _position = _this select 1;
 _azi = _this select 2;
 
+["Spawning Composition: %1", _this] call ALiVE_fnc_dump;
+
 private ["_posX", "_posY"];
 _posX = _position select 0;
 _posY = _position select 1;
