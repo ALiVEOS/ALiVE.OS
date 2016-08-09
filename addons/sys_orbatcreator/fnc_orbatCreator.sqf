@@ -94,7 +94,6 @@ nil
 #define OC_EDITVEHICLE_LEFT_LIST_TWO                13012
 #define OC_EDITVEHICLE_LEFT_LIST_THREE              13013
 #define OC_EDITVEHICLE_CONTROLBAR_CANCEL            13009
-#define OC_EDITVEHICLE_CONTROLBAR_RESET             13010
 #define OC_EDITVEHICLE_CONTROLBAR_SAVE              13011
 
 #define OC_GROUPEDITOR_FACTIONS_LIST                11008
@@ -819,9 +818,6 @@ switch(_operation) do {
 
                 private _controlBar_bottom_cancel = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_CONTROLBAR_CANCEL );
                 _controlBar_bottom_cancel ctrlSetEventHandler ["MouseButtonDown","['onEditVehicleCancelClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-
-                private _controlBar_bottom_reset = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_CONTROLBAR_RESET );
-                _controlBar_bottom_reset ctrlSetEventHandler ["MouseButtonDown","['onEditVehicleResetClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
                 private _controlBar_bottom_save = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_CONTROLBAR_SAVE );
                 _controlBar_bottom_save ctrlSetEventHandler ["MouseButtonDown","['onEditVehicleSaveClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
@@ -2425,7 +2421,7 @@ switch(_operation) do {
 
     };
 
-    case "getVehicleTextureSources": {
+    case "getVehicleTextureSourcesByName": {
 
         private _vehicle = _args;
 
@@ -2456,11 +2452,32 @@ switch(_operation) do {
 
     };
 
+    case "getVehicleTextureSources": {
+
+        private _vehicle = _args;
+
+        _result = configFile >> "CfgVehicles" >> _vehicle >> "textureSources";
+
+    };
+
+    case "getVehicleTextureConfig": {
+
+        _args params ["_vehicle","_texture"];
+
+        private _textureSources = [_logic,"getVehicleTextureSources", _vehicle] call MAINCLASS;
+
+        if (_textureSources isEqualType configNull) then {
+            _result = _textureSources >> _texture;
+        };
+
+    };
+
     case "getVehicleTextureArray": {
 
         _args params ["_vehicle","_texture"];
 
-        _result = getArray (configFile >> "CfgVehicles" >> _vehicle >> "textureSources" >> _texture >> "textures");
+        private _vehicleTexture = [_logic,"getVehicleTextureConfig", [_vehicle,_texture]] call MAINCLASS;
+        _result = getArray (_vehicleTexture >> "textures");
 
     };
 
@@ -3708,6 +3725,7 @@ switch(_operation) do {
         private _faction = [_state,"unitEditor_selectedFaction"] call ALiVE_fnc_hashGet;
 
         private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+        private _added = [];
 
         {
             _customUnit = _x;
@@ -3722,6 +3740,8 @@ switch(_operation) do {
 
                     _index = _left_list_one lbAdd _customUnitDisplayName;
                     _left_list_one lbSetData [_index,_customUnitConfigName];
+
+                    _added pushback _customUnitConfigName;
                 };
             };
         } foreach (_customUnits select 2);
@@ -3734,7 +3754,7 @@ switch(_operation) do {
         {
             _assetConfigName = _x;
 
-            if (_assetConfigName isKindOf "Man") then {
+            if (!(_assetConfigName in _added) && {_assetConfigName isKindOf "Man"}) then {
                 _assetConfig = _cfgVehicles >> _assetConfigName;
                 _assetDisplayName = getText (_assetConfig >> "displayName");
 
@@ -3788,7 +3808,7 @@ switch(_operation) do {
         private _selectedVehicle = [_state,"editVehicle_vehicle"] call ALiVE_fnc_hashGet;
         private _realVehClass = [_logic,"getRealUnitClass", _selectedVehicle] call MAINCLASS;
 
-        private _textures = [_logic,"getVehicleTextureSources", _realVehClass] call MAINCLASS;
+        private _textures = [_logic,"getVehicleTextureSourcesByName", _realVehClass] call MAINCLASS;
 
         lbClear _left_list_two;
 
@@ -4849,7 +4869,7 @@ switch(_operation) do {
                 "author","displayname","side","faction","uniformclass","backpack",
                 "items","linkeditems","magazines","weapons","respawnitems","respawnlinkeditems",
                 "respawnmagazines","respawnweapons","eventhandlers","crew","cba_extended_hventHandlers",
-                "texturelist"
+                "generatedbyaliveorbatcreator"
             ];
 
             {
@@ -4898,6 +4918,15 @@ switch(_operation) do {
         private _eventHandlers = [] call ALiVE_fnc_hashCreate;
         _result = "";
 
+        // remove all weapon attachments on spawn
+        // any needed will be set on spawn after this
+
+        private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
+        _initEventHandler = _initEventHandler + "removeAllPrimaryWeaponItems (_this select 0)" + ";";
+        _initEventHandler = _initEventHandler + "{(_this select 0) removeSecondaryWeaponItem _x} foreach (secondaryWeaponItems (_this select 0));" + ";";
+        _initEventHandler = _initEventHandler + "removeAllHandgunItems (_this select 0)" + ";";
+        [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
+
         // loadout
         // create unit for easy data collection
 
@@ -4929,7 +4958,7 @@ switch(_operation) do {
         if (_tmpUnitUniformSide == _unitSide) then {
             _result = _result + _indent + _indent + ("uniformClass = " + str uniform _tmpUnit + ";") + _newLine;
         } else {
-            _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
+            private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
             _initEventHandler = _initEventHandler + "(_this select 0) forceAddUniform " + "'" + _tmpUnitUniform + "'" + ";";
 
             [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
@@ -4986,7 +5015,7 @@ switch(_operation) do {
         // event handlers
 
         _result = _result + _newLine + _newLine + _indent + _indent + "class EventHandlers : EventHandlers {";
-        _result = _result + _newLine + _indent + _indent + _indent + "class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {}";
+        _result = _result + _newLine + _indent + _indent + _indent + "class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {};";
 
         private _eventHandlerTypes = _eventHandlers select 1;
         private _eventHandlerStrings = _eventHandlers select 2;
@@ -4999,7 +5028,6 @@ switch(_operation) do {
 
             _result = _result + _newLine + _indent + _indent + _indent + _EHString;
         };
-
         _result = _result + _newLine + _indent + _indent + "};" + _newLine;
 
         [_logic,"deleteUnit", _tmpUnit] call MAINCLASS;
@@ -5020,32 +5048,48 @@ switch(_operation) do {
         // get unit data
 
         private _unitConfigName = [_unit,"configName"] call ALiVE_fnc_hashGet;
+        private _unitFaction = [_unit,"faction"] call ALiVE_fnc_hashGet;
         private _unitSide = [_unit,"side"] call ALiVE_fnc_hashGet;
         private _unitCrew = [_unit,"crew"] call ALiVE_fnc_hashGet;
         private _unitTexture = [_unit,"texture"] call ALiVE_fnc_hashGet;
-        _unitTexture = [_logic,"arrayToConfigArrayString",[_unitTexture,1]] call MAINCLASS;
 
         // format result
 
         private _newLine = toString [13,10];
         private _indent = "    ";
-        private _eventHandlers = [];
-        _eventHandlers pushback ("class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {}");
+        private _eventHandlers = [] call ALiVE_fnc_hashCreate;
         _result = "";
+
+        private _realVehicle = [_logic,"getRealUnitClass", _unitConfigName] call MAINCLASS;
+        private _unitTextureArray = [_logic,"getVehicleTextureArray", [_realVehicle,_unitTexture]] call MAINCLASS;
+
+        if (count _unitTextureArray > 0) then {
+            private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
+            {
+                _initEventHandler = _initEventHandler + "(_this select 0) setObjectTexture " + str [_forEachIndex, str _x] + ";";
+            } foreach _unitTextureArray;
+            [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
+        };
 
         _result = _result + _newLine;
         _result = _result + _indent + _indent + "crew = " + str _unitCrew + ";" + _newLine;
 
-        if (_unitTexture != (str ({ "" , 1 }))) then {
-            _result = _result + _indent + _indent +"textureList[] = " + _unitTexture + ";" + _newLine;
-        };
-
         // event handlers
 
-        _result = _result + _newLine + _indent + _indent + ("class EventHandlers : EventHandlers {");
-        {
-            _result = _result + _newLine + _indent + _indent + _indent + _x + ";";
-        } foreach _eventHandlers;
+        _result = _result + _newLine + _newLine + _indent + _indent + "class EventHandlers : EventHandlers {";
+        _result = _result + _newLine + _indent + _indent + _indent + "class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {};";
+
+        private _eventHandlerTypes = _eventHandlers select 1;
+        private _eventHandlerStrings = _eventHandlers select 2;
+
+        for "_i" from 0 to (count _eventHandlerTypes - 1) do {
+            _eventHandlerType = _eventHandlerTypes select _i;
+            _eventHandlerStatements = _eventHandlerStrings select _i;
+
+            _EHString = _eventHandlerType + " = " + """" + _eventHandlerStatements + """" + ";";
+
+            _result = _result + _newLine + _indent + _indent + _indent + _EHString;
+        };
         _result = _result + _newLine + _indent + _indent + "};" + _newLine;
 
     };
@@ -5316,7 +5360,7 @@ switch(_operation) do {
         private _indent = "    ";
 
         private _indentOuter = "";
-        for "_i" from 0 to (_level - 1) do {_indentOuter = _indentOuter + _indent};
+        for "_i" from 1 to _level do {_indentOuter = _indentOuter + _indent};
 
         private _indentInner = _indentOuter + _indent;
         _result = "";
@@ -5336,7 +5380,7 @@ switch(_operation) do {
                 _result = _result + _indentOuter + _attributeString;
             };
 
-            _result = _result + _indentOuter + "};" + _newLine;
+            _result = _result + _newLine + _indentOuter + "};" + _newLine;
         } else {
             if (_value isEqualType []) then {
                 private _valueString = [_logic,"arrayToConfigArrayString", _value] call MAINCLASS;
