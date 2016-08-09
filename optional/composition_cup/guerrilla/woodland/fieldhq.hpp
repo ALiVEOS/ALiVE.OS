@@ -1,14 +1,14 @@
     class FieldHQLarge
     {
-        name = "Field HQ (Large)";
+        name = $STR_ZECCUP_FieldHQLarge;
     };
     class FieldHQMedium
     {
-        name = "Field HQ (Medium)";
+        name = $STR_ZECCUP_FieldHQMedium;
 
     };
     class FieldHQSmall
     {
-        name = "Field HQ (Small)";
+        name = $STR_ZECCUP_FieldHQSmall;
 
     };

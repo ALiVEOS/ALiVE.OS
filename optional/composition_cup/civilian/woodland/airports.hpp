@@ -1,12 +1,12 @@
     class AirportsLarge
     {
-        name = "Airports (Large)";
+        name = $STR_ZECCUP_AirportsLarge;
     };
     class AirportsMedium
     {
-        name = "Airports (Medium)";
+        name = $STR_ZECCUP_AirportsMedium;
     };
     class AirportsSmall
     {
-        name = "Airports (Small)";
+        name = $STR_ZECCUP_AirportsSmall;
     };

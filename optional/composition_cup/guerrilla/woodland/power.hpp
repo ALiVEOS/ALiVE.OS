@@ -1,12 +1,12 @@
     class PowerLarge
     {
-        name = "Power (Large)";
+        name = $STR_ZECCUP_PowerLarge;
     };
     class PowerMedium
     {
-        name = "Power (Medium)";
+        name = $STR_ZECCUP_PowerMedium;
     };
     class PowerSmall
     {
-        name = "Power (Small)";
+        name = $STR_ZECCUP_PowerSmall;
     };

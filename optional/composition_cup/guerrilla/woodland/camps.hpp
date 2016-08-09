@@ -1,13 +1,13 @@
     class CampsLarge
     {
-        name = "Camps (Large)";
+        name = $STR_ZECCUP_CampsLarge;
     };
     class CampsMedium
     {
-        name = "Camps (Medium)";
+        name = $STR_ZECCUP_CampsMedium;
     };
     class CampsSmall
     {
-        name = "Camps (Small)";
+        name = $STR_ZECCUP_CampsSmall;
 
     };

@@ -16,7 +16,7 @@
 
 #include "desert\marine.hpp"
 
-#include "desert\mining_oil.hpp"
+#include "desert\mining.hpp"
 
 #include "desert\power.hpp"
 
