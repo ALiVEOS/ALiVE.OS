@@ -4902,7 +4902,7 @@ switch(_operation) do {
 
         _result = _result + _newLine;
         _result = _result + _indent + _indent + "// custom attributes (do not delete)" + _newLine;
-        _result = _result + _indent + _indent + "ALiVE_orbatCreator_owned = true;" + _newLine;
+        _result = _result + _indent + _indent + "ALiVE_orbatCreator_owned = 1;" + _newLine;
 
         if (_unitTexture != "") then {
             _result = _result + _indent + _indent + "ALiVE_orbatCreator_texture = " + str _unitTexture + ";" + _newLine;
@@ -4915,6 +4915,8 @@ switch(_operation) do {
     };
 
     case "exportCustomUnitMan": {
+
+        private ["_item","_count"];
 
         private _unit = _args;
 
@@ -4942,9 +4944,10 @@ switch(_operation) do {
         // any needed will be set on spawn after this
 
         private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
-        _initEventHandler = _initEventHandler + "removeAllPrimaryWeaponItems (_this select 0)" + ";";
-        _initEventHandler = _initEventHandler + "{(_this select 0) removeSecondaryWeaponItem _x} foreach (secondaryWeaponItems (_this select 0))" + ";";
-        _initEventHandler = _initEventHandler + "removeAllHandgunItems (_this select 0)" + ";";
+        _initEventHandler = _initEventHandler + "_unit = (_this select 0);";
+        _initEventHandler = _initEventHandler + "removeAllPrimaryWeaponItems _unit" + ";";
+        _initEventHandler = _initEventHandler + "{_unit removeSecondaryWeaponItem _x} foreach (secondaryWeaponItems _unit)" + ";";
+        _initEventHandler = _initEventHandler + "removeAllHandgunItems _unit" + ";";
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
 
         // loadout
@@ -4969,7 +4972,84 @@ switch(_operation) do {
         if (_tmpUnitGoggles != "") then {_tmpUnitLinkedItems pushback _tmpUnitGoggles};
 
         private _tmpUnitLinkedItems = [_logic,"arrayToConfigArrayString", _tmpUnitLinkedItems] call MAINCLASS;
-        private _tmpUnitMagazines = [_logic,"arrayToConfigArrayString", magazines _tmpUnit] call MAINCLASS;
+
+        // add items to gear with init EH for now
+
+        private _uniformItems = uniformItems _tmpUnit;
+        private _vestItems = vestItems _tmpUnit;
+        private _backpackItems = backpackItems _tmpUnit;
+
+        _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
+        _initEventHandler = _initEventHandler + "{_unit removeItem _x} foreach (uniformItems _unit + vestItems _unit + backpackItems _unit);";
+
+        // uniform items
+
+        private _uniformItemsAdded = [];
+        {
+            _item = _x;
+
+            if !(_item in _uniformItemsAdded) then {
+                _count = {_x == _item} count _uniformItems;
+
+                if (_count == 1) then {
+                    _initEventHandler = _initEventHandler + "_unit addItemToUniform " + "'" + _item + "'" + ";";
+                } else {
+                    _initEventHandler = _initEventHandler + "for " + "'" + "_i" + "'" + " from 1 to " + str _count + " do {";
+                    _initEventHandler = _initEventHandler + "_unit addItemToUniform " + "'" + _item + "'" + ";";
+                    _initEventHandler = _initEventHandler + "};";
+                };
+
+                _uniformItemsAdded pushback _item;
+            };
+        } foreach _uniformItems;
+        [_eventHandlers,"init",_initEventHandler] call ALiVE_fnc_hashSet;
+
+        // vest items
+
+        private _vestItemsAdded = [];
+        {
+            _item = _x;
+
+            if !(_item in _vestItemsAdded) then {
+                _count = {_x == _item} count _vestItems;
+
+                if (_count == 1) then {
+                    _initEventHandler = _initEventHandler + "_unit addItemToVest " + "'" + _item + "'" + ";";
+                } else {
+                    _initEventHandler = _initEventHandler + "for " + "'" + "_i" + "'" + " from 1 to " + str _count + " do {";
+                    _initEventHandler = _initEventHandler + "_unit addItemToVest " + "'" + _item + "'" + ";";
+                    _initEventHandler = _initEventHandler + "};";
+                };
+
+                _vestItemsAdded pushback _item;
+            };
+        } foreach _vestItems;
+        [_eventHandlers,"init",_initEventHandler] call ALiVE_fnc_hashSet;
+
+        // backpack items
+
+        private _backpackItemsAdded = [];
+        _initEventHandler = _initEventHandler + "_unit spawn {sleep 0.1;_unit = _this;";
+        {
+            _item = _x;
+
+            if !(_item in _backpackItemsAdded) then {
+                _count = {_x == _item} count _backpackItems;
+
+                if (_count == 1) then {
+                    _initEventHandler = _initEventHandler + "_unit addItemToBackpack " + "'" + _item + "'" + ";";
+                } else {
+                    _initEventHandler = _initEventHandler + "for " + "'" + "_i" + "'" + " from 1 to " + str _count + " do {";
+                    _initEventHandler = _initEventHandler + "_unit addItemToBackpack " + "'" + _item + "'" + ";";
+                    _initEventHandler = _initEventHandler + "};";
+                };
+
+                _backpackItemsAdded pushback _item;
+            };
+        } foreach _backpackItems;
+        _initEventHandler = _initEventHandler + "};";
+        [_eventHandlers,"init",_initEventHandler] call ALiVE_fnc_hashSet;
+
         private _tmpUnitWeapons = [_logic,"arrayToConfigArrayString", weapons _tmpUnit + ["Throw","Put"]] call MAINCLASS;
 
         private _tmpUnitUniformWearer = getText (configFile >> "CfgWeapons" >> _tmpUnitUniform >> "ItemInfo" >> "uniformClass");
@@ -4979,7 +5059,7 @@ switch(_operation) do {
             _result = _result + _indent + _indent + ("uniformClass = " + str uniform _tmpUnit + ";") + _newLine;
         } else {
             private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
-            _initEventHandler = _initEventHandler + "(_this select 0) forceAddUniform " + "'" + _tmpUnitUniform + "'" + ";";
+            _initEventHandler = _initEventHandler + "_unit forceAddUniform " + "'" + _tmpUnitUniform + "'" + ";";
 
             [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
         };
@@ -4988,24 +5068,24 @@ switch(_operation) do {
 
         _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
         private _primaryWeaponItems = primaryWeaponItems _tmpUnit;
-        private _secondarWeaponItems = secondaryWeaponItems _tmpUnit;
+        private _secondaryWeaponItems = secondaryWeaponItems _tmpUnit;
         private _handgunWeaponItems = handgunItems _tmpUnit;
 
         {
             if (_x != "") then {
-                _initEventHandler = _initEventHandler + "(_this select 0) addPrimaryWeaponItem " + "'" + _x + "'" + ";";
+                _initEventHandler = _initEventHandler + "_unit addPrimaryWeaponItem " + "'" + _x + "'" + ";";
             };
         } foreach _primaryWeaponItems;
 
         {
             if (_x != "") then {
-                _initEventHandler = _initEventHandler + "(_this select 0) addSecondaryWeaponItem " + "'" + _x + "'" + ";";
+                _initEventHandler = _initEventHandler + "_unit addSecondaryWeaponItem " + "'" + _x + "'" + ";";
             };
-        } foreach _secondarWeaponItems;
+        } foreach _secondaryWeaponItems;
 
         {
             if (_x != "") then {
-                _initEventHandler = _initEventHandler + "(_this select 0) addHandgunItem " + "'" + _x + "'" + ";";
+                _initEventHandler = _initEventHandler + "_unit addHandgunItem " + "'" + _x + "'" + ";";
             };
         } foreach _handgunWeaponItems;
 
@@ -5016,26 +5096,21 @@ switch(_operation) do {
         _result = _result + _indent + _indent + ("backpack = " + str _tmpUnitBackpack + ";");
 
         _result = _result + _newLine;
-        _result = _result + _newLine + _indent + _indent + ("Items[] = " + _tmpUnitItems + ";");
         _result = _result + _newLine + _indent + _indent + ("linkedItems[] = " + _tmpUnitLinkedItems + ";");
-        _result = _result + _newLine + _indent + _indent + ("magazines[] = " + _tmpUnitMagazines + ";");
         _result = _result + _newLine + _indent + _indent + ("weapons[] = " + _tmpUnitWeapons + ";");
 
         // respawn variants
 
         _result = _result + _newLine;
-        _result = _result + _newLine + _indent + _indent + ("respawnItems[] = " + _tmpUnitItems + ";");
         _result = _result + _newLine + _indent + _indent + ("respawnLinkedItems[] = " + _tmpUnitLinkedItems + ";");
-        _result = _result + _newLine + _indent + _indent + ("respawnMagazines[] = " + _tmpUnitMagazines + ";");
         _result = _result + _newLine + _indent + _indent + ("respawnWeapons[] = " + _tmpUnitWeapons + ";");
-
-        //_result = _result + _newLine;
-        //_result = _result + _newLine + _indent + _indent + ("role = " + str "Rifleman" + ";");
 
         // event handlers
 
         _result = _result + _newLine + _newLine + _indent + _indent + "class EventHandlers : EventHandlers {";
-        _result = _result + _newLine + _indent + _indent + _indent + "class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {};";
+        _result = _result + _newLine + _indent + _indent + _indent + "class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {};" + _newLine;
+        _result = _result + _newLine;
+        _result = _result + _indent + _indent + _indent + "class ALiVE_orbatCreator {";
 
         private _eventHandlerTypes = _eventHandlers select 1;
         private _eventHandlerStrings = _eventHandlers select 2;
@@ -5046,8 +5121,9 @@ switch(_operation) do {
 
             _EHString = _eventHandlerType + " = " + """" + _eventHandlerStatements + """" + ";";
 
-            _result = _result + _newLine + _indent + _indent + _indent + _EHString;
+            _result = _result + _newLine + _indent + _indent + _indent + _indent + _EHString;
         };
+        _result = _result + _newLine + _indent + _indent + _indent + "};" + _newLine;
         _result = _result + _newLine + _indent + _indent + "};" + _newLine;
 
         [_logic,"deleteUnit", _tmpUnit] call MAINCLASS;
@@ -5097,7 +5173,9 @@ switch(_operation) do {
         // event handlers
 
         _result = _result + _newLine + _newLine + _indent + _indent + "class EventHandlers : EventHandlers {";
-        _result = _result + _newLine + _indent + _indent + _indent + "class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {};";
+        _result = _result + _newLine + _indent + _indent + _indent + "class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {};" + _newLine;
+        _result = _result + _newLine;
+        _result = _result + _indent + _indent + _indent + "class ALiVE_orbatCreator {";
 
         private _eventHandlerTypes = _eventHandlers select 1;
         private _eventHandlerStrings = _eventHandlers select 2;
@@ -5108,8 +5186,9 @@ switch(_operation) do {
 
             _EHString = _eventHandlerType + " = " + """" + _eventHandlerStatements + """" + ";";
 
-            _result = _result + _newLine + _indent + _indent + _indent + _EHString;
+            _result = _result + _newLine + _indent + _indent + _indent + _indent + _EHString;
         };
+        _result = _result + _newLine + _indent + _indent + _indent + "};" + _newLine;
         _result = _result + _newLine + _indent + _indent + "};" + _newLine;
 
     };
