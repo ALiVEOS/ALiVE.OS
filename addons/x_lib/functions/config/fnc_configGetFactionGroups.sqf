@@ -46,6 +46,10 @@ if !(_factionSide isEqualType "") then {
     } else {
         _factionSide = str _factionSide;
     };
+} else {
+    if (_factionSide == "GUER") then {
+        _factionSide = "Indep";
+    };
 };
 
 private _path = missionConfigFile >> "CfgGroups" >> _factionSide >> _faction;
