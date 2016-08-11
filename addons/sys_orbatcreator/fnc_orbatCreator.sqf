@@ -1028,16 +1028,11 @@ switch(_operation) do {
 
                 private _factionData = [_logic,"getFactionData",_faction] call MAINCLASS;
                 private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
-                private _factionGroupCategories = [_factionData,"groupCategories"] call ALiVE_fnc_hashGet;
 
                 // init category list
 
                 private _inputCategory = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_CATEGORY );
-
-                {
-                    _index = _inputCategory lbAdd _x;
-                    _inputCategory lbSetData [_index,_x];
-                } foreach (_factionGroupCategories select 1);
+                [_logic,"loadFactionGroupCategoriesToList", [_inputCategory,_faction]] call MAINCLASS;
 
                 private _selectedCategory = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
                 [_inputCategory,_selectedCategory] call ALiVE_fnc_listSelectData;
@@ -2286,6 +2281,26 @@ switch(_operation) do {
         [_categoryGroups,_newGroupConfigName,_newGroup] call ALiVE_fnc_hashSet;
 
         _result = _newGroupConfigName;
+
+    };
+
+    case "loadFactionGroupCategoriesToList": {
+
+        _args params ["_list","_faction"];
+
+        private _factionData = [_logic,"getFactionData",_faction] call MAINCLASS;
+        private _factionGroupCategories = [_factionData,"groupCategories"] call ALiVE_fnc_hashGet;
+
+        lbClear _list;
+
+        {
+            _category = _x;
+            _categoryDisplayName = [_category,"name"] call ALiVE_fnc_hashGet;
+            _categoryConfigName = [_category,"configName"] call ALiVE_fnc_hashGet;
+
+            _index = _list lbAdd _categoryDisplayName;
+            _list lbSetData [_index,_categoryConfigName];
+        } foreach (_factionGroupCategories select 2);
 
     };
 
@@ -3898,23 +3913,10 @@ switch(_operation) do {
         [_state,"groupEditor_selectedFaction", _faction] call ALiVE_fnc_hashSet;
         [_state,"selectedFaction", _faction] call ALiVE_fnc_hashSet;
 
-        private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
-        private _factionData = [_factions,_faction] call ALiVE_fnc_hashGet;
-        private _factionGroupCategories = [_factionData,"groupCategories"] call ALiVE_fnc_hashGet;
-
         // add categories to list
 
         private _categoryList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_INPUT_CATEGORY );
-        lbClear _categoryList;
-
-        {
-            _category = _x;
-            _categoryDisplayName = [_category,"name"] call ALiVE_fnc_hashGet;
-            _categoryConfigName = [_category,"configName"] call ALiVE_fnc_hashGet;
-
-            _index = _categoryList lbAdd _categoryDisplayName;
-            _categoryList lbSetData [_index,_categoryConfigName];
-        } foreach (_factionGroupCategories select 2);
+        [_logic,"loadFactionGroupCategoriesToList", [_categoryList,_faction]] call MAINCLASS;
 
         if (lbSize _categoryList > 0) then {
             _categoryList lbSetCurSel 0;
@@ -5207,7 +5209,7 @@ switch(_operation) do {
         private _sideText = [_factionSide] call ALiVE_fnc_sideNumberToText;
 
         if (_sideText == "GUER") then {
-            _sideText = "Independant";
+            _sideText = "Indep";
         };
 
         private _newLine = toString [13,10];
