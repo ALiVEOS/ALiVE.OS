@@ -8,6 +8,7 @@
 #define LOG_FORMAT(varLevel,varComponent,varText,varParams) \
     [varLevel, varComponent, varText, varParams, __FILE__, __LINE__] call core_fnc_log
 
+#undef LOG
 #define LOG(varLevel,varComponent,varText) \
     LOG_FORMAT(varLevel,varComponent,varText,[])
 
