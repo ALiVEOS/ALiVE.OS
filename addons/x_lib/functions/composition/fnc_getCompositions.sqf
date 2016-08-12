@@ -16,7 +16,7 @@ Array - Category name(s) - leave [] for any
     Military Categories - airports, camps, checkpoints, constructionsupplies, comms, crashsites, fieldhq, fort, fuel, heliports, hq, marine, medical, outposts, power, supports, supplies
 
 Array - Size - ["Large","Medium","Small"] - leave [] for any size
-Array - Faction (Optional) - leave [] for any size
+Array - Faction(s) (Optional) - leave [] for any faction
 
 Returns:
 Array - Of composition configs, empty array if nothing found
@@ -24,13 +24,13 @@ Array - Of composition configs, empty array if nothing found
 Examples:
 (begin example)
 //
-_result = [_compType, _cat, _size, _faction] call ALiVE_fnc_getCompositions;
+_result = [_compType, _cat, _size, _factions] call ALiVE_fnc_getCompositions;
 (end)
 
 See Also:
 
 Author:
-ARJay
+Tupolov
 ---------------------------------------------------------------------------- */
 
 private ["_className","_configPaths","_configPath","_result","_item","_comp","_name","_size","_cat","_faction","_compType","_enemyFactions"];
