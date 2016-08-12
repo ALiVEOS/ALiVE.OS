@@ -1,0 +1,65 @@
+[center][url=https://github.com/ALiVEOS/ALiVE.OS.git][img=http://i.imgur.com/RFX0nkZ.jpg][/url][/center]
+[center][b][url=http://alivemod.com/]ALiVEmod.com[/url]
+[size=4]The next generation dynamic persistent mission addon for ArmA3[/size][/b][/center]
+[center][b]Release 1.2[/b][/center]
+[center][b][img=http://i.imgur.com/HylyTQh.jpg][/b][/center]
+
+[b]Compositions, Civilians and The Factionator[/b]
+If you have ever wanted to make your own custom faction config but been scared by the complexities of CfgFactions, or tweak unit loadouts and groups configurations to remove all those pesky UGL units but didn't know where to begin, then you'll love this.  SpyderBlack has really pulled it out of the bag and done some amazing work.  The ALiVE Order of Battle Creator, also known as the Orbatterer (we're struggling for catchy names) is a fully in-game graphical tool for creating and editing unit, group and faction configs, which can then be exported and used in missions or packed into pbo files as addon override.  You need @ALiVE to use the tool but once exported, your faction override config can be used standalone (though obviously you'll need the original addons).  Full instructions for how to use this new tool are on the wiki.
+
+Meanwhile Tupolov has been adding lots of new toys.  With massive thanks to lsd, we have integrated his entire collection of ZEC and ZECCUP compositions into ALiVE.  They will be used by Mil Placement modules as well as random camps and are fully supported by the Custom Objectives module.  In addition, compositions can now be faction specific.  Don't forget that we recently added support for mission level compositions as well.  Details are on the wiki.
+
+You will find 2 new tasks in the C2ISTAR module, also thanks to Tup.  Combat Search and Rescue has you scrambling to find and rescue a downed heli crew before they get overrun by the enemy.  Hostage Rescue is a race against time to remove a captured agent from the grips of the dastardly bad guys.  Feel free to submit ideas on github or better yet, make your own tasks and submit them via a Pull Request!
+
+Thanks to everyone for feedback both here and on our forum!
+
+[center][b][url=http://alivemod.com/#Download]Download[/url][/b]
+Grab the latest version from [url=http://alivemod.com/#Download]ALiVEmod.com[/url]
+Also available from PlayWithSix, ArmAholic and Steam (Usually within 24 hours of this post)[/center]
+[center][b][url=http://alivemod.com/#ALiVEWarRoom]Join the War Room Now![/url][/b][/center]
+
+Please note that as with all updates, if you have an issue loading a mission made with a previous version of ALiVE, delete and replace the modules in that mission.
+
+
+
+
+
+
+
+
+[b]Release Highlights[/b]
+[LIST]
+[*]New! ALiVE ORBAT Creator[/*]
+[*]Added 2 new tasks - CSAR and Hostage Rescue[/*]
+[*]Fixed civ spawns on Tanoa (and other maps)[/*]
+[*]Added support for Taviana A3 (thanks to KuroNeko87 for the index)[/*]
+[*]Integrated ZEC and ZECCUP compositions into ALiVE (massive thanks to lsd!)[/*]
+[*]Fixed Mission Abort button override[/*]
+[/LIST]
+See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
+
+[b]More Maps?[/b]
+The momentum is really beginning to build with the indexing tools and we are cracking through the [url=https://github.com/ALiVEOS/ALiVE.OS/issues/9]backlog[/url]. Instructions for using the Map Indexer can be found [url=http://alivemod.com/wiki/index.php/Map_Indexing]on our wiki [/url]
+
+[b]Known Issues & Support[/b]
+Existing bugs are listed on Github [url=https://github.com/ALiVEOS/ALiVE.OS/issues]here[/url]. Feel free to submit bugs (with repros) or discuss any issues or ideas on our forum at [url=http://alivemod.com/forum/]http://alivemod.com/forum/[/url].
+
+[b]Manual[/b]
+Please refer to the [url=http://www.alivemod.com/wiki]ALiVE Wiki[/url]. All the info you need is there. If anything is missing or unclear, please let us know.
+
+[b]Are you using Linux?[/b]
+ALiVE is fully supported on a Linux Dedicated Server (as well as Windows). In fact the ALiVE Official Server for testing is running Ubuntu. Here are some tips on getting ALiVE running smoothly on Linux and integrated with War Room - [url=http://www.alivemod.com/forum/1916-setting-up-linux-dedi-server]http://www.alivemod.com/forum/1916-setting-up-linux- dedi-server[/url]
+
+[b]Acknowledgements and Thanks[/b]
+Particular thanks to all those on our support forum who have worked closely with us to identify bugs, provide logs and generally help us improve ALiVE. Your assistance is valuable and your dedication to ALiVE makes it all worth the effort!
+
+[b]Disclaimer[/b]
+We may need to prune the persistent database data from the War Room, eliminating data that is older than 6-12 months. The
+ALiVE War Room database is run on a voluntary basis at a cost to the ALiVE development team. No guarantees can be given on the mission data stored or the availability of the service. We apologise for any downtime that may impact your MP persistent missions.
+
+[b]ALiVE has transformed my Arma 3 experience, how can I thank you?[/b]
+Please consider making a contribution to our server costs if you enjoy ALiVE! It costs us $65 per month to run our War Room website and the ALiVE Database servers and every little helps. Donate here [url=http://www.alivemod.com/#Donate]http://www.alivemod.com/#Donate[/url]
+
+Special thanks to everyone here for supporting us with donations to the ALiVE mod development effort.
+
+Have fun!
