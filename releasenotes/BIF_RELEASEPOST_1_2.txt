@@ -4,12 +4,14 @@
 [center][b]Release 1.2[/b][/center]
 [center][b][img=http://i.imgur.com/HylyTQh.jpg][/b][/center]
 
-[b]Compositions, Civilians and The Factionator[/b]
+[b]Compositions, Civilians, Abort Button and The Factionator/Orbatterer[/b]
 If you have ever wanted to make your own custom faction config but been scared by the complexities of CfgFactions, or tweak unit loadouts and groups configurations to remove all those pesky UGL units but didn't know where to begin, then you'll love this.  SpyderBlack has really pulled it out of the bag and done some amazing work.  The ALiVE Order of Battle Creator, also known as the Orbatterer (we're struggling for catchy names) is a fully in-game graphical tool for creating and editing unit, group and faction configs, which can then be exported and used in missions or packed into pbo files as addon override.  You need @ALiVE to use the tool but once exported, your faction override config can be used standalone (though obviously you'll need the original addons).  Full instructions for how to use this new tool are on the wiki.
 
-Meanwhile Tupolov has been adding lots of new toys.  With massive thanks to lsd, we have integrated his entire collection of ZEC and ZECCUP compositions into ALiVE.  They will be used by Mil Placement modules as well as random camps and are fully supported by the Custom Objectives module.  In addition, compositions can now be faction specific.  Don't forget that we recently added support for mission level compositions as well.  Details are on the wiki.
+Meanwhile Tupolov has been adding lots of new toys.  With massive thanks to lsd/2600k, we have integrated his entire collection of ZEC and ZECCUP compositions into ALiVE.  They will be used by Mil Placement modules as well as random camps and are fully supported by the Custom Objectives module. In addition, compositions can now be faction specific. Don't forget that we recently added support for mission level compositions as well.  Of course you can also just place these amazing compositions in your mission, making ALiVE a one stop shop for mission making. You no longer need to use ZEC if you are also using ALiVE (we will keep ALiVE sync'd to the ZEC mod). Details are on the wiki.
 
 You will find 2 new tasks in the C2ISTAR module, also thanks to Tup.  Combat Search and Rescue has you scrambling to find and rescue a downed heli crew before they get overrun by the enemy.  Hostage Rescue is a race against time to remove a captured agent from the grips of the dastardly bad guys.  Feel free to submit ideas on github or better yet, make your own tasks and submit them via a Pull Request!
+
+Finally, we had a bunch of people that didn't want to use ALiVE due to us overriding the vanilla ABORT button, well we've fixed that, so for those of you that had push back from clan members due to this, let them know!
 
 Thanks to everyone for feedback both here and on our forum!
 
@@ -20,20 +22,13 @@ Also available from PlayWithSix, ArmAholic and Steam (Usually within 24 hours of
 
 Please note that as with all updates, if you have an issue loading a mission made with a previous version of ALiVE, delete and replace the modules in that mission.
 
-
-
-
-
-
-
-
 [b]Release Highlights[/b]
 [LIST]
 [*]New! ALiVE ORBAT Creator[/*]
 [*]Added 2 new tasks - CSAR and Hostage Rescue[/*]
 [*]Fixed civ spawns on Tanoa (and other maps)[/*]
 [*]Added support for Taviana A3 (thanks to KuroNeko87 for the index)[/*]
-[*]Integrated ZEC and ZECCUP compositions into ALiVE (massive thanks to lsd!)[/*]
+[*]Integrated ZEC and ZECCUP compositions into ALiVE (massive thanks to lsd/2600k!)[/*]
 [*]Fixed Mission Abort button override[/*]
 [/LIST]
 See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
