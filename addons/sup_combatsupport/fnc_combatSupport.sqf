@@ -715,10 +715,46 @@ switch(_operation) do {
                         //} forEach SUP_ARTYARRAYS;
                         } forEach [];
 
+                        // TODO: Move most of the code below to ALIVE_fnc_artillery
                         for "_i" from 0 to ((count synchronizedObjects _logic)-1) do {
                             if (typeOf ((synchronizedObjects _logic) select _i) == "ALiVE_sup_artillery") then {
                                 private _artyLogic = (synchronizedObjects _logic) select _i;
-                                [_artyLogic, "spawn"] call ALIVE_fnc_artillery;
+                                private _group = [_artyLogic, "spawn"] call ALIVE_fnc_artillery;
+                                private _vehicles = [];
+
+                                {
+                                    if (vehicle _x != _x && {!(vehicle _x in _vehicles)}) then {
+                                        _vehicles pushBack (vehicle _x);
+                                    };
+                                } forEach (units _group);
+
+                                private _callsign = _artyLogic getVariable ["artillery_callsign","FOX ONE"];
+
+                                private _rounds = [
+                                    ["HE", parseNumber (_artyLogic getVariable ["artillery_he", "30"])],
+                                    ["ILLUM", parseNumber (_artyLogic getVariable ["artillery_illum", "30"])],
+                                    ["SMOKE", parseNumber (_artyLogic getVariable ["artillery_smoke", "30"])],
+                                    ["SADARM", parseNumber (_artyLogic getVariable ["artillery_guided", "30"])],
+                                    ["CLUSTER", parseNumber (_artyLogic getVariable ["artillery_cluster", "30"])],
+                                    ["LASER", parseNumber (_artyLogic getVariable ["artillery_lg", "30"])],
+                                    ["MINE", parseNumber (_artyLogic getVariable ["artillery_mine", "30"])],
+                                    ["AT MINE", parseNumber (_artyLogic getVariable ["artillery_atmine", "30"])],
+                                    ["ROCKETS", parseNumber (_artyLogic getVariable ["artillery_rockets", "16"])]
+                                ];
+
+                                private _roundsAvailable = [];
+                                private _roundsUnit = (typeOf (_vehicles select 0)) call ALIVE_fnc_getArtyRounds;
+
+                                {
+                                    if ((_x select 0) in _roundsUnit) then {
+                                        _roundsAvailable pushBack _x;
+                                    };
+                                } forEach _rounds;
+
+                                leader _group setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];
+                                private _a = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", side _group];
+                                _a set [count _a, [leader _group, _group, _callsign, _vehicles, _roundsAvailable]];
+                                NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", side _group], _a, true];
                             };
                         };
 

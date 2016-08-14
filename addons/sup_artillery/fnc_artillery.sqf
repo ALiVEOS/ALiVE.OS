@@ -170,7 +170,9 @@ switch (_operation) do {
         private _waypoint = _group addWaypoint [_position, 0];
         _waypoint setWaypointType "MOVE";
         _waypoint setWaypointBehaviour "SAFE";
+        _waypoint setWaypointForceBehaviour true;
         _waypoint setWaypointSpeed "NORMAL";
+        _waypoint setWaypointFormation "COLUMN";
         _waypoint setWaypointStatements [
             "true",
             "(group this) setVariable ['sup_artillery_inPosition', true]"
@@ -206,6 +208,8 @@ switch (_operation) do {
         };
 
         ALIVE_sup_artillery_stateMachine_list pushBack _logic;
+
+        _result = _group;
     };
 
     /******************
@@ -218,7 +222,7 @@ switch (_operation) do {
     };
     case "onActive": {
         if (!([_logic, "inRange"] call MAINCLASS)) then {
-            _logic setVariable ["moveToPos", [0,0,0]]; // TODO: Figure out best firing position
+            _logic setVariable ["moveToPos", [3451.45,5379.89,0]]; // TODO: Figure out best firing position
         };
     };
     case "onFire": {

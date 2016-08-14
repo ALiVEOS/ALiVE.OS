@@ -31,6 +31,7 @@ _supportMarker = NEO_radioLogic getVariable "NEO_supportMarker";
 _artyMarkers = NEO_radioLogic getVariable "NEO_supportArtyMarkers";
 _battery = _artyArray select (lbCurSel _artyUnitLb) select 0; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" }) then { _battery = ((NEO_radioLogic getVariable "NEO_radioTalkWithArty") getVariable "NEO_radioArtyModule") select 0 };
 _status = _battery getVariable "NEO_radioArtyUnitStatus";
+_status = "NONE"; // TODO: Handle status properly
 _class = typeOf (((_artyArray select (lbCurSel _artyUnitLb)) select 3) select 0); if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" }) then { _class = typeOf (NEO_radioLogic getVariable "NEO_radioTalkWithArty") };
 _ord = _battery getVariable "NEO_radioArtyBatteryRounds";
 
