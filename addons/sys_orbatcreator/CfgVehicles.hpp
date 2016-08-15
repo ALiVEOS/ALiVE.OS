@@ -29,5 +29,6 @@ class CfgVehicles {
                     };
 
                 };
+
         };
 };

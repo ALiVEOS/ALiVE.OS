@@ -3,43 +3,21 @@ class ALiVE_orbatCreator_interface_groupEditor {
 
     class controlsBackground {
 
-        class groupEditor_header : orbatCreator_RscText {
-            idc = 11001;
+        // common header controls
 
-            text = "";
-            x = -0.003125 * safezoneW + safezoneX;
-            y = -0.00399999 * safezoneH + safezoneY;
-            w = 1.00625 * safezoneW;
-            h = 0.056 * safezoneH;
-            colorBackground[] = {0.576,0.769,0.49,1};
-        };
-
-        class groupEditor_header_title : orbatCreator_RscText {
-            idc = 11002;
-
+        class header_background : orbatCreator_common_header_green {};
+        class header_interfaceTitle : orbatCreator_common_header_interfaceTitle {
             text = "Group Editor";
-            x = 0.0078125 * safezoneW + safezoneX;
-            y = -0.00399999 * safezoneH + safezoneY;
-            w = 0.21875 * safezoneW;
-            h = 0.056 * safezoneH;
-            colorBackground[] = {0,0,0,0};
         };
+        class header_banner : orbatCreator_common_header_banner {};
 
-        class groupEditor_headerLogo : orbatCreator_RscPicture {
-            idc = 11003;
-            style = 48;
-            text = "\x\alive\addons\sys_orbatcreator\data\images\banner_alive.paa";
-            x = 0.653125 * safezoneW + safezoneX;
-            y = -0.00315998 * safezoneH + safezoneY;
-            w = 0.35 * safezoneW;
-            h = 0.05544 * safezoneH;
-        };
+        // standard controls
 
         class groupEditor_title_faction : orbatCreator_RscText {
             idc = 11004;
             text = "Faction:";
             x = 0.0114583 * safezoneW + safezoneX;
-            y = 0.0632 * safezoneH + safezoneY;
+            y = 0.094 * safezoneH + safezoneY;
             w = 0.0802083 * safezoneW;
             h = 0.056 * safezoneH;
             colorBackground[] = {-1,-1,-1,0};
@@ -82,42 +60,16 @@ class ALiVE_orbatCreator_interface_groupEditor {
 
     class controls {
 
+        // common header controls
+
+        class header_menuStrip : orbatCreator_common_header_menuStrip {};
+
         class groupEditor_combo_faction : orbatCreator_RscCombo {
             idc = 11008;
             x = 0.0989583 * safezoneW + safezoneX;
-            y = 0.0772 * safezoneH + safezoneY;
+            y = 0.108 * safezoneH + safezoneY;
             w = 0.145833 * safezoneW;
             h = 0.035 * safezoneH;
-        };
-
-        class groupEditor_button_big_one : orbatCreator_RscButtonBig {
-            idc = 11009;
-
-            text = "";
-            x = 0.478125 * safezoneW + safezoneX;
-            y = 0.066 * safezoneH + safezoneY;
-            w = 0.160417 * safezoneW;
-            h = 0.056 * safezoneH;
-        };
-
-        class groupEditor_button_big_two : orbatCreator_RscButtonBig {
-            idc = 11010;
-
-            text = "";
-            x = 0.653125 * safezoneW + safezoneX;
-            y = 0.066 * safezoneH + safezoneY;
-            w = 0.160417 * safezoneW;
-            h = 0.056 * safezoneH;
-        };
-
-        class groupEditor_button_big_three : orbatCreator_RscButtonBig {
-            idc = 11011;
-
-            text = "";
-            x = 0.828125 * safezoneW + safezoneX;
-            y = 0.066 * safezoneH + safezoneY;
-            w = 0.160417 * safezoneW;
-            h = 0.056 * safezoneH;
         };
 
         class groupEditor_availableAssets_input_category: orbatCreator_RscCombo {

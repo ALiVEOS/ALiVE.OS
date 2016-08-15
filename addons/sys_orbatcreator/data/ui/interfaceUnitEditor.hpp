@@ -3,43 +3,26 @@ class ALiVE_orbatCreator_interface_unitEditor {
 
     class controlsBackground {
 
-        class unitEditor_header: orbatCreator_RscText {
-            idc = 9001;
+        // common header controls
 
-            text = "";
-            x = -0.003125 * safezoneW + safezoneX;
-            y = -0.00399999 * safezoneH + safezoneY;
-            w = 1.00625 * safezoneW;
-            h = 0.056 * safezoneH;
-            colorBackground[] = {0.576,0.769,0.49,1};
+        class header_background : orbatCreator_common_header_green {
+            idc = 9019;
         };
-
-        class unitEditor_header_title: orbatCreator_RscText {
-            idc = 9002;
-
+        class header_interfaceTitle : orbatCreator_common_header_interfaceTitle {
+            idc = 9020;
             text = "Unit Editor";
-            x = 0.0078125 * safezoneW + safezoneX;
-            y = -0.00399999 * safezoneH + safezoneY;
-            w = 0.21875 * safezoneW;
-            h = 0.056 * safezoneH;
-            colorBackground[] = {0,0,0,0};
+        };
+        class header_banner : orbatCreator_common_header_banner {
+            idc = 9021;
         };
 
-        class unitEditor_headerLogo: orbatCreator_RscPicture {
-            idc = 9003;
-            style = 48;
-            text = "\x\alive\addons\sys_orbatcreator\data\images\banner_alive.paa";
-            x = 0.653125 * safezoneW + safezoneX;
-            y = -0.00315998 * safezoneH + safezoneY;
-            w = 0.35 * safezoneW;
-            h = 0.05544 * safezoneH;
-        };
+        // standard controls
 
         class unitEditor_title_faction: orbatCreator_RscText {
             idc = 9004;
             text = "Faction:";
             x = 0.0114583 * safezoneW + safezoneX;
-            y = 0.0632 * safezoneH + safezoneY;
+            y = 0.094 * safezoneH + safezoneY;
             w = 0.0802083 * safezoneW;
             h = 0.056 * safezoneH;
             colorBackground[] = {-1,-1,-1,0};
@@ -51,9 +34,9 @@ class ALiVE_orbatCreator_interface_unitEditor {
 
             text = "Custom Units";
             x = 0.0114583 * safezoneW + safezoneX;
-            y = 0.1906 * safezoneH + safezoneY;
+            y = 0.192 * safezoneH + safezoneY;
             w = 0.233333 * safezoneW;
-            h = 0.049 * safezoneH;
+            h = 0.035 * safezoneH;
             colorBackground[] = {0.2,0.2,0.2,1};
         };
 
@@ -61,42 +44,16 @@ class ALiVE_orbatCreator_interface_unitEditor {
 
     class controls {
 
+        // common header controls
+
+        class header_menuStrip : orbatCreator_common_header_menuStrip {};
+
         class unitEditor_combo_faction: orbatCreator_RscCombo {
             idc = 9007;
             x = 0.0989583 * safezoneW + safezoneX;
-            y = 0.0772 * safezoneH + safezoneY;
+            y = 0.108 * safezoneH + safezoneY;
             w = 0.145833 * safezoneW;
             h = 0.035 * safezoneH;
-        };
-
-        class unitEditor_button_big_one: orbatCreator_RscButtonBig {
-            idc = 9008;
-
-            text = "";
-            x = 0.478125 * safezoneW + safezoneX;
-            y = 0.066 * safezoneH + safezoneY;
-            w = 0.160417 * safezoneW;
-            h = 0.056 * safezoneH;
-        };
-
-        class unitEditor_button_big_two: orbatCreator_RscButtonBig {
-            idc = 9009;
-
-            text = "";
-            x = 0.653125 * safezoneW + safezoneX;
-            y = 0.066 * safezoneH + safezoneY;
-            w = 0.160417 * safezoneW;
-            h = 0.056 * safezoneH;
-        };
-
-        class unitEditor_button_big_three: orbatCreator_RscButtonBig {
-            idc = 9010;
-
-            text = "";
-            x = 0.828125 * safezoneW + safezoneX;
-            y = 0.066 * safezoneH + safezoneY;
-            w = 0.160417 * safezoneW;
-            h = 0.056 * safezoneH;
         };
 
         class unitEditor_list_unitClasses: orbatCreator_RscListBox {
@@ -110,7 +67,7 @@ class ALiVE_orbatCreator_interface_unitEditor {
             colorBackground[] = {0.2,0.2,0.2,1};
         };
 
-        class unitEditor_button_unitClasses_one: orbatCreator_RscButton {
+        class unitEditor_button_unitClasses_one: orbatCreator_RscButtonBig {
             idc = 9012;
 
             x = 0.0114583 * safezoneW + safezoneX;
@@ -119,7 +76,7 @@ class ALiVE_orbatCreator_interface_unitEditor {
             h = 0.035 * safezoneH;
         };
 
-        class unitEditor_button_unitClasses_two: orbatCreator_RscButton {
+        class unitEditor_button_unitClasses_two: orbatCreator_RscButtonBig {
             idc = 9013;
 
             x = 0.0114583 * safezoneW + safezoneX;
@@ -128,7 +85,7 @@ class ALiVE_orbatCreator_interface_unitEditor {
             h = 0.035 * safezoneH;
         };
 
-        class unitEditor_button_unitClasses_three: orbatCreator_RscButton {
+        class unitEditor_button_unitClasses_three: orbatCreator_RscButtonBig {
             idc = 9014;
 
             x = 0.0114583 * safezoneW + safezoneX;
@@ -137,7 +94,7 @@ class ALiVE_orbatCreator_interface_unitEditor {
             h = 0.035 * safezoneH;
         };
 
-        class unitEditor_button_unitClasses_four: orbatCreator_RscButton {
+        class unitEditor_button_unitClasses_four: orbatCreator_RscButtonBig {
             idc = 9015;
 
             x = 0.0114583 * safezoneW + safezoneX;
@@ -146,7 +103,7 @@ class ALiVE_orbatCreator_interface_unitEditor {
             h = 0.035 * safezoneH;
         };
 
-        class unitEditor_button_unitClasses_five: orbatCreator_RscButton {
+        class unitEditor_button_unitClasses_five: orbatCreator_RscButtonBig {
             idc = 9017;
 
             x = 0.0114583 * safezoneW + safezoneX;
@@ -155,7 +112,7 @@ class ALiVE_orbatCreator_interface_unitEditor {
             h = 0.035 * safezoneH;
         };
 
-        class unitEditor_button_unitClasses_six: orbatCreator_RscButton {
+        class unitEditor_button_unitClasses_six: orbatCreator_RscButtonBig {
             idc = 9018;
 
             x = 0.0114583 * safezoneW + safezoneX;
