@@ -80,7 +80,7 @@ class ArtilleryStateMachine {
 
         class Fired {
             targetState = "FireDelay";
-            condition = "true";
+            condition = "[_this, 'isFireMissionDelayed'] call ALIVE_fnc_artillery";
             onTransition = "";
         };
     };
@@ -89,6 +89,12 @@ class ArtilleryStateMachine {
         onState = "";
         onStateEntered = "";
         onStateLeaving = "";
+
+        class FireMissionComplete {
+            targetState = "ReturnToBase";
+            condition = "[_this, 'isFireMissionComplete'] call ALIVE_fnc_artillery";
+            onTransition = "";
+        };
 
         class Continue {
             targetState = "Fire";

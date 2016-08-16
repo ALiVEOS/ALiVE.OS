@@ -56,7 +56,7 @@ switch (_operation) do {
      ****************/
     case "fireMission": {
         if (count _args == 0) then {
-            _result = _logic getVariable ["fireMission", objNull];
+            _result = _logic getVariable ["fireMission", []];
         } else {
             private _position = _args param [0, [0,0,0], [[]], 3];
             private _roundType = _args param [1, "", [""]];
@@ -90,64 +90,112 @@ switch (_operation) do {
     case "execute": {
         private _group = _logic getVariable ["group", grpNull];
         private _units = (units _group) select {vehicle _x != _x && {gunner (vehicle _x) == _x}};
-        private _fireMission = _logic getVariable ["fireMission", objNull];
+        private _fireMission = _logic getVariable ["fireMission", []];
         private _fireMissionPos = [_fireMission, "position"] call ALIVE_fnc_hashGet;
         [_fireMission, "units", _units] call ALIVE_fnc_hashSet;
         [_fireMission, "unitIndex", 0] call ALIVE_fnc_hashSet;
         [_fireMission, "roundsShot", 0] call ALIVE_fnc_hashSet;
+        [_fireMission, "nextRoundTime", time] call ALIVE_fnc_hashSet;
+        /* _units doWatch [_fireMissionPos select 0, _fireMissionPos select 1, 9999]; */
         _units doWatch _fireMissionPos;
 
         _logic setVariable ["fireMission", _fireMission];
+
+        // Attach Fired EH to all vehicles in group
+        {
+            private _vehicle = vehicle _x;
+            private _firedEH = _vehicle addEventHandler ["Fired", {
+                private _unit = param [0, objNull];
+                private _magazine = param [5, ""];
+                private _logic = (group _unit) getVariable ["logic", objNull];
+                private _fireMission = _logic getVariable ["fireMission", []];
+                private _roundType = [_fireMission, "roundType"] call ALIVE_fnc_hashGet;
+                private _roundsShot = [_fireMission, "roundsShot"] call ALIVE_fnc_hashGet;
+
+                if (_magazine == _roundType) then {
+                    private _delay = [_fireMission, "delay"] call ALIVE_fnc_hashGet;
+
+                    if (_delay > 0) then {
+                        private _units = [_fireMission, "units"] call ALIVE_fnc_hashGet;
+                        private _unitIndex = [_fireMission, "unitIndex"] call ALIVE_fnc_hashGet;
+
+                        if ((_unitIndex + 1) >= count _units) then {
+                            _unitIndex = 0;
+                        } else {
+                            _unitIndex = _unitIndex + 1;
+                        };
+
+                        [_fireMission, "unitIndex", _unitIndex] call ALIVE_fnc_hashSet;
+                        [_fireMission, "nextRoundTime", time + _delay] call ALIVE_fnc_hashSet;
+                    };
+
+                    [_fireMission, "roundsShot", _roundsShot + 1] call ALIVE_fnc_hashSet;
+                    _logic setVariable ["fireMission", _fireMission];
+                };
+            }];
+            _vehicle setVariable ["sup_artillery_firedEH", _firedEH];
+        } forEach _units;
     };
+    // TODO: Check if unit is alive, otherwise skip
     case "fire": {
-        private _fireMission = _logic getVariable ["fireMission", objNull];
-        private _roundsShot = [_fireMission, "roundsShot"] call ALIVE_fnc_hashGet;
+        private _fireMission = _logic getVariable ["fireMission", []];
+        private _delay = [_fireMission, "delay"] call ALIVE_fnc_hashGet;
         private _units = [_fireMission, "units"] call ALIVE_fnc_hashGet;
-        private _unitIndex = [_fireMission, "unitIndex"] call ALIVE_fnc_hashGet;
-        private _unit = _units select _unitIndex;
         private _position = [_fireMission, "position"] call ALIVE_fnc_hashGet;
         private _roundType = [_fireMission, "roundType"] call ALIVE_fnc_hashGet;
-        private _delay = [_fireMission, "delay"] call ALIVE_fnc_hashGet;
 
-        _unit doArtilleryFire [
-            _position,
-            _roundType,
-            1
-        ];
+        if (_delay > 0) then {
+            private _unitIndex = [_fireMission, "unitIndex"] call ALIVE_fnc_hashGet;
+            private _unit = _units select _unitIndex;
 
-        if ((_unitIndex + 1) > ((count _units) - 1)) then {
-            _unitIndex = 0;
+            _unit doArtilleryFire [
+                _position,
+                _roundType,
+                1
+            ];
+
+            hint format ["%3: _unit: %1 firing 1 %2", _unit, _roundType, time];
         } else {
-            _unitIndex = _unitIndex + 1;
+            {
+                private _roundCount = [_fireMission, "roundCount"] call ALIVE_fnc_hashGet;
+
+                _x doArtilleryFire [
+                    _position,
+                    _roundType,
+                    floor (_roundCount / (count _units)) // TODO: Better distribution
+                ];
+            } forEach _units;
         };
 
-        [_fireMission, "nextRoundTime", time + _delay] call ALIVE_fnc_hashSet;
-        [_fireMission, "unitIndex", _unitIndex] call ALIVE_fnc_hashSet;
-        [_fireMission, "roundsShot", _roundsShot + 1] call ALIVE_fnc_hashSet;
-
+        [_fireMission, "nextRoundTime", -1] call ALIVE_fnc_hashSet;
         _logic setVariable ["fireMission", _fireMission];
     };
     case "fireNextRound": {
-        private _fireMission = _logic getVariable ["fireMission", objNull];
+        private _fireMission = _logic getVariable ["fireMission", []];
         private _nextRoundTime = [_fireMission, "nextRoundTime"] call ALIVE_fnc_hashGet;
-        _result = (time >= _nextRoundTime);
+        _result = (_nextRoundTime != -1 && {time >= _nextRoundTime});
     };
     case "hasFireMission": {
-        private _fireMission = _logic getVariable ["fireMission", objNull];
+        private _fireMission = _logic getVariable ["fireMission", []];
         _result = (count _fireMission > 0);
     };
     case "isFireMissionComplete": {
-        private _fireMission = _logic getVariable ["fireMission", objNull];
+        private _fireMission = _logic getVariable ["fireMission", []];
         private _roundCount = [_fireMission, "roundCount"] call ALIVE_fnc_hashGet;
         private _roundsShot = [_fireMission, "roundsShot"] call ALIVE_fnc_hashGet;
         _result = (_roundsShot >= _roundCount);
+    };
+    case "isFireMissionDelayed": {
+        private _fireMission = _logic getVariable ["fireMission", []];
+        private _delay = [_fireMission, "delay"] call ALIVE_fnc_hashGet;
+        _result = (_delay > 0);
     };
     case "inPosition": {
         private _group = _logic getVariable ["group", grpNull];
         _result = _group getVariable ["sup_artillery_inPosition", false];
     };
     case "inRange": {
-        private _fireMission = _logic getVariable ["fireMission", objNull];
+        private _fireMission = _logic getVariable ["fireMission", []];
         private _position = [_fireMission, "position"] call ALIVE_fnc_hashGet;
         private _roundType = [_fireMission, "roundType"] call ALIVE_fnc_hashGet;
         private _group = _logic getVariable ["group", grpNull];
@@ -177,7 +225,6 @@ switch (_operation) do {
             "true",
             "(group this) setVariable ['sup_artillery_inPosition', true]"
         ];
-        diag_log format["_group: %1, _position: %2, _waypoint: %3", _group, _position, _waypoint];
     };
     case "spawn": {
         private _position = position _logic;
@@ -222,7 +269,7 @@ switch (_operation) do {
     };
     case "onActive": {
         if (!([_logic, "inRange"] call MAINCLASS)) then {
-            _logic setVariable ["moveToPos", [3451.45,5379.89,0]]; // TODO: Figure out best firing position
+            _logic setVariable ["moveToPos", [3744.56,4757.54,0]]; // TODO: Figure out best firing position
         };
     };
     case "onFire": {
@@ -238,6 +285,17 @@ switch (_operation) do {
         private _group = _logic getVariable ["group", grpNull];
         private _units = (units _group) select {vehicle _x != _x && {gunner (vehicle _x) == _x}};
         _units doWatch objNull;
+
+        // Cleanup event handlers
+        {
+            private _vehicle = vehicle _x;
+            private _firedEH = _vehicle getVariable ["sup_artillery_firedEH", nil];
+
+            if (!isNil "_firedEH") then {
+                _vehicle removeEventHandler ["Fired", _firedEH];
+                _vehicle setVariable ["sup_artillery_firedEH", nil];
+            };
+        } forEach _units;
 
         _logic setVariable ["fireMission", []];
         [_logic, "move", [position _logic]] call MAINCLASS; // TODO: Find (best) RTB position
