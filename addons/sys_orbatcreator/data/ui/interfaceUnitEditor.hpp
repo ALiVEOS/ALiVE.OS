@@ -127,7 +127,265 @@ class ALiVE_orbatCreator_interface_unitEditor {
 
 // create unit
 
+class ALiVE_orbatCreator_interface_createUnit {
+    idd = 10000;
 
+    class controlsBackground {
+
+        // common controls
+
+        class background_grid : orbatCreator_common_backgroundGrid {
+            idc = 10001;
+        };
+
+        class header : orbatCreator_common_popup_header {
+            idc = 10002;
+            text = "Create Unit";
+        };
+
+        class background : orbatCreator_common_popup_background {
+            idc = 10003;
+        };
+
+        class footer : orbatCreator_common_popup_footer {
+            idc = 10004;
+        };
+
+        class context : orbatCreator_common_popup_context {
+            idc = 10005;
+        };
+
+        // standard controls
+
+    };
+
+    class controls {
+
+        // common controls
+
+        class buttonOk : orbatCreator_common_popup_ok {
+            idc = 10006;
+        };
+
+        class buttonCancel : orbatCreator_common_popup_cancel {
+            idc = 10007;
+        };
+
+        // standard controls
+
+        class controlsGroup_attributes : orbatCreator_common_popup_controlsGroup {
+            idc = 10008;
+
+            class controls {
+
+                class general_divider : orbatCreator_RscText {
+                    idc = 10009;
+                    text = "";
+                    x = 0.2 * safezoneW + safezoneX;
+                    y = 0.01 * safezoneH;
+                    w = 0.46 * safezoneW;
+                    h = 0.00125 * safezoneH;
+                    colorBackground[] = COLOR_GREY_TITLE_HARD;
+                };
+
+                class properties_title : orbatCreator_common_popup_attribute_title {
+                    idc = 10010;
+                    text = "General";
+                    x = 0.21 * safezoneW + safezoneX;
+                    y = 0.02 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
+                };
+
+                class displayName_title : orbatCreator_common_popup_attribute_subtitle {
+                    idc = 10011;
+                    text = "Display Name";
+                    x = 0.29 * safezoneW + safezoneX;
+                    y = 0.09 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
+                };
+
+                class displayName_input : orbatCreator_RscEdit {
+                    idc = 10012;
+                    x = 0.43 * safezoneW + safezoneX;
+                    y = 0.095 * safezoneH;
+                    w = 0.20 * safezoneW;
+                    h = 0.03 * safezoneH;
+                    colorBackground[] = COLOR_BLACK_HARD;
+                };
+
+                class className_title : orbatCreator_common_popup_attribute_subtitle {
+                    idc = 10013;
+                    text = "Class Name";
+                    x = 0.29 * safezoneW + safezoneX;
+                    y = 0.145 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
+                };
+
+                class className_input : orbatCreator_RscEdit {
+                    idc = 10014;
+                    x = 0.43 * safezoneW + safezoneX;
+                    y = 0.15 * safezoneH;
+                    w = 0.20 * safezoneW;
+                    h = 0.03 * safezoneH;
+                    colorBackground[] = COLOR_BLACK_HARD;
+                };
+
+                class ownership_divider : orbatCreator_RscText {
+                    idc = 10015;
+                    text = "";
+                    x = 0.2 * safezoneW + safezoneX;
+                    y = 0.222 * safezoneH;
+                    w = 0.46 * safezoneW;
+                    h = 0.00125 * safezoneH;
+                    colorBackground[] = COLOR_GREY_TITLE_HARD;
+                };
+
+                class ownership_title : orbatCreator_common_popup_attribute_title {
+                    idc = 10016;
+                    text = "Ownership";
+                    x = 0.21 * safezoneW + safezoneX;
+                    y = 0.232 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
+                };
+
+                class side_title : orbatCreator_common_popup_attribute_subtitle {
+                    idc = 10017;
+                    text = "Side";
+                    x = 0.29 * safezoneW + safezoneX;
+                    y = 0.302 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
+                };
+
+                class side_input : orbatCreator_RscCombo {
+                    idc = 10018;
+                    x = 0.43 * safezoneW + safezoneX;
+                    y = 0.307 * safezoneH;
+                    w = 0.20 * safezoneW;
+                    h = 0.03 * safezoneH;
+                    colorBackground[] = COLOR_BLACK_HARD;
+                };
+
+                class faction_title : orbatCreator_common_popup_attribute_subtitle {
+                    idc = 10019;
+                    text = "Faction";
+                    x = 0.29 * safezoneW + safezoneX;
+                    y = 0.362 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
+                };
+
+                class faction_input : orbatCreator_RscCombo {
+                    idc = 10020;
+                    x = 0.43 * safezoneW + safezoneX;
+                    y = 0.367 * safezoneH;
+                    w = 0.20 * safezoneW;
+                    h = 0.03 * safezoneH;
+                    colorBackground[] = COLOR_BLACK_HARD;
+                };
+
+                class unittype_divider : orbatCreator_RscText {
+                    idc = 10021;
+                    text = "";
+                    x = 0.2 * safezoneW + safezoneX;
+                    y = 0.439 * safezoneH;
+                    w = 0.46 * safezoneW;
+                    h = 0.00125 * safezoneH;
+                    colorBackground[] = COLOR_GREY_TITLE_HARD;
+                };
+
+                class unittype_title : orbatCreator_common_popup_attribute_title {
+                    idc = 10022;
+                    text = "Unit Type";
+                    x = 0.21 * safezoneW + safezoneX;
+                    y = 0.449 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
+                };
+
+                class unittype_side_title : orbatCreator_common_popup_attribute_subtitle {
+                    idc = 10023;
+                    text = "Side";
+                    x = 0.29 * safezoneW + safezoneX;
+                    y = 0.519 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
+                };
+
+                class unittype_side_input : orbatCreator_RscCombo {
+                    idc = 10024;
+                    x = 0.43 * safezoneW + safezoneX;
+                    y = 0.524 * safezoneH;
+                    w = 0.20 * safezoneW;
+                    h = 0.03 * safezoneH;
+                    colorBackground[] = COLOR_BLACK_HARD;
+                };
+
+                class unittype_faction_title : orbatCreator_common_popup_attribute_subtitle {
+                    idc = 10025;
+                    text = "Faction";
+                    x = 0.29 * safezoneW + safezoneX;
+                    y = 0.579 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
+                };
+
+                class unittype_faction_input : orbatCreator_RscCombo {
+                    idc = 10026;
+                    x = 0.43 * safezoneW + safezoneX;
+                    y = 0.584 * safezoneH;
+                    w = 0.20 * safezoneW;
+                    h = 0.03 * safezoneH;
+                    colorBackground[] = COLOR_BLACK_HARD;
+                };
+
+                class unittype_category_title : orbatCreator_common_popup_attribute_subtitle {
+                    idc = 10027;
+                    text = "Category";
+                    x = 0.29 * safezoneW + safezoneX;
+                    y = 0.639 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
+                };
+
+                class unittype_category_input : orbatCreator_RscCombo {
+                    idc = 10028;
+                    x = 0.43 * safezoneW + safezoneX;
+                    y = 0.644 * safezoneH;
+                    w = 0.20 * safezoneW;
+                    h = 0.03 * safezoneH;
+                    colorBackground[] = COLOR_BLACK_HARD;
+                };
+
+                class unittype_typeList_title : orbatCreator_common_popup_attribute_subtitle {
+                    idc = 10029;
+                    text = "Type";
+                    x = 0.29 * safezoneW + safezoneX;
+                    y = 0.699 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
+                };
+
+                class unittype_typeList_input : orbatCreator_RscListBox {
+                    idc = 10030;
+                    x = 0.43 * safezoneW + safezoneX;
+                    y = 0.704 * safezoneH;
+                    w = 0.20 * safezoneW;
+                    h = 0.15 * safezoneH;
+                    colorBackground[] = COLOR_BLACK_HARD;
+                };
+
+            };
+        };
+
+    };
+};
+
+/*
 class ALiVE_orbatCreator_interface_createUnit {
     idd = 10000;
 
@@ -342,6 +600,7 @@ class ALiVE_orbatCreator_interface_createUnit {
 
     };
 };
+*/
 
 class ALiVE_orbatCreator_interface_editUnit : ALiVE_orbatCreator_interface_createUnit {
 
