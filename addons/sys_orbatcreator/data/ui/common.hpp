@@ -34,6 +34,11 @@
 #define COLOR_GREY_DARK_MODERATE    COLOR_GREY_DARK(0.8)
 #define COLOR_GREY_DARK_SOFT        COLOR_GREY_DARK(0.7)
 
+#define COLOR_GREY_TITLE(alpha)      {0.678,0.678,0.678,alpha}
+#define COLOR_GREY_TITLE_HARD        COLOR_GREY_TITLE(1)
+#define COLOR_GREY_TITLE_MODERATE    COLOR_GREY_TITLE(0.8)
+#define COLOR_GREY_TITLE_SOFT        COLOR_GREY_TITLE(0.7)
+
 #define COLOR_GREEN(alpha)          {0.576,0.769,0.49,alpha}
 #define COLOR_GREEN_HARD            COLOR_GREEN(1)
 #define COLOR_GREEN_MODERATE        COLOR_GREEN(0.8)
@@ -57,14 +62,6 @@ class orbatCreator_RscText : RscText {
     y = 0;
     h = 0.037;
     w = 0.3;
-    class Attributes {
-        font = "PuristaMedium";
-        color = "#C0C0C0";
-        align = "center";
-        valign = "middle";
-        shadow = false;
-        shadowColor = "#000000";
-    };
     style = 0;
     font = "PuristaMedium";
     SizeEx = BASE_SIZE_TEXT;
@@ -155,7 +152,8 @@ class orbatCreator_RscCombo {
         border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
         thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
     };
-    style = 16;
+    style = 0x10 + 0x200;
+    //style = 16;
     x = 0;
     y = 0;
     w = 0.12;
@@ -404,7 +402,7 @@ class orbatCreator_RscControlsGroup {
         scrollSpeed = 0.06;
         shadow = 0;
         thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
-        width = 0.021;
+        width = 0.021 * 0.75;
     };
 };
 
@@ -696,10 +694,10 @@ class orbatCreator_common_popup_background : orbatCreator_RscText {
 
 class orbatCreator_common_popup_controlsGroup : orbatCreator_RscControlsGroup {
     idc = 7033;
-	x = 0.28854 * safezoneW + safezoneX;
-	y = 0.164 * safezoneH + safezoneY;
-	w = 0.422917 * safezoneW;
-	h = 0.7 * safezoneH;
+	x = 0.266521 * safezoneW + safezoneX;
+	y = 0.15 * safezoneH + safezoneY;
+	w = 0.466667 * safezoneW;
+	h = 0.728 * safezoneH;
 };
 
 class orbatCreator_common_popup_footer : orbatCreator_RscText {
@@ -740,4 +738,14 @@ class orbatCreator_common_popup_cancel: orbatCreator_ctrlButtonCancel {
 	y = 0.8878 * safezoneH + safezoneY;
 	w = 0.0875 * safezoneW;
 	h = 0.028 * safezoneH;
+};
+
+class orbatCreator_common_popup_attribute_title : orbatCreator_RscText {
+	colorText[] = COLOR_GREY_TITLE_HARD;
+    sizeEx = BASE_SIZE_TEXT * 0.9;
+};
+
+class orbatCreator_common_popup_attribute_subtitle : orbatCreator_common_popup_attribute_title {
+    style = 0x01;
+    colorText[] = COLOR_WHITE_HARD;
 };

@@ -123,16 +123,16 @@ class ALiVE_orbatCreator_interface_createFaction {
         // common controls
 
         class background_grid : orbatCreator_common_backgroundGrid {
-            idc = 8318;
+            idc = 8301;
         };
 
         class header : orbatCreator_common_popup_header {
-            idc = 8301;
+            idc = 8302;
             text = "Create Faction";
         };
 
         class background : orbatCreator_common_popup_background {
-            idc = 8302;
+            idc = 8303;
         };
 
         class footer : orbatCreator_common_popup_footer {
@@ -140,7 +140,7 @@ class ALiVE_orbatCreator_interface_createFaction {
         };
 
         class context : orbatCreator_common_popup_context {
-            idc = 8303;
+            idc = 8305;
         };
 
         // standard controls
@@ -152,107 +152,125 @@ class ALiVE_orbatCreator_interface_createFaction {
         // common controls
 
         class buttonOk : orbatCreator_common_popup_ok {
-            idc = 8305;
+            idc = 8306;
         };
 
         class buttonCancel : orbatCreator_common_popup_cancel {
-            idc = 8306;
+            idc = 8307;
         };
 
         // standard controls
 
         class controlsGroup_attributes : orbatCreator_common_popup_controlsGroup {
-            idc = 8307;
+            idc = 8308;
 
             class controls {
 
-                class properties_title: orbatCreator_RscText {
-                    idc = 8308;
-                    text = "General";
-                    x = 0.37 * safezoneW + safezoneX;
-                    y = 0 * safezoneH;
-                    w = 0.125 * safezoneW;
-                    h = 0.035 * safezoneH;
-                    sizeEx = BASE_SIZE_TEXT * 1.7;
-                };
-
-                class displayName_title: orbatCreator_RscText {
+                class general_divider : orbatCreator_RscText {
                     idc = 8309;
-                    text = "Display Name";
-                    x = 0.225 * safezoneW + safezoneX;
-                    y = 0.07 * safezoneH;
-                    w = 0.125 * safezoneW;
-                    h = 0.035 * safezoneH;
+                    text = "";
+                    x = 0.2 * safezoneW + safezoneX;
+                    y = 0.01 * safezoneH;
+                    w = 0.46 * safezoneW;
+                    h = 0.00125 * safezoneH;
+                    colorBackground[] = COLOR_GREY_TITLE_HARD;
                 };
 
-                class displayName_input: orbatCreator_RscEdit {
+                class general_title : orbatCreator_common_popup_attribute_title {
                     idc = 8310;
-                    x = 0.40 * safezoneW + safezoneX;
-                    y = 0.075 * safezoneH;
-                    w = 0.20 * safezoneW;
-                    h = 0.03 * safezoneH;
-                    colorBackground[] = COLOR_BLACK_HARD;
+                    text = "General";
+                    x = 0.21 * safezoneW + safezoneX;
+                    y = 0.02 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
                 };
 
-                class className_title: orbatCreator_RscText {
+                class displayName_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 8311;
-                    text = "Class Name";
-                    x = 0.225 * safezoneW + safezoneX;
-                    y = 0.125 * safezoneH;
+                    text = "Display Name";
+                    x = 0.29 * safezoneW + safezoneX;
+                    y = 0.09 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
                 };
 
-                class className_input: orbatCreator_RscEdit {
+                class displayName_input : orbatCreator_RscEdit {
                     idc = 8312;
-                    x = 0.40 * safezoneW + safezoneX;
-                    y = 0.13 * safezoneH;
+                    x = 0.43 * safezoneW + safezoneX;
+                    y = 0.095 * safezoneH;
                     w = 0.20 * safezoneW;
                     h = 0.03 * safezoneH;
                     colorBackground[] = COLOR_BLACK_HARD;
                 };
 
-                class side_title: orbatCreator_RscText {
+                class className_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 8313;
-                    text = "Side";
-                    x = 0.225 * safezoneW + safezoneX;
-                    y = 0.1975 * safezoneH;
+                    text = "Class Name";
+                    x = 0.29 * safezoneW + safezoneX;
+                    y = 0.145 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
                 };
 
-                class side_input: orbatCreator_RscCombo {
+                class className_input : orbatCreator_RscEdit {
                     idc = 8314;
-                    x = 0.40 * safezoneW + safezoneX;
-                    y = 0.198 * safezoneH;
+                    x = 0.43 * safezoneW + safezoneX;
+                    y = 0.15 * safezoneH;
                     w = 0.20 * safezoneW;
                     h = 0.03 * safezoneH;
                     colorBackground[] = COLOR_BLACK_HARD;
                 };
 
-                class appearance: orbatCreator_RscText {
+                class side_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 8315;
-                    text = "Appearance";
-                    x = 0.355 * safezoneW + safezoneX;
-                    y = 0.280 * safezoneH;
+                    text = "Side";
+                    x = 0.29 * safezoneW + safezoneX;
+                    y = 0.2175 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
-                    sizeEx = BASE_SIZE_TEXT * 1.7;
                 };
 
-                class flag_title : orbatCreator_RscText {
+                class side_input : orbatCreator_RscCombo {
                     idc = 8316;
-                    text = "Flag";
-                    x = 0.225 * safezoneW + safezoneX;
-                    y = 0.350 * safezoneH;
+                    x = 0.43 * safezoneW + safezoneX;
+                    y = 0.218 * safezoneH;
+                    w = 0.20 * safezoneW;
+                    h = 0.03 * safezoneH;
+                    colorBackground[] = COLOR_BLACK_HARD;
+                };
+
+                class appearance_divider : orbatCreator_RscText {
+                    idc = 8317;
+                    text = "";
+                    x = 0.2 * safezoneW + safezoneX;
+                    y = 0.29 * safezoneH;
+                    w = 0.46 * safezoneW;
+                    h = 0.00125 * safezoneH;
+                    colorBackground[] = COLOR_GREY_TITLE_HARD;
+                };
+
+                class appearance_title : orbatCreator_common_popup_attribute_title {
+                    idc = 8318;
+                    text = "Appearance";
+                    x = 0.21 * safezoneW + safezoneX;
+                    y = 0.30 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
                 };
 
-                class flag_input: orbatCreator_RscCombo {
-                    idc = 8317;
-                    x = 0.40 * safezoneW + safezoneX;
-                    y = 0.355 * safezoneH;
+                class flag_title : orbatCreator_common_popup_attribute_subtitle {
+                    idc = 8319;
+                    text = "Flag";
+                    x = 0.29 * safezoneW + safezoneX;
+                    y = 0.370 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
+                };
+
+                class flag_input : orbatCreator_RscCombo {
+                    idc = 8320;
+                    x = 0.43 * safezoneW + safezoneX;
+                    y = 0.375 * safezoneH;
                     w = 0.20 * safezoneW;
                     h = 0.03 * safezoneH;
                     colorBackground[] = COLOR_BLACK_HARD;
