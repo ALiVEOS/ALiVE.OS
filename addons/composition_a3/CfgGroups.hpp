@@ -18,11 +18,6 @@ class CfgGroups
 	    	name = "Civilian (Woodland)";
 	    	#include "civilian\woodland.hpp"
 	    };
-	    class Civilian_Pacific
-	    {
-	    	name = "Civilian (Pacific)";
-	    	#include "civilian\pacific.hpp"
-	    };
 		class Guerrilla
 		{
             #include "guerrilla\urban.hpp"
@@ -37,12 +32,6 @@ class CfgGroups
 	    	name = "Guerrilla (Woodland)";
 	    	#include "guerrilla\woodland.hpp"
 	    };
-	    class Guerrilla_Pacific
-	    {
-	    	name = "Guerrilla (Pacific)";
-	    	#include "guerrilla\pacific.hpp"
-	    };
-
 		class Military
 		{
             #include "military\urban.hpp"
@@ -57,12 +46,6 @@ class CfgGroups
 	    	name = "Military (Woodland)";
 	    	#include "military\woodland.hpp"
 	    };
-	    class Military_Pacific
-	    {
-	    	name = "Military (Pacific)";
-	    	#include "military\pacific.hpp"
-	    };
-
 	};
 };
 
