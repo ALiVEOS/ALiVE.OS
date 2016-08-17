@@ -671,9 +671,6 @@ switch(_operation) do {
                 private _buttonOK = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_BUTTON_CONFIRM );
                 _buttonOK ctrlSetEventHandler ["MouseButtonDown","['onCreateUnitConfirmClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
-                private _buttonCancel = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_BUTTON_CANCEL );
-                _buttonCancel ctrlSetEventHandler ["MouseButtonDown","['onCreateUnitCancelClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-
                 private _buttonAutogen = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_BUTTON_AUTOGEN_CLASSNAME );
                 _buttonAutogen ctrlSetEventHandler ["MouseButtonDown","['onCreateUnitAutogenerateClassnameClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
@@ -1050,9 +1047,6 @@ switch(_operation) do {
 
                 private _buttonAutogenClassname = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_BUTTON_AUTOGEN_CLASSNAME );
                 _buttonAutogenClassname ctrlSetEventHandler ["MouseButtonDown","['onCreateGroupAutogenClassnameClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-
-                private _buttonCancel = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_BUTTON_CANCEL );
-                _buttonCancel ctrlSetEventHandler ["MouseButtonDown","['onCreateGroupCancelClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
                 private _buttonConfirm = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_BUTTON_CONFIRM );
                 _buttonConfirm ctrlSetEventHandler ["MouseButtonDown","['onCreateGroupConfirmClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
@@ -3512,7 +3506,7 @@ switch(_operation) do {
 
         // validate prerequisites
 
-        private _instructions = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INSTRUCTIONS );
+        private _instructions = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_CONTEXT );
         private _parentUnitList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_UNITS );
 
         private _displayNameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_DISPLAYNAME );
@@ -3631,12 +3625,6 @@ switch(_operation) do {
 
     };
 
-    case "onCreateUnitCancelClicked": {
-
-        closeDialog 0;
-
-    };
-
 
     // edit unit
 
@@ -3705,7 +3693,7 @@ switch(_operation) do {
 
         // validate prerequisites
 
-        private _instructions = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INSTRUCTIONS );
+        private _instructions = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_CONTEXT );
 
         if (_displayName == "") exitWith {_instructions ctrlSetText "Display name cannot be left blank"};
         if (_classname == "") exitWith {_instructions ctrlSetText "Class name cannot be left blank"};
@@ -4612,12 +4600,6 @@ switch(_operation) do {
 
     };
 
-    case "onCreateGroupCancelClicked": {
-
-        closeDialog 0;
-
-    };
-
     case "onCreateGroupConfirmClicked": {
 
         private _state = [_logic,"state"] call MAINCLASS;
@@ -4626,7 +4608,7 @@ switch(_operation) do {
         private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
         private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
 
-        private _instructions = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INSTRUCTIONS );
+        private _instructions = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_CONTEXT );
 
         private _groupIcon = OC_getSelData( OC_CREATEGROUP_INPUT_ICON );
 
@@ -4701,7 +4683,7 @@ switch(_operation) do {
 
         private _inputName = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_NAME );
         private _inputClassname = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_CLASSNAME );
-        private _instructions = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INSTRUCTIONS );
+        private _instructions = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_CONTEXT );
 
         private _newGroupName = ctrlText _inputName;
         private _newGroupClassname = ctrlText _inputClassname;

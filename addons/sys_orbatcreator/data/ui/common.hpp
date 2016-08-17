@@ -548,7 +548,7 @@ class orbatCreator_common_header_menuStrip : orbatCreator_ctrlMenuStrip {
 
         class OrbatCreator {
 
-            text = "Orbat Creator";
+            text = "ORBAT Creator";
             items[] = {"OrbatCreator_Close"};
 
         };
