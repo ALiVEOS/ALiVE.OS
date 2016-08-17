@@ -4,7 +4,7 @@ _keepWeapon = _this select 1;
 _ammoCount = [];
 {
     private "_count";
-    if (_x == _weapon) then {
+    if (_x == _keepWeapon) then {
         _count = -1;
     } else {
         _count = _veh ammo _x;
