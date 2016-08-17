@@ -37,27 +37,29 @@ Developed by the team that brought you Multi Session Operations (MSO), the **Adv
 
 ###Main Features
 
-ALiVE features the revolutionary *Virtual Profile System* that supports thousands of units operating simultaneously across the map with minimal impact on performance.  Unlike older caching systems, Virtual AI groups will continue to move, operate and fight and will seamlessly spawn into the visual game world when players are in range.
+ALiVE features the revolutionary **Virtual Profile System** that supports thousands of units operating simultaneously across the map with minimal impact on performance.  Unlike older caching systems, Virtual AI groups will continue to move, operate and fight and will seamlessly spawn into the visual game world when players are in range.
 
-ALiVE identifies key military, industrial and civilian installations automatically for any map. It uses an advanced, multi-layered AI *Operational Command* structure which assesses the strategic, operational and tactical situation across the battlespace, analyses the relative strengths of enemy and friendly forces and issues missions accordingly. The result is a fluid, dynamic and credibly realistic battlefield as forces modelled on real world Combined Arms doctrines fight for key objectives.
+ALiVE identifies key military, industrial and civilian installations automatically for any map. It uses an advanced, multi-layered AI **Operational Command** structure which assesses the strategic, operational and tactical situation across the battlespace, analyses the relative strengths of enemy and friendly forces and issues missions accordingly. The result is a fluid, dynamic and credibly realistic battlefield as forces modelled on real world Combined Arms doctrines fight for key objectives.
 
-The second generation *Persistent Campaign* system automatically retains mission critical data on an external database without any user installations required - no need for complicated MySQL databases, it is all handled completely automatically (this requires a dedicated server)!
+The second generation **Persistent Campaign** system automatically retains mission critical data on an external database without any user installations required - no need for complicated MySQL databases, it is all handled completely automatically (this requires a dedicated server)!
 
-ALiVE also provides a variety of popular *Player Support* utilities such as View Distance, Respawn Manager and an integrated Support Radio Suite for AI controlled Combat Support, Combat Service Support and C2ISTAR.
+ALiVE also provides a variety of popular **Player Support** utilities such as View Distance, Respawn Manager and an integrated Support Radio Suite for AI controlled Combat Support, Combat Service Support and C2ISTAR.
 
-The intuitive, easy to use *modular framework* means mission making with ALiVE is quick and easy, even if you have never opened the editor before.  Simply place modules down and play.  ALiVE can be used completely stand alone or as part of more complex missions and scripts.
+The intuitive, easy to use modular framework means mission making with ALiVE is quick and easy, even if you have never opened the editor before.  Simply place modules down and play.  ALiVE can be used completely stand alone or as part of more complex missions and scripts.
+
+A recent addition is a fully in game GUI for building unit, group and faction configs without having to learn the intricacies of config editing.
 
 ###Installation
--Download and run as any normal mod for ArmA3 using -mod=@CBA_A3;@ALiVE
--For Dedicated Servers use -mod=@CBA_A3;@ALiVEServer;@ALiVE
--ALiVE requires CBA_A3
+- Download and run as any normal mod for ArmA3 using -mod=@CBA_A3;@ALiVE
+- For Dedicated Servers use -mod=@CBA_A3;@ALiVEServer;@ALiVE
+- ALiVE requires CBA_A3
 
 ###Help
 There are several entries in the Field Manual which will guide you through interacting with key in game ALiVE features.
 
--By default, ALiVE uses the **App Key** to open the ALiVE interaction menu.  The app key is found next to your right control key. If you do not have an app key or wish to use a different binding, you can remap it in the mods keybinding menu once in game. 
--Some features will require that you carry a **Laser Designator** (or any custom item defined in the editor modules).
--For Advanced Markers, access the map and press **CTRL ALT LMB** to place or edit a marker. Press **CTRL ALT RMB** to delete a marker.
+- By default, ALiVE uses the **App Key** to open the ALiVE interaction menu.  The app key is found next to your right control key. If you do not have an app key or wish to use a different binding, you can remap it in the mods keybinding menu once in game. 
+- Some features will require that you carry a **Laser Designator** (or any custom item defined in the editor modules).
+- For Advanced Markers, access the map and press **CTRL ALT LMB** to place or edit a marker. Press **CTRL ALT RMB** to delete a marker.
 
 For full instructions refer to the wiki at http://alivemod.com/wiki/
 
