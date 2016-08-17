@@ -77,10 +77,6 @@ ALiVE is complex but not complicated. Each module is standalone but they can be 
 
 Everything starts with the Placement modules. These modules fulfill two important functions: they identify a list of military and civilian objectives or areas of importance across the map and secondly, they place the AI groups. There are several module parameters for customising the type of objectives and also the shape and size of the AI forces. Refer to the Military and Civilian Placement Module pages for further details on these.
 
-If an Operational Commander (OPCOM) is placed, it will take command of all available AI forces of its faction. However, OPCOM needs to know where its objectives are and this is simply done by Synchronising it to one or more Placements Modules.
-Note that OPCOM does not exclusively take command of the units defined in the Placement modules, it is only using them to get a list of objectives. OPCOM will take command of all units of its faction across the map.
-
-So for example you could place an OPFOR Military Placement module to occupy an area of the map, but synch a BLUFOR OPCOM to it so it knows to attack those objectives.
-Another example: place a Civilian Placement module with no Unit Placement so it is only providing a list of objectives. Then place a BLUFOR Military Placement Module in a small zone nearby with and set it to a Platoon of Light Infantry. Synch a BLUFOR OPCOM in Invasion mode to both Placement modules and watch as the Infantry are ordered to attack the civilian objectives.
+If an AI Commander is placed, it will take command of all available AI forces of its faction. However, it needs to know where its objectives are and this is simply done by synchronising it to one or more Placements Modules.  So for example you could place an OPFOR Military Placement module to occupy an area of the map then sync a BLUFOR AI Commander to it so it knows to attack those objectives.
 
 Using different combinations of modules it is possible to quickly create a huge range of scenarios, from massive tank battles to intense urban counter insurgency. The best way is to experiment!
