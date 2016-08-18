@@ -7,10 +7,6 @@
         <img src="https://img.shields.io/github/release/ALiVEOS/ALiVE.OS.svg?maxAge=2592000" alt="ALiVE Version">
     </a>
     
-    <a href="https://github.com/ALiVEOS/ALiVE.OS/issues">
-        <img src="https://img.shields.io/github/issues/ALiVEOS/ALiVE.OS.svg?maxAge=2592000" alt="ALiVE Issues">
-    </a>
-    
     <a href="https://forums.bistudio.com/topic/187954-alive-advanced-light-infantry-virtual-environment-10-ga/">
         <img src="https://img.shields.io/badge/BI-Forums-lightgrey.svg" alt="BI Forums">
     </a>
@@ -26,6 +22,16 @@
     <a href="https://github.com/ALiVEOS/ALiVE.OS/blob/master/LICENSE.txt">
         <img src="https://img.shields.io/github/license/ALiVEOS/ALiVE.OS.svg?maxAge=2592000" alt="ALiVE License">
     </a>
+</p>
+
+<p align="center">
+    <a href="https://github.com/ALiVEOS/ALiVE.OS/issues">
+        <img src="https://img.shields.io/github/issues/ALiVEOS/ALiVE.OS.svg?maxAge=2592000" alt="ALiVE Issues">
+    </a>
+    
+    <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=ready&title=Ready" alt="Ready">
+    <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=ready&title=WIP" alt="WIP">
+    <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=ready&title=Testing" alt="Testing">
 </p>
 
 <p align="center">
