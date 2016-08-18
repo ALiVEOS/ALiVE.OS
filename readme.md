@@ -30,8 +30,8 @@
     </a>
     
     <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=ready&title=Ready" alt="Ready">
-    <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=ready&title=WIP" alt="WIP">
-    <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=ready&title=Testing" alt="Testing">
+    <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=WIP&title=WIP" alt="WIP">
+    <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=Needs%20Testing&title=Testing" alt="Testing">
 </p>
 
 <p align="center">
