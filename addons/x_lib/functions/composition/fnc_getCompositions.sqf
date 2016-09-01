@@ -35,6 +35,8 @@ Tupolov
 
 private ["_className","_configPaths","_configPath","_result","_item","_comp","_name","_size","_cat","_faction","_compType","_enemyFactions"];
 
+["COMPOSITION INPUT : %1",_this] call ALiVE_fnc_dump;
+
 _compType = _this select 0;
 _cat = if (typeName (_this select 1) == "ARRAY") then {_this select 1} else {[_this select 1]};
 _size = if (typeName (_this select 2) == "ARRAY") then {_this select 2} else {[_this select 2]};
