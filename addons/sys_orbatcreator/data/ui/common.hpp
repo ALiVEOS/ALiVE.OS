@@ -494,10 +494,10 @@ class orbatCreator_common_header_interfaceTitle : orbatCreator_RscText {
 
     text = "Faction Editor";
 	x = 0.0078125 * safezoneW + safezoneX;
-	y = -0.00399999 * safezoneH + safezoneY;
+	y = -0.0034 * safezoneH + safezoneY;
 	w = 0.21875 * safezoneW;
 	h = 0.0392 * safezoneH;
-    sizeEx = BASE_SIZE_TEXT * 1.05;
+    sizeEx = BASE_SIZE_TEXT * 1.15;
     colorBackground[] = COLOR_BLACK(0);
 };
 
@@ -506,7 +506,7 @@ class orbatCreator_common_header_banner : orbatCreator_RscPicture {
     style = 48 + 0x800;
 
     text = "\x\alive\addons\sys_orbatcreator\data\images\banner_alive.paa";
-	x = 0.69 * safezoneW + safezoneX;
+	x = 0.70 * safezoneW + safezoneX;
 	y = -0.000359978 * safezoneH + safezoneY;
 	w = 0.35 * safezoneW;
 	h = 0.0392 * safezoneH;

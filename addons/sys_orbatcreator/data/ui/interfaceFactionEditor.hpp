@@ -169,9 +169,9 @@ class ALiVE_orbatCreator_interface_createFaction {
                 class general_divider : orbatCreator_RscText {
                     idc = 8309;
                     text = "";
-                    x = 0.2 * safezoneW + safezoneX;
+                    x = 0 * safezoneW;
                     y = 0.01 * safezoneH;
-                    w = 0.46 * safezoneW;
+                    w = 0.45 * safezoneW;
                     h = 0.00125 * safezoneH;
                     colorBackground[] = COLOR_GREY_TITLE_HARD;
                 };
@@ -179,7 +179,7 @@ class ALiVE_orbatCreator_interface_createFaction {
                 class general_title : orbatCreator_common_popup_attribute_title {
                     idc = 8310;
                     text = "General";
-                    x = 0.21 * safezoneW + safezoneX;
+                    x = 0.005 * safezoneW;
                     y = 0.02 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -188,7 +188,7 @@ class ALiVE_orbatCreator_interface_createFaction {
                 class displayName_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 8311;
                     text = "Display Name";
-                    x = 0.27 * safezoneW + safezoneX;
+                    x = 0.033 * safezoneW;
                     y = 0.09 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -196,7 +196,7 @@ class ALiVE_orbatCreator_interface_createFaction {
 
                 class displayName_input : orbatCreator_RscEdit {
                     idc = 8312;
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.095 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.03 * safezoneH;
@@ -206,7 +206,7 @@ class ALiVE_orbatCreator_interface_createFaction {
                 class className_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 8313;
                     text = "Class Name";
-                    x = 0.27 * safezoneW + safezoneX;
+                    x = 0.033 * safezoneW;
                     y = 0.145 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -214,7 +214,7 @@ class ALiVE_orbatCreator_interface_createFaction {
 
                 class className_input : orbatCreator_RscEdit {
                     idc = 8314;
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.15 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.03 * safezoneH;
@@ -224,7 +224,7 @@ class ALiVE_orbatCreator_interface_createFaction {
                 class side_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 8315;
                     text = "Side";
-                    x = 0.27 * safezoneW + safezoneX;
+                    x = 0.033 * safezoneW;
                     y = 0.2175 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -232,7 +232,7 @@ class ALiVE_orbatCreator_interface_createFaction {
 
                 class side_input : orbatCreator_RscCombo {
                     idc = 8316;
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.218 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.03 * safezoneH;
@@ -242,9 +242,9 @@ class ALiVE_orbatCreator_interface_createFaction {
                 class appearance_divider : orbatCreator_RscText {
                     idc = 8317;
                     text = "";
-                    x = 0.2 * safezoneW + safezoneX;
+                    x = 0 * safezoneW;
                     y = 0.29 * safezoneH;
-                    w = 0.46 * safezoneW;
+                    w = 0.45 * safezoneW;
                     h = 0.00125 * safezoneH;
                     colorBackground[] = COLOR_GREY_TITLE_HARD;
                 };
@@ -252,7 +252,7 @@ class ALiVE_orbatCreator_interface_createFaction {
                 class appearance_title : orbatCreator_common_popup_attribute_title {
                     idc = 8318;
                     text = "Appearance";
-                    x = 0.21 * safezoneW + safezoneX;
+                    x = 0.005 * safezoneW;
                     y = 0.30 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -261,7 +261,7 @@ class ALiVE_orbatCreator_interface_createFaction {
                 class flag_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 8319;
                     text = "Flag";
-                    x = 0.27 * safezoneW + safezoneX;
+                    x = 0.033 * safezoneW;
                     y = 0.370 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -269,7 +269,7 @@ class ALiVE_orbatCreator_interface_createFaction {
 
                 class flag_input : orbatCreator_RscCombo {
                     idc = 8320;
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.375 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.03 * safezoneH;

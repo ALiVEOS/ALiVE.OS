@@ -181,7 +181,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class general_divider : orbatCreator_RscText {
                     idc = 10009;
                     text = "";
-                    x = 0.2 * safezoneW + safezoneX;
+                    x = 0 * safezoneW;
                     y = 0.01 * safezoneH;
                     w = 0.46 * safezoneW;
                     h = 0.00125 * safezoneH;
@@ -191,7 +191,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class properties_title : orbatCreator_common_popup_attribute_title {
                     idc = 10010;
                     text = "General";
-                    x = 0.21 * safezoneW + safezoneX;
+                    x = 0.005 * safezoneW;
                     y = 0.02 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -200,7 +200,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class displayName_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 10011;
                     text = "Display Name";
-                    x = 0.27 * safezoneW + safezoneX;
+                    x = 0.033 * safezoneW;
                     y = 0.09 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -208,7 +208,7 @@ class ALiVE_orbatCreator_interface_createUnit {
 
                 class displayName_input : orbatCreator_RscEdit {
                     idc = 10012;
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.095 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.03 * safezoneH;
@@ -218,7 +218,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class className_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 10013;
                     text = "Class Name";
-                    x = 0.27 * safezoneW + safezoneX;
+                    x = 0.033 * safezoneW;
                     y = 0.145 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -226,7 +226,7 @@ class ALiVE_orbatCreator_interface_createUnit {
 
                 class className_input : orbatCreator_RscEdit {
                     idc = 10014;
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.15 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.03 * safezoneH;
@@ -236,7 +236,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class className_button_generateClassname : orbatCreator_RscButton {
                     idc = 10015;
                     text = "Generate Classname";
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.205 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.036 * safezoneH;
@@ -246,7 +246,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class ownership_divider : orbatCreator_RscText {
                     idc = 10016;
                     text = "";
-                    x = 0.2 * safezoneW + safezoneX;
+                    x = 0 * safezoneW;
                     y = 0.277 * safezoneH;
                     w = 0.46 * safezoneW;
                     h = 0.00125 * safezoneH;
@@ -256,7 +256,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class ownership_title : orbatCreator_common_popup_attribute_title {
                     idc = 10017;
                     text = "Ownership";
-                    x = 0.21 * safezoneW + safezoneX;
+                    x = 0.005 * safezoneW;
                     y = 0.287 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -265,7 +265,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class side_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 10018;
                     text = "Side";
-                    x = 0.27 * safezoneW + safezoneX;
+                    x = 0.033 * safezoneW;
                     y = 0.357 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -273,7 +273,7 @@ class ALiVE_orbatCreator_interface_createUnit {
 
                 class side_input : orbatCreator_RscCombo {
                     idc = 10019;
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.362 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.03 * safezoneH;
@@ -283,7 +283,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class faction_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 10020;
                     text = "Faction";
-                    x = 0.27 * safezoneW + safezoneX;
+                    x = 0.033 * safezoneW;
                     y = 0.417 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -291,7 +291,7 @@ class ALiVE_orbatCreator_interface_createUnit {
 
                 class faction_input : orbatCreator_RscCombo {
                     idc = 10021;
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.422 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.03 * safezoneH;
@@ -301,7 +301,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class unittype_divider : orbatCreator_RscText {
                     idc = 10022;
                     text = "";
-                    x = 0.2 * safezoneW + safezoneX;
+                    x = 0 * safezoneW;
                     y = 0.492 * safezoneH;
                     w = 0.46 * safezoneW;
                     h = 0.00125 * safezoneH;
@@ -311,7 +311,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class unittype_title : orbatCreator_common_popup_attribute_title {
                     idc = 10023;
                     text = "Unit Type";
-                    x = 0.21 * safezoneW + safezoneX;
+                    x = 0.005 * safezoneW;
                     y = 0.502 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -320,7 +320,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class unittype_side_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 10024;
                     text = "Side";
-                    x = 0.27 * safezoneW + safezoneX;
+                    x = 0.033 * safezoneW;
                     y = 0.572 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -328,7 +328,7 @@ class ALiVE_orbatCreator_interface_createUnit {
 
                 class unittype_side_input : orbatCreator_RscCombo {
                     idc = 10025;
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.577 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.03 * safezoneH;
@@ -338,7 +338,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class unittype_faction_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 10026;
                     text = "Faction";
-                    x = 0.27 * safezoneW + safezoneX;
+                    x = 0.033 * safezoneW;
                     y = 0.632 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -346,7 +346,7 @@ class ALiVE_orbatCreator_interface_createUnit {
 
                 class unittype_faction_input : orbatCreator_RscCombo {
                     idc = 10027;
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.637 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.03 * safezoneH;
@@ -356,7 +356,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class unittype_category_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 10028;
                     text = "Category";
-                    x = 0.27 * safezoneW + safezoneX;
+                    x = 0.033 * safezoneW;
                     y = 0.692 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -364,7 +364,7 @@ class ALiVE_orbatCreator_interface_createUnit {
 
                 class unittype_category_input : orbatCreator_RscCombo {
                     idc = 10029;
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.697 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.03 * safezoneH;
@@ -374,7 +374,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class unittype_typeList_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 10030;
                     text = "Type";
-                    x = 0.27 * safezoneW + safezoneX;
+                    x = 0.033 * safezoneW;
                     y = 0.752 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -382,7 +382,7 @@ class ALiVE_orbatCreator_interface_createUnit {
 
                 class unittype_typeList_input : orbatCreator_RscListBox {
                     idc = 10031;
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.757 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.18 * safezoneH;
@@ -393,7 +393,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class scroll_dummy : orbatCreator_RscText {
                     idc = 10032;
                     text = "";
-                    x = 0.2 * safezoneW + safezoneX;
+                    x = 0 * safezoneW;
                     y = 0.975 * safezoneH;
                     w = 0.46 * safezoneW;
                     h = 0.00125 * safezoneH;
@@ -564,6 +564,7 @@ class ALiVE_orbatCreator_interface_editVehicle {
             y = 0.934 * safezoneH + safezoneY;
             w = 0.175 * safezoneW;
             h = 0.035 * safezoneH;
+            colorBackground[] = {-1,-1,-1,1};
         };
 
     };

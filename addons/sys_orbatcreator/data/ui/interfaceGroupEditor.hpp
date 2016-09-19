@@ -234,7 +234,7 @@ class ALiVE_orbatCreator_interface_createGroup {
 
         class header : orbatCreator_common_popup_header {
             idc = 12002;
-            text = "Create Faction";
+            text = "Create Group";
         };
 
         class background : orbatCreator_common_popup_background {
@@ -275,7 +275,7 @@ class ALiVE_orbatCreator_interface_createGroup {
                 class general_divider : orbatCreator_RscText {
                     idc = 12009;
                     text = "";
-                    x = 0.2 * safezoneW + safezoneX;
+                    x = 0 * safezoneW;
                     y = 0.01 * safezoneH;
                     w = 0.46 * safezoneW;
                     h = 0.00125 * safezoneH;
@@ -285,7 +285,7 @@ class ALiVE_orbatCreator_interface_createGroup {
                 class general_title : orbatCreator_common_popup_attribute_title {
                     idc = 12010;
                     text = "General";
-                    x = 0.21 * safezoneW + safezoneX;
+                    x = 0.005 * safezoneW;
                     y = 0.02 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -294,7 +294,7 @@ class ALiVE_orbatCreator_interface_createGroup {
                 class displayName_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 12011;
                     text = "Display Name";
-                    x = 0.27 * safezoneW + safezoneX;
+                    x = 0.033 * safezoneW;
                     y = 0.09 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -302,7 +302,7 @@ class ALiVE_orbatCreator_interface_createGroup {
 
                 class displayName_input : orbatCreator_RscEdit {
                     idc = 12012;
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.095 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.03 * safezoneH;
@@ -312,7 +312,7 @@ class ALiVE_orbatCreator_interface_createGroup {
                 class className_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 12013;
                     text = "Class Name";
-                    x = 0.27 * safezoneW + safezoneX;
+                    x = 0.033 * safezoneW;
                     y = 0.145 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -320,7 +320,7 @@ class ALiVE_orbatCreator_interface_createGroup {
 
                 class className_input : orbatCreator_RscEdit {
                     idc = 12014;
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.15 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.03 * safezoneH;
@@ -330,7 +330,7 @@ class ALiVE_orbatCreator_interface_createGroup {
                 class className_button_generateClassname : orbatCreator_RscButton {
                     idc = 12015;
                     text = "Generate Classname";
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.205 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.036 * safezoneH;
@@ -340,7 +340,7 @@ class ALiVE_orbatCreator_interface_createGroup {
                 class category_divider : orbatCreator_RscText {
                     idc = 12016;
                     text = "";
-                    x = 0.2 * safezoneW + safezoneX;
+                    x = 0 * safezoneW;
                     y = 0.29 * safezoneH;
                     w = 0.46 * safezoneW;
                     h = 0.00125 * safezoneH;
@@ -350,7 +350,7 @@ class ALiVE_orbatCreator_interface_createGroup {
                 class category_title_main : orbatCreator_common_popup_attribute_title {
                     idc = 12017;
                     text = "Category";
-                    x = 0.21 * safezoneW + safezoneX;
+                    x = 0.005 * safezoneW;
                     y = 0.30 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -359,7 +359,7 @@ class ALiVE_orbatCreator_interface_createGroup {
                 class category_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 12018;
                     text = "Category";
-                    x = 0.27 * safezoneW + safezoneX;
+                    x = 0.033 * safezoneW;
                     y = 0.370 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -367,7 +367,7 @@ class ALiVE_orbatCreator_interface_createGroup {
 
                 class category_input : orbatCreator_RscCombo {
                     idc = 12019;
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.375 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.03 * safezoneH;
@@ -377,7 +377,7 @@ class ALiVE_orbatCreator_interface_createGroup {
                 class appearance_divider : orbatCreator_RscText {
                     idc = 12020;
                     text = "";
-                    x = 0.2 * safezoneW + safezoneX;
+                    x = 0 * safezoneW;
                     y = 0.447 * safezoneH;
                     w = 0.46 * safezoneW;
                     h = 0.00125 * safezoneH;
@@ -387,7 +387,7 @@ class ALiVE_orbatCreator_interface_createGroup {
                 class appearance_title : orbatCreator_common_popup_attribute_title {
                     idc = 12021;
                     text = "Appearance";
-                    x = 0.21 * safezoneW + safezoneX;
+                    x = 0.005 * safezoneW;
                     y = 0.457 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -396,7 +396,7 @@ class ALiVE_orbatCreator_interface_createGroup {
                 class icon_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 12022;
                     text = "Icon";
-                    x = 0.27 * safezoneW + safezoneX;
+                    x = 0.033 * safezoneW;
                     y = 0.527 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
@@ -404,7 +404,7 @@ class ALiVE_orbatCreator_interface_createGroup {
 
                 class icon_input : orbatCreator_RscCombo {
                     idc = 12023;
-                    x = 0.41 * safezoneW + safezoneX;
+                    x = 0.172 * safezoneW;
                     y = 0.532 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.03 * safezoneH;
@@ -583,7 +583,7 @@ class ALiVE_orbatCreator_interface_editGroup : ALiVE_orbatCreator_interface_crea
 
         class header : orbatCreator_common_popup_header {
             idc = 12002;
-            text = "Create Faction";
+            text = "Edit Group";
         };
 
         class background : orbatCreator_common_popup_background {
