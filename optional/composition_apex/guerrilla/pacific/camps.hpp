@@ -90,7 +90,7 @@
 			name = $STR_ZEC_GuerrillaPacific_CampsMedium_CampJungle3; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\n_recon.paa";
 			class Object0 {side = 8; vehicle = "Land_CanisterPlastic_F"; rank = ""; position[] = {-12.1997,-1.59058,0}; dir = 183.386;};
-			class Object1 {side = 8; vehicle = "Land_Campfire_F"; rank = ""; position[] = {-5.125,1.875,0}; dir = 27.42;};
+			class Object1 {side = 8; vehicle = "Campfire_burning_F"; rank = ""; position[] = {-5.125,1.875,0}; dir = 27.42;};
 			class Object2 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {-9.87256,-1.52893,0}; dir = 270;};
 			class Object3 {side = 8; vehicle = "Land_WoodenCrate_01_F"; rank = ""; position[] = {-1,-1.375,0}; dir = 150;};
 			class Object4 {side = 8; vehicle = "Land_WoodenCrate_01_F"; rank = ""; position[] = {-8.90869,-0.571045,0}; dir = 258.432;};
@@ -148,7 +148,7 @@
 			class Object12 {side = 8; vehicle = "Land_CampingTable_small_F"; rank = ""; position[] = {-1.5,-5.25,0}; dir = 344.997;};
 			class Object13 {side = 8; vehicle = "Land_DataTerminal_01_F"; rank = ""; position[] = {-0.255859,-4.37231,0}; dir = 225;};
 			class Object14 {side = 8; vehicle = "Land_Razorwire_F"; rank = ""; position[] = {-18.3369,-8.73584,0}; dir = 75;};
-			class Object15 {side = 8; vehicle = "Land_Campfire_F"; rank = ""; position[] = {-1.75,1.875,0}; dir = 27.42;};
+			class Object15 {side = 8; vehicle = "Campfire_burning_F"; rank = ""; position[] = {-1.75,1.875,0}; dir = 27.42;};
 			class Object16 {side = 8; vehicle = "Land_Pallet_F"; rank = ""; position[] = {-6.625,4.5,0}; dir = 283.513;};
 			class Object17 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {-9.25781,-1.38464,0}; dir = 60;};
 			class Object18 {side = 8; vehicle = "Land_CampingChair_V1_F"; rank = ""; position[] = {-0.125,0.625,0}; dir = 104.974;};
@@ -170,7 +170,7 @@
 			name = $STR_ZEC_GuerrillaPacific_CampsMedium_CampJungle5; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\n_recon.paa";
 			class Object0 {side = 8; vehicle = "Land_CanisterPlastic_F"; rank = ""; position[] = {-7.25,-3.625,0}; dir = 329.047;};
-			class Object1 {side = 8; vehicle = "Land_Campfire_F"; rank = ""; position[] = {-4.625,1.875,0}; dir = 329.89;};
+			class Object1 {side = 8; vehicle = "Campfire_burning_F"; rank = ""; position[] = {-4.625,1.875,0}; dir = 329.89;};
 			class Object2 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x3_F"; rank = ""; position[] = {-8.54297,-3.28381,0}; dir = 315;};
 			class Object3 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {0.75,2,0}; dir = 75;};
 			class Object4 {side = 8; vehicle = "Land_CampingChair_V1_F"; rank = ""; position[] = {0.875,-2.5,0}; dir = 44.9729;};
@@ -256,7 +256,7 @@
 			class Object23 {side = 8; vehicle = "Land_PicnicTable_01_F"; rank = ""; position[] = {-10.0132,-1.7594,0}; dir = 90;};
 			class Object24 {side = 8; vehicle = "Land_PicnicTable_01_F"; rank = ""; position[] = {4.13428,-5.76343,0}; dir = 0;};
 			class Object25 {side = 8; vehicle = "Land_PicnicTable_01_F"; rank = ""; position[] = {4.15967,2.93237,0}; dir = 180;};
-			class Object27 {side = 8; vehicle = "Land_Campfire_F"; rank = ""; position[] = {-2.25,-0.875,0}; dir = 26.9091;};
+			class Object27 {side = 8; vehicle = "Campfire_burning_F"; rank = ""; position[] = {-2.25,-0.875,0}; dir = 26.9091;};
 			class Object28 {side = 8; vehicle = "Land_WoodenLog_F"; rank = ""; position[] = {-2.25,-5,0}; dir = 77.2296;};
 			class Object29 {side = 8; vehicle = "Land_CanisterFuel_F"; rank = ""; position[] = {-5.125,-6.75024,0}; dir = 35.8203;};
 			class Object30 {side = 8; vehicle = "Land_Camping_Light_F"; rank = ""; position[] = {-5.37451,-6.25012,0}; dir = 76.2793;};
@@ -266,7 +266,7 @@
 		class CampSite2 {
 			name = $STR_ZEC_GuerrillaPacific_CampsSmall_CampSite2; // Credit: 2600K
 			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
-			class Object0 {side = 8; vehicle = "Land_Campfire_F"; rank = ""; position[] = {-2.125,4.375,0}; dir = 27.42;};
+			class Object0 {side = 8; vehicle = "Campfire_burning_F"; rank = ""; position[] = {-2.125,4.375,0}; dir = 27.42;};
 			class Object1 {side = 8; vehicle = "Land_Cliff_stone_big_F"; rank = ""; position[] = {5.37402,7.99414,0}; dir = 300;};
 			class Object2 {side = 8; vehicle = "Land_Cliff_stoneCluster_F"; rank = ""; position[] = {-7.75439,2.24377,0}; dir = 195;};
 			class Object3 {side = 8; vehicle = "Land_Pallet_F"; rank = ""; position[] = {-6,-2,0}; dir = 208.513;};
@@ -299,7 +299,7 @@
 		class JungleCamp {
 			name = $STR_ZEC_GuerrillaPacific_CampsSmall_JungleCamp; // Credit: 2600K
 			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
-			class Object0 {side = 8; vehicle = "Land_Campfire_F"; rank = ""; position[] = {-7.25,-2.625,0}; dir = 26.9091;};
+			class Object0 {side = 8; vehicle = "Campfire_burning_F"; rank = ""; position[] = {-7.25,-2.625,0}; dir = 26.9091;};
 			class Object1 {side = 8; vehicle = "Land_Cliff_boulder_F"; rank = ""; position[] = {3.71387,6.03943,0}; dir = 210;};
 			class Object2 {side = 8; vehicle = "Land_Cliff_stoneCluster_F"; rank = ""; position[] = {-9.88184,7.24695,0}; dir = 225;};
 			class Object3 {side = 8; vehicle = "Land_Pallet_F"; rank = ""; position[] = {-1.875,-1.875,0}; dir = 118.513;};

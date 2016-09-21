@@ -1,7 +1,7 @@
     class HeliportsLarge
     {
         name = $STR_ZEC_HeliportsLarge;
-		class HelipadSquare_GUER {
+		class HelipadSquare_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_HeliportsLarge_HelipadSquare; // Credit: 2600K
 			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-17.2871,-9.24219,0}; dir = 45;};
@@ -63,7 +63,7 @@
     class HeliportsMedium
     {
         name = $STR_ZEC_HeliportsMedium;
-		class HelipadSquare_GUER {
+		class HelipadSquare_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_HeliportsMedium_HelipadSquare; // Credit: 2600K
 			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-8.49219,9.78711,0}; dir = 135;};

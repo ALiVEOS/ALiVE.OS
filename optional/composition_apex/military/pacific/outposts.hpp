@@ -1,8 +1,8 @@
     class OutpostsLarge
     {
         name = $STR_ZEC_OutpostsLarge;
-		class LargeBungalow_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsLarge_LargeBungalow_OPF_F; // Credit: 2600K
+		class LargeBungalow_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsLarge_LargeBungalow_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_Pallet_F"; rank = ""; position[] = {-26.75,7.5,0}; dir = 283.513;};
 			class Object1 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {-25.135,9.45947,0}; dir = 345;};
@@ -44,8 +44,8 @@
 			class Object38 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {8.91199,-14.8828,0}; dir = 225;};
 			class Object39 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {9.4845,-17.2583,0}; dir = 270;};
 		};
-		class BungalowCompound_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsLarge_BungalowCompound_OPF_F; // Credit: 2600K
+		class BungalowCompound_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsLarge_BungalowCompound_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_CratesShabby_F"; rank = ""; position[] = {3.37354,-11.2578,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {5.125,-11.25,0}; dir = 0;};
@@ -130,8 +130,8 @@
 			class Object81 {side = 8; vehicle = "Land_ConcreteWall_01_l_pole_F"; rank = ""; position[] = {18.5,18,0}; dir = 0;};
 			class Object82 {side = 8; vehicle = "Land_ConcreteWall_01_l_pole_F"; rank = ""; position[] = {18.5,-0.5,0}; dir = 90;};
 		};
-		class Villa_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsLarge_Villa_OPF_F; // Credit: 2600K
+		class Villa_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsLarge_Villa_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_short_green_F"; rank = ""; position[] = {-5.25928,-11.8257,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {7.23242,-3.82422,0}; dir = 0;};
@@ -182,8 +182,8 @@
 			class Object47 {side = 8; vehicle = "Land_NetFence_02_m_pole_F"; rank = ""; position[] = {14.2284,-7.07764,0}; dir = 0;};
 			class Object48 {side = 8; vehicle = "Land_NetFence_02_m_gate_v1_F"; rank = ""; position[] = {14.3574,-7.81006,0}; dir = 90;};
 		};
-		class Apartment_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsLarge_Apartment_OPF_F; // Credit: 2600K
+		class Apartment_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsLarge_Apartment_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_CratesShabby_F"; rank = ""; position[] = {-8.75146,-9.75781,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {-7,-9.75,0}; dir = 0;};
@@ -238,8 +238,8 @@
 			class Object51 {side = 8; vehicle = "Land_CampingChair_V1_F"; rank = ""; position[] = {22.3674,0.111328,0}; dir = 120.005;};
 			class Object52 {side = 8; vehicle = "Land_CampingChair_V1_F"; rank = ""; position[] = {22.75,2,0}; dir = 29.983;};
 		};
-		class Villa_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsLarge_Villa_BLU_F; // Credit: 2600K
+		class Villa_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsLarge_Villa_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_short_green_F"; rank = ""; position[] = {12.4424,9.30859,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_short_green_F"; rank = ""; position[] = {12.2339,-10.5659,0}; dir = 90;};
@@ -280,8 +280,8 @@
 			class Object37 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {14.9747,2.26367,0}; dir = 315;};
 			class Object38 {side = 8; vehicle = "Land_BagFence_01_short_green_F"; rank = ""; position[] = {15.6089,4.05908,0}; dir = 90;};
 		};
-		class Apartment_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsLarge_Apartment_BLU_F; // Credit: 2600K
+		class Apartment_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsLarge_Apartment_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_TinWall_01_m_4m_v1_F"; rank = ""; position[] = {-18.8737,-14.0103,0}; dir = 90;};
 			class Object1 {side = 8; vehicle = "Land_TinWall_01_m_4m_v2_F"; rank = ""; position[] = {-18.8848,-10.0098,0}; dir = 90;};
@@ -326,8 +326,8 @@
 			class Object41 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x5_F"; rank = ""; position[] = {9.74847,6.97021,0}; dir = 0;};
 			class Object42 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {7.125,0.75,0}; dir = 270;};
 		};
-		class LargeBungalow1_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsLarge_LargeBungalow1_BLU_F; // Credit: 2600K
+		class LargeBungalow1_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsLarge_LargeBungalow1_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-31.5125,-16.1274,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_Pallet_F"; rank = ""; position[] = {-36.625,-13.5,0}; dir = 283.513;};
@@ -370,8 +370,8 @@
 			class Object39 {side = 8; vehicle = "Land_CinderBlocks_01_F"; rank = ""; position[] = {-19.2083,6.13428,0}; dir = 0;};
 			class Object40 {side = 8; vehicle = "Land_WaterTank_03_F"; rank = ""; position[] = {-6.00262,0.254883,0}; dir = 345;};
 		};
-		class LargeBungalow2_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsLarge_LargeBungalow2_BLU_F; // Credit: 2600K
+		class LargeBungalow2_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsLarge_LargeBungalow2_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_GarbageHeap_04_F"; rank = ""; position[] = {-6.35223,-10.0776,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_ConcreteWall_02_m_8m_F"; rank = ""; position[] = {-18.6203,-8.99707,0}; dir = 0;};
@@ -1315,8 +1315,8 @@
 			class Object44 {side = 8; vehicle = "Land_WoodenTable_small_F"; rank = ""; position[] = {8.25,6.625,0}; dir = 269.998;};
 			class Object45 {side = 8; vehicle = "Land_CampingChair_V2_F"; rank = ""; position[] = {8.17578,5.75684,0}; dir = 195.005;};
 		};
-		class Bungalow_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_Bungalow_OPF_F; // Credit: 2600K
+		class Bungalow_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_Bungalow_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_CratesShabby_F"; rank = ""; position[] = {-5.37354,4.25781,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {-6.125,-0.5,0}; dir = 107.533;};
@@ -1355,8 +1355,8 @@
 			class Object35 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-8.625,-8.625,0}; dir = 114.525;};
 			class Object36 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-9.35352,-8.95166,0}; dir = 144.534;};
 		};
-		class BrickBungalow_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_BrickBungalow_OPF_F; // Credit: 2600K
+		class BrickBungalow_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_BrickBungalow_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_NetFence_02_m_8m_F"; rank = ""; position[] = {-19.125,10.001,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_NetFence_02_m_pole_F"; rank = ""; position[] = {-19.129,14.1216,0}; dir = 0;};
@@ -1389,8 +1389,8 @@
 			class Object29 {side = 8; vehicle = "Land_PortableLight_double_F"; rank = ""; position[] = {3.85828,7.06689,0}; dir = 105;};
 			class Object30 {side = 8; vehicle = "Land_Portable_generator_F"; rank = ""; position[] = {4.35571,8.04297,0}; dir = 284.998;};
 		};
-		class GreyBungalow_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_GreyBungalow_OPF_F; // Credit: 2600K
+		class GreyBungalow_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_GreyBungalow_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-17.1622,-8.11719,0}; dir = 45;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-17.7655,-5.6333,0}; dir = 270;};
@@ -1448,8 +1448,8 @@
 			class Object54 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {-6.85779,8.34277,0}; dir = 93.6861;};
 			class Object55 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-8.91418,5.98926,0}; dir = 84.5216;};
 		};
-		class YellowBungalow_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_YellowBungalow_OPF_F; // Credit: 2600K
+		class YellowBungalow_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_YellowBungalow_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_NetFence_02_m_4m_F"; rank = ""; position[] = {-20.3749,-7.99902,0}; dir = 90;};
 			class Object1 {side = 8; vehicle = "Land_NetFence_02_m_8m_F"; rank = ""; position[] = {-20.375,7.25098,0}; dir = 270;};
@@ -1492,8 +1492,8 @@
 			class Object39 {side = 8; vehicle = "Flag_CSAT_F"; rank = ""; position[] = {6.39697,4.48633,0}; dir = 0;};
 			class Object40 {side = 8; vehicle = "Land_Sacks_heap_F"; rank = ""; position[] = {-7.75,-2,0}; dir = 278.249;};
 		};
-		class BlueBungalow_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_BlueBungalow_OPF_F; // Credit: 2600K
+		class BlueBungalow_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_BlueBungalow_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {4.66565,7.42578,0}; dir = 179.116;};
 			class Object1 {side = 8; vehicle = "Land_PaperBox_open_full_F"; rank = ""; position[] = {6.76953,-10.9844,0}; dir = 276.432;};
@@ -1534,8 +1534,8 @@
 			class Object37 {side = 8; vehicle = "Land_CanisterFuel_F"; rank = ""; position[] = {7.12488,-9.25,0}; dir = 45.0022;};
 			class Object38 {side = 8; vehicle = "Land_CinderBlocks_01_F"; rank = ""; position[] = {8.73816,6.61621,0}; dir = 45;};
 		};
-		class Shack_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_Shack_OPF_F; // Credit: 2600K
+		class Shack_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_Shack_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_GarbagePallet_F"; rank = ""; position[] = {-2.92676,3.99707,0}; dir = 297.971;};
 			class Object1 {side = 8; vehicle = "Land_WoodenBox_F"; rank = ""; position[] = {-4.51624,4.38623,0}; dir = 107.06;};
@@ -1583,8 +1583,8 @@
 			class Object44 {side = 8; vehicle = "Land_TinWall_01_m_4m_v1_F"; rank = ""; position[] = {13.2487,6.26025,0}; dir = 270;};
 			class Object45 {side = 8; vehicle = "Land_TinWall_01_m_4m_v2_F"; rank = ""; position[] = {11.2401,8.25977,0}; dir = 180;};
 		};
-		class ParkingHouse_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_ParkingHouse_OPF_F; // Credit: 2600K
+		class ParkingHouse_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_ParkingHouse_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {2.16565,6.55078,0}; dir = 95.2257;};
 			class Object1 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {3.91321,5.56348,0}; dir = 0;};
@@ -1624,8 +1624,8 @@
 			class Object36 {side = 8; vehicle = "Land_NetFence_01_m_8m_F"; rank = ""; position[] = {14.9453,9.93359,0}; dir = 180;};
 			class Object37 {side = 8; vehicle = "Land_GarbageBags_F"; rank = ""; position[] = {11.6256,-0.0893555,0}; dir = 0;};
 		};
-		class GuardCompound_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_GuardCompound_OPF_F; // Credit: 2600K
+		class GuardCompound_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_GuardCompound_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_GuardHouse_01_F"; rank = ""; position[] = {1.16199,5.18848,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "Land_LampShabby_F"; rank = ""; position[] = {-2.82507,-6.76074,0}; dir = 0;};
@@ -1695,8 +1695,8 @@
 			class Object66 {side = 8; vehicle = "Land_ConcreteWall_01_l_pole_F"; rank = ""; position[] = {13.3168,17.501,0}; dir = 180;};
 			class Object67 {side = 8; vehicle = "Land_WaterTank_03_F"; rank = ""; position[] = {12.4406,7.38135,0}; dir = 0;};
 		};
-		class Junkyard_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_Junkyard_OPF_F; // Credit: 2600K
+		class Junkyard_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_Junkyard_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_TinWall_01_m_4m_v1_F"; rank = ""; position[] = {0.760254,-14.4985,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_TinWall_01_m_4m_v1_F"; rank = ""; position[] = {4.76025,-14.4985,0}; dir = 0;};
@@ -1746,8 +1746,8 @@
 			class Object46 {side = 8; vehicle = "Flag_CSAT_F"; rank = ""; position[] = {10.772,-0.638672,0}; dir = 0;};
 			class Object47 {side = 8; vehicle = "Land_LampShabby_F"; rank = ""; position[] = {14.4884,-10.4829,0}; dir = 90;};
 		};
-		class Bungalow_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_Bungalow_BLU_F; // Credit: 2600K
+		class Bungalow_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_Bungalow_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x3_F"; rank = ""; position[] = {-15.1673,10.2827,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_Pallet_F"; rank = ""; position[] = {-15.7244,-6.75293,0}; dir = 189.292;};
@@ -1787,8 +1787,8 @@
 			class Object36 {side = 8; vehicle = "Land_Garbage_square3_F"; rank = ""; position[] = {7.5058,-4.97461,0}; dir = 300;};
 			class Object37 {side = 8; vehicle = "Land_Garbage_square3_F"; rank = ""; position[] = {-12.4492,12.4629,0}; dir = 0;};
 		};
-		class BrickBungalow_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_BrickBungalow_BLU_F; // Credit: 2600K
+		class BrickBungalow_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_BrickBungalow_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {-10.875,5.75,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_PaperBox_open_full_F"; rank = ""; position[] = {-12.7565,1.50635,0}; dir = 135;};
@@ -1835,8 +1835,8 @@
 			class Object43 {side = 8; vehicle = "Land_PortableLight_double_F"; rank = ""; position[] = {-3.33508,-6.84912,0}; dir = 225;};
 			class Object44 {side = 8; vehicle = "Land_Portable_generator_F"; rank = ""; position[] = {-3.25098,-5.74902,0}; dir = 225.002;};
 		};
-		class GreyBungalow_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_GreyBungalow_BLU_F; // Credit: 2600K
+		class GreyBungalow_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_GreyBungalow_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_CratesShabby_F"; rank = ""; position[] = {-15.6238,-2.86719,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "Land_IronPipes_F"; rank = ""; position[] = {-18.8066,-5.62744,0}; dir = 105;};
@@ -1885,8 +1885,8 @@
 			class Object45 {side = 8; vehicle = "Land_PortableLight_double_F"; rank = ""; position[] = {-4.15942,4.28467,0}; dir = 135;};
 			class Object46 {side = 8; vehicle = "Land_Portable_generator_F"; rank = ""; position[] = {-5.25977,3.88916,0}; dir = 134.974;};
 		};
-		class YellowBungalow_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_YellowBungalow_BLU_F; // Credit: 2600K
+		class YellowBungalow_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_YellowBungalow_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_PaperBox_open_full_F"; rank = ""; position[] = {-25.6185,-3.61865,0}; dir = 225;};
 			class Object1 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {-24.625,-5.75,0}; dir = 270.002;};
@@ -1944,8 +1944,8 @@
 			class Object54 {side = 8; vehicle = "Land_PortableLight_double_F"; rank = ""; position[] = {-13.6598,4.71582,0}; dir = 45;};
 			class Object55 {side = 8; vehicle = "Land_Portable_generator_F"; rank = ""; position[] = {-13.5224,3.51904,0}; dir = 60.0103;};
 		};
-		class BlueBungalow_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_BlueBungalow_BLU_F; // Credit: 2600K
+		class BlueBungalow_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_BlueBungalow_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_CratesShabby_F"; rank = ""; position[] = {-12.2236,-8.7876,0}; dir = 135;};
 			class Object1 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {-6.58435,-4.94922,0}; dir = 180;};
@@ -1990,8 +1990,8 @@
 			class Object41 {side = 8; vehicle = "Land_PortableLight_double_F"; rank = ""; position[] = {-13.2089,-8.07715,0}; dir = 180;};
 			class Object42 {side = 8; vehicle = "Land_Portable_generator_F"; rank = ""; position[] = {-12.9582,-7.07373,0}; dir = 329.977;};
 		};
-		class Shack_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_Shack_BLU_F; // Credit: 2600K
+		class Shack_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_Shack_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {-15.7701,-6.08887,0}; dir = 288.219;};
 			class Object1 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {2.50842,-17.3848,0}; dir = 150;};
@@ -2040,8 +2040,8 @@
 			class Object45 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x5_F"; rank = ""; position[] = {-12.4778,3.27002,0}; dir = 225;};
 			class Object46 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x5_F"; rank = ""; position[] = {-13.9863,2.22314,0}; dir = 330;};
 		};
-		class ParkingHouse_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_ParkingHouse_BLU_F; // Credit: 2600K
+		class ParkingHouse_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_ParkingHouse_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {-13.4594,0.925781,0}; dir = 3.96516;};
 			class Object1 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {6.56116,5.54883,0}; dir = 75;};
@@ -2097,8 +2097,8 @@
 			class Object52 {side = 8; vehicle = "Land_CampingChair_V2_F"; rank = ""; position[] = {7.31677,1.31982,0}; dir = 134.994;};
 			class Object53 {side = 8; vehicle = "Land_CampingChair_V2_F"; rank = ""; position[] = {5.96204,2.50977,0}; dir = 0.00116851;};
 		};
-		class GuardHouse_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_GuardCompound_BLU_F; // Credit: 2600K
+		class GuardHouse_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_GuardCompound_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_GuardHouse_01_F"; rank = ""; position[] = {-5.49567,-1.09424,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_CratesShabby_F"; rank = ""; position[] = {-0.300415,-4.00049,0}; dir = 270;};
@@ -2148,8 +2148,8 @@
 			class Object46 {side = 8; vehicle = "Land_NetFence_01_m_8m_F"; rank = ""; position[] = {10.4497,-1.15381,0}; dir = 270;};
 			class Object47 {side = 8; vehicle = "Land_NetFence_01_m_8m_F"; rank = ""; position[] = {10.4497,6.84619,0}; dir = 270;};
 		};
-		class Junkyard_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_Junkyard_BLU_F; // Credit: 2600K
+		class Junkyard_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsMedium_Junkyard_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "B_T_LSV_01_unarmed_F"; rank = ""; position[] = {-26.1271,-9.88477,0}; dir = 195.001;};
 			class Object1 {side = 8; vehicle = "Land_CratesShabby_F"; rank = ""; position[] = {-12.2422,-3.00146,0}; dir = 270;};
@@ -2226,8 +2226,8 @@
     class OutpostsSmall
     {
         name = $STR_ZEC_OutpostsSmall;
-		class OldBungalow_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_OldBungalow_BLU_F; // Credit: 2600K
+		class OldBungalow_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_OldBungalow_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_HBarrier_01_line_5_green_F"; rank = ""; position[] = {-19.7462,5.10645,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier_01_line_5_green_F"; rank = ""; position[] = {-17.7687,-9.75391,0}; dir = 0;};
@@ -2273,8 +2273,8 @@
 			class Object42 {side = 8; vehicle = "Land_HBarrier_01_line_3_green_F"; rank = ""; position[] = {-7.49609,9.52295,0}; dir = 180;};
 			class Object43 {side = 8; vehicle = "Land_HBarrier_01_line_3_green_F"; rank = ""; position[] = {-5.22699,8.62109,0}; dir = 270;};
 		};
-		class NativeHouse_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_NativeHouse_BLU_F; // Credit: 2600K
+		class NativeHouse_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_NativeHouse_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-5.2998,7.4292,0}; dir = 165;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {6.39063,-2.36682,0}; dir = 90;};
@@ -2294,8 +2294,8 @@
 			class Object16 {side = 8; vehicle = "Land_Pallet_MilBoxes_F"; rank = ""; position[] = {5.12939,6.29321,0}; dir = 195;};
 			class Object17 {side = 8; vehicle = "Land_WoodenCrate_01_F"; rank = ""; position[] = {3.625,8,0}; dir = 285;};
 		};
-		class SlumShack_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_SlumShack_BLU_F; // Credit: 2600K
+		class SlumShack_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_SlumShack_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_Boat_01_abandoned_blue_F"; rank = ""; position[] = {9.12598,-1.38184,0}; dir = 210;};
 			class Object1 {side = 8; vehicle = "Land_Slum_01_F"; rank = ""; position[] = {-0.254883,-1.76038,0}; dir = 90;};
@@ -2317,8 +2317,8 @@
 			class Object17 {side = 8; vehicle = "B_T_LSV_01_unarmed_F"; rank = ""; position[] = {-7.87891,-1.01221,0}; dir = 210.001;};
 			class Object19 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x3_F"; rank = ""; position[] = {7.24365,1.1958,0}; dir = 270;};
 		};
-		class Shed_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_Shed_BLU_F; // Credit: 2600K
+		class Shed_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_Shed_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_Shed_07_F"; rank = ""; position[] = {0.0126953,-3.81079,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {-0.625,5.25,0}; dir = 300.001;};
@@ -2348,8 +2348,8 @@
 			class Object26 {side = 8; vehicle = "Land_WoodenPlanks_01_messy_F"; rank = ""; position[] = {-3.27393,-8.10303,0}; dir = 180;};
 			class Object27 {side = 8; vehicle = "Land_GarbageHeap_03_F"; rank = ""; position[] = {1.43164,-8.77979,0}; dir = 315;};
 		};
-		class ShedSmall_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_ShedSmall_BLU_F; // Credit: 2600K
+		class ShedSmall_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_ShedSmall_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_Boat_01_abandoned_red_F"; rank = ""; position[] = {6.37744,-6.49353,0}; dir = 60;};
 			class Object1 {side = 8; vehicle = "Land_Shed_05_F"; rank = ""; position[] = {-0.520508,-0.12915,0}; dir = 0;};
@@ -2369,8 +2369,8 @@
 			class Object16 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x3_F"; rank = ""; position[] = {-4.50635,2.3208,0}; dir = 270;};
 			class Object17 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {-0.875,5.625,0}; dir = 300.001;};
 		};
-		class Shack_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_Shack_BLU_F; // Credit: 2600K
+		class Shack_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_Shack_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_Slum_02_F"; rank = ""; position[] = {-0.0166016,0.0201416,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-3.23438,3.25818,0}; dir = 90;};
@@ -2396,8 +2396,8 @@
 			class Object22 {side = 8; vehicle = "Land_WoodenPlanks_01_messy_F"; rank = ""; position[] = {-2.73242,9.22253,0}; dir = 15;};
 			class Object23 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x5_F"; rank = ""; position[] = {3.84521,0.376465,0}; dir = 90;};
 		};
-		class ShedTiny_BLU_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_ShedTiny_BLU_F; // Credit: 2600K
+		class ShedTiny_BLU_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_ShedTiny_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {3.53369,-2.26599,0}; dir = 75;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {3.16162,0.355225,0}; dir = 90;};
@@ -2416,8 +2416,8 @@
 			class Object15 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x3_F"; rank = ""; position[] = {-0.553223,-3.9231,0}; dir = 195;};
 			class Object16 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {-1.604,6.09705,0}; dir = 270.002;};
 		};
-		class Nativehouse_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_NativeHouse_OPF_F; // Credit: 2600K
+		class Nativehouse_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_NativeHouse_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {3.25,4.375,0}; dir = 0.00107065;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {8.62891,2.60791,0}; dir = 195;};
@@ -2437,8 +2437,8 @@
 			class Object16 {side = 8; vehicle = "O_T_Quadbike_01_ghex_F"; rank = ""; position[] = {4.62158,-8.12256,0}; dir = 150;};
 			class Object17 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x3_F"; rank = ""; position[] = {0.570801,-4.36865,0}; dir = 0;};
 		};
-		class SlumShack_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_SlumShack_OPF_F; // Credit: 2600K
+		class SlumShack_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_SlumShack_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_Slum_01_F"; rank = ""; position[] = {-2.88525,3.13013,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {8.23438,3.86682,0}; dir = 270;};
@@ -2458,8 +2458,8 @@
 			class Object15 {side = 8; vehicle = "O_T_LSV_02_armed_F"; rank = ""; position[] = {0.874023,-7.49841,0}; dir = 120;};
 			class Object17 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {8.75732,-2.22876,0}; dir = 30;};
 		};
-		class Shed_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_Shed_OPF_F; // Credit: 2600K
+		class Shed_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_Shed_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_Shed_07_F"; rank = ""; position[] = {4.6377,0.314209,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {9.98438,-1.25818,0}; dir = 270;};
@@ -2491,8 +2491,8 @@
 			class Object28 {side = 8; vehicle = "Land_WoodenPlanks_01_F"; rank = ""; position[] = {6.5542,-4.76575,0}; dir = 0;};
 			class Object29 {side = 8; vehicle = "Land_PaperBox_open_full_F"; rank = ""; position[] = {-8.99219,11.1204,0}; dir = 300;};
 		};
-		class ShedSmall_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_ShedSmall_OPF_F; // Credit: 2600K
+		class ShedSmall_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_ShedSmall_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_Shed_05_F"; rank = ""; position[] = {7.72949,-0.12915,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_ToiletBox_F"; rank = ""; position[] = {12.375,1.375,0}; dir = 195.001;};
@@ -2519,8 +2519,8 @@
 			class Object22 {side = 8; vehicle = "Land_PortableGenerator_01_F"; rank = ""; position[] = {-5.375,8,0}; dir = 210.002;};
 			class Object24 {side = 8; vehicle = "Land_PaperBox_open_full_F"; rank = ""; position[] = {9.63428,3.49988,0}; dir = 270;};
 		};
-		class Shack_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_Shack_OPF_F; // Credit: 2600K
+		class Shack_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_Shack_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_Slum_02_F"; rank = ""; position[] = {2.9834,5.02014,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {7,5.625,0}; dir = 75.0021;};
@@ -2551,8 +2551,8 @@
 			class Object27 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x3_F"; rank = ""; position[] = {7.14502,7.80066,0}; dir = 105;};
 			class Object28 {side = 8; vehicle = "Land_WoodenCrate_01_F"; rank = ""; position[] = {-7.625,-4.25,0}; dir = 315;};
 		};
-		class ShedTiny_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_ShedTiny_OPF_F; // Credit: 2600K
+		class ShedTiny_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_ShedTiny_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_ToiletBox_F"; rank = ""; position[] = {-1.604,4.84705,0}; dir = 195.003;};
 			class Object1 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {1.896,2.09705,0}; dir = 90.0015;};
@@ -2575,8 +2575,8 @@
 			class Object19 {side = 8; vehicle = "Land_Shed_01_F"; rank = ""; position[] = {-2.11768,2.42676,0}; dir = 0;};
 			class Object20 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x5_F"; rank = ""; position[] = {1.86621,0.223511,0}; dir = 90;};
 		};
-		class OldBungalow_OPF_F {
-			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_OldBungalow_OPF_F; // Credit: 2600K
+		class OldBungalow_OPF_T_F {
+			name = $STR_ZEC_MilitaryPacific_OutpostsSmall_OldBungalow_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {5.25464,5.73828,0}; dir = 169.905;};
 			class Object1 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-5.52686,8.2666,0}; dir = 180;};
