@@ -51,7 +51,7 @@
 			class Object45 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {13.9844,-2.63318,0}; dir = 270;};
 		};
 		class HelipadSquare_OPF_T_F {
-			name = $STR_ZEC_MilitaryPacific_HeliportsLarge_HelipadSquare_OPF_F; // Credit: 2600K
+			name = $STR_ZEC_MilitaryPacific_HeliportsLarge_HelipadSquare_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-4.11719,9.53711,0}; dir = 135;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-4.89063,7.1167,0}; dir = 270;};
@@ -106,7 +106,7 @@
 			class Object51 {side = 8; vehicle = "Land_HBarrier_01_line_1_green_F"; rank = ""; position[] = {0.00390625,10.2437,0}; dir = 330;};
 		};
 		class HelipadSquare_BLU_CTRG_F {
-			name = $STR_ZEC_MilitaryPacific_HeliportsLarge_HelipadSquare_CTRG; // Credit: 2600K
+			name = $STR_ZEC_MilitaryPacific_HeliportsLarge_HelipadSquare_BLU_CTRG_F; // Credit: 2600K
 			icon = "\a3\UI_F_Exp\Data\CfgMarkers\ctrg_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_corner_green_F"; rank = ""; position[] = {-19.9932,-2.90967,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-19.0371,-9.86719,0}; dir = 45;};

@@ -44,36 +44,6 @@
 			class Object37 {side = 8; vehicle = "Land_Pallet_F"; rank = ""; position[] = {4.01501,-13.0854,0}; dir = 179.332;};
 			class Object38 {side = 8; vehicle = "Land_Antenna"; rank = ""; position[] = {12.704,5.91797,0}; dir = 75;};
 		};
-		class ServicePoint_CUP_O_TK {
-			name = $STR_ZECCUP_MilitaryDesert_SupportsLarge_ServicePoint_CUP_O_TK; // Credit: 2600K
-			icon = "\ca\data\flag_rus_co.paa";
-			class Object0 {side = 8; vehicle = "Land_HBarrier3"; rank = ""; position[] = {-5.90674,-4.16064,0}; dir = 0;};
-			class Object1 {side = 8; vehicle = "Land_HBarrier3"; rank = ""; position[] = {-7.21423,-4.28174,0}; dir = 270;};
-			class Object2 {side = 8; vehicle = "AmmoCrates_NoInteractive_Large"; rank = ""; position[] = {-2.86938,1.41553,0}; dir = 270;};
-			class Object4 {side = 8; vehicle = "MetalBarrel_burning_F"; rank = ""; position[] = {0.5,-2.875,0}; dir = 105;};
-			class Object5 {side = 8; vehicle = "AmmoCrates_NoInteractive_Small"; rank = ""; position[] = {-4.77344,1.52051,0}; dir = 180;};
-			class Object6 {side = 8; vehicle = "Barrel1"; rank = ""; position[] = {-5.21313,-2.98682,0}; dir = 330;};
-			class Object7 {side = 8; vehicle = "Barrel1"; rank = ""; position[] = {-6,-2.875,0}; dir = 150;};
-			class Object8 {side = 8; vehicle = "TK_GUE_WarfareBVehicleServicePoint_Base_EP1"; rank = ""; position[] = {0.348877,5.05078,0}; dir = 180;};
-			class Object9 {side = 8; vehicle = "Land_fort_bagfence_corner"; rank = ""; position[] = {-5.77954,5.83838,0}; dir = 90;};
-			class Object10 {side = 8; vehicle = "Land_fort_bagfence_long"; rank = ""; position[] = {0.609619,6.86084,0}; dir = 2.04906e-005;};
-			class Object11 {side = 8; vehicle = "Land_fort_bagfence_long"; rank = ""; position[] = {-2.26538,6.86084,0}; dir = 2.04906e-005;};
-			class Object12 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-7.32556,2.11865,0}; dir = 270;};
-			class Object13 {side = 8; vehicle = "Land_CamoNet_EAST_EP1"; rank = ""; position[] = {7.69946,1.02441,0}; dir = 90;};
-			class Object14 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {0.743652,-4.04932,0}; dir = 0;};
-			class Object15 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {8.95056,1.00635,0}; dir = 90;};
-			class Object16 {side = 8; vehicle = "Land_HBarrier3"; rank = ""; position[] = {8.23303,-3.41602,0}; dir = 165;};
-			class Object17 {side = 8; vehicle = "Land_WaterBarrel_F"; rank = ""; position[] = {7.375,2,0}; dir = 119.991;};
-			class Object18 {side = 8; vehicle = "Barrel4"; rank = ""; position[] = {6.5343,-2.47998,0}; dir = 315;};
-			class Object19 {side = 8; vehicle = "Barrel4"; rank = ""; position[] = {4.29321,-2.84033,0}; dir = 150;};
-			class Object20 {side = 8; vehicle = "Barrel1"; rank = ""; position[] = {5,-2.75,0}; dir = 45;};
-			class Object21 {side = 8; vehicle = "Barrel1"; rank = ""; position[] = {5.875,-2.75,0}; dir = 210;};
-			class Object22 {side = 8; vehicle = "Land_Sacks_heap_F"; rank = ""; position[] = {7.5,0.625,0}; dir = 270;};
-			class Object23 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {3.375,1.125,0}; dir = 194.998;};
-			class Object24 {side = 8; vehicle = "Land_fort_bagfence_corner"; rank = ""; position[] = {3.71338,6.27979,0}; dir = 180;};
-			class Object25 {side = 8; vehicle = "Land_fort_bagfence_long"; rank = ""; position[] = {6.60962,6.73584,0}; dir = 1.36604e-005;};
-			class Object26 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {8.95056,6.63135,0}; dir = 90;};
-		};
 		// WEST
 		class Barracks_CUP_B_USMC {
 			name = $STR_ZECCUP_MilitaryDesert_SupportsLarge_Barracks_CUP_B_USMC; // Credit: 2600K
@@ -121,47 +91,7 @@
 			class Object41 {side = 8; vehicle = "US_WarfareBBarracks_Base_EP1"; rank = ""; position[] = {2.03906,2.45801,0}; dir = 0;};
 			class Object42 {side = 8; vehicle = "Land_Antenna"; rank = ""; position[] = {14.329,7.54297,0}; dir = 75;};
 		};
-		class ServicePoint_CUP_B_USMC {
-			name = $STR_ZECCUP_MilitaryDesert_SupportsLarge_ServicePoint_CUP_B_USMC; // Credit: 2600K
-			icon = "\ca\data\flag_usa_co.paa";
-			class Object0 {side = 8; vehicle = "Land_HBarrier_large"; rank = ""; position[] = {-8.53955,-3.8877,0}; dir = 270;};
-			class Object1 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-7.13135,-7.29932,0}; dir = 6.83019e-006;};
-			class Object2 {side = 8; vehicle = "Land_HBarrier1"; rank = ""; position[] = {-2.86926,-8.36768,0}; dir = 285;};
-			class Object3 {side = 8; vehicle = "Land_PaperBox_open_empty_F"; rank = ""; position[] = {-6.49988,-2.50049,0}; dir = 165;};
-			class Object4 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {-5.79053,-8.86523,0}; dir = 75;};
-			class Object5 {side = 8; vehicle = "Land_Pallet_F"; rank = ""; position[] = {-7.25,-9.125,0}; dir = 179.332;};
-			class Object6 {side = 8; vehicle = "Land_CamoNet_NATO_EP1"; rank = ""; position[] = {-6.07446,2.10059,0}; dir = 270;};
-			class Object7 {side = 8; vehicle = "Land_HBarrier_large"; rank = ""; position[] = {-8.78955,4.3623,0}; dir = 270;};
-			class Object8 {side = 8; vehicle = "Land_HBarrier_large"; rank = ""; position[] = {-3.7373,7.71045,0}; dir = 180;};
-			class Object9 {side = 8; vehicle = "AmmoCrates_NoInteractive_Large"; rank = ""; position[] = {-5.54065,5.88037,0}; dir = 180;};
-			class Object10 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-6.98755,4.12744,0}; dir = 90;};
-			class Object11 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-6.99756,5.7373,0}; dir = 180;};
-			class Object12 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-7.01245,2.49756,0}; dir = 270;};
-			class Object13 {side = 8; vehicle = "AmmoCrates_NoInteractive_Medium"; rank = ""; position[] = {-7.10022,1.1377,0}; dir = 180;};
-			class Object14 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {6.49182,-4.81201,0}; dir = 150;};
-			class Object16 {side = 8; vehicle = "Land_HBarrier1"; rank = ""; position[] = {5.62622,-3.75928,0}; dir = 60;};
-			class Object17 {side = 8; vehicle = "Land_Pallet_F"; rank = ""; position[] = {11.1561,-1.07422,0}; dir = 87.757;};
-			class Object18 {side = 8; vehicle = "Land_MetalBarrel_empty_F"; rank = ""; position[] = {8.02441,-0.249512,0}; dir = 0;};
-			class Object19 {side = 8; vehicle = "MetalBarrel_burning_F"; rank = ""; position[] = {1.375,-2.875,0}; dir = 240;};
-			class Object20 {side = 8; vehicle = "Land_MetalBarrel_empty_F"; rank = ""; position[] = {2.875,-8.25,0}; dir = 240;};
-			class Object21 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {7.93774,-1.2793,0}; dir = 164.991;};
-			class Object22 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {0.564331,-2.81006,0}; dir = 359.991;};
-			class Object23 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {2.125,-8.62451,0}; dir = 119.971;};
-			class Object24 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {1.75,-7.75,0}; dir = 239.993;};
-			class Object25 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {3.80994,-7.81006,0}; dir = 45.0049;};
-			class Object26 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {0.375122,-1.875,0}; dir = 194.982;};
-			class Object27 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {1.25,-1.875,0}; dir = 285.016;};
-			class Object28 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {7.37512,0.125,0}; dir = 209.987;};
-			class Object29 {side = 8; vehicle = "Land_CratesPlastic_F"; rank = ""; position[] = {4.74695,-7.50293,0}; dir = 105;};
-			class Object30 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {2.5,-5.25,0}; dir = 239.999;};
-			class Object31 {side = 8; vehicle = "US_WarfareBVehicleServicePoint_Base_EP1"; rank = ""; position[] = {2.72534,5.20117,0}; dir = 270;};
-			class Object32 {side = 8; vehicle = "Land_HBarrier_large"; rank = ""; position[] = {4.3877,7.96045,0}; dir = 180;};
-			class Object33 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {9.20056,8.38135,0}; dir = 90;};
-			class Object34 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {9.20056,2.75635,0}; dir = 90;};
-			class Object35 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {8.07471,0.586914,0}; dir = 239.971;};
-			class Object36 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {10.7994,-0.226563,0}; dir = 345;}; // Z: 0.230725
-		};
-    };
+   };
     class SupportsMedium
     {
         name = $STR_ZECCUP_SupportsMedium;
@@ -196,7 +126,7 @@
 			class Object25 {side = 8; vehicle = "Barrel5"; rank = ""; position[] = {2.25,-1,0}; dir = 300;};
 			class Object26 {side = 8; vehicle = "Barrel5"; rank = ""; position[] = {3,-1.25,0}; dir = 0;};
 			class Object27 {side = 8; vehicle = "Barrel5"; rank = ""; position[] = {4.5,3.75,0}; dir = 120;};
-			class Object29 {side = 8; vehicle = "CUP_A2_tent_east_ep1"; rank = ""; position[] = {8.25,3.22754,0}; dir = 180;};
+			class Object29 {side = 8; vehicle = "CUP_A2_tent_east_ep1"; rank = ""; position[] = {8.25,3.22754,0}; dir = 90;};
 			class Object30 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {12.2006,8.38135,0}; dir = 90;};
 			class Object31 {side = 8; vehicle = "Land_fort_bagfence_corner"; rank = ""; position[] = {11.4634,18.9045,0}; dir = 180;};
 			class Object32 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {10.5377,8.32178,0}; dir = 0;};
@@ -239,6 +169,36 @@
 			class Object30 {side = 8; vehicle = "Land_HBarrier3"; rank = ""; position[] = {6.62024,8.54736,0}; dir = 0;};
 			class Object31 {side = 8; vehicle = "Land_HBarrier3"; rank = ""; position[] = {6.56274,16.9263,0}; dir = 270;};
 			class Object32 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {6.72754,14.3394,0}; dir = 90;};
+		};
+ 		class ServicePoint_CUP_O_TK {
+			name = $STR_ZECCUP_MilitaryDesert_SupportsMedium_ServicePoint_CUP_O_TK; // Credit: 2600K
+			icon = "\ca\data\flag_rus_co.paa";
+			class Object0 {side = 8; vehicle = "Land_HBarrier3"; rank = ""; position[] = {-5.90674,-4.16064,0}; dir = 0;};
+			class Object1 {side = 8; vehicle = "Land_HBarrier3"; rank = ""; position[] = {-7.21423,-4.28174,0}; dir = 270;};
+			class Object2 {side = 8; vehicle = "AmmoCrates_NoInteractive_Large"; rank = ""; position[] = {-2.86938,1.41553,0}; dir = 270;};
+			class Object4 {side = 8; vehicle = "MetalBarrel_burning_F"; rank = ""; position[] = {0.5,-2.875,0}; dir = 105;};
+			class Object5 {side = 8; vehicle = "AmmoCrates_NoInteractive_Small"; rank = ""; position[] = {-4.77344,1.52051,0}; dir = 180;};
+			class Object6 {side = 8; vehicle = "Barrel1"; rank = ""; position[] = {-5.21313,-2.98682,0}; dir = 330;};
+			class Object7 {side = 8; vehicle = "Barrel1"; rank = ""; position[] = {-6,-2.875,0}; dir = 150;};
+			class Object8 {side = 8; vehicle = "TK_GUE_WarfareBVehicleServicePoint_Base_EP1"; rank = ""; position[] = {0.348877,5.05078,0}; dir = 180;};
+			class Object9 {side = 8; vehicle = "Land_fort_bagfence_corner"; rank = ""; position[] = {-5.77954,5.83838,0}; dir = 90;};
+			class Object10 {side = 8; vehicle = "Land_fort_bagfence_long"; rank = ""; position[] = {0.609619,6.86084,0}; dir = 2.04906e-005;};
+			class Object11 {side = 8; vehicle = "Land_fort_bagfence_long"; rank = ""; position[] = {-2.26538,6.86084,0}; dir = 2.04906e-005;};
+			class Object12 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-7.32556,2.11865,0}; dir = 270;};
+			class Object13 {side = 8; vehicle = "Land_CamoNet_EAST_EP1"; rank = ""; position[] = {7.69946,1.02441,0}; dir = 90;};
+			class Object14 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {0.743652,-4.04932,0}; dir = 0;};
+			class Object15 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {8.95056,1.00635,0}; dir = 90;};
+			class Object16 {side = 8; vehicle = "Land_HBarrier3"; rank = ""; position[] = {8.23303,-3.41602,0}; dir = 165;};
+			class Object17 {side = 8; vehicle = "Land_WaterBarrel_F"; rank = ""; position[] = {7.375,2,0}; dir = 119.991;};
+			class Object18 {side = 8; vehicle = "Barrel4"; rank = ""; position[] = {6.5343,-2.47998,0}; dir = 315;};
+			class Object19 {side = 8; vehicle = "Barrel4"; rank = ""; position[] = {4.29321,-2.84033,0}; dir = 150;};
+			class Object20 {side = 8; vehicle = "Barrel1"; rank = ""; position[] = {5,-2.75,0}; dir = 45;};
+			class Object21 {side = 8; vehicle = "Barrel1"; rank = ""; position[] = {5.875,-2.75,0}; dir = 210;};
+			class Object22 {side = 8; vehicle = "Land_Sacks_heap_F"; rank = ""; position[] = {7.5,0.625,0}; dir = 270;};
+			class Object23 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {3.375,1.125,0}; dir = 194.998;};
+			class Object24 {side = 8; vehicle = "Land_fort_bagfence_corner"; rank = ""; position[] = {3.71338,6.27979,0}; dir = 180;};
+			class Object25 {side = 8; vehicle = "Land_fort_bagfence_long"; rank = ""; position[] = {6.60962,6.73584,0}; dir = 1.36604e-005;};
+			class Object26 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {8.95056,6.63135,0}; dir = 90;};
 		};
 		//WEST
 		class ServiceArea_CUP_B_USMC {
@@ -304,6 +264,46 @@
 			class Object29 {side = 8; vehicle = "Barrel5"; rank = ""; position[] = {0.401978,-9.04199,0}; dir = 210;};
 			class Object30 {side = 8; vehicle = "Land_BarrelWater_grey_F"; rank = ""; position[] = {1.65186,3.95801,0}; dir = 359.984;};
 			class Object32 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {5.1106,9.15186,0}; dir = 30;};
+		};
+		class ServicePoint_CUP_B_USMC {
+			name = $STR_ZECCUP_MilitaryDesert_SupportsMedium_ServicePoint_CUP_B_USMC; // Credit: 2600K
+			icon = "\ca\data\flag_usa_co.paa";
+			class Object0 {side = 8; vehicle = "Land_HBarrier_large"; rank = ""; position[] = {-8.53955,-3.8877,0}; dir = 270;};
+			class Object1 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-7.13135,-7.29932,0}; dir = 6.83019e-006;};
+			class Object2 {side = 8; vehicle = "Land_HBarrier1"; rank = ""; position[] = {-2.86926,-8.36768,0}; dir = 285;};
+			class Object3 {side = 8; vehicle = "Land_PaperBox_open_empty_F"; rank = ""; position[] = {-6.49988,-2.50049,0}; dir = 165;};
+			class Object4 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {-5.79053,-8.86523,0}; dir = 75;};
+			class Object5 {side = 8; vehicle = "Land_Pallet_F"; rank = ""; position[] = {-7.25,-9.125,0}; dir = 179.332;};
+			class Object6 {side = 8; vehicle = "Land_CamoNet_NATO_EP1"; rank = ""; position[] = {-6.07446,2.10059,0}; dir = 270;};
+			class Object7 {side = 8; vehicle = "Land_HBarrier_large"; rank = ""; position[] = {-8.78955,4.3623,0}; dir = 270;};
+			class Object8 {side = 8; vehicle = "Land_HBarrier_large"; rank = ""; position[] = {-3.7373,7.71045,0}; dir = 180;};
+			class Object9 {side = 8; vehicle = "AmmoCrates_NoInteractive_Large"; rank = ""; position[] = {-5.54065,5.88037,0}; dir = 180;};
+			class Object10 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-6.98755,4.12744,0}; dir = 90;};
+			class Object11 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-6.99756,5.7373,0}; dir = 180;};
+			class Object12 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-7.01245,2.49756,0}; dir = 270;};
+			class Object13 {side = 8; vehicle = "AmmoCrates_NoInteractive_Medium"; rank = ""; position[] = {-7.10022,1.1377,0}; dir = 180;};
+			class Object14 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {6.49182,-4.81201,0}; dir = 150;};
+			class Object16 {side = 8; vehicle = "Land_HBarrier1"; rank = ""; position[] = {5.62622,-3.75928,0}; dir = 60;};
+			class Object17 {side = 8; vehicle = "Land_Pallet_F"; rank = ""; position[] = {11.1561,-1.07422,0}; dir = 87.757;};
+			class Object18 {side = 8; vehicle = "Land_MetalBarrel_empty_F"; rank = ""; position[] = {8.02441,-0.249512,0}; dir = 0;};
+			class Object19 {side = 8; vehicle = "MetalBarrel_burning_F"; rank = ""; position[] = {1.375,-2.875,0}; dir = 240;};
+			class Object20 {side = 8; vehicle = "Land_MetalBarrel_empty_F"; rank = ""; position[] = {2.875,-8.25,0}; dir = 240;};
+			class Object21 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {7.93774,-1.2793,0}; dir = 164.991;};
+			class Object22 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {0.564331,-2.81006,0}; dir = 359.991;};
+			class Object23 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {2.125,-8.62451,0}; dir = 119.971;};
+			class Object24 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {1.75,-7.75,0}; dir = 239.993;};
+			class Object25 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {3.80994,-7.81006,0}; dir = 45.0049;};
+			class Object26 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {0.375122,-1.875,0}; dir = 194.982;};
+			class Object27 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {1.25,-1.875,0}; dir = 285.016;};
+			class Object28 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {7.37512,0.125,0}; dir = 209.987;};
+			class Object29 {side = 8; vehicle = "Land_CratesPlastic_F"; rank = ""; position[] = {4.74695,-7.50293,0}; dir = 105;};
+			class Object30 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {2.5,-5.25,0}; dir = 239.999;};
+			class Object31 {side = 8; vehicle = "US_WarfareBVehicleServicePoint_Base_EP1"; rank = ""; position[] = {2.72534,5.20117,0}; dir = 270;};
+			class Object32 {side = 8; vehicle = "Land_HBarrier_large"; rank = ""; position[] = {4.3877,7.96045,0}; dir = 180;};
+			class Object33 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {9.20056,8.38135,0}; dir = 90;};
+			class Object34 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {9.20056,2.75635,0}; dir = 90;};
+			class Object35 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {8.07471,0.586914,0}; dir = 239.971;};
+			class Object36 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {10.7994,-0.226563,0}; dir = 345;}; // Z: 0.230725
 		};
     };
     class SupportsSmall
