@@ -89,9 +89,9 @@ switch (_taskState) do {
             _compType = "Military";
             If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
                 _compType = "Guerrilla";
-                _category = ["Comms", "Fort", "Outposts", "Supports"];
+                _category = ["Communications", "Fort", "Outposts", "Supports"];
             } else {
-                _category = ["Comms", "Fort", "Heliports", "Outposts", "Supports"];
+                _category = ["Communications", "Fort", "Heliports", "Outposts", "Supports"];
             };
 
             [_pickupPosition, _compType, _category, _taskFaction, ["Medium","Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
