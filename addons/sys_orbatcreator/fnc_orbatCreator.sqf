@@ -5164,7 +5164,7 @@ switch(_operation) do {
         if (count _unitTextureArray > 0) then {
             private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
             {
-                _initEventHandler = _initEventHandler + "(_this select 0) setObjectTextureGlobal " + str [_forEachIndex, str _x] + ";";
+                _initEventHandler = _initEventHandler + "(_this select 0) setObjectTextureGlobal " + (format ["[%1,'%2']",_forEachIndex,_x]) + ";";
             } foreach _unitTextureArray;
             [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
         };
