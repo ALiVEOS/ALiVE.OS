@@ -205,6 +205,7 @@ class orbatCreator_RscButton : RscButton {
         shadowColor = "#000000";
     };
     font = "RobotoCondensed";
+    fade = 0;
     sizeEx = BASE_SIZE_TEXT;
     borderSize = 0;
     colorShadow[] = {0,0,0,0};

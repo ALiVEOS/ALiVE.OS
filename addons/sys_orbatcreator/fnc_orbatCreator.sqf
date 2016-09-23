@@ -5237,6 +5237,11 @@ Exporting selected groups only
         _result = _result + _newLine + _indent + _indent + _indent + "class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {};" + _newLine;
         _result = _result + _newLine;
         _result = _result + _indent + _indent + _indent + "class ALiVE_orbatCreator {";
+        
+        // hack for force reload weapon
+        
+        _initEventHandler = _initEventHandler + "reload _unit" + ";";
+        [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
 
         private _eventHandlerTypes = _eventHandlers select 1;
         private _eventHandlerStrings = _eventHandlers select 2;
@@ -5288,7 +5293,7 @@ Exporting selected groups only
         if (count _unitTextureArray > 0) then {
             private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
             {
-                _initEventHandler = _initEventHandler + "(_this select 0) setObjectTextureGlobal " + str [_forEachIndex, str _x] + ";";
+                _initEventHandler = _initEventHandler + "(_this select 0) setObjectTextureGlobal " + (format ["[%1,'%2']",_forEachIndex,_x]) + ";";
             } foreach _unitTextureArray;
             [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
         };
