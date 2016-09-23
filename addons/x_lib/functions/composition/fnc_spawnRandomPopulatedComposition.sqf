@@ -13,9 +13,9 @@ Position - Array
 Type - String - Civilian, Military, Guerrilla
 Category - String
 
-    Civilian Categories - airports, checkpoints, construction, constructionSupplies, comms, fuel, general, heliports, industrial, marine, mining_oil, power, rail, settlements
-    Guerrilla Categories - camps, checkpoints, constructionsupplies, comms, fieldhq, fort, fuel, hq, marine, medical, outposts, power, supports
-    Military Categories - airports, camps, checkpoints, constructionsupplies, comms, crashsites, fieldhq, fort, fuel, heliports, hq, marine, medical, outposts, power, supports
+    Civilian Categories - airports, checkpointsbarricades, construction, constructionSupplies, communications, fuel, general, heliports, industrial, marine, mining_oil, power, rail, settlements
+    Guerrilla Categories - camps, checkpointsbarricades, constructionsupplies, commnunications, fieldhq, fort, fuel, hq, marine, medical, outposts, power, supports
+    Military Categories - airports, camps, checkpointsbarricades, constructionsupplies, communications, crashsites, fieldhq, fort, fuel, heliports, hq, marine, medical, outposts, power, supports, supplies
 
 Size - String (Large, Medium, Small, ANY)
 Faction - String (OPTIONAL)
@@ -30,7 +30,7 @@ Returns:
 Examples:
 (begin example)
 // spawn a fortification composition of any size with 2 OPF_F groups
-_result = [_position, "Military", "Fort", "OPF_F", "ANY", 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+_result = [_position, "Military", "Fort", "OPF_F", "Small", 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
 (end)
 
 See Also:

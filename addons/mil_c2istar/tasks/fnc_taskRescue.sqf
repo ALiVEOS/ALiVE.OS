@@ -118,9 +118,9 @@ switch (_taskState) do {
                     _compType = "Military";
                     If (_taskEnemySide == "GUER") then {
                         _compType = "Guerrilla";
-                        _category = ["HQ", "Outposts", "FieldHQ", "Camps","Supports","Comms"];
+                        _category = ["HQ", "Outposts", "FieldHQ", "Camps","Supports","Communications"];
                     } else {
-                        _category = ["Outposts", "FieldHQ", "Camps","Supports","Heliports","Comms"];
+                        _category = ["Outposts", "FieldHQ", "Camps","Supports","Heliports","Communications"];
                     };
                     [_targetPosition, _compType, _category, _taskEnemyFaction, ["Medium","Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
 
@@ -135,9 +135,9 @@ switch (_taskState) do {
             _compType = "Military";
             If (_taskEnemySide == "GUER") then {
                 _compType = "Guerrilla";
-                _category = ["HQ", "Outposts", "FieldHQ", "Camps","Supports","Comms"];
+                _category = ["HQ", "Outposts", "FieldHQ", "Camps","Supports","Communications"];
             } else {
-                _category = ["Outposts", "FieldHQ", "Camps","Supports","Heliports","Comms"];
+                _category = ["Outposts", "FieldHQ", "Camps","Supports","Heliports","Communications"];
             };
             [_targetPosition, _compType, _category, _taskEnemyFaction, ["Medium","Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
         };
@@ -171,9 +171,9 @@ switch (_taskState) do {
             _compType = "Military";
             If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
                 _compType = "Guerrilla";
-                _category = ["HQ", "Outposts", "FieldHQ", "Camps","Supports","Comms"];
+                _category = ["HQ", "Outposts", "FieldHQ", "Camps","Supports","Communications"];
             } else {
-                _category = ["Outposts", "FieldHQ", "Camps","Supports","Heliports","Comms"];
+                _category = ["Outposts", "FieldHQ", "Camps","Supports","Heliports","Communications"];
             };
             [_returnPosition, _compType, _category, _taskFaction, ["Medium","Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
         };

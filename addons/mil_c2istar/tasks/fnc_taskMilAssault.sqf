@@ -94,7 +94,7 @@ switch (_taskState) do {
             If (_taskEnemySide == "GUER") then {
                 _compType = "Guerrilla";
             };
-            [_targetPosition, _compType, ["Camps", "Comms", "Fort", "Outposts", "Supports", "FieldHQ"], _taskEnemyFaction, ["Medium"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+            [_targetPosition, _compType, ["Camps", "Communications", "Fort", "Outposts", "Supports", "FieldHQ"], _taskEnemyFaction, ["Medium"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
 
         };
 
