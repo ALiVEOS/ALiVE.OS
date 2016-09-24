@@ -83,6 +83,30 @@ switch (_operation) do {
         private _group = _logic getVariable ["group", grpNull];
         _result = position (leader _group);
     };
+    case "rounds": {
+        private _rounds = [
+            ["HE", parseNumber (_logic getVariable ["artillery_he", "30"])],
+            ["ILLUM", parseNumber (_logic getVariable ["artillery_illum", "30"])],
+            ["SMOKE", parseNumber (_logic getVariable ["artillery_smoke", "30"])],
+            ["SADARM", parseNumber (_logic getVariable ["artillery_guided", "30"])],
+            ["CLUSTER", parseNumber (_logic getVariable ["artillery_cluster", "30"])],
+            ["LASER", parseNumber (_logic getVariable ["artillery_lg", "30"])],
+            ["MINE", parseNumber (_logic getVariable ["artillery_mine", "30"])],
+            ["AT MINE", parseNumber (_logic getVariable ["artillery_atmine", "30"])],
+            ["ROCKETS", parseNumber (_logic getVariable ["artillery_rockets", "16"])]
+        ];
+
+        private _roundsAvailable = [];
+        private _roundsUnit = (typeOf (_vehicles select 0)) call ALIVE_fnc_getArtyRounds;
+
+        {
+            if ((_x select 0) in _roundsUnit) then {
+                _roundsAvailable pushBack _x;
+            };
+        } forEach _rounds;
+
+        _result = _roundsAvailable;
+    };
 
     /*************
      ** METHODS **
@@ -249,32 +273,11 @@ switch (_operation) do {
         _group setVariable ["logic", _logic];
         _logic setVariable ["group", _group];
 
-        // Set available rounds
-        private _rounds = [
-            ["HE", parseNumber (_artyLogic getVariable ["artillery_he", "30"])],
-            ["ILLUM", parseNumber (_artyLogic getVariable ["artillery_illum", "30"])],
-            ["SMOKE", parseNumber (_artyLogic getVariable ["artillery_smoke", "30"])],
-            ["SADARM", parseNumber (_artyLogic getVariable ["artillery_guided", "30"])],
-            ["CLUSTER", parseNumber (_artyLogic getVariable ["artillery_cluster", "30"])],
-            ["LASER", parseNumber (_artyLogic getVariable ["artillery_lg", "30"])],
-            ["MINE", parseNumber (_artyLogic getVariable ["artillery_mine", "30"])],
-            ["AT MINE", parseNumber (_artyLogic getVariable ["artillery_atmine", "30"])],
-            ["ROCKETS", parseNumber (_artyLogic getVariable ["artillery_rockets", "16"])]
-        ];
-
-        private _roundsAvailable = [];
-        private _roundsUnit = (typeOf (_vehicles select 0)) call ALIVE_fnc_getArtyRounds;
-
-        {
-            if ((_x select 0) in _roundsUnit) then {
-                _roundsAvailable pushBack _x;
-            };
-        } forEach _rounds;
-
         // Assign artillery group to the NEO_radio scripts
-        leader _group setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];
+        private _rounds = [_logic, "rounds"] call MAINCLASS;
+        leader _group setVariable ["NEO_radioArtyBatteryRounds", _rounds, true];
         private _a = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _side];
-        _a set [count _a, [leader _group, _group, _callsign, _vehicles, _roundsAvailable]];
+        _a set [count _a, [leader _group, _group, _callsign, _vehicles, _rounds]];
         NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _side], _a, true];
 
         // Start state machine if it hasn't already
