@@ -177,8 +177,6 @@ switch (_operation) do {
                 _roundType,
                 1
             ];
-
-            hint format ["%3: _unit: %1 firing 1 %2", _unit, _roundType, time];
         } else {
             {
                 private _roundCount = [_fireMission, "roundCount"] call ALIVE_fnc_hashGet;
@@ -250,6 +248,25 @@ switch (_operation) do {
             "(group this) setVariable ['sup_artillery_inPosition', true]"
         ];
     };
+    case "returnToBase": {
+        private _group = _logic getVariable ["group", grpNull];
+        private _units = (units _group) select {vehicle _x != _x && {gunner (vehicle _x) == _x}};
+        _units doWatch objNull;
+
+        // Cleanup event handlers
+        {
+            private _vehicle = vehicle _x;
+            private _firedEH = _vehicle getVariable ["sup_artillery_firedEH", nil];
+
+            if (!isNil "_firedEH") then {
+                _vehicle removeEventHandler ["Fired", _firedEH];
+                _vehicle setVariable ["sup_artillery_firedEH", nil];
+            };
+        } forEach _units;
+
+        _logic setVariable ["fireMission", []];
+        [_logic, "move", [position _logic]] call MAINCLASS;
+    };
     case "spawn": {
         private _position = position _logic;
         private _type = _logic getVariable ["artillery_type", ""];
@@ -317,23 +334,7 @@ switch (_operation) do {
         [_logic, "execute"] call MAINCLASS;
     };
     case "onReturnToBase": {
-        private _group = _logic getVariable ["group", grpNull];
-        private _units = (units _group) select {vehicle _x != _x && {gunner (vehicle _x) == _x}};
-        _units doWatch objNull;
-
-        // Cleanup event handlers
-        {
-            private _vehicle = vehicle _x;
-            private _firedEH = _vehicle getVariable ["sup_artillery_firedEH", nil];
-
-            if (!isNil "_firedEH") then {
-                _vehicle removeEventHandler ["Fired", _firedEH];
-                _vehicle setVariable ["sup_artillery_firedEH", nil];
-            };
-        } forEach _units;
-
-        _logic setVariable ["fireMission", []];
-        [_logic, "move", [position _logic]] call MAINCLASS; // TODO: Find (best) RTB position
+        [_logic, "returnToBase"] call MAINCLASS;
     };
 };
 
