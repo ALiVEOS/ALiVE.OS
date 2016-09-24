@@ -234,6 +234,7 @@ switch (_operation) do {
 
         private _side = _type call ALIVE_fnc_classSide;
         private _group = createGroup _side;
+        private _vehicles = [];
 
         for "_i" from 0 to 2 do {
             // TODO: Spawn vehicles in proper fancy formation (see CfgFormations)
@@ -242,11 +243,41 @@ switch (_operation) do {
             _vehicle setDir (getDir _logic);
             _vehicle lock true;
             [_vehicle, _group] call BIS_fnc_spawnCrew;
+            _vehicles pushBack _vehicle;
         };
 
         _group setVariable ["logic", _logic];
         _logic setVariable ["group", _group];
 
+        // Set available rounds
+        private _rounds = [
+            ["HE", parseNumber (_artyLogic getVariable ["artillery_he", "30"])],
+            ["ILLUM", parseNumber (_artyLogic getVariable ["artillery_illum", "30"])],
+            ["SMOKE", parseNumber (_artyLogic getVariable ["artillery_smoke", "30"])],
+            ["SADARM", parseNumber (_artyLogic getVariable ["artillery_guided", "30"])],
+            ["CLUSTER", parseNumber (_artyLogic getVariable ["artillery_cluster", "30"])],
+            ["LASER", parseNumber (_artyLogic getVariable ["artillery_lg", "30"])],
+            ["MINE", parseNumber (_artyLogic getVariable ["artillery_mine", "30"])],
+            ["AT MINE", parseNumber (_artyLogic getVariable ["artillery_atmine", "30"])],
+            ["ROCKETS", parseNumber (_artyLogic getVariable ["artillery_rockets", "16"])]
+        ];
+
+        private _roundsAvailable = [];
+        private _roundsUnit = (typeOf (_vehicles select 0)) call ALIVE_fnc_getArtyRounds;
+
+        {
+            if ((_x select 0) in _roundsUnit) then {
+                _roundsAvailable pushBack _x;
+            };
+        } forEach _rounds;
+
+        // Assign artillery group to the NEO_radio scripts
+        leader _group setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];
+        private _a = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _side];
+        _a set [count _a, [leader _group, _group, _callsign, _vehicles, _roundsAvailable]];
+        NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _side], _a, true];
+
+        // Start state machine if it hasn't already
         if (isNil "ALIVE_sup_artillery_stateMachine") then {
             ALIVE_sup_artillery_stateMachine_list = [];
             ALIVE_sup_artillery_stateMachine = [
@@ -254,6 +285,7 @@ switch (_operation) do {
             ] call CBA_statemachine_fnc_createFromConfig;
         };
 
+        // Add artillery group to state machine
         ALIVE_sup_artillery_stateMachine_list pushBack _logic;
 
         _result = _group;
