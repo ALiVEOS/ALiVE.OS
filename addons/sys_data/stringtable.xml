@@ -75,7 +75,7 @@
                 <Original>Custom Perf Monitors:</Original>
             </Key>
             <Key ID="STR_ALIVE_Data_customPerfMonCode_COMMENT">
-                <Original>Customize objects counted and intervals. Ensure interval values are in ascending order. 'triggers' will count allMissionObjects "EmptyDetector", 'entities' will count entities "All", 'objects' will count allMissionObjects "All". Any thing else will be count YOURPARAM i.e. count allDead.</Original>
+                <Original>Customize objects counted and intervals. Ensure interval values are in ascending order. 'triggers' will count allMissionObjects "EmptyDetector", 'entities' will count entities "All", 'objects' will count allMissionObjects "All", 'activeScripts' will count all active scripts. Any thing else will be count YOURPARAM i.e. count allDead.</Original>
             </Key>                        
         </Container>
     </Package>
