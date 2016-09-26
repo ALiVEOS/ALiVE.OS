@@ -6,15 +6,15 @@
 #define MINOR 2
 #define PATCHLVL 0
 // BUILD should be YYMMDDR eg 1311211
-#define BUILD 1608231
+#define BUILD 1609261
 
-#define CLUSTERBUILD "Arma 3","Arma3",162,137494,"Stable"
+#define CLUSTERBUILD "Arma 3","Arma3",164,138497,"Stable"
 
 #define VERSION MAJOR.MINOR.PATCHLVL.BUILD
 #define VERSION_AR MAJOR,MINOR,PATCHLVL,BUILD
 
 // MINIMAL required version for the Mod. Components can specify others..
-#define REQUIRED_VERSION 1.62
+#define REQUIRED_VERSION 1.64
 
 /*
  // Defined DEBUG_MODE_NORMAL in a few CBA_fncs to prevent looped logging :)
