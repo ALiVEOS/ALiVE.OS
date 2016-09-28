@@ -1214,15 +1214,27 @@ switch(_operation) do {
 
             };
 
-            case "exportUnits": {
+            case "exportUnitsSelected": {
 
-                [_logic,"exportConfig", "Units"] call MAINCLASS;
+                [_logic,"exportConfig", "UnitsSelected"] call MAINCLASS;
 
             };
 
-            case "exportGroups": {
+            case "exportUnitsAll": {
 
-                [_logic,"exportConfig", "Groups"] call MAINCLASS;
+                [_logic,"exportConfig", "UnitsAll"] call MAINCLASS;
+
+            };
+
+            case "exportGroupsSelected": {
+
+                [_logic,"exportConfig", "GroupsSelected"] call MAINCLASS;
+
+            };
+
+            case "exportGroupsAll": {
+
+                [_logic,"exportConfig", "GroupsAll"] call MAINCLASS;
 
             };
 
@@ -2057,7 +2069,7 @@ switch(_operation) do {
             private _state = [_logic,"state"] call MAINCLASS;
             private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
 
-            if !(_unit in (_customUnits select 1)) then {
+            //if !(_unit in (_customUnits select 1)) then {
 
                 private _unitConfig = configFile >> "CfgVehicles" >> _unit;
                 private _unitDisplayName = getText (_unitConfig >> "displayName");
@@ -2100,7 +2112,7 @@ switch(_operation) do {
 
                 _result = _newUnit;
 
-            };
+            //};
 
         };
 
@@ -2775,18 +2787,42 @@ switch(_operation) do {
 
         [_logic,"addFaction", _newFaction] call MAINCLASS;
 
-        private _importedUnits = [_logic,"importFactionUnitsFromConfig", _faction] call MAINCLASS;
+        private _factionUnits = [];
+
+        _factionUnits append (+([_logic,"getCustomUnitsByFaction", _faction] call MAINCLASS));
+
+        if !([_factionData,"assetsImportedConfig"] call ALiVE_fnc_hashGet) then {
+            _factionUnits append ([_logic,"importFactionUnitsFromConfig", _faction] call MAINCLASS);
+        };
+
+        // rule out duplicates
+
+        private _unitsToCopy = [];
+        private _collectedClassnames = [];
+
+        {
+            _unit = _x;
+            _unitClass = [_unit,"configName"] call ALiVE_fnc_hashGet;
+
+            if !(_unitClass in _collectedClassnames) then {
+                _unitsToCopy pushback _unit;
+                _collectedClassnames pushback _unitClass;
+            };
+        } foreach _factionUnits;
 
         {
             _importedUnit = _x;
             _importedUnitDisplayName = [_importedUnit,"displayName"] call ALiVE_fnc_hashGet;
             _importedUnitConfigName = [_importedUnit,"configName"] call ALiVE_fnc_hashGet;
 
+
             _newClassname = [_logic,"generateClassname", [_factionSide,_newConfigName,_importedUnitDisplayName]] call MAINCLASS;
 
             [_importedUnit,"faction", _newConfigName] call ALiVE_fnc_hashSet; // must be set before changing classname
             [_logic,"setCustomUnitClassname", [_importedUnitConfigName,_newClassname]] call MAINCLASS; // must be ran before the unit's classname is changed
-        } foreach _importedUnits;
+
+            [_logic,"addCustomUnit", _importedUnit] call MAINCLASS;
+        } foreach _unitsToCopy;
 
         // update list
 
@@ -2794,6 +2830,7 @@ switch(_operation) do {
         [_logic,"loadFactionToList", _factionList] call MAINCLASS:
         lbSort [_factionList, "ASC"];
         [_factionList,_newConfigName] call ALiVE_fnc_listSelectData;
+
 
     };
 
@@ -4767,17 +4804,118 @@ switch(_operation) do {
 
             };
 
-            case "Units": {
+            case "UnitsSelected": {
 
-                private _classList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
-                private _selectedIndices = lbSelection _classList;
-                private _selectedUnits = [];
+                private _state = [_logic,"state"] call MAINCLASS;
+                private _currentState = [_state,"activeInteface"] call ALiVE_fnc_hashGet;
+
+                if (_currentState == "Unit_Editor") then {
+
+                    private _classList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
+                    private _selectedIndices = lbSelection _classList;
+                    private _selectedUnits = [];
+
+                    {
+                        _selectedUnits pushback (_classList lbData _x);
+                    } foreach _selectedIndices;
+
+                    _result = [_logic,"exportCustomUnits", _selectedUnits] call MAINCLASS;
+
+                    _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
+
+                    systemchat "Config data copied to clipboard";
+                    copyToClipboard _result;
+
+                };
+
+            };
+
+            case "UnitsAll": {
+
+                private _state = [_logic,"state"] call MAINCLASS;
+                private _selectedFaction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+
+                private _factionUnits = [_logic,"getCustomUnitsByFaction", _selectedFaction] call MAINCLASS;
+                private _factionUnitClasses = [];
 
                 {
-                    _selectedUnits pushback (_classList lbData _x);
-                } foreach _selectedIndices;
+                    _factionUnitClasses pushback ([_x,"configName"] call ALiVE_fnc_hashGet);
+                } foreach _factionUnits;
 
-                _result = [_logic,"exportCustomUnits", _selectedUnits] call MAINCLASS;
+                 _result = [_logic,"exportCustomUnits", _factionUnitClasses] call MAINCLASS;
+
+                 _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
+
+                systemchat "Config data copied to clipboard";
+                copyToClipboard _result;
+
+            };
+
+            case "GroupsSelected": {
+
+                private _state = [_logic,"state"] call MAINCLASS;
+                private _currentState = [_state,"activeInteface"] call ALiVE_fnc_hashGet;
+
+                if (_currentState == "Group_Editor") then {
+
+                    private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
+
+                    private _groupList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_LIST_GROUPS );
+                    private _selectedIndices = lbSelection _groupList;
+
+                    private _groups = [];
+
+                    {
+                        _groups pushback (_groupList lbData _x);
+                    } foreach _selectedIndices;
+
+                    private _factionGroupCategory = [_logic,"getFactionGroupCategory", [_faction,_category]] call MAINCLASS;
+
+                    _result = [_logic,"exportGroupsInCategory", [_factionGroupCategory,_groups]] call MAINCLASS;
+                    _result = [_logic,"formatGroupCategoriesToFaction", [_faction,_result]] call MAINCLASS;
+
+                    _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
+
+                    systemchat "Config data copied to clipboard";
+                    copyToClipboard _result;
+
+                };
+
+            };
+
+            case "GroupsAll": {
+
+                private ["_category","_categoryGroups","_categoryGroupClasses"];
+
+                private _state = [_logic,"state"] call MAINCLASS;
+                private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+
+                private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+                private _groupCategories = [_factionData,"groupCategories"] call ALiVE_fnc_hashGet;
+
+                _result = "";
+                private _indent = "    ";
+                private _newLine = toString [13,10];
+
+                // get groups by category
+
+                private _categoryGroupPairs = [];
+
+                {
+                    _category = _x;
+                    _categoryGroups = [_category,"groups"] call ALiVE_fnc_hashGet;
+                    _categoryGroupClasses = _categoryGroups select 1;
+
+                    _categoryGroupPairs pushback [_category,_categoryGroupClasses];
+                } foreach (_groupCategories select 2);
+
+                private _CFGgroups = "";
+                {
+                    _groupCategoryExportString = [_logic,"exportGroupsInCategory", _x] call MAINCLASS;
+                    _CFGgroups = _CFGgroups + _groupCategoryExportString + _newLine;
+                } foreach _categoryGroupPairs;
+
+                _result = [_logic,"formatGroupCategoriesToFaction", [_faction,_CFGgroups]] call MAINCLASS;
 
                 _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
 
@@ -4786,57 +4924,6 @@ switch(_operation) do {
 
             };
 
-            case "Groups": {
-
-                private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
-
-                private _groupList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_LIST_GROUPS );
-                private _selectedIndices = lbSelection _groupList;
-
-                private _groups = [];
-
-                {
-                    _groups pushback (_groupList lbData _x);
-                } foreach _selectedIndices;
-
-                private _factionGroupCategory = [_logic,"getFactionGroupCategory", [_faction,_category]] call MAINCLASS;
-
-                _result = [_logic,"exportGroupsInCategory", [_factionGroupCategory,_groups]] call MAINCLASS;
-                _result = [_logic,"formatGroupCategoriesToFaction", [_faction,_result]] call MAINCLASS;
-
-                _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
-
-                systemchat "Config data copied to clipboard";
-                copyToClipboard _result;
-
-            };
-/*
-Exporting selected groups only
-            case "Groups": {
-
-                private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
-
-                private _groupList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_LIST_GROUPS );
-                private _selectedIndices = lbSelection _groupList;
-
-                private _groups = [];
-
-                {
-                    _groups pushback (_groupList lbData _x);
-                } foreach _selectedIndices;
-
-                private _factionGroupCategory = [_logic,"getFactionGroupCategory", [_faction,_category]] call MAINCLASS;
-
-                _result = [_logic,"exportGroupsInCategory", [_factionGroupCategory,_groups]] call MAINCLASS;
-                _result = [_logic,"formatGroupCategoriesToFaction", [_faction,_result]] call MAINCLASS;
-
-                _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
-
-                systemchat "Config data copied to clipboard";
-                copyToClipboard _result;
-
-            };
-*/
             case "Full": {
 
                 _result = [_logic,"exportFaction", _faction] call MAINCLASS;
@@ -5237,9 +5324,9 @@ Exporting selected groups only
         _result = _result + _newLine + _indent + _indent + _indent + "class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {};" + _newLine;
         _result = _result + _newLine;
         _result = _result + _indent + _indent + _indent + "class ALiVE_orbatCreator {";
-        
+
         // hack for force reload weapon
-        
+
         _initEventHandler = _initEventHandler + "reload _unit" + ";";
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
 
@@ -5661,8 +5748,6 @@ Exporting selected groups only
         };
 
         _classString = _classString + " {" + _newLine;
-
-
 
     };
 

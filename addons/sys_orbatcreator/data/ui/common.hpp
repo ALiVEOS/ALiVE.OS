@@ -458,6 +458,7 @@ class orbatCreator_RscControlsGroupNoScrollbars {
 
 class ctrlMenuStrip;
 class orbatCreator_ctrlMenuStrip : ctrlMenuStrip {
+    sizeEx = BASE_SIZE_TEXT * 0.85;
 
     class Items {
         items[] = {};
@@ -498,7 +499,7 @@ class orbatCreator_common_header_interfaceTitle : orbatCreator_RscText {
 	y = -0.0034 * safezoneH + safezoneY;
 	w = 0.21875 * safezoneW;
 	h = 0.0392 * safezoneH;
-    sizeEx = BASE_SIZE_TEXT * 1.15;
+    sizeEx = BASE_SIZE_TEXT * 1.10;
     colorBackground[] = COLOR_BLACK(0);
 };
 
@@ -620,16 +621,17 @@ class orbatCreator_common_header_menuStrip : orbatCreator_ctrlMenuStrip {
 
         };
 
-        class Export_Units : menuStrip_button_action {
+        class Export_Units {
 
             text = "Units";
-            data = "exportUnits";
+            items[] = {"Export_Units_Selected","Export_Units_All"};
 
         };
 
-        class Export_Groups : menuStrip_button_action {
+        class Export_Groups {
 
             text = "Groups";
+            items[] = {"Export_Groups_Selected","Export_Groups_All"};
             data = "exportGroups";
 
         };
@@ -645,6 +647,34 @@ class orbatCreator_common_header_menuStrip : orbatCreator_ctrlMenuStrip {
 
             text = "Settings";
             data = "exportSettings";
+
+        };
+
+        class Export_Units_Selected : menuStrip_button_action {
+
+            text = "Selected Units";
+            data = "exportUnitsSelected";
+
+        };
+
+        class Export_Units_All : menuStrip_button_action {
+
+            text = "All Units";
+            data = "exportUnitsAll";
+
+        };
+
+        class Export_Groups_Selected : menuStrip_button_action {
+
+            text = "Selected Groups";
+            data = "exportGroupsSelected";
+
+        };
+
+        class Export_Groups_All : menuStrip_button_action {
+
+            text = "All Groups";
+            data = "exportGroupsAll";
 
         };
 
