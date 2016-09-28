@@ -1226,6 +1226,12 @@ switch(_operation) do {
 
             };
 
+            case "exportUnitsClasses": {
+
+                [_logic,"exportConfig", "UnitsClasses"] call MAINCLASS;
+
+            };
+
             case "exportGroupsSelected": {
 
                 [_logic,"exportConfig", "GroupsSelected"] call MAINCLASS;
@@ -1241,6 +1247,12 @@ switch(_operation) do {
             case "exportFull": {
 
                 [_logic,"exportConfig", "Full"] call MAINCLASS;
+
+            };
+
+            case "exportCfgPatches": {
+
+                [_logic,"exportConfig", "CfgPatches"] call MAINCLASS;
 
             };
 
@@ -1915,8 +1927,9 @@ switch(_operation) do {
 
         private _state = [_logic,"state"] call MAINCLASS;
         private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+        private _cfgVehicles = configFile >> "CfgVehicles";
 
-        if (isClass (configFile >> "CfgVehicles" >> _unit)) exitWith {
+        if (isClass (_cfgVehicles >> _unit)) exitWith {
             _result = _unit;
         };
 
@@ -1928,7 +1941,7 @@ switch(_operation) do {
         while {!isClass _configPath} do {
             __unitParentEntry = [_customUnits,_unitParent] call ALiVE_fnc_hashGet;
             _unitParent = [__unitParentEntry,"inheritsFrom"] call ALiVE_fnc_hashGet;
-            _configPath = configFile >> "CfgVehicles" >> _unitParent;
+            _configPath = _cfgVehicles >> _unitParent;
 
         };
 
@@ -2072,6 +2085,8 @@ switch(_operation) do {
             //if !(_unit in (_customUnits select 1)) then {
 
                 private _unitConfig = configFile >> "CfgVehicles" >> _unit;
+                //private _unitParent = configName (inheritsFrom _unitConfig); // this might break something unit editor related?
+                private _unitParent = _unit;
                 private _unitDisplayName = getText (_unitConfig >> "displayName");
                 private _unitSide = getNumber (_unitConfig >> "side");
                 private _unitFaction = getText (_unitConfig >> "faction");
@@ -2101,7 +2116,7 @@ switch(_operation) do {
                 [_newUnit,"init"] call ALiVE_fnc_orbatCreatorUnit;
                 [_newUnit,"configName", _unit] call ALiVE_fnc_hashSet;
                 [_newUnit,"displayName", _unitDisplayName] call ALiVE_fnc_hashSet;
-                [_newUnit,"inheritsFrom", _unit] call ALiVE_fnc_hashSet;
+                [_newUnit,"inheritsFrom", _unitParent] call ALiVE_fnc_hashSet;
                 [_newUnit,"side", _unitSide] call ALiVE_fnc_hashSet;
                 [_newUnit,"faction", _unitFaction] call ALiVE_fnc_hashSet;
                 [_newUnit,"loadout", _unitLoadout] call ALiVE_fnc_hashSet;
@@ -4851,6 +4866,41 @@ switch(_operation) do {
 
             };
 
+            case "UnitsClasses": {
+
+                private _state = [_logic,"state"] call MAINCLASS;
+                private _selectedFaction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+
+                private _factionUnits = [_logic,"getCustomUnitsByFaction", _selectedFaction] call MAINCLASS;
+                private _factionUnitClasses = [];
+
+                {
+                    _factionUnitClasses pushback ([_x,"configName"] call ALiVE_fnc_hashGet);
+                } foreach _factionUnits;
+
+                _result = "";
+                private _indent = "    ";
+                private _newLine = toString [13,10];
+
+                // convert to vertical string
+
+                {
+                    if (_forEachIndex != 0) then {
+                        _result = _result + _newLine;
+                    };
+
+                    _result = _result + str _x;
+
+                    if (_forEachIndex != (count _factionUnitClasses) - 1) then {
+                        _result = _result + ",";
+                    };
+                } foreach _factionUnitClasses;
+
+                systemchat "Unit classnames copied to clipboard";
+                copyToClipboard _result;
+
+            };
+
             case "GroupsSelected": {
 
                 private _state = [_logic,"state"] call MAINCLASS;
@@ -4929,6 +4979,86 @@ switch(_operation) do {
                 _result = [_logic,"exportFaction", _faction] call MAINCLASS;
 
                 _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
+
+                systemchat "Config data copied to clipboard";
+                copyToClipboard _result;
+
+            };
+
+            case "CfgPatches": {
+
+                _result = "";
+                private _indent = "    ";
+                private _newLine = toString [13,10];
+
+                private _state = [_logic,"state"] call MAINCLASS;
+                private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+                private _factionUnits = [_logic,"getCustomUnitsByFaction", _faction] call MAINCLASS;
+
+                // get unit classnames
+
+                private _unitClassnames = [];
+                private _unitClassnamesString = "";
+
+                {
+                    _unitClassnames pushback ([_x,"configName"] call ALiVE_fnc_hashGet);
+                } foreach _factionUnits;
+
+                // convert to vertical string
+
+                {
+                    _unitClassnamesString = _unitClassnamesString + _indent + _indent + _indent;
+
+                    _unitClassnamesString = _unitClassnamesString + str _x;
+
+                    if (_forEachIndex != (count _unitClassnames) - 1) then {
+                        _unitClassnamesString = _unitClassnamesString + ",";
+                    };
+
+                    _unitClassnamesString = _unitClassnamesString + _newLine;
+                } foreach _unitClassnames;
+
+                // get required addons
+
+                private _requiredAddons = [];
+                private _requiredAddonsString = "";
+                private _cfgVehicles = configFile >> "CfgVehicles";
+
+                {
+                    _unitClass = [_x,"configName"] call ALiVE_fnc_hashGet;
+                    _realUnitClass = [_logic,"getRealUnitClass", _unitClass] call MAINCLASS;
+                    _realUnitParent = inheritsFrom (_cfgVehicles >> _realUnitClass);
+                    _requiredAddonList = configSourceAddonList _realUnitParent;
+
+                    {_requiredAddons pushbackunique _x} foreach _requiredAddonList;
+                } foreach _factionUnits;
+
+                // convert to vertical string
+
+                {
+                    _requiredAddonsString = _requiredAddonsString + _indent + _indent + _indent;
+
+                    _requiredAddonsString = _requiredAddonsString + str _x;
+
+                    if (_forEachIndex != (count _requiredAddons) - 1) then {
+                        _requiredAddonsString = _requiredAddonsString + ",";
+                    };
+
+                    _requiredAddonsString = _requiredAddonsString + _newLine;
+                } foreach _requiredAddons;
+
+                _result = _result + "class CfgPatches {" + _newLine;
+
+                _result = _result + _indent + "class " + _faction + " {" + _newLine;
+                _result = _result + _indent + _indent + "units[] = {" + _newLine + _unitClassnamesString + _indent + _indent + "};" + _newLine;
+                _result = _result + _indent + _indent + "weapons[] = {};" + _newLine;
+                _result = _result + _indent + _indent + "requiredVersion = 1.62;" + _newLine;
+                _result = _result + _indent + _indent + "requiredAddons[] = " + _newLine + _requiredAddonsString + _indent + _indent + "};" + _newLine;
+                _result = _result + _indent + _indent + "author = " + str profileName + ";" + _newLine;
+                _result = _result + _indent + _indent + "authors[] = " + ([_logic,"arrayToConfigArrayString", [profileName]] call MAINCLASS) + ";" + _newLine;
+                _result = _result + _indent + "};" + _newLine;
+
+                _result = _result + "};" + _newLine;
 
                 systemchat "Config data copied to clipboard";
                 copyToClipboard _result;

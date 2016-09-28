@@ -610,7 +610,7 @@ class orbatCreator_common_header_menuStrip : orbatCreator_ctrlMenuStrip {
         class Export {
 
             text = "Export";
-            items[] = {"Export_Faction","Export_Units","Export_Groups","Export_Full","Separator","Export_Settings"};
+            items[] = {"Export_Faction","Export_Units","Export_Groups","Export_Full","Export_CfgPatches","Separator","Export_Settings"};
 
         };
 
@@ -624,7 +624,7 @@ class orbatCreator_common_header_menuStrip : orbatCreator_ctrlMenuStrip {
         class Export_Units {
 
             text = "Units";
-            items[] = {"Export_Units_Selected","Export_Units_All"};
+            items[] = {"Export_Units_Selected","Export_Units_All","Separator","Export_Units_Classes"};
 
         };
 
@@ -638,8 +638,15 @@ class orbatCreator_common_header_menuStrip : orbatCreator_ctrlMenuStrip {
 
         class Export_Full : menuStrip_button_action {
 
-            text = "Full";
+            text = "Full Faction";
             data = "exportFull";
+
+        };
+
+        class Export_CfgPatches : menuStrip_button_action {
+
+            text = "CfgPatches";
+            data = "exportCfgPatches";
 
         };
 
@@ -661,6 +668,13 @@ class orbatCreator_common_header_menuStrip : orbatCreator_ctrlMenuStrip {
 
             text = "All Units";
             data = "exportUnitsAll";
+
+        };
+
+        class Export_Units_Classes : menuStrip_button_action {
+
+            text = "Unit Classenames";
+            data = "exportUnitsClasses";
 
         };
 
