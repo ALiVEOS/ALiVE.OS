@@ -610,7 +610,7 @@ class orbatCreator_common_header_menuStrip : orbatCreator_ctrlMenuStrip {
         class Export {
 
             text = "Export";
-            items[] = {"Export_Faction","Export_Units","Export_Groups","Export_Full","Export_CfgPatches","Separator","Export_Settings"};
+            items[] = {"Export_Faction","Export_Units","Export_Groups","Export_Full","Export_CfgPatches"}; // Separator, Export_Settings
 
         };
 
