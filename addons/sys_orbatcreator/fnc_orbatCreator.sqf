@@ -5059,7 +5059,7 @@ switch(_operation) do {
                 _result = _result + _indent + _indent + "units[] = {" + _newLine + _unitClassnamesString + _indent + _indent + "};" + _newLine;
                 _result = _result + _indent + _indent + "weapons[] = {};" + _newLine;
                 _result = _result + _indent + _indent + "requiredVersion = 1.62;" + _newLine;
-                _result = _result + _indent + _indent + "requiredAddons[] = " + _newLine + _requiredAddonsString + _indent + _indent + "};" + _newLine;
+                _result = _result + _indent + _indent + "requiredAddons[] = {" + _newLine + _requiredAddonsString + _indent + _indent + "};" + _newLine;
                 _result = _result + _indent + _indent + "author = " + str profileName + ";" + _newLine;
                 _result = _result + _indent + _indent + "authors[] = " + ([_logic,"arrayToConfigArrayString", [profileName]] call MAINCLASS) + ";" + _newLine;
                 _result = _result + _indent + "};" + _newLine;
