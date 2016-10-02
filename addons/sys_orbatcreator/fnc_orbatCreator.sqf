@@ -49,6 +49,8 @@ nil
 
 #define ALIVE_COMPATIBLE_GROUP_CATEGORIES   ["Infantry","SpecOps","Motorized","Motorized_MTP","Mechanized","Armored","Artillery","Naval","Air","Support"]
 
+#define FACTION_BLACKLIST ["Virtual_F","Interactive_F"]
+
 #define COLOR_SIDE_EAST [profilenamespace getvariable ["Map_OPFOR_R",0],profilenamespace getvariable ["Map_OPFOR_G",1],profilenamespace getvariable ["Map_OPFOR_B",1],profilenamespace getvariable ["Map_OPFOR_A",0.8]]
 #define COLOR_SIDE_WEST [profilenamespace getvariable ["Map_BLUFOR_R",0],profilenamespace getvariable ["Map_BLUFOR_G",1],profilenamespace getvariable ["Map_BLUFOR_B",1],profilenamespace getvariable ["Map_BLUFOR_A",0.8]]
 #define COLOR_SIDE_GUER [profilenamespace getvariable ["Map_Independent_R",0],profilenamespace getvariable ["Map_Independent_G",1],profilenamespace getvariable ["Map_Independent_B",1],profilenamespace getvariable ["Map_Independent_A",0.8]]
@@ -124,7 +126,7 @@ switch(_operation) do {
             _factionClass = _faction call ALiVE_fnc_configGetFactionClass;
             _factionSide = getNumber (_factionClass >> "side");
 
-            if (_factionSide >= 0 && {_factionSide <= 2}) then {
+            if (_factionSide >= 0 && {_factionSide <= 3}) then {
                 _factionConfigName = _faction;
                 _factionDisplayName = getText (_factionClass >> "displayName");
                 _factionFlag = getText (_factionClass >> "flag");
@@ -461,7 +463,7 @@ switch(_operation) do {
                         _factionConfigSide = getNumber (_factionConfig >> "side");
                         _factionConfigFlag = getText (_factionConfig >> "flag");
 
-                        if (_factionConfigSide >= 0 && {_factionConfigSide <= 2} && {!(_factionConfigFlag in _allFlags)}) then {
+                        if (_factionConfigSide >= 0 && {_factionConfigSide <= 3} && {!(_factionConfigFlag in _allFlags)}) then {
                             _factionConfigDisplayName = getText (_factionConfig >> "displayName");
                             _factionConfigMarkerName = format ["Flag - %1", _factionConfigDisplayName];
 
@@ -642,7 +644,7 @@ switch(_operation) do {
                 private _unitTypeSideList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_SIDE );
                 _unitTypeSideList ctrlSetEventHandler ["LBSelChanged","['onCreateUnitUnitTypeSideChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
-                for "_i" from 0 to 2 do {
+                for "_i" from 0 to 3 do {
                     _sideNum = _i;
                     _sideText = [_sideNum] call ALiVE_fnc_sideNumberToText;
                     _sideTextLong = [_sideText] call ALiVE_fnc_sideTextToLong;
@@ -1281,9 +1283,7 @@ switch(_operation) do {
             "_entryConfigName"
         ];
 
-        private _tmpHash = [] call ALiVE_fnc_hashCreate;
-
-        _result = +_tmpHash;
+        _result = [] call ALiVE_fnc_hashCreate;
 
         private _allFactions = [] call ALiVE_fnc_configGetFactions;
 
@@ -1293,7 +1293,7 @@ switch(_operation) do {
             _factionConfig = _x call ALiVE_fnc_configGetFactionClass;
             _factionSide = getNumber (_factionConfig >> "side");
 
-            if (_factionSide >= 0 && {_factionSide <= 2}) then {
+            if (_factionSide >= 0 && {_factionSide <= 3}) then {
                 _factionConfigName = configName _factionConfig;
 
                 [_result,_factionConfigName, [[],[]]] call ALiVE_fnc_hashSet;
@@ -1314,7 +1314,7 @@ switch(_operation) do {
                 if (_entryScope >= 2) then {
                     _entrySide = getNumber (_entry >> "side");
 
-                    if (_entrySide >= 0 && {_entrySide <= 2}) then {
+                    if (_entrySide >= 0 && {_entrySide <= 3}) then {
                         _entryFaction = getText (_entry >> "faction");
 
                         _factionData = nil;
@@ -1606,8 +1606,10 @@ switch(_operation) do {
             _factionDisplayName = [_faction,"displayName"] call ALiVE_fnc_hashGet;
             _factionConfigName = [_faction,"configName"] call ALiVE_fnc_hashGet;
 
-            _index = _list lbAdd (format ["%1 - %2", _factionDisplayName, _factionConfigName]);
-            _list lbSetData [_index,_factionConfigName];
+            if !(_factionConfigName in FACTION_BLACKLIST) then {
+                _index = _list lbAdd (format ["%1 - %2", _factionDisplayName, _factionConfigName]);
+                _list lbSetData [_index,_factionConfigName];
+            };
         } foreach (_factions select 2);
 
     };
@@ -2391,8 +2393,10 @@ switch(_operation) do {
             _factionDisplayName = [_x,"displayName"] call ALiVE_fnC_hashGet;
             _factionConfigName = [_x,"configName"] call ALiVE_fnc_hashGet;
 
-            _index = _list lbAdd _factionDisplayName;
-            _list lbSetData [_index, _factionConfigName];
+            if !(_factionConfigName in FACTION_BLACKLIST) then {
+                _index = _list lbAdd _factionDisplayName;
+                _list lbSetData [_index, _factionConfigName];
+            };
         } foreach _factions;
 
         if (lbSize _list > 0) then {
@@ -2553,7 +2557,7 @@ switch(_operation) do {
 
         lbClear _list;
 
-        for "_i" from 0 to 2 do {
+        for "_i" from 0 to 3 do {
             _sideNum = _i;
             _sideText = [_sideNum] call ALiVE_fnc_sideNumberToText;
             _sideText = [_sideText] call ALiVE_fnc_sideTextToLong;
@@ -5032,6 +5036,8 @@ switch(_operation) do {
 
                     {_requiredAddons pushbackunique _x} foreach _requiredAddonList;
                 } foreach _factionUnits;
+
+                _requiredAddons deleteAt (_requiredAddons find _faction);
 
                 // convert to vertical string
 
