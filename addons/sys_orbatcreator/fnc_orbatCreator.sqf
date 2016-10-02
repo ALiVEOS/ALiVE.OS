@@ -35,97 +35,9 @@ nil
 #define SUPERCLASS  ALIVE_fnc_baseClass
 #define MAINCLASS   ALiVE_fnc_orbatCreator
 
-// display components
+// UI components
 
-#define OC_DISPLAY_FACTIONEDITOR                    8000
-#define OC_DISPLAY_UNITEDITOR                       9000
-#define OC_DISPLAY_CREATEUNIT                       10000
-#define OC_DISPLAY_EDITVEHICLE                      13000
-#define OC_DISPLAY_GROUPEDITOR                      11000
-#define OC_DISPLAY_CREATEGROUP                      12000
-
-// interface elements
-
-#define OC_FACTIONEDITOR_BUTTON_BIG_ONE             8011
-#define OC_FACTIONEDITOR_BUTTON_BIG_TWO             8012
-#define OC_FACTIONEDITOR_BUTTON_BIG_THREE           8013
-#define OC_FACTIONEDITOR_FACTIONS_LIST              8014
-#define OC_FACTIONEDITOR_FACTIONS_BUTTON_ONE        8016
-#define OC_FACTIONEDITOR_FACTIONS_BUTTON_TWO        8017
-#define OC_FACTIONEDITOR_FACTIONS_BUTTON_THREE      8018
-#define OC_FACTIONEDITOR_INPUT_SIDE                 8019
-#define OC_FACTIONEDITOR_INPUT_NAME                 8020
-#define OC_FACTIONEDITOR_INPUT_CLASSNAME            8021
-#define OC_FACTIONEDITOR_INPUT_FLAG                 8022
-#define OC_FACTIONEDITOR_TREE_GROUPS                8015
-
-#define OC_UNITEDITOR_BUTTON_BIG_ONE                9008
-#define OC_UNITEDITOR_BUTTON_BIG_TWO                9009
-#define OC_UNITEDITOR_BUTTON_BIG_THREE              9010
-#define OC_UNITEDITOR_CLASSLIST_BUTTON_ONE          9012
-#define OC_UNITEDITOR_CLASSLIST_BUTTON_TWO          9013
-#define OC_UNITEDITOR_CLASSLIST_BUTTON_THREE        9014
-#define OC_UNITEDITOR_CLASSLIST_BUTTON_FOUR         9015
-#define OC_UNITEDITOR_CLASSLIST_BUTTON_FIVE         9017
-#define OC_UNITEDITOR_CLASSLIST_BUTTON_SIX          9018
-#define OC_UNITEDITOR_CLASSLIST_LIST                9011
-#define OC_UNITEDITOR_FACTIONS_LIST                 9007
-
-#define OC_CREATEUNIT_INPUT_DISPLAYNAME             10010
-#define OC_CREATEUNIT_INPUT_CLASSNAME               10011
-#define OC_CREATEUNIT_INPUT_SIDE                    10012
-#define OC_CREATEUNIT_INPUT_FACTION                 10013
-#define OC_CREATEUNIT_INPUT_UNITTYPE_SIDE           10014
-#define OC_CREATEUNIT_INPUT_UNITTYPE_FACTION        10015
-#define OC_CREATEUNIT_INPUT_UNITTYPE_CATEGORY       10021
-#define OC_CREATEUNIT_INPUT_UNITTYPE_UNITS          10016
-#define OC_CREATEUNIT_BUTTON_CANCEL                 10017
-#define OC_CREATEUNIT_BUTTON_CONFIRM                10018
-#define OC_CREATEUNIT_BUTTON_AUTOGEN_CLASSNAME      10019
-#define OC_CREATEUNIT_INSTRUCTIONS                  10020
-
-#define OC_EDITVEHICLE_LEFT_ICON_ONE                13002
-#define OC_EDITVEHICLE_LEFT_ICON_TWO                13003
-#define OC_EDITVEHICLE_LEFT_ICON_THREE              13004
-#define OC_EDITVEHICLE_LEFT_BUTTON_ONE              13006
-#define OC_EDITVEHICLE_LEFT_BUTTON_TWO              13007
-#define OC_EDITVEHICLE_LEFT_BUTTON_THREE            13008
-#define OC_EDITVEHICLE_LEFT_LIST_ONE                13005
-#define OC_EDITVEHICLE_LEFT_LIST_TWO                13012
-#define OC_EDITVEHICLE_LEFT_LIST_THREE              13013
-#define OC_EDITVEHICLE_CONTROLBAR_CANCEL            13009
-#define OC_EDITVEHICLE_CONTROLBAR_SAVE              13011
-
-#define OC_GROUPEDITOR_FACTIONS_LIST                11008
-#define OC_GROUPEDITOR_BUTTON_BIG_ONE               11009
-#define OC_GROUPEDITOR_BUTTON_BIG_TWO               11010
-#define OC_GROUPEDITOR_BUTTON_BIG_THREE             11011
-#define OC_GROUPEDITOR_ASSETS_INPUT_CATEGORY        11012
-#define OC_GROUPEDITOR_ASSETS_LIST_UNITS            11013
-#define OC_GROUPEDITOR_ASSETS_BUTTON_ONE            11014
-#define OC_GROUPEDITOR_ASSETS_BUTTON_TWO            11015
-#define OC_GROUPEDITOR_ASSETS_BUTTON_THREE          11016
-#define OC_GROUPEDITOR_GROUPS_INPUT_CATEGORY        11017
-#define OC_GROUPEDITOR_GROUPS_LIST_GROUPS           11018
-#define OC_GROUPEDITOR_GROUPS_BUTTON_ONE            11019
-#define OC_GROUPEDITOR_GROUPS_BUTTON_TWO            11020
-#define OC_GROUPEDITOR_GROUPS_BUTTON_THREE          11021
-#define OC_GROUPEDITOR_GROUPS_BUTTON_FOUR           11027
-#define OC_GROUPEDITOR_SELECTEDGROUP_HEADER         11007
-#define OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS     11022
-#define OC_GROUPEDITOR_SELECTEDGROUP_INPUT_UNITRANK 11023
-#define OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_TWO     11024
-#define OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_THREE   11025
-#define OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_FOUR    11026
-
-#define OC_CREATEGROUP_INPUT_NAME                       12006
-#define OC_CREATEGROUP_INPUT_CLASSNAME                  12007
-#define OC_CREATEGROUP_INPUT_CATEGORY                   12008
-#define OC_CREATEGROUP_INPUT_ICON                       12014
-#define OC_CREATEGROUP_INPUT_BUTTON_CANCEL              12010
-#define OC_CREATEGROUP_INPUT_BUTTON_CONFIRM             12009
-#define OC_CREATEGROUP_INSTRUCTIONS                     12011
-#define OC_CREATEGROUP_INPUT_BUTTON_AUTOGEN_CLASSNAME   12012
+#include <\x\alive\addons\sys_orbatcreator\data\ui\include.hpp>
 
 // control Macros
 
@@ -136,6 +48,8 @@ nil
 // general macros
 
 #define ALIVE_COMPATIBLE_GROUP_CATEGORIES   ["Infantry","SpecOps","Motorized","Motorized_MTP","Mechanized","Armored","Artillery","Naval","Air","Support"]
+
+#define FACTION_BLACKLIST ["Virtual_F","Interactive_F"]
 
 #define COLOR_SIDE_EAST [profilenamespace getvariable ["Map_OPFOR_R",0],profilenamespace getvariable ["Map_OPFOR_G",1],profilenamespace getvariable ["Map_OPFOR_B",1],profilenamespace getvariable ["Map_OPFOR_A",0.8]]
 #define COLOR_SIDE_WEST [profilenamespace getvariable ["Map_BLUFOR_R",0],profilenamespace getvariable ["Map_BLUFOR_G",1],profilenamespace getvariable ["Map_BLUFOR_B",1],profilenamespace getvariable ["Map_BLUFOR_A",0.8]]
@@ -212,7 +126,7 @@ switch(_operation) do {
             _factionClass = _faction call ALiVE_fnc_configGetFactionClass;
             _factionSide = getNumber (_factionClass >> "side");
 
-            if (_factionSide >= 0 && {_factionSide <= 2}) then {
+            if (_factionSide >= 0 && {_factionSide <= 3}) then {
                 _factionConfigName = _faction;
                 _factionDisplayName = getText (_factionClass >> "displayName");
                 _factionFlag = getText (_factionClass >> "flag");
@@ -251,15 +165,15 @@ switch(_operation) do {
         private _customUnits = +_tmpHash;
         [_state,"customUnits", _customUnits] call ALiVE_fnc_hashSet;
 
+        [_state,"activeInteface", ""] call ALiVE_fnc_hashSet;
         [_state,"selectedFaction", ""] call ALiVE_fnc_hashSet;
 
-        [_state,"factionEditor_selectedFaction", ""] call ALiVE_fnc_hashSet;
+        [_state,"factionEditor_treeDisplayType", ""] call ALiVE_fnc_hashSet;
 
         [_state,"unitEditor_interfaceBackground", objNull] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_interfaceCamera", objNull] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_activeUnitPosition", [0,0,0]] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_activeUnitObject", objNull] call ALiVE_fnc_hashSet;
-        [_state,"unitEditor_selectedFaction", ""] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_selectedUnit", ""] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_unitToSelect", ""] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_arsenalOpen", false] call ALiVE_fnc_hashSet;
@@ -268,7 +182,6 @@ switch(_operation) do {
         [_state,"editVehicle_selectedCrew", ""] call ALiVE_fnc_hashSet;
         [_state,"editVehicle_selectedTexture", []] call ALiVE_fnc_hashSet;
 
-        [_state,"groupEditor_selectedFaction", ""] call ALiVE_fnc_hashSet;
         [_state,"groupEditor_selectedGroupCategory", ""] call ALiVE_fnc_hashSet;
         [_state,"groupEditor_selectedGroup", ""] call ALiVE_fnc_hashSet;
         [_state,"groupEditor_assetListDragTarget", ""] call ALiVE_fnc_hashSet;
@@ -379,6 +292,18 @@ switch(_operation) do {
 
             };
 
+            case "Create_Faction": {
+
+                createDialog "ALiVE_orbatCreator_interface_createFaction";
+
+            };
+
+            case "Edit_Faction": {
+
+                createDialog "ALiVE_orbatCreator_interface_editFaction";
+
+            };
+
             case "Unit_Editor": {
 
                 closeDialog 0;
@@ -428,6 +353,7 @@ switch(_operation) do {
         };
 
         [_logic,"onLoad", _interface] call MAINCLASS;
+        [_state,"activeInteface", _interface] call ALiVE_fnc_hashSet;
 
     };
 
@@ -450,21 +376,65 @@ switch(_operation) do {
                 private _display = findDisplay OC_DISPLAY_FACTIONEDITOR;
                 _display displayAddEventHandler ["unload", "['onUnload', ['Faction_Editor',_this]] call ALiVE_fnc_orbatCreatorOnAction"];
 
-                // init side list
+                // init faction list
 
-                private _inputSide = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_INPUT_SIDE );
+                private _factionButton1 = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_BUTTON_ONE );
+                _factionButton1 ctrlSetEventHandler ["MouseButtonDown","['onFactionEditorNewClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                _factionButton1 ctrlSetTooltip "Create a new faction.";
+                _factionButton1 ctrlSetText "New";
 
-                {
-                    _sideText = [_x] call ALiVE_fnc_sideNumberToText;
-                    _sideTextLong = [_sideText] call ALiVE_fnc_sideTextToLong;
+                private _factionButton2 = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_BUTTON_TWO );
+                _factionButton2 ctrlSetEventHandler ["MouseButtonDown","['onFactionEditorEditClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                _factionButton2 ctrlSetTooltip "Edit selected faction";
+                _factionButton2 ctrlSetText "Edit";
 
-                    _index = _inputSide lbAdd _sideTextLong;
-                    _inputSide lbSetData [_index,str _x];
-                } foreach [0,1,2];
+                private _factionButton3 = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_BUTTON_THREE );
+                _factionButton3 ctrlSetEventHandler ["MouseButtonDown","['onFactionEditorCopyClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                _factionButton3 ctrlSetTooltip "Copy Selected Faction";
+                _factionButton3 ctrlSetText "Copy";
 
-                // init flag list
+                private _factionButton4 = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_BUTTON_FOUR );
+                _factionButton4 ctrlSetEventHandler ["MouseButtonDown","['onFactionEditorDeleteClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                _factionButton4 ctrlSetTooltip "Delete selected faction   Warning: Will delete the faction, its units, and its groups.";
+                _factionButton4 ctrlSetText "Delete";
 
-                private _inputFlag = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_INPUT_FLAG );
+                private _factionList = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_LIST );
+                _factionList ctrlSetEventHandler ["LBSelChanged","['onFactionEditorFactionChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+
+                [_logic,"loadFactionToList", _factionList] call MAINCLASS;
+                lbSort [_factionList, "ASC"];
+
+                private _selectedFaction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+                if (_selectedFaction == "") then {
+                    _factionList lbSetCurSel 0;
+                } else {
+                    [_factionList,_selectedFaction] call ALiVE_fnc_listSelectData;
+                };
+
+            };
+
+            case "Create_Faction": {
+
+                private [
+                    "_index","_marker","_markerClass","_markerName","_markerIcon",
+                    "_factionConfig","_factionConfigSide","_factionConfigFlag",
+                    "_factionConfigDisplayName","_factionConfigMarkerName"
+                ];
+
+                private _display = findDisplay OC_DISPLAY_CREATEFACTION;
+                _display displayAddEventHandler ["unload", "['onUnload', ['Create_Faction',_this]] call ALiVE_fnc_orbatCreatorOnAction"];
+
+                private _buttonOk = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_BUTTON_OK );
+                _buttonOk ctrlSetEventHandler ["MouseButtonDown","['onCreateFactionOkClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+
+                private _inputSide = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_SIDE );
+                private _inputFlag = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_FLAG );
+
+                // populate side list
+
+                [_logic,"loadSidesToList", _inputSide] call MAINCLASS;
+
+                // populate flag list
 
                 private _allFlags = [];
                 private _markerPath = configFile >> "CfgMarkers";
@@ -493,7 +463,7 @@ switch(_operation) do {
                         _factionConfigSide = getNumber (_factionConfig >> "side");
                         _factionConfigFlag = getText (_factionConfig >> "flag");
 
-                        if (_factionConfigSide >= 0 && {_factionConfigSide <= 2} && {!(_factionConfigFlag in _allFlags)}) then {
+                        if (_factionConfigSide >= 0 && {_factionConfigSide <= 3} && {!(_factionConfigFlag in _allFlags)}) then {
                             _factionConfigDisplayName = getText (_factionConfig >> "displayName");
                             _factionConfigMarkerName = format ["Flag - %1", _factionConfigDisplayName];
 
@@ -510,54 +480,38 @@ switch(_operation) do {
                     _inputFlag lbSetPicture [_index,_path];
                 } foreach _allFlags;
 
-                // init faction list
+                _inputSide lbSetCurSel 0;
+                _inputFlag lbSetCurSel 0;
 
-                private _factionButton1 = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_BUTTON_ONE );
-                _factionButton1 ctrlSetEventHandler ["MouseButtonDown","['onFactionEditorFactionNewClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-                _factionButton1 ctrlSetTooltip "Create a new faction.";
-                _factionButton1 ctrlSetText "New";
+            };
 
-                private _factionButton2 = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_BUTTON_TWO );
-                _factionButton2 ctrlSetEventHandler ["MouseButtonDown","['onFactionEditorFactionDeleteClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-                _factionButton2 ctrlSetTooltip "Delete selected faction   Warning: Will delete the faction, its units, and its groups.";
-                _factionButton2 ctrlSetText "Delete";
+            case "Edit_Faction": {
 
-                private _factionButton3 = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_BUTTON_THREE );
-                _factionButton3 ctrlSetEventHandler ["MouseButtonDown","['onFactionEditorFactionSaveClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-                _factionButton3 ctrlSetTooltip "Save Faction Properties";
-                _factionButton3 ctrlSetText "Save";
+                [_logic,"onLoad", "Create_Faction"] call MAINCLASS;
 
-                private _factionList = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_LIST );
-                [_logic,"loadFactionToList", _factionList] call MAINCLASS;
+                private _display = findDisplay OC_DISPLAY_CREATEFACTION;
+                _display displayAddEventHandler ["unload", "['onUnload', ['Edit_Faction',_this]] call ALiVE_fnc_orbatCreatorOnAction"];
 
-                lbSort [_factionList, "ASC"];
+                private _buttonOk = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_BUTTON_OK );
+                _buttonOk ctrlSetEventHandler ["MouseButtonDown","['onEditFactionOkClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
-                _factionList ctrlSetEventHandler ["LBSelChanged","['onFactionEditorFactionChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+                private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+                private _factionDisplayName = [_factionData,"displayName"] call ALiVE_fnc_hashGet;
+                private _factionClassname = [_factionData,"configName"] call ALiVE_fnc_hashGet;
+                private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
+                private _factionFlag = [_factionData,"flag"] call ALiVE_fnc_hashGet;
 
-                private _selectedFactionGlobal = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
-                if (_selectedFactionGlobal == "") then {
-                    _factionList lbSetCurSel 0;
-                } else {
-                    [_factionList,_selectedFactionGlobal] call ALiVE_fnc_listSelectData;
-                };
+                private _inputDisplayName = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_DISPLAYNAME );
+                private _inputClassName = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_CLASSNAME );
+                private _inputSide = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_SIDE );
+                private _inputFlag = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_FLAG );
 
-                // init buttons
+                _inputDisplayName ctrlSetText _factionDisplayName;
+                _inputClassName ctrlSetText _factionClassname;
 
-                private _button1 = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_BUTTON_BIG_ONE );
-                _button1 ctrlSetText "Unit Editor";
-                _button1 ctrlSetEventHandler ["MouseButtonDown","['onFactionEditorUnitEditorClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-                _button1 ctrlShow true;
-
-                private _button2 = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_BUTTON_BIG_TWO );
-                _button2 ctrlSetText "Group Editor";
-                _button2 ctrlSetEventHandler ["MouseButtonDown","['onFactionEditorGroupEditorClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-                _button2 ctrlShow true;
-
-                private _button3 = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_BUTTON_BIG_THREE );
-                _button3 ctrlSetText "Generate Config";
-                _button3 ctrlSetTooltip "Export selected faction data (Faction class, groups, and units)";
-                _button3 ctrlSetEventHandler ["MouseButtonDown","['generateConfig', 'Faction_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
-                _button3 ctrlShow true;
+                [_inputSide,str _factionSide] call ALiVE_fnc_listSelectData;
+                [_inputFlag,_factionFlag] call ALiVE_fnc_listSelectData;
 
             };
 
@@ -579,24 +533,6 @@ switch(_operation) do {
                 lbSort [_factionList, "ASC"];
 
                 _factionList ctrlSetEventHandler ["LBSelChanged","['onUnitEditorFactionChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-
-                // init buttons
-
-                private _button1 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_BUTTON_BIG_ONE );
-                _button1 ctrlSetText "Faction Editor";
-                _button1 ctrlSetEventHandler ["MouseButtonDown","['onUnitEditorFactionEditorClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-                _button1 ctrlShow true;
-
-                private _button2 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_BUTTON_BIG_TWO );
-                _button2 ctrlSetText "Group Editor";
-                _button2 ctrlSetEventHandler ["MouseButtonDown","['onUnitEditorGroupEditorClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-                _button2 ctrlShow true;
-
-                private _button3 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_BUTTON_BIG_THREE );
-                _button3 ctrlSetText "Generate Config";
-                _button3 ctrlSetTooltip "Export selected units to clipboard";
-                _button3 ctrlSetEventHandler ["MouseButtonDown","['generateConfig', 'Unit_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
-                _button3 ctrlShow true;
 
                 // init class list
 
@@ -679,7 +615,7 @@ switch(_operation) do {
                 // get faction selected in unit editor
 
                 private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
-                private _selectedFaction = [_state,"unitEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+                private _selectedFaction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
                 private _selectedFactionData = [_factions,_selectedFaction] call ALiVE_fnc_hashGet;
                 private _selectedFactionSide = [_selectedFactionData,"side"] call ALiVE_fnc_hashGet;
 
@@ -708,7 +644,7 @@ switch(_operation) do {
                 private _unitTypeSideList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_SIDE );
                 _unitTypeSideList ctrlSetEventHandler ["LBSelChanged","['onCreateUnitUnitTypeSideChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
-                for "_i" from 0 to 2 do {
+                for "_i" from 0 to 3 do {
                     _sideNum = _i;
                     _sideText = [_sideNum] call ALiVE_fnc_sideNumberToText;
                     _sideTextLong = [_sideText] call ALiVE_fnc_sideTextToLong;
@@ -725,7 +661,7 @@ switch(_operation) do {
                     };
                 };
 
-                private _selectedFaction = [_state,"unitEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+                private _selectedFaction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
                 private _factionList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_FACTION );
                 private _unitTypeFactionList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_FACTION );
 
@@ -736,9 +672,6 @@ switch(_operation) do {
 
                 private _buttonOK = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_BUTTON_CONFIRM );
                 _buttonOK ctrlSetEventHandler ["MouseButtonDown","['onCreateUnitConfirmClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-
-                private _buttonCancel = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_BUTTON_CANCEL );
-                _buttonCancel ctrlSetEventHandler ["MouseButtonDown","['onCreateUnitCancelClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
                 private _buttonAutogen = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_BUTTON_AUTOGEN_CLASSNAME );
                 _buttonAutogen ctrlSetEventHandler ["MouseButtonDown","['onCreateUnitAutogenerateClassnameClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
@@ -882,24 +815,6 @@ switch(_operation) do {
                 private _display = findDisplay OC_DISPLAY_GROUPEDITOR;
                 _display displayAddEventHandler ["unload", "['onUnload', ['Group_Editor',_this]] call ALiVE_fnc_orbatCreatorOnAction"];
 
-                // init buttons
-
-                private _button1 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_BUTTON_BIG_ONE );
-                _button1 ctrlSetText "Faction Editor";
-                _button1 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorFactionEditorClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-                _button1 ctrlShow true;
-
-                private _button2 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_BUTTON_BIG_TWO );
-                _button2 ctrlSetText "Unit Editor";
-                _button2 ctrlSetEventHandler ["MouseButtonDown","['onGroupEditorUnitEditorClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-                _button2 ctrlShow true;
-
-                private _button3 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_BUTTON_BIG_THREE );
-                _button3 ctrlSetText "Generate Config";
-                _button3 ctrlSetTooltip "Export selected groups to clipboard";
-                _button3 ctrlSetEventHandler ["MouseButtonDown","['generateConfig', 'Group_Editor'] call ALiVE_fnc_orbatCreatorOnAction"];
-                _button3 ctrlShow true;
-
                 // init group list
 
                 private _groupCategoryList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_INPUT_CATEGORY );
@@ -1024,7 +939,7 @@ switch(_operation) do {
                     "_sideMarkerClass","_sideColor","_sidePrefix","_icon"
                 ];
 
-                private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+                private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
 
                 private _factionData = [_logic,"getFactionData",_faction] call MAINCLASS;
                 private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
@@ -1135,9 +1050,6 @@ switch(_operation) do {
                 private _buttonAutogenClassname = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_BUTTON_AUTOGEN_CLASSNAME );
                 _buttonAutogenClassname ctrlSetEventHandler ["MouseButtonDown","['onCreateGroupAutogenClassnameClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
-                private _buttonCancel = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_BUTTON_CANCEL );
-                _buttonCancel ctrlSetEventHandler ["MouseButtonDown","['onCreateGroupCancelClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-
                 private _buttonConfirm = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_BUTTON_CONFIRM );
                 _buttonConfirm ctrlSetEventHandler ["MouseButtonDown","['onCreateGroupConfirmClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
@@ -1147,7 +1059,7 @@ switch(_operation) do {
 
                 [_logic,"onLoad", "Create_Group"] call MAINCLASS;
 
-                private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+                private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
                 private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
                 private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
 
@@ -1193,6 +1105,18 @@ switch(_operation) do {
 
             };
 
+            case "Create_Faction": {
+
+
+
+            };
+
+            case "Edit_Faction": {
+
+
+
+            };
+
             case "Unit_Editor": {
 
                 if (_exitCode == 2) then {
@@ -1225,7 +1149,6 @@ switch(_operation) do {
 
             case "Group_Editor": {
 
-                [_state,"groupEditor_selectedFaction", ""] call ALiVE_fnc_hashSet;
                 [_state,"groupEditor_selectedGroupCategory", ""] call ALiVE_fnc_hashSet;
                 [_state,"groupEditor_selectedGroup", ""] call ALiVE_fnc_hashSet;
 
@@ -1252,6 +1175,102 @@ switch(_operation) do {
     };
 
 
+    // menu strip
+
+
+    case "onMenuStripButtonClicked": {
+
+        _args params ["_control","_menuPath"];
+
+        private _op = menuData [OC_COMMON_MENUSTRIP,_menuPath];
+
+        switch (_op) do {
+
+            case "orbatCreatorClose": {
+
+                [_logic,"closeOrbatCreator"] call MAINCLASS;
+
+            };
+
+            case "factionEditorOpen": {
+
+                [_logic,"openInterface", "Faction_Editor"] spawn MAINCLASS;
+
+            };
+
+            case "unitEditorOpen": {
+
+                [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
+
+            };
+
+            case "groupEditorOpen": {
+
+                [_logic,"openInterface", "Group_Editor"] spawn MAINCLASS;
+
+            };
+
+            case "exportFaction": {
+
+                [_logic,"exportConfig", "Faction"] call MAINCLASS;
+
+            };
+
+            case "exportUnitsSelected": {
+
+                [_logic,"exportConfig", "UnitsSelected"] call MAINCLASS;
+
+            };
+
+            case "exportUnitsAll": {
+
+                [_logic,"exportConfig", "UnitsAll"] call MAINCLASS;
+
+            };
+
+            case "exportUnitsClasses": {
+
+                [_logic,"exportConfig", "UnitsClasses"] call MAINCLASS;
+
+            };
+
+            case "exportGroupsSelected": {
+
+                [_logic,"exportConfig", "GroupsSelected"] call MAINCLASS;
+
+            };
+
+            case "exportGroupsAll": {
+
+                [_logic,"exportConfig", "GroupsAll"] call MAINCLASS;
+
+            };
+
+            case "exportFull": {
+
+                [_logic,"exportConfig", "Full"] call MAINCLASS;
+
+            };
+
+            case "exportCfgPatches": {
+
+                [_logic,"exportConfig", "CfgPatches"] call MAINCLASS;
+
+            };
+
+        };
+
+    };
+
+    case "closeOrbatCreator": {
+
+        closeDialog 0;
+
+        [_logic,"enableUnitEditorBackground", false] call MAINCLASS;
+
+    };
+
+
     // helper functions
     // init
 
@@ -1264,9 +1283,7 @@ switch(_operation) do {
             "_entryConfigName"
         ];
 
-        private _tmpHash = [] call ALiVE_fnc_hashCreate;
-
-        _result = +_tmpHash;
+        _result = [] call ALiVE_fnc_hashCreate;
 
         private _allFactions = [] call ALiVE_fnc_configGetFactions;
 
@@ -1276,7 +1293,7 @@ switch(_operation) do {
             _factionConfig = _x call ALiVE_fnc_configGetFactionClass;
             _factionSide = getNumber (_factionConfig >> "side");
 
-            if (_factionSide >= 0 && {_factionSide <= 2}) then {
+            if (_factionSide >= 0 && {_factionSide <= 3}) then {
                 _factionConfigName = configName _factionConfig;
 
                 [_result,_factionConfigName, [[],[]]] call ALiVE_fnc_hashSet;
@@ -1297,7 +1314,7 @@ switch(_operation) do {
                 if (_entryScope >= 2) then {
                     _entrySide = getNumber (_entry >> "side");
 
-                    if (_entrySide >= 0 && {_entrySide <= 2}) then {
+                    if (_entrySide >= 0 && {_entrySide <= 3}) then {
                         _entryFaction = getText (_entry >> "faction");
 
                         _factionData = nil;
@@ -1589,8 +1606,10 @@ switch(_operation) do {
             _factionDisplayName = [_faction,"displayName"] call ALiVE_fnc_hashGet;
             _factionConfigName = [_faction,"configName"] call ALiVE_fnc_hashGet;
 
-            _index = _list lbAdd (format ["%1 - %2", _factionDisplayName, _factionConfigName]);
-            _list lbSetData [_index,_factionConfigName];
+            if !(_factionConfigName in FACTION_BLACKLIST) then {
+                _index = _list lbAdd (format ["%1 - %2", _factionDisplayName, _factionConfigName]);
+                _list lbSetData [_index,_factionConfigName];
+            };
         } foreach (_factions select 2);
 
     };
@@ -1910,8 +1929,9 @@ switch(_operation) do {
 
         private _state = [_logic,"state"] call MAINCLASS;
         private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+        private _cfgVehicles = configFile >> "CfgVehicles";
 
-        if (isClass (configFile >> "CfgVehicles" >> _unit)) exitWith {
+        if (isClass (_cfgVehicles >> _unit)) exitWith {
             _result = _unit;
         };
 
@@ -1923,7 +1943,7 @@ switch(_operation) do {
         while {!isClass _configPath} do {
             __unitParentEntry = [_customUnits,_unitParent] call ALiVE_fnc_hashGet;
             _unitParent = [__unitParentEntry,"inheritsFrom"] call ALiVE_fnc_hashGet;
-            _configPath = configFile >> "CfgVehicles" >> _unitParent;
+            _configPath = _cfgVehicles >> _unitParent;
 
         };
 
@@ -2057,14 +2077,18 @@ switch(_operation) do {
 
         private _unit = _args;
 
+        _result = [];
+
         if (_unit isEqualType "") then {
 
             private _state = [_logic,"state"] call MAINCLASS;
             private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
 
-            if !(_unit in (_customUnits select 1)) then {
+            //if !(_unit in (_customUnits select 1)) then {
 
                 private _unitConfig = configFile >> "CfgVehicles" >> _unit;
+                //private _unitParent = configName (inheritsFrom _unitConfig); // this might break something unit editor related?
+                private _unitParent = _unit;
                 private _unitDisplayName = getText (_unitConfig >> "displayName");
                 private _unitSide = getNumber (_unitConfig >> "side");
                 private _unitFaction = getText (_unitConfig >> "faction");
@@ -2094,7 +2118,7 @@ switch(_operation) do {
                 [_newUnit,"init"] call ALiVE_fnc_orbatCreatorUnit;
                 [_newUnit,"configName", _unit] call ALiVE_fnc_hashSet;
                 [_newUnit,"displayName", _unitDisplayName] call ALiVE_fnc_hashSet;
-                [_newUnit,"inheritsFrom", _unit] call ALiVE_fnc_hashSet;
+                [_newUnit,"inheritsFrom", _unitParent] call ALiVE_fnc_hashSet;
                 [_newUnit,"side", _unitSide] call ALiVE_fnc_hashSet;
                 [_newUnit,"faction", _unitFaction] call ALiVE_fnc_hashSet;
                 [_newUnit,"loadout", _unitLoadout] call ALiVE_fnc_hashSet;
@@ -2103,7 +2127,9 @@ switch(_operation) do {
 
                 [_logic,"addCustomUnit", _newUnit] call MAINCLASS;
 
-            };
+                _result = _newUnit;
+
+            //};
 
         };
 
@@ -2111,7 +2137,11 @@ switch(_operation) do {
 
     case "importFactionUnitsFromConfig": {
 
+        private ["_importedUnit"];
+
         private _faction = _args;
+
+        _result = [];
 
         if (_faction isEqualType "") then {
 
@@ -2119,10 +2149,9 @@ switch(_operation) do {
             private _factionAssets = [_factionData,"assets"] call ALiVE_fnc_hashGet;
 
             {
-                [_logic,"importUnitFromConfig", _x] call MAINCLASS;
+                _importedUnit = [_logic,"importUnitFromConfig", _x] call MAINCLASS;
+                _result pushback _importedUnit;
             } foreach _factionAssets;
-
-            [_factionData,"assetsImportedConfig", true] call ALiVE_fnc_hashSet;
 
         };
 
@@ -2364,8 +2393,10 @@ switch(_operation) do {
             _factionDisplayName = [_x,"displayName"] call ALiVE_fnC_hashGet;
             _factionConfigName = [_x,"configName"] call ALiVE_fnc_hashGet;
 
-            _index = _list lbAdd _factionDisplayName;
-            _list lbSetData [_index, _factionConfigName];
+            if !(_factionConfigName in FACTION_BLACKLIST) then {
+                _index = _list lbAdd _factionDisplayName;
+                _list lbSetData [_index, _factionConfigName];
+            };
         } foreach _factions;
 
         if (lbSize _list > 0) then {
@@ -2518,6 +2549,25 @@ switch(_operation) do {
 
     };
 
+    case "loadSidesToList": {
+
+        private ["_sideNum","_sideText","_index"];
+
+        private _list = _args;
+
+        lbClear _list;
+
+        for "_i" from 0 to 3 do {
+            _sideNum = _i;
+            _sideText = [_sideNum] call ALiVE_fnc_sideNumberToText;
+            _sideText = [_sideText] call ALiVE_fnc_sideTextToLong;
+
+            _index = _list lbAdd _sideText;
+            _list lbSetData [_index,str _sideNum];
+        };
+
+    };
+
 
     // faction editor
 
@@ -2664,7 +2714,6 @@ switch(_operation) do {
         private _faction = OC_ctrlGetSelData(_list);
 
         private _state = [_logic,"state"] call MAINCLASS;
-        [_state,"factionEditor_selectedFaction", _faction] call ALiVE_fnc_hashSet;
         [_state,"selectedFaction", _faction] call ALiVE_fnc_hashSet;
 
         [_logic,"factionEditorDisplayFaction", _faction] call MAINCLASS;
@@ -2675,45 +2724,30 @@ switch(_operation) do {
 
         private _faction = _args;
 
+        private _inputFactionFlag = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_FLAG );
+        _inputFactionFlag ctrlShow false;
+
+        private _tree = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_TREE_GROUPS );
+        tvClear _tree;
+
         private _state = [_logic,"state"] call MAINCLASS;
-
         private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
-        private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
-        private _factionDisplayName = [_factionData,"displayName"] call ALiVE_fnc_hashGet;
-        private _factionClassname = [_factionData,"configName"] call ALiVE_fnc_hashGet;
-        private _factionFlag = [_factionData,"flag"] call ALiVE_fnc_hashGet;
 
-        private _inputSide = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_INPUT_SIDE );
-        private _inputDisplayName = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_INPUT_NAME );
-        private _inputClassname = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_INPUT_CLASSNAME );
-        private _inputFlag = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_INPUT_FLAG );
+        if (!isnil "_factionData") then {
 
-        // if flag isnt in list
-        // add it
+            private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
+            private _factionDisplayName = [_factionData,"displayName"] call ALiVE_fnc_hashGet;
+            private _factionClassname = [_factionData,"configName"] call ALiVE_fnc_hashGet;
+            private _factionFlag = [_factionData,"flag"] call ALiVE_fnc_hashGet;
 
-        private _allFlags = [];
-        for "_i" from 0 to (lbSize _inputFlag -  1) do {
-            _allFlags pushback (_inputFlag lbData _i);
+            _inputFactionFlag ctrlShow true;
+            _inputFactionFlag ctrlSetText _factionFlag;
+
+            // update group tree
+
+            [_logic,"factionEditorDisplayFactionGroups", _faction] call MAINCLASS;
+
         };
-
-        if !(_factionFlag in _allFlags) then {
-            private _flagName = format ["Flag %1", _factionDisplayName];
-
-            private _index = _inputFlag lbAdd _flagName;
-            _inputFlag lbSetData [_index,_factionFlag];
-            _inputFlag lbSetPicture [_index,_factionFlag];
-        };
-
-        // update inputs
-
-        [_inputSide,str _factionSide] call ALiVE_fnc_listSelectData;
-        _inputDisplayName ctrlSetText _factionDisplayName;
-        _inputClassname ctrlSetText _factionClassname;
-        [_inputFlag,_factionFlag] call ALiVE_fnc_listSelectData;
-
-        // update group tree
-
-        [_logic,"factionEditorDisplayFactionGroups", _faction] call MAINCLASS;
 
     };
 
@@ -2730,55 +2764,101 @@ switch(_operation) do {
 
     };
 
-    case "onFactionEditorFactionNewClicked": {
+    case "onFactionEditorNewClicked": {
+
+        [_logic,"openInterface", "Create_Faction"] spawn MAINCLASS;
+
+    };
+
+    case "onFactionEditorEditClicked": {
+
+        [_logic,"openInterface", "Edit_Faction"] spawn MAINCLASS;
+
+    };
+
+    case "onFactionEditorCopyClicked": {
+
+        private ["_newClassname"];
 
         private _state = [_logic,"state"] call MAINCLASS;
         private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+
+        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+        private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
+        private _factionConfigName = [_factionData,"configName"] call ALiVE_fnc_hashGet;
+        private _factionDisplayName = [_factionData,"displayName"] call ALiVE_fnc_hashGet;
 
         private _numPrefix = 1;
-        private _factionConfigName = format ["new_faction_%1", _numPrefix];
+        private _newConfigName = format ["%1_copy_%2", _factionConfigName, _numPrefix];
 
-        while {_factionConfigName in (_factions select 1)} do {
+        while {_newConfigName in (_factions select 1)} do {
             _numPrefix = _numPrefix + 1;
-            _factionConfigName = format ["new_faction_%1", _numPrefix];
+            _newConfigName = format ["%1_copy_%2", _factionConfigName, _numPrefix];
         };
 
-        // get random flag
+        private _newDisplayName = format ["%1 copy %2", _factionDisplayName, _numPrefix];
 
-        private _flagList = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_INPUT_FLAG );
-        private _flags = [];
-
-        for "_i" from 0 to (lbSize _flagList - 1) do {
-            _flags pushback (_flagList lbData _i);
-        };
-
-        private _factionDisplayName = format ["New Faction %1", _numPrefix];
-        private _randomFlag = selectRandom _flags;
-
-        private _newFaction = [nil,"create"] call ALiVE_fnc_orbatCreatorFaction;
-        [_newFaction,"init"] call ALiVE_fnc_orbatCreatorFaction;
-        [_newFaction,"configName", _factionConfigName] call ALiVE_fnc_orbatCreatorFaction;
-        [_newFaction,"displayName", _factionDisplayName] call ALiVE_fnc_orbatCreatorFaction;
-        [_newFaction,"flag", _randomFlag] call ALiVE_fnc_hashSet;
-        [_newFaction,"icon", _randomFlag] call ALiVE_fnc_hashSet;
+        private _newFaction = +_factionData;
+        [_newFaction,"configName", _newConfigName] call ALiVE_fnc_hashSet;
+        [_newFaction,"displayName", _newDisplayName] call ALiVE_fnc_hashSet;
+        [_newFaction,"assets", []] call ALiVE_fnc_hashSet;
 
         [_logic,"addFaction", _newFaction] call MAINCLASS;
+
+        private _factionUnits = [];
+
+        _factionUnits append (+([_logic,"getCustomUnitsByFaction", _faction] call MAINCLASS));
+
+        if !([_factionData,"assetsImportedConfig"] call ALiVE_fnc_hashGet) then {
+            _factionUnits append ([_logic,"importFactionUnitsFromConfig", _faction] call MAINCLASS);
+        };
+
+        // rule out duplicates
+
+        private _unitsToCopy = [];
+        private _collectedClassnames = [];
+
+        {
+            _unit = _x;
+            _unitClass = [_unit,"configName"] call ALiVE_fnc_hashGet;
+
+            if !(_unitClass in _collectedClassnames) then {
+                _unitsToCopy pushback _unit;
+                _collectedClassnames pushback _unitClass;
+            };
+        } foreach _factionUnits;
+
+        {
+            _importedUnit = _x;
+            _importedUnitDisplayName = [_importedUnit,"displayName"] call ALiVE_fnc_hashGet;
+            _importedUnitConfigName = [_importedUnit,"configName"] call ALiVE_fnc_hashGet;
+
+
+            _newClassname = [_logic,"generateClassname", [_factionSide,_newConfigName,_importedUnitDisplayName]] call MAINCLASS;
+
+            [_importedUnit,"faction", _newConfigName] call ALiVE_fnc_hashSet; // must be set before changing classname
+            [_logic,"setCustomUnitClassname", [_importedUnitConfigName,_newClassname]] call MAINCLASS; // must be ran before the unit's classname is changed
+
+            [_logic,"addCustomUnit", _importedUnit] call MAINCLASS;
+        } foreach _unitsToCopy;
 
         // update list
 
         private _factionList = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_LIST );
         [_logic,"loadFactionToList", _factionList] call MAINCLASS:
         lbSort [_factionList, "ASC"];
-        [_factionList,_factionConfigName] call ALiVE_fnc_listSelectData;
+        [_factionList,_newConfigName] call ALiVE_fnc_listSelectData;
+
 
     };
 
-    case "onFactionEditorFactionDeleteClicked": {
+    case "onFactionEditorDeleteClicked": {
 
         private ["_customUnit","_customUnitConfigName"];
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _faction = [_state,"factionEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
 
         [_logic,"removeFaction", _faction] call MAINCLASS;
 
@@ -2787,64 +2867,137 @@ switch(_operation) do {
         private _factionList = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_LIST );
         [_logic,"loadFactionToList", _factionList] call MAINCLASS:
         lbSort [_factionList, "ASC"];
-        [_factionList,_newClassname] call ALiVE_fnc_listSelectData;
+        _factionList lbSetCurSel 0;
 
     };
 
-    case "onFactionEditorFactionSaveClicked": {
 
-        private ["_index"];
+    // create faction
+
+
+    case "onCreateFactionOkClicked": {
 
         private _state = [_logic,"state"] call MAINCLASS;
         private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
-        private _faction = [_state,"factionEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+
+        private _inputDisplayname = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_DISPLAYNAME );
+        private _inputClassname = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_CLASSNAME );
+
+        private _displayName = ctrlText _inputDisplayname;
+        private _className = ctrlText _inputClassname;
+        private _side = call compile OC_getSelData( OC_CREATEFACTION_INPUT_SIDE );
+        private _flag = OC_getSelData( OC_CREATEFACTION_INPUT_FLAG );
+
+        // validate input
+
+        private _context = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_CONTEXT );
+
+        if (_displayName == "") exitWith {
+            _context ctrlSetText "Display name cannot be left blank";
+        };
+
+        if (_className == "") exitWith {
+            _context ctrlSetText "Class name cannot be left blank";
+        };
+
+        if (_className in (_factions select 1)) exitWith {
+            _context ctrlSetText "A faction with that class name already exists!";
+        };
+
+        // validation complete
+
+        _className = [_logic,"validateClassname", _className] call MAINCLASS;
+
+        private _newFaction = [nil,"create"] call ALiVE_fnc_orbatCreatorFaction;
+        [_newFaction,"init"] call ALiVE_fnc_orbatCreatorFaction;
+        [_newFaction,"displayName", _displayName] call ALiVE_fnc_orbatCreatorFaction;
+        [_newFaction,"configName", _className] call ALiVE_fnc_orbatCreatorFaction;
+        [_newFaction,"side", _side] call ALiVE_fnc_orbatCreatorFaction;
+        [_newFaction,"flag", _flag] call ALiVE_fnc_hashSet;
+        [_newFaction,"icon", _flag] call ALiVE_fnc_hashSet;
+
+        [_logic,"addFaction", _newFaction] call MAINCLASS;
+
+        closeDialog 0;
+
+        // update list
+
+        private _listFactions = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_LIST );
+        [_logic,"loadFactionToList", _listFactions] call MAINCLASS:
+
+        lbSort [_listFactions, "ASC"];
+        [_listFactions,_className] call ALiVE_fnc_listSelectData;
+
+    };
+
+
+    // edit faction
+
+
+    case "onEditFactionOkClicked": {
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
 
         private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
-        private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
         private _factionDisplayName = [_factionData,"displayName"] call ALiVE_fnc_hashGet;
         private _factionClassname = [_factionData,"configName"] call ALiVE_fnc_hashGet;
+        private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
         private _factionFlag = [_factionData,"flag"] call ALiVE_fnc_hashGet;
 
-        private _inputDisplayName = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_INPUT_NAME );
-        private _inputClassname = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_INPUT_CLASSNAME );
+        private _inputDisplayName = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_DISPLAYNAME );
+        private _inputClassname = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_CLASSNAME );
 
-        private _newSide = call compile OC_getSelData( OC_FACTIONEDITOR_INPUT_SIDE );
         private _newDisplayName = ctrlText _inputDisplayName;
         private _newClassname = ctrlText _inputClassname;
-        private _newFlag = OC_getSelData( OC_FACTIONEDITOR_INPUT_FLAG );
+        private _newSide = call compile OC_getSelData( OC_CREATEFACTION_INPUT_SIDE );
+        private _newFlag = OC_getSelData( OC_CREATEFACTION_INPUT_FLAG );
 
-        private _changed = false;
+        // validate input
+
+        private _context = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_CONTEXT );
+
+        if (_newDisplayName == "") exitWith {
+            _context ctrlSetText "Display name cannot be left blank";
+        };
+
+        if (_newClassname == "") exitWith {
+            _context ctrlSetText "Class name cannot be left blank";
+        };
+
+        if (_newClassname in (_factions select 1)) exitWith {
+            _context ctrlSetText "A faction with that class name already exists!";
+        };
+
+        // validation complete
 
         if (_newSide != _factionSide) then {
             [_logic,"setFactionSide", [_faction,_newSide]] call MAINCLASS;
-            _changed = true;
         };
 
         if (_newDisplayName != _factionDisplayName) then {
             [_factionData,"displayName", _newDisplayName] call ALiVE_fnc_hashSet;
-            _changed = true;
         };
 
         if (_newClassname != _factionClassname) then {
-            _newClassname = [_newClassname," ","_"] call CBA_fnc_replace;
+            _newClassname = [_logic,"validateClassname", _newClassname] call MAINCLASS;
             [_logic,"setFactionClassname", [_faction,_newClassname]] call MAINCLASS;
-            _changed = true;
         };
 
         if (_newFlag != _factionFlag) then {
             [_factionData,"flag", _newFlag] call ALiVE_fnc_hashSet;
             [_factionData,"icon", _newFlag] call ALiVE_fnc_hashSet;
-            _changed = true;
         };
 
-        // update lists if values changed
+        closeDialog 0;
 
-        if (_changed) then {
-            private _factionList = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_LIST );
-            [_logic,"loadFactionToList", _factionList] call MAINCLASS:
-            lbSort [_factionList, "ASC"];
-            [_factionList,_newClassname] call ALiVE_fnc_listSelectData;
-        };
+        // update lists
+
+        private _factionList = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_LIST );
+        [_logic,"loadFactionToList", _factionList] call MAINCLASS:
+        lbSort [_factionList, "ASC"];
+        _factionList lbSetCurSel 0;
+        [_factionList,_newClassname] call ALiVE_fnc_listSelectData;
 
     };
 
@@ -3000,7 +3153,6 @@ switch(_operation) do {
                 _unitList lbSetData [_index, _x select 1];
             } foreach _units;
 
-            [_state,"unitEditor_selectedFaction", _faction] call ALiVE_fnc_hashSet;
             [_state,"selectedFaction", _faction] call ALiVE_fnc_hashSet;
 
         };
@@ -3057,9 +3209,12 @@ switch(_operation) do {
 
             // hide buttons
 
-            for "_i" from 9001 to 9018 do {
-                ctrlShow [_i, false]; // hardcoded idcs for sanity
-            };
+            private _display = findDisplay OC_DISPLAY_UNITEDITOR;
+            private _displayControls = allControls _display;
+
+            {
+                _x ctrlShow false;
+            } foreach _displayControls;
 
             // open interface
 
@@ -3182,7 +3337,7 @@ switch(_operation) do {
         private ["_unitClassname"];
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _faction = [_state,"unitEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
 
         private _unitList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
 
@@ -3234,7 +3389,7 @@ switch(_operation) do {
 
         private _currIndex = lbCurSel _unitList;
 
-        private _faction = [_state,"unitEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
         [_logic,"unitEditorDisplayFactionUnits", _faction] call MAINCLASS;
 
         // if no entries remain in list
@@ -3250,9 +3405,12 @@ switch(_operation) do {
     case "unitEditorImportConfigClicked": {
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _faction = [_state,"unitEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
 
-        [_logic,"importFactionUnitsFromConfig", _faction] call MAINCLASS;
+        private _importedUnits = [_logic,"importFactionUnitsFromConfig", _faction] call MAINCLASS;
+
+        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+        [_factionData,"assetsImportedConfig", true] call ALiVE_fnc_hashSet;
 
         // update lists
 
@@ -3404,7 +3562,7 @@ switch(_operation) do {
 
         // validate prerequisites
 
-        private _instructions = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INSTRUCTIONS );
+        private _instructions = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_CONTEXT );
         private _parentUnitList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_UNITS );
 
         private _displayNameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_DISPLAYNAME );
@@ -3480,7 +3638,7 @@ switch(_operation) do {
 
         closeDialog 0;
 
-        private _selectedFaction = [_state,"unitEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _selectedFaction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
         [_logic,"unitEditorDisplayFactionUnits", _selectedFaction] call MAINCLASS;
 
         private _unitList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
@@ -3520,12 +3678,6 @@ switch(_operation) do {
             [_customUnits,_unitConfigName, _newUnit] call ALiVE_fnc_hashSet;
 
         };
-
-    };
-
-    case "onCreateUnitCancelClicked": {
-
-        closeDialog 0;
 
     };
 
@@ -3597,7 +3749,7 @@ switch(_operation) do {
 
         // validate prerequisites
 
-        private _instructions = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INSTRUCTIONS );
+        private _instructions = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_CONTEXT );
 
         if (_displayName == "") exitWith {_instructions ctrlSetText "Display name cannot be left blank"};
         if (_classname == "") exitWith {_instructions ctrlSetText "Class name cannot be left blank"};
@@ -3656,7 +3808,7 @@ switch(_operation) do {
 
         closeDialog 0;
 
-        private _selectedFaction = [_state,"unitEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _selectedFaction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
         [_logic,"unitEditorDisplayFactionUnits", _selectedFaction] call MAINCLASS;
 
         private _unitList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
@@ -3753,7 +3905,7 @@ switch(_operation) do {
         lbClear _left_list_one;
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _faction = [_state,"unitEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
 
         private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
         private _added = [];
@@ -3910,7 +4062,6 @@ switch(_operation) do {
         private _faction = _args;
 
         private _state = [_logic,"state"] call MAINCLASS;
-        [_state,"groupEditor_selectedFaction", _faction] call ALiVE_fnc_hashSet;
         [_state,"selectedFaction", _faction] call ALiVE_fnc_hashSet;
 
         // add categories to list
@@ -3976,7 +4127,7 @@ switch(_operation) do {
 
         private _state = [_logic,"state"] call MAINCLASS;
         private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
-        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
 
         private _factionData = [_factions,_faction] call ALiVE_fnc_hashGet;
         private _factionAssets = [_factionData,"assets"] call ALiVE_fnc_hashGet;
@@ -4036,7 +4187,7 @@ switch(_operation) do {
         private _draggedAsset = [_state,"groupEditor_assetListDragTarget"] call ALiVE_fnc_hashGet;
 
         if (_group != "" && {_draggedAsset != ""}) then {
-            private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+            private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
             private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
             private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
 
@@ -4071,7 +4222,7 @@ switch(_operation) do {
         private _groupCategory = _args;
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
 
         [_state,"groupEditor_selectedGroupCategory", _groupCategory] call ALiVE_fnc_hashSet;
 
@@ -4176,7 +4327,7 @@ switch(_operation) do {
         _button4 ctrlEnable true;
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
         private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
 
         private _groupData = [_logic,"getFactionCategoryGroup", [_faction,_category,_group]] call MAINCLASS;
@@ -4263,7 +4414,7 @@ switch(_operation) do {
         private _unit = OC_ctrlGetSelData( _list );
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
         private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
         private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
 
@@ -4299,7 +4450,7 @@ switch(_operation) do {
         private _rank = OC_ctrlGetSelData( _list );
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
         private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
         private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
 
@@ -4349,7 +4500,7 @@ switch(_operation) do {
         private _unitIndex = lbCurSel _unitList;
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
         private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
         private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
 
@@ -4379,7 +4530,7 @@ switch(_operation) do {
         private ["_groupData","_groupClassname"];
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
         private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
         private _categoryData = [_logic,"getFactionGroupCategory", [_faction,_category]] call MAINCLASS;
 
@@ -4419,7 +4570,7 @@ switch(_operation) do {
         } foreach _selectedIndices;
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
         private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
 
         {
@@ -4437,7 +4588,7 @@ switch(_operation) do {
         private _asset = OC_getSelData( OC_GROUPEDITOR_ASSETS_LIST_UNITS );
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
         private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
         private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
 
@@ -4478,7 +4629,7 @@ switch(_operation) do {
     case "onCreateGroupAutogenClassnameClicked": {
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
         private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
 
         private _inputName = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_NAME );
@@ -4505,21 +4656,15 @@ switch(_operation) do {
 
     };
 
-    case "onCreateGroupCancelClicked": {
-
-        closeDialog 0;
-
-    };
-
     case "onCreateGroupConfirmClicked": {
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
 
         private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
         private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
 
-        private _instructions = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INSTRUCTIONS );
+        private _instructions = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_CONTEXT );
 
         private _groupIcon = OC_getSelData( OC_CREATEGROUP_INPUT_ICON );
 
@@ -4579,7 +4724,7 @@ switch(_operation) do {
 
         private _state = [_logic,"state"] call MAINCLASS;
 
-        private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
         private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
         private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
 
@@ -4594,7 +4739,7 @@ switch(_operation) do {
 
         private _inputName = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_NAME );
         private _inputClassname = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_CLASSNAME );
-        private _instructions = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INSTRUCTIONS );
+        private _instructions = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_CONTEXT );
 
         private _newGroupName = ctrlText _inputName;
         private _newGroupClassname = ctrlText _inputClassname;
@@ -4658,17 +4803,182 @@ switch(_operation) do {
     // config generation
 
 
-    case "generateConfig": {
+    case "exportConfig": {
 
         private _mode = _args;
 
         private _state = [_logic,"state"] call MAINCLASS;
+        private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
 
         switch (_mode) do {
 
-            case "Faction_Editor": {
+            case "Faction": {
 
-                private _faction = [_state,"factionEditor_selectedFaction"] call ALiVE_fnc_hashGet;
+                _result = [_logic,"getFactionClassExportString", _faction] call MAINCLASS;
+
+                _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
+
+                systemchat "Config data copied to clipboard";
+                copyToClipboard _result;
+
+            };
+
+            case "UnitsSelected": {
+
+                private _state = [_logic,"state"] call MAINCLASS;
+                private _currentState = [_state,"activeInteface"] call ALiVE_fnc_hashGet;
+
+                if (_currentState == "Unit_Editor") then {
+
+                    private _classList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
+                    private _selectedIndices = lbSelection _classList;
+                    private _selectedUnits = [];
+
+                    {
+                        _selectedUnits pushback (_classList lbData _x);
+                    } foreach _selectedIndices;
+
+                    _result = [_logic,"exportCustomUnits", _selectedUnits] call MAINCLASS;
+
+                    _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
+
+                    systemchat "Config data copied to clipboard";
+                    copyToClipboard _result;
+
+                };
+
+            };
+
+            case "UnitsAll": {
+
+                private _state = [_logic,"state"] call MAINCLASS;
+                private _selectedFaction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+
+                private _factionUnits = [_logic,"getCustomUnitsByFaction", _selectedFaction] call MAINCLASS;
+                private _factionUnitClasses = [];
+
+                {
+                    _factionUnitClasses pushback ([_x,"configName"] call ALiVE_fnc_hashGet);
+                } foreach _factionUnits;
+
+                 _result = [_logic,"exportCustomUnits", _factionUnitClasses] call MAINCLASS;
+
+                 _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
+
+                systemchat "Config data copied to clipboard";
+                copyToClipboard _result;
+
+            };
+
+            case "UnitsClasses": {
+
+                private _state = [_logic,"state"] call MAINCLASS;
+                private _selectedFaction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+
+                private _factionUnits = [_logic,"getCustomUnitsByFaction", _selectedFaction] call MAINCLASS;
+                private _factionUnitClasses = [];
+
+                {
+                    _factionUnitClasses pushback ([_x,"configName"] call ALiVE_fnc_hashGet);
+                } foreach _factionUnits;
+
+                _result = "";
+                private _indent = "    ";
+                private _newLine = toString [13,10];
+
+                // convert to vertical string
+
+                {
+                    if (_forEachIndex != 0) then {
+                        _result = _result + _newLine;
+                    };
+
+                    _result = _result + str _x;
+
+                    if (_forEachIndex != (count _factionUnitClasses) - 1) then {
+                        _result = _result + ",";
+                    };
+                } foreach _factionUnitClasses;
+
+                systemchat "Unit classnames copied to clipboard";
+                copyToClipboard _result;
+
+            };
+
+            case "GroupsSelected": {
+
+                private _state = [_logic,"state"] call MAINCLASS;
+                private _currentState = [_state,"activeInteface"] call ALiVE_fnc_hashGet;
+
+                if (_currentState == "Group_Editor") then {
+
+                    private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
+
+                    private _groupList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_LIST_GROUPS );
+                    private _selectedIndices = lbSelection _groupList;
+
+                    private _groups = [];
+
+                    {
+                        _groups pushback (_groupList lbData _x);
+                    } foreach _selectedIndices;
+
+                    private _factionGroupCategory = [_logic,"getFactionGroupCategory", [_faction,_category]] call MAINCLASS;
+
+                    _result = [_logic,"exportGroupsInCategory", [_factionGroupCategory,_groups]] call MAINCLASS;
+                    _result = [_logic,"formatGroupCategoriesToFaction", [_faction,_result]] call MAINCLASS;
+
+                    _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
+
+                    systemchat "Config data copied to clipboard";
+                    copyToClipboard _result;
+
+                };
+
+            };
+
+            case "GroupsAll": {
+
+                private ["_category","_categoryGroups","_categoryGroupClasses"];
+
+                private _state = [_logic,"state"] call MAINCLASS;
+                private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+
+                private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+                private _groupCategories = [_factionData,"groupCategories"] call ALiVE_fnc_hashGet;
+
+                _result = "";
+                private _indent = "    ";
+                private _newLine = toString [13,10];
+
+                // get groups by category
+
+                private _categoryGroupPairs = [];
+
+                {
+                    _category = _x;
+                    _categoryGroups = [_category,"groups"] call ALiVE_fnc_hashGet;
+                    _categoryGroupClasses = _categoryGroups select 1;
+
+                    _categoryGroupPairs pushback [_category,_categoryGroupClasses];
+                } foreach (_groupCategories select 2);
+
+                private _CFGgroups = "";
+                {
+                    _groupCategoryExportString = [_logic,"exportGroupsInCategory", _x] call MAINCLASS;
+                    _CFGgroups = _CFGgroups + _groupCategoryExportString + _newLine;
+                } foreach _categoryGroupPairs;
+
+                _result = [_logic,"formatGroupCategoriesToFaction", [_faction,_CFGgroups]] call MAINCLASS;
+
+                _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
+
+                systemchat "Config data copied to clipboard";
+                copyToClipboard _result;
+
+            };
+
+            case "Full": {
 
                 _result = [_logic,"exportFaction", _faction] call MAINCLASS;
 
@@ -4679,45 +4989,82 @@ switch(_operation) do {
 
             };
 
-            case "Unit_Editor": {
+            case "CfgPatches": {
 
-                private _classList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
-                private _selectedIndices = lbSelection _classList;
-                private _selectedUnits = [];
+                _result = "";
+                private _indent = "    ";
+                private _newLine = toString [13,10];
 
-                {
-                    _selectedUnits pushback (_classList lbData _x);
-                } foreach _selectedIndices;
+                private _state = [_logic,"state"] call MAINCLASS;
+                private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+                private _factionUnits = [_logic,"getCustomUnitsByFaction", _faction] call MAINCLASS;
 
-                _result = [_logic,"exportCustomUnits", _selectedUnits] call MAINCLASS;
+                // get unit classnames
 
-                _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
-
-                systemchat "Config data copied to clipboard";
-                copyToClipboard _result;
-
-            };
-
-            case "Group_Editor": {
-
-                private _faction = [_state,"groupEditor_selectedFaction"] call ALiVE_fnc_hashGet;
-                private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
-
-                private _groupList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_LIST_GROUPS );
-                private _selectedIndices = lbSelection _groupList;
-
-                private _groups = [];
+                private _unitClassnames = [];
+                private _unitClassnamesString = "";
 
                 {
-                    _groups pushback (_groupList lbData _x);
-                } foreach _selectedIndices;
+                    _unitClassnames pushback ([_x,"configName"] call ALiVE_fnc_hashGet);
+                } foreach _factionUnits;
 
-                private _factionGroupCategory = [_logic,"getFactionGroupCategory", [_faction,_category]] call MAINCLASS;
+                // convert to vertical string
 
-                _result = [_logic,"exportGroupsInCategory", [_factionGroupCategory,_groups]] call MAINCLASS;
-                _result = [_logic,"formatGroupCategoriesToFaction", [_faction,_result]] call MAINCLASS;
+                {
+                    _unitClassnamesString = _unitClassnamesString + _indent + _indent + _indent;
 
-                _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
+                    _unitClassnamesString = _unitClassnamesString + str _x;
+
+                    if (_forEachIndex != (count _unitClassnames) - 1) then {
+                        _unitClassnamesString = _unitClassnamesString + ",";
+                    };
+
+                    _unitClassnamesString = _unitClassnamesString + _newLine;
+                } foreach _unitClassnames;
+
+                // get required addons
+
+                private _requiredAddons = [];
+                private _requiredAddonsString = "";
+                private _cfgVehicles = configFile >> "CfgVehicles";
+
+                {
+                    _unitClass = [_x,"configName"] call ALiVE_fnc_hashGet;
+                    _realUnitClass = [_logic,"getRealUnitClass", _unitClass] call MAINCLASS;
+                    _realUnitParent = inheritsFrom (_cfgVehicles >> _realUnitClass);
+                    _requiredAddonList = configSourceAddonList _realUnitParent;
+
+                    {_requiredAddons pushbackunique _x} foreach _requiredAddonList;
+                } foreach _factionUnits;
+
+                _requiredAddons deleteAt (_requiredAddons find _faction);
+
+                // convert to vertical string
+
+                {
+                    _requiredAddonsString = _requiredAddonsString + _indent + _indent + _indent;
+
+                    _requiredAddonsString = _requiredAddonsString + str _x;
+
+                    if (_forEachIndex != (count _requiredAddons) - 1) then {
+                        _requiredAddonsString = _requiredAddonsString + ",";
+                    };
+
+                    _requiredAddonsString = _requiredAddonsString + _newLine;
+                } foreach _requiredAddons;
+
+                _result = _result + "class CfgPatches {" + _newLine;
+
+                _result = _result + _indent + "class " + _faction + " {" + _newLine;
+                _result = _result + _indent + _indent + "units[] = {" + _newLine + _unitClassnamesString + _indent + _indent + "};" + _newLine;
+                _result = _result + _indent + _indent + "weapons[] = {};" + _newLine;
+                _result = _result + _indent + _indent + "requiredVersion = 1.62;" + _newLine;
+                _result = _result + _indent + _indent + "requiredAddons[] = " + _newLine + _requiredAddonsString + _indent + _indent + "};" + _newLine;
+                _result = _result + _indent + _indent + "author = " + str profileName + ";" + _newLine;
+                _result = _result + _indent + _indent + "authors[] = " + ([_logic,"arrayToConfigArrayString", [profileName]] call MAINCLASS) + ";" + _newLine;
+                _result = _result + _indent + "};" + _newLine;
+
+                _result = _result + "};" + _newLine;
 
                 systemchat "Config data copied to clipboard";
                 copyToClipboard _result;
@@ -5114,6 +5461,11 @@ switch(_operation) do {
         _result = _result + _newLine;
         _result = _result + _indent + _indent + _indent + "class ALiVE_orbatCreator {";
 
+        // hack for force reload weapon
+
+        _initEventHandler = _initEventHandler + "reload _unit" + ";";
+        [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
+
         private _eventHandlerTypes = _eventHandlers select 1;
         private _eventHandlerStrings = _eventHandlers select 2;
 
@@ -5343,6 +5695,37 @@ switch(_operation) do {
 
     };
 
+    case "getFactionClassExportString": {
+
+        private _faction = _args;
+
+        private _newLine = toString [13,10];
+        private _indent = "    ";
+        _result = "";
+
+        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+        private _factionConfigName = [_factionData,"configName"] call ALiVE_fnc_hashGet;
+        private _factionDisplayName = [_factionData,"displayName"] call ALiVE_fnc_hashGet;
+        private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
+        private _factionFlag = [_factionData,"flag"] call ALiVE_fnc_hashGet;
+        private _factionIcon = [_factionData,"icon"] call ALiVE_fnc_hashGet;
+        private _factionPriority = [_factionData,"priority"] call ALiVE_fnc_hashGet;
+
+        private _factionClassString = "";
+        _factionClassString = _factionClassString + "class CfgFactionClasses {" + _newLine;
+        _factionClassString = _factionClassString + _indent + "class " + _factionConfigName + " {" + _newLine;
+        _factionClassString = _factionClassString + _indent + _indent + "displayName = " + str _factionDisplayName + ";" + _newLine;
+        _factionClassString = _factionClassString + _indent + _indent + "side = " + str _factionSide + ";" + _newLine;
+        _factionClassString = _factionClassString + _indent + _indent + "flag = " + str _factionFlag + ";" + _newLine;
+        _factionClassString = _factionClassString + _indent + _indent + "icon = " + str _factionIcon + ";" + _newLine;
+        _factionClassString = _factionClassString + _indent + _indent + "priority = " + str _factionPriority + ";" + _newLine;
+        _factionClassString = _factionClassString + _indent + "};" + _newLine;
+        _factionClassString = _factionClassString + "};";
+
+        _result = _result + _factionClassString;
+
+    };
+
     case "exportFaction": {
 
         private ["_category","_categoryGroups","_categoryGroupClasses","_groupCategoryExportString"];
@@ -5381,15 +5764,8 @@ switch(_operation) do {
 
         // CfgFactionClasses
 
-        _result = _result + "class CfgFactionClasses {" + _newLine;
-        _result = _result + _indent + "class " + _factionConfigName + " {" + _newLine;
-        _result = _result + _indent + _indent + "displayName = " + str _factionDisplayName + ";" + _newLine;
-        _result = _result + _indent + _indent + "side = " + str _factionSide + ";" + _newLine;
-        _result = _result + _indent + _indent + "flag = " + str _factionFlag + ";" + _newLine;
-        _result = _result + _indent + _indent + "icon = " + str _factionIcon + ";" + _newLine;
-        _result = _result + _indent + _indent + "priority = " + str _factionPriority + ";" + _newLine;
-        _result = _result + _indent + "};" + _newLine;
-        _result = _result + "};";
+        private _CFGFactionClassesString = [_logic,"getFactionClassExportString", _faction] call MAINCLASS;
+        _result = _result + _CFGFactionClassesString;
 
         // CfgGroups
 
@@ -5490,6 +5866,24 @@ switch(_operation) do {
                 _result = _result + _indentOuter + _attribute + " = " + str _value + ";" + _newLine;
             };
         };
+
+    };
+
+    case "getClassHashDataString": {
+
+        _args params ["_class","_classParent","_classProperties",["_level",0]];
+
+        private _newLine = toString [13,10];
+        private _indent = "    ";
+        private _classString = "";
+
+        _classString = _classString + _class;
+
+        if (_classParent != "") then {
+            _classString = _classString + " : " + _classParent;
+        };
+
+        _classString = _classString + " {" + _newLine;
 
     };
 

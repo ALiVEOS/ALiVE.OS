@@ -1,1 +1,4 @@
-Add role dropdown menu in unit creation/edit dialog that allows the user to pick the units "role" attribute
+Wishlist
+--------
+
+- Alternative Uniforms: Pick multiple uniforms from which one will randomly be assigned to the unit upon spawn
