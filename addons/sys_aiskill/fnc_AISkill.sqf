@@ -69,9 +69,11 @@ private ["_logic","_operation","_args","_result","_debug"];
 
 TRACE_1("AISKILL - input",_this);
 
-_logic = [_this, 0, objNull, [objNull]] call BIS_fnc_param;
-_operation = [_this, 1, "", [""]] call BIS_fnc_param;
-_args = [_this, 2, objNull, [objNull,[],"",0,true,false]] call BIS_fnc_param;
+params [
+    ["_logic", objNull, [objNull]],
+    ["_operation", "", [""]],
+    ["_args", objNull, [objNull,[],"",0,true,false]]
+];
 _result = true;
 
 switch(_operation) do {
@@ -309,6 +311,9 @@ switch(_operation) do {
     case "customSkillCourage": {
         _result = [_logic,_operation,_args,_logic getvariable [_operation,0]] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "customSkillFleeing": {
+        _result = [_logic,_operation,_args,_logic getvariable [_operation,0]] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "customSkillReload": {
         _result = [_logic,_operation,_args,_logic getvariable [_operation,0]] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -342,9 +347,9 @@ switch(_operation) do {
         private ["_minSkill","_maxSkill","_diff","_factionSkill","_faction","_aimingAccuracy","_aimingShake","_aimingSpeed",
         "_skillFactionsRecruit","_skillFactionsRegular","_skillFactionsVeteran","_customSkillFactions","_customSkillAbilityMin",
         "_customSkillAbilityMax","_customSkillAimAccuracy","_customSkillAimShake","_customSkillAimSpeed","_customSkillEndurance",
-        "_customSkillSpotDistance","_customSkillSpotTime","_customSkillCourage","_customSkillReload","_customSkillCommanding",
-        "_customSkillGeneral","_recruitSkill","_regularSkill","_veteranSkill","_expertSkill","_customSkill","_factionSkills",
-        "_skillFactionsExpert","_countEffected","_side"];
+        "_customSkillSpotDistance","_customSkillSpotTime","_customSkillCourage","_customSkillFleeing","_customSkillReload",
+        "_customSkillCommanding","_customSkillGeneral","_recruitSkill","_regularSkill","_veteranSkill","_expertSkill","_customSkill",
+        "_factionSkills","_skillFactionsExpert","_countEffected","_side"];
 
         _skillFactionsRecruit = [_logic, "skillFactionsRecruit"] call MAINCLASS;
         _skillFactionsRegular = [_logic, "skillFactionsRegular"] call MAINCLASS;
@@ -360,6 +365,7 @@ switch(_operation) do {
         _customSkillSpotDistance = [_logic, "customSkillSpotDistance"] call MAINCLASS;
         _customSkillSpotTime = [_logic, "customSkillSpotTime"] call MAINCLASS;
         _customSkillCourage = [_logic, "customSkillCourage"] call MAINCLASS;
+        _customSkillFleeing = [_logic, "customSkillFleeing"] call MAINCLASS;
         _customSkillReload = [_logic, "customSkillReload"] call MAINCLASS;
         _customSkillCommanding = [_logic, "customSkillCommanding"] call MAINCLASS;
         _customSkillGeneral = [_logic, "customSkillGeneral"] call MAINCLASS;
@@ -371,7 +377,7 @@ switch(_operation) do {
             ["ALiVE AISKILL Custom Skill: Factions:[%1]",_customSkillFactions] call ALIVE_fnc_dump;
             ["ALiVE AISKILL Custom Skill: Min Ability:%1 Max Ability:%2",_customSkillAbilityMin,_customSkillAbilityMax] call ALIVE_fnc_dump;
             ["ALiVE AISKILL Custom Skill: Aim Accuracy:%1 Aim Shake:%2 Aim Speed:%3",_customSkillAimAccuracy,_customSkillAimShake,_customSkillAimSpeed] call ALIVE_fnc_dump;
-            ["ALiVE AISKILL Custom Skill: Courage:%1 Endurance:%2 Spot Distance:%3 Spot Time:%4",_customSkillCourage,_customSkillEndurance,_customSkillSpotDistance,_customSkillSpotTime] call ALIVE_fnc_dump;
+            ["ALiVE AISKILL Custom Skill: Courage:%1 Fleeing:%2 Endurance:%3 Spot Distance:%4 Spot Time:%5",_customSkillCourage,_customSkillFleeing,_customSkillEndurance,_customSkillSpotDistance,_customSkillSpotTime] call ALIVE_fnc_dump;
             ["ALiVE AISKILL Custom Skill: Reload:%1 Commanding:%2 General:%3",_customSkillReload,_customSkillCommanding,_customSkillGeneral] call ALIVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
@@ -392,7 +398,7 @@ switch(_operation) do {
         _veteranSkill = [0.2,0.3,0.1,0.75,0.2,0.2,0.75,0.6,0.2,0.2,1,0.6];
         _expertSkill = [0.3,0.4,0.2,0.55,0.45,0.45,0.85,0.7,0.45,0.45,1,0.75];
         _customSkill = [_customSkillAbilityMin,_customSkillAbilityMax,_customSkillAimAccuracy,_customSkillAimShake,_customSkillAimSpeed,_customSkillEndurance,
-        _customSkillSpotDistance,_customSkillSpotTime,_customSkillCourage,_customSkillReload,_customSkillCommanding,_customSkillGeneral];
+        _customSkillSpotDistance,_customSkillSpotTime,_customSkillCourage,_customSkillFleeing,_customSkillReload,_customSkillCommanding,_customSkillGeneral];
 
         _factionSkills = [] call ALIVE_fnc_hashCreate;
 

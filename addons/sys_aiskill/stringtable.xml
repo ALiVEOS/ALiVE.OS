@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
@@ -101,6 +101,13 @@
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COURAGE_COMMENT">
     <Original>Courage</Original>
 </Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_FLEEING">
+    <Original>Cowardice:</Original>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_CUSTOM_FLEEING_COMMENT">
+    <Original>How easily the unit will flee</Original>
+</Key>
+
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_RELOAD">
     <Original>Reload:</Original>
 </Key>
