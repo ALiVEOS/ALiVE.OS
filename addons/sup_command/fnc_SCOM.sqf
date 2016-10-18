@@ -475,7 +475,7 @@ switch(_operation) do {
                 };
                 case "OPS_GROUP_SPECTATE_READY": {
 
-                    [_logic,"enableOpsSpectateGroup",_eventData] call MAINCLASS;
+                    [_logic,"enableOpsSpectateGroup",_eventData] spawn MAINCLASS;
 
                 };
             };
