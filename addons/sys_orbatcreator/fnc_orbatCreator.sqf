@@ -3240,8 +3240,21 @@ switch(_operation) do {
 
                 // hide unneeded buttons
 
-                _ctrlButtonSave = findDisplay -1 displayctrl 44146;
-                _ctrlButtonSave ctrlEnable false;
+                private _ctrlButtonSave = _displayArsenal displayctrl 44146;
+                _ctrlButtonSave ctrlSetTooltip "Save loadout to arsenal.";
+                //_ctrlButtonSave ctrlEnable false;
+
+                private _ctrlButtonLoad = _displayArsenal displayctrl 44147;
+                _ctrlButtonLoad ctrlSetTooltip "Load loadout from arsenal.";
+                //_ctrlButtonLoad ctrlEnable false;
+
+                private _ctrlButtonExport = _displayArsenal displayctrl 44148;
+                _ctrlButtonExport ctrlSetTooltip "Export loadout to clipboard.";
+                //_ctrlButtonExport ctrlEnable false;
+
+                private _ctrlButtonImport = _displayArsenal displayctrl 44149;
+                _ctrlButtonImport ctrlSetTooltip "Import loadout from clipboard.";
+                //_ctrlButtonImport ctrlEnable false;
 
                 _ctrlButtonLoad = findDisplay -1 displayctrl 44147;
                 _ctrlButtonLoad ctrlEnable false;
