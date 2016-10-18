@@ -39,35 +39,27 @@ if (isnil QUOTE(ADDON) || {!(ADDON getVariable ["startupComplete", false])}) exi
     //["ALiVE AI Skill not active exiting! Unit: %1!",_unit] call ALiVE_fnc_DumpR
 };
 
-_factionSkills = [ADDON, "factionSkills"] call ALiVE_fnc_AISkill;
-_debug = [ADDON, "debug"] call ALiVE_fnc_AISkill;
+private _factionSkills = [ADDON, "factionSkills"] call ALiVE_fnc_AISkill;
+private _debug = [ADDON, "debug"] call ALiVE_fnc_AISkill;
 
-_faction = faction _unit;
-_side = side _unit;
+private _faction = faction _unit;
 
-_aimingAccuracy = _unit skill "aimingAccuracy";
-_aimingShake = _unit skill "aimingShake";
-_aimingSpeed = _unit skill "aimingSpeed";
+private _aimingAccuracy = _unit skill "aimingAccuracy";
+private _aimingShake = _unit skill "aimingShake";
+private _aimingSpeed = _unit skill "aimingSpeed";
 
-if ((_faction in (_factionSkills select 1)) && {!(_side == CIVILIAN)}) then {
+if ((_faction in (_factionSkills select 1)) && {!(side _unit == CIVILIAN)}) then {
     _factionSkill = [_factionSkills,_faction] call ALIVE_fnc_hashGet;
 
-    if((_aimingAccuracy != _factionSkill select 2) && (_aimingShake != _factionSkill select 3) && (_aimingSpeed != _factionSkill select 4)) then {
+    if((_aimingAccuracy != _factionSkill select 2) && {_aimingShake != _factionSkill select 3} && {_aimingSpeed != _factionSkill select 4}) then {
 
-        _minSkill = _factionSkill select 0;
-        _maxSkill = _factionSkill select 1;
+        _factionSkill params [
+            "_minSkill","_maxSkill","_aimingAccuracy","_aimingShake",
+            "_aimingSpeed","_endurance","_spotDistance","_spotTime",
+            "_courage","_fleeing","_reloadSpeed","_commanding","_general"
+        ];
+
         _diff = _maxSkill - _minSkill;
-
-        _aimingAccuracy = _factionSkill select 2;
-        _aimingShake = _factionSkill select 3;
-        _aimingSpeed = _factionSkill select 4;
-        _endurance = _factionSkill select 5;
-        _spotDistance = _factionSkill select 6;
-        _spotTime = _factionSkill select 7;
-        _courage = _factionSkill select 8;
-        _reloadSpeed = _factionSkill select 9;
-        _commanding = _factionSkill select 10;
-        _general = _factionSkill select 11;
 
         _unit setUnitAbility (_minSkill + (random _diff));
 

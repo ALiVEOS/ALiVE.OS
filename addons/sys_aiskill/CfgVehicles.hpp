@@ -127,6 +127,12 @@ class CfgVehicles {
                 defaultValue = 0.7;
                 typeName = "NUMBER";
             };
+            class customSkillFleeing {
+                displayName = "$STR_ALIVE_AISKILL_CUSTOM_FLEEING";
+                description = "$STR_ALIVE_AISKILL_CUSTOM_FLEEING_COMMENT";
+                defaultValue = 0.3;
+                typeName = "NUMBER";
+            };
             class customSkillReload {
                 displayName = "$STR_ALIVE_AISKILL_CUSTOM_RELOAD";
                 description = "$STR_ALIVE_AISKILL_CUSTOM_RELOAD_COMMENT";
