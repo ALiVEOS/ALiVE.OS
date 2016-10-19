@@ -1,3 +1,5 @@
+ #include "script_component.hpp"
+
  private ["_display","_serverSave","_serverExit"];
 
  // diag_log str(_this);
@@ -11,3 +13,15 @@ _serverSave ctrladdeventhandler ["buttonclick","with uinamespace do {if (serverC
 
 _serverExit = _display displayctrl 196;
 _serverExit ctrladdeventhandler ["buttonclick","with uinamespace do {if (serverCommandAvailable '#kick') then {closeDialog 0; ['SERVERABORT'] call alive_fnc_buttonAbort};};"];
+
+if !(["ALiVE_sys_data"] call ALIVE_fnc_isModuleAvailable) then {
+    _serverSave ctrlEnable false;
+    _serverSave ctrlSetTooltip "ALiVE data module was not placed";
+
+    _serverExit ctrlEnable false;
+    _serverExit ctrlSetTooltip "ALiVE data module was not placed";
+
+    _playerExit = _display displayctrl 198;
+    _playerExit ctrlEnable false;
+    _playerExit ctrlSetTooltip "ALiVE data module was not placed";
+};
