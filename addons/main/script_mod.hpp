@@ -3,18 +3,18 @@
 
 // TODO: Consider Mod-wide or Component-narrow versions (or both, depending on wishes!)
 #define MAJOR 1
-#define MINOR 2
-#define PATCHLVL 0
+#define MINOR 0
+#define PATCHLVL 5
 // BUILD should be YYMMDDR eg 1311211
-#define BUILD 1609261
+#define BUILD 1605051
 
-#define CLUSTERBUILD "Arma 3","Arma3",164,138497,"Stable"
+#define CLUSTERBUILD "Arma 3","Arma3",158,135742,"Stable"
 
 #define VERSION MAJOR.MINOR.PATCHLVL.BUILD
 #define VERSION_AR MAJOR,MINOR,PATCHLVL,BUILD
 
 // MINIMAL required version for the Mod. Components can specify others..
-#define REQUIRED_VERSION 1.64
+#define REQUIRED_VERSION 1.58
 
 /*
  // Defined DEBUG_MODE_NORMAL in a few CBA_fncs to prevent looped logging :)
@@ -58,5 +58,8 @@
 
 #define MOD(var1) GVARMAIN(var1)
 #define QMOD(var1) QUOTE(GVARMAIN(var1))
-#define RECOMPILE 0
+#ifdef RECOMPILE
+    #undef RECOMPILE
+#endif
+#define RECOMPILE recompile = 1
 #define MODULE_AUTHOR QUOTE(ALiVE Mod Team)

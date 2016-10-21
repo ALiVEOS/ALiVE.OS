@@ -4,42 +4,42 @@ class cfgFunctions {
                         class spotrep {
                                 description = "The main class";
                                 file = "\x\alive\addons\sys_spotrep\fnc_spotrep.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class spotrepInit {
                                 description = "The module initialisation function";
                                 file = "\x\alive\addons\sys_spotrep\fnc_spotrepInit.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class spotrepParams {
                                 description = "spotrep parameters";
                                 file = "\x\alive\addons\sys_spotrep\fnc_spotrepParams.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class spotrepSaveData {
                                 description = "spotrep save data to DB";
                                 file = "\x\alive\addons\sys_spotrep\fnc_spotrepSaveData.sqf";
-                                                                recompile = RECOMPILE;
+                                                                RECOMPILE;
                         };
                         class spotrepLoadData {
                                 description = "spotrep load data to DB";
                                 file = "\x\alive\addons\sys_spotrep\fnc_spotrepLoadData.sqf";
-                                                                recompile = RECOMPILE;
+                                                                RECOMPILE;
                         };
                         class spotrepDeleteData {
                                 description = "spotrep delete data from DB";
                                 file = "\x\alive\addons\sys_spotrep\fnc_spotrepDeleteData.sqf";
-                                                                recompile = RECOMPILE;
+                                                                RECOMPILE;
                         };
                         class spotrepOnPlayerConnected {
                                 description = "Handles on player connected event";
                                 file = "\x\alive\addons\sys_spotrep\fnc_spotrepOnPlayerConnected.sqf";
-                                                                recompile = RECOMPILE;
+                                                                RECOMPILE;
                         };
                         class spotrepCreateDiaryRecord {
                                 description = "Adds a spotrep to a diary record";
                                 file = "\x\alive\addons\sys_spotrep\fnc_spotrepCreateDiaryRecord.sqf";
-                                                                recompile = RECOMPILE;
+                                                                RECOMPILE;
                         };
                 };
         };

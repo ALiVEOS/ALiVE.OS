@@ -4,12 +4,12 @@ class cfgFunctions {
                         class quickstart {
                                 description = "The main class";
                                 file = "\x\alive\addons\sys_quickstart\fnc_quickstart.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class quickstartInit {
                                 description = "The module initialisation function";
                                 file = "\x\alive\addons\sys_quickstart\fnc_quickstartInit.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                 };
         };
