@@ -25,8 +25,20 @@ class ArtilleryStateMachine {
         };
 
         class NotInRange {
-            targetState = "Move";
+            targetState = "Pack";
             condition = "!([_this, 'inRange'] call ALIVE_fnc_artillery)";
+            onTransition = "";
+        };
+    };
+
+    class Pack {
+        onState = "";
+        onStateEntered = "[_this, 'onPack'] call ALIVE_fnc_artillery";
+        onStateLeaving = "";
+
+        class Packed {
+            targetState = "Move";
+            condition = "[_this, 'hasPacked'] call ALIVE_fnc_artillery";
             onTransition = "";
         };
     };
@@ -37,7 +49,7 @@ class ArtilleryStateMachine {
         onStateLeaving = "";
 
         class InPosition {
-            targetState = "Execute";
+            targetState = "Unpack";
             condition = "[_this, 'inPosition'] call ALIVE_fnc_artillery";
             onTransition = "";
         };
@@ -45,6 +57,18 @@ class ArtilleryStateMachine {
         class Abort {
             targetState = "ReturnToBase";
             condition = "!([_this, 'hasFireMission'] call ALIVE_fnc_artillery)";
+            onTransition = "";
+        };
+    };
+
+    class Unpack {
+        onState = "";
+        onStateEntered = "[_this, 'onUnpack'] call ALIVE_fnc_artillery";
+        onStateLeaving = "";
+
+        class Unpacked {
+            targetState = "Execute";
+            condition = "[_this, 'hasUnpacked'] call ALIVE_fnc_artillery";
             onTransition = "";
         };
     };

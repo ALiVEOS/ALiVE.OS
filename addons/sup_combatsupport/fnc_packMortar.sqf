@@ -27,7 +27,7 @@ if (isNil "_disassembleTo" || {count _disassembleTo == 0}) exitWith {};
 private _leader = leader _group;
 private _gunner = gunner _weapon;
 private _units = (units _group) - [_leader] - [_gunner];
-private _assistant = _unit select 0;
+private _assistant = _units select 0;
 
 private _primaryBag = objNull;
 private _secondaryBag = objNull;
