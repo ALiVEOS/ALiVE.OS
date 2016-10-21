@@ -4,112 +4,112 @@ class cfgFunctions {
                         class logistics {
                                 description = "The main class";
                                 file = "\x\alive\addons\sys_logistics\fnc_logistics.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class logisticsInit {
                                 description = "The module initialisation function";
                                 file = "\x\alive\addons\sys_logistics\fnc_logisticsInit.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class logisticsDisable {
                                 description = "Logistics load data to DB";
                                 file = "\x\alive\addons\sys_logistics\fnc_logisticsDisable.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class logisticsMenuDef {
                                 description = "The module menu definition";
                                 file = "\x\alive\addons\sys_logistics\fnc_logisticsMenuDef.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class getObjectWeight {
                                 description = "Gets the approximate weight (sum) of the given objects";
                                 file = "\x\alive\addons\sys_logistics\fnc_getObjectWeight.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class getObjectSize {
                                 description = "Gets the approximate volume (sum) of the given objects";
                                 file = "\x\alive\addons\sys_logistics\fnc_getObjectSize.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class availableWeight {
                                 description = "Gets the available weight capacity (sum) of the given objects in kg";
                                 file = "\x\alive\addons\sys_logistics\fnc_availableWeight.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class availableCargo {
                                 description = "Gets the available cargo volume (sum) of the given objects in m^3";
                                 file = "\x\alive\addons\sys_logistics\fnc_availableCargo.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class canCarry {
                                 description = "Checks if an object can be carried by another given object";
                                 file = "\x\alive\addons\sys_logistics\fnc_canCarry.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class canStow {
                                 description = "Checks if an object can be stowed the given container";
                                 file = "\x\alive\addons\sys_logistics\fnc_canStow.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class canTow {
                                 description = "Checks if an object can be towed by the given vehicle";
                                 file = "\x\alive\addons\sys_logistics\fnc_canTow.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class canLift {
                                 description = "Checks if an object can be lifted by given vehicle";
                                 file = "\x\alive\addons\sys_logistics\fnc_canLift.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class getObjectCargo {
                                 description = "Gets the cargo list of an object";
                                 file = "\x\alive\addons\sys_logistics\fnc_getObjectCargo.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class setObjectCargo {
                                 description = "Sets the cargo back on an object";
                                 file = "\x\alive\addons\sys_logistics\fnc_setObjectCargo.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class setObjectState {
                                 description = "Sets the given state of on an object";
                                 file = "\x\alive\addons\sys_logistics\fnc_setObjectState.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class getObjectState {
                                 description = "Gets the given state of an object";
                                 file = "\x\alive\addons\sys_logistics\fnc_getObjectState.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class getObjectFuel {
                                 description = "Gets the fuel of an object";
                                 file = "\x\alive\addons\sys_logistics\fnc_getObjectFuel.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class setObjectFuel {
                                 description = "Sets the given fuel oo an object";
                                 file = "\x\alive\addons\sys_logistics\fnc_setObjectFuel.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class getObjectDamage {
                                 description = "Gets the damage of an object";
                                 file = "\x\alive\addons\sys_logistics\fnc_getObjectDamage.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class setObjectDamage {
                                 description = "Sets the given damage on an object";
                                 file = "\x\alive\addons\sys_logistics\fnc_setObjectDamage.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class logisticsSaveData {
                                 description = "Logistics save data to DB";
                                 file = "\x\alive\addons\sys_logistics\fnc_logisticsSaveData.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                         class logisticsLoadData {
                                 description = "Logistics load data to DB";
                                 file = "\x\alive\addons\sys_logistics\fnc_logisticsLoadData.sqf";
-                                recompile = RECOMPILE;
+                                RECOMPILE;
                         };
                 };
         };

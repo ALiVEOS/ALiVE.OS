@@ -87,7 +87,7 @@ foreach ($func in $functionData)
         $class = $data[0];
         $ext = $data[1];
         
-        $funcCfgStream.WriteLine("`nclass $class`n{`n`tfile = ""$file"";`n`text = ""$ext"";`n`trecompile = RECOMPILE;`n};");
+        $funcCfgStream.WriteLine("`nclass $class`n{`n`tfile = ""$file"";`n`text = ""$ext"";`n`tRECOMPILE;`n};");
         
         if ($build_function_list)
         {

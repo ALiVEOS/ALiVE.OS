@@ -16,22 +16,22 @@ class CfgFunctions {
             class displayMenu {
                 description = "Display various UI menus";
                 file = "\x\alive\addons\ui\menu\fnc_displayMenu.sqf";
-                recompile = RECOMPILE;
+                RECOMPILE;
             };
             class RscDisplayLoadingALiVE {
                 description = "Hook loading screen";
                 file = "\x\alive\addons\ui\fnc_RscDisplayLoadingALiVE.sqf";
-                recompile = RECOMPILE;
+                RECOMPILE;
             };
             class RscDisplayMPInterruptALiVE {
                 description = "Hook MP interrupt screen";
                 file = "\x\alive\addons\ui\fnc_RscDisplayMPInterruptALiVE.sqf";
-                recompile = RECOMPILE;
+                RECOMPILE;
             };
             class copyFactionClasses {
                 description = "Copy faction classes from selected objects in 3DEN to clipboard";
                 file = "\x\alive\addons\ui\fnc_copyFactionClasses.sqf";
-                recompile = RECOMPILE;
+                RECOMPILE;
             };
         };
     };
