@@ -261,7 +261,7 @@ If (isClass (configFile >> "cfgMods" >> "ace") && GVAR(ENABLED)) then {
             // diag_log format["ACE MEDICAL ON SETDEAD CALLED: %1", _this];
             [_this select 0, nil] call alive_sys_statistics_fnc_unitKilledEH;
         }
-    ] call ace_common_fnc_addEventHandler;
+    ] call CBA_fnc_addEventHandler;
 };
 
 /*
