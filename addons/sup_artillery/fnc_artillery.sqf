@@ -48,9 +48,12 @@ switch (_operation) do {
         _logic setVariable ["class", MAINCLASS];
 
         // Defaults
-        /* _logic setVariable ["group", grpNull]; */
+        _logic setVariable ["group", grpNull];
         _logic setVariable ["moveToPos", objNull];
         _logic setVariable ["fireMission", []];
+
+        // Spawn and initialize artillery units
+        [_logic, "spawn"] call MAINCLASS;
     };
 
     /****************
@@ -334,8 +337,8 @@ switch (_operation) do {
                 private _leader = _group createUnit ["B_Soldier_F", _vehiclePosition, [], 0, "NONE"];
                 private _assistant = _group createUnit ["B_Soldier_F", _vehiclePosition, [], 0, "NONE"];
                 _group selectLeader _leader;
-                _logic setVariable ["type", TYPE_MORTAR];
                 _group setVariable ["sup_artillery_deployed", true];
+                _logic setVariable ["type", TYPE_MORTAR];
             } else {
                 _logic setVariable ["type", TYPE_ARTILLERY];
             };
