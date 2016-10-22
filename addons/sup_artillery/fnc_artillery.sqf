@@ -324,7 +324,7 @@ switch (_operation) do {
         private _group = createGroup _side;
         private _vehicles = [];
 
-        for "_i" from 0 to 0 do {
+        for "_i" from 0 to 2 do {
             // TODO: Spawn vehicles in proper fancy formation (see CfgFormations)
             private _vehiclePosition = _position getPos [15 * _i, (getDir _logic) * _i];
             private _vehicle = createVehicle [_type, _vehiclePosition, [], 0, "NONE"];
@@ -332,16 +332,22 @@ switch (_operation) do {
             _vehicle lock true;
             [_vehicle, _group] call BIS_fnc_spawnCrew;
             _vehicles pushBack _vehicle;
+        };
 
-            if (_vehicle isKindOf "StaticMortar") then {
-                private _leader = _group createUnit ["B_Soldier_F", _vehiclePosition, [], 0, "NONE"];
-                private _assistant = _group createUnit ["B_Soldier_F", _vehiclePosition, [], 0, "NONE"];
-                _group selectLeader _leader;
-                _group setVariable ["sup_artillery_deployed", true];
-                _logic setVariable ["type", TYPE_MORTAR];
-            } else {
-                _logic setVariable ["type", TYPE_ARTILLERY];
-            };
+        if (_type isKindOf "StaticMortar") then {
+            // Create group leader
+            private _leader = _group createUnit ["B_Soldier_F", position (leader _group), [], 0, "NONE"];
+            _group selectLeader _leader;
+
+            // Create gunner assitants
+            {
+                private _vehicle = _x param [0, objNull];
+                _group createUnit ["B_Soldier_F", position _vehicle, [], 0, "NONE"];
+            } forEach _vehicles;
+
+            _logic setVariable ["type", TYPE_MORTAR];
+        } else {
+            _logic setVariable ["type", TYPE_ARTILLERY];
         };
 
         _group setVariable ["logic", _logic];
