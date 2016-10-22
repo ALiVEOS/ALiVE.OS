@@ -24,7 +24,8 @@ _type = "IMMEDIATE";
 _ordnanceType = _artyOrdnanceTypeLb lbText (lbCurSel _artyOrdnanceTypeLb);
 
 //_ord = [_battery, _ordnanceType] CALL ALIVE_fnc_GetMagazineType;
-_ord = [_battery, _ordnanceType] CALL ALIVE_fnc_getArtyMagazineType;
+private _gunner = ((units _unit) select {vehicle _x != _x && {gunner (vehicle _x) == _x}});
+_ord = [_gunner, _ordnanceType] CALL ALIVE_fnc_getArtyMagazineType;
 
 _rate = switch (_artyRateOfFireLb lbText (lbCurSel _artyRateOfFireLb)) do
 {
