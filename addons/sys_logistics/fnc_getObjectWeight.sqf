@@ -52,7 +52,7 @@ _types = [
         case ("STRING") : {_type = _object; _weight = getNumber(configfile >> "CfgVehicles" >> _type >> "mass")};
     };
 
-    if (_weight == 0) then {{if (_type isKindOf (_x select 0)) exitwith {_weight = (getNumber(configFile >> "CfgVehicles" >> _type >> "mapSize")) * (_x select 1)}} foreach _types};
+    if (_weight == 0 || _object isKindOf "Reammobox_F") then {{if (_type isKindOf (_x select 0)) exitwith {_weight = (getNumber(configFile >> "CfgVehicles" >> _type >> "mapSize")) * (_x select 1)}} foreach _types};
 
     _sum = _sum + _weight;
 } foreach _objects;
