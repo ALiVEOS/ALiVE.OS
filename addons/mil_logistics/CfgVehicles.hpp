@@ -300,13 +300,37 @@ class CfgVehicles {
         class ALIVE_O_supplyCrate_F : Box_East_AmmoVeh_F {
             transportSoldier = 3;
             scope = 1;
+            mass = 2000;
+            class EventHandlers
+            {
+                class ADDON
+                {
+                    init = "(_this select 0) setMass 650";
+                };
+            };
         };
         class ALIVE_I_supplyCrate_F : Box_IND_AmmoVeh_F {
             transportSoldier = 3;
             scope = 1;
+            mass = 2000;
+            class EventHandlers
+            {
+                class ADDON
+                {
+                    init = "(_this select 0) setMass 650";
+                };
+            };
         };
         class ALIVE_B_supplyCrate_F : Box_NATO_AmmoVeh_F {
             transportSoldier = 3;
             scope = 1;
+            mass = 2000;
+            class EventHandlers
+            {
+                class ADDON
+                {
+                    init = "(_this select 0) setMass 650";
+                };
+            };
         };
 };
