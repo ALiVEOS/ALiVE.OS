@@ -2803,16 +2803,19 @@ switch(_operation) do {
                 // Check to see if payload profiles are ready to return
                 // Slingloaders can return once done.
                 // If vehicle no longer has cargo it can return
-                private ["_payloadUnloaded"];
+                private ["_payloadUnloaded","_payloadProfiles"];
                 _payloadUnloaded = true;
-                _payloadProfiles = [_playerRequestProfiles, 'payloadGroups'] call ALIVE_fnc_hashGet;
+
+                _payloadProfiles = _playerRequestProfiles select 2 select 7;
+
                 if (!isnil "_payloadProfiles") then {
-                    _payloadProfiles = _payloadProfiles + ([_eventCargoProfiles, 'payloadGroups'] call ALIVE_fnc_hashGet);
+                    _payloadProfiles append ([_eventCargoProfiles, "payloadGroups"] call ALIVE_fnc_hashGet);
                 } else {
-                    _payloadProfiles = [_eventCargoProfiles, 'payloadGroups'] call ALIVE_fnc_hashGet;
+                    _payloadProfiles = [_eventCargoProfiles, "payloadGroups"] call ALIVE_fnc_hashGet;
                 };
 
                 if (!isNil "_payloadProfiles") then {
+
                     {
                         private ["_vehicleProfile"];
 
@@ -3709,13 +3712,14 @@ switch(_operation) do {
 
                 // Check to see if payload profiles are ready to return
                 // If vehicle no longer has cargo it can return
-                private ["_payloadUnloaded"];
+                private ["_payloadUnloaded","_payloadProfiles"];
                 _payloadUnloaded = true;
-                _payloadProfiles = [_playerRequestProfiles, 'payloadGroups'] call ALIVE_fnc_hashGet;
+                _payloadProfiles = _playerRequestProfiles select 2 select 7;
+
                 if (!isnil "_payloadProfiles") then {
-                    _payloadProfiles = _payloadProfiles + ([_eventCargoProfiles, 'payloadGroups'] call ALIVE_fnc_hashGet);
+                    _payloadProfiles append ([_eventCargoProfiles, "payloadGroups"] call ALIVE_fnc_hashGet);
                 } else {
-                    _payloadProfiles = [_eventCargoProfiles, 'payloadGroups'] call ALIVE_fnc_hashGet;
+                    _payloadProfiles = [_eventCargoProfiles, "payloadGroups"] call ALIVE_fnc_hashGet;
                 };
                 if (!isNil "_payloadProfiles") then {
                     {
@@ -3770,6 +3774,8 @@ switch(_operation) do {
                 [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
 
                 if(_waitIterations > _waitTotalIterations) then {
+
+                    // Dump cargo?
 
                     _eventStateData set [0, 0];
                     [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
@@ -4970,12 +4976,14 @@ switch(_operation) do {
                                         _loadDiff = _maxLoad - _payloadWeight;
 
                                         if ((_slingDiff < _currentDiff) && (_slingDiff > 0)) then {_currentDiff = _slingDiff; _vehicleClass = _x; _slingload = true;};
-                                        if ((_loadDiff < _currentDiff) && (_loadDiff > 0)) then {_currentDiff = _loadDiff; _vehicleClass = _x; _slingload = false;};
+                                        if ((_loadDiff <= _currentDiff) && (_loadDiff > 0)) then {_currentDiff = _loadDiff; _vehicleClass = _x; _slingload = false;};
+
+                                        ["slmax %1, mload %2, sldiff %3, ldiff %4, cdiff %5, veh %6, sling %7", _slingloadmax, _maxLoad, _slingDiff, _loadDiff, _currentDiff, _vehicleClass, _slingload] call ALiVE_fnc_dump;
 
                                     } foreach _transportGroups;
 
                                     // If total size > vehicle size then force slingload if available
-                                    if ( (_payloadSize > sizeOf _vehicleClass) && ([(configFile >> "CfgVehicles" >> _vehicleClass >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue > 0)) then {
+                                    if ( (_payloadSize > [(configFile >> "CfgVehicles" >> _vehicleClass >> "mapSize")] call ALiVE_fnc_getConfigValue) && ([(configFile >> "CfgVehicles" >> _vehicleClass >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue > 0)) then {
                                         _slingload = true;
                                     };
 
@@ -6463,7 +6471,6 @@ switch(_operation) do {
                                 TRACE_2("PR UNLOADED", !_slingLoading, _noCargo);
 
                                 if( _active && _noCargo && !_slingloading ) then {
-
                                     _payloadUnloaded = true;
 
                                 } else {
@@ -6480,7 +6487,7 @@ switch(_operation) do {
 
                         if (!_payloadUnloaded) then {
                             waituntil {
-                                sleep (10);
+                                sleep 10;
                                 _currentTime = _currentTime + 1;
                                 (_currentTime > _waitTime)
                             };
