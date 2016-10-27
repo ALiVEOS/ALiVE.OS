@@ -3340,7 +3340,7 @@ switch(_operation) do {
                 {
 
                     _position = _positionSeries select _seriesIndex;
-                    _profileWaypoint = [_position, 1, "MOVE", "LIMITED", 2, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                    _profileWaypoint = [_position, 1, "MOVE", "LIMITED", 2, [], "COLUMN"] call ALIVE_fnc_createProfileWaypoint;
 
                     _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                     if!(isNil "_profile") then {
@@ -3364,7 +3364,7 @@ switch(_operation) do {
 
                 {
                     _position = _positionSeries select _seriesIndex;
-                    _profileWaypoint = [_position, 1, "MOVE", "NORMAL", 2, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                    _profileWaypoint = [_position, 1, "MOVE", "NORMAL", 2, [], "COLUMN"] call ALIVE_fnc_createProfileWaypoint;
 
                     _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
                     if!(isNil "_profile") then {
@@ -3377,7 +3377,7 @@ switch(_operation) do {
 
                 {
                     _position = _positionSeries select _seriesIndex;
-                    _profileWaypoint = [_position, 1, "MOVE", "LIMITED", 2, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                    _profileWaypoint = [_position, 1, "MOVE", "LIMITED", 2, [], "COLUMN"] call ALIVE_fnc_createProfileWaypoint;
 
                     _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
                     if!(isNil "_profile") then {
@@ -3390,7 +3390,7 @@ switch(_operation) do {
 
                 {
                     _position = _positionSeries select _seriesIndex;
-                    _profileWaypoint = [_position, 1, "MOVE", "LIMITED", 2, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                    _profileWaypoint = [_position, 1, "MOVE", "LIMITED", 2, [], "COLUMN"] call ALIVE_fnc_createProfileWaypoint;
 
                     _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
                     if!(isNil "_profile") then {
@@ -3756,6 +3756,12 @@ switch(_operation) do {
 
                             };
 
+                            // If we've run out of time, dump cargo
+                            if(_waitIterations == _waitTotalIterations) then {
+                                if (_active && !_noCargo) then {
+                                    [MOD(SYS_LOGISTICS),"unloadObjects",[_vehicle,_vehicle]] call ALiVE_fnc_logistics;
+                                };
+                            };
                         };
                     } foreach _payloadProfiles;
                 };
