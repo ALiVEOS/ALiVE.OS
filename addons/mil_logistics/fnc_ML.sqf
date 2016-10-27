@@ -4978,8 +4978,6 @@ switch(_operation) do {
                                         if ((_slingDiff < _currentDiff) && (_slingDiff > 0)) then {_currentDiff = _slingDiff; _vehicleClass = _x; _slingload = true;};
                                         if ((_loadDiff <= _currentDiff) && (_loadDiff > 0)) then {_currentDiff = _loadDiff; _vehicleClass = _x; _slingload = false;};
 
-                                        ["slmax %1, mload %2, sldiff %3, ldiff %4, cdiff %5, veh %6, sling %7", _slingloadmax, _maxLoad, _slingDiff, _loadDiff, _currentDiff, _vehicleClass, _slingload] call ALiVE_fnc_dump;
-
                                     } foreach _transportGroups;
 
                                     // If total size > vehicle size then force slingload if available
