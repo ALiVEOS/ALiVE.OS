@@ -2848,6 +2848,12 @@ switch(_operation) do {
 
                                 };
 
+                                // If we've run out of time, dump cargo
+                                if(_waitIterations == _waitTotalIterations) then {
+                                    if (_active && !_noCargo) then {
+                                        [MOD(SYS_LOGISTICS),"unloadObjects",[_vehicle,_vehicle]] call ALiVE_fnc_logistics;
+                                    };
+                                };
                             };
                         };
                     } foreach _payloadProfiles;
@@ -3774,8 +3780,6 @@ switch(_operation) do {
                 [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
 
                 if(_waitIterations > _waitTotalIterations) then {
-
-                    // Dump cargo?
 
                     _eventStateData set [0, 0];
                     [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
@@ -6404,6 +6408,7 @@ switch(_operation) do {
 
                 } forEach _staticGroupProfiles;
 
+                // If payload profiles are still carrying their load, wait a while then dump them
                 private ["_payloadProfiles","_payloadProfileID","_payloadVehicleID","_payloadProfile","_payloadVehicle","_payloadCount",
                 "_reinforcementPosition","_position","_vehicle"];
 
@@ -6476,6 +6481,13 @@ switch(_operation) do {
                                     _payloadUnloaded = false;
 
                                 };
+
+                                // If we've run out of time, dump cargo
+                                if (_active && !_noCargo) then {
+                                    [MOD(SYS_LOGISTICS),"unloadObjects",[_vehicle,_vehicle]] call ALiVE_fnc_logistics;
+                                };
+
+                                // Drop slingload?
 
                             };
                         } foreach _payloadProfiles;
