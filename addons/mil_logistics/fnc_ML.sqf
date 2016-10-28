@@ -282,7 +282,18 @@ switch(_operation) do {
         _result = _args;
     };
     case "limitTransportToFaction": {
-        _result = [_logic,_operation,_args,false] call ALIVE_fnc_OOsimpleOperation;
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["limitTransportToFaction", _args];
+        } else {
+            _args = _logic getVariable ["limitTransportToFaction", false];
+        };
+        if (typeName _args == "STRING") then {
+            if(_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["limitTransportToFaction", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
     };
     case "type": {
         if(typeName _args == "STRING") then {
@@ -1845,7 +1856,7 @@ switch(_operation) do {
                         if (_eventType == "AIRDROP" && _noHeavy && _slingAvailable) then {_eventType = "HELI_INSERT";};
 
                         // If OPCOM requested convoy but there's water - then heli insert
-                        if (_eventType == "STANDARD" && _water && _noHeavy) then {_eventType = "HELI_INSERT";};
+                        if (_eventType == "STANDARD" && _water && _noHeavy && count _airTrans > 0) then {_eventType = "HELI_INSERT";};
 
                         // If sling is not available then its an AIRDROP
                         If (_eventType == "HELI_INSERT" && _eventForceMotorised > 0 && !_slingAvailable && _noHeavy) then {_eventType = "AIRDROP";};
@@ -6493,7 +6504,22 @@ switch(_operation) do {
                                     [MOD(SYS_LOGISTICS),"unloadObjects",[_vehicle,_vehicle]] call ALiVE_fnc_logistics;
                                 };
 
-                                // Drop slingload?
+                                // Drop slingload
+                                if (_active && _slingloading) then {
+                                    private ["_slungID"];
+                                    _slungID = ([_vehicleProfile, 'slingload'] call ALIVE_fnc_profileVehicle) select 0;
+                                    if (typeName _slungID == 'ARRAY') then {
+                                        private ["_slungprofile"];
+                                        _slungprofile = [ALIVE_profileHandler,'getProfile',_slungID select 0] call ALIVE_fnc_profileHandler;
+                                        [_slungprofile, 'slung', []] call ALIVE_fnc_hashSet;
+                                        [_slungProfile,'spawnType',[]] call ALIVE_fnc_profileVehicle;
+                                    };
+                                    [_vehicleProfile, 'slingload', []] call ALIVE_fnc_profileVehicle;
+                                    [_vehicleProfile, 'slingloading', false] call ALIVE_fnc_hashSet;
+                                    _vehicle setSlingLoad objNull;
+                                    // Delete current unhook waypoint
+                                    deleteWaypoint [group _vehicle, (currentWaypoint (group _vehicle))];
+                                };
 
                             };
                         } foreach _payloadProfiles;
