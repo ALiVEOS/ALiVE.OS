@@ -556,25 +556,34 @@ switch(_operation) do {
                                 If (_debug) then {
                                     ["HELI WILL TRY TO SLINGLOAD %1", _slingloadClass select 0] call ALiVE_fnc_dump;
                                 };
-                                _slingloadClass = [ALIVE_profileHandler, "getProfile", _slingloadClass select 0] call ALIVE_fnc_profileHandler;
-                                private "_slActive";
-                                _slActive = _slingLoadClass select 2 select 1;
 
-                                if (typeName _slActive == "BOOL" && _slActive) then {
-                                    // Attach the slingload to the vehicle
-                                    _slinging = _vehicle setSlingLoad (_slingloadClass select 2 select 10); // if profile is active, then slingload vehicle
+                                private _slingloadProfile = [ALIVE_profileHandler, "getProfile", _slingloadClass select 0] call ALIVE_fnc_profileHandler;
 
-                                    if (!_slinging) then {
-                                        If (_debug) then {
-                                            ["%1 FAILED ATTACH %2", _profileID, (_slingloadClass select 2 select 10)] call ALiVE_fnc_dump;
+                                if (!isNil "_slingloadProfile") then {
+                                    private _slActive = _slingLoadProfile select 2 select 1;
+
+                                    if (typeName _slActive == "BOOL" && _slActive) then {
+                                        // Attach the slingload to the vehicle
+                                        _slinging = _vehicle setSlingLoad (_slingloadProfile select 2 select 10); // if profile is active, then slingload vehicle
+
+                                        if (!_slinging) then {
+                                            If (_debug) then {
+                                                ["%1 FAILED ATTACH %2", _profileID, (_slingloadProfile select 2 select 10)] call ALiVE_fnc_dump;
+                                            };
+                                            [_logic, "slingloading", false] call ALIVE_fnc_hashSet;
+                                            [_logic, "slingload", []] call ALIVE_fnc_profileVehicle;
+                                            [_slingloadProfile,"slung",[]] call ALIVE_fnc_profileVehicle;
                                         };
-                                        [_logic, "slingloading", false] call ALIVE_fnc_hashSet;
-                                        [_logic, "slingload", []] call ALIVE_fnc_profileVehicle;
-                                        [_slingloadClass,"slung",[]] call ALIVE_fnc_profileVehicle;
                                     };
-                                };
-                                if (typeName _slActive == "BOOL" && !_slActive) then {
-                                    [_slingloadClass,"spawn"] spawn ALIVE_fnc_profileVehicle;
+                                    if (typeName _slActive == "BOOL" && !_slActive) then {
+                                        [_slingloadProfile,"spawn"] spawn ALIVE_fnc_profileVehicle;
+                                    };
+                                } else {
+                                    If (_debug) then {
+                                        ["%1 FAILED ATTACH AS TARGET DESTROYED?", _profileID] call ALiVE_fnc_dump;
+                                    };
+                                    [_logic, "slingloading", false] call ALIVE_fnc_hashSet;
+                                    [_logic, "slingload", []] call ALIVE_fnc_profileVehicle;
                                 };
 
                             };
