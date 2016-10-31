@@ -33,4 +33,23 @@ private _path = missionConfigFile >> "CfgFactionClasses" >> _this;
 
 if !(isClass _path) then {_path = configFile >> "CfgFactionClasses" >> _this};
 
+if !(isClass _path) then {
+	// Check to see if faction has a mapping within groups
+	if (!isnil "ALiVE_factionCustomMappings") then {
+		{
+	       private _factionData = [ALiVE_factionCustomMappings, _x] call ALiVE_fnc_hashGet;
+
+		   private _factionSide = [_factionData,"GroupSideName"] call ALiVE_fnc_hashGet;
+
+		   private _faction = [_factionData,"GroupFactionName"] call ALiVE_fnc_hashGet;
+
+		   if (_this == _faction) then {
+		   		_path = missionConfigFile >> "CfgFactionClasses" >> _x;
+				if !(isClass _path) then {_path = configFile >> "CfgFactionClasses" >> _x};
+		   };
+
+		} foreach (ALiVE_factionCustomMappings select 1);
+	};
+};
+
 _path
