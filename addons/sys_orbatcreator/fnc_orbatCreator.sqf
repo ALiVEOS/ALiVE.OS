@@ -2329,6 +2329,11 @@ switch(_operation) do {
 
             _index = _list lbAdd _categoryDisplayName;
             _list lbSetData [_index,_categoryConfigName];
+
+            if !(_categoryConfigName in ALIVE_COMPATIBLE_GROUP_CATEGORIES) then {
+                _list lbSetColor [_index, [255, 0, 0, 0.60]];
+                _list lbSetTooltip [_index,"This group category is not compatible with ALiVE!"];
+            };
         } foreach (_factionGroupCategories select 2);
 
     };
@@ -3226,13 +3231,15 @@ switch(_operation) do {
 
                 // a3\addons\ui_f\hpp\defineResinclDesign
 
+                private _displayArsenal = findDisplay -1;
+
                 // set button actions
 
-                private _closeButton = findDisplay -1 displayCtrl 44448;
+                private _closeButton = _displayArsenal displayCtrl 44448;
                 _closeButton ctrlSetText "Cancel Changes";
                 (ctrlParent _closeButton) displayAddEventHandler ["Unload", "['onUnitEditorArsenalClosed', false] spawn ALiVE_fnc_orbatCreatorOnAction"];
 
-                _ctrlButtonOK = findDisplay -1 displayctrl 44346;
+                private _ctrlButtonOK = _displayArsenal displayctrl 44346;
                 _ctrlButtonOK ctrlShow true;
                 _ctrlButtonOK ctrlEnable true;
                 _ctrlButtonOK ctrlSetText "Save Changes";
@@ -3830,16 +3837,23 @@ switch(_operation) do {
     };
 
 
+
     // edit vehicle
+
 
 
     case "onEditVehicleCancelClicked": {
 
         closeDialog 0;
 
+        private _state = [_logic,"state"] call MAINCLASS;
+        [_state,"activeInteface", "Unit_Editor"] call ALiVE_fnc_hashSet; // hack because unit editor is never closeds
+
     };
 
     case "onEditVehicleResetClicked": {
+
+        // this method is currently unused
 
         private _state = [_logic,"state"] call MAINCLASS;
         private _vehicle = [_state,"editVehicle_vehicle"] call ALiVE_fnc_hashGet;
@@ -5106,11 +5120,6 @@ switch(_operation) do {
         private _indent = "    ";
         private _newLine = toString [13,10];
 
-        // forward declare eventhandler class for forceAdding uniforms
-
-        _result = _result + "class EventHandlers;";
-        _result = _result + _newLine + "class CBA_Extended_EventHandlers_base;";
-
         _result = _result + _newLine + _newLine + "class CfgVehicles {" + _newLine;
 
         // reorder units to maintain timely definitions
@@ -5142,7 +5151,7 @@ switch(_operation) do {
             };
 
             if (!(_unitParentConfigName in _forwardDeclared) && {!(_unitParentConfigName in _unitsToExport)}) then {
-                _result = _result + _indent + "class " + _unitParentConfigName + ";" + _newLine;
+                _result = _result + _indent + "class " + _unitParentConfigName + " { class EventHandlers { class CBA_Extended_EventHandlers_base; }; };" + _newLine;
                 _forwardDeclared pushback _unitParentConfigName;
             };
         } foreach _unitsToExport;
@@ -5211,6 +5220,7 @@ switch(_operation) do {
 
         _result = _result + _newLine;
         _result = _result + _indent + _indent + ("author = " + str profileName + ";") + _newLine;
+        _result = _result + _indent + _indent + ("scope = 2;") + _newLine;
         _result = _result + _indent + _indent + ("displayName = " + str _unitDisplayName + ";") + _newLine;
         _result = _result + _indent + _indent + ("side = " + str _unitSide + ";") + _newLine;
         _result = _result + _indent + _indent + ("faction = " + str _unitFaction + ";") + _newLine;
@@ -5307,9 +5317,6 @@ switch(_operation) do {
 
         private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
         _initEventHandler = _initEventHandler + "_unit = (_this select 0);";
-        _initEventHandler = _initEventHandler + "removeAllPrimaryWeaponItems _unit" + ";";
-        _initEventHandler = _initEventHandler + "{_unit removeSecondaryWeaponItem _x} foreach (secondaryWeaponItems _unit)" + ";";
-        _initEventHandler = _initEventHandler + "removeAllHandgunItems _unit" + ";";
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
 
         // loadout
@@ -5326,6 +5333,8 @@ switch(_operation) do {
         private _tmpUnitUniform = uniform _tmpUnit;
         private _tmpUnitBackpack = backpack _tmpUnit;
         private _tmpUnitLinkedItems = assignedItems _tmpUnit;
+        private _tmpUnitMagazines = magazines _tmpUnit;
+        private _tmpUnitWeapons = weapons _tmpUnit;
         private _tmpUnitVest = vest _tmpUnit;
         private _tmpUnitHeadgear = headgear _tmpUnit;
         private _tmpUnitGoggles = goggles _tmpUnit;
@@ -5333,16 +5342,44 @@ switch(_operation) do {
         if (_tmpUnitHeadgear != "") then {_tmpUnitLinkedItems pushback _tmpUnitHeadgear};
         if (_tmpUnitGoggles != "") then {_tmpUnitLinkedItems pushback _tmpUnitGoggles};
 
-        private _tmpUnitLinkedItems = [_logic,"arrayToConfigArrayString", _tmpUnitLinkedItems] call MAINCLASS;
-
-        // add items to gear with init EH for now
-
         private _uniformItems = uniformItems _tmpUnit;
         private _vestItems = vestItems _tmpUnit;
         private _backpackItems = backpackItems _tmpUnit;
 
+        // shuffle weapons to back of array
+        // causes magazines to be added before
+        // weapons that are in inv
+
+        private _uniformWep = _uniformItems arrayIntersect _tmpUnitWeapons;
+        private _vestWep = _vestItems arrayIntersect _tmpUnitWeapons;
+        private _backpackWep = _backpackItems arrayIntersect _tmpUnitWeapons;
+
+        _uniformItems = (_uniformItems - _uniformWep) + _uniformWep;
+        _vestItems = (_vestItems - _vestWep) + _vestWep;
+        _backpackItems = (_backpackItems - _backpackWep) + _backpackWep;
+
+        _tmpUnitWeapons = ((_tmpUnitWeapons - _uniformItems) - _vestItems) - _backpackItems;
+
+        _tmpUnitLinkedItems = [_logic,"arrayToConfigArrayString", _tmpUnitLinkedItems] call MAINCLASS;
+        _tmpUnitMagazines = [_logic,"arrayToConfigArrayString", _tmpUnitMagazines] call MAINCLASS;
+        _tmpUnitWeaponsString = [_logic,"arrayToConfigArrayString", _tmpUnitWeapons + ["Throw","Put"]] call MAINCLASS;
+
+        // clear gear
         _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
-        _initEventHandler = _initEventHandler + "{_unit removeItem _x} foreach (uniformItems _unit + vestItems _unit + backpackItems _unit);";
+        _initEventHandler = _initEventHandler + "_unit setUnitLoadout [[],[],[],[],[],[],'','',[],['','','','','','']];";
+
+        // add gear containers prior to gear
+
+        _initEventHandler = _initEventHandler + "_unit forceAddUniform " + "'" + _tmpUnitUniform + "'" + ";";
+        _initEventHandler = _initEventHandler + "_unit addVest " + "'" + _tmpUnitVest + "'" + ";";
+        _initEventHandler = _initEventHandler + "_unit addBackpack " + "'" + _tmpUnitBackpack + "'" + ";";
+
+        // remove prepacked items
+
+        _initEventHandler = _initEventHandler + "{_unit removeItemFromUniform _x} foreach (uniformItems _unit);";
+        _initEventHandler = _initEventHandler + "{_unit removeItemFromVest _x} foreach (vestItems _unit);";
+        _initEventHandler = _initEventHandler + "{_unit removeItemFromBackpack _x} foreach (backpackItems _unit);";
+        [_eventHandlers,"init",_initEventHandler] call ALiVE_fnc_hashSet;
 
         // uniform items
 
@@ -5391,7 +5428,6 @@ switch(_operation) do {
         // backpack items
 
         private _backpackItemsAdded = [];
-        _initEventHandler = _initEventHandler + "_unit spawn {sleep 0.1;_unit = _this;";
         {
             _item = _x;
 
@@ -5409,22 +5445,7 @@ switch(_operation) do {
                 _backpackItemsAdded pushback _item;
             };
         } foreach _backpackItems;
-        _initEventHandler = _initEventHandler + "};";
         [_eventHandlers,"init",_initEventHandler] call ALiVE_fnc_hashSet;
-
-        private _tmpUnitWeapons = [_logic,"arrayToConfigArrayString", weapons _tmpUnit + ["Throw","Put"]] call MAINCLASS;
-
-        private _tmpUnitUniformWearer = getText (configFile >> "CfgWeapons" >> _tmpUnitUniform >> "ItemInfo" >> "uniformClass");
-        private _tmpUnitUniformSide = getNumber (configFile >> "CfgVehicles" >> _tmpUnitUniformWearer >> "side");
-
-        if (_tmpUnitUniformSide == _unitSide) then {
-            _result = _result + _indent + _indent + ("uniformClass = " + str uniform _tmpUnit + ";") + _newLine;
-        } else {
-            private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
-            _initEventHandler = _initEventHandler + "_unit forceAddUniform " + "'" + _tmpUnitUniform + "'" + ";";
-
-            [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
-        };
 
         // persist weapon items
 
@@ -5432,6 +5453,10 @@ switch(_operation) do {
         private _primaryWeaponItems = primaryWeaponItems _tmpUnit;
         private _secondaryWeaponItems = secondaryWeaponItems _tmpUnit;
         private _handgunWeaponItems = handgunItems _tmpUnit;
+
+        {
+            _initEventHandler = _initEventHandler + "_unit addWeapon " + "'" + _x + "'" + ";";
+        } foreach _tmpUnitWeapons;
 
         {
             if (_x != "") then {
@@ -5455,17 +5480,25 @@ switch(_operation) do {
 
         // persist gear
 
+        _result = _result + _indent + _indent + ("uniformClass = " + str _tmpUnitUniform + ";") + _newLine;
         _result = _result + _indent + _indent + ("backpack = " + str _tmpUnitBackpack + ";");
 
         _result = _result + _newLine;
         _result = _result + _newLine + _indent + _indent + ("linkedItems[] = " + _tmpUnitLinkedItems + ";");
-        _result = _result + _newLine + _indent + _indent + ("weapons[] = " + _tmpUnitWeapons + ";");
+        _result = _result + _newLine + _indent + _indent + ("weapons[] = " + _tmpUnitWeaponsString + ";");
+        _result = _result + _newLine + _indent + _indent + ("magazines[] = " + _tmpUnitMagazines + ";");
 
         // respawn variants
 
         _result = _result + _newLine;
         _result = _result + _newLine + _indent + _indent + ("respawnLinkedItems[] = " + _tmpUnitLinkedItems + ";");
-        _result = _result + _newLine + _indent + _indent + ("respawnWeapons[] = " + _tmpUnitWeapons + ";");
+        _result = _result + _newLine + _indent + _indent + ("respawnWeapons[] = " + _tmpUnitWeaponsString + ";");
+        _result = _result + _newLine + _indent + _indent + ("respawnMagazines[] = " + _tmpUnitMagazines + ";");
+
+        // hack to reload weapons on spawn
+
+        _initEventHandler = _initEventHandler + "reload _unit;";
+        [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
 
         // event handlers
 
@@ -5473,11 +5506,6 @@ switch(_operation) do {
         _result = _result + _newLine + _indent + _indent + _indent + "class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {};" + _newLine;
         _result = _result + _newLine;
         _result = _result + _indent + _indent + _indent + "class ALiVE_orbatCreator {";
-
-        // hack for force reload weapon
-
-        _initEventHandler = _initEventHandler + "reload _unit" + ";";
-        [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
 
         private _eventHandlerTypes = _eventHandlers select 1;
         private _eventHandlerStrings = _eventHandlers select 2;

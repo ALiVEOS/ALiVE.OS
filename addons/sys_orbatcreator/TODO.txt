@@ -1,4 +1,0 @@
-Wishlist
---------
-
-- Alternative Uniforms: Pick multiple uniforms from which one will randomly be assigned to the unit upon spawn
