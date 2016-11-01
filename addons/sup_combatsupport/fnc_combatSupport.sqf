@@ -144,6 +144,34 @@ switch(_operation) do {
                                         _transportArray = [_position,_direction,_type, _callsign,_tasks,_code,_height,_slingloading,_containers];
                                         _transportArrays set [count _transportArrays,_transportArray];
                                     };
+                                    case ("hybrid"): {
+                                        private ["_position","_callsign","_type","_slingloading","_containers","_tasks"];
+
+                                        _callsign = _entry getvariable ["CS_CALLSIGN",groupID (group _entry)];
+                                        _height = _entry getvariable ["CS_HEIGHT",0];
+                                        _code = _entry getvariable ["CS_CODE",""];
+                                        _slingloading = _entry getvariable ["CS_SLINGLOADING",true];
+                                        _containers = _entry getvariable ["CS_CONTAINERS",0];
+
+                                        _position = getposATL _entry;
+                                        _id = [_position] call ALiVE_fnc_getNearestAirportID;
+                                        _type = typeOf _entry;
+                                        _direction =  getDir _entry;
+
+                                        LOG(_slingloading);
+
+                                        if (!_slingloading) then {
+                                            _tasks = DEFAULT_TRANSPORT_TASKS - ["Slingload","Unhook"];
+                                        } else {
+                                            _tasks = DEFAULT_TRANSPORT_TASKS;
+                                        };
+
+                                        _transportArray = [_position,_direction,_type, _callsign,_tasks,_code,_height,_slingloading,_containers];
+                                        _transportArrays set [count _transportArrays,_transportArray];
+
+                                        _casArray = [_position,_direction, _type, _callsign, _id,_code,_height];
+                                        _casArrays set [count _casArrays,_casArray];
+                                    };
                                 };
                             } else {
                                 switch (tolower(_type)) do {
