@@ -4774,70 +4774,128 @@ switch(_operation) do {
         private _currentGroupCategory = [_logic,"getFactionGroupCategory", [_faction,_category]] call MAINCLASS;
         private _currentCategoryGroups = [_currentGroupCategory,"groups"] call ALiVE_fnc_hashGet;
 
-        private _groupData = [_currentCategoryGroups,_group] call ALiVE_fnc_hashGet;
-        private _groupName = [_groupData,"name"] call ALiVE_fnc_hashGet;
-        private _groupConfigName = [_groupData,"configName"] call ALiVE_fnc_hashGet;
-        private _groupIcon = [_groupData,"icon"] call ALiVE_fnc_hashGet;
-
         private _inputName = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_NAME );
         private _inputClassname = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_CLASSNAME );
         private _instructions = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_CONTEXT );
 
-        private _newGroupName = ctrlText _inputName;
-        private _newGroupClassname = ctrlText _inputClassname;
-        private _newCategory = OC_getSelData( OC_CREATEGROUP_INPUT_CATEGORY );
-        private _newIcon = OC_getSelData( OC_CREATEGROUP_INPUT_ICON );
+        private _selGroupName = ctrlText _inputName;
+        private _selGroupClassname = ctrlText _inputClassname;
+        private _selCategory = OC_getSelData( OC_CREATEGROUP_INPUT_CATEGORY );
+        private _selIcon = OC_getSelData( OC_CREATEGROUP_INPUT_ICON );
 
-        // verify names aren't blank
-
-        if (_newGroupName == "") exitWith {
-            _instructions ctrlSetText "Group name cannot be blank";
-        };
-
-        if (_newGroupClassname == "") exitWith {
-            _instructions ctrlSetText "Class name cannot be blank";
-        };
-
-        private _newGroupCategory = [_logic,"getFactionGroupCategory", [_faction,_newCategory]] call MAINCLASS;
+        private _newGroupCategory = [_logic,"getFactionGroupCategory", [_faction,_selCategory]] call MAINCLASS;
         private _newGroupCategoryGroups = [_newGroupCategory,"groups"] call ALiVE_fnc_hashGet;
         private _newCategoryGroupClassnames = _newGroupCategoryGroups select 1;
 
-        if (!(_newGroupCategory isEqualTo _currentGroupCategory) && {_newGroupClassname in _newCategoryGroupClassnames}) exitWith {
-            _instructions ctrlSetText "A group with that classname already exists in the selected category";
+        private _saveAborted = false;
+        private _groupsToSelect = [];
+
+        private _listGroups = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_LIST_GROUPS );
+        private _selectedIndices = lbSelection _listGroups;
+
+        if (count _selectedIndices > 1) then {
+            // editing multiple groups
+
+            private _groups = [];
+
+            {
+                private _group = _listGroups lbData _x;
+
+                _groups pushback _group;
+            } foreach _selectedIndices;
+
+            // if selected category has changed
+            // and any of the selected group config names
+            // exist in selected category, abort save
+
+            private _sharedConfigNames = _newCategoryGroupClassnames arrayIntersect _groups;
+
+            if (_selCategory != _category && {count _sharedConfigNames > 0}) exitWith {
+                _instructions ctrlSetText (format ["At least one of the selected group's config names already exists in the selected category %1", _sharedConfigNames]);
+                _saveAborted = true;
+            };
+
+            {
+                private _groupConfigName = _x;
+                private _groupData = [_currentCategoryGroups,_groupConfigName] call ALiVE_fnc_hashGet;
+                private _groupIcon = [_groupData,"icon"] call ALiVE_fnc_hashGet;
+
+                if (_selIcon != _groupIcon) then {
+                    [_groupData,"icon", _selIcon] call ALiVE_fnc_hashSet;
+                };
+
+                if (_selCategory != _category) then {
+                    [_currentCategoryGroups,_groupConfigName, nil] call ALiVE_fnc_hashSet;
+                    [_newGroupCategoryGroups,_groupConfigName, _groupData] call ALiVE_fnc_hashSet;
+                };
+            } foreach _groups;
+
+            _groupsToSelect = _groups;
+        } else {
+            // editing single group
+
+            // verify valid input
+
+            if (_selGroupName == "") exitWith {
+                _instructions ctrlSetText "Group name cannot be blank";
+                _saveAborted = true;
+            };
+
+            if (_selGroupClassname == "") exitWith {
+                _instructions ctrlSetText "Class name cannot be blank";
+                _saveAborted = true;
+            };
+
+            private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
+
+            private _groupData = [_currentCategoryGroups,_group] call ALiVE_fnc_hashGet;
+            private _groupName = [_groupData,"name"] call ALiVE_fnc_hashGet;
+            private _groupConfigName = [_groupData,"configName"] call ALiVE_fnc_hashGet;
+            private _groupIcon = [_groupData,"icon"] call ALiVE_fnc_hashGet;
+
+            // if config name was changed
+            // and the new config name exists
+            // in the selected category, abort save
+
+            if ((_selGroupClassname != _groupConfigName || {_selCategory != _category}) && {_selGroupClassname in _newCategoryGroupClassnames}) exitWith {
+                _instructions ctrlSetText "A group with that classname already exists in the selected category";
+                _saveAborted = true;
+            };
+
+            if (_selGroupName != _groupName) then {
+                [_groupData,"name", _selGroupName] call ALiVE_fnc_hashSet;
+                _groupName = _selGroupName;
+            };
+
+            if (_selGroupClassname != _groupConfigName) then {
+                _selGroupClassname = [_logic,"validateClassname", _selGroupClassname] call MAINCLASS;
+                [_groupData,"configName", _selGroupClassname] call ALiVE_fnc_hashSet;
+
+                [_currentCategoryGroups, _groupConfigName] call ALiVE_fnc_hashRem;
+                [_currentCategoryGroups,_selGroupClassname, _groupData] call ALiVE_fnc_hashSet;
+                _groupConfigName = _selGroupClassname;
+            };
+
+            if (_selIcon != _groupIcon) then {
+                [_groupData,"icon", _selIcon] call ALiVE_fnc_hashSet;
+            };
+
+            if (_selCategory != _category) then {
+                [_currentCategoryGroups,_groupConfigName, nil] call ALiVE_fnc_hashSet;
+                [_newGroupCategoryGroups,_groupConfigName,_groupData] call ALiVE_fnc_hashSet;
+            };
+
+            _groupsToSelect pushback _groupConfigName;
         };
 
-        // verification complete
+        if (!_saveAborted) then {
+            closeDialog 0;
 
-        if (_newGroupName != _groupName) then {
-            [_groupData,"name", _newGroupName] call ALiVE_fnc_hashSet;
-            _groupName = _newGroupName;
+            [_logic,"groupEditorDisplayFactionGroupsInCategory", _selCategory] call MAINCLASS;
+
+            private _groupList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_LIST_GROUPS );
+            [_groupList,_groupsToSelect, true] call ALiVE_fnc_listSelectData;
         };
-
-        if (_newGroupClassname != _groupConfigName) then {
-            _newGroupClassname = [_logic,"validateClassname", _newGroupClassname] call MAINCLASS;
-            [_groupData,"configName", _newGroupClassname] call ALiVE_fnc_hashSet;
-
-            [_currentCategoryGroups,_groupConfigName] call ALiVE_fnc_hashRem;
-            [_currentCategoryGroups,_newGroupClassname,_groupData] call ALiVE_fnc_hashSet;
-            _groupConfigName = _newGroupClassname;
-        };
-
-        if (_newIcon != _groupIcon) then {
-            [_groupData,"icon", _newIcon] call ALiVE_fnc_hashSet;
-        };
-
-        if (_newCategory != _category) then {
-            [_currentCategoryGroups,_groupConfigName] call ALiVE_fnc_hashRem;
-            [_newGroupCategoryGroups,_groupConfigName,_groupData] call ALiVE_fnc_hashSet;
-            _category = _newCategory;
-        };
-
-        closeDialog 0;
-
-        [_logic,"groupEditorDisplayFactionGroupsInCategory", _category] call MAINCLASS;
-
-        private _groupList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_LIST_GROUPS );
-        [_groupList,[_groupConfigName], true] call ALiVE_fnc_listSelectData;
 
     };
 
