@@ -3,7 +3,7 @@
         name = $STR_ZEC_AirportsLarge;
 		class Hangar {
 			name = $STR_ZEC_GuerrillaPacific_AirportsLarge_Hangar; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_TinWall_01_m_4m_v2_F"; rank = ""; position[] = {-7.24005,-35.1348,0}; dir = 360;};
 			class Object1 {side = 8; vehicle = "Land_TinWall_01_m_4m_v2_F"; rank = ""; position[] = {-9.25983,-33.1348,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_TinWall_01_m_4m_v1_F"; rank = ""; position[] = {-9.24866,-29.1353,0}; dir = 90;};

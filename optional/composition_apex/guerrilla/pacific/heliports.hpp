@@ -3,7 +3,7 @@
         name = $STR_ZEC_HeliportsLarge;
 		class HelipadSquare_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_HeliportsLarge_HelipadSquare; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-17.2871,-9.24219,0}; dir = 45;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-17.1172,9.78711,0}; dir = 135;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-9.50781,-9.28711,0}; dir = 315;};
@@ -65,7 +65,7 @@
         name = $STR_ZEC_HeliportsMedium;
 		class HelipadSquare_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_HeliportsMedium_HelipadSquare; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-8.49219,9.78711,0}; dir = 135;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-8.66211,-9.24219,0}; dir = 45;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-0.882813,-9.28711,0}; dir = 315;};
