@@ -284,7 +284,7 @@
 			class Object21 {side = 8; vehicle = "Land_Pallet_F"; rank = ""; position[] = {5.92188,-2.29102,0}; dir = 160;};
 		};
 		class ConstructionSite2 {
-			name = $STR_ZEC_Civilian_ConstructionSmall_ConstructionSite1; // Credit: 2600K
+			name = $STR_ZEC_Civilian_ConstructionSmall_ConstructionSite2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
 			class Object1 {side = 8; vehicle = "Land_Unfinished_Building_01_F"; rank = ""; position[] = {-2.5625,6.13281,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Wreck_Ural_F"; rank = ""; position[] = {-8.66211,-3.28711,0}; dir = 300;};
@@ -347,7 +347,7 @@
 			class Object60 {side = 8; vehicle = "Land_WoodenLog_F"; rank = ""; position[] = {5.41797,9.76953,0}; dir = 77.1773;};
 		};
 		class ConstructionSite3 {
-			name = $STR_ZEC_Civilian_ConstructionSmall_ConstructionSite1; // Credit: 2600K
+			name = $STR_ZEC_Civilian_ConstructionSmall_ConstructionSite3; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
 			class Object1 {side = 8; vehicle = "Land_ConcretePipe_F"; rank = ""; position[] = {-11.5742,-6.81055,0}; dir = 215.391;};
 			class Object2 {side = 8; vehicle = "Land_ConcretePipe_F"; rank = ""; position[] = {-12.3086,-2.87695,0}; dir = 255.482;};

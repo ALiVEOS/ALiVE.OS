@@ -223,7 +223,7 @@
 		};
 		class AAPosition_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortMedium_AAPosition; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-11.2656,-0.883301,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "I_C_Offroad_02_unarmed_F"; rank = ""; position[] = {-7.74083,-9.62158,0}; dir = 239.999;};
 			class Object2 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x5_F"; rank = ""; position[] = {-6.72011,-5.00146,0}; dir = 270;};
@@ -260,7 +260,7 @@
 		};
 		class MortarBunker_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortMedium_MortarBunker; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_HBarrier_01_big_4_green_F"; rank = ""; position[] = {-6.62472,-1.4707,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier_01_big_4_green_F"; rank = ""; position[] = {-4.88913,-8.29492,0}; dir = 240;};
 			class Object2 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-4.5025,-2.7373,0}; dir = 0;};
@@ -309,7 +309,7 @@
 		};
 		class TowerBunker1_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortMedium_TowerBunker1; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_HBarrier_01_line_3_green_F"; rank = ""; position[] = {-4.49607,-2.35205,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-7.16201,-1.24219,0}; dir = 45;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-7.76555,1.3667,0}; dir = 270;};
@@ -331,7 +331,7 @@
 		};
 		class TowerBunker2_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortMedium_TowerBunker2; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_HBarrier_01_line_5_green_F"; rank = ""; position[] = {-6.24615,-2.51855,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier_01_tower_green_F"; rank = ""; position[] = {-2.38638,-8.125,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-3.17691,-4.69531,0}; dir = 270;};
@@ -369,7 +369,7 @@
 		};
 		class TowerBunker3_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortMedium_TowerBunker3; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_HBarrier_01_line_3_green_F"; rank = ""; position[] = {-5.72701,-0.878906,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier_01_line_1_green_F"; rank = ""; position[] = {0.362579,0.96875,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-7.41201,1.00781,0}; dir = 45;};
@@ -399,7 +399,7 @@
 		};
 		class BunkerLarge1_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortMedium_BunkerLarge1; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_Razorwire_F"; rank = ""; position[] = {-5.56738,-6.604,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_Razorwire_F"; rank = ""; position[] = {-1.60382,-9.55762,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_BagBunker_01_large_green_F"; rank = ""; position[] = {0.0780258,-4.00537,0}; dir = 0;};
@@ -425,7 +425,7 @@
 		};
 		class BunkerLarge2_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortMedium_BunkerLarge2; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_HBarrier_01_line_3_green_F"; rank = ""; position[] = {-5.15018,-0.293945,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-7.80838,0.611816,0}; dir = 45;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-8.4119,3.2207,0}; dir = 270;};
@@ -453,7 +453,7 @@
 		};
 		class BunkerLarge3_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortMedium_BunkerLarge3; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagBunker_01_large_green_F"; rank = ""; position[] = {0.265362,-5.81641,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier_01_line_5_green_F"; rank = ""; position[] = {0.981255,8.37109,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_01_line_3_green_F"; rank = ""; position[] = {-3.47701,4.99609,0}; dir = 270;};
@@ -489,7 +489,7 @@
 		};
 		class BunkerLarge4_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortMedium_BunkerLarge4; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_HBarrier_01_line_5_green_F"; rank = ""; position[] = {-6.35625,-0.621094,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "Land_Razorwire_F"; rank = ""; position[] = {-1.1241,-9.54932,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_BagBunker_01_large_green_F"; rank = ""; position[] = {0.725506,-4.44287,0}; dir = 0;};
@@ -524,7 +524,7 @@
         name = $STR_ZEC_FortSmall;
 		class StaticAANet_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortSmall_StaticAANet; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {0.75,2.25,0}; dir = 195;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_end_green_F"; rank = ""; position[] = {-0.111958,-1.16602,0}; dir = 285;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_end_green_F"; rank = ""; position[] = {-5.21822,0.471191,0}; dir = 255;};
@@ -546,7 +546,7 @@
 		};
 		class BunkerHBbarNet_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortSmall_BunkerHBbarNet; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_HBarrier_01_line_3_green_F"; rank = ""; position[] = {-4.37893,-3.27295,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier_01_line_1_green_F"; rank = ""; position[] = {-9.375,-3.11768,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-1.36682,-3.26563,0}; dir = 180;};
@@ -568,7 +568,7 @@
 		};
 		class BunkerSandbagsNet_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortSmall_BunkerSandbagsNet; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object1 {side = 8; vehicle = "CamoNet_INDP_open_F"; rank = ""; position[] = {-1.02621,-0.362793,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_BagBunker_01_small_green_F"; rank = ""; position[] = {0.688793,-2.35498,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_GarbageHeap_03_F"; rank = ""; position[] = {-3.00245,-2.00928,0}; dir = 0;};
@@ -584,7 +584,7 @@
 		};
 		class Net1_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortSmall_Net1; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-4.74867,-4.84717,0}; dir = 15;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-2.09584,-4.94482,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_GarbageHeap_02_F"; rank = ""; position[] = {-6.94301,-4.72168,0}; dir = 45;};
@@ -609,7 +609,7 @@
 		};
 		class Net2_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortSmall_Net2; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_HBarrier_01_line_3_green_F"; rank = ""; position[] = {-7.37893,2.47705,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier_01_line_3_green_F"; rank = ""; position[] = {-8.22701,0.121094,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_01_line_3_green_F"; rank = ""; position[] = {-7.25393,-2.27295,0}; dir = 0;};
@@ -635,7 +635,7 @@
 		};
 		class Net3_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortSmall_Net3; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_HBarrier_01_line_1_green_F"; rank = ""; position[] = {-4.85956,-3.18604,0}; dir = 120;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-6.1121,-0.988037,0}; dir = 75;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-1.99182,-3.89063,0}; dir = 180;};
@@ -660,7 +660,7 @@
 		};
 		class Net4_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortSmall_Net4; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_HBarrier_01_line_3_green_F"; rank = ""; position[] = {-3.2366,-5.08521,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-5.8948,-4.42944,0}; dir = 45;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-0.0881596,-5.17554,0}; dir = 0;};
@@ -687,7 +687,7 @@
 		};
 		class Net5_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortSmall_Net5; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-5.53703,-3.74219,0}; dir = 45;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-6.14055,-1.2583,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_CampingChair_V2_F"; rank = ""; position[] = {-3.25064,-1.57178,0}; dir = 195.009;};
@@ -708,7 +708,7 @@
 		};
 		class Net6_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FortSmall_Net6; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {1.25123,-5.54907,0}; dir = 30;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-0.444078,-3.70044,0}; dir = 210;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-5.39379,-2.69458,0}; dir = 45;};

@@ -208,7 +208,7 @@
         name = $STR_ZEC_CampsSmall;
 		class CampSite1 {
 			name = $STR_ZEC_GuerrillaPacific_CampsSmall_CampSite1; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-2.29883,-0.189697,0}; dir = 189.408;};
 			class Object1 {side = 8; vehicle = "Land_Sacks_heap_F"; rank = ""; position[] = {-5.75,-1.5,0}; dir = 195;};
 			class Object2 {side = 8; vehicle = "Land_WoodenCrate_01_F"; rank = ""; position[] = {-4.125,-1.5,0}; dir = 60.0002;};
@@ -229,7 +229,7 @@
 		};
 		class PicnicSite {
 			name = $STR_ZEC_GuerrillaPacific_CampsSmall_PicnicSite; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_Cliff_stoneCluster_F"; rank = ""; position[] = {0.495117,6.88098,0}; dir = 300;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_short_green_F"; rank = ""; position[] = {-6.04443,-8.93311,0}; dir = 105;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_short_green_F"; rank = ""; position[] = {-3.58643,7.47729,0}; dir = 255;};
@@ -265,7 +265,7 @@
 		};
 		class CampSite2 {
 			name = $STR_ZEC_GuerrillaPacific_CampsSmall_CampSite2; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Campfire_burning_F"; rank = ""; position[] = {-2.125,4.375,0}; dir = 27.42;};
 			class Object1 {side = 8; vehicle = "Land_Cliff_stone_big_F"; rank = ""; position[] = {5.37402,7.99414,0}; dir = 300;};
 			class Object2 {side = 8; vehicle = "Land_Cliff_stoneCluster_F"; rank = ""; position[] = {-7.75439,2.24377,0}; dir = 195;};
@@ -298,7 +298,7 @@
 		};
 		class JungleCamp {
 			name = $STR_ZEC_GuerrillaPacific_CampsSmall_JungleCamp; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Campfire_burning_F"; rank = ""; position[] = {-7.25,-2.625,0}; dir = 26.9091;};
 			class Object1 {side = 8; vehicle = "Land_Cliff_boulder_F"; rank = ""; position[] = {3.71387,6.03943,0}; dir = 210;};
 			class Object2 {side = 8; vehicle = "Land_Cliff_stoneCluster_F"; rank = ""; position[] = {-9.88184,7.24695,0}; dir = 225;};

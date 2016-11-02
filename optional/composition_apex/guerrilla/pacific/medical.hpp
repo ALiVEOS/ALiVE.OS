@@ -3,7 +3,7 @@
         name = $STR_ZEC_MedicalLarge;
 		class AirAmbulance_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_MedicalLarge_AirAmbulance; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-17.0288,-9.57813,0}; dir = 105;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_short_green_F"; rank = ""; position[] = {-16.4243,-7.29639,0}; dir = 285;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_01_line_5_green_F"; rank = ""; position[] = {-18.1699,-13.5198,0}; dir = 105;};
@@ -171,7 +171,7 @@
 		};
 		class EvacHospital_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_MedicalLarge_EvacHospital; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_NetFence_01_m_8m_F"; rank = ""; position[] = {-16.0298,-4.00781,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_NetFence_01_m_8m_F"; rank = ""; position[] = {-12.0078,-7.97021,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-13.6167,-3.39063,0}; dir = 180;};
@@ -290,7 +290,7 @@
 		};
 		class UrbanSurgery_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_MedicalMedium_UrbanSurgery; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-2.90771,-5.38745,0}; dir = 90;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-2.90771,-2.88745,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_Cargo10_white_F"; rank = ""; position[] = {-12,-4.125,0}; dir = 150.001;};
@@ -529,7 +529,7 @@
 		};
 		class CollectionStation_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_MedicalSmall_CollectionStation; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-4.1333,1.89063,0}; dir = 2.73208e-005;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-10.3574,5.87427,0}; dir = 120;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-7.80225,2.09766,0}; dir = 30;};
@@ -563,7 +563,7 @@
 		};
 		class UrbanEvacPoint_IND_C_F {
 			name = "Urban Evac Point"; // Credit: 2600K
-			icon = "\a3\UI_F_Exp\Data\CfgMarkers\syndicat_ca.paa";
+			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-8.1333,-7.10938,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-11.2881,-3.75391,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {3.26563,-3.6167,0}; dir = 90;};
