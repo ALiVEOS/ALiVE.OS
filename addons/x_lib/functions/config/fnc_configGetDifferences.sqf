@@ -31,7 +31,7 @@ private _childClassProperties = [_childClass] call ALiVE_fnc_configProperties;
 private _parentClassProperties = [_parentClass] call ALiVE_fnc_configProperties;
 
 private _attributes = _childClassProperties select 1;
-_differences = [];
+private _differences = [];
 
 {
     _attribute = _x;
