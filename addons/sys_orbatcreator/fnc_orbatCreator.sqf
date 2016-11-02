@@ -1081,6 +1081,20 @@ switch(_operation) do {
                 private _buttonConfirm = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_BUTTON_CONFIRM );
                 _buttonConfirm ctrlSetEventHandler ["MouseButtonDown","['onEditGroupConfirmClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
+                private _listGroups = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_GROUPS_LIST_GROUPS );
+                private _selectedIndices = lbSelection _listGroups;
+
+                if (count _selectedIndices > 1) then {
+                    _inputName ctrlSetText "";
+                    _inputName ctrlEnable false;
+
+                    _inputClassname ctrlSetText "";
+                    _inputClassname ctrlEnable false;
+
+                    private _buttonAutogenClassname = OC_getControl( OC_DISPLAY_CREATEGROUP , OC_CREATEGROUP_INPUT_BUTTON_AUTOGEN_CLASSNAME );
+                    _buttonAutogenClassname ctrlEnable false;
+                };
+
             };
 
         };
@@ -3650,8 +3664,7 @@ switch(_operation) do {
         [_newUnit,"crew", _crew] call ALiVE_fnc_orbatCreatorUnit;
         [_newUnit,"texture", _texture] call ALiVE_fnc_orbatCreatorUnit;
 
-        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
-        [_customUnits,_classname,_newUnit] call ALiVE_fnc_hashSet;
+        [_logic,"addCustomUnit", _newUnit] call MAINCLASS;
 
         // close display
         // refresh unit editor custom units list
@@ -4744,7 +4757,9 @@ switch(_operation) do {
     };
 
 
+
     // edit group
+
 
 
     case "onEditGroupConfirmClicked": {
