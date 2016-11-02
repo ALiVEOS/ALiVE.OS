@@ -1,4 +1,5 @@
-class CfgVehicles {
+class CfgVehicles
+{
         class ModuleAliveBase;
         class ADDON : ModuleAliveBase
         {
@@ -292,16 +293,29 @@ class CfgVehicles {
                     };
 
                 };
+        };
 
+        class NATO_Box_Base;
+        class IND_Box_Base;
+        class EAST_Box_Base;
+        class Box_IND_AmmoVeh_F : IND_Box_Base
+        {
+            class Eventhandlers;
         };
-        class Box_IND_AmmoVeh_F;
-        class Box_NATO_AmmoVeh_F;
-        class Box_East_AmmoVeh_F;
-        class ALIVE_O_supplyCrate_F : Box_East_AmmoVeh_F {
+        class Box_NATO_AmmoVeh_F : NATO_Box_Base
+        {
+            class Eventhandlers;
+        };
+        class Box_East_AmmoVeh_F : EAST_Box_Base
+        {
+            class Eventhandlers;
+        };
+        class ALIVE_O_supplyCrate_F : Box_East_AmmoVeh_F
+        {
             transportSoldier = 3;
             scope = 1;
-            mass = 2000;
-            class EventHandlers
+            mass = 650;
+            class EventHandlers : Eventhandlers
             {
                 class ADDON
                 {
@@ -309,11 +323,12 @@ class CfgVehicles {
                 };
             };
         };
-        class ALIVE_I_supplyCrate_F : Box_IND_AmmoVeh_F {
+        class ALIVE_I_supplyCrate_F : Box_IND_AmmoVeh_F
+        {
             transportSoldier = 3;
             scope = 1;
-            mass = 2000;
-            class EventHandlers
+            mass = 650;
+            class EventHandlers : Eventhandlers
             {
                 class ADDON
                 {
@@ -321,11 +336,12 @@ class CfgVehicles {
                 };
             };
         };
-        class ALIVE_B_supplyCrate_F : Box_NATO_AmmoVeh_F {
+        class ALIVE_B_supplyCrate_F : Box_NATO_AmmoVeh_F
+        {
             transportSoldier = 3;
             scope = 1;
-            mass = 2000;
-            class EventHandlers
+            mass = 650;
+            class EventHandlers : Eventhandlers
             {
                 class ADDON
                 {
