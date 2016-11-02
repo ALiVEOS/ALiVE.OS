@@ -294,9 +294,42 @@
 
 	[ALIVE_generatedTasks, "TransportInsertion", ["Transport Insertion",_options]] call ALIVE_fnc_hashSet;
 
-// Recover Asset Tasks
+/* Recover Asset Tasks
+
+	_options = [];
 
 	// Recover Device
+
+		_tasksData = [] call ALIVE_fnc_hashCreate;
+
+		_taskData = [] call ALIVE_fnc_hashCreate;
+		[_taskData,"title","Recover Device"] call ALIVE_fnc_hashSet;
+		[_taskData,"description","Recove the military device before it falls into enemy hands"] call ALIVE_fnc_hashSet;
+		[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
+
+		_taskData = [] call ALIVE_fnc_hashCreate;
+		[_taskData,"title","Secure the Device"] call ALIVE_fnc_hashSet;
+		[_taskData,"description","A secret military device has gone missing in the vicinity of %1. You are to find and recover the device as quickly as possible!"] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_start",[["HQ","We have reports that we have lost contact with a truck carrying a highly sensitive military device in the vicinity of %1. Find and recover the device as quickly as possible!"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_update",[["HQ","All callsigns, SITREP, device location has been confirmed at GR%2. Int indicates enemy forces are closing in on the device within the hour."],["PLAYERS","Roger, Out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_success",[["PLAYERS","The package is secure, Over"],["HQ","Roger, well done, Out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_failed",[["HQ","Mission aborted, device has been recovered by the enemy, Over"],["PLAYERS","Roger that, we're RTB, Out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_cancelled",[["PLAYERS","Callsign compromised, mission aborted, Over"],["HQ","Roger, break contact and withdraw. Send SITREP when ready, Out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
+		[_tasksData,"Rescue",_taskData] call ALIVE_fnc_hashSet;
+
+		_taskData = [] call ALIVE_fnc_hashCreate;
+		[_taskData,"title","Recover the Device"] call ALIVE_fnc_hashSet;
+		[_taskData,"description","Recover the device to the safe location near %1."] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_start",[["HQ","Immediately recover the device to safe house near %1"],["PLAYERS","Roger, moving now, Out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_failed",[["HQ","Device has been recovered by the enemy, abort mission and RTB immediately, Over"],["PLAYERS","Roger Out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_success",[["PLAYERS","Package has been returned to the safe location"],["HQ","Roger, great job! Well done, Out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
+		[_tasksData,"Return",_taskData] call ALIVE_fnc_hashSet;
+
+		_options set [count _options,_tasksData];
+
+		[ALIVE_generatedTasks, "Rescue", ["Recover Device",_options]] call ALIVE_fnc_hashSet;
 
 	// Steal Device
 
@@ -307,6 +340,7 @@
 	// Recover Item
 
 	// Steal Item
+*/
 
 // Destroy Vehicles Task
 
@@ -419,7 +453,7 @@
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
 	[_taskData,"title","Destroy the %1"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","We received intelligence about an insurgent %1 near %2! Destroy the building!"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","We received intelligence about insurgents %1 near %2! Destroy the building!"] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_start",[["HQ","We received intelligence about an insurgent %1 near %2! Destory the building!"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_success",[["PLAYERS","The building has been destroyed!"],["HQ","Roger that, well done!"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"reward",["forcePool",10]] call ALIVE_fnc_hashSet;
