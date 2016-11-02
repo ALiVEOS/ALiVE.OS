@@ -330,6 +330,7 @@ class ALiVE_orbatCreator_interface_createGroup {
                 class className_button_generateClassname : orbatCreator_RscButton {
                     idc = 12015;
                     text = "Generate Classname";
+                    tooltip = "Generate a classname based on the side and display name of the group";
                     x = 0.172 * safezoneW;
                     y = 0.205 * safezoneH;
                     w = 0.225 * safezoneW;
@@ -396,6 +397,7 @@ class ALiVE_orbatCreator_interface_createGroup {
                 class icon_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 12022;
                     text = "Icon";
+                    tooltip = "Icon that will be displayed next to the group in the editor";
                     x = 0.033 * safezoneW;
                     y = 0.527 * safezoneH;
                     w = 0.125 * safezoneW;
