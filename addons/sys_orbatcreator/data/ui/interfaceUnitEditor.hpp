@@ -236,6 +236,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class className_button_generateClassname : orbatCreator_RscButton {
                     idc = 10015;
                     text = "Generate Classname";
+                    tooltip = "Generate a classname based on the units side, faction, and display name.";
                     x = 0.172 * safezoneW;
                     y = 0.205 * safezoneH;
                     w = 0.225 * safezoneW;
@@ -265,6 +266,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class side_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 10018;
                     text = "Side";
+                    tooltip = "The side this unit will belong to.";
                     x = 0.033 * safezoneW;
                     y = 0.357 * safezoneH;
                     w = 0.125 * safezoneW;
@@ -283,6 +285,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class faction_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 10020;
                     text = "Faction";
+                    tooltip = "The faction this unit will belong to.";
                     x = 0.033 * safezoneW;
                     y = 0.417 * safezoneH;
                     w = 0.125 * safezoneW;
@@ -374,6 +377,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                 class unittype_typeList_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 10030;
                     text = "Type";
+                    tooltip = "The type of object this unit will look and behave like (inherit).";
                     x = 0.033 * safezoneW;
                     y = 0.752 * safezoneH;
                     w = 0.125 * safezoneW;
