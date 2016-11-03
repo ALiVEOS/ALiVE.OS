@@ -349,7 +349,7 @@ switch(_operation) do {
                         if !(count _profiles_count_tmp == 0) then {
                             _profiles_count = _profiles_count + (count _profiles_count_tmp);
                         } else {
-                            _error2 = "Please ensure you have configured a Mil Placement or Mil Placement (Civ Obj) module for this faction (or faction units are synced to Virtual AI module). If so, please check groups are correctly configured for this faction.";
+                            private _error2 = "Please ensure you have configured a Mil Placement or Mil Placement (Civ Obj) module for this faction (or faction units are synced to Virtual AI module). If so, please check groups are correctly configured for this faction.";
                             [_errorMessage,_x,_error2] call ALIVE_fnc_dumpR;
                         };
                     } foreach _factions;
