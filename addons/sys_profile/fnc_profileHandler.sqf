@@ -923,7 +923,7 @@ switch(_operation) do {
 
                     _profilesByFaction = [_logic, "profilesByFaction"] call ALIVE_fnc_hashGet;
 
-                    _result = [_profilesByFaction, _faction] call ALIVE_fnc_hashGet;
+                    _result = [_profilesByFaction, _faction,[]] call ALIVE_fnc_hashGet;
                 };
         };
         case "getProfilesByFactionByType": {
