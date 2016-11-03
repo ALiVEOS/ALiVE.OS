@@ -325,17 +325,17 @@ switch(_operation) do {
 
 
                     //Check if there are any objectives
-                    _errorMessage = "There are %1 objectives for this OPCOM instance! %2";
+                    _errorMessage = "There are %1 objectives for this %3 OPCOM instance! %2";
                     _error1 = count _objectives; _error2 = "Please assign Military or Civilian Placement Objectives!"; //defaults
                     if ((count _objectives) == 0) exitwith {
-                        [_errorMessage,_error1,_error2] call ALIVE_fnc_dumpR;
+                        [_errorMessage,_error1,_error2,_factions] call ALIVE_fnc_dumpR;
                     };
 
                     //Warn if there are too many objectives
-                    _errorMessage = "There are %1 objectives for this OPCOM instance! %2";
+                    _errorMessage = "There are %1 objectives for this %3 OPCOM instance! %2";
                     _error1 = count _objectives; _error2 = "Please lower the objective count for performance reasons, suggested is below 80!"; //defaults
                     if ((count _objectives) > 80) then {
-                        [_errorMessage,_error1,_error2] call ALIVE_fnc_dumpR;
+                        [_errorMessage,_error1,_error2,_factions] call ALIVE_fnc_dumpR;
                     };
 
                     //Check if there are any profiles available
