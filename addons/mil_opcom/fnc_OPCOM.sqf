@@ -339,12 +339,19 @@ switch(_operation) do {
                     };
 
                     //Check if there are any profiles available
-                    _errorMessage = "There are are no groups for OPCOM faction(s) %1! Please check if you chose the correct faction, and that the faction has groups defined in the ArmA 3 default categories infantry, motorized, mechanized, armored, air, sea!";
-                    _error1 = _factions; _error2 = ""; //defaults
-                    _profiles_count = 0;
+                    _errorMessage = "There are are no groups for OPCOM faction(s) %1! %2";
+                    _error1 = _factions;
+                    _error2 = "Please check you chose the correct faction(s), and that factions have groups defined in the ArmA 3 default categories infantry, motorized, mechanized, armored, air, sea!";
+                    private _profiles_count = 0;
                     {
-                        _profiles_count_tmp = ([ALIVE_profileHandler, "getProfilesByFaction",_x] call ALIVE_fnc_profileHandler);
-                        if !(isnil "_profiles_count_tmp") then {_profiles_count = _profiles_count + (count _profiles_count_tmp)};
+                        private _profiles_count_tmp = ([ALIVE_profileHandler, "getProfilesByFaction",_x] call ALIVE_fnc_profileHandler);
+
+                        if !(count _profiles_count_tmp == 0) then {
+                            _profiles_count = _profiles_count + (count _profiles_count_tmp);
+                        } else {
+                            _error2 = "Please ensure you have configured a Mil Placement or Mil Placement (Civ Obj) module for this faction (or faction units are synced to Virtual AI module). If so, please check groups are correctly configured for this faction.";
+                            [_errorMessage,_x,_error2] call ALIVE_fnc_dumpR;
+                        };
                     } foreach _factions;
                     if (_profiles_count == 0) exitwith {
                         [_errorMessage,_error1,_error2] call ALIVE_fnc_dumpR;
