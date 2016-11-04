@@ -33,16 +33,17 @@ onTeamSwitch
 // ALIVE_player_count is used to measure how many players are connected and when all players have disconnected - used in the fnc_abortButton.
 MOD(player_count) = 0;
 
-onPlayerDisconnected {
+
+ALiVE_fnc_onPlayerDisconnected = {
 
     TRACE_1("OPD DATA",_this);
 
     if (_name != "__SERVER__") then {
         MOD(player_count) = MOD(player_count) - 1;
     };
-
 };
 
+[QGVAR(OPD),"onPlayerDisconnected","ALiVE_fnc_OnPlayerDisconnected"] call BIS_fnc_addStackedEventHandler;
 
 ALiVE_fnc_onPlayerConnected = {
 
