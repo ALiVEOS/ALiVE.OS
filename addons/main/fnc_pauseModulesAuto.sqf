@@ -24,6 +24,8 @@ Highhead
 
 if !(isServer) exitwith {};
 
+["ALiVE - Auto Pause Modules Initialising..."] call ALiVE_fnc_Dump;
+
 [QMOD(PAUSEMODULES_EH_DISCONNECTED),"onPlayerDisconnected", {
     [] spawn {
 
