@@ -30,7 +30,7 @@ if (!isNil QMOD(sys_player) && isDedicated) then {
 
     if (_name == "__SERVER__") exitWith {
 
-        if (!isNil "ALIVE_sys_data" && {!ALIVE_sys_data_DISABLED}) then {
+        if (!isNil "ALIVE_sys_data" && {!ALIVE_sys_data_DISABLED} && {MOD(sys_player) getVariable ["enablePlayerPersistence",false]}) then {
             _result = [MOD(sys_player), "savePlayers", [false]] call ALIVE_fnc_player;
 
             ["ALiVE SYS_PLAYER - SAVING PLAYER DATA: %1",_result] call ALIVE_fnc_dump;
@@ -50,26 +50,31 @@ if (!isNil QMOD(sys_player) && isDedicated) then {
         };
     } foreach playableUnits;
 
-    if (isNull _unit) then {
-        private ["_timeDiff","_lastPlayerSaveTime"];
+    if (MOD(sys_player) getVariable ["enablePlayerPersistence",false]) then {
 
-        ["ALiVE SYS_PLAYER - PLAYER UNIT NOT FOUND IN PLAYABLEUNITS (%1)",_name] call ALIVE_fnc_dump;
+        if (isNull _unit) then {
+            private ["_timeDiff","_lastPlayerSaveTime"];
 
-        // Work out when the last player save was and report the difference
+            ["ALiVE SYS_PLAYER - PLAYER UNIT NOT FOUND IN PLAYABLEUNITS (%1)",_name] call ALIVE_fnc_dump;
 
-        _lastPlayerSaveTime = [MOD(sys_player), "getPlayerSaveTime", [_uid]] call ALIVE_fnc_player;
-        _timeDiff = (dateToNumber date) - _lastPlayerSaveTime;
+            // Work out when the last player save was and report the difference
 
-        ["ALiVE SYS_PLAYER - Have not saved player state for %2 for %1 seconds",_timeDiff,_name] call ALIVE_fnc_dump;
+            _lastPlayerSaveTime = [MOD(sys_player), "getPlayerSaveTime", [_uid]] call ALIVE_fnc_player;
+            _timeDiff = (dateToNumber date) - _lastPlayerSaveTime;
 
-    } else {
+            ["ALiVE SYS_PLAYER - Have not saved player state for %2 for %1 seconds",_timeDiff,_name] call ALIVE_fnc_dump;
 
-        if !(_unit getVariable [QGVAR(kicked), false]) then {
-            _result = [MOD(sys_player), "setPlayer", [_unit]] call ALIVE_fnc_player;
-            TRACE_1("SETTING PLAYER DATA", _result);
         } else {
-            _unit setVariable [QGVAR(kicked), false, true];
+
+            if !(_unit getVariable [QGVAR(kicked), false]) then {
+                _result = [MOD(sys_player), "setPlayer", [_unit]] call ALIVE_fnc_player;
+                TRACE_1("SETTING PLAYER DATA", _result);
+            } else {
+
+                _unit setVariable [QGVAR(kicked), false, true];
+            };
         };
+
     };
 
     MOD(sys_player) setVariable [_uid, false, true];

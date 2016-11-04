@@ -95,50 +95,50 @@ switch(_operation) do {
         };
         case "init": {
 
-                //Only one init per instance is allowed
-                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS PLAYER - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+            //Only one init per instance is allowed
+            if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS PLAYER - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
 
-                //Start init
-                _logic setVariable ["initGlobal", false];
+            //Start init
+            _logic setVariable ["initGlobal", false];
 
-                /*
-                MODEL - no visual just reference data
-                - module object stores parameters
-                - Establish data handler on server
-                - Establish data model on server and client
-                */
+            /*
+            MODEL - no visual just reference data
+            - module object stores parameters
+            - Establish data handler on server
+            - Establish data model on server and client
+            */
 
-                MOD(sys_player) = _logic;
+            MOD(sys_player) = _logic;
 
-                // Set Module Parameters as booleans
-                MOD(sys_player) setVariable ["enablePlayerPersistence", call compile (_logic getvariable "enablePlayerPersistence")];
-                MOD(sys_player) setVariable ["allowReset", call compile (_logic getvariable "allowReset")];
-                MOD(sys_player) setVariable ["allowDiffClass", call compile (_logic getvariable "allowDiffClass")];
-                MOD(sys_player) setVariable ["allowManualSave", call compile (_logic getvariable "allowManualSave")];
-                MOD(sys_player) setVariable ["storeToDB", call compile (_logic getvariable "storeToDB")];
-                MOD(sys_player) setVariable ["autoSaveTime", call compile (_logic getvariable "autoSaveTime")];
+            // Set Module Parameters as booleans
+            MOD(sys_player) setVariable ["enablePlayerPersistence", call compile (_logic getvariable "enablePlayerPersistence")];
+            MOD(sys_player) setVariable ["allowReset", call compile (_logic getvariable "allowReset")];
+            MOD(sys_player) setVariable ["allowDiffClass", call compile (_logic getvariable "allowDiffClass")];
+            MOD(sys_player) setVariable ["allowManualSave", call compile (_logic getvariable "allowManualSave")];
+            MOD(sys_player) setVariable ["storeToDB", call compile (_logic getvariable "storeToDB")];
+            MOD(sys_player) setVariable ["autoSaveTime", call compile (_logic getvariable "autoSaveTime")];
 
-                MOD(sys_player) setVariable ["saveLoadout", call compile (_logic getvariable "saveLoadout")];
-                MOD(sys_player) setVariable ["saveAmmo", call compile (_logic getvariable "saveAmmo")];
-                MOD(sys_player) setVariable ["saveHealth", call compile (_logic getvariable "saveHealth")];
-                MOD(sys_player) setVariable ["savePosition", call compile (_logic getvariable "savePosition")];
-                MOD(sys_player) setVariable ["saveScores", call compile (_logic getvariable "saveScores")];
+            MOD(sys_player) setVariable ["saveLoadout", call compile (_logic getvariable "saveLoadout")];
+            MOD(sys_player) setVariable ["saveAmmo", call compile (_logic getvariable "saveAmmo")];
+            MOD(sys_player) setVariable ["saveHealth", call compile (_logic getvariable "saveHealth")];
+            MOD(sys_player) setVariable ["savePosition", call compile (_logic getvariable "savePosition")];
+            MOD(sys_player) setVariable ["saveScores", call compile (_logic getvariable "saveScores")];
 
-                MOD(sys_player) setVariable ["saved", false];
+            MOD(sys_player) setVariable ["saved", false];
 
-               MOD(sys_player) setVariable ["super", QUOTE(SUPERCLASS)];
-               MOD(sys_player) setVariable ["class", QUOTE(MAINCLASS)];
+           MOD(sys_player) setVariable ["super", QUOTE(SUPERCLASS)];
+           MOD(sys_player) setVariable ["class", QUOTE(MAINCLASS)];
 
-               if !(_logic getVariable ["enablePlayerPersistence",true]) exitWith {_logic setVariable ["bis_fnc_initModules_activate",true]; ["ALiVE SYS PLAYER - Feature turned off! Exiting..."] call ALiVE_fnc_Dump};
+           if !(_logic getVariable ["enablePlayerPersistence",true]) exitWith {_logic setVariable ["bis_fnc_initModules_activate",true]; ["ALiVE SYS PLAYER - Feature turned off! Exiting..."] call ALiVE_fnc_Dump};
 
-                // DEFINE PLAYER DATA
-                #include <playerData.hpp>
+            // DEFINE PLAYER DATA
+            #include <playerData.hpp>
 
-                // Create Player and Gear Store in memory on client and server
-                GVAR(player_data) = [] call ALIVE_fnc_hashCreate;
-                GVAR(gear_data) = [] call ALIVE_fnc_hashCreate;
+            // Create Player and Gear Store in memory on client and server
+            GVAR(player_data) = [] call ALIVE_fnc_hashCreate;
+            GVAR(gear_data) = [] call ALIVE_fnc_hashCreate;
 
-                 TRACE_4("SYS_PLAYER1", typename (MOD(sys_player) getvariable "allowReset"), MOD(sys_player) getvariable "allowDiffClass",MOD(sys_player) getvariable "allowManualSave",MOD(sys_player) getvariable "storeToDB" );
+             TRACE_4("SYS_PLAYER1", typename (MOD(sys_player) getvariable "allowReset"), MOD(sys_player) getvariable "allowDiffClass",MOD(sys_player) getvariable "allowManualSave",MOD(sys_player) getvariable "storeToDB" );
 
 
              if (isDedicated) then {
