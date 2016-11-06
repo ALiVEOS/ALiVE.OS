@@ -2112,7 +2112,7 @@ switch(_operation) do {
 
         private [
             "_groupCategory","_groupsInCategory","_group","_groupUnits",
-            "_groupUnit","_groupUnitVehicle","_customUnit"
+            "_groupUnit","_groupUnitVehicle","_customUnit","_turretInfo"
         ];
 
         _args params ["_unit","_classname"];
@@ -2159,8 +2159,10 @@ switch(_operation) do {
             _turrets = [_customUnit,"turrets"] call ALiVE_fnc_hashGet;
 
             {
-                if (_x == _unitClassname) exitWith {
-                    (_turrets select 2) set [_forEachIndex, _classname];
+                _turretInfo = _x;
+
+                if ((_x select 2) == _unitClassname) exitWith {
+                    _turretInfo set [2, _classname];
                 };
             } foreach (_turrets select 2);
         } foreach (_customUnits select 2);
