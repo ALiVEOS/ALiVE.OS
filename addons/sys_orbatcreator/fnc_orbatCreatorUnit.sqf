@@ -57,17 +57,25 @@ switch(_operation) do {
         [_logic,"side", 0] call ALiVE_fnc_hashSet;
         [_logic,"faction", ""] call ALiVE_fnc_hashSet;
 
-        [_logic,"configName", ""] call MAINCLASS;
-        [_logic,"displayName", ""] call MAINCLASS;
+        [_logic,"configName", ""] call ALiVE_fnc_hashSet;
+        [_logic,"displayName", ""] call ALiVE_fnc_hashSet;
 
         // man properties
 
-        [_logic,"loadout", []] call MAINCLASS;
+        [_logic,"loadout", []] call ALiVE_fnc_hashSet;
+
+        private _identityTypes = [] call ALiVE_fnc_hashCreate;
+        [_identityTypes,"face", ""] call ALiVE_fnc_hashSet;
+        [_identityTypes,"voice", ""] call ALiVE_fnc_hashSet;
+        [_identityTypes,"insignia", ""] call ALiVE_fnc_hashSet;
+        [_identityTypes,"misc", ""] call ALiVE_fnc_hashSet;
+        [_logic,"identityTypes", _identityTypes] call ALiVE_fnc_hashSet;
 
         // vehicle properties
 
-        [_logic,"crew", ""] call MAINCLASS;
-        [_logic,"texture", ""] call MAINCLASS;
+        [_logic,"crew", ""] call ALiVE_fnc_hashSet;
+        [_logic,"turrets", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
+        [_logic,"texture", ""] call ALiVE_fnc_hashSet;
 
     };
 
@@ -148,9 +156,31 @@ switch(_operation) do {
 
     };
 
+    case "turrets": {
+
+        if (typename _args == "ARRAY") then {
+            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _result = _args;
+        } else {
+            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+        };
+
+    };
+
     case "texture": {
 
         if (typename _args == "STRING") then {
+            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _result = _args;
+        } else {
+            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+        };
+
+    };
+
+    case "identityTypes": {
+
+        if (typename _args == "ARRAY") then {
             [_logic,_operation,_args] call ALiVE_fnc_hashSet;
             _result = _args;
         } else {

@@ -21,7 +21,6 @@ class ALiVE_orbatCreator_interface_groupEditor {
             w = 0.0802083 * safezoneW;
             h = 0.056 * safezoneH;
             colorBackground[] = {-1,-1,-1,0};
-            sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1.25);
         };
 
         class groupEditor_availableAssets_header: orbatCreator_RscText {
@@ -277,7 +276,7 @@ class ALiVE_orbatCreator_interface_createGroup {
                     text = "";
                     x = 0 * safezoneW;
                     y = 0.01 * safezoneH;
-                    w = 0.46 * safezoneW;
+                    w = 0.44 * safezoneW;
                     h = 0.00125 * safezoneH;
                     colorBackground[] = COLOR_GREY_TITLE_HARD;
                 };
@@ -343,7 +342,7 @@ class ALiVE_orbatCreator_interface_createGroup {
                     text = "";
                     x = 0 * safezoneW;
                     y = 0.29 * safezoneH;
-                    w = 0.46 * safezoneW;
+                    w = 0.44 * safezoneW;
                     h = 0.00125 * safezoneH;
                     colorBackground[] = COLOR_GREY_TITLE_HARD;
                 };
@@ -380,7 +379,7 @@ class ALiVE_orbatCreator_interface_createGroup {
                     text = "";
                     x = 0 * safezoneW;
                     y = 0.447 * safezoneH;
-                    w = 0.46 * safezoneW;
+                    w = 0.44 * safezoneW;
                     h = 0.00125 * safezoneH;
                     colorBackground[] = COLOR_GREY_TITLE_HARD;
                 };

@@ -183,7 +183,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                     text = "";
                     x = 0 * safezoneW;
                     y = 0.01 * safezoneH;
-                    w = 0.46 * safezoneW;
+                    w = 0.44 * safezoneW;
                     h = 0.00125 * safezoneH;
                     colorBackground[] = COLOR_GREY_TITLE_HARD;
                 };
@@ -249,7 +249,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                     text = "";
                     x = 0 * safezoneW;
                     y = 0.277 * safezoneH;
-                    w = 0.46 * safezoneW;
+                    w = 0.44 * safezoneW;
                     h = 0.00125 * safezoneH;
                     colorBackground[] = COLOR_GREY_TITLE_HARD;
                 };
@@ -306,7 +306,7 @@ class ALiVE_orbatCreator_interface_createUnit {
                     text = "";
                     x = 0 * safezoneW;
                     y = 0.492 * safezoneH;
-                    w = 0.46 * safezoneW;
+                    w = 0.44 * safezoneW;
                     h = 0.00125 * safezoneH;
                     colorBackground[] = COLOR_GREY_TITLE_HARD;
                 };
@@ -395,10 +395,10 @@ class ALiVE_orbatCreator_interface_createUnit {
                 };
 
                 class scroll_dummy : orbatCreator_RscText {
-                    idc = 10032;
+                    idc = 10040;
                     text = "";
                     x = 0 * safezoneW;
-                    y = 0.975 * safezoneH;
+                    y = 0.973 * safezoneH; // NEEDS READJUSTING
                     w = 0.46 * safezoneW;
                     h = 0.00125 * safezoneH;
                     colorBackground[] = COLOR_BLACK(0);
@@ -491,6 +491,15 @@ class ALiVE_orbatCreator_interface_editVehicle {
             colorBackground[] = {1,1,1,1};
         };
 
+        class unitEditor_editVehicle_left_list_three_title: orbatCreator_RscText {
+            idc = 13014;
+            x = 0.775625 * safezoneW + safezoneX;
+            y = 0.01 * safezoneH + safezoneY;
+            w = 0.21 * safezoneW;
+            h = 0.042 * safezoneH;
+            colorBackground[] = {-1,-1,-1,1};
+        };
+
     };
 
     class controls {
@@ -569,6 +578,16 @@ class ALiVE_orbatCreator_interface_editVehicle {
             w = 0.175 * safezoneW;
             h = 0.035 * safezoneH;
             colorBackground[] = {-1,-1,-1,1};
+        };
+
+        class unitEditor_editVehicle_right_list_one: orbatCreator_RscListBox {
+            idc = 13015;
+
+            x = 0.775625 * safezoneW + safezoneX;
+            y = 0.052 * safezoneH + safezoneY;
+            w = 0.211458 * safezoneW;
+            h = 0.434 * safezoneH;
+            colorBackground[] = {0.2,0.2,0.2,1};
         };
 
     };

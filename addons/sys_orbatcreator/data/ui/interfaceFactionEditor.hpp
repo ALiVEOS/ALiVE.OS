@@ -171,7 +171,7 @@ class ALiVE_orbatCreator_interface_createFaction {
                     text = "";
                     x = 0 * safezoneW;
                     y = 0.01 * safezoneH;
-                    w = 0.45 * safezoneW;
+                    w = 0.44 * safezoneW;
                     h = 0.00125 * safezoneH;
                     colorBackground[] = COLOR_GREY_TITLE_HARD;
                 };
@@ -244,7 +244,7 @@ class ALiVE_orbatCreator_interface_createFaction {
                     text = "";
                     x = 0 * safezoneW;
                     y = 0.29 * safezoneH;
-                    w = 0.45 * safezoneW;
+                    w = 0.44 * safezoneW;
                     h = 0.00125 * safezoneH;
                     colorBackground[] = COLOR_GREY_TITLE_HARD;
                 };
