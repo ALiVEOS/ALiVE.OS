@@ -74,6 +74,8 @@ if ((_faction in (_factionSkills select 1)) && {!(side _unit == CIVILIAN)}) then
         _unit setSkill ["commanding", _commanding];
         _unit setSkill ["general", _general];
 
+        _unit allowFleeing _fleeing;
+
         if (_debug) then {["ALiVE Skill set on %1: %2",_unit,_factionSkill] call ALiVE_fnc_DumpR};
     };
 };
