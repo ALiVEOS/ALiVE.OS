@@ -156,6 +156,7 @@ switch(_operation) do {
                     [ADDON, "roadIEDClasses", _logic getVariable ["roadIEDClasses", DEFAULT_ROADIEDS]] call MAINCLASS;
                     [ADDON, "urbanIEDClasses", _logic getVariable ["urbanIEDClasses", DEFAULT_URBANIEDS]] call MAINCLASS;
                     [ADDON, "clutterClasses", _logic getVariable ["clutterClasses", DEFAULT_CLUTTER]] call MAINCLASS;
+                    [ADDON, "thirdParty", _logic getVariable ["thirdParty", false]] call MAINCLASS;
 
                     publicVariable QUOTE(ADDON);
 
@@ -522,6 +523,9 @@ switch(_operation) do {
         };
         case "locations": {
             _result = [_logic,_operation,_args,[]] call ALIVE_fnc_OOsimpleOperation;
+        };
+        case "thirdParty": {
+            _result = [_logic,_operation,_args,false] call ALIVE_fnc_OOsimpleOperation;
         };
         case "createMarkers": {
 

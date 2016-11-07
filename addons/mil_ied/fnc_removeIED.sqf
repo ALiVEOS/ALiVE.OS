@@ -23,9 +23,26 @@ _removeIED = {
 
     //["REMOVE IED: %1, %2, %3",_IEDpos, _IEDskin, _IEDObj] call ALIVE_fnc_dump;
 
-    if (isNil "_IEDObj") then {
-        diag_log "IED NOT FOUND";
+    if (isNil "_IEDObj" || {!(mineActive _IEDObj)}) then {
+        // diag_log format["IED NOT FOUND at %1 for %2", _IEDpos, _IEDskin];
+
+        // Remove the IED from the store
+        [_IEDs, _key] call ALiVE_fnc_hashRem;
+        [[GVAR(STORE), "IEDs"] call ALiVE_fnc_hashGet, _town, _IEDs] call ALiVE_fnc_hashSet;
     };
+
+    if (ADDON getVariable "debug") then {
+        private _debugmarkers = ADDON getVariable ["debugmarkers",[]];
+        {
+            // diag_log format["IED delete marker: %1, %2, %3", _x, markerpos _x, _IEDpos];
+            if ((markerPos _x) distance _IEDpos < 2) then {
+                [_x] call cba_fnc_deleteEntity;
+                _debugmarkers set [_foreachindex, -1];
+                ADDON setVariable ["debugmarkers", _debugmarkers - [-1]];
+            };
+        } foreach _debugmarkers;
+    };
+
     _IEDCharge = _IEDobj getVariable ["charge", nil];
 
     // Delete Triggers

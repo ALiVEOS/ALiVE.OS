@@ -242,6 +242,26 @@ class CfgVehicles {
                                         };
                                 };
                         };
+                        class thirdParty
+                        {
+                                displayName = "$STR_ALIVE_IED_3RDPARTY";
+                                description = "$STR_ALIVE_IED_3RDPARTY_COMMENT";
+                                typeName = "BOOL";
+                                class Values
+                                {
+                                        class Yes
+                                        {
+                                                name = "Yes";
+                                                value = 1;
+                                        };
+                                        class No
+                                        {
+                                                name = "No";
+                                                value = 0;
+                                                default = 1;
+                                        };
+                                };
+                        };
                        class roadIEDClasses
                         {
                                 displayName = "$STR_ALIVE_IED_ROAD_IED_CLASSES";
