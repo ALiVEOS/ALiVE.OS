@@ -11,10 +11,14 @@ _town = _this select 1;
 
 _IEDs = [[GVAR(STORE), "IEDs"] call ALiVE_fnc_hashGet, _town] call ALiVE_fnc_hashGet;
 
+
     //["REMOVE IED: %1",_IEDs] call ALIVE_fnc_dump;
 
 _removeIED = {
     private ["_IED","_IEDObj","_IEDCharge","_IEDskin","_IEDpos","_trgr"];
+
+    private _thirdParty = ADDON getVariable ["thirdParty",false];
+
     _IEDpos = [_value, "IEDpos", [0,0,0]] call ALiVE_fnc_hashGet;
     _IEDskin = [_value, "IEDskin", "ALIVE_IEDUrbanSmall_Remote_Ammo"] call ALiVE_fnc_hashGet;
 
@@ -23,8 +27,9 @@ _removeIED = {
 
     //["REMOVE IED: %1, %2, %3",_IEDpos, _IEDskin, _IEDObj] call ALIVE_fnc_dump;
 
-    if (isNil "_IEDObj" || {!(mineActive _IEDObj)}) then {
-        // diag_log format["IED NOT FOUND at %1 for %2", _IEDpos, _IEDskin];
+    // Assuming 3rd party IED mods are using mines
+    if (isNil "_IEDObj" || {(!(mineActive _IEDObj) && (_thirdParty))}) then {
+        //diag_log format["IED NOT FOUND at %1 for %2", _IEDpos, _IEDskin];
 
         // Remove the IED from the store
         [_IEDs, _key] call ALiVE_fnc_hashRem;
@@ -34,8 +39,9 @@ _removeIED = {
     if (ADDON getVariable "debug") then {
         private _debugmarkers = ADDON getVariable ["debugmarkers",[]];
         {
-            // diag_log format["IED delete marker: %1, %2, %3", _x, markerpos _x, _IEDpos];
-            if ((markerPos _x) distance _IEDpos < 2) then {
+
+            if ((markerPos _x) distance _IEDpos < 3) then {
+                // diag_log format["IED delete marker: %1, %2, %3", _x, markerpos _x, _IEDpos];
                 [_x] call cba_fnc_deleteEntity;
                 _debugmarkers set [_foreachindex, -1];
                 ADDON setVariable ["debugmarkers", _debugmarkers - [-1]];
