@@ -129,7 +129,7 @@ switch (_taskState) do {
             _formatMessageText = format[_formatMessageText,_nearestTown];
             _formatMessage set [1,_formatMessageText];
             _formatChat set [0,_formatMessage];
-            [_dialog,"chat_start",_formatChat] call ALIVE_fnc_hashGet;
+            [_dialog,"chat_start",_formatChat] call ALIVE_fnc_hashSet;
 
 
             // create the tasks
