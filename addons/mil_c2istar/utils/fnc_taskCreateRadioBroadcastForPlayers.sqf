@@ -31,7 +31,7 @@ _taskPlayers = _this select 3;
 if(_messageCode in (_taskDialog select 1)) then {
 
     _sideObject = [_taskSide] call ALIVE_fnc_sideTextToObject;
-    _messages = [_currentTaskDialog,_messageCode] call ALIVE_fnc_hashGet;
+    _messages = [_taskDialog,_messageCode] call ALIVE_fnc_hashGet;
 
     [_sideObject,_messages,_taskPlayers] spawn {
 
