@@ -16,6 +16,11 @@ TRACE_1("IED",_this);
 
 _debug = ADDON getVariable ["debug", false];
 _threat = ADDON getVariable ["IED_Threat", DEFAULT_IED_THREAT];
+private _thirdParty = ADDON getVariable ["thirdParty", false];
+
+if (_thirdParty && _debug) then {
+    ["MIL IED: Using third party IEDs"] call ALiVE_fnc_dump;
+};
 
 _position = _this select 0;
 _size = _this select 1;
@@ -122,7 +127,9 @@ for "_j" from 1 to _numIEDs do {
             };
         };
 
-        _IEDpos set [2, -0.1];
+        if !(_thirdParty) then {
+            _IEDpos set [2, -0.1];
+        };
         _IEDskin = _IEDskins call BIS_fnc_selectRandom;
         _IED = createVehicle [_IEDskin, _IEDpos, [], 0, ""];
 
@@ -139,6 +146,9 @@ for "_j" from 1 to _numIEDs do {
         _ID = (_IEDs select 1) select (_j-1);
         _data = [_IEDs, _ID] call ALiVE_fnc_hashGet;
         _IED = createVehicle [[_data, "IEDskin", "ALIVE_IEDUrbanSmall_Remote_Ammo"] call ALiVE_fnc_hashGet, [_data, "IEDpos",[0,0,0]] call ALiVE_fnc_hashGet, [], 0, ""];
+        if (_thirdParty) then {
+            _IED setpos [(position _IED) select 0, (position _IED) select 1, 0.15];
+        };
     };
 
     if (_error) exitWith {diag_log format ["ALIVE-%1 IED: exiting as could not find suitable place.",time];};
@@ -147,7 +157,7 @@ for "_j" from 1 to _numIEDs do {
     _IED setvariable ["town", _town];
 
     // Choose IED or Dud IED
-    if (random 1 < 0.95) then {
+    if (random 1 < 0.95 && !_thirdParty) then {
         [_IED, typeOf _IED] call ALIVE_fnc_armIED;
 
         // Attach something that can take a hit to the IED and add a damage handler
@@ -158,7 +168,7 @@ for "_j" from 1 to _numIEDs do {
         _ehID = _IEDCharge addeventhandler ["HandleDamage",{
             private ["_trgr","_IED"];
 
-//            diag_log str(_this);
+            //diag_log str(_this);
             if (isPlayer (_this select 3)) then { // GO BOOOOOOOOOOM!
 
                 _IED = attachedTo (_this select 0);
@@ -185,6 +195,28 @@ for "_j" from 1 to _numIEDs do {
         }];
         _IED setVariable ["ehID",_ehID, true];
         _IED setvariable ["charge", _IEDCharge, true];
+    };
+
+    if (_thirdParty) then {
+
+        // ["MIL IED: Adding EH to 3rd party IEDs : %1 - %2", typeOf _IED, _IED] call ALiVE_fnc_dump;
+
+    };
+
+    if (_debug) then {
+        private ["_t","_markers","_text","_iedm"];
+
+        //Mark IED position
+        _t = format["ied_r%1", floor (random 1000)];
+        _text = "IED";
+
+        _iedm = [_t, position _IED, "Icon", [0.5,0.5], "TEXT:", _text, "TYPE:", "mil_dot", "COLOR:", "ColorRed", "GLOBAL"] call CBA_fnc_createMarker;
+        _IED setvariable ["Marker", _iedm];
+
+        _markers = ADDON getVariable ["debugMarkers",[]];
+        _markers pushback _iedm;
+        ADDON setVariable ["debugMarkers",_markers];
+
     };
 };
 

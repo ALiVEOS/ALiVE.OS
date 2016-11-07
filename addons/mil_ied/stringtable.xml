@@ -89,6 +89,12 @@
 <Key ID="STR_ALIVE_IED_Locs_IED_COMMENT">
     <Original>Choose where IED, VB-IED or Suicide bombers may exist</Original>
 </Key>
+<Key ID="STR_ALIVE_IED_3RDPARTY">
+    <Original>3rd Party IED System:</Original>
+</Key>
+<Key ID="STR_ALIVE_IED_3RDPARTY_COMMENT">
+    <Original>Select this if you are using 3rd party IED mods such as ACE, EOD etc.</Original>
+</Key>
 <Key ID="STR_ALIVE_IED_ERROR1">
     <Original>Only one IED module can be used</Original>
 </Key>
