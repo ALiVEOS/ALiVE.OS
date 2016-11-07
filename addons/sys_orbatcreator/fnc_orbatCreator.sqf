@@ -2738,7 +2738,7 @@ switch(_operation) do {
             private _voiceEntry = configfile >> "CfgVoice" >> _voice;
             private _voiceEntryIdentityTypes = getArray(_voiceEntry >> "identityTypes");
 
-            {if (_x find "Language" != -1) exitWith {_result = _x}} foreach _voiceEntryIdentityTypes;
+            {if (_x isEqualType "" && {_x find "Language" != -1}) exitWith {_result = _x}} foreach _voiceEntryIdentityTypes;
 
         };
 
