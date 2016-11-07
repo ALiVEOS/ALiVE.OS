@@ -395,8 +395,8 @@
 	_tasksData = [] call ALIVE_fnc_hashCreate;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
-	[_taskData,"title","Sabotage in %1"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","Destroy the %2 in %1!"] call ALIVE_fnc_hashSet;
+	[_taskData,"title","Sabotage near %1"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Destroy the %2 near %1!"] call ALIVE_fnc_hashSet;
 	[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;

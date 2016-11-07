@@ -354,6 +354,16 @@ switch (_taskState) do {
 
         _nearestTown = [_targetPosition] call ALIVE_fnc_taskGetNearestLocationName;
 
+        _dialog = [_dialogOption,"Destroy"] call ALIVE_fnc_hashGet;
+
+        _formatChat = [_dialog,"chat_start"] call ALIVE_fnc_hashGet;
+        _formatMessage = _formatChat select 0;
+        _formatMessageText = _formatMessage select 1;
+        _formatMessageText = format[_formatMessageText,_nearestTown,_targetDisplayType,_buildingType];
+        _formatMessage set [1,_formatMessageText];
+        _formatChat set [0,_formatMessage];
+        [_dialog,"chat_start",_formatChat] call ALIVE_fnc_hashSet;
+
         // create the tasks
         private["_state","_tasks","_taskIDs","_dialog","_taskTitle","_taskDescription","_newTask","_newTaskID","_taskParams","_taskSource"];
 
@@ -395,9 +405,6 @@ switch (_taskState) do {
 
         _tasks set [count _tasks,_newTask];
         _taskIDs set [count _taskIDs,_newTaskID];
-
-
-
 
         // store task data in the params for this task set
         _taskParams = [] call ALIVE_fnc_hashCreate;
