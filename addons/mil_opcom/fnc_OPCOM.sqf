@@ -140,6 +140,7 @@ switch(_operation) do {
                     _debug = call compile (_logic getvariable ["debug","false"]);
                     _persistent = call compile (_logic getvariable ["persistent","false"]);
                     _reinforcements = call compile (_logic getvariable ["reinforcements","0.9"]);
+                    _roadblocks = _logic getvariable ["roadblocks",true];
 
                     //Get position
                     _position = getposATL _logic;
@@ -199,6 +200,7 @@ switch(_operation) do {
                     [_handler, "asym_occupation",_occupation] call ALiVE_fnc_HashSet;
                     [_handler, "controltype",_type] call ALiVE_fnc_HashSet;
                     [_handler, "intelchance",_intelChance] call ALiVE_fnc_HashSet;
+                    [_handler, "roadblocks",_roadblocks] call ALiVE_fnc_HashSet;
 
                     //Spread Intel Information for this OPCOMs side
                     call compile (format["ALiVE_MIL_OPCOM_INTELCHANCE_%1 = _intelChance",[_side] call ALiVE_fnc_SideTextToObject]);
@@ -947,6 +949,7 @@ switch(_operation) do {
                 _type = _args;
                 _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
                 _asym_occupation = [_logic,"asym_occupation",-1] call ALiVE_fnc_HashGet;
+                _roadblocks = [_logic,"roadblocks",true] call ALiVE_fnc_HashGet;
 
                 switch (_type) do {
                             //by distance
@@ -1057,6 +1060,9 @@ switch(_operation) do {
                                                 } else {
                                                     if (count _roads > 0) then {
                                                         _type = selectRandom ["ied","roadblocks"];
+                                                        if !(_roadblocks) then {
+                                                            _type = "ied";
+                                                        };
                                                         _target = selectRandom _roads;
                                                     };
                                                 };

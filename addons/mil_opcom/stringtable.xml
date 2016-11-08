@@ -65,4 +65,10 @@
 <Key ID="STR_ALIVE_OPCOM_INTELCHANCE_COMMENT">
     <Original>Some soldiers can carry viable information about nearby installations</Original>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_ROADBLOCKS">
+    <Original>Roadblocks (Asymmetric):</Original>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_ROADBLOCKS_COMMENT">
+    <Original>Option to enable or disable roadblocks as an option for asymmetric commanders</Original>
+</Key>
 </Container></Package></Project>
