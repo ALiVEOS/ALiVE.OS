@@ -1,0 +1,80 @@
+[center][url=https://github.com/ALiVEOS/ALiVE.OS.git][img=http://i.imgur.com/RFX0nkZ.jpg][/url][/center]
+[center][b][url=http://alivemod.com/]ALiVEmod.com[/url]
+[size=4]The next generation dynamic persistent mission addon for ArmA3[/size][/b][/center]
+[center][b]Release 1.2.1[/b][/center]
+[center][b][img=http://i.imgur.com/HylyTQh.jpg][/b][/center]
+
+[b]Critical Fixes and Updates, ACE IED compatibility, Side Mission improvements[/b]
+Following on from the amazing addition of the ORBATRON aka The Orbatterrer, SpyderBlack continues to add fixes and updates to the only in game faction creator around. Its a seminal piece of work where wanna-be faction modders can finally make their OPFOR dreams come true. SpyderBlack has added ...
+
+Meanwhile we had several reports that the ALiVE helicopter pilots level of service has been dismal. Everything from forgetting to drop off supplies to not even bothering to slingload supplies were some of the main complaints. Apparently, even factions without helo's had access to OPFOR helo resupply, leaving many commanders in the field wondering if the Russians were up to something. Suffice to say Tupolov has contacted the various combat service supply units and given them a good bollocking. Helo resupply and logistics now reliably deliver to requests and factions can be limited so they don't resupply using someone elses chopper. 
+
+We had several requests to support ACE IED's in the ALiVE IED threat module and ALiVE Asymmetric Warfare options. Tupolov has implemented a system that supports most third party IED mods, as long as those mods are using vanilla "mines" as the base class for their IEDs. More feedback welcome on our GitHub.
+
+Command and Control also received some improvements. Aircraft can now assume a hybrid role of both Transport and CAS (using the CS_TYPE = "hybrid" value) when using the Combat Support module. There were also reports (thanks Shukari!) of HQ not using appropriate voice protocol for tasking (C2ISTAR), this has been fixed. Don't forget about the cool "side missions" now part of ALiVE, we now support the following taskings (auto generated if you like):
+
+[*] Assault on a military installation 
+[*] Defence of a military installation 
+[*] Assault on a civilian installation
+[*] Assassination of a HVT
+[*] Hostage Rescue
+[*] Combat Search and Rescue
+[*] Transport insertion
+[*] Seek and destroy enemy infantry
+[*] Seek and destroy enemy vehicles
+[*] Sabotage a military/civilian installation
+[*] Patrol an area (as an insurgent)
+[*] Destroy military assets (as an insurgent)
+
+Minor fixes include addressing an error that was only apparent when player persistence was turned off and players disconnected from a mission using persistence. Auto pause of virtual AI and relevant systems when there were no players on the server has also been fixed, ensuring AI insurgents don't spread across the map like wild fire.
+
+Minor updates include new ZEC composition updates (thank you ZEC!) and improved error handling when OPCOM factions have not been placed on the map.
+
+Again, we had a bunch of people that didn't want to use ALiVE due to us overriding the vanilla ABORT button, well we've fixed that, so for those of you that had push back from clan members due to this, let them know!
+
+Thanks to everyone for feedback both here and on our forum!
+
+[center][b][url=http://alivemod.com/#Download]Download[/url][/b]
+Grab the latest version from [url=http://alivemod.com/#Download]ALiVEmod.com[/url]
+Also available from PlayWithSix, ArmAholic and Steam (Usually within 24 hours of this post)[/center]
+[center][b][url=http://alivemod.com/#ALiVEWarRoom]Join the War Room Now![/url][/b][/center]
+
+Please note that as with all updates, if you have an issue loading a mission made with a previous version of ALiVE, delete and replace the modules in that mission.
+
+[b]Release Highlights[/b]
+[LIST]
+[*]Key updates to SpyderBlack's ORBATRON[/*]
+[*]Critical fixes to Helicopter resupply[/*]
+[*]Aircraft can now be both Transport and CAS for Combat Support[/*]
+[*]ACE IED and 3rd party IED support[/*] 
+[*]More Integrated ZEC and ZECCUP compositions into ALiVE (massive thanks to lsd/2600k!)[/*]
+[*]Fixed issue where auto pause didn't work when players left the server[/*]
+[*]Various minor fixes and updates (31 issues fixed or improved)[/*]
+[/LIST]
+See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
+
+[b]More Maps?[/b]
+The momentum is really beginning to build with the indexing tools and we are cracking through the [url=https://github.com/ALiVEOS/ALiVE.OS/issues/9]backlog[/url]. Instructions for using the Map Indexer can be found [url=http://alivemod.com/wiki/index.php/Map_Indexing]on our wiki [/url]
+
+[b]Known Issues & Support[/b]
+Existing bugs are listed on Github [url=https://github.com/ALiVEOS/ALiVE.OS/issues]here[/url]. Feel free to submit bugs (with repros) or discuss any issues or ideas on our forum at [url=http://alivemod.com/forum/]http://alivemod.com/forum/[/url].
+
+[b]Manual[/b]
+Please refer to the [url=http://www.alivemod.com/wiki]ALiVE Wiki[/url]. All the info you need is there. If anything is missing or unclear, please let us know.
+
+[b]Are you using Linux?[/b]
+ALiVE is fully supported on a Linux Dedicated Server (as well as Windows). In fact the ALiVE Official Server for testing is running Ubuntu. Here are some tips on getting ALiVE running smoothly on Linux and integrated with War Room - [url=http://www.alivemod.com/forum/1916-setting-up-linux-dedi-server]http://www.alivemod.com/forum/1916-setting-up-linux- dedi-server[/url]
+
+[b]Acknowledgements and Thanks[/b]
+Particular thanks to all those on our support forum who have worked closely with us to identify bugs, provide logs and generally help us improve ALiVE. Your assistance is valuable and your dedication to ALiVE makes it all worth the effort!
+
+[b]Disclaimer[/b]
+We may need to prune the persistent database data from the War Room, eliminating data that is older than 6-12 months. The
+ALiVE War Room database is run on a voluntary basis at a cost to the ALiVE development team. No guarantees can be given on the mission data stored or the availability of the service. We apologise for any downtime that may impact your MP persistent missions.
+
+[b]ALiVE has transformed my Arma 3 experience, how can I thank you?[/b]
+Please consider making a contribution to our server costs if you enjoy ALiVE! It costs us $65 per month to run our War Room website and the ALiVE Database servers and every little helps. Donate here [url=http://www.alivemod.com/#Donate]http://www.alivemod.com/#Donate[/url]
+
+Special thanks to everyone here for supporting us with donations to the ALiVE mod development effort.
+
+Have fun!
