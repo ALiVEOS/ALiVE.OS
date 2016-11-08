@@ -5,7 +5,7 @@
 [center][b][img=http://i.imgur.com/HylyTQh.jpg][/b][/center]
 
 [b]Critical Fixes and Updates, ACE IED compatibility, Side Mission improvements[/b]
-Following on from the amazing addition of the ORBATRON aka The Orbatterrer, SpyderBlack continues to add fixes and updates to the only in game faction creator around. Its a seminal piece of work where wanna-be faction modders can finally make their OPFOR dreams come true. SpyderBlack has added ...
+Following on from the amazing addition of the ORBATRON aka The Orbatterrer, SpyderBlack continues to add fixes and updates to the only in game faction creator around. Its a seminal piece of work where wanna-be faction modders can finally make their OPFOR dreams come true. SpyderBlack has added the ability to custom unit ethnicity, language, and insignia. Vehicles can now be further customized and specifiyng different crew classes per turret. The entire ORBAT Creator has also received a visual lift and an influx of new export options. All of this has been rounded out with some splendid general fixes to provide a smooth experience.
 
 Meanwhile we had several reports that the ALiVE helicopter pilots level of service has been dismal. Everything from forgetting to drop off supplies to not even bothering to slingload supplies were some of the main complaints. Apparently, even factions without helo's had access to OPFOR helo resupply, leaving many commanders in the field wondering if the Russians were up to something. Suffice to say Tupolov has contacted the various combat service supply units and given them a good bollocking. Helo resupply and logistics now reliably deliver to requests and factions can be limited so they don't resupply using someone elses chopper. 
 
