@@ -1050,24 +1050,27 @@ switch(_operation) do {
                     {
                         private ["_position","_size","_spawn"];
 
-                        if (typeName _x == "ARRAY") then {
-                            _position  = _x select 0;
-                            _size = _x select 1;
+                        if (!isnil "_x") then {
 
-                            _spawn = false;
+                            if (typeName _x == "ARRAY") then {
+                                _position  = _x select 0;
+                                _size = _x select 1;
 
-                            if ([_position, ALIVE_spawnRadius,ALIVE_spawnRadiusJet,ALIVE_spawnRadiusHeli] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {
-                                _spawn = true;
-                            } else {
-                                if ([_position, ALIVE_spawnRadiusJet] call ALiVE_fnc_anyAutonomousInRange > 0) then {
+                                _spawn = false;
+
+                                if ([_position, ALIVE_spawnRadius,ALIVE_spawnRadiusJet,ALIVE_spawnRadiusHeli] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {
                                     _spawn = true;
+                                } else {
+                                    if ([_position, ALIVE_spawnRadiusJet] call ALiVE_fnc_anyAutonomousInRange > 0) then {
+                                        _spawn = true;
+                                    };
                                 };
-                            };
 
-                            if (_spawn) then {
-                                [_position, _size + 150, ceil(_roadblocks / 30), _debug] call ALiVE_fnc_createRoadblock;
+                                if (_spawn) then {
+                                    [_position, _size + 150, ceil(_roadblocks / 30), _debug] call ALiVE_fnc_createRoadblock;
 
-                                GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, -1];
+                                    GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, -1];
+                                };
                             };
                         };
                     } foreach GVAR(ROADBLOCK_LOCATIONS);

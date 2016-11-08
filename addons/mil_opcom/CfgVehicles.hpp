@@ -147,6 +147,27 @@ class CfgVehicles {
                                         };
                                 };
                         };
+                        class roadblocks
+                        {
+                                displayName = "$STR_ALIVE_OPCOM_ROADBLOCKS";
+                                description = "$STR_ALIVE_OPCOM_ROADBLOCKS_COMMENT";
+                                typeName = "BOOL";
+                                class Values
+                                {
+                                        class Yes
+                                        {
+                                                name = "Yes";
+                                                value = 1;
+                                                default = 1;
+                                        };
+                                        class No
+                                        {
+                                                name = "No";
+                                                value = 0;
+                                        };
+
+                                };
+                        };
                         class reinforcements
                         {
                                 displayName = "$STR_ALIVE_OPCOM_REINFORCEMENTS";
@@ -217,7 +238,7 @@ class CfgVehicles {
                                         {
                                                 name = "NATO (CTRG)";
                                                 value = "BLU_CTRG_F";
-                                        };                                         
+                                        };
                                         class IRAN
                                         {
                                                 name = "CSAT";
@@ -227,7 +248,7 @@ class CfgVehicles {
                                         {
                                                 name = "CSAT (Pacific)";
                                                 value = "OPF_T_F";
-                                        };                                        
+                                        };
                                         class GREEKARMY
                                         {
                                                 name = "AAF";
@@ -237,7 +258,7 @@ class CfgVehicles {
                                         {
                                                 name = "Syndikat";
                                                 value = "IND_C_F";
-                                        };                                        
+                                        };
                                         class REBELS_BLU
                                         {
                                                 name = "REBELS BLU";
@@ -275,7 +296,7 @@ class CfgVehicles {
                                         {
                                                 name = "NATO (CTRG)";
                                                 value = "BLU_CTRG_F";
-                                        };                                         
+                                        };
                                         class IRAN
                                         {
                                                 name = "CSAT";
@@ -285,7 +306,7 @@ class CfgVehicles {
                                         {
                                                 name = "CSAT (Pacific)";
                                                 value = "OPF_T_F";
-                                        };                                        
+                                        };
                                         class GREEKARMY
                                         {
                                                 name = "AAF";
@@ -295,7 +316,7 @@ class CfgVehicles {
                                         {
                                                 name = "Syndikat";
                                                 value = "IND_C_F";
-                                        };                                        
+                                        };
                                         class REBELS_BLU
                                         {
                                                 name = "REBELS BLU";
@@ -320,7 +341,7 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_OPCOM_FACTION_COMMENT";
                                 class Values
                                 {
-class NATO
+                                        class NATO
                                         {
                                                 name = "NATO";
                                                 value = "BLU_F";
@@ -334,7 +355,7 @@ class NATO
                                         {
                                                 name = "NATO (CTRG)";
                                                 value = "BLU_CTRG_F";
-                                        };                                         
+                                        };
                                         class IRAN
                                         {
                                                 name = "CSAT";
@@ -344,7 +365,7 @@ class NATO
                                         {
                                                 name = "CSAT (Pacific)";
                                                 value = "OPF_T_F";
-                                        };                                        
+                                        };
                                         class GREEKARMY
                                         {
                                                 name = "AAF";
@@ -354,7 +375,7 @@ class NATO
                                         {
                                                 name = "Syndikat";
                                                 value = "IND_C_F";
-                                        };                                        
+                                        };
                                         class REBELS_BLU
                                         {
                                                 name = "REBELS BLU";
@@ -393,7 +414,7 @@ class NATO
                                         {
                                                 name = "NATO (CTRG)";
                                                 value = "BLU_CTRG_F";
-                                        };                                         
+                                        };
                                         class IRAN
                                         {
                                                 name = "CSAT";
@@ -403,7 +424,7 @@ class NATO
                                         {
                                                 name = "CSAT (Pacific)";
                                                 value = "OPF_T_F";
-                                        };                                        
+                                        };
                                         class GREEKARMY
                                         {
                                                 name = "AAF";
@@ -413,7 +434,7 @@ class NATO
                                         {
                                                 name = "Syndikat";
                                                 value = "IND_C_F";
-                                        };                                        
+                                        };
                                         class REBELS_BLU
                                         {
                                                 name = "REBELS BLU";

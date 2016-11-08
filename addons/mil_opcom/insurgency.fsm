@@ -15,7 +15,7 @@ item10[] = {"SELECT_ORDERS",2,250,-724.372742,-364.088989,-634.372742,-314.08883
 item11[] = {"ACTIONS___ASSAULT",2,250,-928.195251,-172.044922,-828.132568,-31.480927,0.000000,"ACTIONS:" \n "" \n "ASSAULT" \n "AMBUSH"};
 item12[] = {"ACTIONS___RETREAT",2,250,-806.544922,-175.131653,-706.482239,-34.567657,0.000000,"ACTIONS:" \n "" \n "RETREAT" \n "SURRENDER"};
 item13[] = {"ACTIONS___IEDS_SUICIDERS",2,250,-647.961060,-177.760864,-545.662231,-33.842651,0.000000,"ACTIONS:" \n "" \n "IEDS" \n "SUICIDERS" \n "SABOTAGE"};
-item14[] = {"ACTIONS___RECRUIT",2,250,-514.779175,-179.211487,-416.952698,-34.175232,0.000000,"ACTIONS:" \n "" \n "RECRUIT" \n "CACHES" \n "ROADBLOCKS"};
+item14[] = {"ACTIONS___RECRUIT",2,4346,-514.779175,-179.211487,-416.952698,-34.175232,0.000000,"ACTIONS:" \n "" \n "RECRUIT" \n "CACHES" \n "ROADBLOCKS"};
 item15[] = {"ORDERS_SELECTED",4,218,-719.547424,-21.761780,-629.547424,28.238159,0.000000,"ORDERS" \n "SELECTED"};
 item16[] = {"SECTION_MOVING",4,218,-978.297668,263.344055,-888.298279,313.343994,0.000000,"SECTION" \n "MOVING"};
 item17[] = {"SELECT_SECTION",2,250,-719.992188,73.293480,-629.992554,123.293404,0.000000,"SELECT" \n "SECTION"};
@@ -35,7 +35,7 @@ item30[] = {"RESET_1",2,250,-557.855774,-676.293335,-467.856445,-626.293030,0.00
 item31[] = {"ACTIONS_EXECUTIN",4,218,-969.264343,432.824890,-879.264343,482.824890,0.000000,"ACTIONS" \n "EXECUTING"};
 item32[] = {"IDLE",4,218,-920.655945,-363.002319,-830.655945,-313.002289,20.000000,"IDLE"};
 item33[] = {"EXIT",4,218,-179.589508,-871.612854,-89.589325,-821.612854,99.000000,"EXIT"};
-item34[] = {"END",1,4346,-179.605621,-745.501648,-89.605438,-695.501343,0.000000,"END"};
+item34[] = {"END",1,250,-179.605621,-745.501648,-89.605438,-695.501343,0.000000,"END"};
 link0[] = {0,1};
 link1[] = {1,2};
 link2[] = {2,29};
@@ -80,8 +80,8 @@ link40[] = {30,33};
 link41[] = {31,26};
 link42[] = {32,26};
 link43[] = {33,34};
-globals[] = {0.000000,0,0,0,16777215,640,480,1,137,6316128,1,-1434.610596,75.843719,94.666382,-1510.454346,718,763,1};
-window[] = {0,-1,-1,-1,-1,1081,380,1932,173,1,736};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,137,6316128,1,-1009.366821,-349.400360,121.330872,-579.998352,718,763,1};
+window[] = {0,-1,-1,-1,-1,1083,175,1727,175,1,736};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -96,7 +96,7 @@ class FSM
        "    [" \n
        "        ""_OPCOM_status"",""_busy"",""_pause"",""_exitFSM"",""_OPCOM_HANDLER"",""_OBJECTIVES"",""_OPCOM_FSM"",""_CQB"",""_debug"",""_side""," \n
        "        ""_factions"",""_sidesEnemy"",""_sidesFriendly"",""_controltype"", ""_simultanObjectives"",""_reinforcementRatio"",""_iteration"",""_lock""," \n
-       "        ""_createMarker"",""_agentClusterData"",""_civFactions""" \n
+       "        ""_createMarker"",""_agentClusterData"",""_civFactions"",""_roadblocks""" \n
        "    ];" \n
        "" \n
        "_OPCOM_status = ""PreInit"";" \n
@@ -114,6 +114,7 @@ class FSM
        "_controltype = [_OPCOM_HANDLER, ""controltype"",""invasion""] call ALiVE_fnc_HashGet;" \n
        "_simultanObjectives = [_OPCOM_HANDLER, ""simultanobjectives"",10] call ALiVE_fnc_HashGet;" \n
        "_reinforcementRatio = [_OPCOM_HANDLER, ""reinforcements"",0.9] call ALiVE_fnc_HashGet;" \n
+       "_roadblocks = [_OPCOM_HANDLER, ""roadblocks"",true] call ALiVE_fnc_HashGet;" \n
        "" \n
        "_delay = 0.2;" \n
        "_cycleTime = 30;" \n
@@ -959,12 +960,17 @@ class FSM
     class ACTIONS___RECRUIT
     {
       name = "ACTIONS___RECRUIT";
-      init = /*%FSM<STATEINIT""">*/"private [""_actions"",""_actionsFulfilled"",""_possibleTypes"",""_type"",""_types"",""_agents"",""_state""];" \n
+      init = /*%FSM<STATEINIT""">*/"private [""_actions"",""_actionsFulfilled"",""_possibleTypes"",""_type"",""_types"",""_agents"",""_state"",""_roadblocks""];" \n
        "" \n
        "_actions = [_objective,""actions""] call ALiVE_fnc_HashGet;" \n
        "_actionsFulfilled = [_objective,""actionsFulfilled"",[]] call ALiVE_fnc_HashGet;" \n
        "_allActions = [""depot"",""roadblocks""];" \n
        "_state = ""reserving"";" \n
+       "_roadblocks = [_OPCOM_HANDLER, ""roadblocks"",true] call ALiVE_fnc_HashGet;" \n
+       "" \n
+       "if (!_roadblocks) then {" \n
+       "	_allActions = [""depot""];" \n
+       "};" \n
        "" \n
        "// Always select different style of occupation" \n
        "_unusedActions = _allActions - _actionsFulfilled;" \n
@@ -978,7 +984,6 @@ class FSM
        "" \n
        "// Overwrite type with Recruitment HQ if fitting" \n
        "if (count _agents >= 2 && {!(""recruit"" in _actionsFulfilled)}) then {_type = ""recruit""};" \n
-       "" \n
        "" \n
        "" \n
        "if (isnil ""_actions"")  then {" \n
