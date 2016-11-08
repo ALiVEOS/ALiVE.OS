@@ -413,7 +413,7 @@ switch(_operation) do {
                 };
             } forEach (_sideTasks select 1);
 
-            if(_countActive == 0) then {
+            if(_countActive == 0 && count (allPlayers - entities "HeadlessClient_F") > 0) then {
 
                 private["_sidePlayers","_taskType","_locationTypes","_taskLocationType","_taskLocation","_taskCurrent","_taskApplyType","_task"];
 
@@ -473,6 +473,7 @@ switch(_operation) do {
             _taskApplyType = _taskData select 10;
 
             if((_taskLocationType == "Short") || (_taskLocationType == "Medium") || (_taskLocationType == "Long")) then {
+
                 _player = [_requestPlayerID] call ALIVE_fnc_getPlayerByUID;
 
                 if (isNull _player) then {
