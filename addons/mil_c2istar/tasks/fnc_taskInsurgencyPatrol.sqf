@@ -86,7 +86,7 @@ switch (_taskState) do {
 
             _dialogOptions = [ALIVE_generatedTasks,"InsurgencyPatrol"] call ALIVE_fnc_hashGet;
             _dialogOptions = _dialogOptions select 1;
-            _dialogOption = _dialogOptions call BIS_fnc_selectRandom;
+            _dialogOption = +(_dialogOptions call BIS_fnc_selectRandom);
 
             // format the dialog options
 
