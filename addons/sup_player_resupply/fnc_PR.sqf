@@ -516,13 +516,14 @@ switch(_operation) do {
 
             if(count _deliveryListOptions == 0) then {
                 ["There are no delivery methods allowed, enable one or more delivery methods on the Player Combat Logistics module!"] call ALIVE_fnc_dumpR;
+                _deliveryListOptions set [count _deliveryListOptions,"Convoy: Resupply via road transport vehicles"];
+                _deliveryListValues set [count _deliveryListValues,"PR_STANDARD"];
             };
 
             [_logic,"deliveryListOptions",_deliveryListOptions] call MAINCLASS;
 
             // set the delivery list values
             [_logic,"deliveryListValues",_deliveryListValues] call MAINCLASS;
-
 
 
             // set the supply list options
@@ -540,7 +541,6 @@ switch(_operation) do {
             _selectedSupplyListValues = [_logic,"selectedSupplyListValues"] call MAINCLASS;
             _selectedSupplyListValues set [count _selectedSupplyListValues, _supplyListOptions];
             [_logic,"selectedSupplyListValues",_selectedSupplyListValues] call MAINCLASS;
-
 
 
             // set the reinforcement list options
@@ -616,7 +616,7 @@ switch(_operation) do {
             };
 
             // Initialise interaction key if undefined
-          if (isNil "SELF_INTERACTION_KEY") then {SELF_INTERACTION_KEY = [221,[false,false,false]];};
+            if (isNil "SELF_INTERACTION_KEY") then {SELF_INTERACTION_KEY = [221,[false,false,false]];};
 
             TRACE_2("Menu pre-req",SELF_INTERACTION_KEY,ALIVE_fnc_logisticsMenuDef);
 
