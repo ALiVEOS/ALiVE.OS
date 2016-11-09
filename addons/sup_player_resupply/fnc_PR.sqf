@@ -2463,6 +2463,8 @@ switch(_operation) do {
                                 [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
                             };
 
+                            // Reset after a succesful request
+                            [_logic,"resetRequest"] call MAINCLASS;
                         }else{
                             _status ctrlSetText "Payload refused adjust payload settings";
                             _status ctrlSetTextColor [0.729,0.216,0.235,1];
