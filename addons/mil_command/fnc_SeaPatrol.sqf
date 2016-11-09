@@ -119,10 +119,15 @@ while {count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) < 5} do {
         };
         // Find a position that is definitely in water
         _gpos = [_gpos, 15, _radius, 20, 2, 10, 0, [], [_startPos,_startPos]] call bis_fnc_findSafePos;
+        // Add 3rd element because BIS_fnc_findSafePos returns an array of 2 elements...
+        _gpos set [2, 0];
     };
 
     //Loop last Waypoint
-    if (count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) == 4) then {_gpos = _startPos; _type = "CYCLE"};
+    if (count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) == 4) then {
+        _gpos = _startPos;
+        _type = "CYCLE";
+    };
 
     if (surfaceIsWater _gpos) then {
 
