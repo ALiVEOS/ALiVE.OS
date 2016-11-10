@@ -1,8 +1,8 @@
 x\alive\addons\sys_GC
-======<HEADER>=======
+=======HEADER=======
 prefix=x\alive\addons\sys_GC
+Mikero=DePbo.dll
 product=Arma 3
 version=1
 Pbo Type is: Arma Addon
-======</HEADER>============
-
+==================

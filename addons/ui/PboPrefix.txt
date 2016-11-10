@@ -1,6 +1,6 @@
-x\alive\addons\sup_player_resupply
+x\alive\addons\ui
 =======HEADER=======
-prefix=x\alive\addons\sup_player_resupply
+prefix=x\alive\addons\ui
 Mikero=DePbo.dll
 product=Arma 3
 version=1

@@ -1,8 +1,8 @@
 x\alive\addons\amb_civ_population
-======<HEADER>=======
+=======HEADER=======
 prefix=x\alive\addons\amb_civ_population
+Mikero=DePbo.dll
 product=Arma 3
 version=1
 Pbo Type is: Arma Addon
-======</HEADER>============
-
+==================
