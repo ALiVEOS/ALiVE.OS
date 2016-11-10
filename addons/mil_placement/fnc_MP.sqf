@@ -874,7 +874,8 @@ switch(_operation) do {
 
                         //[_x, "debug", true] call ALIVE_fnc_cluster;
                         {
-                            _position = position _x;
+                            private _buildingPositions = [_x] call BIS_fnc_buildingPositions;
+                            _position = _buildingPositions call BIS_fnc_selectRandom;
                             _direction = direction _x;
                             _vehicleClass = _supplyClasses call BIS_fnc_selectRandom;
                             if(random 1 > 0.6) then {
