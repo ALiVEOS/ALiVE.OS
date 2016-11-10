@@ -1,4 +1,8 @@
 x\alive\addons\sys_xstream
+=======HEADER=======
 prefix=x\alive\addons\sys_xstream
 Mikero=DePbo.dll
-Pbo Type is: Arma
+product=Arma 3
+version=1
+Pbo Type is: Arma Addon
+==================

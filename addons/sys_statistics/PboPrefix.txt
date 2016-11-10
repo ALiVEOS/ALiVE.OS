@@ -1,6 +1,6 @@
-x\alive\addons\fnc_strategic
+x\alive\addons\sys_statistics
 =======HEADER=======
-prefix=x\alive\addons\fnc_strategic
+prefix=x\alive\addons\sys_statistics
 Mikero=DePbo.dll
 product=Arma 3
 version=1
