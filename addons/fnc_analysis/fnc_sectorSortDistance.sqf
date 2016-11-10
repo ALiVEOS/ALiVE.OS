@@ -6,10 +6,10 @@ Function: ALIVE_fnc_sectorSortDistance
 
 Description:
 Returns an array of sectors sorted by distance to passed position
-Uses RUBEs shell sort implemented into ALIVE
 
 Parameters:
 Array - Array of sectors
+Array - Position for distances
 
 Returns:
 Array of distance sorted sectors
@@ -27,26 +27,14 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_sectors","_position","_err","_getDistance","_sortedSectors","_sector"];
+params [
+	["_sectors", [], [[]]],
+	["_position", [], [[]]]
+];
 
-_sectors = _this select 0;
-_position = _this select 1;
-
-_err = format["sector sort distance requires an array of sectors - %1",_sectors];
-ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
-_err = format["sector sort distance requires an array position - %1",_position];
-ASSERT_TRUE(typeName _position == "ARRAY",_err);
-
-_getDistance = {
-    private ["_sector", "_centerPosition", "_distance"];
-    _sector = _this select 0;
-    _centerPosition = [_sector, "center"] call ALIVE_fnc_sector;
-    _distance = _centerPosition distance _position;
-    _distance
-};
-
-_sortedSectors = [_sectors, {
-    ([_this] call _getDistance)
-}] call ALIVE_fnc_shellSort;
+// Create a new array with a subarray contains [distance, sector], than sort this array and convert it back
+private _sortedSectors = _sectors apply {[([_x, "center"] call ALIVE_fnc_sector) distance _position, _x]};
+_sortedSectors sort true;
+_sortedSectors = _sortedSectors apply {_x select 1};
 
 _sortedSectors
