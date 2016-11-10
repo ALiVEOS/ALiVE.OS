@@ -1,4 +1,8 @@
 x\alive\addons\sys_weather
+=======HEADER=======
 prefix=x\alive\addons\sys_weather
 Mikero=DePbo.dll
-Pbo Type is: Arma
+product=Arma 3
+version=1
+Pbo Type is: Arma Addon
+==================

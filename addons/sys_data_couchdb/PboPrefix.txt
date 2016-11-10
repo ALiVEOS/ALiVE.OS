@@ -1,6 +1,6 @@
-x\alive\addons\sup_player_resupply
+x\alive\addons\sys_data_couchdb
 =======HEADER=======
-prefix=x\alive\addons\sup_player_resupply
+prefix=x\alive\addons\sys_data_couchdb
 Mikero=DePbo.dll
 product=Arma 3
 version=1

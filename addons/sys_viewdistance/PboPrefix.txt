@@ -1,8 +1,9 @@
 x\alive\addons\sys_viewdistance
-======<HEADER>=======
+=======HEADER=======
 prefix=x\alive\addons\sys_viewdistance
+Mikero=DePbo.dll
 product=Arma 3
 version=1
 Pbo Type is: Arma Addon
-======</HEADER>============
+==================
 
