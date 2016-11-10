@@ -1691,15 +1691,17 @@ switch(_operation) do {
                                     _displayName = getText(configFile >> "CfgVehicles" >> _x >> "displayname");
 
                                     // Make sure item is not too heavy to transport based on delivery type
-                                    if ([_x] call ALIVE_fnc_getObjectWeight < _maxWeight && (_deliveryType == "PR_HELI_INSERT" || _deliveryType == "PR_AIRDROP")) then {
+                                    if (_deliveryType == "PR_HELI_INSERT" || _deliveryType == "PR_AIRDROP") then {
 
                                         _slingable = count ([(configFile >> "CfgVehicles" >> _x >> "slingLoadCargoMemoryPoints")] call ALiVE_fnc_getConfigValue) > 0;
 
                                         If (!_slingable && _deliveryType == "PR_HELI_INSERT" && (_selectedValue == "Car" || _selectedValue == "Ship")) then {
                                             // Don't display
                                         } else {
-                                            _options set [count _options, _displayName];
-                                            _values set [count _values, _x];
+                                            if ([_x] call ALIVE_fnc_getObjectWeight < _maxWeight) then {
+                                                _options set [count _options, _displayName];
+                                                _values set [count _values, _x];
+                                            };
                                         };
 
                                     } else {
