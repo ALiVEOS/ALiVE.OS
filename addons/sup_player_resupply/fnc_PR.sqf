@@ -1739,7 +1739,8 @@ switch(_operation) do {
 
                                 _payloadList = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_PayloadList);
 
-                                _payloadList lbAdd format["%1", _selectedOption];
+                                private _index = _payloadList lbAdd format["%1", _selectedOption];
+                                _payLoadList lbSetTooltip [_index, _selectedValue];
 
                                 [_logic,"payloadUpdated"] call MAINCLASS;
 
@@ -1763,7 +1764,12 @@ switch(_operation) do {
                             lbClear _supplyList;
 
                             {
-                                _supplyList lbAdd format["%1", _x];
+                                private _index = _supplyList lbAdd format["%1", _x];
+
+                                if (_selectedSupplyListDepth == 2 && _index > 0) then {
+                                    private _vehicleClasses = [_sortedVehicles, _selectedValue] call ALIVE_fnc_hashGet;
+                                    _supplyList lbSetTooltip [_index, format ["%1", _vehicleClasses select (_index - 1)]];
+                                };
                             } forEach _options;
 
                         };
@@ -1996,7 +2002,8 @@ switch(_operation) do {
 
                                     _payloadList = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_PayloadList);
 
-                                    _payloadList lbAdd format["%1", _selectedOption];
+                                    private _index = _payloadList lbAdd format["%1", _selectedOption];
+                                    _payLoadList lbSetTooltip [_index, _selectedValue];
 
                                     [_logic,"payloadUpdated"] call MAINCLASS;
 
@@ -2026,7 +2033,8 @@ switch(_operation) do {
 
                                 _payloadList = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_PayloadList);
 
-                                _payloadList lbAdd format["%1", _selectedOption];
+                                private _index = _payloadList lbAdd format["%1", _selectedOption];
+                                _payLoadList lbSetTooltip [_index, _selectedValue];
 
                                 [_logic,"payloadUpdated"] call MAINCLASS;
 
@@ -2050,7 +2058,26 @@ switch(_operation) do {
                             lbClear _reinforceList;
 
                             {
-                                _reinforceList lbAdd format["%1", _x];
+                                private _index = _reinforceList lbAdd format["%1", _x];
+
+                                if (_index > 0) then {
+                                    private _tooltip = "";
+
+                                    // Groups
+                                    if (_selectedReinforceListDepth == 3) then {
+                                        private _groupCategories = [_sortedGroups, _selectedReinforceListParents select 1] call ALIVE_fnc_hashGet;
+                                        private _groupClasses = [_groupCategories, _selectedReinforceListParents select 2] call ALIVE_fnc_hashGet;
+                                        _tooltip = (_groupClasses select 1) select (_index - 1);
+                                    } else {
+                                        // Individuals
+                                        if (_selectedReinforceListDepth == 2 && _selectedReinforceListParents select 0 == "Individuals") then {
+                                            private _vehicleClasses = [_sortedVehicles, _selectedValue] call ALIVE_fnc_hashGet;
+                                            _tooltip = _vehicleClasses select (_index - 1);
+                                        };
+                                    };
+
+                                    _reinforceList lbSetTooltip [_index, _tooltip];
+                                };
                             } forEach _options;
 
                         };
