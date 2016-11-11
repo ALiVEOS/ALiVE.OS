@@ -4139,9 +4139,8 @@ switch(_operation) do {
         private ["_parentLoadout"];
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
         private _selectedUnit = [_state,"unitEditor_selectedUnit"] call ALiVE_fnc_hashGet;
-        private _selectedUnitData = [_customUnits,_selectedUnit] call ALiVE_fnc_hashGet;
+        private _selectedUnitData = [_logic,"getCustomUnit",_selectedUnit] call MAINCLASS;
 
         private _displayNameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_DISPLAYNAME );
         private _classnameInput = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_CLASSNAME );
@@ -4189,36 +4188,47 @@ switch(_operation) do {
         if (_parentClass != _selectedUnit && {_parentClass != _unitParentClass}) then {
             [_selectedUnitData,"inheritsFrom", _parentClass] call ALiVE_fnc_hashSet;
 
+            private _parentClassUnit = [_logic,"getCustomUnit", _parentClass] call MAINCLASS;
             private _realParentClass = [_logic,"getRealUnitClass", _unitParentClass] call MAINCLASS;
-            if (_realParentClass isKindOf "Man") then {
 
-                private _newIdentityTypes = [_logic,"getUnitIdentityTypes", _parentClass] call MAINCLASS;
+            if (isnil "_parentClassUnit") then {
+                private _parentCopy = [_logic,"importUnitFromConfig", _parentClass] call MAINCLASS;
 
-                if (_parentClass in (_customUnits select 1)) then {
-                    private _parentEntry = [_customUnits,_parentClass] call ALiVE_fnc_hashGet;
-                    _parentLoadout = [_parentEntry,"loadout"] call ALiVE_fnc_hashGet;
+                if (_realParentClass isKindOf "Man") then {
+                    private _loadout = +([_parentCopy,"loadout"] call ALiVE_fnc_hashGet);
+                    private _identityTypes = +([_parentCopy,"identityTypes"] call ALiVE_fnc_hashGet);
+
+                    [_selectedUnitData,"loadout", _loadout] call ALiVE_fnc_hashSet;
+                    [_selectedUnitData,"identityTypes", _identityTypes] call ALiVE_fnc_hashSet;
                 } else {
-                    // create unit to give EH's chance to fire
+                    private _turrets = + ([_parentCopy,"turrets"] call ALiVE_fnc_hashGet);
+                    private _crew = [_parentCopy,"crew"] call ALiVE_fnc_hashGet;
+                    private _texture = [_parentCopy,"texture"] call ALiVE_fnc_hashGet;
 
-                    private _parentClassConfig = configFile >> "CfgVehicles" >> _parentClass;
-                    private _parentClassSide = getNumber (_parentClassConfig >> "side");
-                    private _parentClassSideText = [_parentClassSide] call ALiVE_fnc_sideNumberToText;
-                    private _parentClassSideObject = [_parentClassSideText] call ALiVE_fnc_sideTextToObject;
-
-                    private _parentClassUnit = (creategroup _parentClassSideObject) createUnit [_parentClass, [0,0,0], [], 0, "NONE"];
-                    _parentLoadout = getUnitLoadout _parentClassUnit;
-                    [_logic,"deleteUnit", _parentClassUnit] call MAINCLASS;
+                    [_selectedUnitData,"turrets", _turrets] call ALiVE_fnc_hashSet;
+                    [_selectedUnitData,"crew", _crew] call ALiVE_fnc_hashSet;
+                    [_selectedUnitData,"texture", _texture] call ALiVE_fnc_hashSet;
                 };
-
-                [_selectedUnitData,"loadout", _parentLoadout] call ALiVE_fnc_hashSet;
-                [_selectedUnitData,"identityTypes", _newIdentityTypes] call ALiVE_fnc_hashSet;
-
             } else {
+                if (_realParentClass isKindOf "Man") then {
+                    private _loadout = +([_parentClassUnit,"loadout"] call ALiVE_fnc_hashGet);
+                    private _identityTypes = +([_parentClassUnit,"identityTypes"] call ALiVE_fnc_hashGet);
 
-                [_selectedUnitData,"loadout", []] call ALiVE_fnc_hashSet;
+                    [_selectedUnitData,"loadout", _loadout] call ALiVE_fnc_hashSet;
+                    [_selectedUnitData,"identityTypes", _identityTypes] call ALiVE_fnc_hashSet;
+                } else {
+                    private _turrets = + ([_parentClassUnit,"turrets"] call ALiVE_fnc_hashGet);
+                    private _crew = [_parentClassUnit,"crew"] call ALiVE_fnc_hashGet;
+                    private _texture = [_parentClassUnit,"texture"] call ALiVE_fnc_hashGet;
 
+                    [_selectedUnitData,"turrets", _turrets] call ALiVE_fnc_hashSet;
+                    [_selectedUnitData,"crew", _crew] call ALiVE_fnc_hashSet;
+                    [_selectedUnitData,"texture", _texture] call ALiVE_fnc_hashSet;
+                };
             };
         };
+
+        private _realUnitClass = [_logic,"getRealUnitClass", _selectedUnit] call MAINCLASS;
 
         closeDialog 0;
 
@@ -5635,7 +5645,8 @@ switch(_operation) do {
         private _indent = "    ";
         private _newLine = toString [13,10];
 
-        _result = _result + _newLine + _newLine + "class CfgVehicles {" + _newLine;
+        _result = _result + _newLine + "class CBA_Extended_EventHandlers_base;" + _newLine;
+        _result = _result + _newLine + "class CfgVehicles {" + _newLine;
 
         // reorder units to maintain timely definitions
 
@@ -5679,7 +5690,7 @@ switch(_operation) do {
                     _importClass2 = _unitParentConfigName + "_OCimport_02";
 
                     _result = _result + _indent + "class " + _importClass1 + " : " + _unitParentConfigName + " { scope = 0; class EventHandlers; };" + _newLine;
-                    _result = _result + _indent + "class " + _importClass2 + " : " + _importClass1 + " { class EventHandlers { class CBA_Extended_EventHandlers_base; }; };" + _newLine;
+                    _result = _result + _indent + "class " + _importClass2 + " : " + _importClass1 + " { class EventHandlers; };" + _newLine;
                 } else {
                     if (isClass(_cfgVehicles >> _realUnitClass >> "Turrets")) then {
                         _unitTurrets = [_unit,"turrets"] call ALiVE_fnc_hashGet;
@@ -5692,7 +5703,7 @@ switch(_operation) do {
                             _result = _result + _indent + "class " + _importClass1 + " : " + _unitParentConfigName + " { scope = 0; class EventHandlers; class Turrets; };" + _newLine;
 
                             _result = _result + _indent + "class " + _importClass2 + " : " + _importClass1 + " { " + _newLine;
-                            _result = _result + _indent + _indent + "class EventHandlers { class CBA_Extended_EventHandlers_base; }; " + _newLine;
+                            _result = _result + _indent + _indent + "class EventHandlers; " + _newLine;
                             _result = _result + _indent + _indent +  "class Turrets : Turrets {" + _newLine;
 
                             {
@@ -6092,7 +6103,7 @@ switch(_operation) do {
         // event handlers
 
         _result = _result + _newLine + _newLine + _indent + _indent + "class EventHandlers : EventHandlers {";
-        _result = _result + _newLine + _indent + _indent + _indent + "class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {};" + _newLine;
+        _result = _result + _newLine + _indent + _indent + _indent + "class CBA_Extended_EventHandlers : CBA_Extended_EventHandlers_base {};" + _newLine;
         _result = _result + _newLine;
         _result = _result + _indent + _indent + _indent + "class ALiVE_orbatCreator {";
 
@@ -6174,7 +6185,7 @@ switch(_operation) do {
         // event handlers
 
         _result = _result + _newLine + _newLine + _indent + _indent + "class EventHandlers : EventHandlers {";
-        _result = _result + _newLine + _indent + _indent + _indent + "class CBA_Extended_EventHandlers: CBA_Extended_EventHandlers_base {};" + _newLine;
+        _result = _result + _newLine + _indent + _indent + _indent + "class CBA_Extended_EventHandlers : CBA_Extended_EventHandlers_base {};" + _newLine;
         _result = _result + _newLine;
         _result = _result + _indent + _indent + _indent + "class ALiVE_orbatCreator {";
 
