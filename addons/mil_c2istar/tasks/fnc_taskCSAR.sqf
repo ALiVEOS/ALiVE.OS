@@ -155,7 +155,7 @@ switch (_taskState) do {
                 _compType = "Military";
                 _site = "smallAH99Crashsite1";
                 _comp = [_site, _CompType] call ALiVE_fnc_findComposition;
-                [_comp,_targetposition,random 360] call ALiVE_fnc_spawnComposition;
+                [_comp,_targetposition,random 360,_taskFaction] call ALiVE_fnc_spawnComposition;
 
                 // replace wreck with downed bird
                 _wreck = nearestObject [_targetposition, "Land_Wreck_Heli_Attack_01_F"];

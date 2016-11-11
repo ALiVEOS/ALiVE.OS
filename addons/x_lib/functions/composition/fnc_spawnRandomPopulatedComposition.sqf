@@ -60,7 +60,7 @@ _compositions = [_type, _category, _size, _faction] call ALiVE_fnc_getCompositio
 _composition = selectRandom _compositions;
 
 if(count _composition > 0) then {
-    [_composition, _position, random 360] call ALIVE_fnc_spawnComposition;
+    [_composition, _position, random 360, _faction] call ALIVE_fnc_spawnComposition;
 };
 
 // Assign groups
