@@ -4135,7 +4135,7 @@ switch(_operation) do {
                         _paraDrop = false;
                         if(_playersInRange > 0) then {
                             _paraDrop = true;
-
+                            // remote position should probably be spawn range - risk of heli getting shot down though too...
                             _remotePosition = [_reinforcementPosition, 1600] call ALIVE_fnc_getPositionDistancePlayers;
                         }else{
                             _remotePosition = _reinforcementPosition;
@@ -4201,6 +4201,13 @@ switch(_operation) do {
 
                                 if(_eventType == "PR_AIRDROP" || (_eventType == "PR_HELI_INSERT" && _itemCategory != "Air")) then {
 
+                                    if (_paraDrop && _eventType == "PR_HELI_INSERT") then {
+                                        _position = _remotePosition getPos [random(200), random(360)];
+                                        _position set [2,0]; // position might be in water :(
+                                    } else {
+                                        _position = _reinforcementPosition getPos [random(200), random(360)];
+                                    };
+
                                     TRACE_2(">>>>>>>>>>>>>>>>>>>>>>>>",_itemClass, _position);
 
                                     _profiles = [_itemClass,_side,_eventFaction,_position] call ALIVE_fnc_createProfileVehicle;
@@ -4265,7 +4272,11 @@ switch(_operation) do {
                                 {
                                     private ["_currentDiff","_vehicleClass","_position","_payloadWeight","_slingLoadProfile"];
 
-                                    _position = _reinforcementPosition getPos [random(200), random(360)];
+                                    if (_paraDrop) then {
+                                        _position = _remotePosition getPos [random(200), random(360)];
+                                    } else {
+                                        _position = _reinforcementPosition getPos [random(200), random(360)];
+                                    };
 
                                     // Get the profile
                                     _slingLoadProfile = [ALiVE_ProfileHandler, "getProfile", (_x select 0)] call ALIVE_fnc_profileHandler;
@@ -4771,7 +4782,11 @@ switch(_operation) do {
 
                                 for "_i" from 0 to (count _infantryProfiles) -1 do {
 
-                                    _position = _remotePosition getPos [random(200), random(360)];
+                                    if (_paraDrop) then {
+                                        _position = _remotePosition getPos [random(200), random(360)];
+                                    } else {
+                                        _position = _reinforcementPosition getPos [random(200), random(360)];
+                                    };
 
                                     if(_paraDrop) then {
                                         _position set [2,PARADROP_HEIGHT];
@@ -4848,7 +4863,11 @@ switch(_operation) do {
                                         // Check to see if profile is a vehicle
                                         if ([_x,"vehicle"] call CBA_fnc_find != -1) then {
 
-                                            _position = _reinforcementPosition getPos [random(200), random(360)];
+                                            if (_paraDrop) then {
+                                                _position = _remotePosition getPos [random(200), random(360)];
+                                            } else {
+                                                _position = _reinforcementPosition getPos [random(200), random(360)];
+                                            };
 
                                             // Get the profile
                                             _slingLoadProfile = [ALiVE_ProfileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
@@ -4874,9 +4893,7 @@ switch(_operation) do {
                                             // Cannot find vehicle big enough to slingload...
                                             if (_vehicleClass == "") exitWith {_totalCount = _totalCount - 1;};
 
-                                            if(_paraDrop) then {
-                                                _position set [2,PARADROP_HEIGHT];
-                                            };
+                                            _position set [2,PARADROP_HEIGHT];
 
                                             // Create slingloading heli (slingloading another profile!)
                                             _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,[], [[_x], []]] call ALIVE_fnc_createProfilesCrewedVehicle;
@@ -5002,7 +5019,11 @@ switch(_operation) do {
                                 if(count _transportGroups > 0) then {
                                     private ["_slingload","_currentDiff"];
 
-                                    _position = _reinforcementPosition getPos [random(200), random(360)];
+                                    if (_paraDrop) then {
+                                        _position = _remotePosition getPos [random(200), random(360)];
+                                    } else {
+                                        _position = _reinforcementPosition getPos [random(200), random(360)];
+                                    };
 
                                     // Select helicopter that can carry enough for payload
                                     _vehicleClass = _transportGroups select 0;
@@ -5027,9 +5048,9 @@ switch(_operation) do {
                                         _slingload = true;
                                     };
 
-                                    if(_paraDrop) then {
-                                        _position set [2,PARADROP_HEIGHT];
-                                    };
+
+                                    _position set [2,PARADROP_HEIGHT];
+
 
                                     if (!_slingload) then {
                                         _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,_payload] call ALIVE_fnc_createProfilesCrewedVehicle;
@@ -5050,7 +5071,11 @@ switch(_operation) do {
 
                                         if(count _containers > 0) then {
                                             private ["_tempContainer","_tempContainerSize"];
-                                            _position = _reinforcementPosition getPos [random(200), random(360)];
+                                            if (_paraDrop) then {
+                                                _position = _remotePosition getPos [random(200), random(360)];
+                                            } else {
+                                                _position = _reinforcementPosition getPos [random(200), random(360)];
+                                            };
 
                                             // Choose a good sized container
                                             _containerClass = _containers select 0;
@@ -5110,8 +5135,6 @@ switch(_operation) do {
                             private ["_containers","_vehicle","_parachute","_soundFlyover"];
 
                             if(_eventType == "PR_AIRDROP") then {
-
-                                // create heli transport vehicles for the payload
 
                                 _containers = [ALIVE_factionDefaultContainers,_eventFaction,[]] call ALIVE_fnc_hashGet;
 
