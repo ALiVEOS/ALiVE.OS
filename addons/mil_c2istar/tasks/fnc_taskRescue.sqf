@@ -395,8 +395,8 @@ switch (_taskState) do {
                         _electronicClass = _electronics call BIS_fnc_selectRandom;
                         _documentClass = _documents call BIS_fnc_selectRandom;
 
-                                                // see if a building is nearby, if so change the targetposition
-                        private _bldgPos = [_targetPosition, 100] call ALiVE_fnc_findIndoorHousePositions;
+                        // see if a building is nearby, if so change the targetposition
+                        private _bldgPos = [_targetPosition, 50] call ALiVE_fnc_findIndoorHousePositions;
                         if (count _bldgPos > 0) then {
                             _targetPosition = selectRandom _bldgPos;
                             _tablePosition = selectRandom _bldgPos;
