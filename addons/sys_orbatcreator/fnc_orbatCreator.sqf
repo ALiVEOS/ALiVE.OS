@@ -5899,9 +5899,7 @@ switch(_operation) do {
         // insignia must be added via init eh
 
         if (_identityInsignia != "") then {
-            _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
             _initEventHandler = _initEventHandler + (format ["_unit spawn {sleep 0.05;[_this,'%1'] call BIS_fnc_setUnitInsignia;};", _identityInsignia]);
-            [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
         };
 
         _result = _result + _indent + _indent + "identityTypes[] = " + _identityTypesString + ";" + _newLine;
@@ -5932,6 +5930,7 @@ switch(_operation) do {
         private _uniformItems = uniformItems _tmpUnit;
         private _vestItems = vestItems _tmpUnit;
         private _backpackItems = backpackItems _tmpUnit;
+        private _linkedItems = assignedItems _tmpUnit;
 
         // shuffle weapons to back of array
         // causes magazines to be added before
@@ -5953,7 +5952,6 @@ switch(_operation) do {
 
         // clear gear
 
-        _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
         _initEventHandler = _initEventHandler + "_unit setUnitLoadout [[],[],[],[],[],[],'','',[],['','','','','','']];";
 
         // add gear containers prior to gear
@@ -5967,7 +5965,16 @@ switch(_operation) do {
         _initEventHandler = _initEventHandler + "{_unit removeItemFromUniform _x} foreach (uniformItems _unit);";
         _initEventHandler = _initEventHandler + "{_unit removeItemFromVest _x} foreach (vestItems _unit);";
         _initEventHandler = _initEventHandler + "{_unit removeItemFromBackpack _x} foreach (backpackItems _unit);";
-        [_eventHandlers,"init",_initEventHandler] call ALiVE_fnc_hashSet;
+
+        // linked items
+
+        private _linkedItemsString = "[";
+        {
+            if (_forEachIndex != 0) then {_linkedItemsString = _linkedItemsString + ","};
+            _linkedItemsString = _linkedItemsString + "'" + _x + "'";
+        } foreach _linkedItems;
+        _linkedItemsString = _linkedItemsString + "]";
+        _initEventHandler = _initEventHandler + "{_unit linkItem _x} foreach " + _linkedItemsString + ";";
 
         // uniform items
 
@@ -5989,7 +5996,6 @@ switch(_operation) do {
                 _uniformItemsAdded pushback _item;
             };
         } foreach _uniformItems;
-        [_eventHandlers,"init",_initEventHandler] call ALiVE_fnc_hashSet;
 
         // vest items
 
@@ -6011,7 +6017,6 @@ switch(_operation) do {
                 _vestItemsAdded pushback _item;
             };
         } foreach _vestItems;
-        [_eventHandlers,"init",_initEventHandler] call ALiVE_fnc_hashSet;
 
         // backpack items
 
@@ -6033,11 +6038,9 @@ switch(_operation) do {
                 _backpackItemsAdded pushback _item;
             };
         } foreach _backpackItems;
-        [_eventHandlers,"init",_initEventHandler] call ALiVE_fnc_hashSet;
 
         // persist weapon items
 
-        _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
         private _primaryWeaponItems = primaryWeaponItems _tmpUnit;
         private _secondaryWeaponItems = secondaryWeaponItems _tmpUnit;
         private _handgunWeaponItems = handgunItems _tmpUnit;
@@ -6063,8 +6066,6 @@ switch(_operation) do {
                 _initEventHandler = _initEventHandler + "_unit addHandgunItem " + "'" + _x + "'" + ";";
             };
         } foreach _handgunWeaponItems;
-
-        [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
 
         // persist gear
 
@@ -6154,17 +6155,21 @@ switch(_operation) do {
         _result = _result + _newLine;
         _result = _result + _indent + _indent + "crew = " + str _unitCrew + ";" + _newLine;
 
-        _result = _result + _newLine;
-        _result = _result + _indent + _indent + "class Turrets : Turrets {" + _newLine;
+        private _unitTurretValues = _unitTurrets select 2;
 
-        {
-            _x params ["_turretConfigName","_turretDisplayName","_turretGunnerType"];
+        if (count _unitTurretValues > 0) then {
+            _result = _result + _newLine;
+            _result = _result + _indent + _indent + "class Turrets : Turrets {" + _newLine;
 
-            _result = _result + _indent + _indent + _indent + "class " + _turretConfigName + " : " + _turretConfigName + " { " + "gunnerType = " + (format ["""%1""; ", _turretGunnerType]) + "};" + _newLine;
-        } foreach (_unitTurrets select 2);
+            {
+                _x params ["_turretConfigName","_turretDisplayName","_turretGunnerType"];
 
-        _result = _result + _indent + _indent + "};" + _newLine;
-        _result = _result + _newLine;
+                _result = _result + _indent + _indent + _indent + "class " + _turretConfigName + " : " + _turretConfigName + " { " + "gunnerType = " + (format ["""%1""; ", _turretGunnerType]) + "};" + _newLine;
+            } foreach _unitTurretValues;
+
+            _result = _result + _indent + _indent + "};" + _newLine;
+            _result = _result + _newLine;
+        };
 
         // event handlers
 
