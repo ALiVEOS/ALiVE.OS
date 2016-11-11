@@ -311,20 +311,27 @@ switch(_operation) do {
 
             if(typeName _args == "STRING") then {
                 _eventID = _args;
+
                 _events = [_logic,"events"] call ALIVE_fnc_hashGet;
-                _eventsByType = [_logic,"eventsByType"] call ALIVE_fnc_hashGet;
+
+                //["EVENT ID: %1",_eventID] call ALiVE_fnc_dump;
+
+                _eventsByType = [_logic,"eventsByType",[]] call ALIVE_fnc_hashGet;
 
                 if(_eventID in (_events select 1)) then {
-                    _event = [_events,_eventID] call ALIVE_fnc_hashGet;
-                    _type = [_event,"type"] call ALIVE_fnc_hashGet;
+                    _event = [_events,_eventID,"MISSING"] call ALIVE_fnc_hashGet;
 
-                    // remove the event from the hash by type
+                    if (typeName _event == "STRING") exitWith {};
 
-                    _eventTypes = [_eventsByType,_type] call ALIVE_fnc_hashGet;
-                    [_eventTypes,_eventID] call ALIVE_fnc_hashRem;
+                    _type = [_event,"type",""] call ALIVE_fnc_hashGet;
+
+                    if !(typeName _type == "STRING" || count _eventsByType == 0) then {
+                        // remove the event from the hash by type
+                        _eventTypes = [_eventsByType,_type] call ALIVE_fnc_hashGet;
+                        [_eventTypes,_eventID] call ALIVE_fnc_hashRem;
+                    };
 
                     // remove the event from the main hash
-
                     [_events, _eventID] call ALIVE_fnc_hashRem;
                     [_logic,"events",_events] call ALIVE_fnc_hashSet;
                 };
