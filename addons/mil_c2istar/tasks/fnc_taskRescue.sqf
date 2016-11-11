@@ -324,7 +324,8 @@ switch (_taskState) do {
             [_taskParams,"hostageSpawnType",_spawnType] call ALIVE_fnc_hashSet;
             [_taskParams,"returnReached",false] call ALIVE_fnc_hashSet;
             [_taskParams,"hostageAnims",_hostageAnims] call ALIVE_fnc_hashSet;
-
+            [_taskParams,"enemyFaction",_taskEnemyFaction] call ALIVE_fnc_hashSet;
+            [_taskParams,"targetPosition",_targetPosition] call ALIVE_fnc_hashSet;
             // return the created tasks and params
 
             _result = [_tasks,_taskParams];
@@ -338,7 +339,7 @@ switch (_taskState) do {
     case "Rescue":{
 
         private["_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
-        "_destinationReached","_taskIDs","_hostageSpawned","_hostageSpawnType","_lastState","_taskDialog","_currentTaskDialog","_hostageAnims","_startTime","_anims"];
+        "_destinationReached","_taskIDs","_hostageSpawned","_hostageSpawnType","_lastState","_taskDialog","_currentTaskDialog","_hostageAnims","_startTime","_anims","_targetPosition"];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;
@@ -357,6 +358,7 @@ switch (_taskState) do {
         _hostageAnims = [_taskParams,"hostageAnims"] call ALIVE_fnc_hashGet;
         _startTime = [_taskParams,"startTime"] call ALIVE_fnc_hashGet;
         _activeFirst = [_taskParams,"activeFirst",false] call ALIVE_fnc_hashGet;
+        _targetPosition = [_taskParams,"targetPosition",_taskPosition] call ALIVE_fnc_hashGet;
 
         if(_lastState != "Rescue") then {
 
@@ -388,11 +390,14 @@ switch (_taskState) do {
                         _documents = [_taskObjects,"documents"] call ALIVE_fnc_hashGet;
 
                         _tableClass = _tables call BIS_fnc_selectRandom;
+                        private _chairClass = _chairs call BIS_fnc_selectRandom;
                         _electronicClass = _electronics call BIS_fnc_selectRandom;
                         _documentClass = _documents call BIS_fnc_selectRandom;
 
-                        _table = _tableClass createVehicle _taskPosition;
+                        _table = createVehicle [_tableClass,_targetPosition,[],5,"NONE"];
                         _table setdir 0;
+
+                        _chair = createVehicle [_chairClass,_targetPosition,[],5,"NONE"];
 
                         _electronic = [_table,_electronicClass] call ALIVE_fnc_taskSpawnOnTopOf;
                         _document = [_table,_documentClass] call ALIVE_fnc_taskSpawnOnTopOf;
@@ -403,7 +408,7 @@ switch (_taskState) do {
 
                         _units = [[_taskFaction],1,ALiVE_MIL_CQB_UNITBLACKLIST,true] call ALiVE_fnc_chooseRandomUnits;
 
-                        _hostageProfile1 = [_units,_taskSide,_taskFaction,_taskPosition,random(360),_taskFaction,true] call ALIVE_fnc_createProfileEntity;
+                        _hostageProfile1 = [_units,_taskSide,_taskFaction,_targetPosition,random(360),_taskFaction,true] call ALIVE_fnc_createProfileEntity;
                         _hostageProfile1ID = _hostageProfile1 select 2 select 4;
 
                         waitUntil {
