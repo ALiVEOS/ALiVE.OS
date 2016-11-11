@@ -312,7 +312,7 @@ switch(_operation) do {
             if(typeName _args == "STRING") then {
                 _eventID = _args;
 
-                _events = [_logic,"events"] call ALIVE_fnc_hashGet;
+                _events = [_logic,"events",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashGet;
 
                 //["EVENT ID: %1",_eventID] call ALiVE_fnc_dump;
 
