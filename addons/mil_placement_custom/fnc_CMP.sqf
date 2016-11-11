@@ -321,7 +321,7 @@ switch(_operation) do {
                 _composition = [_composition, _compType] call ALIVE_fnc_findComposition;
 
                 if(count _composition > 0) then {
-                    [_composition, _position, direction _logic] call ALIVE_fnc_spawnComposition;
+                    [_composition, _position, direction _logic, _faction] call ALIVE_fnc_spawnComposition;
                 };
             };
 

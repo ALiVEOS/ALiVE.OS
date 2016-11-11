@@ -12,6 +12,7 @@ Parameters:
 Config - group
 Array - position
 Scalar - direction
+String - Faction
 
 Returns:
 
@@ -32,6 +33,7 @@ private ["_config","_position","_azi","_objects","_positions","_azis","_item","_
 _config = _this select 0;
 _position = _this select 1;
 _azi = _this select 2;
+private _faction = _this select 3;
 
 ["Spawning Composition: %1", _this] call ALiVE_fnc_dump;
 
@@ -108,5 +110,8 @@ for "_i" from 0 to ((count _objects) - 1) do
     };
     _newObj setDir (_azi + _azimuth);
     _newObj setPos _newPos;
+    if (faction _newObj != _faction && (_newObj iskindof "LandVehicle" || _newObj iskindof "FlagCarrier")) then {
+        deleteVehicle _newObj;
+    };
 
 };
