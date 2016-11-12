@@ -60,7 +60,7 @@ _compositions = [_type, _category, _size, _faction] call ALiVE_fnc_getCompositio
 _composition = selectRandom _compositions;
 
 if(count _composition > 0) then {
-    [_composition, _position, random 360] call ALIVE_fnc_spawnComposition;
+    [_composition, _position, random 360, _faction] call ALIVE_fnc_spawnComposition;
 };
 
 // Assign groups
@@ -135,7 +135,7 @@ if(_groupCount > 0) then {
 
         {
             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[200,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
+                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[100,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
             };
         } foreach _guards;
     };
@@ -148,8 +148,12 @@ if(_groupCount > 0) then {
 
         if!(surfaceIsWater _position) then {
 
-            [_group, _position, random(360), false, _faction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
-
+            private _units = [_group, _position, random(360), false, _faction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+            {
+                if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
+                    [_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[250,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity;
+                };
+            } foreach _units;
         };
     };
 };

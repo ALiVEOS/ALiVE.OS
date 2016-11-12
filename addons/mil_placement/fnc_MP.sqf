@@ -795,7 +795,7 @@ switch(_operation) do {
                     _nearRoads = _flatpos nearRoads 1000;
                     _direction = if (count _nearRoads > 0) then {direction (_nearRoads select 0)} else {random 360};
 
-                    [_HQ, _flatPos, _direction] call ALiVE_fnc_spawnComposition;
+                    [_HQ, _flatPos, _direction, _faction] call ALiVE_fnc_spawnComposition;
                     [_logic, "FieldHQBuilding", nearestObject [_flatPos, "building"]] call MAINCLASS;
 
                     _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
@@ -837,7 +837,7 @@ switch(_operation) do {
                     };
 
                     if(count _composition > 0) then {
-                        [_composition, _pos, random 360] call ALIVE_fnc_spawnComposition;
+                        [_composition, _pos, random 360, _faction] call ALIVE_fnc_spawnComposition;
                     };
 
                     [_x,"nodes",nearestObjects [_pos,["static"],50]] call ALIVE_fnc_hashSet;
@@ -875,9 +875,16 @@ switch(_operation) do {
                         //[_x, "debug", true] call ALIVE_fnc_cluster;
                         {
                             private _buildingPositions = [_x] call BIS_fnc_buildingPositions;
-                            _position = _buildingPositions call BIS_fnc_selectRandom;
+
+                            if (count _buildingPositions > 0) then {
+                                _position = _buildingPositions call BIS_fnc_selectRandom;
+                            } else {
+                                _position = position _x;
+                            };
+
                             _direction = direction _x;
                             _vehicleClass = _supplyClasses call BIS_fnc_selectRandom;
+
                             if(random 1 > 0.6) then {
                                 _box = createVehicle [_vehicleClass, _position, [], 0, "NONE"];
                                 _countSupplies = _countSupplies + 1;

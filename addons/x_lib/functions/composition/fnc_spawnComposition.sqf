@@ -12,6 +12,7 @@ Parameters:
 Config - group
 Array - position
 Scalar - direction
+String - Faction
 
 Returns:
 
@@ -32,12 +33,27 @@ private ["_config","_position","_azi","_objects","_positions","_azis","_item","_
 _config = _this select 0;
 _position = _this select 1;
 _azi = _this select 2;
+private _faction = _this select 3;
 
 ["Spawning Composition: %1", _this] call ALiVE_fnc_dump;
 
 private ["_posX", "_posY"];
 _posX = _position select 0;
 _posY = _position select 1;
+
+// Workaround until LSD fixes ZEC compositions
+private _brokenCheckpoints = [
+    "CheckpointWatchtower",
+    "CheckpointBunker",
+    "CheckpointSandbags2",
+    "CheckpointTower",
+    "CheckpointBunkers",
+    "CheckpointHBarrier"
+];
+
+if (configName _config in _brokenCheckpoints) then {
+    _azi = [_azi + 90] call ALiVE_fnc_modDegrees;
+};
 
 //Function to multiply a [2, 2] matrix by a [2, 1] matrix
 private ["_multiplyMatrixFunc"];
@@ -108,5 +124,8 @@ for "_i" from 0 to ((count _objects) - 1) do
     };
     _newObj setDir (_azi + _azimuth);
     _newObj setPos _newPos;
+    if (faction _newObj != _faction && (_newObj iskindof "LandVehicle" || _newObj iskindof "FlagCarrier")) then {
+        deleteVehicle _newObj;
+    };
 
 };

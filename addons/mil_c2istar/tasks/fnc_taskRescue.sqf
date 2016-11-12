@@ -311,7 +311,7 @@ switch (_taskState) do {
             _hostageAnims = [] call ALIVE_fnc_hashCreate;
             [_hostageAnims, "boundAnims", _boundAnims] call ALiVE_fnc_hashSet;
             [_hostageAnims, "unboundAnims", _unboundAnims] call ALiVE_fnc_hashSet;
-            [_hostageAnims, "index", round (random (count _boundAnims) -1)] call ALiVE_fnc_hashSet;
+            [_hostageAnims, "index", ceil (random (count _boundAnims) -1)] call ALiVE_fnc_hashSet;
 
             // store task data in the params for this task set
 
@@ -354,11 +354,11 @@ switch (_taskState) do {
         _taskDialog = [_params,"dialog"] call ALIVE_fnc_hashGet;
         _currentTaskDialog = [_taskDialog,_taskState] call ALIVE_fnc_hashGet;
         _hostageSpawned = [_params,"hostageSpawned"] call ALIVE_fnc_hashGet;
-        _hostageSpawnType = [_taskParams,"hostageSpawnType"] call ALIVE_fnc_hashGet;
+        _hostageSpawnType = [_params,"hostageSpawnType"] call ALIVE_fnc_hashGet;
         _hostageAnims = [_taskParams,"hostageAnims"] call ALIVE_fnc_hashGet;
-        _startTime = [_taskParams,"startTime"] call ALIVE_fnc_hashGet;
-        _activeFirst = [_taskParams,"activeFirst",false] call ALIVE_fnc_hashGet;
-        _targetPosition = [_taskParams,"targetPosition",_taskPosition] call ALIVE_fnc_hashGet;
+        _startTime = [_params,"startTime"] call ALIVE_fnc_hashGet;
+        _activeFirst = [_params,"activeFirst",false] call ALIVE_fnc_hashGet;
+        _targetPosition = [_params,"targetPosition"] call ALIVE_fnc_hashGet;
 
         if(_lastState != "Rescue") then {
 
@@ -379,7 +379,8 @@ switch (_taskState) do {
                     case "static":{
 
                         private["_taskObjects","_tables","_chairs","_electronics","_documents","_tableClass","_electronicClass",
-                        "_documentClass","_table","_electronic","_document","_anims"];
+                        "_documentClass","_table","_electronic","_document","_anims","_tablePosition"];
+
 
                         // spawn some objects
 
@@ -394,10 +395,19 @@ switch (_taskState) do {
                         _electronicClass = _electronics call BIS_fnc_selectRandom;
                         _documentClass = _documents call BIS_fnc_selectRandom;
 
-                        _table = createVehicle [_tableClass,_targetPosition,[],5,"NONE"];
-                        _table setdir 0;
+                        // see if a building is nearby, if so change the targetposition
+                        private _bldgPos = [_targetPosition, 50] call ALiVE_fnc_findIndoorHousePositions;
+                        if (count _bldgPos > 0) then {
+                            _targetPosition = selectRandom _bldgPos;
+                            _tablePosition = selectRandom _bldgPos;
+                            _table = createVehicle [_tableClass,_tablePosition,[],0.5,"NONE"];
+                        } else {
+                            _table = createVehicle [_tableClass,_targetPosition,[],4,"NONE"];
+                        };
 
-                        _chair = createVehicle [_chairClass,_targetPosition,[],5,"NONE"];
+
+                        _table setdir 0;
+                        _chair = createVehicle [_chairClass,position _table,[],3,"NONE"];
 
                         _electronic = [_table,_electronicClass] call ALIVE_fnc_taskSpawnOnTopOf;
                         _document = [_table,_documentClass] call ALIVE_fnc_taskSpawnOnTopOf;
@@ -408,7 +418,7 @@ switch (_taskState) do {
 
                         _units = [[_taskFaction],1,ALiVE_MIL_CQB_UNITBLACKLIST,true] call ALiVE_fnc_chooseRandomUnits;
 
-                        _hostageProfile1 = [_units,_taskSide,_taskFaction,_targetPosition,random(360),_taskFaction,true] call ALIVE_fnc_createProfileEntity;
+                        _hostageProfile1 = [_units,_taskSide,_taskFaction, _targetPosition,random(360),_taskFaction,true] call ALIVE_fnc_createProfileEntity;
                         _hostageProfile1ID = _hostageProfile1 select 2 select 4;
 
                         waitUntil {
@@ -439,6 +449,8 @@ switch (_taskState) do {
                         // Hostage Anim
                         _anims = ([_hostageAnims, "boundAnims"] call ALIVE_fnc_hashGet) select ([_hostageAnims, "index"] call ALiVE_fnc_hashGet);
                         _hostage switchMove (selectRandom _anims);
+
+                        [_hostage, format ["Rescue %1",name _hostage], "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","_this distance _target < 2", "_caller distance _target < 2", {}, {}, {_target setVariable ["rescued",true]; ["Rescue", format ["You have rescued %1!",name _target]] call BIS_fnc_showSubtitle;},{},[],8] remoteExec ["BIS_fnc_holdActionAdd",-2];
 
                         // Chat update
                         _formatChat = [_currentTaskDialog,"chat_update"] call ALIVE_fnc_hashGet;
@@ -505,8 +517,10 @@ switch (_taskState) do {
 
                         // [position _hostage,_taskSide,_taskPlayers,_taskID,"hostage"] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
-                        _distance = [_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerDistanceToDestination;
-                        if (_distance < 2) then {
+                        // _distance = [_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerDistanceToDestination;
+
+
+                        if (_hostage getVariable ["rescued",false]) then {
 
                             [_hostage] joinSilent (group ([_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition));
 

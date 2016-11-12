@@ -155,7 +155,7 @@ switch (_taskState) do {
                 _compType = "Military";
                 _site = "smallAH99Crashsite1";
                 _comp = [_site, _CompType] call ALiVE_fnc_findComposition;
-                [_comp,_targetposition,random 360] call ALiVE_fnc_spawnComposition;
+                [_comp,_targetposition,random 360,_taskFaction] call ALiVE_fnc_spawnComposition;
 
                 // replace wreck with downed bird
                 _wreck = nearestObject [_targetposition, "Land_Wreck_Heli_Attack_01_F"];
@@ -389,10 +389,14 @@ switch (_taskState) do {
                             };
                             _x setformdir 0;
 
+                            [_x, format ["Rescue %1",name _x], "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","_this distance _target < 2", "_caller distance _target < 2", {}, {}, {_target setVariable ["rescued",true]; ["Rescue", format ["You have rescued %1!",name _target]] call BIS_fnc_showSubtitle;},{},[],8] remoteExec ["BIS_fnc_holdActionAdd"];
+
                         } foreach units _crewGroup;
 
                         _crewGroup setBehaviour "STEALTH";
                         _crewGroup setCombatMode "GREEN";
+
+
 
                         // store the data on the params
                         [_params, "startTime", time] call ALIVE_fnc_hashSet;
@@ -464,8 +468,7 @@ switch (_taskState) do {
                             [_params,"crewFound",true] call ALIVE_fnc_hashSet;
                         };
 
-                        _distance = [_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerDistanceToDestination;
-                        if (_distance < 8) then {
+                        if (_crew getVariable ["rescued",false]) then {
 
                             {
                                 [_x] joinSilent (group ([_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition));
