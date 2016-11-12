@@ -41,6 +41,20 @@ private ["_posX", "_posY"];
 _posX = _position select 0;
 _posY = _position select 1;
 
+// Workaround until LSD fixes ZEC compositions
+private _brokenCheckpoints = [
+    "CheckpointWatchtower",
+    "CheckpointBunker",
+    "CheckpointSandbags2",
+    "CheckpointTower",
+    "CheckpointBunkers",
+    "CheckpointHBarrier"
+];
+
+if (configName _config in _brokenCheckpoints) then {
+    _azi = [_azi + 90] call ALiVE_fnc_modDegrees;
+};
+
 //Function to multiply a [2, 2] matrix by a [2, 1] matrix
 private ["_multiplyMatrixFunc"];
 _multiplyMatrixFunc =
