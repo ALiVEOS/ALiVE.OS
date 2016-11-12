@@ -450,7 +450,7 @@ switch (_taskState) do {
                         _anims = ([_hostageAnims, "boundAnims"] call ALIVE_fnc_hashGet) select ([_hostageAnims, "index"] call ALiVE_fnc_hashGet);
                         _hostage switchMove (selectRandom _anims);
 
-                        [_hostage, format ["Rescue %1",name _hostage], "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","true", "true", {}, {}, {_target setVariable ["rescued",true]; ["Rescue", format ["You have rescued %1!",name _target]] call BIS_fnc_showSubtitle;},{},[],8] call BIS_fnc_holdActionAdd;
+                        [_hostage, format ["Rescue %1",name _hostage], "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","_this distance _target < 2", "_caller distance _target < 2", {}, {}, {_target setVariable ["rescued",true]; ["Rescue", format ["You have rescued %1!",name _target]] call BIS_fnc_showSubtitle;},{},[],8] remoteExec ["BIS_fnc_holdActionAdd",-2];
 
                         // Chat update
                         _formatChat = [_currentTaskDialog,"chat_update"] call ALIVE_fnc_hashGet;
