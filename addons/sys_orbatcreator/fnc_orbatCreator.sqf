@@ -5967,9 +5967,12 @@ switch(_operation) do {
 
         // add gear containers prior to gear
 
-        _initEventHandler = _initEventHandler + "_unit forceAddUniform " + "'" + _tmpUnitUniform + "'" + ";";
-        _initEventHandler = _initEventHandler + "_unit addVest " + "'" + _tmpUnitVest + "'" + ";";
-        _initEventHandler = _initEventHandler + "_unit addBackpack " + "'" + _tmpUnitBackpack + "'" + ";";
+        _initEventHandler = _initEventHandler + "_unit forceAddUniform " + "'" + _tmpUnitUniform + "';";
+        _initEventHandler = _initEventHandler + "_unit addVest " + "'" + _tmpUnitVest + "';";
+        _initEventHandler = _initEventHandler + "_unit addBackpack " + "'" + _tmpUnitBackpack + "';";
+
+        _initEventHandler = _initEventHandler + "_unit addHeadgear " + "'" + _tmpUnitHeadgear + "';";
+        _initEventHandler = _initEventHandler + "_unit addGoggles " + "'" + _tmpUnitGoggles + "';";
 
         // remove prepacked items
 
