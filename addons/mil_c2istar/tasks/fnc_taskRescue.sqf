@@ -450,6 +450,8 @@ switch (_taskState) do {
                         _anims = ([_hostageAnims, "boundAnims"] call ALIVE_fnc_hashGet) select ([_hostageAnims, "index"] call ALiVE_fnc_hashGet);
                         _hostage switchMove (selectRandom _anims);
 
+                        [_hostage, format ["Rescue %1",name _hostage], "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","true", "true", {}, {}, {_target setVariable ["rescued",true]; ["Rescue", format ["You have rescued %1!",name _target]] call BIS_fnc_showSubtitle;},{},[],8] call BIS_fnc_holdActionAdd;
+
                         // Chat update
                         _formatChat = [_currentTaskDialog,"chat_update"] call ALIVE_fnc_hashGet;
                         _formatMessage = _formatChat select 0;
@@ -515,8 +517,10 @@ switch (_taskState) do {
 
                         // [position _hostage,_taskSide,_taskPlayers,_taskID,"hostage"] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
-                        _distance = [_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerDistanceToDestination;
-                        if (_distance < 2) then {
+                        // _distance = [_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerDistanceToDestination;
+
+
+                        if (_hostage getVariable ["rescued",false]) then {
 
                             [_hostage] joinSilent (group ([_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition));
 
