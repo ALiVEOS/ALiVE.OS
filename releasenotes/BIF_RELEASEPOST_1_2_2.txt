@@ -1,0 +1,59 @@
+[center][url=https://github.com/ALiVEOS/ALiVE.OS.git][img=http://i.imgur.com/RFX0nkZ.jpg][/url][/center]
+[center][b][url=http://alivemod.com/]ALiVEmod.com[/url]
+[size=4]The next generation dynamic persistent mission addon for ArmA3[/size][/b][/center]
+[center][b]Release 1.2.2[/b][/center]
+[center][b][img=https://pbs.twimg.com/media/CwtIKL6XAAAOt1C.jpg][/b][/center]
+[b]Hotfixes![/b]
+Thanks to the diligence of some our community members, we identified and fixed several annoying bugs and also took the chance to close out a number of small enhancement requests. We want to say thanks to Shukari for great bug reports and help in testing out ALiVE (and his first Pull Request!). Also to CoachWN, EasyEB and AUTigerGrad for bug reports and feature requests.
+
+Fixes:
+Logistics and C2ISTAR modules received a number of fixes to slingloading and tasks as well as placement of supplies, incorrectly orientated/composed compositions were fixed and there are minor fixes to the ORBATRON. Shukari fixed a stuttering bug and popped his cherry with a pull request!
+
+Enhancements:
+MarcelDev89 improved the player resupply UI by adding classname tooltips, Tupolov added an option to disable OPCOM roadblocks, added more patrols around compositions and improved UI/interaction with hostages/downed pilots.SpyderBlack updated ORBATRON to support Zeus and turrets.
+
+Thanks to everyone for feedback both here and on our forum!
+ 
+[center][b][url=http://alivemod.com/#Download]Download[/url][/b]
+Grab the latest version from [url=http://alivemod.com/#Download]ALiVEmod.com[/url]
+Also available from PlayWithSix, ArmAholic and Steam (Usually within 24 hours of this post)[/center]
+[center][b][url=http://alivemod.com/#ALiVEWarRoom]Join the War Room Now![/url][/b][/center]
+Please note that as with all updates, if you have an issue loading a mission made with a previous version of ALiVE, delete and replace the modules in that mission.
+
+[b]Release Highlights[/b]
+[LIST]
+[*]Minor Fixes to SpyderBlack's ORBATRON[/*]
+[*]Critical fixes to Helicopter resupply[/*]
+[*]More patrols around compositions[/*]
+[*]Fixed compositions that were incorrectly aligned to roads, removed incorrect faction assets[/*]
+[*]Fixed Panthera civilian population issues[/*]
+[*]Fixes to player resupply UI[/*]
+[*]Various minor fixes and updates[/*]
+[/LIST]
+See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
+
+[b]More Maps?[/b]
+The momentum is really beginning to build with the indexing tools and we are cracking through the [url=https://github.com/ALiVEOS/ALiVE.OS/issues/9]backlog[/url]. Instructions for using the Map Indexer can be found [url=http://alivemod.com/wiki/index.php/Map_Indexing]on our wiki [/url]
+
+[b]Known Issues & Support[/b]
+Existing bugs are listed on Github [url=https://github.com/ALiVEOS/ALiVE.OS/issues]here[/url]. Feel free to submit bugs (with repros) or discuss any issues or ideas on our forum at [url=http://alivemod.com/forum/]http://alivemod.com/forum/[/url].
+
+[b]Manual[/b]
+Please refer to the [url=http://www.alivemod.com/wiki]ALiVE Wiki[/url]. All the info you need is there. If anything is missing or unclear, please let us know.
+
+[b]Are you using Linux?[/b]
+ALiVE is fully supported on a Linux Dedicated Server (as well as Windows). In fact the ALiVE Official Server for testing is running Ubuntu. Here are some tips on getting ALiVE running smoothly on Linux and integrated with War Room - [url=http://www.alivemod.com/forum/1916-setting-up-linux-dedi-server]http://www.alivemod.com/forum/1916-setting-up-linux- dedi-server[/url]
+
+[b]Acknowledgements and Thanks[/b]
+Particular thanks to all those on our support forum who have worked closely with us to identify bugs, provide logs and generally help us improve ALiVE. Your assistance is valuable and your dedication to ALiVE makes it all worth the effort!
+
+[b]Disclaimer[/b]
+We may need to prune the persistent database data from the War Room, eliminating data that is older than 6-12 months. The
+ALiVE War Room database is run on a voluntary basis at a cost to the ALiVE development team. No guarantees can be given on the mission data stored or the availability of the service. We apologise for any downtime that may impact your MP persistent missions.
+
+[b]ALiVE has transformed my Arma 3 experience, how can I thank you?[/b]
+Please consider making a contribution to our server costs if you enjoy ALiVE! It costs us $65 per month to run our War Room website and the ALiVE Database servers and every little helps. Donate here [url=http://www.alivemod.com/#Donate]http://www.alivemod.com/#Donate[/url]
+
+Special thanks to everyone here for supporting us with donations to the ALiVE mod development effort.
+
+Have fun!
