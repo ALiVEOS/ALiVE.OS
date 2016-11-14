@@ -5796,7 +5796,7 @@ switch(_operation) do {
         _result = _result + _newLine;
         _result = _result + _indent + _indent + ("author = " + str profileName + ";") + _newLine;
         _result = _result + _indent + _indent + ("scope = 2;") + _newLine;
-        _result = _result + _indent + _indent + ("scopeArsenal = 2;") + _newLine;
+        _result = _result + _indent + _indent + ("scopeCurator = 2;") + _newLine;
         _result = _result + _indent + _indent + ("displayName = " + str _unitDisplayName + ";") + _newLine;
         _result = _result + _indent + _indent + ("side = " + str _unitSide + ";") + _newLine;
         _result = _result + _indent + _indent + ("faction = " + str _unitFaction + ";"); // newline handled by type specific properties
@@ -5830,7 +5830,7 @@ switch(_operation) do {
             // that takes effort though so this'll do for now
 
             private _attributeBlacklist = [
-                "author","scope","displayname","side","faction","uniformclass","backpack",
+                "author","scope","scopecurator","displayname","side","faction","uniformclass","backpack",
                 "items","linkeditems","magazines","weapons","respawnitems","respawnlinkeditems",
                 "respawnmagazines","respawnweapons","eventhandlers","crew","cba_extended_hventHandlers",
                 "alive_orbatcreator_owned","alive_orbatcreator_texture","Turrets","alive_orbatcreator_insignia"
