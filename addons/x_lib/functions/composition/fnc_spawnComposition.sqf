@@ -28,12 +28,7 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_config","_position","_azi","_objects","_positions","_azis","_item","_object","_relPos","_itemPos","_isFurniture"];
-
-_config = _this select 0;
-_position = _this select 1;
-_azi = _this select 2;
-private _faction = _this select 3;
+params ["_config","_position","_azi","_faction"];
 
 ["Spawning Composition: %1", _this] call ALiVE_fnc_dump;
 
@@ -56,8 +51,7 @@ if (configName _config in _brokenCheckpoints) then {
 };
 
 //Function to multiply a [2, 2] matrix by a [2, 1] matrix
-private ["_multiplyMatrixFunc"];
-_multiplyMatrixFunc =
+private _multiplyMatrixFunc =
 {
     private ["_array1", "_array2", "_result"];
     _array1 = _this select 0;
@@ -72,60 +66,59 @@ _multiplyMatrixFunc =
     _result
 };
 
-_objects = [];
-_positions = [];
-_azis = [];
-_isFurniture = false;
+private _objects = [];
+private _positions = [];
+private _azis = [];
+private _isFurniture = false;
 
 if (str(_config) find "Furniture" != -1) then {
     _isFurniture = true;
 };
 
-for "_i" from 0 to ((count _config) - 1) do
-{
-    private ["_item"];
-    _item = _config select _i;
+for "_i" from 0 to ((count _config) - 1) do {
+    private _item = _config select _i;
 
     if (isClass _item) then {
-        _objects = _objects + [getText(_item >> "vehicle")];
-        _positions = _positions + [getArray(_item >> "position")];
-        _azis = _azis + [getNumber(_item >> "dir")];
+        _objects pushback (getText(_item >> "vehicle"));
+        _positions pushback (getArray(_item >> "position"));
+        _azis pushback (getNumber(_item >> "dir"));
     };
 };
 
-for "_i" from 0 to ((count _objects) - 1) do
-{
-    private ["_object", "_relPos", "_azimuth"];
-    _object = _objects select _i;
-    _relPos = _positions select _i;
-    _azimuth = _azis select _i;
+private _startPos = [0,0,0];
+for "_i" from 0 to ((count _objects) - 1) do {
+    private _object = _objects select _i;
+    private _relPos = _positions select _i;
+    private _azimuth = _azis select _i;
 
     //Rotate the relative position using a rotation matrix
-    private ["_rotMatrix", "_newRelPos", "_newPos"];
-    _rotMatrix =
+    private _rotMatrix =
     [
         [cos _azi, sin _azi],
         [-(sin _azi), cos _azi]
     ];
-    _newRelPos = [_rotMatrix, _relPos] call _multiplyMatrixFunc;
+    private _newRelPos = [_rotMatrix, _relPos] call _multiplyMatrixFunc;
 
     //Backwards compatability causes for height to be optional
-    private ["_z"];
-    if ((count _relPos) > 2) then {_z = _relPos select 2} else {_z = 0};
+    private _z = if ((count _relPos) > 2) then {_relPos select 2} else {0};
 
-    _newPos = [_posX + (_newRelPos select 0), _posY + (_newRelPos select 1), _z];
+    private _newPos = [_posX + (_newRelPos select 0), _posY + (_newRelPos select 1), _z];
 
     //Create the object and make sure it's in the correct location
-    private ["_newObj"];
-    _newObj = _object createVehicle _newPos;
+    private _newObj = _object createVehicle _startPos; // TODO: simpleObject
     if (_isFurniture) then {
         _newObj enableSimulation false;
         _newPos = [_newPos select 0, _newPos select 1, (_newPos select 2) + (_position select 2)];
     };
-    _newObj setDir (_azi + _azimuth);
-    _newObj setPos _newPos;
-    if (faction _newObj != _faction && (_newObj iskindof "LandVehicle" || _newObj iskindof "FlagCarrier")) then {
+
+    // if object is faction-specific
+    // and doesn't belong to passed faction
+    // delete it
+    if (faction _newObj != _faction && {_newObj iskindof "LandVehicle" || {_newObj iskindof "FlagCarrier"}}) then {
         deleteVehicle _newObj;
+    } else {
+        _newObj setDir (_azi + _azimuth);
+        _newObj setPos _newPos;
     };
 
 };
