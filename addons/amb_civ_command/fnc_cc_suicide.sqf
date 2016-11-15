@@ -25,20 +25,13 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_agentData","_commandState","_commandName","_args","_state","_debug","_agentID","_agent","_nextState","_nextStateArgs"];
+params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
 
-_agentData = _this select 0;
-_commandState = _this select 1;
-_commandName = _this select 2;
-_args = _this select 3;
-_state = _this select 4;
-_debug = _this select 5;
+private _agentID = _agentData select 2 select 3;
+private _agent = _agentData select 2 select 5;
 
-_agentID = _agentData select 2 select 3;
-_agent = _agentData select 2 select 5;
-
-_nextState = _state;
-_nextStateArgs = [];
+private _nextState = _state;
+private _nextStateArgs = [];
 
 
 // DEBUG -------------------------------------------------------------------------------------
@@ -50,8 +43,6 @@ if(_debug) then {
 switch (_state) do {
     case "init":{
 
-        private ["_agentClusterID","_agentCluster","_target","_homePosition","_positions","_position"];
-
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
             ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
@@ -60,20 +51,20 @@ switch (_state) do {
 
         _agent setVariable ["ALIVE_agentBusy", true, false];
 
-        _agentClusterID = _agentData select 2 select 9;
-        _agentCluster = [ALIVE_clusterHandler,"getCluster",_agentClusterID] call ALIVE_fnc_clusterHandler;
+        private _agentClusterID = _agentData select 2 select 9;
+        private _agentCluster = [ALIVE_clusterHandler,"getCluster",_agentClusterID] call ALIVE_fnc_clusterHandler;
 
-        _target = [_agentCluster,getPosASL _agent, 50] call ALIVE_fnc_getAgentEnemyNear;
+        private _target = [_agentCluster,getPosASL _agent, 50] call ALIVE_fnc_getAgentEnemyNear;
 
         if(count _target > 0) then {
 
             _target = _target select 0;
 
-            _homePosition = _agentData select 2 select 10;
-            _positions = [_homePosition,5] call ALIVE_fnc_findIndoorHousePositions;
+            private _homePosition = _agentData select 2 select 10;
+            private _positions = [_homePosition,5] call ALIVE_fnc_findIndoorHousePositions;
 
             if(count _positions > 0) then {
-                _position = _positions call BIS_fnc_arrayPop;
+                private _position = _positions call BIS_fnc_arrayPop;
                 [_agent] call ALIVE_fnc_agentSelectSpeedMode;
                 [_agent, _position] call ALiVE_fnc_doMoveRemote;
 
@@ -92,8 +83,6 @@ switch (_state) do {
     };
     case "arm":{
 
-        private ["_bomb1","_bomb2","_bomb3"];
-
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
             ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
@@ -102,9 +91,9 @@ switch (_state) do {
 
         if(_agent call ALiVE_fnc_unitReadyRemote) then {
 
-            _bomb1 = "DemoCharge_Remote_Ammo" createVehicle [0,0,0];
-            _bomb2 = "DemoCharge_Remote_Ammo" createVehicle  [0,0,0];
-            _bomb3 = "DemoCharge_Remote_Ammo" createVehicle  [0,0,0];
+            private _bomb1 = "DemoCharge_Remote_Ammo" createVehicle [0,0,0];
+            private _bomb2 = "DemoCharge_Remote_Ammo" createVehicle  [0,0,0];
+            private _bomb3 = "DemoCharge_Remote_Ammo" createVehicle  [0,0,0];
 
             sleep 0.01;
 
@@ -130,32 +119,21 @@ switch (_state) do {
     };
     case "target":{
 
-        private ["_target","_bomb1","_bomb2","_bomb3","_handle"];
-
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
             ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-        _target = _args select 0;
-        _bomb1 = _args select 1;
-        _bomb2 = _args select 2;
-        _bomb3 = _args select 3;
+        _args params ["_target","_bomb1","_bomb2","_bomb3"];
 
         if!(isNil "_target") then {
 
             _agent setSpeedMode "FULL";
 
-            _handle = [_agent, _target, _bomb1, _bomb2, _bomb3] spawn {
+            private _handle = [_agent, _target, _bomb1, _bomb2, _bomb3] spawn {
 
-                private ["_agent","_target","_bomb1","_bomb2","_bomb3","_diceRoll","_object","_distance"];
-
-                _agent = _this select 0;
-                _target = _this select 1;
-                _bomb1 = _this select 2;
-                _bomb2 = _this select 3;
-                _bomb3 = _this select 4;
+                params ["_agent","_target","_bomb1","_bomb2","_bomb3"];
 
                 [_agent, getPosASL _target] call ALiVE_fnc_doMoveRemote;
 
@@ -166,7 +144,7 @@ switch (_state) do {
 
                     if (time - _timer > 15) then {[_agent, getPosASL _target] call ALiVE_fnc_doMoveRemote; _timer = time};
 
-                    _distance = _agent distance _target;
+                    private _distance = _agent distance _target;
 
                     //["SPAWNED SUICIDE distance: %1 alive: %2 condition: %3",_distance, (alive _agent), ((_distance < 5) || !(alive _agent))] call ALIVE_fnc_dump;
                     ((_distance < 5) || !(alive _agent))
@@ -178,10 +156,10 @@ switch (_state) do {
                 deleteVehicle _bomb2;
                 deleteVehicle _bomb3;
 
-                _diceRoll = random 1;
+                private _diceRoll = random 1;
 
                 if(_diceRoll > 0.2) then {
-                    _object = "HelicopterExploSmall" createVehicle (getPos _agent);
+                    private _object = "HelicopterExploSmall" createVehicle (getPos _agent);
                     _object attachTo [_agent,[-0.02,-0.07,0.042],"rightHand"];
                 };
             };
@@ -203,16 +181,14 @@ switch (_state) do {
     };
     case "travel":{
 
-        private ["_target","_handle"];
-
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
             ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-        _target = _args select 0;
-        _handle = _args select 4;
+        private _target = _args select 0;
+        private _handle = _args select 4;
 
         _nextStateArgs = _args;
 
@@ -229,8 +205,6 @@ switch (_state) do {
     };
     case "done":{
 
-         private ["_bomb1","_bomb2","_bomb3"];
-
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
             ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
@@ -238,9 +212,9 @@ switch (_state) do {
         // DEBUG -------------------------------------------------------------------------------------
 
         if(count _args > 1) then {
-            _bomb1 = _args select 1;
-            _bomb2 = _args select 2;
-            _bomb3 = _args select 3;
+            private _bomb1 = _args select 1;
+            private _bomb2 = _args select 2;
+            private _bomb3 = _args select 3;
 
             if!(isNull _bomb1) then { deleteVehicle _bomb1 };
             if!(isNull _bomb2) then { deleteVehicle _bomb2 };
