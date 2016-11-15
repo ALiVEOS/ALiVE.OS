@@ -8,7 +8,7 @@ $files = Get-ChildItem $path  -Recurse -Include "*.sqf"
 
 foreach ($file in $files)
 {
-    
+
     $parentPath = split-path $file -parent
     $parentPath = split-path $parentPath -leaf
     if($ignorePaths -contains $parentPath){
@@ -50,13 +50,13 @@ foreach ($file in $files)
             $closingCount += $line.Split("}").Count - 1
             #echo("OPENS: "+$openingCount+" CLOSES: "+$closingCount)
             if($openingCount -eq $closingCount){
-                #echo("CASE complete line: "+$lineNumber) 
+                #echo("CASE complete line: "+$lineNumber)
                 $inCase = $false
             }
         }
 
         if($line.StartsWith("private")){
-            if($line.EndsWith("];")){
+            if (!($line.contains("="))){
                 $stripped = $line.Trim("private ")
                 $stripped = $stripped.Trim('[')
                 $stripped = $stripped.Trim('];')
@@ -70,9 +70,22 @@ foreach ($file in $files)
                     $global += $split;
                     #echo ("GLOBAL: " + $global + " line: "+$lineNumber)
                 }
-                
-            }else{
-                $privateContinues = $true;                
+
+                if (!($line.EndsWith("];"))){
+                    $privateContinues = $true;
+                }
+            } else {
+                $stripped = $line.Substring(0,$line.indexOf("="))
+                $stripped = $stripped.Trim("private")
+                $stripped = $stripped.Trim()
+
+                if($inCase){
+                    $private += $stripped;
+                    #echo ("PRIVATE: " + $private + " line: "+$lineNumber)
+                }else{
+                    $global += $stripped;
+                    #echo ("GLOBAL: " + $global + " line: "+$lineNumber)
+                }
             }
         }
 
