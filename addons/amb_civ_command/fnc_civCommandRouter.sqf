@@ -37,8 +37,6 @@ nil
 #define SUPERCLASS ALIVE_fnc_baseClassHash
 #define MAINCLASS ALIVE_fnc_civCommandRouter
 
-private ["_result"];
-
 TRACE_1("commandRouter - input",_this);
 
 params [
@@ -46,12 +44,14 @@ params [
     ["_operation", "", [""]],
     ["_args", objNull, [objNull,[],"",0,true,false]]
 ];
-_result = true;
+private _result = true;
 
 #define MTEMPLATE "ALiVE_CIV_COMMAND_ROUTER_%1"
 
 switch(_operation) do {
+
     case "init": {
+
         if (isServer) then {
             // if server, initialise module game logic
             [_logic,"super"] call ALIVE_fnc_hashRem;
@@ -64,9 +64,13 @@ switch(_operation) do {
             [_logic,"isManaging",false] call ALIVE_fnc_hashSet; // select 2 select 2
             [_logic,"managerHandle",objNull] call ALIVE_fnc_hashSet; // select 2 select 3
         };
+
     };
+
     case "destroy": {
+
         [_logic, "debug", false] call MAINCLASS;
+
         if (isServer) then {
                 // if server
                 [_logic,"super"] call ALIVE_fnc_hashRem;
@@ -74,22 +78,29 @@ switch(_operation) do {
 
                 [_logic, "destroy"] call SUPERCLASS;
         };
+
     };
+
     case "debug": {
-        if(typeName _args != "BOOL") then {
+
+        if !(_args isEqualType true) then {
                 _args = [_logic,"debug", false] call ALIVE_fnc_hashGet;
         } else {
                 [_logic,"debug",_args] call ALIVE_fnc_hashSet;
         };
+
         _result = _args;
+
     };
+
     case "pause": {
-        if(typeName _args != "BOOL") then {
+
+        if !(_args isEqualType true) then {
             // if no new value was provided return current setting
             _args = [_logic,"pause",objNull,false] call ALIVE_fnc_OOsimpleOperation;
         } else {
                 // if a new value was provided set groups list
-                ASSERT_TRUE(typeName _args == "BOOL",str typeName _args);
+                ASSERT_TRUE(_args isEqualType true,str typeName _args);
 
                 private ["_state"];
                 _state = [_logic,"pause",objNull,false] call ALIVE_fnc_OOsimpleOperation;
@@ -99,16 +110,18 @@ switch(_operation) do {
                 _args = [_logic,"pause",_args,false] call ALIVE_fnc_OOsimpleOperation;
                 ["ALiVE Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_DumpR;
         };
-        _result = _args;
-    };
-    case "state": {
-        private["_state"];
 
-        if(typeName _args != "ARRAY") then {
+        _result = _args;
+
+    };
+
+    case "state": {
+
+        if !(_args isEqualType []) then {
 
             // Save state
 
-            _state = [] call ALIVE_fnc_hashCreate;
+            private _state = [] call ALIVE_fnc_hashCreate;
 
             {
                 if(!(_x == "super") && !(_x == "class")) then {
@@ -119,33 +132,31 @@ switch(_operation) do {
             _result = _state;
 
         } else {
-            ASSERT_TRUE(typeName _args == "ARRAY",str typeName _args);
+            ASSERT_TRUE(_args isEqualType [],str typeName _args);
 
             // Restore state
             {
                 [_logic,_x,[_args,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
             } forEach (_args select 1);
         };
+
     };
+
     case "activate": {
-        if(typeName _args == "ARRAY") then {
 
-            private ["_agent","_commands","_agentID","_activeCommand","_commandName",
-            "_commandType","_commandArgs","_debug","_commandState","_handle","_isManaging"];
+        if(_args isEqualType []) then {
 
-            _agent = _args select 0;
-            _commands = _args select 1;
+            _args params ["_agent","_commands"];
 
-            _agentID = _agent select 2 select 3; //[_agent,"agentID"] call ALIVE_fnc_hashGet;
+            private _agentID = _agent select 2 select 3; //[_agent,"agentID"] call ALIVE_fnc_hashGet;
 
             // get the active command vars
-            _activeCommand = _commands select 0;
-            _commandName = _activeCommand select 0;
-            _commandType = _activeCommand select 1;
-            _commandArgs = _activeCommand select 2;
+            private _activeCommand = _commands select 0;
 
-            _debug = _logic select 2 select 0; //[logic,"debug"] call ALIVE_fnc_hashGet;
-            _commandState = _logic select 2 select 1; //[logic,"commandState"] call ALIVE_fnc_hashGet;
+            _activeCommand params ["_commandName","_commandType","_commandArgs"];
+
+            private _debug = _logic select 2 select 0; //[logic,"debug"] call ALIVE_fnc_hashGet;
+            private _commandState = _logic select 2 select 1; //[logic,"commandState"] call ALIVE_fnc_hashGet;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
@@ -158,12 +169,12 @@ switch(_operation) do {
             switch(_commandType) do {
                 case "fsm": {
                     // exec the command FSM and store the handle on the internal command states hash
-                    _handle = [_agent, _commandArgs, true] execFSM format["\x\alive\addons\amb_civ_command\%1.fsm",_commandName];
+                    private _handle = [_agent, _commandArgs, true] execFSM format["\x\alive\addons\amb_civ_command\%1.fsm",_commandName];
                     [_commandState, _agentID, [_handle, _activeCommand]] call ALIVE_fnc_hashSet;
                 };
                 case "spawn": {
                     // spawn the command script and store the handle on the internal command states hash
-                    _handle = [_agent, _commandArgs, true] spawn (call compile _commandName);
+                    private _handle = [_agent, _commandArgs, true] spawn (call compile _commandName);
                     [_commandState, _agentID, [_handle, _activeCommand]] call ALIVE_fnc_hashSet;
                 };
                 case "managed": {
@@ -171,7 +182,7 @@ switch(_operation) do {
                     [_commandState, _agentID, [_agent, _activeCommand]] call ALIVE_fnc_hashSet;
 
                     // if the managed commands loop is not running start it
-                    _isManaging = _logic select 2 select 2;
+                    private _isManaging = _logic select 2 select 2;
                     if!(_isManaging) then {
                         [_logic,"startManagement"] call MAINCLASS;
                     };
@@ -186,30 +197,27 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
         };
+
     };
+
     case "deactivate": {
-        if(typeName _args == "ARRAY") then {
 
-            private ["_agent","_agentID","_debug","_commandState","_activeCommandState",
-            "_handle","_activeCommand","_commandName","_commandType","_commandArgs","_isManaging"];
+        if(_args isEqualType []) then {
 
-            _agent = _args;
+            private _agent = _args;
+            private _agentID = _agent select 2 select 3; //[_logic,"agentID"] call ALIVE_fnc_hashGet;
 
-            _agentID = _agent select 2 select 3; //[_logic,"agentID"] call ALIVE_fnc_hashGet;
-
-            _debug = _logic select 2 select 0;
-            _commandState = _logic select 2 select 1;
+            private _debug = _logic select 2 select 0;
+            private _commandState = _logic select 2 select 1;
 
             // does the profile have currently active commands
             if(_agentID in (_commandState select 1)) then {
-                _activeCommandState = [_commandState, _agentID] call ALIVE_fnc_hashGet;
+                private _activeCommandState = [_commandState, _agentID] call ALIVE_fnc_hashGet;
 
                 // get the active command vars
-                _handle = _activeCommandState select 0;
-                _activeCommand = _activeCommandState select 1;
-                _commandName = _activeCommand select 0;
-                _commandType = _activeCommand select 1;
-                _commandArgs = _activeCommand select 2;
+                _activeCommandState params ["_handle","_activeCommand"];
+
+                _activeCommand params ["_commandName","_commandType","_commandArgs"];
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
@@ -248,20 +256,20 @@ switch(_operation) do {
                 // if there are no active commands shut down the
                 // management loop if it is running
                 if(count (_commandState select 1) == 0) then {
-                    _isManaging = _logic select 2 select 2;
+                    private _isManaging = _logic select 2 select 2;
                     if(_isManaging) then {
                         [_logic,"stopManagement"] call MAINCLASS;
                     };
                 };
             };
         };
+
     };
+
     case "startManagement": {
 
-        private ["_debug","_commandState","_handle","_env"];
-
-        _debug = _logic select 2 select 0;
-        _commandState = _logic select 2 select 1;
+        private _debug = _logic select 2 select 0;
+        private _commandState = _logic select 2 select 1;
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -270,17 +278,13 @@ switch(_operation) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-        _env = call ALIVE_fnc_getEnvironment;
+        private _env = call ALIVE_fnc_getEnvironment;
 
         // spawn the manager thread
-        _handle = [_logic, _debug, _commandState] spawn {
+        private _handle = [_logic, _debug, _commandState] spawn {
 
-            private ["_debug","_commandState","_activeCommand","_agent","_agentID","_commandType","_commandName","_commandArgs","_iterationCount","_nextState","_nextStateArgs"];
-
-            _logic = _this select 0;
-            _debug = _this select 1;
-            _commandState = _this select 2;
-            _iterationCount = 0;
+            params ["_logic","_debug","_commandState"];
+            private _iterationCount = 0;
 
             // start the manager loop
             waituntil {
@@ -288,7 +292,7 @@ switch(_operation) do {
                 if!([_logic, "pause"] call MAINCLASS) then {
 
                     // get current environment settings
-                    _env = call ALIVE_fnc_getEnvironment;
+                    private _env = call ALIVE_fnc_getEnvironment;
 
                     // get current global civilian population posture
                     [] call ALIVE_fnc_getGlobalPosture;
@@ -296,10 +300,10 @@ switch(_operation) do {
 
                     // for each of the internal commands
                     {
-                        _activeCommand = _x;
+                        private _activeCommand = _x;
 
-                        _agent = _activeCommand select 0;
-                        _agentID = _agent select 2 select 3; //[_logic,"agentID"] call ALIVE_fnc_hashGet;
+                        private _agent = _activeCommand select 0;
+                        private _agentID = _agent select 2 select 3; //[_logic,"agentID"] call ALIVE_fnc_hashGet;
 
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
@@ -310,7 +314,7 @@ switch(_operation) do {
                         // DEBUG -------------------------------------------------------------------------------------
 
                         _activeCommand = _activeCommand select 1;
-                        _commandType = _activeCommand select 1;
+                        private _commandType = _activeCommand select 1;
 
                         /*
                         ["ALiVE Command Router - Active Command: %1",_commandType] call ALIVE_fnc_dump;
@@ -319,8 +323,8 @@ switch(_operation) do {
 
                         // if we are a managed command
                         if(_commandType == "managed") then {
-                            _commandName = _activeCommand select 0;
-                            _commandArgs = _activeCommand select 2;
+                            private _commandName = _activeCommand select 0;
+                            private _commandArgs = _activeCommand select 2;
 
                             // DEBUG -------------------------------------------------------------------------------------
                             if(_debug) then {
@@ -331,8 +335,8 @@ switch(_operation) do {
 
                             // command state set, continue with the command
                             if(count _activeCommand > 3) then {
-                                _nextState = _activeCommand select 3;
-                                _nextStateArgs = _activeCommand select 4;
+                                private _nextState = _activeCommand select 3;
+                                private _nextStateArgs = _activeCommand select 4;
 
                                 /*
                                 ["ALiVE Command Router - Next State: %1",_nextState] call ALIVE_fnc_dump;
@@ -379,12 +383,11 @@ switch(_operation) do {
         [_logic,"managerHandle",_handle] call ALIVE_fnc_hashSet;
 
     };
+
     case "stopManagement": {
 
-        private ["_debug","_handle"];
-
-        _debug = _logic select 2 select 0;
-        _handle = _logic select 2 select 3;
+        private _debug = _logic select 2 select 0;
+        private _handle = _logic select 2 select 3;
 
         if!(scriptDone _handle) then {
             terminate _handle;
@@ -399,10 +402,15 @@ switch(_operation) do {
             ["ALiVE Civ Command Router - Command Manager Stopped"] call ALIVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
+
     };
+
     default {
         _result = [_logic, _operation, _args] call SUPERCLASS;
     };
+
 };
+
 TRACE_1("civCommandRouter - output",_result);
+
 _result;

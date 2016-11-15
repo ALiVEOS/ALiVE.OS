@@ -41,6 +41,7 @@ if(_debug) then {
 // DEBUG -------------------------------------------------------------------------------------
 
 switch (_state) do {
+
     case "init":{
 
         // DEBUG -------------------------------------------------------------------------------------
@@ -80,7 +81,9 @@ switch (_state) do {
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
+
     };
+
     case "arm":{
 
         // DEBUG -------------------------------------------------------------------------------------
@@ -116,7 +119,9 @@ switch (_state) do {
             _nextState = "target";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
+
     };
+
     case "target":{
 
         // DEBUG -------------------------------------------------------------------------------------
@@ -137,7 +142,7 @@ switch (_state) do {
 
                 [_agent, getPosASL _target] call ALiVE_fnc_doMoveRemote;
 
-                _timer = time;
+                private _timer = time;
 
                 waituntil {
                     sleep 0.5;
@@ -178,7 +183,9 @@ switch (_state) do {
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
+
     };
+
     case "travel":{
 
         // DEBUG -------------------------------------------------------------------------------------
@@ -202,7 +209,9 @@ switch (_state) do {
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
+
     };
+
     case "done":{
 
         // DEBUG -------------------------------------------------------------------------------------
@@ -233,5 +242,7 @@ switch (_state) do {
         _nextStateArgs = [];
 
         [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+
     };
+
 };

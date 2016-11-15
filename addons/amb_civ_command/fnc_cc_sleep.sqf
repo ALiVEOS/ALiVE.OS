@@ -25,20 +25,13 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_agentData","_commandState","_commandName","_args","_state","_debug","_agentID","_agent","_nextState","_nextStateArgs"];
+params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
 
-_agentData = _this select 0;
-_commandState = _this select 1;
-_commandName = _this select 2;
-_args = _this select 3;
-_state = _this select 4;
-_debug = _this select 5;
+private _agentID = _agentData select 2 select 3;
+private _agent = _agentData select 2 select 5;
 
-_agentID = _agentData select 2 select 3;
-_agent = _agentData select 2 select 5;
-
-_nextState = _state;
-_nextStateArgs = [];
+private _nextState = _state;
+private _nextStateArgs = [];
 
 
 // DEBUG -------------------------------------------------------------------------------------
@@ -48,9 +41,8 @@ if(_debug) then {
 // DEBUG -------------------------------------------------------------------------------------
 
 switch (_state) do {
-    case "init":{
 
-        private ["_minTimeout","_maxTimeout","_homePosition","_timeout","_timer"];
+    case "init":{
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -60,24 +52,24 @@ switch (_state) do {
 
         _agent setVariable ["ALIVE_agentBusy", true, false];
 
-        _minTimeout = _args select 0;
-        _maxTimeout = _args select 1;
+        _args params ["_minTimeout","_maxTimeout"];
 
-        _homePosition = _agentData select 2 select 10;
+        private _homePosition = _agentData select 2 select 10;
 
         [_agent] call ALIVE_fnc_agentSelectSpeedMode;
         [_agent, _homePosition] call ALiVE_fnc_doMoveRemote;
 
-        _timeout = _minTimeout + floor(random _maxTimeout);
-        _timer = 0;
+        private _timeout = _minTimeout + floor(random _maxTimeout);
+        private _timer = 0;
 
         _nextState = "travel";
         _nextStateArgs = [_timeout, _timer];
 
         [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+
     };
+
     case "travel":{
-        private ["_dayState","_music","_light"];
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -87,12 +79,12 @@ switch (_state) do {
 
         if(_agent call ALiVE_fnc_unitReadyRemote) then {
 
-            _dayState = ALIVE_currentEnvironment select 0;
+            private _dayState = ALIVE_currentEnvironment select 0;
 
             if(_dayState == "EVENING" || _dayState == "NIGHT") then {
 
                 if(_agent getVariable ["ALIVE_agentHouseMusicOn",false]) then {
-                    _music = _agent getVariable "ALIVE_agentHouseMusic";
+                    private _music = _agent getVariable "ALIVE_agentHouseMusic";
                     deleteVehicle _music;
                     _agent setVariable ["ALIVE_agentHouseMusic", objNull, false];
                     _agent setVariable ["ALIVE_agentHouseMusicOn", true, false];
@@ -102,7 +94,7 @@ switch (_state) do {
             if(_dayState == "EVENING" || _dayState == "NIGHT") then {
 
                 if(_agent getVariable ["ALIVE_agentHouseLightOn",false]) then {
-                    _light = _agent getVariable "ALIVE_agentHouseLight";
+                    private _light = _agent getVariable "ALIVE_agentHouseLight";
                     deleteVehicle _light;
                     _agent setVariable ["ALIVE_agentHouseLight", objNull, false];
                     _agent setVariable ["ALIVE_agentHouseLightOn", false, false];
@@ -116,10 +108,10 @@ switch (_state) do {
 
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
-    };
-    case "sleep":{
 
-        private ["_timeout","_timer"];
+    };
+
+    case "sleep":{
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -127,8 +119,7 @@ switch (_state) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-        _timeout = _args select 0;
-        _timer = _args select 1;
+        _args params ["_timeout","_timer"];
 
         if(_timer > _timeout || (ALIVE_currentEnvironment select 0 == "DAY")) then
         {
@@ -142,7 +133,9 @@ switch (_state) do {
 
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
+
     };
+
     case "done":{
 
         // DEBUG -------------------------------------------------------------------------------------
@@ -157,5 +150,7 @@ switch (_state) do {
         _nextStateArgs = [];
 
         [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+
     };
+
 };

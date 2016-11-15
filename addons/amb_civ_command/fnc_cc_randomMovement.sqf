@@ -25,20 +25,13 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_agentData","_commandState","_commandName","_args","_state","_debug","_agentID","_agent","_nextState","_nextStateArgs"];
+params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
 
-_agentData = _this select 0;
-_commandState = _this select 1;
-_commandName = _this select 2;
-_args = _this select 3;
-_state = _this select 4;
-_debug = _this select 5;
+private _agentID = _agentData select 2 select 3;
+private _agent = _agentData select 2 select 5;
 
-_agentID = _agentData select 2 select 3;
-_agent = _agentData select 2 select 5;
-
-_nextState = _state;
-_nextStateArgs = [];
+private _nextState = _state;
+private _nextStateArgs = [];
 
 
 // DEBUG -------------------------------------------------------------------------------------
@@ -48,9 +41,8 @@ if(_debug) then {
 // DEBUG -------------------------------------------------------------------------------------
 
 switch (_state) do {
-    case "init":{
 
-        private ["_maxDistance","_homePosition","_agentPosition","_startPosition","_positions","_distance","_position"];
+    case "init":{
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -60,10 +52,12 @@ switch (_state) do {
 
         _agent setVariable ["ALIVE_agentBusy", true, false];
 
-        _maxDistance = _args select 0;
+        private _maxDistance = _args select 0;
 
-        _homePosition = _agentData select 2 select 10;
-        _agentPosition = getPosASL _agent;
+        private _homePosition = _agentData select 2 select 10;
+        private _agentPosition = getPosASL _agent;
+
+        private ["_startPosition"];
 
         if(_agentPosition distance _homePosition > 100) then {
             _startPosition = _homePosition;
@@ -71,16 +65,16 @@ switch (_state) do {
             _startPosition = _agentPosition;
         };
 
-        _positions = [];
+        private _positions = [];
 
         for "_i" from 0 to (5) do
         {
-            _distance = random _maxDistance;
-            _position = [_startPosition, _distance] call ALIVE_fnc_getRandomPositionLand;
-            _positions set [count _positions, _position];
+            private _distance = random _maxDistance;
+            private _position = [_startPosition, _distance] call ALIVE_fnc_getRandomPositionLand;
+            _positions pushback _position;
         };
 
-        _position = _positions call BIS_fnc_arrayPop;
+        private _position = _positions call BIS_fnc_arrayPop;
         [_agent] call ALIVE_fnc_agentSelectSpeedMode;
         [_agent, _position] call ALiVE_fnc_doMoveRemote;
 
@@ -88,10 +82,10 @@ switch (_state) do {
         _nextStateArgs = [_positions];
 
         [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-    };
-    case "walk":{
 
-        private ["_positions","_position"];
+    };
+
+    case "walk":{
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -99,7 +93,7 @@ switch (_state) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-        _positions = _args select 0;
+        private _positions = _args select 0;
 
         if(count _positions == 0) then
         {
@@ -110,7 +104,7 @@ switch (_state) do {
         {
             if(_agent call ALiVE_fnc_unitReadyRemote) then
             {
-                _position = _positions call BIS_fnc_arrayPop;
+                private _position = _positions call BIS_fnc_arrayPop;
                 [_agent] call ALIVE_fnc_agentSelectSpeedMode;
                 [_agent, _position] call ALiVE_fnc_doMoveRemote;
 
@@ -119,7 +113,9 @@ switch (_state) do {
                 [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
             };
         };
+
     };
+
     case "done":{
 
         // DEBUG -------------------------------------------------------------------------------------
@@ -134,5 +130,7 @@ switch (_state) do {
         _nextStateArgs = [];
 
         [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+
     };
+
 };

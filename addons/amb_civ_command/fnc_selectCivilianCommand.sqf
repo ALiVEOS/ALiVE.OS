@@ -24,22 +24,20 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_agentData","_debug","_agent","_dayState","_dayCommand","_eveningCommand","_nightCommand",
-"_idleCommand","_commandName","_command","_probability","_timeProbability","_diceRoll","_args",
-"_agentCluster","_clusterHostilityLevel","_agentID"];
+params [
+    "_agentData",
+    ["_debug", false]
+];
 
-_agentData = _this select 0;
-_debug = if(count _this > 1) then {_this select 1} else {false};
-
-_agent = _agentData select 2 select 5;
-_dayState = ALIVE_currentEnvironment select 0;
+private _agent = _agentData select 2 select 5;
+private _dayState = ALIVE_currentEnvironment select 0;
 
 // set initial fall back commands
 
-_dayCommand = "randomMovement";
-_eveningCommand = "housework";
-_nightCommand = "sleep";
-_idleCommand = "idle";
+private _dayCommand = "randomMovement";
+private _eveningCommand = "housework";
+private _nightCommand = "sleep";
+private _idleCommand = "idle";
 
 
 // setup all possible commands available to agents
@@ -82,8 +80,8 @@ if(count (ALIVE_civCommands select 1) > 0) then {
 
     // check global posture adjust command probability accordingly
 
-    _agentCluster = [ALIVE_clusterHandler, "getCluster", _agentData select 2 select 9] call ALIVE_fnc_clusterHandler;
-    _clusterHostilityLevel = [_agentCluster, "posture", 0] call ALIVE_fnc_hashGet;
+    private _agentCluster = [ALIVE_clusterHandler, "getCluster", _agentData select 2 select 9] call ALIVE_fnc_clusterHandler;
+    private _clusterHostilityLevel = [_agentCluster, "posture", 0] call ALIVE_fnc_hashGet;
     [_agentData, "posture", _clusterHostilityLevel] call ALIVE_fnc_hashSet;
     _agent setVariable ["posture", _clusterHostilityLevel];
 
@@ -136,11 +134,13 @@ if(count (ALIVE_civCommands select 1) > 0) then {
     };
 
     // select a random command
-    _commandName = selectRandom ALIVE_availableCivCommands;
-    _command = [ALIVE_civCommands, _commandName] call ALIVE_fnc_hashGet;
+    private _commandName = selectRandom ALIVE_availableCivCommands;
+    private _command = [ALIVE_civCommands, _commandName] call ALIVE_fnc_hashGet;
 
     // get the probability for the command for the current time of day
-    _probability = _command select 2;
+    private _probability = _command select 2;
+
+    private ["_timeProbability"];
 
     switch(_dayState) do {
         case "DAY": {
@@ -156,12 +156,12 @@ if(count (ALIVE_civCommands select 1) > 0) then {
 
     // roll the probability dice
 
-    _diceRoll = random 1;
+    private _diceRoll = random 1;
 
 
     // DEBUG -------------------------------------------------------------------------------------
     if(_debug) then {
-        _agentID = _agentData select 2 select 3;
+        private _agentID = _agentData select 2 select 3;
         ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
         ["ALIVE Select Civilian Command [%1]", _agentID] call ALIVE_fnc_dump;
         ["ALIVE Select Civilian Command - Time of day: %1", _dayState] call ALIVE_fnc_dump;
@@ -173,7 +173,7 @@ if(count (ALIVE_civCommands select 1) > 0) then {
     // random command dice roll success run the random command
 
     if(_diceRoll < _timeProbability) then {
-        _args = + _command select 3;
+        private _args = + _command select 3;
         [_agentData, "setActiveCommand", [_command select 0, _command select 1,_args]] call ALIVE_fnc_civilianAgent;
     }else{
 
@@ -194,14 +194,15 @@ if(count (ALIVE_civCommands select 1) > 0) then {
                     _command = [ALIVE_civCommands, _nightCommand] call ALIVE_fnc_hashGet;
                 };
             };
-            _args = + _command select 3;
+
+            private _args = + _command select 3;
             [_agentData, "setActiveCommand", [_command select 0, _command select 1,_args]] call ALIVE_fnc_civilianAgent;
         }else{
 
             // secondary dice roll failed fall back to idle state
 
             _command = [ALIVE_civCommands, _idleCommand] call ALIVE_fnc_hashGet;
-            _args = + _command select 3;
+            private _args = + _command select 3;
             [_agentData, "setActiveCommand", [_command select 0, _command select 1,_args]] call ALIVE_fnc_civilianAgent;
         };
     }

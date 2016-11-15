@@ -41,6 +41,7 @@ if(_debug) then {
 // DEBUG -------------------------------------------------------------------------------------
 
 switch (_state) do {
+
     case "init":{
 
         // DEBUG -------------------------------------------------------------------------------------
@@ -78,6 +79,7 @@ switch (_state) do {
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
+
     };
 
     case "move":{
@@ -148,6 +150,7 @@ switch (_state) do {
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
+
     };
 
     case "travel":{
@@ -173,6 +176,7 @@ switch (_state) do {
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
+
     };
 
     case "done":{
@@ -205,5 +209,7 @@ switch (_state) do {
         _nextStateArgs = [];
 
         [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+
     };
+
 };
