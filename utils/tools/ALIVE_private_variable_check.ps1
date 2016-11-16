@@ -146,7 +146,7 @@ foreach ($file in $files)
 
         if ($paramsContinues){
             $tmp = $line
-            $tmp = $tmp.Substring(0,$tmp.indexOf('['))
+            $tmp = $tmp.Substring(0,$tmp.indexOf('"'))
 
             $stripped = $line.Trim($tmp)
             $stripped = $stripped.Trim(';')
