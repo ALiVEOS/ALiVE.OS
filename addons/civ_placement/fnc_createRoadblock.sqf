@@ -33,25 +33,27 @@ to do: Current issue if road ahead bends.
 =======================================================================================================================
 */
 
-private ["_grp","_pos","_roadpos","_vehicle","_vehtype","_blockers","_roads","_fac","_debug","_roadConnectedTo", "_connectedRoad","_direction","_checkpoint","_checkpointComp","_roadpoints","_num"];
+private ["_vehicle","_checkpoint"];
 
-_pos = [_this, 0, [0,0,0], [[]]] call BIS_fnc_param;
-_radius = [_this, 1, 100, [-1]] call BIS_fnc_param;
-_num = [_this, 2, 1, [-1]] call BIS_fnc_param;
-_debug = [_this, 3, false, [true]] call BIS_fnc_param;
+params [
+    ["_pos", [0,0,0], [[]]],
+    ["_radius", 100, [-1]],
+    ["_num", 1, [-1]],
+    ["_debug", false, [true]]
+];
 
 if (isnil QGVAR(ROADBLOCKS)) then {GVAR(ROADBLOCKS) = []};
 
 if (_num > 5) then {_num = 5};
 
-_fac = [_pos, _radius] call ALiVE_fnc_getDominantFaction;
+private _fac = [_pos, _radius] call ALiVE_fnc_getDominantFaction;
 
 if (isNil "_fac") then {
     _fac = "OPF_G_F";
 };
 
 // Find all the checkpoints pos
-_roads = _pos nearRoads (_radius + 20);
+private _roads = _pos nearRoads (_radius + 20);
 // scan road positions and find those on outskirts
 {
     if (_x distance _pos < (_radius - 10)) then {
@@ -63,38 +65,36 @@ if (count _roads == 0) exitWith {["ALiVE No roads found for roadblock! Cannot cr
 
 if (_num > count _roads) then {_num = count _roads};
 
-_roadpoints = [];
+private _roadpoints = [];
 
 for "_i" from 1 to _num do {
-    private "_roadsel";
     while {
-        _roadsel = _roads call BIS_fnc_selectRandom;
+        private _roadsel = selectRandom _roads;
         (count _roads > 1 && ({_roadsel distance _x < 60} count _roadpoints) != 0)
     } do {
         _roads = _roads - [_roadsel];
     };
 
     _roadpoints pushback _roadsel;
-
 };
 
 for "_j" from 1 to (count _roadpoints) do {
 
-    _roadpos = _roadpoints select (_j - 1);
+    private _roadpos = _roadpoints select (_j - 1);
 
     if ({_roadpos distance _x < 60} count GVAR(ROADBLOCKS) > 0) exitWith {["ALiVE Roadblock to close to another! Not created..."] call ALiVE_fnc_Dump};
 
     // check for non road position
     if (!isOnRoad _roadpos) exitWith {["ALiVE Roadblock is not on a road! Not created..."] call ALiVE_fnc_Dump};
 
-    _roadConnectedTo = roadsConnectedTo _roadpos;
+    private _roadConnectedTo = roadsConnectedTo _roadpos;
 
     if (count _roadConnectedTo == 0) exitWith {["ALiVE Selected road for roadblock is a dead end! Not created..."] call ALiVE_fnc_Dump};
 
     GVAR(ROADBLOCKS) pushBack _roadpos;
 
-    _connectedRoad = _roadConnectedTo select 0;
-    _direction = [_roadpos, _connectedRoad] call BIS_fnc_DirTo;
+    private _connectedRoad = _roadConnectedTo select 0;
+    private _direction = [_roadpos, _connectedRoad] call BIS_fnc_DirTo;
 
     if (_direction < 181) then {_direction = _direction + 180} else {_direction = _direction - 180;};
 
@@ -109,7 +109,7 @@ for "_j" from 1 to (count _roadpoints) do {
     };
 
     // Get a composition
-    _compType = "Military";
+    private _compType = "Military";
 
     If (_fac call ALiVE_fnc_factionSide == RESISTANCE) then {
         _compType = "Guerrilla";
@@ -118,9 +118,8 @@ for "_j" from 1 to (count _roadpoints) do {
     If (!isNil "ALiVE_compositions_roadblocks") then {
         _checkpoint = [ALiVE_compositions_roadblocks call BIS_fnc_selectRandom, _CompType] call ALiVE_fnc_findComposition;
     } else {
-        private ["_cat","_size"];
-        _cat = ["CheckpointsBarricades"];
-        _size = ["Medium","Small"];
+        private _cat = ["CheckpointsBarricades"];
+        private _size = ["Medium","Small"];
         _checkpoint = selectRandom ([_compType, _cat, _size] call ALiVE_fnc_getCompositions);
     };
 
@@ -128,7 +127,7 @@ for "_j" from 1 to (count _roadpoints) do {
     [_checkpoint,_roadpos,_direction,_fac] spawn {[_this select 0, position (_this select 1), _this select 2, _this select 3] call ALiVE_fnc_spawnComposition};
 
     // Place a vehicle
-    _vehtype = ([1, _fac, "Car"] call ALiVE_fnc_findVehicleType) call BIS_fnc_selectRandom;
+    private _vehtype = ([1, _fac, "Car"] call ALiVE_fnc_findVehicleType) call BIS_fnc_selectRandom;
     if (!isNil "_vehtype") then {
         _vehicle = createVehicle [_vehtype, [position _roadpos, 10,30,2,0,5,0] call BIS_fnc_findsafepos, [], 0, "NONE"];
         _vehicle setDir _direction;
@@ -137,8 +136,8 @@ for "_j" from 1 to (count _roadpoints) do {
 
     // Spawn static virtual group if Profile System is loaded and get them to defend
     if !(isnil "ALiVE_ProfileHandler") then {
-        _group = ["Infantry",_fac] call ALIVE_fnc_configGetRandomGroup;
-        _guards = [_group, position _roadpos, random(360), true, _fac, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+        private _group = ["Infantry",_fac] call ALIVE_fnc_configGetRandomGroup;
+        private _guards = [_group, position _roadpos, random(360), true, _fac, true] call ALIVE_fnc_createProfilesFromGroupConfig;
 
         {
             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
@@ -150,15 +149,12 @@ for "_j" from 1 to (count _roadpoints) do {
     // else spawn real AI and get them to defend
     } else {
         [_vehicle, _roadpos, _fac] spawn {
-            private["_roadpos","_fac","_vehicle","_side","_blockers"];
+            params ["_vehicle","_roadpos","_fac"];
 
-            _vehicle = _this select 0;
-            _roadpos = _this select 1;
-            _fac = _this select 2;
-            _side = _fac call ALiVE_fnc_factionSide;
+            private _side = _fac call ALiVE_fnc_factionSide;
 
             // Spawn group and get them to defend
-            _blockers = [getpos _roadpos, _side, "Infantry", _fac] call ALiVE_fnc_randomGroupByType;
+            private _blockers = [getpos _roadpos, _side, "Infantry", _fac] call ALiVE_fnc_randomGroupByType;
             _blockers addVehicle _vehicle;
 
             sleep 1;
@@ -168,4 +164,3 @@ for "_j" from 1 to (count _roadpoints) do {
     };
 
 };
-

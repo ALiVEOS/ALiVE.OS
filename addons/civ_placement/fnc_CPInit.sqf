@@ -22,15 +22,13 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_logic","_moduleID"];
-
-PARAMS_1(_logic);
+params ["_logic"];
 //DEFAULT_PARAM(1,_syncunits, []);
 
 // Confirm init function available
 ASSERT_DEFINED("ALIVE_fnc_CP","Main function missing");
 
-_moduleID = [_logic, true] call ALIVE_fnc_dumpModuleInit;
+private _moduleID = [_logic, true] call ALIVE_fnc_dumpModuleInit;
 
 [_logic, "init"] call ALIVE_fnc_CP;
 
