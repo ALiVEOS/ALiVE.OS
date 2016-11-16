@@ -23,14 +23,13 @@ See Also:
 Author:
 ARJay
 ---------------------------------------------------------------------------- */
-private ["_agent","_probabilityNormal","_probabilityFull","_posture","_diceRoll"];
 
-_agent = _this select 0;
+private _agent = _this select 0;
 
-_probabilityNormal = 0.1;
-_probabilityFull = 0.05;
+private _probabilityNormal = 0.1;
+private _probabilityFull = 0.05;
 
-_posture = _agent getVariable ["posture", 0];
+private _posture = _agent getVariable ["posture", 0];
 
 if(_posture < 10) then {_probabilityNormal = 0.1; _probabilityFull = 0.05};
 if(_posture >= 10 && {_posture < 40}) then {_probabilityNormal = 0.2; _probabilityFull = 0.1};
@@ -59,7 +58,7 @@ switch(_posture) do {
 };
 */
 
-_diceRoll = random 1;
+private _diceRoll = random 1;
 
 _agent setSpeedMode "LIMITED";
 

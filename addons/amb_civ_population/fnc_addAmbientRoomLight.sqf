@@ -23,15 +23,14 @@ See Also:
 Author:
 ARJay
 ---------------------------------------------------------------------------- */
-private ["_building","_colours","_colour","_brightness","_light"];
 
-_building = _this select 0;
+private _building = _this select 0;
 
-_colours = [[255,217,66],[255,162,41],[221,219,206]];
-_colour = _colours select (random((count _colours)-1));
-_brightness = random 10 / 100;
+private _colours = [[255,217,66],[255,162,41],[221,219,206]];
+private _colour = _colours select (random((count _colours)-1));
+private _brightness = random 10 / 100;
 
-_light = "#lightpoint" createVehicle getPos _building;
+private _light = "#lightpoint" createVehicle getPos _building;
 
 if(isMultiplayer) then
 {

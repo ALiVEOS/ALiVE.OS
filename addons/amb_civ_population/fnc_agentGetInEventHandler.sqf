@@ -21,15 +21,14 @@ See Also:
 Author:
 ARJay
 ---------------------------------------------------------------------------- */
-private ["_unit","_getInUnit","_agentID","_agent","_position","_faction","_event","_eventID"];
 
-_unit = _this select 0;
-_getInUnit = _this select 2;
+private _unit = _this select 0;
+private _getInUnit = _this select 2;
 
 if(isPlayer _getInUnit) then {
 
-    _agentID = _unit getVariable "agentID";
-    _agent = [ALIVE_agentHandler, "getAgent", _agentID] call ALIVE_fnc_agentHandler;
+    private _agentID = _unit getVariable "agentID";
+    private _agent = [ALIVE_agentHandler, "getAgent", _agentID] call ALIVE_fnc_agentHandler;
 
     if (isnil "_agent") exitwith {};
 

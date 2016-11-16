@@ -24,26 +24,22 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_agent","_agentID","_agentData","_agentProfile","_clusterID","_cluster"];
+private _agent = _this select 0;
+private _agentID = _agent getVariable ["agentID", ""];
 
-_agent = _this select 0;
-
-_agentID = _agent getVariable ["agentID", ""];
-
-_agentData = [];
+private _agentData = [];
 
 if(_agentID != "") then {
-    _agentProfile = [ALIVE_agentHandler, "getAgent", _agentID] call ALIVE_fnc_agentHandler;
+    private _agentProfile = [ALIVE_agentHandler, "getAgent", _agentID] call ALIVE_fnc_agentHandler;
 
-    _clusterID = _agentProfile select 2 select 9;
-    _cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
+    private _clusterID = _agentProfile select 2 select 9;
+    private _cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
 
-    _agentData set [0, _agentProfile select 2 select 12]; // agent posture
-    _agentData set [1, _agentProfile select 2 select 10]; // home position
-    _agentData set [2, _cluster select 2 select 2]; // home town center position
-    _agentData set [3, _cluster select 2 select 3]; // home town radius
-    _agentData set [4, _cluster select 2 select 9]; // home town posture
-
+    _agentData set [0, _agentProfile select 2 select 12];   // agent posture
+    _agentData set [1, _agentProfile select 2 select 10];   // home position
+    _agentData set [2, _cluster select 2 select 2];         // home town center position
+    _agentData set [3, _cluster select 2 select 3];         // home town radius
+    _agentData set [4, _cluster select 2 select 9];         // home town posture
 };
 
 //["RESULT: %1",_agentData] call ALIVE_fnc_dump;

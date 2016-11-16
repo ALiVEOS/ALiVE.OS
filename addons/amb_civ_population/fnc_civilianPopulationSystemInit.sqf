@@ -20,28 +20,26 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_logic","_debug","_spawnRadius","_spawnTypeJetRadius","_spawnTypeHeliRadius","_activeLimiter","_hostilityWest","_hostilityEast","_hostilityIndep","_moduleID","_ambientCivilianRoles"];
-
-PARAMS_1(_logic);
+params ["_logic"];
 
 // Confirm init function available
 ASSERT_DEFINED("ALIVE_fnc_civilianPopulationSystem","Main function missing");
 
-_moduleID = [_logic, true] call ALIVE_fnc_dumpModuleInit;
+private _moduleID = [_logic, true] call ALIVE_fnc_dumpModuleInit;
 
 if(isServer) then {
 
     MOD(amb_civ_population) = _logic;
 
-    _debug = call compile (_logic getVariable ["debug","false"]);
-    _spawnRadius = parseNumber (_logic getVariable ["spawnRadius","1500"]);
-    _spawnTypeHeliRadius = parseNumber (_logic getVariable ["spawnTypeHeliRadius","1500"]);
-    _spawnTypeJetRadius = parseNumber (_logic getVariable ["spawnTypeJetRadius","0"]);
-    _activeLimiter = parseNumber (_logic getVariable ["activeLimiter","30"]);
-    _hostilityWest = parseNumber (_logic getVariable ["hostilityWest","0"]);
-    _hostilityEast = parseNumber (_logic getVariable ["hostilityEast","0"]);
-    _hostilityIndep = parseNumber (_logic getVariable ["hostilityIndep","0"]);
-    _ambientCivilianRoles = call compile (_logic getVariable ["ambientCivilianRoles","[]"]);
+    private _debug = call compile (_logic getVariable ["debug","false"]);
+    private _spawnRadius = parseNumber (_logic getVariable ["spawnRadius","1500"]);
+    private _spawnTypeHeliRadius = parseNumber (_logic getVariable ["spawnTypeHeliRadius","1500"]);
+    private _spawnTypeJetRadius = parseNumber (_logic getVariable ["spawnTypeJetRadius","0"]);
+    private _activeLimiter = parseNumber (_logic getVariable ["activeLimiter","30"]);
+    private _hostilityWest = parseNumber (_logic getVariable ["hostilityWest","0"]);
+    private _hostilityEast = parseNumber (_logic getVariable ["hostilityEast","0"]);
+    private _hostilityIndep = parseNumber (_logic getVariable ["hostilityIndep","0"]);
+    private _ambientCivilianRoles = call compile (_logic getVariable ["ambientCivilianRoles","[]"]);
 
     ALIVE_civilianHostility = [] call ALIVE_fnc_hashCreate;
     [ALIVE_civilianHostility, "WEST", _hostilityWest] call ALIVE_fnc_hashSet;
@@ -65,6 +63,7 @@ if(isServer) then {
     PublicVariable QMOD(amb_civ_population);
 
     [ALIVE_civilianPopulationSystem,"start"] call ALIVE_fnc_civilianPopulationSystem;
+
 };
 
 [_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;

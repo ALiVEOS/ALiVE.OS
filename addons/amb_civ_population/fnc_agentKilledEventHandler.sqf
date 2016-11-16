@@ -21,17 +21,15 @@ See Also:
 Author:
 ARJay
 ---------------------------------------------------------------------------- */
-private ["_unit","_killer","_agentID","_agent","_killerSide","_position","_faction","_event","_eventID","_side"];
 
-_unit = _this select 0;
-_killer = _this select 1;
+params ["_unit","_killer"];
 
-_agentID = _unit getVariable "agentID";
-_agent = [ALIVE_agentHandler, "getAgent", _agentID] call ALIVE_fnc_agentHandler;
+private _agentID = _unit getVariable "agentID";
+private _agent = [ALIVE_agentHandler, "getAgent", _agentID] call ALIVE_fnc_agentHandler;
 
 [_unit,""] call ALIVE_fnc_switchMove;
 
-_killerSide = str(side (group _killer));
+private _killerSide = str(side (group _killer));
 
 if (isnil "_agent" || {!isServer}) exitwith {};
 
@@ -41,9 +39,9 @@ if (isnil "_agent" || {!isServer}) exitwith {};
 
 // log event
 
-_position = getPosASL _unit;
-_faction = _agent select 2 select 7;
-_side = _agent select 2 select 8;
+private _position = getPosASL _unit;
+private _faction = _agent select 2 select 7;
+private _side = _agent select 2 select 8;
 
-_event = ['AGENT_KILLED', [_position,_faction,_side,_killerSide],"Agent"] call ALIVE_fnc_event;
-_eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+private _event = ['AGENT_KILLED', [_position,_faction,_side,_killerSide],"Agent"] call ALIVE_fnc_event;
+private _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;

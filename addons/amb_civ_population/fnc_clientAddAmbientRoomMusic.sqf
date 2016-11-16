@@ -23,11 +23,8 @@ See Also:
 Author:
 ARJay
 ---------------------------------------------------------------------------- */
-private ["_building","_source","_track"];
 
-_building = _this select 0;
-_source = _this select 1;
-_track = _this select 2;
+params ["_building","_source","_track"];
 
 _source attachTo [_building,[1,1,1]];
 hideObject _source;
