@@ -19,29 +19,29 @@ foreach ($file in $files)
 
     $stream.WriteLine("Parsing : " + $file)
     $content = Get-Content $file
-    $lineNumber = 1;
+    $lineNumber = 1
     $global = @()
     $private = @()
     $defined = @()
     $privateContinues = $false
     $paramsContinues = $false
-    $subSwitch = false;
+    $subSwitch = $false
     $inCase = $false
     $isComment = $false
-    $openingCount = 0;
-    $closingCount = 0;
+    $openingCount = 0
+    $closingCount = 0
 
     foreach ($line in $content)
     {
-        $line = $line.Trim();
+        $line = $line.Trim()
 
         if($line.StartsWith('case')){
             if(!$inCase){
                 $inCase = $true
                 $private = @()
                 $privateBlock = ""
-                $openingCount = 0;
-                $closingCount = 0;
+                $openingCount = 0
+                $closingCount = 0
                 #echo ("CASE starts: " + $line + " line: "+$lineNumber)
             }
         }
@@ -66,26 +66,26 @@ foreach ($file in $files)
                 $split = $stripped.split(",")
 
                 if($inCase){
-                    $private += $split;
+                    $private += $split
                     #echo ("PRIVATE: " + $private + " line: "+$lineNumber)
                 }else{
-                    $global += $split;
+                    $global += $split
                     #echo ("GLOBAL: " + $global + " line: "+$lineNumber)
                 }
 
                 if (!($line.EndsWith("];"))){
-                    $privateContinues = $true;
+                    $privateContinues = $true
                 }
             } else {
-                $stripped = $line.Substring(0,$line.indexOf("="))
+                $stripped = $line.Substring(0,$line.indexOf('='))
                 $stripped = $stripped.Trim("private")
                 $stripped = $stripped.Trim()
 
                 if($inCase){
-                    $private += $stripped;
+                    $private += $stripped
                     #echo ("PRIVATE: " + $private + " line: "+$lineNumber)
                 }else{
-                    $global += $stripped;
+                    $global += $stripped
                     #echo ("GLOBAL: " + $global + " line: "+$lineNumber)
                 }
             }
@@ -100,10 +100,10 @@ foreach ($file in $files)
             $split = $stripped.split(",")
 
             if($inCase){
-                $private += $split;
+                $private += $split
                 #echo ("PRIVATE: " + $private + " line: "+$lineNumber)
             }else{
-                $global += $split;
+                $global += $split
                 #echo ("GLOBAL: " + $global + " line: "+$lineNumber)
             }
 
@@ -113,9 +113,7 @@ foreach ($file in $files)
         }
 
         if ($line.contains("params")){
-
-            $tmp = $line
-            $tmp = $tmp.Substring(0,$tmp.indexOf('['))
+            $tmp = $line.Substring(0,$line.indexOf('['))
 
             $stripped = $line.Trim($tmp)
             $stripped = $stripped.Trim(';')
@@ -130,45 +128,50 @@ foreach ($file in $files)
             {
                 if ($string.contains("_")){
                     if($inCase){
-                        $private += $string;
+                        $private += $string
                         #echo ("PRIVATE: " + $private + " line: "+$lineNumber)
                     }else{
-                        $global += $string;
+                        $global += $string
                         #echo ("GLOBAL: " + $global + " line: "+$lineNumber)
                     }
                 }
             }
 
             if (!($line.EndsWith("];"))){
-                $paramsContinues = $true;
+                $paramsContinues = $true
             }
         }
 
         if ($paramsContinues){
-            $tmp = $line
-            $tmp = $tmp.Substring(0,$tmp.indexOf('"'))
 
-            $stripped = $line.Trim($tmp)
-            $stripped = $stripped.Trim(';')
-            $stripped = $stripped.Trim()
-            $stripped = $stripped.Trim('[')
-            $stripped = $stripped.Trim(']')
-            $stripped = $stripped.Replace('"','')
-            $stripped = $stripped.Replace(' ','')
-            $split = $stripped.split(",")
+            $quoteIndex = $line.indexOf('"')
 
-            foreach ($string in $split)
-            {
-                if ($string.contains("_")){
-                    if($inCase){
-                        $private += $string;
-                        #echo ("PRIVATE: " + $private + " line: "+$lineNumber)
-                    }else{
-                        $global += $string;
-                        #echo ("GLOBAL: " + $global + " line: "+$lineNumber)
+            if ($quoteIndex.CompareTo(-1)){
+                $tmp = $line.Substring(0,$line.indexOf('"'))
+
+                $stripped = $line.Trim($tmp)
+                $stripped = $stripped.Trim(';')
+                $stripped = $stripped.Trim()
+                $stripped = $stripped.Trim('[')
+                $stripped = $stripped.Trim(']')
+                $stripped = $stripped.Replace('"','')
+                $stripped = $stripped.Replace(' ','')
+                $split = $stripped.split(",")
+
+                foreach ($string in $split)
+                {
+                    if ($string.contains("_")){
+                        if($inCase){
+                            $private += $string
+                            #echo ("PRIVATE: " + $private + " line: "+$lineNumber)
+                        }else{
+                            $global += $string
+                            #echo ("GLOBAL: " + $global + " line: "+$lineNumber)
+                        }
                     }
                 }
-            }
+
+            };
 
             if($line.EndsWith("];")){
                 $paramsContinues = $false
@@ -188,7 +191,7 @@ foreach ($file in $files)
                 if($line.Contains("=")){
                     $var = $line.split("=")
                     $var = $var[0]
-                    $var = $var.Trim();
+                    $var = $var.Trim()
                     $var = $var.Replace(' ','')
                     $defined = $global + $private
                     if($defined -notcontains $var){
