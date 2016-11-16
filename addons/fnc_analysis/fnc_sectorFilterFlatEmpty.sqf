@@ -26,27 +26,24 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_sectors","_err","_filteredSectors","_sector","_sectorData","_flatEmpty"];
+private _sectors = _this select 0;
 
-_sectors = _this select 0;
+private _err = format["sector filter best places requires an array of sectors - %1",_sectors];
+ASSERT_TRUE(_sectors isEqualType [], _err);
 
-_err = format["sector filter best places requires an array of sectors - %1",_sectors];
-ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
-
-_filteredSectors = [];
+private _filteredSectors = [];
 
 {
-    _sector = _x;
-    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+    private _sector = _x;
+    private _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
 
     if("flatEmpty" in (_sectorData select 1)) then {
-        _flatEmpty = [_sectorData, "flatEmpty"] call ALIVE_fnc_hashGet;
+        private _flatEmpty = [_sectorData, "flatEmpty"] call ALIVE_fnc_hashGet;
 
         if(count _flatEmpty > 0) then {
-            _filteredSectors set [count _filteredSectors, _sector];
+            _filteredSectors pushback _sector;
         };
     };
-
 } forEach _sectors;
 
 _filteredSectors

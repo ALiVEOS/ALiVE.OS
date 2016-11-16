@@ -33,31 +33,30 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_sectors","_clusterCategory","_clusterType","_err","_filteredSectors","_sector","_sectorData","_clusterData","_clusterTypeData"];
+params [
+    "_sectors"
+    ["_clusterCategory", "clustersMil"],
+    ["_clusterType", "consolidated"]
+];
 
-_sectors = _this select 0;
-_clusterCategory = if(count _this > 1) then {_this select 1} else {'clustersMil'};
-_clusterType = if(count _this > 2) then {_this select 2} else {'consolidated'};
+private _err = format["sector filter clusters requires an array of sectors - %1",_sectors];
+ASSERT_TRUE(_sectors isEqualType [], _err);
 
-_err = format["sector filter clusters requires an array of sectors - %1",_sectors];
-ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
-
-_filteredSectors = [];
+private _filteredSectors = [];
 
 {
-    _sector = _x;
-    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+    private _sector = _x;
+    private _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
 
     if(_clusterCategory in (_sectorData select 1)) then {
 
-        _clusterData = [_sectorData, _clusterCategory] call ALIVE_fnc_hashGet;
-        _clusterTypeData = [_clusterData, _clusterType] call ALIVE_fnc_hashGet;
+        private _clusterData = [_sectorData, _clusterCategory] call ALIVE_fnc_hashGet;
+        private _clusterTypeData = [_clusterData, _clusterType] call ALIVE_fnc_hashGet;
 
         if(count _clusterTypeData > 0) then {
-            _filteredSectors set [count _filteredSectors, _sector];
+            _filteredSectors pushback _sector;
         };
     };
-
 } forEach _sectors;
 
 _filteredSectors

@@ -32,27 +32,27 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_sectors","_roadType","_err","_filteredSectors","_sector","_sectorData","_roads","_roadData"];
+params [
+    "_sectors",
+    ["_roadType", "road"]
+];
 
-_sectors = _this select 0;
-_roadType = if(count _this > 1) then {_this select 1} else {'road'};
+private _err = format["sector filter roads requires an array of sectors - %1",_sectors];
+ASSERT_TRUE(_sectors isEqualType [], _err);
 
-_err = format["sector filter roads requires an array of sectors - %1",_sectors];
-ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
-
-_filteredSectors = [];
+private _filteredSectors = [];
 
 {
-    _sector = _x;
-    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+    private _sector = _x;
+    private _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
 
     if("roads" in (_sectorData select 1)) then {
 
-        _roads = [_sectorData, "roads"] call ALIVE_fnc_hashGet;
-        _roadData = [_roads, _roadType] call ALIVE_fnc_hashGet;
+        private _roads = [_sectorData, "roads"] call ALIVE_fnc_hashGet;
+        private _roadData = [_roads, _roadType] call ALIVE_fnc_hashGet;
 
         if(count _roadData > 0) then {
-            _filteredSectors set [count _filteredSectors, _sector];
+            _filteredSectors pushback _sector;
         };
     };
 

@@ -28,24 +28,21 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_sector","_sectors","_gridID","_err","_centerPosition","_id","_bounds","_dimensions","_gridPosition","_gridWidth","_sectorWidth","_grid"];
+params ["_sector","_sectors","_gridID"];
 
-_sector = _this select 0;
-_sectors = _this select 1;
-_gridID = _this select 2;
-_err = format["sector analysis terrain requires a of sector - %1",_sector];
-ASSERT_TRUE(typeName _sector == "ARRAY",_err);
+private _err = format["sector analysis terrain requires a of sector - %1",_sector];
+ASSERT_TRUE(_sector isEqualType [], _err);
 
-_centerPosition = [_sector, "center"] call ALIVE_fnc_sector;
-_id = [_sector, "id"] call ALIVE_fnc_sector;
-_bounds = [_sector, "bounds"] call ALIVE_fnc_sector;
-_dimensions = [_sector, "dimensions"] call ALIVE_fnc_sector;
+private _centerPosition = [_sector, "center"] call ALIVE_fnc_sector;
+private _id = [_sector, "id"] call ALIVE_fnc_sector;
+private _bounds = [_sector, "bounds"] call ALIVE_fnc_sector;
+private _dimensions = [_sector, "dimensions"] call ALIVE_fnc_sector;
 
-_gridPosition = _bounds select 0;
-_gridWidth = (_dimensions select 0) * 2;
-_sectorWidth = _gridWidth / _sectors;
+private _gridPosition = _bounds select 0;
+private _gridWidth = (_dimensions select 0) * 2;
+private _sectorWidth = _gridWidth / _sectors;
 
-_grid = [nil, "create"] call ALIVE_fnc_sectorGrid;
+private _grid = [nil, "create"] call ALIVE_fnc_sectorGrid;
 [_grid, "init"] call ALIVE_fnc_sectorGrid;
 [_grid, "id",_gridID] call ALIVE_fnc_sectorGrid;
 [_grid, "gridPosition", [_gridPosition select 0, _gridPosition select 1]] call ALIVE_fnc_sectorGrid;

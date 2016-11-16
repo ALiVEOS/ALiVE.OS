@@ -31,40 +31,39 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_sectors","_isActive","_err","_filteredSectors","_sector","_sectorData","_active"];
+params [
+    "_sectors",
+    ["_isActive", true]
+]
 
-_sectors = _this select 0;
-_isActive = if(count _this > 1) then {_this select 1} else {true};
+private _err = format["sector filter active requires an array of sectors - %1",_sectors];
+ASSERT_TRUE(_sectors isEqualto [], _err);
 
-_err = format["sector filter active requires an array of sectors - %1",_sectors];
-ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
-
-_filteredSectors = [];
+private _filteredSectors = [];
 
 {
-    _sector = _x;
-    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+    private _sector = _x;
+    private _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
 
     if("active" in (_sectorData select 1)) then {
 
-        _active = [_sectorData, "active"] call ALIVE_fnc_hashGet;
+        private _active = [_sectorData, "active"] call ALIVE_fnc_hashGet;
 
         if(_isActive) then {
             if(count _active > 0) then {
-                _filteredSectors set [count _filteredSectors, _sector];
+                _filteredSectors pushback _sector;
             };
         }else{
             if(count _active == 0) then {
-                _filteredSectors set [count _filteredSectors, _sector];
+                _filteredSectors pushback _sector;
             };
         };
 
     }else{
         if!(_isActive) then {
-            _filteredSectors set [count _filteredSectors, _sector];
+            _filteredSectors pushback _sector;
         };
     };
-
 } forEach _sectors;
 
 _filteredSectors

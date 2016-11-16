@@ -28,12 +28,12 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_grid","_export","_debug","_sectors","_exportString","_subGridRoads","_sector","_sectorData","_sectorID","_subGrid","_subGridSectors"];
-
-_grid = _this select 0;
-_sectors = _this select 1;
-_export = if(count _this > 2) then {_this select 2} else {false};
-_debug = if(count _this > 3) then {_this select 3} else {false};
+params [
+    "_grid",
+    "_sectors",
+    ["_export", false],
+    ["_debug", false]
+];
 
 // reset existing analysis data
 if(count _sectors == 0) then {
@@ -52,9 +52,9 @@ if(_debug) then {
 // DEBUG -------------------------------------------------------------------------------------
 
 {
-    _sector = _x;
-    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
-    _sectorID = [_sector, "id"] call ALIVE_fnc_sector;
+    private _sector = _x;
+    private _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+    private _sectorID = [_sector, "id"] call ALIVE_fnc_sector;
 
     [_sector, "debug", true] call ALIVE_fnc_sector;
 
@@ -66,8 +66,8 @@ if(_debug) then {
     };
     // DEBUG -------------------------------------------------------------------------------------
 
-    _subGrid = [_sector,10,format["Grid_%1",_forEachIndex]] call ALIVE_fnc_sectorSubGrid;
-    _subGridSectors = [_subGrid, "sectors"] call ALIVE_fnc_sectorGrid;
+    private _subGrid = [_sector,10,format["Grid_%1",_forEachIndex]] call ALIVE_fnc_sectorSubGrid;
+    private _subGridSectors = [_subGrid, "sectors"] call ALIVE_fnc_sectorGrid;
 
     // DEBUG -------------------------------------------------------------------------------------
     if(_debug) then {
@@ -95,58 +95,50 @@ if(_debug) then {
 
     // copy all sub grid sector data into this parent sector data
 
-    private ["_elevationSamples","_elevationSamplesLand","_elevationSamplesSea","_elevation","_terrainSamples","_terrain","_landTerrain","_shoreTerrain","_seaTerrain",
-    "_forestPlaces","_hillPlaces","_meadowPlaces","_treePlaces","_housePlaces","_seaPlaces",
-    "_flatEmptySamples","_roadSamples","_crossroadSamples","_terminusSamples","_bestPlaces","_roads","_terrainSamples","_currentElevation"];
-
-    _elevationSamplesLand = [];
-
-    _elevation = 0;
-    _elevationSamples = [];
-    _terrain = "";
-    _landTerrain = [];
-    _shoreTerrain = [];
-    _seaTerrain = [];
-    _forestPlaces = [];
-    _hillPlaces = [];
+    private _elevation = 0;
+    private _elevationSamples = [];
+    private _terrain = "";
+    private _landTerrain = [];
+    private _shoreTerrain = [];
+    private _seaTerrain = [];
+    private _forestPlaces = [];
+    private _hillPlaces = [];
     /*
-    _meadowPlaces = [];
-    _treePlaces = [];
-    _housePlaces = [];
-    _seaPlaces = [];
+    private _meadowPlaces = [];
+    private _treePlaces = [];
+    private _housePlaces = [];
+    private _seaPlaces = [];
     */
-    _flatEmptySamples = [];
-    _roadSamples = [];
-    _crossroadSamples = [];
-    _terminusSamples = [];
+    private _flatEmptySamples = [];
+    private _roadSamples = [];
+    private _crossroadSamples = [];
+    private _terminusSamples = [];
 
     {
-        private ["_subGridSector","_subGridSectorData","_subGridElevationSamples","_subGridTerrainSamples","_subGridLand","_subGridShore","_subGridSea"];
+        private _subGridSector = _x;
+        private _subGridSectorData = [_subGridSector, "data"] call ALIVE_fnc_sector;
+        private _subGridElevationSamples = [_subGridSectorData, "elevationSamples"] call ALIVE_fnc_hashGet;
+        private _subGridTerrainSamples = [_subGridSectorData, "terrainSamples"] call ALIVE_fnc_hashGet;
 
-        _subGridSector = _x;
-        _subGridSectorData = [_subGridSector, "data"] call ALIVE_fnc_sector;
-        _subGridElevationSamples = [_subGridSectorData, "elevationSamples"] call ALIVE_fnc_hashGet;
-        _subGridTerrainSamples = [_subGridSectorData, "terrainSamples"] call ALIVE_fnc_hashGet;
+        private _subGridLand = [_subGridTerrainSamples, "land"] call ALIVE_fnc_hashGet;
+        private _subGridShore = [_subGridTerrainSamples, "shore"] call ALIVE_fnc_hashGet;
+        private _subGridSea = [_subGridTerrainSamples, "sea"] call ALIVE_fnc_hashGet;
 
-        _subGridLand = [_subGridTerrainSamples, "land"] call ALIVE_fnc_hashGet;
-        _subGridShore = [_subGridTerrainSamples, "shore"] call ALIVE_fnc_hashGet;
-        _subGridSea = [_subGridTerrainSamples, "sea"] call ALIVE_fnc_hashGet;
+        _landTerrain append _subGridLand;
+        _shoreTerrain append _subGridShore;
+        _seaTerrain append _subGridSea;
 
-        _landTerrain = _landTerrain + _subGridLand;
-        _shoreTerrain = _shoreTerrain + _subGridShore;
-        _seaTerrain = _seaTerrain + _subGridSea;
-
-        _elevationSamples = _elevationSamples + _subGridElevationSamples;
-
+        _elevationSamples append _subGridElevationSamples;
     } forEach _subGridSectors;
 
-    _elevationSamplesLand = [];
-    _elevationSamplesSea = [];
+    private _elevationSamplesLand = [];
+    private _elevationSamplesSea = [];
 
     // calculate average elevation for the sector
     {
-        _currentElevation = _x select 1;
+        private _currentElevation = _x select 1;
         _elevation = _elevation + _currentElevation;
+
         if(_currentElevation >= 0) then {
             _elevationSamplesLand set [count _elevationSamplesLand, _x];
         }else{
@@ -227,43 +219,40 @@ if(_debug) then {
 
         // copy all sub grid sector data into this parent sector data
         {
-            private ["_subGridSector","_subGridSectorData","_subGridFlatEmptySamples","_subGridRoadSamples","_subGridRoad","_subGridCrossroad","_subGridTerminus",
-            "_subGridBestPlaces","_subGridForestPlaces","_subGridHillPlaces","_subGridMeadowPlaces","_subGridTreePlaces","_subGridHousePlaces","_subGridSeaPlaces","_countIsWater"];
+            private _subGridSector = _x;
+            private _subGridSectorData = [_subGridSector, "data"] call ALIVE_fnc_sector;
+            private _subGridFlatEmptySamples = [_subGridSectorData, "flatEmpty"] call ALIVE_fnc_hashGet;
+            private _subGridRoads = [_subGridSectorData, "roads"] call ALIVE_fnc_hashGet;
+            private _subGridBestPlaces = [_subGridSectorData, "bestPlaces"] call ALIVE_fnc_hashGet;
 
-            _subGridSector = _x;
-            _subGridSectorData = [_subGridSector, "data"] call ALIVE_fnc_sector;
-            _subGridFlatEmptySamples = [_subGridSectorData, "flatEmpty"] call ALIVE_fnc_hashGet;
-            _subGridRoads = [_subGridSectorData, "roads"] call ALIVE_fnc_hashGet;
-            _subGridBestPlaces = [_subGridSectorData, "bestPlaces"] call ALIVE_fnc_hashGet;
-
-            _subGridForestPlaces = [_subGridBestPlaces, "forest"] call ALIVE_fnc_hashGet;
-            _subGridHillPlaces = [_subGridBestPlaces, "exposedHills"] call ALIVE_fnc_hashGet;
+            private _subGridForestPlaces = [_subGridBestPlaces, "forest"] call ALIVE_fnc_hashGet;
+            private _subGridHillPlaces = [_subGridBestPlaces, "exposedHills"] call ALIVE_fnc_hashGet;
             /*
-            _subGridMeadowPlaces = [_subGridBestPlaces, "meadow"] call ALIVE_fnc_hashGet;
-            _subGridTreePlaces = [_subGridBestPlaces, "exposedTrees"] call ALIVE_fnc_hashGet;
-            _subGridHousePlaces = [_subGridBestPlaces, "houses"] call ALIVE_fnc_hashGet;
-            _subGridSeaPlaces = [_subGridBestPlaces, "sea"] call ALIVE_fnc_hashGet;
+            private _subGridMeadowPlaces = [_subGridBestPlaces, "meadow"] call ALIVE_fnc_hashGet;
+            private _subGridTreePlaces = [_subGridBestPlaces, "exposedTrees"] call ALIVE_fnc_hashGet;
+            private _subGridHousePlaces = [_subGridBestPlaces, "houses"] call ALIVE_fnc_hashGet;
+            private _subGridSeaPlaces = [_subGridBestPlaces, "sea"] call ALIVE_fnc_hashGet;
             */
 
-            _subGridRoad = [_subGridRoads, "road"] call ALIVE_fnc_hashGet;
-            _subGridCrossroad = [_subGridRoads, "crossroad"] call ALIVE_fnc_hashGet;
-            _subGridTerminus = [_subGridRoads, "terminus"] call ALIVE_fnc_hashGet;
+            private _subGridRoad = [_subGridRoads, "road"] call ALIVE_fnc_hashGet;
+            private _subGridCrossroad = [_subGridRoads, "crossroad"] call ALIVE_fnc_hashGet;
+            private _subGridTerminus = [_subGridRoads, "terminus"] call ALIVE_fnc_hashGet;
 
-            _forestPlaces = _forestPlaces + _subGridForestPlaces;
-            _hillPlaces = _hillPlaces + _subGridHillPlaces;
+            private _forestPlaces = _forestPlaces + _subGridForestPlaces;
+            private _hillPlaces = _hillPlaces + _subGridHillPlaces;
             /*
-            _meadowPlaces = _meadowPlaces + _subGridMeadowPlaces;
-            _treePlaces = _treePlaces + _subGridTreePlaces;
-            _housePlaces = _housePlaces + _subGridHousePlaces;
-            _seaPlaces = _seaPlaces + _subGridSeaPlaces;
+            private _meadowPlaces = _meadowPlaces + _subGridMeadowPlaces;
+            private _treePlaces = _treePlaces + _subGridTreePlaces;
+            private _housePlaces = _housePlaces + _subGridHousePlaces;
+            private _seaPlaces = _seaPlaces + _subGridSeaPlaces;
             */
 
-            _roadSamples = _roadSamples + _subGridRoad;
-            _crossroadSamples = _crossroadSamples + _subGridCrossroad;
-            _terminusSamples = _terminusSamples + _subGridTerminus;
+            _roadSamples append _subGridRoad;
+            _crossroadSamples append _subGridCrossroad;
+            _terminusSamples append _subGridTerminus;
 
             if(count (_subGridFlatEmptySamples select 0) > 0) then {
-                _flatEmptySamples = _flatEmptySamples + _subGridFlatEmptySamples;
+                _flatEmptySamples append _subGridFlatEmptySamples;
             };
 
         } forEach _subGridSectors;
@@ -272,12 +261,12 @@ if(_debug) then {
 
     // store all data
 
-    _terrainSamples = [] call ALIVE_fnc_hashCreate;
+    private _terrainSamples = [] call ALIVE_fnc_hashCreate;
     [_terrainSamples,"land",_landTerrain] call ALIVE_fnc_hashSet;
     [_terrainSamples,"sea",_seaTerrain] call ALIVE_fnc_hashSet;
     [_terrainSamples,"shore",_shoreTerrain] call ALIVE_fnc_hashSet;
 
-    _bestPlaces = [] call ALIVE_fnc_hashCreate;
+    private _bestPlaces = [] call ALIVE_fnc_hashCreate;
     [_bestPlaces,"forest",_forestPlaces] call ALIVE_fnc_hashSet;
     [_bestPlaces,"exposedHills",_hillPlaces] call ALIVE_fnc_hashSet;
     /*
@@ -287,7 +276,7 @@ if(_debug) then {
     [_bestPlaces,"sea",_seaPlaces] call ALIVE_fnc_hashSet;
     */
 
-    _roads = [] call ALIVE_fnc_hashCreate;
+    private _roads = [] call ALIVE_fnc_hashCreate;
     [_roads,"road",_roadSamples] call ALIVE_fnc_hashSet;
     [_roads,"crossroad",_crossroadSamples] call ALIVE_fnc_hashSet;
     [_roads,"terminus",_terminusSamples] call ALIVE_fnc_hashSet;
@@ -351,6 +340,4 @@ if(_debug) then {
     [_subGrid, "destroy"] call ALIVE_fnc_sectorGrid;
 
     [_sector, "debug", false] call ALIVE_fnc_sector;
-
-
 } forEach _sectors;

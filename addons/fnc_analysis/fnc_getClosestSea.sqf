@@ -27,33 +27,33 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_position","_radius","_result","_err", "_sector","_sectorData","_sectorTerrain","_sectorTerrainSamples","_samples","_sectors","_closest"];
+params [
+    "_position",
+    ["_closest", true]
+];
+//private _radius = _this select 1;
 
-_position = _this select 0;
-//_radius = _this select 1;
-if (count _this > 1) then {_closest = _this select 1;} else { _closest = true;};
+private _result = _position;
 
-_result = _position;
-
-_err = format["get closest sea requires a position array - %1",_position];
+private _err = format["get closest sea requires a position array - %1",_position];
 ASSERT_TRUE(typeName _position == "ARRAY",_err);
 //_err = format["get closest sea requires a radius scalar - %1",_radius];
 //ASSERT_TRUE(typeName _radius == "SCALAR",_err);
 
-_sector = [ALIVE_sectorGrid, "positionToSector", _position] call ALIVE_fnc_sectorGrid;
-_sectorData = [_sector, "data"] call ALIVE_fnc_hashGet;
+private _sector = [ALIVE_sectorGrid, "positionToSector", _position] call ALIVE_fnc_sectorGrid;
+private _sectorData = [_sector, "data"] call ALIVE_fnc_hashGet;
 
 if (isnil "_sectorData") exitwith {_position};
 
-_sectorTerrain = [_sectorData, "terrain"] call ALIVE_fnc_hashGet;
+private _sectorTerrain = [_sectorData, "terrain"] call ALIVE_fnc_hashGet;
 
 // the positions sector is terrain shore
 // we can get a sea position there
 if(_sectorTerrain == "SHORE" && _closest) then {
 
     //["GCS - sector terrain is shore"] call ALIVE_fnc_dump;
-    _sectorTerrainSamples = [_sectorData, "terrainSamples"] call ALIVE_fnc_hashGet;
-    _samples = [_sectorTerrainSamples, "sea"] call ALIVE_fnc_hashGet;
+    private _sectorTerrainSamples = [_sectorData, "terrainSamples"] call ALIVE_fnc_hashGet;
+    private _samples = [_sectorTerrainSamples, "sea"] call ALIVE_fnc_hashGet;
 
     if(count _samples > 0) then {
         //["GCS got sea samples: %1",_samples] call ALIVE_fnc_dump;
@@ -72,7 +72,7 @@ if(_sectorTerrain == "SHORE" && _closest) then {
 if(_sectorTerrain == "LAND" || !_closest) then {
 
     //["GCS - sector terrain is land"] call ALIVE_fnc_dump;
-    _sectors = [ALIVE_sectorGrid, "surroundingSectors", _position] call ALIVE_fnc_sectorGrid;
+    private _sectors = [ALIVE_sectorGrid, "surroundingSectors", _position] call ALIVE_fnc_sectorGrid;
 
     _sectors = [_sectors, "sea"] call ALIVE_fnc_sectorFilterTerrain;
     //["GCS - sea sectors %1", _sectors] call ALIVE_fnc_dump;

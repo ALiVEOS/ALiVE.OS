@@ -27,23 +27,26 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_sectors","_maxPositions","_vehicleClass","_sector","_result","_centerPosition","_dimensions","_radius","_emptyPositions","_position","_err"];
+params [
+    "_sectors"
+    ["_vehicleClass", "false"]
+];
 
-_sectors = _this select 0;
-_vehicleClass = if(count _this > 1) then {_this select 1} else {"false"};
-_err = format["sector analysis flat empty requires an array of sectors - %1",_sectors];
-ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
+private _err = format["sector analysis flat empty requires an array of sectors - %1",_sectors];
+ASSERT_TRUE(_sectors isEqualType [], _err);
 
 {
-    _sector = _x;
-    _centerPosition = [_sector, "center"] call ALIVE_fnc_sector;
-    _dimensions = [_sector, "dimensions"] call ALIVE_fnc_sector;
+    private _sector = _x;
+    private _centerPosition = [_sector, "center"] call ALIVE_fnc_sector;
+    private _dimensions = [_sector, "dimensions"] call ALIVE_fnc_sector;
 
-    _radius = _dimensions select 0;
+    private _radius = _dimensions select 0;
 
-    _emptyPositions = [];
+    private _emptyPositions = [];
 
-    if!(_vehicleClass == "false") then {
+    private ["_position"];
+
+    if !(_vehicleClass == "false") then {
         _position = _centerPosition findEmptyPosition[1, _radius, _vehicleClass];
     }else{
         _position = _centerPosition findEmptyPosition[1, _radius];
@@ -57,5 +60,4 @@ ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
 
     // store the result of the analysis on the sector instance
     [_sector, "data", ["flatEmpty",_emptyPositions]] call ALIVE_fnc_sector;
-
 } forEach _sectors;

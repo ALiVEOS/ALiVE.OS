@@ -56,86 +56,97 @@ _result = true;
 #define MTEMPLATE "ALiVE_PLOTSECTORS_%1"
 
 switch(_operation) do {
-        case "init": {
-                /*
-                MODEL - no visual just reference data
-                - nodes
-                - center
-                - size
-                */
 
-                if (isServer) then {
-                        // if server, initialise module game logic
-                        [_logic,"super"] call ALIVE_fnc_hashRem;
-                        [_logic,"class"] call ALIVE_fnc_hashRem;
-                        TRACE_1("After module init",_logic);
+    case "init": {
+        /*
+        MODEL - no visual just reference data
+        - nodes
+        - center
+        - size
+        */
 
-                        [_logic,"id","plotter"] call ALIVE_fnc_hashSet;
-                        [_logic,"plots",[]] call ALIVE_fnc_hashSet;
-                };
+        if (isServer) then {
+            // if server, initialise module game logic
+            [_logic,"super"] call ALIVE_fnc_hashRem;
+            [_logic,"class"] call ALIVE_fnc_hashRem;
+            TRACE_1("After module init",_logic);
 
-                /*
-                VIEW - purely visual
-                */
-
-                /*
-                CONTROLLER  - coordination
-                */
+            [_logic,"id","plotter"] call ALIVE_fnc_hashSet;
+            [_logic,"plots",[]] call ALIVE_fnc_hashSet;
         };
-        case "destroy": {
 
-                if (isServer) then {
+        /*
+        VIEW - purely visual
+        */
 
-                        // clear plots
-                        [_logic, "clear"] call MAINCLASS;
+        /*
+        CONTROLLER  - coordination
+        */
 
-                        // if server
-                        [_logic,"super"] call ALIVE_fnc_hashRem;
-                        [_logic,"class"] call ALIVE_fnc_hashRem;
+    };
 
-                        [_logic, "destroy"] call SUPERCLASS;
-                };
+    case "destroy": {
+
+        if (isServer) then {
+
+            // clear plots
+            [_logic, "clear"] call MAINCLASS;
+
+            // if server
+            [_logic,"super"] call ALIVE_fnc_hashRem;
+            [_logic,"class"] call ALIVE_fnc_hashRem;
+
+            [_logic, "destroy"] call SUPERCLASS;
 
         };
-        case "id": {
-                if(typeName _args == "STRING") then {
-                        [_logic,"id",_args] call ALIVE_fnc_hashSet;
-                };
 
-                _result = [_logic,"id"] call ALIVE_fnc_hashGet;
+    };
+
+    case "id": {
+
+        if(_args isEqualType "") then {
+            [_logic,"id",_args] call ALIVE_fnc_hashSet;
         };
-        case "plot": {
-                private["_sectors","_sector","_key","_plotterID","_plots","_plot"];
 
-                _sectors = _args select 0;
-                _key = _args select 1;
+        _result = [_logic,"id"] call ALIVE_fnc_hashGet;
 
-                _plotterID = [_logic,"id"] call ALIVE_fnc_hashGet;
+    };
 
-                _plots = [];
+    case "plot": {
 
-                {
-                    _sector = _x;
-                    _plot = [nil, "create"] call ALIVE_fnc_sectorPlot;
-                    [_plot, "plotterID", _plotterID] call ALIVE_fnc_sectorPlot;
-                    [_plot, "plot", [_sector, _key]] call ALIVE_fnc_sectorPlot;
-                    _plots set [count _plots, _plot];
-                } forEach _sectors;
+        _args params ["_sectors","_key"];
 
-                [_logic,"plots",_plots] call ALIVE_fnc_hashSet;
-        };
-        case "clear": {
-                private["_plots"];
+        private _plotterID = [_logic,"id"] call ALIVE_fnc_hashGet;
 
-                _plots = [_logic,"plots"] call ALIVE_fnc_hashGet;
+        private _plots = [];
 
-                {
-                    _result = [_x, "destroy", false] call ALIVE_fnc_sectorPlot;
-                } forEach _plots;
-        };
-        default {
-                _result = [_logic, _operation, _args] call SUPERCLASS;
-        };
+        {
+            private _sector = _x;
+            private _plot = [nil, "create"] call ALIVE_fnc_sectorPlot;
+            [_plot, "plotterID", _plotterID] call ALIVE_fnc_sectorPlot;
+            [_plot, "plot", [_sector, _key]] call ALIVE_fnc_sectorPlot;
+            _plots pushback _plot;
+        } forEach _sectors;
+
+        [_logic,"plots",_plots] call ALIVE_fnc_hashSet;
+
+    };
+
+    case "clear": {
+
+        private _plots = [_logic,"plots"] call ALIVE_fnc_hashGet;
+
+        {
+            _result = [_x, "destroy", false] call ALIVE_fnc_sectorPlot;
+        } forEach _plots;
+
+    };
+
+    default {
+        _result = [_logic, _operation, _args] call SUPERCLASS;
+    };
 };
+
 TRACE_1("plotSectors - output",_result);
+
 _result;
