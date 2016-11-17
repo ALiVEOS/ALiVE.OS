@@ -61,7 +61,7 @@ _group setVariable ["logic", _logic];
 _logic setVariable ["group", _group];
 
 // Assign artillery group to NEO_radio
-private _rounds = [_logic, "rounds"] call ALIVE_fnc_artillery;
+private _rounds = [_logic, "getRounds"] call ALIVE_fnc_artillery;
 leader _group setVariable ["NEO_radioArtyBatteryRounds", _rounds, true];
 private _a = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _side];
 _a set [count _a, [leader _group, _group, _callsign, _vehicles, _rounds]];

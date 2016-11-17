@@ -60,7 +60,7 @@ if (_audio) then {
 
 // TODO: Cleanup obsolete bits
 private _logic = _unit getVariable ["logic", objNull];
-[_logic, "fireMission", [_pos, _ord, _count, _rate, _dispersion]] call ALIVE_fnc_artillery;
+[_logic, "setFireMission", [_pos, _ord, _count, _rate, _dispersion]] call ALIVE_fnc_artillery;
 
 //NEW TASK
 _battery setVariable ["NEO_radioArtyNewTask", [_type, _ordnanceType, _rate, _count, _dispersion, _pos, _unit, _ord, _callsignPlayer, player], true];

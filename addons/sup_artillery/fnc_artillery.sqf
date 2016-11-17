@@ -31,8 +31,6 @@ marceldev89
 
 #define SUPERCLASS ALIVE_fnc_baseClass
 #define MAINCLASS ALIVE_fnc_artillery
-#define TYPE_ARTILLERY 0
-#define TYPE_MORTAR 1
 
 private _logic = param [0, objNull, [objNull, []]];
 private _operation = param [1, "", [""]];
@@ -66,8 +64,33 @@ switch (_operation) do {
         // Add artillery module to state machine
         ALIVE_sup_artillery_stateMachine_list pushBack _logic;
     };
-    // get available rounds
-    case "rounds": {
+    case "getFireMission": {
+        _result = _logic getVariable ["fireMission", []];
+    };
+    case "setFireMission": {
+        if (count _args == 0) exitWith { _result = false };
+
+        private _position = _args param [0, [0,0,0], [[]], 3];
+        private _roundType = _args param [1, "", [""]];
+        private _roundCount = _args param [2, 1, [1]];
+        private _delay = _args param [3, 5, [1]];
+        private _dispersion = _args param [4, 50, [1]];
+
+        private _fireMission = [] call ALIVE_fnc_hashCreate;
+        [_fireMission, "position", _position] call ALIVE_fnc_hashSet;
+        [_fireMission, "roundType", _roundType] call ALIVE_fnc_hashSet;
+        [_fireMission, "roundCount", _roundCount] call ALIVE_fnc_hashSet;
+        [_fireMission, "delay", _delay] call ALIVE_fnc_hashSet;
+        [_fireMission, "dispersion", _dispersion] call ALIVE_fnc_hashSet;
+        // Fire mission state
+        [_fireMission, "units", []] call ALIVE_fnc_hashSet;
+        [_fireMission, "unitIndex", -1] call ALIVE_fnc_hashSet;
+        [_fireMission, "roundsShot", -1] call ALIVE_fnc_hashSet;
+        [_fireMission, "nextRoundTime", -1] call ALIVE_fnc_hashSet;
+
+        _logic setVariable ["fireMission", _fireMission];
+    };
+    case "getRounds": {
         private _rounds = [
             ["HE", parseNumber (_logic getVariable ["artillery_he", "30"])],
             ["ILLUM", parseNumber (_logic getVariable ["artillery_illum", "30"])],
@@ -90,37 +113,6 @@ switch (_operation) do {
         } forEach _rounds;
 
         _result = _roundsAvailable;
-    };
-    // get/set fire mission
-    case "fireMission": {
-        if (count _args == 0) then {
-            _result = _logic getVariable ["fireMission", []];
-        } else {
-            private _position = _args param [0, [0,0,0], [[]], 3];
-            private _roundType = _args param [1, "", [""]];
-            private _roundCount = _args param [2, 1, [1]];
-            private _delay = _args param [3, 5, [1]];
-            private _dispersion = _args param [4, 50, [1]];
-
-            private _fireMission = [] call ALIVE_fnc_hashCreate;
-            [_fireMission, "position", _position] call ALIVE_fnc_hashSet;
-            [_fireMission, "roundType", _roundType] call ALIVE_fnc_hashSet;
-            [_fireMission, "roundCount", _roundCount] call ALIVE_fnc_hashSet;
-            [_fireMission, "delay", _delay] call ALIVE_fnc_hashSet;
-            [_fireMission, "dispersion", _dispersion] call ALIVE_fnc_hashSet;
-            // Fire mission state
-            [_fireMission, "units", []] call ALIVE_fnc_hashSet;
-            [_fireMission, "unitIndex", -1] call ALIVE_fnc_hashSet;
-            [_fireMission, "roundsShot", -1] call ALIVE_fnc_hashSet;
-            [_fireMission, "nextRoundTime", -1] call ALIVE_fnc_hashSet;
-
-            _logic setVariable ["fireMission", _fireMission];
-        };
-    };
-    // get position
-    case "position": {
-        private _group = _logic getVariable ["group", grpNull];
-        _result = position (leader _group);
     };
     case "hasFireMission": {
         private _fireMission = _logic getVariable ["fireMission", []];
