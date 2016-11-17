@@ -108,7 +108,7 @@ switch (_operation) do {
             [_fireMission, "roundCount", _roundCount] call ALIVE_fnc_hashSet;
             [_fireMission, "delay", _delay] call ALIVE_fnc_hashSet;
             [_fireMission, "dispersion", _dispersion] call ALIVE_fnc_hashSet;
-            // Defaults
+            // Fire mission state
             [_fireMission, "units", []] call ALIVE_fnc_hashSet;
             [_fireMission, "unitIndex", -1] call ALIVE_fnc_hashSet;
             [_fireMission, "roundsShot", -1] call ALIVE_fnc_hashSet;
@@ -136,7 +136,6 @@ switch (_operation) do {
         [_fireMission, "unitIndex", 0] call ALIVE_fnc_hashSet;
         [_fireMission, "roundsShot", 0] call ALIVE_fnc_hashSet;
         [_fireMission, "nextRoundTime", time] call ALIVE_fnc_hashSet;
-        /* _units doWatch [_fireMissionPos select 0, _fireMissionPos select 1, 9999]; */
         _units doWatch _fireMissionPos;
 
         _logic setVariable ["fireMission", _fireMission];
