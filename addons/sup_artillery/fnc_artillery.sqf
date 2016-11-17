@@ -116,6 +116,11 @@ switch (_operation) do {
     /*************
      ** METHODS **
      *************/
+    case "activate": {
+        if (!([_logic, "inRange"] call MAINCLASS)) then {
+            _logic setVariable ["moveToPos", [3744.56,4757.54,0]]; // TODO: Figure out best firing position
+        };
+    };
     case "execute": {
         private _group = _logic getVariable ["group", grpNull];
         private _units = (units _group) select {vehicle _x != _x && {gunner (vehicle _x) == _x}};
@@ -387,38 +392,6 @@ switch (_operation) do {
             waitUntil { scriptDone _handle };
             _group setVariable ["sup_artillery_deployed", true];
         };
-    };
-
-    /******************
-     ** STATEMACHINE **
-     ******************/
-    case "onIdle": {
-        private _group = _logic getVariable ["group", grpNull];
-        _group setVariable ["sup_artillery_inPosition", true];
-        _logic setVariable ["moveToPos", objNull];
-    };
-    case "onActive": {
-        if (!([_logic, "inRange"] call MAINCLASS)) then {
-            _logic setVariable ["moveToPos", [3744.56,4757.54,0]]; // TODO: Figure out best firing position
-        };
-    };
-    case "onFire": {
-        [_logic, "fire"] call MAINCLASS;
-    };
-    case "onMove": {
-        [_logic, "move"] call MAINCLASS;
-    };
-    case "onPack": {
-        [_logic, "pack"] call MAINCLASS;
-    };
-    case "onUnpack": {
-        [_logic, "unpack"] call MAINCLASS;
-    };
-    case "onExecute": {
-        [_logic, "execute"] call MAINCLASS;
-    };
-    case "onReturnToBase": {
-        [_logic, "returnToBase"] call MAINCLASS;
     };
 };
 

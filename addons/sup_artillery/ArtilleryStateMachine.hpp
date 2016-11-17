@@ -15,7 +15,7 @@ class ArtilleryStateMachine {
 
     class Active {
         onState = "";
-        onStateEntered = "[_this, 'onActive'] call ALIVE_fnc_artillery";
+        onStateEntered = "[_this, 'activate'] call ALIVE_fnc_artillery";
         onStateLeaving = "";
 
         class InRange {
@@ -33,7 +33,7 @@ class ArtilleryStateMachine {
 
     class Pack {
         onState = "";
-        onStateEntered = "[_this, 'onPack'] call ALIVE_fnc_artillery";
+        onStateEntered = "[_this, 'pack'] call ALIVE_fnc_artillery";
         onStateLeaving = "";
 
         class Packed {
@@ -45,7 +45,7 @@ class ArtilleryStateMachine {
 
     class Move {
         onState = "";
-        onStateEntered = "[_this, 'onMove'] call ALIVE_fnc_artillery";
+        onStateEntered = "[_this, 'move'] call ALIVE_fnc_artillery";
         onStateLeaving = "";
 
         class InPosition {
@@ -63,7 +63,7 @@ class ArtilleryStateMachine {
 
     class Unpack {
         onState = "";
-        onStateEntered = "[_this, 'onUnpack'] call ALIVE_fnc_artillery";
+        onStateEntered = "[_this, 'unpack'] call ALIVE_fnc_artillery";
         onStateLeaving = "";
 
         class Unpacked {
@@ -75,7 +75,7 @@ class ArtilleryStateMachine {
 
     class Execute {
         onState = "";
-        onStateEntered = "[_this, 'onExecute'] call ALIVE_fnc_artillery";
+        onStateEntered = "[_this, 'execute'] call ALIVE_fnc_artillery";
         onStateLeaving = "";
 
         class Fire {
@@ -93,7 +93,7 @@ class ArtilleryStateMachine {
 
     class Fire {
         onState = "";
-        onStateEntered = "[_this, 'onFire'] call ALIVE_fnc_artillery";
+        onStateEntered = "[_this, 'fire'] call ALIVE_fnc_artillery";
         onStateLeaving = "";
 
         class FireMissionComplete {
@@ -129,7 +129,7 @@ class ArtilleryStateMachine {
 
     class ReturnToBase {
         onState = "";
-        onStateEntered = "[_this, 'onReturnToBase'] call ALIVE_fnc_artillery";
+        onStateEntered = "[_this, 'returnToBase'] call ALIVE_fnc_artillery";
         onStateLeaving = "";
 
         class AtBase {
