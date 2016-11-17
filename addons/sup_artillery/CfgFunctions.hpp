@@ -16,6 +16,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\sup_artillery\fnc_artillerySpawn.sqf";
                 RECOMPILE;
             };
+            class artilleryFiredEH {
+                description = "Handles artillery fired events";
+                file = "\x\alive\addons\sup_artillery\fnc_artilleryFiredEH.sqf";
+                RECOMPILE;
+            };
         };
     };
 };
