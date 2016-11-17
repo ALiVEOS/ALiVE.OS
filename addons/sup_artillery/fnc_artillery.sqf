@@ -53,12 +53,45 @@ switch (_operation) do {
         _logic setVariable ["fireMission", []];
 
         // Spawn and initialize artillery units
-        [_logic, "spawn"] call MAINCLASS;
-    };
+        [_logic] call ALIVE_fnc_artillerySpawn;
 
-    /****************
-     ** PROPERTIES **
-     ****************/
+        // Start state machine if it hasn't already
+        if (isNil "ALIVE_sup_artillery_stateMachine") then {
+            ALIVE_sup_artillery_stateMachine_list = [];
+            ALIVE_sup_artillery_stateMachine = [
+                configFile >> "ArtilleryStateMachine"
+            ] call CBA_statemachine_fnc_createFromConfig;
+        };
+
+        // Add artillery module to state machine
+        ALIVE_sup_artillery_stateMachine_list pushBack _logic;
+    };
+    // get available rounds
+    case "rounds": {
+        private _rounds = [
+            ["HE", parseNumber (_logic getVariable ["artillery_he", "30"])],
+            ["ILLUM", parseNumber (_logic getVariable ["artillery_illum", "30"])],
+            ["SMOKE", parseNumber (_logic getVariable ["artillery_smoke", "30"])],
+            ["SADARM", parseNumber (_logic getVariable ["artillery_guided", "30"])],
+            ["CLUSTER", parseNumber (_logic getVariable ["artillery_cluster", "30"])],
+            ["LASER", parseNumber (_logic getVariable ["artillery_lg", "30"])],
+            ["MINE", parseNumber (_logic getVariable ["artillery_mine", "30"])],
+            ["AT MINE", parseNumber (_logic getVariable ["artillery_atmine", "30"])],
+            ["ROCKETS", parseNumber (_logic getVariable ["artillery_rockets", "16"])]
+        ];
+
+        private _roundsAvailable = [];
+        private _roundsUnit = (typeOf (_vehicles select 0)) call ALIVE_fnc_getArtyRounds;
+
+        {
+            if ((_x select 0) in _roundsUnit) then {
+                _roundsAvailable pushBack _x;
+            };
+        } forEach _rounds;
+
+        _result = _roundsAvailable;
+    };
+    // get/set fire mission
     case "fireMission": {
         if (count _args == 0) then {
             _result = _logic getVariable ["fireMission", []];
@@ -84,38 +117,11 @@ switch (_operation) do {
             _logic setVariable ["fireMission", _fireMission];
         };
     };
+    // get position
     case "position": {
         private _group = _logic getVariable ["group", grpNull];
         _result = position (leader _group);
     };
-    case "rounds": {
-        private _rounds = [
-            ["HE", parseNumber (_logic getVariable ["artillery_he", "30"])],
-            ["ILLUM", parseNumber (_logic getVariable ["artillery_illum", "30"])],
-            ["SMOKE", parseNumber (_logic getVariable ["artillery_smoke", "30"])],
-            ["SADARM", parseNumber (_logic getVariable ["artillery_guided", "30"])],
-            ["CLUSTER", parseNumber (_logic getVariable ["artillery_cluster", "30"])],
-            ["LASER", parseNumber (_logic getVariable ["artillery_lg", "30"])],
-            ["MINE", parseNumber (_logic getVariable ["artillery_mine", "30"])],
-            ["AT MINE", parseNumber (_logic getVariable ["artillery_atmine", "30"])],
-            ["ROCKETS", parseNumber (_logic getVariable ["artillery_rockets", "16"])]
-        ];
-
-        private _roundsAvailable = [];
-        private _roundsUnit = (typeOf (_vehicles select 0)) call ALIVE_fnc_getArtyRounds;
-
-        {
-            if ((_x select 0) in _roundsUnit) then {
-                _roundsAvailable pushBack _x;
-            };
-        } forEach _rounds;
-
-        _result = _roundsAvailable;
-    };
-
-    /*************
-     ** METHODS **
-     *************/
     case "activate": {
         if (!([_logic, "inRange"] call MAINCLASS)) then {
             _logic setVariable ["moveToPos", [3744.56,4757.54,0]]; // TODO: Figure out best firing position
@@ -318,65 +324,6 @@ switch (_operation) do {
 
         _logic setVariable ["fireMission", []];
         [_logic, "move", [position _logic]] call MAINCLASS;
-    };
-    case "spawn": {
-        private _position = position _logic;
-        private _type = _logic getVariable ["artillery_type", ""];
-        private _callsign = _logic getVariable ["artillery_callsign", ""];
-        private _code = _logic getVariable ["artillery_code", ""];
-
-        private _side = _type call ALIVE_fnc_classSide;
-        private _group = createGroup _side;
-        private _vehicles = [];
-
-        for "_i" from 0 to 2 do {
-            // TODO: Spawn vehicles in proper fancy formation (see CfgFormations)
-            private _vehiclePosition = _position getPos [15 * _i, (getDir _logic) * _i];
-            private _vehicle = createVehicle [_type, _vehiclePosition, [], 0, "NONE"];
-            _vehicle setDir (getDir _logic);
-            _vehicle lock true;
-            [_vehicle, _group] call BIS_fnc_spawnCrew;
-            _vehicles pushBack _vehicle;
-        };
-
-        if (_type isKindOf "StaticMortar") then {
-            // Create group leader
-            private _leader = _group createUnit ["B_Soldier_F", position (leader _group), [], 0, "NONE"];
-            _group selectLeader _leader;
-
-            // Create gunner assitants
-            {
-                private _vehicle = _x param [0, objNull];
-                _group createUnit ["B_Soldier_F", position _vehicle, [], 0, "NONE"];
-            } forEach _vehicles;
-
-            _logic setVariable ["type", TYPE_MORTAR];
-        } else {
-            _logic setVariable ["type", TYPE_ARTILLERY];
-        };
-
-        _group setVariable ["logic", _logic];
-        _logic setVariable ["group", _group];
-
-        // Assign artillery group to the NEO_radio scripts
-        private _rounds = [_logic, "rounds"] call MAINCLASS;
-        leader _group setVariable ["NEO_radioArtyBatteryRounds", _rounds, true];
-        private _a = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _side];
-        _a set [count _a, [leader _group, _group, _callsign, _vehicles, _rounds]];
-        NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _side], _a, true];
-
-        // Start state machine if it hasn't already
-        if (isNil "ALIVE_sup_artillery_stateMachine") then {
-            ALIVE_sup_artillery_stateMachine_list = [];
-            ALIVE_sup_artillery_stateMachine = [
-                configFile >> "ArtilleryStateMachine"
-            ] call CBA_statemachine_fnc_createFromConfig;
-        };
-
-        // Add artillery group to state machine
-        ALIVE_sup_artillery_stateMachine_list pushBack _logic;
-
-        _result = _group;
     };
     case "unpack": {
         private _group = _logic getVariable ["group", grpNull];
