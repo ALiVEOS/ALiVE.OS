@@ -122,9 +122,106 @@ switch (_operation) do {
         private _group = _logic getVariable ["group", grpNull];
         _result = position (leader _group);
     };
+    case "hasFireMission": {
+        private _fireMission = _logic getVariable ["fireMission", []];
+        _result = (count _fireMission > 0);
+    };
     case "activate": {
         if (!([_logic, "inRange"] call MAINCLASS)) then {
             _logic setVariable ["moveToPos", [3744.56,4757.54,0]]; // TODO: Figure out best firing position
+        };
+    };
+    case "inRange": {
+        private _fireMission = _logic getVariable ["fireMission", []];
+        private _position = [_fireMission, "position"] call ALIVE_fnc_hashGet;
+        private _roundType = [_fireMission, "roundType"] call ALIVE_fnc_hashGet;
+        private _group = _logic getVariable ["group", grpNull];
+        private _units = (units _group) select {vehicle _x != _x && {gunner (vehicle _x) == _x}};
+        _result = _position inRangeOfArtillery [_units, _roundType];
+    };
+    case "pack": {
+        private _group = _logic getVariable ["group", grpNull];
+        private _deployed = _group getVariable ["sup_artillery_deployed", true];
+
+        if (_deployed) then {
+            private _weapon = objNull;
+
+            {
+                if (vehicle _x != _x) exitWith { _weapon = vehicle _x };
+            } forEach (units _group);
+
+            private _handle = [_group, _weapon] spawn ALIVE_fnc_packMortar;
+
+            [_group, _handle] spawn {
+                private _group = _this select 0;
+                private _handle = _this select 1;
+
+                waitUntil { scriptDone _handle };
+                _group setVariable ["sup_artillery_deployed", false];
+            };
+        };
+    };
+    case "hasPacked": {
+        private _type = _logic getvariable ["type", TYPE_ARTILLERY];
+
+        if (_type == TYPE_MORTAR) then {
+            private _group = _logic getVariable ["group", grpNull];
+            _result = !(_group getVariable ["sup_artillery_deployed", true]);
+        } else {
+            _result = true
+        };
+    };
+    case "move": {
+        private _group = _logic getVariable ["group", grpNull];
+        private _position = [];
+
+        if (count _args == 0) then {
+            _position = _logic getVariable ["moveToPos", objNull];
+        } else {
+            _position = _args param [0, [0,0,0], [[]], 3];
+            _logic setVariable ["moveToPos", _position];
+        };
+
+        _group setVariable ["sup_artillery_inPosition", false];
+
+        private _waypoint = _group addWaypoint [_position, 0];
+        _waypoint setWaypointType "MOVE";
+        _waypoint setWaypointBehaviour "SAFE";
+        _waypoint setWaypointForceBehaviour true;
+        _waypoint setWaypointSpeed "NORMAL";
+        _waypoint setWaypointFormation "COLUMN";
+        _waypoint setWaypointStatements [
+            "true",
+            "(group this) setVariable ['sup_artillery_inPosition', true]"
+        ];
+    };
+    case "inPosition": {
+        private _group = _logic getVariable ["group", grpNull];
+        _result = _group getVariable ["sup_artillery_inPosition", false];
+    };
+    case "unpack": {
+        private _group = _logic getVariable ["group", grpNull];
+        private _fireMission = _logic getVariable ["fireMission", []];
+        private _position = [_fireMission, "position"] call ALIVE_fnc_hashGet;
+
+        private _handle = [_group, position (leader _group), _position] spawn ALIVE_fnc_unpackMortar;
+
+        [_group, _handle] spawn {
+            private _group = _this select 0;
+            private _handle = _this select 1;
+
+            waitUntil { scriptDone _handle };
+            _group setVariable ["sup_artillery_deployed", true];
+        };
+    };
+    case "hasUnpacked": {
+        private _type = _logic getvariable ["type", TYPE_ARTILLERY];
+
+        if (_type == TYPE_MORTAR) then {
+            private _group = _logic getVariable ["group", grpNull];
+            _result = _group getVariable ["sup_artillery_deployed", true];
+        } else {
+            _result = true
         };
     };
     case "execute": {
@@ -146,6 +243,11 @@ switch (_operation) do {
             private _firedEH = _vehicle addEventHandler ["Fired", ALIVE_fnc_artilleryFiredEH];
             _vehicle setVariable ["sup_artillery_firedEH", _firedEH];
         } forEach _units;
+    };
+    case "canFireRound": {
+        private _fireMission = _logic getVariable ["fireMission", []];
+        private _nextRoundTime = [_fireMission, "nextRoundTime"] call ALIVE_fnc_hashGet;
+        _result = (_nextRoundTime != -1 && {time >= _nextRoundTime});
     };
     // TODO: Check if unit is alive, otherwise skip
     case "fire": {
@@ -179,35 +281,6 @@ switch (_operation) do {
         [_fireMission, "nextRoundTime", -1] call ALIVE_fnc_hashSet;
         _logic setVariable ["fireMission", _fireMission];
     };
-    case "fireNextRound": {
-        private _fireMission = _logic getVariable ["fireMission", []];
-        private _nextRoundTime = [_fireMission, "nextRoundTime"] call ALIVE_fnc_hashGet;
-        _result = (_nextRoundTime != -1 && {time >= _nextRoundTime});
-    };
-    case "hasFireMission": {
-        private _fireMission = _logic getVariable ["fireMission", []];
-        _result = (count _fireMission > 0);
-    };
-    case "hasPacked": {
-        private _type = _logic getvariable ["type", TYPE_ARTILLERY];
-
-        if (_type == TYPE_MORTAR) then {
-            private _group = _logic getVariable ["group", grpNull];
-            _result = !(_group getVariable ["sup_artillery_deployed", true]);
-        } else {
-            _result = true
-        };
-    };
-    case "hasUnpacked": {
-        private _type = _logic getvariable ["type", TYPE_ARTILLERY];
-
-        if (_type == TYPE_MORTAR) then {
-            private _group = _logic getVariable ["group", grpNull];
-            _result = _group getVariable ["sup_artillery_deployed", true];
-        } else {
-            _result = true
-        };
-    };
     case "isFireMissionComplete": {
         private _fireMission = _logic getVariable ["fireMission", []];
         private _roundCount = [_fireMission, "roundCount"] call ALIVE_fnc_hashGet;
@@ -218,64 +291,6 @@ switch (_operation) do {
         private _fireMission = _logic getVariable ["fireMission", []];
         private _delay = [_fireMission, "delay"] call ALIVE_fnc_hashGet;
         _result = (_delay > 0);
-    };
-    case "inPosition": {
-        private _group = _logic getVariable ["group", grpNull];
-        _result = _group getVariable ["sup_artillery_inPosition", false];
-    };
-    case "inRange": {
-        private _fireMission = _logic getVariable ["fireMission", []];
-        private _position = [_fireMission, "position"] call ALIVE_fnc_hashGet;
-        private _roundType = [_fireMission, "roundType"] call ALIVE_fnc_hashGet;
-        private _group = _logic getVariable ["group", grpNull];
-        private _units = (units _group) select {vehicle _x != _x && {gunner (vehicle _x) == _x}};
-        _result = _position inRangeOfArtillery [_units, _roundType];
-    };
-    case "move": {
-        private _group = _logic getVariable ["group", grpNull];
-        private _position = [];
-
-        if (count _args == 0) then {
-            _position = _logic getVariable ["moveToPos", objNull];
-        } else {
-            _position = _args param [0, [0,0,0], [[]], 3];
-            _logic setVariable ["moveToPos", _position];
-        };
-
-        _group setVariable ["sup_artillery_inPosition", false];
-
-        private _waypoint = _group addWaypoint [_position, 0];
-        _waypoint setWaypointType "MOVE";
-        _waypoint setWaypointBehaviour "SAFE";
-        _waypoint setWaypointForceBehaviour true;
-        _waypoint setWaypointSpeed "NORMAL";
-        _waypoint setWaypointFormation "COLUMN";
-        _waypoint setWaypointStatements [
-            "true",
-            "(group this) setVariable ['sup_artillery_inPosition', true]"
-        ];
-    };
-    case "pack": {
-        private _group = _logic getVariable ["group", grpNull];
-        private _deployed = _group getVariable ["sup_artillery_deployed", true];
-
-        if (_deployed) then {
-            private _weapon = objNull;
-
-            {
-                if (vehicle _x != _x) exitWith { _weapon = vehicle _x };
-            } forEach (units _group);
-
-            private _handle = [_group, _weapon] spawn ALIVE_fnc_packMortar;
-
-            [_group, _handle] spawn {
-                private _group = _this select 0;
-                private _handle = _this select 1;
-
-                waitUntil { scriptDone _handle };
-                _group setVariable ["sup_artillery_deployed", false];
-            };
-        };
     };
     case "returnToBase": {
         private _group = _logic getVariable ["group", grpNull];
@@ -295,21 +310,6 @@ switch (_operation) do {
 
         _logic setVariable ["fireMission", []];
         [_logic, "move", [position _logic]] call MAINCLASS;
-    };
-    case "unpack": {
-        private _group = _logic getVariable ["group", grpNull];
-        private _fireMission = _logic getVariable ["fireMission", []];
-        private _position = [_fireMission, "position"] call ALIVE_fnc_hashGet;
-
-        private _handle = [_group, position (leader _group), _position] spawn ALIVE_fnc_unpackMortar;
-
-        [_group, _handle] spawn {
-            private _group = _this select 0;
-            private _handle = _this select 1;
-
-            waitUntil { scriptDone _handle };
-            _group setVariable ["sup_artillery_deployed", true];
-        };
     };
 };
 

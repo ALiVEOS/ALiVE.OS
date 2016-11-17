@@ -80,7 +80,7 @@ class ArtilleryStateMachine {
 
         class Fire {
             targetState = "Fire";
-            condition = "[_this, 'fireNextRound'] call ALIVE_fnc_artillery";
+            condition = "[_this, 'canFireRound'] call ALIVE_fnc_artillery";
             onTransition = "";
         };
 
@@ -122,7 +122,7 @@ class ArtilleryStateMachine {
 
         class Continue {
             targetState = "Fire";
-            condition = "[_this, 'fireNextRound'] call ALIVE_fnc_artillery";
+            condition = "[_this, 'canFireRound'] call ALIVE_fnc_artillery";
             onTransition = "";
         };
     };
