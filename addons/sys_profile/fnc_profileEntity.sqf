@@ -894,12 +894,23 @@ switch(_operation) do {
                         };
                     };
 
-                    //["Profile [%1] Spawn - Spawn Units",_profileID] call ALIVE_fnc_dump;
+                    // ["Profile [%1] Spawn - Spawn Units",_profileID] call ALIVE_fnc_dump;
                     //[true] call ALIVE_fnc_timer;
                     {
                         if !(isnil "_x") then {
-                            _unitPosition = _positions select _unitCount;
-                            _damage = _damages select _unitCount;
+
+                            if (count _positions > 0 && count _positions < _unitCount) then {
+                                _unitPosition = _positions select _unitCount;
+                            } else {
+                                _unitPosition = _position;
+                            };
+
+                            if (count _damages > 0 && count _damages < _unitCount) then {
+                                _damage = _damages select _unitCount;
+                            } else {
+                                _damage = 0;
+                            };
+
                             _rank = _ranks select _unitCount;
 
                             //Creating unit on ground, or they will fall to death with slow-spawn
