@@ -255,7 +255,7 @@ _saveServer = {
 
         _result = [] call ALiVE_fnc_logisticsSaveData;
 
-        if(!(isNil "_admin") && typeName _result != "BOOL") then {
+        if(!(isNil "_admin") && !(isNil "_result")) then {
             _messages = _result select 1;
             if(count _messages > 0) then {
                 reverse _messages;
