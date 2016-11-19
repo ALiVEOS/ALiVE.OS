@@ -27,6 +27,8 @@ private ["_profile","_params","_startPos","_type","_speed","_formation","_behavi
 _profile = _this select 0;
 _params = _this select 1;
 
+if (isnil "_profile") exitWith {};
+
 if (typename _params == "ARRAY") then {
     _radius = _params select 0;
     _behaviour = _params select 1;

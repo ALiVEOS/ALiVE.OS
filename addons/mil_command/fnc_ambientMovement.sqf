@@ -31,6 +31,8 @@ private ["_args","_debug","_waypoints","_unit","_profile","_vehiclesInCommandOf"
 _profile = _this select 0;
 _params = _this select 1;
 
+if (isnil "_profile") exitWith {};
+
 if (typename _params == "SCALAR") then {
     _radius = _params;
     _behaviour = "SAFE";
