@@ -50,6 +50,9 @@ switch (_operation) do {
         _logic setVariable ["moveToPos", objNull];
         _logic setVariable ["fireMission", []];
 
+        // Are we synced with combat support module?
+        if (({typeOf _x == "ALIVE_sup_combatsupport"} count (synchronizedObjects _logic)) == 0) exitWith { _result = false };
+
         // Spawn and initialize artillery units
         [_logic] call ALIVE_fnc_artillerySpawn;
 
