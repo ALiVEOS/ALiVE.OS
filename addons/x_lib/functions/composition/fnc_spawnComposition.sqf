@@ -135,12 +135,13 @@ if (isNil QMOD(PCOMPOSITIONS)) then {
 private _comp = [MOD(PCOMPOSITIONS), "compositions",[[],[]]] call ALiVE_fnc_hashGet;
 if !(_position in (_comp select 0)) then {
     (_comp select 0) pushBack _position;
-    _config = [_config,[]] call BIS_fnc_configPath;
 
     // Switch back original azi if broken checkpoint
     if (configName _config in _brokenCheckpoints) then {
         _azi = [_azi - 90] call ALiVE_fnc_modDegrees;
     };
+
+    _config = [_config,[]] call BIS_fnc_configPath;
 
     (_comp select 1) pushBack [_config,_azi,_faction];
     [MOD(PCOMPOSITIONS), "compositions",_comp] call ALiVE_fnc_hashSet;
