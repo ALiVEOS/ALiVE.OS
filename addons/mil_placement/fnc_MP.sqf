@@ -781,31 +781,37 @@ switch(_operation) do {
 
                     _flatPos = [_pos,_size] call ALiVE_fnc_findFlatArea;
 
-                    // Get a composition
-                    _compType = "Military";
-                    If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
-                        _compType = "Guerrilla";
+                    if (isNil QMOD(COMPOSITIONS_LOADED)) then {
+
+                        // Get a composition
+                        _compType = "Military";
+                        If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                            _compType = "Guerrilla";
+                        };
+                        _HQ = selectRandom ([_compType, ["FieldHQ"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
+
+                        if (isNil "_HQ") then {
+                            _HQ = selectRandom ([_compType, ["HQ","FieldHQ"], ["Medium","Small"], _faction] call ALiVE_fnc_getCompositions);
+                        };
+
+                        _nearRoads = _flatpos nearRoads 1000;
+                        _direction = if (count _nearRoads > 0) then {direction (_nearRoads select 0)} else {random 360};
+
+                        [_HQ, _flatPos, _direction, _faction] call ALiVE_fnc_spawnComposition;
                     };
-                    _HQ = selectRandom ([_compType, ["FieldHQ"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
 
-                    if (isNil "_HQ") then {
-                        _HQ = selectRandom ([_compType, ["HQ","FieldHQ"], ["Medium","Small"], _faction] call ALiVE_fnc_getCompositions);
-                    };
-
-                    _nearRoads = _flatpos nearRoads 1000;
-                    _direction = if (count _nearRoads > 0) then {direction (_nearRoads select 0)} else {random 360};
-
-                    [_HQ, _flatPos, _direction, _faction] call ALiVE_fnc_spawnComposition;
                     [_logic, "FieldHQBuilding", nearestObject [_flatPos, "building"]] call MAINCLASS;
 
-                    _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
-                    _profiles = [_group, _flatPos, random 360, true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+                    if !(ALIVE_loadProfilesPersistent) then {
+                        _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
+                        _profiles = [_group, _flatPos, random 360, true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
 
-                    {
-                        if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                            [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[50,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
-                        };
-                    } foreach _profiles;
+                        {
+                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
+                                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[50,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
+                            };
+                        } foreach _profiles;
+                    };
 
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
@@ -824,20 +830,22 @@ switch(_operation) do {
                     private ["_compType","_composition","_pos"];
                     _pos = [_x,"center"] call ALiVE_fnc_HashGet;
 
-                    // Get a composition
-                    _compType = "Military";
-                    If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
-                        _compType = "Guerrilla";
-                    };
+                    if (isNil QMOD(COMPOSITIONS_LOADED)) then {
+                        // Get a composition
+                        _compType = "Military";
+                        If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                            _compType = "Guerrilla";
+                        };
 
-                    _composition = selectRandom ([_compType, ["Camps","Outposts"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
+                        _composition = selectRandom ([_compType, ["Camps","Outposts"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
 
-                    if (isNil "_composition") then {
-                        _composition = selectRandom ([_compType, ["Camps","Outposts"], ["Medium","Small"], _faction] call ALiVE_fnc_getCompositions);
-                    };
+                        if (isNil "_composition") then {
+                            _composition = selectRandom ([_compType, ["Camps","Outposts"], ["Medium","Small"], _faction] call ALiVE_fnc_getCompositions);
+                        };
 
-                    if(count _composition > 0) then {
-                        [_composition, _pos, random 360, _faction] call ALIVE_fnc_spawnComposition;
+                        if(count _composition > 0) then {
+                            [_composition, _pos, random 360, _faction] call ALIVE_fnc_spawnComposition;
+                        };
                     };
 
                     [_x,"nodes",nearestObjects [_pos,["static"],50]] call ALIVE_fnc_hashSet;

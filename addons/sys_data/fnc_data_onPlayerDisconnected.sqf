@@ -51,6 +51,23 @@ if (_name == "__SERVER__") then {
             };
         };
 
+        // Save Composition data
+        if (MOD(sys_data) getVariable ["saveCompositions","false"] == "true") then {
+
+            if (["ALiVE_civ_placement"] call ALiVE_fnc_isModuleAvailable) then {
+                [MOD(PCOMPOSITIONS),"roadblock_locs",ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS] call ALiVE_fnc_hashSet;
+                [MOD(PCOMPOSITIONS),"roadblocks",ALIVE_CIV_PLACEMENT_ROADBLOCKS] call ALiVE_fnc_hashSet;
+            };
+
+            _missionName = format["%1_%2_COMPOSITIONS", GVAR(GROUP_ID), missionName];
+
+            _result = [GVAR(datahandler), "write", ["sys_data", MOD(PCOMPOSITIONS), false, _missionName] ] call ALIVE_fnc_Data;
+
+            if(ALiVE_SYS_DATA_DEBUG_ON) then {
+                ["ALiVE SYS_DATA - SAVED COMPOSITIONS: %1",_result] call ALIVE_fnc_dump;
+            };
+        };
+
         // Save Data Dictionary
         if(ALiVE_SYS_DATA_DEBUG_ON) then {
             ["ALiVE SYS_DATA: DATA DICTIONARY SIZE: %1",[str(ALIVE_DataDictionary)] call CBA_fnc_strLen] call ALIVE_fnc_dump;

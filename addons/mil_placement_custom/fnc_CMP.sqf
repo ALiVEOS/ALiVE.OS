@@ -312,16 +312,18 @@ switch(_operation) do {
             if (typeName _composition == "STRING" && _composition != "") then {
                 private ["_compType"];
 
-                // Get a composition
-                _compType = "Military";
-                If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
-                    _compType = "Guerrilla";
-                };
+                if (isNil QMOD(COMPOSITIONS_LOADED)) then {
+                    // Get a composition
+                    _compType = "Military";
+                    If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                        _compType = "Guerrilla";
+                    };
 
-                _composition = [_composition, _compType] call ALIVE_fnc_findComposition;
+                    _composition = [_composition, _compType] call ALIVE_fnc_findComposition;
 
-                if(count _composition > 0) then {
-                    [_composition, _position, direction _logic, _faction] call ALIVE_fnc_spawnComposition;
+                    if(count _composition > 0) then {
+                        [_composition, _position, direction _logic, _faction] call ALIVE_fnc_spawnComposition;
+                    };
                 };
             };
 

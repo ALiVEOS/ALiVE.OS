@@ -245,6 +245,44 @@ if (isDedicated) then {
 
     };
 
+    // Handle compositions persistence
+    MOD(PCOMPOSITIONS) = [] call CBA_fnc_hashCreate;
+    if (GVAR(dictionaryLoaded) && (MOD(sys_data) getVariable ["saveCompositions","false"] == "true")) then {
+        private ["_missionName","_response"];
+        // Read in compositions for mission
+        ["DATA: Loading mission compositions data."] call ALIVE_fnc_dump;
+        _missionName = format["%1_%2_COMPOSITIONS", GVAR(GROUP_ID), missionName];
+        _response = [GVAR(datahandler), "read", ["sys_data", [], _missionName]] call ALIVE_fnc_Data;
+        if ( typeName _response != "STRING") then {
+            MOD(PCOMPOSITIONS) = _response;
+
+            if(ALiVE_SYS_DATA_DEBUG_ON) then {
+                ["ALiVE SYS_DATA - MISSION COMPOSITION DATA LOADED: %1",_response] call ALIVE_fnc_dump;
+            };
+
+            // Update CIV PLACEMENT Module so that roadblocks are not duplicated
+            ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS = [MOD(PCOMPOSITIONS),"roadblock_locs",[]] call ALiVE_fnc_hashGet;
+            ALIVE_CIV_PLACEMENT_ROADBLOCKS = [MOD(PCOMPOSITIONS),"roadblocks",[]] call ALiVE_fnc_hashGet;
+
+            // Get all spawned composition data
+            private _compositions = [MOD(PCOMPOSITIONS),"compositions",[[],[]]] call ALiVE_fnc_hashGet;
+            // Spawn all compositions
+            {
+                private _entry = (_compositions select 1) select _forEachIndex;
+                [_entry select 0, _x, _entry select 1, _entry select 2] call ALiVE_fnc_spawnComposition;
+            } foreach (_compositions select 0);
+
+            MOD(COMPOSITIONS_LOADED) = true;
+
+        } else {
+
+            if(ALiVE_SYS_DATA_DEBUG_ON) then {
+                ["ALiVE SYS_DATA - NO MISSION COMPOSITION DATA AVAILABLE: %1",_response] call ALIVE_fnc_dump;
+            };
+
+        };
+    };
+
 
     // Spawn a process to handle async writes
 

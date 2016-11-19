@@ -47,6 +47,12 @@
             <Key ID="STR_ALIVE_Data_SAVEDATETIME_COMMENT">
                 <Original>Enable/disable saving date and time of the mission</Original>
             </Key>
+            <Key ID="STR_ALIVE_Data_SAVECOMPOSITIONS">
+                <Original>Save Roadblocks/Outposts:</Original>
+            </Key>
+            <Key ID="STR_ALIVE_Data_SAVECOMPOSITIONS_COMMENT">
+                <Original>Enable/disable saving any compositions that are spawned for camps, checkpoints etc</Original>
+            </Key>            
             <Key ID="STR_ALIVE_Data_disableStats">
                 <Original>Disable Stats:</Original>
             </Key>
