@@ -46,6 +46,10 @@ private _brokenCheckpoints = [
     "CheckpointHBarrier"
 ];
 
+if (typename _config == "ARRAY") then {
+    _config = [_config, configFile] call BIS_fnc_configPath;
+};
+
 if (configName _config in _brokenCheckpoints) then {
     _azi = [_azi + 90] call ALiVE_fnc_modDegrees;
 };
@@ -121,4 +125,23 @@ for "_i" from 0 to ((count _objects) - 1) do {
         _newObj setPos _newPos;
     };
 
+};
+
+if (isNil QMOD(PCOMPOSITIONS)) then {
+    MOD(PCOMPOSITIONS) = [] call ALiVE_fnc_hashCreate;
+};
+
+// Save Compositions to a hash
+private _comp = [MOD(PCOMPOSITIONS), "compositions",[[],[]]] call ALiVE_fnc_hashGet;
+if !(_position in (_comp select 0)) then {
+    (_comp select 0) pushBack _position;
+    _config = [_config,[]] call BIS_fnc_configPath;
+
+    // Switch back original azi if broken checkpoint
+    if (configName _config in _brokenCheckpoints) then {
+        _azi = [_azi - 90] call ALiVE_fnc_modDegrees;
+    };
+
+    (_comp select 1) pushBack [_config,_azi,_faction];
+    [MOD(PCOMPOSITIONS), "compositions",_comp] call ALiVE_fnc_hashSet;
 };
