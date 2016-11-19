@@ -82,7 +82,7 @@ for "_j" from 1 to (count _roadpoints) do {
 
     _roadpos = _roadpoints select (_j - 1);
 
-    if ({_roadpos distance _x < 60} count GVAR(ROADBLOCKS) > 0) exitWith {["ALiVE Roadblock to close to another! Not created..."] call ALiVE_fnc_Dump};
+    if ({_roadpos distance _x < 100} count GVAR(ROADBLOCKS) > 0) exitWith {["ALiVE Roadblock to close to another! Not created..."] call ALiVE_fnc_Dump};
 
     // check for non road position
     if (!isOnRoad _roadpos) exitWith {["ALiVE Roadblock is not on a road! Not created..."] call ALiVE_fnc_Dump};
@@ -91,7 +91,7 @@ for "_j" from 1 to (count _roadpoints) do {
 
     if (count _roadConnectedTo == 0) exitWith {["ALiVE Selected road for roadblock is a dead end! Not created..."] call ALiVE_fnc_Dump};
 
-    GVAR(ROADBLOCKS) pushBack _roadpos;
+    GVAR(ROADBLOCKS) pushBack (position _roadpos);
 
     _connectedRoad = _roadConnectedTo select 0;
     _direction = [_roadpos, _connectedRoad] call BIS_fnc_DirTo;
@@ -130,9 +130,13 @@ for "_j" from 1 to (count _roadpoints) do {
     // Place a vehicle
     _vehtype = ([1, _fac, "Car"] call ALiVE_fnc_findVehicleType) call BIS_fnc_selectRandom;
     if (!isNil "_vehtype") then {
-        _vehicle = createVehicle [_vehtype, [position _roadpos, 10,30,2,0,5,0] call BIS_fnc_findsafepos, [], 0, "NONE"];
-        _vehicle setDir _direction;
-        _vehicle setposATL (getposATL _vehicle);
+        if !(isnil "ALiVE_ProfileHandler") then {
+            _vehicle = [_vehtype, [_fac] call ALiVE_fnc_factionSide, _fac, [position _roadpos, 10,30,2,0,5,0] call BIS_fnc_findsafepos, _direction, true, _fac] call ALiVE_fnc_createProfileVehicle;
+        } else {
+            _vehicle = createVehicle [_vehtype, [position _roadpos, 10,30,2,0,5,0] call BIS_fnc_findsafepos, [], 0, "NONE"];
+            _vehicle setDir _direction;
+            _vehicle setposATL (getposATL _vehicle);
+        };
     };
 
     // Spawn static virtual group if Profile System is loaded and get them to defend
@@ -159,7 +163,9 @@ for "_j" from 1 to (count _roadpoints) do {
 
             // Spawn group and get them to defend
             _blockers = [getpos _roadpos, _side, "Infantry", _fac] call ALiVE_fnc_randomGroupByType;
-            _blockers addVehicle _vehicle;
+            if (isNil "_vehicle") then {
+                _blockers addVehicle _vehicle;
+            };
 
             sleep 1;
 

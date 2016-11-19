@@ -68,7 +68,26 @@ class CfgVehicles {
                                         };
                                 };
                         };
+                        class saveCompositions
+                        {
+                                displayName = "$STR_ALIVE_data_SAVECOMPOSITIONS";
+                                description = "$STR_ALIVE_data_SAVECOMPOSITIONS_COMMENT";
+                                class Values
+                                {
+                                        class Yes
+                                        {
+                                                name = "Yes";
+                                                value = true;
+                                                default = 1;
+                                        };
+                                        class No
+                                        {
+                                                name = "No";
+                                                value = false;
 
+                                        };
+                                };
+                        };
                         class disableStats
                         {
                                 displayName = "$STR_ALIVE_data_disableStats";

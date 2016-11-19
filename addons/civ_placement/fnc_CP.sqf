@@ -575,10 +575,65 @@ switch(_operation) do {
                         if(_debug) then { ["ALIVE CP - Profiles are persistent, no creation of profiles"] call ALIVE_fnc_dump; };
                         // DEBUG -------------------------------------------------------------------------------------
 
+                        // need to start roadblock spawn loop though...
+
                         // set module as started
                         _logic setVariable ["startupComplete", true];
 
                     };
+
+                    // Start Roadblock spawn checker
+                    if (parsenumber([_logic, "roadBlocks"] call MAINCLASS) > 0) then {
+                        [_logic] spawn {
+
+                            private ["_logic","_roadBlocks","_debug"];
+
+                            _logic = _this select 0;
+
+                            _roadBlocks = parsenumber([_logic, "roadBlocks"] call MAINCLASS);
+                            _debug = [_logic, "debug"] call MAINCLASS;
+
+                            while {count GVAR(ROADBLOCK_LOCATIONS) > 0} do {
+                                private ["_timer"];
+
+                                _timer = time;
+                                {
+                                    private ["_position","_size","_spawn"];
+
+                                    if (!isnil "_x") then {
+
+                                        if (typeName _x == "ARRAY") then {
+                                            _position  = _x select 0;
+                                            _size = _x select 1;
+
+                                            _spawn = false;
+
+                                            if ([_position, ALIVE_spawnRadius,ALIVE_spawnRadiusJet,ALIVE_spawnRadiusHeli] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {
+                                                _spawn = true;
+                                            } else {
+                                                if ([_position, ALIVE_spawnRadiusJet] call ALiVE_fnc_anyAutonomousInRange > 0) then {
+                                                    _spawn = true;
+                                                };
+                                            };
+
+                                            if (_spawn) then {
+                                                [_position, _size + 150, ceil(_roadblocks / 30), _debug] call ALiVE_fnc_createRoadblock;
+
+                                                GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, -1];
+                                            };
+                                        };
+                                    };
+                                } foreach GVAR(ROADBLOCK_LOCATIONS);
+
+                                GVAR(ROADBLOCK_LOCATIONS) = GVAR(ROADBLOCK_LOCATIONS) - [-1];
+
+                                if (_debug) then {["ALiVE Roadblock iteration time: %1 secs for %2 entries...", time - _timer, count GVAR(ROADBLOCK_LOCATIONS)] call ALiVE_fnc_Dump};
+
+                                sleep 1;
+                            };
+                        };
+                    };
+
                 }else{
 
                     // DEBUG -------------------------------------------------------------------------------------
@@ -866,7 +921,9 @@ switch(_operation) do {
             _readiness = parseNumber([_logic, "readinessLevel"] call MAINCLASS);
             _readiness = (1 - _readiness) * _groupCount;
 
-            GVAR(ROADBLOCK_LOCATIONS) = [];
+            if (isNil QGVAR(ROADBLOCK_LOCATIONS)) then {
+                GVAR(ROADBLOCK_LOCATIONS) = [];
+            };
 
             _countSeaPatrols = 0;
 
@@ -1019,7 +1076,7 @@ switch(_operation) do {
                     };
                 };
 
-                if (!isnil "ALIVE_fnc_createRoadblock" && {random 100 < _roadBlocks}) then {
+                if (!isnil "ALIVE_fnc_createRoadblock" && isNil QGVAR(COMPOSITIONS_LOADED) && {random 100 < _roadBlocks} ) then {
 
                     private ["_rb"];
 
@@ -1032,56 +1089,6 @@ switch(_operation) do {
                 };
 
             } forEach _clusters;
-
-            // Start Roadblock spawn checker
-            [_logic] spawn {
-
-                private ["_logic","_roadBlocks","_debug"];
-
-                _logic = _this select 0;
-
-                _roadBlocks = parsenumber([_logic, "roadBlocks"] call MAINCLASS);
-                _debug = [_logic, "debug"] call MAINCLASS;
-
-                while {count GVAR(ROADBLOCK_LOCATIONS) > 0} do {
-                    private ["_timer"];
-
-                    _timer = time;
-                    {
-                        private ["_position","_size","_spawn"];
-
-                        if (!isnil "_x") then {
-
-                            if (typeName _x == "ARRAY") then {
-                                _position  = _x select 0;
-                                _size = _x select 1;
-
-                                _spawn = false;
-
-                                if ([_position, ALIVE_spawnRadius,ALIVE_spawnRadiusJet,ALIVE_spawnRadiusHeli] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {
-                                    _spawn = true;
-                                } else {
-                                    if ([_position, ALIVE_spawnRadiusJet] call ALiVE_fnc_anyAutonomousInRange > 0) then {
-                                        _spawn = true;
-                                    };
-                                };
-
-                                if (_spawn) then {
-                                    [_position, _size + 150, ceil(_roadblocks / 30), _debug] call ALiVE_fnc_createRoadblock;
-
-                                    GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, -1];
-                                };
-                            };
-                        };
-                    } foreach GVAR(ROADBLOCK_LOCATIONS);
-
-                    GVAR(ROADBLOCK_LOCATIONS) = GVAR(ROADBLOCK_LOCATIONS) - [-1];
-
-                    if (_debug) then {["ALiVE Roadblock iteration time: %1 secs for %2 entries...", time - _timer, count GVAR(ROADBLOCK_LOCATIONS)] call ALiVE_fnc_Dump};
-
-                    sleep 1;
-                };
-            };
 
 
             // DEBUG -------------------------------------------------------------------------------------
