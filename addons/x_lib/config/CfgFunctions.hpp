@@ -531,6 +531,13 @@ class sideToText
     RECOMPILE;
 };
 
+class sideToSideText
+{
+    file = "\x\alive\addons\x_lib\functions\conversions\fnc_sideToSideText.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
 class toBool
 {
     file = "\x\alive\addons\x_lib\functions\conversions\fnc_toBool.sqf";

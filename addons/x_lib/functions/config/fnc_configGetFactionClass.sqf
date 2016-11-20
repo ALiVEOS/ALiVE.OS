@@ -28,10 +28,18 @@ SpyderBlack723
 Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
+private "_value";
 
-private _path = missionConfigFile >> "CfgFactionClasses" >> _this;
+if (typeName _this == "ARRAY") then {
+	["INCORRECT TYPE PASSED TO configGetFactionClass: %1", _this] call ALiVE_fnc_dump;
+	_value = _this select 0;
+} else {
+	_value = _this;
+};
 
-if !(isClass _path) then {_path = configFile >> "CfgFactionClasses" >> _this};
+private _path = missionConfigFile >> "CfgFactionClasses" >> _value;
+
+if !(isClass _path) then {_path = configFile >> "CfgFactionClasses" >> _value};
 
 if !(isClass _path) then {
 	// Check to see if faction has a mapping within groups
@@ -43,7 +51,7 @@ if !(isClass _path) then {
 
 		   private _faction = [_factionData,"GroupFactionName"] call ALiVE_fnc_hashGet;
 
-		   if (_this == _faction) then {
+		   if (_value == _faction) then {
 		   		_path = missionConfigFile >> "CfgFactionClasses" >> _x;
 				if !(isClass _path) then {_path = configFile >> "CfgFactionClasses" >> _x};
 		   };
