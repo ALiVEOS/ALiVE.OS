@@ -208,7 +208,13 @@ switch (_operation) do {
     case "unpack": {
         private _group = _logic getVariable ["group", grpNull];
         private _fireMission = _logic getVariable ["fireMission", []];
-        private _position = [_fireMission, "position"] call ALIVE_fnc_hashGet;
+        private _position = [];
+
+        if (count _fireMission > 0) then {
+            _position = [_fireMission, "position"] call ALIVE_fnc_hashGet;
+        } else {
+            _position = position _logic;
+        };
 
         private _handle = [_group, position (leader _group), _position] spawn ALIVE_fnc_unpackMortar;
 
@@ -315,7 +321,16 @@ switch (_operation) do {
         } forEach _units;
 
         _logic setVariable ["fireMission", []];
-        [_logic, "move", [position _logic]] call MAINCLASS;
+
+        [_logic] spawn {
+            private _logic = param [0, objNull, [objNull]];
+
+            [_logic, "pack"] call MAINCLASS;
+            waitUntil { [_logic, "hasPacked"] call MAINCLASS };
+            [_logic, "move", [position _logic]] call MAINCLASS;
+            waitUntil { [_logic, "inPosition"] call MAINCLASS };
+            [_logic, "unpack"] call MAINCLASS;
+        };
     };
 };
 
