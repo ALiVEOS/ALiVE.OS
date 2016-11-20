@@ -2792,6 +2792,7 @@ switch(_operation) do {
                 [_identityTypes,"insignia", ""] call ALiVE_fnc_hashSet;
 
                 // get identityTypes info
+                // must be compared lowercase because some mods aren't consistent
 
                 private _allFaceTypes = ([_logic,"getFacesByIdentityType"] call MAINCLASS) select 1;
                 private _allVoices = [];
@@ -2808,15 +2809,18 @@ switch(_operation) do {
                     };
                 };
 
+                private _allFaceTypesLower = _allFaceTypes apply {if (_x isEqualType "") then {tolower _x}};
+                private _allVoicesLower = _allVoices apply {if (_x isEqualType "") then {tolower _x}};
+
                 private _unitConfig = configFile >> "CfgVehicles" >> _unit;
                 private _unitIdentityInfo = getArray(_unitConfig >> "identityTypes");
 
                 {
-                    if (_x in _allFaceTypes) then {
+                    if ((tolower _x) in _allFaceTypesLower) then {
                         [_identityTypes,"face", _x] call ALiVE_fnc_hashSet;
                     };
 
-                    if (_x in _allVoices) then {
+                    if ((tolower _x) in _allVoicesLower) then {
                         [_identityTypes,"voice", _x] call ALiVE_fnc_hashSet;
                     };
                 } foreach _unitIdentityInfo;
@@ -2825,8 +2829,24 @@ switch(_operation) do {
                 [_identityTypes,"insignia", _insignia] call ALiVE_fnc_hashSet;
 
                 private _allUnitIdentityTypes = getArray(_unitConfig >> "identityTypes");
-                _allUnitIdentityTypes = _allUnitIdentityTypes - _allFaceTypes - _allVoices;
-                [_identityTypes,"misc", _allUnitIdentityTypes] call ALiVE_fnc_hashSet;
+                private _uniqueIdentityTypes = [];
+
+                {
+                    private _identityTypeLower = tolower _x;
+                    private _unique = true;
+
+                    if (_identityTypeLower in _allFaceTypesLower) then {_unique = false};
+
+                    if (_unique) then {
+                        if (_identityTypeLower in _allVoicesLower) then {_unique = false};
+                    };
+
+                    if (_unique) then {
+                        _uniqueIdentityTypes pushback _x;
+                    };
+                } foreach _allUnitIdentityTypes;
+
+                [_identityTypes,"misc", _uniqueIdentityTypes] call ALiVE_fnc_hashSet;
 
                 _result = _identityTypes;
             } else {
@@ -5916,187 +5936,9 @@ switch(_operation) do {
         _result = _result + _indent + _indent + "identityTypes[] = " + _identityTypesString + ";" + _newLine;
 
         // loadout
-        // create unit for easy data collection
 
-        private _tmpUnitClass = [_logic,"getRealUnitClass", _unitConfigName] call MAINCLASS;
-        private _tmpUnitSideText = [_unitSide] call ALiVE_fnc_sideNumberToText;
-        private _tmpUnitSideObject = [_tmpUnitSideText] call ALiVE_fnc_sideTextToObject;
-        private _tmpUnit = (createGroup _tmpUnitSideObject) createUnit [_tmpUnitClass, [0,0,0], [], 0, "NONE"];
-        _tmpUnit setUnitLoadout _unitLoadout;
-
-        private _tmpUnitItems = [_logic,"arrayToConfigArrayString", items _tmpUnit] call MAINCLASS;
-
-        private _tmpUnitUniform = uniform _tmpUnit;
-        private _tmpUnitBackpack = backpack _tmpUnit;
-        private _tmpUnitLinkedItems = assignedItems _tmpUnit;
-        private _tmpUnitMagazines = magazines _tmpUnit;
-        private _tmpUnitWeapons = weapons _tmpUnit;
-        private _tmpUnitVest = vest _tmpUnit;
-        private _tmpUnitHeadgear = headgear _tmpUnit;
-        private _tmpUnitGoggles = goggles _tmpUnit;
-        if (_tmpUnitVest != "") then {_tmpUnitLinkedItems pushback _tmpUnitVest};
-        if (_tmpUnitHeadgear != "") then {_tmpUnitLinkedItems pushback _tmpUnitHeadgear};
-        if (_tmpUnitGoggles != "") then {_tmpUnitLinkedItems pushback _tmpUnitGoggles};
-
-        private _uniformItems = uniformItems _tmpUnit;
-        private _vestItems = vestItems _tmpUnit;
-        private _backpackItems = backpackItems _tmpUnit;
-        private _linkedItems = assignedItems _tmpUnit;
-
-        // shuffle weapons to back of array
-        // causes magazines to be added before
-        // weapons that are in inv
-
-        private _uniformWep = _uniformItems arrayIntersect _tmpUnitWeapons;
-        private _vestWep = _vestItems arrayIntersect _tmpUnitWeapons;
-        private _backpackWep = _backpackItems arrayIntersect _tmpUnitWeapons;
-
-        _uniformItems = (_uniformItems - _uniformWep) + _uniformWep;
-        _vestItems = (_vestItems - _vestWep) + _vestWep;
-        _backpackItems = (_backpackItems - _backpackWep) + _backpackWep;
-
-        _tmpUnitWeapons = ((_tmpUnitWeapons - _uniformItems) - _vestItems) - _backpackItems;
-
-        _tmpUnitLinkedItems = [_logic,"arrayToConfigArrayString", _tmpUnitLinkedItems] call MAINCLASS;
-        _tmpUnitMagazines = [_logic,"arrayToConfigArrayString", _tmpUnitMagazines] call MAINCLASS;
-        _tmpUnitWeaponsString = [_logic,"arrayToConfigArrayString", _tmpUnitWeapons + ["Throw","Put"]] call MAINCLASS;
-
-        // clear gear
-
-        _initEventHandler = _initEventHandler + "_unit setUnitLoadout [[],[],[],[],[],[],'','',[],['','','','','','']];";
-
-        // add gear containers prior to gear
-
-        _initEventHandler = _initEventHandler + "_unit forceAddUniform " + "'" + _tmpUnitUniform + "';";
-        _initEventHandler = _initEventHandler + "_unit addVest " + "'" + _tmpUnitVest + "';";
-        _initEventHandler = _initEventHandler + "_unit addBackpack " + "'" + _tmpUnitBackpack + "';";
-
-        _initEventHandler = _initEventHandler + "_unit addHeadgear " + "'" + _tmpUnitHeadgear + "';";
-        _initEventHandler = _initEventHandler + "_unit addGoggles " + "'" + _tmpUnitGoggles + "';";
-
-        // remove prepacked items
-
-        _initEventHandler = _initEventHandler + "{_unit removeItemFromUniform _x} foreach (uniformItems _unit);";
-        _initEventHandler = _initEventHandler + "{_unit removeItemFromVest _x} foreach (vestItems _unit);";
-        _initEventHandler = _initEventHandler + "{_unit removeItemFromBackpack _x} foreach (backpackItems _unit);";
-
-        // linked items
-
-        private _linkedItemsString = "[";
-        {
-            if (_forEachIndex != 0) then {_linkedItemsString = _linkedItemsString + ","};
-            _linkedItemsString = _linkedItemsString + "'" + _x + "'";
-        } foreach _linkedItems;
-        _linkedItemsString = _linkedItemsString + "]";
-        _initEventHandler = _initEventHandler + "{_unit linkItem _x} foreach " + _linkedItemsString + ";";
-
-        // uniform items
-
-        private _uniformItemsAdded = [];
-        {
-            _item = _x;
-
-            if !(_item in _uniformItemsAdded) then {
-                _count = {_x == _item} count _uniformItems;
-
-                if (_count == 1) then {
-                    _initEventHandler = _initEventHandler + "_unit addItemToUniform " + "'" + _item + "'" + ";";
-                } else {
-                    _initEventHandler = _initEventHandler + "for " + "'" + "_i" + "'" + " from 1 to " + str _count + " do {";
-                    _initEventHandler = _initEventHandler + "_unit addItemToUniform " + "'" + _item + "'" + ";";
-                    _initEventHandler = _initEventHandler + "};";
-                };
-
-                _uniformItemsAdded pushback _item;
-            };
-        } foreach _uniformItems;
-
-        // vest items
-
-        private _vestItemsAdded = [];
-        {
-            _item = _x;
-
-            if !(_item in _vestItemsAdded) then {
-                _count = {_x == _item} count _vestItems;
-
-                if (_count == 1) then {
-                    _initEventHandler = _initEventHandler + "_unit addItemToVest " + "'" + _item + "'" + ";";
-                } else {
-                    _initEventHandler = _initEventHandler + "for " + "'" + "_i" + "'" + " from 1 to " + str _count + " do {";
-                    _initEventHandler = _initEventHandler + "_unit addItemToVest " + "'" + _item + "'" + ";";
-                    _initEventHandler = _initEventHandler + "};";
-                };
-
-                _vestItemsAdded pushback _item;
-            };
-        } foreach _vestItems;
-
-        // backpack items
-
-        private _backpackItemsAdded = [];
-        {
-            _item = _x;
-
-            if !(_item in _backpackItemsAdded) then {
-                _count = {_x == _item} count _backpackItems;
-
-                if (_count == 1) then {
-                    _initEventHandler = _initEventHandler + "_unit addItemToBackpack " + "'" + _item + "'" + ";";
-                } else {
-                    _initEventHandler = _initEventHandler + "for " + "'" + "_i" + "'" + " from 1 to " + str _count + " do {";
-                    _initEventHandler = _initEventHandler + "_unit addItemToBackpack " + "'" + _item + "'" + ";";
-                    _initEventHandler = _initEventHandler + "};";
-                };
-
-                _backpackItemsAdded pushback _item;
-            };
-        } foreach _backpackItems;
-
-        // persist weapon items
-
-        private _primaryWeaponItems = primaryWeaponItems _tmpUnit;
-        private _secondaryWeaponItems = secondaryWeaponItems _tmpUnit;
-        private _handgunWeaponItems = handgunItems _tmpUnit;
-
-        {
-            _initEventHandler = _initEventHandler + "_unit addWeapon " + "'" + _x + "'" + ";";
-        } foreach _tmpUnitWeapons;
-
-        {
-            if (_x != "") then {
-                _initEventHandler = _initEventHandler + "_unit addPrimaryWeaponItem " + "'" + _x + "'" + ";";
-            };
-        } foreach _primaryWeaponItems;
-
-        {
-            if (_x != "") then {
-                _initEventHandler = _initEventHandler + "_unit addSecondaryWeaponItem " + "'" + _x + "'" + ";";
-            };
-        } foreach _secondaryWeaponItems;
-
-        {
-            if (_x != "") then {
-                _initEventHandler = _initEventHandler + "_unit addHandgunItem " + "'" + _x + "'" + ";";
-            };
-        } foreach _handgunWeaponItems;
-
-        // persist gear
-
-        _result = _result + _indent + _indent + ("uniformClass = " + str _tmpUnitUniform + ";") + _newLine;
-        _result = _result + _indent + _indent + ("backpack = " + str _tmpUnitBackpack + ";");
-
-        _result = _result + _newLine;
-        _result = _result + _newLine + _indent + _indent + ("linkedItems[] = " + _tmpUnitLinkedItems + ";");
-        _result = _result + _newLine + _indent + _indent + ("weapons[] = " + _tmpUnitWeaponsString + ";");
-        _result = _result + _newLine + _indent + _indent + ("magazines[] = " + _tmpUnitMagazines + ";");
-
-        // respawn variants
-
-        _result = _result + _newLine;
-        _result = _result + _newLine + _indent + _indent + ("respawnLinkedItems[] = " + _tmpUnitLinkedItems + ";");
-        _result = _result + _newLine + _indent + _indent + ("respawnWeapons[] = " + _tmpUnitWeaponsString + ";");
-        _result = _result + _newLine + _indent + _indent + ("respawnMagazines[] = " + _tmpUnitMagazines + ";");
+        private _unitLoadoutString = [str _unitLoadout,"""","'"] call CBA_fnc_replace;
+        _initEventHandler = _initEventHandler + "_unit setUnitLoadout " + _unitLoadoutString + ";";
 
         // hack to reload weapons on spawn
 
