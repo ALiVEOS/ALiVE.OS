@@ -123,7 +123,18 @@ switch (_operation) do {
     };
     case "activate": {
         if (!([_logic, "inRange"] call MAINCLASS)) then {
-            _logic setVariable ["moveToPos", [3744.56,4757.54,0]]; // TODO: Figure out best firing position
+            private _fireMission = _logic getVariable ["fireMission", []];
+            private _position = [_fireMission, "position"] call ALIVE_fnc_hashGet;
+            private _roundType = [_fireMission, "roundType"] call ALIVE_fnc_hashGet;
+            private _group = _logic getVariable ["group", grpNull];
+            private _units = (units _group) select {vehicle _x != _x && {gunner (vehicle _x) == _x}};
+
+            private _vehicle = vehicle (_units select 0);
+            private _range = [_vehicle, _roundType] call ALIVE_fnc_artilleryGetRange;
+            private _radius = 500;
+            private _newPosition = [_position, _range - _radius, _position getDir _vehicle] call BIS_fnc_relPos;
+            _newPosition = [_newPosition, 10, _radius, 5, 0, 0.15, 0] call BIS_fnc_findSafePos;
+            _logic setVariable ["moveToPos", _newPosition];
         };
     };
     case "inRange": {

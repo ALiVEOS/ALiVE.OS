@@ -21,6 +21,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\sup_artillery\fnc_artilleryFiredEH.sqf";
                 RECOMPILE;
             };
+            class artilleryGetRange {
+                description = "Gets range of artillery asset";
+                file = "\x\alive\addons\sup_artillery\fnc_artilleryGetRange.sqf";
+                RECOMPILE;
+            };
         };
     };
 };
