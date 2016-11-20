@@ -26,10 +26,10 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 params [
-    "_sectors"
+    "_sectors",
     ["_sources", 10],
     ["_precision", 20]
-]
+];
 
 private _err = format["sector analysis terrain requires an array of sectors - %1",_sectors];
 ASSERT_TRUE(_sectors isEqualType [], _err);

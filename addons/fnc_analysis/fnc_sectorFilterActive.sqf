@@ -34,7 +34,7 @@ ARJay
 params [
     "_sectors",
     ["_isActive", true]
-]
+];
 
 private _err = format["sector filter active requires an array of sectors - %1",_sectors];
 ASSERT_TRUE(_sectors isEqualto [], _err);

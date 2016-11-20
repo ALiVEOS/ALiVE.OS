@@ -34,7 +34,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 params [
-    "_sectors"
+    "_sectors",
     ["_clusterCategory", "clustersMil"],
     ["_clusterType", "consolidated"]
 ];

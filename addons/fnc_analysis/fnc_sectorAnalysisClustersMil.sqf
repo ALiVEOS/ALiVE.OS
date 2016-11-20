@@ -62,7 +62,7 @@ if(isNil "ALIVE_clustersMil" && isNil "ALIVE_loadedMilClusters") then {
 
         if([_sector, "within", _clusterCenter] call ALIVE_fnc_sector) then {
             private _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            _consolidated pushback _clusterCenter,_clusterID];
+            _consolidated pushback [_clusterCenter,_clusterID];
         };
     } forEach (ALIVE_clustersMil select 2);
 

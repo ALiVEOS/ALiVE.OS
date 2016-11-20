@@ -29,9 +29,9 @@ ARJay
 
 params ["_sectors","_placeType"];
 
-private _err = format["sector filter best places requires an array of sectors - %1",_sectors];
+private _err = format ["sector filter best places requires an array of sectors - %1", _sectors];
 ASSERT_TRUE(_sectors isEqualType [], _err);
-_err = format["sector filter best places requires a place type string- %1",_placeType];
+_err = format ["sector filter best places requires a place type string- %1", _placeType];
 ASSERT_TRUE(_placeType isEqualType "", _err);
 
 private _filteredSectors = [];

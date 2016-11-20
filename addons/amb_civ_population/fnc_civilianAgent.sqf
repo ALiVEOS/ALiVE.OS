@@ -109,7 +109,7 @@ switch(_operation) do {
     case "state": {
 
         if !(_args isEqualType []) then {
-            private state = [] call ALIVE_fnc_hashCreate;
+            private _state = [] call ALIVE_fnc_hashCreate;
 
             {
                 if(!(_x == "super") && !(_x == "class")) then {

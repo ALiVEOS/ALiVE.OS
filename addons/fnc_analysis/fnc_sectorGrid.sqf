@@ -447,7 +447,7 @@ switch(_operation) do {
         _index = [(_indexX + 1),(_indexY - 1)];
         _sector = [_logic, "gridIndexToSector", _index] call MAINCLASS;
         if(count (_sector select 1) > 0) then {
-            _result pushback _sector]\;
+            _result pushback _sector;
         };
 
         //bm
