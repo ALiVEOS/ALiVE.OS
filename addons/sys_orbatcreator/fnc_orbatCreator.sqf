@@ -3551,7 +3551,33 @@ switch(_operation) do {
                     _faceIdentityType = _faceIdentityTypes select _i;
                     _facesForIdentity = _facesArray select _i;
 
-                    _index = _ctrlListFaces lbAdd _faceIdentityType;
+                    private _faceDisplayName = _faceIdentityType;
+                    switch (tolower _faceIdentityType) do {
+                        // vanilla
+                        case "head_tk": {_faceDisplayName = "Persian"};
+                        case "head_tk_camo_arid": {_faceDisplayName = "Persian (Camo,Arid)"};
+                        case "head_tk_camo_lush": {_faceDisplayName = "Persian (Camo,Lush)"};
+                        case "head_tk_camo_semiarid": {_faceDisplayName = "Persian (Camo,Semi-Arid)"};
+                        case "head_nato": {_faceDisplayName = "NATO"};
+                        case "head_euro": {_faceDisplayName = "European"};
+                        case "head_nato_camo_arid": {_faceDisplayName = "NATO (Camo,Arid)"};
+                        case "head_nato_camo_lush": {_faceDisplayName = "NATO (Camo,Lush)"};
+                        case "head_nato_camo_semiarid": {_faceDisplayName = "NATO (Camo,Semi-Arid)"};
+                        case "head_african": {_faceDisplayName = "African"};
+                        case "head_greek": {_faceDisplayName = "Greek"};
+                        case "head_greek_camo_arid": {_faceDisplayName = "Greek (Camo,Arid)"};
+                        case "head_greek_camo_lush": {_faceDisplayName = "Greek (Camo,Lush)"};
+                        case "head_greek_camo_semiarid": {_faceDisplayName = "Greek (Camo,Semi-Arid)"};
+                        case "head_rangemaster": {_faceDisplayName = "Rangemaster"};
+                        case "head_asian": {_faceDisplayName = "Asian"};
+                        case "head_tanoan": {_faceDisplayName = "Tanoan"};
+
+                        // cup
+
+                        // rhs
+                    };
+
+                    _index = _ctrlListFaces lbAdd _faceDisplayName;
                     _ctrlListFaces lbSetData [_index, str [_faceIdentityType,_facesForIdentity]];
 
                     if (_faceIdentityType == _selUnitFace) then {
@@ -3574,7 +3600,31 @@ switch(_operation) do {
                     _voiceIdentityType = _voiceIdentityTypes select _i;
                     _voicesForIdentity = _voicesArray select _i;
 
-                    _index = _ctrlListVoices lbAdd _voiceIdentityType;
+                    // manual mapped languages
+
+                    private _voiceDisplayName = _voiceIdentityType;
+
+                    switch (tolower _voiceIdentityType) do {
+                        // vanilla
+                        case "languageeng_f": {_voiceDisplayName = "English"};
+                        case "languageengb_f": {_voiceDisplayName = "English (British)"};
+                        case "languagegre_f": {_voiceDisplayName = "English (Altian)"};
+                        case "languageper_f": {_voiceDisplayName = "Farsi"};
+                        case "languageengvr_f": {_voiceDisplayName = "English (VR)"};
+                        case "languagegrevr_f": {_voiceDisplayName = "English (Altian,VR)"};
+                        case "languagepervr_f": {_voiceDisplayName = "Farsi (VR)"};
+                        case "languagechi_f": {_voiceDisplayName = "Chinese"};
+                        case "languagefre_f": {_voiceDisplayName = "French"};
+                        case "languageengfre_f": {_voiceDisplayName = "English (French)"};
+
+                        // cup
+                        case "cup_d_language_ru": {_voiceDisplayName = "Russian (CUP)"};
+
+                        // rhs
+                        case "languagerus": {_voiceDisplayName = "Russian (RHS)"};
+                    };
+
+                    _index = _ctrlListVoices lbAdd _voiceDisplayName;
                     _ctrlListVoices lbSetData [_index, str [_voiceIdentityType,_voicesForIdentity]];
 
                     if (_voiceIdentityType == _SelUnitVoice) then {
