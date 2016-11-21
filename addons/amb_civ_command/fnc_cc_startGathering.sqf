@@ -25,20 +25,13 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_agentData","_commandState","_commandName","_args","_state","_debug","_agentID","_agent","_nextState","_nextStateArgs"];
+params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
 
-_agentData = _this select 0;
-_commandState = _this select 1;
-_commandName = _this select 2;
-_args = _this select 3;
-_state = _this select 4;
-_debug = _this select 5;
+private _agentID = _agentData select 2 select 3;
+private _agent = _agentData select 2 select 5;
 
-_agentID = _agentData select 2 select 3;
-_agent = _agentData select 2 select 5;
-
-_nextState = _state;
-_nextStateArgs = [];
+private _nextState = _state;
+private _nextStateArgs = [];
 
 
 // DEBUG -------------------------------------------------------------------------------------
@@ -48,9 +41,8 @@ if(_debug) then {
 // DEBUG -------------------------------------------------------------------------------------
 
 switch (_state) do {
-    case "init":{
 
-        private ["_position","_minTimeout","_maxTimeout","_timeout","_timer","_pos"];
+    case "init":{
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -59,26 +51,25 @@ switch (_state) do {
         // DEBUG -------------------------------------------------------------------------------------
 
         //_position = getPosASL _agent findEmptyPosition[10, 100, "O_Ka60_F"];
-        _pos = getposATL _agent;
-        _position = [_pos,0,10,1,0,10,0,[],[_pos]] call BIS_fnc_findSafePos;
+        private _pos = getposATL _agent;
+        private _position = [_pos,0,10,1,0,10,0,[],[_pos]] call BIS_fnc_findSafePos;
 
-        _minTimeout = _args select 0;
-        _maxTimeout = _args select 1;
+        _args params ["_minTimeout","_maxTimeout"];
 
         [_agent] call ALIVE_fnc_agentSelectSpeedMode;
         [_agent, _position] call ALiVE_fnc_doMoveRemote;
 
-        _timeout = _minTimeout + floor(random _maxTimeout);
-        _timer = 0;
+        private _timeout = _minTimeout + floor(random _maxTimeout);
+        private _timer = 0;
 
         _nextState = "travel";
         _nextStateArgs = [_timeout, _timer];
 
         [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-    };
-    case "travel":{
 
-        private ["_agents","_partners","_partner","_partnerAgent"];
+    };
+
+    case "travel":{
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -90,15 +81,15 @@ switch (_state) do {
 
             _agent setVariable ["ALIVE_agentBusy", true, false];
 
-            _agents = [ALIVE_agentHandler, "getActive"] call ALIVE_fnc_agentHandler;
+            private _agents = [ALIVE_agentHandler, "getActive"] call ALIVE_fnc_agentHandler;
             _agents = _agents select 2;
 
             if(count _agents > 0) then {
-                _partners = [];
+                private _partners = [];
 
                 {
-                    _partner = selectRandom _agents;
-                    _partnerAgent = _partner select 2 select 5;
+                    private _partner = selectRandom _agents;
+                    private _partnerAgent = _partner select 2 select 5;
 
                     if!(_partnerAgent getVariable ["ALIVE_agentGatheringRequested",false]) then {
                         _partnerAgent setVariable ["ALIVE_agentGatheringComplete", false, false];
@@ -117,10 +108,10 @@ switch (_state) do {
                 [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
             };
         };
-    };
-    case "wait":{
 
-        private ["_timeout","_timer","_partners"];
+    };
+
+    case "wait":{
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -128,9 +119,7 @@ switch (_state) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-        _timeout = _args select 0;
-        _timer = _args select 1;
-        _partners =  _args select 2;
+        _args params ["_timeout","_timer","_partners"];
 
         if(_timer > _timeout) then
         {
@@ -153,7 +142,9 @@ switch (_state) do {
 
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
+
     };
+
     case "done":{
 
         // DEBUG -------------------------------------------------------------------------------------
@@ -168,5 +159,7 @@ switch (_state) do {
         _nextStateArgs = [];
 
         [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+
     };
+
 };

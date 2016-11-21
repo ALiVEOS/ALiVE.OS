@@ -25,20 +25,13 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_agentData","_commandState","_commandName","_args","_state","_debug","_agentID","_agent","_nextState","_nextStateArgs"];
+params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
 
-_agentData = _this select 0;
-_commandState = _this select 1;
-_commandName = _this select 2;
-_args = _this select 3;
-_state = _this select 4;
-_debug = _this select 5;
+private _agentID = _agentData select 2 select 3;
+private _agent = _agentData select 2 select 5;
 
-_agentID = _agentData select 2 select 3;
-_agent = _agentData select 2 select 5;
-
-_nextState = _state;
-_nextStateArgs = [];
+private _nextState = _state;
+private _nextStateArgs = [];
 
 
 // DEBUG -------------------------------------------------------------------------------------
@@ -48,9 +41,7 @@ if(_debug) then {
 // DEBUG -------------------------------------------------------------------------------------
 
 switch (_state) do {
-    case "init":{
-
-        private ["_agentClusterID","_agentCluster","_homePosition","_positions","_position","_targetSide"];
+    case "init": {
 
         // DEBUG -------------------------------------------------------------------------------------
         if (_debug) then {
@@ -60,10 +51,10 @@ switch (_state) do {
 
         _agent setVariable ["ALIVE_agentBusy", true, false];
 
-        _agentClusterID = _agentData select 2 select 9;
-        _agentCluster = [ALIVE_clusterHandler,"getCluster",_agentClusterID] call ALIVE_fnc_clusterHandler;
+        private _agentClusterID = _agentData select 2 select 9;
+        private _agentCluster = [ALIVE_clusterHandler,"getCluster",_agentClusterID] call ALIVE_fnc_clusterHandler;
 
-        _position = _args select 0;
+        private _position = _args select 0;
 
         //_target = [getPosASL _agent, 600, _targetSide] call ALIVE_fnc_getSideManOrPlayerNear;
 
@@ -82,9 +73,7 @@ switch (_state) do {
         };
     };
 
-    case "move":{
-
-        private ["_position","_destination","_handle"];
+    case "move": {
 
         // DEBUG -------------------------------------------------------------------------------------
         if (_debug) then {
@@ -92,14 +81,14 @@ switch (_state) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-        _position = _args select 0;
+        private _position = _args select 0;
 
         if !(isNil "_position") then {
 
             _agent setSpeedMode "LIMITED";
             _agent setBehaviour "CARELESS";
 
-            _handle = [_agent, _position] spawn {
+            private _handle = [_agent, _position] spawn {
 
                 private ["_agent","_position"];
 
@@ -135,9 +124,7 @@ switch (_state) do {
         };
     };
 
-    case "travel":{
-
-        private ["_position","_destination","_handle"];
+    case "travel": {
 
         // DEBUG -------------------------------------------------------------------------------------
         if (_debug) then {
@@ -145,8 +132,8 @@ switch (_state) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-        _position = _args select 0;
-        _handle = _args select 1;
+        private _position = _args select 0;
+        private _handle = _args select 1;
 
         _nextStateArgs = _args;
 
@@ -163,7 +150,7 @@ switch (_state) do {
         };
     };
 
-    case "done":{
+    case "done": {
 
         // DEBUG -------------------------------------------------------------------------------------
         if (_debug) then {
@@ -176,11 +163,11 @@ switch (_state) do {
             _agent setBehaviour "SAFE";
             _agent setSkill 0.1;
 
-            _homePosition = _agentData select 2 select 10;
-            _positions = [_homePosition,15] call ALIVE_fnc_findIndoorHousePositions;
+            private _homePosition = _agentData select 2 select 10;
+            private _positions = [_homePosition,15] call ALIVE_fnc_findIndoorHousePositions;
 
             if (count _positions > 0) then {
-                _position = _positions call BIS_fnc_arrayPop;
+                private _position = _positions call BIS_fnc_arrayPop;
                 [_agent] call ALIVE_fnc_agentSelectSpeedMode;
 
                 [_agent, _position] call ALiVE_fnc_doMoveRemote;

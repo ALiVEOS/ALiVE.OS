@@ -23,30 +23,26 @@ See Also:
 Author:
 ARJay
 ---------------------------------------------------------------------------- */
-private ["_building","_musicSource","_colour","_brightness","_light"];
 
-_building = _this select 0;
+private _building = _this select 0;
 
-_musicSource = "RoadCone_L_F" createVehicle position _building;
-_musicSource attachTo [_building,[1,1,1]];
+private _musicSource = "RoadCone_L_F" createVehicle position _building;
+private _musicSource attachTo [_building,[1,1,1]];
 hideObject _musicSource;
 
 [_building, _musicSource] spawn {
-    private ["_building", "_musicSource", "_tracksPlayed", "_totalTracks", "_trackName", "_trackDuration"];
-
-    _building = _this select 0;
-    _musicSource = _this select 1;
-    _tracksPlayed = 1;
-    _totalTracks = count (ALIVE_civilianHouseTracks select 1);
+    params ["_building","_musicSource"];
+    private _tracksPlayed = 1;
+    private _totalTracks = count (ALIVE_civilianHouseTracks select 1);
 
     while { (alive _musicSource) } do {
         while { _tracksPlayed < _totalTracks } do {
-            _trackName = format["Track%1", floor (1 + (random _totalTracks))];
-            _trackDuration = [ALIVE_civilianHouseTracks, _trackName] call ALIVE_fnc_hashGet;
+            private _trackName = format["Track%1", floor (1 + (random _totalTracks))];
+            private _trackDuration = [ALIVE_civilianHouseTracks, _trackName] call ALIVE_fnc_hashGet;
 
             if(isMultiplayer) then {
                 [_building, _musicSource, _trackName] remoteExec ["ALIVE_fnc_clientAddAmbientRoomMusic"];
-                
+
             }else{
                 _musicSource say3d _trackName;
             };

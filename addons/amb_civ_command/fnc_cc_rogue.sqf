@@ -25,20 +25,13 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_agentData","_commandState","_commandName","_args","_state","_debug","_agentID","_agent","_nextState","_nextStateArgs"];
+params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
 
-_agentData = _this select 0;
-_commandState = _this select 1;
-_commandName = _this select 2;
-_args = _this select 3;
-_state = _this select 4;
-_debug = _this select 5;
+private _agentID = _agentData select 2 select 3;
+private _agent = _agentData select 2 select 5;
 
-_agentID = _agentData select 2 select 3;
-_agent = _agentData select 2 select 5;
-
-_nextState = _state;
-_nextStateArgs = [];
+private _nextState = _state;
+private _nextStateArgs = [];
 
 
 // DEBUG -------------------------------------------------------------------------------------
@@ -48,9 +41,8 @@ if(_debug) then {
 // DEBUG -------------------------------------------------------------------------------------
 
 switch (_state) do {
-    case "init":{
 
-        private ["_agentClusterID","_agentCluster","_target","_armed","_homePosition","_positions","_position"];
+    case "init":{
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -60,16 +52,16 @@ switch (_state) do {
 
         _agent setVariable ["ALIVE_agentBusy", true, false];
 
-        _agentClusterID = _agentData select 2 select 9;
-        _agentCluster = [ALIVE_clusterHandler,"getCluster",_agentClusterID] call ALIVE_fnc_clusterHandler;
+        private _agentClusterID = _agentData select 2 select 9;
+        private _agentCluster = [ALIVE_clusterHandler,"getCluster",_agentClusterID] call ALIVE_fnc_clusterHandler;
 
-        _target = [_agentCluster,getPosASL _agent, 50] call ALIVE_fnc_getAgentEnemyNear;
+        private _target = [_agentCluster,getPosASL _agent, 50] call ALIVE_fnc_getAgentEnemyNear;
 
         if(count _target > 0) then {
 
             _target = _target select 0;
 
-            _armed = _agent getVariable ["ALIVE_agentArmed", false];
+            private _armed = _agent getVariable ["ALIVE_agentArmed", false];
 
             if(_armed) then {
                  _nextStateArgs = [_target];
@@ -77,11 +69,11 @@ switch (_state) do {
                 _nextState = "target";
                 [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
             }else{
-                _homePosition = _agentData select 2 select 10;
-                _positions = [_homePosition,5] call ALIVE_fnc_findIndoorHousePositions;
+                private _homePosition = _agentData select 2 select 10;
+                private _positions = [_homePosition,5] call ALIVE_fnc_findIndoorHousePositions;
 
                 if(count _positions > 0) then {
-                    _position = _positions call BIS_fnc_arrayPop;
+                    private _position = _positions call BIS_fnc_arrayPop;
                     [_agent] call ALIVE_fnc_agentSelectSpeedMode;
                     [_agent, _position] call ALiVE_fnc_doMoveRemote;
 
@@ -98,10 +90,10 @@ switch (_state) do {
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
-    };
-    case "arm":{
 
-        private ["_faction","_weapons","_weaponGroup","_weapon","_ammo"];
+    };
+
+    case "arm":{
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -112,17 +104,17 @@ switch (_state) do {
         if(_agent call ALiVE_fnc_unitReadyRemote) then {
 
             //arm
-            _faction = _agentData select 2 select 7;
-            _weapons = [ALIVE_civilianWeapons, _faction,[["hgun_Pistol_heavy_01_F","11Rnd_45ACP_Mag"],["hgun_PDW2000_F","30Rnd_9x21_Mag"],["SMG_02_ARCO_pointg_F","30Rnd_9x21_Mag"],["arifle_TRG21_F","30Rnd_556x45_Stanag"]]] call ALIVE_fnc_hashGet;
+            private _faction = _agentData select 2 select 7;
+            private _weapons = [ALIVE_civilianWeapons, _faction,[["hgun_Pistol_heavy_01_F","11Rnd_45ACP_Mag"],["hgun_PDW2000_F","30Rnd_9x21_Mag"],["SMG_02_ARCO_pointg_F","30Rnd_9x21_Mag"],["arifle_TRG21_F","30Rnd_556x45_Stanag"]]] call ALIVE_fnc_hashGet;
 
             if(count _weapons == 0) then {
                 _weapons = [ALIVE_civilianWeapons, "CIV"] call ALIVE_fnc_hashGet;
             };
 
             if(count _weapons > 0) then {
-                _weaponGroup = selectRandom _weapons;
-                _weapon = _weaponGroup select 0;
-                _ammo = _weaponGroup select 1;
+                private _weaponGroup = selectRandom _weapons;
+                private _weapon = _weaponGroup select 0;
+                private _ammo = _weaponGroup select 1;
 
                 _agent addWeapon _weapon;
                 _agent addMagazine _ammo;
@@ -139,10 +131,10 @@ switch (_state) do {
                 [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
             };
         };
-    };
-    case "target":{
 
-        private ["_target"];
+    };
+
+    case "target":{
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -150,7 +142,7 @@ switch (_state) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-        _target = _args select 0;
+        private _target = _args select 0;
 
         if!(isNil "_target") then {
 
@@ -172,10 +164,10 @@ switch (_state) do {
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
-    };
-    case "travel":{
 
-        private ["_target"];
+    };
+
+    case "travel":{
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -183,7 +175,7 @@ switch (_state) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-        _target = _args select 0;
+        private _target = _args select 0;
 
         if(_agent call ALiVE_fnc_unitReadyRemote) then {
 
@@ -204,7 +196,9 @@ switch (_state) do {
                 [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
             };
         };
+
     };
+
     case "done":{
 
         // DEBUG -------------------------------------------------------------------------------------
@@ -225,5 +219,7 @@ switch (_state) do {
         _nextStateArgs = [];
 
         [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+
     };
+
 };

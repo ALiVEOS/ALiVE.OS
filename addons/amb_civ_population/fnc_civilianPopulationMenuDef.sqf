@@ -36,13 +36,12 @@ Tupolov, Wolffy
 Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
-private ["_menuDef", "_target", "_params", "_menuName", "_menuRsc", "_menus"];
 // _this==[_target, _menuNameOrParams]
 
-PARAMS_2(_target,_params);
+params ["_target","_params"];
 
-_menuName = "";
-_menuRsc = "popup";
+private _menuName = "";
+private _menuRsc = "popup";
 
 if (typeName _params == typeName []) then {
     if (count _params < 1) exitWith {diag_log format["Error: Invalid params: %1, %2", _this, __FILE__];};
@@ -66,7 +65,7 @@ if (typeName _params == typeName []) then {
             ],
              ...
 */
-_menus =
+private _menus =
 [
     [
         ["main", "ALiVE", _menuRsc],
@@ -109,7 +108,7 @@ if (_menuName == "civpop") then {
 };
 
 //-----------------------------------------------------------------------------
-_menuDef = [];
+private _menuDef = [];
 {
     if (_x select 0 select 0 == _menuName) exitWith {_menuDef = _x};
 } forEach _menus;

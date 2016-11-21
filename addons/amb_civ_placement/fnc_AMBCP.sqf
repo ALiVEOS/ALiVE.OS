@@ -57,10 +57,13 @@ params [
 _result = true;
 
 switch(_operation) do {
+
     default {
         _result = [_logic, _operation, _args] call SUPERCLASS;
     };
+
     case "destroy": {
+
         [_logic, "debug", false] call MAINCLASS;
         if (isServer) then {
             // if server
@@ -72,25 +75,28 @@ switch(_operation) do {
 
     };
     case "debug": {
-        if (typeName _args == "BOOL") then {
+
+        if (_args isEqualType true) then {
             _logic setVariable ["debug", _args];
         } else {
             _args = _logic getVariable ["debug", false];
         };
-        if (typeName _args == "STRING") then {
+        if (_args isEqualType "") then {
                 if(_args == "true") then {_args = true;} else {_args = false;};
                 _logic setVariable ["debug", _args];
         };
-        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+        ASSERT_TRUE(_args isEqualType true,str _args);
 
         _result = _args;
+
     };
     case "state": {
-        private["_state","_data","_nodes","_simple_operations"];
-        _simple_operations = ["targets", "size","type","faction"];
 
-        if(typeName _args != "ARRAY") then {
-            _state = [] call CBA_fnc_hashCreate;
+        private _simple_operations = ["targets", "size","type","faction"];
+
+        if !(_args isEqualType []) then {
+            private _state = [] call CBA_fnc_hashCreate;
+
             // Save state
             {
                 [_state, _x, _logic getVariable _x] call ALIVE_fnc_hashSet;
@@ -99,6 +105,7 @@ switch(_operation) do {
             if ([_logic, "debug"] call MAINCLASS) then {
                 diag_log PFORMAT_2(QUOTE(MAINCLASS), _operation,_state);
             };
+
             _result = _state;
         } else {
             ASSERT_TRUE([_args] call ALIVE_fnc_isHash,str _args);
@@ -108,97 +115,129 @@ switch(_operation) do {
                 [_logic, _x, [_args, _x] call ALIVE_fnc_hashGet] call MAINCLASS;
             } forEach _simple_operations;
         };
+
     };
+
     // Determine force faction
     case "faction": {
+
         _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
+
     };
+
     // Return TAOR marker
     case "taor": {
-        if(typeName _args == "STRING") then {
+
+        if(_args isEqualType "") then {
             _args = [_args, " ", ""] call CBA_fnc_replace;
             _args = [_args, ","] call CBA_fnc_split;
+
             if(count _args > 0) then {
                 _logic setVariable [_operation, _args];
             };
         };
-        if(typeName _args == "ARRAY") then {
+
+        if (_args isEqualType []) then {
             _logic setVariable [_operation, _args];
         };
+
         _result = _logic getVariable [_operation, DEFAULT_TAOR];
+
     };
+
     // Return the Blacklist marker
     case "blacklist": {
-        if(typeName _args == "STRING") then {
+
+        if(_args isEqualType "") then {
             _args = [_args, " ", ""] call CBA_fnc_replace;
             _args = [_args, ","] call CBA_fnc_split;
+
             if(count _args > 0) then {
                 _logic setVariable [_operation, _args];
             };
         };
-        if(typeName _args == "ARRAY") then {
+
+        if (_args isEqualType []) then {
             _logic setVariable [_operation, _args];
         };
+
         _result = _logic getVariable [_operation, DEFAULT_BLACKLIST];
+
     };
+
     // Return the Size filter
     case "sizeFilter": {
         _result = [_logic,_operation,_args,DEFAULT_SIZE_FILTER] call ALIVE_fnc_OOsimpleOperation;
     };
+
     // Return the Priority filter
     case "priorityFilter": {
         _result = [_logic,_operation,_args,DEFAULT_PRIORITY_FILTER] call ALIVE_fnc_OOsimpleOperation;
     };
+
     // Return the Placement Multiplier
     case "placementMultiplier": {
         _result = [_logic,_operation,_args,DEFAULT_PLACEMENT_MULTIPLIER] call ALIVE_fnc_OOsimpleOperation;
     };
+
     // Return the Ambient Vehicle Amount
     case "ambientVehicleAmount": {
         _result = [_logic,_operation,_args,DEFAULT_AMBIENT_VEHICLE_AMOUNT] call ALIVE_fnc_OOsimpleOperation;
     };
+
     // Ambient vehicle faction
     case "ambientVehicleFaction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
     };
+
     // Return the objectives as an array of clusters
     case "objectives": {
         _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
     };
+
     // Return the HQ objectives as an array of clusters
     case "objectivesHQ": {
         _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
     };
+
     // Return the Power objectives as an array of clusters
     case "objectivesPower": {
         _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
     };
+
     // Return the Comms objectives as an array of clusters
     case "objectivesComms": {
         _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
     };
+
     // Return the MARINE objectives as an array of clusters
     case "objectivesMarine": {
         _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
     };
+
     // Return the RAIL objectives as an array of clusters
     case "objectivesRail": {
         _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
     };
+
     // Return the FUEL objectives as an array of clusters
     case "objectivesFuel": {
         _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
     };
+
     // Return the CONSTRUCTION objectives as an array of clusters
     case "objectivesConstruction": {
         _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
     };
+
     // Return the SETTLEMENT objectives as an array of clusters
     case "objectivesSettlement": {
         _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
     };
+
     // Main process
     case "init": {
+
         if (isServer) then {
 
             // if server, initialise module game logic
@@ -241,14 +280,14 @@ switch(_operation) do {
             {_x setMarkerAlpha 0} foreach (_logic getVariable ["taor", DEFAULT_TAOR]);
             {_x setMarkerAlpha 0} foreach (_logic getVariable ["blacklist", DEFAULT_TAOR]);
         };
+
     };
+
     case "start": {
+
         if (isServer) then {
 
-            private ["_debug","_clusterType","_worldName","_file","_clusters","_cluster","_taor","_taorClusters","_blacklist",
-            "_sizeFilter","_priorityFilter","_blacklistClusters","_center","_error"];
-
-            _debug = [_logic, "debug"] call MAINCLASS;
+            private _debug = [_logic, "debug"] call MAINCLASS;
 
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
@@ -260,8 +299,8 @@ switch(_operation) do {
             waituntil {!(isnil "ALIVE_clusterHandler")};
 
             if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
-                _worldName = toLower(worldName);
-                _file = format["x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
+                private _worldName = toLower(worldName);
+                private _file = format["x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
                 call compile preprocessFileLineNumbers _file;
                 ALIVE_loadedCIVClusters = true;
             };
@@ -274,24 +313,22 @@ switch(_operation) do {
 
             //Only spawn warning on version mismatch since map index changes were reduced
             //uncomment //_error = true; below for exit
-            _error = false;
+            private _error = false;
             if!(isNil "ALIVE_clusterBuild") then {
-                private ["_clusterVersion","_clusterBuild","_clusterType","_version","_build","_message"];
-
-                _clusterVersion = ALIVE_clusterBuild select 2;
-                _clusterBuild = ALIVE_clusterBuild select 3;
-                _clusterType = ALIVE_clusterBuild select 4;
-                _version = productVersion select 2;
-                _build = productVersion select 3;
+                private _clusterVersion = ALIVE_clusterBuild select 2;
+                private _clusterBuild = ALIVE_clusterBuild select 3;
+                private _clusterType = ALIVE_clusterBuild select 4;
+                private _version = productVersion select 2;
+                private _build = productVersion select 3;
 
                 if!(_clusterType == 'Stable') then {
-                    _message = "Warning ALiVE requires the STABLE game build";
+                    private _message = "Warning ALiVE requires the STABLE game build";
                     [_message] call ALIVE_fnc_dump;
                     //_error = true;
                 };
 
                 if(!(_clusterVersion == _version) || !(_clusterBuild == _build)) then {
-                    _message = format["Warning: This version of ALiVE is build for A3 version: %1.%2. The server is running version: %3.%4. Please contact your server administrator and update to the latest ALiVE release version.",_clusterVersion, _clusterBuild, _version, _build];
+                    private _message = format["Warning: This version of ALiVE is build for A3 version: %1.%2. The server is running version: %3.%4. Please contact your server administrator and update to the latest ALiVE release version.",_clusterVersion, _clusterBuild, _version, _build];
                     [_message] call ALIVE_fnc_dump;
                     //_error = true;
                 };
@@ -305,10 +342,10 @@ switch(_operation) do {
             };
 
             if!(_error) then {
-                _taor = [_logic, "taor"] call MAINCLASS;
-                _blacklist = [_logic, "blacklist"] call MAINCLASS;
-                _sizeFilter = parseNumber([_logic, "sizeFilter"] call MAINCLASS);
-                _priorityFilter = parseNumber([_logic, "priorityFilter"] call MAINCLASS);
+                private _taor = [_logic, "taor"] call MAINCLASS;
+                private _blacklist = [_logic, "blacklist"] call MAINCLASS;
+                private _sizeFilter = parseNumber([_logic, "sizeFilter"] call MAINCLASS);
+                private _priorityFilter = parseNumber([_logic, "priorityFilter"] call MAINCLASS);
 
                 // check markers for existance
                 private ["_marker","_counter"];
@@ -337,9 +374,7 @@ switch(_operation) do {
                     } forEach _blacklist;
                 };
 
-                private ["_clusters"];
-
-                _clusters = DEFAULT_OBJECTIVES;
+                private _clusters = DEFAULT_OBJECTIVES;
 
 
                 if(!(worldName == "Altis") && _sizeFilter == 160) then {
@@ -513,14 +548,15 @@ switch(_operation) do {
                 _logic setVariable ["startupComplete", true];
             };
         };
+
     };
+
     // Registration
     case "registration": {
+
         if (isServer) then {
 
-            private ["_debug","_clusters","_cluster","_clustersSettlement","_clustersHQ","_clustersPower","_clustersComms","_clustersMarine","_clustersRail","_clustersFuel","_clustersConstruction"];
-
-            _debug = [_logic, "debug"] call MAINCLASS;
+            private _debug = [_logic, "debug"] call MAINCLASS;
 
 
             // DEBUG -------------------------------------------------------------------------------------
@@ -531,18 +567,18 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
-            _clusters = [_logic, "objectives"] call MAINCLASS;
+            private _clusters = [_logic, "objectives"] call MAINCLASS;
 
             /*
-            _clusters = [_logic, "objectives"] call MAINCLASS;
-            _clustersSettlement = [_logic, "objectivesSettlement", _clusters] call MAINCLASS;
-            _clustersHQ = [_logic, "objectivesHQ", _clusters] call MAINCLASS;
-            _clustersPower = [_logic, "objectivesPower", _clusters] call MAINCLASS;
-            _clustersComms = [_logic, "objectivesComms", _clusters] call MAINCLASS;
-            _clustersMarine = [_logic, "objectivesMarine", _clusters] call MAINCLASS;
-            _clustersRail = [_logic, "objectivesRail", _clusters] call MAINCLASS;
-            _clustersFuel = [_logic, "objectivesFuel", _clusters] call MAINCLASS;
-            _clustersConstruction = [_logic, "objectivesConstruction", _clusters] call MAINCLASS;
+            private _clusters = [_logic, "objectives"] call MAINCLASS;
+            private _clustersSettlement = [_logic, "objectivesSettlement", _clusters] call MAINCLASS;
+            private _clustersHQ = [_logic, "objectivesHQ", _clusters] call MAINCLASS;
+            private _clustersPower = [_logic, "objectivesPower", _clusters] call MAINCLASS;
+            private _clustersComms = [_logic, "objectivesComms", _clusters] call MAINCLASS;
+            private _clustersMarine = [_logic, "objectivesMarine", _clusters] call MAINCLASS;
+            private _clustersRail = [_logic, "objectivesRail", _clusters] call MAINCLASS;
+            private _clustersFuel = [_logic, "objectivesFuel", _clusters] call MAINCLASS;
+            private _clustersConstruction = [_logic, "objectivesConstruction", _clusters] call MAINCLASS;
             */
 
 
@@ -562,17 +598,15 @@ switch(_operation) do {
             [_logic, "placement"] call MAINCLASS;
 
         };
+
     };
+
     // Placement
     case "placement": {
+
         if (isServer) then {
 
-            private ["_debug","_clusters","_cluster","_clustersSettlement","_clustersHQ","_clustersPower","_clustersComms","_clustersMarine",
-            "_clustersRail","_clustersFuel","_clustersConstruction","_ambientVehicleAmount","_ambientVehicleFaction","_vehicleClass",
-            "_faction","_placementMultiplier","_ambientCivilianRoles","_factionConfig","_factionSideNumber","_side","_sideObject","_nodes","_node","_buildings",
-            "_env","_file"];
-
-            _debug = [_logic, "debug"] call MAINCLASS;
+            private _debug = [_logic, "debug"] call MAINCLASS;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
@@ -585,7 +619,7 @@ switch(_operation) do {
 
             //waituntil {sleep 5; (!(isnil {([_logic, "objectives"] call MAINCLASS)}) && {count ([_logic, "objectives"] call MAINCLASS) > 0})};
 
-            _clusters = [_logic, "objectives"] call MAINCLASS;
+            private _clusters = [_logic, "objectives"] call MAINCLASS;
 
             /*
             _clusters = [_logic, "objectives"] call MAINCLASS;
@@ -599,18 +633,18 @@ switch(_operation) do {
             _clustersConstruction = [_logic, "objectivesConstruction", _clusters] call MAINCLASS;
             */
 
-            _faction = [_logic, "faction"] call MAINCLASS;
-            _placementMultiplier = parseNumber([_logic, "placementMultiplier"] call MAINCLASS);
-            _ambientVehicleAmount = parseNumber([_logic, "ambientVehicleAmount"] call MAINCLASS);
-            _ambientVehicleFaction = [_logic, "ambientVehicleFaction"] call MAINCLASS;
+            private _faction = [_logic, "faction"] call MAINCLASS;
+            private _placementMultiplier = parseNumber([_logic, "placementMultiplier"] call MAINCLASS);
+            private _ambientVehicleAmount = parseNumber([_logic, "ambientVehicleAmount"] call MAINCLASS);
+            private _ambientVehicleFaction = [_logic, "ambientVehicleFaction"] call MAINCLASS;
 
-            _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
-            _factionSideNumber = getNumber(_factionConfig >> "side");
-            _side = _factionSideNumber call ALIVE_fnc_sideNumberToText;
-            _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
+            private _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
+            private _factionSideNumber = getNumber(_factionConfig >> "side");
+            private _side = _factionSideNumber call ALIVE_fnc_sideNumberToText;
+            private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
 
             // get current environment settings
-            _env = call ALIVE_fnc_getEnvironment;
+            private _env = call ALIVE_fnc_getEnvironment;
 
             // get current global civilian population posture
             [] call ALIVE_fnc_getGlobalPosture;
@@ -626,24 +660,22 @@ switch(_operation) do {
             // Load static data
 
             if(isNil "ALiVE_STATIC_DATA_LOADED") then {
-                _file = "\x\alive\addons\main\static\staticData.sqf";
+                private _file = "\x\alive\addons\main\static\staticData.sqf";
                 call compile preprocessFileLineNumbers _file;
             };
 
             // Spawn ambient vehicles
 
-            private ["_countLandUnits","_carClasses","_landClasses","_supportCount","_supportMax","_supportClasses","_types",
-            "_countBuildings","_parkingChance","_usedPositions","_building","_parkingPosition","_positionOK","_supportPlacement",
-            "_clusterID","_position","_buildingPosition"];
+            private ["_vehicleClass"];
 
-            _countLandUnits = 0;
+            private _countLandUnits = 0;
 
             if(_ambientVehicleAmount > 0) then {
 
-                _carClasses = [0,_ambientVehicleFaction,"Car"] call ALiVE_fnc_findVehicleType;
-                _landClasses = _carClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
+                private _carClasses = [0,_ambientVehicleFaction,"Car"] call ALiVE_fnc_findVehicleType;
+                private _landClasses = _carClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
 
-                _supportClasses = [ALIVE_factionDefaultSupports,_ambientVehicleFaction,[]] call ALIVE_fnc_hashGet;
+                private _supportClasses = [ALIVE_factionDefaultSupports,_ambientVehicleFaction,[]] call ALIVE_fnc_hashGet;
 
                 //["SUPPORT CLASSES: %1",_supportClasses] call ALIVE_fnc_dump;
 
@@ -663,21 +695,20 @@ switch(_operation) do {
                 if(count _landClasses > 0) then {
 
                     {
+                        private _supportCount = 0;
+                        private _supportMax = 0;
 
-                        _supportCount = 0;
-                        _supportMax = 0;
-
-                        _clusterID = [_x, "clusterID"] call ALIVE_fnc_hashGet;
-                        _nodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
+                        private _clusterID = [_x, "clusterID"] call ALIVE_fnc_hashGet;
+                        private _nodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
 
                         //["NODES: %1",_nodes] call ALIVE_fnc_dump;
 
-                        _buildings = [_nodes, ALIVE_civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
+                        private _buildings = [_nodes, ALIVE_civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
 
                         //["BUILDINGS: %1",_buildings] call ALIVE_fnc_dump;
 
-                        _countBuildings = count _buildings;
-                        _parkingChance = 0.1 * _ambientVehicleAmount;
+                        private _countBuildings = count _buildings;
+                        private _parkingChance = 0.1 * _ambientVehicleAmount;
 
                         //["COUNT BUILDINGS: %1",_countBuildings] call ALIVE_fnc_dump;
                         //["CHANCE: %1",_parkingChance] call ALIVE_fnc_dump;
@@ -715,33 +746,33 @@ switch(_operation) do {
                         //["SUPPORT MAX: %1",_supportMax] call ALIVE_fnc_dump;
                         //["CHANCE: %1",_parkingChance] call ALIVE_fnc_dump;
 
-                        _usedPositions = [];
+                        private _usedPositions = [];
 
                         {
                             if(random 1 < _parkingChance) then {
 
-                                _building = _x;
+                                private _building = _x;
 
 
                                 //["SUPPORT CLASSES: %1",_supportClasses] call ALIVE_fnc_dump;
                                 //["LAND CLASSES: %1",_landClasses] call ALIVE_fnc_dump;
 
-                                _supportPlacement = false;
+                                private _supportPlacement = false;
                                 if(_supportCount < _supportMax) then {
                                     _supportPlacement = true;
-                                    _vehicleClass = _supportClasses call BIS_fnc_selectRandom;
+                                    _vehicleClass = selectRandom _supportClasses;
                                 }else{
-                                    _vehicleClass = _landClasses call BIS_fnc_selectRandom;
+                                    _vehicleClass = selectRandom _landClasses;
                                 };
 
                                 //["SUPPORT PLACEMENT: %1",_supportPlacement] call ALIVE_fnc_dump;
                                 //["VEHICLE CLASS: %1",_vehicleClass] call ALIVE_fnc_dump;
 
-                                _parkingPosition = [_vehicleClass,_building,false] call ALIVE_fnc_getParkingPosition;
-                                _positionOK = true;
+                                private _parkingPosition = [_vehicleClass,_building,false] call ALIVE_fnc_getParkingPosition;
+                                private _positionOK = true;
 
                                 {
-                                    _position = _x select 0;
+                                    private _position = _x select 0;
                                     if((_parkingPosition select 0) distance _position < 10) then {
                                         _positionOK = false;
                                     };
@@ -751,13 +782,13 @@ switch(_operation) do {
 
                                 if(_positionOK) then {
 
-                                    _buildingPosition = getPos _building;
+                                    private _buildingPosition = getPos _building;
 
                                     [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction,_clusterID,_parkingPosition select 0] call ALIVE_fnc_createCivilianVehicle;
 
                                     _countLandUnits = _countLandUnits + 1;
 
-                                    _usedPositions set [count _usedPositions, _parkingPosition];
+                                    _usedPositions pushback _parkingPosition;
 
                                     if(_supportPlacement) then {
                                         _supportCount = _supportCount + 1;
@@ -772,9 +803,8 @@ switch(_operation) do {
             };
 
 
-            private ["_spawnChance","_civClasses","_clusterID","_nodes","_buildings","_countBuildings","_building","_unitClass","_agentID","_buildingPosition","_agent","_clusterGroup"];
 
-            _civClasses = [0,_faction,"Man"] call ALiVE_fnc_findVehicleType;
+            private _civClasses = [0,_faction,"Man"] call ALiVE_fnc_findVehicleType;
 
             //["CIV Classes: %1",_civClasses] call ALIVE_fnc_dump;
 
@@ -785,19 +815,19 @@ switch(_operation) do {
             if(count _civClasses > 0) then {
 
                 {
-                    _clusterID = [_x, "clusterID"] call ALIVE_fnc_hashGet;
-                    _nodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
-                    _ambientCivilianRoles = [ALIVE_civilianPopulationSystem, "ambientCivilianRoles",[]] call ALiVE_fnc_HashGet;
+                    private _clusterID = [_x, "clusterID"] call ALIVE_fnc_hashGet;
+                    private _nodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
+                    private _ambientCivilianRoles = [ALIVE_civilianPopulationSystem, "ambientCivilianRoles",[]] call ALiVE_fnc_HashGet;
 
                     //["NODES: %1",_nodes] call ALIVE_fnc_dump;
 
-                    _buildings = [_nodes, ALIVE_civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
+                    private _buildings = [_nodes, ALIVE_civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
 
                     //["BUILDINGS: %1",_buildings] call ALIVE_fnc_dump;
 
-                    _countBuildings = count _buildings;
+                    private _countBuildings = count _buildings;
 
-                    _spawnChance = 0.1;
+                    private _spawnChance = 0.1;
 
                     if(_countBuildings > 50) then {
                         _spawnChance = 0.1 * _placementMultiplier;
@@ -827,15 +857,15 @@ switch(_operation) do {
 
                         if(random 1 < _spawnChance) then {
 
-                            _building = _x;
+                            private _building = _x;
 
-                            _unitClass = _civClasses call BIS_fnc_selectRandom;
-                            _agentID = format["agent_%1",[ALIVE_agentHandler, "getNextInsertID"] call ALIVE_fnc_agentHandler];
+                            private _unitClass = selectRandom _civClasses;
+                            private _agentID = format["agent_%1",[ALIVE_agentHandler, "getNextInsertID"] call ALIVE_fnc_agentHandler];
 
-                            _buildingPositions = [getPosATL _building,15] call ALIVE_fnc_findIndoorHousePositions;
-                            _buildingPosition = if (count _buildingPositions > 0) then {_buildingPositions call BIS_fnc_SelectRandom} else {getPosATL _building};
+                            private _buildingPositions = [getPosATL _building,15] call ALIVE_fnc_findIndoorHousePositions;
+                            private _buildingPosition = if (count _buildingPositions > 0) then {selectRandom _buildingPositions} else {getPosATL _building};
 
-                            _agent = [nil, "create"] call ALIVE_fnc_civilianAgent;
+                            private _agent = [nil, "create"] call ALIVE_fnc_civilianAgent;
                             [_agent, "init"] call ALIVE_fnc_civilianAgent;
                             [_agent, "agentID", _agentID] call ALIVE_fnc_civilianAgent;
                             [_agent, "agentClass", _unitClass] call ALIVE_fnc_civilianAgent;
@@ -846,8 +876,8 @@ switch(_operation) do {
                             [_agent, "homePosition", _buildingPosition] call ALIVE_fnc_civilianAgent;
 
                             if (count _ambientCivilianRoles > 0 && {random 1 > 0.5}) then {
-                                _role = _ambientCivilianRoles call BIS_fnc_SelectRandom;
-                                _roles = _ambientCivilianRoles - [_role];
+                                private _role = selectRandom _ambientCivilianRoles;
+                                //private _roles = _ambientCivilianRoles - [_role];
 
                                 [_agent, _role, true] call ALIVE_fnc_HashSet;
                             };
@@ -884,8 +914,11 @@ switch(_operation) do {
             _logic setVariable ["startupComplete", true];
 
         };
+
     };
+
 };
 
 TRACE_1("AMBCP - output",_result);
+
 _result;

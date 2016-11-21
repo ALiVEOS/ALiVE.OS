@@ -27,46 +27,41 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_cluster","_position","_distance","_result","_clusterHostility","_hostilitySettingsEAST","_hostilitySettingsWEST","_hostilitySettingsINDEP",
-"_hostilitySides","_hostilityNumbers","_nearUnits","_highest","_highestIndex","_nearEAST","_nearWEST","_nearINDEP","_mostHostileSide"];
+params ["_cluster","_position","_distance"];
 
-_cluster = _this select 0;
-_position = _this select 1;
-_distance = _this select 2;
+private _result = [];
 
-_result = [];
+private _clusterHostility = [_cluster, "hostility"] call ALIVE_fnc_hashGet;
 
-_clusterHostility = [_cluster, "hostility"] call ALIVE_fnc_hashGet;
-
-_hostilitySettingsEAST = [_clusterHostility, "EAST"] call ALIVE_fnc_hashGet;
-_hostilitySettingsWEST = [_clusterHostility, "WEST"] call ALIVE_fnc_hashGet;
-_hostilitySettingsINDEP = [_clusterHostility, "GUER"] call ALIVE_fnc_hashGet;
+private _hostilitySettingsEAST = [_clusterHostility, "EAST"] call ALIVE_fnc_hashGet;
+private _hostilitySettingsWEST = [_clusterHostility, "WEST"] call ALIVE_fnc_hashGet;
+private _hostilitySettingsINDEP = [_clusterHostility, "GUER"] call ALIVE_fnc_hashGet;
 //_hostilitySettingsGUER = [_clusterHostility, "GUER"] call ALIVE_fnc_hashGet;
 
-_hostilitySides = ["EAST","WEST","GUER"];
-_hostilityNumbers = [_hostilitySettingsEAST, _hostilitySettingsWEST, _hostilitySettingsINDEP];
+private _hostilitySides = ["EAST","WEST","GUER"];
+private _hostilityNumbers = [_hostilitySettingsEAST, _hostilitySettingsWEST, _hostilitySettingsINDEP];
 
-_nearUnits = [] call ALIVE_fnc_hashCreate;
+private _nearUnits = [] call ALIVE_fnc_hashCreate;
 [_nearUnits, "EAST", []] call ALIVE_fnc_hashSet;
 [_nearUnits, "WEST", []] call ALIVE_fnc_hashSet;
 [_nearUnits, "GUER", []] call ALIVE_fnc_hashSet;
 
-_nearEAST = [_nearUnits, "EAST"] call ALIVE_fnc_hashGet;
-_nearWEST = [_nearUnits, "WEST"] call ALIVE_fnc_hashGet;
-_nearINDEP = [_nearUnits, "GUER"] call ALIVE_fnc_hashGet;
+private _nearEAST = [_nearUnits, "EAST"] call ALIVE_fnc_hashGet;
+private _nearWEST = [_nearUnits, "WEST"] call ALIVE_fnc_hashGet;
+private _nearINDEP = [_nearUnits, "GUER"] call ALIVE_fnc_hashGet;
 
 {
     if(_position distance position _x < _distance) then {
         if(alive _x) then {
             switch(side (group _x)) do {
                 case west:{
-                    _nearWEST set [count _nearWEST, _x];
+                    _nearWEST pushback _x;
                 };
                 case east:{
-                    _nearEAST set [count _nearEAST, _x];
+                    _nearEAST pushback _x;
                 };
                 case resistance:{
-                    _nearINDEP set [count _nearINDEP, _x];
+                    _nearINDEP pushback _x;
                 };
             };
         };
@@ -78,13 +73,13 @@ _nearINDEP = [_nearUnits, "GUER"] call ALIVE_fnc_hashGet;
         if(alive _x) then {
             switch(side (group _x)) do {
                 case west:{
-                    _nearWEST set [count _nearWEST, _x];
+                    _nearWEST pushback _x;
                 };
                 case east:{
-                    _nearEAST set [count _nearEAST, _x];
+                    _nearEAST pushback _x;
                 };
                 case resistance:{
-                    _nearINDEP set [count _nearINDEP, _x];
+                    _nearINDEP pushback _x;
                 };
             };
         };
@@ -104,8 +99,8 @@ _nearINDEP = [_nearUnits, "GUER"] call ALIVE_fnc_hashGet;
 ["NEAR INDEP %1",_nearINDEP] call ALIVE_fnc_dump;
 */
 
-_highest = 0;
-_highestIndex = 0;
+private _highest = 0;
+private _highestIndex = 0;
 {
     if(_x > _highest) then {
         _highest = _x;
@@ -113,7 +108,7 @@ _highestIndex = 0;
     };
 } foreach _hostilityNumbers;
 
-_mostHostileSide = _hostilitySides select _highestIndex;
+private _mostHostileSide = _hostilitySides select _highestIndex;
 
 /*
 ["hostile numbers: %1",_hostilityNumbers] call ALIVE_fnc_dump;

@@ -24,19 +24,17 @@ Author:
 Highhead
 ---------------------------------------------------------------------------- */
 
-private ["_object","_operation","_id","_condition","_text"];
-
-_object = _this select 0;
+private _object = _this select 0;
 
 if (side _object != CIVILIAN || {isnil QGVAR(ROLES_DISABLED)} || {GVAR(ROLES_DISABLED)}) exitWith {}; // only add actions if civilian roles module field != none
 
-_role = "townelder";
-_text = format["Talk to %1",_role];
-_params = [];
-_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; [_object,_caller] call ALiVE_fnc_SelectRoleAction};
-_condition = "alive _target" + "&&" + format["_target getvariable [%1,false]",str(_role)];
+private _role = "townelder";
+private _text = format["Talk to %1",_role];
+private _params = [];
+private _code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; [_object,_caller] call ALiVE_fnc_SelectRoleAction};
+private _condition = "alive _target" + "&&" + format["_target getvariable [%1,false]",str(_role)];
 
-_id = _object addAction [
+private _id = _object addAction [
     _text,
     _code,
     _params,
@@ -180,4 +178,5 @@ if (random 1 > 0.9) then {
         _condition
     ];
 };
+
 true;

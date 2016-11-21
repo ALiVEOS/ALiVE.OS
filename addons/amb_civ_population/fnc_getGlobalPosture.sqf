@@ -24,20 +24,19 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_activeClusters","_cluster","_position","_size","_clusterHostility","_nearUnits","_hostileSide","_hostileLevel"];
+private _activeClusters = [ALIVE_clusterHandler, "getActive"] call ALIVE_fnc_clusterHandler;
 
-_activeClusters = [ALIVE_clusterHandler, "getActive"] call ALIVE_fnc_clusterHandler;
 {
-    _cluster = _x;
-    _position = _cluster select 2 select 2;
-    _size = _cluster select 2 select 3;
-    _clusterHostility = [_cluster, "hostility"] call ALIVE_fnc_hashGet;
+    private _cluster = _x;
+    private _position = _cluster select 2 select 2;
+    private _size = _cluster select 2 select 3;
+    private _clusterHostility = [_cluster, "hostility"] call ALIVE_fnc_hashGet;
 
-    _nearUnits = [_cluster,_position, (_size*2)] call ALIVE_fnc_getAgentEnemyNear;
+    private _nearUnits = [_cluster,_position, (_size*2)] call ALIVE_fnc_getAgentEnemyNear;
 
     if(count _nearUnits > 0) then {
-        _hostileSide = str(side (group(_nearUnits select 0)));
-        _hostileLevel = [_clusterHostility, _hostileSide, 0] call ALIVE_fnc_hashGet;
+        private _hostileSide = str(side (group(_nearUnits select 0)));
+        private _hostileLevel = [_clusterHostility, _hostileSide, 0] call ALIVE_fnc_hashGet;
         [_cluster, "posture", _hostileLevel] call ALIVE_fnc_hashSet;
     }else{
         [_cluster, "posture", 0] call ALIVE_fnc_hashSet;
