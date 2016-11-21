@@ -26,28 +26,34 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-params ["_sectors","_side","_unitCountMin","_unitCountMax"];
+private ["_sectors","_side","_unitCountMin","_unitCountMax","_err","_filteredSectors","_sector","_sectorData","_unitData","_units"];
 
-private _err = format["sector filter units requires an array of sectors - %1",_sectors];
-ASSERT_TRUE(_sectors isEqualType [], _err);
+_sectors = _this select 0;
+_side = _this select 1;
+_unitCountMin = _this select 2;
+_unitCountMax = _this select 3;
+
+_err = format["sector filter units requires an array of sectors - %1",_sectors];
+ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
 _err = format["sector filter units requires a string side - %1",_side];
-ASSERT_TRUE(_sectors isEqualType [], _err);
+ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
 _err = format["sector filter units requires a min units scalar- %1",_unitCountMin];
-ASSERT_TRUE(_unitCountMin isEqualType 0, _err);
+ASSERT_TRUE(typeName _unitCountMin == "SCALAR",_err);
 _err = format["sector filter units requires a max units scalar- %1",_unitCountMax];
-ASSERT_TRUE(_unitCountMax isEqualType 0, _err);
+ASSERT_TRUE(typeName _unitCountMax == "SCALAR",_err);
 
-private _filteredSectors = [];
+_filteredSectors = [];
 
 {
-    private _sector = _x;
-    private _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
-    private _unitData = [_sectorData, "units"] call ALIVE_fnc_hashGet;
-    private _units = [_unitData, _side] call ALIVE_fnc_hashGet;
+    _sector = _x;
+    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+    _unitData = [_sectorData, "units"] call ALIVE_fnc_hashGet;
+    _units = [_unitData, _side] call ALIVE_fnc_hashGet;
 
     if(count _units > 0 && count _units > _unitCountMin &&  count _units < _unitCountMax) then {
-        _filteredSectors pushback _sector;
+        _filteredSectors set [count _filteredSectors, _sector];
     };
+
 } forEach _sectors;
 
 _filteredSectors

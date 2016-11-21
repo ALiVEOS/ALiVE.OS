@@ -27,23 +27,25 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private _position = _this select 0;
-//private _radius = _this select 1;
+private ["_position","_radius","_result","_err", "_sector","_sectorData","_active","_roads","_road","_sectors"];
 
-private _err = format["get closest inactive requires a position array - %1",_position];
-ASSERT_TRUE(_position isEqualType [],_err);
+_position = _this select 0;
+//_radius = _this select 1;
+
+_err = format["get closest inactive requires a position array - %1",_position];
+ASSERT_TRUE(typeName _position == "ARRAY",_err);
 //_err = format["get closest sea requires a radius scalar - %1",_radius];
 //ASSERT_TRUE(typeName _radius == "SCALAR",_err);
 
-private _sector = [ALIVE_sectorGrid, "positionToSector", _position] call ALIVE_fnc_sectorGrid;
-private _sectorData = [_sector, "data",["",[],[],nil]] call ALIVE_fnc_hashGet;
+_sector = [ALIVE_sectorGrid, "positionToSector", _position] call ALIVE_fnc_sectorGrid;
+_sectorData = [_sector, "data",["",[],[],nil]] call ALIVE_fnc_hashGet;
 
 if("active" in (_sectorData select 1)) then {
-    private _active = [_sectorData, "active"] call ALIVE_fnc_hashGet;
+    _active = [_sectorData, "active"] call ALIVE_fnc_hashGet;
 
     if(count _active > 0) then {
 
-        private _sectors = [ALIVE_sectorGrid, "surroundingSectors", _position] call ALIVE_fnc_sectorGrid;
+        _sectors = [ALIVE_sectorGrid, "surroundingSectors", _position] call ALIVE_fnc_sectorGrid;
         _sectors = [_sectors,false] call ALIVE_fnc_sectorFilterActive;
 
         if(count _sectors > 0) then {
@@ -55,4 +57,5 @@ if("active" in (_sectorData select 1)) then {
     };
 };
 
-_position
+_result = _position;
+_result

@@ -26,143 +26,157 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private _sectors = _this;
+private ["_sectors","_err","_sectorData","_key","_args","_data","_sortedData"];
 
-private _err = format["sector data merge requires an array of sectors - %1",_sectors];
-ASSERT_TRUE(_sectors isEqualTo [], _err);
+_sectors = _this;
 
-private _elevationSamples = [];
-private _elevationSamplesLand = [];
-private _elevationSamplesSea = [];
-private _elevation = 0;
-private _terrain = "";
-private _landTerrain = [];
-private _shoreTerrain = [];
-private _seaTerrain = [];
-private _forestPlaces = [];
-private _hillPlaces = [];
-private _consolidatedClusters = [];
-private _airClusters = [];
-private _heliClusters = [];
-private _consolidatedCivClusters = [];
-private _powerClusters = [];
-private _commsClusters = [];
-private _marineClusters = [];
-private _railClusters = [];
-private _fuelClusters = [];
-private _constructionClusters = [];
-private _settlementClusters = [];
+_err = format["sector data merge requires an array of sectors - %1",_sectors];
+ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
 
+private ["_elevationSamples","_elevationSamplesLand","_elevationSamplesSea","_elevation","_terrainSamples","_terrain","_landTerrain","_shoreTerrain","_seaTerrain",
+"_forestPlaces","_hillPlaces","_meadowPlaces","_treePlaces","_housePlaces","_seaPlaces","_flatEmptySamples","_roadSamples",
+"_crossroadSamples","_terminusSamples","_bestPlaces","_roads","_terrainSamples","_sector","_sectorSectorData","_sectorElevationSamples",
+"_sectorTerrainSamples","_sectorLand","_sectorShore","_sectorSea","_sectorFlatEmptySamples","_sectorRoadSamples","_sectorRoad",
+"_sectorCrossroad","_sectorTerminus","_sectorBestPlaces","_sectorForestPlaces","_sectorHillPlaces","_sectorMeadowPlaces",
+"_sectorTreePlaces","_sectorHousePlaces","_sectorSeaPlaces","_entitiesBySide","_eastEntities","_westEntities","_civEntities",
+"_guerEntities","_sectorEntitiesBySide","_sectorEastEntities","_sectorWestEntities","_sectorCivEntities","_sectorGuerEntities",
+"_consolidatedClusters","_airClusters","_heliClusters","_sectorMilClusters","_sectorConsolidatedClusters","_sectorAirClusters",
+"_sectorHeliClusters","_consolidatedCivClusters","_powerClusters","_commsClusters","_marineClusters","_railClusters","_fuelClusters",
+"_constructionClusters","_settlementClusters","_sectorCivClusters","_sectorConsolidatedCivClusters","_sectorConsolidatedCivClusters",
+"_sectorPowerClusters","_sectorCommsClusters","_sectorMarineClusters","_sectorFuelClusters","_sectorRailClusters","_sectorConstructionClusters",
+"_sectorSettlementClusters","_sectorElevationSamplesLand","_sectorElevationSamplesSea","_sectorRoads","_clustersMil","_clustersCiv","_mergedData"];
+
+_elevationSamples = [];
+_elevationSamplesLand = [];
+_elevationSamplesSea = [];
+_elevation = 0;
+_terrain = "";
+_landTerrain = [];
+_shoreTerrain = [];
+_seaTerrain = [];
+_forestPlaces = [];
+_hillPlaces = [];
+_consolidatedClusters = [];
+_airClusters = [];
+_heliClusters = [];
+_consolidatedCivClusters = [];
+_powerClusters = [];
+_commsClusters = [];
+_marineClusters = [];
+_railClusters = [];
+_fuelClusters = [];
+_constructionClusters = [];
+_settlementClusters = [];
 /*
 _meadowPlaces = [];
 _treePlaces = [];
 _housePlaces = [];
 _seaPlaces = [];
 */
-
-private _flatEmptySamples = [];
-private _roadSamples = [];
-private _crossroadSamples = [];
-private _terminusSamples = [];
-private _eastEntities = [];
-private _westEntities = [];
-private _civEntities = [];
-private _guerEntities = [];
+_flatEmptySamples = [];
+_roadSamples = [];
+_crossroadSamples = [];
+_terminusSamples = [];
+_eastEntities = [];
+_westEntities = [];
+_civEntities = [];
+_guerEntities = [];
 
 {
-    private _sector = _x;
-    private _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+    private [];
 
-    private _sectorElevationSamplesLand = [_sectorData, "elevationSamplesLand"] call ALIVE_fnc_hashGet;
-    private _sectorElevationSamplesSea = [_sectorData, "elevationSamplesSea"] call ALIVE_fnc_hashGet;
-    private _sectorTerrainSamples = [_sectorData, "terrainSamples"] call ALIVE_fnc_hashGet;
-    private _sectorFlatEmptySamples = [_sectorData, "flatEmpty"] call ALIVE_fnc_hashGet;
-    private _sectorRoads = [_sectorData, "roads"] call ALIVE_fnc_hashGet;
-    private _sectorBestPlaces = [_sectorData, "bestPlaces"] call ALIVE_fnc_hashGet;
-    private _sectorMilClusters = [_sectorData, "clustersMil"] call ALIVE_fnc_hashGet;
-    private _sectorCivClusters = [_sectorData, "clustersCiv"] call ALIVE_fnc_hashGet;
+    _sector = _x;
+    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
 
-    _elevationSamplesLand append _sectorElevationSamplesLand;
-    _elevationSamplesSea append _sectorElevationSamplesSea;
+    _sectorElevationSamplesLand = [_sectorData, "elevationSamplesLand"] call ALIVE_fnc_hashGet;
+    _sectorElevationSamplesSea = [_sectorData, "elevationSamplesSea"] call ALIVE_fnc_hashGet;
+    _sectorTerrainSamples = [_sectorData, "terrainSamples"] call ALIVE_fnc_hashGet;
+    _sectorFlatEmptySamples = [_sectorData, "flatEmpty"] call ALIVE_fnc_hashGet;
+    _sectorRoads = [_sectorData, "roads"] call ALIVE_fnc_hashGet;
+    _sectorBestPlaces = [_sectorData, "bestPlaces"] call ALIVE_fnc_hashGet;
+    _sectorMilClusters = [_sectorData, "clustersMil"] call ALIVE_fnc_hashGet;
+    _sectorCivClusters = [_sectorData, "clustersCiv"] call ALIVE_fnc_hashGet;
 
-    private _sectorLand = [_sectorTerrainSamples, "land"] call ALIVE_fnc_hashGet;
-    private _sectorShore = [_sectorTerrainSamples, "shore"] call ALIVE_fnc_hashGet;
-    private _sectorSea = [_sectorTerrainSamples, "sea"] call ALIVE_fnc_hashGet;
+    _elevationSamplesLand = _elevationSamplesLand + _sectorElevationSamplesLand;
+    _elevationSamplesSea = _elevationSamplesSea + _sectorElevationSamplesSea;
 
-    _landTerrain append _sectorLand;
-    _shoreTerrain append _sectorShore;
-    _seaTerrain append _sectorSea;
+    _sectorLand = [_sectorTerrainSamples, "land"] call ALIVE_fnc_hashGet;
+    _sectorShore = [_sectorTerrainSamples, "shore"] call ALIVE_fnc_hashGet;
+    _sectorSea = [_sectorTerrainSamples, "sea"] call ALIVE_fnc_hashGet;
+
+    _landTerrain = _landTerrain + _sectorLand;
+    _shoreTerrain = _shoreTerrain + _sectorShore;
+    _seaTerrain = _seaTerrain + _sectorSea;
 
     if(count (_sectorFlatEmptySamples select 0) > 0) then {
-        _flatEmptySamples append _sectorFlatEmptySamples;
+        _flatEmptySamples = _flatEmptySamples + _sectorFlatEmptySamples;
     };
 
-    private _sectorRoad = [_sectorRoads, "road"] call ALIVE_fnc_hashGet;
-    private _sectorCrossroad = [_sectorRoads, "crossroad"] call ALIVE_fnc_hashGet;
-    private _sectorTerminus = [_sectorRoads, "terminus"] call ALIVE_fnc_hashGet;
+    _sectorRoad = [_sectorRoads, "road"] call ALIVE_fnc_hashGet;
+    _sectorCrossroad = [_sectorRoads, "crossroad"] call ALIVE_fnc_hashGet;
+    _sectorTerminus = [_sectorRoads, "terminus"] call ALIVE_fnc_hashGet;
 
-    _roadSamples append _sectorRoad;
-    _crossroadSamples append _sectorCrossroad;
-    _terminusSamples append _sectorTerminus;
+    _roadSamples = _roadSamples + _sectorRoad;
+    _crossroadSamples = _crossroadSamples + _sectorCrossroad;
+    _terminusSamples = _terminusSamples + _sectorTerminus;
 
-    private _sectorForestPlaces = [_sectorBestPlaces, "forest"] call ALIVE_fnc_hashGet;
-    private _sectorHillPlaces = [_sectorBestPlaces, "exposedHills"] call ALIVE_fnc_hashGet;
-
+    _sectorForestPlaces = [_sectorBestPlaces, "forest"] call ALIVE_fnc_hashGet;
+    _sectorHillPlaces = [_sectorBestPlaces, "exposedHills"] call ALIVE_fnc_hashGet;
     /*
-    private _sectorMeadowPlaces = [_sectorBestPlaces, "meadow"] call ALIVE_fnc_hashGet;
-    private _sectorTreePlaces = [_sectorBestPlaces, "exposedTrees"] call ALIVE_fnc_hashGet;
-    private _sectorHousePlaces = [_sectorBestPlaces, "houses"] call ALIVE_fnc_hashGet;
-    private _sectorSeaPlaces = [_sectorBestPlaces, "sea"] call ALIVE_fnc_hashGet;
+    _sectorMeadowPlaces = [_sectorBestPlaces, "meadow"] call ALIVE_fnc_hashGet;
+    _sectorTreePlaces = [_sectorBestPlaces, "exposedTrees"] call ALIVE_fnc_hashGet;
+    _sectorHousePlaces = [_sectorBestPlaces, "houses"] call ALIVE_fnc_hashGet;
+    _sectorSeaPlaces = [_sectorBestPlaces, "sea"] call ALIVE_fnc_hashGet;
     */
 
-    _forestPlaces append _sectorForestPlaces;
-    _hillPlaces append _sectorHillPlaces;
-
+    _forestPlaces = _forestPlaces + _sectorForestPlaces;
+    _hillPlaces = _hillPlaces + _sectorHillPlaces;
     /*
-    private _meadowPlaces = _meadowPlaces + _sectorMeadowPlaces;
-    private _treePlaces = _treePlaces + _sectorTreePlaces;
-    private _housePlaces = _housePlaces + _sectorHousePlaces;
-    private _seaPlaces = _seaPlaces + _sectorSeaPlaces;
+    _meadowPlaces = _meadowPlaces + _sectorMeadowPlaces;
+    _treePlaces = _treePlaces + _sectorTreePlaces;
+    _housePlaces = _housePlaces + _sectorHousePlaces;
+    _seaPlaces = _seaPlaces + _sectorSeaPlaces;
     */
 
-    private _sectorConsolidatedClusters = [_sectorMilClusters, "consolidated"] call ALIVE_fnc_hashGet;
-    private _sectorAirClusters = [_sectorMilClusters, "air"] call ALIVE_fnc_hashGet;
-    private _sectorHeliClusters = [_sectorMilClusters, "heli"] call ALIVE_fnc_hashGet;
+    _sectorConsolidatedClusters = [_sectorMilClusters, "consolidated"] call ALIVE_fnc_hashGet;
+    _sectorAirClusters = [_sectorMilClusters, "air"] call ALIVE_fnc_hashGet;
+    _sectorHeliClusters = [_sectorMilClusters, "heli"] call ALIVE_fnc_hashGet;
 
-    _consolidatedClusters append _sectorConsolidatedClusters;
-    _airClusters append _sectorAirClusters;
-    _heliClusters append _sectorHeliClusters;
+    _consolidatedClusters = _consolidatedClusters + _sectorConsolidatedClusters;
+    _airClusters = _airClusters + _sectorAirClusters;
+    _heliClusters = _heliClusters + _sectorHeliClusters;
 
-    private _sectorConsolidatedCivClusters = [_sectorCivClusters, "consolidated"] call ALIVE_fnc_hashGet;
-    private _sectorPowerClusters = [_sectorCivClusters, "power"] call ALIVE_fnc_hashGet;
-    private _sectorCommsClusters = [_sectorCivClusters, "comms"] call ALIVE_fnc_hashGet;
-    private _sectorMarineClusters = [_sectorCivClusters, "marine"] call ALIVE_fnc_hashGet;
-    private _sectorFuelClusters = [_sectorCivClusters, "fuel"] call ALIVE_fnc_hashGet;
-    private _sectorRailClusters = [_sectorCivClusters, "rail"] call ALIVE_fnc_hashGet;
-    private _sectorConstructionClusters = [_sectorCivClusters, "construction"] call ALIVE_fnc_hashGet;
-    private _sectorSettlementClusters = [_sectorCivClusters, "settlement"] call ALIVE_fnc_hashGet;
+    _sectorConsolidatedCivClusters = [_sectorCivClusters, "consolidated"] call ALIVE_fnc_hashGet;
+    _sectorPowerClusters = [_sectorCivClusters, "power"] call ALIVE_fnc_hashGet;
+    _sectorCommsClusters = [_sectorCivClusters, "comms"] call ALIVE_fnc_hashGet;
+    _sectorMarineClusters = [_sectorCivClusters, "marine"] call ALIVE_fnc_hashGet;
+    _sectorFuelClusters = [_sectorCivClusters, "fuel"] call ALIVE_fnc_hashGet;
+    _sectorRailClusters = [_sectorCivClusters, "rail"] call ALIVE_fnc_hashGet;
+    _sectorConstructionClusters = [_sectorCivClusters, "construction"] call ALIVE_fnc_hashGet;
+    _sectorSettlementClusters = [_sectorCivClusters, "settlement"] call ALIVE_fnc_hashGet;
 
-    _consolidatedCivClusters append _sectorConsolidatedCivClusters;
-    _powerClusters append _sectorPowerClusters;
-    _commsClusters append _sectorCommsClusters;
-    _marineClusters append _sectorMarineClusters;
-    _railClusters append _sectorRailClusters;
-    _fuelClusters append _sectorFuelClusters;
-    _constructionClusters append _sectorConstructionClusters;
-    _settlementClusters append _sectorSettlementClusters;
+    _consolidatedCivClusters = _consolidatedCivClusters + _sectorConsolidatedCivClusters;
+    _powerClusters = _powerClusters + _sectorPowerClusters;
+    _commsClusters = _commsClusters + _sectorCommsClusters;
+    _marineClusters = _marineClusters + _sectorMarineClusters;
+    _railClusters = _railClusters + _sectorRailClusters;
+    _fuelClusters = _fuelClusters + _sectorFuelClusters;
+    _constructionClusters = _constructionClusters + _sectorConstructionClusters;
+    _settlementClusters = _settlementClusters + _sectorSettlementClusters;
 
     if("entitiesBySide" in (_sectorData select 1)) then {
-        private _sectorEntitiesBySide = [_sectorData, "entitiesBySide"] call ALIVE_fnc_hashGet;
-        private _sectorEastEntities = [_sectorEntitiesBySide, "EAST"] call ALIVE_fnc_hashGet;
-        private _sectorWestEntities = [_sectorEntitiesBySide, "WEST"] call ALIVE_fnc_hashGet;
-        private _sectorCivEntities = [_sectorEntitiesBySide, "CIV"] call ALIVE_fnc_hashGet;
-        private _sectorGuerEntities = [_sectorEntitiesBySide, "GUER"] call ALIVE_fnc_hashGet;
+        _sectorEntitiesBySide = [_sectorData, "entitiesBySide"] call ALIVE_fnc_hashGet;
+        _sectorEastEntities = [_sectorEntitiesBySide, "EAST"] call ALIVE_fnc_hashGet;
+        _sectorWestEntities = [_sectorEntitiesBySide, "WEST"] call ALIVE_fnc_hashGet;
+        _sectorCivEntities = [_sectorEntitiesBySide, "CIV"] call ALIVE_fnc_hashGet;
+        _sectorGuerEntities = [_sectorEntitiesBySide, "GUER"] call ALIVE_fnc_hashGet;
 
-        _eastEntities append _sectorEastEntities;
-        _westEntities append _sectorWestEntities;
-        _civEntities append _sectorCivEntities;
-        _guerEntities append _sectorGuerEntities;
+        _eastEntities = _eastEntities + _sectorEastEntities;
+        _westEntities = _westEntities + _sectorWestEntities;
+        _civEntities = _civEntities + _sectorCivEntities;
+        _guerEntities = _guerEntities + _sectorGuerEntities;
     };
+
 } forEach _sectors;
 
 
@@ -190,21 +204,20 @@ if((count _landTerrain > 0) && (count _shoreTerrain == 0) && (count _seaTerrain 
 
 // store all data
 
-private _entitiesBySide = [] call ALIVE_fnc_hashCreate;
+_entitiesBySide = [] call ALIVE_fnc_hashCreate;
 [_entitiesBySide,"EAST",_eastEntities] call ALIVE_fnc_hashSet;
 [_entitiesBySide,"WEST",_westEntities] call ALIVE_fnc_hashSet;
 [_entitiesBySide,"CIV",_civEntities] call ALIVE_fnc_hashSet;
 [_entitiesBySide,"GUER",_guerEntities] call ALIVE_fnc_hashSet;
 
-private _terrainSamples = [] call ALIVE_fnc_hashCreate;
+_terrainSamples = [] call ALIVE_fnc_hashCreate;
 [_terrainSamples,"land",_landTerrain] call ALIVE_fnc_hashSet;
 [_terrainSamples,"sea",_seaTerrain] call ALIVE_fnc_hashSet;
 [_terrainSamples,"shore",_shoreTerrain] call ALIVE_fnc_hashSet;
 
-private _bestPlaces = [] call ALIVE_fnc_hashCreate;
+_bestPlaces = [] call ALIVE_fnc_hashCreate;
 [_bestPlaces,"forest",_forestPlaces] call ALIVE_fnc_hashSet;
 [_bestPlaces,"exposedHills",_hillPlaces] call ALIVE_fnc_hashSet;
-
 /*
 [_bestPlaces,"meadow",_meadowPlaces] call ALIVE_fnc_hashSet;
 [_bestPlaces,"exposedTrees",_treePlaces] call ALIVE_fnc_hashSet;
@@ -212,17 +225,17 @@ private _bestPlaces = [] call ALIVE_fnc_hashCreate;
 [_bestPlaces,"sea",_seaPlaces] call ALIVE_fnc_hashSet;
 */
 
-private _roads = [] call ALIVE_fnc_hashCreate;
+_roads = [] call ALIVE_fnc_hashCreate;
 [_roads,"road",_roadSamples] call ALIVE_fnc_hashSet;
 [_roads,"crossroad",_crossroadSamples] call ALIVE_fnc_hashSet;
 [_roads,"terminus",_terminusSamples] call ALIVE_fnc_hashSet;
 
-private _clustersMil = [] call ALIVE_fnc_hashCreate;
+_clustersMil = [] call ALIVE_fnc_hashCreate;
 [_clustersMil,"consolidated",_consolidatedClusters] call ALIVE_fnc_hashSet;
 [_clustersMil,"air",_airClusters] call ALIVE_fnc_hashSet;
 [_clustersMil,"heli",_heliClusters] call ALIVE_fnc_hashSet;
 
-private _clustersCiv = [] call ALIVE_fnc_hashCreate;
+_clustersCiv = [] call ALIVE_fnc_hashCreate;
 [_clustersCiv,"consolidated",_consolidatedCivClusters] call ALIVE_fnc_hashSet;
 [_clustersCiv, "power", _powerClusters] call ALIVE_fnc_hashSet;
 [_clustersCiv, "comms", _commsClusters] call ALIVE_fnc_hashSet;
@@ -232,7 +245,7 @@ private _clustersCiv = [] call ALIVE_fnc_hashCreate;
 [_clustersCiv, "construction", _constructionClusters] call ALIVE_fnc_hashSet;
 [_clustersCiv, "settlement", _settlementClusters] call ALIVE_fnc_hashSet;
 
-private _mergedData = [] call ALIVE_fnc_hashCreate;
+_mergedData = [] call ALIVE_fnc_hashCreate;
 [_mergedData, "elevationSamplesLand",_elevationSamplesLand] call ALIVE_fnc_hashSet;
 [_mergedData, "elevationSamplesSea",_elevationSamplesSea] call ALIVE_fnc_hashSet;
 [_mergedData, "elevation",_elevation] call ALIVE_fnc_hashSet;

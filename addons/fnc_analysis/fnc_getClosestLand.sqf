@@ -27,28 +27,31 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_landPosition"];
+private ["_getClosestLandFromSectors","_position","_radius","_result","_err", "_sector","_sectorData","_sectorTerrain","_sectorTerrainSamples","_samples","_sectors","_landPosition"];
 
-private _getClosestLandFromSectors = {
+_getClosestLandFromSectors = {
 
-    params ["_sectors","_position"];
+    private ["_sectors","_position","_sector","_sectorData","_sectorTerrainSamples","_samples"];
 
-    private _sectors = [_sectors, "SEA"] call ALIVE_fnc_sectorFilterTerrain;
+    _sectors = _this select 0;
+    _position = _this select 1;
 
-    private _result = [];
+    _sectors = [_sectors, "SEA"] call ALIVE_fnc_sectorFilterTerrain;
+
+    _result = [];
 
     if(count _sectors > 0) then {
 
         _sectors = [_sectors,_position] call ALIVE_fnc_sectorSortDistance;
 
         {
-            private _sector = _x;
-            private _sectorData = [_sector, "data",["",[],[],nil]] call ALIVE_fnc_hashGet;
+            _sector = _x;
+            _sectorData = [_sector, "data",["",[],[],nil]] call ALIVE_fnc_hashGet;
 
             //_sectorData call ALIVE_fnc_inspectHash;
 
-            private _sectorTerrainSamples = [_sectorData, "terrainSamples"] call ALIVE_fnc_hashGet;
-            private _samples = +([_sectorTerrainSamples, "land"] call ALIVE_fnc_hashGet);
+            _sectorTerrainSamples = [_sectorData, "terrainSamples"] call ALIVE_fnc_hashGet;
+            _samples = +([_sectorTerrainSamples, "land"] call ALIVE_fnc_hashGet);
 
             if(count _samples > 0) exitwith {
                 //["GCL got land samples: %1",_samples] call ALIVE_fnc_dump;
@@ -67,20 +70,20 @@ private _getClosestLandFromSectors = {
     _result
 };
 
-private _position = _this select 0;
-//private _radius = _this select 1;
+_position = _this select 0;
+//_radius = _this select 1;
 
-private _err = format["get closest land requires a position array - %1",_position];
+_err = format["get closest land requires a position array - %1",_position];
 ASSERT_TRUE(typeName _position == "ARRAY",_err);
 //_err = format["get closest land requires a radius scalar - %1",_radius];
 //ASSERT_TRUE(typeName _radius == "SCALAR",_err);
 
-private _sector = [ALIVE_sectorGrid, "positionToSector", _position] call ALIVE_fnc_sectorGrid;
-private _sectorData = [_sector, "data"] call ALIVE_fnc_hashGet;
+_sector = [ALIVE_sectorGrid, "positionToSector", _position] call ALIVE_fnc_sectorGrid;
+_sectorData = [_sector, "data"] call ALIVE_fnc_hashGet;
 
 if (isnil "_sectorData") exitwith {_position};
 
-private _sectorTerrain = [_sectorData, "terrain"] call ALIVE_fnc_hashGet;
+_sectorTerrain = [_sectorData, "terrain"] call ALIVE_fnc_hashGet;
 
 // the positions sector is terrain shore
 // we can get a land position there
@@ -91,8 +94,8 @@ if(_sectorTerrain == "SHORE") then {
     //Worse results with BIS_fnc_Safepos when looking for a shore
     //_landPosition = [_position, 0, 500, 1, 0, 100, 1, [], [_position]] call BIS_fnc_findSafePos;
 
-    private _sectorTerrainSamples = [_sectorData, "terrainSamples"] call ALIVE_fnc_hashGet;
-    private _samples = +([_sectorTerrainSamples, "land"] call ALIVE_fnc_hashGet);
+    _sectorTerrainSamples = [_sectorData, "terrainSamples"] call ALIVE_fnc_hashGet;
+    _samples = +([_sectorTerrainSamples, "land"] call ALIVE_fnc_hashGet);
 
     //Some shores dont have land terrain samples, fallback to shore samples
     if!(count _samples > 0) then {_samples = +([_sectorTerrainSamples, "shore"] call ALIVE_fnc_hashGet)};
@@ -115,7 +118,7 @@ if(_sectorTerrain == "SHORE") then {
 // if so spawn on a random land position
 if(_sectorTerrain == "SEA") then {
 
-    private _sectors = [ALIVE_sectorGrid, "surroundingSectors", _position] call ALIVE_fnc_sectorGrid;
+    _sectors = [ALIVE_sectorGrid, "surroundingSectors", _position] call ALIVE_fnc_sectorGrid;
 
     _landPosition = [_sectors,_position] call _getClosestLandFromSectors;
 

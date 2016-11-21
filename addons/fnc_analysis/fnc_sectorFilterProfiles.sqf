@@ -26,43 +26,46 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-params ["_sectors","_profileType","_profileSide"];
+private ["_sectors","_profileType","_profileSide","_err","_filteredSectors","_sector","_sectorData","_sideProfiles","_sideProfile"];
 
-private _err = format["sector filter profiles requires an array of sectors - %1",_sectors];
-ASSERT_TRUE(_sectors isEqualType [], _err);
+_sectors = _this select 0;
+_profileType = _this select 1;
+_profileSide = _this select 2;
+
+_err = format["sector filter profiles requires an array of sectors - %1",_sectors];
+ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
 _err = format["sector filter profiles requires a profile type string- %1",_profileType];
-ASSERT_TRUE(_profileType isEqualType "", _err);
+ASSERT_TRUE(typeName _profileType == "STRING",_err);
 _err = format["sector filter profiles requires a profile side string- %1",_profileSide];
-ASSERT_TRUE(_profileSide isEqualType "", _err);
+ASSERT_TRUE(typeName _profileSide == "STRING",_err);
 
-private _filteredSectors = [];
+_filteredSectors = [];
 
 {
-    private _sector = _x;
-    private _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+    _sector = _x;
+    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
 
     switch(_profileType) do {
         case "entity": {
             if("entitiesBySide" in (_sectorData select 1)) then {
-                private _sideProfiles = [_sectorData, "entitiesBySide"] call ALIVE_fnc_hashGet;
-                private _sideProfile = [_sideProfiles, _profileSide] call ALIVE_fnc_hashGet;
-
+                _sideProfiles = [_sectorData, "entitiesBySide"] call ALIVE_fnc_hashGet;
+                _sideProfile = [_sideProfiles, _profileSide] call ALIVE_fnc_hashGet;
                 if(count _sideProfile > 0) then {
-                    _filteredSectors pushback _sector;
+                    _filteredSectors set [count _filteredSectors, _sector];
                 };
             };
         };
         case "vehicle": {
             if("vehiclesBySide" in (_sectorData select 1)) then {
-                private _sideProfiles = [_sectorData, "vehiclesBySide"] call ALIVE_fnc_hashGet;
-                private _sideProfile = [_sideProfiles, _profileSide] call ALIVE_fnc_hashGet;
-
+                _sideProfiles = [_sectorData, "vehiclesBySide"] call ALIVE_fnc_hashGet;
+                _sideProfile = [_sideProfiles, _profileSide] call ALIVE_fnc_hashGet;
                 if(count _sideProfile > 0) then {
-                    _filteredSectors pushback _sector;
+                    _filteredSectors set [count _filteredSectors, _sector];
                 };
             };
         };
     };
+
 } forEach _sectors;
 
 _filteredSectors

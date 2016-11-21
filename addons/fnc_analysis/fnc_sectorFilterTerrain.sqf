@@ -26,26 +26,30 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-params ["_sectors","_terrainType"];
+private ["_sectors","_terrainType","_err","_filteredSectors","_sector","_sectorData","_terrainData"];
 
-private _err = format["sector filter terrain requires an array of sectors - %1",_sectors];
-ASSERT_TRUE(_sectors isEqualType [], _err);
+_sectors = _this select 0;
+_terrainType = _this select 1;
+
+_err = format["sector filter terrain requires an array of sectors - %1",_sectors];
+ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
 _err = format["sector filter terrain requires a terrain type string - %1",_terrainType];
-ASSERT_TRUE(_terrainType isEqualType "", _err);
+ASSERT_TRUE(typeName _terrainType == "STRING",_err);
 
-private _filteredSectors = [];
+_filteredSectors = [];
 
 {
-    private _sector = _x;
-    private _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+    _sector = _x;
+    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
 
     if("terrain" in (_sectorData select 1)) then {
-        private _terrainData = [_sectorData, "terrain"] call ALIVE_fnc_hashGet;
+        _terrainData = [_sectorData, "terrain"] call ALIVE_fnc_hashGet;
 
         if!(_terrainData == _terrainType) then {
-            _filteredSectors pushback _sector;
+            _filteredSectors set [count _filteredSectors, _sector];
         };
     };
+
 } forEach _sectors;
 
 _filteredSectors

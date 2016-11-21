@@ -26,17 +26,19 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private _sectors = _this select 0;
+private ["_sectors","_err","_worldName","_file","_sector","_result","_centerPosition","_id","_bounds","_dimensions",
+"_cluster","_clusterCenter","_clusterID","_consolidated","_air","_heli"];
 
-private _err = format["sector analysis units requires an array of sectors - %1",_sectors];
-ASSERT_TRUE(_sectors isEqualType [], _err);
+_sectors = _this select 0;
+_err = format["sector analysis units requires an array of sectors - %1",_sectors];
+ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
 
 if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
     //["LOADING MO DATA"] call ALIVE_fnc_dump;
     //[true] call ALIVE_fnc_timer;
 
-    private _worldName = toLower(worldName);
-    private _file = format["\x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
+    _worldName = toLower(worldName);
+    _file = format["\x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
     call compile preprocessFileLineNumbers _file;
     ALIVE_loadedCivClusters = true;
 
@@ -45,105 +47,108 @@ if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
 };
 
 {
-    private _sector = _x;
+    _sector = _x;
 
-    private _centerPosition = [_sector, "center"] call ALIVE_fnc_sector;
-    private _id = [_sector, "id"] call ALIVE_fnc_sector;
-    private _bounds = [_sector, "bounds"] call ALIVE_fnc_sector;
-    private _dimensions = [_sector, "dimensions"] call ALIVE_fnc_sector;
+    _centerPosition = [_sector, "center"] call ALIVE_fnc_sector;
+    _id = [_sector, "id"] call ALIVE_fnc_sector;
+    _bounds = [_sector, "bounds"] call ALIVE_fnc_sector;
+    _dimensions = [_sector, "dimensions"] call ALIVE_fnc_sector;
 
-    private _consolidated = [];
-    private _power = [];
-    private _comms = [];
-    private _marine = [];
-    private _rail = [];
-    private _fuel = [];
-    private _construction = [];
-    private _settlement = [];
+    private ["_consolidated","_power","_comms","_marine","_rail","_fuel","_construction","_settlement","_clusters"];
+
+
+    _consolidated = [];
+    _power = [];
+    _comms = [];
+    _marine = [];
+    _rail = [];
+    _fuel = [];
+    _construction = [];
+    _settlement = [];
 
     {
-        private _cluster = _x;
-        private _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
+        _cluster = _x;
+        _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
 
         if([_sector, "within", _clusterCenter] call ALIVE_fnc_sector) then {
-            private _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            _consolidated pushback [_clusterCenter,_clusterID];
+            _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
+            _consolidated set [count _consolidated, [_clusterCenter,_clusterID]];
         };
     } forEach (ALIVE_clustersCiv select 2);
 
     {
-        private _cluster = _x;
-        private _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
+        _cluster = _x;
+        _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
 
         if([_sector, "within", _clusterCenter] call ALIVE_fnc_sector) then {
-            private _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            _power pushback [_clusterCenter,_clusterID];
+            _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
+            _power set [count _power, [_clusterCenter,_clusterID]];
         };
     } forEach (ALIVE_clustersCivPower select 2);
 
     {
-        private _cluster = _x;
-        private _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
+        _cluster = _x;
+        _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
 
         if([_sector, "within", _clusterCenter] call ALIVE_fnc_sector) then {
-            private _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            _comms pushback [_clusterCenter,_clusterID];
+            _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
+            _comms set [count _comms, [_clusterCenter,_clusterID]];
         };
     } forEach (ALIVE_clustersCivComms select 2);
 
     {
-        private _cluster = _x;
-        private _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
+        _cluster = _x;
+        _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
 
         if([_sector, "within", _clusterCenter] call ALIVE_fnc_sector) then {
-            private _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            _marine pushback [_clusterCenter,_clusterID];
+            _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
+            _marine set [count _marine, [_clusterCenter,_clusterID]];
         };
     } forEach (ALIVE_clustersCivMarine select 2);
 
     /*
     {
-        private _cluster = _x;
-        private _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
+        _cluster = _x;
+        _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
 
         if([_sector, "within", _clusterCenter] call ALIVE_fnc_sector) then {
-            private _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            _rail pushback [_clusterCenter,_clusterID];
+            _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
+            _rail set [count _rail, [_clusterCenter,_clusterID]];
         };
     } forEach (ALIVE_clustersCivRail select 2);
     */
 
     {
-        private _cluster = _x;
-        private  _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
+        _cluster = _x;
+        _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
 
         if([_sector, "within", _clusterCenter] call ALIVE_fnc_sector) then {
-            private _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            _fuel pushback [_clusterCenter,_clusterID];
+            _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
+            _fuel set [count _fuel, [_clusterCenter,_clusterID]];
         };
     } forEach (ALIVE_clustersCivFuel select 2);
 
     {
-        private _cluster = _x;
-        private _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
+        _cluster = _x;
+        _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
 
         if([_sector, "within", _clusterCenter] call ALIVE_fnc_sector) then {
-            private _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            _construction pushback [_clusterCenter,_clusterID];
+            _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
+            _construction set [count _construction, [_clusterCenter,_clusterID]];
         };
     } forEach (ALIVE_clustersCivConstruction select 2);
 
     {
-        private _cluster = _x;
-        private _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
+        _cluster = _x;
+        _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
 
         if([_sector, "within", _clusterCenter] call ALIVE_fnc_sector) then {
-            private _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            _settlement pushback [_clusterCenter,_clusterID];
+            _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
+            _settlement set [count _settlement, [_clusterCenter,_clusterID]];
         };
     } forEach (ALIVE_clustersCivSettlement select 2);
 
-    private _clusters = [] call ALIVE_fnc_hashCreate;
+    _clusters = [] call ALIVE_fnc_hashCreate;
     [_clusters, "consolidated", _consolidated] call ALIVE_fnc_hashSet;
     [_clusters, "power", _power] call ALIVE_fnc_hashSet;
     [_clusters, "comms", _comms] call ALIVE_fnc_hashSet;
@@ -155,4 +160,5 @@ if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
 
     // store the result of the analysis on the sector instance
     [_sector, "data", ["clustersCiv",_clusters]] call ALIVE_fnc_sector;
+
 } forEach _sectors;

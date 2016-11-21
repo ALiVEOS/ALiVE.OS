@@ -26,28 +26,33 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-params ["_sectors","_elevationMin","_elevationMax"];
+private ["_sectors","_elevationMin","_elevationMax","_err","_filteredSectors","_sector","_sectorData","_elevationData"];
 
-private _err = format["sector filter elevation requires an array of sectors - %1",_sectors];
-ASSERT_TRUE(_sectors isEqualType [], _err);
+_sectors = _this select 0;
+_elevationMin = _this select 1;
+_elevationMax = _this select 2;
+
+_err = format["sector filter elevation requires an array of sectors - %1",_sectors];
+ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
 _err = format["sector filter elevation requires a min elevation scalar- %1",_elevationMin];
-ASSERT_TRUE(_elevationMin isEqualType 0, _err);
+ASSERT_TRUE(typeName _elevationMin == "SCALAR",_err);
 _err = format["sector filter elevation requires a max elevation scalar- %1",_elevationMax];
-ASSERT_TRUE(_elevationMax isEqualType 0, _err);
+ASSERT_TRUE(typeName _elevationMax == "SCALAR",_err);
 
-private _filteredSectors = [];
+_filteredSectors = [];
 
 {
-    private _sector = _x;
-    private _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
+    _sector = _x;
+    _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
 
     if("elevation" in (_sectorData select 1)) then {
-        private _elevationData = [_sectorData, "elevation"] call ALIVE_fnc_hashGet;
+        _elevationData = [_sectorData, "elevation"] call ALIVE_fnc_hashGet;
 
         if(_elevationData >= _elevationMin && _elevationData <= _elevationMax) then {
-            _filteredSectors pushback _sector;
+            _filteredSectors set [count _filteredSectors, _sector];
         };
     };
+
 } forEach _sectors;
 
 _filteredSectors

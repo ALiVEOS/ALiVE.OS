@@ -26,25 +26,26 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private _sectors = _this select 0;
+private ["_sectors","_err","_sector","_result","_centerPosition","_bounds","_dimensions","_units","_id","_detectionRadius"];
 
-private _err = format["sector analysis units requires an array of sectors - %1",_sectors];
-ASSERT_TRUE(_sectors isEqualType [], _err);
+_sectors = _this select 0;
+_err = format["sector analysis units requires an array of sectors - %1",_sectors];
+ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
 
 {
-    private _sector = _x;
+    _sector = _x;
 
-    private _centerPosition = [_sector, "center"] call ALIVE_fnc_sector;
-    private _id = [_sector, "id"] call ALIVE_fnc_sector;
-    private _bounds = [_sector, "bounds"] call ALIVE_fnc_sector;
-    private _dimensions = [_sector, "dimensions"] call ALIVE_fnc_sector;
+    _centerPosition = [_sector, "center"] call ALIVE_fnc_sector;
+    _id = [_sector, "id"] call ALIVE_fnc_sector;
+    _bounds = [_sector, "bounds"] call ALIVE_fnc_sector;
+    _dimensions = [_sector, "dimensions"] call ALIVE_fnc_sector;
 
     // detection radius get the diagonal of the sector
     // this gives a circumference that fits the sector within it
-    private _detectionRadius = floor(((_bounds select 0) distance (_bounds select 2)) / 2);
+    _detectionRadius = floor(((_bounds select 0) distance (_bounds select 2)) / 2);
 
     // get all near units
-    private _units = [_centerPosition, _detectionRadius] call ALIVE_fnc_getNearUnits;
+    _units = [_centerPosition, _detectionRadius] call ALIVE_fnc_getNearUnits;
 
     // remove dead units
     _units = [_units] call ALIVE_fnc_unitArrayFilterDead;
@@ -59,4 +60,5 @@ ASSERT_TRUE(_sectors isEqualType [], _err);
 
     // store the result of the analysis on the sector instance
     [_sector, "data", ["units",_units]] call ALIVE_fnc_sector;
+
 } forEach _sectors;

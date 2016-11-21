@@ -27,18 +27,21 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-params ["_units","_sector"];
+private ["_units","_sector","_err","_inSectorUnits"];
 
-private _err = format["unit array filter in sector requires an array of units - %1",_units];
-ASSERT_TRUE(_units isEqualType [], _err);
+_units = _this select 0;
+_sector = _this select 1;
+
+_err = format["unit array filter in sector requires an array of units - %1",_units];
+ASSERT_TRUE(typeName _units == "ARRAY",_err);
 _err = format["unit array filter in sector requires a sector - %1",_sector];
-ASSERT_TRUE(_sector isEqualType [], _err);
+ASSERT_TRUE(typeName _sector == "ARRAY",_err);
 
-private _inSectorUnits = [];
+_inSectorUnits = [];
 
 {
     if([_sector, "within", getPos _x] call ALIVE_fnc_sector) then {
-        _inSectorUnits pushback _x;
+        _inSectorUnits set [count _inSectorUnits, _x];
     };
 } forEach _units;
 

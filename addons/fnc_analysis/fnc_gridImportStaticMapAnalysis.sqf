@@ -27,22 +27,23 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private _grid = _this select 0;
+private ["_grid","_worldName","_sectors","_staticMapAnalysis","_sector","_sectorID","_file"];
 
-private _sectors = [_grid, "sectors"] call ALIVE_fnc_sectorGrid;
+_grid = _this select 0;
 
-//private _worldName = [worldName] call CBA_fnc_capitalize;
+_sectors = [_grid, "sectors"] call ALIVE_fnc_sectorGrid;
+
+_worldName = [worldName] call CBA_fnc_capitalize;
 
 if(isNil "ALIVE_gridData") then {
-    private _worldName = toLower(worldName);
-    private _file = format["x\alive\addons\fnc_analysis\data\data.%1.sqf", _worldName];
+    _worldName = toLower(worldName);
+    _file = format["x\alive\addons\fnc_analysis\data\data.%1.sqf", _worldName];
     call compile preprocessFileLineNumbers _file;
 };
 
 {
-    private _sector = _x;
-    private _sectorID = [_sector, "id"] call ALIVE_fnc_sector;
-
+    _sector = _x;
+    _sectorID = [_sector, "id"] call ALIVE_fnc_sector;
     [_sector, "data", [ALIVE_gridData, _sectorID] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
 
 } forEach _sectors;

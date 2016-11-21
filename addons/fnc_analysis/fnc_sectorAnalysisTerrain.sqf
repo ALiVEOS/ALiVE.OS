@@ -26,25 +26,26 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private _sectors = _this select 0;
+private ["_sectors","_err","_sector","_result","_centerPosition","_bounds","_dimensions","_quadrantWidth","_terrain","_terrainData","_countIsWater","_direction","_position","_id"];
 
-private _err = format["sector analysis terrain requires an array of sectors - %1",_sectors];
-ASSERT_TRUE(_sectors isEqualType [], _err);
+_sectors = _this select 0;
+_err = format["sector analysis terrain requires an array of sectors - %1",_sectors];
+ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
 
 {
-    private _sector = _x;
+    _sector = _x;
 
-    private _centerPosition = [_sector, "center"] call ALIVE_fnc_sector;
-    private _id = [_sector, "id"] call ALIVE_fnc_sector;
-    private _bounds = [_sector, "bounds"] call ALIVE_fnc_sector;
-    private _dimensions = [_sector, "dimensions"] call ALIVE_fnc_sector;
+    _centerPosition = [_sector, "center"] call ALIVE_fnc_sector;
+    _id = [_sector, "id"] call ALIVE_fnc_sector;
+    _bounds = [_sector, "bounds"] call ALIVE_fnc_sector;
+    _dimensions = [_sector, "dimensions"] call ALIVE_fnc_sector;
 
-    private _quadrantWidth = (_dimensions select 0) / 2;
+    _quadrantWidth = (_dimensions select 0) / 2;
 
-    private _countIsWater = 0;
+    _countIsWater = 0;
 
-    private _terrain = "";
-    private _terrainData = [] call ALIVE_fnc_hashCreate;
+    _terrain = "";
+    _terrainData = [] call ALIVE_fnc_hashCreate;
     [_terrainData,"sea",[]] call ALIVE_fnc_hashSet;
     [_terrainData,"land",[]] call ALIVE_fnc_hashSet;
     [_terrainData,"shore",[]] call ALIVE_fnc_hashSet;
@@ -54,9 +55,8 @@ ASSERT_TRUE(_sectors isEqualType [], _err);
     };
 
     {
-        private _direction = _x getDir _centerPosition;
-        private _position = _x getPos [_quadrantWidth, _direction];
-
+        _direction = _x getDir _centerPosition;
+        _position = _x getPos [_quadrantWidth, _direction];
         if(surfaceIsWater _position) then {
             _countIsWater = _countIsWater + 1;
         };
@@ -80,4 +80,5 @@ ASSERT_TRUE(_sectors isEqualType [], _err);
     // store the result of the analysis on the sector instance
     [_sector, "data", ["terrainSamples",_terrainData]] call ALIVE_fnc_sector;
     [_sector, "data", ["terrain",_terrain]] call ALIVE_fnc_sector;
+
 } forEach _sectors;
