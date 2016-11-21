@@ -28,7 +28,7 @@ ARJay
 params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
 
 private _agentID = _agentData select 2 select 3;
-private _agentData select 2 select 5;
+private _agent = _agentData select 2 select 5;
 
 private _nextState = _state;
 private _nextStateArgs = [];

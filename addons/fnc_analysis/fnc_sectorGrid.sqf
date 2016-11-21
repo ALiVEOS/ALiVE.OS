@@ -284,11 +284,13 @@ switch(_operation) do {
 
                 private _position = [_gridPositionX + ((_row * _sectorWidth)+(_sectorWidth / 2)), _gridPositionY + ((_column * _sectorHeight)+(_sectorHeight / 2))];
 
+                private ["_sector"];
+
                 // allow different sector sub classes.
                 switch(_sectorType) do
                 {
                     case "SECTOR": {
-                        private _sector = [nil, "create"] call ALIVE_fnc_sector;
+                        _sector = [nil, "create"] call ALIVE_fnc_sector;
                         [_sector, "init"] call ALIVE_fnc_sector;
                         [_sector, "gridID", _gridID] call ALIVE_fnc_sector;
                         [_sector, "dimensions", [(_sectorWidth / 2), (_sectorHeight / 2)]] call ALIVE_fnc_sector;
