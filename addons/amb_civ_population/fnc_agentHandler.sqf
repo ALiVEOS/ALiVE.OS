@@ -76,10 +76,10 @@ params [
 #define MTEMPLATE "ALiVE_AGENTHANDLER_%1"
 
 switch(_operation) do {
-    case "init": {
-        if (isServer) then {
 
-            private["_profilesByType","_profilesBySide"];
+    case "init": {
+
+        if (isServer) then {
 
             // if server, initialise module game logic
             [_logic,"super"] call ALIVE_fnc_hashRem;
@@ -98,24 +98,29 @@ switch(_operation) do {
             [_logic,"agentsByCluster",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
 
         };
+
     };
+
     case "destroy": {
+
         [_logic, "debug", false] call MAINCLASS;
+
         if (isServer) then {
                 [_logic, "destroy"] call SUPERCLASS;
         };
-    };
-    case "debug": {
-        private["_agents"];
 
-        if(typeName _args != "BOOL") then {
+    };
+
+    case "debug": {
+
+        if !(_args isEqualType true) then {
                 _args = [_logic,"debug"] call ALIVE_fnc_hashGet;
         } else {
                 [_logic,"debug",_args] call ALIVE_fnc_hashSet;
         };
-        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+        ASSERT_TRUE(_args isEqualType true,str _args);
 
-        _agents = [_logic, "agents"] call ALIVE_fnc_hashGet;
+        private _agents = [_logic, "agents"] call ALIVE_fnc_hashGet;
 
         if(count _agents > 0) then {
             {
@@ -139,15 +144,16 @@ switch(_operation) do {
         };
 
         _result = _args;
-    };
-    case "state": {
-        private["_state"];
 
-        if(typeName _args != "ARRAY") then {
+    };
+
+    case "state": {
+
+        if !(_args isEqualType []) then {
 
                 // Save state
 
-                _state = [] call ALIVE_fnc_hashCreate;
+                private _state = [] call ALIVE_fnc_hashCreate;
 
                 // loop the class hash and set vars on the state hash
                 {
@@ -159,7 +165,7 @@ switch(_operation) do {
                 _result = _state;
 
         } else {
-                ASSERT_TRUE(typeName _args == "ARRAY",str typeName _args);
+                ASSERT_TRUE(_args isEqualType [],str typeName _args);
 
                 // Restore state
 
@@ -168,25 +174,26 @@ switch(_operation) do {
                     [_logic,_x,[_args,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
                 } forEach (_args select 1);
         };
+
     };
+
     case "registerAgent": {
-        private["_agent","_agentID","_agents","_agentsByCluster","_agentsActive","_activeAgents","_agentsInActive","_agentSide","_agentType","_agentID","_agentCluster","_agentPosition","_agentActive","_agentsCluster"];
 
-        if(typeName _args == "ARRAY") then {
-            _agent = _args;
+        if(_args isEqualType []) then {
+            private _agent = _args;
 
-            _agents = [_logic, "agents"] call ALIVE_fnc_hashGet;
-            _agentsByCluster = [_logic, "agentsByCluster"] call ALIVE_fnc_hashGet;
-            _agentsActive = [_logic, "agentsActive"] call ALIVE_fnc_hashGet;
-            _agentsInActive = [_logic, "agentsInActive"] call ALIVE_fnc_hashGet;
-            _activeAgents = [_logic, "activeAgents"] call ALIVE_fnc_hashGet;
+            private _agents = [_logic, "agents"] call ALIVE_fnc_hashGet;
+            private _agentsByCluster = [_logic, "agentsByCluster"] call ALIVE_fnc_hashGet;
+            private _agentsActive = [_logic, "agentsActive"] call ALIVE_fnc_hashGet;
+            private _agentsInActive = [_logic, "agentsInActive"] call ALIVE_fnc_hashGet;
+            private _activeAgents = [_logic, "activeAgents"] call ALIVE_fnc_hashGet;
 
-            _agentSide = [_agent, "side"] call ALIVE_fnc_hashGet;
-            _agentType = [_agent, "type"] call ALIVE_fnc_hashGet;
-            _agentID = [_agent, "agentID"] call ALIVE_fnc_hashGet;
-            _agentCluster = [_agent, "homeCluster"] call ALIVE_fnc_hashGet;
-            _agentPosition = [_agent, "position"] call ALIVE_fnc_hashGet;
-            _agentActive = [_agent, "active"] call ALIVE_fnc_hashGet;
+            private _agentSide = [_agent, "side"] call ALIVE_fnc_hashGet;
+            private _agentType = [_agent, "type"] call ALIVE_fnc_hashGet;
+            private _agentID = [_agent, "agentID"] call ALIVE_fnc_hashGet;
+            private _agentCluster = [_agent, "homeCluster"] call ALIVE_fnc_hashGet;
+            private _agentPosition = [_agent, "position"] call ALIVE_fnc_hashGet;
+            private _agentActive = [_agent, "active"] call ALIVE_fnc_hashGet;
 
             // store on main agent hash
             [_agents, _agentID, _agent] call ALIVE_fnc_hashSet;
@@ -200,7 +207,7 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
-            private["_profilesFaction","_profilesFactionType","_profilesFactionVehicleType"];
+            private ["_agentsCluster"];
 
             // store reference to main agent on by cluster hash
             if(_agentCluster in (_agentsByCluster select 1)) then {
@@ -221,25 +228,26 @@ switch(_operation) do {
                 [_agentsInActive, _agentID, _agent] call ALIVE_fnc_hashSet;
             };
         };
+
     };
+
     case "unregisterAgent": {
-        private["_agent","_agentID","_agents","_agentsByCluster","_agentsActive","_agentsInActive","_activeAgents","_agentSide","_agentType","_agentID","_agentCluster","_agentPosition","_agentActive","_agentsCluster"];
 
-        if(typeName _args == "ARRAY") then {
-            _agent = _args;
+        if(_args isEqualType []) then {
+            private _agent = _args;
 
-            _agents = [_logic, "agents"] call ALIVE_fnc_hashGet;
-            _agentsByCluster = [_logic, "agentsByCluster"] call ALIVE_fnc_hashGet;
-            _agentsActive = [_logic, "agentsActive"] call ALIVE_fnc_hashGet;
-            _agentsInActive = [_logic, "agentsInActive"] call ALIVE_fnc_hashGet;
-            _activeAgents = [_logic, "activeAgents"] call ALIVE_fnc_hashGet;
+            private _agents = [_logic, "agents"] call ALIVE_fnc_hashGet;
+            private _agentsByCluster = [_logic, "agentsByCluster"] call ALIVE_fnc_hashGet;
+            private _agentsActive = [_logic, "agentsActive"] call ALIVE_fnc_hashGet;
+            private _agentsInActive = [_logic, "agentsInActive"] call ALIVE_fnc_hashGet;
+            private _activeAgents = [_logic, "activeAgents"] call ALIVE_fnc_hashGet;
 
-            _agentSide = [_agent, "side"] call ALIVE_fnc_hashGet;
-            _agentType = [_agent, "type"] call ALIVE_fnc_hashGet;
-            _agentID = [_agent, "agentID"] call ALIVE_fnc_hashGet;
-            _agentCluster = [_agent, "homeCluster"] call ALIVE_fnc_hashGet;
-            _agentPosition = [_agent, "position"] call ALIVE_fnc_hashGet;
-            _agentActive = [_agent, "active"] call ALIVE_fnc_hashGet;
+            private _agentSide = [_agent, "side"] call ALIVE_fnc_hashGet;
+            private _agentType = [_agent, "type"] call ALIVE_fnc_hashGet;
+            private _agentID = [_agent, "agentID"] call ALIVE_fnc_hashGet;
+            private _agentCluster = [_agent, "homeCluster"] call ALIVE_fnc_hashGet;
+            private _agentPosition = [_agent, "position"] call ALIVE_fnc_hashGet;
+            private _agentActive = [_agent, "active"] call ALIVE_fnc_hashGet;
 
             // remove on main profiles hash
             [_agents, _agentID] call ALIVE_fnc_hashRem;
@@ -252,7 +260,7 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
-            _agentsCluster = [_agentsByCluster, _agentCluster] call ALIVE_fnc_hashGet;
+            private _agentsCluster = [_agentsByCluster, _agentCluster] call ALIVE_fnc_hashGet;
             [_agentsCluster, _agentID] call ALIVE_fnc_hashRem;
             [_agentsByCluster, _agentCluster, _agentsCluster] call ALIVE_fnc_hashSet;
 
@@ -266,40 +274,40 @@ switch(_operation) do {
                 [_agentsInActive, _agentID] call ALIVE_fnc_hashRem;
             };
         };
+
     };
+
     case "setActive": {
-        private["_agentID","_agent","_agentsActive","_agentsInActive","_activeAgents","_agentType"];
 
-        _agentID = _args select 0;
-        _agent = _args select 1;
+        _args params ["_agentID","_agent"];
 
-        _agentsActive = [_logic, "agentsActive"] call ALIVE_fnc_hashGet;
-        _agentsInActive = [_logic, "agentsInActive"] call ALIVE_fnc_hashGet;
-        _activeAgents = [_logic, "activeAgents"] call ALIVE_fnc_hashGet;
+        private _agentsActive = [_logic, "agentsActive"] call ALIVE_fnc_hashGet;
+        private _agentsInActive = [_logic, "agentsInActive"] call ALIVE_fnc_hashGet;
+        private _activeAgents = [_logic, "activeAgents"] call ALIVE_fnc_hashGet;
 
-        _agentType = [_agent, "type"] call ALIVE_fnc_hashGet;
+        private _agentType = [_agent, "type"] call ALIVE_fnc_hashGet;
 
         if(_agentID in (_agentsInActive select 1)) then {
             [_agentsInActive, _agentID] call ALIVE_fnc_hashRem;
         };
 
         if(_agentType == "agent") then {
-            _activeAgents set [count _activeAgents, _agentID];
+            _activeAgents pushback _agentID;
         };
 
         [_agentsActive, _agentID, _agent] call ALIVE_fnc_hashSet;
+
     };
+
     case "setInActive": {
-        private["_agentID","_agent","_agentsActive","_agentsInActive","_activeAgents","_agentType"];
 
-        _agentID = _args select 0;
-        _agent = _args select 1;
+        _args params ["_agentID","_agent"];
 
-        _agentsActive = [_logic, "agentsActive"] call ALIVE_fnc_hashGet;
-        _agentsInActive = [_logic, "agentsInActive"] call ALIVE_fnc_hashGet;
-        _activeAgents = [_logic, "activeAgents"] call ALIVE_fnc_hashGet;
+        private _agentsActive = [_logic, "agentsActive"] call ALIVE_fnc_hashGet;
+        private _agentsInActive = [_logic, "agentsInActive"] call ALIVE_fnc_hashGet;
+        private _activeAgents = [_logic, "activeAgents"] call ALIVE_fnc_hashGet;
 
-         _agentType = [_agent, "type"] call ALIVE_fnc_hashGet;
+        private _agentType = [_agent, "type"] call ALIVE_fnc_hashGet;
 
         if(_agentID in (_agentsActive select 1)) then {
             [_agentsActive, _agentID] call ALIVE_fnc_hashRem;
@@ -311,23 +319,27 @@ switch(_operation) do {
         };
 
         [_agentsInActive, _agentID, _agent] call ALIVE_fnc_hashSet;
+
     };
+
     case "getActive": {
         _result = [_logic, "agentsActive"] call ALIVE_fnc_hashGet;
     };
+
     case "getInActive": {
         _result = [_logic, "agentsInActive"] call ALIVE_fnc_hashGet;
     };
+
     case "getActiveAgents": {
         _result = [_logic, "activeAgents"] call ALIVE_fnc_hashGet;
     };
-    case "getAgent": {
-        private["_agentID","_agents","_agentIndex"];
 
-        if(typeName _args == "STRING") then {
-            _agentID = _args;
-            _agents = [_logic, "agents"] call ALIVE_fnc_hashGet;
-            _agentIndex = _agents select 1;
+    case "getAgent": {
+
+        if(_args isEqualType "") then {
+            private _agentID = _args;
+            private _agents = [_logic, "agents"] call ALIVE_fnc_hashGet;
+            private _agentIndex = _agents select 1;
 
             if(_agentID in _agentIndex) then {
                 _result = [_agents, _agentID] call ALIVE_fnc_hashGet;
@@ -335,33 +347,38 @@ switch(_operation) do {
                 _result = nil;
             };
         };
+
     };
+
     case "getAgents": {
         _result = [_logic, "agents"] call ALIVE_fnc_hashGet;
     };
+
     case "getAgentsByCluster": {
-        private["_type","_clusterID","_agentsByCluster"];
 
-        if(typeName _args == "STRING") then {
-            _clusterID = _args;
-
-            _agentsByCluster = [_logic, "agentsByCluster"] call ALIVE_fnc_hashGet;
+        if(_args isEqualType "") then {
+            private _clusterID = _args;
+            private _agentsByCluster = [_logic, "agentsByCluster"] call ALIVE_fnc_hashGet;
 
             _result = [_agentsByCluster, _clusterID] call ALIVE_fnc_hashGet;
         };
-    };
-    case "getNextInsertID": {
-        private["_agentCount"];
 
-        _agentCount = [_logic, "agentCount"] call ALIVE_fnc_hashGet;
+    };
+
+    case "getNextInsertID": {
+
+        private _agentCount = [_logic, "agentCount"] call ALIVE_fnc_hashGet;
         _result = _agentCount;
 
         _agentCount = _agentCount + 1;
         [_logic, "agentCount", _agentCount] call ALIVE_fnc_hashSet;
+
     };
+
     default {
             _result = [_logic, _operation, _args] call SUPERCLASS;
     };
+
 };
 TRACE_1("agentHandler - output",_result);
 

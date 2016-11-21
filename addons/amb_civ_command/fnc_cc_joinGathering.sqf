@@ -25,20 +25,13 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_agentData","_commandState","_commandName","_args","_state","_debug","_agentID","_agent","_nextState","_nextStateArgs"];
+params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
 
-_agentData = _this select 0;
-_commandState = _this select 1;
-_commandName = _this select 2;
-_args = _this select 3;
-_state = _this select 4;
-_debug = _this select 5;
+private _agentID = _agentData select 2 select 3;
+private _agent = _agentData select 2 select 5;
 
-_agentID = _agentData select 2 select 3;
-_agent = _agentData select 2 select 5;
-
-_nextState = _state;
-_nextStateArgs = [];
+private _nextState = _state;
+private _nextStateArgs = [];
 
 
 // DEBUG -------------------------------------------------------------------------------------
@@ -50,8 +43,6 @@ if(_debug) then {
 switch (_state) do {
     case "init":{
 
-        private ["_position","_target"];
-
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
             ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
@@ -60,10 +51,10 @@ switch (_state) do {
 
         _agent setVariable ["ALIVE_agentBusy", true, false];
 
-        _target = _agent getVariable ["ALIVE_agentGatheringTarget", objNull];
+        private _target = _agent getVariable ["ALIVE_agentGatheringTarget", objNull];
 
         if!(isNil "_target") then {
-            _position = (getPosASL _target) getPos [random 5, random 360];
+            private _position = (getPosASL _target) getPos [random 5, random 360];
             [_agent] call ALIVE_fnc_agentSelectSpeedMode;
             [_agent, _position] call ALiVE_fnc_doMoveRemote;
 
@@ -77,9 +68,10 @@ switch (_state) do {
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
+
     };
+
     case "travel":{
-        private ["_target"];
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -87,7 +79,7 @@ switch (_state) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-        _target = _args select 0;
+        private _target = _args select 0;
 
         if(_agent call ALiVE_fnc_unitReadyRemote) then {
 
@@ -115,7 +107,9 @@ switch (_state) do {
                 [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
             };
         };
+
     };
+
     case "wait":{
 
         // DEBUG -------------------------------------------------------------------------------------
@@ -129,7 +123,9 @@ switch (_state) do {
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
+
     };
+
     case "done":{
 
         // DEBUG -------------------------------------------------------------------------------------
@@ -144,5 +140,7 @@ switch (_state) do {
         _nextStateArgs = [];
 
         [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+
     };
+
 };

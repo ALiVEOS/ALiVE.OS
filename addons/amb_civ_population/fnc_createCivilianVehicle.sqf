@@ -29,27 +29,27 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_vehicleClass","_side","_faction","_direction","_spawnGoodPosition","_prefix","_clusterID","_buildingPosition","_position","_vehicleID","_vehicleKind","_civilianVehicle"];
-
-_vehicleClass = _this select 0;
-_side = _this select 1;
-_faction = _this select 2;
-_position = _this select 3;
-_direction = if(count _this > 4) then {_this select 4} else {0};
-_spawnGoodPosition = if(count _this > 5) then {_this select 5} else {true};
-_prefix = if(count _this > 6) then {_this select 6} else {""};
-_clusterID = if(count _this > 7) then {_this select 7} else {""};
-_buildingPosition = if(count _this > 8) then {_this select 8} else {[0,0,0]};
+params [
+    "_vehicleClass",
+    "_side",
+    "_faction",
+    "_position",
+    ["_direction", 0],
+    ["_spawnGoodPosition", true],
+    ["_prefix", ""],
+    ["_clusterID", ""],
+    ["_buildingPosition", [0,0,0]]
+];
 
 // get counts of current profiles
 
-_vehicleID = format["agent_%1",[ALIVE_agentHandler, "getNextInsertID"] call ALIVE_fnc_agentHandler];
+private _vehicleID = format["agent_%1",[ALIVE_agentHandler, "getNextInsertID"] call ALIVE_fnc_agentHandler];
 
-_vehicleKind = _vehicleClass call ALIVE_fnc_vehicleGetKindOf;
+private _vehicleKind = _vehicleClass call ALIVE_fnc_vehicleGetKindOf;
 
 // create the profile for the vehicle
 
-_civilianVehicle = [nil, "create"] call ALIVE_fnc_civilianVehicle;
+private _civilianVehicle = [nil, "create"] call ALIVE_fnc_civilianVehicle;
 [_civilianVehicle, "init"] call ALIVE_fnc_civilianVehicle;
 [_civilianVehicle, "agentID", _vehicleID] call ALIVE_fnc_civilianVehicle;
 [_civilianVehicle, "agentClass", _vehicleClass] call ALIVE_fnc_civilianVehicle;

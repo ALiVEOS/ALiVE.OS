@@ -23,14 +23,10 @@ See Also:
 Author:
 ARJay
 ---------------------------------------------------------------------------- */
-private ["_building","_colour","_brightness","_light"];
 
-_building = _this select 0;
-_light = _this select 1;
-_brightness = _this select 2;
-_colour = _this select 3;
+params ["_building","_light","_brightness","_colour"];
 
-if(hasInterface) then {
+if (hasInterface) then {
     _light setLightBrightness _brightness;
     _light setLightColor _colour;
     _light lightAttachObject [_building, [1,1,1]];

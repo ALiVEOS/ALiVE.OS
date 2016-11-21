@@ -25,172 +25,162 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_file","_obj_array","_types","_clusters","_clusters_tmp","_size"];
-
 if(isNil "ALIVE_civilianHQBuildingTypes") then {
-    _file = "\x\alive\addons\main\static\staticData.sqf";
+    private _file = "\x\alive\addons\main\static\staticData.sqf";
     call compile preprocessFileLineNumbers _file;
 };
 
 
 // Find HQ locations
 // ------------------------------------------------------------------
-private ["_clusters_hq","_clusters_copy_hq"];
 
 "CO - Searching HQ locations" call ALiVE_fnc_logger;
 
-_clusters_hq = [ALIVE_civilianHQBuildingTypes] call ALIVE_fnc_findTargets;
+private _clusters_hq = [ALIVE_civilianHQBuildingTypes] call ALIVE_fnc_findTargets;
 _clusters_hq = [_clusters_hq, "CIV", 50, "ColorBlack"] call ALIVE_fnc_setTargets;
 _clusters_hq = [_clusters_hq] call ALIVE_fnc_consolidateClusters;
 
 // Save the non consolidated clusters
-_clusters_copy_hq = [_clusters_hq] call ALIVE_fnc_copyClusters;
+private _clusters_copy_hq = [_clusters_hq] call ALIVE_fnc_copyClusters;
 
-_clusters = +_clusters_hq;
+private _clusters = +_clusters_hq;
 
 
 
 // Find civ power
 // ------------------------------------------------------------------
-private ["_clusters_power","_clusters_copy_power"];
 
 "CO - Searching Power locations" call ALiVE_fnc_logger;
 
-_clusters_power = [ALIVE_civilianPowerBuildingTypes] call ALIVE_fnc_findTargets;
+private _clusters_power = [ALIVE_civilianPowerBuildingTypes] call ALIVE_fnc_findTargets;
 _clusters_power = [_clusters_power, "CIV", 40, "ColorYellow"] call ALIVE_fnc_setTargets;
 
 // Consolidate locations
 _clusters_power = [_clusters_power] call ALIVE_fnc_consolidateClusters;
 
 // Save the non consolidated clusters
-_clusters_copy_power = [_clusters_power] call ALIVE_fnc_copyClusters;
+private _clusters_copy_power = [_clusters_power] call ALIVE_fnc_copyClusters;
 
-_clusters = _clusters + _clusters_power;
+_clusters append _clusters_power;
 //_clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 
 
 
 // Find civ comms
 // ------------------------------------------------------------------
-private ["_clusters_comms","_clusters_copy_comms"];
 
 "CO - Searching Comms locations" call ALiVE_fnc_logger;
 
-_clusters_comms = [ALIVE_civilianCommsBuildingTypes] call ALIVE_fnc_findTargets;
+private _clusters_comms = [ALIVE_civilianCommsBuildingTypes] call ALIVE_fnc_findTargets;
 _clusters_comms = [_clusters_comms, "CIV", 40, "ColorWhite"] call ALIVE_fnc_setTargets;
 
 // Consolidate locations
 _clusters_comms = [_clusters_comms] call ALIVE_fnc_consolidateClusters;
 
 // Save the non consolidated clusters
-_clusters_copy_comms = [_clusters_comms] call ALIVE_fnc_copyClusters;
+private _clusters_copy_comms = [_clusters_comms] call ALIVE_fnc_copyClusters;
 
-_clusters = _clusters + _clusters_comms;
+_clusters append _clusters_comms;
 //_clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 
 
 
 // Find civ marine
 // ------------------------------------------------------------------
-private ["_clusters_marine","_clusters_copy_marine"];
 
 "CO - Searching Marine locations" call ALiVE_fnc_logger;
 
-_clusters_marine = [ALIVE_civilianMarineBuildingTypes] call ALIVE_fnc_findTargets;
+private _clusters_marine = [ALIVE_civilianMarineBuildingTypes] call ALIVE_fnc_findTargets;
 _clusters_marine = [_clusters_marine, "CIV", 30, "ColorBlue"] call ALIVE_fnc_setTargets;
 
 // Consolidate locations
 _clusters_marine = [_clusters_marine] call ALIVE_fnc_consolidateClusters;
 
 // Save the non consolidated clusters
-_clusters_copy_marine = [_clusters_marine] call ALIVE_fnc_copyClusters;
+private _clusters_copy_marine = [_clusters_marine] call ALIVE_fnc_copyClusters;
 
 // Consolidate locations
-_clusters = _clusters + _clusters_marine;
+_clusters append _clusters_marine;
 //_clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 
 
 
 // Find civ rail
 // ------------------------------------------------------------------
-private ["_clusters_rail","_clusters_copy_rail"];
 
 "CO - Searching Rail locations" call ALiVE_fnc_logger;
 
-_clusters_rail = [ALIVE_civilianRailBuildingTypes] call ALIVE_fnc_findTargets;
+private _clusters_rail = [ALIVE_civilianRailBuildingTypes] call ALIVE_fnc_findTargets;
 _clusters_rail = [_clusters_rail, "CIV", 10, "ColorKhaki"] call ALIVE_fnc_setTargets;
 
 // Consolidate locations
 _clusters_rail = [_clusters_rail] call ALIVE_fnc_consolidateClusters;
 
 // Save the non consolidated clusters
-_clusters_copy_rail = [_clusters_rail] call ALIVE_fnc_copyClusters;
+private _clusters_copy_rail = [_clusters_rail] call ALIVE_fnc_copyClusters;
 
 // Consolidate locations
-_clusters = _clusters + _clusters_rail;
+_clusters append _clusters_rail;
 //_clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 
 
 
 // Find civ fuel
 // ------------------------------------------------------------------
-private ["_clusters_fuel","_clusters_copy_fuel"];
 
 "CO - Searching Fuel locations" call ALiVE_fnc_logger;
 
-_clusters_fuel = [ALIVE_civilianFuelBuildingTypes] call ALIVE_fnc_findTargets;
+private _clusters_fuel = [ALIVE_civilianFuelBuildingTypes] call ALIVE_fnc_findTargets;
 _clusters_fuel = [_clusters_fuel, "CIV", 30, "ColorOrange"] call ALIVE_fnc_setTargets;
 
 // Consolidate locations
 _clusters_fuel = [_clusters_fuel] call ALIVE_fnc_consolidateClusters;
 
 // Save the non consolidated clusters
-_clusters_copy_fuel = [_clusters_fuel] call ALIVE_fnc_copyClusters;
+private _clusters_copy_fuel = [_clusters_fuel] call ALIVE_fnc_copyClusters;
 
 // Consolidate locations
-_clusters = _clusters + _clusters_fuel;
+_clusters append _clusters_fuel;
 //_clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 
 
 
 // Find civ construction
 // ------------------------------------------------------------------
-private ["_clusters_construction","_clusters_copy_construction"];
 
 "CO - Searching Construction locations" call ALiVE_fnc_logger;
 
-_clusters_construction = [ALIVE_civilianConstructionBuildingTypes] call ALIVE_fnc_findTargets;
+private _clusters_construction = [ALIVE_civilianConstructionBuildingTypes] call ALIVE_fnc_findTargets;
 _clusters_construction = [_clusters_construction, "CIV", 10, "ColorPink"] call ALIVE_fnc_setTargets;
 
 // Consolidate locations
 _clusters_construction = [_clusters_construction] call ALIVE_fnc_consolidateClusters;
 
 // Save the non consolidated clusters
-_clusters_copy_construction = [_clusters_construction] call ALIVE_fnc_copyClusters;
+private _clusters_copy_construction = [_clusters_construction] call ALIVE_fnc_copyClusters;
 
 // Consolidate locations
-_clusters = _clusters + _clusters_construction;
+_clusters append _clusters_construction;
 //_clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 
 
 
 // Find civ settlements
 // ------------------------------------------------------------------
-private ["_clusters_settlement","_clusters_copy_settlement"];
 
 "CO - Searching Settlement locations" call ALiVE_fnc_logger;
 
-_clusters_settlement = [ALIVE_civilianSettlementBuildingTypes] call ALIVE_fnc_findTargets;
+private _clusters_settlement = [ALIVE_civilianSettlementBuildingTypes] call ALIVE_fnc_findTargets;
 _clusters_settlement = [_clusters_settlement, "CIV", 0, "ColorGreen"] call ALIVE_fnc_setTargets;
 
 // Consolidate locations
 _clusters_settlement = [_clusters_settlement] call ALIVE_fnc_consolidateClusters;
 
 // Save the non consolidated clusters
-_clusters_copy_settlement = [_clusters_settlement] call ALIVE_fnc_copyClusters;
+private _clusters_copy_settlement = [_clusters_settlement] call ALIVE_fnc_copyClusters;
 
 // Consolidate locations
-_clusters = _clusters + _clusters_settlement;
+_clusters append _clusters_settlement;
 
 
 
@@ -206,18 +196,16 @@ _clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 
 
 
-private ["_worldName","_objectivesName","_exportString","_result","_clusterCount","_pV"];
-
-_worldName = toLower(worldName);
-_exportString = '';
-_clusterCount = 0;
+private _worldName = toLower(worldName);
+private _exportString = '';
+private _clusterCount = 0;
 
 
-_pV = productVersion;
+private _pV = productVersion;
 _exportString = _exportString + format['ALIVE_clusterBuild = ["%1", "%2", %3, %4, "%5"];',_pV select 0, _pV select 1, _pV select 2, _pV select 3, _pV select 4];
 
-_objectivesName = 'ALIVE_clustersCiv';
-_result = [_clusters, _objectivesName] call ALIVE_fnc_staticClusterOutput;
+private _objectivesName = 'ALIVE_clustersCiv';
+private _result = [_clusters, _objectivesName] call ALIVE_fnc_staticClusterOutput;
 
 _exportString = _exportString + _result;
 

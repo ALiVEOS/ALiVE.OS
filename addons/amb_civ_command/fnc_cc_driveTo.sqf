@@ -25,20 +25,13 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_agentData","_commandState","_commandName","_args","_state","_debug","_agentID","_agent","_nextState","_nextStateArgs"];
+params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
 
-_agentData = _this select 0;
-_commandState = _this select 1;
-_commandName = _this select 2;
-_args = _this select 3;
-_state = _this select 4;
-_debug = _this select 5;
+private _agentID = _agentData select 2 select 3;
+private _agent = _agentData select 2 select 5;
 
-_agentID = _agentData select 2 select 3;
-_agent = _agentData select 2 select 5;
-
-_nextState = _state;
-_nextStateArgs = [];
+private _nextState = _state;
+private _nextStateArgs = [];
 
 
 // DEBUG -------------------------------------------------------------------------------------
@@ -48,9 +41,8 @@ if(_debug) then {
 // DEBUG -------------------------------------------------------------------------------------
 
 switch (_state) do {
-    case "init":{
 
-        private ["_vehicle","_destination","_position"];
+    case "init":{
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -60,14 +52,13 @@ switch (_state) do {
 
         _agent setVariable ["ALIVE_agentBusy", true, false];
 
-        _vehicle = _args select 0;
-        _destination = _args select 1;
+        _args params ["_vehicle","_destination"];
 
         if!(isNil "_vehicle") then {
 
             _vehicle setVariable ["ALIVE_vehicleInUse", true, false];
 
-            _position = getPosASL _vehicle;
+            private _position = getPosASL _vehicle;
             [_agent] call ALIVE_fnc_agentSelectSpeedMode;
             [_agent, _position] call ALiVE_fnc_doMoveRemote;
 
@@ -79,10 +70,10 @@ switch (_state) do {
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
-    };
-    case "travel_to_vehicle":{
 
-        private ["_vehicle","_destination"];
+    };
+
+    case "travel_to_vehicle":{
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -90,8 +81,7 @@ switch (_state) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-        _vehicle = _args select 0;
-        _destination = _args select 1;
+        _args params ["_vehicle","_destination"];
 
         if(_agent call ALiVE_fnc_unitReadyRemote) then {
 
@@ -108,10 +98,10 @@ switch (_state) do {
                 [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
             };
         };
-    };
-    case "get_in_vehicle":{
 
-        private ["_vehicle","_destination"];
+    };
+
+    case "get_in_vehicle":{
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -119,8 +109,7 @@ switch (_state) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-        _vehicle = _args select 0;
-        _destination = _args select 1;
+        _args params ["_vehicle","_destination"];
 
         if(_agent call ALiVE_fnc_unitReadyRemote) then {
 
@@ -137,10 +126,10 @@ switch (_state) do {
                 [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
             };
         };
-    };
-    case "travel":{
 
-        private ["_timeout","_timer","_vehicle","_destination"];
+    };
+
+    case "travel":{
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -148,8 +137,7 @@ switch (_state) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-        _vehicle = _args select 0;
-        _destination = _args select 1;
+        _args params ["_vehicle","_destination"];
 
         if(_agent call ALiVE_fnc_unitReadyRemote) then {
 
@@ -160,7 +148,9 @@ switch (_state) do {
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
+
     };
+
     case "done":{
 
         // DEBUG -------------------------------------------------------------------------------------
@@ -175,5 +165,7 @@ switch (_state) do {
         _nextStateArgs = [];
 
         [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+
     };
+
 };
