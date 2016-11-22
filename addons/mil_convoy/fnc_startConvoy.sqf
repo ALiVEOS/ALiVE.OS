@@ -44,7 +44,7 @@ for "_j" from 1 to _intensity do {
                        _size = size _x;
 
                        if (_size select 0 > _size select 1) then {_size = _size select 0} else {_size = _size select 1};
-                          _convoyLocs set [count _convoyLocs,_pos];
+                          _convoyLocs pushback _pos;
                     } foreach _locations;
                 };
 

@@ -6,7 +6,7 @@ _return = [];
 {
     if !(_forEachIndex in [0,1]) then
     {
-        _return set [count _return, _x];
+        _return pushback _x;
     };
 } forEach _array;
 

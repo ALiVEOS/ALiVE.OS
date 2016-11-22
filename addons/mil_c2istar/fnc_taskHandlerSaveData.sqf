@@ -48,7 +48,7 @@ _result = [false,[]];
 
 _message = format["ALiVE C2ISTAR - Preparing to save %1 tasks..",count(_data select 1)];
 _messages = _result select 1;
-_messages set [count _messages,_message];
+_messages pushback _message;
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     ["ALiVE SAVE TASK HANDLER DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALIVE_fnc_dump;
@@ -70,7 +70,7 @@ _result set [0,_saveResult];
 
 _message = format["ALiVE C2ISTAR - Save Result: %1",_saveResult];
 _messages = _result select 1;
-_messages set [count _messages,_message];
+_messages pushback _message;
 
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {

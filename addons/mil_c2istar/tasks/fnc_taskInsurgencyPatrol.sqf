@@ -139,8 +139,8 @@ switch (_taskState) do {
             _taskSource = format["%1-InsurgencyPatrol-Parent",_taskID];
             _newTask = [_taskID,_requestPlayerID,_taskSide,_targetPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,"N","None",_taskSource,false];
 
-            _tasks set [count _tasks,_newTask];
-            _taskIDs set [count _taskIDs,_taskID];
+            _tasks pushback _newTask;
+            _taskIDs pushback _taskID;
 
             // create the travel task
 
@@ -151,8 +151,8 @@ switch (_taskState) do {
             _taskSource = format["%1-InsurgencyPatrol-Travel",_taskID];
             _newTask = [_newTaskID,_requestPlayerID,_taskSide,_stagingPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,_taskCurrent,_taskID,_taskSource,false];
 
-            _tasks set [count _tasks,_newTask];
-            _taskIDs set [count _taskIDs,_newTaskID];
+            _tasks pushback _newTask;
+            _taskIDs pushback _newTaskID;
 
             // create the patrol task
 
@@ -167,8 +167,8 @@ switch (_taskState) do {
 
             _newTask = [_newTaskID,_requestPlayerID,_taskSide,_targetPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,"Created",_taskApplyType,"N",_taskID,_taskSource,true];
 
-            _tasks set [count _tasks,_newTask];
-            _taskIDs set [count _taskIDs,_newTaskID];
+            _tasks pushback _newTask;
+            _taskIDs pushback _newTaskID;
 
             // store task data in the params for this task set
 

@@ -500,24 +500,24 @@ switch(_operation) do {
             _deliveryListValues = [];
 
             if(_restrictionTypeAirDrop) then {
-                _deliveryListOptions set [count _deliveryListOptions,"Airlift: Air drop by transport plane"];
-                _deliveryListValues set [count _deliveryListValues,"PR_AIRDROP"];
+                _deliveryListOptions pushback ("Airlift: Air drop by transport plane");
+                _deliveryListValues pushback "PR_AIRDROP";
             };
 
             if(_restrictionTypeHeliInsert) then {
-                _deliveryListOptions set [count _deliveryListOptions,"Airlift: Air insertion via helicopter or VTOL"];
-                _deliveryListValues set [count _deliveryListValues,"PR_HELI_INSERT"];
+                _deliveryListOptions pushback ("Airlift: Air insertion via helicopter or VTOL");
+                _deliveryListValues pushback "PR_HELI_INSERT";
             };
 
             if(_restrictionTypeConvoy) then {
-                _deliveryListOptions set [count _deliveryListOptions,"Convoy: Resupply via road transport vehicles"];
-                _deliveryListValues set [count _deliveryListValues,"PR_STANDARD"];
+                _deliveryListOptions pushback ("Convoy: Resupply via road transport vehicles");
+                _deliveryListValues pushback "PR_STANDARD";
             };
 
             if(count _deliveryListOptions == 0) then {
                 ["There are no delivery methods allowed, enable one or more delivery methods on the Player Combat Logistics module!"] call ALIVE_fnc_dumpR;
-                _deliveryListOptions set [count _deliveryListOptions,"Convoy: Resupply via road transport vehicles"];
-                _deliveryListValues set [count _deliveryListValues,"PR_STANDARD"];
+                _deliveryListOptions pushback ("Convoy: Resupply via road transport vehicles");
+                _deliveryListValues pushback "PR_STANDARD";
             };
 
             [_logic,"deliveryListOptions",_deliveryListOptions] call MAINCLASS;
@@ -534,12 +534,12 @@ switch(_operation) do {
             _supplyListValues = ["Vehicles","Defence","Combat"];
 
             _selectedSupplyListOptions = [_logic,"selectedSupplyListOptions"] call MAINCLASS;
-            _selectedSupplyListOptions set [count _selectedSupplyListOptions, _supplyListOptions];
+            _selectedSupplyListOptions pushback _supplyListOptions;
             [_logic,"selectedSupplyListOptions",_selectedSupplyListOptions] call MAINCLASS;
 
             // set the supply list values
             _selectedSupplyListValues = [_logic,"selectedSupplyListValues"] call MAINCLASS;
-            _selectedSupplyListValues set [count _selectedSupplyListValues, _supplyListOptions];
+            _selectedSupplyListValues pushback _supplyListOptions;
             [_logic,"selectedSupplyListValues",_selectedSupplyListValues] call MAINCLASS;
 
 
@@ -550,12 +550,12 @@ switch(_operation) do {
             _reinforceListOptions = ["Individuals","Groups"];
 
             _selectedReinforceListOptions = [_logic,"selectedReinforceListOptions"] call MAINCLASS;
-            _selectedReinforceListOptions set [count _selectedReinforceListOptions, _reinforceListOptions];
+            _selectedReinforceListOptions pushback _reinforceListOptions;
             [_logic,"selectedReinforceListOptions",_selectedReinforceListOptions] call MAINCLASS;
 
             // set the reinforcement list values
             _selectedReinforceListValues = [_logic,"selectedReinforceListValues"] call MAINCLASS;
-            _selectedReinforceListValues set [count _selectedReinforceListValues, _reinforceListOptions];
+            _selectedReinforceListValues pushback _reinforceListOptions;
             [_logic,"selectedReinforceListValues",_selectedReinforceListValues] call MAINCLASS;
 
 
@@ -863,14 +863,14 @@ switch(_operation) do {
                         _marker setMarkerTypeLocal "mil_dot";
                         _marker setMarkerColorLocal "ColorYellow";
                         _marker setMarkerTextLocal _markerLabel;
-                        _markers set [count _markers, _marker];
+                        _markers pushback _marker;
 
                         _marker = createMarkerLocal ["PR_DESTINATION_M2", _position];
                         _marker setMarkerShape "Ellipse";
                         _marker setMarkerSize [150, 150];
                         _marker setMarkerColor "ColorYellow";
                         _marker setMarkerAlpha 0.5;
-                        _markers set [count _markers, _marker];
+                        _markers pushback _marker;
 
                         [_logic,"destinationMarker",_markers] call MAINCLASS;
 
@@ -1699,16 +1699,16 @@ switch(_operation) do {
                                             // Don't display
                                         } else {
                                             if ([_x] call ALIVE_fnc_getObjectWeight < _maxWeight) then {
-                                                _options set [count _options, _displayName];
-                                                _values set [count _values, _x];
+                                                _options pushback _displayName;
+                                                _values pushback _x;
                                             };
                                         };
 
                                     } else {
 
                                         if (_deliveryType == "PR_STANDARD") then {
-                                            _options set [count _options, _displayName];
-                                            _values set [count _values, _x];
+                                            _options pushback _displayName;
+                                            _values pushback _x;
                                         };
                                     };
 
@@ -1730,11 +1730,11 @@ switch(_operation) do {
 
                                 _selectedParents = [];
                                 {
-                                    _selectedParents set [count _selectedParents, _x];
+                                    _selectedParents pushback _x;
                                 } forEach _selectedSupplyListParents;
 
-                                _payloadListOptions set [count _payloadListOptions,_selectedOption];
-                                _payloadListValues set [count _payloadListValues,[_selectedValue,_selectedParents]];
+                                _payloadListOptions pushback _selectedOption;
+                                _payloadListValues pushback [_selectedValue,_selectedParents];
 
                                 [_logic,"payloadListOptions",_payloadListOptions] call MAINCLASS;
                                 [_logic,"payloadListValues",_payloadListValues] call MAINCLASS;
@@ -1950,8 +1950,8 @@ switch(_operation) do {
                                     {
                                         _displayName = getText(configFile >> "CfgVehicles" >> _x >> "displayname");
 
-                                        _options set [count _options, _displayName];
-                                        _values set [count _values, _x];
+                                        _options pushback _displayName;
+                                        _values pushback _x;
 
                                     } forEach _vehicleClasses;
 
@@ -1993,11 +1993,11 @@ switch(_operation) do {
 
                                     _selectedParents = [];
                                     {
-                                        _selectedParents set [count _selectedParents, _x];
+                                        _selectedParents pushback _x;
                                     } forEach _selectedReinforceListParents;
 
-                                    _payloadListOptions set [count _payloadListOptions,_selectedOption];
-                                    _payloadListValues set [count _payloadListValues,[_selectedValue,_selectedParents,"Reinforce"]];
+                                    _payloadListOptions pushback _selectedOption;
+                                    _payloadListValues pushback [_selectedValue,_selectedParents,"Reinforce"];
 
                                     [_logic,"payloadListOptions",_payloadListOptions] call MAINCLASS;
                                     [_logic,"payloadListValues",_payloadListValues] call MAINCLASS;
@@ -2024,11 +2024,11 @@ switch(_operation) do {
 
                                 _selectedParents = [];
                                 {
-                                    _selectedParents set [count _selectedParents, _x];
+                                    _selectedParents pushback _x;
                                 } forEach _selectedReinforceListParents;
 
-                                _payloadListOptions set [count _payloadListOptions,_selectedOption];
-                                _payloadListValues set [count _payloadListValues,[_selectedValue,_selectedParents,"Reinforce"]];
+                                _payloadListOptions pushback _selectedOption;
+                                _payloadListValues pushback [_selectedValue,_selectedParents,"Reinforce"];
 
                                 [_logic,"payloadListOptions",_payloadListOptions] call MAINCLASS;
                                 [_logic,"payloadListValues",_payloadListValues] call MAINCLASS;
@@ -2412,25 +2412,25 @@ switch(_operation) do {
 
                                 switch(_payloadType) do {
                                     case "Vehicles":{
-                                        _emptyVehicles set [count _emptyVehicles,[_payloadClass,_payloadInfo]];
+                                        _emptyVehicles pushback [_payloadClass,_payloadInfo];
                                     };
                                     case "Defence Stores":{
-                                        _payload set [count _payload,_payloadClass];
+                                        _payload pushback _payloadClass;
                                     };
                                     case "Combat Supplies":{
-                                        _payload set [count _payload,_payloadClass];
+                                        _payload pushback _payloadClass;
                                     };
                                     case "Individuals":{
                                         _payloadOrders = _x select 2;
                                         switch(_payloadOrders) do {
                                             case "Join":{
-                                                _joinIndividuals set [count _joinIndividuals,[_payloadClass,_payloadInfo]];
+                                                _joinIndividuals pushback [_payloadClass,_payloadInfo];
                                             };
                                             case "Static":{
-                                                _staticIndividuals set [count _staticIndividuals,[_payloadClass,_payloadInfo]];
+                                                _staticIndividuals pushback [_payloadClass,_payloadInfo];
                                             };
                                             case "Reinforce":{
-                                                _reinforceIndividuals set [count _reinforceIndividuals,[_payloadClass,_payloadInfo]];
+                                                _reinforceIndividuals pushback [_payloadClass,_payloadInfo];
                                             };
                                         };
                                     };
@@ -2438,13 +2438,13 @@ switch(_operation) do {
                                         _payloadOrders = _x select 2;
                                         switch(_payloadOrders) do {
                                             case "Join":{
-                                                _joinGroups set [count _joinGroups,[_payloadClass,_payloadInfo]];
+                                                _joinGroups pushback [_payloadClass,_payloadInfo];
                                             };
                                             case "Static":{
-                                                _staticGroups set [count _staticGroups,[_payloadClass,_payloadInfo]];
+                                                _staticGroups pushback [_payloadClass,_payloadInfo];
                                             };
                                             case "Reinforce":{
-                                                _reinforceGroups set [count _reinforceGroups,[_payloadClass,_payloadInfo]];
+                                                _reinforceGroups pushback [_payloadClass,_payloadInfo];
                                             };
                                         };
                                     };
@@ -2649,14 +2649,14 @@ switch(_operation) do {
                         _marker setMarkerTypeLocal "mil_dot";
                         _marker setMarkerColorLocal "ColorYellow";
                         _marker setMarkerTextLocal "Request Location";
-                        _markers set [count _markers, _marker];
+                        _markers pushback _marker;
 
                         _marker = createMarkerLocal ["PR_STATUS_M2", _position];
                         _marker setMarkerShape "Ellipse";
                         _marker setMarkerSize [150, 150];
                         _marker setMarkerColor "ColorYellow";
                         _marker setMarkerAlpha 0.5;
-                        _markers set [count _markers, _marker];
+                        _markers pushback _marker;
 
                         [_logic,"statusMarker",_markers] call MAINCLASS;
 

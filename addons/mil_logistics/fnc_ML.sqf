@@ -171,7 +171,7 @@ switch(_operation) do {
             _m setMarkerColor _debugColor;
             _m setMarkerText _text;
 
-            _markers set [count _markers, _m];
+            _markers pushback _m;
         };
 
         _logic setVariable ["markers", _markers];
@@ -431,7 +431,7 @@ switch(_operation) do {
 
                 waituntil {_module = _moduleObject getVariable "handler"; !(isnil "_module")};
                 _module = _moduleObject getVariable "handler";
-                _modules set [count _modules, _module];
+                _modules pushback _module;
             };
 
 
@@ -495,8 +495,8 @@ switch(_operation) do {
                     (!(isnil "_objectives") && {count _objectives > 0})
                 };
 
-                _modulesFactions set [count _modulesFactions, [_moduleSide,_moduleFactions]];
-                _modulesObjectives set [count _modulesObjectives, _objectives];
+                _modulesFactions pushback [_moduleSide,_moduleFactions];
+                _modulesObjectives pushback _objectives;
 
                 // set the faction force pools
                 {
@@ -1373,7 +1373,7 @@ switch(_operation) do {
                             _priorityTotal = _priorityTotal + _priority;
 
                             // store the objective
-                            _reserve set [count _reserve, _x];
+                            _reserve pushback _x;
                         };
                     };
 
@@ -1930,15 +1930,15 @@ switch(_operation) do {
                             _tempGroups = [];
                             _group = ["Motorized",_eventFaction] call ALIVE_fnc_configGetRandomGroup;
                             if!(_group == "FALSE") then {
-                                _tempGroups set [count _tempGroups, _group];
+                                _tempGroups pushback _group;
                             };
                             _group = ["Motorized_MTP",_eventFaction] call ALIVE_fnc_configGetRandomGroup;
                             if!(_group == "FALSE") then {
-                                _tempGroups set [count _tempGroups, _group];
+                                _tempGroups pushback _group;
                             };
                             if (count _tempGroups > 0) then {
                                 _group = selectRandom _tempGroups;
-                                _motorisedGroups set [count _motorisedGroups, _group];
+                                _motorisedGroups pushback _group;
                             };
                         };
 
@@ -1964,10 +1964,10 @@ switch(_operation) do {
                                 _profileIDs = [];
                                 {
                                     _profileID = _x select 2 select 4;
-                                    _profileIDs set [count _profileIDs, _profileID];
+                                    _profileIDs pushback _profileID;
                                 } forEach _profiles;
 
-                                _motorisedProfiles set [count _motorisedProfiles, _profileIDs];
+                                _motorisedProfiles pushback _profileIDs;
 
                             };
                         };
@@ -2073,16 +2073,16 @@ switch(_operation) do {
                                                 _slingloadProfile call ALIVE_fnc_inspectHash;
                                             };
 
-                                            _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
-                                            _transportVehicleProfiles set [count _transportVehicleProfiles, _profiles select 1 select 2 select 4];
+                                            _transportProfiles pushback (_profiles select 0 select 2 select 4);
+                                            _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
 
                                             _profileIDs = [];
                                             {
                                                 _profileID = _x select 2 select 4;
-                                                _profileIDs set [count _profileIDs, _profileID];
+                                                _profileIDs pushback _profileID;
                                             } forEach _profiles;
 
-                                            _payloadGroupProfiles set [count _payloadGroupProfiles, _profileIDs];
+                                            _payloadGroupProfiles pushback _profileIDs;
 
                                             _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
                                             _profile = _profiles select 0;
@@ -2110,7 +2110,7 @@ switch(_operation) do {
                         for "_i" from 0 to _eventForceInfantry -1 do {
                             _group = ["Infantry",_eventFaction] call ALIVE_fnc_configGetRandomGroup;
                             if!(_group == "FALSE") then {
-                                _infantryGroups set [count _infantryGroups, _group];
+                                _infantryGroups pushback _group;
                             }
                         };
 
@@ -2142,10 +2142,10 @@ switch(_operation) do {
                                 _profileIDs = [];
                                 {
                                     _profileID = _x select 2 select 4;
-                                    _profileIDs set [count _profileIDs, _profileID];
+                                    _profileIDs pushback _profileID;
                                 } forEach _profiles;
 
-                                _infantryProfiles set [count _infantryProfiles, _profileIDs];
+                                _infantryProfiles pushback _profileIDs;
 
                             };
                         };
@@ -2182,8 +2182,8 @@ switch(_operation) do {
 
                                         _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
 
-                                        _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
-                                        _transportVehicleProfiles set [count _transportVehicleProfiles, _profiles select 1 select 2 select 4];
+                                        _transportProfiles pushback (_profiles select 0 select 2 select 4);
+                                        _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
 
                                         if(count _infantryProfiles >= _i) then {
                                             if(count (_infantryProfiles select _i) > 0) then {
@@ -2238,8 +2238,8 @@ switch(_operation) do {
 
                                         _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,false,true] call ALIVE_fnc_createProfilesCrewedVehicle;
 
-                                        _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
-                                        _transportVehicleProfiles set [count _transportVehicleProfiles, _profiles select 1 select 2 select 4];
+                                        _transportProfiles pushback (_profiles select 0 select 2 select 4);
+                                        _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
 
                                     };
 
@@ -2259,7 +2259,7 @@ switch(_operation) do {
                         for "_i" from 0 to _eventForceArmour -1 do {
                             _group = ["Armored",_eventFaction] call ALIVE_fnc_configGetRandomGroup;
                             if!(_group == "FALSE") then {
-                                _armourGroups set [count _armourGroups, _group];
+                                _armourGroups pushback _group;
                             };
                         };
 
@@ -2285,10 +2285,10 @@ switch(_operation) do {
                                 _profileIDs = [];
                                 {
                                     _profileID = _x select 2 select 4;
-                                    _profileIDs set [count _profileIDs, _profileID];
+                                    _profileIDs pushback _profileID;
                                 } forEach _profiles;
 
-                                _armourProfiles set [count _armourProfiles, _profileIDs];
+                                _armourProfiles pushback _profileIDs;
 
                             };
                         };
@@ -2306,7 +2306,7 @@ switch(_operation) do {
                         for "_i" from 0 to _eventForceMechanised -1 do {
                             _group = ["Mechanized",_eventFaction] call ALIVE_fnc_configGetRandomGroup;
                             if!(_group == "FALSE") then {
-                                _mechanisedGroups set [count _mechanisedGroups, _group];
+                                _mechanisedGroups pushback _group;
                             }
                         };
 
@@ -2332,10 +2332,10 @@ switch(_operation) do {
                                 _profileIDs = [];
                                 {
                                     _profileID = _x select 2 select 4;
-                                    _profileIDs set [count _profileIDs, _profileID];
+                                    _profileIDs pushback _profileID;
                                 } forEach _profiles;
 
-                                _mechanisedProfiles set [count _mechanisedProfiles, _profileIDs];
+                                _mechanisedProfiles pushback _profileIDs;
 
                             };
                         };
@@ -2367,10 +2367,10 @@ switch(_operation) do {
                                     _profileIDs = [];
                                     {
                                         _profileID = _x select 2 select 4;
-                                        _profileIDs set [count _profileIDs, _profileID];
+                                        _profileIDs pushback _profileID;
                                     } forEach _profiles;
 
-                                    _planeProfiles set [count _planeProfiles, _profileIDs];
+                                    _planeProfiles pushback _profileIDs;
 
                                     _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
                                     _profile = _profiles select 0;
@@ -2411,10 +2411,10 @@ switch(_operation) do {
                                     _profileIDs = [];
                                     {
                                         _profileID = _x select 2 select 4;
-                                        _profileIDs set [count _profileIDs, _profileID];
+                                        _profileIDs pushback _profileID;
                                     } forEach _profiles;
 
-                                    _heliProfiles set [count _heliProfiles, _profileIDs];
+                                    _heliProfiles pushback _profileIDs;
 
                                     _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
                                     _profile = _profiles select 0;
@@ -2811,9 +2811,9 @@ switch(_operation) do {
                             {
                                 if(alive _x) then {
                                     if(vehicle _x == _x) then {
-                                        _unloadedUnits set [count _unloadedUnits, _x];
+                                        _unloadedUnits pushback _x;
                                     }else{
-                                        _loadedUnits set [count _loadedUnits, _x];
+                                        _loadedUnits pushback _x;
                                     };
                                 };
                             } forEach _units;
@@ -3260,12 +3260,12 @@ switch(_operation) do {
                                     _vehicleClass = typeOf _vehicle;
                                     if(_vehicleClass != "Steerable_Parachute_F") then {
                                         if(vehicle _x == _x) then {
-                                            _notLoadedUnits set [count _notLoadedUnits, _x];
+                                            _notLoadedUnits pushback _x;
                                         }else{
-                                            _loadedUnits set [count _loadedUnits, _x];
+                                            _loadedUnits pushback _x;
                                         };
                                     }else{
-                                        _notLoadedUnits set [count _notLoadedUnits, _x];
+                                        _notLoadedUnits pushback _x;
                                     };
 
                                 } forEach _units;
@@ -3728,9 +3728,9 @@ switch(_operation) do {
                             {
                                 if(alive _x) then {
                                     if(vehicle _x == _x) then {
-                                        _unloadedUnits set [count _unloadedUnits, _x];
+                                        _unloadedUnits pushback _x;
                                     }else{
-                                        _loadedUnits set [count _loadedUnits, _x];
+                                        _loadedUnits pushback _x;
                                     };
                                 };
                             } forEach _units;
@@ -4223,23 +4223,23 @@ switch(_operation) do {
                                 _profileIDs = [];
                                 {
                                     _profileID = _x select 2 select 4;
-                                    _profileIDs set [count _profileIDs, _profileID];
+                                    _profileIDs pushback _profileID;
                                 } forEach _profiles;
 
-                                _emptyVehicleProfiles set [count _emptyVehicleProfiles, _profileIDs];
+                                _emptyVehicleProfiles pushback _profileIDs;
 
                                 switch(_itemCategory) do {
                                     case "Car":{
-                                        _motorisedProfiles set [count _motorisedProfiles, _profileIDs];
+                                        _motorisedProfiles pushback _profileIDs;
                                     };
                                     case "Armored":{
-                                        _armourProfiles set [count _armourProfiles, _profileIDs];
+                                        _armourProfiles pushback _profileIDs;
                                     };
                                     case "Ship":{
-                                        _marineProfiles set [count _marineProfiles, _profileIDs];
+                                        _marineProfiles pushback _profileIDs;
                                     };
                                     case "Air":{
-                                        _heliProfiles set [count _heliProfiles, _profileIDs];
+                                        _heliProfiles pushback _profileIDs;
 
                                         _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
                                         _profile = _profiles select 0;
@@ -4312,16 +4312,16 @@ switch(_operation) do {
                                     // Set slingloaded profile
                                     [_slingloadProfile,"slung",[[_profiles select 1 select 2 select 4]]] call ALIVE_fnc_profileVehicle;
 
-                                    _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
-                                    _transportVehicleProfiles set [count _transportVehicleProfiles, _profiles select 1 select 2 select 4];
+                                    _transportProfiles pushback (_profiles select 0 select 2 select 4);
+                                    _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
 
                                     _profileIDs = [];
                                     {
                                         _profileID = _x select 2 select 4;
-                                        _profileIDs set [count _profileIDs, _profileID];
+                                        _profileIDs pushback _profileID;
                                     } forEach _profiles;
 
-                                    _payloadGroupProfiles set [count _payloadGroupProfiles, _profileIDs];
+                                    _payloadGroupProfiles pushback _profileIDs;
 
                                     _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
                                     _profile = _profiles select 0;
@@ -4361,13 +4361,13 @@ switch(_operation) do {
 
                             _unitClasses = [];
                             {
-                                _unitClasses set [count _unitClasses,_x select 0];
+                                _unitClasses pushback (_x select 0);
                             } forEach _staticIndividuals;
 
                             _profile = [_unitClasses,_side,_eventFaction,_position,0,_side,true] call ALIVE_fnc_createProfileEntity;
                             _profileID = _profile select 2 select 4;
-                            _staticIndividualProfiles set [count _staticIndividualProfiles, [_profileID]];
-                            _infantryProfiles set [count _infantryProfiles, [_profileID]];
+                            _staticIndividualProfiles pushback [_profileID];
+                            _infantryProfiles pushback [_profileID];
 
                             _totalCount = _totalCount + 1;
 
@@ -4396,13 +4396,13 @@ switch(_operation) do {
 
                             _unitClasses = [];
                             {
-                                _unitClasses set [count _unitClasses,_x select 0];
+                                _unitClasses pushback (_x select 0);
                             } forEach _joinIndividuals;
 
                             _profile = [_unitClasses,_side,_eventFaction,_position,0,_side,true] call ALIVE_fnc_createProfileEntity;
                             _profileID = _profile select 2 select 4;
-                            _joinIndividualProfiles set [count _joinIndividualProfiles, [_profileID]];
-                            _infantryProfiles set [count _infantryProfiles, [_profileID]];
+                            _joinIndividualProfiles pushback [_profileID];
+                            _infantryProfiles pushback [_profileID];
 
                             _totalCount = _totalCount + 1;
 
@@ -4430,13 +4430,13 @@ switch(_operation) do {
 
                             _unitClasses = [];
                             {
-                                _unitClasses set [count _unitClasses,_x select 0];
+                                _unitClasses pushback (_x select 0);
                             } forEach _reinforceIndividuals;
 
                             _profile = [_unitClasses,_side,_eventFaction,_position,0,_side,true] call ALIVE_fnc_createProfileEntity;
                             _profileID = _profile select 2 select 4;
-                            _reinforceIndividualProfiles set [count _reinforceIndividualProfiles, [_profileID]];
-                            _infantryProfiles set [count _infantryProfiles, [_profileID]];
+                            _reinforceIndividualProfiles pushback [_profileID];
+                            _infantryProfiles pushback [_profileID];
 
                             _totalCount = _totalCount + 1;
 
@@ -4496,35 +4496,35 @@ switch(_operation) do {
                                 _profileIDs = [];
                                 {
                                     _profileID = _x select 2 select 4;
-                                    _profileIDs set [count _profileIDs, _profileID];
+                                    _profileIDs pushback _profileID;
                                 } forEach _profiles;
 
-                                _staticGroupProfiles set [count _staticGroupProfiles, _profileIDs];
+                                _staticGroupProfiles pushback _profileIDs;
 
                                 switch(_itemCategory) do {
                                     case "Infantry":{
-                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
+                                        _infantryProfiles pushback _profileIDs;
                                     };
                                     case "Support":{
-                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
+                                        _infantryProfiles pushback _profileIDs;
                                     };
                                     case "SpecOps":{
-                                        _specOpsProfiles set [count _specOpsProfiles, _profileIDs];
+                                        _specOpsProfiles pushback _profileIDs;
                                     };
                                     case "Naval":{
-                                        _marineProfiles set [count _marineProfiles, _profileIDs];
+                                        _marineProfiles pushback _profileIDs;
                                     };
                                     case "Armored":{
-                                        _armourProfiles set [count _armourProfiles, _profileIDs];
+                                        _armourProfiles pushback _profileIDs;
                                     };
                                     case "Mechanized":{
-                                         _mechanisedProfiles set [count _mechanisedProfiles, _profileIDs];
+                                         _mechanisedProfiles pushback _profileIDs;
                                     };
                                     case "Motorized":{
-                                         _motorisedProfiles set [count _motorisedProfiles, _profileIDs];
+                                         _motorisedProfiles pushback _profileIDs;
                                     };
                                     case "Air":{
-                                        _heliProfiles set [count _heliProfiles, _profileIDs];
+                                        _heliProfiles pushback _profileIDs;
 
                                         _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
                                         _profile = _profiles select 0;
@@ -4588,35 +4588,35 @@ switch(_operation) do {
                                 _profileIDs = [];
                                 {
                                     _profileID = _x select 2 select 4;
-                                    _profileIDs set [count _profileIDs, _profileID];
+                                    _profileIDs pushback _profileID;
                                 } forEach _profiles;
 
-                                _joinGroupProfiles set [count _joinGroupProfiles, _profileIDs];
+                                _joinGroupProfiles pushback _profileIDs;
 
                                 switch(_itemCategory) do {
                                     case "Infantry":{
-                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
+                                        _infantryProfiles pushback _profileIDs;
                                     };
                                     case "Support":{
-                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
+                                        _infantryProfiles pushback _profileIDs;
                                     };
                                     case "SpecOps":{
-                                        _specOpsProfiles set [count _specOpsProfiles, _profileIDs];
+                                        _specOpsProfiles pushback _profileIDs;
                                     };
                                     case "Naval":{
-                                        _marineProfiles set [count _marineProfiles, _profileIDs];
+                                        _marineProfiles pushback _profileIDs;
                                     };
                                     case "Armored":{
-                                        _armourProfiles set [count _armourProfiles, _profileIDs];
+                                        _armourProfiles pushback _profileIDs;
                                     };
                                     case "Mechanized":{
-                                         _mechanisedProfiles set [count _mechanisedProfiles, _profileIDs];
+                                         _mechanisedProfiles pushback _profileIDs;
                                     };
                                     case "Motorized":{
-                                         _motorisedProfiles set [count _motorisedProfiles, _profileIDs];
+                                         _motorisedProfiles pushback _profileIDs;
                                     };
                                     case "Air":{
-                                        _heliProfiles set [count _heliProfiles, _profileIDs];
+                                        _heliProfiles pushback _profileIDs;
 
                                         _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
                                         _profile = _profiles select 0;
@@ -4680,35 +4680,35 @@ switch(_operation) do {
                                 _profileIDs = [];
                                 {
                                     _profileID = _x select 2 select 4;
-                                    _profileIDs set [count _profileIDs, _profileID];
+                                    _profileIDs pushback _profileID;
                                 } forEach _profiles;
 
-                                _reinforceGroupProfiles set [count _reinforceGroupProfiles, _profileIDs];
+                                _reinforceGroupProfiles pushback _profileIDs;
 
                                 switch(_itemCategory) do {
                                     case "Infantry":{
-                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
+                                        _infantryProfiles pushback _profileIDs;
                                     };
                                     case "Support":{
-                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
+                                        _infantryProfiles pushback _profileIDs;
                                     };
                                     case "SpecOps":{
-                                        _specOpsProfiles set [count _specOpsProfiles, _profileIDs];
+                                        _specOpsProfiles pushback _profileIDs;
                                     };
                                     case "Naval":{
-                                        _marineProfiles set [count _marineProfiles, _profileIDs];
+                                        _marineProfiles pushback _profileIDs;
                                     };
                                     case "Armored":{
-                                        _armourProfiles set [count _armourProfiles, _profileIDs];
+                                        _armourProfiles pushback _profileIDs;
                                     };
                                     case "Mechanized":{
-                                         _mechanisedProfiles set [count _mechanisedProfiles, _profileIDs];
+                                         _mechanisedProfiles pushback _profileIDs;
                                     };
                                     case "Motorized":{
-                                         _motorisedProfiles set [count _motorisedProfiles, _profileIDs];
+                                         _motorisedProfiles pushback _profileIDs;
                                     };
                                     case "Air":{
-                                        _heliProfiles set [count _heliProfiles, _profileIDs];
+                                        _heliProfiles pushback _profileIDs;
 
                                         _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
                                         _profile = _profiles select 0;
@@ -4751,8 +4751,8 @@ switch(_operation) do {
 
                                         _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,false,true] call ALIVE_fnc_createProfilesCrewedVehicle;
 
-                                        _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
-                                        _transportVehicleProfiles set [count _transportVehicleProfiles, _profiles select 1 select 2 select 4];
+                                        _transportProfiles pushback (_profiles select 0 select 2 select 4);
+                                        _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
 
                                     }
 
@@ -4807,8 +4807,8 @@ switch(_operation) do {
                                         // Create profiles
                                         _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
 
-                                        _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
-                                        _transportVehicleProfiles set [count _transportVehicleProfiles, _profiles select 1 select 2 select 4];
+                                        _transportProfiles pushback (_profiles select 0 select 2 select 4);
+                                        _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
 
                                         _infantryProfileID = _infantryProfiles select _i select 0;
                                         if!(isNil "_infantryProfileID") then {
@@ -4902,16 +4902,16 @@ switch(_operation) do {
                                             // Set slingloaded profile
                                             [_slingloadProfile,"slung",[[_profiles select 1 select 2 select 4]]] call ALIVE_fnc_profileVehicle;
 
-                                            _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
-                                            _transportVehicleProfiles set [count _transportVehicleProfiles, _profiles select 1 select 2 select 4];
+                                            _transportProfiles pushback (_profiles select 0 select 2 select 4);
+                                            _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
 
                                             _profileIDs = [];
                                             {
                                                 _profileID = _x select 2 select 4;
-                                                _profileIDs set [count _profileIDs, _profileID];
+                                                _profileIDs pushback _profileID;
                                             } forEach _profiles;
 
-                                            _payloadGroupProfiles set [count _payloadGroupProfiles, _profileIDs];
+                                            _payloadGroupProfiles pushback _profileIDs;
 
                                             _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
                                             _profile = _profiles select 0;
@@ -4982,16 +4982,16 @@ switch(_operation) do {
 
                                     _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,false,true,_payload] call ALIVE_fnc_createProfilesCrewedVehicle;
 
-                                    _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
-                                    _transportVehicleProfiles set [count _transportVehicleProfiles, _profiles select 1 select 2 select 4];
+                                    _transportProfiles pushback (_profiles select 0 select 2 select 4);
+                                    _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
 
                                     _profileIDs = [];
                                     {
                                         _profileID = _x select 2 select 4;
-                                        _profileIDs set [count _profileIDs, _profileID];
+                                        _profileIDs pushback _profileID;
                                     } forEach _profiles;
 
-                                    _payloadGroupProfiles set [count _payloadGroupProfiles, _profileIDs];
+                                    _payloadGroupProfiles pushback _profileIDs;
 
                                 };
 
@@ -5108,16 +5108,16 @@ switch(_operation) do {
                                         };
                                     };
 
-                                    _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
-                                    _transportVehicleProfiles set [count _transportVehicleProfiles, _profiles select 1 select 2 select 4];
+                                    _transportProfiles pushback (_profiles select 0 select 2 select 4);
+                                    _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
 
                                     _profileIDs = [];
                                     {
                                         _profileID = _x select 2 select 4;
-                                        _profileIDs set [count _profileIDs, _profileID];
+                                        _profileIDs pushback _profileID;
                                     } forEach _profiles;
 
-                                    _payloadGroupProfiles set [count _payloadGroupProfiles, _profileIDs];
+                                    _payloadGroupProfiles pushback _profileIDs;
 
                                     _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
                                     _profile = _profiles select 0;
@@ -5935,7 +5935,7 @@ switch(_operation) do {
                     };
                     _heliPad = "Land_HelipadEmpty_F" createVehicle _position;
 
-                    _eventAssets set [count _eventAssets, _heliPad];
+                    _eventAssets pushback _heliPad;
                     [_event, "eventAssets",_eventAssets] call ALIVE_fnc_hashSet;
 
                     _inCargo = _vehicleProfile select 2 select 9;
@@ -5992,7 +5992,7 @@ switch(_operation) do {
                     };
                     _heliPad = "Land_HelipadEmpty_F" createVehicle _position;
 
-                    _eventAssets set [count _eventAssets, _heliPad];
+                    _eventAssets pushback _heliPad;
                     [_event, "eventAssets",_eventAssets] call ALIVE_fnc_hashSet;
 
                     [_entityProfile,_vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
@@ -6048,7 +6048,7 @@ switch(_operation) do {
                     };
                     _heliPad = "Land_HelipadEmpty_F" createVehicle _position;
 
-                    _eventAssets set [count _eventAssets, _heliPad];
+                    _eventAssets pushback _heliPad;
                     [_event, "eventAssets",_eventAssets] call ALIVE_fnc_hashSet;
 
                     if!(isNil "_vehicle") then {
@@ -6483,7 +6483,7 @@ switch(_operation) do {
                         _payloadVehicle = [ALIVE_profileHandler, "getProfile", _payloadVehicleID] call ALIVE_fnc_profileHandler;
 
                         if(!(isNil "_payloadProfile") && !(isNil "_payloadVehicle")) then {
-                            _payloadProfiles set [count _payloadProfiles,_payloadProfileID];
+                            _payloadProfiles pushback _payloadProfileID;
 
                             _vehicle = _payloadVehicle select 2 select 10;
 

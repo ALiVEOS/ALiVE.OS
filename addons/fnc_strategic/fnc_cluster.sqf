@@ -81,7 +81,7 @@ _createMarkers = {
                 _m setMarkerShape "Icon";
                 _m setMarkerSize [0.5,0.5];
                 _m setMarkerType "mil_dot";
-                _markers set [count _markers, _m];
+                _markers pushback _m;
             } else {
                 _m setMarkerPos (getPosATL _x);
             };
@@ -99,14 +99,14 @@ _createMarkers = {
         _m setMarkerType "mil_dot";
         _m setMarkerColor ([_logic, "debugColor","ColorYellow"] call ALIVE_fnc_hashGet);
         _m setMarkerText format["%1|%2|%3|%4",_id,_type,_priority,floor(_size)];
-        _markers set [count _markers, _m];
+        _markers pushback _m;
 
         _m = createMarker [_m + "_size", _center];
         _m setMarkerShape "Ellipse";
         _m setMarkerSize [_size, _size];
         _m setMarkerColor ([_logic, "debugColor","ColorYellow"] call ALIVE_fnc_hashGet);
         _m setMarkerAlpha 0.5;
-        _markers set [count _markers, _m];
+        _markers pushback _m;
 
         [_logic, "debugMarkers", _markers] call ALIVE_fnc_hashSet;
     };

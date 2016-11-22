@@ -163,7 +163,7 @@ switch(_operation) do {
 
                                     _markerID = format[MTEMPLATE, format["%1ue%2",_plotterID,_id]];
                                     _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorRed"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 };
 
                                 if(_westCount > 0) then {
@@ -174,7 +174,7 @@ switch(_operation) do {
 
                                     _markerID = format[MTEMPLATE, format["%1uw%2",_plotterID,_id]];
                                     _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorBlue"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 };
 
                                 if(_civCount > 0) then {
@@ -185,7 +185,7 @@ switch(_operation) do {
 
                                     _markerID = format[MTEMPLATE, format["%1uc%2",_plotterID,_id]];
                                     _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorGreen"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 };
 
                                 if(_guerCount > 0) then {
@@ -196,7 +196,7 @@ switch(_operation) do {
 
                                     _markerID = format[MTEMPLATE, format["%1ug%2",_plotterID,_id]];
                                     _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorYellow"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 };
                             };
                         };
@@ -225,7 +225,7 @@ switch(_operation) do {
 
                                     _markerID = format[MTEMPLATE, format["%1ee%2",_plotterID,_id]];
                                     _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorRed"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 };
 
                                 if(_westCount > 0) then {
@@ -236,7 +236,7 @@ switch(_operation) do {
 
                                     _markerID = format[MTEMPLATE, format["%1ew%2",_plotterID,_id]];
                                     _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorBlue"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 };
 
                                 if(_civCount > 0) then {
@@ -247,7 +247,7 @@ switch(_operation) do {
 
                                     _markerID = format[MTEMPLATE, format["%1ec%2",_plotterID,_id]];
                                     _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorGreen"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 };
 
                                 if(_guerCount > 0) then {
@@ -258,7 +258,7 @@ switch(_operation) do {
 
                                     _markerID = format[MTEMPLATE, format["%1eg%2",_plotterID,_id]];
                                     _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorYellow"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 };
                             };
                         };
@@ -287,7 +287,7 @@ switch(_operation) do {
 
                                     _markerID = format[MTEMPLATE, format["%1ve%2",_plotterID,_id]];
                                     _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorRed"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 };
 
                                 if(_westCount > 0) then {
@@ -298,7 +298,7 @@ switch(_operation) do {
 
                                     _markerID = format[MTEMPLATE, format["%1vw%2",_plotterID,_id]];
                                     _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorBlue"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 };
 
                                 if(_civCount > 0) then {
@@ -309,7 +309,7 @@ switch(_operation) do {
 
                                     _markerID = format[MTEMPLATE, format["%1vc%2",_plotterID,_id]];
                                     _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorGreen"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 };
 
                                 if(_guerCount > 0) then {
@@ -320,7 +320,7 @@ switch(_operation) do {
 
                                     _markerID = format[MTEMPLATE, format["%1vg%2",_plotterID,_id]];
                                     _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorYellow"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 };
                             };
                         };
@@ -341,7 +341,7 @@ switch(_operation) do {
 
                                     _markerID = format[MTEMPLATE, format["%1act%2",_plotterID,_id]];
                                     _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorGreen"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 };
                             };
                         };
@@ -358,17 +358,17 @@ switch(_operation) do {
                                     case "LAND": {
                                         _markerID = format[MTEMPLATE, format["%1t%2",_plotterID,_id]];
                                         _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorBrown"] call _createMarker;
-                                        _markers set [count _markers, _m];
+                                        _markers pushback _m;
                                     };
                                     case "SHORE": {
                                         _markerID = format[MTEMPLATE, format["%1t%2",_plotterID,_id]];
                                         _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorKhaki"] call _createMarker;
-                                        _markers set [count _markers, _m];
+                                        _markers pushback _m;
                                     };
                                     case "SEA": {
                                         _markerID = format[MTEMPLATE, format["%1t%2",_plotterID,_id]];
                                         _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorBlue"] call _createMarker;
-                                        _markers set [count _markers, _m];
+                                        _markers pushback _m;
                                     };
                                 };
                             };
@@ -390,21 +390,21 @@ switch(_operation) do {
                                     _position = _x;
                                     _markerID = format["TLA_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorBrown"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _landPositions;
 
                                 {
                                     _position = _x;
                                     _markerID = format["TSH_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorKhaki"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _shorePositions;
 
                                 {
                                     _position = _x;
                                     _markerID = format["TSE_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorBlue"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _seaPositions;
                             };
                         };
@@ -437,7 +437,7 @@ switch(_operation) do {
 
                                 _markerID = format[MTEMPLATE, format["%1e%2",_plotterID,_id]];
                                 _m = [_markerID,_centerPosition,_dimensions,_alpha,_colour] call _createMarker;
-                                _markers set [count _markers, _m];
+                                _markers pushback _m;
                             };
                         };
                         case "bestPlaces": {
@@ -462,14 +462,14 @@ switch(_operation) do {
                                     _position = _x;
                                     _markerID = format["BPF_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorGreen"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _forestPositions;
 
                                 {
                                     _position = _x;
                                     _markerID = format["BPH_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorOrange"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _hillsPositions;
 
                                 /*
@@ -477,28 +477,28 @@ switch(_operation) do {
                                     _position = _x;
                                     _markerID = format["BPM_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorWhite"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _meadowsPositions;
 
                                 {
                                     _position = _x;
                                     _markerID = format["BPT_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorRed"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _treesPositions;
 
                                 {
                                     _position = _x;
                                     _markerID = format["BPB_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorYellow"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _housesPositions;
 
                                 {
                                     _position = _x;
                                     _markerID = format["BPS_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorBlue"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _seaPositions;
                                 */
                             };
@@ -517,7 +517,7 @@ switch(_operation) do {
                                     if(count _position > 0) then {
                                         _markerID = format["FE_%1_%2",_id,_forEachIndex];
                                         _m = [_markerID,_position,_dimensions,_alpha,"ColorRed","ELLIPSE"] call _createMarker;
-                                        _markers set [count _markers, _m];
+                                        _markers pushback _m;
                                     };
                                 } forEach _plotData;
 
@@ -540,21 +540,21 @@ switch(_operation) do {
                                     _position = _x select 0;
                                     _markerID = format["RO_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorBrown"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _roadPositions;
 
                                 {
                                     _position = _x select 0;
                                     _markerID = format["ROC_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorOrange"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _crossroadPositions;
 
                                 {
                                     _position = _x select 0;
                                     _markerID = format["ROT_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorRed"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _terminusPositions;
                             };
                         };
@@ -575,21 +575,21 @@ switch(_operation) do {
                                     _position = _x select 0;
                                     _markerID = format["MCC_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorGreen","ELLIPSE"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _consolidatedPositions;
 
                                 {
                                     _position = _x select 0;
                                     _markerID = format["MCA_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorBlue","ELLIPSE"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _airPositions;
 
                                 {
                                     _position = _x select 0;
                                     _markerID = format["MCH_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorOrange","ELLIPSE"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _heliPositions;
                             };
                         };
@@ -616,49 +616,49 @@ switch(_operation) do {
                                     _position = _x select 0;
                                     _markerID = format["CCC_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorBlack","ELLIPSE"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _consolidatedPositions;
 
                                 {
                                     _position = _x select 0;
                                     _markerID = format["CCP_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorYellow","ELLIPSE"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _powerPositions;
 
                                 {
                                     _position = _x select 0;
                                     _markerID = format["CCC_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorWhite","ELLIPSE"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _commsPositions;
 
                                 {
                                     _position = _x select 0;
                                     _markerID = format["CCM_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorBlue","ELLIPSE"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _marinePositions;
 
                                 {
                                     _position = _x select 0;
                                     _markerID = format["CCF_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorOrange","ELLIPSE"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _fuelPositions;
 
                                 {
                                     _position = _x select 0;
                                     _markerID = format["CCCO_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorPink","ELLIPSE"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _constructionPositions;
 
                                 {
                                     _position = _x select 0;
                                     _markerID = format["CCS_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,"ColorGreen","ELLIPSE"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 } forEach _settlementPositions;
                             };
                         };
@@ -696,7 +696,7 @@ switch(_operation) do {
 
                                     _markerID = format["ACC_%1_%2",_id,_forEachIndex];
                                     _m = [_markerID,_position,_dimensions,_alpha,_color,"ELLIPSE"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
 
                                 } forEach (_plotData select 2);
 
@@ -739,7 +739,7 @@ switch(_operation) do {
 
                                     _markerID = format[MTEMPLATE, format["%1ee%2",_plotterID,_id]];
                                     _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorRed"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 };
 
                                 if(_westCount > 0) then {
@@ -750,7 +750,7 @@ switch(_operation) do {
 
                                     _markerID = format[MTEMPLATE, format["%1ew%2",_plotterID,_id]];
                                     _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorBlue"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 };
 
                                 if(_civCount > 0) then {
@@ -761,7 +761,7 @@ switch(_operation) do {
 
                                     _markerID = format[MTEMPLATE, format["%1ec%2",_plotterID,_id]];
                                     _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorGreen"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 };
 
                                 if(_guerCount > 0) then {
@@ -772,7 +772,7 @@ switch(_operation) do {
 
                                     _markerID = format[MTEMPLATE, format["%1eg%2",_plotterID,_id]];
                                     _m = [_markerID,_centerPosition,_dimensions,_alpha,"ColorYellow"] call _createMarker;
-                                    _markers set [count _markers, _m];
+                                    _markers pushback _m;
                                 };
                             };
                         };

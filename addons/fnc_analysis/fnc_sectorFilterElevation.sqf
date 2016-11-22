@@ -49,7 +49,7 @@ _filteredSectors = [];
         _elevationData = [_sectorData, "elevation"] call ALIVE_fnc_hashGet;
 
         if(_elevationData >= _elevationMin && _elevationData <= _elevationMax) then {
-            _filteredSectors set [count _filteredSectors, _sector];
+            _filteredSectors pushback _sector;
         };
     };
 

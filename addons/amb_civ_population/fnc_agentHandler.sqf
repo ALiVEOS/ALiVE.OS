@@ -221,7 +221,7 @@ switch(_operation) do {
 
             if(_agentActive) then {
                 if(_agentType == "agent") then {
-                    _activeAgents set [count _activeAgents, _agentID];
+                    _activeAgents pushback _agentID;
                 };
                 [_agentsActive, _agentID, _agent] call ALIVE_fnc_hashSet;
             }else{

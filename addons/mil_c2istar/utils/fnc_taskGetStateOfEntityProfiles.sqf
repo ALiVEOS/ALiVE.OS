@@ -36,7 +36,7 @@ _state = [] call ALIVE_fnc_hashCreate;
 
         _active = _entityProfile select 2 select 1;
 
-        _profiles set [count _profiles, _entityProfile];
+        _profiles pushback _entityProfile;
 
         if(_active) then {
 

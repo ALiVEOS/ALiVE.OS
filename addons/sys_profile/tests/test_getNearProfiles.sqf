@@ -117,7 +117,7 @@ _markers = [];
         _m setMarkerTypeLocal "hd_dot";
         _m setMarkerColorLocal "ColorBlue";
 
-        _markers set [count _markers, _m];
+        _markers pushback _m;
     };
 } forEach _profiles;
 
@@ -138,7 +138,7 @@ TIMEREND
         _m setMarkerTypeLocal "hd_dot";
         _m setMarkerColorLocal "ColorGreen";
 
-        _markers set [count _markers, _m];
+        _markers pushback _m;
     };
 } forEach _profiles;
 

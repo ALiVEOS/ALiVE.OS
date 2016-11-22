@@ -96,7 +96,7 @@ switch (_state) do {
                         _partnerAgent setVariable ["ALIVE_agentGatheringRequested", true, false];
                         _partnerAgent setVariable ["ALIVE_agentGatheringTarget", _agent, false];
 
-                        _partners set [count _partners, _partnerAgent];
+                        _partners pushback _partnerAgent;
                     };
                 } forEach _agents;
 

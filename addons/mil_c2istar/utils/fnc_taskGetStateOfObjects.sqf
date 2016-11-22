@@ -34,7 +34,7 @@ _output = [];
     private ["_target"];
     
     _target = _x;
-    _output set [count _output, _target];
+    _output pushback _target;
 
     if (alive _target) then {[_state,"allDestroyed",false] call ALIVE_fnc_hashSet};
 } forEach _targets;

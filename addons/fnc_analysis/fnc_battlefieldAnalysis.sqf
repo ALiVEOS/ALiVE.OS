@@ -477,7 +477,7 @@ switch(_operation) do {
                     if (_owner == "GUER") then {_owner = "INDEP"};
 
                     if (_owner == _side) then {
-                        _clustersOwnedBySide set [count _clustersOwnedBySide, _x];
+                        _clustersOwnedBySide pushback _x;
                     };
                 } forEach (_clusters select 2);
             };
@@ -512,7 +512,7 @@ switch(_operation) do {
                     if (_owner == "GUER") then {_owner = "INDEP"};
 
                     if (_owner == _side && {_type == _clusterType}) then {
-                        _clustersOwnedBySide set [count _clustersOwnedBySide, _x];
+                        _clustersOwnedBySide pushback _x;
                     };
                 } forEach (_clusters select 2);
 
@@ -538,7 +538,7 @@ switch(_operation) do {
                 _entities = [_sectorData,"entitiesBySide"] call ALIVE_fnc_hashGet;
                 _sideEntities = [_entities,_side] call ALIVE_fnc_hashGet;
                 if(count _sideEntities > 0) then {
-                    _sectorsContainingSide set [count _sectorsContainingSide,_x];
+                    _sectorsContainingSide pushback _x;
                 };
             };
         } forEach _landSectors;
@@ -562,7 +562,7 @@ switch(_operation) do {
                 _vehicles = [_sectorData,"vehiclesBySide"] call ALIVE_fnc_hashGet;
                 _sideVehicles = [_vehicles,_side] call ALIVE_fnc_hashGet;
                 if(count _sideVehicles > 0) then {
-                    _sectorsContainingSide set [count _sectorsContainingSide,_x];
+                    _sectorsContainingSide pushback _x;
                 };
             };
         } forEach _landSectors;

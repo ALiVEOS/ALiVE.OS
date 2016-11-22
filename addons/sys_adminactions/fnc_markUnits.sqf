@@ -35,7 +35,7 @@ private ["_m","_markers","_delay"];
     {
         _m = createMarkerLocal [str _x, position _x];
         _m setMarkerSizeLocal [.6,.6];
-        _markers set [count _markers, _m];
+        _markers pushback _m;
 
         switch (side _x) do {
             case west: {
@@ -79,7 +79,7 @@ private ["_m","_markers","_delay"];
         _m = createMarkerLocal [format["inactive_%1",_forEachIndex], _position];
         _m setMarkerSizeLocal [.45,.45];
         _m setMarkerAlphaLocal 0.5;
-        _markers set [count _markers, _m];
+        _markers pushback _m;
 
         switch (_side) do {
             case "WEST":{

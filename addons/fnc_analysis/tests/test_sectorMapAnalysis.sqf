@@ -75,17 +75,17 @@ diag_log format["Sectors created: %1",count _allSectors];
 DEBUGOFF
 
 _sectors = [];
-_sectors set [count _sectors,[_grid,"gridIndexToSector",[13,15]] call ALIVE_fnc_sectorGrid];
-_sectors set [count _sectors,[_grid,"gridIndexToSector",[20,14]] call ALIVE_fnc_sectorGrid];
-_sectors set [count _sectors,[_grid,"gridIndexToSector",[21,14]] call ALIVE_fnc_sectorGrid];
-_sectors set [count _sectors,[_grid,"gridIndexToSector",[20,15]] call ALIVE_fnc_sectorGrid];
-_sectors set [count _sectors,[_grid,"gridIndexToSector",[21,15]] call ALIVE_fnc_sectorGrid];
-_sectors set [count _sectors,[_grid,"gridIndexToSector",[4,15]] call ALIVE_fnc_sectorGrid];
-_sectors set [count _sectors,[_grid,"gridIndexToSector",[4,17]] call ALIVE_fnc_sectorGrid];
-_sectors set [count _sectors,[_grid,"gridIndexToSector",[16,19]] call ALIVE_fnc_sectorGrid];
-_sectors set [count _sectors,[_grid,"gridIndexToSector",[21,19]] call ALIVE_fnc_sectorGrid];
-_sectors set [count _sectors,[_grid,"gridIndexToSector",[22,20]] call ALIVE_fnc_sectorGrid];
-_sectors set [count _sectors,[_grid,"gridIndexToSector",[16,10]] call ALIVE_fnc_sectorGrid];
+_sectors pushback ([_grid,"gridIndexToSector",[13,15]] call ALIVE_fnc_sectorGrid);
+_sectors pushback ([_grid,"gridIndexToSector",[20,14]] call ALIVE_fnc_sectorGrid);
+_sectors pushback ([_grid,"gridIndexToSector",[21,14]] call ALIVE_fnc_sectorGrid);
+_sectors pushback ([_grid,"gridIndexToSector",[20,15]] call ALIVE_fnc_sectorGrid);
+_sectors pushback ([_grid,"gridIndexToSector",[21,15]] call ALIVE_fnc_sectorGrid);
+_sectors pushback ([_grid,"gridIndexToSector",[4,15]] call ALIVE_fnc_sectorGrid);
+_sectors pushback ([_grid,"gridIndexToSector",[4,17]] call ALIVE_fnc_sectorGrid);
+_sectors pushback ([_grid,"gridIndexToSector",[16,19]] call ALIVE_fnc_sectorGrid);
+_sectors pushback ([_grid,"gridIndexToSector",[21,19]] call ALIVE_fnc_sectorGrid);
+_sectors pushback ([_grid,"gridIndexToSector",[22,20]] call ALIVE_fnc_sectorGrid);
+_sectors pushback ([_grid,"gridIndexToSector",[16,10]] call ALIVE_fnc_sectorGrid);
 
 
 STAT("Start static terrain analysis");

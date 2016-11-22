@@ -43,7 +43,7 @@ if(count _sideSectors > 0) then {
     {
         _position = [_x, "position"] call ALIVE_fnc_hashGet;
         if([_position, 1000] call ALiVE_fnc_anyPlayersInRange == 0) then {
-            _spawnSectors set [count _spawnSectors, _x];
+            _spawnSectors pushback _x;
         };
     } forEach _sortedSectors;
 

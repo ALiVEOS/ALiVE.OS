@@ -57,7 +57,7 @@ _assignments = [[],[],[],[],[],[]];
                 };
                 case "cargo":{
                     _cargo = _assignments select 4;
-                    _cargo set [count _cargo,_unitIndex];
+                    _cargo pushback _unitIndex;
                     _assignments set [4, _cargo];
                 };
                 case "turret":{
@@ -70,14 +70,14 @@ _assignments = [[],[],[],[],[],[]];
 
                     if(_turretIsGunner == 1) then {
                         _gunner = _assignments select 1;
-                        _gunner set [count _gunner,_unitIndex];
+                        _gunner pushback _unitIndex;
                         _assignments set [1, _gunner];
                         _isTurret = false;
                     };
 
                     if(_turretIsCommander == 1) then {
                         _commander = _assignments select 2;
-                        _commander set [count _commander,_unitIndex];
+                        _commander pushback _unitIndex;
                         _assignments set [2, _commander];
                         _isTurret = false;
                     };
@@ -85,13 +85,13 @@ _assignments = [[],[],[],[],[],[]];
                     if(_turretIsPerson == 1) then {
                         _isTurret = false;
                         _turret = _assignments select 5;
-                        _turret set [count _turret,_unitIndex];
+                        _turret pushback _unitIndex;
                         _assignments set [5, _turret];
                     };
 
                     if(_isTurret) then {
                         _turret = _assignments select 3;
-                        _turret set [count _turret,_unitIndex];
+                        _turret pushback _unitIndex;
                         _assignments set [3, _turret];
                     };
 

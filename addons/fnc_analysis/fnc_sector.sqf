@@ -109,7 +109,7 @@ _createMarkers = {
                 _m setMarkerBrush "Border";
                 _m setMarkerColor _debugColor;
 
-                _markers set [count _markers, _m];
+                _markers pushback _m;
 
                 _m = createMarker [format[MTEMPLATE, format["g%1_%2",_gridID,_id]], _position];
                 _m setMarkerShape "RECTANGLE";
@@ -118,7 +118,7 @@ _createMarkers = {
                 _m setMarkerBrush "Solid";
                 _m setMarkerColor "ColorGreen";
 
-                _markers set [count _markers, _m];
+                _markers pushback _m;
 
                 _m = createMarker [format[MTEMPLATE, format["l%1_%2",_gridID,_id]], _position];
                 _m setMarkerShape "ICON";
@@ -127,7 +127,7 @@ _createMarkers = {
                 _m setMarkerColor _debugColor;
                 _m setMarkerText _id;
 
-                _markers set [count _markers, _m];
+                _markers pushback _m;
 
                 [_logic,"debugMarkers",_markers] call ALIVE_fnc_hashSet;
         };

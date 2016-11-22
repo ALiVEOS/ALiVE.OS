@@ -276,11 +276,11 @@ switch(_operation) do {
                             };
                         };
 
-                        _sectors set [count _sectors, _sector];
-                        _allSectors set [count _allSectors, _sector];
+                        _sectors pushback _sector;
+                        _allSectors pushback _sector;
                     };
 
-                    _grid set [count _grid, _sectors];
+                    _grid pushback _sectors;
                 };
 
                 [_logic,"sectors",_allSectors] call ALIVE_fnc_hashSet;
@@ -376,56 +376,56 @@ switch(_operation) do {
                 _index = [(_indexX - 1),(_indexY - 1)];
                 _sector = [_logic, "gridIndexToSector", _index] call MAINCLASS;
                 if(count (_sector select 1) > 0) then {
-                    _result set [count _result, _sector];
+                    _result pushback _sector;
                 };
 
                 //ml
                 _index = [(_indexX - 1),(_indexY)];
                 _sector = [_logic, "gridIndexToSector", _index] call MAINCLASS;
                 if(count (_sector select 1) > 0) then {
-                    _result set [count _result, _sector];
+                    _result pushback _sector;
                 };
 
                 //tl
                 _index = [(_indexX - 1),(_indexY + 1)];
                 _sector = [_logic, "gridIndexToSector", _index] call MAINCLASS;
                 if(count (_sector select 1) > 0) then {
-                    _result set [count _result, _sector];
+                    _result pushback _sector;
                 };
 
                 //tm
                 _index = [(_indexX),(_indexY + 1)];
                 _sector = [_logic, "gridIndexToSector", _index] call MAINCLASS;
                 if(count (_sector select 1) > 0) then {
-                    _result set [count _result, _sector];
+                    _result pushback _sector;
                 };
 
                 //tr
                 _index = [(_indexX + 1),(_indexY + 1)];
                 _sector = [_logic, "gridIndexToSector", _index] call MAINCLASS;
                 if(count (_sector select 1) > 0) then {
-                    _result set [count _result, _sector];
+                    _result pushback _sector;
                 };
 
                 //mr
                 _index = [(_indexX + 1),(_indexY)];
                 _sector = [_logic, "gridIndexToSector", _index] call MAINCLASS;
                 if(count (_sector select 1) > 0) then {
-                    _result set [count _result, _sector];
+                    _result pushback _sector;
                 };
 
                 //br
                 _index = [(_indexX + 1),(_indexY - 1)];
                 _sector = [_logic, "gridIndexToSector", _index] call MAINCLASS;
                 if(count (_sector select 1) > 0) then {
-                    _result set [count _result, _sector];
+                    _result pushback _sector;
                 };
 
                 //bm
                 _index = [(_indexX),(_indexY - 1)];
                 _sector = [_logic, "gridIndexToSector", _index] call MAINCLASS;
                 if(count (_sector select 1) > 0) then {
-                    _result set [count _result, _sector];
+                    _result pushback _sector;
                 };
         };
         case "sectorsInRadius": {
@@ -448,7 +448,7 @@ switch(_operation) do {
                         _centre = [_x, "center"] call ALIVE_fnc_sector;
 
                         if(_centre distance _position <= _radius) then {
-                            _sectors set [count _sectors, _x];
+                            _sectors pushback _x;
                         };
                     } forEach _allSectors;
 
@@ -469,7 +469,7 @@ switch(_operation) do {
                         } forEach _bounds;
 
                         if(_within) then {
-                            _sectors set [count _sectors, _sector];
+                            _sectors pushback _sector;
                         };
                     } forEach _surroundingSectors;
 

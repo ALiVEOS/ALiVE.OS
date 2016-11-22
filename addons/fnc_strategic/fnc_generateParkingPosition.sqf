@@ -151,6 +151,6 @@ while{!(_positionFound)} do
     }
 };
 
-ALIVE_parkingVehicles set [count ALIVE_parkingVehicles, _vehicle];
+ALIVE_parkingVehicles pushback _vehicle;
 
 [_parkingPosition, _direction]

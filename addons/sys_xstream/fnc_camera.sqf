@@ -32,7 +32,7 @@ _loopHandle = [] spawn {
                  subjects = subjects + [_x];
                 _nn = _x getVariable "EHfired";
                 if (isNil "_nn") then {
-                    _fh = _x addeventhandler["fired", { TargetFired set [count TargetFired, [(_this select 0),time]]}];
+                    _fh = _x addeventhandler["fired", { TargetFired pushback ([(_this select 0),time])}];
                     _x setVariable["EHfired", _fh];
                 };
             };
@@ -45,7 +45,7 @@ _loopHandle = [] spawn {
                 infantry = infantry + [_x];
                 _nn = _x getVariable "EHfired";
                 if (isNil "_nn") then {
-                    _fh = _x addeventhandler["fired", { TargetFired set [count TargetFired, [(_this select 0),time]]}];
+                    _fh = _x addeventhandler["fired", { TargetFired pushback ([(_this select 0),time])}];
                     _x setVariable["EHfired", _fh];
                 };
             };

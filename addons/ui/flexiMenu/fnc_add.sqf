@@ -48,13 +48,13 @@ if (({str _x == str _this} count (_this select _flexiMenu_typeMenuSources_ID_DIK
     diag_log format ["Warning: duplicate record, ignoring. %1 (%2)", _this, __FILE__];
 };
 
-GVAR(typeMenuSources) set [count GVAR(typeMenuSources), _this];
+GVAR(typeMenuSources) pushback _this;
 [GVAR(typeMenuSources), _flexiMenu_typeMenuSources_ID_priority] call CBA_fnc_sortNestedArray;
 
 // reverse the order of sorting, so highest priority is at the top
 _list = [];
 for "_e" from (count GVAR(typeMenuSources) - 1) to 0 step -1 do {
-    _list set [count _list, GVAR(typeMenuSources) select _e];
+    _list pushback (GVAR(typeMenuSources) select _e);
 };
 GVAR(typeMenuSources) = _list;
 diag_log format["FlexiMenu ADD: %1", QUOTE(GVAR(display))];

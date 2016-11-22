@@ -44,7 +44,7 @@ for "_i" from 0 to (count _indexes)-1 do {
         */
 
         if(count _units > _x) then {
-            _assignment set [count _assignment, _units select _x];
+            _assignment pushback (_units select _x);
         };
     } forEach (_indexes select _i);
 };

@@ -48,7 +48,7 @@ _clustersCopy = [];
         _nodes = [_x,"nodes"] call ALIVE_fnc_hashGet;
         _newNodes = [];
         {
-            _newNodes set [count _newNodes, _x];
+            _newNodes pushback _x;
         } forEach _nodes;
 
         [_cluster,"nodes",_newNodes] call ALIVE_fnc_hashSet;
@@ -59,7 +59,7 @@ _clustersCopy = [];
         [_cluster,"type",[_x,"type"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
         [_cluster,"priority",_priority] call ALIVE_fnc_hashSet;
         [_cluster,"debugColor",[_x,"debugColor"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-        _clustersCopy set [count _clustersCopy, _cluster];
+        _clustersCopy pushback _cluster;
     };
 } forEach _clusters;
 

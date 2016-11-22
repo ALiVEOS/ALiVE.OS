@@ -67,7 +67,7 @@ switch (_state) do {
                 private _vehicle = _x;
 
                 if!((_vehicle select 2 select 5) getVariable ["ALIVE_vehicleInUse", false]) then {
-                    _activeVehicles set [count _activeVehicles, _x];
+                    _activeVehicles pushback _x;
                 };
             };
         } forEach (_activeAgents select 2);

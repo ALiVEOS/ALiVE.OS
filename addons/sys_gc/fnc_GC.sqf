@@ -303,7 +303,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
 
             _object setvariable ["timeToDie",_timeToDie];
-            _queue set [count _queue,_object];
+            _queue pushback _object;
 
             _logic setVariable ["queue", _queue];
         };

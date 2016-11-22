@@ -210,7 +210,7 @@ switch(_operation) do {
         if(_args isEqualType []) then {
 
             if(count _args == 2) then  {
-                _args set [count _args, 0];
+                _args pushback 0;
             };
 
             [_logic,"position",_args] call ALIVE_fnc_hashSet;
@@ -249,7 +249,7 @@ switch(_operation) do {
         if(_args isEqualType []) then {
 
             if(count _args == 2) then  {
-                _args set [count _args, 0];
+                _args pushback 0;
             };
 
             [_logic,"homePosition",_args] call ALIVE_fnc_hashSet;

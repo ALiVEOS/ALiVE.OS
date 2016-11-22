@@ -52,7 +52,7 @@ _filteredSectors = [];
         _roadData = [_roads, _roadType] call ALIVE_fnc_hashGet;
 
         if(count _roadData > 0) then {
-            _filteredSectors set [count _filteredSectors, _sector];
+            _filteredSectors pushback _sector;
         };
     };
 

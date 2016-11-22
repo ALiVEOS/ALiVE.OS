@@ -94,7 +94,7 @@ if (_patchprefix != "" && (_noCfgPatches || count _patchWeapons == 0)) then {
     _patchWeapons = [];
     {
         if ([tolower(configName _x), tolower(_patchprefix)] call CBA_fnc_find != -1) then {
-            _patchWeapons set [count _patchWeapons, configName _x];
+            _patchWeapons pushback (configName _x);
         };
     } foreach _cfgWeapons;
 };

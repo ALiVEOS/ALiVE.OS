@@ -433,7 +433,7 @@ SABOTAGE_fnc_handleSabotageLocal = {
 
         if (!(isnil "_object") && {!isNull _x}) then {
 
-            _objectsSave set [count _objectsSave,[typeOf _object,getposATL _object]];
+            _objectsSave pushback ([typeOf _object,getposATL _object]);
 
             {
                 _type = _x select 0;
@@ -448,12 +448,12 @@ SABOTAGE_fnc_handleSabotageLocal = {
                     }
                 ) exitwith {
                     _buildingType = _typeText;
-                    _list set [count _list, _object];
+                    _list pushback _object;
                     _points = _points + _reward;
                 };
 
                 _buildingType = "location";
-                _list set [count _list, _object];
+                _list pushback _object;
                 _points = _points + 10;
 
             } foreach [
@@ -491,8 +491,8 @@ SABOTAGE_fnc_handleSabotageLocal = {
             _object = typeOf _x;
 
             if !(_object in _blacklist) then {
-                _blacklist set [count _blacklist,_object];
-                _whitelist set [count _whitelist,format["%1x %2",{(typeOf _x) == _object} count _list,getText(configfile >> "CfgVehicles" >> _object >> "displayName")]];
+                _blacklist pushback _object;
+                _whitelist pushback (format["%1x %2",{(typeOf _x) == _object} count _list,getText(configfile >> "CfgVehicles" >> _object >> "displayName")]);
             };
         } foreach _list;
 

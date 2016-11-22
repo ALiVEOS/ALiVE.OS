@@ -10,7 +10,7 @@ _ammoCount = [];
         _count = _veh ammo _x;
         _veh setAmmo [_x, 0];
     };
-    _ammoCount set [count _ammoCount, _count];
+    _ammoCount pushback _count;
 } foreach weapons _veh;
 
 _ammoCount;

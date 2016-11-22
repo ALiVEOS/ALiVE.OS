@@ -27,11 +27,11 @@ _countArray = [];
         _count = _x select 1;
     };
 } forEach (_battery getVariable "NEO_radioArtyBatteryRounds");
-if (_count >= 1) then { _countArray set [count _countArray, "1 ROUND"] };
-if (_count >= 3) then { _countArray set [count _countArray, "3 ROUNDS"] };
-if (_count >= 6) then { _countArray set [count _countArray, "6 ROUNDS"] };
-if (_count >= 12) then { _countArray set [count _countArray, "12 ROUNDS"] };
-if (_count >= 24) then { _countArray set [count _countArray, "24 ROUNDS"] };
+if (_count >= 1) then { _countArray pushback ("1 ROUND") };
+if (_count >= 3) then { _countArray pushback ("3 ROUNDS") };
+if (_count >= 6) then { _countArray pushback ("6 ROUNDS") };
+if (_count >= 12) then { _countArray pushback ("12 ROUNDS") };
+if (_count >= 24) then { _countArray pushback ("24 ROUNDS") };
 
 if (count _countArray > 0) then
 {

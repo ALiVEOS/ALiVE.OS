@@ -105,7 +105,7 @@ _worldMarkers = [];
 STAT("Spawn debug markers");
 {
     _m = [_x] call ALIVE_fnc_spawnDebugMarker;
-    _worldMarkers set [count _worldMarkers, _m];
+    _worldMarkers pushback _m;
 } forEach _result;
 
 _count = 0;
@@ -117,7 +117,7 @@ _count = 0;
     _m setMarkerColorLocal ([_logic,"debugColor"] call ALIVE_fnc_hashGet);
     _count = _count + 1;
 
-    _markers set [count _markers, _m];
+    _markers pushback _m;
 } forEach _result;
 
 

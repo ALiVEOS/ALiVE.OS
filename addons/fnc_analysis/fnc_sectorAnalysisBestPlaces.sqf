@@ -88,7 +88,7 @@ ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
         _pos = _x select 0;
         _cost = _x select 1;
         if(_cost > 2.3) then {
-            _forestPositions set [count _forestPositions, _pos];
+            _forestPositions pushback _pos;
         };
 
     } forEach _selectedForestPlaces;
@@ -97,7 +97,7 @@ ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
         _pos = _x select 0;
         _cost = _x select 1;
         if(_cost > 1.2) then {
-            _hillsPositions set [count _hillsPositions, _pos];
+            _hillsPositions pushback _pos;
         };
 
     } forEach _selectedHillsPlaces;
@@ -107,7 +107,7 @@ ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
         _pos = _x select 0;
         _cost = _x select 1;
         if(_cost > 1.6) then {
-            _meadowsPositions set [count _meadowsPositions, _pos];
+            _meadowsPositions pushback _pos;
         };
 
     } forEach _selectedMeadowsPlaces;
@@ -116,7 +116,7 @@ ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
         _pos = _x select 0;
         _cost = _x select 1;
         if(_cost > 1.2) then {
-            _treesPositions set [count _treesPositions, _pos];
+            _treesPositions pushback _pos;
         };
 
     } forEach _selectedTreesPlaces;
@@ -125,7 +125,7 @@ ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
         _pos = _x select 0;
         _cost = _x select 1;
         if(_cost >= 2) then {
-            _housesPositions set [count _housesPositions, _pos];
+            _housesPositions pushback _pos;
         };
 
     } forEach _selectedHousesPlaces;
@@ -134,7 +134,7 @@ ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
         _pos = _x select 0;
         _cost = _x select 1;
         if(_cost >= 2) then {
-            _seaPositions set [count _seaPositions, _pos];
+            _seaPositions pushback _pos;
         };
 
     } forEach _selectedSeaPlaces;
