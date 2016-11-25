@@ -1,5 +1,3 @@
-#include "\x\alive\addons\ui\script_component.hpp"
-
 #define _eval_image(_param) __EVAL(format ["%1\data\popup\%2.paa", _flexiMenu_path, ##_param])
 
 #define _SX (safeZoneX+safeZoneW/2) // screen centre x
