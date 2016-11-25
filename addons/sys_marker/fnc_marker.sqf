@@ -432,7 +432,7 @@ switch (_operation) do {
                                        };
                                         case ARROW_DRAW: {          // Free Arrow Draw
                                             // Create Add to the arrow list
-                                            GVAR(arrowList) set [count GVAR(arrowList), [GVAR(startpoint), GVAR(endpoint), (configfile >> "cfgmarkercolors" >> _color >> "color") call BIS_fnc_colorConfigToRGBA]];
+                                            GVAR(arrowList) pushback ([GVAR(startpoint), GVAR(endpoint), (configfile >> "cfgmarkercolors" >> _color >> "color") call BIS_fnc_colorConfigToRGBA]);
                                             publicVariable QGVAR(arrowList);
                                         };
                                         case ELLIPSE_DRAW: {            // Free Ellipse Draw

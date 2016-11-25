@@ -553,7 +553,7 @@ switch(_operation) do {
             _position = [getPos player, _rad, _degStep * _forEachIndex] call BIS_fnc_relPos;
             _position set [2, (100) + (_forEachIndex * 10)];
 
-            ALIVE_tourIconPositions set [count ALIVE_tourIconPositions, _position];
+            ALIVE_tourIconPositions pushback _position;
 
         } foreach ALIVE_tourCurrentSelectionValues;
 
@@ -1351,7 +1351,7 @@ switch(_operation) do {
                                         if!(surfaceIsWater _position) then {
                                             _m = [_profile, "createMarker", [_alpha]] call ALIVE_fnc_profileEntity;
                                             _markers = _markers + _m;
-                                            _profiles set [count _profiles, _profileID];
+                                            _profiles pushback _profileID;
                                         };
 
                                         _dir = [_position, _center] call BIS_fnc_dirTo;
@@ -1368,7 +1368,7 @@ switch(_operation) do {
                             _m setMarkerColor _color;
                             _m setMarkerAlpha _alpha;
 
-                            _markers = _markers + [_m];
+                            _markers pushback _m;
 
                             _icon = "EMPTY";
                             _text = "";
@@ -1394,7 +1394,7 @@ switch(_operation) do {
                                         _m setMarkerAlpha _alpha;
                                         _m setMarkerDir _dir;
 
-                                        _markers = _markers + [_m];
+                                        _markers pushback _m;
 
                                         _icon = "EMPTY";
                                         _text = " sighting";
@@ -1410,7 +1410,7 @@ switch(_operation) do {
                                         _m setMarkerAlpha _alpha;
                                         _m setMarkerDir _dir;
 
-                                        _markers = _markers + [_m];
+                                        _markers pushback _m;
 
                                         _icon = "mil_warning";
                                         _text = " captured";
@@ -1427,7 +1427,7 @@ switch(_operation) do {
                             _m setMarkerAlpha _alpha;
                             _m setMarkerText _text;
 
-                            _markers = _markers + [_m];
+                            _markers pushback _m;
 
                         } forEach _objectives;
 
@@ -1790,7 +1790,7 @@ switch(_operation) do {
                 if!(isNil "_moduleType") then {
 
                     if(_moduleType == "ALIVE_OPCOM") then {
-                        _opcomModules set [count _opcomModules,_x];
+                        _opcomModules pushback _x;
                     };
                 };
             } forEach (entities "Module_F");
@@ -1826,9 +1826,9 @@ switch(_operation) do {
                                 _position = _profile select 2 select 2;
 
                                 if(_opcom_state == "idle") then {
-                                    _profiles set [count _profiles,[_objective,_profileID,15000]];
+                                    _profiles pushback [_objective,_profileID,15000];
                                 }else{
-                                    _profiles set [count _profiles,[_objective,_profileID,_center distance _position]];
+                                    _profiles pushback ([_objective,_profileID,_center distance _position]);
                                 };
 
                             };
@@ -1998,7 +1998,7 @@ switch(_operation) do {
                 _moduleType = _x getVariable "moduleType";
                 if!(isNil "_moduleType") then {
                     if(_moduleType == "ALIVE_MP" || _moduleType == "ALIVE_CMP") then {
-                        _placementModules set [count _placementModules, _x];
+                        _placementModules pushback _x;
                     };
                 };
             } forEach (entities "Module_F");
@@ -2239,7 +2239,7 @@ switch(_operation) do {
 
                     ["TYPE: %1",_moduleType] call ALIVE_fnc_dump;
                     if(_moduleType == "ALIVE_ML") then {
-                        _logisticsModules set [count _logisticsModules, _x];
+                        _logisticsModules pushback _x;
                     };
                 };
             } forEach (entities "Module_F");
@@ -2371,7 +2371,7 @@ switch(_operation) do {
             _CQBModules = [];
 
             {
-                _CQBModules set [count _CQBModules, _x];
+                _CQBModules pushback _x;
             } foreach (MOD(CQB) getVariable ["instances",[]]);
 
             _CQBModule = _CQBModules call BIS_fnc_selectRandom;
@@ -2828,7 +2828,7 @@ switch(_operation) do {
                 if!(isNil "_moduleType") then {
 
                     if(_moduleType == "ALIVE_OPCOM") then {
-                        _opcomModules set [count _opcomModules,_x];
+                        _opcomModules pushback _x;
                     };
                 };
             } forEach (entities "Module_F");

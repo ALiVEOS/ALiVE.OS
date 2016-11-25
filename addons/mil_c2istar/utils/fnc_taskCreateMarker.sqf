@@ -138,7 +138,7 @@ if(_markerText != "") then {
     _m setMarkerTextLocal _markerText;
 };
 
-_taskMarkers set [count _taskMarkers, _m];
+_taskMarkers pushback _m;
 
 // update the clients task markers
 [ALIVE_taskMarkers,_taskID,_taskMarkers] call ALIVE_fnc_hashSet;

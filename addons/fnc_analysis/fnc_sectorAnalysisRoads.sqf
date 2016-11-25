@@ -58,11 +58,11 @@ ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
         if(count _roadsConnectedTo > 0) then {
 
             if(count _roadsConnectedTo == 1) then {
-                _terminusRoads set [count _terminusRoads, [_position,_direction]];
+                _terminusRoads pushback [_position,_direction];
             };
 
             if(count _roadsConnectedTo > 2) then {
-                _crossRoads set [count _crossRoads, [_position,_direction]];
+                _crossRoads pushback [_position,_direction];
             };
 
             _connectedRoad = _roadsConnectedTo select 0;
@@ -71,7 +71,7 @@ ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
 
         //["Road: %1 Pos: %2 Dir: %3 [%4] Roads Connected %5",_road,_position,_direction,(count _roadsConnectedTo),_roadsConnectedTo] call ALIVE_fnc_dump;
 
-        _standardRoads set [count _standardRoads, [_position,_direction]];
+        _standardRoads pushback [_position,_direction];
     } forEach _nearRoads;
 
     [_roads,"road",_standardRoads] call ALIVE_fnc_hashSet;

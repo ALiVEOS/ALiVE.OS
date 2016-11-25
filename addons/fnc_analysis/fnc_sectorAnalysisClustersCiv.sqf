@@ -72,7 +72,7 @@ if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
 
         if([_sector, "within", _clusterCenter] call ALIVE_fnc_sector) then {
             _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            _consolidated set [count _consolidated, [_clusterCenter,_clusterID]];
+            _consolidated pushback [_clusterCenter,_clusterID];
         };
     } forEach (ALIVE_clustersCiv select 2);
 
@@ -82,7 +82,7 @@ if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
 
         if([_sector, "within", _clusterCenter] call ALIVE_fnc_sector) then {
             _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            _power set [count _power, [_clusterCenter,_clusterID]];
+            _power pushback [_clusterCenter,_clusterID];
         };
     } forEach (ALIVE_clustersCivPower select 2);
 
@@ -92,7 +92,7 @@ if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
 
         if([_sector, "within", _clusterCenter] call ALIVE_fnc_sector) then {
             _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            _comms set [count _comms, [_clusterCenter,_clusterID]];
+            _comms pushback [_clusterCenter,_clusterID];
         };
     } forEach (ALIVE_clustersCivComms select 2);
 
@@ -102,7 +102,7 @@ if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
 
         if([_sector, "within", _clusterCenter] call ALIVE_fnc_sector) then {
             _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            _marine set [count _marine, [_clusterCenter,_clusterID]];
+            _marine pushback [_clusterCenter,_clusterID];
         };
     } forEach (ALIVE_clustersCivMarine select 2);
 
@@ -113,7 +113,7 @@ if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
 
         if([_sector, "within", _clusterCenter] call ALIVE_fnc_sector) then {
             _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            _rail set [count _rail, [_clusterCenter,_clusterID]];
+            _rail pushback [_clusterCenter,_clusterID];
         };
     } forEach (ALIVE_clustersCivRail select 2);
     */
@@ -124,7 +124,7 @@ if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
 
         if([_sector, "within", _clusterCenter] call ALIVE_fnc_sector) then {
             _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            _fuel set [count _fuel, [_clusterCenter,_clusterID]];
+            _fuel pushback [_clusterCenter,_clusterID];
         };
     } forEach (ALIVE_clustersCivFuel select 2);
 
@@ -134,7 +134,7 @@ if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
 
         if([_sector, "within", _clusterCenter] call ALIVE_fnc_sector) then {
             _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            _construction set [count _construction, [_clusterCenter,_clusterID]];
+            _construction pushback [_clusterCenter,_clusterID];
         };
     } forEach (ALIVE_clustersCivConstruction select 2);
 
@@ -144,7 +144,7 @@ if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
 
         if([_sector, "within", _clusterCenter] call ALIVE_fnc_sector) then {
             _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            _settlement set [count _settlement, [_clusterCenter,_clusterID]];
+            _settlement pushback [_clusterCenter,_clusterID];
         };
     } forEach (ALIVE_clustersCivSettlement select 2);
 

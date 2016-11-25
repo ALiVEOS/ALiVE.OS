@@ -106,7 +106,7 @@ switch(_action) do {
 
         _currentListOptions = [ALiVE_mainTabletData,"list"] call ALIVE_fnc_hashGet;
 
-        _currentListOptions set [count _currentListOptions,_option];
+        _currentListOptions pushback _option;
 
         [ALiVE_mainTabletData,"list",_currentListOptions] call ALIVE_fnc_hashSet;
 
@@ -170,7 +170,7 @@ switch(_action) do {
 
         _message = format["[%1] %2",_time,_message];
 
-        _currentStatus set [count _currentStatus,_message];
+        _currentStatus pushback _message;
 
         [ALiVE_mainTabletData,"status",_currentStatus] call ALIVE_fnc_hashSet;
 

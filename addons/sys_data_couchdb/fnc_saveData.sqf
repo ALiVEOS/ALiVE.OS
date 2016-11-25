@@ -62,7 +62,7 @@ _saveData = {
 _indexArray = [];
 
 _createIndex = {
-    _indexArray set [count _indexArray, _key];
+    _indexArray pushback _key;
 };
 [_data, _createIndex] call CBA_fnc_hashEachPair;
 

@@ -90,7 +90,7 @@ _funcGetTurretsWeapons = {
              if (isClass _class) then {
                  _currentPath = _path + [_i];
                  {
-                     _result set [count _result, [_x, _x call _getAnyMagazines, _currentPath, str _class]];
+                     _result pushback ([_x, _x call _getAnyMagazines, _currentPath, str _class]);
                  } foreach getArray (_class >> "weapons");
                  _class = _class >> "turrets";
                  if (isClass _class) then {

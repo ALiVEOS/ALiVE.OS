@@ -232,7 +232,7 @@ switch(_operation) do {
 
                             // run count maxed cancel the job
                             if(_runCount > _maxRunCount && !(_maxRunCount == 0)) then {
-                                _jobsToCancel set [count _jobsToCancel, _jobID];
+                                _jobsToCancel pushback _jobID;
                             }else{
                                 if((time - _lastRun) > _runEvery) then {
 
@@ -475,7 +475,7 @@ switch(_operation) do {
                             if!(surfaceIsWater _position) then {
                                 _marker = [_profile, "createMarker", [_alpha]] call ALIVE_fnc_profileEntity;
                                 _markers = _markers + _marker;
-                                _profiles set [count _profiles, _profileID];
+                                _profiles pushback _profileID;
                             };
 
                             _dir = _position getDir _center;
@@ -509,7 +509,7 @@ switch(_operation) do {
                     _m setMarkerColor _color;
                     _m setMarkerAlpha _alpha;
 
-                    _markers = _markers + [_m];
+                    _markers pushback _m;
 
                     _icon = "mil_unknown";
                     _text = "";
@@ -533,7 +533,7 @@ switch(_operation) do {
                             _m setMarkerAlpha _alpha;
                             _m setMarkerDir _dir;
 
-                            _markers = _markers + [_m];
+                            _markers pushback _m;
 
                             _icon = "mil_unknown";
                             _text = " sighting";
@@ -549,7 +549,7 @@ switch(_operation) do {
                             _m setMarkerAlpha _alpha;
                             _m setMarkerDir _dir;
 
-                            _markers = _markers + [_m];
+                            _markers pushback _m;
 
                             _icon = "mil_warning";
                             _text = " captured";
@@ -569,7 +569,7 @@ switch(_operation) do {
                     _m setMarkerAlpha _alpha;
                     _m setMarkerText _text;
 
-                    _markers = _markers + [_m];
+                    _markers pushback _m;
 
                     // Show installations
                     {
@@ -579,7 +579,7 @@ switch(_operation) do {
                         };
                     } foreach _installations;
 
-                    _jobArgs set [count _jobArgs, [_markers, _profiles]];
+                    _jobArgs pushback ([_markers, _profiles]);
 
                 // on subsequent runs lower marker alpha
                 } else {
@@ -714,9 +714,9 @@ switch(_operation) do {
                     _m setMarkerAlpha _alpha;
                     _m setMarkerText " KIA";
 
-                    _markers = _markers + [_m];
+                    _markers pushback _m;
 
-                    _jobArgs set [count _jobArgs, [_markers]];
+                    _jobArgs pushback [_markers];
 
                 // on subsequent runs lower marker alpha
                 } else {
@@ -823,9 +823,9 @@ switch(_operation) do {
                     _m setMarkerAlpha _alpha;
                     _m setMarkerText " KIA";
 
-                    _markers = _markers + [_m];
+                    _markers pushback _m;
 
-                    _jobArgs set [count _jobArgs, [_markers]];
+                    _jobArgs pushback [_markers];
 
                 // on subsequent runs lower marker alpha
                 } else {
@@ -951,9 +951,9 @@ switch(_operation) do {
                     _m setMarkerAlpha _alpha;
                     _m setMarkerText " insertion";
 
-                    _markers = _markers + [_m];
+                    _markers pushback _m;
 
-                    _jobArgs set [count _jobArgs, [_markers]];
+                    _jobArgs pushback [_markers];
 
                 // on subsequent runs lower marker alpha
                 } else {
@@ -1079,9 +1079,9 @@ switch(_operation) do {
                     _m setMarkerAlpha _alpha;
                     _m setMarkerText " destination";
 
-                    _markers = _markers + [_m];
+                    _markers pushback _m;
 
-                    _jobArgs set [count _jobArgs, [_markers]];
+                    _jobArgs pushback [_markers];
 
                 // on subsequent runs lower marker alpha
                 } else {
@@ -1204,7 +1204,7 @@ switch(_operation) do {
                             {
                                 _player = _x select 0;
                                 if!((side _player) in _sides) then {
-                                    _sides set [count _sides, side _player];
+                                    _sides pushback (side _player);
                                 };
 
                             } forEach _active;
@@ -1220,7 +1220,7 @@ switch(_operation) do {
                                         if!(surfaceIsWater _position) then {
                                             _marker = [_profile, "createMarker", [1]] call ALIVE_fnc_profileEntity;
                                             _markers = _markers + _marker;
-                                            _profiles set [count _profiles, _profile];
+                                            _profiles pushback _profile;
                                         };
 
                                     };

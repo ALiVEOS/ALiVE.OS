@@ -178,7 +178,7 @@ if (isDedicated) then {
         ALIVE_DataDictionary = _response;
 
         // Capture Dictionary revision information
-        GVAR(DictionaryRevs) set [count GVAR(DictionaryRevs), [ALIVE_DataDictionary, "_rev"] call CBA_fnc_hashGet];
+        GVAR(DictionaryRevs) pushback ([ALIVE_DataDictionary, "_rev"] call CBA_fnc_hashGet);
 
         // Try loading more dictionary entries
         private ["_i","_newresponse","_addResponse"];
@@ -190,7 +190,7 @@ if (isDedicated) then {
             };
 
             [_newresponse, _addResponse] call CBA_fnc_hashEachPair;
-            GVAR(DictionaryRevs) set [count GVAR(DictionaryRevs), [_newresponse, "_rev"] call CBA_fnc_hashGet];
+            GVAR(DictionaryRevs) pushback ([_newresponse, "_rev"] call CBA_fnc_hashGet);
             _i = _i + 1;
         };
 
@@ -432,7 +432,7 @@ if (isDedicated) then {
                                 [_unitHash, "AAR_playerUID", getPlayerUID _unit] call ALIVE_fnc_hashSet;
                             };
 
-                            GVAR(AAR_Array) set [count GVAR(AAR_Array), _unitHash];
+                            GVAR(AAR_Array) pushback _unitHash;
 
                         };
                     } forEach allUnits;
@@ -571,7 +571,7 @@ if (isDedicated) then {
                             [_vehHash, "AAR_crew", _vehicleCrew] call ALIVE_fnc_hashSet;
                             [_vehHash, "AAR_cargo", _vehicleCargo] call ALIVE_fnc_hashSet;
 
-                            GVAR(AAR_vehArray) set [count GVAR(AAR_vehArray), _vehHash];
+                            GVAR(AAR_vehArray) pushback _vehHash;
 
                         };
                     } forEach vehicles;

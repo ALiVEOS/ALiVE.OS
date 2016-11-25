@@ -46,7 +46,7 @@ _filteredSectors = [];
         _terrainData = [_sectorData, "terrain"] call ALIVE_fnc_hashGet;
 
         if!(_terrainData == _terrainType) then {
-            _filteredSectors set [count _filteredSectors, _sector];
+            _filteredSectors pushback _sector;
         };
     };
 

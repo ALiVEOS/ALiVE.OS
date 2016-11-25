@@ -109,7 +109,7 @@ switch (_taskState) do {
                                     _OPCOM_objective_state in _triggerStates &&
                                     {(({(_x select 4) == _taskFaction && {(_x select 3) distance _OPCOM_objective_center < 500}} count _tasksCurrent) == 0)}
                             ) then {
-                                    _objectives set [count _objectives,_OPCOM_objective];
+                                    _objectives pushback _OPCOM_objective;
                             };
                         } foreach _OPCOM_objectives;
                     };
@@ -387,8 +387,8 @@ switch (_taskState) do {
         _taskDescription = format[_taskDescription,_nearestTown,_buildingType];
         _newTask = [_taskID,_requestPlayerID,_taskSide,_targetPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,"N","None",_taskSource,false];
 
-        _tasks set [count _tasks,_newTask];
-        _taskIDs set [count _taskIDs,_taskID];
+        _tasks pushback _newTask;
+        _taskIDs pushback _taskID;
 
         // create the destroy task
         _dialog = [_dialogOption,"Destroy"] call ALIVE_fnc_hashGet;
@@ -403,8 +403,8 @@ switch (_taskState) do {
 
         _newTask = [_newTaskID,_requestPlayerID,_taskSide,_targetPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,_taskCurrent,_taskID,_taskSource,true];
 
-        _tasks set [count _tasks,_newTask];
-        _taskIDs set [count _taskIDs,_newTaskID];
+        _tasks pushback _newTask;
+        _taskIDs pushback _newTaskID;
 
         // store task data in the params for this task set
         _taskParams = [] call ALIVE_fnc_hashCreate;

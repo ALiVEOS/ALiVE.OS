@@ -126,7 +126,7 @@ ALIVE_fnc_restore = {
                         };
                         _item = _x;
                         TRACE_1("",_item);
-                        _data set [count _data, [_tmpKey, _item, true] call ALIVE_fnc_restore];
+                        _data pushback ([_tmpKey, _item, true] call ALIVE_fnc_restore);
                         _i = _i + 1;
                     } forEach _value;
 

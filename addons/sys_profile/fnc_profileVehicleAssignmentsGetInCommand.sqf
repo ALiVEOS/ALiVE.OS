@@ -55,7 +55,7 @@ _result = [];
     };
 
     if(_inControlVehicle) then {
-        _result set [count _result, _vehicle]
+        _result pushback _vehicle
     };
 
 } forEach (_assignments select 2);

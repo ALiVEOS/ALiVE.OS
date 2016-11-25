@@ -54,7 +54,7 @@ _filteredSectors = [];
         _clusterTypeData = [_clusterData, _clusterType] call ALIVE_fnc_hashGet;
 
         if(count _clusterTypeData > 0) then {
-            _filteredSectors set [count _filteredSectors, _sector];
+            _filteredSectors pushback _sector;
         };
     };
 

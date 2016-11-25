@@ -43,7 +43,7 @@ _filteredSectors = [];
         _flatEmpty = [_sectorData, "flatEmpty"] call ALIVE_fnc_hashGet;
 
         if(count _flatEmpty > 0) then {
-            _filteredSectors set [count _filteredSectors, _sector];
+            _filteredSectors pushback _sector;
         };
     };
 

@@ -10,7 +10,7 @@ _collection = [];
    _size = size _x;
                                            
    if (_size select 0 > _size select 1) then {_size = _size select 0} else {_size = _size select 1};
-      _collection set [count _collection,[_pos,_size]];
+      _collection pushback [_pos,_size];
 } foreach _locations;
 _collection;
 };

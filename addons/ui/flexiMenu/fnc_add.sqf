@@ -28,7 +28,7 @@ if !(typeName (_this select _flexiMenu_typeMenuSources_ID_menuSource) in [typeNa
 //TODO: still not detecting nil?
 if (({isNil "_x"} count (_this select _flexiMenu_typeMenuSources_ID_DIKCodes)) > 0) exitWith {diag_log _msg};
 
-if (count _this == 4) then {_this set [count _this, true]};
+if (count _this == 4) then {_this pushback true};
 
 
 // convert any single key items (eg: DIK_A) into a key array [key, [shift,ctrl,alt]]
@@ -48,13 +48,13 @@ if (({str _x == str _this} count (_this select _flexiMenu_typeMenuSources_ID_DIK
     diag_log format ["Warning: duplicate record, ignoring. %1 (%2)", _this, __FILE__];
 };
 
-GVAR(typeMenuSources) set [count GVAR(typeMenuSources), _this];
+GVAR(typeMenuSources) pushback _this;
 [GVAR(typeMenuSources), _flexiMenu_typeMenuSources_ID_priority] call CBA_fnc_sortNestedArray;
 
 // reverse the order of sorting, so highest priority is at the top
 _list = [];
 for "_e" from (count GVAR(typeMenuSources) - 1) to 0 step -1 do {
-    _list set [count _list, GVAR(typeMenuSources) select _e];
+    _list pushback (GVAR(typeMenuSources) select _e);
 };
 GVAR(typeMenuSources) = _list;
 diag_log format["FlexiMenu ADD: %1", QUOTE(GVAR(display))];

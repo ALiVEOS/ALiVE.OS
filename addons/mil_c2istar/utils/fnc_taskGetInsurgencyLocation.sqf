@@ -35,7 +35,7 @@ _opcomModules = [];
     if!(isNil "_moduleType") then {
 
         if(_moduleType == "ALIVE_OPCOM") then {
-            _opcomModules set [count _opcomModules,_x];
+            _opcomModules pushback _x;
         };
     };
 } forEach (entities "Module_F");

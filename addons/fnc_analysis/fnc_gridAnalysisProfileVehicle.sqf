@@ -109,13 +109,13 @@ _profiles = [ALIVE_profileHandler, "profiles"] call ALIVE_fnc_hashGet;
                 _sideProfile = [_sideProfiles, _side] call ALIVE_fnc_hashGet;
             };
 
-            _sideProfile set [count _sideProfile, [_profileID,_position]];
+            _sideProfile pushback [_profileID,_position];
 
             // store the result of the analysis on the sector instance
             [_sector, "data", ["vehiclesBySide",_sideProfiles]] call ALIVE_fnc_sector;
 
             if!(_sector in _updatedSectors) then {
-                _updatedSectors set [count _updatedSectors, _sector];
+                _updatedSectors pushback _sector;
             };
         };
     };

@@ -83,7 +83,7 @@ if!(isNil "_registeredProfile") then {
                 if(isPlayer _unit) then {
                     _uuid = getPlayerUID _unit;
                     if(_uuid != _uid) then {
-                        _existingPlayers = _existingPlayers + [_uuid];
+                        _existingPlayers pushback _uuid;
                         //["ALIVE Player profiler - found another player in this group: %1",_unit] call ALIVE_fnc_dump;
                     }else{
                         //["ALIVE Player profiler - found disconnecting player in this group: %1",_unit] call ALIVE_fnc_dump;
@@ -169,7 +169,7 @@ if!(isNil "_registeredProfile") then {
                 if(isPlayer _unit) then {
                     _uuid = getPlayerUID _unit;
                     if(_uuid != _uid) then {
-                        _existingPlayers = _existingPlayers + [_uuid];
+                        _existingPlayers pushback _uuid;
                         //["ALIVE Player profiler - found another player in this group: %1",_unit] call ALIVE_fnc_dump;
                     }else{
                         //["ALIVE Player profiler - found disconnecting player in this group: %1",_unit] call ALIVE_fnc_dump;
@@ -344,7 +344,7 @@ if!(isNil "_registeredProfile") then {
                 if(isPlayer _unit) then {
                     _uuid = getPlayerUID _unit;
                     if(_uuid != _uid) then {
-                        _existingPlayers = _existingPlayers + [_uuid];
+                        _existingPlayers pushback _uuid;
                         //["ALIVE Player profiler - found another player in this group: %1",_unit] call ALIVE_fnc_dump;
                     }else{
                         //["ALIVE Player profiler - found connecting player in this group: %1",_unit] call ALIVE_fnc_dump;
@@ -523,7 +523,7 @@ if!(isNil "_registeredProfile") then {
                 if(isPlayer _unit) then {
                     _uuid = getPlayerUID _unit;
                     if(_uuid != _uid) then {
-                        _existingPlayers = _existingPlayers + [_uuid];
+                        _existingPlayers pushback _uuid;
                         //["ALIVE Player profiler - found another player in this group: %1",_unit] call ALIVE_fnc_dump;
                     }else{
                         //["ALIVE Player profiler - found respawned player in this group: %1",_unit] call ALIVE_fnc_dump;

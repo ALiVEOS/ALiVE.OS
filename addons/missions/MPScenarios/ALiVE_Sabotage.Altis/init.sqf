@@ -159,7 +159,7 @@ _taskData = [] call ALIVE_fnc_hashCreate;
 [_taskData,"reward",["forcePool",10]] call ALIVE_fnc_hashSet;
 [_tasksData,"Destroy",_taskData] call ALIVE_fnc_hashSet;
 
-_options set [count _options,_tasksData];
+_options pushback _tasksData;
 
 [ALIVE_generatedTasks, "SabotageBuilding", ["Sabotage installation",_options]] call ALIVE_fnc_hashSet;
 

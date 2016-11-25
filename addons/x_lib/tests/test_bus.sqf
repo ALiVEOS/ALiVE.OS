@@ -47,7 +47,7 @@ ASSERT_TRUE(_result,typeOf _expected + " != " + typeOf _returned);
             hint "Starting ALiVE Servicebus Test (expected duration: 20 secs)!";
 
             for "_i" from 1 to 100 do {
-                ["server","Subject",[_i,{["ALiVE automated test BUS #%1",_this] call ALiVE_fnc_DumpR; RESULTSET_SERVER set [count RESULTSET_SERVER,_this]}]] call ALiVE_fnc_BUS;
+                ["server","Subject",[_i,{["ALiVE automated test BUS #%1",_this] call ALiVE_fnc_DumpR; RESULTSET_SERVER pushback _this}]] call ALiVE_fnc_BUS;
             };
 
             ERROR_CLIENT = false;
@@ -66,7 +66,7 @@ ASSERT_TRUE(_result,typeOf _expected + " != " + typeOf _returned);
             hint "Starting ALiVE Servicebus Test (expected duration: 20 secs)!";
 
             for "_i" from 1 to 100 do {
-                [playableUnits select 0,"Subject",[_i,{["ALiVE automated test BUS #%1",_this] call ALiVE_fnc_DumpR; RESULTSET_CLIENT set [count RESULTSET_CLIENT,_this]}]] call ALiVE_fnc_BUS;
+                [playableUnits select 0,"Subject",[_i,{["ALiVE automated test BUS #%1",_this] call ALiVE_fnc_DumpR; RESULTSET_CLIENT pushback _this}]] call ALiVE_fnc_BUS;
             };
 
             ERROR_SERVER = false;

@@ -42,7 +42,7 @@ _vehicles = [];
 
             if(_playerVehicle != _player) then {
                 if!(_playerVehicle in _vehicles) then {
-                    _vehicles set [count _vehicles, _playerVehicle];
+                    _vehicles pushback _playerVehicle;
                 };
             };
         };

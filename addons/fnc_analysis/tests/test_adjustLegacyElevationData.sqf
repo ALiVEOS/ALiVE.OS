@@ -93,9 +93,9 @@ _exportString = '';
     {
         _currentElevation = _x select 1;
         if(_currentElevation >= 0) then {
-            _elevationSamplesLand set [count _elevationSamplesLand, _x];
+            _elevationSamplesLand pushback _x;
         }else{
-            _elevationSamplesSea set [count _elevationSamplesSea, _x];
+            _elevationSamplesSea pushback _x;
         };
     } forEach _elevationSamples;
 

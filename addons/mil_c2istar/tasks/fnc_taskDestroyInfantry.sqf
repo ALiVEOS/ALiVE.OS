@@ -152,8 +152,8 @@ switch (_taskState) do {
             _taskSource = format["%1-DestroyInfantry-Parent",_taskID];
             _newTask = [_taskID,_requestPlayerID,_taskSide,_entityPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,"N","None",_taskSource,false];
 
-            _tasks set [count _tasks,_newTask];
-            _taskIDs set [count _taskIDs,_taskID];
+            _tasks pushback _newTask;
+            _taskIDs pushback _taskID;
 
             // create the destroy task
 
@@ -164,8 +164,8 @@ switch (_taskState) do {
             _taskSource = format["%1-DestroyInfantry-Destroy",_taskID];
             _newTask = [_newTaskID,_requestPlayerID,_taskSide,_entityPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,_taskCurrent,_taskID,_taskSource,true];
 
-            _tasks set [count _tasks,_newTask];
-            _taskIDs set [count _taskIDs,_newTaskID];
+            _tasks pushback _newTask;
+            _taskIDs pushback _newTaskID;
 
             // store task data in the params for this task set
 

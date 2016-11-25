@@ -48,17 +48,17 @@ ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
     if(_terrainData == "SEA") then {
         _m = [_centerPosition] call ALIVE_fnc_spawnDebugMarker;
         hideObject _m;
-        _markers set [count _markers, _m];
+        _markers pushback _m;
         _elevation = ((getPosATL _m) select 2);
         _elevation = _elevation - (_elevation * 2);
-        _elevationData set [count _elevationData, [_centerPosition,_elevation]];
+        _elevationData pushback [_centerPosition,_elevation];
 
     } else {
         _m = [_centerPosition] call ALIVE_fnc_spawnDebugMarker;
         hideObject _m;
-        _markers set [count _markers, _m];
+        _markers pushback _m;
         _elevation = ((getPosASL _m) select 2);
-        _elevationData set [count _elevationData, [_centerPosition,_elevation]];
+        _elevationData pushback [_centerPosition,_elevation];
     };
 
     {

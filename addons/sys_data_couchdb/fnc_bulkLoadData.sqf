@@ -56,10 +56,10 @@ if (typeName _indexDoc == "ARRAY") then {
         _tempIndex = [_newresponse, "index"] call CBA_fnc_hashGet; // Should be an array of key values
 
         {
-            _index set [count _index, _tempIndex select _foreachIndex];
+            _index pushback (_tempIndex select _foreachIndex);
         } foreach _tempIndex;
 
-        _indexRev set [count _indexRev, [_newresponse, "_rev"] call CBA_fnc_hashGet];
+        _indexRev pushback ([_newresponse, "_rev"] call CBA_fnc_hashGet);
         _i = _i + 1;
     };
 

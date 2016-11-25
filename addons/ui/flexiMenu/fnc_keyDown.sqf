@@ -106,7 +106,7 @@ if (!GVAR(optionSelected) || !GVAR(holdKeyDown)) then {
                             _target = player;
                         };
                     };
-                    _potentialMenuSources set [count _potentialMenuSources, _x select _flexiMenu_typeMenuSources_ID_menuSource];
+                    _potentialMenuSources pushback (_x select _flexiMenu_typeMenuSources_ID_menuSource);
                 };
             };
         } forEach GVAR(typeMenuSources);
@@ -115,10 +115,10 @@ if (!GVAR(optionSelected) || !GVAR(holdKeyDown)) then {
             private ["_menuSources", "_menuSource"]; // sometimes nil
             _menuSources = [];
             _menuSource = _target getVariable QUOTE(GVAR(flexiMenu_source));
-            if (isNil "_menuSource") then {_menuSource = []} else {_menuSources set [count _menuSources, _menuSource]};
+            if (isNil "_menuSource") then {_menuSource = []} else {_menuSources pushback _menuSource};
 
             {
-                _menuSources set [count _menuSources, _x];
+                _menuSources pushback _x;
             } forEach _potentialMenuSources;
 
             if (count _menuSources > 0) then {
