@@ -28,7 +28,7 @@ if !(typeName (_this select _flexiMenu_typeMenuSources_ID_menuSource) in [typeNa
 //TODO: still not detecting nil?
 if (({isNil "_x"} count (_this select _flexiMenu_typeMenuSources_ID_DIKCodes)) > 0) exitWith {diag_log _msg};
 
-if (count _this == 4) then {_this set [count _this, true]};
+if (count _this == 4) then {_this pushback true};
 
 
 // convert any single key items (eg: DIK_A) into a key array [key, [shift,ctrl,alt]]

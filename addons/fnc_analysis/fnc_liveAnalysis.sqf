@@ -509,7 +509,7 @@ switch(_operation) do {
                     _m setMarkerColor _color;
                     _m setMarkerAlpha _alpha;
 
-                    _markers = _markers + [_m];
+                    _markers pushback _m;
 
                     _icon = "mil_unknown";
                     _text = "";
@@ -533,7 +533,7 @@ switch(_operation) do {
                             _m setMarkerAlpha _alpha;
                             _m setMarkerDir _dir;
 
-                            _markers = _markers + [_m];
+                            _markers pushback _m;
 
                             _icon = "mil_unknown";
                             _text = " sighting";
@@ -549,7 +549,7 @@ switch(_operation) do {
                             _m setMarkerAlpha _alpha;
                             _m setMarkerDir _dir;
 
-                            _markers = _markers + [_m];
+                            _markers pushback _m;
 
                             _icon = "mil_warning";
                             _text = " captured";
@@ -569,7 +569,7 @@ switch(_operation) do {
                     _m setMarkerAlpha _alpha;
                     _m setMarkerText _text;
 
-                    _markers = _markers + [_m];
+                    _markers pushback _m;
 
                     // Show installations
                     {
@@ -714,7 +714,7 @@ switch(_operation) do {
                     _m setMarkerAlpha _alpha;
                     _m setMarkerText " KIA";
 
-                    _markers = _markers + [_m];
+                    _markers pushback _m;
 
                     _jobArgs pushback [_markers];
 
@@ -823,7 +823,7 @@ switch(_operation) do {
                     _m setMarkerAlpha _alpha;
                     _m setMarkerText " KIA";
 
-                    _markers = _markers + [_m];
+                    _markers pushback _m;
 
                     _jobArgs pushback [_markers];
 
@@ -951,7 +951,7 @@ switch(_operation) do {
                     _m setMarkerAlpha _alpha;
                     _m setMarkerText " insertion";
 
-                    _markers = _markers + [_m];
+                    _markers pushback _m;
 
                     _jobArgs pushback [_markers];
 
@@ -1079,7 +1079,7 @@ switch(_operation) do {
                     _m setMarkerAlpha _alpha;
                     _m setMarkerText " destination";
 
-                    _markers = _markers + [_m];
+                    _markers pushback _m;
 
                     _jobArgs pushback [_markers];
 

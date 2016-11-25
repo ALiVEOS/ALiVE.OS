@@ -69,7 +69,7 @@ _position = getPos player;
 _sector = [ALIVE_sectorGrid, "positionToSector", _position] call ALIVE_fnc_sectorGrid;
 _sectors = [ALIVE_sectorGrid, "surroundingSectors", _position] call ALIVE_fnc_sectorGrid;
 
-_sectors = _sectors + [_sector];
+_sectors pushback _sector;
 
 {
     _sectorData = [_x, "data"] call ALIVE_fnc_sector;

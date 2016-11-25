@@ -422,7 +422,7 @@ switch (_taskState) do {
                             _object setPos _position;
                             _object hideObjectGlobal true;
 
-                            _cleanupObjects = _cleanupObjects + [_object];
+                            _cleanupObjects pushback _object;
                             [_params,"cleanupObjects",_cleanupObjects] call ALIVE_fnc_hashSet;
 
                             [_object,"MISSILE_STRIKE_SMALL",floor(2+(random 10)),floor(30+(random 50)),true,10] call ALIVE_fnc_taskCreateBombardment;
@@ -445,7 +445,7 @@ switch (_taskState) do {
                             _object setPos _taskPosition;
                             _object hideObjectGlobal true;
 
-                            _cleanupObjects = _cleanupObjects + [_object];
+                            _cleanupObjects pushback _object;
                             [_params,"cleanupObjects",_cleanupObjects] call ALIVE_fnc_hashSet;
 
                             _env = call ALIVE_fnc_getEnvironment;

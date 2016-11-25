@@ -72,7 +72,7 @@ SABOTAGE_fnc_masquerade = {
 
             sleep 5;
 
-            _enemyunits = []; {if (((side _x) getfriend _side) < 0.6) then {_enemyUnits set [count _enemyUnits,_x]}} foreach ((getposATL _unit) nearEntities [["CAmanBase"],50]);
+            _enemyunits = []; {if (((side _x) getfriend _side) < 0.6) then {_enemyUnits pushback _x}} foreach ((getposATL _unit) nearEntities [["CAmanBase"],50]);
             _enemyunits = _enemyunits - [_unit];
             _detectionRate = _unit getvariable ["SABOTAGE_DETECTIONRATE",0];
 
@@ -160,7 +160,7 @@ SABOTAGE_fnc_establishHideout = {
         _hideOuts = (_unit getvariable ["SABOTAGE_HIDEOUTS",[]]) - [_building];
         _respawn = format["ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1",faction _unit];
         _respawnBackUp = format["RESPAWN_%1",side _unit];
-        _data = []; {_data set [count _data,[typeOf _x,getposATL _x]]} foreach _hideouts;
+        _data = []; {_data pushback [typeOf _x,getposATL _x]} foreach _hideouts;
 
         if ([_respawn] call ALiVE_fnc_markerExists) then {_respawn setMarkerPosLocal (getmarkerPos _respawnBackUp)};
 
@@ -226,7 +226,7 @@ SABOTAGE_fnc_destroyHideoutsServer = {
                     if ((_type == "entity") && {!_isPlayer}) then {
                         _pos = [_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet;
 
-                        if (_pos distance _hideOut < _radius) exitwith {_killed set [count _killed,_hideOut]; _exit = true};
+                        if (_pos distance _hideOut < _radius) exitwith {_killed pushback _hideOut; _exit = true};
                     };
                 };
 
@@ -238,7 +238,7 @@ SABOTAGE_fnc_destroyHideoutsServer = {
             _killedTotal = _killedTotal + _killed;
             _hideouts = _hideouts - _killed;
 
-            _data = []; {_data set [count _data,[typeOf _x,getposATL _x]]} foreach _hideouts;
+            _data = []; {_data pushback [typeOf _x,getposATL _x]} foreach _hideouts;
 
             _unit setvariable ["SABOTAGE_HIDEOUTS",_hideouts, true];
             [getplayerUID _unit,"SABOTAGE_HIDEOUTS",_data,true] call Sabotage_fnc_SaveData;
@@ -419,7 +419,7 @@ SABOTAGE_fnc_handleSabotageLocal = {
         };
     };
 
-    {if (isnull _x || {!(alive _x)}) then {_killed set [count _killed,_x]}} foreach (_unit getvariable ["SABOTAGE_TARGETS",[]]);
+    {if (isnull _x || {!(alive _x)}) then {_killed pushback _x}} foreach (_unit getvariable ["SABOTAGE_TARGETS",[]]);
     _unit setvariable ["SABOTAGE_TARGETS",(_unit getvariable ["SABOTAGE_TARGETS",[]]) - _killed];
 
     _points = 0;

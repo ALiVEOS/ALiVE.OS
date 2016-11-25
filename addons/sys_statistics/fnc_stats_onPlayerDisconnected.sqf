@@ -102,7 +102,7 @@ if (GVAR(ENABLED)) then {
                     [_shotsFiredHash, "count", _x select 1] call CBA_fnc_hashSet;
                     [_shotsFiredHash, "weaponType", _x select 2] call CBA_fnc_hashSet;
                     [_shotsFiredHash, "weaponName", _x select 3] call CBA_fnc_hashSet;
-                    _shotsFiredData = _shotsFiredData + [ _shotsFiredHash ] ;
+                    _shotsFiredData pushback _shotsFiredHash ;
                 };
             } foreach _shotsFired;
         } else {

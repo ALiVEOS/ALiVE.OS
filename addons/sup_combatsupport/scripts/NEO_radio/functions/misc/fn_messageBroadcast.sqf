@@ -9,7 +9,7 @@
     //sleep 1;
 
     _friendlySides = [];
-    {if (_x getfriend (_side) >= 0.6) then {_friendlySides set [count _friendlySides,_x]}} foreach [WEST,EAST,RESISTANCE,CIVILIAN];
+    {if (_x getfriend (_side) >= 0.6) then {_friendlySides pushback _x}} foreach [WEST,EAST,RESISTANCE,CIVILIAN];
 
     switch (_radio) do
     {

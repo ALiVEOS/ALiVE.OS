@@ -195,7 +195,7 @@ switch(_operation) do {
                 _objID = parseNumber(_x select 0);
                 if(_objID > 0) then {
                     _node = (_x select 1) nearestObject (parseNumber(_x select 0));
-                    _data set [count _data, _node];
+                    _data pushback _node;
                 }
             } forEach _nodes;
             [_logic, "nodes", _data] call MAINCLASS;

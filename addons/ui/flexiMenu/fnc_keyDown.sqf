@@ -115,7 +115,7 @@ if (!GVAR(optionSelected) || !GVAR(holdKeyDown)) then {
             private ["_menuSources", "_menuSource"]; // sometimes nil
             _menuSources = [];
             _menuSource = _target getVariable QUOTE(GVAR(flexiMenu_source));
-            if (isNil "_menuSource") then {_menuSource = []} else {_menuSources set [count _menuSources, _menuSource]};
+            if (isNil "_menuSource") then {_menuSource = []} else {_menuSources pushback _menuSource};
 
             {
                 _menuSources pushback _x;

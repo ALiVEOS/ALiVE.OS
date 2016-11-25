@@ -29,7 +29,7 @@ _loopHandle = [] spawn {
         { if ((side _x in _sideMask) && (_x != player)) then
             {
                 private ["_nn","_fh"];
-                 subjects = subjects + [_x];
+                 subjects pushback _x;
                 _nn = _x getVariable "EHfired";
                 if (isNil "_nn") then {
                     _fh = _x addeventhandler["fired", { TargetFired pushback ([(_this select 0),time])}];
@@ -42,7 +42,7 @@ _loopHandle = [] spawn {
         { if ((side _x in _sideMask) && (_x != player) && (_x isKindOf "MAN")) then
             {
                 private ["_nn","_fh"];
-                infantry = infantry + [_x];
+                infantry pushback _x;
                 _nn = _x getVariable "EHfired";
                 if (isNil "_nn") then {
                     _fh = _x addeventhandler["fired", { TargetFired pushback ([(_this select 0),time])}];

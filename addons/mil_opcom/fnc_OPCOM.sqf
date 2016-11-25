@@ -300,7 +300,7 @@ switch(_operation) do {
                                     [_obj,"priority",_priority] call ALiVE_fnc_hashSet;
                                     [_obj,"clusterID",""] call ALiVE_fnc_hashSet;
 
-                                    _objectives = _objectives + [_obj];
+                                    _objectives pushback _obj;
                                 };
                             };
                         };

@@ -1368,7 +1368,7 @@ switch(_operation) do {
                             _m setMarkerColor _color;
                             _m setMarkerAlpha _alpha;
 
-                            _markers = _markers + [_m];
+                            _markers pushback _m;
 
                             _icon = "EMPTY";
                             _text = "";
@@ -1394,7 +1394,7 @@ switch(_operation) do {
                                         _m setMarkerAlpha _alpha;
                                         _m setMarkerDir _dir;
 
-                                        _markers = _markers + [_m];
+                                        _markers pushback _m;
 
                                         _icon = "EMPTY";
                                         _text = " sighting";
@@ -1410,7 +1410,7 @@ switch(_operation) do {
                                         _m setMarkerAlpha _alpha;
                                         _m setMarkerDir _dir;
 
-                                        _markers = _markers + [_m];
+                                        _markers pushback _m;
 
                                         _icon = "mil_warning";
                                         _text = " captured";
@@ -1427,7 +1427,7 @@ switch(_operation) do {
                             _m setMarkerAlpha _alpha;
                             _m setMarkerText _text;
 
-                            _markers = _markers + [_m];
+                            _markers pushback _m;
 
                         } forEach _objectives;
 

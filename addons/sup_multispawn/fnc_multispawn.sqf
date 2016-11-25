@@ -492,7 +492,7 @@ switch(_operation) do {
             _player setcaptive true; 1 fadesound 0; // disableUserinput true;
             _player enableSimulation false; _player hideObject true;
 
-            _tgts = []; {if (({isPlayer _x} count (units _x)) == 0) then {_tgts set [count _tgts, leader _x]}} foreach allGroups;
+            _tgts = []; {if (({isPlayer _x} count (units _x)) == 0) then {_tgts pushback (leader _x)}} foreach allGroups;
 
             _loader = [
                 _tgts,
