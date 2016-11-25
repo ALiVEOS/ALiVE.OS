@@ -41,7 +41,7 @@ _inSectorUnits = [];
 
 {
     if([_sector, "within", getPos _x] call ALIVE_fnc_sector) then {
-        _inSectorUnits set [count _inSectorUnits, _x];
+        _inSectorUnits pushback _x;
     };
 } forEach _units;
 

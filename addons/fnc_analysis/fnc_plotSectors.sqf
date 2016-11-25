@@ -119,7 +119,7 @@ switch(_operation) do {
                     _plot = [nil, "create"] call ALIVE_fnc_sectorPlot;
                     [_plot, "plotterID", _plotterID] call ALIVE_fnc_sectorPlot;
                     [_plot, "plot", [_sector, _key]] call ALIVE_fnc_sectorPlot;
-                    _plots set [count _plots, _plot];
+                    _plots pushback _plot;
                 } forEach _sectors;
 
                 [_logic,"plots",_plots] call ALIVE_fnc_hashSet;

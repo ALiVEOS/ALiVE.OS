@@ -53,7 +53,7 @@ _buildingTypeWhitelist = _this select 1;
             _direction = (direction _x) + 180;
             _vehicleClass = "B_Truck_01_mover_F";
             _parkingPosition = [_vehicleClass,_position,_direction] call ALIVE_fnc_generateParkingPosition;
-            _positions set [count _positions, _parkingPosition];
+            _positions pushback _parkingPosition;
         };
     } forEach _nodes;
 

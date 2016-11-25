@@ -48,9 +48,9 @@ _casArray = NEO_radioLogic getVariable format ["NEO_radioCasArray_%1", playerSid
 _artyArray = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", playerSide];
 
 //Available Supports
-if (count _transportArray > 0) then { _available set [count _available, ["TRANSPORT", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\transport_ca.paa"]] };
-if (count _casArray > 0) then { _available set [count _available, ["CAS", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\cas_ca.paa"]] };
-if (count _artyArray > 0 && (_action == "radio" || _action == "talkarty")) then { _available set [count _available, ["ARTY", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\artillery_ca.paa"]] };
+if (count _transportArray > 0) then { _available pushback (["TRANSPORT", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\transport_ca.paa"]) };
+if (count _casArray > 0) then { _available pushback (["CAS", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\cas_ca.paa"]) };
+if (count _artyArray > 0 && (_action == "radio" || _action == "talkarty")) then { _available pushback (["ARTY", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\artillery_ca.paa"]) };
 //Support ListBox
 lbClear _suppListBox;
 {

@@ -123,7 +123,7 @@ _veh setVariable ["NEO_transportAvailableTasks", _tasks, true];
         private ["_array"];
 
         _array = NEO_radioLogic getVariable format["NEO_radioTrasportArray_%1", _x];
-        _array set [count _array,[_veh, _grp, _callsign]];
+        _array pushback ([_veh, _grp, _callsign]);
 
         NEO_radioLogic setVariable [format["NEO_radioTrasportArray_%1", _x], _array,true];
     };

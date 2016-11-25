@@ -55,7 +55,7 @@ _result = [];
     };
 
     if(_inCargoVehicle) then {
-        _result set [count _result, _entity]
+        _result pushback _entity
     };
 
 } forEach (_assignments select 2);

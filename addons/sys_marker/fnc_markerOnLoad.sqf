@@ -53,7 +53,7 @@ if (isNil "_data") then {
               private ["_scope"];
               _scope = getNumber (_entry >> "scope");
               if (   ( configName(inheritsFrom(_entry)) == ""  && _scope == 0 && (configName _entry != "Flag")) || _scope > 0 ) then {
-                _ar set [count _ar, configName _entry];
+                _ar pushback (configName _entry);
             };
           };
         };

@@ -84,7 +84,7 @@
 
             private ["_transportArray"];
             _transportArray = NEO_radioLogic getVariable format ["NEO_radioTrasportArray_%1", _side];
-            _transportArray set [count _transportArray, [_veh, _grp, _callsign]];
+            _transportArray pushback ([_veh, _grp, _callsign]);
             NEO_radioLogic setVariable [format ["NEO_radioTrasportArray_%1", _side], _transportArray, true];
         };
 
@@ -171,7 +171,7 @@
 
             private ["_casArray"];
             _casArray = NEO_radioLogic getVariable format ["NEO_radioCasArray_%1", _side];
-            _casArray set [count _casArray, [_veh, _grp, _callsign]];
+            _casArray pushback ([_veh, _grp, _callsign]);
             NEO_radioLogic setVariable [format ["NEO_radioCasArray_%1", _side], _casArray, true];
                     diag_log format ["Support with callsign  not found in Transport units"];
         };
@@ -203,7 +203,7 @@ case "ARTY" :
                 [_veh, _grp] call BIS_fnc_spawnCrew;
                 _veh lock true;
                 _vehDir = _vehDir + 90;
-                _units set [count _units, _veh];
+                _units pushback _veh;
             };
 
             private ["_battery"];
@@ -218,7 +218,7 @@ case "ARTY" :
             {
                 if ((_x select 0) in _roundsUnit) then
                 {
-                    _roundsAvailable set [count _roundsAvailable, _x];
+                    _roundsAvailable pushback _x;
                 };
             } forEach _rounds;
             _battery setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];
@@ -231,7 +231,7 @@ case "ARTY" :
 
             private ["_artyArray"];
             _artyArray = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _side];
-            _artyArray set [count _artyArray, [_battery, _grp, _callsign, _units, _roundsAvailable]];
+            _artyArray pushback ([_battery, _grp, _callsign, _units, _roundsAvailable]);
             NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _side], _artyArray, true];
         };
         */

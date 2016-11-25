@@ -116,7 +116,7 @@ switch(_operation) do {
                                         _direction =  getDir _entry;
 
                                         _casArray = [_position,_direction, _type, _callsign, _id,_code,_height];
-                                        _casArrays set [count _casArrays,_casArray];
+                                        _casArrays pushback _casArray;
                                     };
 
                                     case ("transport") : {
@@ -142,7 +142,7 @@ switch(_operation) do {
                                         };
 
                                         _transportArray = [_position,_direction,_type, _callsign,_tasks,_code,_height,_slingloading,_containers];
-                                        _transportArrays set [count _transportArrays,_transportArray];
+                                        _transportArrays pushback _transportArray;
                                     };
                                     case ("hybrid"): {
                                         private ["_position","_callsign","_type","_slingloading","_containers","_tasks"];
@@ -167,10 +167,10 @@ switch(_operation) do {
                                         };
 
                                         _transportArray = [_position,_direction,_type, _callsign,_tasks,_code,_height,_slingloading,_containers];
-                                        _transportArrays set [count _transportArrays,_transportArray];
+                                        _transportArrays pushback _transportArray;
 
                                         _casArray = [_position,_direction, _type, _callsign, _id,_code,_height];
-                                        _casArrays set [count _casArrays,_casArray];
+                                        _casArrays pushback _casArray;
                                     };
                                 };
                             } else {
@@ -197,7 +197,7 @@ switch(_operation) do {
                                         _ordnance = [_he,_illum,_smoke,_guided,_cluster,_lg,_mine,_atmine, _rockets];
                                         _code = "";
                                         _artyArray = [_position,_class, _callsign,3,_ordnance,_code];
-                                        _artyArrays set [count _artyArrays,_artyArray];
+                                        _artyArrays pushback _artyArray;
                                     };
                                 };
                             };
@@ -217,7 +217,7 @@ switch(_operation) do {
                                     _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
 
                                     _casArray = [_position,_direction, _type, _callsign, _id,_code,_height];
-                                    _casArrays set [count _casArrays,_casArray];
+                                    _casArrays pushback _casArray;
                                 };
                                 case ("ALiVE_SUP_TRANSPORT") : {
                                     private ["_position","_callsign","_type","_slingloading","_containers","_tasks"];
@@ -245,7 +245,7 @@ switch(_operation) do {
                                     };
 
                                     _transportArray = [_position,_direction,_type, _callsign,_tasks,_code,_height,_slingloading, _containers];
-                                    _transportArrays set [count _transportArrays,_transportArray];
+                                    _transportArrays pushback _transportArray;
                                 };
                                 case ("ALiVE_sup_artillery") : {
                                     private ["_position","_callsign","_type"];
@@ -290,7 +290,7 @@ switch(_operation) do {
                                    _ordnance = [_he,_illum,_smoke,_guided,_cluster,_lg,_mine,_atmine, _rockets];
 
                                     _artyArray = [_position,_class, _callsign,3,_ordnance,_code];
-                                    _artyArrays set [count _artyArrays,_artyArray];
+                                    _artyArrays pushback _artyArray;
                                 };
                             };
                         };
@@ -437,7 +437,7 @@ switch(_operation) do {
                             [_veh, _grp, _callsign, _pos, _dir, _height, _type, CS_RESPAWN,_code, _audio, _slingloading] execFSM _transportfsm;
 
                             _t = NEO_radioLogic getVariable format ["NEO_radioTrasportArray_%1", _side];
-                            _t set [count _t, [_veh, _grp, _callsign]];
+                            _t pushback ([_veh, _grp, _callsign]);
 
                             NEO_radioLogic setVariable [format ["NEO_radioTrasportArray_%1", _side], _t,true];
 
@@ -532,7 +532,7 @@ switch(_operation) do {
                             [_veh, _grp, _callsign, _pos, _airport, _dir, _height, _type, CS_RESPAWN, _code, _audio] execFSM _casfsm;
 
                             _c = NEO_radioLogic getVariable format ["NEO_radioCasArray_%1", _side];
-                            _c set [count _c, [_veh, _grp, _callsign]];
+                            _c pushback ([_veh, _grp, _callsign]);
 
                             NEO_radioLogic setVariable [format ["NEO_radioCasArray_%1", _side], _c,true];
 
@@ -638,7 +638,7 @@ switch(_operation) do {
                                         _grp setvariable ["supportWeaponArray", _sptarr];
                                     };
 
-                                    _units set [count _units, _veh];
+                                    _units pushback _veh;
                                 };
                                 if (_class in ["BUS_MotInf_MortTeam","OIA_MotInf_MortTeam","HAF_MotInf_MortTeam"]) then {
                                     _cars = [2, faction (leader _grp),"Car"] call ALiVE_fnc_findVehicleType;
@@ -652,7 +652,7 @@ switch(_operation) do {
                                     };
                                 };
                             } else {
-                                _units set [count _units, _veh];
+                                _units pushback _veh;
                                 _veh lock true;
 
                                 // set ownership flag for other modules
@@ -685,7 +685,7 @@ switch(_operation) do {
                             {
                                 if ((_x select 0) in _roundsUnit) then
                                 {
-                                    _roundsAvailable set [count _roundsAvailable, _x];
+                                    _roundsAvailable pushback _x;
                                 };
                             } forEach _rounds;
 
@@ -696,7 +696,7 @@ switch(_operation) do {
                             [_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _class, leader _grp, _code, _audio] execFSM "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
 
                             _a = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _side];
-                            _a set [count _a, [leader _grp, _grp, _callsign, _units, _roundsAvailable]];
+                            _a pushback ([leader _grp, _grp, _callsign, _units, _roundsAvailable]);
 
                             NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _side], _a, true];
 
@@ -719,7 +719,7 @@ switch(_operation) do {
                                         {
                                             _vehicle = _x select 0;
                                             if (({_vehicle == _x select 0} count _sideInArray) == 0) then {
-                                                _add set [count _add,_x];
+                                                _add pushback _x;
                                             };
                                         } foreach _xArray;
                                         NEO_radioLogic setVariable [format ["NEO_radioTrasportArray_%1", _sideIn], _sideInArray + _add,true];
@@ -734,7 +734,7 @@ switch(_operation) do {
                                         {
                                             _vehicle = _x select 0;
                                             if (({_vehicle == _x select 0} count _sideInArray) == 0) then {
-                                                _add set [count _add,_x];
+                                                _add pushback _x;
                                             };
                                         } foreach _xArray;
                                         NEO_radioLogic setVariable [format ["NEO_radioCasArray_%1", _sideIn], _sideInArray + _add,true];
@@ -749,7 +749,7 @@ switch(_operation) do {
                                         {
                                             _vehicle = _x select 0;
                                             if (({_vehicle == _x select 0} count _sideInArray) == 0) then {
-                                                _add set [count _add,_x];
+                                                _add pushback _x;
                                             };
                                         } foreach _xArray;
                                         NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _sideIn], _sideInArray + _add,true];

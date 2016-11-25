@@ -51,17 +51,17 @@ _filteredSectors = [];
 
         if(_isActive) then {
             if(count _active > 0) then {
-                _filteredSectors set [count _filteredSectors, _sector];
+                _filteredSectors pushback _sector;
             };
         }else{
             if(count _active == 0) then {
-                _filteredSectors set [count _filteredSectors, _sector];
+                _filteredSectors pushback _sector;
             };
         };
 
     }else{
         if!(_isActive) then {
-            _filteredSectors set [count _filteredSectors, _sector];
+            _filteredSectors pushback _sector;
         };
     };
 

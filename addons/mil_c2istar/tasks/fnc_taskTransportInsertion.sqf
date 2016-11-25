@@ -230,8 +230,8 @@ switch (_taskState) do {
             _taskSource = format["%1-TransportInsertion-Parent",_taskID];
             _newTask = [_taskID,_requestPlayerID,_taskSide,_insertionPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,"N","None",_taskSource,false];
 
-            _tasks set [count _tasks,_newTask];
-            _taskIDs set [count _taskIDs,_taskID];
+            _tasks pushback _newTask;
+            _taskIDs pushback _taskID;
 
             // create the pickup task
 
@@ -242,8 +242,8 @@ switch (_taskState) do {
             _taskSource = format["%1-TransportInsertion-Pickup",_taskID];
             _newTask = [_newTaskID,_requestPlayerID,_taskSide,_pickupPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,_taskCurrent,_taskID,_taskSource,false];
 
-            _tasks set [count _tasks,_newTask];
-            _taskIDs set [count _taskIDs,_newTaskID];
+            _tasks pushback _newTask;
+            _taskIDs pushback _newTaskID;
 
             // create the insertion task
 
@@ -254,8 +254,8 @@ switch (_taskState) do {
             _taskSource = format["%1-TransportInsertion-Insertion",_taskID];
             _newTask = [_newTaskID,_requestPlayerID,_taskSide,_insertionPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,"Created",_taskApplyType,"N",_taskID,_taskSource,true];
 
-            _tasks set [count _tasks,_newTask];
-            _taskIDs set [count _taskIDs,_newTaskID];
+            _tasks pushback _newTask;
+            _taskIDs pushback _newTaskID;
 
             // store task data in the params for this task set
 

@@ -45,7 +45,7 @@ if(count _markers > 0) then {
             {
                 _center = [_x,"center"] call ALIVE_fnc_hashGet;
                 if([_center,_marker] call ALiVE_fnc_inArea) then {
-                    _markerClusters set [count _markerClusters, _x];
+                    _markerClusters pushback _x;
                 };
             } forEach _clusters;
         };

@@ -51,7 +51,7 @@ _filteredSectors = [];
                 _sideProfiles = [_sectorData, "entitiesBySide"] call ALIVE_fnc_hashGet;
                 _sideProfile = [_sideProfiles, _profileSide] call ALIVE_fnc_hashGet;
                 if(count _sideProfile > 0) then {
-                    _filteredSectors set [count _filteredSectors, _sector];
+                    _filteredSectors pushback _sector;
                 };
             };
         };
@@ -60,7 +60,7 @@ _filteredSectors = [];
                 _sideProfiles = [_sectorData, "vehiclesBySide"] call ALIVE_fnc_hashGet;
                 _sideProfile = [_sideProfiles, _profileSide] call ALIVE_fnc_hashGet;
                 if(count _sideProfile > 0) then {
-                    _filteredSectors set [count _filteredSectors, _sector];
+                    _filteredSectors pushback _sector;
                 };
             };
         };

@@ -110,7 +110,7 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     };
 
     _consolidated = [_sectorData, "consolidated"] call ALIVE_fnc_hashGet;
-    _consolidated set [count _consolidated, [_clusterCenter,_clusterID]];
+    _consolidated pushback [_clusterCenter,_clusterID];
     [_sectorData, "consolidated", _consolidated] call ALIVE_fnc_hashSet;
 
     //_sectorData call ALIVE_fnc_inspectHash;
@@ -143,7 +143,7 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     };
 
     _power = [_sectorData, "power"] call ALIVE_fnc_hashGet;
-    _power set [count _power, [_clusterCenter,_clusterID]];
+    _power pushback [_clusterCenter,_clusterID];
     [_sectorData, "power", _power] call ALIVE_fnc_hashSet;
 
     //_sectorData call ALIVE_fnc_inspectHash;
@@ -176,7 +176,7 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     };
 
     _comms = [_sectorData, "comms"] call ALIVE_fnc_hashGet;
-    _comms set [count _comms, [_clusterCenter,_clusterID]];
+    _comms pushback [_clusterCenter,_clusterID];
     [_sectorData, "comms", _comms] call ALIVE_fnc_hashSet;
 
     //_sectorData call ALIVE_fnc_inspectHash;
@@ -209,7 +209,7 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     };
 
     _marine = [_sectorData, "marine"] call ALIVE_fnc_hashGet;
-    _marine set [count _marine, [_clusterCenter,_clusterID]];
+    _marine pushback [_clusterCenter,_clusterID];
     [_sectorData, "marine", _marine] call ALIVE_fnc_hashSet;
 
     //_sectorData call ALIVE_fnc_inspectHash;
@@ -242,7 +242,7 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     };
 
     _fuel = [_sectorData, "fuel"] call ALIVE_fnc_hashGet;
-    _fuel set [count _fuel, [_clusterCenter,_clusterID]];
+    _fuel pushback [_clusterCenter,_clusterID];
     [_sectorData, "fuel", _fuel] call ALIVE_fnc_hashSet;
 
     //_sectorData call ALIVE_fnc_inspectHash;
@@ -275,7 +275,7 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     };
 
     _construction = [_sectorData, "construction"] call ALIVE_fnc_hashGet;
-    _construction set [count _construction, [_clusterCenter,_clusterID]];
+    _construction pushback [_clusterCenter,_clusterID];
     [_sectorData, "construction", _construction] call ALIVE_fnc_hashSet;
 
     //_sectorData call ALIVE_fnc_inspectHash;
@@ -308,7 +308,7 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     };
 
     _settlement = [_sectorData, "settlement"] call ALIVE_fnc_hashGet;
-    _settlement set [count _settlement, [_clusterCenter,_clusterID]];
+    _settlement pushback [_clusterCenter,_clusterID];
     [_sectorData, "settlement", _settlement] call ALIVE_fnc_hashSet;
 
     //_sectorData call ALIVE_fnc_inspectHash;

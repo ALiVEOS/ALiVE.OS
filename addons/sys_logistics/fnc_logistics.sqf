@@ -134,7 +134,7 @@ switch (_operation) do {
                     _container = _x;
                     TRACE_1(">>>>",_container);
                     if !(_container in _aliveContainers) then {
-                        _aliveContainers set [count _aliveContainers, _x];
+                        _aliveContainers pushback _x;
                     };
                 } foreach _containers;
             } foreach (ALIVE_factionDefaultContainers select 2);
@@ -872,7 +872,7 @@ switch (_operation) do {
 
                 _object = _x;
                 if ((_x distance _position <= _radius) && {({_object iskindOf _x} count _list) > 0}) then {
-                    _objects set [count _objects,_object];
+                    _objects pushback _object;
                 };
             } foreach (allMissionObjects "");
 
@@ -963,7 +963,7 @@ switch (_operation) do {
                     _x setVectorDirAndUp ([_args,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
 
                     //remove in next step
-                    _existing set [count _existing,_id];
+                    _existing pushback _id;
                 };
             } foreach _startObjects;
 
@@ -983,7 +983,7 @@ switch (_operation) do {
                     _object setposATL ([_args,QGVAR(POSITION)] call ALiVE_fnc_HashGet);
                     _object setVectorDirAndUp ([_args,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
 
-                    _createdObjects set [count _createdObjects,_object];
+                    _createdObjects pushback _object;
                 } else {
                     TRACE_1("ALiVE SYS LOGISTICS Removing non-existing unit from store!",_x);
 

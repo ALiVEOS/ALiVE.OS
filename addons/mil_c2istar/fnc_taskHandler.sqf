@@ -593,8 +593,8 @@ switch(_operation) do {
                             _applyType = _x select 9;
 
                             if(_applyType == "Side") then {
-                                _dispatchTasks set [count _dispatchTasks,_x];
-                                _dispatchIDs set [count _dispatchIDs,_taskID];
+                                _dispatchTasks pushback _x;
+                                _dispatchIDs pushback _taskID;
 
                                 // DEBUG -------------------------------------------------------------------------------------
                                 if(_debug) then {
@@ -620,8 +620,8 @@ switch(_operation) do {
                             if(_playerSide == _taskSide) then {
 
                                 if!(_taskID in _dispatchIDs) then {
-                                    _dispatchTasks set [count _dispatchTasks,_x];
-                                    _dispatchIDs set [count _dispatchIDs,_taskID];
+                                    _dispatchTasks pushback _x;
+                                    _dispatchIDs pushback _taskID;
 
                                     // DEBUG -------------------------------------------------------------------------------------
                                     if(_debug) then {
@@ -645,8 +645,8 @@ switch(_operation) do {
                             _taskID = _x select 0;
 
                             if!(_taskID in _dispatchIDs) then {
-                                _dispatchTasks set [count _dispatchTasks,_x];
-                                _dispatchIDs set [count _dispatchIDs,_taskID];
+                                _dispatchTasks pushback _x;
+                                _dispatchIDs pushback _taskID;
 
                                 // DEBUG -------------------------------------------------------------------------------------
                                 if(_debug) then {
@@ -696,7 +696,7 @@ switch(_operation) do {
                                 };
                             };
 
-                            _parentTasks set [count _parentTasks, _taskID];
+                            _parentTasks pushback _taskID;
                             _dispatchTasks set [_forEachIndex,"DELETE"];
 
                         };
@@ -740,7 +740,7 @@ switch(_operation) do {
                                 };
                             };
 
-                            _parentTasks set [count _parentTasks, _taskID];
+                            _parentTasks pushback _taskID;
                             _dispatchTasks set [_forEachIndex,"DELETE"];
 
                         };
@@ -803,7 +803,7 @@ switch(_operation) do {
                                             };
                                         };
 
-                                        _parentTasks set [count _parentTasks, _taskID];
+                                        _parentTasks pushback _taskID;
                                         _dispatchTasks set [_forEachIndex,"DELETE"];
                                     };
 
@@ -899,13 +899,13 @@ switch(_operation) do {
 
                     {
                         if!(_x in _groupPlayerOptions) then {
-                            _groupPlayerOptions set [count _groupPlayerOptions, _x];
+                            _groupPlayerOptions pushback _x;
                         };
                     } forEach _currentGroupPlayerOptions;
 
                     {
                         if!(_x in _groupPlayerValues) then {
-                            _groupPlayerValues set [count _groupPlayerValues, _x];
+                            _groupPlayerValues pushback _x;
                         };
                     } forEach _currentGroupPlayerValues;
 
@@ -945,7 +945,7 @@ switch(_operation) do {
                 {
                     _activeTaskID = _x;
                     if(_activeTaskID in (_sideTasks select 1)) then {
-                        _activeTasksToRemove set [count _activeTasksToRemove,_activeTaskID];
+                        _activeTasksToRemove pushback _activeTaskID;
                     }
                 } forEach (_activeTasks select 2);
 
@@ -1087,13 +1087,13 @@ switch(_operation) do {
 
                     {
                         if!(_x in _groupPlayerOptions) then {
-                            _groupPlayerOptions set [count _groupPlayerOptions, _x];
+                            _groupPlayerOptions pushback _x;
                         };
                     } forEach _currentGroupPlayerOptions;
 
                     {
                         if!(_x in _groupPlayerValues) then {
-                            _groupPlayerValues set [count _groupPlayerValues, _x];
+                            _groupPlayerValues pushback _x;
                         };
                     } forEach _currentGroupPlayerValues;
 
@@ -1127,7 +1127,7 @@ switch(_operation) do {
                 {
                     _activeTaskID = _x;
                     if(_activeTaskID in (_sideTasks select 1)) then {
-                        _activeTasksToRemove set [count _activeTasksToRemove,_activeTaskID];
+                        _activeTasksToRemove pushback _activeTaskID;
                     }
                 } forEach (_activeTasks select 1);
 
@@ -1214,7 +1214,7 @@ switch(_operation) do {
                                 _group = [format["%1",_group], " ", "_"] call CBA_fnc_replace;
 
                                 if!(_group in _previousGroups) then {
-                                    _previousGroups set [count _previousGroups, _group];
+                                    _previousGroups pushback _group;
                                 };
 
                             };
@@ -1233,7 +1233,7 @@ switch(_operation) do {
                                 _group = [format["%1",_group], " ", "_"] call CBA_fnc_replace;
 
                                 if!(_group in _updatedGroups) then {
-                                    _updatedGroups set [count _updatedGroups, _group];
+                                    _updatedGroups pushback _group;
                                 };
 
                             };
@@ -1629,7 +1629,7 @@ switch(_operation) do {
                 {
                     _managedTaskID = _x;
                     if!(_managedTaskID in (_activeTasks select 1)) then {
-                        _managedTasksToRemove set [count _managedTasksToRemove,_x];
+                        _managedTasksToRemove pushback _x;
                     };
                 } forEach (_managedTasks select 1);
 
@@ -1783,7 +1783,7 @@ switch(_operation) do {
             if!(isNil "_sideTasks") then {
 
                 {
-                    _tasks set [count _tasks, [_logic,"getTask",_x] call MAINCLASS];
+                    _tasks pushback ([_logic,"getTask",_x] call MAINCLASS);
                 } forEach (_sideTasks select 1);
 
             };
@@ -1806,7 +1806,7 @@ switch(_operation) do {
 
                 {
                     _task = [_logic,"getTask",_x] call MAINCLASS;
-                    _tasks set [count _tasks, _task];
+                    _tasks pushback _task;
                 } forEach (_playerTasks select 1);
 
             };
@@ -1831,7 +1831,7 @@ switch(_operation) do {
 
                 {
                     _task = [_logic,"getTask",_x] call MAINCLASS;
-                    _tasks set [count _tasks, _task];
+                    _tasks pushback _task;
                 } forEach (_groupTasks select 1);
 
             };

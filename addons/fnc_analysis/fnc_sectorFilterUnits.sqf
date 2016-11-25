@@ -51,7 +51,7 @@ _filteredSectors = [];
     _units = [_unitData, _side] call ALIVE_fnc_hashGet;
 
     if(count _units > 0 && count _units > _unitCountMin &&  count _units < _unitCountMax) then {
-        _filteredSectors set [count _filteredSectors, _sector];
+        _filteredSectors pushback _sector;
     };
 
 } forEach _sectors;

@@ -241,8 +241,8 @@ switch (_taskState) do {
             _taskSource = format["%1-CSAR-Parent",_taskID];
             _newTask = [_taskID,_requestPlayerID,_taskSide,_newTaskPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,"N","None",_taskSource,false];
 
-            _tasks set [count _tasks,_newTask];
-            _taskIDs set [count _taskIDs,_taskID];
+            _tasks pushback _newTask;
+            _taskIDs pushback _taskID;
 
             // create the rescue task
             _dialog = [_dialogOption,"Rescue"] call ALIVE_fnc_hashGet;
@@ -252,8 +252,8 @@ switch (_taskState) do {
             _taskSource = format["%1-CSAR-Rescue",_taskID];
             _newTask = [_newTaskID,_requestPlayerID,_taskSide,_newTaskPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,_taskCurrent,_taskID,_taskSource,true];
 
-            _tasks set [count _tasks,_newTask];
-            _taskIDs set [count _taskIDs,_taskID];
+            _tasks pushback _newTask;
+            _taskIDs pushback _taskID;
 
             // Create secure task
             _dialog = [_dialogOption,"DefenceWave"] call ALIVE_fnc_hashGet;
@@ -263,8 +263,8 @@ switch (_taskState) do {
             _taskSource = format["%1-CSAR-DefenceWave",_taskID];
             _newTask = [_newTaskID,_requestPlayerID,_taskSide,_newTaskPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,"Created",_taskApplyType,"N",_taskID,_taskSource,true];
 
-            _tasks set [count _tasks,_newTask];
-            _taskIDs set [count _taskIDs,_newTaskID];
+            _tasks pushback _newTask;
+            _taskIDs pushback _newTaskID;
 
             // create the return task
             _dialog = [_dialogOption,"Return"] call ALIVE_fnc_hashGet;
@@ -274,8 +274,8 @@ switch (_taskState) do {
             _taskSource = format["%1-CSAR-Return",_taskID];
             _newTask = [_newTaskID,_requestPlayerID,_taskSide,_returnPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,"Created",_taskApplyType,"N",_taskID,_taskSource,true];
 
-            _tasks set [count _tasks,_newTask];
-            _taskIDs set [count _taskIDs,_newTaskID];
+            _tasks pushback _newTask;
+            _taskIDs pushback _newTaskID;
 
             // select the type of spawn
 
@@ -565,7 +565,7 @@ switch (_taskState) do {
             for "_i" from 0 to _groupCount -1 do {
                 _group = ["Infantry",_enemyFaction] call ALIVE_fnc_configGetRandomGroup;
                 if!(_group == "FALSE") then {
-                    _groups set [count _groups, _group];
+                    _groups pushback _group;
                 }
             };
 
@@ -584,7 +584,7 @@ switch (_taskState) do {
                 _profileWaypoint = [_position, 100, "MOVE", "FULL", 100, [], "LINE", "NO CHANGE", "CARELESS"] call ALIVE_fnc_createProfileWaypoint;
                 [(_profiles select 0), "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
-                _profileIDs set [count _profileIDs, _profileID];
+                _profileIDs pushback _profileID;
 
             } forEach _groups;
 
@@ -601,7 +601,7 @@ switch (_taskState) do {
 
                 _group = [_vehicleGroup,_enemyFaction] call ALIVE_fnc_configGetRandomGroup;
                 if!(_group == "FALSE") then {
-                     _groups set [count _groups, _group];
+                     _groups pushback _group;
                 };
 
                 _groups = _groups - ALiVE_PLACEMENT_GROUPBLACKLIST;
@@ -616,7 +616,7 @@ switch (_taskState) do {
                     _profileWaypoint = [_position, 100, "MOVE", "FULL", 100, [], "LINE", "NO CHANGE", "CARELESS"] call ALIVE_fnc_createProfileWaypoint;
                     [(_profiles select 0), "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
-                    _profileIDs set [count _profileIDs, _profileID];
+                    _profileIDs pushback _profileID;
 
                 } forEach _groups;
             };

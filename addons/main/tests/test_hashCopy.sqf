@@ -39,10 +39,10 @@ _testSubSubHash = [] call ALIVE_fnc_hashCreate;
 [_testSubHash, "Foods", _testSubSubHash] call ALIVE_fnc_hashSet;
 
 _testArray = [];
-_testArray set [count _testArray, 1];
-_testArray set [count _testArray, 2];
-_testArray set [count _testArray, 3];
-_testArray set [count _testArray, 4];
+_testArray pushback 1;
+_testArray pushback 2;
+_testArray pushback 3;
+_testArray pushback 4;
 
 _testHash = [] call ALIVE_fnc_hashCreate;
 [_testHash, "one", "apple"] call ALIVE_fnc_hashSet;

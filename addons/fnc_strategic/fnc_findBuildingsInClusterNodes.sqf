@@ -52,7 +52,7 @@ _buildings = [];
     } forEach _types;
 
     if(_isBuilding) then {
-        _buildings set [count _buildings, _x];
+        _buildings pushback _x;
     };
 } forEach _nodes;
 

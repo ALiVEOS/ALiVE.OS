@@ -38,7 +38,7 @@ _vehiclesWithRoom = [];
     ["EMPTY COUNT: %1",_emptyCount] call ALIVE_fnc_dump;
 
     if(_groupCount <= _emptyCount) then {
-        _vehiclesWithRoom set [count _vehiclesWithRoom, _x];
+        _vehiclesWithRoom pushback _x;
     };
 
 } forEach _taskVehicles;

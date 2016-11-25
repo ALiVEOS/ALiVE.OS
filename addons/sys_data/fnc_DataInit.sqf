@@ -178,7 +178,7 @@ if (isDedicated) then {
         ALIVE_DataDictionary = _response;
 
         // Capture Dictionary revision information
-        GVAR(DictionaryRevs) set [count GVAR(DictionaryRevs), [ALIVE_DataDictionary, "_rev"] call CBA_fnc_hashGet];
+        GVAR(DictionaryRevs) pushback ([ALIVE_DataDictionary, "_rev"] call CBA_fnc_hashGet);
 
         // Try loading more dictionary entries
         private ["_i","_newresponse","_addResponse"];
@@ -190,7 +190,7 @@ if (isDedicated) then {
             };
 
             [_newresponse, _addResponse] call CBA_fnc_hashEachPair;
-            GVAR(DictionaryRevs) set [count GVAR(DictionaryRevs), [_newresponse, "_rev"] call CBA_fnc_hashGet];
+            GVAR(DictionaryRevs) pushback ([_newresponse, "_rev"] call CBA_fnc_hashGet);
             _i = _i + 1;
         };
 
@@ -333,7 +333,6 @@ if (isDedicated) then {
     };
 
     // AAR system - should prob be its own module
-
     TRACE_2("SYS_DATA AAR VAR", MOD(sys_data) getVariable "disableAAR", ALIVE_sys_AAR_ENABLED);
     // Start the AAR monitoring module
     if (MOD(sys_data) getvariable ["disableAAR", "true"] == "false" && ALIVE_sys_AAR_ENABLED) then {
@@ -341,7 +340,7 @@ if (isDedicated) then {
         ["DATA: Starting AAR system."] call ALIVE_fnc_dump;
 
         [] spawn {
-            // Thread running on server to report state/pos of every playable unit and group every 60 seconds
+            // Thread running on server to report state/pos of every playable unit and group every 30 seconds
             private ["_tickt","_docId","_missionName","_result"];
 
             // Setup data handler
@@ -351,6 +350,7 @@ if (isDedicated) then {
             // Set up hash of unit positions for each minute
             GVAR(AAR) = [] call ALIVE_fnc_hashCreate;
             GVAR(AAR_Array) = [];
+            GVAR(AAR_vehArray) = [];
 
             GVAR(operation) = getText (missionConfigFile >> "OnLoadName");
 
@@ -364,13 +364,90 @@ if (isDedicated) then {
 
             while {MOD(sys_data) getVariable "disableAAR" == "false"} do {
 
-                private ["_hash","_dateTime","_currenttime","_minutes","_hours","_gametime","_ttm"];
+                private ["_hash","_dateTime","_currenttime","_minutes","_hours","_gametime","_ttm","_missionTime"];
                 _ttm = diag_tickTime;
                 TRACE_1("SYS_DATA AAR", _tickt);
                 TRACE_1("SYS_DATA AAR", _ttm);
 
                 if ( (count playableUnits > 0) && (_ttm > (_tickt + AAR_DEFAULT_SAMPLE_RATE) ) ) then {
 
+                    [GVAR(AAR), "Group", GVAR(GROUP_ID)] call ALIVE_fnc_hashSet;
+                    [GVAR(AAR), "Operation", GVAR(operation)] call ALIVE_fnc_hashSet;
+                    [GVAR(AAR), "Map", worldName] call ALIVE_fnc_hashSet;
+
+                    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    // Handle infantry
+                    GVAR(AARdocId) = [] call ALIVE_fnc_realTimeToDTG;
+                    // Get local time and format please.
+                    _currenttime = date;
+
+                    // Work out time in 4 digits
+                    if ((_currenttime select 4) < 10) then {
+                        _minutes = "0" + str(_currenttime select 4);
+                    } else {
+                        _minutes = str(_currenttime select 4);
+                    };
+                    if ((_currenttime select 3) < 10) then {
+                        _hours = "0" + str(_currenttime select 3);
+                    } else {
+                        _hours = str(_currenttime select 3);
+                    };
+
+                    _gametime = format["%1%2", _hours, _minutes];
+                    _realTime = [] call ALIVE_fnc_getServerTime;
+                    _missionTime = round time;
+
+                    [GVAR(AAR), "gameTime", _gametime] call ALIVE_fnc_hashSet;
+                    [GVAR(AAR), "realTime", _realTime] call ALIVE_fnc_hashSet;
+                    [GVAR(AAR), "missionTime", _missionTime] call ALIVE_fnc_hashSet;
+
+                    [GVAR(AAR), "AAR_type", "positions_infantry"] call ALIVE_fnc_hashSet;
+
+                    TRACE_1("SYS_DATA AAR", allUnits);
+                    {
+                        private ["_unit"];
+                        _unit = _x;
+                        if ((vehicle _unit == _unit) && alive _unit && (typeof _unit != "Logic") && (side _unit != civilian)) then {
+                            private ["_unitHash"];
+                            TRACE_1("SYS_DATA AAR", _unit);
+                            _unitHash = [] call ALIVE_fnc_hashCreate;
+
+                            [_unitHash, "AAR_unit", _unit] call ALIVE_fnc_hashSet;
+                            [_unitHash, "AAR_name", name _unit] call ALIVE_fnc_hashSet;
+                            [_unitHash, "AAR_pos", getpos _unit] call ALIVE_fnc_hashSet;
+                            [_unitHash, "AAR_weapon", primaryWeapon _unit] call ALIVE_fnc_hashSet;
+                            [_unitHash, "AAR_dir", ceil(getdir _unit)] call ALIVE_fnc_hashSet;
+                            [_unitHash, "AAR_config", typeof _unit] call ALIVE_fnc_hashSet;
+                            [_unitHash, "AAR_class", getText (configFile >> "cfgVehicles" >> (typeof _unit) >> "displayName")] call ALIVE_fnc_hashSet;
+                            [_unitHash, "AAR_damage", damage _unit] call ALIVE_fnc_hashSet;
+                            [_unitHash, "AAR_side", side (group _unit)] call ALIVE_fnc_hashSet;
+                            [_unitHash, "AAR_fac", getText (((faction _unit) call ALiVE_fnc_configGetFactionClass) >> "displayName")] call ALIVE_fnc_hashSet;
+                            [_unitHash, "AAR_ico", getText (configFile >> "CfgVehicles" >> (typeOf _unit) >> "icon")];
+                            [_unitHash, "AAR_isLeader", _unit == leader (group _unit)] call ALIVE_fnc_hashSet;
+                            [_unitHash, "AAR_isPlayer", isPlayer _unit] call ALIVE_fnc_hashSet;
+                            [_unitHash, "AAR_group", str (group _unit)] call ALIVE_fnc_hashSet;
+                            [_unitHash, "AAR_groupid", groupID group _unit] call ALIVE_fnc_hashSet;
+
+                            if (isPlayer _unit) then {
+                                [_unitHash, "AAR_playerUID", getPlayerUID _unit] call ALIVE_fnc_hashSet;
+                            };
+
+                            GVAR(AAR_Array) pushback _unitHash;
+
+                        };
+                    } forEach allUnits;
+
+                    [GVAR(AAR), "value", GVAR(AAR_Array)] call ALIVE_fnc_hashSet;
+
+                    // Send the inf data to DB
+                    _missionName = format["%1_%2_%3_%4", GVAR(GROUP_ID), missionName, GVAR(AARdocId), _missionTime];
+
+                    // async write
+                    _result = [GVAR(aar_datahandler), "write", ["sys_aar", GVAR(AAR), true, _missionName] ] call ALIVE_fnc_Data;
+                    TRACE_1("SYS_AAR",_result);
+
+                    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    // Handle vehicles
                     GVAR(AARdocId) = [] call ALIVE_fnc_realTimeToDTG;
 
                     // Get local time and format please.
@@ -381,7 +458,7 @@ if (isDedicated) then {
                         _minutes = "0" + str(_currenttime select 4);
                     } else {
                         _minutes = str(_currenttime select 4);
-                        };
+                    };
                     if ((_currenttime select 3) < 10) then {
                         _hours = "0" + str(_currenttime select 3);
                     } else {
@@ -390,46 +467,119 @@ if (isDedicated) then {
 
                     _gametime = format["%1%2", _hours, _minutes];
                     _realTime = [] call ALIVE_fnc_getServerTime;
-                    TRACE_1("SYS_DATA AAR", allUnits);
-                    {
-                        private ["_unit"];
-                        _unit = vehicle _x;
-                        if (alive _unit && (isplayer _x || (_unit == leader (group _unit) && (side _unit != civilian)))) then {
-                            private ["_playerHash"];
-                            TRACE_1("SYS_DATA AAR", _unit);
-                            _playerHash = [] call ALIVE_fnc_hashCreate;
-
-                            [_playerHash, "AAR_name", name _unit] call ALIVE_fnc_hashSet;
-                            [_playerHash, "AAR_pos", getpos _unit] call ALIVE_fnc_hashSet;
-                            [_playerHash, "AAR_weapon", primaryWeapon _unit] call ALIVE_fnc_hashSet;
-                            [_playerHash, "AAR_dir", ceil(getdir _unit)] call ALIVE_fnc_hashSet;
-                            [_playerHash, "AAR_config", typeof _unit] call ALIVE_fnc_hashSet;
-                            [_playerHash, "AAR_class", getText (configFile >> "cfgVehicles" >> (typeof _unit) >> "displayName")] call ALIVE_fnc_hashSet;
-                            [_playerHash, "AAR_damage", damage _unit] call ALIVE_fnc_hashSet;
-                            [_playerHash, "AAR_side", side (group _unit)] call ALIVE_fnc_hashSet;
-                            [_playerHash, "AAR_fac", getText (((faction _unit) call ALiVE_fnc_configGetFactionClass) >> "displayName")] call ALIVE_fnc_hashSet;
-                            [_playerHash, "AAR_isLeader", _unit == leader (group _unit)] call ALIVE_fnc_hashSet;
-                            [_playerHash, "AAR_isPlayer", isPlayer _unit] call ALIVE_fnc_hashSet;
-                            [_playerHash, "AAR_group", str (group _unit)] call ALIVE_fnc_hashSet;
-
-                            if (isPlayer _unit) then {
-                                [_playerHash, "AAR_playerUID", getPlayerUID _unit] call ALIVE_fnc_hashSet;
-                            };
-
-                            GVAR(AAR_Array) set [count GVAR(AAR_Array), _playerHash];
-
-                        };
-                    } forEach allUnits;
+                    _missionTime = round time;
 
                     [GVAR(AAR), "gameTime", _gametime] call ALIVE_fnc_hashSet;
                     [GVAR(AAR), "realTime", _realTime] call ALIVE_fnc_hashSet;
-                    [GVAR(AAR), "Group", GVAR(GROUP_ID)] call ALIVE_fnc_hashSet;
-                    [GVAR(AAR), "Operation", GVAR(operation)] call ALIVE_fnc_hashSet;
-                    [GVAR(AAR), "Map", worldName] call ALIVE_fnc_hashSet;
-                    [GVAR(AAR), "AAR_data", GVAR(AAR_Array)] call ALIVE_fnc_hashSet;
+                    [GVAR(AAR), "missionTime", _missionTime] call ALIVE_fnc_hashSet;
+                    [GVAR(AAR), "AAR_type", "positions_vehicles"] call ALIVE_fnc_hashSet;
+
+                    {
+                        private ["_veh"];
+                        _veh = vehicle _x;
+                        if ((typeof _veh != "Logic") && (side _veh != civilian) && (count crew _veh > 0)) then {
+                            private ["_vehHash"];
+                            TRACE_1("SYS_DATA AAR", _veh);
+                            _vehHash = [] call ALIVE_fnc_hashCreate;
+
+                            [_vehHash, "AAR_unit", _veh] call ALIVE_fnc_hashSet;
+                            [_vehHash, "AAR_pos", getpos _veh] call ALIVE_fnc_hashSet;
+                            [_vehHash, "AAR_dir", ceil(getdir _veh)] call ALIVE_fnc_hashSet;
+                            [_vehHash, "AAR_config", typeof _veh] call ALIVE_fnc_hashSet;
+                            [_vehHash, "AAR_class", getText (configFile >> "cfgVehicles" >> (typeof _veh) >> "displayName")] call ALIVE_fnc_hashSet;
+                            [_vehHash, "AAR_damage", damage _veh] call ALIVE_fnc_hashSet;
+                            [_vehHash, "AAR_side", side (group _veh)] call ALIVE_fnc_hashSet;
+                            [_vehHash, "AAR_fac", getText (((faction _veh) call ALiVE_fnc_configGetFactionClass) >> "displayName")] call ALIVE_fnc_hashSet;
+                            [_vehHash, "AAR_group", str (group _veh)] call ALIVE_fnc_hashSet;
+                            [_vehHash, "AAR_groupid", groupID group _veh] call ALIVE_fnc_hashSet;
+
+                            if (isPlayer _veh) then {
+                                [_vehHash, "AAR_playerUID", getPlayerUID _veh] call ALIVE_fnc_hashSet;
+                            };
+
+                            private _vehicleCrew = (
+                                _veh call {
+                                    private _crew = [];
+                                    {
+                                        if(isPlayer _x) then {
+                                            if(_this getCargoIndex _x == -1) then {
+                                                _crew pushBack getPlayerUID _x;
+                                            };
+                                        };
+                                    } forEach crew _this;
+                                    _crew
+                                }
+                            );
+
+                            private _vehicleCargo = (
+                                _veh call {
+                                    private _cargo = [];
+                                    {
+                                        if(isPlayer _x) then {
+                                            if(_this getCargoIndex _x >= 0) then {
+                                                _cargo pushBack getPlayerUID _x;
+                                            };
+                                        };
+                                    } forEach crew _this;
+                                    _cargo
+                                }
+                            );
+
+                            private _vehicleIcon = (
+                                        _veh call {
+
+                                            if (_this isKindOf "Heli_Attack_01_base_F" || _this isKindOf "Heli_Attack_02_base_F" || _this isKindOf "Heli_Attack_03_base_F") exitWith { "iconHelicopterAttack" };
+                                            if (_this isKindOf "Heli_Transport_01_base_F" || _this isKindOf "Heli_Transport_02_base_F" || _this isKindOf "Heli_Transport_03_base_F") exitWith { "iconHelicopterTransport" };
+                                            if (_this isKindOf "Plane_CAS_01_base_F") exitWith { "iconPlaneAttack" };
+                                            if (_this isKindOf "Plane_CAS_02_base_F") exitWith { "iconPlaneAttack" };
+                                            if (_this isKindOf "Plane_CAS_03_base_F") exitWith { "iconPlaneAttack" };
+                                            if (_this isKindOf "APC_Tracked_03_base_F") exitWith { "iconAPC" };
+                                            if (_this isKindOf "APC_Tracked_02_base_F") exitWith { "iconAPC" };
+                                            if (_this isKindOf "APC_Tracked_01_base_F") exitWith { "iconAPC" };
+                                            if (_this isKindOf "Truck_01_base_F") exitWith { "iconTruck" };
+                                            if (_this isKindOf "Truck_02_base_F") exitWith { "iconTruck" };
+                                            if (_this isKindOf "Truck_03_base_F") exitWith { "iconTruck" };
+                                            if (_this isKindOf "MRAP_01_base_F") exitWith { "iconMRAP" };
+                                            if (_this isKindOf "MRAP_02_base_F") exitWith { "iconMRAP" };
+                                            if (_this isKindOf "MRAP_03_base_F") exitWith { "iconMRAP" };
+                                            if (_this isKindOf "MBT_01_arty_base_F") exitWith { "iconTankArtillery" };
+                                            if (_this isKindOf "MBT_02_arty_base_F") exitWith { "iconTankArtillery" };
+                                            if (_this isKindOf "MBT_03_arty_base_F") exitWith { "iconTankArtillery" };
+                                            if (_this isKindOf "MBT_01_base_F") exitWith { "iconTank" };
+                                            if (_this isKindOf "MBT_02_base_F") exitWith { "iconTank" };
+                                            if (_this isKindOf "MBT_03_base_F") exitWith { "iconTank" };
+                                            if (_this isKindOf "StaticCannon") exitWith { "iconStaticCannon" };
+                                            if (_this isKindOf "StaticAAWeapon") exitWith { "iconStaticAA" };
+                                            if (_this isKindOf "StaticATWeapon") exitWith { "iconStaticAT" };
+                                            if (_this isKindOf "StaticMGWeapon") exitWith { "iconStaticMG" };
+                                            if (_this isKindOf "StaticWeapon") exitWith { "iconStaticWeapon" };
+                                            if (_this isKindOf "StaticGrenadeLauncher") exitWith { "iconStaticGL" };
+
+                                            if (_this isKindOf "Steerable_Parachute_F" || _this isKindOf "NonSteerable_Parachute_F") exitWith { "iconParachute" };
+                                            if (_this isKindOf "Boat_F") exitWith { "iconBoat" };
+                                            if (_this isKindOf "Truck_F") exitWith { "iconTruck" };
+                                            if (_this isKindOf "Tank" || _this isKindOf "Tank_F") exitWith { "iconTank" };
+                                            if (_this isKindOf "Car" || _this isKindOf "Car_F") exitWith { "iconCar" };
+                                            if (_this isKindOf "Helicopter_Base_F") exitWith { "iconHelicopter" };
+                                            if (_this isKindOf "Plane_Base_F" || _this isKindOf "Plane") exitWith { "iconPlane" };
+
+                                            //diag_log format["unknown vehicle type: %1", typeOf _this];
+                                            "iconUnknown";
+                                        }
+                            );
+                            [_vehHash, "AAR_ico", _vehicleIcon] call ALIVE_fnc_hashSet;
+                            [_vehHash, "AAR_crew", _vehicleCrew] call ALIVE_fnc_hashSet;
+                            [_vehHash, "AAR_cargo", _vehicleCargo] call ALIVE_fnc_hashSet;
+
+                            GVAR(AAR_vehArray) pushback _vehHash;
+
+                        };
+                    } forEach vehicles;
+
+                    [GVAR(AAR), "value", GVAR(AAR_vehArray)] call ALIVE_fnc_hashSet;
 
                     // Send the data to DB
-                    _missionName = format["%1_%2_%3", GVAR(GROUP_ID), missionName, GVAR(AARdocId)];
+                    _missionName = format["%1_%2_%3_%4", GVAR(GROUP_ID), missionName, GVAR(AARdocId), _missionTime];
 
                     // async write
                     _result = [GVAR(aar_datahandler), "write", ["sys_aar", GVAR(AAR), true, _missionName] ] call ALIVE_fnc_Data;
@@ -438,6 +588,7 @@ if (isDedicated) then {
                     // Reset
                     GVAR(AAR) = [] call ALIVE_fnc_hashCreate;
                     GVAR(AAR_Array) resize 0;
+                    GVAR(AAR_vehArray) resize 0;
                     TRACE_1("SYS_AAR",GVAR(AAR_Array));
                     _tickt = diag_tickTime;
 
@@ -446,7 +597,7 @@ if (isDedicated) then {
                 sleep AAR_DEFAULT_SAMPLE_RATE;
 
             };
-            Diag_log "AAR system stopped";
+            diag_log "AAR system stopped";
         };
     };
 };

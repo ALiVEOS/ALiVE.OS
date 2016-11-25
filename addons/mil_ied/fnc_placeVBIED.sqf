@@ -29,7 +29,7 @@ if (count _veh > 0) then {
         [_vb] call ALiVE_fnc_createVBIED;
 
         // Add vehicle to list to return
-        _vblist set [count _vblist, _vb];
+        _vblist pushback _vb;
     };
 
 } else {
@@ -57,7 +57,7 @@ if (count _veh > 0) then {
         [_vb] call ALiVE_fnc_createVBIED;
 
         // Add vehicle to list to return
-        _vblist set [count _vblist, _vb];
+        _vblist pushback _vb;
 
         // remove from working list to avoid duplicates
         _veh set [_select, nil];

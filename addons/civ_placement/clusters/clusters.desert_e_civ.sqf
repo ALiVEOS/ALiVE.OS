@@ -1,7 +1,7 @@
 ALIVE_clustersCiv = [] call ALIVE_fnc_hashCreate;
 _cluster = [nil, "create"] call ALIVE_fnc_cluster;
 _nodes = [];
-_nodes set [count _nodes, ["675",[1389.57,1470.92,0.194313]]];
+_nodes pushback ["675",[1389.57,1470.92,0.194313]];
 [_cluster,"nodes",_nodes] call ALIVE_fnc_hashSet;
 [_cluster, "state", _cluster] call ALIVE_fnc_cluster;
 [_cluster,"clusterID","c_0"] call ALIVE_fnc_hashSet;
@@ -19,7 +19,7 @@ ALIVE_clustersCivRail = [] call ALIVE_fnc_hashCreate;
 ALIVE_clustersCivFuel = [] call ALIVE_fnc_hashCreate;
 _cluster = [nil, "create"] call ALIVE_fnc_cluster;
 _nodes = [];
-_nodes set [count _nodes, ["675",[1389.57,1470.92,0.194313]]];
+_nodes pushback ["675",[1389.57,1470.92,0.194313]];
 [_cluster,"nodes",_nodes] call ALIVE_fnc_hashSet;
 [_cluster, "state", _cluster] call ALIVE_fnc_cluster;
 [_cluster,"clusterID","c_0"] call ALIVE_fnc_hashSet;

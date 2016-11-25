@@ -30,7 +30,7 @@ STAT("Create mock objects");
 _obj_array = [];
 createCenter sideLogic;
 {
-    _obj_array set [count _obj_array, (createGroup sideLogic) createUnit ["LOGIC", (player modelToWorld _x), [], 0, "NONE"]];
+    _obj_array pushback ((createGroup sideLogic) createUnit ["LOGIC", (player modelToWorld _x), [], 0, "NONE"]);
 } forEach [
     [-1200,-900],
     [-900,-600],

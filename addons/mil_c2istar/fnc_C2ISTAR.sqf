@@ -640,8 +640,8 @@ switch(_operation) do {
             _generateValues = [];
             {
                 _task = [ALIVE_generatedTasks,_x] call ALIVE_fnc_hashGet;
-                _generateOptions set [count _generateOptions,_task select 0];
-                _generateValues set [count _generateValues,_x];
+                _generateOptions pushback (_task select 0);
+                _generateValues pushback _x;
             } forEach (ALIVE_generatedTasks select 1);
 
             private ["_taskingState","_playerListOptions","_playerListValues","_factionsDataSource"];
@@ -1182,8 +1182,8 @@ switch(_operation) do {
 
                     if!(_selectedOption in _selectedPlayerListOptions) then {
 
-                        _selectedPlayerListOptions set [count _selectedPlayerListOptions,_selectedOption];
-                        _selectedPlayerListValues set [count _selectedPlayerListValues,_selectedValue];
+                        _selectedPlayerListOptions pushback _selectedOption;
+                        _selectedPlayerListValues pushback _selectedValue;
 
                         [_taskingState,"selectedPlayerListOptions",_selectedPlayerListOptions] call ALIVE_fnc_hashSet;
                         [_taskingState,"selectedPlayerListValues",_selectedPlayerListValues] call ALIVE_fnc_hashSet;
@@ -1231,14 +1231,14 @@ switch(_operation) do {
 
                         {
                             if!(_x in _selectedPlayerListOptions) then {
-                                _selectedPlayerListOptions set [count _selectedPlayerListOptions,_x];
+                                _selectedPlayerListOptions pushback _x;
                                 _selectedPlayerList lbAdd format["%1", _x];
                             };
                         } forEach _currentGroupPlayerOptions;
 
                         {
                             if!(_x in _selectedPlayerListValues) then {
-                                _selectedPlayerListValues set [count _selectedPlayerListValues,_x];
+                                _selectedPlayerListValues pushback _x;
                             };
                         } forEach _currentGroupPlayerValues;
 
@@ -1565,8 +1565,8 @@ switch(_operation) do {
 
                     if!(_selectedOption in _selectedPlayerListOptions) then {
 
-                        _selectedPlayerListOptions set [count _selectedPlayerListOptions,_selectedOption];
-                        _selectedPlayerListValues set [count _selectedPlayerListValues,_selectedValue];
+                        _selectedPlayerListOptions pushback _selectedOption;
+                        _selectedPlayerListValues pushback _selectedValue;
 
                         [_taskingState,"currentTaskSelectedPlayerListOptions",_selectedPlayerListOptions] call ALIVE_fnc_hashSet;
                         [_taskingState,"currentTaskSelectedPlayerListValues",_selectedPlayerListValues] call ALIVE_fnc_hashSet;
@@ -1611,14 +1611,14 @@ switch(_operation) do {
 
                         {
                             if!(_x in _selectedPlayerListOptions) then {
-                                _selectedPlayerListOptions set [count _selectedPlayerListOptions,_x];
+                                _selectedPlayerListOptions pushback _x;
                                 _selectedPlayerList lbAdd format["%1", _x];
                             };
                         } forEach _currentGroupPlayerOptions;
 
                         {
                             if!(_x in _selectedPlayerListValues) then {
-                                _selectedPlayerListValues set [count _selectedPlayerListValues,_x];
+                                _selectedPlayerListValues pushback _x;
                             };
                         } forEach _currentGroupPlayerValues;
 
@@ -2097,11 +2097,11 @@ switch(_operation) do {
             _playerNames = _players select 1;
 
             {
-                _newPlayerIDs set [count _newPlayerIDs, _x];
+                _newPlayerIDs pushback _x;
             } forEach _playerIDs;
 
             {
-                _newPlayerNames set [count _newPlayerNames, _x];
+                _newPlayerNames pushback _x;
             } forEach _playerNames;
 
             _newPlayers set [0,_newPlayerIDs];
@@ -2135,11 +2135,11 @@ switch(_operation) do {
                 _title = format["-- %1 - %2 %3",_newTask select 5,_newTask select 8,_currentText];
             };
 
-            _listOptions set [count _listOptions, _title];
-            _listValues set [count _listValues, _newTask];
+            _listOptions pushback _title;
+            _listValues pushback _newTask;
 
-            _parentListOptions set [count _parentListOptions, _title];
-            _parentListValues set [count _parentListValues, _newTask select 0];
+            _parentListOptions pushback _title;
+            _parentListValues pushback (_newTask select 0);
 
         } foreach _taskState;
 

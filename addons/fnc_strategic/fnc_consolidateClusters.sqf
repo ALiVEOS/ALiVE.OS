@@ -51,7 +51,7 @@ _result = _master;
 
 {
     if !(_x in _result) then {
-        _result set [count _result, _x];
+        _result pushback _x;
     };
 } foreach _redundant;
 
@@ -84,7 +84,7 @@ _result = _master;
                     // combine them and ensure that old nodes are only added if the master doesnt have them already
                     {
                         if !(_x in _nodes_out) then {
-                            _nodes_out set [count _nodes_out, _x];
+                            _nodes_out pushback _x;
                         };
                     } foreach _nodes_x;
 

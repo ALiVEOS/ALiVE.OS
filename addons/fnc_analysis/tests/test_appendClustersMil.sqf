@@ -105,7 +105,7 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     };
 
     _consolidated = [_sectorData, "consolidated"] call ALIVE_fnc_hashGet;
-    _consolidated set [count _consolidated, [_clusterCenter,_clusterID]];
+    _consolidated pushback [_clusterCenter,_clusterID];
     [_sectorData, "consolidated", _consolidated] call ALIVE_fnc_hashSet;
 
     //_sectorData call ALIVE_fnc_inspectHash;
@@ -133,7 +133,7 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     };
 
     _air = [_sectorData, "air"] call ALIVE_fnc_hashGet;
-    _air set [count _air, [_clusterCenter,_clusterID]];
+    _air pushback [_clusterCenter,_clusterID];
     [_sectorData, "air", _air] call ALIVE_fnc_hashSet;
 
     //_sectorData call ALIVE_fnc_inspectHash;
@@ -161,7 +161,7 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     };
 
     _heli = [_sectorData, "heli"] call ALIVE_fnc_hashGet;
-    _heli set [count _heli, [_clusterCenter,_clusterID]];
+    _heli pushback [_clusterCenter,_clusterID];
     [_sectorData, "heli", _heli] call ALIVE_fnc_hashSet;
 
     //_sectorData call ALIVE_fnc_inspectHash;

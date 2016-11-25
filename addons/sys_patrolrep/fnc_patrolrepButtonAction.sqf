@@ -55,12 +55,12 @@ _sitreps =[];
 
 _spotlist = lbSelection _spotControl;
 {
-    _spotreps set [count _spotreps, lbText [SPOT_LIST, _x]];
+    _spotreps pushback (lbText [SPOT_LIST, _x]);
 } foreach _spotlist;
 
 _sitlist = lbSelection _sitControl;
 {
-    _sitreps set [count _sitreps, lbText [SIT_LIST, _x]];
+    _sitreps pushback (lbText [SIT_LIST, _x]);
 } foreach _sitlist;
 
 _ammo = lbText [AMMO_LIST, lbCurSel AMMO_LIST];

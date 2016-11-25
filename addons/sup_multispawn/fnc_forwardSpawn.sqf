@@ -32,7 +32,7 @@ if (isnil "keyspressed") then {
 
 waituntil {alive player}; _unit = player;
 
-aliveUnits = []; {if (alive _x and _x != player) then {aliveUnits set [count aliveUnits,_x]};} foreach units (group player); if (count aliveUnits == 0) exitwith {TitleText[format["There are no units in your group %1!",group player],"PLAIN DOWN"]; disableUserInput false};
+aliveUnits = []; {if (alive _x and _x != player) then {aliveUnits pushback _x};} foreach units (group player); if (count aliveUnits == 0) exitwith {TitleText[format["There are no units in your group %1!",group player],"PLAIN DOWN"]; disableUserInput false};
 
 actualUnits = 0;
 keyout = 0;

@@ -70,13 +70,13 @@ _updatedSectors = [];
 
         _active = [_sectorData, "active",[]] call ALIVE_fnc_hashGet;
 
-        _active set [count _active, [_player,_position]];
+        _active pushback [_player,_position];
 
         // store the result of the analysis on the sector instance
         [_sector, "data", ["active",_active]] call ALIVE_fnc_sector;
 
         if!(_sector in _updatedSectors) then {
-            _updatedSectors set [count _updatedSectors, _sector];
+            _updatedSectors pushback _sector;
         };
     };
 } forEach allPlayers;

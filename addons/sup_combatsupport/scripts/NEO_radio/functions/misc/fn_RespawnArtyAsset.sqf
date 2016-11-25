@@ -49,7 +49,7 @@ _toDelete = [];
         _sideArray = NEO_radioLogic getVariable [format["NEO_radioArtyArray_%1", _sideIn],[]];
         {
             if (count _units > 0) then {
-                _toDelete set [count _toDelete,_x];
+                _toDelete pushback _x;
 
                 _sideArray set [_foreachIndex, -1];
                 _sideArray = _sideArray - [-1];
@@ -78,7 +78,7 @@ if (_side == WEST && _type == "BUS_MotInf_MortTeam") then {
     _vehPos = [_pos, 30, _vehDir] call BIS_fnc_relPos; _vehPos set [2, 0];
     _grp = [_vehPos, side _grp, (configFile >> "cfgGroups" >> "WEST" >> "BLU_F" >> "Motorized" >> "BUS_MotInf_MortTeam"),[],[],[],[],[],_vehDir] call BIS_fnc_spawnGroup;
     {
-        _units set [count _units, _x];
+        _units pushback _x;
         _x setVariable ["ALIVE_CombatSupport", true];
     } foreach units _grp;
 } else {
@@ -94,7 +94,7 @@ if (_side == WEST && _type == "BUS_MotInf_MortTeam") then {
         _veh lock true;
         _vehDir = _vehDir + 90;
 
-        _units set [count _units, _veh];
+        _units pushback _veh;
         _artyBatteries pushback _veh;
 
         // set ownership flag for other modules
@@ -110,7 +110,7 @@ if (_side == WEST && _type == "BUS_MotInf_MortTeam") then {
 {
     if ((_x select 0) in _roundsUnit) then
     {
-        _roundsAvailable set [count _roundsAvailable, _x];
+        _roundsAvailable pushback _x;
     };
 } forEach _rounds;
 
@@ -137,7 +137,7 @@ _audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
 [_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _type, leader _grp, _code, _audio] execFSM "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
 
 _a = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _side];
-_a set [count _a, [leader _grp, _grp, _callsign, _units, _roundsAvailable]];
+_a pushback ([leader _grp, _grp, _callsign, _units, _roundsAvailable]);
 
 NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _side], _a, true];
 

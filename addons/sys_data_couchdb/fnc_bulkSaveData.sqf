@@ -55,7 +55,7 @@ _indexArray = [];
 
 _createIndex = {
     If (_key != "") then {
-        _indexArray set [count _indexArray, _key];
+        _indexArray pushback _key;
     };
 };
 [_data, _createIndex] call CBA_fnc_hashEachPair;
@@ -89,7 +89,7 @@ if ( ([str(_newIndexDoc)] call CBA_fnc_strLen) > DATA_INBOUND_LIMIT ) then {
 //                    ["ALiVE SYS_DATA_COUCHDB - BULK SAVE TEMP INDEX SIZE: %1",[str(_tempIndex)] call CBA_fnc_strLen] call ALIVE_fnc_dump;
                 };
 
-                _tempIndex set [count _tempIndex, _indexArray select _foreachIndex];
+                _tempIndex pushback (_indexArray select _foreachIndex);
 
             } else {
 
@@ -114,7 +114,7 @@ if ( ([str(_newIndexDoc)] call CBA_fnc_strLen) > DATA_INBOUND_LIMIT ) then {
                 };
 
                 _tempIndex = [];
-                _tempIndex set [count _tempIndex, _indexArray select _foreachIndex];
+                _tempIndex pushback (_indexArray select _foreachIndex);
                 _i = _i + 1;
 
             };
