@@ -129,7 +129,7 @@ switch (_taskState) do {
             } else {
                 _category = ["Outposts", "FieldHQ", "Camps","Supports","Heliports","Comms"];
             };
-            [_returnPosition, _compType, _category, _tasFaction, ["Medium","Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+            [_returnPosition, _compType, _category, _taskFaction, ["Medium","Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
         };
 
         if!(isNil "_targetPosition" || isNil "_returnPosition") then {
