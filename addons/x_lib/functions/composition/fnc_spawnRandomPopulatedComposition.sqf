@@ -53,6 +53,9 @@ params [
 ];
 
 // Spawn a composition
+if (isNil "_category") then {
+    _category = ["camps", "communications", "fieldhq", "fort", "fuel", "heliports", "hq", "medical", "outposts", "power", "supports", "supplies"];
+};
 
 private _compositions = [_type, _category, _size, _faction] call ALiVE_fnc_getCompositions;
 private _composition = selectRandom _compositions;
