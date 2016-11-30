@@ -57,7 +57,7 @@ if (_type == "entity") then {
         {
             _agent = _x;
 
-            [_agent, getposATL (_roads call BIS_fnc_SelectRandom)] call ALiVE_fnc_doMoveRemote;
+            [_agent, getposATL (selectRandom _roads)] call ALiVE_fnc_doMoveRemote;
 
             sleep 5;
 
