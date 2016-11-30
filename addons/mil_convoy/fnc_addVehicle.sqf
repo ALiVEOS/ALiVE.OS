@@ -15,7 +15,7 @@
         _type = ([3, [_facs], _this select 4] call ALiVE_fnc_findVehicleType);
     };
 
-    _type = _type call BIS_fnc_selectRandom;
+    _type = (selectRandom _type);
 
     if (_debug) then {
         ["ALiVE MIL CONVOY Spawning %1 at %2", _type,_pos] call ALiVE_fnc_DumpR;
