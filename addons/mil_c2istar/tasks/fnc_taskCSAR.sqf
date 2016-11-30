@@ -282,7 +282,7 @@ switch (_taskState) do {
             private["_spawnTypes","_spawnType","_crewAnims","_unboundAnims","_boundAnims"];
 
             _spawnTypes = ["static"];
-            _spawnType = _spawnTypes call BIS_fnc_selectRandom;
+            _spawnType = (selectRandom _spawnTypes);
 
             // store task data in the params for this task set
             _taskParams = [] call ALIVE_fnc_hashCreate;
@@ -574,7 +574,7 @@ switch (_taskState) do {
             ["INF GROUPS: %1",_groups] call ALIVE_fnc_dump;
 
             _remotePosition = [_taskPosition, 500, 5, true] call ALIVE_fnc_getPositionDistancePlayers;
-            _remotePosition = _remotePosition call BIS_fnc_selectRandom;
+            _remotePosition = (selectRandom _remotePosition);
 
             {
                 _position = [_remotePosition, (random(200)), random(200)] call BIS_fnc_relPos;
@@ -597,7 +597,7 @@ switch (_taskState) do {
                 _groups = [];
 
                 _vehicleGroupTypes = ["Armored","Mechanized","Motorized"];
-                _vehicleGroup = _vehicleGroupTypes call BIS_fnc_selectRandom;
+                _vehicleGroup = (selectRandom _vehicleGroupTypes);
 
                 _group = [_vehicleGroup,_enemyFaction] call ALIVE_fnc_configGetRandomGroup;
                 if!(_group == "FALSE") then {
