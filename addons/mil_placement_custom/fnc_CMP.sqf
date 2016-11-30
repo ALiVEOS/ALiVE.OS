@@ -474,7 +474,7 @@ switch(_operation) do {
 
                 //Guards
                 if(count _infantryGroups > 0) then {
-                    _guardGroup = _infantryGroups call BIS_fnc_selectRandom;
+                    _guardGroup = (selectRandom _infantryGroups);
                     _guards = [_guardGroup, _position, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
 
                     //ARJay, here we could place the default patrols/garrisons instead of the static garrisson if you like to (same is in CIV MP)
@@ -606,7 +606,7 @@ switch(_operation) do {
                         {
                             _position = position _x;
                             _direction = direction _x;
-                            _vehicleClass = _supplyClasses call BIS_fnc_selectRandom;
+                            _vehicleClass = (selectRandom _supplyClasses);
                             if(random 1 > 0.3) then {
                                 _box = createVehicle [_vehicleClass, _position, [], 0, "NONE"];
                                 _countSupplies = _countSupplies + 1;
@@ -643,7 +643,7 @@ switch(_operation) do {
                             if (typeOf _x in ALIVE_militaryHeliBuildingTypes || typeOf _x in ALIVE_civilianHeliBuildingTypes || typeOf _x in ["Land_HelipadSquare_F","Land_HelipadCircle_F"]) then {
                                 _position = position _x;
                                 _direction = direction _x;
-                                _vehicleClass = _heliClasses call BIS_fnc_selectRandom;
+                                _vehicleClass = (selectRandom _heliClasses);
                                 if(random 1 > 0.8) then {
                                     [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
                                     _countProfiles = _countProfiles + 1;
@@ -758,9 +758,9 @@ switch(_operation) do {
                                 _supportPlacement = false;
                                 if(_supportCount <= _supportMax) then {
                                     _supportPlacement = true;
-                                    _vehicleClass = _supportClasses call BIS_fnc_selectRandom;
+                                    _vehicleClass = (selectRandom _supportClasses);
                                 }else{
-                                    _vehicleClass = _landClasses call BIS_fnc_selectRandom;
+                                    _vehicleClass = (selectRandom _landClasses);
                                 };
 
                                 //["SUPPORT PLACEMENT: %1",_supportPlacement] call ALIVE_fnc_dump;
