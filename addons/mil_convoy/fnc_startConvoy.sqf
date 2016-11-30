@@ -18,7 +18,7 @@ for "_j" from 1 to _intensity do {
                 _debug = _logic getvariable ["conv_debug_setting",false];
 
                 if (typename _factionsConvoy == "ARRAY") then {
-                    _factionsConvoy call BIS_fnc_SelectRandom;
+                    (selectRandom _factionsConvoy);
                 };
 
                 _convoyLocs = [];
@@ -70,7 +70,7 @@ for "_j" from 1 to _intensity do {
 
                                 private ["_quit","_road","_list"];
 
-                                _loc = _convoyLocs call BIS_fnc_selectRandom;
+                                _loc = (selectRandom _convoyLocs);
 
                                 if (isnil "_loc") exitwith {_exit = true};
 
@@ -78,7 +78,7 @@ for "_j" from 1 to _intensity do {
                                 _quit = false;
 
                                 if (count _list > 5) then {
-                                    _road = _list call BIS_fnc_selectRandom;
+                                    _road = (selectRandom _list);
                                     _pos = getposATL _road;
 
                                     _quit = !([_pos] call ALIVE_fnc_intrigger);
