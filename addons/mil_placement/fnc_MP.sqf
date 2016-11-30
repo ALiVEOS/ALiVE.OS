@@ -128,7 +128,7 @@ switch(_operation) do {
         _result = [_logic,_operation,_args,DEFAULT_TYPE,["Random","Armored","Mechanized","Motorized","Infantry","Air"]] call ALIVE_fnc_OOsimpleOperation;
         if(_result == "Random") then {
             // Randomly pick an type
-            _result = ["Armored","Mechanized","Motorized","Infantry","Air"] call BIS_fnc_selectRandom;
+            _result = (selectRandom ["Armored","Mechanized","Motorized","Infantry","Air"]);
             _logic setVariable ["type", _result];
         };
     };
@@ -788,10 +788,10 @@ switch(_operation) do {
                         If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
                             _compType = "Guerrilla";
                         };
-                        _HQ = selectRandom ([_compType, ["FieldHQ"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
+                        _HQ = (selectRandom ([_compType, ["FieldHQ"], ["Medium"], _faction] call ALiVE_fnc_getCompositions));
 
                         if (isNil "_HQ") then {
-                            _HQ = selectRandom ([_compType, ["HQ","FieldHQ"], ["Medium","Small"], _faction] call ALiVE_fnc_getCompositions);
+                            _HQ = (selectRandom ([_compType, ["HQ","FieldHQ"], ["Medium","Small"], _faction] call ALiVE_fnc_getCompositions));
                         };
 
                         _nearRoads = _flatpos nearRoads 1000;
@@ -837,10 +837,10 @@ switch(_operation) do {
                             _compType = "Guerrilla";
                         };
 
-                        _composition = selectRandom ([_compType, ["Camps","Outposts"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
+                        _composition = (selectRandom ([_compType, ["Camps","Outposts"], ["Medium"], _faction] call ALiVE_fnc_getCompositions));
 
                         if (isNil "_composition") then {
-                            _composition = selectRandom ([_compType, ["Camps","Outposts"], ["Medium","Small"], _faction] call ALiVE_fnc_getCompositions);
+                            _composition = (selectRandom ([_compType, ["Camps","Outposts"], ["Medium","Small"], _faction] call ALiVE_fnc_getCompositions));
                         };
 
                         if(count _composition > 0) then {
@@ -885,13 +885,13 @@ switch(_operation) do {
                             private _buildingPositions = [_x] call BIS_fnc_buildingPositions;
 
                             if (count _buildingPositions > 0) then {
-                                _position = _buildingPositions call BIS_fnc_selectRandom;
+                                _position = (selectRandom _buildingPositions);
                             } else {
                                 _position = position _x;
                             };
 
                             _direction = direction _x;
-                            _vehicleClass = _supplyClasses call BIS_fnc_selectRandom;
+                            _vehicleClass = (selectRandom _supplyClasses);
 
                             if(random 1 > 0.6) then {
                                 _box = createVehicle [_vehicleClass, _position, [], 0, "NONE"];
@@ -946,7 +946,7 @@ switch(_operation) do {
                                 _position = position _helipad;
                                 _direction = direction _helipad;
                             };
-                            _vehicleClass = _heliClasses call BIS_fnc_selectRandom;
+                            _vehicleClass = (selectRandom _heliClasses);
                             if(random 1 > 0.8) then {
                                 [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
                                 _countProfiles = _countProfiles + 1;
@@ -1011,7 +1011,7 @@ switch(_operation) do {
                                     } foreach (nearestObjects [position _x, [], 100]);
                                     if (count _runway > 0) then {
                                         // diag_log format["Cannot find hangar, choosing safe taxiway from: %1", _runway];
-                                        _pavement = selectRandom _runway;
+                                        _pavement = (selectRandom _runway);
                                         _position = position _pavement;
                                         _direction = direction _pavement;
                                     } else {
@@ -1023,7 +1023,7 @@ switch(_operation) do {
                                 };
 
                                 // Place Aircraft
-                                _vehicleClass = _airClasses call BIS_fnc_selectRandom;
+                                _vehicleClass = (selectRandom _airClasses);
                                 [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
                                 _countProfiles = _countProfiles + 1;
                                 _countUncrewedAir =_countUncrewedAir + 1;
@@ -1142,9 +1142,9 @@ switch(_operation) do {
                                 _supportPlacement = false;
                                 if(_supportCount <= _supportMax) then {
                                     _supportPlacement = true;
-                                    _vehicleClass = _supportClasses call BIS_fnc_selectRandom;
+                                    _vehicleClass = (selectRandom _supportClasses);
                                 }else{
-                                    _vehicleClass = _landClasses call BIS_fnc_selectRandom;
+                                    _vehicleClass = (selectRandom _landClasses);
                                 };
 
                                 //["SUPPORT PLACEMENT: %1",_supportPlacement] call ALIVE_fnc_dump;
@@ -1393,7 +1393,7 @@ switch(_operation) do {
 
                     //Default guards (place always)
                     if(count _infantryGroups > 0) then {
-                        _guardGroup = _infantryGroups call BIS_fnc_selectRandom;
+                        _guardGroup = (selectRandom _infantryGroups);
                         _guards = [_guardGroup, _center, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
 
                         //ARJay, here we could place the default patrols/garrisons instead of the static garrisson if you like to (same is in CIV MP)
