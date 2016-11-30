@@ -1078,7 +1078,7 @@ switch(_operation) do {
             // and will be over-written in addHouse
 
             _units = _house getVariable ["unittypes", []];
-            _houseFaction = _house getVariable ["faction", _factions call BIS_fnc_SelectRandom];
+            _houseFaction = _house getVariable ["faction", (selectRandom _factions)];
 
             // Check: if no units already defined
             if ((count _units == 0) || {!(_houseFaction == _faction)}) then {
@@ -1128,7 +1128,7 @@ switch(_operation) do {
             if (count _positions == 0) exitwith {_grp};
 
             {
-                _pos = (_positions call BIS_fnc_selectRandom);
+                _pos = (selectRandom _positions);
                 _x setPosATL [_pos select 0, _pos select 1, (_pos select 2 + 0.4)];
             } forEach units _grp;
             [_logic, "addGroup", [_house, _grp]] call ALiVE_fnc_CQB;
@@ -1209,7 +1209,7 @@ switch(_operation) do {
                                         };
 
                                         if (count _hosts > 0) then {
-                                            _host = _hosts call BIS_fnc_selectRandom;
+                                            _host = (selectRandom _hosts);
 
                                             if !(isnil "_host") then {
                                                 _house setvariable ["group","preinit",true];
@@ -1217,9 +1217,9 @@ switch(_operation) do {
                                                 if (_useDominantFaction) then {
                                                     _faction = [getposATL _house, 250,true] call ALiVE_fnc_getDominantFaction;
 
-                                                    if (isnil "_faction") then {_faction = (_logic getvariable ["factions",["OPF_F"]]) call BIS_fnc_SelectRandom};
+                                                    if (isnil "_faction") then {_faction = (selectRandom (_logic getvariable ["factions",["OPF_F"]])};
                                                 } else {
-                                                    _faction = (_logic getvariable ["factions",["OPF_F"]]) call BIS_fnc_SelectRandom;
+                                                    _faction = (selectRandom (_logic getvariable ["factions",["OPF_F"]]));
                                                 };
 
                                                 // Naught, ALiVE_fnc_BUS seems to be broken since movement into x_lib (Server to client calls fail)! Please check on dedicated server, switched to BIS_fnc_MP for now!
