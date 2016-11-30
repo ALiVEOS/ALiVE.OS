@@ -1217,7 +1217,7 @@ switch(_operation) do {
                                                 if (_useDominantFaction) then {
                                                     _faction = [getposATL _house, 250,true] call ALiVE_fnc_getDominantFaction;
 
-                                                    if (isnil "_faction") then {_faction = (selectRandom (_logic getvariable ["factions",["OPF_F"]])};
+                                                    if (isnil "_faction") then {_faction = (selectRandom (_logic getvariable ["factions",["OPF_F"]]))};
                                                 } else {
                                                     _faction = (selectRandom (_logic getvariable ["factions",["OPF_F"]]));
                                                 };
