@@ -53,9 +53,11 @@ if (GVAR(ENABLED)) then {
     _killed = _this select 0;
     _killer = _this select 1;
 
+    // diag_log format["KILLED: %1",_this];
+
     _aceKilled = false;
 
-    if (isNil "_killer") then {
+    if (isNull _killer || _killed == _killer) then {
         // Check for ACE last damage else return killed.
         _killer = _killed getVariable ["ace_medical_lastDamageSource", _killed];
 
