@@ -103,7 +103,7 @@ switch (_taskState) do {
 
             _dialogOptions = [ALIVE_generatedTasks,"MilDefence"] call ALIVE_fnc_hashGet;
             _dialogOptions = _dialogOptions select 1;
-            _dialogOption = +(_dialogOptions call BIS_fnc_selectRandom);
+            _dialogOption = +(selectRandom _dialogOptions);
 
             // format the dialog options
 
@@ -295,7 +295,7 @@ switch (_taskState) do {
             //["INF GROUPS: %1",_groups] call ALIVE_fnc_dump;
 
             _remotePosition = [_taskPosition, 500, 5, true] call ALIVE_fnc_getPositionDistancePlayers;
-            _remotePosition = _remotePosition call BIS_fnc_selectRandom;
+            _remotePosition = (selectRandom _remotePosition);
 
             {
                 _position = [_remotePosition, (random(200)), random(200)] call BIS_fnc_relPos;
@@ -318,7 +318,7 @@ switch (_taskState) do {
                 _groups = [];
 
                 _vehicleGroupTypes = ["Armored","Mechanized","Motorized"];
-                _vehicleGroup = _vehicleGroupTypes call BIS_fnc_selectRandom;
+                _vehicleGroup = (selectRandom _vehicleGroupTypes);
 
                 _group = [_vehicleGroup,_enemyFaction] call ALIVE_fnc_configGetRandomGroup;
                 if!(_group == "FALSE") then {
