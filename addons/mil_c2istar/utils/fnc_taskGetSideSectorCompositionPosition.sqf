@@ -78,15 +78,15 @@ if(count _sideSectors > 0) then {
         if("exposedHills" in (_bestPlaces select 1)) then {
             _exposedHills = [_bestPlaces,"exposedHills"] call ALIVE_fnc_hashGet;
             if(count _exposedHills > 0) then {
-                _targetPosition = _exposedHills call BIS_fnc_selectRandom;
+                _targetPosition = (selectRandom _exposedHills);
             }else{
                 if(count _flatEmpty > 0) then {
-                    _targetPosition = _flatEmpty call BIS_fnc_selectRandom;
+                    _targetPosition = (selectRandom _flatEmpty);
                 };
             };
         }else{
             if(count _flatEmpty > 0) then {
-                _targetPosition = _flatEmpty call BIS_fnc_selectRandom;
+                _targetPosition = (selectRandom _flatEmpty);
             };
         };
 
