@@ -491,7 +491,7 @@ class FSM
       init = /*%FSM<STATEINIT""">*/"{" \n
        "    _unit = _x;" \n
        "    _pos = _unit getvariable [""HousePos"",nil];" \n
-       "    if (isnil ""_pos"") then {_pos = _bldgpos call BIS_fnc_selectRandom};" \n
+       "    if (isnil ""_pos"") then {_pos = (selectRandom _bldgpos)};" \n
        "    _timeout = time;" \n
        "" \n
        "    _unit setSpeedMode ""FULL"";" \n
