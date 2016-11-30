@@ -99,7 +99,7 @@ if ((count _waypoints == 0) && {isnil "_parkedAir"}) then {
     for "_i" from 0 to 4 do {
         if (count _locations > 0) then {
             private ["_location"];
-            _location = _locations call BIS_fnc_SelectRandom;
+            _location = (selectRandom _locations);
             _locations = _locations - [_location];
             _pos = position _location;
         } else {
@@ -113,7 +113,7 @@ if ((count _waypoints == 0) && {isnil "_parkedAir"}) then {
             _roadsArray = _pos nearRoads 200;
 
             if (count _roadsArray > 0) then {
-                _pos = getposATL (_roadsArray call BIS_fnc_SelectRandom);
+                _pos = getposATL (selectRandom _roadsArray);
             };
         };
 
