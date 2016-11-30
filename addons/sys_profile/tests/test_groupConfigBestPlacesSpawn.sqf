@@ -108,8 +108,8 @@ if(count _sortedFlatEmptyPositions > 0) then {
 
 {
     _position = _x;
-    _type = _testTypes call BIS_fnc_selectRandom;
-    _faction = _testFactions call BIS_fnc_selectRandom;
+    _type = (selectRandom _testTypes);
+    _faction = (selectRandom _testFactions);
     _group = [_type,_faction] call ALIVE_fnc_configGetRandomGroup;
     if!(_group == "FALSE") then {
         [_group, _position] call ALIVE_fnc_createProfilesFromGroupConfig;
