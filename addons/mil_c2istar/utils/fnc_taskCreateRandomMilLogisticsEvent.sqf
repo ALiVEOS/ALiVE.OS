@@ -28,7 +28,7 @@ _taskSide = _this select 1;
 _taskFaction = _this select 2;
 
 _types = ["AIRDROP","STANDARD","HELI_INSERT"];
-_type = _types call BIS_fnc_selectRandom;
+_type = (selectRandom _types);
 
 switch(_type) do {
     case "AIRDROP":{
