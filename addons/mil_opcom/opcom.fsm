@@ -887,7 +887,7 @@ class FSM
        "        };" \n
        "" \n
        "    _position = [_base,""center""] call ALiVE_fnc_HashGet;" \n
-       "    _faction = _factions call BIS_fnc_SelectRandom;" \n
+       "    _faction = (selectRandom _factions);" \n
        "" \n
        "    //Limiting to not drop 100s of troops at once" \n
        "    _forceMakeup = [" \n
