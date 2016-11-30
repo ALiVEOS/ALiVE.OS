@@ -102,7 +102,7 @@ switch (_taskState) do {
             _targetBuildings pushBack _targetBuilding;
         };
 
-        _selectedBuilding = _targetBuildings call BIS_fnc_selectRandom;
+        _selectedBuilding = (selectRandom _targetBuildings);
         _selectedBuilding = _selectedBuilding select 0;
 
         _selectedBuilding call ALIVE_fnc_inspectArray;
@@ -123,7 +123,7 @@ switch (_taskState) do {
 
             _dialogOptions = [ALIVE_generatedTasks,"InsurgencyDestroyAssets"] call ALIVE_fnc_hashGet;
             _dialogOptions = _dialogOptions select 1;
-            _dialogOption = +(_dialogOptions call BIS_fnc_selectRandom);
+            _dialogOption = +(selectRandom _dialogOptions);
 
             // format the dialog options
 
