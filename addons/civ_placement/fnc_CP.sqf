@@ -123,7 +123,7 @@ switch(_operation) do {
         _result = [_logic,_operation,_args,DEFAULT_TYPE,["Random","Armored","Mechanized","Motorized","Infantry","Air"]] call ALIVE_fnc_OOsimpleOperation;
         if(_result == "Random") then {
             // Randomly pick an type
-            _result = ["Armored","Mechanized","Motorized","Infantry","Air"] call BIS_fnc_selectRandom;
+            _result = (selectRandom ["Armored","Mechanized","Motorized","Infantry","Air"]);
             _logic setVariable ["type", _result];
         };
     };
@@ -994,7 +994,7 @@ switch(_operation) do {
                 _size = [_x, "size"] call ALIVE_fnc_hashGet;
 
                 if(count _infantryGroups > 0) then {
-                    _guardGroup = _infantryGroups call BIS_fnc_selectRandom;
+                    _guardGroup = (selectRandom _infantryGroups);
                     _guards = [_guardGroup, _center, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
 
                     //ARJay, here we could place the default patrols/garrisons instead of the static garrisson if you like to (same is in CIV MP)
