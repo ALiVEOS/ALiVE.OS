@@ -487,9 +487,9 @@ switch(_operation) do {
         waitUntil {ALIVE_REQUIRE_INITIALISED};
 
         _sides = ["EAST","WEST"];
-        _side = _sides call BIS_fnc_selectRandom;
+        _side = (selectRandom _sides);
         _locationTypes = ["Short","Medium","Long"];
-        _locationType = _locationTypes call BIS_fnc_selectRandom;
+        _locationType = (selectRandom _locationTypes);
 
         _initialPosition = position _logic;
 
@@ -1904,7 +1904,7 @@ switch(_operation) do {
                     waitUntil{_profile select 2 select 1};
 
                     _group = _profile select 2 select 13;
-                    _unit = (units _group) call BIS_fnc_selectRandom;
+                    _unit = (selectRandom (units _group));
 
                     _duration = 30;
 
@@ -2104,7 +2104,7 @@ switch(_operation) do {
                     _objectives = _module getVariable "objectives";
                     _faction = _module getVariable "faction";
 
-                    _objective = _objectives call BIS_fnc_selectRandom;
+                    _objective = (selectRandom _objectives);
 
                     _position = [_objective,"center"] call ALIVE_fnc_hashGet;
                     _size = [_objective,"size"] call ALIVE_fnc_hashGet;
@@ -2244,7 +2244,7 @@ switch(_operation) do {
                 };
             } forEach (entities "Module_F");
 
-            _logisticsModule = _logisticsModules call BIS_fnc_selectRandom;
+            _logisticsModule = (selectRandom _logisticsModules);
 
             if!(isNil "_logisticsModule") then {
 
@@ -2283,7 +2283,7 @@ switch(_operation) do {
                     if(_eventState == "heliTransport") then {
 
                         _transportProfiles = [_logisticsEvent,"transportProfiles"] call ALIVE_fnc_hashGet;
-                        _transportProfile = _transportProfiles call BIS_fnc_selectRandom;
+                        _transportProfile = (selectRandom _transportProfiles);
 
                         _transportProfile = [ALIVE_profileHandler, "getProfile", _transportProfile] call ALIVE_fnc_profileHandler;
                         if!(isNil "_transportProfile") then {
@@ -2374,7 +2374,7 @@ switch(_operation) do {
                 _CQBModules pushback _x;
             } foreach (MOD(CQB) getVariable ["instances",[]]);
 
-            _CQBModule = _CQBModules call BIS_fnc_selectRandom;
+            _CQBModule = (selectRandom _CQBModules);
 
             if!(isNil "_CQBModule") then {
 
@@ -2863,7 +2863,7 @@ switch(_operation) do {
 
                             private["_profileID","_profile","_position","_faction","_line1","_group","_unit","_nearestTown","_factionName","_title","_text","_target","_duration"];
 
-                            _profileID = _section call BIS_fnc_selectRandom;
+                            _profileID = (selectRandom _section);
                             _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
 
                             if !(isnil "_profile") then {
@@ -2891,7 +2891,7 @@ switch(_operation) do {
                                     sleep 2;
 
                                     _group = _profile select 2 select 13;
-                                    _unit = (units _group) call BIS_fnc_selectRandom;
+                                    _unit = (selectRandom (units _group));
 
                                     _duration = 1000;
 
@@ -4052,7 +4052,7 @@ switch(_operation) do {
 
         //_cameraAngles = ["DEFAULT","LOW","EYE","HIGH","BIRDS_EYE","UAV","SATELITE"];
         _cameraAngles = ["EYE","HIGH","BIRDS_EYE","UAV"];
-        _initialAngle = _cameraAngles call BIS_fnc_selectRandom;
+        _initialAngle = (selectRandom _cameraAngles);
 
         /*
         ["CINEMATIC DURATION: %1",_duration] call ALIVE_fnc_dump;
@@ -4078,7 +4078,7 @@ switch(_operation) do {
             _cameraShots = _cameraShots + ["CHASE","CHASE_SIDE","CHASE_ANGLE"];
         };
 
-        _shot = _cameraShots call BIS_fnc_selectRandom;
+        _shot = (selectRandom _cameraShots);
 
         /*
         ["CAMERA SHOT IS: %1",_shot] call ALIVE_fnc_dump;
