@@ -60,14 +60,14 @@ ARJay
         _heliClasses = _heliClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
         _insertionType = "Helicopter";
     }else{
-        _insertionType = _insertionTypes call BIS_fnc_selectRandom;
+        _insertionType = (selectRandom _insertionTypes);
     };
 
     private ["_vehicleClass","_profiles","_crewProfile","_crewProfileID","_vehicleProfile","_vehicleProfileID","_profileWaypoint"];
 
     switch(_insertionType) do {
         case "Car":{
-            _vehicleClass = _carClasses call BIS_fnc_selectRandom;
+            _vehicleClass = (selectRandom _carClasses);
             _profiles = [_vehicleClass,_taskSide,_taskFaction,"CAPTAIN",_insertionPosition,random(360),false,_taskFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
             _crewProfile = _profiles select 0;
             _crewProfileID = _crewProfile select 2 select 4;
@@ -80,7 +80,7 @@ ARJay
             [_crewProfile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
         };
         case "Helicopter":{
-            _vehicleClass = _heliClasses call BIS_fnc_selectRandom;
+            _vehicleClass = (selectRandom _heliClasses);
             _profiles = [_vehicleClass,_taskSide,_taskFaction,"CAPTAIN",_insertionPosition,random(360),false,_taskFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
             _crewProfile = _profiles select 0;
             _crewProfileID = _crewProfile select 2 select 4;
