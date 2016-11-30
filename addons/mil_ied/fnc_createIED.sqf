@@ -105,7 +105,7 @@ for "_j" from 1 to _numIEDs do {
                     //Seems to cause a crash lateley if _clutter is empty (trigger-related?)
                     //Fixme: @Tup: why is clutter clutterClasses empty?
                     if (count _clutter > 0) then {
-                        _clut = createVehicle [_clutter call BIS_fnc_selectRandom,_IEDpos, [], 40, ""];
+                        _clut = createVehicle [(selectRandom _clutter),_IEDpos, [], 40, ""];
                         _clut setvariable [QUOTE(ADDON), true];
 
                         //Fixme: what happens if clut is nil or null
@@ -130,7 +130,7 @@ for "_j" from 1 to _numIEDs do {
         if !(_thirdParty) then {
             _IEDpos set [2, -0.1];
         };
-        _IEDskin = _IEDskins call BIS_fnc_selectRandom;
+        _IEDskin = (selectRandom _IEDskins);
         _IED = createVehicle [_IEDskin, _IEDpos, [], 0, ""];
 
         _ID = format ["%1-%2", _town, _j];

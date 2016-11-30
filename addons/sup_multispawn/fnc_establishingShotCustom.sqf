@@ -259,7 +259,7 @@ ALiVE_fnc_establishingShot_logic3 = ALiVE_fnc_establishingShot_logic_group creat
 
             _mul = _mul - [objNull];
 
-            _tgt = (_mul call BIS_fnc_SelectRandom);
+            _tgt = (selectRandom _mul);
             _pos = position _tgt;
 
             _coords = [_pos, _rad, _ang] call BIS_fnc_relPos; _coords set [2, _alt];

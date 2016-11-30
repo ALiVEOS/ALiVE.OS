@@ -36,7 +36,7 @@ if (isNil "_bomber") then {
             _class = ([[_faction], 1, ALiVE_MIL_CQB_UNITBLACKLIST, true] call ALiVE_fnc_chooseRandomUnits) select 0;
         };
     } else {
-        _class = (call compile (ADDON getVariable "Bomber_Type")) call BIS_fnc_selectRandom;
+        _class = (selectRandom (call compile (ADDON getVariable "Bomber_Type")));
     };
     if (isNil "_class") exitWith {diag_log "No bomber class defined."};
     _bomber = _grp createUnit [_class, _pos, [], _size, "NONE"];
@@ -54,7 +54,7 @@ _bomber addVest "V_ALiVE_Suicide_Vest";
 _bomber addItemToVest "DemoCharge_Remote_Mag";
 
 // Select victim
-_victim = units (group _victim) call BIS_fnc_selectRandom;
+_victim = (selectRandom (units (group _victim)));
 if (isNil "_victim") exitWith {    deletevehicle _bomber;};
 
 // Add debug marker

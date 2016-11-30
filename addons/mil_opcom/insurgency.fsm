@@ -492,7 +492,7 @@ class FSM
        "// Determine best action type" \n
        "" \n
        "// Action types" \n
-       "_type = if (count _unusedActions > 0) then {_unusedActions call BIS_fnc_SelectRandom} else {""idle""};" \n
+       "_type = if (count _unusedActions > 0) then {(selectRandom _unusedActions)} else {""idle""};" \n
        "" \n
        "" \n
        "" \n
@@ -515,7 +515,7 @@ class FSM
        "" \n
        "            _pos = _center;" \n
        "            _switch = false;" \n
-       "            _faction = _factions call BIS_fnc_SelectRandom;" \n
+       "            _faction = (selectRandom _factions);" \n
        "" \n
        "            _paramsActions = [time,_center,_id,_size,_faction,_sidesEnemy,_agents];" \n
        "            _codeActions = ""ALiVE_fnc_INS_assault"";" \n
@@ -534,13 +534,13 @@ class FSM
        "            _types = [""infantry""];" \n
        "            _groupsize = 2;" \n
        "            _road = objNull;" \n
-       "            _faction = _factions call BIS_fnc_SelectRandom;" \n
+       "            _faction = (selectRandom _factions);" \n
        "" \n
        "            _nearRoads = _pos nearRoads (_size + 200);" \n
        "" \n
        "            if (count _nearRoads > 0) then {" \n
        "                _nearRoads = [_nearRoads,[_pos],{_Input0 distance _x},""DESCEND""] call ALiVE_fnc_SortBy;" \n
-       "                if (count _nearRoads > 5) then {_nearRoads resize 5; _road = _nearRoads call BIS_fnc_selectRandom} else {_road = _nearRoads select 0};" \n
+       "                if (count _nearRoads > 5) then {_nearRoads resize 5; _road = (selectRandom _nearRoads)} else {_road = _nearRoads select 0};" \n
        "            };" \n
        "" \n
        "            //Override destination if there is an explosive factory" \n
@@ -634,7 +634,7 @@ class FSM
        "// Determine best action type" \n
        "" \n
        "// Action types" \n
-       "_type = if (count _unusedActions > 0) then {_unusedActions call BIS_fnc_SelectRandom} else {""idle""};" \n
+       "_type = if (count _unusedActions > 0) then {(selectRandom _unusedActions)} else {""idle""};" \n
        "" \n
        "" \n
        "" \n
@@ -658,7 +658,7 @@ class FSM
        "" \n
        "            _pos = _center;" \n
        "            _switch = false;" \n
-       "            _faction = _factions call BIS_fnc_SelectRandom;" \n
+       "            _faction = (selectRandom _factions);" \n
        "" \n
        "            // Define that no section shall be assigned, code will be passed through" \n
        "            _groupsize = 0;" \n
@@ -749,7 +749,7 @@ class FSM
        "" \n
        "if (count _agents == 0) then {_unusedActions = _unusedActions - [""sabotage""]};" \n
        "" \n
-       "_type = if (count _unusedActions > 0) then {_unusedActions call BIS_fnc_SelectRandom} else {""idle""};" \n
+       "_type = if (count _unusedActions > 0) then {(selectRandom _unusedActions)} else {""idle""};" \n
        "" \n
        "// Overwrite type with factory if fitting" \n
        "// if (!alive ([[],""convertObject"",[_objective,""factory"",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM) && {_size >= 200}) then {_type = ""factory""};" \n
@@ -776,7 +776,7 @@ class FSM
        "" \n
        "            _pos = _center;" \n
        "            _switch = false;" \n
-       "            _faction = _factions call BIS_fnc_SelectRandom;" \n
+       "            _faction = (selectRandom _factions);" \n
        "" \n
        "            _building = [[],""convertObject"",[_objective,""factory"",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;" \n
        "" \n
@@ -809,7 +809,7 @@ class FSM
        "" \n
        "            _pos = _center;" \n
        "            _switch = false;" \n
-       "            _faction = _factions call BIS_fnc_SelectRandom;" \n
+       "            _faction = (selectRandom _factions);" \n
        "" \n
        "            _building = [[],""convertObject"",[_objective,""factory"",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;" \n
        "" \n
@@ -833,7 +833,7 @@ class FSM
        "" \n
        "            _pos = _center;" \n
        "            _switch = false;" \n
-       "            _faction = _factions call BIS_fnc_SelectRandom;" \n
+       "            _faction = (selectRandom _factions);" \n
        "" \n
        "            _building = [[],""convertObject"",[_objective,""factory"",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;" \n
        "" \n
@@ -857,7 +857,7 @@ class FSM
        "            _pos = _center;" \n
        "            _switch = false;" \n
        "            _target = objNull;" \n
-       "            _faction = _factions call BIS_fnc_SelectRandom;" \n
+       "            _faction = (selectRandom _factions);" \n
        "" \n
        "            _behaviour = ""SAFE"";" \n
        "            _speed = ""LIMITED"";" \n
@@ -980,7 +980,7 @@ class FSM
        "" \n
        "// Analyse" \n
        "// Determine best action type" \n
-       "_type = if (count _unusedActions > 0) then {_unusedActions call BIS_fnc_SelectRandom} else {""idle""};" \n
+       "_type = if (count _unusedActions > 0) then {(selectRandom _unusedActions)} else {""idle""};" \n
        "" \n
        "// Overwrite type with Recruitment HQ if fitting" \n
        "if (count _agents >= 2 && {!(""recruit"" in _actionsFulfilled)}) then {_type = ""recruit""};" \n
@@ -1006,7 +1006,7 @@ class FSM
        "" \n
        "            _pos = _center;" \n
        "            _switch = false;" \n
-       "            _faction = _factions call BIS_fnc_SelectRandom;" \n
+       "            _faction = (selectRandom _factions);" \n
        "" \n
        "            _handle = [[],""convertObject"",[_objective,""roadblocks"",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;" \n
        "" \n
@@ -1030,14 +1030,14 @@ class FSM
        "" \n
        "            _pos = _center;" \n
        "            _switch = false;" \n
-       "            _faction = _factions call BIS_fnc_SelectRandom;" \n
+       "            _faction = (selectRandom _factions);" \n
        "" \n
        "            _building = [[],""convertObject"",[_objective,""depot"",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;" \n
        "" \n
        "            if (!alive _building) then {" \n
        "                _buildings = [_center, _size] call ALiVE_fnc_getEnterableHouses;" \n
        "                if (count _buildings == 0) then {_building = objNull; [""There is no suitable building for an insurgents HQ!""] call ALiVE_fnc_Dump} else {" \n
-       "                    _building = _buildings call BIS_fnc_SelectRandom;" \n
+       "                    _building = (selectRandom _buildings);" \n
        "                };" \n
        "            };" \n
        "" \n
@@ -1061,14 +1061,14 @@ class FSM
        "            _pos = _center;" \n
        "            _switch = false;" \n
        "            _groupsize = 1;" \n
-       "            _faction = _factions call BIS_fnc_SelectRandom;" \n
+       "            _faction = (selectRandom _factions);" \n
        "" \n
        "            _building = [[],""convertObject"",[_objective,""HQ"",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;" \n
        "" \n
        "            if (!alive _building) then {" \n
        "                _buildings = [_center, _size] call ALiVE_fnc_getEnterableHouses;" \n
        "                if (count _buildings == 0) then {_building = objNull; [""There is no suitable building for an insurgents HQ!""] call ALiVE_fnc_Dump} else {" \n
-       "                    _building = _buildings call BIS_fnc_SelectRandom;" \n
+       "                    _building = (selectRandom _buildings);" \n
        "                };" \n
        "            };" \n
        "" \n
@@ -1303,7 +1303,7 @@ class FSM
        "                _damages = [_profile,""damages""] call ALiVE_fnc_HashGet;" \n
        "                _ranks = [_profile,""ranks""] call ALiVE_fnc_HashGet;" \n
        "                _faction = [_profile,""faction""] call ALiVE_fnc_HashGet;" \n
-       "                _civFaction = _civFactions call BIS_fnc_SelectRandom;" \n
+       "                _civFaction = (selectRandom _civFactions);" \n
        "                _class = [[_civFaction],1,[],false] call ALiVE_fnc_chooseRandomUnits;" \n
        "" \n
        "                _storage pushback [_profileID,_profileSide,_unitClasses,_positions,_damages,_ranks,_faction];" \n

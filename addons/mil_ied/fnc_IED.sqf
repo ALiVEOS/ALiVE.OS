@@ -319,7 +319,7 @@ switch(_operation) do {
                             };
                         };
 
-                        _faction = _factions call bis_fnc_selectRandom;
+                        _faction = (selectRandom _factions);
 
                         //Roll the dice
                         if (GVAR(Loaded)) then {

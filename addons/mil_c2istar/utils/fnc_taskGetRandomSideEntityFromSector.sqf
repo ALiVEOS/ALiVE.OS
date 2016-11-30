@@ -44,7 +44,7 @@ if(count _taskSector > 0) then {
 
             {
 
-                _targetEntityID = _sideEntities call BIS_fnc_selectRandom;
+                _targetEntityID = (selectRandom _sideEntities);
                 _targetEntityID = _targetEntityID select 0;
 
                 _entityProfile = [ALIVE_profileHandler, "getProfile", _targetEntityID] call ALIVE_fnc_profileHandler;

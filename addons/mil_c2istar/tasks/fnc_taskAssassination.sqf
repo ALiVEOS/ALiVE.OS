@@ -155,7 +155,7 @@ switch (_taskState) do {
             If (_taskEnemySide == RESISTANCE) then {
                 _compType = "Guerrilla";
             };
-            _category = selectRandom ["HQ", "Outposts", "FieldHQ", "Camps"];
+            _category = (selectRandom ["HQ", "Outposts", "FieldHQ", "Camps"]);
             [_targetPosition, _compType, _category, _taskEnemyFaction, "Medium", 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
         };
 
@@ -167,7 +167,7 @@ switch (_taskState) do {
 
             _dialogOptions = [ALIVE_generatedTasks,"Assassination"] call ALIVE_fnc_hashGet;
             _dialogOptions = _dialogOptions select 1;
-            _dialogOption = +(_dialogOptions call BIS_fnc_selectRandom);
+            _dialogOption = +(selectRandom _dialogOptions);
 
             // format the dialog options
 
@@ -230,7 +230,7 @@ switch (_taskState) do {
             private["_spawnTypes","_spawnType"];
 
             _spawnTypes = ["static","insertion","extraction"];
-            _spawnType = _spawnTypes call BIS_fnc_selectRandom;
+            _spawnType = (selectRandom _spawnTypes);
 
             // store task data in the params for this task set
 
@@ -309,9 +309,9 @@ switch (_taskState) do {
                         _electronics = [_taskObjects,"electronics"] call ALIVE_fnc_hashGet;
                         _documents = [_taskObjects,"documents"] call ALIVE_fnc_hashGet;
 
-                        _tableClass = _tables call BIS_fnc_selectRandom;
-                        _electronicClass = _electronics call BIS_fnc_selectRandom;
-                        _documentClass = _documents call BIS_fnc_selectRandom;
+                        _tableClass = (selectRandom _tables);
+                        _electronicClass = (selectRandom _electronics);
+                        _documentClass = (selectRandom _documents);
 
                         _table = _tableClass createVehicle _taskPosition;
                         _table setdir 0;

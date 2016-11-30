@@ -192,7 +192,7 @@ switch (_taskState) do {
                 } else {
                     ["C2ISTAR - Task SabotageBuilding - Currently there are no OPCOM objectives available, using map locations!"] call ALiVE_fnc_Dump;
 
-                    _taskLocation = position ((nearestLocations [getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition"), ["NameVillage","NameCity","NameCityCapital","NameLocal","CityCenter","Airport"], 30000]) call BIS_fnc_SelectRandom);
+                    _taskLocation = position (selectRandom (nearestLocations [getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition"), ["NameVillage","NameCity","NameCityCapital","NameLocal","CityCenter","Airport"], 30000]));
                 };
             };
         };
@@ -347,7 +347,7 @@ switch (_taskState) do {
         // select the random text
         _dialogOptions = [ALIVE_generatedTasks,"SabotageBuilding"] call ALIVE_fnc_hashGet;
         _dialogOptions = _dialogOptions select 1;
-        _dialogOption = +(_dialogOptions call BIS_fnc_selectRandom);
+        _dialogOption = +(selectRandom _dialogOptions);
 
         // format the dialog options
         private["_nearestTown","_dialog","_formatDescription","_formatChat","_formatMessage","_formatMessageText"];

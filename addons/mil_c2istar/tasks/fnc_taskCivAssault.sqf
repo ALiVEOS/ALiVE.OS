@@ -109,7 +109,7 @@ switch (_taskState) do {
 
             _dialogOptions = [ALIVE_generatedTasks,"CivAssault"] call ALIVE_fnc_hashGet;
             _dialogOptions = _dialogOptions select 1;
-            _dialogOption = +(_dialogOptions call BIS_fnc_selectRandom);
+            _dialogOption = +(selectRandom _dialogOptions);
 
             // format the dialog options
 

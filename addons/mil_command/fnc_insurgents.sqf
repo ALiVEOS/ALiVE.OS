@@ -111,7 +111,7 @@ if (_type == "entity") then {
 
                     _list = _list - [_units,objnull];
 
-                    if (count _list > 0) then {_target = _list call BIS_fnc_SelectRandom};
+                    if (count _list > 0) then {_target = (selectRandom _list)};
                 };
 
                 if (!isnil "_target" && {alive _target} && {{alive _x && {_x distance _target < 20}} count _units > 0}) then {
@@ -208,7 +208,7 @@ if (_type == "entity") then {
 
                     _list = _list - [_units,objnull];
 
-                    if (count _list > 0) then {_target = _list call BIS_fnc_SelectRandom};
+                    if (count _list > 0) then {_target = (selectRandom _list)};
                 };
 
                 if (!isnil "_target" && {alive _target}) then {

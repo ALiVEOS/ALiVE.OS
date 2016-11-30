@@ -186,7 +186,7 @@ switch (_taskState) do {
 
             _dialogOptions = [ALIVE_generatedTasks,"Rescue"] call ALIVE_fnc_hashGet;
             _dialogOptions = _dialogOptions select 1;
-            _dialogOption = +(_dialogOptions call BIS_fnc_selectRandom);
+            _dialogOption = +(selectRandom _dialogOptions);
 
             // format the dialog options
 
@@ -278,7 +278,7 @@ switch (_taskState) do {
             private["_spawnTypes","_spawnType","_hostageAnims","_unboundAnims","_boundAnims"];
 
             _spawnTypes = ["static"];
-            _spawnType = _spawnTypes call BIS_fnc_selectRandom;
+            _spawnType = (selectRandom _spawnTypes);
 
             _boundAnims = [
                 [
@@ -390,16 +390,16 @@ switch (_taskState) do {
                         _electronics = [_taskObjects,"electronics"] call ALIVE_fnc_hashGet;
                         _documents = [_taskObjects,"documents"] call ALIVE_fnc_hashGet;
 
-                        _tableClass = _tables call BIS_fnc_selectRandom;
-                        private _chairClass = _chairs call BIS_fnc_selectRandom;
-                        _electronicClass = _electronics call BIS_fnc_selectRandom;
-                        _documentClass = _documents call BIS_fnc_selectRandom;
+                        _tableClass = (selectRandom _tables);
+                        private _chairClass = (selectRandom _chairs);
+                        _electronicClass = (selectRandom _electronics);
+                        _documentClass = (selectRandom _documents);
 
                         // see if a building is nearby, if so change the targetposition
                         private _bldgPos = [_targetPosition, 50] call ALiVE_fnc_findIndoorHousePositions;
                         if (count _bldgPos > 0) then {
-                            _targetPosition = selectRandom _bldgPos;
-                            _tablePosition = selectRandom _bldgPos;
+                            _targetPosition = (selectRandom _bldgPos);
+                            _tablePosition = (selectRandom _bldgPos);
                             _table = createVehicle [_tableClass,_tablePosition,[],0.5,"NONE"];
                         } else {
                             _table = createVehicle [_tableClass,_targetPosition,[],4,"NONE"];

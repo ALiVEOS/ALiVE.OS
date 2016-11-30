@@ -39,7 +39,7 @@ if(count _taskSector > 0) then {
 
         if(count _sideVehicles > 0) then {
 
-            _targetVehicleID = _sideVehicles call BIS_fnc_selectRandom;
+            _targetVehicleID = (selectRandom _sideVehicles);
             _targetVehicleID = _targetVehicleID select 0;
 
             _vehicleProfile = [ALIVE_profileHandler, "getProfile", _targetVehicleID] call ALIVE_fnc_profileHandler;

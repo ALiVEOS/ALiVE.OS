@@ -47,7 +47,7 @@ if (isServer) then {};
 
              // Random climate selector
              _options = [0,1,2,3];
-                      if (INITIAL_WEATHER == 4)  then { INITIAL_WEATHER = _options call BIS_fnc_selectRandom; };
+                      if (INITIAL_WEATHER == 4)  then { INITIAL_WEATHER = (selectRandom _options); };
 
 
                  switch (INITIAL_WEATHER) do
