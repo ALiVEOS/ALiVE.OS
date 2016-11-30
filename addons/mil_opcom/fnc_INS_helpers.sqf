@@ -205,7 +205,7 @@ ALiVE_fnc_INS_factory = {
                     // Get indoor Housepos
                     _pos = getposATL _factory;
                     _positions = [_pos,15] call ALIVE_fnc_findIndoorHousePositions;
-                    _pos = if (count _positions > 0) then {_positions call BIS_fnc_SelectRandom} else {_pos};
+                    _pos = if (count _positions > 0) then {(selectRandom _positions)} else {_pos};
 
                     // Create factory
                     [_factory,_id] call ALiVE_fnc_INS_spawnIEDfactory;
@@ -321,7 +321,7 @@ ALiVE_fnc_INS_suicide = {
                     _trg setTriggerActivation ["ANY","PRESENT",false];
                     _trg setTriggerStatements [
                         "this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)",
-                        format ["null = [[getpos thisTrigger,%1,'%2'],thisList] call ALIVE_fnc_createBomber", _size, _civFactions call BIS_fnc_SelectRandom],
+                        format ["null = [[getpos thisTrigger,%1,'%2'],thisList] call ALIVE_fnc_createBomber", _size, (selectRandom _civFactions)],
                          ""
                     ];
 
@@ -535,7 +535,7 @@ ALiVE_fnc_INS_recruit = {
                     // Get indoor Housepos
                     _pos = getposATL _HQ;
                     _positions = [_pos,15] call ALIVE_fnc_findIndoorHousePositions;
-                    _pos = if (count _positions > 0) then {_positions call BIS_fnc_SelectRandom} else {_pos};
+                    _pos = if (count _positions > 0) then {(selectRandom _positions)} else {_pos};
 
                     // Create virtual guards
                     {[_x,"addHouse",_HQ] call ALiVE_fnc_CQB} foreach _CQB;
@@ -633,13 +633,13 @@ ALiVE_fnc_spawnFurniture = {
 
         if ({(_pos select 2) - (_x select 2) < 0.5} count _positions > 1) then {
             if (random 1 < 0.3) then {
-                _furniture = createVehicle [_furnitures call BIS_fnc_SelectRandom, _pos, [], 0, "CAN_COLLIDE"];
+                _furniture = createVehicle [(selectRandom _furnitures), _pos, [], 0, "CAN_COLLIDE"];
                 _furniture setdir getdir _building;
 
                 _created pushback _furniture;
 
                 if (_ieds) then {
-                    _bomb = createVehicle [_bombs call BIS_fnc_SelectRandom, getposATL _furniture, [], 0, "CAN_COLLIDE"];
+                    _bomb = createVehicle [(selectRandom _bombs), getposATL _furniture, [], 0, "CAN_COLLIDE"];
                     _charge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo",getposATL _bomb, [], 0, "CAN_COLLIDE"];
 
                     _bomb attachTo [_furniture, [0,0,_furniture call ALiVE_fnc_getRelativeTop]];
@@ -669,13 +669,13 @@ ALiVE_fnc_spawnFurniture = {
                 };
             } else {
                 if (_add && {random 1 < 0.5}) then {
-                    _object = createVehicle [_objects call BIS_fnc_SelectRandom, _pos, [], 0, "CAN_COLLIDE"];
+                    _object = createVehicle [(selectRandom _objects), _pos, [], 0, "CAN_COLLIDE"];
                     _object setdir ([_building,_object] call BIS_fnc_DirTo);
 
                     _created pushback _object;
                 } else {
                     if (_ammo && {random 1 < 0.5}) then {
-                        _box = createVehicle [_boxes call BIS_fnc_SelectRandom, _pos, [], 0, "CAN_COLLIDE"];
+                        _box = createVehicle [(selectRandom _boxes), _pos, [], 0, "CAN_COLLIDE"];
                         _box setdir ([_building,_box] call BIS_fnc_DirTo);
 
                         _created pushback _box;
