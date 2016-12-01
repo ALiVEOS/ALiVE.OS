@@ -48,7 +48,7 @@ if (isNil "_bomber") then {
 if (isNil "_bomber") exitWith {};
 
 // Add radio, suicide vest and charge
-_bomber addweapon (["ItemRadio","ItemALiVEPhoneOld"] call BIS_fnc_selectRandom);
+_bomber addweapon (selectRandom ["ItemRadio","ItemALiVEPhoneOld"]);
 removeVest _bomber;
 _bomber addVest "V_ALiVE_Suicide_Vest";
 _bomber addItemToVest "DemoCharge_Remote_Mag";
