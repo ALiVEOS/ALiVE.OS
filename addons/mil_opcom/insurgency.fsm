@@ -1272,7 +1272,7 @@ class FSM
        "" \n
        "        if (_profilePosition distance _pos > 200) then {" \n
        "            // Select halfway staging postion in angle to objectve" \n
-       "            _direction = [_pos,_profilePosition] call BIS_fnc_dirTo;" \n
+       "            _direction = (_pos getDir _profilePosition);" \n
        "            _stagingPosition = [_pos,(_profilePosition distance _pos)/2, _direction] call BIS_fnc_relPos;" \n
        "        } else {" \n
        "            // Select staging postion at objective" \n
