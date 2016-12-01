@@ -1354,7 +1354,7 @@ switch(_operation) do {
                                             _profiles pushback _profileID;
                                         };
 
-                                        _dir = [_position, _center] call BIS_fnc_dirTo;
+                                        _dir = (_position getDir _center);
                                     };
                                 } forEach _section;
                             };
