@@ -530,7 +530,7 @@ class FSM
        "" \n
        "                        //Select recon postion in angle to objectve" \n
        "                        _posP = [_profile, ""position""] call ALIVE_fnc_profileEntity;" \n
-       "                        _direction = [_pos, _posP] call BIS_fnc_dirTo;" \n
+       "                        _direction = (_pos getDir _posP);" \n
        "                        _newPosition = [_pos, 500, _direction] call BIS_fnc_relPos;" \n
        "                        " \n
        "                        if (_turn) then {_direction = _direction - 90;_turn = false} else {_direction = _direction + 90;_turn = true};" \n
