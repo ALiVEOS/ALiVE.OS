@@ -785,7 +785,7 @@ class FSM
        "                if (count _buildings == 0) then {_building = objNull; [""There is no suitable building for an IED factory!""] call ALiVE_fnc_Dump} else {" \n
        "                    _buildings = [_buildings,[_pos],{_Input0 distance _x},""DESCEND""] call ALiVE_fnc_SortBy;" \n
        "" \n
-       "                    if (count _buildings > 5) then {_buildings resize 5; _building = _buildings call BIS_fnc_selectRandom} else {_building = _buildings select 0};" \n
+       "                    if (count _buildings > 5) then {_buildings resize 5; _building = (selectRandom _buildings)} else {_building = _buildings select 0};" \n
        "                };" \n
        "            };" \n
        "" \n
