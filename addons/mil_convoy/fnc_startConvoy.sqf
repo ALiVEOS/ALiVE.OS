@@ -142,7 +142,7 @@ for "_j" from 1 to _intensity do {
 
                         // Set direction so pointing towards destination
                         //_dir = getdir _startroad;
-                        _dir = [_startpos, _destpos] call BIS_fnc_dirTo;
+                        _dir = (_startpos getDir _destpos);
 
                         {
                             if (_x == (driver vehicle _x)) then {
