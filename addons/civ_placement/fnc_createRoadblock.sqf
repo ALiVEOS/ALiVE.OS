@@ -116,7 +116,7 @@ for "_j" from 1 to (count _roadpoints) do {
     };
 
     If (!isNil "ALiVE_compositions_roadblocks") then {
-        _checkpoint = [ALiVE_compositions_roadblocks call BIS_fnc_selectRandom, _CompType] call ALiVE_fnc_findComposition;
+        _checkpoint = [(selectRandom ALiVE_compositions_roadblocks), _CompType] call ALiVE_fnc_findComposition;
     } else {
         private ["_cat","_size"];
         _cat = ["CheckpointsBarricades"];
