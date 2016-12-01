@@ -94,7 +94,7 @@ for "_j" from 1 to (count _roadpoints) do {
     GVAR(ROADBLOCKS) pushBack (position _roadpos);
 
     _connectedRoad = _roadConnectedTo select 0;
-    _direction = [_roadpos, _connectedRoad] call BIS_fnc_DirTo;
+    _direction = (_roadpos getDir _connectedRoad);
 
     if (_direction < 181) then {_direction = _direction + 180} else {_direction = _direction - 180;};
 
