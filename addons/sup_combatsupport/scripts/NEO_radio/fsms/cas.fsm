@@ -353,7 +353,7 @@ class FSM
            "_grp enableAttack true;" \n
            "{ _x enableAi ""TARGET""; _x enableAi ""AUTOTARGET""; } forEach units _grp;" \n
            "" \n
-           "_dirCas = [_posCas, _veh] call BIS_fnc_dirTo;" \n
+           "_dirCas = (_posCas getDir _veh);" \n
            "_posCircle = [_posCas, _radiusCas, _dirCas] call BIS_fnc_relPos;" \n
            "[_veh, _posCircle] call ALiVE_fnc_doMoveRemote;" \n
            "" \n
