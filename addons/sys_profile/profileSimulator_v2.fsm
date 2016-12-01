@@ -367,13 +367,13 @@ class FSM
        "                        " \n
        "                        switch (_type) do {" \n
        "                            case ""MOVE"" : {" \n
-       "                                 _direction = [_currentPosition, _destination] call BIS_fnc_dirTo;" \n
+       "                                 _direction = (_currentPosition getDir _destination);" \n
        "                                 _newPosition = [_currentPosition, _moveDistance, _direction] call BIS_fnc_relPos;" \n
        "                                 _handleWPcomplete = {};" \n
        "            " \n
        "                            };" \n
        "                            case ""CYCLE"" : {" \n
-       "                                 _direction = [_currentPosition, _destination] call BIS_fnc_dirTo;" \n
+       "                                 _direction = (_currentPosition getDir _destination);" \n
        "                                 _newPosition = [_currentPosition, _moveDistance, _direction] call BIS_fnc_relPos;" \n
        "                                 _handleWPcomplete = {" \n
        "                                    _waypoints = _waypoints + _waypointsCompleted;" \n
