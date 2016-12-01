@@ -848,7 +848,7 @@ class FSM
            "_radiusMove = 0;" \n
            "if (_leader distance _target < (_firingDistance select 0)) then { _radiusMove = _firingDistance select 0 };" \n
            "if (_leader distance _target > (_firingDistance select 1)) then { _radiusMove = _firingDistance select 1 };" \n
-           "_dirMove = [_target, _leader] call BIS_fnc_dirTo;" \n
+           "_dirMove = (_target getDir _leader);" \n
            "_posMove = [_target, _radiusMove, _dirMove] call BIS_fnc_relPos;" \n
            "_isFlat = _posMove isflatempty [10,0,1,10,0,false,objNull];" \n
            "_tries = 0;" \n
@@ -863,7 +863,7 @@ class FSM
            "" \n
            "if (count _isFlat < 2) then" \n
            "{" \n
-           "    _isFlat = [_target, _radiusMove, ([_target, _leader] call BIS_fnc_dirTo)] call BIS_fnc_relPos;" \n
+           "    _isFlat = [_target, _radiusMove, (_target getDir _leader)] call BIS_fnc_relPos;" \n
            "};" \n
            "" \n
            "_grp setVariable [""NEO_radioArtyNotInBase"", _isFlat];" \n
