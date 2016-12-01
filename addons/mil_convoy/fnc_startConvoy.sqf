@@ -31,7 +31,7 @@ for "_j" from 1 to _intensity do {
 
                     if ((typeof _mod) in ["ALiVE_mil_OPCOM"]) then {
                         waituntil {!(isnil "OPCOM_INSTANCES") && {[OPCOM_INSTANCES select 0,"startupComplete",false] call ALiVE_fnc_HashGet}};
-                        waituntil {sleep 5; _factionsConvoy = ([_mod getVariable ["handler",[]], "factions",["OPF_F"]] call ALiVE_fnc_HashGet) call BIS_fnc_SelectRandom; _convoyLocs = [_factionsConvoy,"idle"] call ALiVE_fnc_OPCOMpositions; ["Convoy faction %1 is waiting for secured OPCOM positions...",_factionsConvoy] call ALiVE_fnc_Dump; count _convoyLocs >= 4};
+                        waituntil {sleep 5; _factionsConvoy = (selectRandom ([_mod getVariable ["handler",[]], "factions",["OPF_F"]] call ALiVE_fnc_HashGet)); _convoyLocs = [_factionsConvoy,"idle"] call ALiVE_fnc_OPCOMpositions; ["Convoy faction %1 is waiting for secured OPCOM positions...",_factionsConvoy] call ALiVE_fnc_Dump; count _convoyLocs >= 4};
                     } else {
 
                     };
