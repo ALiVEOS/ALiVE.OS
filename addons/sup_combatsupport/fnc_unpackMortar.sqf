@@ -90,7 +90,7 @@ if (isNil "_gunner" || isNil "_assistant") exitWith {
     _sptarr pushback _weapon;
     _grp setvariable ["supportWeaponArray", _sptarr];
 
-    _dirTo = [position _weapon, _tPos] call BIS_fnc_dirTo;
+    _dirTo = ((position _weapon) getDir _tPos);
 
     sleep 5;
     _gunner assignAsGunner _weapon;

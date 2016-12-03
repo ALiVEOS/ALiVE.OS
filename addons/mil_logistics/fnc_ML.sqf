@@ -1838,7 +1838,7 @@ switch(_operation) do {
 
                         // Check route
                         _routeDistance = _eventPosition distance ([_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet);
-                        _routeDirection = [_eventPosition, [_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet] call BIS_fnc_dirTo;
+                        _routeDirection = (_eventPosition getDir ([_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet));
                         _newPos = _eventPosition;
                         for "_i" from 0 to _routeDistance step 20 do {
                             _newPos = _newPos getpos [20, _routeDirection];
@@ -3019,7 +3019,7 @@ switch(_operation) do {
                     // send transport vehicles back to insertion point and beyond 1500m to ensure it
                     {
                         _reinforcementPosition = [_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet;
-                        _position = _reinforcementPosition getPos [1500, [[_event, "finalDestination"] call ALIVE_fnc_hashGet,_reinforcementPosition] call BIS_fnc_dirTo];
+                        _position = _reinforcementPosition getPos [1500, (([_event, "finalDestination"] call ALIVE_fnc_hashGet) getDir _reinforcementPosition)];
                         _profileWaypoint = [_position, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
 
                         _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
@@ -6496,7 +6496,7 @@ switch(_operation) do {
                 if(count _payloadProfiles > 0) then {
 
                     _reinforcementPosition = [_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet;
-                    _position = _reinforcementPosition getPos [1500, [[_event, "finalDestination"] call ALIVE_fnc_hashGet,_reinforcementPosition] call BIS_fnc_dirTo];
+                    _position = _reinforcementPosition getPos [1500, (([_event, "finalDestination"] call ALIVE_fnc_hashGet) getDir _reinforcementPosition)];
 
                     [_payloadGroupProfiles,_position] spawn {
 
