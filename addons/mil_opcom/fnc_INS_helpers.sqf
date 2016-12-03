@@ -676,7 +676,7 @@ ALiVE_fnc_spawnFurniture = {
                 } else {
                     if (_ammo && {random 1 < 0.5}) then {
                         _box = createVehicle [(selectRandom _boxes), _pos, [], 0, "CAN_COLLIDE"];
-                        _box setdir (_building getDir_box);
+                        _box setdir (_building getDir _box);
 
                         _created pushback _box;
                     };
