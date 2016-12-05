@@ -1,0 +1,52 @@
+[center][url=https://github.com/ALiVEOS/ALiVE.OS.git][img=http://i.imgur.com/RFX0nkZ.jpg][/url][/center]
+[center][b][url=http://alivemod.com/]ALiVEmod.com[/url]
+[size=4]The next generation dynamic persistent mission addon for ArmA3[/size][/b][/center]
+[center][b]Release 1.2.3[/b][/center]
+[center][img=http://i.imgur.com/EfY9zEM.png][/center]
+ 
+[b]Hotfixes![/b]
+Again another hotfix release. These releases are like London buses, you can wait around for ages for one to turn up and then 4 come at once... Anyway, once again thank you to the continued great feedback from the community. This release sees [b]Whigital[/b] pop his Github cherry pushing several widespread code optimisations. We also fixed some regressions, [b]ACE[/b] kills now get logged on War Room and we also fixed an issue with persistence missions getting stuck on the loading screen.
+
+If you do have any persistent mission issues please contact us on our forum for support!
+
+Thanks to everyone for feedback both here and on our forum!
+[center][b][url=http://alivemod.com/#Download]Download[/url][/b]
+Grab the latest version from [url=http://alivemod.com/#Download]ALiVEmod.com[/url]
+Also available from PlayWithSix, ArmAholic and Steam (Usually within 24 hours of this post)[/center]
+[center][b][url=http://alivemod.com/#ALiVEWarRoom]Join the War Room Now![/url][/b][/center]
+Please note that as with all updates, if you have an issue loading a mission made with a previous version of ALiVE, delete and replace the modules in that mission.
+
+[b]Release Highlights[/b]
+[LIST]
+[*]Support for 1.66.139494 - Public Stable[/*]
+[*]Code Optimisations by Whigital[/*]
+[*]Fix issue where kills were not registered when using ACE medical with ALiVE War Room.[/*]
+[*]Fixed issue where persistent missions were stuck on loading screen[/*]
+[*]Update ALiVEClient.dll to fix crashing issues while indexing[/*]
+[/LIST]
+See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
+
+[b]More Maps?[/b]
+The momentum is really beginning to build with the indexing tools and we are cracking through the [url=https://github.com/ALiVEOS/ALiVE.OS/issues/9]backlog[/url]. Instructions for using the Map Indexer can be found [url=http://alivemod.com/wiki/index.php/Map_Indexing]on our wiki [/url]
+
+[b]Known Issues & Support[/b]
+Existing bugs are listed on Github [url=https://github.com/ALiVEOS/ALiVE.OS/issues]here[/url]. Feel free to submit bugs (with repros) or discuss any issues or ideas on our forum at [url=http://alivemod.com/forum/]http://alivemod.com/forum/[/url].
+
+[b]Manual[/b]
+Please refer to the [url=http://www.alivemod.com/wiki]ALiVE Wiki[/url]. All the info you need is there. If anything is missing or unclear, please let us know.
+
+[b]Are you using Linux?[/b]
+ALiVE is fully supported on a Linux Dedicated Server (as well as Windows). In fact the ALiVE Official Server for testing is running Ubuntu. Here are some tips on getting ALiVE running smoothly on Linux and integrated with War Room - [url=http://www.alivemod.com/forum/1916-setting-up-linux-dedi-server]http://www.alivemod.com/forum/1916-setting-up-linux- dedi-server[/url]
+
+[b]Acknowledgements and Thanks[/b]
+Particular thanks to all those on our support forum who have worked closely with us to identify bugs, provide logs and generally help us improve ALiVE. Your assistance is valuable and your dedication to ALiVE makes it all worth the effort!
+
+[b]Disclaimer[/b]
+We may need to prune the persistent database data from the War Room, eliminating data that is older than 6-12 months. The ALiVE War Room database is run on a voluntary basis at a cost to the ALiVE development team. No guarantees can be given on the mission data stored or the availability of the service. We apologise for any downtime that may impact your MP persistent missions.
+
+[b]ALiVE has transformed my Arma 3 experience, how can I thank you?[/b]
+Please consider making a contribution to our server costs if you enjoy ALiVE! It costs us $65 per month to run our War Room website and the ALiVE Database servers and every little helps. Donate here [url=http://www.alivemod.com/#Donate]http://www.alivemod.com/#Donate[/url]
+
+Special thanks to everyone here for supporting us with donations to the ALiVE mod development effort.
+
+Have fun!
