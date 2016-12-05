@@ -58,6 +58,8 @@ lbClear _suppListBox;
     _suppListBox lbSetPicture [_forEachIndex, (_x select 1)];
 } forEach _available;
 
+lbSort _suppListBox;
+
 //Display Event Handlers
 _suppListBox ctrlSetEventHandler ["LBSelChanged", "_this call NEO_fnc_radioLbSelChanged"];
 _abort ctrlSetEventHandler ["ButtonClick", "closeDialog 0;"];
