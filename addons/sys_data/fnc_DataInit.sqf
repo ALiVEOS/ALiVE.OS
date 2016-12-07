@@ -422,7 +422,7 @@ if (isDedicated) then {
                             [_unitHash, "AAR_damage", damage _unit] call ALIVE_fnc_hashSet;
                             [_unitHash, "AAR_side", side (group _unit)] call ALIVE_fnc_hashSet;
                             [_unitHash, "AAR_fac", getText (((faction _unit) call ALiVE_fnc_configGetFactionClass) >> "displayName")] call ALIVE_fnc_hashSet;
-                            [_unitHash, "AAR_ico", getText (configFile >> "CfgVehicles" >> (typeOf _unit) >> "icon")];
+                            [_unitHash, "AAR_ico", (getText (configFile >> "CfgVehicles" >> (typeOf _unit) >> "icon")]) splitString "\" joinString "";
                             [_unitHash, "AAR_isLeader", _unit == leader (group _unit)] call ALIVE_fnc_hashSet;
                             [_unitHash, "AAR_isPlayer", isPlayer _unit] call ALIVE_fnc_hashSet;
                             [_unitHash, "AAR_group", str (group _unit)] call ALIVE_fnc_hashSet;
