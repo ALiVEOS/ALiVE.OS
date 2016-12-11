@@ -645,26 +645,24 @@ class FSM
        "" \n
        "_profile = _toDespawn select _despawnCount;" \n
        "" \n
-       "if!(isnil ""_profile"") then {" \n
-       "    if !((_profile select 2) isEqualTo []) then {" \n
-       "        _profileType = _profile select 2 select 5;" \n
-       "        _profileID = _profile select 2 select 4;" \n
+       "if (!(isnil ""_profile"") && {!((_profile select 2) isEqualTo [])}) then {" \n
+       "    _profileType = _profile select 2 select 5;" \n
+       "    _profileID = _profile select 2 select 4;" \n
        "" \n
-       "        // DEBUG -------------------------------------------------------------------------------------" \n
-       "        /*" \n
-       "        if(_debug) then {" \n
-       "            [""ALIVE Profile spawner - despawn [%1]"",_profileID] call ALIVE_fnc_dump;            " \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "    /*" \n
+       "    if(_debug) then {" \n
+       "        [""ALIVE Profile spawner - despawn [%1]"",_profileID] call ALIVE_fnc_dump;            " \n
+       "    };" \n
+       "    */" \n
+       "    // DEBUG -------------------------------------------------------------------------------------                " \n
+       "" \n
+       "    switch(_profileType) do {" \n
+       "        case ""entity"": {" \n
+       "            [_profile, ""despawn""] call ALIVE_fnc_profileEntity;" \n
        "        };" \n
-       "        */" \n
-       "        // DEBUG -------------------------------------------------------------------------------------                " \n
-       "" \n
-       "        switch(_profileType) do {" \n
-       "            case ""entity"": {" \n
-       "                [_profile, ""despawn""] call ALIVE_fnc_profileEntity;" \n
-       "            };" \n
-       "            case ""vehicle"": {" \n
-       "                [_profile, ""despawn""] call ALIVE_fnc_profileVehicle;" \n
-       "            };" \n
+       "        case ""vehicle"": {" \n
+       "            [_profile, ""despawn""] call ALIVE_fnc_profileVehicle;" \n
        "        };" \n
        "    };" \n
        "};" \n
