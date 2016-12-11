@@ -269,7 +269,7 @@ switch (_operation) do {
                     "ColorOPFOR"
                 ];
 
-                if !(didJIP) then { // Don't run if JIP as no briefing screen appears
+                if (isMultiplayer && !didJIP) then { // Don't run if JIP as no briefing screen appears
                     ["Registering Advanced Marker controls for briefing screen. JIP: %1", didJIP] call ALiVE_fnc_Dump;
                     [_logic] spawn {
                         // Install handlers on briefing screen
