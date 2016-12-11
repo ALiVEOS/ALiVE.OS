@@ -849,10 +849,13 @@ switch(_operation) do {
 
                 {
                     _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-                    _position = _profile select 2 select 2;
-                    _side = _profile select 2 select 3;
 
-                    _result pushback [_position,_side];
+                    if !(isNil "_profile") then {
+                        _position = _profile select 2 select 2;
+                        _side = _profile select 2 select 3;
+
+                        _result pushback [_position,_side];
+                    };
                 } forEach _entities;
         };
         case "setPosition": {
