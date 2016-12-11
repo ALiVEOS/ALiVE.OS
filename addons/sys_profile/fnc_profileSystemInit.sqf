@@ -77,7 +77,7 @@ if(isServer) then {
 
 if(hasInterface) then {
 
-    waituntil {!isnil QMOD(PROFILE)};
+    waituntil {!isnil QMOD(SYS_PROFILE)};
 
     player addEventHandler ["killed",
     {
