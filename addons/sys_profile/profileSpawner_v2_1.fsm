@@ -459,13 +459,13 @@ class FSM
        "{" \n
        "    _profile = _x;" \n
        "" \n
-       "    if!(isnil ""_profile"") then {" \n
+       "    if (!(isnil ""_profile"") && {!((_profile select 2) isEqualTo [])}) then {" \n
        "        _active = _profile select 2 select 1;" \n
        "" \n
        "        if(_active) then {" \n
        "            " \n
        "            _leader = _profile select 2 select 10;" \n
-       "              _position = getposATL _leader;" \n
+       "            _position = getposATL _leader;" \n
        "" \n
        "            // if leader is null get a new leader if possible" \n
        "            if(isNull(_leader)) then {" \n
