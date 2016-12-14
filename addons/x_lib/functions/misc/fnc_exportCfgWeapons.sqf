@@ -185,7 +185,7 @@ if (_mode == "json") then {
                     _holder addweaponcargo [_class,1];
                     _holder setvectordirandup [[0,0,1],[0,-1,0]];
 
-                    _campos = [_pos,1.75,60] call bis_fnc_relpos;
+                    _campos = (_pos getPos [1.75, 60]);
                     _campos set [2,_alt + 1.3];
                     _cam campreparepos _campos;
                     _cam campreparefov 0.4;
@@ -199,7 +199,7 @@ if (_mode == "json") then {
                     _holder addweaponcargo [_class,1];
                     _holder setvectordirandup [[0.00173726,0.000167279,0.999998],[-0.995395,-0.0958456,0.00177588]];//[[0,0,1],[-1,0,0]];
 
-                    _campos = [_pos,2,90] call bis_fnc_relpos;
+                    _campos = (_pos getPos [2, 90]);
                     _campos set [2,_alt + 1];
                     _cam campreparepos _campos;
                     _cam campreparefov 0.7;
@@ -244,7 +244,7 @@ if (_mode == "json") then {
                     };
                     _holder enablesimulation false;
 
-                    _campos = [_pos,2.5,90] call bis_fnc_relpos;
+                    _campos = (_pos getPos [2.5, 90]);
                     _campos set [2,_alt + 1];
                     _cam campreparepos _campos;
                     _cam campreparetarget [(_pos select 0),(_pos select 1),_alt + 0.85 + _offset];
@@ -260,7 +260,7 @@ if (_mode == "json") then {
                         _holder setvectordirandup [[0,0,1],[1,0,0]];
 
                         _fov = if (_itemType == "AccessoryMuzzle") then {0.3} else {0.2};
-                        _campos = [_pos,0.5,90] call bis_fnc_relpos;
+                        _campos = (_pos getPos [0.5, 90]);
                         _campos set [2,_alt + 0.5];
                         _cam campreparepos _campos;
                         _cam campreparefov _fov;
@@ -287,7 +287,7 @@ if (_mode == "json") then {
                                 _holder addmagazinecargo [_x,1];
                                 _holder setvectordirandup [[0.707107,0,0.707107],[0.408248,0.816497,-0.408248]];
 
-                                _campos = [_pos,0.5*2,90] call bis_fnc_relpos;
+                                _campos = (_pos getPos [(0.5 * 2), 90]);
                                 _campos set [2,_alt + 0.5];
                                 _cam campreparepos _campos;
                                 _cam campreparefov 0.2;
@@ -319,7 +319,7 @@ if (_mode == "json") then {
                         _holder addweaponcargo [_class,1];
                         _holder setvectordirandup [[0.707107,0,0.707107],[0.408248,0.816497,-0.408248]];
 
-                        _campos = [_pos,0.5*2,90] call bis_fnc_relpos;
+                        _campos = (_pos getPos [(0.5 * 2), 90]);
                         _campos set [2,_alt + 0.5];
                         _cam campreparepos _campos;
                         _cam campreparefov 0.4;
@@ -334,7 +334,7 @@ if (_mode == "json") then {
                         _holder setvectordirandup [[0,0,1],[1,0,0]];
 
                         _fov = if (_itemType == "Handgun") then {0.3} else {0.7};
-                        _campos = [_pos,0.5,90] call bis_fnc_relpos;
+                        _campos = (_pos getPos [0.5, 90]);
                         _campos set [2,_alt + 0.5];
                         _cam campreparepos _campos;
                         _cam campreparefov _fov;
