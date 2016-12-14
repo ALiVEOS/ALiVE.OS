@@ -346,7 +346,7 @@ class FSM
           condition=/*%FSM<CONDITION""">*/"_task == ""CIRCLE""" \n
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"_dirCircle = (_pos getDir _chopper);" \n
-           "[_chopper, [_pos, _radiusCircle, _dirCircle] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "[_chopper, (_pos getPos [_radiusCircle, _dirCircle])] call ALiVE_fnc_doMoveRemote;" \n
            "_chopper flyinheight 100;" \n
            "" \n
            "//New Status" \n
@@ -416,7 +416,7 @@ class FSM
           action=/*%FSM<ACTION""">*/"_radiusCircle = 150;" \n
            "_chopper flyinheight 100;" \n
            "_dirCircle = (_pos getDir _chopper);" \n
-           "[_chopper, [_pos, _radiusCircle, _dirCircle] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "[_chopper, (_pos getPos [_radiusCircle, _dirCircle])] call ALiVE_fnc_doMoveRemote;" \n
            "_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""MISSION"", true];" \n
            "" \n
            "[_chopper] spawn {  " \n
@@ -501,7 +501,7 @@ class FSM
            "            " \n
            "            while { _dist <= 250 } do" \n
            "            {" \n
-           "                _posLand = ([_pos, _dist, _dir] call BIS_fnc_relPos) isflatempty [sizeOf typeOf _chopper, 0, 0.5, sizeOf typeOf _chopper, 0, false, _chopper];" \n
+           "                _posLand = (_pos getPos [_dist, _dir]) isflatempty [sizeOf typeOf _chopper, 0, 0.5, sizeOf typeOf _chopper, 0, false, _chopper];" \n
            "                if (count _posLand > 0) exitWith {};" \n
            "                " \n
            "                _dir = _dir + 1;" \n
@@ -788,7 +788,7 @@ class FSM
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
           condition=/*%FSM<CONDITION""">*/"_chopper call ALiVE_fnc_unitReadyRemote" \n
            ""/*%FSM</CONDITION""">*/;
-          action=/*%FSM<ACTION""">*/"_posCircle = [_pos, _radiusCircle, _dirCircle] call BIS_fnc_relPos;" \n
+          action=/*%FSM<ACTION""">*/"_posCircle = (_pos getPos [_radiusCircle, _dirCircle]);" \n
            "_dirCircle = _dirCircle + 45;" \n
            "" \n
            "[_chopper,_posCircle] call ALiVE_fnc_doMoveRemote;" \n
@@ -1131,7 +1131,7 @@ class FSM
           action=/*%FSM<ACTION""">*/"_radiusCircle = 150;" \n
            "_chopper flyinheight 100;" \n
            "_dirCircle = (_pos getDir _chopper);" \n
-           "[_chopper, [_pos, _radiusCircle, _dirCircle] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "[_chopper, (_pos getPos [_radiusCircle, _dirCircle])] call ALiVE_fnc_doMoveRemote;" \n
            "_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""MISSION"", true];" \n
            "" \n
            "[_chopper] spawn {  " \n
@@ -1635,7 +1635,7 @@ class FSM
           condition=/*%FSM<CONDITION""">*/"_chopper call ALiVE_fnc_unitReadyRemote" \n
            ""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"_dirCircle = _dirCircle + 45;" \n
-           "_posCircle = [_pos, _radiusCircle, _dirCircle] call BIS_fnc_relPos;" \n
+           "_posCircle = (_pos getPos [_radiusCircle, _dirCircle]);" \n
            "[_chopper,_posCircle] call ALiVE_fnc_doMoveRemote;" \n
            "_coord = _pos call BIS_fnc_posToGrid;" \n
            "" \n
