@@ -659,13 +659,13 @@ class FSM
            "" \n
            "    {" \n
            "        _x enableAI ""MOVE""; _x enableAI ""ANIM"";" \n
-           "        [_x, [_pos, 50, random 360] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "        [_x, (_pos getPos [50, (random 360)])] call ALiVE_fnc_doMoveRemote;" \n
            "    } forEach (units _grp);" \n
            "" \n
            "} else {" \n
            "" \n
            "{" \n
-           "    [_x, [_pos, 20, random 360] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "    [_x, (_pos getPos [20, (random 360)])] call ALiVE_fnc_doMoveRemote;" \n
            "} forEach _units;" \n
            "" \n
            "};" \n
@@ -849,7 +849,7 @@ class FSM
            "if (_leader distance _target < (_firingDistance select 0)) then { _radiusMove = _firingDistance select 0 };" \n
            "if (_leader distance _target > (_firingDistance select 1)) then { _radiusMove = _firingDistance select 1 };" \n
            "_dirMove = (_target getDir _leader);" \n
-           "_posMove = [_target, _radiusMove, _dirMove] call BIS_fnc_relPos;" \n
+           "_posMove = (_target getPos [_radiusMove, _dirMove]);" \n
            "_isFlat = _posMove isflatempty [10,0,1,10,0,false,objNull];" \n
            "_tries = 0;" \n
            "" \n
@@ -857,13 +857,13 @@ class FSM
            "{" \n
            "    _tries = _tries + 1;" \n
            "    _dirMove = _dirMove + 1;" \n
-           "    _posMove = [_target, _radiusMove, _dirMove] call BIS_fnc_relPos;" \n
+           "    _posMove = (_target getPos [_radiusMove, _dirMove]);" \n
            "    _isFlat = _posMove isflatempty [50,0,0.9,50,0,false,objNull];" \n
            "};" \n
            "" \n
            "if (count _isFlat < 2) then" \n
            "{" \n
-           "    _isFlat = [_target, _radiusMove, (_target getDir _leader)] call BIS_fnc_relPos;" \n
+           "    _isFlat = (_target getPos [_radiusMove, (_target getDir _leader)]);" \n
            "};" \n
            "" \n
            "_grp setVariable [""NEO_radioArtyNotInBase"", _isFlat];" \n
@@ -892,13 +892,13 @@ class FSM
            "diag_log ""Mortar team have packed up mortars and are moving"";" \n
            "" \n
            "    {" \n
-           "        [_x, [_isFlat, 50, random 360] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "        [_x, (_isFlat getPos [50, (random 360)])] call ALiVE_fnc_doMoveRemote;" \n
            "    } forEach (units _grp);" \n
            "" \n
            "} else {" \n
            "    _grp setVariable [""mortar"", false];" \n
            "    {" \n
-           "        [_x, [_isFlat, 50, random 360] call BIS_fnc_relPos] call ALiVE_fnc_doMoveRemote;" \n
+           "        [_x, (_isFlat getPos [50, (random 360)])] call ALiVE_fnc_doMoveRemote;" \n
            "    } forEach _units;" \n
            "" \n
            "};" \n
