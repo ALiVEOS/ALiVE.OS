@@ -550,7 +550,7 @@ switch(_operation) do {
         ALIVE_tourIconPositions = [];
 
         {
-            _position = [getPos player, _rad, _degStep * _forEachIndex] call BIS_fnc_relPos;
+            _position = ((getPos player) getPos [_rad, (_degStep * _forEachIndex)]);
             _position set [2, (100) + (_forEachIndex * 10)];
 
             ALIVE_tourIconPositions pushback _position;
@@ -1386,7 +1386,7 @@ switch(_operation) do {
                                     case "recon":{
 
                                         // create direction marker
-                                        _m = createMarker [format[MTEMPLATE, format["%1_dir", _objectiveID]], [_position, 100, _dir] call BIS_fnc_relPos];
+                                        _m = createMarker [format[MTEMPLATE, format["%1_dir", _objectiveID]], (_position getPos [100, _dir])];
                                         _m setMarkerShape "ICON";
                                         _m setMarkerSize [0.5,0.5];
                                         _m setMarkerType "mil_arrow";
@@ -1402,7 +1402,7 @@ switch(_operation) do {
                                     case "capture":{
 
                                         // create direction marker
-                                        _m = createMarker [format[MTEMPLATE, format["%1_dir", _objectiveID]], [_position, 100, _dir] call BIS_fnc_relPos];
+                                        _m = createMarker [format[MTEMPLATE, format["%1_dir", _objectiveID]], (_position getPos [100, _dir])];
                                         _m setMarkerShape "ICON";
                                         _m setMarkerSize [0.5,0.5];
                                         _m setMarkerType "mil_arrow2";
@@ -1893,7 +1893,7 @@ switch(_operation) do {
 
                     _position = _profile select 2 select 2;
 
-                    _position = [_position, 50, random 360] call BIS_fnc_relPos;
+                    _position = (_position getPos [50, (random 360)]);
 
                     if(surfaceIsWater _position) then {
                         _position = [_position] call ALIVE_fnc_getClosestLand;
@@ -2044,7 +2044,7 @@ switch(_operation) do {
                         _position = [_objective,"center"] call ALIVE_fnc_hashGet;
                         _size = [_objective,"size"] call ALIVE_fnc_hashGet;
 
-                        _playerPosition = [_position, 50, random 360] call BIS_fnc_relPos;
+                        _playerPosition = (_position getPos [50, (random 360)]);
 
                         if(surfaceIsWater _playerPosition) then {
                             _playerPosition = [_playerPosition] call ALIVE_fnc_getClosestLand;
@@ -2061,7 +2061,7 @@ switch(_operation) do {
 
                         ALIVE_cameraType = "CAMERA";
 
-                        _randomPosition = [_position, 500, random(360)] call BIS_fnc_relPos;
+                        _randomPosition = (_position getPos [500, (random 360)]);
                         _target2 = "RoadCone_L_F" createVehicle _randomPosition;
                         _target2 hideObjectGlobal true;
 
@@ -2109,7 +2109,7 @@ switch(_operation) do {
                     _position = [_objective,"center"] call ALIVE_fnc_hashGet;
                     _size = [_objective,"size"] call ALIVE_fnc_hashGet;
 
-                    _playerPosition = [_position, 50, random 360] call BIS_fnc_relPos;
+                    _playerPosition = (_position getPos [50, (random 360)]);
 
                     if(surfaceIsWater _playerPosition) then {
                         _playerPosition = [_playerPosition] call ALIVE_fnc_getClosestLand;
@@ -2126,7 +2126,7 @@ switch(_operation) do {
 
                     ALIVE_cameraType = "CAMERA";
 
-                    _randomPosition = [_position, 500, random(360)] call BIS_fnc_relPos;
+                    _randomPosition = (_position getPos [500, (random 360)]);
                     _target2 = "RoadCone_L_F" createVehicle _randomPosition;
                     _target2 hideObjectGlobal true;
 
@@ -2254,7 +2254,7 @@ switch(_operation) do {
                 _eventQueue = _logisticsModule getVariable "eventQueue";
                 _forcePool = _logisticsModule getVariable "forcePool";
 
-                _position = [getPos player, 20, 180] call BIS_fnc_relPos;
+                _position = ((getPos player) getPos [20, 180]);
 
                 _forceMakeup = [
                     3, // infantry
@@ -2876,7 +2876,7 @@ switch(_operation) do {
 
                                 if(count _vehiclesInCommandOf == 0) then {
 
-                                    _position = [_position, 50, random 360] call BIS_fnc_relPos;
+                                    _position = (_position getPos [50, (random 360)]);
 
                                     if(surfaceIsWater _position) then {
                                         _position = [_position] call ALIVE_fnc_getClosestLand;
@@ -2918,7 +2918,7 @@ switch(_operation) do {
                                         waitUntil{
                                             sleep 1;
                                             if((player distance _unit) > 100) then {
-                                                //_newPosition = [getPos _unit, 10, random 360] call BIS_fnc_relPos;
+                                                //_newPosition = ((getPos _unit) getPos [10, (random 360)]);
                                                 player setPos (position _unit);
                                             };
                                             !(alive _unit)
@@ -4102,7 +4102,7 @@ switch(_operation) do {
                 case "PAN":{
 
                     if(isNil "_target2") then {
-                        _randomPosition = [position _source, (random(50)), random(360)] call BIS_fnc_relPos;
+                        _randomPosition = ((position _source) getPos [(random 50), (random 360)]);
                         _target2 = "RoadCone_L_F" createVehicle _randomPosition;
                         _target2 hideObjectGlobal true;
                     };

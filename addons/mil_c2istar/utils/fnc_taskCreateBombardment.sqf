@@ -48,7 +48,7 @@ ARJay
     for "_i" from 0 to _count-1 do
     {
         _object = [_target, _type] call ALIVE_fnc_taskCreateExplosiveProjectile;
-        _position = [position _object, random _distance, random 360] call BIS_fnc_relPos;
+        _position = ((position _object) getPos [(random _distance), (random 360)]);
         _object setPosATL _position;
 
         if(_randomTiming) then

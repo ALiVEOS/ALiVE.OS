@@ -1273,7 +1273,7 @@ class FSM
        "        if (_profilePosition distance _pos > 200) then {" \n
        "            // Select halfway staging postion in angle to objectve" \n
        "            _direction = (_pos getDir _profilePosition);" \n
-       "            _stagingPosition = [_pos,(_profilePosition distance _pos)/2, _direction] call BIS_fnc_relPos;" \n
+       "            _stagingPosition = (_pos getPos [((_profilePosition distance _pos) / 2), _direction]);" \n
        "        } else {" \n
        "            // Select staging postion at objective" \n
        "            _stagingPosition = [_pos,20] call CBA_fnc_Randpos;" \n
@@ -1320,7 +1320,7 @@ class FSM
        "                [_profileVehicle1, ""init""] call ALIVE_fnc_profileVehicle;" \n
        "                [_profileVehicle1, ""profileID"", format[""Transport_%1"",_profileID]] call ALIVE_fnc_profileVehicle;" \n
        "                [_profileVehicle1, ""vehicleClass"", ""C_Offroad_01_F""] call ALIVE_fnc_profileVehicle;" \n
-       "                [_profileVehicle1, ""position"", [_profilePosition, 20, 180] call BIS_fnc_relPos] call ALIVE_fnc_profileVehicle;" \n
+       "                [_profileVehicle1, ""position"", (_profilePosition getPos [20, 180])] call ALIVE_fnc_profileVehicle;" \n
        "                [_profileVehicle1, ""direction"", 180] call ALIVE_fnc_profileVehicle;" \n
        "                [_profileVehicle1, ""damage"", 0] call ALIVE_fnc_profileVehicle;" \n
        "                [_profileVehicle1, ""fuel"", 1] call ALIVE_fnc_profileVehicle;" \n

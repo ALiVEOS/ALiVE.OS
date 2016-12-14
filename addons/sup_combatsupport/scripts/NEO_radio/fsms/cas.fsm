@@ -354,7 +354,7 @@ class FSM
            "{ _x enableAi ""TARGET""; _x enableAi ""AUTOTARGET""; } forEach units _grp;" \n
            "" \n
            "_dirCas = (_posCas getDir _veh);" \n
-           "_posCircle = [_posCas, _radiusCas, _dirCas] call BIS_fnc_relPos;" \n
+           "_posCircle = (_posCas getPos [_radiusCas, _dirCas]);" \n
            "[_veh, _posCircle] call ALiVE_fnc_doMoveRemote;" \n
            "" \n
            "[_veh,_callsign,_pos, _audio, _player] spawn" \n
@@ -464,7 +464,7 @@ class FSM
            "} forEach (_posCas nearEntities [[""Man"",""Air"",""Car"",""Motorcycle"",""Tank"", ""Wheeled_apc""], _radiusCas]);" \n
            "" \n
            "_dirCas = _dirCas + 90;" \n
-           "_posCircle = [_posCas, _radiusCas, _dirCas] call BIS_fnc_relPos;" \n
+           "_posCircle = (_posCas getPos [_radiusCas, _dirCas]);" \n
            "" \n
            "[_veh, _posCircle] call ALiVE_fnc_doMoveRemote;" \n
            "" \n
@@ -955,7 +955,7 @@ class FSM
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
           condition=/*%FSM<CONDITION""">*/"_veh call ALiVE_fnc_unitReadyRemote"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"_dirCas = _dirCas + 90;" \n
-           "_posCircle = [_posCas, _radiusCas, _dirCas] call BIS_fnc_relPos;" \n
+           "_posCircle = (_posCas getPos [_radiusCas, _dirCas]);" \n
            "" \n
            "[_veh, _posCircle] call ALiVE_fnc_doMoveRemote;" \n
            "" \n

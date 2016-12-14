@@ -1425,7 +1425,7 @@ switch(_operation) do {
                                 };
 
                                 if (isnil "_garrisonPos") then {
-                                    _position = [_center, ((_size/2) + random(500)), random(360)] call BIS_fnc_relPos;
+                                    _position = (_center getPos [((_size / 2) + (random 500)), (random 360)]);
                                 } else {
                                     _position = [_garrisonPos, 50] call CBA_fnc_RandPos;
                                 };
@@ -1461,7 +1461,7 @@ switch(_operation) do {
                             };
 
                             if (isnil "_garrisonPos") then {
-                                _position = [_center, (_size + random(500)), random(360)] call BIS_fnc_relPos;
+                                _position = (_center getPos [(_size + (random 500)), (random 360)]);
                             } else {
                                 _position = [_garrisonPos, 50] call CBA_fnc_RandPos;
                             };

@@ -230,13 +230,13 @@ switch tolower _mode do {
 
 
                     if (_class iskindof "Bag_Base") then {
-                        _campos = [_pos,2.5,90] call bis_fnc_relpos;
+                        _campos = (_pos getPos [2.5, 90]);
                         _campos set [2,_alt + 2];
                         _cam campreparepos _campos;
                         _cam campreparetarget [(_pos select 0),(_pos select 1),_alt + 1.3];
                         _cam camcommitprepared 0;
                     } else {
-                        _campos = [_pos,_size * 1.5,135] call bis_fnc_relpos;
+                        _campos = (_pos getPos [(_size * 1.5), 135]);
                         _campos set [2,_alt + _size * 0.5];
                         _cam campreparepos _campos;
                         _cam campreparetarget (_object modeltoworld [0,0,_targetZ]);
