@@ -75,7 +75,7 @@ _artyBatteries = [];
 if (_side == WEST && _type == "BUS_MotInf_MortTeam") then {
     // Spawn a mortar team :)
     private ["_veh","_vehPos"];
-    _vehPos = [_pos, 30, _vehDir] call BIS_fnc_relPos; _vehPos set [2, 0];
+    _vehPos = (_pos getPos [30, _vehDir]); _vehPos set [2, 0];
     _grp = [_vehPos, side _grp, (configFile >> "cfgGroups" >> "WEST" >> "BLU_F" >> "Motorized" >> "BUS_MotInf_MortTeam"),[],[],[],[],[],_vehDir] call BIS_fnc_spawnGroup;
     {
         _units pushback _x;
@@ -86,7 +86,7 @@ if (_side == WEST && _type == "BUS_MotInf_MortTeam") then {
     for "_i" from 1 to _unitCount do
     {
         private ["_veh"];
-        _vehPos = [_pos, 15, _vehDir] call BIS_fnc_relPos; _vehPos set [2, 0];
+        _vehPos = (_pos getPos [15, _vehDir]); _vehPos set [2, 0];
         _veh = createVehicle [_type, _vehPos, [], 0, "CAN_COLLIDE"];
         _veh setDir _vehDir;
         _veh setPosATL _vehPos;
