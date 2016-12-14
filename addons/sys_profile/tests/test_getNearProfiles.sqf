@@ -108,7 +108,7 @@ _markers = [];
 {
     //_x call ALIVE_fnc_inspectHash;
     _position = _x select 2 select 2;
-    _position = [_position, 5, random 360] call BIS_fnc_relPos;
+    _position = (_position getPos [5, (random 360)]);
 
     if(count _position > 0) then {
         _m = createMarkerLocal [format["M1_%1", _forEachIndex], _position];
@@ -129,7 +129,7 @@ TIMEREND
 
 {
     _position = _x select 2 select 2;
-    _position = [_position, 5, random 360] call BIS_fnc_relPos;
+    _position = (_position getPos [5, (random 360)]);
 
     if(count _position > 0) then {
         _m = createMarkerLocal [format["M2_%1", _forEachIndex], _position];
