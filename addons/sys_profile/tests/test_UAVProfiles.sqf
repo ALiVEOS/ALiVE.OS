@@ -73,7 +73,7 @@ _profileVehicle1 = [nil, "create"] call ALIVE_fnc_profileVehicle;
 [_profileVehicle1, "init"] call ALIVE_fnc_profileVehicle;
 [_profileVehicle1, "profileID", "vehicle_01"] call ALIVE_fnc_profileVehicle;
 [_profileVehicle1, "vehicleClass", "B_UAV_01_F"] call ALIVE_fnc_profileVehicle;
-[_profileVehicle1, "position", [getPos player, 20, 180] call BIS_fnc_relPos] call ALIVE_fnc_profileVehicle;
+[_profileVehicle1, "position", ((getPos player) getPos [20, 180])] call ALIVE_fnc_profileVehicle;
 [_profileVehicle1, "direction", 180] call ALIVE_fnc_profileVehicle;
 [_profileVehicle1, "damage", 0] call ALIVE_fnc_profileVehicle;
 [_profileVehicle1, "fuel", 1] call ALIVE_fnc_profileVehicle;
@@ -90,7 +90,7 @@ STAT("Assign group 1 to vehicle 1");
 
 
 STAT("Add waypoint");
-_position = [getPos player, 200, random 360] call BIS_fnc_relPos;
+_position = ((getPos player) getPos [200, (random 360)]);
 _profileWaypoint = [_position, 0] call ALIVE_fnc_createProfileWaypoint;
 [_profileEntity1, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
