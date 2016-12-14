@@ -46,7 +46,7 @@ if (!isNil "_this") then {
 
 } else {;
 
-    _position = [getPos player, 20, 180] call BIS_fnc_relPos;
+    _position = ((getPos player) getPos [20, 180]);
 
     _faction = "OPF_F";
     _side = "EAST";
