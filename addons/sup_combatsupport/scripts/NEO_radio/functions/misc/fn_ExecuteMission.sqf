@@ -57,7 +57,7 @@ if(_missionRoundCount == 1) then {
     {
         private "_pos";
         if (_dispersion > 50) then {
-            _pos = [_targetPos, _dispersion-50, round(random 360)] call BIS_fnc_relPos;
+            _pos = (_targetPos getPos [(_dispersion - 50), (round (random 360))]);
         } else {
             _pos = _targetPos;
         };
