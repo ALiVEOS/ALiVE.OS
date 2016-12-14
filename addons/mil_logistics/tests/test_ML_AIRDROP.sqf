@@ -38,7 +38,7 @@ ASSERT_TRUE(!_result, _err);
 
 STAT("Create OPCOM reinforcement event");
 
-_position = [getPos player, 20, 180] call BIS_fnc_relPos;
+_position = ((getPos player) getPos [20, 180]);
 
 _faction = "BLU_F";
 _side = "WEST";
