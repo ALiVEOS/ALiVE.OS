@@ -195,7 +195,7 @@ case "ARTY" :
             for "_i" from 0 to (_unitCount - 1) do
             {
                 private ["_vehPos", "_veh"];
-                _vehPos = [_pos, 15, _vehDir] call BIS_fnc_relPos; _vehPos set [2, 0];
+                _vehPos = (_pos getPos [15, _vehDir]); _vehPos set [2, 0];
                 _veh = createVehicle [_class, _vehPos, [], 0, "CAN_COLLIDE"];
                 [nil, nil, rCALLVAR, [_veh], BIS_ARTY_F_initVehicle] call RE;
                 _veh setDir _vehDir;
