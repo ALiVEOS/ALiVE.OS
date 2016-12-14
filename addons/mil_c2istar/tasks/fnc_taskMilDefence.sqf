@@ -298,10 +298,10 @@ switch (_taskState) do {
             _remotePosition = (selectRandom _remotePosition);
 
             {
-                _position = [_remotePosition, (random(200)), random(200)] call BIS_fnc_relPos;
+                _position = (_remotePosition getPos [(random 200), (random 200)]);
                 _profiles = [_x, _position, random(360), true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
                 _profileID = _profiles select 0 select 2 select 4;
-                _position = [_taskPosition, (random(40)), random(40)] call BIS_fnc_relPos;
+                _position = (_taskPosition getPos [(random 40), (random 40)]);
                 _profileWaypoint = [_position, 100, "MOVE", "FULL", 100, [], "LINE", "NO CHANGE", "CARELESS"] call ALIVE_fnc_createProfileWaypoint;
                 [(_profiles select 0), "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
@@ -330,10 +330,10 @@ switch (_taskState) do {
                 //["VEH GROUPS: %1",_groups] call ALIVE_fnc_dump;
 
                 {
-                    _position = [_remotePosition, (random(200)), random(200)] call BIS_fnc_relPos;
+                    _position = (_remotePosition getPos [(random 200), (random 200)]);
                     _profiles = [_x, _position, random(360), true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
                     _profileID = _profiles select 0 select 2 select 4;
-                    _position = [_taskPosition, (random(40)), random(40)] call BIS_fnc_relPos;
+                    _position = (_taskPosition getPos [(random 40), (random 40)]);
                     _profileWaypoint = [_position, 100, "MOVE", "FULL", 100, [], "LINE", "NO CHANGE", "CARELESS"] call ALIVE_fnc_createProfileWaypoint;
                     [(_profiles select 0), "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
@@ -416,7 +416,7 @@ switch (_taskState) do {
 
                             [_params,"missileStrikeCreated",true] call ALIVE_fnc_hashSet;
 
-                            _position = [_taskPosition, (random(300)), random(300)] call BIS_fnc_relPos;
+                            _position = (_taskPosition getPos [(random 300), (random 300)]);
 
                             _object = "Sign_Sphere100cm_F" createVehicle _position;
                             _object setPos _position;
