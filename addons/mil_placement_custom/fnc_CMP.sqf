@@ -505,7 +505,7 @@ switch(_operation) do {
                     _group = _groups select _i;
 
                     if (isnil "_garrisonPos") then {
-                        _position = [position _logic, random(500), random(360)] call BIS_fnc_relPos;
+                        _position = ((position _logic) getPos [(random 500), (random 360)]);
                     } else {
                         _position = [_garrisonPos, 50] call CBA_fnc_RandPos;
                     };
