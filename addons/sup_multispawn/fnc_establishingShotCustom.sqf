@@ -89,7 +89,7 @@ switch (typeName _tgt) do {
     };
 };
 
-_coords = [_pos, _rad, _ang] call BIS_fnc_relPos;
+_coords = (_pos getPos [_rad, _ang]);
 _coords set [2, _alt];
 
 ALiVE_fnc_establishingShot_fakeUAV camPrepareTarget _tgt;
@@ -252,7 +252,7 @@ ALiVE_fnc_establishingShot_logic3 = ALiVE_fnc_establishingShot_logic_group creat
 
     while {isNil "ALiVE_missionStarted"} do {
         private ["_coords"];
-        _coords = [_pos, _rad, _ang] call BIS_fnc_relPos;
+        _coords = (_pos getPos [_rad, _ang]);
         _coords set [2, _alt];
 
         if (count _mul > 0 && {time - _time > 20}) then {
@@ -262,7 +262,7 @@ ALiVE_fnc_establishingShot_logic3 = ALiVE_fnc_establishingShot_logic_group creat
             _tgt = (selectRandom _mul);
             _pos = position _tgt;
 
-            _coords = [_pos, _rad, _ang] call BIS_fnc_relPos; _coords set [2, _alt];
+            _coords = (_pos getPos [_rad, _ang]); _coords set [2, _alt];
 
             ALiVE_fnc_establishingShot_fakeUAV camPrepareTarget _tgt;
             ALiVE_fnc_establishingShot_fakeUAV camPreparePos _coords;
