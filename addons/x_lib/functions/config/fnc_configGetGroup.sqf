@@ -25,10 +25,7 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_groupClass","_result","_groupData","_config","_factionGroups","_faction"];
-
-_faction = _this select 0;
-_groupClass = _this select 1;
+params ["_faction","_groupClass"];
 
 // instantiate static vehicle position data
 if(isNil "ALIVE_groupConfig") then {
@@ -38,17 +35,17 @@ if(isNil "ALIVE_groupConfig") then {
 _groupClass = format ["%1_%2", _faction, _groupClass];
 
 // get the class config path from the static group config data store
-_groupData = [ALIVE_groupConfig, _groupClass] call ALIVE_fnc_hashGet;
-_config = [];
+private _groupData = [ALIVE_groupConfig, _groupClass] call ALIVE_fnc_hashGet;
+private _config = [];
 
-if!(isNil "_groupData") then {
+if !(isNil "_groupData") then {
     //["CDATA: %1 %2",_groupData,_groupClass] call ALIVE_fnc_dump;
     //["CDATA COUNT: %1 %2",count _groupData,_groupClass] call ALIVE_fnc_dump;
 
     _groupData params ["_configRoot","_groupData"];
     _config = _configRoot >> "CfgGroups";
 
-    for "_i" from 0 to count _groupData -1 do {
+    for "_i" from 0 to (count _groupData - 1) do {
         _config = _config select (_groupData select _i);
     };
 

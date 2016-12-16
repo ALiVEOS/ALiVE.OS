@@ -37,8 +37,6 @@ nil
 #define SUPERCLASS ALIVE_fnc_baseClassHash
 #define MAINCLASS ALIVE_fnc_liveAnalysis
 
-private ["_result"];
-
 TRACE_1("liveAnalysis - input",_this);
 
 params [
@@ -46,7 +44,7 @@ params [
     ["_operation", "", [""]],
     ["_args", objNull, [objNull,[],"",0,true,false]]
 ];
-_result = true;
+private _result = true;
 
 #define MTEMPLATE "ALiVE_LIVEANALYSIS_%1"
 

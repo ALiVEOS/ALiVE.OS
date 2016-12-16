@@ -27,29 +27,33 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_groupClass","_position","_direction","_spawnGoodPosition","_prefix","_busy","_config","_groupName","_groupSide","_groupFaction",
-"_groupProfiles","_groupUnits","_groupVehicles","_class","_rank","_vehicle","_vehicleType"];
+private [
+    "_groupName","_groupSide","_groupFaction","_groupUnits",
+    "_groupVehicles","_class","_rank","_vehicle","_vehicleType"
+];
 
-_groupClass = _this select 0;
-_position = _this select 1;
-_direction = if(count _this > 2) then {_this select 2} else {0};
-_spawnGoodPosition = if(count _this > 3) then {_this select 3} else {true};
-_prefix = if(count _this > 4) then {_this select 4} else {""};
-_busy = if(count _this > 5) then {_this select 5} else {false};
+params [
+    "_groupClass",
+    "_position",
+    ["_direction", 0],
+    ["_spawnGoodPosition", true],
+    ["_prefix", ""],
+    ["_busy", false]
+];
 
-_groupProfiles = [];
+private _groupProfiles = [];
 
 // Check to see if faction has a mapping
 if(!isNil "ALIVE_factionCustomMappings") then {
     if(_prefix in (ALIVE_factionCustomMappings select 1)) then {
-        _customMappings = [ALIVE_factionCustomMappings, _prefix] call ALIVE_fnc_hashGet;
+        private _customMappings = [ALIVE_factionCustomMappings, _prefix] call ALIVE_fnc_hashGet;
         _prefix = [_customMappings, "GroupFactionName"] call ALIVE_fnc_hashGet;
     };
 };
 
 // ["Group faction: %1",_prefix] call ALIVE_fnc_dump;
 
-_config = [_prefix, _groupClass] call ALIVE_fnc_configGetGroup;
+private _config = [_prefix, _groupClass] call ALIVE_fnc_configGetGroup;
 
 // ["Group Config: %1 %2",_config,_groupClass] call ALIVE_fnc_dump;
 
