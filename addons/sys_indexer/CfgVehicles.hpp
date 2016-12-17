@@ -45,6 +45,26 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_INDEXER_MAPBOUND_COMMENT";
                                 defaultValue = 0;
                         };
+                        class OS
+                        {
+                                displayName = "$STR_ALIVE_INDEXER_OS";
+                                description = "$STR_ALIVE_INDEXER_OS_COMMENT";
+                                typeName = "BOOL";
+                                class Values
+                                {
+                                        class Win7
+                                        {
+                                                name = "Windows 7";
+                                                value = 0;
+                                                default = 1;
+                                        };
+                                        class Win10
+                                        {
+                                                name = "Windows 10";
+                                                value = 1;
+                                        };
+                                };
+                        };
                 };
 
         };

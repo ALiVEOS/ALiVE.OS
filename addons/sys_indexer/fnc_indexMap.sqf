@@ -33,11 +33,13 @@ private ["_path","_custom"];
 
 _path = _this select 0;
 _custom = _this select 1;
+private _launch = _this select 2;
 
-[_path,_custom] spawn {
+[_path,_custom, _Launch] spawn {
     private ["_path","_file","_objects","_result","_handle","_custom"];
     _path = _this select 0;
     _custom = _this select 1;
+    private _launch = _this select 2;
 
     waitUntil{!isNull player};
 
@@ -49,7 +51,7 @@ _custom = _this select 1;
 
     // Create parsed objects file for map
     [">>>>>>>>>>>>>>>>>> Creating a list of objects (excluding blacklist)"] call ALiVE_fnc_dump;
-    _result = "ALiVEClient" callExtension format["StartIndex~%1|%2",_path, worldName];
+    _result = "ALiVEClient" callExtension format["StartIndex~%1|%2|%3",_path, worldName,_launch];
     //_result = "SUCCESS";
 
     If (_result != "SUCCESS") exitwith {
