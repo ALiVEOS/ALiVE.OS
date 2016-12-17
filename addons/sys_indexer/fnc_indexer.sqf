@@ -169,6 +169,10 @@ switch(_operation) do {
             _result = [_logic,_operation,_args,true] call ALIVE_fnc_OOsimpleOperation;
         };
 
+        case "OS": {
+            _result = [_logic,_operation,_args,false] call ALIVE_fnc_OOsimpleOperation;
+        };
+
         case "start": {
             private ["_mapPath","_customStatic","_customMapBound"];
 
@@ -177,6 +181,7 @@ switch(_operation) do {
                 _mapPath = [_logic, "mapPath"] call MAINCLASS;
                 _customStatic = [_logic, "customStatic"] call MAINCLASS;
                 _customMapBound = [_logic, "customMapBound"] call MAINCLASS;
+                private _launch = [_logic, "OS"] call MAINCLASS;
                 ALIVE_mapBounds = [] call ALIVE_fnc_hashCreate;
 
                 if (_customMapBound != 0) then {
@@ -185,7 +190,7 @@ switch(_operation) do {
                 };
 
                 // start index
-                _result = [_mapPath,_customStatic] call ALiVE_fnc_indexMap;
+                _result = [_mapPath,_customStatic,_launch] call ALiVE_fnc_indexMap;
 
             };
         };
