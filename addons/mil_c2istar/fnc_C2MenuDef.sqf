@@ -52,11 +52,13 @@ _result = (({([toLower(str(_items + [_backpacks])), toLower(_x)] call CBA_fnc_fi
 if ([QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable) then {
     _prUserItems = [[MOD(SUP_PLAYER_RESUPPLY),"pr_item"] call ALIVE_fnc_PR];
     _otherResult = (({([toLower(str(_items + [_backpacks])), toLower(_x)] call CBA_fnc_find) > -1} count _prUserItems) > 0);
+    diag_log["PR: %1", _otherResult];
 };
 
 if ([QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable) then {
     _csUserItems = [NEO_radioLogic getVariable ["combatsupport_item","LaserDesignator"]];
     _csResult = (({([toLower(str(_items + [_backpacks])), toLower(_x)] call CBA_fnc_find) > -1} count _csUserItems) > 0);
+    diag_log["CS: %1", _csResult];
 };
 
 if (typeName _params == typeName []) then {
@@ -93,7 +95,7 @@ _menus =
                 ["call ALiVE_fnc_C2MenuDef", "C2ISTAR", 1],
                 -1,
                 true,
-                _result
+                _result || _csResult || _otherResult
             ]
         ]
     ]
