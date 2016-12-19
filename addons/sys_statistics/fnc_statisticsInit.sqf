@@ -60,7 +60,7 @@ if (isDedicated && GVAR(ENABLED)) then {
     // Server side handler to write data to DB
     QGVAR(UPDATE_EVENTS) addPublicVariableEventHandler {
 
-        private ["_data", "_post", "_gameTime", "_realTime","_hours","_minutes","_currenttime","_async"];
+        private ["_data", "_post", "_gameTime", "_realTime","_hours","_minutes","_currenttime","_async","_missionTime"];
         if (GVAR(ENABLED)) then {
             _data = _this select 1;
             _module = "events";
@@ -87,9 +87,10 @@ if (isDedicated && GVAR(ENABLED)) then {
 
             _gametime = format["%1%2", _hours, _minutes];
             _realtime = [] call ALIVE_fnc_getServerTime;
+            _missionTime = round time;
 
             // _data should be an array of key/value
-            _data = [ ["realTime",_realtime],["Server",GVAR(serverIP)],["Group",GVAR(groupTag)],["Operation",GVAR(operation)],["Map",worldName],["gameTime",_gametime] ] + _data;
+            _data = [["realTime",_realtime],["Server",GVAR(serverIP)],["Group",GVAR(groupTag)],["Operation",GVAR(operation)],["Map",worldName],["gameTime",_gametime]] + _data + [["missionTime",_missionTime]];
 
             // Write event data to DB
             if ((_data select 6) select 1 == "OperationFinish") then {
