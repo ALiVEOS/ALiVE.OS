@@ -580,7 +580,7 @@ if (isDedicated) then {
                     _keyName = format["%1_%2",_aarDocID,_missionTime];
 
                     // store in aar hash
-                    [_aar,_keyName,_aarRecord] call ALiVE_fnc_hashSet;
+                    [_aar,_keyName,_aarVRecord] call ALiVE_fnc_hashSet;
 
                     // Check to see if it's time to write to the DB
                     if (diag_tickTime > (_lastSave + AAR_DEFAULT_SAVE_INTERVAL))  then {
