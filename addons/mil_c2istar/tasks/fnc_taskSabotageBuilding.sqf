@@ -34,7 +34,7 @@ switch (_taskState) do {
     case "init":{
 
         private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
-        "_taskApplyType","_taskEnemySide","_targetSector","_targetEntity","_taskPlayers","_targetBuilding","_targetBuildings","_targetTypes"];
+        "_taskApplyType","_taskEnemySide","_targetSector","_targetEntity","_taskPlayers","_targetBuilding","_targetBuildings","_targetTypes","_blacklist"];
 
         _taskID = [_task, 0, "", [""]] call BIS_fnc_param;
         _requestPlayerID = [_task, 1, "", [""]] call BIS_fnc_param;
@@ -78,6 +78,7 @@ switch (_taskState) do {
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideObjectToNumber;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideNumberToText;
         _targetBuildings = [];
+        _blacklist = ["Land_dp_smallFactory_F"];
 
         // establish the location for the task
         // get enemy location based on input
@@ -141,31 +142,21 @@ switch (_taskState) do {
                     _clusterID = [_objectives select _index,"clusterID",""] call ALiVE_fnc_HashGet;
                     _type = [_objectives select _index,"type",""] call ALiVE_fnc_HashGet;
 
-                    _targetTypes = [];
-
-                    switch _type do {
-                        case ("CIV") : {
-                            _targetTypes =  [
-                                "ALIVE_clustersCiv",
-                                "ALIVE_clustersCivConstruction",
-                                "ALIVE_clustersCivFuel",
-                                "ALIVE_clustersCivHQ",
-                                "ALIVE_clustersCivMarine",
-                                "ALIVE_clustersCivPower",
-                                "ALIVE_clustersCivRail",
-                                "ALIVE_clustersCivSettlement",
-                                "ALIVE_clustersCivComms"
-                            ];
-                        };
-                        default {
-                            _targetTypes = [
-                                "ALIVE_clustersMil",
-                                "ALIVE_clustersMilAir",
-                                "ALIVE_clustersMilHeli",
-                                "ALIVE_clustersMilHQ"
-                            ];
-                        };
-                    };
+                    _targetTypes = [
+                        "ALIVE_clustersMil",
+                        "ALIVE_clustersMilAir",
+                        "ALIVE_clustersMilHeli",
+                        "ALIVE_clustersMilHQ",
+                        "ALIVE_clustersCiv",
+                        "ALIVE_clustersCivConstruction",
+                        "ALIVE_clustersCivFuel",
+                        "ALIVE_clustersCivHQ",
+                        "ALIVE_clustersCivMarine",
+                        "ALIVE_clustersCivPower",
+                        "ALIVE_clustersCivRail",
+                        "ALIVE_clustersCivSettlement",
+                        "ALIVE_clustersCivComms"                                
+                    ];
 
                     {
                         _clusters = _x;
@@ -178,13 +169,13 @@ switch (_taskState) do {
                             _clusterLocation resize 2;
                             _taskLocation resize 2;
 
-                            if (str(_clusterLocation) == str(_taskLocation)) exitwith {
+                            if (_clusterLocation distance _taskLocation < 15) exitwith {
 
                                 _targetBuildings = [_cluster,"nodes",[]] call ALiVE_fnc_HashGet;
                             };
                         };
 
-                        if (!isnil "_targetBuildings") exitwith {};
+                        if (!isnil "_targetBuildings" && {count _targetBuildings > 0}) exitwith {};
                     } foreach _targetTypes;
 
                     ["C2ISTAR - Task SabotageBuilding - OPCOM index %2 selected as objective at position %1",_taskLocation,_index] call ALiVE_fnc_Dump;
@@ -199,87 +190,46 @@ switch (_taskState) do {
 
         if (isnil "_taskLocation") exitwith {["C2ISTAR - Task SabotageBuilding - No location selected!"] call ALiVE_fnc_Dump};
 
-        //["Sorting buildings by height..."] call ALiVE_fnc_DumpR;
-        //Led to Lampposts being selected, now going for buildings with most buildingpos and fallback to random building within 500m
-        /*
+        if (count _targetBuildings == 0) then {
+            ["C2ISTAR - No buildings given for this sabotage location! Defaulting to houses within 500m"] call ALiVE_fnc_Dump;
+
+            _targetBuildings = _taskLocation nearObjects ["House_F",500];
+        };
+        
         _targetBuildings = [_targetBuildings,[],{
 
-            _maxHeight = -999;
-            if (alive _x && {!((typeOf _x) isKindOf "House_Small_F")}) then {
-
-                if !((getText(configfile >> "CfgVehicles" >> (typeOf _x) >> "destrType")) == "DestructNo") then {
-                    _bbr = boundingBoxReal _x;
-                    _p1 = _bbr select 0; _p2 = _bbr select 1;
-                    _maxHeight = abs ((_p2 select 2) - (_p1 select 2));
-                };
-            };
-            _maxHeight
-
-        },"DESCEND"] call ALiVE_fnc_SortBy;
-
-        //Filter broken
-        _targetBuildings = [_targetBuildings,[],{
+			//By indoor building positions
+            count ([getPosATL _x, 20] call ALIVE_fnc_findIndoorHousePositions);
+            
+			/* By height
             _bbr = boundingBoxReal _x;
             _p1 = _bbr select 0; _p2 = _bbr select 1;
             abs ((_p2 select 2) - (_p1 select 2));
-        },"DESCEND", {
-            alive _x &&
-            {_x isKindOf "House_Small_F"} &&
-            {!((getText(configfile >> "CfgVehicles" >> (typeOf _x) >> "destrType")) == "DestructNo")}
-        }] call ALiVE_fnc_SortBy;
-
-        _targetBuildings = [_targetBuildings,[],{
-
-            count ([getPosATL _x, 10] call ALIVE_fnc_findIndoorHousePositions);
-
-        },"DESCEND", {
+			*/
+            
+        },"DESCEND",{
             _alive = alive _x;
-            _house = _x isKindOf "House_Small_F";
-            _destructable = !((getText(configfile >> "CfgVehicles" >> (typeOf _x) >> "destrType")) == "DestructNo");
-            _hasBuildingPos = count ([getPosATL _x, 10] call ALIVE_fnc_findIndoorHousePositions) > 0;
+            _lamp = _x iskindof "Lamps_Base_F";
+            _invincible = getText(configfile >> "CfgVehicles" >> (typeOf _x) >> "destrType") == "DestructNo";
+            
+			//Edit for blacklist (placeholder) in case it is still needed (case sensitive)
+            _excluded = (typeOf _x) in _blacklist;
 
-            _result = _alive && _house && _destructable && _hasBuildingPos;
+            _result = _alive && {!_excluded} && {!_lamp} && {!_invincible};
             _result;
 
         }] call ALiVE_fnc_SortBy;
-        */
 
-        //Pre-filter Array since ALiVE_fnc_SortBy is broken atm.
-        {
-            private ["_alive", "_house", "_destructable", "_hasBuildingPos"];
-
-            _alive = alive _x;
-            _house = _x isKindOf "House_F";
-            _destructable = !((getText(configfile >> "CfgVehicles" >> (typeOf _x) >> "destrType")) == "DestructNo");
-            _hasBuildingPos = count ([getPosATL _x, 10] call ALIVE_fnc_findIndoorHousePositions) > 0;
-
-            if !(_alive && {_house} && {_destructable} && {_hasBuildingPos}) then {_targetBuildings set [_foreachindex,objNull]};
-        } foreach _targetBuildings;
-        _targetBuildings = _targetBuildings - [objNull];
-
-        //Sort by housepositions
-        _targetBuildings = [_targetBuildings,[],{
-
-            count ([getPosATL _x, 10] call ALIVE_fnc_findIndoorHousePositions);
-
-        },"DESCEND"] call ALiVE_fnc_SortBy;
-
-
-        //Move on
-        if (count _targetBuildings < 1) then {
-            ["C2ISTAR - No enterable buildings found for sabotage task! Defaulting to random house within 500m"] call ALiVE_fnc_Dump;
-
-            _targetBuildings = _taskLocation nearObjects ["House_F",500];
-            _lamps = _taskLocation nearObjects ["Lamps_base_F",500];
-
-            _targetBuildings = _targetBuildings - _lamps;
-
-            _targetBuildings call BIS_fnc_arrayShuffle;
-        };
-
+		//still no suitable buildings? fuck off...
         if (count _targetBuildings == 0) exitwith {["C2ISTAR - Task SabotageBuilding - There are no buildings to attack at the target area!"] call ALiVE_fnc_Dump};
 
-        _targetBuilding = _targetBuildings select 0;
+		//Move on
+        if (count _targetBuildings >= 3) then {
+            _targetBuildings reSize 3;
+            _targetBuilding = _targetBuildings call BIS_fnc_SelectRandom;
+        } else {
+            _targetBuilding = _targetBuildings select 0;
+        };
 
         private["_targetPosition","_targetID","_targetDisplayType"];
 
