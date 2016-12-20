@@ -302,7 +302,7 @@ switch (_taskState) do {
                 _profiles = [_x, _position, random(360), true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
                 _profileID = _profiles select 0 select 2 select 4;
                 _position = (_taskPosition getPos [(random 40), (random 40)]);
-                _profileWaypoint = [_position, 100, "MOVE", "FULL", 100, [], "LINE", "NO CHANGE", "CARELESS"] call ALIVE_fnc_createProfileWaypoint;
+                _profileWaypoint = [_position, 100, "MOVE", "FULL", 100, [], "LINE", "NO CHANGE", "SAFE"] call ALIVE_fnc_createProfileWaypoint;
                 [(_profiles select 0), "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
                 _profileIDs pushback _profileID;
@@ -334,7 +334,7 @@ switch (_taskState) do {
                     _profiles = [_x, _position, random(360), true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
                     _profileID = _profiles select 0 select 2 select 4;
                     _position = (_taskPosition getPos [(random 40), (random 40)]);
-                    _profileWaypoint = [_position, 100, "MOVE", "FULL", 100, [], "LINE", "NO CHANGE", "CARELESS"] call ALIVE_fnc_createProfileWaypoint;
+                    _profileWaypoint = [_position, 100, "MOVE", "FULL", 100, [], "LINE", "NO CHANGE", "SAFE"] call ALIVE_fnc_createProfileWaypoint;
                     [(_profiles select 0), "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
                     _profileIDs pushback _profileID;
