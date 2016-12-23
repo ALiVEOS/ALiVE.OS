@@ -71,4 +71,16 @@
 <Key ID="STR_ALIVE_OPCOM_ROADBLOCKS_COMMENT">
     <Original>Option to enable or disable roadblocks as an option for asymmetric commanders</Original>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_SIMULTAN">
+    <Original>Max. simultan attacks:</Original>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_SIMULTAN_COMMENT">
+    <Original>Maximum of objectives engaged at the same time! Reduces speed of progression!</Original>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_MINAGENTS">
+    <Original>Min. recruitment size:</Original>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_MINAGENTS_COMMENT">
+    <Original>Minimum of ALiVE civilians needed per objective for a recruitment center to be set up (Asymmetric Warfare only)!</Original>
+</Key>
 </Container></Package></Project>

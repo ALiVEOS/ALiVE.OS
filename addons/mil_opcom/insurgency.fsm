@@ -80,8 +80,8 @@ link40[] = {30,33};
 link41[] = {31,26};
 link42[] = {32,26};
 link43[] = {33,34};
-globals[] = {0.000000,0,0,0,16777215,640,480,1,137,6316128,1,-1009.366821,-349.400360,121.330872,-579.998352,718,763,1};
-window[] = {0,-1,-1,-1,-1,1083,175,1727,175,1,736};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,137,6316128,1,-1009.366821,-349.400360,340.539001,-372.665344,719,777,1};
+window[] = {0,-1,-1,-1,-1,1150,242,1794,242,1,736};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -96,7 +96,7 @@ class FSM
        "    [" \n
        "        ""_OPCOM_status"",""_busy"",""_pause"",""_exitFSM"",""_OPCOM_HANDLER"",""_OBJECTIVES"",""_OPCOM_FSM"",""_CQB"",""_debug"",""_side""," \n
        "        ""_factions"",""_sidesEnemy"",""_sidesFriendly"",""_controltype"", ""_simultanObjectives"",""_reinforcementRatio"",""_iteration"",""_lock""," \n
-       "        ""_createMarker"",""_agentClusterData"",""_civFactions"",""_roadblocks""" \n
+       "        ""_createMarker"",""_agentClusterData"",""_civFactions"",""_roadblocks"",""_minAgents""" \n
        "    ];" \n
        "" \n
        "_OPCOM_status = ""PreInit"";" \n
@@ -113,6 +113,7 @@ class FSM
        "_sidesFriendly = [_OPCOM_HANDLER,""sidesfriendly"",[""EAST""]] call ALiVE_fnc_HashGet;" \n
        "_controltype = [_OPCOM_HANDLER, ""controltype"",""invasion""] call ALiVE_fnc_HashGet;" \n
        "_simultanObjectives = [_OPCOM_HANDLER, ""simultanobjectives"",10] call ALiVE_fnc_HashGet;" \n
+       "_minAgents = [_OPCOM_HANDLER, ""minAgents"",2] call ALiVE_fnc_HashGet;" \n
        "_reinforcementRatio = [_OPCOM_HANDLER, ""reinforcements"",0.9] call ALiVE_fnc_HashGet;" \n
        "_roadblocks = [_OPCOM_HANDLER, ""roadblocks"",true] call ALiVE_fnc_HashGet;" \n
        "" \n
@@ -1169,7 +1170,7 @@ class FSM
        "        private [""_nearProfiles""];" \n
        "    " \n
        "        // Dont assign troops on more than 3 objectives at once" \n
-       "        if (count _section <= 0 && {count _simultan >= 3}) exitwith {_simultan = _simultan - [_id]};" \n
+       "        if (count _section <= 0 && {count _simultan >= _simultanObjectives}) exitwith {_simultan = _simultan - [_id]};" \n
        "    " \n
        "        _nearProfiles = [_OPCOM_HANDLER,_center,_factions,_sizeSection - (count _section),_types] call _fnc_selectSection;" \n
        "        _section = _section + _nearProfiles;" \n

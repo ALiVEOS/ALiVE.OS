@@ -136,6 +136,8 @@ switch(_operation) do {
                     _faction3 = _logic getvariable ["faction3","NONE"];
                     _faction4 = _logic getvariable ["faction4","NONE"];
                     _factions = [_logic, "convert", _logic getvariable ["factions",[]]] call ALiVE_fnc_OPCOM;
+                    _simultanObjectives = _logic getvariable ["simultanObjectives",10];
+                    _minAgents = _logic getvariable ["minAgents",2];
 
                     _debug = call compile (_logic getvariable ["debug","false"]);
                     _persistent = call compile (_logic getvariable ["persistent","false"]);
@@ -191,7 +193,8 @@ switch(_operation) do {
                     [_handler, "sidesenemy",_sidesEnemy] call ALiVE_fnc_HashSet;
                     [_handler, "sidesfriendly",_sidesFriendly] call ALiVE_fnc_HashSet;
                     [_handler, "position",_position] call ALiVE_fnc_HashSet;
-                    [_handler, "simultanobjectives",10] call ALiVE_fnc_HashSet;
+                    [_handler, "simultanobjectives",_simultanObjectives] call ALiVE_fnc_HashSet;
+                    [_handler, "minAgents",_minAgents] call ALiVE_fnc_HashSet;
                     [_handler, "opcomID",_opcomID] call ALiVE_fnc_HashSet;
                     [_handler, "debug",_debug] call ALiVE_fnc_HashSet;
                     [_handler, "persistent",_persistent] call ALiVE_fnc_HashSet;
