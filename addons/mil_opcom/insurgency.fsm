@@ -984,7 +984,7 @@ class FSM
        "_type = if (count _unusedActions > 0) then {(selectRandom _unusedActions)} else {""idle""};" \n
        "" \n
        "// Overwrite type with Recruitment HQ if fitting" \n
-       "if (count _agents >= 2 && {!(""recruit"" in _actionsFulfilled)}) then {_type = ""recruit""};" \n
+       "if (count _agents >= _minAgents && {!(""recruit"" in _actionsFulfilled)}) then {_type = ""recruit""};" \n
        "" \n
        "" \n
        "if (isnil ""_actions"")  then {" \n
