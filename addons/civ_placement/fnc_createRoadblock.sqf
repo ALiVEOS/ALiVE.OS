@@ -36,7 +36,7 @@ to do: Current issue if road ahead bends.
 private ["_grp","_pos","_roadpos","_vehicle","_vehtype","_blockers","_roads","_fac","_debug","_roadConnectedTo", "_connectedRoad","_direction","_checkpoint","_checkpointComp","_roadpoints","_num"];
 
 _pos = [_this, 0, [0,0,0], [[]]] call BIS_fnc_param;
-_radius = [_this, 1, 100, [-1]] call BIS_fnc_param;
+_radius = [_this, 1, 300, [-1]] call BIS_fnc_param;
 _num = [_this, 2, 1, [-1]] call BIS_fnc_param;
 _debug = [_this, 3, false, [true]] call BIS_fnc_param;
 
