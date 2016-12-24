@@ -49,18 +49,18 @@ if ([_newloc, "Error"] call CBA_fnc_find == -1) then {
     // TO DO
 
 
-                    _date = date;
-                    _year = "2012";
-                    _i = 0;
+    _date = date;
+    _year = "2012";
+    _i = 0;
 
-                    {
-                        if (_x < 10) then {
-                            _date set [_i, "0" + str(_x)];
-                        } else {
-                            _date set [_i, _x];
-                        };
-                        _i = _i + 1;
-                    } foreach _date;
+    {
+        if (_x < 10) then {
+            _date set [_i, "0" + str(_x)];
+        } else {
+            _date set [_i, _x];
+        };
+        _i = _i + 1;
+    } foreach _date;
 
 
 
