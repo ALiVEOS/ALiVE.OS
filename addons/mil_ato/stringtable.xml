@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_ATO">
+    <Original>Joint Forces Air Component Commander</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_COMMENT">
+    <Original>Joint Forces Air Component Commander</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_DEBUG">
+    <Original>Enable Debug:</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_DEBUG_COMMENT">
+    <Original>Enables Module Debug</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_PERSISTENT">
+    <Original>Persistent:</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_PERSISTENT_COMMENT">
+    <Original>Enables external Database persistence</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_FACTION">
+    <Original>Faction:</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_FACTION_COMMENT">
+    <Original>Select the faction for air taskings.</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_TYPES">
+    <Original>Available ATOs:</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_TYPES_COMMENT">
+    <Original>Select the type of air tasking orders, in order of priority. Choices are SEAD, DCA, CAP, CAS, Strike, Recce</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_AIRSPACE">
+    <Original>Airspace Markers:</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_AIRSPACE_COMMENT">
+    <Original>Enter the marker names representing the airspace managed by this module</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_USAGE">
+    <Original>Place a JFACC module to provide combat air patrol and suppresion of enemy air defenses over your airspace. Sync to an OPCOM in order for OPCOM to request Recce, Strike or CAS</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_CREATE_HQ">
+    <Original>Create HQ:</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_CREATE_HQ_COMMENT">
+    <Original>Selects HQ objective close to the module or spawns an appropriate composition</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_PLACE_AA">
+    <Original>Place Anti-Air:</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_PLACE_AA_COMMENT">
+    <Original>Place Anti-Air around the existing JFACC HQ</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_PLACE_AIR">
+    <Original>Place Air Assets:</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_PLACE_AIR_COMMENT">
+    <Original>If there are no available air assets, then place additional assets at the nearest airbase or helipad</Original>
+</Key>
+</Container></Package></Project>
