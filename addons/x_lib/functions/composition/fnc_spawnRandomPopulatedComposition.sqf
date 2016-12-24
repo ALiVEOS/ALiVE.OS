@@ -17,8 +17,8 @@ Category - String
     Guerrilla Categories - camps, checkpointsbarricades, constructionsupplies, commnunications, fieldhq, fort, fuel, hq, marine, medical, outposts, power, supports
     Military Categories - airports, camps, checkpointsbarricades, constructionsupplies, communications, crashsites, fieldhq, fort, fuel, heliports, hq, marine, medical, outposts, power, supports, supplies
 
-Size - String (Large, Medium, Small, ANY)
 Faction - String (OPTIONAL)
+Size - String (Large, Medium, Small, ANY)
 Infantry groups - Integer (OPTIONAL)
 Mot Groups - Integer (OPTIONAL)
 Mech Groups - Integer (OPTIONAL)
