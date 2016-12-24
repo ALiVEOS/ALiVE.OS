@@ -1,0 +1,19 @@
+1. On demand analysis
+2. Checking for crew death
+3. Crew reinforcement / aircraft reinforcement
+4. UAV handling
+5. Player request handling
+6. kickoff rescue mission on downed bird
+7. OPCOM ATO request logic
+8. remove OCA/CAP if no planes
+9. add OCA/CAP if new planes
+10. Check for AA or AG weapons on aircraft
+11. Multiple targets
+12. SEAD/STRIKE/CAS/RECCE vs Profiles?
+13. BLUFOR choppers explode on compositions?
+14. Place AA
+15. Despawn aircraft
+16. if vehicle dies while runway locked, unlock runway
+17. Tests
+18. Option to include CS assets
+19. If crew are not available abort mission move plane back

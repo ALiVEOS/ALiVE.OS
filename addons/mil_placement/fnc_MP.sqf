@@ -168,7 +168,7 @@ switch(_operation) do {
             ASSERT_TRUE(typeName _args == "BOOL",str _args);
 
             _result = _args;
-        };
+    };
     case "createFieldHQ": {
             if (typeName _args == "BOOL") then {
                 _logic setVariable ["createFieldHQ", _args];
@@ -1022,7 +1022,7 @@ switch(_operation) do {
 
                         //[_x, "debug", true] call ALIVE_fnc_cluster;
                         {
-                            if(random 1 > 0.66) then {
+                            if(random 1 > 0.5) then {
 
                                 // Find safe place to put aircraft
                                 private ["_pavement","_runway"];
@@ -1038,7 +1038,7 @@ switch(_operation) do {
                                     } foreach (nearestObjects [position _x, [], 100]);
                                     if (count _runway > 0) then {
                                         // diag_log format["Cannot find hangar, choosing safe taxiway from: %1", _runway];
-                                        _pavement = (selectRandom _runway);
+                                        _pavement = selectRandom _runway;
                                         _position = position _pavement;
                                         _direction = direction _pavement;
                                     } else {
@@ -1051,18 +1051,17 @@ switch(_operation) do {
 
                                 // Place Aircraft
                                 _vehicleClass = (selectRandom _airClasses);
-                                [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
-                                _countProfiles = _countProfiles + 1;
-                                _countUncrewedAir =_countUncrewedAir + 1;
+                                //if (random 1 > 1) then {
+                                    [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                                    _countProfiles = _countProfiles + 1;
+                                    _countUncrewedAir =_countUncrewedAir + 1;
+                                /*} else {
+                                    [_vehicleClass,_side,_faction,"CAPTAIN",_position,_direction,false,_faction,false,true] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                    _countProfiles = _countProfiles + 2;
+                                    _countCrewedAir = _countCrewedAir + 1;
+                                };*/
                             };
-                                /*
-                            }else{
-                                _position = [_position,0,100,5,0,20,0,[],[[_position,0,100,5,0,20,0,[],[_position]] call BIS_fnc_findSafePos]] call BIS_fnc_findSafePos;
-                                [_vehicleClass,_side,_faction,"CAPTAIN",_position,_direction,false,_faction] call ALIVE_fnc_createProfilesCrewedVehicle;
-                                _countProfiles = _countProfiles + 2;
-                                _countCrewedAir = _countCrewedAir + 1;
-                            };
-                            */
+
                         } forEach _buildings;
                     } forEach _airClusters;
                 };
@@ -1385,10 +1384,12 @@ switch(_operation) do {
 
             _groups = _groups + _infantryGroups;
 
-            for "_i" from 0 to _countAir -1 do {
-                _group = ["Air",_faction] call ALIVE_fnc_configGetRandomGroup;
-                if!(_group == "FALSE") then {
-                    _groups pushback _group;
+            if (_placeHelis) then {
+                for "_i" from 0 to _countAir -1 do {
+                    _group = ["Air",_faction] call ALIVE_fnc_configGetRandomGroup;
+                    if!(_group == "FALSE") then {
+                        _groups pushback _group;
+                    };
                 };
             };
 
