@@ -5967,6 +5967,7 @@ switch(_operation) do {
 
         private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
         _initEventHandler = _initEventHandler + "if (isServer) then {_unit = _this select 0;";
+        _initEventHandler = _initEventHandler + "_onSpawn = {_unit = _this select 0;";
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
 
         private _identityTypes = [_unit,"identityTypes"] call ALiVE_fnc_hashGet;
@@ -5993,6 +5994,9 @@ switch(_operation) do {
         // hack to reload weapons on spawn
 
         _initEventHandler = _initEventHandler + "reload _unit;";
+        
+        _initEventHandler = _initEventHandler + "};"; // _onSpawn close
+        _initEventHandler = _initEventHandler + "[_unit] call _onSpawn;_unit addMPEventHandler ['MPRespawn', _onSpawn];";
 
         _initEventHandler = _initEventHandler + "};"; // if (isServer) close
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
@@ -6050,6 +6054,8 @@ switch(_operation) do {
         _result = "";
 
         private _initEventHandler = _initEventHandler + "if (isServer) then {_unit = _this select 0;";
+        _initEventHandler = _initEventHandler + "if (isServer) then {_unit = _this select 0;";
+        _initEventHandler = _initEventHandler + "_onSpawn = {_unit = _this select 0;";
 
         private _realVehicle = [_logic,"getRealUnitClass", _unitConfigName] call MAINCLASS;
         private _unitTextureArray = [_logic,"getVehicleTextureArray", [_realVehicle,_unitTexture]] call MAINCLASS;
@@ -6080,6 +6086,9 @@ switch(_operation) do {
             _result = _result + _newLine;
         };
 
+        _initEventHandler = _initEventHandler + "};"; // _onSpawn close
+        _initEventHandler = _initEventHandler + "[_unit] call _onSpawn;_unit addMPEventHandler ['MPRespawn', _onSpawn];";
+        
         _initEventHandler = _initEventHandler + "};"; // if (isServer) close
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
 
