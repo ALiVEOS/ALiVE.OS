@@ -247,7 +247,7 @@ if (isMultiplayer && {hasInterface} && {GVAR(ENABLED)}) then {
 
     // Setup the event data for player starting
 
-        _data = [ ["Event","PlayerStart"] , ["PlayerSide",_PlayerSide] , ["PlayerFaction",_PlayerFaction], ["PlayerName",_name] ,["PlayerType",typeof player] , ["PlayerClass",_class] , ["PlayerRank", rank player], ["Player",_puid], ["GeoPos",position player], ["playerGroup", [_unit] call ALiVE_fnc_getPlayerGroup] ];
+        _data = [ ["Event","PlayerStart"] , ["PlayerSide",_PlayerSide] , ["PlayerFaction",_PlayerFaction], ["PlayerName",_name] ,["PlayerType",typeof player] , ["PlayerClass",_class] , ["PlayerRank", rank player], ["Player",_puid], ["GeoPos",position player], ["playerGroup", [player] call ALiVE_fnc_getPlayerGroup] ];
         GVAR(UPDATE_EVENTS) = _data;
         publicVariableServer QGVAR(UPDATE_EVENTS);
 };
