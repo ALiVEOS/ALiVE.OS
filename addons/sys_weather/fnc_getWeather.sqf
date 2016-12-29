@@ -27,31 +27,32 @@ Peer Reviewed:
 
 ---------------------------------------------------------------------------- */
 
-private ["_date","_location","_cmd","_result","_year","_response","_newloc"];
+private _location = _this select 0;
 
-_location = _this select 0;
+private _result = false;
 
 // Check Location
 // Create function call
-_cmd = format ["GetWeatherLocation [""%1""]", _location];
+private _cmd = format ["GetWeatherLocation [""%1""]", _location];
 
-diag_log format ["cmd: %1",_cmd];
+// diag_log format ["cmd: %1",_cmd];
 
 // Send command to plugin
-_newloc = [_cmd] call ALIVE_fnc_sendToPlugin;
+private _newLoc = [_cmd] call ALIVE_fnc_sendToPlugin;
 
-diag_log format ["JSON: %1",_newloc];
-
+diag_log format ["WEATHER LOCATION JSON: %1",_newloc];
 
 if ([_newloc, "Error"] call CBA_fnc_find == -1) then {
 
-    // Check param
-    // TO DO
+    // Process Weather Location data
+    _newloc = [nil,"decode",_newLoc] call ALiVE_fnc_json;
+    _newLoc = [_newLoc select 3,"get",["l"]] call ALiVE_fnc_json;
 
+    //diag_log format ["WEATHER LOCATION JSON: %1",_newloc];
 
-    _date = date;
-    _year = "2012";
-    _i = 0;
+    private _date = date;
+    private _year = "2015";
+    private _i = 0;
 
     {
         if (_x < 10) then {
@@ -62,23 +63,26 @@ if ([_newloc, "Error"] call CBA_fnc_find == -1) then {
         _i = _i + 1;
     } foreach _date;
 
-
-
     // Create function call
-    _cmd = format ["GetWeather [""%1"",""%2"",""%3"",""%4"",""%5""]", _year, _date select 1, _date select 2, _date select 3, _newloc];
+    _cmd = format ["GetWeather ['%1','%2','%3','%4','%5']", _year, _date select 1, _date select 2, _date select 3, _newloc];
 
-    diag_log format ["cmd: %1",_cmd];
+    //diag_log format ["weather cmd: %1",_cmd];
 
-    // Send command to plugin
-    _response = [_cmd] call ALIVE_fnc_sendToPlugin;
+    // Send command to plugin (Dedicated Server only atm)
+    //if (isDedicated) then {
+        private _response = [_cmd] call ALIVE_fnc_sendToPlugin;
+    //} else {
+    //    _response = "ALiVEClient" callExtension _cmd;
+    // };
 
-    diag_log format ["JSON: %1",_response];
+    //diag_log format ["WEATHER JSON: %1",_response];
 
     // Check response for error
     // TO DO
 
     // Parse correct response
-    _result = [_response] call ALIVE_fnc_parseJSON;
+    _result = [nil,"decode",_response] call ALiVE_fnc_json;
+
 } else {
     _result = _newloc;
 };
