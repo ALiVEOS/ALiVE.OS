@@ -152,7 +152,7 @@ switch (_taskState) do {
 
             private ["_category","_compType"];
             _compType = "Military";
-            If (_taskEnemySide == RESISTANCE) then {
+            If (_taskEnemySide == "GUER") then {
                 _compType = "Guerrilla";
             };
             _category = (selectRandom ["HQ", "Outposts", "FieldHQ", "Camps"]);
