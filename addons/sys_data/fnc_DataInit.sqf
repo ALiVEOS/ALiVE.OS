@@ -1,7 +1,7 @@
 #include <\x\alive\addons\sys_data\script_component.hpp>
 SCRIPT(DataInit);
 
-#define AAR_DEFAULT_SAMPLE_RATE 10
+#define AAR_DEFAULT_SAMPLE_RATE 5
 #define AAR_DEFAULT_SAVE_INTERVAL 120
 #define SUPERCLASS ALIVE_fnc_baseClass
 #define MAINCLASS ALIVE_fnc_Data
