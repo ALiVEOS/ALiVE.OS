@@ -167,6 +167,13 @@ ALiVE_fnc_INS_retreat = {
 
                     [_objective,_x] call ALiVE_fnc_HashRem;
                 } foreach ["factory","hq","ambush","depot","sabotage","ied","suicide"];
+                
+                // Reset all actions done on that objective so they can be performed again
+                [_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashSet;
+                
+                // Reduce hostility level after retreat
+                [_pos,_sides, 20] call ALiVE_fnc_updateSectorHostility;
+                [_pos, _allSides - _sides, -20] call ALiVE_fnc_updateSectorHostility;
 
                 _event = ['OPCOM_DEFEND',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
                 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
