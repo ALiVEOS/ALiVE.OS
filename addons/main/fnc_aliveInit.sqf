@@ -170,53 +170,58 @@ if (hasInterface) then {
     if (call compile MOD(DISABLESAVE)) then {enableSaving [false, false]};
 
     if (isMultiplayer) then {
-        [] spawn {
-            waitUntil {
-                LOG(str ( (findDisplay MPINTERRUPT) displayCtrl ABORTBUTTON ));
-                str ((findDisplay MPINTERRUPT) displayCtrl ABORTBUTTON) != "No control"
-            };
 
+        _id = [1, [false, false, false],{
             // Add hook to abort button
-            ((findDisplay MPINTERRUPT) displayCtrl ABORTBUTTON) ctrlAddEventHandler ["ButtonClick", {
 
-                // ALiVE Abort Code
-                private ["_name","_uid","_id","_shotsFired"];
-                _id = player;
-                _name = name player;
-                _uid = getPlayerUID player;
+            [] spawn {
+                private _wait = time + 10;
 
-                ["ALiVE Exit - Exit Player id: %1 name: %2 uid: %3",_id,_name,_uid] call ALIVE_fnc_dump;
+                waitUntil {
+                    LOG(str ( (findDisplay MPINTERRUPT) displayCtrl ABORTBUTTON ));
+                    str ((findDisplay MPINTERRUPT) displayCtrl ABORTBUTTON) != "No control" || time > _wait
+                };
+                ((findDisplay MPINTERRUPT) displayCtrl ABORTBUTTON) ctrlAddEventHandler ["ButtonClick", {
 
-                //diag_log format["STATS ENABLED: %1",MOD(sys_statistics_ENABLED)];
+                    // ALiVE Abort Code
+                    private ["_name","_uid","_id","_shotsFired"];
+                    _id = player;
+                    _name = name player;
+                    _uid = getPlayerUID player;
 
-                if (!isNil QMOD(sys_statistics) && (MOD(sys_statistics_ENABLED))) then {
-                    ["ALiVE Exit - Player Stats OPD"] call ALIVE_fnc_dump;
+                    ["ALiVE Exit - Exit Player id: %1 name: %2 uid: %3",_id,_name,_uid] call ALIVE_fnc_dump;
 
-                    if (!isNil "ALIVE_sys_statistics_playerShotsFired") then {
+                    //diag_log format["STATS ENABLED: %1",MOD(sys_statistics_ENABLED)];
 
-                        // diag_log str(ALIVE_sys_statistics_playerShotsFired);
+                    if (!isNil QMOD(sys_statistics) && (MOD(sys_statistics_ENABLED))) then {
+                        ["ALiVE Exit - Player Stats OPD"] call ALIVE_fnc_dump;
 
-                        // Send the player's shots fired data to the server and add it to the hash
-                        // [[_uid, ALIVE_sys_statistics_playerShotsFired],"ALiVE_fnc_updateShotsFired", false, false] call BIS_fnc_MP;
-                        [_uid, ALIVE_sys_statistics_playerShotsFired] remoteExec ["ALiVE_fnc_updateShotsFired", 2];
+                        if (!isNil "ALIVE_sys_statistics_playerShotsFired") then {
+
+                            // diag_log str(ALIVE_sys_statistics_playerShotsFired);
+
+                            // Send the player's shots fired data to the server and add it to the hash
+                            // [[_uid, ALIVE_sys_statistics_playerShotsFired],"ALiVE_fnc_updateShotsFired", false, false] call BIS_fnc_MP;
+                            [_uid, ALIVE_sys_statistics_playerShotsFired] remoteExec ["ALiVE_fnc_updateShotsFired", 2];
+                        };
+
+                        // Stats module onPlayerDisconnected call
+                        [[_id, _name, _uid],"ALIVE_fnc_stats_onPlayerDisconnected", false, false] call BIS_fnc_MP;
+
                     };
 
-                    // Stats module onPlayerDisconnected call
-                    [[_id, _name, _uid],"ALIVE_fnc_stats_onPlayerDisconnected", false, false] call BIS_fnc_MP;
+                    if (["ALiVE_sys_profile"] call ALiVE_fnc_isModuleAvailable) then {
 
-                };
+                        ["ALiVE Exit - Player Profile Handler OPD"] call ALIVE_fnc_dump;
+                        // Profiles module onPlayerDisconnected call
+                        [[_id, _name, _uid],"ALIVE_fnc_profile_onPlayerDisconnected", false, false] call BIS_fnc_MP;
 
-                if (["ALiVE_sys_profile"] call ALiVE_fnc_isModuleAvailable) then {
-
-                    ["ALiVE Exit - Player Profile Handler OPD"] call ALIVE_fnc_dump;
-                    // Profiles module onPlayerDisconnected call
-                    [[_id, _name, _uid],"ALIVE_fnc_profile_onPlayerDisconnected", false, false] call BIS_fnc_MP;
-
-                };
-                ["ALiVE Exit - [ABORT] Ending mission"] call ALIVE_fnc_dump;
-            }];
-            ["ALiVE has hooked abort button: %1", player] call ALiVE_fnc_Dump;
-        };
+                    };
+                    ["ALiVE Exit - [ABORT] Ending mission"] call ALIVE_fnc_dump;
+                }];
+                ["ALiVE has hooked abort button: %1", player] call ALiVE_fnc_Dump;
+            };
+        }] call CBA_fnc_addKeyHandler;
     };
 };
 
