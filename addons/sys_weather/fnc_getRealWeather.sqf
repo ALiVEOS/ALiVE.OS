@@ -47,7 +47,7 @@ private _newLoc = [_cmd] call ALIVE_fnc_sendToPlugin;
 
 // diag_log format ["WEATHER LOCATION JSON: %1",_newloc];
 
-if ([_newloc, "Error"] call CBA_fnc_find == -1) then {
+if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
 
     // Process Weather Location data
     _newloc = [nil,"decode",_newLoc] call ALiVE_fnc_json;
