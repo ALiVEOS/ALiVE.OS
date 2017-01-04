@@ -80,7 +80,7 @@ if (isDedicated) then {
     GVAR(databaseName) = "arma3live";
     GVAR(source) = MOD(sys_data) getVariable ["source","CouchDB"];
 
-    _initmsg = [_logic getVariable ["disablePerfMon","true"]] call ALIVE_fnc_startALiVEPlugIn;
+    private _initmsg = [_logic getVariable ["disablePerfMon","true"]] call ALIVE_fnc_startALiVEPlugIn;
 
     ["ALIVE_SYS_DATA START PLUGIN: %1", _initmsg] call ALIVE_fnc_dump;
 
@@ -106,7 +106,7 @@ if (isDedicated) then {
     };
 
     // Check that the config loaded ok, if not then stop the data module
-    if (typeName _config == "STRING" || (_initmsg select 1 == "ERROR" && _initmsg select 2 != "ALiVE already initialized")) exitWith {
+    if (typeName _config == "STRING") exitWith {
         ["CANNOT CONNECT TO DATABASE, DISABLING DATA MODULE"] call ALIVE_fnc_logger;
         GVAR(DISABLED) = true;
         publicVariable QGVAR(DISABLED);
