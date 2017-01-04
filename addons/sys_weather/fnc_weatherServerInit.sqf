@@ -126,6 +126,10 @@ switch (INITIAL_WEATHER) do
         // Get the current weather
         GVAR(REAL_WEATHER) = [WEATHER_CYCLE_REAL_LOCATION] call ALIVE_fnc_getRealWeather;
 
+        if (typeName GVAR(REAL_WEATHER) == "BOOL") exitWith {
+            diag_log format["--------------------------------- ERROR GETTING REAL WEATHER : %1", WEATHER_CYCLE_REAL_LOCATION];
+        };
+
         _rainProbability = (parseNumber ([GVAR(REAL_WEATHER),"rain", 0] call ALiVE_fnc_hashGet)) * 100;
         _fogProbability = (parseNumber ([GVAR(REAL_WEATHER),"fog", 0] call ALiVE_fnc_hashGet)) * 100;
         _lightningProbability = (parseNumber ([GVAR(REAL_WEATHER),"thunder", 0] call ALiVE_fnc_hashGet)) * 100;
@@ -292,7 +296,7 @@ private _windSpeed = random 5;
 private _windDir = random 360;
 private _isFoggy = false;
 
-if (INITIAL_WEATHER == 5) then { // REAL WEATHER
+if (INITIAL_WEATHER == 5 && typeName GVAR(REAL_WEATHER) != "BOOL") then { // REAL WEATHER
 
     // Calculate Fog
     _isFoggy = parseNumber ([GVAR(REAL_WEATHER),"fog", 0] call ALiVE_fnc_hashGet);
