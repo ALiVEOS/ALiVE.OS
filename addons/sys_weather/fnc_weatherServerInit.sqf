@@ -132,10 +132,11 @@ switch (INITIAL_WEATHER) do
 
         private _conditions = [GVAR(REAL_WEATHER),"conds", "Clear"] call ALiVE_fnc_hashGet;
 
-        if ("Drizzle" find _conditions != -1) then {
-            _conditions = "Mostly Cloudy";
-        };
-        if ("Rain" find _conditions != -1 || "Snow" find _conditions != -1 || "Thunderstorms" find _conditions != -1 || "Showers" find _conditions != -1 || "Hail" find _conditions != -1 || "Ice" find _conditions != -1) then {
+        // ["CONDITIONS: %1",_conditions] call ALIVE_fnc_dump;
+
+        if (_conditions == "") then {_conditions = "Clear"};
+
+        if (_conditions find "Drizzle" != -1 || _conditions find "Rain" != -1 || _conditions find "Snow" != -1 || _conditions find "Thunderstorms" != -1 || _conditions find "Showers" != -1 || _conditions find "Hail" != -1 || _conditions find "Ice" != -1) then {
             _conditions = "Overcast";
         };
 
@@ -197,6 +198,64 @@ switch (INITIAL_WEATHER) do
             };
         };
 
+        // Check conditions for rain
+
+        private _minimumRain = 0;
+        private _maximumRain = 0.1;
+
+        switch (_conditions) do {
+            case "Light Drizzle": {
+                _minimumRain = 0.1; _maximumRain = 0.2;
+            };
+            case "Light Rain Mist";
+            case "Drizzle": {
+                _minimumRain = 0.2; _maximumRain = 0.3;
+            };
+            case "Rain Mist";
+            case "Heavy Drizzle";
+            case "Light Freezing Rain";
+            case "Light Rain": {
+                _minimumRain = 0.3; _maximumRain = 0.4;
+            };
+            case "Heavy Rain Mist";
+            case "Light Rain Showers";
+            case "Freezing Rain";
+            case "Rain": {
+                _minimumRain = 0.4; _maximumRain = 0.5;
+            };
+            case "Light Thunderstorms and Rain";
+            case "Rain": {
+                _minimumRain = 0.5; _maximumRain = 0.6;
+            };
+            case "Thunderstorms and Rain";
+            case "Rain Showers": {
+                _minimumRain = 0.7; _maximumRain = 0.8;
+            };
+            case "Heavy Thunderstorms and Rain";
+            case "Heavy Rain Showers";
+            case "Heavy Freezing Rain";
+            case "Heavy Rain": {
+                _minimumRain = 0.9; _maximumRain = 1;
+            };
+            default {
+                _minimumRain = 0; _maximumRain = 0.1;
+            };
+        };
+        0 setRain (_minimumRain + random (_maximumRain - _minimumRain));
+
+        // Check conditions for lightning
+        private _lightnings = parseNumber ([GVAR(REAL_WEATHER),"thunder", 0] call ALiVE_fnc_hashGet);
+        if (_conditions find "Thunderstorm" != -1) then {
+            _lightnings = 0.5;
+        };
+        if (_conditions find "Light Thunderstorm" != -1) then {
+            _lightnings = 0.2;
+        };
+        if (_conditions find "Heavy Thunderstorm" != -1) then {
+            _lightnings = 1;
+        };
+        0 setLightnings _lightnings;
+
     };
 };
 
@@ -229,6 +288,7 @@ private _cycleDelay = WEATHER_CYCLE_DELAY;
 private _decimalplaces = 2;
 private _initialOvercast = (_minimumOvercast + random (_maximumOvercast - _minimumOvercast));
 
+private _windSpeed = random 5;
 private _windDir = random 360;
 private _isFoggy = false;
 
@@ -245,12 +305,10 @@ if (INITIAL_WEATHER == 5) then { // REAL WEATHER
 
     // Set clouds, rain and lightning
     0 setOvercast round(_initialOvercast * (10 ^ _decimalplaces)) / (10 ^ _decimalplaces);
-    0 setRain parseNumber ([GVAR(REAL_WEATHER),"rain", 0] call ALiVE_fnc_hashGet);
-    0 setLightnings parseNumber ([GVAR(REAL_WEATHER),"thunder", 0] call ALiVE_fnc_hashGet);
 
     // Calculate Wind
     _windDir = parseNumber ([GVAR(REAL_WEATHER),"wdird", random 360] call ALiVE_fnc_hashGet);
-    private _windSpeed = parseNumber ([GVAR(REAL_WEATHER),"wspdm", 1 + (random 5)] call ALiVE_fnc_hashGet);
+    _windSpeed = parseNumber ([GVAR(REAL_WEATHER),"wspdm", 1 + (random 5)] call ALiVE_fnc_hashGet);
     setWind [-_windSpeed * sin(_windDir), -_windSpeed * cos(_windDir), true];
 
     // Calculate gusts and waves
@@ -278,6 +336,8 @@ if (INITIAL_WEATHER == 5) then { // REAL WEATHER
 
 sleep 0.01;
 forceWeatherChange;
+
+// ["INIT WEATHER SETTINGS: %1, %2, %3, %4, %5, %6, %7, %8, %9, %10,%11, %12, %13, %14, %15, %16, %17, %18, %19, %20",round(_initialOvercast * (10 ^ _decimalplaces)) / (10 ^ _decimalplaces), _minimumOvercast, _maximumOvercast, _rainProbability, rain, _lightningProbability, lightnings, _windDir, wind, _windSpeed, _fogProbability, _minimumFog, _maximumFog, _isFoggy, _initialFog, _initialFogDecay, _initialFogAltitude, _decimalplaces, _cycleVariance, _cycleDelay] call ALIVE_fnc_dump;
 
 if (WEATHER_DEBUG) then { ["Module ALiVE_sys_weather WEATHER CHANGED! OVERCAST: %1, NEXTWEATHERCHANGE: %2", overcast, nextWeatherChange] call ALIVE_fnc_dump;};
 
