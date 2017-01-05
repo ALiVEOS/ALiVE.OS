@@ -34,6 +34,13 @@ if (count _this > 1) then {
     _date = _this select 1;
 };
 
+// Convert dates to SCALARS
+{
+    If (typeName _x == "STRING") then {
+        _date set [_foreachIndex, parseNumber _x];
+    };
+} foreach _date;
+
 private _result = false;
 
 // Check Location
@@ -55,23 +62,41 @@ if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
 
     diag_log format ["WEATHER LOCATION: %1 = %2",_location, _newloc];
 
+    private _year = _date select 0;
 
-    private _year = "2015";
-    private _i = 0;
+    // Work out which year should be used
 
+    // Get the local time to the server (not UTC)
+    private _curDate =  ([true] call ALIVE_fnc_getServerTime) splitString "/ :";
+    private _curYear = parseNumber (_curDate select 2);
+    private _curMon = parseNumber (_curDate select 1);
+    private _curDay = parseNumber (_curDate select 0);
+    private _curHour = parseNumber (_curDate select 3);
+
+    // Check to see if we are in the future or earlier than 2007
+    if (((_date select 0) >= _curYear && (_date select 1) >= _curMon && (_date select 2) > _curDay) || ((_date select 0) < 2007)) then {
+        _date set [0,_curYear - 1]; // set year
+    };
+
+    // If we are going for current time then move back 1 hour
+    if ((_date select 0) == _curYear && (_date select 1) == _curMon && (_date select 2) == _curDay && (_date select 3) >= _curHour) then {
+        _date set [3,_curHour -1];
+    };
+
+    // convert date back to string to handle values less than 10
     {
         if (_x < 10) then {
-            _date set [_i, "0" + str(_x)];
+            _date set [_foreachIndex, "0" + str(_x)];
         } else {
-            _date set [_i, _x];
+            _date set [_foreachIndex, str(_x)];
         };
-        _i = _i + 1;
+
     } foreach _date;
 
     // Create function call
-    _cmd = format ["GetWeather ['%1','%2','%3','%4','%5']", _year, _date select 1, _date select 2, _date select 3, _newloc];
+    _cmd = format ["GetWeather ['%1','%2','%3','%4','%5']", _date select 0, _date select 1, _date select 2, _date select 3, _newloc];
 
-    //diag_log format ["weather cmd: %1",_cmd];
+    diag_log format ["weather cmd: %1",_cmd];
 
     // Send command to plugin (Dedicated Server only atm)
     //if (isDedicated) then {
@@ -82,7 +107,7 @@ if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
 
     //diag_log format ["WEATHER JSON: %1",_response];
 
-    // Check response for error
+    // Check response for error or no data
     // TO DO
 
     // Parse correct response
@@ -93,36 +118,29 @@ if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
         private _weatherHash = [] call ALiVE_fnc_hashCreate;
 
         /*
-            tempm
-            tempi
-            dewptm
-            dewpti
-            hum
-            wspdm
-            wspdi
-            wgustm
-            wgusti
-            wdird
-            wdire
-            vism
-            visi
-            pressurem
-            pressurei
-            windchillm
-            windchilli
-            heatindexm
-            heatindexi
-            precipm
-            precipi
-            conds
-            icon
-            fog
-            rain
-            snow
-            hail
-            thunder
-            tornado
-            metar
+            tempm   Temp in C
+            tempi   Temp in F
+            dewptm  Dewpoint in C
+            dewpti  Duepoint in F
+            hum Humidity %
+            wspdm   WindSpeed kph
+            wspdi   Windspeed in mph
+            wgustm  Wind gust in kph
+            wgusti  Wind gust in mph
+            wdird   Wind direction in degrees
+            wdire   Wind direction description (ie, SW, NNE)
+            vism    Visibility in Km
+            visi    Visability in Miles
+            pressurem   Pressure in mBar
+            pressurei   Pressure in inHg
+            windchillm  Wind chill in C
+            windchilli  Wind chill in F
+            heatindexm  Heat index C
+            heatindexi  Heat Index F
+            precipm Precipitation in mm
+            precipi Precipitation in inches
+            pop Probability of Precipitation
+            conds   See possible condition phrases below
         */
 
         private _count = (count _realWeather)-2;
@@ -131,10 +149,9 @@ if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
             [_weatherHash,_realWeather select _i, _realWeather select (_i+1)] call ALiVE_fnc_hashSet;
         };
 
-        diag_log format["--------------------------------- WEATHER IN %1 AT %2 ---------------------------------", WEATHER_CYCLE_REAL_LOCATION, date];
+        diag_log format["--------------------------------- WEATHER IN %1 AT %2 ---------------------------------", WEATHER_CYCLE_REAL_LOCATION, _date];
 
         if (WEATHER_DEBUG) then {
-            ["Module ALiVE_sys_weather REAL WEATHER"] call ALIVE_fnc_dump;
             _weatherHash call ALiVE_fnc_inspectHash;
         };
 
