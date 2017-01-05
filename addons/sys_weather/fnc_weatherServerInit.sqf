@@ -124,7 +124,18 @@ switch (INITIAL_WEATHER) do
     case 5: { // Real Weather - Real weather for a time and location you specify.
 
         // Get the current weather
-        GVAR(REAL_WEATHER) = [WEATHER_CYCLE_REAL_LOCATION] call ALIVE_fnc_getRealWeather;
+
+        // Check to see if you want the weather right now
+        if (WEATHER_OVERRIDE == 5) then {
+            // Server will return UTC
+            private _tmpDate =  ([true] call ALIVE_fnc_getServerTime) splitString "/ :";
+            private _curDate = [_tmpDate select 2, _tmpDate select 1, _tmpDate select 0, _tmpDate select 3, _tmpDate select 4];
+
+            GVAR(REAL_WEATHER) = [WEATHER_CYCLE_REAL_LOCATION, _curDate] call ALIVE_fnc_getRealWeather;
+        } else {
+            // Get weather for game time
+            GVAR(REAL_WEATHER) = [WEATHER_CYCLE_REAL_LOCATION] call ALIVE_fnc_getRealWeather;
+        };
 
         if (typeName GVAR(REAL_WEATHER) == "BOOL") exitWith {
             diag_log format["--------------------------------- ERROR GETTING REAL WEATHER : %1", WEATHER_CYCLE_REAL_LOCATION];
@@ -148,7 +159,6 @@ switch (INITIAL_WEATHER) do
         private _tornado = parseNumber ([GVAR(REAL_WEATHER),"tornado", 0] call ALiVE_fnc_hashGet);
 
         // Check for Volcanic Ash, Dust, Sand, Haze, Drifting/Blowing Widespread Dust/Sand/Snow, Sandstorm, Smoke, Hail, Ice, Dust Whirls, Mist, shallow fog for effects
-
 
         // Check conditions for clouds
         switch (_conditions) do {
@@ -174,13 +184,16 @@ switch (INITIAL_WEATHER) do
 
         // Check conditions for fog
         switch (_conditions) do {
+            case "Light Haze";
             case "Light Fog Patches": {
                 _minimumFog = 0.1; _maximumFog = 0.2;
             };
+            case "Haze";
             case "Light Freezing Fog";
             case "Light Fog": {
                 _minimumFog = 0.2; _maximumFog = 0.3;
             };
+            case "Heavy Haze";
             case "Patches of Fog": {
                 _minimumFog = 0.2; _maximumFog = 0.3;
             };
@@ -302,6 +315,7 @@ if (INITIAL_WEATHER == 5 && typeName GVAR(REAL_WEATHER) != "BOOL") then { // REA
     _isFoggy = parseNumber ([GVAR(REAL_WEATHER),"fog", 0] call ALiVE_fnc_hashGet);
     if (_isFoggy > 0.5) then {true}else{false};
 
+    // TODO - Haze, Mist etc
     if (random 100 <= _fogProbability) then {
         _isFoggy = true;
         0 setFog [_initialFog, _initialFogDecay, _initialFogAltitude];
@@ -325,7 +339,6 @@ if (INITIAL_WEATHER == 5 && typeName GVAR(REAL_WEATHER) != "BOOL") then { // REA
     // Does gusts do anything?
     //0 setGusts = [GVAR(REAL_WEATHER),"wgustm", round(_initialOvercast * (10 ^ _decimalplaces)) / (10 ^ _decimalplaces)] call ALiVE_fnc_hashGet;
 
-
 } else {
     0 setOvercast round(_initialOvercast * (10 ^ _decimalplaces)) / (10 ^ _decimalplaces);
     if (random 100 <= _fogProbability) then {
@@ -341,13 +354,21 @@ if (INITIAL_WEATHER == 5 && typeName GVAR(REAL_WEATHER) != "BOOL") then { // REA
 sleep 0.01;
 forceWeatherChange;
 
-// ["INIT WEATHER SETTINGS: %1, %2, %3, %4, %5, %6, %7, %8, %9, %10,%11, %12, %13, %14, %15, %16, %17, %18, %19, %20",round(_initialOvercast * (10 ^ _decimalplaces)) / (10 ^ _decimalplaces), _minimumOvercast, _maximumOvercast, _rainProbability, rain, _lightningProbability, lightnings, _windDir, wind, _windSpeed, _fogProbability, _minimumFog, _maximumFog, _isFoggy, _initialFog, _initialFogDecay, _initialFogAltitude, _decimalplaces, _cycleVariance, _cycleDelay] call ALIVE_fnc_dump;
+if (WEATHER_DEBUG) then {
+    ["INIT WEATHER SETTINGS: Overcast: %1, MinO: %2, MaxO: %3, RainProb: %4, Rain: %5, LightProb: %6, Lightning: %7, WindDir: %8, Wind: %9, WindSpeed: %10, FogP: %11, minFog: %12, maxFog: %13, Fog: %14, Fog Settings [%15, %16, %17], Decimal: %18, CycleVar: %19, Delay: %20",round(_initialOvercast * (10 ^ _decimalplaces)) / (10 ^ _decimalplaces), _minimumOvercast, _maximumOvercast, _rainProbability, rain, _lightningProbability, lightnings, _windDir, wind, _windSpeed, _fogProbability, _minimumFog, _maximumFog, _isFoggy, _initialFog, _initialFogDecay, _initialFogAltitude, _decimalplaces, _cycleVariance, _cycleDelay] call ALIVE_fnc_dump;
+};
 
-if (WEATHER_DEBUG) then { ["Module ALiVE_sys_weather WEATHER CHANGED! OVERCAST: %1, NEXTWEATHERCHANGE: %2", overcast, nextWeatherChange] call ALIVE_fnc_dump;};
 
-// Now lets apply the first weather settings to the server and run the cycle delay in a new thread and launch the weathercycle function when delay complete.
-[round(_initialOvercast * (10 ^ _decimalplaces)) / (10 ^ _decimalplaces), _rainProbability, _lightningProbability, _cycleDelay, _maximumOvercast, _fogProbability, _minimumOvercast, _windDir, _minimumFog, _maximumFog, _isFoggy, _initialFog, _initialFogDecay, _initialFogAltitude, _decimalplaces, _cycleVariance] spawn ALIVE_fnc_weatherServer;
+if (INITIAL_WEATHER != 5) then {
+    if (WEATHER_DEBUG) then { ["Module ALiVE_sys_weather WEATHER CHANGED! OVERCAST: %1, NEXTWEATHERCHANGE: %2", overcast, nextWeatherChange] call ALIVE_fnc_dump;};
+    // Now lets apply the first weather settings to the server and run the cycle delay in a new thread and launch the weathercycle function when delay complete.
+    [round(_initialOvercast * (10 ^ _decimalplaces)) / (10 ^ _decimalplaces), _rainProbability, _lightningProbability, _cycleDelay, _maximumOvercast, _fogProbability, _minimumOvercast, _windDir, _minimumFog, _maximumFog, _isFoggy, _initialFog, _initialFogDecay, _initialFogAltitude, _decimalplaces, _cycleVariance] spawn ALIVE_fnc_weatherServer;
 
+} else {
+
+    // Real weather should just start moving weather towards the state in the next hour
+
+};
 
 
 

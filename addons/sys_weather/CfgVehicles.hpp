@@ -127,6 +127,11 @@ class CfgVehicles {
                         name = "Foggy";
                         value = 4;
                     };
+                    class overrideReal
+                    {
+                        name = "Real Weather: Use weather from real time not game time";
+                        value = 5;
+                    };
                 };
             };
 
