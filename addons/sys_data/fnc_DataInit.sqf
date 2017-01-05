@@ -84,6 +84,12 @@ if (isDedicated) then {
 
     ["ALIVE_SYS_DATA START PLUGIN: %1", _initmsg] call ALIVE_fnc_dump;
 
+    private _serverIP = [] call ALIVE_fnc_getServerIP;
+    // If the host IP web service is down, just use the serverName
+    if (_serverIP != "ERROR") then {
+        ["YOUR SERVER EXTERNAL IP ADDRESS AS SEEN BY WAR ROOM: %1 (Ensure it matches with your War Room server entry if you have any issues)",_serverIP] call ALiVE_fnd_dump;
+    };
+
     GVAR(GROUP_ID) = [] call ALIVE_fnc_getGroupID;
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
