@@ -1,0 +1,92 @@
+[center][url=https://github.com/ALiVEOS/ALiVE.OS.git][img=http://i.imgur.com/RFX0nkZ.jpg][/url][/center]
+[center][b][url=http://alivemod.com/]ALiVEmod.com[/url]
+[size=4]The next generation dynamic persistent mission addon for ArmA3[/size][/b][/center]
+[center][b]Release 1.2.6[/b][/center]
+[center][img=http://i.imgur.com/EfY9zEM.png][/center]
+ 
+[b]Happy New Year! ALiVE introduces online After Action Review![/b]]
+Yes! It happened!
+
+The original intent of the ALiVE War Room website was to allow groups to track their performance (both group and individuals) as well as review missions. Although stats are great, War Room never had a true AAR capability - until now! 
+
+We are very happy to announce that we have integrated community member Titan's R3 framework into ALiVE War Room. Thanks to ALiVE Dev MarcelDev89 we have incorporated R3 in a way that means you can use AAR without having to setup your own web service or do anything other run ALiVE as usual on your dedicated server with AAR enabled. Many thanks to [b]Titan[/b] and [b]MarcelDev89[/b] for making AAR a reality on ALiVE War Room.
+
+Our system is very similar to OCAP and other AAR systems, however, ours [b]does not require you to have to setup your own web server[/b] etc.
+
+The great thing about AAR is that [b]you don't even need to be running an ALiVE "mission"[/b]. Simply ensure everyone is running the @ALiVE mod and ensure your server is running @ALiVE and @ALiVEServer mods. Simply Place the sys_data_auto.pbo (located in the @ALiVE/optional folder) into your @ALiVE/addons folder on your server.
+
+What you will need:
+[*] Latest version of @ALiVE (1.2.6) and @ALiVEServer
+[*] Register your dedicated server on ALiVE War Room (this allows you to download @ALiVEServer mod and latest extensions)
+[*] Add the Data module to your mission and ensure AAR is enabled (it should be by default) in the module parameters (or place the sys_data_auto.pbo in your @ALiVE/addons folder)
+[*] Launch your MP mission on your dedicated server
+[*] To access your AAR simply visit ALiVE War Room and select your operation. 
+
+We will continue to work with Titan to improve AAR and are also looking to offer an export/import function as AAR data is only kept for 30 days at the moment.
+
+But I don't have a dedicated server? Its very simple to run a dedicated server instance on your PC. See here for more.
+
+[b]Wait but there's more! 64 bit ALiVE Extensions[/b]
+We thought that might get your attention! We've ported all our extension goodness to 64 bit for those of you running the Dev branch and want to enjoy ALiVE without those pesky OUT_OF_MEMORY issues! Thanks to Tupolov, we've ported the ALIVEClient.DLL to 64 bit so that you can continue to index maps if so desired. More importantly we've ported the ALiVEPlugIn.DLL that runs on your dedicated server to 64 bit too. 
+
+[b]There's even moar? Real Weather tech preview[/b]
+What on earth is Real Weather I hear you say. Well its pretty simple, for our Weather module, if you select Real Weather and then state a COUNTRY/CITY location, ALiVE will go and grab the actual weather for that location for your mission game time. We support dates between 2007 and right up to today. If you are playing in the future (2025) we will grab the weather for the hour/day/month in 2016. 
+
+Not only that but you can override real weather from game time with real weather from real time, so it will grab the weather for that location based on your server's local time. We don't change mission time though, so keep that in mind.
+
+Real Weather is only available on dedicated server based missions, its tech preview today and does not use any MP weather sync mechanism (so we are relying on BIS for that :()
+
+[b]Just to finish you off we are also shipping numerous bug fixes and enhancements[/b] 
+
+Here's a list...
+
+[MIL_OPCOM] Fix asymmetric AI commander could have been caught up in a loop, preventing progression. Fix asymmetric AI commander was sometimes retreating from unoccupied areas, lower hostility level and reset fulfilled orders once retreated. Improved movement behaviour when setting up roadblocks and establishing depots.
+[MIL_C2ISTAR] Fixed bug with side independent in task HVT assassination!
+[SYS_ORBATCREATOR] Add MPRespawn EH to exported units to call init code
+[CIV_PLACEMENT] Increase the radius roadblocks can be placed by default from 100m to 300m, helps ensure the dominant faction can be found.
+[CIV_PLACEMENT] Allow for no cluster filtering for ambient civilians. Current missions need to be updated with new Very Small setting.
+[MIL_OPCOM] Added options to allow for more detailed tweaks of the AI Commander. 1. Amount of objectives attacked simultanously 2. Minimum of ALiVE civilians needed for a recruitment center to be set up by the asymmetric commander. Both settings can be used to slow down an ongoing Insurgency, esp. if you plan a long term operation to avoid the map being taken over too quickly! (fix #138)
+[C2ISTAR] Set behaviour from careless to safe in Task Military Defence since groups were not engaging at all (fix #179)
+[C2ISTAR] Fixed: Sabotage mission - no OPCOM buildings were selected at all. Removed legacy code, improved filtering and added optional internal blacklist (fix #166 - Sabotage mission on a undestroyable house)
+[MIL_C2ISTAR] Fix issue #198 with menu items not showing even though player had item
+
+Thanks to everyone for feedback both here and on our forum!
+[center][b][url=http://alivemod.com/#Download]Download[/url][/b]
+Grab the latest version from [url=http://alivemod.com/#Download]ALiVEmod.com[/url]
+Also available from PlayWithSix, ArmAholic and Steam (Usually within 24 hours of this post)[/center]
+[center][b][url=http://alivemod.com/#ALiVEWarRoom]Join the War Room Now![/url][/b][/center]
+Please note that as with all updates, if you have an issue loading a mission made with a previous version of ALiVE, delete and replace the modules in that mission.
+
+[b]Release Highlights[/b]
+[LIST]
+[*]After Action Review now available on ALiVE War Room[/*]
+[*]64-bit Extensions[/*]
+[*]Real Weather (Tech Preview)[/*]
+[*]Numerous bug fixes and enhancements[/*]
+[/LIST]
+See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
+
+[b]More Maps?[/b]
+The momentum is really beginning to build with the indexing tools and we are cracking through the [url=https://github.com/ALiVEOS/ALiVE.OS/issues/9]backlog[/url]. Instructions for using the Map Indexer can be found [url=http://alivemod.com/wiki/index.php/Map_Indexing]on our wiki [/url]
+
+[b]Known Issues & Support[/b]
+Existing bugs are listed on Github [url=https://github.com/ALiVEOS/ALiVE.OS/issues]here[/url]. Feel free to submit bugs (with repros) or discuss any issues or ideas on our forum at [url=http://alivemod.com/forum/]http://alivemod.com/forum/[/url].
+
+[b]Manual[/b]
+Please refer to the [url=http://www.alivemod.com/wiki]ALiVE Wiki[/url]. All the info you need is there. If anything is missing or unclear, please let us know.
+
+[b]Are you using Linux?[/b]
+ALiVE is fully supported on a Linux Dedicated Server (as well as Windows). In fact the ALiVE Official Server for testing is running Ubuntu. Here are some tips on getting ALiVE running smoothly on Linux and integrated with War Room - [url=http://www.alivemod.com/forum/1916-setting-up-linux-dedi-server]http://www.alivemod.com/forum/1916-setting-up-linux- dedi-server[/url]
+
+[b]Acknowledgements and Thanks[/b]
+Particular thanks to all those on our support forum who have worked closely with us to identify bugs, provide logs and generally help us improve ALiVE. Your assistance is valuable and your dedication to ALiVE makes it all worth the effort!
+
+[b]Disclaimer[/b]
+We may need to prune the persistent database data from the War Room, eliminating data that is older than 6-12 months. The ALiVE War Room database is run on a voluntary basis at a cost to the ALiVE development team. No guarantees can be given on the mission data stored or the availability of the service. We apologise for any downtime that may impact your MP persistent missions.
+
+[b]ALiVE has transformed my Arma 3 experience, how can I thank you?[/b]
+Please consider making a contribution to our server costs if you enjoy ALiVE! It costs us $65 per month to run our War Room website and the ALiVE Database servers and every little helps. Donate here [url=http://www.alivemod.com/#Donate]http://www.alivemod.com/#Donate[/url]
+
+Special thanks to everyone here for supporting us with donations to the ALiVE mod development effort.
+
+Have fun!
