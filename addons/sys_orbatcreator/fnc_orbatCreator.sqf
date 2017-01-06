@@ -5737,8 +5737,6 @@ switch(_operation) do {
         // forward declare non-local inherited units
 
         private _cfgVehicles = configFile >> "CfgVehicles";
-        private _importClass1 = "";
-        private _importClass2 = "";
 
         _result = _result + _newLine;
         {
@@ -5754,6 +5752,9 @@ switch(_operation) do {
                 private _realUnitClass = [_logic,"getRealUnitClass", _unitParentConfigName] call MAINCLASS;
 
                 _result = _result + _indent + "class " + _unitParentConfigName + ";" + _newLine;
+
+                private _importClass1 = "";
+                private _importClass2 = "";
 
                 if (_realUnitClass isKindOf "Man") then {
                     _importClass1 = _unitParentConfigName + "_OCimport_01";
@@ -5994,7 +5995,7 @@ switch(_operation) do {
         // hack to reload weapons on spawn
 
         _initEventHandler = _initEventHandler + "reload _unit;";
-        
+
         _initEventHandler = _initEventHandler + "};"; // _onSpawn close
         _initEventHandler = _initEventHandler + "[_unit] call _onSpawn;_unit addMPEventHandler ['MPRespawn', _onSpawn];";
 
@@ -6088,7 +6089,7 @@ switch(_operation) do {
 
         _initEventHandler = _initEventHandler + "};"; // _onSpawn close
         _initEventHandler = _initEventHandler + "[_unit] call _onSpawn;_unit addMPEventHandler ['MPRespawn', _onSpawn];";
-        
+
         _initEventHandler = _initEventHandler + "};"; // if (isServer) close
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
 

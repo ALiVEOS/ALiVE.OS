@@ -68,7 +68,7 @@ switch(_operation) do {
         [_identityTypes,"face", ""] call ALiVE_fnc_hashSet;
         [_identityTypes,"voice", ""] call ALiVE_fnc_hashSet;
         [_identityTypes,"insignia", ""] call ALiVE_fnc_hashSet;
-        [_identityTypes,"misc", ""] call ALiVE_fnc_hashSet;
+        [_identityTypes,"misc", []] call ALiVE_fnc_hashSet;
         [_logic,"identityTypes", _identityTypes] call ALiVE_fnc_hashSet;
 
         // vehicle properties
