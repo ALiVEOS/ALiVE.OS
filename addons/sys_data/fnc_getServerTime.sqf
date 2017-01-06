@@ -5,17 +5,20 @@ SCRIPT(getServerTime);
 Function: ALIVE_fnc_getServerTime
 
 Description:
-Gets the current server local time via ALiVEPlugIn (Dedi only)
+Gets the current server local or UTC time via ALiVEPlugIn (Dedi only)
 
 Parameters:
-None
+BOOL - True indicates the time returned should be local not UTC
 
 Returns:
-String - Returns the server UTC time
+String - Returns the server local or UTC time
 
 Examples:
 (begin example)
  _serverTime = [] call ALIVE_fnc_getServerTime
+(end)
+(begin example)
+ _serverTime = [true] call ALIVE_fnc_getServerTime
 (end)
 
 Author:
