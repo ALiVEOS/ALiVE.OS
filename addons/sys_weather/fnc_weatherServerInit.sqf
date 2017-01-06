@@ -23,6 +23,8 @@ SCRIPT(weatherServerInit);
 
 if !(isServer) exitwith {};
 
+GVAR(REAL_WEATHER) = false;
+
 if (WEATHER_DEBUG) then {
     ["Module ALiVE_sys_weather SERVER STARTING"] call ALIVE_fnc_dump;
     ["Module ALiVE_sys_weather INITIAL_WEATHER: %1, WEATHER_CYCLE_DELAY: %2, WEATHER_CYCLE_VARIANCE: %3",INITIAL_WEATHER,WEATHER_CYCLE_DELAY,WEATHER_CYCLE_VARIANCE] call ALIVE_fnc_dump;
