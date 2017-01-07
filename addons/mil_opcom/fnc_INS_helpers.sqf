@@ -436,8 +436,10 @@ ALiVE_fnc_INS_roadblocks = {
                 // Spawn CQB
                 [_pos,_size,_CQB] spawn ALiVE_fnc_addCQBpositions;
 
-                // Spawn roadblock
-                [_pos, _size, ceil(_size/200), false] call ALiVE_fnc_createRoadblock;
+                // Spawn roadblock only if it hasn't been set up already (esp. if it has been reloaded from DB)
+                if (isnil "ALiVE_CIV_PLACEMENT_ROADBLOCKS" || {{_pos distance _x < _size} count ALiVE_CIV_PLACEMENT_ROADBLOCKS < ceil(_size/200)}) then {[_pos, _size, ceil(_size/200), false] call ALiVE_fnc_createRoadblock};
+                
+                // Identify location
                 [_objective,"roadblocks",[[],"convertObject",_pos nearestObject ""] call ALiVE_fnc_OPCOM] call ALiVE_fnc_HashSet;
 
                 _event = ['OPCOM_RESERVE',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
