@@ -310,6 +310,17 @@ switch(_operation) do {
             };
             waituntil {!(isnil "ALIVE_loadedCIVClusters") && {ALIVE_loadedCIVClusters}};
             waituntil {!(isnil "ALIVE_profileSystemInit")};
+            
+            // instantiate static vehicle position data
+            if(isNil "ALIVE_groupConfig") then {
+                [] call ALIVE_fnc_groupGenerateConfigData;
+            };
+
+            // all CMP modules execute at the same time
+            // ALIVE_groupConfig is created, but not 100% filled
+            // before the rest of the modules start creating their profiles
+
+            waitUntil {!isnil "ALiVE_GROUP_CONFIG_DATA_GENERATED"};            
 
             //Only spawn warning on version mismatch since map index changes were reduced
             //uncomment //_error = true; below for exit
