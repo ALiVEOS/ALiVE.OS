@@ -44,8 +44,13 @@ if (isNil "_response" || _response == "") exitWith {
 
 // Need to check for errors here with new plugin grab 2nd and 3rd array values.
 if (([_response, "ERROR"] call CBA_fnc_find != -1 || [_response, "error"] call CBA_fnc_find != -1) && [_response, "terror"] call CBA_fnc_find == -1) exitWith {
-	["THERE IS A PROBLEM WITH THE ALIVE PLUGIN! ERROR: %1",_response] call ALiVE_fnc_dump;
-    _response = "SYS_DATA_ERROR";
+	["ALiVE Extension (ALiVEPlugIn) Error: %1",_response] call ALiVE_fnc_dump;
+
+	if (_response find "not authorized" != -1) then {
+		_response = "YOU ARE NOT AUTHORIZED";
+	} else {
+    	_response = "SYS_DATA_ERROR";
+    };
     _response
 };
 
