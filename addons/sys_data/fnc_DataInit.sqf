@@ -86,7 +86,7 @@ if (isDedicated) then {
 
     private _serverIP = [] call ALIVE_fnc_getServerIP;
     // If the host IP web service is down, just use the serverName
-    if (_serverIP != "ERROR") then {
+    if (_serverIP != "SYS_DATA_ERROR" && _initmsg == "YOU ARE NOT AUTHORIZED") then {
         ["YOUR SERVER EXTERNAL IP ADDRESS AS SEEN BY WAR ROOM: %1 (Ensure it matches with your War Room server entry if you have any issues)",_serverIP] call ALiVE_fnc_dump;
     };
 
@@ -112,7 +112,7 @@ if (isDedicated) then {
     };
 
     // Check that the config loaded ok, if not then stop the data module
-    if (typeName _config == "STRING") exitWith {
+    if (typeName _config == "STRING" || _initmsg == "YOU ARE NOT AUTHORIZED") exitWith {
         ["CANNOT CONNECT TO DATABASE, DISABLING DATA MODULE"] call ALIVE_fnc_logger;
         GVAR(DISABLED) = true;
         publicVariable QGVAR(DISABLED);
