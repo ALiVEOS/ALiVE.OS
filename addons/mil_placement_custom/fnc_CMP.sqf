@@ -392,7 +392,7 @@ switch(_operation) do {
             [_cluster,"size", _size] call ALIVE_fnc_hashSet;
             [_cluster,"type", "MIL"] call ALIVE_fnc_hashSet;
             [_cluster,"priority", _priority] call ALIVE_fnc_hashSet;
-            [_cluster,"debug", true] call ALIVE_fnc_cluster;
+            [_cluster,"debug", _debug] call ALIVE_fnc_cluster;
 
             [_logic, "objectives", [_cluster]] call MAINCLASS;
 
