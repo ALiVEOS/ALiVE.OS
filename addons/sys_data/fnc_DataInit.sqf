@@ -367,7 +367,14 @@ if (isDedicated) then {
 
             while {MOD(sys_data) getVariable "disableAAR" == "false"} do {
 
-                if (count playableUnits > 0) then {
+                private _allPlayers = [];
+                {
+                    if (isPlayer _x) then
+                    {
+                        _allPlayers pushBack _x;
+                    };
+                } forEach playableUnits;
+                if (count _allPlayers > 0) then {
 
                     // Set up hash of unit positions
                     private _aarRecord = [] call ALIVE_fnc_hashCreate;
