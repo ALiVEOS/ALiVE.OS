@@ -450,7 +450,7 @@ switch (_taskState) do {
                         _anims = ([_hostageAnims, "boundAnims"] call ALIVE_fnc_hashGet) select ([_hostageAnims, "index"] call ALiVE_fnc_hashGet);
                         _hostage switchMove (selectRandom _anims);
 
-                        [_hostage, format ["Rescue %1",name _hostage], "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","_this distance _target < 2", "_caller distance _target < 2", {}, {}, {_target setVariable ["rescued",true,true]; ["Rescue", format ["You have rescued %1!",name _target]] call BIS_fnc_showSubtitle;},{},[],8] remoteExec ["BIS_fnc_holdActionAdd",-2];
+                        [_hostage, format ["Rescue %1",name _hostage], "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","_this distance _target < 2", "_caller distance _target < 2", {}, {}, {_target setVariable ["rescued",true,true]; ["Rescue", format ["You have rescued %1!",name _target]] call BIS_fnc_showSubtitle;},{},[],8] remoteExec ["BIS_fnc_holdActionAdd",0];
 
                         // Chat update
                         _formatChat = [_currentTaskDialog,"chat_update"] call ALIVE_fnc_hashGet;
@@ -522,15 +522,23 @@ switch (_taskState) do {
 
                         if (_hostage getVariable ["rescued",false]) then {
 
-                            [_hostage] joinSilent (group ([_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition));
-
-                            // Hostage Anim
+							// Get closest player
+							private _saver = group ([_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition);
+                            
+                            // End Hostage Anim
                             _anims = ([_hostageAnims, "unboundAnims"] call ALIVE_fnc_hashGet) select ([_hostageAnims, "index"] call ALiVE_fnc_hashGet);
                             _hostage playMove (selectRandom _anims);
-                            sleep 4;
+                            sleep 5;
 
+							// Reset
                             _hostage enableAI "MOVE";
                             _hostage setCaptive false;
+                            _hostage switchmove "";
+                            
+                            sleep 1;
+                            
+                            // Join player group
+                            [_hostage] joinSilent _saver;
 
                             _taskIDs = [_params,"taskIDs"] call ALIVE_fnc_hashGet;
                             [_params,"nextTask",_taskIDs select 2] call ALIVE_fnc_hashSet;
