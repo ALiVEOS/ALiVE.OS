@@ -49,7 +49,7 @@ if(isServer) then {
         [_errorMessage,_error1,_error2] call ALIVE_fnc_dumpMPH;
     };
 
-    if !([QMOD(AMBCP)] call ALiVE_fnc_isModuleAvailable) then {
+    if !([QMOD(amb_civ_population)] call ALiVE_fnc_isModuleAvailable) then {
         ["WARNING: Civilian Placement module not placed!"] call ALiVE_fnc_DumpR;
     };
 
