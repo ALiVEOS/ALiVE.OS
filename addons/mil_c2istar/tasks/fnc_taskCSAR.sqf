@@ -34,7 +34,7 @@ switch (_taskState) do {
     case "init":{
 
         private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskPlayers","_taskEnemyFaction","_taskCurrent",
-        "_taskApplyType","_taskEnemySide","_enemyClusters","_targetPosition","_returnPosition","_aircraft","_crashsite"];
+        "_taskApplyType","_taskEnemySide","_enemyClusters","_targetPosition","_returnPosition","_aircraft","_crashsite","_category"];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;
@@ -389,7 +389,7 @@ switch (_taskState) do {
                             };
                             _x setformdir 0;
 
-                            [_x, format ["Rescue %1",name _x], "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","_this distance _target < 2", "_caller distance _target < 2", {}, {}, {_target setVariable ["rescued",true,true]; ["Rescue", format ["You have rescued %1!",name _target]] call BIS_fnc_showSubtitle;},{},[],8] remoteExec ["BIS_fnc_holdActionAdd"];
+                            [_x, format ["Rescue %1",name _x], "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","_this distance _target < 2", "_caller distance _target < 2", {}, {}, {_target setVariable ["rescued",true,true]; ["Rescue", format ["You have rescued %1!",name _target]] call BIS_fnc_showSubtitle;},{},[],8] remoteExec ["BIS_fnc_holdActionAdd",0];
 
                         } foreach units _crewGroup;
 
@@ -471,12 +471,13 @@ switch (_taskState) do {
                         if (_crew getVariable ["rescued",false]) then {
 
                             {
-                                [_x] joinSilent (group ([_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition));
-                                _x setCaptive false;
                                 if (!isNil "_irstrobe") then {
                                     detach _irstrobe;
                                     deleteVehicle _irstrobe;
                                 };
+                                
+                                _x setCaptive false;
+                                [_x] joinSilent (group ([_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition));
                             } foreach units _group;
 
                             _task set [8,"Succeeded"];
