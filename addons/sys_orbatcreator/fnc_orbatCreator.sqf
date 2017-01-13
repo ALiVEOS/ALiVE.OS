@@ -901,6 +901,9 @@ switch(_operation) do {
                 _selectedGroupUnitList ctrlSetEventHandler ["LBSelChanged","['onGroupEditorSelectedGroupUnitChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
                 _selectedGroupUnitList ctrlSetEventHandler ["LBDrag","['onGroupEditorSelectedGroupListDragStart', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
+                private _groupUnitListGreenCover = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS_GREENCOVER );
+                _groupUnitListGreenCover ctrlshow false;
+
                 private _selectedGroupUnitRank = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_INPUT_UNITRANK );
                 _selectedGroupUnitRank ctrlSetEventHandler ["LBSelChanged","['onGroupEditorSelectedGroupUnitRankChangedClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
@@ -4734,6 +4737,9 @@ switch(_operation) do {
 
         (findDisplay OC_DISPLAY_GROUPEDITOR) displayAddEventHandler ["MouseButtonUp", "['groupEditorOnDragEnd', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
+        private _groupUnitListGreenCover = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS_GREENCOVER );
+        _groupUnitListGreenCover ctrlshow true;
+
     };
 
     case "onGroupEditorSelectedGroupListDragStart": {
@@ -4741,12 +4747,15 @@ switch(_operation) do {
         _args params ["_list","_dragData"];
 
         private _selIndex = _dragData select 0 select 1;
-        systemchat format ["Sel Index: %1", _selIndex];
 
         private _state = [_logic,"state"] call MAINCLASS;
         [_state,"groupEditor_selectedGroupDragTargetIndex", _selIndex] call ALiVE_fnc_hashSet;
 
         (findDisplay OC_DISPLAY_GROUPEDITOR) displayAddEventHandler ["MouseButtonUp","['groupEditorOnDragEnd', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+
+        // clicking the unit list causes it to be above the green cover
+        //private _groupUnitListGreenCover = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS_GREENCOVER );
+        //_groupUnitListGreenCover ctrlshow true;
 
     };
 
@@ -4786,7 +4795,7 @@ switch(_operation) do {
 
             if (_group != "") then {
 
-                private _validControlsForDrop = [_display displayCtrl OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS];
+                private _validControlsForDrop = [_display displayCtrl OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS, _display displayCtrl OC_GROUPEDITOR_SELECTEDGROUP_HEADER];
 
                 private _validDrop = [[_mouseX,_mouseY],_validControlsForDrop] call _posWithinCtrls;
 
@@ -4805,6 +4814,9 @@ switch(_operation) do {
             };
 
             [_state,"groupEditor_assetListDragTarget", ""] call ALiVE_fnc_hashSet;
+
+            private _groupUnitListGreenCover = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS_GREENCOVER );
+            _groupUnitListGreenCover ctrlshow false;
         };
 
         // selected group unit list to anywhere outside the list
@@ -4825,6 +4837,9 @@ switch(_operation) do {
                 // update list
 
                 [_logic,"groupEditorDisplayGroupUnits", _groupData] call MAINCLASS;
+
+                private _groupUnitListGreenCover = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS_GREENCOVER );
+                _groupUnitListGreenCover ctrlshow false;
             };
 
             [_state,"groupEditor_selectedGroupDragTargetIndex", -1] call ALiVE_fnc_hashSet;

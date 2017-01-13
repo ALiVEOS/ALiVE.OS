@@ -292,6 +292,7 @@ class orbatCreator_RscTree {
 
 class RscListBox;
 class orbatCreator_RscListBox : RscListBox {
+    access = 0;
     style = 16;
     type = 5;
     rowHeight = 0.0375;
