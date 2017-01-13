@@ -402,7 +402,7 @@ switch (_operation) do {
 
             // Detach and reposition for a save placement
             detach _object;
-            _object setposATL [getposATL _object select 0, getposATL _object select 1,0];
+            _object setposATL [getposATL _object select 0, getposATL _object select 1,getposATL _object select 2];
 
             [[_logic,"updateObject",[_container,_object]],"ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
 
