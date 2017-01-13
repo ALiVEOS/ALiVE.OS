@@ -194,7 +194,7 @@ switch (_operation) do {
                     // If JIP then also restore when STORE is rebroadcast
                     QGVAR(store) addPublicVariableEventHandler {
                         // Restore Markers on map for JIP
-                        [ADDON, "restoresitreps", [GVAR(store)]] call ALiVE_fnc_sitrep;
+                        [ADDON, "restoresitreps", [(_this select 1)]] call ALiVE_fnc_sitrep;
                     };
                 } else {
                       // Restore Markers on map based on initial store
