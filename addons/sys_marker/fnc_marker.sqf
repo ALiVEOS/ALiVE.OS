@@ -153,7 +153,7 @@ switch (_operation) do {
              [_logic, "drawToggle", DEFAULT_TOGGLE] call ALIVE_fnc_marker;
              [_logic, "drawing", false] call ALIVE_fnc_marker;
 
-//             diag_log format["TOGGLE: %1", [_logic, "drawToggle",[]] call MAINCLASS];
+            //             diag_log format["TOGGLE: %1", [_logic, "drawToggle",[]] call MAINCLASS];
 
             // Define module basics on server
             if (isServer) then {
@@ -231,11 +231,9 @@ switch (_operation) do {
                  waituntil {!isnil QGVAR(STORE)};
 
                  if (didJIP) then {
-                    ["Registering Advanced Marker PVEH for %1. JIP: %2 ", player, didJIP] call ALiVE_fnc_Dump;
-                    QGVAR(STORE) addPublicVariableEventHandler {
-                        // Restore Markers on map for JIP
-                        [ADDON, "restoreMarkers", [GVAR(STORE)]] call ALiVE_fnc_marker;
-                    };
+                    ["Restoring Advanced Markers for %1. JIP: %2 ", player, didJIP] call ALiVE_fnc_Dump;
+                     // Restore Markers on map for JIP
+                    [ADDON, "restoreMarkers", [GVAR(STORE)]] call ALiVE_fnc_marker;
                 };
 
                 TRACE_1("Initial STORE", GVAR(STORE));
@@ -354,8 +352,7 @@ switch (_operation) do {
             _result = MOD(SYS_marker);
         };
 
-         case "mouseButton":
-         { // Runs locally on client
+        case "mouseButton": { // Runs locally on client
 
             private ["_player","_shift","_alt","_ctr","_ok","_control","_xPos","_yPos","_toggle"];
             _player = player;
@@ -523,7 +520,7 @@ switch (_operation) do {
             // Handles pressing of certain keys on map
             private ["_player","_shift","_alt","_ctr","_key","_toggle","_width","_angle","_display"];
 
-//            diag_log str _this;
+                //            diag_log str _this;
 
             _params = _args select 1;
 
