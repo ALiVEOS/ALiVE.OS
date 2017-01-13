@@ -260,12 +260,12 @@ switch(_operation) do {
             [_logic, "taor", _logic getVariable ["taor", DEFAULT_TAOR]] call MAINCLASS;
             [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;
 
-            if !(["ALiVE_sys_profile"] call ALiVE_fnc_isModuleAvailable) exitwith {
+            if !([QMOD(sys_profile)] call ALiVE_fnc_isModuleAvailable) exitwith {
                 ["Profile System module not placed! Exiting..."] call ALiVE_fnc_DumpR;
                 _logic setVariable ["startupComplete", true];
             };
 
-            if !(["ALiVE_amb_civ_population"] call ALiVE_fnc_isModuleAvailable) exitwith {
+            if !([QMOD(amb_civ_population)] call ALiVE_fnc_isModuleAvailable) exitwith {
                 ["Civilian Population System module not placed! Exiting..."] call ALiVE_fnc_DumpR;
                 _logic setVariable ["startupComplete", true];
             };
@@ -827,8 +827,10 @@ switch(_operation) do {
 
                     private _countBuildings = count _buildings;
 
-                    private _spawnChance = 0.1;
+                    private _spawnChance = 0.25 * _placementMultiplier;
 
+/*
+From: https://github.com/ALiVEOS/ALiVE.OS/issues/205
                     if(_countBuildings > 50) then {
                         _spawnChance = 0.1 * _placementMultiplier;
                     };
@@ -852,7 +854,7 @@ switch(_operation) do {
                     if(_countBuildings > 0 && _countBuildings < 11) then {
                         _spawnChance = 0.8 * _placementMultiplier;
                     };
-
+*/
                     {
 
                         if(random 1 < _spawnChance) then {

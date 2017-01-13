@@ -2,9 +2,9 @@
 SCRIPT(civilianPopulationSystem);
 
 /* ----------------------------------------------------------------------------
-Function: MAINCLASS
+Function: ALIVE_fnc_civilianPopulationSystem
 Description:
-Main class for civilian population system initialisation
+Main class for civilian population system
 
 Parameters:
 Nil or Object - If Nil, return a new instance. If Object, reference an existing instance.
@@ -76,7 +76,7 @@ switch(_operation) do {
         if (isServer) then {
 
             waituntil {!(isnil "ALIVE_profileSystemInit")};
-
+            
             private _debug = [_logic,"debug",false] call ALIVE_fnc_hashGet;
             private _spawnRadius = [_logic,"spawnRadius"] call ALIVE_fnc_hashGet;
             private _spawnTypeJetRadius = [_logic,"spawnTypeJetRadius"] call ALIVE_fnc_hashGet;
