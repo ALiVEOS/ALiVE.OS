@@ -36,7 +36,7 @@ to do: Current issue if road ahead bends.
 private ["_grp","_pos","_roadpos","_vehicle","_vehtype","_blockers","_roads","_fac","_debug","_roadConnectedTo", "_connectedRoad","_direction","_checkpoint","_checkpointComp","_roadpoints","_num"];
 
 _pos = [_this, 0, [0,0,0], [[]]] call BIS_fnc_param;
-_radius = [_this, 1, 300, [-1]] call BIS_fnc_param;
+_radius = [_this, 1, 500, [-1]] call BIS_fnc_param;
 _num = [_this, 2, 1, [-1]] call BIS_fnc_param;
 _debug = [_this, 3, false, [true]] call BIS_fnc_param;
 
@@ -46,8 +46,8 @@ if (_num > 5) then {_num = 5};
 
 _fac = [_pos, _radius] call ALiVE_fnc_getDominantFaction;
 
-if (isNil "_fac") then {
-    _fac = "OPF_G_F";
+if (isNil "_fac") exitWith {
+    ["Unable to find a dominant faction within %1 radius", _radius] call ALiVE_fnc_Dump;
 };
 
 // Find all the checkpoints pos
