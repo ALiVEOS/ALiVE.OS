@@ -231,9 +231,15 @@ switch (_operation) do {
                  waituntil {!isnil QGVAR(STORE)};
 
                  if (didJIP) then {
-                    ["Restoring Advanced Markers for %1. JIP: %2 ", player, didJIP] call ALiVE_fnc_Dump;
-                     // Restore Markers on map for JIP
-                    [ADDON, "restoreMarkers", [GVAR(STORE)]] call ALiVE_fnc_marker;
+                    ["Registering Advanced Marker PVEH for %1. JIP: %2 ", player, didJIP] call ALiVE_fnc_Dump;
+
+                    // [ADDON, "restoreMarkers", [GVAR(STORE)]] call ALiVE_fnc_marker;
+
+                    QGVAR(STORE) addPublicVariableEventHandler {
+                        // Restore Markers on map for JIP
+                        [ADDON, "restoreMarkers", [(_this select 1)]] call ALiVE_fnc_marker;
+                    };
+
                 };
 
                 TRACE_1("Initial STORE", GVAR(STORE));
