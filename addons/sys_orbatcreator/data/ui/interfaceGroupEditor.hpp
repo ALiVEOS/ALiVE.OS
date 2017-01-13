@@ -168,6 +168,7 @@ class ALiVE_orbatCreator_interface_groupEditor {
 
         class groupEditor_selectedGroup_list_units: orbatCreator_RscListbox {
             idc = 11022;
+            canDrag = 1;
             x = 0.244792 * safezoneW + safezoneX;
             y = 0.808 * safezoneH + safezoneY;
             w = 0.39375 * safezoneW;
