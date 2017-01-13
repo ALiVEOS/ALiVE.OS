@@ -137,7 +137,7 @@ class CfgVehicles {
                                         class EXTREME
                                         {
                                                 name = "$STR_ALIVE_AMBCP_PLACEMENT_MULTIPLIER_EXTREME";
-                                                value = "2";
+                                                value = "4";
                                         };
                                 };
                         };
