@@ -238,7 +238,7 @@ switch (_operation) do {
                     QGVAR(STORE) addPublicVariableEventHandler {
                         // Restore Markers on map for JIP
                         [ADDON, "restoreMarkers", [(_this select 1)]] call ALiVE_fnc_marker;
-                        ["PVEH FIRING %1", _this] call ALiVE_fnc_dump;
+                        // ["PVEH FIRING %1", _this] call ALiVE_fnc_dump;
                     };
 
                 };
