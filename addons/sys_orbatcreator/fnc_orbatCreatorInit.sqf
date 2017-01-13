@@ -13,7 +13,7 @@ Returns:
 Nil
 
 See Also:
-- <ALiVE_fnc_groupConfigurator>
+- <ALIVE_fnc_orbatCreator>
 
 Author:
 SpyderBlack723
