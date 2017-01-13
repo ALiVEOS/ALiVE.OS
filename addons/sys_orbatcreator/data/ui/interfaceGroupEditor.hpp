@@ -49,7 +49,7 @@ class ALiVE_orbatCreator_interface_groupEditor {
             idc = 11007;
             text = "Selected Group";
             x = 0.244792 * safezoneW + safezoneX;
-            y = 0.78 * safezoneH + safezoneY;
+            y = 0.781 * safezoneH + safezoneY;
             w = 0.510417 * safezoneW;
             h = 0.028 * safezoneH;
             colorBackground[] = {0,0,0,1};
@@ -212,6 +212,16 @@ class ALiVE_orbatCreator_interface_groupEditor {
             w = 0.109375 * safezoneW;
             h = 0.028 * safezoneH;
             sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8);
+        };
+
+        class groupEditor_selectedGroup_list_units_greencover: orbatCreator_RscText {
+            idc = 11028;
+            x = 0.244792 * safezoneW + safezoneX;
+            y = 0.808 * safezoneH + safezoneY;
+            w = 0.39375 * safezoneW;
+            h = 0.168 * safezoneH;
+            sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+            colorBackground[] = {0.173,1,0.078,0.7};
         };
 
     };
