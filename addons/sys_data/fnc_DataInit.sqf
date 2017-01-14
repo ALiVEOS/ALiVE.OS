@@ -341,7 +341,7 @@ if (isDedicated) then {
     // AAR system - should prob be its own module
     TRACE_2("SYS_DATA AAR VAR", MOD(sys_data) getVariable "disableAAR", ALIVE_sys_AAR_ENABLED);
     // Start the AAR monitoring module
-    if (MOD(sys_data) getvariable ["disableAAR", "true"] == "false" && ALIVE_sys_AAR_ENABLED) then {
+    if (MOD(sys_data) getvariable ["disableAAR", "false"] == "false" && ALIVE_sys_AAR_ENABLED) then {
 
         ["DATA: Starting AAR system."] call ALIVE_fnc_dump;
 
