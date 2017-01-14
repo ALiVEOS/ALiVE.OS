@@ -261,6 +261,8 @@ switch(_operation) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
+
+
         [_logic, "updateTaskState", _eventData] call MAINCLASS;
 
     };
@@ -299,9 +301,43 @@ switch(_operation) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
+        _taskID = _eventData select 0;
+        _state = _eventData select 8;
+        _tasks = [_logic, "getTasks"] call MAINCLASS;
+
         [_logic, "updateTask", _eventData] call MAINCLASS;
 
         [_logic, "updateTaskState", _eventData] call MAINCLASS;
+
+            _updateChildTask = {
+                                _parent = _value select 11;
+                                _curentState = _value select 8;
+
+                                if((_parent == _taskID) && (_state != _curentState)) then   {
+                                    _requestingPlayer = _value select 1;
+                                    _side = _value select 2;
+                                    _position = _value select 3;
+                                    _faction = _value select 4;
+                                    _title = _value select 5;
+                                    _description = _value select 6;
+                                    _players = _value select 7;
+                                    _applyType = _value select 9;
+                                    _current = _value select 10;
+                                    _source = _value select 12;
+
+                                    _childEventData = [_key,_requestingPlayer,_side,_position,_faction,_title,_description,_players,_state,_applyType,_current,_parent,_source,false,"",""];
+
+                                    [_logic, "updateTask", _childEventData] call MAINCLASS;
+                                    [_logic, "updateTaskState", _childEventData] call MAINCLASS;
+                                }
+
+            };
+
+            {
+
+                [_tasks,_updateChildTask] call CBA_fnc_hashEachPair;
+
+            } forEach _tasks;
 
     };
     case "TASK_DELETE": {
@@ -310,7 +346,7 @@ switch(_operation) do {
         _debug = [_logic,"debug"] call ALIVE_fnc_hashGet;
 
         _eventData = _args;
-
+        diag_log format["DATA: %1", _eventData];
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
@@ -320,10 +356,40 @@ switch(_operation) do {
         // DEBUG -------------------------------------------------------------------------------------
 
         _taskID = _eventData select 0;
+        _tasks = [_logic, "getTasks"] call MAINCLASS;
 
         [_logic, "unregisterTask", _taskID] call MAINCLASS;
 
         [_logic, "updateTaskState", _eventData] call MAINCLASS;
+
+         _deleteChildTask = {
+                              _parent = _value select 11;
+
+                                if(_parent == _taskID) then   {
+                                    _requestingPlayer = _value select 1;
+                                    _side = _value select 2;
+                                    _position = _value select 3;
+                                    _faction = _value select 4;
+                                    _title = _value select 5;
+                                    _description = _value select 6;
+                                    _players = _value select 7;
+                                    _applyType = _value select 9;
+                                    _current = _value select 10;
+                                    _source = _value select 12;
+
+                                    _childEventData = [_key,_requestingPlayer,_side];
+
+                                    [_logic, "unregisterTask", _key] call MAINCLASS;
+                                    [_logic, "updateTaskState", _childEventData] call MAINCLASS;
+                                }
+
+                             };
+
+                            {
+
+                                [_tasks,_deleteChildTask] call CBA_fnc_hashEachPair;
+
+                            } forEach _tasks;
 
     };
     case "TASKS_SYNC": {
@@ -1058,7 +1124,7 @@ switch(_operation) do {
             _previousTaskCurrent = _task select 10;
 
             // prepare tasks to dispatch
-            _tasksToDispatch = [_logic,"tasksToDispatch"] call ALIVE_fnc_hashGet;
+            _tasksToDispatch = [_logic,"tasksToDispatch"] call ALIVE_fnc_hashGet;;
             _createTasks = [_tasksToDispatch,"create"] call ALIVE_fnc_hashGet;
             _updateTasks = [_tasksToDispatch,"update"] call ALIVE_fnc_hashGet;
             _deleteTasks = [_tasksToDispatch,"delete"] call ALIVE_fnc_hashGet;
@@ -1455,7 +1521,7 @@ switch(_operation) do {
 
             _debug = [_logic,"debug"] call ALIVE_fnc_hashGet;
             _tasksBySide = [_logic, "tasksBySide"] call ALIVE_fnc_hashGet;
-            _sideTasks = [_logic, "getTasksBySide", _taskSide] call MAINCLASS;
+             _sideTasks = [_logic, "getTasksBySide", _taskSide] call MAINCLASS;
             _tasksToDispatch = [_logic,"tasksToDispatch"] call ALIVE_fnc_hashGet;
             _createTasks = [_tasksToDispatch,"create"] call ALIVE_fnc_hashGet;
             _updateTasks = [_tasksToDispatch,"update"] call ALIVE_fnc_hashGet;
@@ -1552,6 +1618,7 @@ switch(_operation) do {
                         _event call ALIVE_fnc_taskHandlerEventToClient;
                     };
                 };
+
 
             } forEach (_updateTasks select 1);
 
