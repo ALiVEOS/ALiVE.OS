@@ -1,6 +1,6 @@
 //#define DEBUG_MODE_FULL
-#include <\x\alive\addons\sys_orbatcreator\script_component.hpp>
-SCRIPT(ALiVE_fnc_civInteraction);
+#include <\x\alive\addons\sys_civ_interaction\script_component.hpp>
+SCRIPT(civInteraction);
 
 /* ----------------------------------------------------------------------------
 Function: ALiVE_fnc_civInteraction
@@ -62,13 +62,43 @@ switch(_operation) do {
 
     case "init": {
 
-        MOD(civInteraction) = _logic;
+        // only one init per instance is allowed
+
+        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS Orbat Creator - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+
+        // start init
+
+        _logic setVariable ["initGlobal", false];
+
+        _logic setVariable ["super", QUOTE(SUPERCLASS)];
+        _logic setVariable ["class", QUOTE(MAINCLASS)];
+        _logic setVariable ["moduleType", QUOTE(ADDON)];
+        _logic setVariable ["startupComplete", false];
+
+        // get module settings
+
+        private _debug = call compile (_logic getVariable "debug");
+
+        private _state = [] call ALiVE_fnc_hashCreate;
+        [_state,"asymmetricFactions", []] call ALiVE_fnc_hashSet;
+        [_state,"conventionalFactions", []] call ALiVE_fnc_hashSet;
+
+        [_logic,"debug", _debug] call MAINCLASS;
+        [_logic,"state", _state] call MAINCLASS;
+
+        ADDON = _logic;
 
         [_logic,"start"] spawn MAINCLASS;
 
     };
 
     case "start": {
+
+        // exit if civpop not placed
+
+        if !([QMOD(amb_civ_population)] call ALiVE_fnc_isModuleAvailable) exitWith {
+            ["alive_sys_civ_interaction: Civilian Population Module must be placed! Exiting..."] call ALiVE_fnc_dumpR;
+        };
 
         // set module as startup complete
 
@@ -124,6 +154,20 @@ switch(_operation) do {
         */
 
         [_logic,_operation,_args] call MAINCLASS
+
+    };
+
+    case "onCivilianInteracted": {
+
+        _this params ["_civilian","_player"];
+
+        [_logic,"openInterface"] call MAINCLASS;
+
+    };
+
+    case "openInterface": {
+
+
 
     };
 

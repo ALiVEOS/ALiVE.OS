@@ -1,10 +1,10 @@
-#include <\x\alive\addons\sys_orbatcreator\script_component.hpp>
-SCRIPT(ALiVE_fnc_civInteractionOnAction);
+#include <\x\alive\addons\sys_civ_interaction\script_component.hpp>
+SCRIPT(civInteractionOnAction);
 
 /* ----------------------------------------------------------------------------
 Function: ALiVE_fnc_civInteractionOnAction
 Description:
-Handles civ interaction interface events
+Handles civ interaction events
 
 Parameters:
 String - Operation
@@ -23,4 +23,4 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-[MOD(civInteraction),"onAction", _this] call ALiVE_fnc_civInteraction;
+[ADDON,"onAction", _this] call ALiVE_fnc_civInteraction;
