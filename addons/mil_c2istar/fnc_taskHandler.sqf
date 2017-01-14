@@ -346,7 +346,7 @@ switch(_operation) do {
         _debug = [_logic,"debug"] call ALIVE_fnc_hashGet;
 
         _eventData = _args;
-        diag_log format["DATA: %1", _eventData];
+
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
