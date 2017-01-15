@@ -24,36 +24,30 @@ ARJay
 Highhead
 ---------------------------------------------------------------------------- */
 
-//_id = floor(random(100000));
-//_time = time;
-//[true, "ALiVE Profile Simulation starting!", format["profileSimTotal_%1",_id]] call ALIVE_fnc_timer;
+// private _id = floor(random(100000));
+// private _time = time;
+// [true, "ALiVE Profile Simulation starting!", format["profileSimTotal_%1",_id]] call ALIVE_fnc_timer;
 
-private [
-    "_debug","_cycleTime","_profiles","_markers","_deleteMarkers","_deleteMarker","_createMarker","_profileIndex","_profileBlock","_profile",
-    "_entityProfile","_profileType","_profileID","_active","_waypoints","_waypointsCompleted","_currentPosition","_vehiclesInCommandOf","_vehicleCommander",
-    "_vehicleCargo","_vehiclesInCargoOf","_activeWaypoint","_type","_speed","_destination","_distance","_speedPerSecondArray","_speedPerSecond","_moveDistance",
-    "_vehicleProfile","_vehicleClass","_vehicleAssignments","_speedArray","_direction","_newPosition","_leader","_handleWPcomplete","_statements","_isCycling",
-    "_isPlayer","_group","_combatRange","_totalEntities"
-];
+private ["_leader"]; // TODO
 
-_markers = _this select 0;
-_cycleTime = _this select 1;
-_debug = if(count _this > 2) then {_this select 2} else {false};
+params ["_markers","_cycleTime",["_debug", false]];
 
-_profiles = [ALIVE_profileHandler, "profiles"] call ALIVE_fnc_hashGet;
-//_profileBlock = [ALIVE_arrayBlockHandler,"getNextBlock", ["simulation",_profiles select 2,50]] call ALIVE_fnc_arrayBlockHandler;
+private _speedModifier = [ALiVE_profileSystem,"speedModifier",1] call ALiVE_fnc_HashGet;
+private _combatRange = [MOD(profileCombatHandler),"combatRange"] call ALiVE_fnc_hashGet;
 
-_combatRange = [MOD(profileCombatHandler),"combatRange"] call ALiVE_fnc_hashGet;
+private _moveDistModifier = _cycleTime * _speedModifier;
 
-_totalEntities = 0;
+private _profiles = [ALIVE_profileHandler, "profiles"] call ALIVE_fnc_hashGet;
+// private _profileBlock = [ALIVE_arrayBlockHandler,"getNextBlock", ["simulation",_profiles select 2,50]] call ALIVE_fnc_arrayBlockHandler;
+
+private _totalEntities = 0;
 
 //[true, "ALiVE Profiles Movement starting", format["profileCheck_%1",_id]] call ALIVE_fnc_timer;
 {
     //[true, "ALiVE Profile starts...", format["profileSim1_%1",_id]] call ALIVE_fnc_timer;
 
-    _entityProfile = _x;
-
-    _profileType = _entityProfile select 2 select 5; //[_profile,"type"] call ALIVE_fnc_hashGet;
+    private _entityProfile = _x;
+    private _profileType = _entityProfile select 2 select 5; //[_profile,"type"] call ALIVE_fnc_hashGet;
 
     if(_profileType == "entity") then {
 
@@ -61,27 +55,27 @@ _totalEntities = 0;
 
         //[true, "ALiVE entity inits...", format["profileSim_%1",_id]] call ALIVE_fnc_timer;
 
-        _profileID = _entityProfile select 2 select 4;              //[_profile,"profileID"] call ALIVE_fnc_hashGet;
-        _active = _entityProfile select 2 select 1;                 //[_profile, "active"] call ALIVE_fnc_hashGet;
-        _waypoints = _entityProfile select 2 select 16;             //[_entityProfile,"waypoints"] call ALIVE_fnc_hashGet;
-        _waypointsCompleted = _entityProfile select 2 select 17;    //[_entityProfile,"waypointsCompleted",[]] call ALIVE_fnc_hashGet;
-        _currentPosition = _entityProfile select 2 select 2;        //[_entityProfile,"position"] call ALIVE_fnc_hashGet;
-        _vehiclesInCommandOf = _entityProfile select 2 select 8;    //[_entityProfile,"vehiclesInCommandOf"] call ALIVE_fnc_hashGet;
-        _vehiclesInCargoOf = _entityProfile select 2 select 9;      //[_entityProfile,"vehiclesInCargoOf"] call ALIVE_fnc_hashGet;
-        _speedPerSecondArray = _entityProfile select 2 select 22;   //[_entityProfile, "speedPerSecond"] call ALIVE_fnc_hashGet;
-        _isCycling = _entityProfile select 2 select 25;             //[_entityProfile, "speedPerSecond"] call ALIVE_fnc_hashGet;
-        _side = _entityProfile select 2 select 3;                   //[_entityProfile, "side"] call ALIVE_fnc_hashGet;
-        _positions = _entityProfile select 2 select 18;             //[_entityProfile, "positions"] call ALIVE_fnc_hashGet;
-        _isPlayer = _entityProfile select 2 select 30;              //[_entityProfile, "isPlayer"] call ALIVE_fnc_hashGet;
-        _locked = [_entityProfile, "locked",false] call ALIVE_fnc_HashGet;
-        _combat = [_entityProfile, "combat",false] call ALIVE_fnc_HashGet;
+        private _profileID = _entityProfile select 2 select 4;              // [_profile,"profileID"] call ALIVE_fnc_hashGet;
+        private _active = _entityProfile select 2 select 1;                 // [_profile, "active"] call ALIVE_fnc_hashGet;
+        private _waypoints = _entityProfile select 2 select 16;             // [_entityProfile,"waypoints"] call ALIVE_fnc_hashGet;
+        private _waypointsCompleted = _entityProfile select 2 select 17;    // [_entityProfile,"waypointsCompleted",[]] call ALIVE_fnc_hashGet;
+        private _currentPosition = _entityProfile select 2 select 2;        // [_entityProfile,"position"] call ALIVE_fnc_hashGet;
+        private _vehiclesInCommandOf = _entityProfile select 2 select 8;    // [_entityProfile,"vehiclesInCommandOf"] call ALIVE_fnc_hashGet;
+        private _vehiclesInCargoOf = _entityProfile select 2 select 9;      // [_entityProfile,"vehiclesInCargoOf"] call ALIVE_fnc_hashGet;
+        private _speedPerSecondArray = _entityProfile select 2 select 22;   // [_entityProfile, "speedPerSecond"] call ALIVE_fnc_hashGet;
+        private _isCycling = _entityProfile select 2 select 25;             // [_entityProfile, "speedPerSecond"] call ALIVE_fnc_hashGet;
+        private _side = _entityProfile select 2 select 3;                   // [_entityProfile, "side"] call ALIVE_fnc_hashGet;
+        private _positions = _entityProfile select 2 select 18;             // [_entityProfile, "positions"] call ALIVE_fnc_hashGet;
+        private _isPlayer = _entityProfile select 2 select 30;              // [_entityProfile, "isPlayer"] call ALIVE_fnc_hashGet;
+        private _locked = [_entityProfile, "locked",false] call ALIVE_fnc_HashGet;
+        private _combat = [_entityProfile, "combat",false] call ALIVE_fnc_HashGet;
 
         if (!_locked && {!_combat}) then {
 
-            _vehicleCommander = false;
-            _vehicleCargo = false;
-            _collected = false;
-            _isAir = false;
+            private _vehicleCommander = false;
+            private _vehicleCargo = false;
+            private _collected = false;
+            private _isAir = false;
 
             // if entity is commanding a vehicle/s
             if(count _vehiclesInCommandOf > 0) then {
@@ -89,16 +83,14 @@ _totalEntities = 0;
 
                 // check if moving air unit
                 {
-                    private ["_entry"];
-
-                    _entry = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
+                    private _entry = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
 
                     if !(isNil "_entry") then {
                         if (
                             [_entry,"engineOn",false] call ALiVE_fnc_HashGet &&
                             {([_entry,"vehicleClass",""] call ALiVE_fnc_HashGet) isKindOf "Air"}
                         ) then {
-                            _isAir = true
+                            _isAir = true;
                         };
                     };
                 } foreach _vehiclesInCommandOf;
@@ -175,13 +167,14 @@ _totalEntities = 0;
 
                     //[true, "ALiVE entity movement phase 1 start...", format["profileSim_%1",_id]] call ALIVE_fnc_timer;
 
-                    _activeWaypoint = _waypoints select 0;
-                    _type = [_activeWaypoint,"type"] call ALIVE_fnc_hashGet;
-                    _speed = [_activeWaypoint,"speed"] call ALIVE_fnc_hashGet;
-                    _speedModifier = [ALiVE_profileSystem,"speedModifier",1] call ALiVE_fnc_HashGet;
-                    _destination = [_activeWaypoint,"position"] call ALIVE_fnc_hashGet;
-                    _statements = [_activeWaypoint,"statements"] call ALIVE_fnc_hashGet;
-                    _distance = _currentPosition distance _destination;
+                    private _activeWaypoint = _waypoints select 0;
+                    private _type = [_activeWaypoint,"type"] call ALIVE_fnc_hashGet;
+                    private _speed = [_activeWaypoint,"speed"] call ALIVE_fnc_hashGet;
+                    private _destination = [_activeWaypoint,"position"] call ALIVE_fnc_hashGet;
+                    private _statements = [_activeWaypoint,"statements"] call ALIVE_fnc_hashGet;
+                    private _distance = _currentPosition distance _destination;
+
+                    private ["_speedPerSecond"];
 
                     switch(_speed) do {
                         case "LIMITED": {_speedPerSecond = _speedPerSecondArray select 0};
@@ -190,8 +183,8 @@ _totalEntities = 0;
                         case default {_speedPerSecond = _speedPerSecondArray select 1};
                     };
 
-                    _moveDistance = floor(_speedPerSecond * _cycleTime * _speedModifier);
-                    _direction = 0;
+                    private _moveDistance = floor(_speedPerSecond * _moveDistModifier);
+                    private _direction = 0;
 
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
@@ -212,6 +205,8 @@ _totalEntities = 0;
                         _currentPosition set [2,0];
                         _destination set [2,0];
                         _executeStatements = false;
+
+                        private ["_newPosition","_handleWPcomplete"];
 
                         switch (_type) do {
                             case "MOVE" : {
@@ -256,7 +251,7 @@ _totalEntities = 0;
                             // if entity is in command of a vehicle (not cargo)
                             [_entityProfile,"hasSimulated",true] call ALIVE_fnc_hashSet;
                             {
-                                _vehicleProfile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
+                                private _vehicleProfile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
 
                                 if !(isnil "_vehicleProfile") then {
 
@@ -296,15 +291,15 @@ _totalEntities = 0;
 
                     //[true, "ALiVE entity movement phase 2 live start...", format["profileSim_%1",_id]] call ALIVE_fnc_timer;
 
-                    _group = _entityProfile select 2 select 13;
+                    private _group = _entityProfile select 2 select 13;
 
                     _leader = leader _group; //_leader = [_profile,"leader"] call ALIVE_fnc_hashGet;
-                    _newPosition = getPosATL _leader;
+                    private _newPosition = getPosATL _leader;
                     _position = _entityProfile select 2 select 2; //_leader = [_profile,"position"] call ALIVE_fnc_hashGet;
 
                     if (!(isnil "_newPosition") && {count _newPosition > 0} && {!(isnil "_position")} && {count _position > 0}) then {
 
-                        _moveDistance = _newPosition distance _position;
+                        private _moveDistance = _newPosition distance _position;
 
                         if(_moveDistance > 10) then {
 
@@ -317,7 +312,7 @@ _totalEntities = 0;
                                 _newPosition = getPosATL vehicle _leader;
 
                                 {
-                                    _vehicleProfile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
+                                    private _vehicleProfile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
 
                                     //["PROFILE SIM SPAWNED ENTITY %1 IN COMMAND OF %2 SET VEHICLE POS: %3",_entityProfile select 2 select 4,_vehicleProfile select 2 select 4,_newPosition] call ALIVE_fnc_dump;
 
@@ -350,7 +345,7 @@ _totalEntities = 0;
 
                     //[true, "ALiVE entity no-movement starts...", format["profileSim_%1",_id]] call ALIVE_fnc_timer;
 
-                    _group = _entityProfile select 2 select 13; //_leader = [_profile,"leader"] call ALIVE_fnc_hashGet;
+                    private _group = _entityProfile select 2 select 13; //_leader = [_profile,"leader"] call ALIVE_fnc_hashGet;
                     //_group = group _leader;
 
                     // but the profile has waypoints set, but not by ALiVE
@@ -358,12 +353,12 @@ _totalEntities = 0;
                     if((!isNull _group) && {currentWaypoint _group < count waypoints _group && currentWaypoint _group > 0}) then {
                         //["S1: %1 %2", currentWaypoint _group, count waypoints _group] call ALIVE_fnc_dump;
 
-                        _newPosition = getPosATL _leader;
+                        private _newPosition = getPosATL _leader;
                         _position = _entityProfile select 2 select 2; //_leader = [_profile,"position"] call ALIVE_fnc_hashGet;
 
                         if (!(isnil "_newPosition") && {count _newPosition > 0} && {!(isnil "_position")} && {count _position > 0}) then {
 
-                            _moveDistance = _newPosition distance _position;
+                            private _moveDistance = _newPosition distance _position;
 
                             if(_moveDistance > 10) then {
 
@@ -378,7 +373,7 @@ _totalEntities = 0;
                                     _newPosition = getPosATL vehicle _leader;
 
                                     {
-                                        _vehicleProfile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
+                                        private _vehicleProfile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
 
                                         //["PROFILE SIM SPAWNED NO WAYPOINTS ENTITY %1 IN COMMAND OF %2 SET VEHICLE POS: %3",_entityProfile select 2 select 4,_vehicleProfile select 2 select 4,_newPosition] call ALIVE_fnc_dump;
 
@@ -415,44 +410,44 @@ _totalEntities = 0;
 
                     //[true, "ALiVE entity player starts...", format["profileSim_%1",_id]] call ALIVE_fnc_timer;
 
-                    _leader = _entityProfile select 2 select 10;    //_leader = [_profile,"leader"] call ALIVE_fnc_hashGet;
-                    _newPosition = getPosATL _leader;
+                    private _leader = _entityProfile select 2 select 10;    //_leader = [_profile,"leader"] call ALIVE_fnc_hashGet;
+                    private _newPosition = getPosATL _leader;
                     _position = _entityProfile select 2 select 2;   //_leader = [_profile,"position"] call ALIVE_fnc_hashGet;
 
                     //Positions are valid
                     if (!(isnil "_newPosition") && {str(_newPosition) != "[0,0,0]"} && {!(isnil "_position")} && {str(_position) != "[0,0,0]"}) then {
 
-                         _moveDistance = _newPosition distance _position;
+                        private _moveDistance = _newPosition distance _position;
 
-                         if(_moveDistance > 10) then {
-                             if(_vehicleCommander) then {
-                                 // if in command of vehicle move all entities within the vehicle
-                                 // set the vehicle position and merge all assigned entities positions
+                        if(_moveDistance > 10) then {
+                            if(_vehicleCommander) then {
+                                // if in command of vehicle move all entities within the vehicle
+                                // set the vehicle position and merge all assigned entities positions
 
-                                 _leader = _entityProfile select 2 select 10; //_leader = [_profile,"leader"] call ALIVE_fnc_hashGet;
-                                 _newPosition = getPosATL vehicle _leader;
+                                //_leader = _entityProfile select 2 select 10; //_leader = [_profile,"leader"] call ALIVE_fnc_hashGet;
+                                _newPosition = getPosATL vehicle _leader;
 
-                                 {
-                                     _vehicleProfile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
+                                {
+                                    private _vehicleProfile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
 
-                                     if !(isnil "_vehicleProfile") then {
-                                         [_vehicleProfile,"position",_newPosition] call ALIVE_fnc_profileVehicle;
-                                         [_vehicleProfile,"mergePositions"] call ALIVE_fnc_profileVehicle;
-                                     };
-                                 } forEach _vehiclesInCommandOf;
-                             } else {
-                                 _leader = _entityProfile select 2 select 10; //_leader = [_profile,"leader"] call ALIVE_fnc_hashGet;
-                                 _newPosition = getPosATL _leader;
+                                    if !(isnil "_vehicleProfile") then {
+                                        [_vehicleProfile,"position",_newPosition] call ALIVE_fnc_profileVehicle;
+                                        [_vehicleProfile,"mergePositions"] call ALIVE_fnc_profileVehicle;
+                                    };
+                                } forEach _vehiclesInCommandOf;
+                            } else {
+                                //_leader = _entityProfile select 2 select 10; //_leader = [_profile,"leader"] call ALIVE_fnc_hashGet;
+                                _newPosition = getPosATL _leader;
 
-                                 // set the entity position and merge all unit positions to group position
-                                 [_entityProfile,"position",_newPosition] call ALIVE_fnc_profileEntity;
-                                 [_entityProfile,"mergePositions"] call ALIVE_fnc_profileEntity;
-                             };
-                         };
+                                // set the entity position and merge all unit positions to group position
+                                [_entityProfile,"position",_newPosition] call ALIVE_fnc_profileEntity;
+                                [_entityProfile,"mergePositions"] call ALIVE_fnc_profileEntity;
+                            };
+                        };
 
-                    //Positions are invalid (due to missing player object or corrupted profile)
+                        //Positions are invalid (due to missing player object or corrupted profile)
                     } else {
-                         ["DISCONNECT"] call ALIVE_fnc_createProfilesFromPlayers;
+                        ["DISCONNECT"] call ALIVE_fnc_createProfilesFromPlayers;
                     };
 
                     //[false, "ALiVE entity player ends...", format["profileSim_%1",_id]] call ALIVE_fnc_timer;
@@ -472,47 +467,47 @@ _totalEntities = 0;
 // Simulate attacks
 
 private [
-    "_combatRate","_profileAttacks","_attacksToRemove","_toBeUnassigned","_toBeKilled","_attack",
-    "_cyclesLeft","_active","_attacker","_targets","_attackerProfile","_targetIndex","_attackerID",
-    "_targetNil","_targetCount","_attackerType","_attackerVehiclesInCommandOf","_targetIDs","_attackerPos",
-    "_targetType","_targetVehiclesInCommandOf","_targetPos","_profilesToAttackWith","_targetsToAttack",
+    "_targets","_attackerProfile","_profilesToAttackWith","_targetsToAttack",
     "_ran","_nextTargetDamageModifier","_targetToAttack","_targetToAttackType","_profileToAttackHealth","_damageToInflict",
     "_unitCount","_dmgPerUnitEven","_randomIndex","_randomIndexDamage","_randomDamage","_nextTarget","_entityInCommandOf",
     "_assignedVehicles","_hitPointCount","_dmgPerHitPointEven","_randomHitPointDmg","_vehicleClass","_indexesToRemove",
-    "_totalHitpoints","_victimType","_victimID","_victimPos","_victimFaction","_victimSide","_killerSide","_event","_eventID",
-    "_targetToAttackID","_deadHitPoints","_randomHitPointNme","_vehCritical"
+    "_totalHitpoints","_victimID","_targetToAttackID","_deadHitPoints","_randomHitPointNme","_vehCritical"
 ];
 
-_combatRate = [MOD(profileCombatHandler),"combatRate"] call ALiVE_fnc_hashGet;
-_profileAttacks = [MOD(profileCombatHandler),"attacksByID"] call ALiVE_fnc_hashGet;
-_attacksToRemove = [];
-_toBeUnassigned = [];
-_toBeKilled = [];
+private _combatRate = [MOD(profileCombatHandler),"combatRate"] call ALiVE_fnc_hashGet;
+private _profileAttacks = [MOD(profileCombatHandler),"attacksByID"] call ALiVE_fnc_hashGet;
+private _attacksToRemove = [];
+private _toBeUnassigned = [];
+private _toBeKilled = [];
+
+private _damageModifier = _cycleTime * _combatRate;
 
 {
-    _attack = _x;
-    _cyclesLeft = [_attack,"cyclesLeft"] call ALiVE_fnc_hashGet;
+    private ["_attacker"];
 
-    _active = false;
+    private _attack = _x;
+    private _cyclesLeft = [_attack,"cyclesLeft"] call ALiVE_fnc_hashGet;
+
+    private _active = false;
 
     if (_cyclesLeft > 0) then {
         [_attack,"cyclesLeft", _cyclesLeft - 1] call ALiVE_fnc_hashSet;
 
-        _attackerID = [_attack,"attacker"] call ALiVE_fnc_hashGet;
-        _targetIDs = [_attack,"targets"] call ALiVE_fnc_hashGet;
+        private _attackerID = [_attack,"attacker"] call ALiVE_fnc_hashGet;
+        private _targetIDs = [_attack,"targets"] call ALiVE_fnc_hashGet;
 
         _attacker = [MOD(profileHandler),"getProfile", _attackerID] call ALiVE_fnc_profileHandler;
 
         if (!isnil "_attacker") then {
             if !(_attacker select 2 select 1) then {                    // [_attacker,"active", false] call ALiVE_fnc_hashGet
 
-                _targetCount = count _targetIDs;
-                _targetIndex = 0;
+                private _targetCount = count _targetIDs;
+                private _targetIndex = 0;
 
-                _target = [MOD(profileHandler),"getProfile", _targetIDs select _targetIndex] call ALiVE_fnc_profileHandler;
-                _targetNil = isnil "_target";
+                private _target = [MOD(profileHandler),"getProfile", _targetIDs select _targetIndex] call ALiVE_fnc_profileHandler;
+                private _targetNil = isnil "_target";
 
-                while {(_targetNil || {[_target,"active", false] call ALiVE_fnc_hashGet}) && {_targetIndex < _targetCount}} do {
+                while {(_targetNil || {_target select 2 select 1}) && {_targetIndex < _targetCount}} do {
 
                     if (_targetNil) then {
                         _targetIDs deleteAt _targetIndex;
@@ -528,15 +523,15 @@ _toBeKilled = [];
 
                 if (!_targetNil) then {
                     if !(_target select 2 select 1) then {                              // [_target,"active", false] call ALiVE_fnc_hashGet
-                        _attackerType = _attacker select 2 select 5;                    // [_attacker,"type"] call ALiVE_fnc_hashGet;
-                        _attackerVehiclesInCommandOf = _attacker select 2 select 8;;    // [_attacker,"vehiclesInCommandOf"] call ALiVE_fnc_hashGet;
-                        _attackerPos = _attacker select 2 select 2;                     // [_attacker,"position"] call ALiVE_fnc_hashGet;
+                        private _attackerType = _attacker select 2 select 5;                    // [_attacker,"type"] call ALiVE_fnc_hashGet;
+                        private _attackerVehiclesInCommandOf = _attacker select 2 select 8;;    // [_attacker,"vehiclesInCommandOf"] call ALiVE_fnc_hashGet;
+                        private _attackerPos = _attacker select 2 select 2;                     // [_attacker,"position"] call ALiVE_fnc_hashGet;
 
-                        _targetType = _target select 2 select 5;                        // [_target,"type"] call ALiVE_fnc_hashGet;
-                        _targetVehiclesInCommandOf = _target select 2 select 8;         // [_target,"vehiclesInCommandOf"] call ALiVE_fnc_hashGet;
-                        _targetPos = _target select 2 select 2;                         // [_target,"position"] call ALiVE_fnc_hashGet;
+                        private _targetType = _target select 2 select 5;                        // [_target,"type"] call ALiVE_fnc_hashGet;
+                        private _targetVehiclesInCommandOf = _target select 2 select 8;         // [_target,"vehiclesInCommandOf"] call ALiVE_fnc_hashGet;
+                        private _targetPos = _target select 2 select 2;                         // [_target,"position"] call ALiVE_fnc_hashGet;
 
-                        _maxEngagementRange = [_attack,"maxRange"] call ALiVE_fnc_hashGet;
+                        private _maxEngagementRange = [_attack,"maxRange"] call ALiVE_fnc_hashGet;
 
                         if (_attackerPos distance2D _targetPos <= _maxEngagementRange) then {
 
@@ -603,7 +598,7 @@ _toBeKilled = [];
                                     // if entity controls no vehicles, the entity itself attacks
 
                                     {
-                                        _damageToInflict = _damageToInflict + (([_x,_targetToAttack] call ALiVE_fnc_profileGetDamageOutput) * _nextTargetDamageModifier * _cycleTime * _combatRate);
+                                        _damageToInflict = _damageToInflict + (([_x,_targetToAttack] call ALiVE_fnc_profileGetDamageOutput) * _nextTargetDamageModifier * _damageModifier);
                                     } foreach _profilesToAttackWith;
 
                                     if (_damageToInflict > 0) then {
@@ -750,9 +745,6 @@ _toBeKilled = [];
     if (!_active) then {
         _attacksToRemove pushback _attack;
 
-        _attackerID = [_attack,"attacker"] call ALiVE_fnc_hashGet;
-        _attacker = [MOD(profileHandler),"getProfile", _attackerID] call ALiVE_fnc_profileHandler;
-
         if !(isnil "_attacker") then {
             [_attacker,"combat", false] call ALiVE_fnc_hashSet;
             [_attacker,"attackID", nil] call ALiVE_fnc_hashSet;
@@ -762,17 +754,17 @@ _toBeKilled = [];
 
 //[false, "ALiVE Profile Attack Simulation ending", format["profileClash_%1",_id]] call ALIVE_fnc_timer;
 
-private ["_vehAssignments","_vehicleID","_vehAssignment","_unitAssignments"];
-
 {
      _x params ["_commandingEntity","_subordinateVehicle"];
 
-     // remove crew from commanding entity
-    _vehAssignments = [_commandingEntity,"vehicleAssignments"] call ALiVE_fnc_hashGet;
-    _vehicleID = _subordinateVehicle select 2 select 4;
+    // remove crew from commanding entity
 
-    _vehAssignment = [_vehAssignments,_vehicleID] call ALiVE_fnc_hashGet;
-    _unitAssignments = + (_vehAssignment select 2);
+    private _vehAssignments = [_commandingEntity,"vehicleAssignments"] call ALiVE_fnc_hashGet;
+    private _vehicleID = _subordinateVehicle select 2 select 4;
+
+    private _vehAssignment = [_vehAssignments,_vehicleID] call ALiVE_fnc_hashGet;
+    private _unitAssignments = + (_vehAssignment select 2);
+
     reverse _unitAssignments; // must remove in reverse order
 
     {
@@ -782,6 +774,7 @@ private ["_vehAssignments","_vehicleID","_vehAssignment","_unitAssignments"];
     } foreach _unitAssignments;
 
     // unassign vehicle from entity
+
     _x call ALIVE_fnc_removeProfileVehicleAssignment;
 } foreach _toBeUnassigned;
 
@@ -789,19 +782,19 @@ private ["_vehAssignments","_vehicleID","_vehAssignment","_unitAssignments"];
 {
     _x params ["_killer","_victim"];
 
-    _victimType = _victim select 2 select 5;
+    private _victimType = _victim select 2 select 5;
 
     if (_victimType == "entity") then {
-        _victimPos = _victim select 2 select 2;
-        _victimFaction = _victim select 2 select 29;
-        _victimSide = _victim select 2 select 3;
+        private _victimPos = _victim select 2 select 2;
+        private _victimFaction = _victim select 2 select 29;
+        private _victimSide = _victim select 2 select 3;
 
-        _killerSide = _killer select 2 select 3;
+        private _killerSide = _killer select 2 select 3;
 
         // log event
 
-        _event = ['PROFILE_KILLED', [_victimPos,_victimFaction,_victimSide,_killerSide],"Profile"] call ALIVE_fnc_event;
-        _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+        private _event = ['PROFILE_KILLED', [_victimPos,_victimFaction,_victimSide,_killerSide],"Profile"] call ALIVE_fnc_event;
+       [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
     };
 
     [MOD(profileHandler), "unregisterProfile", _victim] call ALiVE_fnc_profileHandler;
