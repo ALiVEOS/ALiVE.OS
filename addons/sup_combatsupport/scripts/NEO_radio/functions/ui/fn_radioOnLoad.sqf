@@ -52,13 +52,15 @@ if (count _transportArray > 0) then { _available pushback (["TRANSPORT", "\a3\Ui
 if (count _casArray > 0) then { _available pushback (["CAS", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\cas_ca.paa"]) };
 if (count _artyArray > 0 && (_action == "radio" || _action == "talkarty")) then { _available pushback (["ARTY", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\artillery_ca.paa"]) };
 //Support ListBox
+
+
 lbClear _suppListBox;
 {
     _suppListBox lbAdd format["%1", (_x select 0)];
     _suppListBox lbSetPicture [_forEachIndex, (_x select 1)];
 } forEach _available;
 
-lbSort _suppListBox;
+ lbSort _suppListBox;
 
 //Display Event Handlers
 _suppListBox ctrlSetEventHandler ["LBSelChanged", "_this call NEO_fnc_radioLbSelChanged"];
@@ -70,9 +72,16 @@ switch (_action) do
     {
         NEO_radioLogic setVariable ["NEO_radioTalkWithPilot", vehicle _unit];
 
+        if (count _casArray > 0) then {
+            lbDelete [655565, 0];
+        };
+        if (count _artyArray > 0) then {
+            lbDelete [655565, 2];
+        };
+
         [] spawn
         {
-            lbSetCurSel [655565, 0];
+            lbSetCurSel [655565, 1];
             waituntil { lbSize 655568 > 0 };
             lbSetCurSel [655568, 0];
         };
@@ -81,6 +90,13 @@ switch (_action) do
     case "talkarty" :
     {
         NEO_radioLogic setVariable ["NEO_radioTalkWithArty", vehicle cursorTarget];
+
+        if (count _casArray > 0) then {
+            lbDelete [655565, 0];
+        };
+        if (count _transportArray > 0) then {
+            lbDelete [655565, 1];
+        };
 
         [] spawn
         {
