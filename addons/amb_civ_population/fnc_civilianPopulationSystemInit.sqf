@@ -49,7 +49,7 @@ if(isServer) then {
         [_errorMessage,_error1,_error2] call ALIVE_fnc_dumpMPH;
     };
 
-    if !([QMOD(AMBCP)] call ALiVE_fnc_isModuleAvailable) then {
+    if !([QMOD(amb_civ_population)] call ALiVE_fnc_isModuleAvailable) then {
         ["WARNING: Civilian Placement module not placed!"] call ALiVE_fnc_DumpR;
     };
 
@@ -67,7 +67,17 @@ if(isServer) then {
     [ALIVE_civilianPopulationSystem, "activeLimiter", _activeLimiter] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "ambientCivilianRoles", _ambientCivilianRoles] call ALIVE_fnc_civilianPopulationSystem;
 
-    if (count _ambientCivilianRoles == 0) then {GVAR(ROLES_DISABLED) = true} else {GVAR(ROLES_DISABLED) = false};
+    if (count _ambientCivilianRoles == 0) then {
+        GVAR(ROLES_DISABLED) = true;
+    } else {
+        GVAR(ROLES_DISABLED) = false;
+
+        MOD(sys_civ_interaction) = [nil,"create"] call ALiVE_fnc_civInteraction;
+        [MOD(sys_civ_interaction),"debug", _debug] call ALiVE_fnc_civInteraction;
+        [MOD(sys_civ_interaction),"civilianRoles", _ambientCivilianRoles] call ALiVE_fnc_civInteraction;
+        [MOD(sys_civ_interaction),"init"] call ALiVE_fnc_civInteraction;
+    };
+
     PublicVariable QGVAR(ROLES_DISABLED);
 
     _logic setVariable ["handler",ALIVE_civilianPopulationSystem];
