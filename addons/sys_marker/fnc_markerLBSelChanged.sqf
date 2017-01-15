@@ -137,7 +137,14 @@ switch _idc do {
             _icon = _ValueIcon lbdata _i;
             _type = gettext (configfile >> "cfgmarkers" >> _icon >> "icon");
             _ValueIcon lbsetpicture [_i,_type];
-            lbsetcolor [80104,_i,(configfile >> "cfgmarkers" >> _icon >> "color") call bis_fnc_colorConfigToRGBA];
+            private "_civ";
+                _civ = [_ValueIcon lbdata (lbcursel _ValueIcon),0,1] call BIS_fnc_trimString;
+                if (_civ == "c_") then {
+                  lbsetcolor [80104,_i,[0,0,0,1]];
+                } else {
+                   lbsetcolor  [80104,_i,(configfile >> "cfgmarkers" >> _icon >> "color") call BIS_fnc_colorConfigToRGBA];
+                };
+           // lbsetcolor [80104,_i,(configfile >> "cfgmarkers" >> _icon >> "color") call bis_fnc_colorConfigToRGBA];
         };
         lbSetCurSel [ICON_LIST, 0];
     };
