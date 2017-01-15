@@ -1,11 +1,11 @@
 //#define DEBUG_MODE_FULL
 #include <\x\alive\addons\sys_civ_interaction\script_component.hpp>
-SCRIPT(civInteraction);
+SCRIPT(civInteractionHandler);
 
 /* ----------------------------------------------------------------------------
-Function: ALiVE_fnc_civInteraction
+Function: ALiVE_fnc_civInteractionHandler
 Description:
-Main handler for civilian interaction
+Serverside handling of civilian interactions
 
 Parameters:
 Nil or Object - If Nil, return a new instance. If Object, reference an existing instance.
@@ -16,10 +16,9 @@ Returns:
 Any - The new instance or the result of the selected function and parameters
 
 Examples:
-[_logic, "debug", true] call ALiVE_fnc_civInteraction;
 
 See Also:
-- <ALiVE_fnc_civInteractionInit>
+- <ALiVE_fnc_civInteraction>
 
 Author:
 SpyderBlack723
@@ -29,24 +28,10 @@ nil
 ---------------------------------------------------------------------------- */
 
 #define SUPERCLASS  ALIVE_fnc_baseClass
-#define MAINCLASS   ALiVE_fnc_civInteraction
+#define MAINCLASS   ALiVE_fnc_civInteractionHandler
 
-// control Macros
+TRACE_1("Civ Interaction Handler - input", _this);
 
-#define CI_getControl(disp,ctrl)    ((findDisplay disp) displayCtrl ctrl)
-#define CI_getSelData(ctrl)         (lbData [ctrl,(lbCurSel ctrl)])
-#define CI_ctrlGetSelData(ctrl)     (ctrl lbData (lbCurSel ctrl))
-
-// general macros
-
-#define COLOR_SIDE_EAST [profilenamespace getvariable ["Map_OPFOR_R",0],profilenamespace getvariable ["Map_OPFOR_G",1],profilenamespace getvariable ["Map_OPFOR_B",1],profilenamespace getvariable ["Map_OPFOR_A",0.8]]
-#define COLOR_SIDE_WEST [profilenamespace getvariable ["Map_BLUFOR_R",0],profilenamespace getvariable ["Map_BLUFOR_G",1],profilenamespace getvariable ["Map_BLUFOR_B",1],profilenamespace getvariable ["Map_BLUFOR_A",0.8]]
-#define COLOR_SIDE_GUER [profilenamespace getvariable ["Map_Independent_R",0],profilenamespace getvariable ["Map_Independent_G",1],profilenamespace getvariable ["Map_Independent_B",1],profilenamespace getvariable ["Map_Independent_A",0.8]]
-
-
-TRACE_1("Civ Interaction - input", _this);
-
-disableSerialization;
 private ["_result"];
 params [
     ["_logic", objNull, [objNull]],
@@ -72,19 +57,6 @@ switch(_operation) do {
             _logic setVariable ["class", QUOTE(MAINCLASS)];
             _logic setVariable ["moduleType", QUOTE(ADDON)];
             _logic setVariable ["startupComplete", false];
-
-            // get module settings
-
-            private _debug = call compile (_logic getVariable "debug");
-
-            private _state = [] call ALiVE_fnc_hashCreate;
-            [_state,"asymmetricFactions", []] call ALiVE_fnc_hashSet;
-            [_state,"conventionalFactions", []] call ALiVE_fnc_hashSet;
-
-            [_logic,"debug", _debug] call MAINCLASS;
-            [_logic,"state", _state] call MAINCLASS;
-
-            ADDON = _logic;
 
             [_logic,"start"] spawn MAINCLASS;
 
@@ -190,20 +162,6 @@ switch(_operation) do {
         */
 
         [_logic,_operation,_args] call MAINCLASS;
-
-    };
-
-    case "onCivilianInteracted": {
-
-        _this params ["_civilian","_player"];
-
-        [_logic,"openInterface"] call MAINCLASS;
-
-    };
-
-    case "openInterface": {
-
-
 
     };
 
