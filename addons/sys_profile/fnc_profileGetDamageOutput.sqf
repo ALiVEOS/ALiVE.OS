@@ -32,17 +32,12 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private [
-    "_damageOutput","_hitChance","_critChance","_critDamage","_unitCount","_victimObjectType",
-    "_attackerObjectType","_attackerVehicleClass","_commandingEntity","_attackerPos","_victimPos",
-    "_attackDistance","_accuracyModifier"
-];
 params ["_attacker","_victim"];
 
-_damageOutput = 0;
-_hitChance = 1;
-_critChance = 0;            // simulates hit such as a helicopter using rocket, inf using rpg
-_critDamage = 0;
+private _damageOutput = 0;
+private _hitChance = 1;
+private _critChance = 0;            // simulates hit such as a helicopter using rocket, inf using rpg
+private _critDamage = 0;
 
 if ((_attacker select 2 select 5) == "entity") then {               // [_attacker,"type"] call ALiVE_fnc_hashGet
 
@@ -50,10 +45,9 @@ if ((_attacker select 2 select 5) == "entity") then {               // [_attacke
     // attacker is infantry squad
     //--------------------------
 
-    private _unitCount = count (_attacker select 2 select 11);     // [_attacker,"unitClasses"] call ALiVE_fnc_hashGet
+    private _unitCount = count (_attacker select 2 select 11);      // [_attacker,"unitClasses"] call ALiVE_fnc_hashGet
 
     if ((_victim select 2 select 5) == "entity") then {             // [_victim,"type"] call ALiVE_fnc_hashGet
-
         // victim is infantry squad
         // figure damage of inf vs inf
 
@@ -61,9 +55,7 @@ if ((_attacker select 2 select 5) == "entity") then {               // [_attacke
         _damageOutput = 0.015 * _unitCount;
         _critChance = 0.15;
         _critDamage = 0.04 * _unitCount;
-
     } else {
-
         // victim is in vehicle(s)
         // figure damage of inf vs veh
 
@@ -123,13 +115,11 @@ if ((_attacker select 2 select 5) == "entity") then {               // [_attacke
     };
 
 } else {
-
     //--------------------------
     // attacker is in vehicle(s)
     //--------------------------
 
     if (([_victim,"type"] call ALiVE_fnc_hashGet) == "entity") then {
-
         // victim is infantry squad
         // figure damage of veh vs inf
 
@@ -189,9 +179,9 @@ if ((_attacker select 2 select 5) == "entity") then {               // [_attacke
                         _critDamage = 1.5;
                     };
                     case ([_attackerVehicleClass] call ALiVE_fnc_isArtillery): {
-                        _attackerPos = _attacker select 2 select 2; // [_attacker,"position"] call ALiVE_fnc_hashGet
-                        _victimPos = _victim select 2 select 2;     // [_victim,"position"] call ALiVE_fnc_hashGet
-                        _attackDistance = _attackerPos distance2D _victimPos;
+                        private _attackerPos = _attacker select 2 select 2; // [_attacker,"position"] call ALiVE_fnc_hashGet
+                        private _victimPos = _victim select 2 select 2;     // [_victim,"position"] call ALiVE_fnc_hashGet
+                        private _attackDistance = _attackerPos distance2D _victimPos;
 
                         if (_attackDistance < 300) then {
                             // secondary weapon
@@ -201,7 +191,8 @@ if ((_attacker select 2 select 5) == "entity") then {               // [_attacke
                             _critDamage = 1;
                         } else {
                             // main gun
-                            _accuracyModifier = (_attackDistance / 100000);
+
+                            private _accuracyModifier = (_attackDistance / 100000);
 
                             _hitChance = 0.35 - _accuracyModifier;
                             _damageOutput = 0.15;
@@ -244,7 +235,6 @@ if ((_attacker select 2 select 5) == "entity") then {               // [_attacke
         };
 
     } else {
-
         // victim is in vehicle(s)
         // figure damage of veh vs veh
 
@@ -354,9 +344,9 @@ if ((_attacker select 2 select 5) == "entity") then {               // [_attacke
                         };
                     };
                     case ([_attackerVehicleClass] call ALiVE_fnc_isArtillery): {
-                        _attackerPos = _attacker select 2 select 2; // [_attacker,"position"] call ALiVE_fnc_hashGet
-                        _victimPos = _victim select 2 select 2;     // [_victim,"position"] call ALiVE_fnc_hashGet
-                        _attackDistance = _attackerPos distance2D _victimPos;
+                        private _attackerPos = _attacker select 2 select 2; // [_attacker,"position"] call ALiVE_fnc_hashGet
+                        private _victimPos = _victim select 2 select 2;     // [_victim,"position"] call ALiVE_fnc_hashGet
+                        private _attackDistance = _attackerPos distance2D _victimPos;
 
                         if (_attackDistance < 300) then {
                             // secondary weapon
@@ -388,7 +378,8 @@ if ((_attacker select 2 select 5) == "entity") then {               // [_attacke
                                 };
                         } else {
                             // main gun
-                            _accuracyModifier = (_attackDistance / 100000);
+
+                            private _accuracyModifier = (_attackDistance / 100000);
 
                             switch true do {
                                 case (_victimObjectType in ["car","truck"]): {
