@@ -313,7 +313,22 @@ switch (_taskState) do {
                         _electronicClass = (selectRandom _electronics);
                         _documentClass = (selectRandom _documents);
 
-                        _table = _tableClass createVehicle _taskPosition;
+                        _pos = [
+                            _taskPosition, // center position
+                            0, // minimum distance
+                            20, // maximum distance
+                            2, // minimum to nearest object
+                            0, // water mode
+                            0.2, // gradient
+                            0, // shore mode
+                            [], // blacklist
+                            [
+                                _taskPosition, // default position on land
+                                _taskPosition // default position on water
+                            ]
+                        ] call BIS_fnc_findSafePos;
+
+                        _table = _tableClass createVehicle _pos;
                         _table setdir 0;
 
                         _electronic = [_table,_electronicClass] call ALIVE_fnc_taskSpawnOnTopOf;
