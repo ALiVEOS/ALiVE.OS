@@ -365,7 +365,7 @@ if (isDedicated) then {
             private _missionName = [GVAR(operation), "%20","-"] call CBA_fnc_replace;
             _missionName = format["%1_%2", GVAR(GROUP_ID), _missionName];
 
-            while {MOD(sys_data) getVariable "disableAAR" == "false"} do {
+            while {MOD(sys_data) getVariable ["disableAAR","false"] == "false"} do {
 
                 private _allPlayers = [];
                 {
