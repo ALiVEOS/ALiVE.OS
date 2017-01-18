@@ -246,11 +246,6 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_profileAttack.sqf";
                 RECOMPILE;
             };
-            class profileBattle {
-                description = "profileBattle";
-                file = "\x\alive\addons\sys_profile\fnc_profileBattle.sqf";
-                RECOMPILE;
-            };
             class profileCombatHandler {
                 description = "profileCombatHandler";
                 file = "\x\alive\addons\sys_profile\fnc_profileCombatHandler.sqf";

@@ -805,7 +805,9 @@ private _damageModifier = _cycleTime * _combatRate;
 
 // attacks must be removed killed profiles have been unregistered
 
-[MOD(profileCombatHandler),"removeAttacks", _attacksToRemove] call ALiVE_fnc_profileCombatHandler;
+if !(_attacksToRemove isEqualTo []) then {
+    [MOD(profileCombatHandler),"removeAttacks", _attacksToRemove] call ALiVE_fnc_profileCombatHandler;
+};
 
 
 //["ALiVE Profile Simulation - Time taken per profile %1 (%2)",(time - _time) / _totalEntities, _totalEntities] call ALiVE_fnc_DumpR;
