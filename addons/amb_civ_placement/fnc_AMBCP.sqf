@@ -708,12 +708,13 @@ switch(_operation) do {
                         //["BUILDINGS: %1",_buildings] call ALIVE_fnc_dump;
 
                         private _countBuildings = count _buildings;
-                        private _parkingChance = 0.1 * _ambientVehicleAmount;
+                        private _parkingChance = 0.5 * _ambientVehicleAmount;
+                        _supportMax = 6 * _parkingChance;
 
                         //["COUNT BUILDINGS: %1",_countBuildings] call ALIVE_fnc_dump;
                         //["CHANCE: %1",_parkingChance] call ALIVE_fnc_dump;
 
-                        if(_countBuildings > 50) then {
+/*                        if(_countBuildings > 50) then {
                             _supportMax = 3;
                             _parkingChance = 0.1 * _ambientVehicleAmount;
                         };
@@ -742,7 +743,7 @@ switch(_operation) do {
                             _supportMax = 0;
                             _parkingChance = 0.6 * _ambientVehicleAmount;
                         };
-
+*/
                         //["SUPPORT MAX: %1",_supportMax] call ALIVE_fnc_dump;
                         //["CHANCE: %1",_parkingChance] call ALIVE_fnc_dump;
 
