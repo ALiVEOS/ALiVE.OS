@@ -46,16 +46,16 @@ switch (_operation) do {
 
     case "init": {
 
+        private _tmpHash = [] call ALiVE_fnc_hashCreate;
+
         [_logic,"super", QUOTE(SUPERCLASS)] call ALiVE_fnc_hashSet;
         [_logic,"class", QUOTE(MAINCLASS)] call ALiVE_fnc_hashSet;
 
         [_logic,"debug", false] call ALiVE_fnc_hashSet;
-        [_logic,"combatRange", 150] call ALiVE_fnc_hashSet;
+        [_logic,"combatRange", 225] call ALiVE_fnc_hashSet;
         [_logic,"combatRate", 1] call ALiVE_fnc_hashSet; // modify to slow down or speed up combat
-        [_logic,"battleSize", 500] call ALiVE_fnc_hashSet;
-        [_logic,"battleMinAttacks", 6] call ALiVE_fnc_hashSet;
 
-        private _profilesBySide = [] call ALiVE_fnc_hashCreate;
+        private _profilesBySide = +_tmpHash;
         [_profilesBySide,"EAST", []] call ALiVE_fnc_hashSet;
         [_profilesBySide,"WEST", []] call ALiVE_fnc_hashSet;
         [_profilesBySide,"GUER", []] call ALiVE_fnc_hashSet;
@@ -64,13 +64,8 @@ switch (_operation) do {
 
         [_logic,"attackCount", 0] call ALiVE_fnc_hashSet;
 
-        private _attacksByID = [] call ALiVE_fnc_hashCreate;
+        private _attacksByID = +_tmpHash;
         [_logic,"attacksByID", _attacksByID] call ALiVE_fnc_hashSet;
-
-        [_logic,"battleCount", 0] call ALiVE_fnc_hashSet;
-
-        private _battlesByID = [] call ALiVE_fnc_hashCreate;
-        [_logic,"battlesByID", _battlesByID] call ALiVE_fnc_hashSet;
 
     };
 
@@ -90,6 +85,10 @@ switch (_operation) do {
         if (typename _args == "SCALAR") then {
             [_logic,_operation,_args] call ALiVE_fnc_hashSet;
             _result = _args;
+
+            {
+                [_x,"maxRange", _args] call ALiVE_fnc_hashSet;
+            } foreach (_attacksByID select 2);
         } else {
             _result = [_logic,_operation] call ALiVE_fnc_hashGet;
         };
@@ -140,42 +139,11 @@ switch (_operation) do {
 
     };
 
-    case "battleCount": {
-
-        if (typename _args == "SCALAR") then {
-            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
-            _result = _args;
-        } else {
-            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
-        };
-
-    };
-
-    case "battlesByID": {
-
-        if (typename _args == "ARRAY") then {
-            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
-            _result = _args;
-        } else {
-            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
-        };
-
-    };
-
     case "getNextAttackID": {
 
         private _attackCount = [_logic,"attackCount"] call ALiVE_fnc_hashGet;
         _result = format ["attack_%1", _attackCount];
         [_logic,"attackCount", _attackCount + 1] call ALiVE_fnc_hashSet;
-
-    };
-
-    case "getNextBattleID": {
-
-        private _battleCount = [_logic,"battleCount"] call ALiVE_fnc_hashGet;
-        _result = format ["battle_%1", _battleCount];
-        _battleCount = _battleCount + 1;
-        [_logic,"battleCount", _battleCount] call ALiVE_fnc_hashSet;
 
     };
 
@@ -215,20 +183,6 @@ switch (_operation) do {
         [MOD(eventLog), "addEvent", _event] call ALiVE_fnc_eventLog;
 
         _result = _attackID;
-
-    };
-
-    case "addBattle": {
-
-        private _battle = _args;
-
-        private _battlesByID = [_logic,"battlesByID"] call ALiVE_fnc_hashGet;
-        private _battleID = [_logic,"getNextBattleID"] call MAINCLASS;
-
-        [_battle,"battleID", _battleID] call ALiVE_fnc_hashSet;
-        [_battlesByID,_battleID,_battle] call ALiVE_fnc_hashSet;
-
-        _result = _battleID;
 
     };
 
@@ -279,25 +233,6 @@ switch (_operation) do {
 
     };
 
-    case "removeBattles": {
-
-        private _battles = _args;
-
-        private _battlesByID = [_logic,"battlesByID"] call ALiVE_fnc_hashGet;
-
-        {
-            private _battle = _x;
-            private _battleID = [_battle,"battleID"] call ALiVE_fnc_hashGet;
-            private _eventData = _battle select 2;
-
-            [_battlesByID,_battleID, nil] call ALiVE_fnc_hashSet;
-
-            private _event = ['PROFILE_BATTLE_END', _eventData, "profileCombatHandler"] call ALIVE_fnc_event;
-            [MOD(eventLog), "addEvent", _event] call ALIVE_fnc_eventLog;
-        } foreach _battleIDs;
-
-    };
-
     case "getAttack": {
 
         private _attackID = _args;
@@ -305,16 +240,6 @@ switch (_operation) do {
         private _attacksByID = [_logic,"attacksByID"] call ALiVE_fnc_hashGet;
 
         _result = [_attacksByID,_attackID] call ALiVE_fnc_hashGet;
-
-    };
-
-    case "getBattle": {
-
-        private _battleID = _args;
-
-        private _battlesByID = [_logic,"battlesByID"] call ALiVE_fnc_hashGet;
-
-        _result = [_battlesByID,_battleID] call ALiVE_fnc_hashGet;
 
     };
 
