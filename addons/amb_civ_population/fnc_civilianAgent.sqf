@@ -333,7 +333,18 @@ switch(_operation) do {
 
         if !(_active) then {
 
-            private _group = createGroup _sideObject;
+            //private _group = createGroup _sideObject;
+            private _group = [ALIVE_civilianPopulationSystem, "civGroup"] call ALiVE_fnc_HashGet;
+            if (isnil "_group") then {
+                _group = createGroup _sideObject;
+                _group setBehaviour "CARELESS";
+                [ALIVE_civilianPopulationSystem, "civGroup", _group] call ALiVE_fnc_HashSet;
+            };
+            if (isnull _group) then {
+                _group = createGroup _sideObject;
+                _group setBehaviour "CARELESS";
+                [ALIVE_civilianPopulationSystem, "civGroup", _group] call ALiVE_fnc_HashSet;
+            };
             private _unit = _group createUnit [_agentClass, _homePosition, [], 0, "CAN_COLLIDE"];
 
             //set low skill to save performance
