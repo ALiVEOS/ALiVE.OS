@@ -58,7 +58,8 @@ switch (_operation) do {
         [_logic,"targets", []] call ALiVE_fnc_hashSet;              // select 2 select 7
 
         // for arty set to max arty range, else leave default
-        [_logic,"maxRange", 150] call ALiVE_fnc_hashSet;            // select 2 select 8
+
+        [_logic,"maxRange", [MOD(profileCombatHandler),"combatRange"] call ALiVE_fnc_hashGet] call ALiVE_fnc_hashSet;            // select 2 select 8
 
         [_logic,"cyclesLeft", 9999] call ALiVE_fnc_hashSet;         // select 2 select 9
         [_logic,"attackerSide", "WEST"] call ALiVE_fnc_hashSet;     // select 2 select 10

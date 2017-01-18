@@ -804,59 +804,8 @@ private _damageModifier = _cycleTime * _combatRate;
 //[false, "ALiVE Profile Combat Cleanup ending", format["profileClean_%1",_id]] call ALIVE_fnc_timer;
 
 // attacks must be removed killed profiles have been unregistered
+
 [MOD(profileCombatHandler),"removeAttacks", _attacksToRemove] call ALiVE_fnc_profileCombatHandler;
-
-/*
-// scan remaining attacks
-// create battle if 6+ exist in radius
-private [
-    "_battleSize","_battleMinAttacks","_profileBattles","_attackPos","_addedToBattle",
-    "_battlePos","_nearAttacks","_testAttackPos","_profileBattle","_nearAttackPositions"
-];
-
-_battleSize = [MOD(profileCombatHandler),"battleSize"] call ALiVE_fnc_hashGet;
-_battleMinAttacks = [MOD(profileCombatHandler),"battleMinAttacks"] call ALiVE_fnc_hashGet;
-
-_profileAttacks = [MOD(profileCombatHandler),"attacksByID"] call ALiVE_fnc_hashGet;
-_profileBattles = [MOD(profileCombatHandler),"battlesByID"] call ALiVE_fnc_hashGet;
-{
-    _attack = _x;
-    _attackPos = [_x,"position"] call ALiVE_fnc_hashGet;
-    _addedToBattle = false;
-
-    {
-        _battlePos = _x select 2 select 3;
-
-        if (_battlePos distance2D _attackPos <= _battleSize) exitwith {
-            [_x,"addAttack", _attack] call ALiVE_fnc_profileBattle;
-        };
-
-        _addedToBattle = true;
-    } foreach (_profileBattles select 2);
-
-    if (!_addedToBattle) then {
-        _nearAttacks = [];
-        _nearAttackPositions = [];
-
-        {
-            private _testAttackPos = _x select 2 select 4;
-            private _testMaxRange = _x select 2 select 8;
-
-            // ensure attack range is default combat range to exclude long range artillery
-            if (_testAttackPos distance2D _attackPos <= _combatRange && {_testMaxRange == _combatRange}) then {
-                _nearAttacks pushback _x;
-                _nearAttackPositions pushback _testAttackPos;
-            };
-        } foreach (_profileAttacks select 2);
-
-        if (count _nearAttacks >= _battleMinAttacks) then {
-            _profileBattle = [nil,"create"] call ALiVE_fnc_profileBattle;
-            [_profileBattle,"position", _nearAttackPositions call ALiVE_fnc_getCenterOfPositions] call ALiVE_fnc_hashSet;
-            [_profileBattle,"addAttacks", _nearAttacks] call ALiVE_fnc_profileBattle;
-        };
-    };
-} foreach (_profileAttacks select 2);
-*/
 
 
 //["ALiVE Profile Simulation - Time taken per profile %1 (%2)",(time - _time) / _totalEntities, _totalEntities] call ALiVE_fnc_DumpR;
