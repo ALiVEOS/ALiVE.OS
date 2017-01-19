@@ -33,34 +33,37 @@ Author:
 Tupolov
 ---------------------------------------------------------------------------- */
 
-private ["_className","_configPaths","_configPath","_result","_item","_comp","_name","_size","_cat","_faction","_compType","_enemyFactions"];
-
 // ["COMPOSITION INPUT : %1",_this] call ALiVE_fnc_dump;
 
 if (count _this < 3) exitWith {};
 
-_compType = _this select 0;
-_cat = if (typeName (_this select 1) == "ARRAY") then {_this select 1} else {[_this select 1]};
-_size = if (typeName (_this select 2) == "ARRAY") then {_this select 2} else {[_this select 2]};
+private _comp = _this select 0;
+private _compType = _comp;
+private _cat = if (typeName (_this select 1) == "ARRAY") then {_this select 1} else {[_this select 1]};
+private _size = if (typeName (_this select 2) == "ARRAY") then {_this select 2} else {[_this select 2]};
+private _env = "Urban";
+private _faction = [];
+private _enemyFactions = [];
+private _result = [];
+private _recursive = false;
+
 if (count _this > 3) then {
     if (typeName (_this select 3) == "ARRAY") then {_faction = _this select 3} else {_faction = [_this select 3]};
-} else {
-    _faction = [];
 };
 
-_enemyFactions = [];
+if (count _this > 4) then {
+    _recursive = _this select 4;
+};
 
 if (!isNil "ALiVE_mapCompositionType") then {
     _env = ALiVE_mapCompositionType;
 };
 
-_result = [];
-
-if (!isNil "_env") then {
-    _compType = format["%1_%2",_compType,_env]; // Civilian_Pacific etc
+if (_env != "Urban") then {
+    _compType = format["%1_%2",_comp,_env]; // Civilian_Pacific etc
 };
 
-_configPaths = [
+private _configPaths = [
     missionConfigFile >> "CfgGroups" >> "Empty" >> _compType,
     configFile >> "CfgGroups" >> "Empty" >> _compType
 ];
@@ -68,9 +71,8 @@ _configPaths = [
 // Get enemy factions
 if (count _faction != 0) then {
     {
-        private ["_enemySide","_friendlySide"];
-        _friendlySide = _x call ALiVE_fnc_factionSide;
-        _enemySide = [];
+        private _friendlySide = _x call ALiVE_fnc_factionSide;
+        private _enemySide = [];
         switch (_friendlySide) do {
             case EAST : {
                 _enemySide = [WEST];
@@ -97,8 +99,7 @@ if (count _faction != 0) then {
             };
         };
         {
-            private ["_enemy"];
-            _enemy = _x;
+            private _enemy = _x;
             _enemy = [_enemy] call ALIVE_fnc_sideObjectToNumber;
             _enemy = [_enemy] call ALIVE_fnc_sideNumberToText;
             {
@@ -110,18 +111,18 @@ if (count _faction != 0) then {
             // diag_log format["ENEMY %1",_enemy];
         } foreach _enemySide;
     } foreach _faction;
-    // diag_log _enemyFactions;
+
 };
 
-scopeName "main";
+if (!isClass (_configPaths select 0) && !isClass(_configPaths select 1)) exitWith {["WARNING: You don't appear to have the %1 compositions loaded, make sure you have added the composition PBOs to your @ALiVE or @ALiVEServer addon folders", _compType] call ALiVE_fnc_dump;};
 
 {
-    _configPath = _x; // Military_Pacific
+    private _configPath = _x; // Military_Pacific
 
     for "_i" from 0 to ((count _configPath) - 1) do
     {
 
-        _item = _configPath select _i; // airports
+        private _item = _configPath select _i; // airports
 
         if (isClass _item && (count _cat == 0 || ({tolower(configName _item) find tolower(_x) != -1} count _cat > 0))) then {
 
@@ -129,12 +130,12 @@ scopeName "main";
 
                 for "_i" from 0 to ((count _item) - 1) do
                 {
-                    _comp = _item select _i;
+                    private _comp = _item select _i;
                     // diag_log str(_comp);
                     if (isClass _comp) then {
+                            // diag_log _enemyFactions;
 
                             if ({(configName _comp) find _x != -1} count _enemyFactions == 0 ||  count _faction == 0  ) then {
-                                // diag_log (configName _comp);
                                 _result pushback _comp;
                             };
                     };
@@ -145,19 +146,20 @@ scopeName "main";
 } foreach _configPaths;
 
 
-if (count _result == 0) then {
-    private ["_temp"];
+if (count _result == 0 && !_recursive) then {
+    private _temp = "Urban";
     if (!isNil "ALiVE_mapCompositionType") then {
-        // If we can't find any compositions for the current environment i.e. desert/woodland then check urban
+        // If we can't find any compositions for the current environment i.e. desert/woodland then check urban for any size composition
         _temp = ALiVE_mapCompositionType;
         ALiVE_mapCompositionType = nil;
     };
-    _result = [_compType,_cat,[]] call ALiVE_fnc_getCompositions;
-    if (!isNil "_temp") then {
+    // Another attempt at getting a composition (might not fit environment)
+    _result = [_comp,_cat,[],_faction, true] call ALiVE_fnc_getCompositions;
+
+    if (_temp != "Urban") then {
         // Set the env back to what it was for other composition searches
         ALiVE_mapCompositionType = _temp;
     };
-
 };
 
 // ["Found %1 compositions for %2", count _result, _this] call ALiVE_fnc_dump;
