@@ -28,11 +28,11 @@ _targets = _this select 0;
 _state = [] call ALIVE_fnc_hashCreate;
 [_state,"allDestroyed",true] call ALIVE_fnc_hashSet;
 
-_output = [];
+private _output = [];
 
 {
     private ["_target"];
-    
+
     _target = _x;
     _output pushback _target;
 

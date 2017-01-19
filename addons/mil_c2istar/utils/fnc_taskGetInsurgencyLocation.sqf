@@ -82,7 +82,7 @@ if(count _objectives > 0) then {
 
     _sortedObjectives call ALIVE_fnc_inspectArray;
 
-    _countObjectives = count _sortedObjectives;
+    private _countObjectives = count _sortedObjectives;
 
     if(_taskLocationType == "Map" || _taskLocationType == "Short") then {
         if(count _sortedObjectives > 1 && _taskLocationType == "Short") then {

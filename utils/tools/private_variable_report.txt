@@ -147,7 +147,6 @@ Parsing : P:\x\alive\addons\main\XEH_preInit.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskAssassination.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskCivAssault.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskCSAR.sqf
-error line: [72] _choice not defined
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskDestroyInfantry.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskDestroyVehicles.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskInsurgencyDestroyAssets.sqf
@@ -156,7 +155,6 @@ Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskMilAssault.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskMilDefence.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskRescue.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskSabotageBuilding.sqf
-error line: [53] _tasksCurrent not defined
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskTransportInsertion.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskCreateBombardment.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskCreateExplosiveProjectile.sqf
@@ -165,7 +163,6 @@ Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskCreateMarkersForPlayers.sq
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskCreateRadioBroadcastForPlayers.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskCreateRandomMilLogisticsEvent.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskCreateReward.sqf
-error line: [47] _factions not defined
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskCreateVehicleExtractionForUnits.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskCreateVehicleInsertionForUnits.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskDeleteMarkers.sqf
@@ -174,7 +171,6 @@ Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskDoVehiclesHaveRoomForGroup
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskGetClosestPlayerDistanceToDestination.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskGetClosestPlayerToPosition.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskGetInsurgencyLocation.sqf
-error line: [85] _countObjectives not defined
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskGetNearestLocationName.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskGetNearPlayerVehicles.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskGetRandomSideEntityFromSector.sqf
@@ -186,7 +182,6 @@ Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskGetSideSectorEntities.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskGetSideSectorVehicles.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskGetStateOfEntityProfiles.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskGetStateOfObjects.sqf
-error line: [31] _output not defined
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskGetStateOfVehicleProfiles.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskGetVehicleWithMaxRoom.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskHavePlayersReachedDestination.sqf
@@ -195,11 +190,6 @@ Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskHaveUnitsUnloadedFromVehic
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskIsAreaClearOfEnemies.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskSpawnOnTopOf.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\fnc_C2ISTAR.sqf
-error line: [440] _scomOpsAllowSpectate not defined
-error line: [441] _scomOpsAllowJoin not defined
-error line: [490] _taskData not defined
-error line: [503] _taskData not defined
-error line: [516] _taskData not defined
 Parsing : P:\x\alive\addons\mil_c2istar\fnc_C2ISTARInit.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\fnc_C2MenuDef.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\fnc_C2OnPlayerConnected.sqf
@@ -208,80 +198,17 @@ Parsing : P:\x\alive\addons\mil_c2istar\fnc_C2TabletOnAction.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\fnc_C2TabletOnLoad.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\fnc_C2TabletOnUnLoad.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\fnc_taskHandler.sqf
-error line: [304] _taskID not defined
-error line: [305] _state not defined
-error line: [306] _tasks not defined
-error line: [312] _updateChildTask not defined
-error line: [313] _parent not defined
-error line: [314] _curentState not defined
-error line: [317] _requestingPlayer not defined
-error line: [318] _side not defined
-error line: [319] _position not defined
-error line: [320] _faction not defined
-error line: [321] _title not defined
-error line: [322] _description not defined
-error line: [323] _players not defined
-error line: [324] _applyType not defined
-error line: [325] _current not defined
-error line: [326] _source not defined
-error line: [328] _childEventData not defined
-error line: [359] _tasks not defined
-error line: [365] _deleteChildTask not defined
-error line: [366] _parent not defined
-error line: [369] _requestingPlayer not defined
-error line: [370] _side not defined
-error line: [371] _position not defined
-error line: [372] _faction not defined
-error line: [373] _title not defined
-error line: [374] _description not defined
-error line: [375] _players not defined
-error line: [376] _applyType not defined
-error line: [377] _current not defined
-error line: [378] _source not defined
-error line: [380] _childEventData not defined
 Parsing : P:\x\alive\addons\mil_c2istar\fnc_taskHandlerClient.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\fnc_taskHandlerEventToClient.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\fnc_taskHandlerLoadData.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\fnc_taskHandlerSaveData.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\XEH_postInit.sqf
 Parsing : P:\x\alive\addons\mil_command\fnc_ambientMovement.sqf
-error line: [32] _params not defined
-error line: [94] _startPos not defined
-error line: [113] _roadsArray not defined
 Parsing : P:\x\alive\addons\mil_command\fnc_ambush.sqf
-error line: [30] _params not defined
-error line: [31] _destination not defined
-error line: [39] _bombs not defined
-error line: [50] _units not defined
-error line: [54] _roads not defined
-error line: [58] _agent not defined
-error line: [65] _bomb not defined
-error line: [71] _newPosition not defined
-error line: [88] _time not defined
 Parsing : P:\x\alive\addons\mil_command\fnc_buildingPatrol.sqf
 Parsing : P:\x\alive\addons\mil_command\fnc_commandRouter.sqf
 Parsing : P:\x\alive\addons\mil_command\fnc_garrison.sqf
-error line: [42] _waypoints not defined
 Parsing : P:\x\alive\addons\mil_command\fnc_insurgents.sqf
-error line: [30] _params not defined
-error line: [68] _units not defined
-error line: [76] _side not defined
-error line: [77] _units not defined
-error line: [78] _speedMode not defined
-error line: [79] _behaviour not defined
-error line: [80] _position not defined
-error line: [83] _vehicle not defined
-error line: [91] _fate not defined
-error line: [98] _armed not defined
-error line: [99] _tempGroupE not defined
-error line: [104] _list not defined
-error line: [112] _list not defined
-error line: [122] _armed not defined
-error line: [126] _cwp not defined
-error line: [158] _armed not defined
-error line: [162] _cwp not defined
-error line: [201] _list not defined
-error line: [209] _list not defined
 Parsing : P:\x\alive\addons\mil_command\fnc_managedBuildingPatrol.sqf
 Parsing : P:\x\alive\addons\mil_command\fnc_managedGarrison.sqf
 Parsing : P:\x\alive\addons\mil_command\fnc_SeaPatrol.sqf
@@ -292,34 +219,10 @@ Parsing : P:\x\alive\addons\mil_convoy\fnc_addVehicle.sqf
 Parsing : P:\x\alive\addons\mil_convoy\fnc_convoy.sqf
 Parsing : P:\x\alive\addons\mil_convoy\fnc_convoyInit.sqf
 Parsing : P:\x\alive\addons\mil_convoy\fnc_findLocations.sqf
-error line: [4] _types not defined
-error line: [5] _locations not defined
-error line: [7] _collection not defined
-error line: [9] _pos not defined
-error line: [10] _size not defined
-error line: [17] _locs not defined
 Parsing : P:\x\alive\addons\mil_convoy\fnc_inTrigger.sqf
-error line: [12] _trigger not defined
 Parsing : P:\x\alive\addons\mil_convoy\fnc_startConvoy.sqf
-error line: [16] _safeArea not defined
-error line: [17] _factionsConvoy not defined
-error line: [62] _fncSelectPos not defined
-error line: [105] _startposList not defined
-error line: [106] _i not defined
-error line: [108] _startposList not defined
-error line: [126] _fnc_SelectStartPosList not defined
-error line: [130] _startposList not defined
-error line: [134] _startposList not defined
-error line: [204] _convoyTimeout not defined
 Parsing : P:\x\alive\addons\mil_convoy\XEH_preInit.sqf
 Parsing : P:\x\alive\addons\mil_cqb\fnc_addCQBpositions.sqf
-error line: [38] _instance not defined
-error line: [39] _filtered not defined
-error line: [41] _instanceType not defined
-error line: [43] _housesPending not defined
-error line: [44] _debug not defined
-error line: [46] _housesPending not defined
-error line: [47] _housesTotal not defined
 Parsing : P:\x\alive\addons\mil_cqb\fnc_CQB.sqf
 error line: [56] _traceCount not defined
 error line: [57] _tdString not defined
@@ -372,31 +275,10 @@ error line: [1289] _activecount not defined
 error line: [1290] _groupsempty not defined
 Parsing : P:\x\alive\addons\mil_cqb\fnc_CQBInit.sqf
 Parsing : P:\x\alive\addons\mil_cqb\fnc_CQBLoadData.sqf
-error line: [38] _async not defined
-error line: [39] _missionName not defined
-error line: [40] _missionName not defined
 Parsing : P:\x\alive\addons\mil_cqb\fnc_CQBLoadData_full.sqf
-error line: [36] _async not defined
-error line: [37] _missionName not defined
-error line: [38] _missionName not defined
 Parsing : P:\x\alive\addons\mil_cqb\fnc_CQBMenuDef.sqf
 Parsing : P:\x\alive\addons\mil_cqb\fnc_CQBSaveData.sqf
-error line: [42] _keys not defined
-error line: [43] _values not defined
-error line: [47] _state not defined
-error line: [48] _type not defined
-error line: [49] _id not defined
 Parsing : P:\x\alive\addons\mil_cqb\fnc_CQBSaveData_full.sqf
-error line: [37] _async not defined
-error line: [38] _missionName not defined
-error line: [39] _missionName not defined
-error line: [41] _keys not defined
-error line: [42] _values not defined
-error line: [43] _data not defined
-error line: [46] _state not defined
-error line: [47] _houses not defined
-error line: [49] _keys not defined
-error line: [50] _values not defined
 Parsing : P:\x\alive\addons\mil_cqb\fnc_CQBsortStrategicHouses.sqf
 Parsing : P:\x\alive\addons\mil_cqb\fnc_removeCQBpositions.sqf
 error line: [40] _instance not defined

@@ -65,9 +65,9 @@ switch (_taskState) do {
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideNumberToText;
 
         // Choose downed pilot or crashsite
-        private["_dialogOptions","_dialogOption"];
+        private ["_dialogOptions","_dialogOption","_choice"];
 
-        private _dialogOptions = [ALIVE_generatedTasks,"CSAR"] call ALIVE_fnc_hashGet;
+        _dialogOptions = [ALIVE_generatedTasks,"CSAR"] call ALIVE_fnc_hashGet;
         _dialogOptions = _dialogOptions select 1;
         _choice = round (random ((count _dialogOptions)-1));
 
