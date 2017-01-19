@@ -301,31 +301,31 @@ switch(_operation) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-        _taskID = _eventData select 0;
-        _state = _eventData select 8;
-        _tasks = [_logic, "getTasks"] call MAINCLASS;
+        private _taskID = _eventData select 0;
+        private _state = _eventData select 8;
+        private _tasks = [_logic, "getTasks"] call MAINCLASS;
 
         [_logic, "updateTask", _eventData] call MAINCLASS;
 
         [_logic, "updateTaskState", _eventData] call MAINCLASS;
 
-            _updateChildTask = {
-                                _parent = _value select 11;
-                                _curentState = _value select 8;
+            private _updateChildTask = {
+                                private _parent = _value select 11;
+                                private _curentState = _value select 8;
 
                                 if((_parent == _taskID) && (_state != _curentState)) then   {
-                                    _requestingPlayer = _value select 1;
-                                    _side = _value select 2;
-                                    _position = _value select 3;
-                                    _faction = _value select 4;
-                                    _title = _value select 5;
-                                    _description = _value select 6;
-                                    _players = _value select 7;
-                                    _applyType = _value select 9;
-                                    _current = _value select 10;
-                                    _source = _value select 12;
+                                    private _requestingPlayer = _value select 1;
+                                    private _side = _value select 2;
+                                    private _position = _value select 3;
+                                    private _faction = _value select 4;
+                                    private _title = _value select 5;
+                                    private _description = _value select 6;
+                                    private _players = _value select 7;
+                                    private _applyType = _value select 9;
+                                    private _current = _value select 10;
+                                    private _source = _value select 12;
 
-                                    _childEventData = [_key,_requestingPlayer,_side,_position,_faction,_title,_description,_players,_state,_applyType,_current,_parent,_source,false,"",""];
+                                    private _childEventData = [_key,_requestingPlayer,_side,_position,_faction,_title,_description,_players,_state,_applyType,_current,_parent,_source,false,"",""];
 
                                     [_logic, "updateTask", _childEventData] call MAINCLASS;
                                     [_logic, "updateTaskState", _childEventData] call MAINCLASS;
@@ -341,7 +341,7 @@ switch(_operation) do {
 
     };
     case "TASK_DELETE": {
-        private["_debug","_eventData","_taskID"];
+        private["_debug","_eventData"];
 
         _debug = [_logic,"debug"] call ALIVE_fnc_hashGet;
 
@@ -355,29 +355,29 @@ switch(_operation) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-        _taskID = _eventData select 0;
-        _tasks = [_logic, "getTasks"] call MAINCLASS;
+        private _taskID = _eventData select 0;
+        private _tasks = [_logic, "getTasks"] call MAINCLASS;
 
         [_logic, "unregisterTask", _taskID] call MAINCLASS;
 
         [_logic, "updateTaskState", _eventData] call MAINCLASS;
 
-         _deleteChildTask = {
-                              _parent = _value select 11;
+        private _deleteChildTask = {
+                              private _parent = _value select 11;
 
                                 if(_parent == _taskID) then   {
-                                    _requestingPlayer = _value select 1;
-                                    _side = _value select 2;
-                                    _position = _value select 3;
-                                    _faction = _value select 4;
-                                    _title = _value select 5;
-                                    _description = _value select 6;
-                                    _players = _value select 7;
-                                    _applyType = _value select 9;
-                                    _current = _value select 10;
-                                    _source = _value select 12;
+                                    private _requestingPlayer = _value select 1;
+                                    private _side = _value select 2;
+                                    private _position = _value select 3;
+                                    private _faction = _value select 4;
+                                    private _title = _value select 5;
+                                    private _description = _value select 6;
+                                    private _players = _value select 7;
+                                    private _applyType = _value select 9;
+                                    private _current = _value select 10;
+                                    private _source = _value select 12;
 
-                                    _childEventData = [_key,_requestingPlayer,_side];
+                                    private _childEventData = [_key,_requestingPlayer,_side];
 
                                     [_logic, "unregisterTask", _key] call MAINCLASS;
                                     [_logic, "updateTaskState", _childEventData] call MAINCLASS;

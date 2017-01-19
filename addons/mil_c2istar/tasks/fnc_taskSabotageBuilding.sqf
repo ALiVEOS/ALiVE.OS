@@ -36,7 +36,7 @@ switch (_taskState) do {
         private [
             "_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
             "_taskApplyType","_startTime","_taskEnemySide","_targetSector","_targetEntity","_taskPlayers","_targetBuilding","_targetBuildings",
-            "_targetTypes","_blacklist"
+            "_targetTypes","_blacklist","_tasksCurrent"
         ];
 
         _taskID = [_task, 0, "", [""]] call BIS_fnc_param;
