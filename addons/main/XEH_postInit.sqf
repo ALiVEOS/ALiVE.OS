@@ -27,7 +27,7 @@ PREPMAIN(ZEUSinit);
 
         {
             if !([_x] call ALiVE_fnc_isModuleAvailable) then {
-                _test = execVM format["\x\alive\addons\%1\tests\test.sqf",_x];
+                private _test = execVM format["\x\alive\addons\%1\tests\test.sqf",_x];
                 waituntil {scriptdone _test};
             } else {
                 ["ALiVE Automated Tests: %1 already existing! Exiting test...",_x] call ALiVE_fnc_DumpH;

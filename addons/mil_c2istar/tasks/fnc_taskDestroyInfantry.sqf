@@ -33,8 +33,10 @@ _result = [];
 switch (_taskState) do {
     case "init":{
 
-        private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
-        "_taskApplyType","_taskEnemySide","_targetSector","_targetEntity","_taskPlayers"];
+        private [
+            "_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
+            "_taskApplyType","_taskEnemySide","_targets","_profile","_targetSector","_targetEntity","_taskPlayers"
+        ];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;

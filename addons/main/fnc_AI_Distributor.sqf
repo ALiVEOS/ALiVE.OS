@@ -48,7 +48,7 @@ GVAR(AI_DISTRIBUTOR) = [] spawn {
                 //Distribute to all available HCs
                 if (_HC_index > ((count HEADLESSCLIENTS)-1)) then {_HC_index = 0};
 
-                _HC = HEADLESSCLIENTS select _HC_index; _HC_index = _HC_index + 1;
+                private _HC = HEADLESSCLIENTS select _HC_index; _HC_index = _HC_index + 1;
 
                 _x setGroupOwner (owner _HC);
 
@@ -61,10 +61,10 @@ GVAR(AI_DISTRIBUTOR) = [] spawn {
        } foreach allGroups;
 
         if (_debug) then {
-            _t = ["AI DISTRIBUTION",lineBreak];
+            private _t = ["AI DISTRIBUTION",lineBreak];
             {
-                _key = (GVAR(AI_LOCALITIES) select 1) select _foreachIndex;
-                   _valueCount = count _x;
+                private _key = (GVAR(AI_LOCALITIES) select 1) select _foreachIndex;
+                private _valueCount = count _x;
 
                 _t = _t + [format["Loc. %1 | Groups: %2",_key,_valueCount],lineBreak];
             } foreach (GVAR(AI_LOCALITIES) select 2);

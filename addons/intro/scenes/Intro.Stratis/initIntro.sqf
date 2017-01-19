@@ -16,11 +16,11 @@ switch true do {
         0 setfog [0.05,0.07,50];
         "Mediterranean" call BIS_fnc_setPPeffectTemplate;
 
-        _pos = [5004.963,5909.859,0.000];
+        private _pos = [5004.963,5909.859,0.000];
 
         //--- Move groups to the new position
         {
-            _grpPos = if (side _x == east) then {
+            private _grpPos = if (side _x == east) then {
                 [_pos,20,180 * _foreachindex] call bis_fnc_relpos
             } else {
                 [_pos,150,-90 * _foreachindex] call bis_fnc_relpos

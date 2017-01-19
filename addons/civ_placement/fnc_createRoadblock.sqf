@@ -33,18 +33,24 @@ to do: Current issue if road ahead bends.
 =======================================================================================================================
 */
 
-private ["_grp","_pos","_roadpos","_vehicle","_vehtype","_blockers","_roads","_fac","_debug","_roadConnectedTo", "_connectedRoad","_direction","_checkpoint","_checkpointComp","_roadpoints","_num"];
+private [
+    "_grp","_roadpos","_vehicle","_vehtype","_blockers","_roads",
+    "_roadConnectedTo", "_connectedRoad","_direction","_checkpoint",
+    "_checkpointComp","_roadpoints"
+];
 
-_pos = [_this, 0, [0,0,0], [[]]] call BIS_fnc_param;
-_radius = [_this, 1, 500, [-1]] call BIS_fnc_param;
-_num = [_this, 2, 1, [-1]] call BIS_fnc_param;
-_debug = [_this, 3, false, [true]] call BIS_fnc_param;
+params [
+    ["_pos", [0,0,0], [[]]],
+    ["_radius", 500, [-1]],
+    ["_num", 1, [-1]],
+    ["_debug", false, [true]]
+];
 
 if (isnil QGVAR(ROADBLOCKS)) then {GVAR(ROADBLOCKS) = []};
 
 if (_num > 5) then {_num = 5};
 
-_fac = [_pos, _radius] call ALiVE_fnc_getDominantFaction;
+private _fac = [_pos, _radius] call ALiVE_fnc_getDominantFaction;
 
 if (isNil "_fac") exitWith {
     ["Unable to find a dominant faction within %1 radius", _radius] call ALiVE_fnc_Dump;
@@ -109,7 +115,7 @@ for "_j" from 1 to (count _roadpoints) do {
     };
 
     // Get a composition
-    _compType = "Military";
+    private _compType = "Military";
 
     If (_fac call ALiVE_fnc_factionSide == RESISTANCE) then {
         _compType = "Guerrilla";
@@ -141,8 +147,8 @@ for "_j" from 1 to (count _roadpoints) do {
 
     // Spawn static virtual group if Profile System is loaded and get them to defend
     if !(isnil "ALiVE_ProfileHandler") then {
-        _group = ["Infantry",_fac] call ALIVE_fnc_configGetRandomGroup;
-        _guards = [_group, position _roadpos, random(360), true, _fac, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+        private _group = ["Infantry",_fac] call ALIVE_fnc_configGetRandomGroup;
+        private _guards = [_group, position _roadpos, random(360), true, _fac, true] call ALIVE_fnc_createProfilesFromGroupConfig;
 
         {
             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
