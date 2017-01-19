@@ -42,8 +42,9 @@ if(isServer) then {
     private _ambientCivilianRoles = call compile (_logic getVariable ["ambientCivilianRoles","[]"]);
 
 //Check if a SYS Profile Module is available
-    _errorMessage = "No Virtual AI system module was found! Please use this module in your mission! %1 %2";
-    _error1 = ""; _error2 = ""; //defaults
+    private _errorMessage = "No Virtual AI system module was found! Please use this module in your mission! %1 %2";
+    private _error1 = "";
+    private _error2 = ""; //defaults
 
     if !([QMOD(sys_profile)] call ALiVE_fnc_isModuleAvailable) exitwith {
         [_errorMessage,_error1,_error2] call ALIVE_fnc_dumpMPH;

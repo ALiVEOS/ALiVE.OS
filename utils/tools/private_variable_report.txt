@@ -33,8 +33,6 @@ Parsing : P:\x\alive\addons\amb_civ_population\fnc_civilianAgent.sqf
 Parsing : P:\x\alive\addons\amb_civ_population\fnc_civilianPopulationMenuDef.sqf
 Parsing : P:\x\alive\addons\amb_civ_population\fnc_civilianPopulationSystem.sqf
 Parsing : P:\x\alive\addons\amb_civ_population\fnc_civilianPopulationSystemInit.sqf
-error line: [45] _errorMessage not defined
-error line: [46] _error1 not defined
 Parsing : P:\x\alive\addons\amb_civ_population\fnc_civilianVehicle.sqf
 Parsing : P:\x\alive\addons\amb_civ_population\fnc_clientAddAmbientRoomLight.sqf
 Parsing : P:\x\alive\addons\amb_civ_population\fnc_clientAddAmbientRoomMusic.sqf
@@ -48,26 +46,8 @@ Parsing : P:\x\alive\addons\amb_civ_population\XEH_preInit.sqf
 Parsing : P:\x\alive\addons\civ_placement\fnc_auto_civClusterGeneration.sqf
 Parsing : P:\x\alive\addons\civ_placement\fnc_civClusterGeneration.sqf
 Parsing : P:\x\alive\addons\civ_placement\fnc_CP.sqf
-error line: [365] _placeSeaPatrols not defined
-error line: [534] _marineClusters not defined
-error line: [538] _marineClusters not defined
-error line: [542] _marineClusters not defined
-error line: [546] _marineClusters not defined
-error line: [732] _roadBlocks not defined
-error line: [932] _readiness not defined
-error line: [933] _readiness not defined
-error line: [942] _placeSeaPatrols not defined
-error line: [946] _marineClusters not defined
-error line: [955] _seaPatrolGroup not defined
-error line: [962] _pos not defined
-error line: [970] _seaPatrol not defined
 Parsing : P:\x\alive\addons\civ_placement\fnc_CPInit.sqf
 Parsing : P:\x\alive\addons\civ_placement\fnc_createRoadblock.sqf
-error line: [39] _radius not defined
-error line: [112] _compType not defined
-error line: [115] _compType not defined
-error line: [144] _group not defined
-error line: [145] _guards not defined
 Parsing : P:\x\alive\addons\civ_placement\XEH_postInit.sqf
 Parsing : P:\x\alive\addons\fnc_analysis\fnc_auto_gridMapAnalysis.sqf
 Parsing : P:\x\alive\addons\fnc_analysis\fnc_battlefieldAnalysis.sqf
@@ -82,15 +62,6 @@ Parsing : P:\x\alive\addons\fnc_analysis\fnc_gridAnalysisProfileVehicle.sqf
 Parsing : P:\x\alive\addons\fnc_analysis\fnc_gridImportStaticMapAnalysis.sqf
 Parsing : P:\x\alive\addons\fnc_analysis\fnc_gridMapAnalysis.sqf
 Parsing : P:\x\alive\addons\fnc_analysis\fnc_liveAnalysis.sqf
-error line: [446] _factory not defined
-error line: [447] _HQ not defined
-error line: [448] _ambush not defined
-error line: [449] _depot not defined
-error line: [450] _sabotage not defined
-error line: [451] _ied not defined
-error line: [452] _suicide not defined
-error line: [453] _roadblocks not defined
-error line: [455] _installations not defined
 Parsing : P:\x\alive\addons\fnc_analysis\fnc_militaryIntel.sqf
 Parsing : P:\x\alive\addons\fnc_analysis\fnc_plotSectors.sqf
 Parsing : P:\x\alive\addons\fnc_analysis\fnc_sector.sqf
@@ -137,10 +108,7 @@ Parsing : P:\x\alive\addons\fnc_strategic\fnc_setTargets.sqf
 Parsing : P:\x\alive\addons\fnc_strategic\fnc_staticClusterOutput.sqf
 Parsing : P:\x\alive\addons\fnc_strategic\XEH_preInit.sqf
 Parsing : P:\x\alive\addons\intro\scenes\Intro.Altis\initIntro.sqf
-error line: [12] _pos not defined
 Parsing : P:\x\alive\addons\intro\scenes\Intro.Stratis\initIntro.sqf
-error line: [19] _pos not defined
-error line: [23] _grpPos not defined
 Parsing : P:\x\alive\addons\intro\scenes\Intro_1.Altis\initIntro.sqf
 Parsing : P:\x\alive\addons\intro\scenes\Intro_1.Stratis\initIntro.sqf
 Parsing : P:\x\alive\addons\main\static\abramia_staticData.sqf
@@ -148,6 +116,7 @@ Parsing : P:\x\alive\addons\main\static\beketov_staticData.sqf
 Parsing : P:\x\alive\addons\main\static\bozcaada_staticData.sqf
 Parsing : P:\x\alive\addons\main\static\dakrong_staticData.sqf
 Parsing : P:\x\alive\addons\main\static\dya_staticData.sqf
+Parsing : P:\x\alive\addons\main\static\koplic_staticData.sqf
 Parsing : P:\x\alive\addons\main\static\noe_staticData.sqf
 Parsing : P:\x\alive\addons\main\static\panthera3_staticData.sqf
 Parsing : P:\x\alive\addons\main\static\pja305_staticData.sqf
@@ -160,13 +129,7 @@ Parsing : P:\x\alive\addons\main\static\sugarlake_staticData.sqf
 Parsing : P:\x\alive\addons\main\static\tanoa_staticData.sqf
 Parsing : P:\x\alive\addons\main\static\taviana_staticData.sqf
 Parsing : P:\x\alive\addons\main\fnc_AI_Distributor.sqf
-error line: [51] _HC not defined
-error line: [64] _t not defined
-error line: [66] _key not defined
-error line: [67] _valueCount not defined
-error line: [69] _t not defined
 Parsing : P:\x\alive\addons\main\fnc_aliveInit.sqf
-error line: [174] _id not defined
 Parsing : P:\x\alive\addons\main\fnc_buttonAbort.sqf
 Parsing : P:\x\alive\addons\main\fnc_isModuleAvailable.sqf
 Parsing : P:\x\alive\addons\main\fnc_isModuleInitialised.sqf
@@ -179,112 +142,22 @@ Parsing : P:\x\alive\addons\main\fnc_unPauseModule.sqf
 Parsing : P:\x\alive\addons\main\fnc_versioning.sqf
 Parsing : P:\x\alive\addons\main\fnc_ZEUSinit.sqf
 Parsing : P:\x\alive\addons\main\XEH_postInit.sqf
-error line: [30] _test not defined
 Parsing : P:\x\alive\addons\main\XEH_postServerInit.sqf
 Parsing : P:\x\alive\addons\main\XEH_preInit.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskAssassination.sqf
-error line: [50] _tasksCurrent not defined
-error line: [95] _triggerStates not defined
-error line: [96] _objectives not defined
-error line: [98] _OPCOM not defined
-error line: [99] _OPCOM_factions not defined
-error line: [100] _OPCOM_side not defined
-error line: [104] _OPCOM_objectives not defined
-error line: [108] _OPCOM_objective not defined
-error line: [109] _OPCOM_objective_state not defined
-error line: [110] _OPCOM_objective_center not defined
-error line: [124] _objectives not defined
-error line: [126] _id not defined
-error line: [127] _pos not defined
-error line: [128] _opcom not defined
-error line: [129] _side not defined
-error line: [316] _pos not defined
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskCivAssault.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskCSAR.sqf
-error line: [50] _tasksCurrent not defined
-error line: [70] _choice not defined
-error line: [125] _compType not defined
-error line: [127] _compType not defined
-error line: [187] _newTaskPosition not defined
-error line: [339] _targetposition not defined
-error line: [341] _irstrobe not defined
-error line: [464] _irstrobe not defined
-error line: [650] _taskIDs not defined
-error line: [681] _taskIDs not defined
-error line: [698] _entitiesState not defined
-error line: [736] _startTime not defined
+error line: [72] _choice not defined
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskDestroyInfantry.sqf
-error line: [71] _targets not defined
-error line: [73] _targets not defined
-error line: [77] _profile not defined
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskDestroyVehicles.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskInsurgencyDestroyAssets.sqf
-error line: [88] _targetBuilding not defined
-error line: [94] _targetBuilding not defined
-error line: [100] _targetBuilding not defined
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskInsurgencyPatrol.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskMilAssault.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskMilDefence.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskRescue.sqf
-error line: [50] _tasksCurrent not defined
-error line: [73] _triggerStates not defined
-error line: [74] _objectives not defined
-error line: [76] _OPCOM not defined
-error line: [77] _OPCOM_factions not defined
-error line: [78] _OPCOM_side not defined
-error line: [82] _OPCOM_objectives not defined
-error line: [86] _OPCOM_objective not defined
-error line: [87] _OPCOM_objective_state not defined
-error line: [88] _OPCOM_objective_center not defined
-error line: [102] _objectives not defined
-error line: [104] _id not defined
-error line: [105] _pos not defined
-error line: [106] _opcom not defined
-error line: [107] _side not defined
-error line: [360] _activeFirst not defined
-error line: [410] _chair not defined
-error line: [456] _formatChat not defined
-error line: [457] _formatMessage not defined
-error line: [458] _formatMessageText not defined
-error line: [459] _formatMessageText not defined
-error line: [583] _startTime not defined
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskSabotageBuilding.sqf
-error line: [50] _tasksCurrent not defined
-error line: [91] _triggerStates not defined
-error line: [92] _objectives not defined
-error line: [94] _OPCOM not defined
-error line: [95] _OPCOM_factions not defined
-error line: [96] _OPCOM_side not defined
-error line: [100] _OPCOM_objectives not defined
-error line: [104] _OPCOM_objective not defined
-error line: [105] _OPCOM_objective_state not defined
-error line: [106] _OPCOM_objective_center not defined
-error line: [120] _objectives not defined
-error line: [122] _id not defined
-error line: [123] _pos not defined
-error line: [124] _opcom not defined
-error line: [125] _side not defined
-error line: [130] _totalIndexes not defined
-error line: [131] _index not defined
-error line: [142] _clusterID not defined
-error line: [143] _type not defined
-error line: [162] _clusters not defined
-error line: [166] _cluster not defined
-error line: [167] _clusterLocation not defined
-error line: [211] _alive not defined
-error line: [212] _lamp not defined
-error line: [213] _invincible not defined
-error line: [216] _excluded not defined
-error line: [245] _points not defined
-error line: [246] _list not defined
-error line: [256] _type not defined
-error line: [257] _typeText not defined
-error line: [258] _points not defined
-error line: [391] _targets not defined
-error line: [400] _targetsState not defined
-error line: [424] _targets not defined
+error line: [53] _tasksCurrent not defined
 Parsing : P:\x\alive\addons\mil_c2istar\tasks\fnc_taskTransportInsertion.sqf
-error line: [152] _factions not defined
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskCreateBombardment.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskCreateExplosiveProjectile.sqf
 Parsing : P:\x\alive\addons\mil_c2istar\utils\fnc_taskCreateMarker.sqf
@@ -1756,7 +1629,7 @@ Parsing : P:\x\alive\addons\sys_crewinfo\fnc_crewinfoInit.sqf
 Parsing : P:\x\alive\addons\sys_data\fnc_Data.sqf
 error line: [56] _source not defined
 Parsing : P:\x\alive\addons\sys_data\fnc_DataInit.sqf
-error line: [601] _result not defined
+error line: [604] _result not defined
 Parsing : P:\x\alive\addons\sys_data\fnc_data_onPlayerDisconnected.sqf
 error line: [45] _missionName not defined
 error line: [62] _missionName not defined
@@ -2494,9 +2367,10 @@ Parsing : P:\x\alive\addons\sys_statistics\fnc_playerfiredEH.sqf
 Parsing : P:\x\alive\addons\sys_statistics\fnc_statistics.sqf
 Parsing : P:\x\alive\addons\sys_statistics\fnc_statisticsDisable.sqf
 Parsing : P:\x\alive\addons\sys_statistics\fnc_statisticsInit.sqf
-error line: [66] _module not defined
-error line: [102] _result not defined
-error line: [192] _waitTime not defined
+error line: [69] _module not defined
+error line: [105] _result not defined
+error line: [160] _waitTime not defined
+error line: [209] _name not defined
 Parsing : P:\x\alive\addons\sys_statistics\fnc_statisticsMenuDef.sqf
 Parsing : P:\x\alive\addons\sys_statistics\fnc_statisticsModuleFunction.sqf
 Parsing : P:\x\alive\addons\sys_statistics\fnc_stats_createPlayerProfile.sqf
@@ -2661,7 +2535,6 @@ Parsing : P:\x\alive\addons\x_lib\functions\camera\fnc_zoomShot.sqf
 Parsing : P:\x\alive\addons\x_lib\functions\composition\fnc_exportComposition.sqf
 Parsing : P:\x\alive\addons\x_lib\functions\composition\fnc_findComposition.sqf
 Parsing : P:\x\alive\addons\x_lib\functions\composition\fnc_getCompositions.sqf
-error line: [54] _env not defined
 Parsing : P:\x\alive\addons\x_lib\functions\composition\fnc_spawnComposition.sqf
 Parsing : P:\x\alive\addons\x_lib\functions\composition\fnc_spawnRandomPopulatedComposition.sqf
 Parsing : P:\x\alive\addons\x_lib\functions\config\fnc_configFindEntries.sqf
