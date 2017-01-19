@@ -50,7 +50,7 @@ _inputArray =+ _inputArray;
 
 if !(_filterFnc isEqualTo {}) then
 {
-    _total = count _inputArray;
+    private _total = count _inputArray;
 
    //Sorting of max. 10.000 items possible in unscheduled, lets check
     while {_total > 0} do {

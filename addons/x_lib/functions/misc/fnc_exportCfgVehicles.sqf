@@ -56,7 +56,7 @@ if (_patchprefix != "") then {
     };
 };
 
-_allPatches = count _patches == 0;
+private _allPatches = count _patches == 0;
 
 _sides = +_sides;
 {
@@ -68,7 +68,7 @@ _types = +_types;
 {
     _types set [_foreachindex,tolower _x];
 } foreach _types;
-_allTypes = count _types == 0;
+private _allTypes = count _types == 0;
 
 player enablesimulation false;
 player hideobject true;
@@ -81,23 +81,23 @@ switch tolower _mode do {
 
         // if !(worldname in ["Render","RenderGreen","RenderBlue"]) exitwith {"Use 'Render White' for capturing screenshots." call bis_fnc_errorMsg;};
 
-        _alt = 100;
-        _pos = [3540,100,_alt];
-        _object = objnull;
-        _cfgAll = configfile >> "cfgvehicles" >> "all";
-        _restrictedModels = ["","\A3\Weapons_f\dummyweapon.p3d","\A3\Weapons_f\laserTgt.p3d"];
-        _blacklist = [
+        private _alt = 100;
+        private _pos = [3540,100,_alt];
+        private _object = objnull;
+        private _cfgAll = configfile >> "cfgvehicles" >> "all";
+        private _restrictedModels = ["","\A3\Weapons_f\dummyweapon.p3d","\A3\Weapons_f\laserTgt.p3d"];
+        private _blacklist = [
             "WeaponHolder",
             "LaserTarget"
 //            "Bag_Base",
 //            "Strategic"
         ];
-        _capture = _mode == "screenshots";
-        _product = productversion select 1;
+        private _capture = _mode == "screenshots";
+        private _product = productversion select 1;
 
-        _cfgVehicles = (configfile >> "cfgvehicles") call bis_fnc_returnchildren;
+        private _cfgVehicles = (configfile >> "cfgvehicles") call bis_fnc_returnchildren;
 
-        _cam = "camera" camcreate _pos;
+        private _cam = "camera" camcreate _pos;
         _cam cameraeffect ["internal","back"];
         _cam campreparefocus [-1,-1];
         _cam camcommitprepared 0;
@@ -108,15 +108,15 @@ switch tolower _mode do {
         if (_mode == "json") then {
             diag_log "{ 'vehicles' : [";
         };
-        _ni = 0;
+        private _ni = 0;
         {
-            _class = configname _x;
-            _scope = getnumber (_x >> "scope");
-            _side = getnumber (_x >> "side");
-            _faction = getText (_x >> "faction");
-            _disName = getText (_x >> "displayName");
-            _unitAddons = unitaddons _class;
-            _isAllVehicles = _class iskindof "allvehicles";
+            private _class = configname _x;
+            private _scope = getnumber (_x >> "scope");
+            private _side = getnumber (_x >> "side");
+            private _faction = getText (_x >> "faction");
+            private _disName = getText (_x >> "displayName");
+            private _unitAddons = unitaddons _class;
+            private _isAllVehicles = _class iskindof "allvehicles";
 
             if (
                 ((_allVehicles && _isAllVehicles) || (!_allVehicles && !_isAllVehicles))
@@ -129,11 +129,11 @@ switch tolower _mode do {
                 &&
                 (_allTypes || {_class iskindof _x} count _types > 0)
             ) then {
-                _model = gettext (_x >> "model");
+                private _model = gettext (_x >> "model");
                 if (!(_model in _restrictedModels) && inheritsfrom _x != _cfgAll && {_class iskindof _x} count _blacklist == 0) then {
 
                     if (_mode == "json") exitWith {
-                        _newType = str(_unitAddons);
+                        private _newType = str(_unitAddons);
                         switch true do {
                             case ([str(_unitAddons), "AirVehicles"] call CBA_fnc_find != -1): {
                                 _newType = "Aircraft";
@@ -179,8 +179,8 @@ switch tolower _mode do {
                     _object switchmove "amovpercmstpsnonwnondnon";
                     _object enablesimulation false;
 
-                    _size = (sizeof _class) max 0.1;
-                    _targetZ = 0;
+                    private _size = (sizeof _class) max 0.1;
+                    private _targetZ = 0;
                     if (_class iskindof "allvehicles") then {
                         _size = _size * 0.5;
                     };
@@ -206,14 +206,14 @@ switch tolower _mode do {
                         _size = _size * 0.75;
                     };
                     if (_class iskindof "Bag_Base") then {
-                        _holder = createagent [typeof player,_pos,[],0,"none"];
+                        private _holder = createagent [typeof player,_pos,[],0,"none"];
                         removeallweapons _holder;
                         removeallitems _holder;
                         removeuniform _holder;
                         removevest _holder;
                         removeheadgear _holder;
                         removegoggles _holder;
-                        _items = assigneditems _holder;
+                        private _items = assigneditems _holder;
                         {_holder unassignitem _x} foreach _items;
                         _holder switchcamera "internal";
                         _holder setpos _pos;
@@ -230,13 +230,13 @@ switch tolower _mode do {
 
 
                     if (_class iskindof "Bag_Base") then {
-                        _campos = (_pos getPos [2.5, 90]);
+                        private _campos = (_pos getPos [2.5, 90]);
                         _campos set [2,_alt + 2];
                         _cam campreparepos _campos;
                         _cam campreparetarget [(_pos select 0),(_pos select 1),_alt + 1.3];
                         _cam camcommitprepared 0;
                     } else {
-                        _campos = (_pos getPos [(_size * 1.5), 135]);
+                        private _campos = (_pos getPos [(_size * 1.5), 135]);
                         _campos set [2,_alt + _size * 0.5];
                         _cam campreparepos _campos;
                         _cam campreparetarget (_object modeltoworld [0,0,_targetZ]);

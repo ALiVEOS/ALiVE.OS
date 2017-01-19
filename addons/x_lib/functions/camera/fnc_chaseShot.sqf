@@ -27,7 +27,7 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_camera", "_target", "_hideTarget", "_duration", "_startTime", "_currentTime", "_eventID","_dist"];
+private ["_camera", "_target", "_hideTarget", "_duration", "_startTime", "_currentTime", "_eventID","_dist","_height"];
 
 _camera = _this select 0;
 _target = _this select 1;

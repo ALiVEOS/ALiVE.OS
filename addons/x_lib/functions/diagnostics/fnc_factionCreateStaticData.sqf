@@ -182,10 +182,10 @@ if(_factionToGroupMappingOK) then {
 
                 for "_o" from 0 to count _class -1 do {
 
-                    _group = _class select _o;
+                    private _group = _class select _o;
 
                     if (isClass _group) then {
-                        _groupName = configName _group;
+                        private _groupName = configName _group;
 
                         _groups pushback _groupName;
                     };
@@ -194,7 +194,7 @@ if(_factionToGroupMappingOK) then {
 
                 if(_aliveCategory in (_factionCategoryGroups select 1)) then {
 
-                    _existingGroups = [_factionCategoryGroups,_aliveCategory] call ALIVE_fnc_hashGet;
+                    private _existingGroups = [_factionCategoryGroups,_aliveCategory] call ALIVE_fnc_hashGet;
 
                     _groups = _groups + _existingGroups;
 
@@ -209,10 +209,10 @@ if(_factionToGroupMappingOK) then {
 
                 for "_o" from 0 to count _class -1 do {
 
-                    _group = _class select _o;
+                    private _group = _class select _o;
 
                     if (isClass _group) then {
-                        _groupName = configName _group;
+                        private _groupName = configName _group;
 
                         _groups pushback _groupName;
                     };
@@ -365,10 +365,10 @@ private ["_vehicleType","_vehicleClasses","_array","_vehicleClass","_configName"
 
     } forEach _vehicleClasses;
 
-    _supports = format['[ALIVE_factionDefaultSupports, "%1", [%2]] call ALIVE_fnc_hashSet;',_faction,_arrayContent];
-    _supplies = format['[ALIVE_factionDefaultSupplies, "%1", [%2]] call ALIVE_fnc_hashSet;',_faction,_arrayContent];
-    _transport = format['[ALIVE_factionDefaultTransport, "%1", [%2]] call ALIVE_fnc_hashSet;',_faction,_arrayContent];
-    _air = format['[ALIVE_factionDefaultAirTransport, "%1", [%2]] call ALIVE_fnc_hashSet;',_faction,_arrayContent];
+    private _supports = format['[ALIVE_factionDefaultSupports, "%1", [%2]] call ALIVE_fnc_hashSet;',_faction,_arrayContent];
+    private _supplies = format['[ALIVE_factionDefaultSupplies, "%1", [%2]] call ALIVE_fnc_hashSet;',_faction,_arrayContent];
+    private _transport = format['[ALIVE_factionDefaultTransport, "%1", [%2]] call ALIVE_fnc_hashSet;',_faction,_arrayContent];
+    private _air = format['[ALIVE_factionDefaultAirTransport, "%1", [%2]] call ALIVE_fnc_hashSet;',_faction,_arrayContent];
 
     [_supports] call ALIVE_fnc_dumpClipboard;
     [_supplies] call ALIVE_fnc_dumpClipboard;

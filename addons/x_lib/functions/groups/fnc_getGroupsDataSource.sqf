@@ -25,12 +25,12 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_side","_faction","_sideNumber","_leaderSide","_leaderSideNumber","_matched","_data","_playerRows","_playerValues",
+private ["_faction","_sideNumber","_leaderSide","_leaderSideNumber","_matched","_data","_playerRows","_playerValues",
 "_rows","_values","_groups","_leaderFaction","_leaderSide","_leaderSideNumber","_row","_labels","_rank","_containsPlayers",
 "_vehicle","_vehicleName","_vehiclePosition","_playerType","_leaderType","_unitName","_leader"];
 
-_player = _this select 0;
-_side = _this select 1;
+params ["_player","_side"];
+
 DEFAULT_PARAM(2,_faction,nil);
 
 _sideNumber = [_side] call ALIVE_fnc_sideTextToNumber;
@@ -67,7 +67,7 @@ _groups = allGroups;
             _row = [];
             _labels = [];
 
-            _distance = floor (player distance leader _x);
+            private _distance = floor (player distance leader _x);
 
             _labels pushback (format['%1 [%2m] ---------------------------------------------------------------------',_x,_distance]);
             _labels pushback ('');

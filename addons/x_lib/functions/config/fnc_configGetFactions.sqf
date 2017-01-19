@@ -39,7 +39,7 @@ private _configPaths = [
 ];
 
 {
-    _configPath = _x;
+    private _configPath = _x;
 
     for "_i" from 0 to (count _configPath - 1) do {
         _faction = _configPath select _i;

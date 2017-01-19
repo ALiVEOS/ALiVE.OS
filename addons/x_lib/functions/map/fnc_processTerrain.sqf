@@ -54,7 +54,7 @@ Author:
 private ["_boundingBox", "_precision", "_decPrecision"];
 _boundingBox = [_this, 0, ["ARRAY"], []] call ALiVE_fnc_param;
 _precision = [_this, 1, ["SCALAR"], 30] call ALiVE_fnc_param;
-_multiProcess = [_this, 2, ["BOOL"], true] call ALiVE_fnc_param;
+private _multiProcess = [_this, 2, ["BOOL"], true] call ALiVE_fnc_param;
 _decPrecision = [_this, 3, ["SCALAR"], 1] call ALiVE_fnc_param;
 
 // Retrieve map information
