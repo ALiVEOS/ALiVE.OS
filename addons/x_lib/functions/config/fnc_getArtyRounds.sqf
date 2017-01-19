@@ -10,40 +10,40 @@ _weapon = [configfile >> "CfgVehicles" >> _class >> "Turrets" >> "MainTurret" >>
 
 _weaponClass = _weapon select 0;
 
-_mags =[];
+private _mags =[];
 _mags = _weaponClass call ALIVE_fnc_configGetWeaponMagazines;
 
-_roundsAvail =[];
+private _roundsAvail =[];
 
      {
 
-        _he = ["Mo_shells", _x] call BIS_fnc_inString;
+        private _he = ["Mo_shells", _x] call BIS_fnc_inString;
         if (!_he) then {
             _he = ["he", _x] call BIS_fnc_inString;
         };
 
-         _smoke = ["Mo_smoke", _x] call BIS_fnc_inString;
-             if (!_smoke) then {
+        private _smoke = ["Mo_smoke", _x] call BIS_fnc_inString;
+            if (!_smoke) then {
             _smoke = ["smoke", _x] call BIS_fnc_inString;
         };
 
-         _guided = ["Mo_guided", _x] call BIS_fnc_inString;
+        private _guided = ["Mo_guided", _x] call BIS_fnc_inString;
 
-         _cluster = ["Mo_Cluster", _x] call BIS_fnc_inString;
+        private _cluster = ["Mo_Cluster", _x] call BIS_fnc_inString;
 
-         _lg = ["Mo_LG", _x] call BIS_fnc_inString;
-         if (!_lg) then {
+        private _lg = ["Mo_LG", _x] call BIS_fnc_inString;
+        if (!_lg) then {
             _lg = ["laser", _x] call BIS_fnc_inString;
         };
 
-         _mine = ["Mo_mine", _x] call BIS_fnc_inString;
+        private _mine = ["Mo_mine", _x] call BIS_fnc_inString;
 
-         _atmine = ["Mo_AT_mine", _x] call BIS_fnc_inString;
+        private _atmine = ["Mo_AT_mine", _x] call BIS_fnc_inString;
 
-         _rockets = ["rockets", _x] call BIS_fnc_inString;
+        private _rockets = ["rockets", _x] call BIS_fnc_inString;
 
-         _illum = ["illum", _x] call BIS_fnc_inString;
-         if (!_illum) then {
+        private _illum = ["illum", _x] call BIS_fnc_inString;
+        if (!_illum) then {
             _illum = ["flare", _x] call BIS_fnc_inString;
         };
 
@@ -73,11 +73,9 @@ _roundsAvail =[];
              };
               if (_illum) then {
                   _roundsAvail =  _roundsAvail + ["ILLUM"];
-             };
-     } forEach _mags;
+            };
+    } forEach _mags;
 
 
 
-_result = _roundsAvail;
-
-_result;
+_roundsAvail;

@@ -42,7 +42,7 @@ waitUntil {
     private ["_found","_player","_playerGUID","_currentUID"];
 
     _found = false;
-    _timeout = time - _time > 5;
+    private _timeout = time - _time > 5;
 
     {
         _player = _x;

@@ -28,18 +28,16 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_side","_factions","_configPaths","_configPath"];
+private _sideNum = [_this] call ALIVE_fnc_sideTextToNumber;
+private _factions = [];
 
-_sideNum = [_this] call ALIVE_fnc_sideTextToNumber;
-_factions = [];
-
-_configPaths = [
+private _configPaths = [
     missionConfigFile >> "CfgFactionClasses",
     configFile >> "CfgFactionClasses"
 ];
 
 {
-    _configPath = _x;
+    private _configPath = _x;
 
     for "_i" from 0 to (count _configPath - 1) do {
 

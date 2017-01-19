@@ -41,14 +41,14 @@ player enablesimulation false;
 player hideobject true;
 
 _mode = tolower _mode;
-_screenshots = _mode in ["screenshots","screenshotstest"];
+private _screenshots = _mode in ["screenshots","screenshotstest"];
 if (_screenshots && !(worldname in ["Render","RenderGreen","RenderBlue"])) exitwith {"Use 'Render White' for capturing screenshots." call bis_fnc_errorMsg;};
-_capture = _mode == "screenshots";
+private _capture = _mode == "screenshots";
 if (_screenshots) then {_mode = "Weapon";};
 
 _mode = tolower _mode;
-_patchWeapons = [];
-_allPatches = true;
+private _patchWeapons = [];
+private _allPatches = true;
 if (_patchprefix != "") then {
     private "_num";
     _num = count _patchprefix;
@@ -72,22 +72,22 @@ _types = +_types;
 {
     _types set [_foreachindex,tolower _x];
 } foreach _types;
-_allTypes = count _types == 0;
+private _allTypes = count _types == 0;
 
-_br = tostring [13,10];
-_product = productversion select 0;
-_productShort = productversion select 1;
-_text = "";
-_cam = objnull;
-_holder = objnull;
+private _br = tostring [13,10];
+private _product = productversion select 0;
+private _productShort = productversion select 1;
+private _text = "";
+private _cam = objnull;
+private _holder = objnull;
 
-_alt = 100;
-_pos = [3540,100,_alt];
-_player = player;
-_weaponObjects = [];
+private _alt = 100;
+private _pos = [3540,100,_alt];
+private _player = player;
+private _weaponObjects = [];
 
-_cfgWeapons = (configfile >> "cfgweapons") call bis_fnc_returnchildren;
-_cfgWeaponsCount = count _cfgWeapons;
+private _cfgWeapons = (configfile >> "cfgweapons") call bis_fnc_returnchildren;
+private _cfgWeaponsCount = count _cfgWeapons;
 
 // Handle mods that don't include weapons in CfgPatches...
 if (_patchprefix != "" && (_noCfgPatches || count _patchWeapons == 0)) then {
@@ -114,16 +114,16 @@ if (_mode == "json") then {
 };
 {
 
-    _cfg = _x;
-    _class = configname _cfg;
-    _scope = getnumber (_cfg >> "scope");
-    _model = gettext (_cfg >> "model");
-    _disName = getText (_cfg >> "displayName");
-    _weaponAddons = [];
-    _itemTypeArray = _class call bis_fnc_itemType;
-    _itemCategory = _itemTypeArray select 0;
-    _itemType = _itemTypeArray select 1;
-    _isAllVehicles = _class iskindof "allvehicles";
+    private _cfg = _x;
+    private _class = configname _cfg;
+    private _scope = getnumber (_cfg >> "scope");
+    private _model = gettext (_cfg >> "model");
+    private _disName = getText (_cfg >> "displayName");
+    private _weaponAddons = [];
+    private _itemTypeArray = _class call bis_fnc_itemType;
+    private _itemCategory = _itemTypeArray select 0;
+    private _itemType = _itemTypeArray select 1;
+    private _isAllVehicles = _class iskindof "allvehicles";
 
     if (
 
@@ -136,7 +136,7 @@ if (_mode == "json") then {
         //(_model != "")
     ) then {
         if (_mode == "json") exitWith {
-            _newType = _itemType;
+            private _newType = _itemType;
             switch (_itemType) do {
                 case "AssaultRifle": {
                     _newType = "Assault Rifles";
@@ -185,7 +185,7 @@ if (_mode == "json") then {
                     _holder addweaponcargo [_class,1];
                     _holder setvectordirandup [[0,0,1],[0,-1,0]];
 
-                    _campos = (_pos getPos [1.75, 60]);
+                    private _campos = (_pos getPos [1.75, 60]);
                     _campos set [2,_alt + 1.3];
                     _cam campreparepos _campos;
                     _cam campreparefov 0.4;
@@ -199,7 +199,7 @@ if (_mode == "json") then {
                     _holder addweaponcargo [_class,1];
                     _holder setvectordirandup [[0.00173726,0.000167279,0.999998],[-0.995395,-0.0958456,0.00177588]];//[[0,0,1],[-1,0,0]];
 
-                    _campos = (_pos getPos [2, 90]);
+                    private _campos = (_pos getPos [2, 90]);
                     _campos set [2,_alt + 1];
                     _cam campreparepos _campos;
                     _cam campreparefov 0.7;
@@ -217,14 +217,14 @@ if (_mode == "json") then {
                     removevest _holder;
                     removeheadgear _holder;
                     removegoggles _holder;
-                    _items = assigneditems _holder;
+                    private _items = assigneditems _holder;
                     {_holder unassignitem _x} foreach _items;
                     _holder switchcamera "internal";
                     _holder setpos _pos;
                     _holder setdir 90;
                     _holder setface "kerry";
                     _holder switchmove "amovpercmstpsnonwnondnon";
-                    _offset = switch _itemType do {
+                    private _offset = switch _itemType do {
                         case "Headgear": {
                             _holder addheadgear _class;
                             _cam campreparefov 0.125;
@@ -244,7 +244,7 @@ if (_mode == "json") then {
                     };
                     _holder enablesimulation false;
 
-                    _campos = (_pos getPos [2.5, 90]);
+                    private _campos = (_pos getPos [2.5, 90]);
                     _campos set [2,_alt + 1];
                     _cam campreparepos _campos;
                     _cam campreparetarget [(_pos select 0),(_pos select 1),_alt + 0.85 + _offset];
@@ -259,8 +259,8 @@ if (_mode == "json") then {
                         _holder addweaponcargo [_class,1];
                         _holder setvectordirandup [[0,0,1],[1,0,0]];
 
-                        _fov = if (_itemType == "AccessoryMuzzle") then {0.3} else {0.2};
-                        _campos = (_pos getPos [0.5, 90]);
+                        private _fov = if (_itemType == "AccessoryMuzzle") then {0.3} else {0.2};
+                        private _campos = (_pos getPos [0.5, 90]);
                         _campos set [2,_alt + 0.5];
                         _cam campreparepos _campos;
                         _cam campreparefov _fov;
@@ -333,7 +333,7 @@ if (_mode == "json") then {
                         _holder addweaponcargo [_class,1];
                         _holder setvectordirandup [[0,0,1],[1,0,0]];
 
-                        _fov = if (_itemType == "Handgun") then {0.3} else {0.7};
+                        private _fov = if (_itemType == "Handgun") then {0.3} else {0.7};
                         _campos = (_pos getPos [0.5, 90]);
                         _campos set [2,_alt + 0.5];
                         _cam campreparepos _campos;
