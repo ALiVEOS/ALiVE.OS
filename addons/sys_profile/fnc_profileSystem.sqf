@@ -76,7 +76,7 @@ switch(_operation) do {
         case "start": {
 
                 private["_debug","_persistent","_plotSectors","_syncMode","_syncedUnits","_spawnRadius","_spawnTypeJetRadius","_spawnTypeHeliRadius",
-                "_activeLimiter","_spawnCycleTime","_despawnCycleTime","_profileSimulatorFSM","_profileSpawnerFSMEast","_profileSpawnerFSMWest",
+                "_activeLimiter","_spawnCycleTime","_despawnCycleTime","_combatRate","_profileSimulatorFSM","_profileSpawnerFSMEast","_profileSpawnerFSMWest",
                 "_profileSpawnerFSMGuer","_profileSpawnerFSMCiv","_sectors","_persistent","_file"];
 
                 if (isServer) then {
@@ -92,6 +92,7 @@ switch(_operation) do {
                         _activeLimiter = [_logic,"activeLimiter"] call ALIVE_fnc_hashGet;
                         _spawnCycleTime = [_logic,"spawnCycleTime"] call ALIVE_fnc_hashGet;
                         _despawnCycleTime = [_logic,"despawnCycleTime"] call ALIVE_fnc_hashGet;
+                        _combatRate = [_logic,"combatRate"] call ALIVE_fnc_hashGet;
 
                         // set global profiles persistent var
                         ALIVE_loadProfilesPersistent = _persistent;
@@ -121,6 +122,7 @@ switch(_operation) do {
                         ALIVE_profileCombatHandler = [nil,"create"] call ALIVE_fnc_profileCombatHandler;
                         [ALIVE_profileCombatHandler,"init"] call ALIVE_fnc_profileCombatHandler;
                         [ALIVE_profileCombatHandler,"debug", _debug] call ALIVE_fnc_profileCombatHandler;
+                        [ALIVE_profileCombatHandler,"combatRate", _combatRate] call ALIVE_fnc_profileCombatHandler;
 
                         // create sector grid
                         ALIVE_sectorGrid = [nil, "create"] call ALIVE_fnc_sectorGrid;
@@ -415,6 +417,17 @@ switch(_operation) do {
                         [_logic,"speedModifier",_args] call ALIVE_fnc_hashSet;
                 };
                 _result = [_logic,"speedModifier"] call ALIVE_fnc_hashGet;
+        };
+        case "combatRate": {
+            if (typename _args == "SCALAR") then {
+                if (!isnil "ALIVE_profileCombatHandler") then {
+                    [ALIVE_profileCombatHandler,_operation, _args] call ALIVE_fnc_profileCombatHandler;
+                };
+
+                [_logic,_operation, _args] call ALiVE_fnc_hashSet;
+            } else {
+                _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+            };
         };
         case "state": {
                 private["_state"];
