@@ -114,7 +114,7 @@ if (count _faction != 0) then {
 
 };
 
-if (!isClass (_configPaths select 0) && !isClass(_configPaths select 1)) exitWith {["WARNING: You don't appear to have the %1 compositions loaded, make sure you have added the composition PBOs to your @ALiVE or @ALiVEServer addon folders", _compType] call ALiVE_fnc_dump;};
+if (!isClass (_configPaths select 0) && !isClass(_configPaths select 1)) exitWith {["WARNING: You don't appear to have the %1 compositions loaded, make sure you have added the composition PBOs to your @ALiVE or @ALiVEServer addon folders", _compType] call ALiVE_fnc_dump; _result};
 
 {
     private _configPath = _x; // Military_Pacific
