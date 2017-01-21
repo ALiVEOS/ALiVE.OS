@@ -143,7 +143,7 @@ switch (_taskState) do {
                     If (_taskEnemySide == "GUER") then {
                         _compType = "Guerrilla";
                     };
-                    [_targetPosition, _compType, ["HQ", "Outposts", "FieldHQ", "Camps"], _taskEnemyFaction, ["Medium"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+                    [_targetPosition, _compType, ["HQ", "Outposts", "FieldHQ", "Camps"], _taskEnemyFaction, ["Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
 
                 };
             } else {
@@ -158,7 +158,7 @@ switch (_taskState) do {
                 _compType = "Guerrilla";
             };
             _category = (selectRandom ["HQ", "Outposts", "FieldHQ", "Camps"]);
-            [_targetPosition, _compType, _category, _taskEnemyFaction, "Medium", 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+            [_targetPosition, _compType, _category, _taskEnemyFaction, "Small", 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
         };
 
         if!(isNil "_targetPosition") then {
@@ -231,7 +231,8 @@ switch (_taskState) do {
 
             private["_spawnTypes","_spawnType"];
 
-            _spawnTypes = ["static","insertion","extraction"];
+            //_spawnTypes = ["static","insertion","extraction"];
+            _spawnTypes = ["static"];
             _spawnType = (selectRandom _spawnTypes);
 
             // store task data in the params for this task set
@@ -321,9 +322,9 @@ switch (_taskState) do {
                             _taskPosition, // center position
                             0, // minimum distance
                             20, // maximum distance
-                            2, // minimum to nearest object
+                            1, // minimum to nearest object
                             0, // water mode
-                            0.2, // gradient
+                            0.3, // gradient
                             0, // shore mode
                             [], // blacklist
                             [
@@ -334,9 +335,13 @@ switch (_taskState) do {
 
                         _table = _tableClass createVehicle _pos;
                         _table setdir 0;
+                        _table enableSimulation false;
 
                         _electronic = [_table,_electronicClass] call ALIVE_fnc_taskSpawnOnTopOf;
                         _document = [_table,_documentClass] call ALIVE_fnc_taskSpawnOnTopOf;
+
+                        (_electronic select 0) enableSimulation false;
+                        (_document select 0) enableSimulation false;
 
                         // create the profiles
 
@@ -362,13 +367,16 @@ switch (_taskState) do {
 
                         _HVTGroup = _HVTProfile1 select 2 select 13;
                         _HVT = leader _HVTGroup;
-                        _HVT setformdir 0;
                         _HVT setpos [getpos _table select 0,(getpos _table select 1)-2,0];
+                        _HVT setdir ([_HVT, _table] call BIS_fnc_dirTo);
 
                         _HVTGroup2 = _HVTProfile2 select 2 select 13;
                         _HVT2 = leader _HVTGroup2;
-                        _HVT2 setformdir 180;
                         _HVT2 setpos [getpos _table select 0,(getpos _table select 1)+2,0];
+                        _HVT2 setdir ([_HVT2, _table] call BIS_fnc_dirTo);
+
+                        _HVT disableAI "MOVE";
+                        _HVT2 disableAI "MOVE";
 
                         // store the data on the params
 
