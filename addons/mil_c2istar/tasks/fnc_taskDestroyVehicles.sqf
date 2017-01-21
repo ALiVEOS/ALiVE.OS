@@ -86,7 +86,7 @@ switch (_taskState) do {
             count ([_profile,"entitiesInCommandOf",[]] call ALiVE_fnc_HashGet) > 0 && {_side == _Input1};
         }] call ALiVE_fnc_SortBy;
 
-        _targetVehicles = [_targets select 0];
+        _targetVehicles = if (count _targets > 0) then {[_targets select 0]} else {[]};
 
         if(count _targetVehicles > 0) then {
 
@@ -188,6 +188,8 @@ switch (_taskState) do {
 
             _result = [_tasks,_taskParams];
 
+        } else {
+            ["C2ISTAR - Task DestroyVehicles - No vehicles for side %1 found! Aborting...",_taskEnemySide] call ALiVE_fnc_Dump;
         };
 
     };
