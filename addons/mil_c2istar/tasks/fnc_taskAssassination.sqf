@@ -231,8 +231,7 @@ switch (_taskState) do {
 
             private["_spawnTypes","_spawnType"];
 
-            //_spawnTypes = ["static","insertion","extraction"];
-            _spawnTypes = ["static"];
+            _spawnTypes = ["static","insertion","extraction"];
             _spawnType = (selectRandom _spawnTypes);
 
             // store task data in the params for this task set
