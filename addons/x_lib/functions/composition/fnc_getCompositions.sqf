@@ -68,6 +68,16 @@ private _configPaths = [
     configFile >> "CfgGroups" >> "Empty" >> _compType
 ];
 
+// Default to regular if additional PBOs are not loaded
+if (!isClass (_configPaths select 0) && !isClass(_configPaths select 1)) then {
+    ["WARNING: You don't appear to have the %1 compositions loaded, make sure you have added the composition PBOs to your @ALiVE or @ALiVEServer addon folders! Falling back to %2!", _compType,_comp] call ALiVE_fnc_dump;
+    
+    _configPaths = [
+        missionConfigFile >> "CfgGroups" >> "Empty" >> _comp,
+        configFile >> "CfgGroups" >> "Empty" >> _comp
+    ];
+};
+
 // Get enemy factions
 if (count _faction != 0) then {
     {
@@ -113,8 +123,6 @@ if (count _faction != 0) then {
     } foreach _faction;
 
 };
-
-if (!isClass (_configPaths select 0) && !isClass(_configPaths select 1)) exitWith {["WARNING: You don't appear to have the %1 compositions loaded, make sure you have added the composition PBOs to your @ALiVE or @ALiVEServer addon folders", _compType] call ALiVE_fnc_dump; _result};
 
 {
     private _configPath = _x; // Military_Pacific
