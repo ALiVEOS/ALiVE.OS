@@ -47,7 +47,7 @@ if(isServer) then {
     private _spawnTypeJetRadius = parseNumber (_logic getVariable ["spawnTypeJetRadius","0"]);
     private _activeLimiter = parseNumber (_logic getVariable ["activeLimiter","30"]);
     private _speedModifier = _logic getVariable ["speedModifier",1];
-    private _virtualCombatSpeedModifier = _logic getVariable ["virtualcombat_speedmodifier", 1];
+    private _virtualCombatSpeedModifier = _logic getVariable ["virtualcombat_speedmodifier", "1"];
 
     //Ensure Event Log is loaded
     if (isnil "ALIVE_eventLog") then {
