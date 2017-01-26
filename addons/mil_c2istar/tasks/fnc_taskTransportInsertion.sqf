@@ -149,7 +149,7 @@ switch (_taskState) do {
 
             // If no group try side?
             if (typeName _group == "BOOL") then {
-                _factions = _taskSide call ALiVE_fnc_getSideFactions;
+                private _factions = _taskSide call ALiVE_fnc_getSideFactions;
                 {
                     _group = ["Infantry",_x] call ALIVE_fnc_configGetRandomGroup;
                     if !(typeName _group == "BOOL") exitWith {_taskFaction = _x;};

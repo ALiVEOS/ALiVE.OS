@@ -233,22 +233,22 @@ switch(_operation) do {
 
     case "debug": {
 
-        if (typeName _args == "BOOL") then {
-            _logic setVariable ["debug", _args];
+        if (_args isEqualType true) then {
+            _logic setVariable [_operation, _args];
             _result = _args;
         } else {
-            _result = _logic getVariable ["debug", false];
+            _result = _logic getVariable [_operation, false];
         };
 
     };
 
     case "state": {
 
-        if (typeName _args == "ARRAY") then {
-            _logic setVariable ["debug", _args];
+        if (_args isEqualType []) then {
+            _logic setVariable [_operation, _args];
             _result = _args;
         } else {
-            _result = _logic getVariable ["debug", false];
+            _result = _logic getVariable [_operation, [] call ALiVE_fnc_hashCreate];
         };
 
     };

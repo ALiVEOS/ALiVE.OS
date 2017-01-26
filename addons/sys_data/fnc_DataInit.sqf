@@ -17,7 +17,7 @@ PARAMS_2(_logic,_mode);
 ASSERT_DEFINED("ALIVE_fnc_Data","Main function missing");
 
 //Only one init per instance is allowed
-if !(isnil QUOTE(ADDON)) exitwith {["ALiVE SYS DATA - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+if (!isnil QUOTE(ADDON) && isDedicated) exitwith {["ALiVE SYS DATA - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
 
 // Check to see if module was placed... (might be auto enabled)
 if (isnil "_logic") then {
@@ -35,7 +35,7 @@ if (isnil "_logic") then {
         // If auto enabled allow
         if (_mode == 1) then { // override defaults and disable everything bar perf
             MOD(sys_data) setVariable ["disableStats","true"];
-             MOD(sys_data) setVariable ["disablePerfMon","false"];
+            MOD(sys_data) setVariable ["disablePerfMon","false"];
         };
 
         //Push to clients
@@ -156,6 +156,9 @@ if (isDedicated) then {
     if ([_config, "EventData","false"] call ALIVE_fnc_hashGet == "false") then {
         ["CONNECTED TO DATABASE, BUT STAT DATA HAS BEEN TURNED OFF"] call ALIVE_fnc_logger;
         ALIVE_sys_statistics_ENABLED = false;
+        publicVariable "ALIVE_sys_statistics_ENABLED";
+    } else {
+        ALIVE_sys_statistics_ENABLED = if (_logic getvariable ["disableStats","false"] == "false") then {true} else {false};
         publicVariable "ALIVE_sys_statistics_ENABLED";
     };
 
@@ -341,7 +344,7 @@ if (isDedicated) then {
     // AAR system - should prob be its own module
     TRACE_2("SYS_DATA AAR VAR", MOD(sys_data) getVariable "disableAAR", ALIVE_sys_AAR_ENABLED);
     // Start the AAR monitoring module
-    if (MOD(sys_data) getvariable ["disableAAR", "true"] == "false" && ALIVE_sys_AAR_ENABLED) then {
+    if (MOD(sys_data) getvariable ["disableAAR", "false"] == "false" && ALIVE_sys_AAR_ENABLED) then {
 
         ["DATA: Starting AAR system."] call ALIVE_fnc_dump;
 
@@ -365,7 +368,7 @@ if (isDedicated) then {
             private _missionName = [GVAR(operation), "%20","-"] call CBA_fnc_replace;
             _missionName = format["%1_%2", GVAR(GROUP_ID), _missionName];
 
-            while {MOD(sys_data) getVariable "disableAAR" == "false"} do {
+            while {MOD(sys_data) getVariable ["disableAAR","false"] == "false"} do {
 
                 private _allPlayers = [];
                 {
@@ -450,7 +453,7 @@ if (isDedicated) then {
                     [_aarRecord, "value", _aarArray] call ALIVE_fnc_hashSet;
 
                     // Send the inf data to DB
-                    private _keyName = format["%1_%2",_aarDocID,_missionTime];
+                    private _keyName = format["%1_%2_i",_aarDocID,_missionTime];
 
                     // store in aar hash
                     [_aar,_keyName,_aarRecord] call ALiVE_fnc_hashSet;
@@ -590,7 +593,7 @@ if (isDedicated) then {
                     [_aarVRecord, "value", _aarvehArray] call ALIVE_fnc_hashSet;
 
                     // Send the inf data to DB
-                    _keyName = format["%1_%2",_aarDocID,_missionTime];
+                    _keyName = format["%1_%2_v",_aarDocID,_missionTime];
 
                     // store in aar hash
                     [_aar,_keyName,_aarVRecord] call ALiVE_fnc_hashSet;

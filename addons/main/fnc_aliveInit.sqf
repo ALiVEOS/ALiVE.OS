@@ -171,7 +171,7 @@ if (hasInterface) then {
 
     if (isMultiplayer) then {
 
-        _id = [1, [false, false, false],{
+        private _id = [1, [false, false, false],{
             // Add hook to abort button
 
             [] spawn {

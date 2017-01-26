@@ -46,7 +46,7 @@ if (isnil "ALiVE_BUSEH") then {
     ARCHIVELIMIT = 100; //Limit items of archive
 
     "BUSE" addPublicVariableEventHandler {
-        private ["_from","_to","_subject","_body","_id","_data","_datastack","_status","_params","_code","_entry","_ret","_exec","_typeName"];
+        private ["_from","_to","_subject","_body","_id","_dataTmp","_data","_datastack","_status","_params","_code","_entry","_ret","_exec","_typeName"];
 
         _dataStack = _this select 1;
         _id = _dataStack select 0;

@@ -30,6 +30,6 @@ params [
 
 if !(alive _target) exitwith {false};
 
-_dir = (_unit getRelDir _target) - (getDir _unit);
+private _dir = (_unit getRelDir _target) - (getDir _unit);
 
 (_dir > -50 && {_dir < 50}) && {!(lineIntersects [eyePos _unit, eyePos _target , _unit, _target])};

@@ -46,7 +46,7 @@ if (typeName _fac == "ARRAY") then {
     _id = [_id, """", ""] call CBA_fnc_replace;
 };
 
-_searchBag = format["ALiVE_X_LIB_SEARCHBAG_%1_%2_%3",_id,_type,_noWeapons];
+private _searchBag = format["ALiVE_X_LIB_SEARCHBAG_%1_%2_%3",_id,_type,_noWeapons];
 
 if !(isnil {call compile _searchBag}) exitwith {call compile _searchBag};
 
@@ -81,7 +81,7 @@ for "_y" from 1 to count(configFile >> "CfgVehicles") - 1 do {
 
             if ({(_entryConfigName isKindOf _x)} count _nonconfigs == 0) then {
                 if (getNumber(_entry >> "TransportSoldier") >= _cargoslots) then {
-                    _entryFaction = getText (_entry >> "faction");
+                    private _entryFaction = getText (_entry >> "faction");
 
                     if (_fac isEqualType []) then {
                         if (_entryFaction in _fac || {_entryConfigName in _facUnits}) then {

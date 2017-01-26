@@ -433,7 +433,7 @@ switch(_operation) do {
         [_gm, "debug", _debug] call ALIVE_fnc_GM;
         [_gm, "init",[]] call ALIVE_fnc_GM;
 
-        private["_scomOpsLimit","_scomIntelLimit","_scom"];
+        private["_scomOpsLimit","_scomIntelLimit","_scomOpsAllowSpectate","_scomOpsAllowJoin","_scom"];
 
         _scomOpsLimit = [_logic, "scomOpsLimit"] call MAINCLASS;
         _scomIntelLimit = [_logic, "scomIntelLimit"] call MAINCLASS;
@@ -487,7 +487,7 @@ switch(_operation) do {
 
                 if(_autoGenerateBLUFOR) then {
 
-                    _taskData = [];
+                    private _taskData = [];
                     _taskData set [0,"BLUFOR_TASK1"];
                     _taskData set [1,"1"];
                     _taskData set [2,"WEST"];

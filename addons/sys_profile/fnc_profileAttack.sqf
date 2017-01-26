@@ -50,18 +50,18 @@ switch (_operation) do {
         [_logic,"class", QUOTE(MAINCLASS)] call ALiVE_fnc_hashSet;  // select 2 select 1
 
         [_logic,"attackID", ""] call ALiVE_fnc_hashSet;             // select 2 select 2
-        [_logic,"battleID", ""] call ALiVE_fnc_hashSet;             // select 2 select 3
-        [_logic,"position", [0,0,0]] call ALiVE_fnc_hashSet;        // select 2 select 4
-        [_logic,"timeStarted", time] call ALiVE_fnc_hashSet;        // select 2 select 5
+        [_logic,"position", [0,0,0]] call ALiVE_fnc_hashSet;        // select 2 select 3
+        [_logic,"timeStarted", time] call ALiVE_fnc_hashSet;        // select 2 select 4
 
-        [_logic,"attacker", []] call ALiVE_fnc_hashSet;             // select 2 select 6
-        [_logic,"targets", []] call ALiVE_fnc_hashSet;              // select 2 select 7
+        [_logic,"attacker", []] call ALiVE_fnc_hashSet;             // select 2 select 5
+        [_logic,"targets", []] call ALiVE_fnc_hashSet;              // select 2 select 6
 
         // for arty set to max arty range, else leave default
-        [_logic,"maxRange", 150] call ALiVE_fnc_hashSet;            // select 2 select 8
 
-        [_logic,"cyclesLeft", 9999] call ALiVE_fnc_hashSet;         // select 2 select 9
-        [_logic,"attackerSide", "WEST"] call ALiVE_fnc_hashSet;     // select 2 select 10
+        [_logic,"maxRange", [MOD(profileCombatHandler),"combatRange"] call ALiVE_fnc_hashGet] call ALiVE_fnc_hashSet;            // select 2 select 7
+
+        [_logic,"cyclesLeft", 9999] call ALiVE_fnc_hashSet;         // select 2 select 8
+        [_logic,"attackerSide", "WEST"] call ALiVE_fnc_hashSet;     // select 2 select 9
 
     };
 

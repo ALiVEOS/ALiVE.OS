@@ -61,7 +61,7 @@ _day = _in select 2;
 _hour = _in select 3;
 _min = _in select 4;
 
-_months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+private _months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 
 _year = [str _year, 2, 4] call bis_fnc_trimString;
 _month = _months select (_month -1);

@@ -33,8 +33,11 @@ _result = [];
 switch (_taskState) do {
     case "init":{
 
-        private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
-        "_taskApplyType","_taskEnemySide","_targetSector","_targetEntity","_taskPlayers","_targetBuilding","_targetBuildings","_targetTypes","_blacklist"];
+        private [
+            "_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
+            "_taskApplyType","_startTime","_taskEnemySide","_targetSector","_targetEntity","_taskPlayers","_targetBuilding","_targetBuildings",
+            "_targetTypes","_blacklist","_tasksCurrent"
+        ];
 
         _taskID = [_task, 0, "", [""]] call BIS_fnc_param;
         _requestPlayerID = [_task, 1, "", [""]] call BIS_fnc_param;
@@ -88,22 +91,22 @@ switch (_taskState) do {
             if (!isnil "OPCOM_instances") then {
 
                 //["Selecting Task location from OPCOMs"] call ALiVE_fnc_DumpR;
-                _triggerStates = ["defend","defending","reserve","reserving","idle","unassigned"];
-                _objectives = [];
+                private _triggerStates = ["defend","defending","reserve","reserving","idle","unassigned"];
+                private _objectives = [];
                 {
-                    _OPCOM = _x;
-                    _OPCOM_factions = [_OPCOM,"factions",""] call ALiVE_fnc_HashGet;
-                    _OPCOM_side = [_OPCOM,"side",""] call ALiVE_fnc_HashGet;
+                    private _OPCOM = _x;
+                    private _OPCOM_factions = [_OPCOM,"factions",""] call ALiVE_fnc_HashGet;
+                    private _OPCOM_side = [_OPCOM,"side",""] call ALiVE_fnc_HashGet;
 
                     //["Looking up correct OPCOM %1 for faction %2",_OPCOM_factions,_taskEnemyFaction] call ALiVE_fnc_DumpR;
                     if ({_x == _taskEnemyFaction} count _OPCOM_factions > 0) then {
-                        _OPCOM_objectives = [_OPCOM,"objectives",[]] call ALiVE_fnc_HashGet;
+                        private _OPCOM_objectives = [_OPCOM,"objectives",[]] call ALiVE_fnc_HashGet;
 
                         //["Looking up correct ones in %1 objectives for faction %2",count _OPCOM_objectives,_taskEnemyFaction] call ALiVE_fnc_DumpR;
                         {
-                            _OPCOM_objective = _x;
-                            _OPCOM_objective_state = [_OPCOM_objective,"opcom_state",""] call ALiVE_fnc_HashGet;
-                            _OPCOM_objective_center = [_OPCOM_objective,"center",[0,0,0]] call ALiVE_fnc_HashGet;
+                            private _OPCOM_objective = _x;
+                            private _OPCOM_objective_state = [_OPCOM_objective,"opcom_state",""] call ALiVE_fnc_HashGet;
+                            private _OPCOM_objective_center = [_OPCOM_objective,"center",[0,0,0]] call ALiVE_fnc_HashGet;
 
                             //["Matching state %1 in triggerstates %2 tasks %3 faction %4!",_OPCOM_objective_state,_triggerStates,_tasksCurrent,_taskFaction] call ALiVE_fnc_DumpR;
                                 if (
@@ -117,18 +120,18 @@ switch (_taskState) do {
                 } foreach OPCOM_instances;
 
                 if (count _objectives > 0) then {
-                    _objectives = [_objectives,[getposATL _player],{_Input0 distance ([_x,"center"] call ALiVE_fnc_HashGet)},"ASCEND",{
+                    private _objectives = [_objectives,[getposATL _player],{_Input0 distance ([_x,"center"] call ALiVE_fnc_HashGet)},"ASCEND",{
 
-                        _id = [_x,"opcomID",""] call ALiVE_fnc_HashGet;
-                        _pos = [_x,"center"] call ALiVE_fnc_HashGet;
-                        _opcom = [objNull,"getOPCOMbyid",_id] call ALiVE_fnc_OPCOM;
-                        _side = [_opcom,"side",""] call ALiVE_fnc_HashGet;
+                        private _id = [_x,"opcomID",""] call ALiVE_fnc_HashGet;
+                        private _pos = [_x,"center"] call ALiVE_fnc_HashGet;
+                        private _opcom = [objNull,"getOPCOMbyid",_id] call ALiVE_fnc_OPCOM;
+                        private _side = [_opcom,"side",""] call ALiVE_fnc_HashGet;
 
                         !([_pos,_side,500,true] call ALiVE_fnc_isEnemyNear);
                     }] call ALiVE_fnc_SortBy;
 
-                    _totalIndexes = (count _objectives)-1;
-                    _index = 0;
+                    private _totalIndexes = (count _objectives)-1;
+                    private _index = 0;
 
                     if (count _objectives > 1) then {
                         switch (_taskLocationType) do {
@@ -138,9 +141,9 @@ switch (_taskState) do {
                         };
                     };
 
-                    _taskLocation = [_objectives select _index,"center"] call ALiVE_fnc_HashGet;
-                    _clusterID = [_objectives select _index,"clusterID",""] call ALiVE_fnc_HashGet;
-                    _type = [_objectives select _index,"type",""] call ALiVE_fnc_HashGet;
+                    private _taskLocation = [_objectives select _index,"center"] call ALiVE_fnc_HashGet;
+                    private _clusterID = [_objectives select _index,"clusterID",""] call ALiVE_fnc_HashGet;
+                    private _type = [_objectives select _index,"type",""] call ALiVE_fnc_HashGet;
 
                     _targetTypes = [
                         "ALIVE_clustersMil",
@@ -155,16 +158,16 @@ switch (_taskState) do {
                         "ALIVE_clustersCivPower",
                         "ALIVE_clustersCivRail",
                         "ALIVE_clustersCivSettlement",
-                        "ALIVE_clustersCivComms"                                
+                        "ALIVE_clustersCivComms"
                     ];
 
                     {
-                        _clusters = _x;
+                        private _clusters = _x;
 
                         if (!(isnil {call compile _clusters}) && {_clusterID in ((call compile _clusters) select 1)}) then {
 
-                            _cluster = [call compile _clusters,_clusterID] call ALiVE_fnc_HashGet;
-                            _clusterLocation = [_cluster,"center"] call ALiVE_fnc_HashGet;
+                            private _cluster = [call compile _clusters,_clusterID] call ALiVE_fnc_HashGet;
+                            private _clusterLocation = [_cluster,"center"] call ALiVE_fnc_HashGet;
 
                             _clusterLocation resize 2;
                             _taskLocation resize 2;
@@ -195,25 +198,25 @@ switch (_taskState) do {
 
             _targetBuildings = _taskLocation nearObjects ["House_F",500];
         };
-        
+
         _targetBuildings = [_targetBuildings,[],{
 
 			//By indoor building positions
             count ([getPosATL _x, 20] call ALIVE_fnc_findIndoorHousePositions);
-            
+
 			/* By height
             _bbr = boundingBoxReal _x;
             _p1 = _bbr select 0; _p2 = _bbr select 1;
             abs ((_p2 select 2) - (_p1 select 2));
 			*/
-            
+
         },"DESCEND",{
-            _alive = alive _x;
-            _lamp = _x iskindof "Lamps_Base_F";
-            _invincible = getText(configfile >> "CfgVehicles" >> (typeOf _x) >> "destrType") == "DestructNo";
-            
+            private _alive = alive _x;
+            private _lamp = _x iskindof "Lamps_Base_F";
+            private _invincible = getText(configfile >> "CfgVehicles" >> (typeOf _x) >> "destrType") == "DestructNo";
+
 			//Edit for blacklist (placeholder) in case it is still needed (case sensitive)
-            _excluded = (typeOf _x) in _blacklist;
+            private _excluded = (typeOf _x) in _blacklist;
 
             _result = _alive && {!_excluded} && {!_lamp} && {!_invincible};
             _result;
@@ -242,8 +245,8 @@ switch (_taskState) do {
         private["_stagingPosition","_dialogOptions","_dialogOption","_buildingType","_reward"];
 
         //["Sorting buildings by type and adding reward..."] call ALiVE_fnc_DumpR;
-        _points = 0;
-        _list = [];
+        private _points = 0;
+        private _list = [];
         {
             private ["_object","_model"];
 
@@ -253,9 +256,9 @@ switch (_taskState) do {
             if (!(isnil "_object") && {!isNull _object}) then {
 
                 {
-                    _type = _x select 0;
-                    _typeText = _x select 1;
-                    _points = _x select 2;
+                    private _type = _x select 0;
+                    private _typeText = _x select 1;
+                    private _points = _x select 2;
 
                     if (
                         !(isnil {call compile _type}) &&
@@ -373,8 +376,11 @@ switch (_taskState) do {
     };
     case "Destroy":{
 
-        private["_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
-        "_entityProfiles","_entitiesState","_allDestroyed","_lastState","_taskDialog","_vehicles","_currentTaskDialog","_taskEnemyFaction","_taskEnemySide"];
+        private [
+            "_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
+            "_entityProfiles","_entitiesState","_allDestroyed","_lastState","_taskDialog","_vehicles","_currentTaskDialog","_targets",
+            "_taskEnemyFaction","_taskEnemySide","_targetsState"
+        ];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;

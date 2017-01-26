@@ -53,7 +53,7 @@ if (_patchprefix != "") then {
     };
 };
 
-_allPatches = count _patches == 0;
+private _allPatches = count _patches == 0;
 
 
 
@@ -67,7 +67,7 @@ player enablesimulation false;
 player hideobject true;
 
 
-_funcGetTurretsWeapons = {
+private _funcGetTurretsWeapons = {
      private ["_result", "_getAnyMagazines", "_findRecurse", "_class"];
      _result = [];
      _getAnyMagazines = {
@@ -118,12 +118,12 @@ switch tolower _mode do {
 
         if !(worldname in ["Render","RenderGreen","RenderBlue"]) exitwith {"Use 'Render White' for capturing screenshots." call bis_fnc_errorMsg;};
 
-        _alt = 100;
-        _pos = [3540,100,_alt];
-        _object = objnull;
-        _cfgAll = configfile >> "cfgvehicles" >> "all";
-        _restrictedModels = ["","\A3\Weapons_f\dummyweapon.p3d","\A3\Weapons_f\laserTgt.p3d"];
-        _blacklist = [
+        private _alt = 100;
+        private _pos = [3540,100,_alt];
+        private _object = objnull;
+        private _cfgAll = configfile >> "cfgvehicles" >> "all";
+        private _restrictedModels = ["","\A3\Weapons_f\dummyweapon.p3d","\A3\Weapons_f\laserTgt.p3d"];
+        private _blacklist = [
             "WeaponHolder",
             "LaserTarget",
             "Bag_Base",
@@ -131,12 +131,12 @@ switch tolower _mode do {
             "Animal",
             "House"
         ];
-        _capture = _mode == "screenshots";
-        _product = productversion select 1;
+        private _capture = _mode == "screenshots";
+        private _product = productversion select 1;
 
-        _cfgVehicles = (configfile >> "cfgvehicles") call bis_fnc_returnchildren;
+        private _cfgVehicles = (configfile >> "cfgvehicles") call bis_fnc_returnchildren;
 
-        _cam = "camera" camcreate _pos;
+        private _cam = "camera" camcreate _pos;
         _cam cameraeffect ["internal","back"];
         _cam campreparefocus [-1,-1];
         _cam camcommitprepared 0;
@@ -145,13 +145,13 @@ switch tolower _mode do {
         setdate [2035,5,28,10,0];
         0 setfog 0.2;
 
-        _n = 0;
+        private _n = 0;
         {
-            _class = configname _x;
-            _scope = getnumber (_x >> "scope");
-            _side = getnumber (_x >> "side");
-            _unitAddons = unitaddons _class;
-            _isAllVehicles = _class iskindof "allvehicles";
+            private _class = configname _x;
+            private _scope = getnumber (_x >> "scope");
+            private _side = getnumber (_x >> "side");
+            private _unitAddons = unitaddons _class;
+            private _isAllVehicles = _class iskindof "allvehicles";
 
             if (
                 ((_allVehicles && _isAllVehicles) || (!_allVehicles && !_isAllVehicles))
@@ -162,7 +162,7 @@ switch tolower _mode do {
                 &&
                 _scope > 1
             ) then {
-                _model = gettext (_x >> "model");
+                private _model = gettext (_x >> "model");
                 if (!(_model in _restrictedModels) && inheritsfrom _x != _cfgAll && {_class iskindof _x} count _blacklist == 0) then {
                     _object = createvehicle [_class,_pos,[],0,"none"];
                     if (_class iskindof "allvehicles") then {_object setdir 90;} else {_object setdir 270;};
@@ -171,15 +171,15 @@ switch tolower _mode do {
                     _object switchmove "amovpercmstpsnonwnondnon";
                     _object enablesimulation false;
 
-                    _size = (sizeof _class) max 0.1;
-                    _targetZ = 0;
+                    private _size = (sizeof _class) max 0.1;
+                    private _targetZ = 0;
                     if (_class iskindof "allvehicles") then {
                         _size = _size * 0.5;
                     };
                     if (_class iskindof "staticweapon") then {
                         _targetZ = -_size * 0.25;
                     };
-                    _campos = _pos getPos [_size * 1.5,135];
+                    private _campos = _pos getPos [_size * 1.5,135];
                     _campos set [2,_alt + _size * 0.5];
 
                     _cam campreparepos _campos;

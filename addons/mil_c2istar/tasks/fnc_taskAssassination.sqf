@@ -33,8 +33,10 @@ _result = [];
 switch (_taskState) do {
     case "init":{
 
-        private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskPlayers","_taskEnemyFaction","_taskCurrent",
-        "_taskApplyType","_taskEnemySide","_enemyClusters","_targetPosition"];
+        private [
+            "_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskPlayers","_taskEnemyFaction","_taskCurrent",
+            "_taskApplyType","_tasksCurrent","_taskEnemySide","_enemyClusters","_targetPosition"
+        ];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;
@@ -92,22 +94,22 @@ switch (_taskState) do {
             if (!isnil "OPCOM_instances") then {
 
                 //["Selecting Task location from OPCOMs"] call ALiVE_fnc_DumpR;
-                _triggerStates = ["defend","defending","reserve","reserving","idle","unassigned"];
-                _objectives = [];
+                private _triggerStates = ["defend","defending","reserve","reserving","idle","unassigned"];
+                private _objectives = [];
                 {
-                    _OPCOM = _x;
-                    _OPCOM_factions = [_OPCOM,"factions",""] call ALiVE_fnc_HashGet;
-                    _OPCOM_side = [_OPCOM,"side",""] call ALiVE_fnc_HashGet;
+                    private _OPCOM = _x;
+                    private _OPCOM_factions = [_OPCOM,"factions",""] call ALiVE_fnc_HashGet;
+                    private _OPCOM_side = [_OPCOM,"side",""] call ALiVE_fnc_HashGet;
 
                     //["Looking up correct OPCOM %1 for faction %2",_OPCOM_factions,_taskEnemyFaction] call ALiVE_fnc_DumpR;
                     if ({_x == _taskEnemyFaction} count _OPCOM_factions > 0) then {
-                        _OPCOM_objectives = [_OPCOM,"objectives",[]] call ALiVE_fnc_HashGet;
+                        private _OPCOM_objectives = [_OPCOM,"objectives",[]] call ALiVE_fnc_HashGet;
 
                         //["Looking up correct ones in %1 objectives for faction %2",count _OPCOM_objectives,_taskEnemyFaction] call ALiVE_fnc_DumpR;
                         {
-                            _OPCOM_objective = _x;
-                            _OPCOM_objective_state = [_OPCOM_objective,"opcom_state",""] call ALiVE_fnc_HashGet;
-                            _OPCOM_objective_center = [_OPCOM_objective,"center",[0,0,0]] call ALiVE_fnc_HashGet;
+                            private _OPCOM_objective = _x;
+                            private _OPCOM_objective_state = [_OPCOM_objective,"opcom_state",""] call ALiVE_fnc_HashGet;
+                            private _OPCOM_objective_center = [_OPCOM_objective,"center",[0,0,0]] call ALiVE_fnc_HashGet;
 
                             //["Matching state %1 in triggerstates %2 tasks %3 faction %4!",_OPCOM_objective_state,_triggerStates,_tasksCurrent,_taskFaction] call ALiVE_fnc_DumpR;
                                 if (
@@ -123,10 +125,10 @@ switch (_taskState) do {
                 if (count _objectives > 0) then {
                     _objectives = [_objectives,[_taskLocation],{_Input0 distance ([_x,"center"] call ALiVE_fnc_HashGet)},"ASCEND",{
 
-                        _id = [_x,"opcomID",""] call ALiVE_fnc_HashGet;
-                        _pos = [_x,"center"] call ALiVE_fnc_HashGet;
-                        _opcom = [objNull,"getOPCOMbyid",_id] call ALiVE_fnc_OPCOM;
-                        _side = [_opcom,"side",""] call ALiVE_fnc_HashGet;
+                        private _id = [_x,"opcomID",""] call ALiVE_fnc_HashGet;
+                        private _pos = [_x,"center"] call ALiVE_fnc_HashGet;
+                        private _opcom = [objNull,"getOPCOMbyid",_id] call ALiVE_fnc_OPCOM;
+                        private _side = [_opcom,"side",""] call ALiVE_fnc_HashGet;
 
                         !([_pos,_side,500,true] call ALiVE_fnc_isEnemyNear) && {_pos distance _Input0 > 1200};
                     }] call ALiVE_fnc_SortBy;
@@ -141,7 +143,7 @@ switch (_taskState) do {
                     If (_taskEnemySide == "GUER") then {
                         _compType = "Guerrilla";
                     };
-                    [_targetPosition, _compType, ["HQ", "Outposts", "FieldHQ", "Camps"], _taskEnemyFaction, ["Medium"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+                    [_targetPosition, _compType, ["HQ", "Outposts", "FieldHQ", "Camps"], _taskEnemyFaction, ["Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
 
                 };
             } else {
@@ -156,7 +158,7 @@ switch (_taskState) do {
                 _compType = "Guerrilla";
             };
             _category = (selectRandom ["HQ", "Outposts", "FieldHQ", "Camps"]);
-            [_targetPosition, _compType, _category, _taskEnemyFaction, "Medium", 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+            [_targetPosition, _compType, _category, _taskEnemyFaction, "Small", 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
         };
 
         if!(isNil "_targetPosition") then {
@@ -298,8 +300,10 @@ switch (_taskState) do {
                 switch(_HVTSpawnType) do {
                     case "static":{
 
-                        private["_taskObjects","_tables","_chairs","_electronics","_documents","_tableClass","_electronicClass",
-                        "_documentClass","_table","_electronic","_document"];
+                        private [
+                            "_taskObjects","_tables","_chairs","_electronics","_documents","_tableClass","_electronicClass",
+                            "_documentClass","_pos","_table","_electronic","_document"
+                        ];
 
                         // spawn some objects
 
@@ -313,11 +317,30 @@ switch (_taskState) do {
                         _electronicClass = (selectRandom _electronics);
                         _documentClass = (selectRandom _documents);
 
-                        _table = _tableClass createVehicle _taskPosition;
+                        _pos = [
+                            _taskPosition, // center position
+                            0, // minimum distance
+                            20, // maximum distance
+                            1, // minimum to nearest object
+                            0, // water mode
+                            0.3, // gradient
+                            0, // shore mode
+                            [], // blacklist
+                            [
+                                _taskPosition, // default position on land
+                                _taskPosition // default position on water
+                            ]
+                        ] call BIS_fnc_findSafePos;
+
+                        _table = _tableClass createVehicle _pos;
                         _table setdir 0;
+                        _table enableSimulation false;
 
                         _electronic = [_table,_electronicClass] call ALIVE_fnc_taskSpawnOnTopOf;
                         _document = [_table,_documentClass] call ALIVE_fnc_taskSpawnOnTopOf;
+
+                        (_electronic select 0) enableSimulation false;
+                        (_document select 0) enableSimulation false;
 
                         // create the profiles
 
@@ -343,13 +366,16 @@ switch (_taskState) do {
 
                         _HVTGroup = _HVTProfile1 select 2 select 13;
                         _HVT = leader _HVTGroup;
-                        _HVT setformdir 0;
                         _HVT setpos [getpos _table select 0,(getpos _table select 1)-2,0];
+                        _HVT setdir ([_HVT, _table] call BIS_fnc_dirTo);
 
                         _HVTGroup2 = _HVTProfile2 select 2 select 13;
                         _HVT2 = leader _HVTGroup2;
-                        _HVT2 setformdir 180;
                         _HVT2 setpos [getpos _table select 0,(getpos _table select 1)+2,0];
+                        _HVT2 setdir ([_HVT2, _table] call BIS_fnc_dirTo);
+
+                        _HVT disableAI "MOVE";
+                        _HVT2 disableAI "MOVE";
 
                         // store the data on the params
 

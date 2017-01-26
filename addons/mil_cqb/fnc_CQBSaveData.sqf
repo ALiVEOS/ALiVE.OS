@@ -39,14 +39,14 @@ _async = false;
 _missionName = [missionName, "%20","-"] call CBA_fnc_replace;
 _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName];
 
-_keys = [];
-_values = [];
+private _keys = [];
+private _values = [];
 _data = [] call ALiVE_fnc_HashCreate;
 {
     if (call compile (_x getvariable ["CQB_persistent","false"])) then {
-        _state = [_x,"state"] call ALiVE_fnc_CQB;
-        _type = [_state,"instancetype"] call AliVE_fnc_HashGet;
-        _id = format["CQB_%1_%2",_type,_foreachIndex];
+        private _state = [_x,"state"] call ALiVE_fnc_CQB;
+        private _type = [_state,"instancetype"] call AliVE_fnc_HashGet;
+        private _id = format["CQB_%1_%2",_type,_foreachIndex];
 
         [_state,"houses"] call ALiVE_fnc_HashRem;
 

@@ -26,12 +26,11 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_side","_configPath","_sortedGroups","_factionClass","_factionName","_factionConfigName","_factionConfig",
+private ["_configPath","_sortedGroups","_factionClass","_factionName","_factionConfigName","_factionConfig",
 "_categories","_categoryClass","_categoryName","_categoryConfigName","_categoryConfig","_groups","_groupClass","_groupName",
 "_groupConfigName"];
 
-_side = _this select 0;
-_faction = _this select 1;
+params ["_side","_faction"];
 
 if(_side == "GUER") then {
     _side = "INDEP";

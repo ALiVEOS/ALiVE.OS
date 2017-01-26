@@ -33,8 +33,10 @@ _result = [];
 switch (_taskState) do {
     case "init":{
 
-        private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskPlayers","_taskEnemyFaction","_taskCurrent",
-        "_taskApplyType","_taskEnemySide","_enemyClusters","_targetPosition","_returnPosition","_aircraft","_crashsite","_category"];
+        private [
+            "_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskPlayers","_taskEnemyFaction","_taskCurrent",
+            "_taskApplyType","_tasksCurrent","_taskEnemySide","_enemyClusters","_targetPosition","_returnPosition","_aircraft","_crashsite","_category"
+        ];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;
@@ -63,7 +65,7 @@ switch (_taskState) do {
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideNumberToText;
 
         // Choose downed pilot or crashsite
-        private["_dialogOptions","_dialogOption"];
+        private ["_dialogOptions","_dialogOption","_choice"];
 
         _dialogOptions = [ALIVE_generatedTasks,"CSAR"] call ALIVE_fnc_hashGet;
         _dialogOptions = _dialogOptions select 1;
@@ -122,7 +124,7 @@ switch (_taskState) do {
 
             _returnPosition = [_returnPosition, 250] call ALIVE_fnc_findFlatArea;
             // spawn a populated composition
-            _compType = "Military";
+            private _compType = "Military";
             If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
                 _compType = "Guerrilla";
                 _category = ["HQ", "Outposts", "FieldHQ", "Camps","Supports","Comms"];
@@ -179,7 +181,7 @@ switch (_taskState) do {
 
             // format the dialog options
 
-            private["_nearestTown","_dialog","_formatDescription","_formatChat","_formatMessage","_formatMessageText","_aircraftName"];
+            private["_nearestTown","_dialog","_formatDescription","_formatChat","_formatMessage","_formatMessageText","_aircraftName","_newTaskPosition"];
 
             _aircraftName = getText(configFile >> "CfgVehicles" >> _aircraft >> "displayName");
 
@@ -314,8 +316,11 @@ switch (_taskState) do {
 
     case "Rescue":{
 
-        private["_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
-        "_destinationReached","_taskIDs","_crewSpawned","_crewSpawnType","_lastState","_taskDialog","_currentTaskDialog","_taskApplyType","_startTime","_crashsite","_vehicleClass","_crewFound"];
+        private [
+            "_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
+            "_destinationReached","_taskIDs","_crewSpawned","_crewSpawnType","_lastState","_taskDialog","_currentTaskDialog","_taskApplyType",
+            "_startTime","_crashsite","_vehicleClass","_targetposition","_crewFound","_irstrobe"
+        ];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;
@@ -475,7 +480,7 @@ switch (_taskState) do {
                                     detach _irstrobe;
                                     deleteVehicle _irstrobe;
                                 };
-                                
+
                                 _x setCaptive false;
                                 [_x] joinSilent (group ([_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition));
                             } foreach units _group;
@@ -647,7 +652,7 @@ switch (_taskState) do {
 
                     if(_areaClear) then {
 
-                        _taskIDs = [_params,"taskIDs"] call ALIVE_fnc_hashGet;
+                        private _taskIDs = [_params,"taskIDs"] call ALIVE_fnc_hashGet;
                         [_params,"nextTask",_taskIDs select 3] call ALIVE_fnc_hashSet;
 
                         _task set [8,"Succeeded"];
@@ -693,10 +698,9 @@ switch (_taskState) do {
             };
 
             // Check to see if Crew are still alive
-            private["_dead"];
 
-            _entitiesState = [_entityProfileIDs] call ALIVE_fnc_taskGetStateOfEntityProfiles;
-            _dead = [_entitiesState,"allDestroyed"] call ALIVE_fnc_hashGet;
+            private _entitiesState = [_entityProfileIDs] call ALIVE_fnc_taskGetStateOfEntityProfiles;
+            private _dead = [_entitiesState,"allDestroyed"] call ALIVE_fnc_hashGet;
 
             // task is completed successfully
             if (_dead) then {
@@ -717,8 +721,10 @@ switch (_taskState) do {
 
     case "Return":{
 
-        private["_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
-        "_areaClear","_lastState","_taskDialog","_destinationReached","_currentTaskDialog","_returnReached"];
+        private [
+            "_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
+            "_areaClear","_lastState","_taskDialog","_destinationReached","_currentTaskDialog","_startTime","_returnReached"
+        ];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;

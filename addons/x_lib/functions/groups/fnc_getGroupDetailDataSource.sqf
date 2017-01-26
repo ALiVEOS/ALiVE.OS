@@ -20,7 +20,7 @@ _datasource = call ALiVE_fnc_getGroupDetailDataSource
 
 Author:
 ARJay
- 
+
 Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
@@ -69,7 +69,7 @@ _values = [];
             _player = '[Player]';
         };
 
-        _leader = '';
+        private _leader = '';
         if(isFormationLeader _x) then {
             _leader = '*Leader*';
         };
@@ -87,7 +87,7 @@ _values = [];
         _values pushback (_x);
 
 
-        private ["_unitAmmo","_obj","_objConfig","_objName","_objPicture","_objMagazines","_objAmmo","_ammoType","_ammoRoundCount","_ammoMagazineCount","_ammoMax","_ammoConfig","_ammoName","_ammoPicture","_ammoTypeCount","_ammoName"];
+        private ["_unitAmmo","_obj","_objConfig","_objName","_objPicture","_objMagazines","_objAmmo","_ammoType","_ammoCount","_ammoTypeData","_ammoRoundCount","_ammoMagazineCount","_ammoMax","_ammoConfig","_ammoName","_ammoPicture","_ammoTypeCount","_ammoName"];
 
         _unitAmmo = _x call ALIVE_fnc_vehicleGetAmmo;
 

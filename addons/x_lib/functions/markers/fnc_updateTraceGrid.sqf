@@ -33,17 +33,15 @@ _grid = _this select 0;
 _fill = if (count _this > 1) then {_this select 1} else {"Solid"};
 
 {
-    private ["_pos","_gridPos","_markerID","_side"];
+    private _pos = getposATL _x;
+    private _side = side _x;
 
-    _pos = getposATL _x;
-    _side = side _x;
-
-    _cleared = [GVAR(TRACEGRID_STORE),str(_side),[]] call ALiVE_fnc_HashGet;
+    private _cleared = [GVAR(TRACEGRID_STORE),str(_side),[]] call ALiVE_fnc_HashGet;
 
     If ((_pos select 2) < 2 && {_x == vehicle _x})  then {
-        _gridPos = _pos call ALiVE_fnc_GridPos;
-        _markerID = format["ALiVE_TraceGrid_%1%2",_gridpos select 0,_gridPos select 1];
-        _nearEnemy = [_gridPos,str(_side), 75] call ALiVE_fnc_isEnemyNear;
+        private _gridPos = _pos call ALiVE_fnc_GridPos;
+        private _markerID = format["ALiVE_TraceGrid_%1%2",_gridpos select 0,_gridPos select 1];
+        private _nearEnemy = [_gridPos,str(_side), 75] call ALiVE_fnc_isEnemyNear;
 
         {
             if (_markerID == _x) exitwith {

@@ -9,7 +9,7 @@ switch true do {
         0 setfog [0.05,0.07,70];
         "Mediterranean" call BIS_fnc_setPPeffectTemplate;
 
-        _pos = [23562.354,21109.277,0.000];
+        private _pos = [23562.354,21109.277,0.000];
         [
             _pos,                        // Target position
             "",                        // SITREP text

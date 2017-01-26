@@ -22,7 +22,7 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_pos","_logics","_radius","_types","_instances","_houses"];
+private ["_pos","_logics","_radius","_types","_instances"];
 
 if (isnil "ALiVE_CQB") exitwith {};
 
@@ -35,16 +35,16 @@ if (!isnil "_logics") then {_instances = _logics} else {_instances = ALiVE_CQB g
 if (count _instances > 0) then {
 
     {
-        _instance = _x;
-        _filtered = [];
+        private _instance = _x;
+        private _filtered = [];
 
-        _instanceType = _x getvariable ["instancetype","regular"];
-        _houses = _instance getvariable ["houses",[]];
-        _housesPending = _instance getvariable ["houses_pending",[]];
-        _debug = [_instance,"debug"] call ALiVE_fnc_CQB;
+        private _instanceType = _x getvariable ["instancetype","regular"];
+        private _houses = _instance getvariable ["houses",[]];
+        private _housesPending = _instance getvariable ["houses_pending",[]];
+        private _debug = [_instance,"debug"] call ALiVE_fnc_CQB;
         _houses = _houses - _housesPending;
         _housesPending = _housesPending - _houses;
-        _housesTotal = _housesPending + _houses;
+        private _housesTotal = _housesPending + _houses;
 
         [_instance,"debug",false] call ALiVE_fnc_CQB;
 

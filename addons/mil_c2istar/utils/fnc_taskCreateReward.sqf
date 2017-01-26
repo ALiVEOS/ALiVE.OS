@@ -44,7 +44,7 @@ switch(_rewardType) do {
             _forcePool = [ALIVE_globalForcePool,_taskFaction] call ALIVE_fnc_hashGet;
 
             if (isNil "_forcePool") then {
-                _factions = _taskSide call ALiVE_fnc_getSideFactions;
+                private _factions = _taskSide call ALiVE_fnc_getSideFactions;
                 {
                     _forcePool = [ALIVE_globalForcePool,_x] call ALIVE_fnc_hashGet;
                     if (!isnil "_forcePool") exitWith {};

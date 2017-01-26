@@ -1,13 +1,16 @@
 #include <\x\alive\addons\mil_convoy\script_component.hpp>
 
-private ["_logic","_intensity"];
-
-_logic = _this select 0;
-_intensity = _logic getvariable ["conv_intensity_setting",1];
+private _logic = _this select 0;
+private _intensity = _logic getvariable ["conv_intensity_setting",1];
 
 for "_j" from 1 to _intensity do {
         [_logic,_j] spawn {
-                private ["_quit","_timeout","_startpos","_roadRadius","_destpos","_destroada","_destroad","_endpos","_endroad","_grp","_front","_wp","_j","_convoyLocs","_debug","_sleep","_type","_starttime","_locations","_pos","_size","_list","_marker_start","_marker_dest","_marker_end"];
+                private [
+                    "_quit","_timeout","_startpos","_roadRadius","_destpos","_destroada","_destroad",
+                    "_endpos","_endroad","_grp","_front","_wp","_j","_convoyLocs","_debug","_sleep",
+                    "_type","_starttime","_locations","_pos","_size","_list","_marker_start","_marker_dest",
+                    "_marker_end","_safeArea","_factionsConvoy"
+                ];
 
                 _logic = _this select 0;
                 _j = _this select 1;
@@ -59,7 +62,7 @@ for "_j" from 1 to _intensity do {
                         private ["_swag","_leader","_dir","_startroad","_list","_startroada","_pos","_loc"];
                         // Select a start position outside of player safe zone and not near base
 
-                        _fncSelectPos = {
+                        private _fncSelectPos = {
                             private ["_pos","_loc","_exit"];
 
                             _convoyLocs = _this;
@@ -102,8 +105,8 @@ for "_j" from 1 to _intensity do {
 
                         ["ALiVE MIL CONVOYS Start: %1 Dest.: %2 End: %3", _startpos,_destpos,_endpos] call ALiVE_fnc_Dump;
 
-                        _startposList = [];
-                        _i = 500;
+                        private _startposList = [];
+                        private _i = 500;
                         while {count _startposList < 15} do {
                             _startposList = _startpos nearRoads (_i + 100);
                         };
@@ -123,7 +126,7 @@ for "_j" from 1 to _intensity do {
                         _grp = nil;
                         _front = "";
 
-                        _fnc_SelectStartPosList = {
+                        private _fnc_SelectStartPosList = {
                             private ["_startpos","_return"];
 
                             _startpos = (_startposList select 0);
@@ -201,7 +204,7 @@ for "_j" from 1 to _intensity do {
                         {(vehicle _x) setVariable ["ALIVE_Convoy",true]} foreach (units _grp);
 
                         _starttime = time;
-                        _convoyTimeout = 3600;
+                        private _convoyTimeout = 3600;
 
                         {
                             if (_x == (driver vehicle _x)) then {

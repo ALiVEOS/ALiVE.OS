@@ -33,8 +33,10 @@ _result = [];
 switch (_taskState) do {
     case "init":{
 
-        private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskPlayers","_taskEnemyFaction","_taskCurrent",
-        "_taskApplyType","_taskEnemySide","_enemyClusters","_targetPosition","_returnPosition"];
+        private [
+            "_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskPlayers","_taskEnemyFaction","_taskCurrent",
+            "_taskApplyType","_tasksCurrent","_taskEnemySide","_enemyClusters","_targetPosition","_returnPosition"
+        ];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;
@@ -70,22 +72,22 @@ switch (_taskState) do {
             if (!isnil "OPCOM_instances") then {
 
                 //["Selecting Task location from OPCOMs"] call ALiVE_fnc_DumpR;
-                _triggerStates = ["defend","defending","reserve","reserving","idle","unassigned"];
-                _objectives = [];
+                private _triggerStates = ["defend","defending","reserve","reserving","idle","unassigned"];
+                private _objectives = [];
                 {
-                    _OPCOM = _x;
-                    _OPCOM_factions = [_OPCOM,"factions",""] call ALiVE_fnc_HashGet;
-                    _OPCOM_side = [_OPCOM,"side",""] call ALiVE_fnc_HashGet;
+                    private _OPCOM = _x;
+                    private _OPCOM_factions = [_OPCOM,"factions",""] call ALiVE_fnc_HashGet;
+                    private _OPCOM_side = [_OPCOM,"side",""] call ALiVE_fnc_HashGet;
 
                     //["Looking up correct OPCOM %1 for faction %2",_OPCOM_factions,_taskEnemyFaction] call ALiVE_fnc_DumpR;
                     if ({_x == _taskEnemyFaction} count _OPCOM_factions > 0) then {
-                        _OPCOM_objectives = [_OPCOM,"objectives",[]] call ALiVE_fnc_HashGet;
+                        private _OPCOM_objectives = [_OPCOM,"objectives",[]] call ALiVE_fnc_HashGet;
 
                         //["Looking up correct ones in %1 objectives for faction %2",count _OPCOM_objectives,_taskEnemyFaction] call ALiVE_fnc_DumpR;
                         {
-                            _OPCOM_objective = _x;
-                            _OPCOM_objective_state = [_OPCOM_objective,"opcom_state",""] call ALiVE_fnc_HashGet;
-                            _OPCOM_objective_center = [_OPCOM_objective,"center",[0,0,0]] call ALiVE_fnc_HashGet;
+                            private _OPCOM_objective = _x;
+                            private _OPCOM_objective_state = [_OPCOM_objective,"opcom_state",""] call ALiVE_fnc_HashGet;
+                            private _OPCOM_objective_center = [_OPCOM_objective,"center",[0,0,0]] call ALiVE_fnc_HashGet;
 
                             //["Matching state %1 in triggerstates %2 tasks %3 faction %4!",_OPCOM_objective_state,_triggerStates,_tasksCurrent,_taskFaction] call ALiVE_fnc_DumpR;
                                 if (
@@ -99,12 +101,12 @@ switch (_taskState) do {
                 } foreach OPCOM_instances;
 
                 if (count _objectives > 0) then {
-                    _objectives = [_objectives,[_taskLocation],{_Input0 distance ([_x,"center"] call ALiVE_fnc_HashGet)},"ASCEND",{
+                    private _objectives = [_objectives,[_taskLocation],{_Input0 distance ([_x,"center"] call ALiVE_fnc_HashGet)},"ASCEND",{
 
-                        _id = [_x,"opcomID",""] call ALiVE_fnc_HashGet;
-                        _pos = [_x,"center"] call ALiVE_fnc_HashGet;
-                        _opcom = [objNull,"getOPCOMbyid",_id] call ALiVE_fnc_OPCOM;
-                        _side = [_opcom,"side",""] call ALiVE_fnc_HashGet;
+                        private _id = [_x,"opcomID",""] call ALiVE_fnc_HashGet;
+                        private _pos = [_x,"center"] call ALiVE_fnc_HashGet;
+                        private _opcom = [objNull,"getOPCOMbyid",_id] call ALiVE_fnc_OPCOM;
+                        private _side = [_opcom,"side",""] call ALiVE_fnc_HashGet;
 
                         !([_pos,_side,500,true] call ALiVE_fnc_isEnemyNear) && {_pos distance _Input0 > 1200};
                     }] call ALiVE_fnc_SortBy;
@@ -338,8 +340,11 @@ switch (_taskState) do {
     };
     case "Rescue":{
 
-        private["_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
-        "_destinationReached","_taskIDs","_hostageSpawned","_hostageSpawnType","_lastState","_taskDialog","_currentTaskDialog","_hostageAnims","_startTime","_anims","_targetPosition"];
+        private [
+            "_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
+            "_destinationReached","_taskIDs","_hostageSpawned","_hostageSpawnType","_lastState","_taskDialog","_currentTaskDialog",
+            "_hostageAnims","_startTime","_activeFirst","_anims","_targetPosition"
+        ];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;
@@ -407,7 +412,7 @@ switch (_taskState) do {
 
 
                         _table setdir 0;
-                        _chair = createVehicle [_chairClass,position _table,[],3,"NONE"];
+                        private _chair = createVehicle [_chairClass,position _table,[],3,"NONE"];
 
                         _electronic = [_table,_electronicClass] call ALIVE_fnc_taskSpawnOnTopOf;
                         _document = [_table,_documentClass] call ALIVE_fnc_taskSpawnOnTopOf;
@@ -453,9 +458,9 @@ switch (_taskState) do {
                         [_hostage, format ["Rescue %1",name _hostage], "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","_this distance _target < 2", "_caller distance _target < 2", {}, {}, {_target setVariable ["rescued",true,true]; ["Rescue", format ["You have rescued %1!",name _target]] call BIS_fnc_showSubtitle;},{},[],8] remoteExec ["BIS_fnc_holdActionAdd",0];
 
                         // Chat update
-                        _formatChat = [_currentTaskDialog,"chat_update"] call ALIVE_fnc_hashGet;
-                        _formatMessage = _formatChat select 0;
-                        _formatMessageText = _formatMessage select 1;
+                        private _formatChat = [_currentTaskDialog,"chat_update"] call ALIVE_fnc_hashGet;
+                        private _formatMessage = _formatChat select 0;
+                        private _formatMessageText = _formatMessage select 1;
                         _formatMessageText = format[_formatMessageText, name _hostage, mapGridPosition _hostage];
                         _formatMessage set [1,_formatMessageText];
                         _formatChat set [0,_formatMessage];
@@ -524,7 +529,7 @@ switch (_taskState) do {
 
 							// Get closest player
 							private _saver = group ([_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition);
-                            
+
                             // End Hostage Anim
                             _anims = ([_hostageAnims, "unboundAnims"] call ALIVE_fnc_hashGet) select ([_hostageAnims, "index"] call ALiVE_fnc_hashGet);
                             _hostage playMove (selectRandom _anims);
@@ -534,9 +539,9 @@ switch (_taskState) do {
                             _hostage enableAI "MOVE";
                             _hostage setCaptive false;
                             _hostage switchmove "";
-                            
+
                             sleep 1;
-                            
+
                             // Join player group
                             [_hostage] joinSilent _saver;
 
@@ -564,8 +569,10 @@ switch (_taskState) do {
 
     case "Return":{
 
-        private["_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
-        "_areaClear","_lastState","_taskDialog","_destinationReached","_currentTaskDialog","_returnReached"];
+        private [
+            "_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
+            "_areaClear","_lastState","_taskDialog","_destinationReached","_currentTaskDialog","_startTime","_returnReached"
+        ];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;

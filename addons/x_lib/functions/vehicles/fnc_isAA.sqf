@@ -36,4 +36,4 @@ switch (typeName _class) do {
 _maxElev = getNumber(configfile >> "CfgVehicles" >> _class >> "Turrets" >> "MainTurret" >> "maxElev");
 _hasArtyScanner = getnumber(configfile >> "CfgVehicles" >> _class >> "artilleryScanner");
 
-_class iskindOf "LandVehicle" && {_maxElev > 65} && {_hasArtyScanner == 0};
+(_class iskindOf "LandVehicle" && {_maxElev > 65} && {_hasArtyScanner == 0});
