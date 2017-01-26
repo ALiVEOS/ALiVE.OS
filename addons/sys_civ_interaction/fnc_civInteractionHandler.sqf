@@ -27,7 +27,7 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-#define SUPERCLASS  ALIVE_fnc_baseClass
+#define SUPERCLASS  ALIVE_fnc_baseClassHash
 #define MAINCLASS   ALiVE_fnc_civInteractionHandler
 
 TRACE_1("Civ Interaction Handler - input", _this);
@@ -51,12 +51,22 @@ switch(_operation) do {
 
         if (isserver) then {
 
+            MOD(civInteractionHandler) = _logic;
+
             _logic setVariable ["initGlobal", false];
 
             _logic setVariable ["super", QUOTE(SUPERCLASS)];
             _logic setVariable ["class", QUOTE(MAINCLASS)];
             _logic setVariable ["moduleType", QUOTE(ADDON)];
             _logic setVariable ["startupComplete", false];
+
+            private _state = [] call ALiVE_fnc_hashCreate;
+            [_state,"asymmetricFactions", []] call ALiVE_fnc_hashSet;
+            [_state,"conventionalFactions", []] call ALiVE_fnc_hashSet;
+
+            [_logic,"debug", false] call MAINCLASS;
+            [_logic,"civilianRoles", []] call MAINCLASS;
+            [_logic,"state", _state] call MAINCLASS;
 
             [_logic,"start"] spawn MAINCLASS;
 
@@ -70,13 +80,16 @@ switch(_operation) do {
         // exit after 15 minutes to detect commanders who fail init
 
         private _timer = 0;
+        private _timeLimit = 60 * 20;
+
         waitUntil {
+            sleep 1;
             _timer = _timer + 1;
-            (_timer > 900) || {[QMOD(mil_OPCOM)] call ALiVE_fnc_isModuleInitialised};
+            (_timer > _timeLimit) || {[QMOD(mil_OPCOM)] call ALiVE_fnc_isModuleInitialised};
         };
 
-        if (_timer > 900) then {
-            ["[ALiVE] Civ Interaction - Military Commander stall timer reached"];
+        if (_timer > _timeLimit) then {
+            ["[ALiVE] Civ Interaction Handler - Military Commander stall timer reached"]; // don't exit
         };
 
         private _state = [_logic,"state"] call MAINCLASS;
@@ -100,6 +113,8 @@ switch(_operation) do {
         // set module as startup complete
 
         _logic setVariable ["startupComplete", true];
+
+        publicVariable QMOD(civInteractionHandler);
 
     };
 
@@ -146,22 +161,6 @@ switch(_operation) do {
         } else {
             _result = _logic getVariable [_operation,[]];
         };
-
-    };
-
-    case "onAction": {
-
-        _args params ["_operation","_args"];
-
-        /*
-        switch (_operation) do {
-
-            default {[_logic,_operation,_args] call MAINCLASS};
-
-        };
-        */
-
-        [_logic,_operation,_args] call MAINCLASS;
 
     };
 

@@ -22,17 +22,23 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_logic","_moduleID"];
-
 params ["_logic","_syncedObjects"];
 
 // Confirm init function available
 
 ASSERT_DEFINED("ALiVE_fnc_civInteraction","Main function missing");
+ASSERT_DEFINED("ALiVE_fnc_civInteractionHandler","Handler function missing");
+
+if (isServer) then {
+    MOD(civInteractionHandler) = [nil,"create"] call ALiVE_fnc_civInteractionHandler;
+    [MOD(civInteractionHandler),"init"] call ALiVE_fnc_civInteractionHandler;
+};
 
 if (isnil "_logic") then {_logic = [nil, "create"] call ALiVE_fnc_civInteraction};
 
-_moduleID = [_logic, true] call ALIVE_fnc_dumpModuleInit;
+MOD(sys_civ_interaction) = _logic;
+
+private _moduleID = [_logic, true] call ALIVE_fnc_dumpModuleInit;
 
 [_logic, "init", _syncedObjects] call ALiVE_fnc_civInteraction;
 

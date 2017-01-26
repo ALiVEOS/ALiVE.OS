@@ -1,6 +1,6 @@
-x\alive\addons\sys_orbatcreator
+x\alive\addons\sys_civ_interaction
 =======HEADER=======
-prefix=x\alive\addons\sys_orbatcreator
+prefix=x\alive\addons\sys_civ_interaction
 Mikero=DePbo.dll
 product=Arma 3
 version=1

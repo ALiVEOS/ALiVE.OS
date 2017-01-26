@@ -20,6 +20,7 @@ Examples:
 
 See Also:
 - <ALiVE_fnc_civInteractionInit>
+- <ALiVE_fnc_civInteractionHandler>
 
 Author:
 SpyderBlack723
@@ -73,15 +74,11 @@ switch(_operation) do {
             _logic setVariable ["moduleType", QUOTE(ADDON)];
             _logic setVariable ["startupComplete", false];
 
-            // get module settings
-
-            private _debug = call compile (_logic getVariable "debug");
-
             private _state = [] call ALiVE_fnc_hashCreate;
             [_state,"asymmetricFactions", []] call ALiVE_fnc_hashSet;
             [_state,"conventionalFactions", []] call ALiVE_fnc_hashSet;
 
-            [_logic,"debug", _debug] call MAINCLASS;
+            [_logic,"debug", false] call MAINCLASS;
             [_logic,"state", _state] call MAINCLASS;
 
             ADDON = _logic;
@@ -94,36 +91,17 @@ switch(_operation) do {
 
     case "start": {
 
-        // wait for all mil commanders to init
-        // exit after 15 minutes to detect commanders who fail init
-
-        private _timer = 0;
         waitUntil {
-            _timer = _timer + 1;
-            (_timer > 900) || {[QMOD(mil_OPCOM)] call ALiVE_fnc_isModuleInitialised};
+            !isnil QMOD(civInteractionHandler) && {[MOD(civInteractionHandler),"startupComplete"] call ALiVE_fnc_hashGet};
         };
 
-        if (_timer > 900) then {
-            ["[ALiVE] Civ Interaction - Military Commander stall timer reached"];
-        };
+        private _asymFac = [MOD(civInteractionHandler),"asymmetricFactions"] call ALiVE_fnc_hashGet;
+        private _convenFac = [MOD(civInteractionHandler),"conventionalFactions"] call AliVE_fnc_hashGet;
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _asymFac = [_state,"asymmetricFactions"] call ALiVE_fnc_hashGet;
-        private _convenFac = [_state,"conventionalFactions"] call AliVE_fnc_hashGet;
 
-        {
-            if ([_x,"startupComplete"] call ALiVE_fnc_hashGet) then {
-
-                private _factions = [_x,"factions"] call ALiVE_fnc_hashGet;
-
-                if (([_x,"controltype"] call ALiVE_fnc_hashGet) == "asymmetric") then {
-                    _asymFac append _factions;
-                } else {
-                    _convenFac append _factions;
-                };
-
-            };
-        } foreach OPCOM_instances;
+        [_state,"asymmetricFactions", _asymFac] call ALiVE_fnc_hashSet;
+        [_state,"conventionalFactions", _convenFac] call ALiVE_fnc_hashSet;
 
         // set module as startup complete
 

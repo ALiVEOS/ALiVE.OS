@@ -3,5 +3,5 @@
 #include <CfgPatches.hpp>
 //#include <CfgVehicles.hpp>
 #include <CfgFunctions.hpp>
-//#include <data\ui\main.hpp>
+#include <data\ui\main.hpp>
 #include <eventhandlers.hpp>
