@@ -39,13 +39,6 @@ private ["_playerGroup","_unit"];
 
 _unit = _this select 0;
 
-// Addresses race condition at module start
-if (isNil QGVAR(groupTag)) then {
-    private _waitTime = diag_tickTime + 100000;
-
-    waitUntil {!isNil QGVAR(groupTag) || diag_tickTime > _waitTime};
-};
-
 if !(_unit isKindof "Man") then {
     switch (true) do {
         case (isPlayer (commander _unit)) : {_playerGroup =    (commander _unit) getvariable [QGVAR(playerGroup), GVAR(groupTag)];};
