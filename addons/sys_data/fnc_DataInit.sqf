@@ -271,7 +271,7 @@ if (isDedicated) then {
 
             // Update CIV PLACEMENT Module so that roadblocks are not duplicated
             ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS = [MOD(PCOMPOSITIONS),"roadblock_locs",[]] call ALiVE_fnc_hashGet;
-            ALIVE_CIV_PLACEMENT_ROADBLOCKS = [MOD(PCOMPOSITIONS),"roadblocks",[]] call ALiVE_fnc_hashGet;
+            ALIVE_CIV_PLACEMENT_ROADBLOCKS = [MOD(PCOMPOSITIONS),"comp_roadblocks",[]] call ALiVE_fnc_hashGet; // Should be in 1.2.9
 
             // Get all spawned composition data
             private _compositions = [MOD(PCOMPOSITIONS),"compositions",[[],[]]] call ALiVE_fnc_hashGet;
