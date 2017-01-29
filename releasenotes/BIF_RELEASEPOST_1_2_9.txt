@@ -1,0 +1,89 @@
+[center][url=https://github.com/ALiVEOS/ALiVE.OS.git][img=http://i.imgur.com/RFX0nkZ.jpg][/url][/center]
+[center][b][url=http://alivemod.com/]ALiVEmod.com[/url]
+[size=4]The next generation dynamic persistent mission addon for ArmA3[/size][/b][/center]
+[center][b]Release 1.2.9[/b][/center]
+[center][/center]
+ 
+[b]Bug Smashing[/b]
+
+Thanks to our wonderful community of ALiVE users we continue to fix reported bugs and slowly enhance ALiVE. This release addresses a number of issues with our stats, data and auto initialisation of AAR as well as a few other fixes and optimsations. We appreciate your patience as we strive to Release Early and Release Often!
+
+[b]Release Highlights[/b]
+
+    Fix to AAR so sys_data_auto.pbo now truely does default to on for AAR!
+    Koplic re-indexed!
+    More improvements to tasks
+    Added speed modifier for combat speed of profiles
+    Fix issue where compositions and roadblocks were still not saved correctly, causing a hung loading screen
+    Improved ALiVE plugin server config parsing
+    Numerous bug fixes and enhancements 
+
+[b]The grim details of bugs slain in the name of Arma[/b]
+[SYS_STATISTICS] Updated statistics init so to avoid race condition with setting of public variables over the network
+[SYS_DATA] Missing update in release
+[SYS LOGISTICS] Do not save to sys logistics store if inventoryClosed fires on a unit (fix #270)
+[SYS_DATA] Fix error handling issue.
+[MAIN] Remove waitUntil from isModuleInitialised
+[ALiVEPlugIn] Aliveplugin calling invalid config location #264
+[SYS STATISTICS] Fixed race condition in sys stats where sys stats was broken for players (very visible on start of a freshly started server; fix #265)
+[SYS_DATA] Fix issue where mission is stuck on loading screen if corrupt array data.
+[SYS_PROFILE] Fixed incorrect initialization of combatrate variable in profile
+[INDEX] Updated Object Blacklist
+[C2ISTAR] Missed to re-enable HVT insertion and extraction (only static was enabled for testing)
+[X_LIB] Fixed regression in fnc_getCompositions that caused infinite loading screen and prevented use of compositions on APEX maps if optional APEX compositions pbo was not loaded
+[X_LIB] Update fnc_getCompositions.sqf
+Update alive_object_blacklist.txt (#258)
+[C2ISTAR] Improved scenery of Task Assassination in case "static" (ambient objects were sometimes flipping or dropping to floor, HVTs were moving away from the ambient objects).
+[C2ISTAR] Fix script error on task "destroy vehicles" if no vehicle profile of selected faction is existing (fix #253)
+[VARIOUS] Fix unprivatized variables
+[INDEX] Re-index Koplic 0.4
+[X_LIB] Private variables for getCompositions, for Spyder. Fix infinite loop on incorrect params.
+[SYS_DATA] Improve error messages
+[SYS_DATA] Fix issue where sys_data_auto did not init data and stats correctly, fix issue where vehicle data could overwrite inf data in AAR
+[X_LIB] Fix unprivatized variables
+[SYS_PROFILE] Add virtual combat speed modifier variable to module options
+[SYS_PROFILE] Remove remaining battle code, reduce combat related function calls
+[C2ISTAR] Fixed Insertion helicopter was hovering on spot and not returning in some tasks! Improved scene creation in HVT task (e.g. furniture and HVT being placed away from main composition)
+[MIL_LOGISTICS] Fixed script error on slingloadmax where value not defined
+[SYS_DATA] Fix issue where AAR stops when auto started
+[AMB_CIV] #205 Single group maintained for all ambient civilians
+[AMB_CIV] #205 Simplified ambient vehicles chance algo
+[SYS_PROFILE] Increase profile attack distance, reduce profile combat rate, remove legacy battle code
+[SYS_PROFILE] Fix issue where the profile simulator could freeze
+[SYS_PROFILE] Improve variable scoping
+[SYS_AISKILL] Fix missing fleeing value in generic skill sets
+
+Thanks to everyone for feedback both here and on our forum!
+[center][b][url=http://alivemod.com/#Download]Download[/url][/b]
+Grab the latest version from [url=http://alivemod.com/#Download]ALiVEmod.com[/url]
+Also available from PlayWithSix, ArmAholic and Steam (Usually within 24 hours of this post)[/center]
+[center][b][url=http://alivemod.com/#ALiVEWarRoom]Join the War Room Now![/url][/b][/center]
+
+Please note that as with all updates, if you have an issue loading a mission made with a previous version of ALiVE, delete and replace the modules in that mission.
+
+See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
+
+[b]More Maps?[/b]
+The momentum is really beginning to build with the indexing tools and we are cracking through the [url=https://github.com/ALiVEOS/ALiVE.OS/issues/9]backlog[/url]. Instructions for using the Map Indexer can be found [url=http://alivemod.com/wiki/index.php/Map_Indexing]on our wiki [/url]
+
+[b]Known Issues & Support[/b]
+Existing bugs are listed on Github [url=https://github.com/ALiVEOS/ALiVE.OS/issues]here[/url]. Feel free to submit bugs (with repros) or discuss any issues or ideas on our forum at [url=http://alivemod.com/forum/]http://alivemod.com/forum/[/url].
+
+[b]Manual[/b]
+Please refer to the [url=http://www.alivemod.com/wiki]ALiVE Wiki[/url]. All the info you need is there. If anything is missing or unclear, please let us know.
+
+[b]Are you using Linux?[/b]
+ALiVE is fully supported on a Linux Dedicated Server (as well as Windows). In fact the ALiVE Official Server for testing is running Ubuntu. Here are some tips on getting ALiVE running smoothly on Linux and integrated with War Room - [url=http://www.alivemod.com/forum/1916-setting-up-linux-dedi-server]http://www.alivemod.com/forum/1916-setting-up-linux- dedi-server[/url]
+
+[b]Acknowledgements and Thanks[/b]
+Particular thanks to all those on our support forum who have worked closely with us to identify bugs, provide logs and generally help us improve ALiVE. Your assistance is valuable and your dedication to ALiVE makes it all worth the effort!
+
+[b]Disclaimer[/b]
+We may need to prune the persistent database data from the War Room, eliminating data that is older than 6-12 months. The ALiVE War Room database is run on a voluntary basis at a cost to the ALiVE development team. No guarantees can be given on the mission data stored or the availability of the service. We apologise for any downtime that may impact your MP persistent missions.
+
+[b]ALiVE has transformed my Arma 3 experience, how can I thank you?[/b]
+Please consider making a contribution to our server costs if you enjoy ALiVE! It costs us $65 per month to run our War Room website and the ALiVE Database servers and every little helps. Donate here [url=http://www.alivemod.com/#Donate]http://www.alivemod.com/#Donate[/url]
+
+Special thanks to everyone here for supporting us with donations to the ALiVE mod development effort.
+
+Have fun!
