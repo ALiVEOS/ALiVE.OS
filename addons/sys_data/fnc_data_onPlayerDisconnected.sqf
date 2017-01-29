@@ -56,7 +56,7 @@ if (_name == "__SERVER__") then {
 
             if (["ALiVE_civ_placement"] call ALiVE_fnc_isModuleAvailable) then {
                 [MOD(PCOMPOSITIONS),"roadblock_locs",ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS] call ALiVE_fnc_hashSet;
-                [MOD(PCOMPOSITIONS),"comp_roadblocks",ALIVE_CIV_PLACEMENT_ROADBLOCKS] call ALiVE_fnc_hashSet;
+                [MOD(PCOMPOSITIONS),"comp_roadblocks",ALIVE_CIV_PLACEMENT_ROADBLOCKS] call ALiVE_fnc_hashSet; // Should be in 1.2.9
             };
 
             _missionName = format["%1_%2_COMPOSITIONS", GVAR(GROUP_ID), missionName];
