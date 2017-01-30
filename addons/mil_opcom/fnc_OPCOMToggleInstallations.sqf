@@ -60,7 +60,7 @@ _markers = [];
 
                 _id = [_objective,"objectiveID",""] call ALiVE_fnc_HashGet;
                 _size = [_objective,"size",150] call ALiVE_fnc_HashGet;
-                _type = [_objective,"type","none"] call ALiVE_fnc_HashGet;
+                _type = [_objective,"objectiveType","none"] call ALiVE_fnc_HashGet;
 
                 _factory = [_OPCOM_HANDLER,"convertObject",[_objective,"factory",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
                 _HQ = [_OPCOM_HANDLER,"convertObject",[_objective,"HQ",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
