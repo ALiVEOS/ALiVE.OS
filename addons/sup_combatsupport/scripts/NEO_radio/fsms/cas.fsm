@@ -1,4 +1,4 @@
-/*%FSM<COMPILE "scriptedFSM.cfg, cas">*/
+/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, cas">*/
 /*%FSM<HEAD>*/
 /*
 item0[] = {"react",0,250,-37.443069,45.098049,52.556931,95.098053,0.000000,"react"};
@@ -26,15 +26,15 @@ item21[] = {"",7,210,145.559280,257.188538,153.559265,265.188477,0.000000,""};
 item22[] = {"UAV",4,218,575.876282,501.508240,665.876404,551.508240,0.000000,"UAV"};
 item23[] = {"__6",2,250,564.446228,770.174377,654.446350,820.174255,0.000000,""};
 item24[] = {"loiter",4,218,104.956596,324.702759,194.956772,374.702789,0.000000,"loiter"};
-item25[] = {"__7",2,4346,99.448303,402.363922,189.448273,452.364075,0.000000,""};
+item25[] = {"__7",2,250,99.448303,402.363922,189.448273,452.364075,0.000000,""};
 item26[] = {"at_position",4,218,104.708717,498.562134,194.708710,548.562134,0.000000,"at position"};
 item27[] = {"__8",2,250,102.770233,578.284058,192.770218,628.284058,0.000000,""};
 item28[] = {"Attack",4,218,236.318878,328.071045,326.319061,378.071075,0.000000,"Attack"};
-item29[] = {"__9",2,250,234.178848,409.100464,324.178833,459.100586,0.000000,""};
+item29[] = {"__9",2,250,231.784821,410.297485,321.784790,460.297638,0.000000,""};
 item30[] = {"nr_position",4,218,236.070999,501.930420,326.070984,551.930481,0.000000,"nr position"};
 item31[] = {"__10",2,250,236.055298,615.580505,326.055267,665.580505,0.000000,""};
 item32[] = {"",7,210,270.519501,264.013885,278.519501,272.013885,0.000000,""};
-item33[] = {"__11",2,250,405.681854,578.019287,495.681854,628.019287,0.000000,""};
+item33[] = {"__11",2,4346,405.681854,578.019287,495.681854,628.019287,0.000000,""};
 item34[] = {"at_base",4,218,500.489563,627.793274,590.489563,677.793274,0.000000,"at base"};
 link0[] = {0,1};
 link1[] = {0,3};
@@ -81,10 +81,11 @@ link41[] = {30,31};
 link42[] = {31,16};
 link43[] = {32,11};
 link44[] = {32,28};
-link45[] = {33,34};
-link46[] = {34,15};
-globals[] = {0.000000,0,0,0,0,640,480,1,66,6316128,1,-403.809967,771.672485,932.668884,-206.866089,981,951,1};
-window[] = {2,-1,-1,-1,-1,937,200,1460,200,3,999};
+link45[] = {33,16};
+link46[] = {33,34};
+link47[] = {34,15};
+globals[] = {0.000000,0,0,0,0,640,480,1,66,6316128,1,-462.584076,830.446533,960.775757,-262.468079,982,929,1};
+window[] = {2,-1,-1,-1,-1,935,198,1458,198,3,999};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -1306,6 +1307,56 @@ class FSM
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
       {
+        /*%FSM<LINK "killed">*/
+        class killed
+        {
+          priority = 50.000000;
+          to="end1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/"private [""_aliveAsset"",""_canMoveAsset"",""_aliveDriver"",""_damaged""];" \n
+           "" \n
+           "_aliveAsset = alive _veh;" \n
+           "_canMoveAsset = canMove _veh;" \n
+           "_damaged = (damage _veh) > 0.1;" \n
+           "_aliveDriver = alive driver _veh;" \n
+           ""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!_aliveAsset" \n
+           "||" \n
+           "{!_canMoveAsset && {_damaged}}" \n
+           "||" \n
+           "{!_aliveDriver}"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_veh setVariable [""NEO_radioCasUnitStatus"", ""KILLED"", true];" \n
+           "" \n
+           "deleteVehicle _h;"/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "New_Task">*/
+        class New_Task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _veh getVariable ""NEO_radioCasNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"if(_restoreAmmo) then {" \n
+           "    _restoreAmmo = false;" \n
+           "    [_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
+           "};" \n
+           "" \n
+           "_taskArray = _veh getVariable ""NEO_radioCasNewTask"";" \n
+           "_task = _taskArray select 0;" \n
+           "_posCas = _taskArray select 1;" \n
+           "_radiusCas = _taskArray select 2;" \n
+           "_flyInHeight = _taskArray select 3;" \n
+           "_weapon =  _taskArray select 4;" \n
+           "_ROE = _taskArray select 5;" \n
+           "_player = _taskArray select 6;" \n
+           "" \n
+           "_veh setVariable [""NEO_radioCurrentTask"",_veh getVariable ""NEO_radioCasNewTask"", true];" \n
+           "_veh setVariable [""NEO_radioCasNewTask"", nil, true];" \n
+           "" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
         /*%FSM<LINK "at_base">*/
         class at_base
         {
@@ -1324,7 +1375,7 @@ class FSM
   initState="react";
   finalStates[] =
   {
-    "end1"
+    "end1",
   };
 };
 /*%FSM</COMPILE>*/
