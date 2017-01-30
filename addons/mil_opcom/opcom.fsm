@@ -168,7 +168,7 @@ class FSM
        "                                    _id = format[""OPCOM_objective_%1_%2"",_side,_foreachIndex]; [_target, ""objectiveID"",_id] call ALIVE_fnc_HashSet;" \n
        "                                    _pos = _x select 0; [_target, ""center"",_pos] call ALIVE_fnc_HashSet;" \n
        "                                    _size = _x select 1; [_target, ""size"",_size] call ALIVE_fnc_HashSet;" \n
-       "                                    _type = _x select 2; [_target, ""type"",_type] call ALIVE_fnc_HashSet;" \n
+       "                                    _type = _x select 2; [_target, ""objectiveType"",_type] call ALIVE_fnc_HashSet;" \n
        "                                    _priority = _x select 3; [_target, ""priority"",_priority] call ALIVE_fnc_HashSet;" \n
        "                                    _opcom_state = ""unassigned""; [_target, ""opcom_state"",_opcom_state] call ALIVE_fnc_HashSet;" \n
        "                        " \n
