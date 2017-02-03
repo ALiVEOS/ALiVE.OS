@@ -47,18 +47,21 @@ params [
     ["_args", objNull, [objNull,[],"",0,true,false]]
 ];
 
+
 switch(_operation) do {
 
     case "init": {
 
         if (isServer) then {
 
-            [_logic,"super"] call ALiVE_fnc_hashRem;
-            [_logic,"class"] call ALiVE_fnc_hashRem;
+            [_logic,"super", QUOTE(SUPERCLASS)] call ALiVE_fnc_hashSet;
+            [_logic,"class", QUOTE(MAINCLASS)] call ALiVE_fnc_hashSet;
 
-            [_logic,"debug",false] call ALiVE_fnc_hashSet;
-            [_logic,"moduleCount",0] call ALiVE_fnc_hashSet;
-            [_logic,"modules",[] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
+            [_logic,"debug", false] call ALiVE_fnc_hashSet;
+            [_logic,"moduleCount", 0] call ALiVE_fnc_hashSet;
+            [_logic,"modules", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
+
+            [_logic,"startupComplete", true] call ALiVE_fnc_hashSet;
 
         };
 

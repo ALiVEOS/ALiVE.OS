@@ -13,9 +13,3 @@ class CfgPatches {
         authorUrl = "http://alivemod.com/";
     };
 };
-class Extended_InitPost_EventHandlers {
-    class ADDON {
-        init = QUOTE(call COMPILE_FILE(XEH_postInit));
-    };
-};
-

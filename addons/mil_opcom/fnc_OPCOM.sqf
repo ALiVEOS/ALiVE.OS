@@ -59,11 +59,6 @@ params [
     ["_args", objNull, [objNull,[],"",0,true,false]]
 ];
 
-/*
-TODO:
-
-1. All methods should take an OPCOM object not datahandler hash
-*/
 
 switch(_operation) do {
 
@@ -92,7 +87,7 @@ switch(_operation) do {
         _OPCOM_FSM setFSMvariable ["_exitFSM",true];
 
         private _registryID = [_logic,"registryID"] call MAINCLASS;
-        [ALiVE_OPCOMGlobalRegistry,"unregister", _registryID] call ALiVE_fnc_OPCOMGlobalRegistry;
+        [MOD(OPCOMGlobalRegistry),"unregister", _registryID] call ALiVE_fnc_OPCOMGlobalRegistry;
 
         _logic setVariable ["super", nil];
         _logic setVariable ["class", nil];
@@ -401,6 +396,15 @@ switch(_operation) do {
 
             OPCOM_instances pushback _handler;
 
+            // register with global registry
+
+            if (isnil QMOD(OPCOMGlobalRegistry)) then {
+                MOD(OPCOMGlobalRegistry) = [nil,"create"] call ALiVE_fnc_OPCOMGlobalRegistry;
+                [MOD(OPCOMGlobalRegistry),"init"] call ALiVE_fnc_OPCOMGlobalRegistry;
+            };
+
+            [MOD(OPCOMGlobalRegistry),"register", _logic] call ALiVE_fnc_OPCOMGlobalRegistry;
+
             // create global intel chance datahandler
 
             if (isnil QMOD(MIL_OPCOM_INTELCHANCE)) then {
@@ -672,103 +676,131 @@ switch(_operation) do {
     };
 
     case "cleanupduplicatesections": {
-        private ["_objectives","_objective","_section","_proID","_state","_size_reserve","_pending_orders","_profile","_wayPoints","_orders","_profileIDs"];
 
-            _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
-            _pending_orders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
-            _size_reserve = [_logic,"sectionsamount_reserve",1] call ALiVE_fnc_HashGet;
-            _factions = [_logic,"factions"] call ALiVE_fnc_HashGet;
-            //_profileIDs = [ALiVE_profileHandler, "getProfilesBySide",[_logic,"side"] call ALiVE_fnc_HashGet] call ALiVE_fnc_profileHandler;
+        private _handler = [_logic,"handler"] call MAINCLASS;
 
-            _profileIDs = [];
-            {
-                _profileIDs = _profileIDs + ([ALiVE_profileHandler, "getProfilesByFaction",_x] call ALiVE_fnc_profileHandler);
-            } foreach _factions;
+        private _objectives = [_handler,"objectives", []] call ALiVE_fnc_HashGet;
+        private _size_reserve = [_handler,"sectionsamount_reserve", 1] call ALiVE_fnc_HashGet;
+        private _factions = [_handler,"factions", []] call ALiVE_fnc_HashGet;
+
+        private _profileIDs = [];
+        {
+            _profileIDs append ([MOD(profileHandler), "getProfilesByFaction", _x] call ALiVE_fnc_profileHandler);
+        } foreach _factions;
+
+        private _idlestates = ["unassigned","idle"];
 
         {
-            private ["_objective","_section","_state","_idlestates","_wps"];
+            private _objective = _x;
+            private _section = [_objective,"section",[]] call ALiVE_fnc_HashGet;
+            private _state = [_objective,"opcom_state",[]] call ALiVE_fnc_HashGet;
 
-            _objective = _x;
-            _section = [_objective,"section",[]] call ALiVE_fnc_HashGet;
-            _state = [_objective,"opcom_state",[]] call ALiVE_fnc_HashGet;
-            _idlestates = ["unassigned","idle"];
+            private _waypointCount = 0;
 
-            _wps = 0;
             {
-                private ["_profile"];
-
-                _profile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
+                private _profile = [MOD(ProfileHandler),"getProfile", _x] call ALiVE_fnc_ProfileHandler;
 
                 if !(isnil "_profile") then {
-                    _wps = _wps + (count (_profile select 2 select 16));
+                    _waypointCount = _waypointCount + (count (_profile select 2 select 16));
                 } else {
-                    [_logic,"resetorders",_x] call ALiVE_fnc_OPCOM;
+                    [_handler,"resetorders", _x] call MAINCLASS;
                 };
             } foreach _section;
 
-            _section = [_objective,"section",_section] call ALiVE_fnc_HashGet;
-            if (!(_state in _idlestates) && {count _section > 0} && {_wps == 0}) then {
-                {[_logic,"resetorders",_x] call ALiVE_fnc_OPCOM} foreach _section;
-                [_logic,"resetObjective",([_objective,"objectiveID"] call ALiVE_fnc_HashGet)] call ALiVE_fnc_OPCOM;
+            if (!(_state in _idlestates) && {count _section > 0} && {_waypointCount == 0}) then {
+                {
+                    [_handler,"resetorders", _x] call MAINCLASS;
+                } foreach _section;
+
+                [_handler,"resetObjective", ([_objective,"objectiveID"] call ALiVE_fnc_HashGet)] call MAINCLASS;
             };
         } foreach _objectives;
+
     };
 
     case "NearestAvailableSection": {
 
-        private ["_st","_troopsunsorted","_types","_pos","_size","_troops","_busy","_section","_reserved","_profileIDs","_profile"];
+        _args params ["_pos","_size",["_types", ["infantry"]]];
 
-        _pos = _args select 0;
-        _size = _args select 1;
-        if (count _args > 2) then {_types = _args select 2} else {_types = ["infantry"]};
+        private _handler = [_logic,"handler"] call MAINCLASS;
 
-        _troops = [];
+        private _troops = [];
+
         {
-            _troops = _troops + ([_logic,_x,[]] call ALiVE_fnc_HashGet);
+            _troops append ([_handler,_x, []] call ALiVE_fnc_HashGet);
         } foreach _types;
 
-        //subtract busy and reserved profiles
-        _busy = [];
-        {_busy pushback (_x select 1)} foreach ([_logic,"pendingorders",[]] call ALiVE_fnc_HashGet);
-        {_busy = _busy + ([_x,"section",[]] call ALiVE_fnc_HashGet)} foreach ([_logic,"objectives",[]] call ALiVE_fnc_HashGet);
-        _reserved = [_logic,"ProfileIDsReserve",[]] call ALiVE_fnc_HashGet;
+        // ignore busy and reserved profiles
+
+        private _busy = [];
+
+        {
+            _busy pushback (_x select 1);
+        } foreach ([_handler,"pendingorders", []] call ALiVE_fnc_HashGet);
+
+        {
+            _busy append ([_x,"section", []] call ALiVE_fnc_HashGet);
+        } foreach ([_handler,"objectives", []] call ALiVE_fnc_HashGet);
+
+        private _reserved = [_handler,"ProfileIDsReserve", []] call ALiVE_fnc_HashGet;
+
         _busy = _busy - _reserved;
 
         if (_size >= 5) then {
             _troops = _troops - _reserved;
         } else {
-            _troops = _troops - (_busy + _reserved);
+            _troops = _troops - _busy;
+            _troops = _troops - _reserved;
         };
 
-        _st = 2000;
-        while
-        {
+        private _searchRadius = 2000;
+        private _troopsUnsorted = [];
+        private _opcomSide = [_handler,"side", "EAST"] call ALiVE_fnc_HashGet;
 
-            _nearProfiles = [_pos, _st, [([_logic,"side","EAST"] call ALiVE_fnc_HashGet),"entity"]] call ALiVE_fnc_getNearProfiles;
+        while {
+            private _nearProfiles = [_pos, _searchRadius, [_opcomSide, "entity"]] call ALiVE_fnc_getNearProfiles;
             _troopsUnsorted = [];
-            {
-                _pi = _x select 2 select 4;
-                _pp = _x select 2 select 2;
 
-                if (_pi in _troops) then {_troopsUnsorted pushBack _pi};
+            {
+                private _profileID = _x select 2 select 4;
+
+                if (_profileID in _troops) then {
+                    _troopsUnsorted pushBack _profileID;
+                };
             } foreach _nearProfiles;
 
-            ((count _troopsUnsorted <= _size) && {_st < 15000});
+            ((count _troopsUnsorted <= _size) && {_searchRadius < 15000});
         } do {
-            _st = _st + 2000;
+            _searchRadius = _searchRadius + 2000;
         };
 
-        //Sort by distance
-        _troops = [_troopsUnsorted,[_pos],{if !(isnil "_x") then {_p = nil; _p = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler; if !(isnil "_p") then {([_p,"position",_Input0] call ALiVE_fnc_HashGet) distance _Input0} else {99999}} else {99999}},"ASCEND"] call ALiVE_fnc_SortBy;
+        // sort by distance
 
-        //Collect section
-        _section = [];
+        private _sortCode = {
+            if !(isnil "_x") then {
+                private _p = nil;
+                _p = [MOD(ProfileHandler),"getProfile", _x] call ALiVE_fnc_ProfileHandler;
+
+                if !(isnil "_p") then {
+                    ([_p,"position", _Input0] call ALiVE_fnc_HashGet) distance _Input0;
+                } else {
+                    99999;
+                };
+            } else {
+                99999;
+            };
+        };
+
+        _troops = [_troopsUnsorted, [_pos], _sortCode, "ASCEND"] call ALiVE_fnc_SortBy;
+
+        // collect section
+
+        private _section = [];
+
         {
-            private ["_profile","_busy"];
-
             if (count _section == _size) exitwith {};
 
-            _profile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
+            private _profile = [MOD(ProfileHandler),"getProfile", _x] call ALiVE_fnc_ProfileHandler;
 
             if (!isnil "_profile" && {!([_profile,"busy",false] call ALiVE_fnc_HashGet)}) then {
                 _section pushback _x;
@@ -776,50 +808,54 @@ switch(_operation) do {
         } foreach _troops;
 
         _result = _section;
+
     };
 
     case "entitiesnearsector": {
-            ASSERT_TRUE(typeName _args == "ARRAY",str _args);
 
-            private ["_ent","_entArr","_side","_pos","_posP","_id","_profiles"];
+        _args params ["_pos","_side","_requireVisibility"];
 
-            _pos = _args select 0; _pos set [2,0];
-            _side = _args select 1;
-            _canSee = _args select 2;
+        _pos set [2,0];
 
-            _ent = [];
-            _entArr = [];
-            _seeArr = [];
+        private _ent = [];
+        private _enemyProfiles = [];
+        private _visibleEnemyProfiles = [];
 
-            if (isnil "_pos") exitwith {_result = []; _result};
+        if (isnil "_pos") exitwith {_result = []};
 
-            _profiles = [_pos, 800, [_side,"entity"]] call ALiVE_fnc_getNearProfiles;
-            {
-                if (count _profiles > 0) then {
-                    _entArr pushback [(_x select 2 select 4),(_x select 2 select 2)];
-                };
-            } foreach _profiles;
-            _result = _entArr;
+        private _profiles = [_pos, 800, [_side,"entity"]] call ALiVE_fnc_getNearProfiles;
 
-            if (_canSee) then {
+        {
+            _enemyProfiles pushback [(_x select 2 select 4),(_x select 2 select 2)];
+        } foreach _profiles;
 
-                _pos = ATLtoASL _pos;
-                _pos set [2,(_pos select 2) + 2];
+        _result = _enemyProfiles;
 
-                if ({(_x select 1) distance _pos < 600} count _entArr > 0) then {
-                    {
-                        _id = _x select 0;
-                        (_x select 1) set [2,0];
-                        _posP = ATLtoASL (_x select 1);
-                        _posP set [2,(_posP select 2) + 2];
+        if (_requireVisibility) then {
 
-                        if (((_x select 1) distance _pos < 500) && {!(terrainIntersectASL [_pos, _posP])}) then {
-                            _seeArr pushback _x;
+            _pos = ATLtoASL _pos;
+            _pos set [2,(_pos select 2) + 2];
+
+            if ({(_x select 1) distance _pos < 600} count _enemyProfiles > 0) then {
+                {
+                    private _profileID = _x select 0;
+                    private _profilePos = _x select 1;
+
+                    if (_profilePos distance _pos < 600) then {
+                        private _profilePosASL = [_profilePos select 0, _profilePos select 1, 0];
+                        _profilePosASL = ATLtoASL _profilePosASL;
+                        _profilePosASL set [2,(_profilePosASL select 2) + 2];
+
+                        if ((_profilePos distance _pos < 500) && {!(terrainIntersectASL [_pos, _profilePosASL])}) then {
+                            _visibleEnemyProfiles pushback _x;
                         };
-                    } foreach _entArr;
-                };
-                _result = _seeArr;
+                    };
+                } foreach _enemyProfiles;
             };
+
+            _result = _visibleEnemyProfiles;
+        };
+
     };
 
     case "attackentity": {
@@ -974,88 +1010,84 @@ switch(_operation) do {
     };
 
     case "setorders": {
-            ASSERT_TRUE(typeName _args == "ARRAY",str _args);
 
-            private ["_section","_profile","_profileID","_objectiveID","_pos","_orders","_pending_orders","_objectives","_id"];
+        _args params ["_pos","_profileID","_objectiveID","_orders"];
 
-            _pos = _args select 0;
-            _profileID = _args select 1;
-            _objectiveID = _args select 2;
-            _orders = _args select 3;
-            _TACOM_FSM = [_logic,"TACOM_FSM"] call ALiVE_fnc_HashGet;
-            _objectives = [_logic,"objectives"] call ALiVE_fnc_HashGet;
+        private _TACOM_FSM = [_logic,"TACOM_FSM"] call ALiVE_fnc_HashGet;
+        private _objectives = [_logic,"objectives", []] call ALiVE_fnc_HashGet;
 
-            {
-                _id = [_x,"objectiveID"] call ALiVE_fnc_HashGet;
-                _section = [_x,"section",[]] call ALiVE_fnc_HashGet;
+        {
+            private _id = [_x,"objectiveID", ""] call ALiVE_fnc_HashGet;
+            private _section = [_x,"section", []] call ALiVE_fnc_HashGet;
 
-                if ((_profileID in _section) && {!(_objectiveID == _id)}) then {
-                    [_logic,"resetorders",_profileID] call ALiVE_fnc_OPCOM;
-                };
-            } foreach _objectives;
-
-            _pending_orders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
-            _pending_orders_tmp = _pending_orders;
-
-            if (({(_x select 1) == _profileID} count _pending_orders_tmp) > 0) then {
-                {
-                    if ((_x select 1) == _profileID) then {_pending_orders_tmp set [_foreachIndex,"x"]};
-                } foreach _pending_orders_tmp;
-                _pending_orders = _pending_orders_tmp - ["x"];
+            if ((_profileID in _section) && {!(_objectiveID == _id)}) then {
+                [_logic,"resetorders",_profileID] call ALiVE_fnc_OPCOM;
             };
+        } foreach _objectives;
 
-            _profile = [ALiVE_profileHandler, "getProfile", _profileID] call ALiVE_fnc_profileHandler;
+        private _pendingOrders = [_logic,"pendingorders", []] call ALiVE_fnc_HashGet;
+        private _pendingOrdersTmp = _pendingOrders;
 
-            [_profile, "clearWaypoints"] call ALiVE_fnc_profileEntity;
-            [_profile, "clearActiveCommands"] call ALiVE_fnc_profileEntity;
+        if (({(_x select 1) == _profileID} count _pendingOrdersTmp) > 0) then {
+            {
+                if ((_x select 1) == _profileID) then {_pendingOrdersTmp set [_foreachIndex,"x"]};
+            } foreach _pendingOrdersTmp;
 
-            _profileWaypoint = [_pos, 15] call ALiVE_fnc_createProfileWaypoint;
+            _pendingOrders = _pendingOrdersTmp - ["x"];
+        };
 
-            _var = ["_TACOM_DATA",["completed",[_ProfileID,_objectiveID,_orders]]];
-            _statements = format["[] spawn {sleep (random 10); %1 setfsmvariable %2}",_TACOM_FSM,_var];
-            [_profileWaypoint,"statements",["true",_statements]] call ALiVE_fnc_hashSet;
-            [_profileWaypoint,"behaviour","AWARE"] call ALiVE_fnc_hashSet;
-            [_profileWaypoint,"speed","NORMAL"] call ALiVE_fnc_hashSet;
+        private _profile = [MOD(profileHandler), "getProfile", _profileID] call ALiVE_fnc_profileHandler;
 
-            [_profile, "addWaypoint", _profileWaypoint] call ALiVE_fnc_profileEntity;
+        [_profile, "clearWaypoints"] call ALiVE_fnc_profileEntity;
+        [_profile, "clearActiveCommands"] call ALiVE_fnc_profileEntity;
 
-            _ordersFull = [_pos,_ProfileID,_objectiveID,time];
-            [_logic,"pendingorders",_pending_orders + [_ordersFull]] call ALiVE_fnc_HashSet;
+        private _args = ["_TACOM_DATA", ["completed", [_ProfileID,_objectiveID,_orders]]];
+        private _statements = format["[] spawn {sleep (random 10); %1 setfsmvariable %2}", _TACOM_FSM, _args];
 
-            _result = _profileWaypoint;
+        private _profileWaypoint = [_pos, 15] call ALiVE_fnc_createProfileWaypoint;
+        [_profileWaypoint,"statements", ["true",_statements]] call ALiVE_fnc_hashSet;
+        [_profileWaypoint,"behaviour", "AWARE"] call ALiVE_fnc_hashSet;
+        [_profileWaypoint,"speed", "NORMAL"] call ALiVE_fnc_hashSet;
+
+        [_profile, "addWaypoint", _profileWaypoint] call ALiVE_fnc_profileEntity;
+
+        private _ordersFull = [_pos, _ProfileID, _objectiveID, time];
+        [_logic,"pendingorders", _pendingOrders + [_ordersFull]] call ALiVE_fnc_HashSet;
+
+        _result = _profileWaypoint;
+
     };
 
     case "synchronizeorders": {
-            ASSERT_TRUE(typeName _args == "STRING",str _args);
 
-            private ["_ProfileIDInput","_profiles","_orders_pending","_synchronized","_item","_objectiveID","_profileID"];
+        private _ProfileIDInput = _args;
+        private _profiles = ([ALiVE_profileHandler, "getProfiles","entity"] call ALiVE_fnc_profileHandler) select 1;
+        private _ordersPending = ([_logic,"pendingorders",[]] call ALiVE_fnc_HashGet);
+        private _synchronized = false;
 
-            _ProfileIDInput = _args;
-            _profiles = ([ALiVE_profileHandler, "getProfiles","entity"] call ALiVE_fnc_profileHandler) select 1;
-            _orders_pending = ([_logic,"pendingorders",[]] call ALiVE_fnc_HashGet);
-            _synchronized = false;
+        for "_i" from 0 to (count _ordersPending - 1) do {
+            if (_i >= (count _ordersPending)) exitwith {};
 
-            for "_i" from 0 to ((count _orders_pending)-1) do {
-                if (_i >= (count _orders_pending)) exitwith {};
+            _item = _ordersPending select _i;
 
-                _item = _orders_pending select _i;
+            if (_item isEqualType []) then {
+                _item params ["_pos","_profileID","_objectiveID","_time"];
 
-                if (typeName _item == "ARRAY") then {
-                    _pos = _item select 0;
-                    _profileID = _item select 1;
-                    _objectiveID = _item select 2;
-                    _time = _item select 3;
-                    _dead = !(_ProfileID in _profiles);
-                    _timeout = (time - _time) > 3600;
+                private _dead = !(_ProfileID in _profiles);
+                private _timeout = (time - _time) > 3600;
 
-                    if ((_dead) || {_timeout} || {_ProfileID == _ProfileIDInput}) then {
-                        _orders_pending set [_i,"x"]; _orders_pending = _orders_pending - ["x"];
-                        [_logic,"pendingorders",_orders_pending] call ALiVE_fnc_HashSet;
-                        if (({_objectiveID == (_x select 2)} count (_orders_pending)) == 0) then {_synchronized = true};
-                    };
+                if (_dead || {_timeout} || {_ProfileID == _ProfileIDInput}) then {
+                    _ordersPending set [_i,"x"];
+                    _ordersPending = _ordersPending - ["x"];
+
+                    [_logic,"pendingorders",_ordersPending] call ALiVE_fnc_HashSet;
+                    if (({_objectiveID == (_x select 2)} count (_ordersPending)) == 0) then {_synchronized = true};
                 };
             };
-            _result = _synchronized;
+        };
+
+        _result = _synchronized;
+
     };
 
     case "resetorders": {
