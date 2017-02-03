@@ -27,34 +27,31 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_hash","_key","_value","_index","_isDefault"];
+params ["_hash","_key","_value"];
 
-_hash = _this select 0;
-_key = _this select 1;
-_value = _this select 2;
+// is bew vakye the default value for this hash?
+// if new value is nil = default
 
-private ["_index", "_isDefault"];
-
-if (isNil "BIS_fnc_areEqual") then { LOG( "WARNING: BIS_fnc_areEqual is Nil") };
-
-// Work out whether the new value is the default value for this assoc.
-_isDefault = [if (isNil "_value") then { nil } else { _value },
-_hash select HASH_DEFAULT_VALUE] call (uiNamespace getVariable "BIS_fnc_areEqual");
-
-_index = (_hash select HASH_KEYS) find _key;
-if (_index >= 0) then
-{
-    if (_isDefault) then
+// selecting default value 3 times is faster than storing it
+private _isDefault = if (
+    isnil "_value" && isnil {_hash select HASH_DEFAULT_VALUE} ||
     {
+        !isnil {_hash select HASH_DEFAULT_VALUE} &&
+        {_value isEqualTo (_hash select HASH_DEFAULT_VALUE)}
+    }
+) then {true} else {false};
+
+private _index = (_hash select HASH_KEYS) find _key;
+if (_index >= 0) then {
+    if (_isDefault) then {
         // Remove the key, if the new value is the default value.
         // Do this by copying the key and value of the last element
         // in the hash to the position of the element to be removed.
         // Then, shrink the key and value arrays by one. (#2407)
-        private ["_keys", "_values", "_last"];
 
-        _keys = _hash select HASH_KEYS;
-        _values = _hash select HASH_VALUES;
-        _last = (count _keys) - 1;
+        private _keys = _hash select HASH_KEYS;
+        private _values = _hash select HASH_VALUES;
+        private _last = (count _keys) - 1;
 
         _keys set [_index, _keys select _last];
         _keys resize _last;
@@ -67,11 +64,11 @@ if (_index >= 0) then
     };
 } else {
     // Ignore values that are the same as the default.
-    if (not _isDefault) then
-    {
-        PUSH(_hash select HASH_KEYS,_key);
-        PUSH(_hash select HASH_VALUES,_value);
+
+    if (!_isDefault) then {
+        (_hash select HASH_KEYS) pushback _key;
+        (_hash select HASH_VALUES) pushback _value;
     };
 };
 
-_hash; // Return.
+_hash
