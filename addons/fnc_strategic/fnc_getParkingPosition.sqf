@@ -45,10 +45,9 @@ _p1 = _bbr select 0;
 _p2 = _bbr select 1;
 _maxWidth = abs ((_p2 select 0) - (_p1 select 0));
 _maxLength = abs ((_p2 select 1) - (_p1 select 1));
-
 _longest = _maxWidth max _maxLength;
 
-_position = _position getPos [(_longest+1), _direction];
+_position = _position getPos [(_longest + 2), _direction];
 
 
 // DEBUG -------------------------------------------------------------------------------------
@@ -59,30 +58,46 @@ if(_debug) then {
 };
 // DEBUG -------------------------------------------------------------------------------------
 
+
 _vehicleMapSize = getNumber(configFile >> "CfgVehicles" >> _vehicleClass >> "mapSize");
-_vehicleMapSize = (_vehicleMapSize/4);
-if(_vehicleMapSize < 1) then {
-    _vehicleMapSize = 1;
-};
+if (_vehicleMapSize < 2) then {_vehicleMapSize = 2};
 
 //["VEHICLE MAP SIZE - Class: %1 VMS: %2",_vehicleClass, _vehicleMapSize] call ALIVE_fnc_dump;
 
-// pos min max nearest water gradient shore
-_safePos = [_position,0,20,_vehicleMapSize,0,10,0,[],[_position]] call BIS_fnc_findSafePos;
+_anchor = _position;
 
-//["SAFE POS: %1",_safePos] call ALIVE_fnc_dump;
+scopeName "parking_main";
 
-_center = getArray(configFile >> "CfgWorlds" >> worldName >> "centerPosition");
-
-//if(((_safePos select 0) == 10801.9) && ((_safePos select 1) == 10589.6)) then {
-if(((_safePos select 0) == (_center select 0)) && ((_safePos select 1) == (_center select 1))) then {
-    _position = [_position,0,20,_vehicleMapSize,0,20,0,[],[_position]] call BIS_fnc_findSafePos;
-}else{
-    _position = _safePos;
+for "_i" from 1 to 3000 do {
+    _safePos = _anchor findEmptyPosition [0,50,_vehicleClass];
+    
+    if (count _safePos > 2 && {!(surfaceIsWater _safePos)}) then {
+        
+	    private _list = nearestObjects [_safePos, ["House","Wall"], _vehicleMapSize + 3];
+	    _list = _list + (nearestTerrainObjects [_safePos, ["TREE","SMALL TREE","ROCK","ROCKS","FENCE", "WALL"], _vehicleMapSize + 3]);
+	    
+	    if (count _list == 0) exitwith {
+			// DEBUG -------------------------------------------------------------------------------------
+			if(_debug) then {
+				["ALiVE getParkingPosition found position after %1 attempt(s) at %2!",_i,_safePos] call ALiVE_fnc_DumpR;
+			};
+			// DEBUG -------------------------------------------------------------------------------------
+			
+            breakTo "parking_main";
+	    };
+    };
+    
+    _anchor = [_position,50] call CBA_fnc_RandPos;
 };
 
-//["SAFE POS: %1",_position] call ALIVE_fnc_dump;
+// if findEmptyPosition defaults to [] get an alternative safe position or default to given start position in worst case
+if (count _safePos == 0) then {_safePos = [_position,10,100,10,0,0.5,0,[],[_position]] call BIS_fnc_findSafePos};
 
+// Set position a little above ground to avoid bouncing vehicles.
+_position = _safePos;
+_position set [2,1];
+
+//["SAFE POS: %1",_position] call ALIVE_fnc_dump;
 
 private ["_nearRoads","_road","_roadConnectedTo","_connectedRoad"];
 
@@ -95,21 +110,6 @@ if(count _nearRoads > 0) then
     if!(isNil '_connectedRoad') then {
         _direction = _road getRelDir _connectedRoad;
     };
-};
-
-_nearRoads = _position nearRoads 3;
-if(count _nearRoads > 0) then
-{
-    _road = _nearRoads select 0;
-    _roadConnectedTo = roadsConnectedTo _road;
-    _connectedRoad = _roadConnectedTo select 0;
-    if!(isNil '_connectedRoad') then {
-        _direction = _road getRelDir _connectedRoad;
-    };
-
-    _position = position _road;
-
-    _position = _position getPos [2, _direction-90];
 };
 
 
