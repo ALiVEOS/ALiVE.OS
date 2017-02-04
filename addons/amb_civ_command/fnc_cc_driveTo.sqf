@@ -115,6 +115,7 @@ switch (_state) do {
 
             if(_agent in _vehicle) then {
                 _agent setSpeedMode "LIMITED";
+                _agent setbehaviour "SAFE";
                 [_agent,_destination] call ALiVE_fnc_doMoveRemote;
 
                 _nextState = "travel";
