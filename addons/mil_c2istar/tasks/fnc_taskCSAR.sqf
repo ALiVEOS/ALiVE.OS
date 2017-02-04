@@ -87,17 +87,19 @@ switch (_taskState) do {
         if(count _targetPosition == 0) then {
 
                 _targetPosition = [
-                    _targetPosition,
-                    500,
+                    _taskLocation,
+                    50,
                     1500,
                     1,
                     0,
-                    100,
+                    0.25,
                     0,
                     [],
-                    [_targetPosition]
+                    [_taskLocation]
                 ] call BIS_fnc_findSafePos;
         };
+        
+        _targetPosition = [_targetPosition, 250] call ALIVE_fnc_findFlatArea;
 
         // establish the location for the return task
         // get friendly cluster
@@ -110,19 +112,20 @@ switch (_taskState) do {
 
             if (count _returnPosition == 0) then {
                 _returnPosition = [
-                    _returnPosition,
+                    _taskLocation,
+                    50,
                     500,
-                    1500,
                     1,
                     0,
-                    100,
+                    0.25,
                     0,
                     [],
-                    [_returnPosition]
+                    [_taskLocation]
                 ] call BIS_fnc_findSafePos;
             };
 
             _returnPosition = [_returnPosition, 250] call ALIVE_fnc_findFlatArea;
+            
             // spawn a populated composition
             private _compType = "Military";
             If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
