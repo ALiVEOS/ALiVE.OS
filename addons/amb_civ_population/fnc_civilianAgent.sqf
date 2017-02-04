@@ -333,22 +333,22 @@ switch(_operation) do {
 
         if !(_active) then {
 
-            //private _group = createGroup _sideObject;
+/*
+			// Causes units to return to group leader and pile up there - #277)
             private _group = [ALIVE_civilianPopulationSystem, "civGroup"] call ALiVE_fnc_HashGet;
-            if (isnil "_group") then {
+            if (isnil "_group" || {isnull _group}) then {
                 _group = createGroup _sideObject;
                 _group setBehaviour "CARELESS";
                 [ALIVE_civilianPopulationSystem, "civGroup", _group] call ALiVE_fnc_HashSet;
             };
-            if (isnull _group) then {
-                _group = createGroup _sideObject;
-                _group setBehaviour "CARELESS";
-                [ALIVE_civilianPopulationSystem, "civGroup", _group] call ALiVE_fnc_HashSet;
-            };
+*/
+			private _group = createGroup _sideObject;
             private _unit = _group createUnit [_agentClass, _homePosition, [], 0, "CAN_COLLIDE"];
-
+            
             //set low skill to save performance
             _unit setSkill 0.1;
+            _unit setBehaviour "CARELESS";
+            _unit setSpeedMode "LIMITED";
 
             // set agent id on the unit
             _unit setVariable ["agentID", _agentID];
