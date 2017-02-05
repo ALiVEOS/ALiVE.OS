@@ -303,6 +303,14 @@ switch(_operation) do {
                         private _activeCommand = _x;
 
                         private _agent = _activeCommand select 0;
+                        private _a = _agent select 2 select 5;
+
+                        if (behaviour _a == "AWARE" || {behaviour _a == "COMBAT"}) then {
+                            _a setBehaviour "AWARE";
+                            _a switchMove "";
+                            _a playMove "";
+                        };
+
                         private _agentID = _agent select 2 select 3; //[_logic,"agentID"] call ALIVE_fnc_hashGet;
 
                         // DEBUG -------------------------------------------------------------------------------------
