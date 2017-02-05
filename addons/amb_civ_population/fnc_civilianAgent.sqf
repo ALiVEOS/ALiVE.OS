@@ -2,7 +2,7 @@
 SCRIPT(civilianAgent);
 
 /* ----------------------------------------------------------------------------
-Function: MAINCLASS
+Function: ALIVE_fnc_civilianAgent
 Description:
 Civilian agent class
 
@@ -338,7 +338,6 @@ switch(_operation) do {
             private _group = [ALIVE_civilianPopulationSystem, "civGroup"] call ALiVE_fnc_HashGet;
             if (isnil "_group" || {isnull _group}) then {
                 _group = createGroup _sideObject;
-                _group setBehaviour "CARELESS";
                 [ALIVE_civilianPopulationSystem, "civGroup", _group] call ALiVE_fnc_HashSet;
             };
 */
