@@ -30,7 +30,7 @@ params [
 ];
 
 private _agent = _agentData select 2 select 5;
-private _dayState = ALIVE_currentEnvironment select 0;
+private _dayState = (call ALIVE_fnc_getEnvironment) select 0;
 
 // set initial fall back commands
 

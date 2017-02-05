@@ -79,7 +79,7 @@ switch (_state) do {
 
         if(_agent call ALiVE_fnc_unitReadyRemote) then {
 
-            private _dayState = ALIVE_currentEnvironment select 0;
+            private _dayState = (call ALIVE_fnc_getEnvironment) select 0;
 
             if(_dayState == "EVENING" || _dayState == "NIGHT") then {
 
@@ -121,7 +121,7 @@ switch (_state) do {
 
         _args params ["_timeout","_timer"];
 
-        if(_timer > _timeout || (ALIVE_currentEnvironment select 0 == "DAY")) then
+        if(_timer > _timeout || ((call ALIVE_fnc_getEnvironment) select 0 == "DAY")) then
         {
             _agent playMove "";
             _nextState = "done";
