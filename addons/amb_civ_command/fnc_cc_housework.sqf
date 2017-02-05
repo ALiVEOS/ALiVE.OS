@@ -84,7 +84,7 @@ switch (_state) do {
 
         if(_agent call ALiVE_fnc_unitReadyRemote) then {
 
-            private _dayState = ALIVE_currentEnvironment select 0;
+            private _dayState = (call ALIVE_fnc_getEnvironment) select 0;
 
             if(_dayState == "EVENING" || {_dayState == "DAY"}) then {
 
