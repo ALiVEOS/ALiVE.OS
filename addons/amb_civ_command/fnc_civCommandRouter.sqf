@@ -306,7 +306,6 @@ switch(_operation) do {
                         private _a = _agent select 2 select 5;
 
                         if (behaviour _a == "AWARE" || {behaviour _a == "COMBAT"}) then {
-                            _a setBehaviour "AWARE";
                             _a switchMove "";
                             _a playMove "";
                         };

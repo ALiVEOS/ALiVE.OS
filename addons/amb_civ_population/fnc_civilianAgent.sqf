@@ -340,13 +340,13 @@ switch(_operation) do {
                 [ALIVE_civilianPopulationSystem, "civGroup", _group] call ALiVE_fnc_HashSet;
             };
 
-			//private _group = createGroup _sideObject;
             private _unit = _group createUnit [_agentClass, _homePosition, [], 0, "CAN_COLLIDE"];
             
             //set low skill to save performance
             _unit setSkill 0.1;
             _unit setFormation "DIAMOND";
             _unit setSpeedMode "LIMITED";
+            _unit disableAI "AUTOCOMBAT";
 
             // set agent id on the unit
             _unit setVariable ["agentID", _agentID];

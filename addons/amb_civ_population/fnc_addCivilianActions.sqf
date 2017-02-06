@@ -131,9 +131,8 @@ _id = _object addAction [
 
 _text = "Release";
 _params = [];
-//_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; _group = createGroup Civilian; [_object] joinsilent _group; _object setvariable ['detained',false,true]};
-// Causes units to return to group leader and pile up there - #277)
 _code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; _group = [ALIVE_civilianPopulationSystem, "civGroup"] call ALiVE_fnc_HashGet; [_object] joinsilent _group; _object setvariable ['detained',false,true]};
+
 _condition = "alive _target" + "&&" + "_target getvariable ['detained',false]";
 
 _id = _object addAction [
