@@ -91,7 +91,7 @@ switch (_state) do {
                     private _partner = selectRandom _agents;
                     private _partnerAgent = _partner select 2 select 5;
 
-                    if!(_partnerAgent getVariable ["ALIVE_agentGatheringRequested",false]) then {
+                    if(!(_partnerAgent getVariable ["ALIVE_agentGatheringRequested",false]) && {!(_partnerAgent getVariable ["ALIVE_agentMeetingRequested",false])}) then {
                         _partnerAgent setVariable ["ALIVE_agentGatheringComplete", false, false];
                         _partnerAgent setVariable ["ALIVE_agentGatheringRequested", true, false];
                         _partnerAgent setVariable ["ALIVE_agentGatheringTarget", _agent, false];

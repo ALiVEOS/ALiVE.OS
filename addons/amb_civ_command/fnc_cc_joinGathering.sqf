@@ -29,6 +29,7 @@ params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
 
 private _agentID = _agentData select 2 select 3;
 private _agent = _agentData select 2 select 5;
+private _homeposition = _agentData select 2 select 10;
 
 private _nextState = _state;
 private _nextStateArgs = [];
@@ -53,8 +54,8 @@ switch (_state) do {
 
         private _target = _agent getVariable ["ALIVE_agentGatheringTarget", objNull];
 
-        if!(isNil "_target") then {
-            private _position = (getPosASL _target) getPos [random 5, random 360];
+        if (!isNil "_target" && {!isnull _target}) then {
+            private _position = (getPosATL _target) getPos [random 4, random 360];
             [_agent] call ALIVE_fnc_agentSelectSpeedMode;
             [_agent, _position] call ALiVE_fnc_doMoveRemote;
 
@@ -81,14 +82,14 @@ switch (_state) do {
 
         private _target = _args select 0;
 
-        if(_agent call ALiVE_fnc_unitReadyRemote) then {
+		if (!isNil "_target" && {!isnull _target}) then {
 
-            if!(isNil "_target") then {
-
+        	if(_agent call ALiVE_fnc_unitReadyRemote) then {
+                
                 _agent lookAt _target;
                 _target lookAt _agent;
 
-                if!(_agent distance _target < 5) then {
+                if (_agent distance _target < 5) then {
                     if(random 1 < 0.5) then {
                         [_agent,"acts_PointingLeftUnarmed"] call ALIVE_fnc_switchMove;
                     }else{
@@ -100,14 +101,13 @@ switch (_state) do {
                 _nextStateArgs = _args;
 
                 [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-            }else{
+            };
+        } else {
                 _agent setVariable ["ALIVE_agentGatheringComplete", true, false];
                 _agent setVariable ["ALIVE_agentGatheringRequested", false, false];
                 _nextState = "done";
                 [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-            };
         };
-
     };
 
     case "wait":{
@@ -119,7 +119,6 @@ switch (_state) do {
         // DEBUG -------------------------------------------------------------------------------------
 
         if(_agent getVariable ["ALIVE_agentGatheringComplete",false]) then {
-            _agent playMove "";
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         };
@@ -134,7 +133,10 @@ switch (_state) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
+		_agent switchMove "";
+        if (_homePosition distance [0,0] > 500) then {[_agent,_homeposition] call ALiVE_fnc_doMoveRemote};
         _agent setVariable ["ALIVE_agentBusy", false, false];
+        
 
         _nextState = "complete";
         _nextStateArgs = [];
