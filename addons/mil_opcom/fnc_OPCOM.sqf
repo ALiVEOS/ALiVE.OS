@@ -348,6 +348,11 @@ switch(_operation) do {
 
             private _sidesFriendly = _allSides - _sidesEnemy;
 
+            // get spec ops groups belonging to controlled factions
+            // allows us to categorize infantry profiles as spec ops
+
+            private _specOpsGroupClasses = [_logic,"getSpecOpsGroups", _factions] call MAINCLASS;
+
             // init data
 
             _logic setVariable ["super", QUOTE(SUPERCLASS)];
@@ -378,13 +383,15 @@ switch(_operation) do {
                     ["asymmIntelChance", _asymmIntelChance],
 
                     ["profileAmountAttack", 4],
-                    ["profileAmountReserve", 1],
                     ["profileAmountDefend", 3],
+                    ["profileAmountHold", 1],
 
                     ["objectives", []],
 
                     ["startForceStrength", [[], [], [], [], [], [], [], []]],
-                    ["knownEnemies", []]
+                    ["knownEnemies", []],
+
+                    ["specialForcesGroupClasses", _specOpsGroupClasses]
                 ]
             ] call ALiVE_fnc_hashCreate;
 
@@ -460,21 +467,21 @@ switch(_operation) do {
             switch (_controlType) do {
 
                 case ("invasion") : {
-                    [_handler, "sectionsAmountAttack", 4] call ALiVE_fnc_HashSet;
-                    [_handler, "sectionsAmountReserve", 1] call ALiVE_fnc_HashSet;
-                    [_handler, "sectionsAmountDefend", 3] call ALiVE_fnc_HashSet;
+                    [_handler, "profileAmountAttack", 4] call ALiVE_fnc_HashSet;
+                    [_handler, "profileAmountDefend", 3] call ALiVE_fnc_HashSet;
+                    [_handler, "profileAmountHold", 1] call ALiVE_fnc_HashSet;
                 };
 
                 case ("occupation") : {
-                    [_handler, "sectionsAmountAttack", 4] call ALiVE_fnc_HashSet;
-                    [_handler, "sectionsAmountReserve", 2] call ALiVE_fnc_HashSet;
-                    [_handler, "sectionsAmountDefend", 5] call ALiVE_fnc_HashSet;
+                    [_handler, "profileAmountAttack", 4] call ALiVE_fnc_HashSet;
+                    [_handler, "profileAmountDefend", 5] call ALiVE_fnc_HashSet;
+                    [_handler, "profileAmountHold", 2] call ALiVE_fnc_HashSet;
                 };
 
                 case ("asymmetric") : {
-                    [_handler, "sectionsAmountAttack", 1] call ALiVE_fnc_HashSet;
-                    [_handler, "sectionsAmountReserve", 1] call ALiVE_fnc_HashSet;
-                    [_handler, "sectionsAmountDefend", 1] call ALiVE_fnc_HashSet;
+                    [_handler, "profileAmountAttack", 1] call ALiVE_fnc_HashSet;
+                    [_handler, "profileAmountDefend", 1] call ALiVE_fnc_HashSet;
+                    [_handler, "profileAmountHold", 1] call ALiVE_fnc_HashSet;
 
                     // init helper functions
 
@@ -706,7 +713,6 @@ switch(_operation) do {
 
             private _class = _logic getvariable ["mainclass", "ALiVE_fnc_OPCOM"];
 
-            [_logic,"postStart"] call _class;
             [_logic,"cycle"] spawn _class;
 
         };
@@ -724,15 +730,266 @@ switch(_operation) do {
 
     };
 
-    case "postStart": {
+    case "getSpecOpsGroups": {
 
+        private _factions = _args;
 
+        _result = [];
+
+        {
+            private _factionGroups = [];
+            private _customDataFound = false;
+
+            if (!isnil QMOD(factionCustomMappings)) then {
+                private _factionCustomData = [MOD(factionCustomMappings),_x] call ALiVE_fnc_hashGet;
+
+                if (!isnil "_factionCustomData") then {
+                    private _groupFactionTypeData = [_factionCustomData,"GroupFactionTypes"] call ALiVE_fnc_hashGet;
+
+                    if (!isnil "_groupFactionTypeData") then {
+                        _factionGroups = [_groupFactionTypeData,"SpecOps", []] call ALiVE_fnc_hashGet;
+
+                        _customDataFound = true;
+                    };
+                };
+            };
+
+            if (!_customDataFound) then {
+                private _CFGGroups = _x call ALiVE_fnc_configGetFactionGroups;
+                private _specOpsGroups = _CFGGroups >> "SpecOps";
+
+                for "_i" from 0 to (count _specOpsGroups - 1) do {
+                    private _specOpsGroup = _specOpsGroups select _i;
+
+                    if (isclass _specOpsGroup) then {
+                        _factionGroups pushback (configname _specOpsGroup);
+                    };
+                };
+            };
+
+            _result append _factionGroups;
+        } foreach _factions;
+
+    };
+
+    case "isSpecOpsGroup": {
+
+        private _group = _args;
+
+        private _handler = [_logic,"handler"] call MAINCLASS;
+
+        private _specOpsGroups = [_handler,"specialForcesGroupClasses"] call ALiVE_fnc_hashGet;
+
+        _result = _group in _specOpsGroups;
 
     };
 
     case "cycle": {
 
 
+
+    };
+
+    case "getProfileIDsByFactions": {
+
+        private _factions = _args;
+
+        _result = [];
+
+        {
+            _result append ([MOD(profileHandler), "getProfilesByFaction", _x] call ALiVE_fnc_profileHandler);
+        } foreach _factions;
+
+    };
+
+    case "getProfileIDsBySides": {
+
+        private _sides = _args;
+
+        _result = [];
+
+        {
+            _result append ([MOD(profileHandler),"getProfilesBySide", _x] call ALiVE_fnc_profileHandler);
+        } foreach _sides;
+
+    };
+
+    case "profileIDsToProfiles": {
+
+        private _profileIDs = _args;
+
+        private _allProfiles = [MOD(profileHandler),"profiles"] call ALIVE_fnc_hashGet; // use over getProfile for perf
+
+        _result = [];
+
+        {
+            private _profile = [_allProfiles,_x] call ALiVE_fnc_hashGet;
+
+            if (!isnil "_profile") then {
+                _result pushback _profile;
+            };
+        } foreach _profileIDs;
+
+    };
+
+    case "sortProfilesByType": {
+
+        private _profiles = _args;
+
+        private _handler = [_logic,"handler"] call MAINCLASS;
+        private _specOpsGroups = [_handler,"specialForcesGroupClasses"] call ALiVE_fnc_hashGet;
+
+        private _inf = [];
+        private _specOps = [];
+        private _mot = [];
+        private _AAA = [];
+        private _arm = [];
+        private _air = [];
+        private _sea = [];
+        private _mech = [];
+        private _arty = [];
+
+        private _playerProfileIDs = [];
+        {_playerProfileIDs pushback (_x getvariable ["profileID",""])} foreach allplayers;
+
+        {
+            private _profile = _x;
+
+            if (_x isEqualType "") then {
+                _profile = [MOD(profileHandler), "getProfile", _x] call ALiVE_fnc_profileHandler;
+            };
+
+            if (!isnil "_profile") then {
+                private _type = _profile select 2 select 5; // type
+
+                switch (tolower _type) do {
+
+                    case ("vehicle") : {
+
+                        private _assignments = _profile select 2 select 8; // entitiesInCommandOf
+
+                        // only count if vehicle isn't empty
+
+                        if (count _assignments > 0) then {
+
+                            // dont collect vehicles with player profiles assigned
+
+                            private _isPlayer = ({_x in _playerProfileIDs} count _assignments) > 0;
+
+                            if (!_isPlayer) then {
+                                switch (tolower _objectType) do {
+
+                                    case "car": {
+                                        {_mot pushbackunique _x} foreach _assignments;
+                                    };
+
+                                    case "tank": {
+                                        private _vehicleClass = [_profile,"vehicleClass", ""] call ALiVE_fnc_hashGet;
+
+                                        switch (true) do {
+                                            case ([_vehicleClass] call ALiVE_fnc_isArtillery): {
+                                                {_arty pushbackunique _x} foreach _assignments;
+                                            };
+                                            case ([_vehicleClass] call ALiVE_fnc_isAA): {
+                                                {_AAA pushbackunique _x} foreach _assignments;
+                                            };
+                                            default {_arm pushbackunique _x};
+                                        };
+                                    };
+
+                                    case "armored": {
+                                        {_mech pushbackunique _x} foreach _assignments;
+                                    };
+
+                                    case "truck": {
+                                        {_mot pushbackunique _x} foreach _assignments;
+                                    };
+
+                                    case "ship": {
+                                        {_sea pushbackunique _x} foreach _assignments;
+                                    };
+
+                                    case "helicopter": {
+                                        {_air pushbackunique _x} foreach _assignments;
+                                    };
+
+                                    case "plane": {
+                                        {_air pushbackunique _x} foreach _assignments;
+                                    };
+
+                                };
+                            };
+                        };
+                    };
+
+                    case ("entity") : {
+
+                        private _assignments = ([_profile,"vehicleAssignments", ["",[],[],nil]] call ALiVE_fnc_hashGet) select 1;
+
+                        if (count _assignments == 0 && {!([_profile,"isPlayer", false] call ALiVE_fnc_hashGet)}) then {
+                            private _profileGroupClass = _profile select 2 select 6; // objectType
+
+                            if (_profileGroupClass in _specOpsGroups) then {
+                                _specOps pushback _x;
+                            } else {
+                                _inf pushback _x;
+                            };
+                        };
+                    };
+
+                };
+            };
+        } foreach _profiles;
+
+        _result = [
+            [
+                ["infantry", _inf],
+                ["specops", _specOps],
+                ["motorized", _mot],
+                ["mechanized", _mech],
+                ["armored", _arm],
+                ["artillery", _arty],
+                ["aaa", _AAA],
+                ["air", _air],
+                ["sea", _sea]
+            ]
+        ] call ALiVE_fnc_hashCreate;
+
+    };
+
+    case "countSortedProfiles": {
+
+        private _sortedProfiles = _args;
+
+        _result = [];
+
+        {_result pushback (count _x)} foreach _sortedProfiles;
+
+    };
+
+    case "scanTroops" : {
+
+        private _startTime = time;
+
+        private _handler = [_logic,"handler"] call MAINCLASS;
+
+        private _debug = [_handler,"debug"] call ALiVE_fnc_hashGet;
+        private _factions = [_handler,"factions"] call ALiVE_fnc_HashGet;
+
+        private _profileIDs = [_logic,"getProfileIDsByFactions", _factions] call MAINCLASS;
+        private _profiles = [_logic,"profileIDsToProfiles", _profileIDs] call MAINCLASS;
+
+        private _sortedProfiles = [_logic,"sortProfilesByType", _profiles] call MAINCLASS;
+        [_handler,"forces", _sortedProfiles] call ALiVE_fnc_hashSet;
+
+        private _count = [_logic,"countSortedProfiles", _sortedProfiles] call MAINCLASS;
+        [_handler,"currentForceStrength", _count] call ALiVE_fnc_HashSet;
+
+        if (_debug) then {
+            ["ALiVE OPCOM - scanTroops: time taken: %1 seconds", time - _startTime] call ALiVE_fnc_DumpH;
+        };
+
+        _result = _sortedProfiles;
 
     };
 
@@ -748,7 +1005,7 @@ switch(_operation) do {
             private _profilePos = _x select 2 select 2;
 
             if (_profilePos distance _pos < _distance) then {
-                private _profilePosRaised = [_profilePos select 0, _profilePos select 1, 2]; // raised to the height of a man
+                private _profilePosRaised = [_profilePos select 0, _profilePos select 1, 2.29]; // raised to the height of Yao Ming
 
                 if !(terrainIntersect [_pos, _profilePosRaised]) then {
                     _result pushback _x;
@@ -762,29 +1019,30 @@ switch(_operation) do {
 
         private _handler = [_logic,"handler"] call MAINCLASS;
 
+        private _debug = [_handler,"debug"] call ALiVE_fnc_hashGet;
+
+        private _startTime = time;
+
         private _sidesFriendly = [_handler,"sidesFriendly"] call ALiVE_fnc_hashGet;
         private _sidesEnemy = [_handler,"sidesEnemy"] call ALiVE_fnc_hashGet;
 
-        private _friendlyProfiles = [];
-        private _enemyProfiles = [];
+        private _friendlyProfiles = [_logic,"getProfileIDsBySides", _sidesFriendly] call MAINCLASS;
+        private _enemyProfiles = [_logic,"getProfileIDsBySides", _sidesEnemy] call MAINCLASS;
 
-        // TODO: make a function inside sys profile where we can pass in factions/sides
+        // TODO: make a function inside profilehandler where we can pass in factions/sides
         // and get profiles separated by those filters - see getNearProfilesSorted
         // this will prevent us looping through the global profile array 5 times for two lists
-
-        {
-            _friendlyProfiles append ([MOD(profileHandler), "getProfilesBySide", _x] call ALiVE_fnc_profileHandler);
-        } foreach _sidesFriendly;
-
-        {
-            _friendlyProfiles append ([MOD(profileHandler), "getProfilesBySide", _x] call ALiVE_fnc_profileHandler);
-        } foreach _sidesEnemy;
+        // this method will not benefit from the above (most likely) since profiles are organized by side as well and retrieved easily
 
         _result = [];
 
         {
             _result append ([_logic,"sortProfilesVisibleFromPosition", [_x select 2 select 2, _enemyProfiles]] call MAINCLASS);
         } foreach _friendlyProfiles;
+
+        if (_debug) then {
+            ["ALiVE OPCOM - getVisibleEnemies: time taken: %1 seconds", time - _startTime] call ALiVE_fnc_DumpH;
+        };
 
     };
 
@@ -851,7 +1109,11 @@ switch(_operation) do {
 
         private _countForAttack = [_handler,"profileAmountAttack"] call ALiVE_fnc_hashGet;
         private _countForDefend = [_handler,"profileAmountDefend"] call ALiVE_fnc_hashGet;
-        private _countForReserve = [_handler,"profileAmountReserve"] call ALiVE_fnc_hashGet;
+        private _countForReserve = [_handler,"profileAmountHold"] call ALiVE_fnc_hashGet;
+
+
+
+
 
         // profileAmountforX
         // new states??
@@ -2840,121 +3102,6 @@ switch(_operation) do {
         };
 
         _result = _knownEntities
-
-    };
-
-    case "scanTroops" : {
-
-        private _handler = [_logic,"handler"] call MAINCLASS;
-        private _debug = [_handler,"debug"] call ALiVE_fnc_hashGet;
-
-        private _startTime = time;
-
-        private _factions = [_handler,"factions"] call ALiVE_fnc_HashGet;
-
-        private _profileIDs = [];
-        {
-            _profileIDs append ([MOD(profileHandler), "getProfilesByFaction", _x] call ALiVE_fnc_profileHandler);
-        } foreach _factions;
-
-        private _inf = [];
-        private _mot = [];
-        private _AAA = [];
-        private _arm = [];
-        private _air = [];
-        private _sea = [];
-        private _mech = [];
-        private _arty = [];
-
-        if (count _profileIDs == 0) exitwith {
-            [_handler,"currentForceStrength", _count] call ALiVE_fnc_HashSet;
-
-            _result = [_inf,_mot,_mech,_arm,_air,_sea,_arty,_AAA];
-        };
-
-        {
-            private _profile = [MOD(profileHandler), "getProfile", _x] call ALiVE_fnc_profileHandler;
-
-            if !(isnil "_profile") then {
-
-                private _type = [_profile,"type"] call ALiVE_fnc_hashGet;
-
-                switch (tolower _type) do {
-
-                    case ("vehicle") : {
-
-                        private _assignments = [_profile,"entitiesInCommandOf", []] call ALiVE_fnc_hashGet;
-
-                        if (count _assignments > 0) then {
-
-                            // dont collect vehicles with player profiles assigned
-
-                            if ({(_x getvariable ["profileID",""]) in _assignments} count allPlayers > 0) exitwith {};
-
-                            switch (tolower _objectType) do {
-                                case "car": {
-                                    {_mot pushbackunique _x} foreach _assignments;
-                                };
-                                case "tank": {
-                                    private _vehicleClass = [_profile,"vehicleClass", ""] call ALiVE_fnc_hashGet;
-
-                                    if ([_vehicleClass] call ALiVE_fnc_isAA || {[_vehicleClass] call ALiVE_fnc_isArtillery}) then {
-                                        if ([_vehicleClass] call ALiVE_fnc_isArtillery) then {_arty pushbackunique _x} foreach _assignments};
-                                        if ([_vehicleClass] call ALiVE_fnc_isAA) then {_AAA pushbackunique _x} foreach _assignments};
-                                    } else {
-                                        {_arm pushbackunique _x} foreach _assignments;
-                                    };
-                                };
-                                case "armored": {
-                                    {_mech pushbackunique _x} foreach _assignments;
-                                };
-                                case "truck": {
-                                    {_mot pushbackunique _x} foreach _assignments;
-                                };
-                                case "ship": {
-                                    {_sea pushbackunique _x} foreach _assignments;
-                                };
-                                case "helicopter": {
-                                    {_air pushbackunique _x} foreach _assignments;
-                                };
-                                case "plane": {
-                                    {_air pushbackunique _x} foreach _assignments;
-                                };
-                            };
-                        };
-                    };
-
-                    case ("entity") : {
-
-                        private _assignments = ([_profile,"vehicleAssignments", ["",[],[],nil]] call ALiVE_fnc_hashGet) select 1;
-
-                        if ((count _assignments == 0) && {!([_profile,"isPlayer", false] call ALiVE_fnc_hashGet)}) then {
-                            _inf pushback _x;
-                        };
-                    };
-                };
-            };
-        } foreach _profileIDs;
-
-        private _count = [count _inf, count _mot, count _mech, count _arm, count _arty, count _AAA, count _air, count _sea];
-        [_handler,"currentForceStrength", _count] call ALiVE_fnc_HashSet;
-
-        if (_debug) then {
-            ["ALiVE OPCOM - Scantroops: time taken: %1 seconds", time - _duration] call ALiVE_fnc_DumpH;
-        };
-
-        _result = [
-            [
-                ["infantry", _inf],
-                ["motorized", _mot],
-                ["mechanized", _mech],
-                ["armored", _arm],
-                ["artillery", _arty],
-                ["aaa", _AAA],
-                ["air", _air],
-                ["sea", _sea]
-            ]
-        ] call ALiVE_fnc_hashCreate;
 
     };
 

@@ -46,12 +46,6 @@ params [
 
 switch(_operation) do {
 
-    case "postStart": {
-
-        [_logic,"listen"] call MAINCLASS;
-
-    };
-
     case "listen": {
 
         private _listenerID = [MOD(eventLog),"addListener", [_logic, []]] call ALIVE_fnc_eventLog;
@@ -79,13 +73,23 @@ switch(_operation) do {
 
     case "cycle": {
 
+        // pre-cycle actions
+
+        [_logic,"listen"] call MAINCLASS;
+
         private _handler = [_logic,"handler"] call MAINCLASS;
+
+        private _debug = [_handler,"debug"] call ALiVE_fnc_hashGet;
+
+        // begin cycling
 
         while {!isnil "_logic" && {!(_logic getvariable ["stopped", false])}} do {
 
             private _paused = _logic getvariable ["paused", false];
 
             if (!_paused) then {
+
+                private _cycleStartTime = time;
 
                 // fire cycle start event here
 
@@ -94,7 +98,8 @@ switch(_operation) do {
 
                 private _friendlyTroops = [_logic,"scanTroops"] call MAINCLASS;
 
-                // update visible units
+                // update known units
+                // opcom should only act upon enemies it knows exist
 
                 private _visibleEnemies = [_logic,"getVisibleEnemies"] call MAINCLASS;
 
@@ -105,6 +110,10 @@ switch(_operation) do {
                 private _objectiveOccupationData = [_logic,"getObjectiveOccupation", [_friendlyTroops,_visibleEnemies]] call MAINCLASS;
 
                 private _objectiveStateData = [_logic,"assignObjectiveStates", _objectiveOccupationData] call MAINCLASS;
+
+                if (_debug) then {
+                    ["ALiVE - OPCOM: Cycle completed in %1 seconds", time - _cycleStartTime] call ALiVE_fnc_Dump;
+                };
 
             };
 
