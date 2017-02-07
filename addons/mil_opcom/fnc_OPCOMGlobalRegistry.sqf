@@ -108,6 +108,8 @@ switch(_operation) do {
 
         publicVariable QUOTE(ALiVE_OPCOMGlobalRegistry);
 
+        _result = _moduleID;
+
     };
 
     case "unregister":{
