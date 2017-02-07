@@ -437,7 +437,7 @@ switch(_operation) do {
                 _center = [_objective,"center"] call ALIVE_fnc_hashGet;
                 _size = [_objective,"size"] call ALIVE_fnc_hashGet;
                 _priority = [_objective,"priority"] call ALIVE_fnc_hashGet;
-                _type = [_objective,"type"] call ALIVE_fnc_hashGet;
+                _type = [_objective,"objectiveType"] call ALIVE_fnc_hashGet;
                 _state = [_objective,"tacom_state","none"] call ALIVE_fnc_hashGet;
                 _objectiveID = [_objective,"objectiveID"] call ALIVE_fnc_hashGet;
                 _section = [_objective,"section",[]] call ALIVE_fnc_hashGet;

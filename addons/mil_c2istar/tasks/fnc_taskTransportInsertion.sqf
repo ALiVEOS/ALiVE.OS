@@ -73,19 +73,20 @@ switch (_taskState) do {
             // spawn a populated composition
             if (count _pickupPosition == 0) then {
                 _pickupPosition = [
-                    _pickupPosition,
-                    500,
+                    _taskLocation,
+                    50,
                     1500,
                     1,
                     0,
-                    100,
+                    0.25,
                     0,
                     [],
-                    [_pickupPosition]
+                    [_taskLocation]
                 ] call BIS_fnc_findSafePos;
             };
 
             _pickupPosition = [_pickupPosition, 250] call ALIVE_fnc_findFlatArea;
+            
             _compType = "Military";
             If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
                 _compType = "Guerrilla";
@@ -111,15 +112,15 @@ switch (_taskState) do {
             // spawn a populated composition
             if (count _insertionPosition == 0) then {
                 _insertionPosition = [
-                    _insertionPosition,
-                    500,
+                    _taskLocation,
+                    50,
                     1500,
                     1,
                     0,
-                    100,
+                    0.25,
                     0,
                     [],
-                    [_insertionPosition]
+                    [_taskLocation]
                 ] call BIS_fnc_findSafePos;
             };
 

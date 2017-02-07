@@ -638,11 +638,14 @@ switch(_operation) do {
 
             _generateOptions = [];
             _generateValues = [];
-            {
-                _task = [ALIVE_generatedTasks,_x] call ALIVE_fnc_hashGet;
-                _generateOptions pushback (_task select 0);
-                _generateValues pushback _x;
-            } forEach (ALIVE_generatedTasks select 1);
+            
+            if (!isnil "ALIVE_generatedTasks" && {count ALIVE_generatedTasks > 2}) then {
+	            {
+	                _task = [ALIVE_generatedTasks,_x] call ALIVE_fnc_hashGet;
+	                _generateOptions pushback (_task select 0);
+	                _generateValues pushback _x;
+	            } forEach (ALIVE_generatedTasks select 1);
+            };
 
             private ["_taskingState","_playerListOptions","_playerListValues","_factionsDataSource"];
 

@@ -172,7 +172,7 @@ if (isMultiplayer && hasInterface && GVAR(ENABLED)) then {
 
     // Set up eventhandler to grab player profile from website
     "STATS_PLAYER_PROFILE" addPublicVariableEventHandler {
-        if (STATS_PLAYER_PROFILE_DONE) exitWith {}; // If i've loaded my player profile already, then quit
+        if (STATS_PLAYER_PROFILE_DONE) exitWith {}; // If i've loaded my player profile already exit
         private ["_data","_result"];
 
         TRACE_1("STATS PLAYER PROFILE",_this);
@@ -186,6 +186,15 @@ if (isMultiplayer && hasInterface && GVAR(ENABLED)) then {
         TRACE_1("STATS PLAYER PROFILE SUCCESS",_result);
 
         STATS_PLAYER_PROFILE_DONE = true;
+    };
+
+    // Addresses race condition at module start on client
+    if (isNil QGVAR(groupTag)) then {
+        private _waitTime = diag_tickTime + 100000;
+
+        waitUntil {!isNil QGVAR(groupTag) || diag_tickTime > _waitTime};
+
+        if (isNil QGVAR(groupTag)) then {GVAR(groupTag) = "Unknown";};
     };
 
     ["Adding Stats EHs to player %1", player] call ALiVE_fnc_dump;

@@ -307,7 +307,7 @@ switch(_operation) do {
         // not already active
         if!(_active) then {
 
-            private _unit = createVehicle [_agentClass, _homePosition, [], 0, "CAN_COLLIDE"];
+            private _unit = createVehicle [_agentClass, _homePosition, [], 0, "NONE"];
             _unit setDir _direction;
             _unit setFuel _fuel;
 
