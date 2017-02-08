@@ -45,15 +45,14 @@ class CfgVehicles {
             class debug {
                 displayName = "$STR_ALIVE_OPCOM_DEBUG";
                 description = "$STR_ALIVE_OPCOM_DEBUG_COMMENT";
-                typeName = "BOOL";
                 class Values {
                     class Yes {
                         name = "Yes";
-                        value = 1;
+                        value = true;
                     };
                     class No {
                         name = "No";
-                        value = 0;
+                        value = false;
                         default = 1;
                     };
                 };
@@ -62,16 +61,15 @@ class CfgVehicles {
             class persistent {
                 displayName = "$STR_ALIVE_OPCOM_PERSISTENT";
                 description = "$STR_ALIVE_OPCOM_PERSISTENT_COMMENT";
-                typeName = "NUMBER";
                 class Values {
                     class No {
                         name = "No";
-                        value = 0;
+                        value = false;
                         default = 1;
                     };
                     class Yes {
                         name = "Yes";
-                        value = 1;
+                        value = true;
                     };
                 };
             };

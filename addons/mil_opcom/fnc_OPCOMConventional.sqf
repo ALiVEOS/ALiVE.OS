@@ -7,8 +7,6 @@ Function: ALiVE_fnc_OPCOMConventional
 Description:
 Virtual AI Controller
 
-Base class for OPCOM Convobjects to inherit from
-
 Parameters:
 Nil or Object - If Nil, return a new instance. If Object, reference an existing instance.
 String - The selected function
@@ -46,11 +44,21 @@ params [
 
 switch(_operation) do {
 
+    case "postStart": {
+
+        _logic setVariable ["super", QUOTE(SUPERCLASS)];
+        _logic setVariable ["class", QUOTE(MAINCLASS)];
+
+        private _listenerID = [_logic,"listen", []] call MAINCLASS;
+        _logic setvariable ["listenerID", _listenerID];
+
+    };
+
     case "listen": {
 
-        private _listenerID = [MOD(eventLog),"addListener", [_logic, []]] call ALIVE_fnc_eventLog;
+        private _filters = _args;
 
-        _logic setvariable ["listenerID", _listenerID];
+        private _listenerID = [MOD(eventLog),"addListener", [_logic, _filters]] call ALIVE_fnc_eventLog;
 
         _result = _listenerID;
 
@@ -72,10 +80,6 @@ switch(_operation) do {
     };
 
     case "cycle": {
-
-        // pre-cycle actions
-
-        [_logic,"listen"] call MAINCLASS;
 
         private _handler = [_logic,"handler"] call MAINCLASS;
 
@@ -119,6 +123,10 @@ switch(_operation) do {
 
         };
 
+    };
+
+    default {
+        _result = [_logic, _operation, _args] call SUPERCLASS;
     };
 
 };

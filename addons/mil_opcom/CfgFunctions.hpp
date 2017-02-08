@@ -6,6 +6,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\mil_opcom\fnc_OPCOM.sqf";
                 RECOMPILE;
             };
+            class OPCOMConventional {
+                description = "Virtual AI Controller";
+                file = "\x\alive\addons\mil_opcom\fnc_OPCOMConventional.sqf";
+                RECOMPILE;
+            };
             class OPCOMInit {
                 description = "The module initialisation function";
                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMInit.sqf";

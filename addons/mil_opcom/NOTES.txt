@@ -1,3 +1,21 @@
+----------------------------------------
+Experimental Overhaul
+2/7/2017
+SpyderBlack723
+
+Objective States
+ - Recon: scout objective for nearby enemies
+ - Strike: enemies are confirmed nearby an objective, attack indirectly before moving in to capture
+ - Attack: move to capture objective
+ - Defend: move to defend the objective from impending or ongoing attack
+ - Hold: occupy objective (already under control)
+ - Idle: ignore for current cycle
+----------------------------------------
+
+
+
+
+
 *Model - no visual just reference data*
 - list of objectives and priorities
 - enemy force composition as profiles
