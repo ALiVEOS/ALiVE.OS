@@ -587,7 +587,7 @@ ALiVE_fnc_INS_recruit = {
                         if (!alive _HQ || {_created >= 5}) exitwith {};
 
                         _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
-                        _recruits = [_group, [_pos,_size] call CBA_fnc_RandPos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+                        _recruits = [_group, [_pos,10,_size,1,0,0,0,[],[_pos]] call BIS_fnc_findSafePos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
                         {[_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[_size + 200,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity} foreach _recruits;
 
                         [_pos,_sides, 10] call ALiVE_fnc_updateSectorHostility;
