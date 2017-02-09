@@ -6231,8 +6231,13 @@ switch(_operation) do {
         private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
         private _sideText = [_factionSide] call ALiVE_fnc_sideNumberToText;
 
-        if (_sideText == "GUER") then {
-            _sideText = "Indep";
+        switch (_sideText) do {
+            case "GUER": {
+                _sideText = "Indep";
+            };
+            case "CIV": {
+                _sideText = "Civilian";
+            };
         };
 
         private _newLine = toString [13,10];
