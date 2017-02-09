@@ -8,3 +8,9 @@ _class = _logic getvariable ["mainclass",""];
 This will allow it to handle inherited classes that have overridden base class methods
 
 Implement objective debug markers -- toggleable with opcom debug operation
+
+Create separate class file for OPCOMObjectives
+- should contain following operations as well
+timeLastRecon
+consecutiveStrikeTasks
+consecutiveDefendTasks
