@@ -128,4 +128,10 @@
 <Key ID="STR_ALIVE_CQB_DEBUG_DISABLE_COMMENT">
     <Original>Deactivates CQB Debug</Original>
 </Key>
+<Key ID="STR_ALIVE_CQB_STATICWEAPONS">
+    <Original>Static weapons:</Original>
+</Key>
+<Key ID="STR_ALIVE_CQB_STATICWEAPONS_COMMENT">
+    <Original>Creates static weapons on top positions by given intensity</Original>
+</Key>
 </Container></Package></Project>
