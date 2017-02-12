@@ -43,7 +43,7 @@ Wolffy, Highhead
 #define MTEMPLATE "ALiVE_CQB_%1"
 #define DEFAULT_BLACKLIST []
 #define DEFAULT_WHITELIST []
-#define DEFAULT_STATICWEAPONS ["B_HMG_01_high_F"]
+#define DEFAULT_STATICWEAPONS ["B_HMG_01_high_F","O_Mortar_01_F","O_HMG_01_high_F"]
 
 private ["_logic","_operation","_args"];
 
@@ -1137,34 +1137,16 @@ switch(_operation) do {
 
             [_logic, "addGroup", [_house, _grp]] call ALiVE_fnc_CQB;
             [_logic, "addStaticWeapons", [_house, _staticWeaponsIntensity]] call ALiVE_fnc_CQB;
-            
-            _staticWeapons = nearestObjects [getPosATL _house, ["StaticWeapon"], 20];
 
             {
-                if (count _staticWeapons > 0 && {!alive gunner (_staticWeapons select 0)}) then {
+                private _unit = _x;
+                
+                {
+                    private _pos = _x;
                     
-                    private _unit = _x;
-                    
-                    _unit assignAsGunner (_staticWeapons select 0);
-                    [_unit] orderGetIn true;
-                    
-                    _unit moveInGunner (_staticWeapons select 0);
-                    _unit disAbleAI "PATH";
-                    
-                    _staticWeapons = _staticWeapons - [_staticWeapons select 0];
-                } else {
-                    
-                    private _unit = _x;
-                    
-                    {
-                        private _pos = _x;
-                        
-                        if ({_pos distance _x < 1} count (units _grp) == 0) then {
-                            _unit setPosATL [_pos select 0, _pos select 1, (_pos select 2 + 0.4)];
-                        };
-                        
-                    } foreach _positions;
-                };
+                    _unit setPosATL [_pos select 0, _pos select 1, (_pos select 2 + 0.4)];
+                } foreach _positions;
+                
             } forEach (units _grp);
 
             // TODO Notify controller to start directing
@@ -1188,8 +1170,10 @@ switch(_operation) do {
             _args;
 	    };
         
-		_building = _args select 0;
-        _count = _args select 1;
+		private _building = _args select 0;
+        private _count = _args select 1;
+        
+        private _buildingPosition = getposATL _building;
         
         private _staticWeapons = _building getvariable ["staticWeapons",[]];
         
@@ -1226,26 +1210,29 @@ switch(_operation) do {
 		        _onTop pushBack (ASLtoAGL _position)
 		    };
 		} foreach _positions;
-        
-        //["ALiVE CQB Found on top top positions: %1",_onTop] call ALiVE_fnc_DumpR;
 
+        //["ALiVE CQB Found on top positions: %1",_onTop] call ALiVE_fnc_DumpR;
 
-		if (random 1 < _count) then {
+		if (random 1 < _count && {count _onTop > 0}) then {
+
+        	_count = ceil _count;   
             
-        	_count = ceil _count;        
+            [_onTop] call CBA_fnc_Shuffle;
                 		
 			{
 			    if (count _staticWeapons < _count) then {
-	                
+
+                    private _class = selectRandom DEFAULT_STATICWEAPONS;	                
 	                private _placement = _x;
 	                
 	                _placement set [2,(_placement select 2) + 0.3];
-	                
-	                private _class = selectRandom DEFAULT_STATICWEAPONS;
+                    _placement = [_placement,0.75,_placement getdir _buildingPosition] call BIS_fnc_relPos;
+
 			    	private _staticWeapon = createVehicle [_class, _placement, [], 0, "CAN_COLLIDE"];
-	                
-	                _staticWeapon setpos _placement;
-			        
+                    
+                    _staticWeapon setpos _placement;
+                    _staticWeapon setdir (_buildingPosition getDir _placement);
+                    
 			        _staticWeapons pushback _staticWeapon;
 			    } else {
 			        breakTo "#Main"
