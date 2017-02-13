@@ -583,6 +583,10 @@ private _damageModifier = _cycleTime * _combatRate;
                                     if (_profileToAttackHealth isEqualTo []) then {
                                         private _vehicleClass = [_targetToAttack,"vehicleClass"] call ALiVE_fnc_hashGet;
                                         private _totalHitpoints = _vehicleClass call ALiVE_fnc_configGetVehicleHitPoints;
+                                        if (_totalHitpoints isEqualTo []) then {
+                                            private _hp = [(configfile >> "CfgVehicles" >> _vehicleClass >> "HitPoints"),0] call BIS_fnc_returnChildren;
+                                            {_totalHitpoints pushBack (configName _x)} forEach _hp; 
+                                        };
                                         {_profileToAttackHealth pushback [_x,0]} foreach _totalHitpoints;
                                     };
                                 };
