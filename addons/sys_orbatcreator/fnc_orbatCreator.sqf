@@ -5850,7 +5850,7 @@ switch(_operation) do {
                 _unitParentConfigName = configname (inheritsFrom (_cfgVehicles >> _unitParentConfigName));
             };
 
-            if (!(_unitParentConfigName in _forwardDeclared) && {!(_unitParentConfigName in _unitsToExport)}) then {
+            if (!(_unitParentConfigName in _forwardDeclared) && {!(_unitParentConfigName in _unitsToExport) || {!(_unitParentConfigName in _unitclasses)}}) then {
                 private _realUnitClass = [_logic,"getRealUnitClass", _unitParentConfigName] call MAINCLASS;
 
                 _result = _result + _indent + "class " + _unitParentConfigName + ";" + _newLine;
