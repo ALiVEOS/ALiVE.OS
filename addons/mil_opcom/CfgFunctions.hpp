@@ -66,6 +66,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMGlobalRegistry.sqf";
                 RECOMPILE;
             };
+            class OPCOMObjective {
+                description = "Main handler for OPCOM Objectives";
+                file = "\x\alive\addons\mil_opcom\fnc_OPCOMObjective.sqf";
+                RECOMPILE;
+            };
         };
     };
 };

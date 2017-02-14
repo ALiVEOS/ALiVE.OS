@@ -132,6 +132,9 @@ switch(_operation) do {
 
                 private _objectiveStateData = [_logic,"assignObjectiveStates", _objectiveOccupationData] call MAINCLASS;
 
+                // TODO: attack known entities closest to friendly objectives
+                // if vehicle -- attack with vehicle : vice versa for infantry
+
                 if (_debug) then {
                     ["ALiVE - OPCOM: Cycle completed in %1 seconds", time - _cycleStartTime] call ALiVE_fnc_Dump;
                 };
@@ -163,16 +166,21 @@ switch(_operation) do {
 
         _averageObjectivePriority = _averageObjectivePriority / (count _objectives);
 
+        // copy forces array as we will need to modify it
+
+        private _friendlyForces = + ([_handler,"forces"] call ALiVE_fnc_hashGet);
+        (_friendlyForces select 2) params ["_friendlyInfantry","_friendlySpecOps","_friendlyMotorized","_friendlyMechanized","_friendlyArmored","_friendlyArtillery","_friendlyAAA","_friendlyAir","_friendlyAirArmed","_friendlySea"];
+
+        private _countForAttack = [_handler,"profileAmountAttack"] call ALiVE_fnc_hashGet;
+        private _countForDefend = [_handler,"profileAmountDefend"] call ALiVE_fnc_hashGet;
+        private _countForHold = [_handler,"profileAmountHold"] call ALiVE_fnc_hashGet;
+
         private _maxActiveReconTasks = [_handler,"maxActiveReconTasks"] call ALiVE_fnc_hashGet;
         private _maxActiveStrikeTasks = [_handler,"maxActiveStrikeTasks"] call ALiVE_fnc_hashGet;
         private _maxActiveAttackTasks = [_handler,"maxActiveAttackTasks"] call ALiVE_fnc_hashGet;
 
         private _activeTasks = [_handler,"activeTasks"] call ALiVE_fnc_hashGet;
         (_activeTasks select 2) params ["_activeReconTasks","_activeStrikeTasks","_activeAttackTasks","_activeDefendTasks"];
-
-        private _countForAttack = [_handler,"profileAmountAttack"] call ALiVE_fnc_hashGet;
-        private _countForDefend = [_handler,"profileAmountDefend"] call ALiVE_fnc_hashGet;
-        private _countForHold = [_handler,"profileAmountHold"] call ALiVE_fnc_hashGet;
 
         private _objectivesToRecon = [];
         private _objectivesToStrike = [];
@@ -198,6 +206,66 @@ switch(_operation) do {
             private _newState = "idle";
 
             switch (_previousState) do {
+
+                case "idle": {
+
+                    if (_nearEnemyCount > 0) then {
+                        if (_netEnemyCount > 0) then {
+
+                        } else {
+                            _newState = "reinforce";
+                        };
+                    } else {
+                        if (_nearFriendlyCount > 0) then {
+                            private _profilesNeeded = _countForHold - _nearFriendlyCount;
+
+                            if (_profilesNeeded > 0) then {
+                                // merge valid group categories from above
+                                // sort by distance
+                                // while _profilesNeeded > 0 add profile to task and deleteat 0
+                                // can this be a generic function?
+
+                                _newState = "reinforce";
+                            };
+                        } else {
+                            if ((count _objectivesToRecon) + (count _activeReconTasks) < _maxActiveReconTasks) then {
+                                private _friendlySpecOpsCount = count _friendlySpecOps > 0;
+                                private _friendlyAirCount = count _friendlyAir > 0;
+
+                                if (_friendlySpecOpsCount > 0 || {_friendlyAirCount > 0}) then {
+                                    if (_friendlySpecOpsCount > 0) then {
+                                        // create recon task with spec ops
+                                        // order profiles to objective to get closest
+
+                                        _friendlySpecOps deleteat 0;
+                                    } else {
+                                        // create recon task with air
+                                        // order profiles to objective to get closest
+
+                                        _friendlyAir deleteat 0;
+                                    };
+
+                                    _newState = "recon";
+                                } else {
+                                    _newState = "idle";
+                                };
+                            } else {
+                                _newState = "idle";
+                            }
+                        };
+                    };
+
+                    if (_nearFriendlyCount == 0 && {_nearEnemyCount == 0} && {(count _objectivesToRecon) + (count _activeReconTasks) < _maxActiveReconTasks}) then {
+                        _newState = "recon";
+                    } else {
+                        if (_nearFriendlyCount > 0) then {
+                            _newState = "hold";
+                        } else {
+                            _newState = "idle";
+                        };
+                    };
+
+                };
 
                 case "recon": {
 
@@ -318,16 +386,6 @@ switch(_operation) do {
 
                 };
 
-                case "idle": {
-
-                    if (_nearFriendlyCount == 0 && {_nearEnemyCount == 0} && {(count _objectivesToRecon) + (count _activeReconTasks) < _maxActiveReconTasks}) then {
-                        _newState = "recon";
-                    } else {
-                        _newState = "idle";
-                    };
-
-                };
-
             };
 
             switch (_newState) do {
@@ -363,8 +421,64 @@ switch(_operation) do {
         _result = _objectivesByState;
 
         if (_debug) then {
-            ["ALiVE OPCOM - getObjectiveOccupation: time taken: %1 seconds", time - _startTime] call ALiVE_fnc_Dump;
+            ["ALiVE OPCOM - assignObjectiveStates: time taken: %1 seconds", time - _startTime] call ALiVE_fnc_Dump;
         };
+
+    };
+
+    case "cycleStart": {
+
+        // cycle start event
+
+    };
+
+    case "updateFriendlyForces": {
+
+        private _handler = [_logic,"handler"] call MAINCLASS;
+
+        private _friendlyTroops = [_logic,"scanTroops"] call MAINCLASS;
+
+        [_handler,"forces", _friendlyTroops] call ALiVE_fnc_hashSet;
+
+        private _countFriendlyTroops = [_logic,"countSortedProfiles", _friendlyTroops] call MAINCLASS;
+        [_handler,"currentForceStrength", _countFriendlyTroops] call ALiVE_fnc_HashSet;
+
+    };
+
+    case "updateEnemyForces": {
+
+        private _handler = [_logic,"handler"] call MAINCLASS;
+
+        private _visibleEnemies = [_logic,"getVisibleEnemies"] call MAINCLASS;
+
+        [_handler,"knownEnemies", _visibleEnemies] call ALiVE_fnc_hashSet;
+
+    };
+
+    case "updateClusterOccupation": {
+
+        private _handler = [_logic,"handler"] call MAINCLASS;
+
+        private _friendlyTroops = [_handler,"forces"] call ALiVE_fnc_hashGet;
+        private _visibleEnemies = [_handler,"knownEnemies"] call ALiVE_fnc_hashGet;
+
+        _friendlyTroops = [_logic,"condenseSortedProfiles", _friendlyTroops] call MAINCLASS;
+        _visibleEnemies = [_logic,"condenseSortedProfiles", _visibleEnemies] call MAINCLASS;
+
+        private _friendlyTroopEntities = [_logic,"sortProfilesEntities", _friendlyTroops] call MAINCLASS;
+        private _enemyTroopEntities = [_logic,"sortProfilesEntities", _visibleEnemies] call MAINCLASS;
+
+        private _objectives = [_handler,"objectives"] call ALIVE_fnc_hashGet;
+
+        private _objectiveOccupationData = [_logic,"getObjectiveOccupation", [_objectives, [_friendlyTroopEntities,_enemyTroopEntities]]] call MAINCLASS;
+
+        [_handler,"objectiveOccupationData", _objectiveOccupationData] call ALiVE_fnc_hashSet;
+
+    };
+
+    case "cycleEnd": {
+
+        _logic setvariable ['lastCycleEndTime', time];
 
     };
 
