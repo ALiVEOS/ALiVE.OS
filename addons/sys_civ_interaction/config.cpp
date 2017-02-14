@@ -4,4 +4,5 @@
 //#include <CfgVehicles.hpp>
 #include <CfgFunctions.hpp>
 #include <data\ui\main.hpp>
+#include <CfgMarkers.hpp>
 #include <eventhandlers.hpp>

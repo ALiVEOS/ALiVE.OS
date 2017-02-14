@@ -50,7 +50,7 @@
 #define BASE_SIZE_TEXT_LISTBOX  (safeZoneH / 100) + (safeZoneH / 100)
 
 class RscText;
-class civInteraction_RscText : RscText {
+class civ_interaction_RscText : RscText {
     access = 0;
     type = 0;
     idc = -1;
@@ -68,7 +68,7 @@ class civInteraction_RscText : RscText {
     linespacing = 1;
 };
 
-class civInteraction_RscPicture {
+class civ_interaction_RscPicture {
     access = 0;
     type = 0;
     idc = -1;
@@ -88,7 +88,7 @@ class civInteraction_RscPicture {
 };
 
 class RscEdit;
-class civInteraction_RscEdit : RscEdit {
+class civ_interaction_RscEdit : RscEdit {
     access = 0;
     type = 2;
     x = 0;
@@ -109,7 +109,7 @@ class civInteraction_RscEdit : RscEdit {
     canModify = 1;
 };
 
-class civInteraction_RscCombo {
+class civ_interaction_RscCombo {
     access = 0;
     type = 4;
     colorSelect[] = {0,0,0,1};
@@ -171,7 +171,7 @@ class civInteraction_RscCombo {
 };
 
 class RscFrame;
-class civInteraction_RscFrame : RscFrame {
+class civ_interaction_RscFrame : RscFrame {
     colorBackground[] = COLOR_BLACK_HARD;
     colorText[] = {1,1,1,1};
     font = "PuristaMedium";
@@ -183,7 +183,7 @@ class civInteraction_RscFrame : RscFrame {
 };
 
 class RscButton;
-class civInteraction_RscButton : RscButton {
+class civ_interaction_RscButton : RscButton {
     access = 0;
     type = 1;
     style = 2;
@@ -212,7 +212,7 @@ class civInteraction_RscButton : RscButton {
     colorBorder[] = {0,0,0,1};
 };
 
-class civInteraction_RscButtonBig : civInteraction_RscButton {
+class civ_interaction_RscButtonBig : civ_interaction_RscButton {
     colorSelect[] = COLOR_GREY_HARD;
     colorSelect2[] = COLOR_GREY_HARD;
     colorFocused[] = COLOR_GREY_HARD;
@@ -224,16 +224,16 @@ class civInteraction_RscButtonBig : civInteraction_RscButton {
 };
 
 class ctrlButtonOK;
-class civInteraction_ctrlButtonOk : ctrlButtonOK {
+class civ_interaction_ctrlButtonOk : ctrlButtonOK {
 
 };
 
 class ctrlButtonCancel;
-class civInteraction_ctrlButtonCancel : ctrlButtonCancel {
+class civ_interaction_ctrlButtonCancel : ctrlButtonCancel {
 
 };
 
-class civInteraction_RscTree {
+class civ_interaction_RscTree {
 	access = 0;
 	idc = 12;
 	type = 12;
@@ -291,7 +291,7 @@ class civInteraction_RscTree {
 };
 
 class RscListBox;
-class civInteraction_RscListBox : RscListBox {
+class civ_interaction_RscListBox : RscListBox {
     access = 0;
     style = 16;
     type = 5;
@@ -312,7 +312,7 @@ class civInteraction_RscListBox : RscListBox {
 };
 
 class RscListNBox;
-class civInteraction_RscListNBox : RscListNBox {
+class civ_interaction_RscListNBox : RscListNBox {
     style = "ST_LEFT + LB_TEXTURES";
     type = 102;
     rowHeight = .05;
@@ -338,7 +338,7 @@ class civInteraction_RscListNBox : RscListNBox {
     drawSideArrows = 1;
 };
 
-class civInteraction_RscStructuredText {
+class civ_interaction_RscStructuredText {
     access = 0;
     type = 13;
     idc = -1;
@@ -359,7 +359,7 @@ class civInteraction_RscStructuredText {
     shadow = 1;
 };
 
-class civInteraction_RscControlsGroup {
+class civ_interaction_RscControlsGroup {
     idc = -1;
     type = 15;
     style = 16;
@@ -408,7 +408,7 @@ class civInteraction_RscControlsGroup {
     };
 };
 
-class civInteraction_RscControlsGroupNoScrollbars {
+class civ_interaction_RscControlsGroupNoScrollbars {
     idc = -1;
     type = 15;
     style = 16;
@@ -458,7 +458,7 @@ class civInteraction_RscControlsGroupNoScrollbars {
 };
 
 class ctrlMenuStrip;
-class civInteraction_ctrlMenuStrip : ctrlMenuStrip {
+class civ_interaction_ctrlMenuStrip : ctrlMenuStrip {
     sizeEx = BASE_SIZE_TEXT * 0.85;
 
     class Items {
@@ -473,7 +473,7 @@ class civInteraction_ctrlMenuStrip : ctrlMenuStrip {
 
 
 
-class civInteraction_common_backgroundGrid: civInteraction_RscPicture {
+class civ_interaction_common_backgroundGrid: civ_interaction_RscPicture {
     idc = 7001;
     text = "x\alive\addons\ui\alive_bg.paa";
     x = -0.003125 * safezoneW + safezoneX;
@@ -482,7 +482,7 @@ class civInteraction_common_backgroundGrid: civInteraction_RscPicture {
     h = 1.008 * safezoneH;
 };
 
-class civInteraction_common_header_green : civInteraction_RscText {
+class civ_interaction_common_header_green : civ_interaction_RscText {
     idc = 7002;
 
 	x = -0.003125 * safezoneW + safezoneX;
@@ -492,7 +492,7 @@ class civInteraction_common_header_green : civInteraction_RscText {
     colorBackground[] = COLOR_GREEN_HARD;
 };
 
-class civInteraction_common_header_interfaceTitle : civInteraction_RscText {
+class civ_interaction_common_header_interfaceTitle : civ_interaction_RscText {
     idc = 7003;
 
     text = "Faction Editor";
@@ -504,11 +504,11 @@ class civInteraction_common_header_interfaceTitle : civInteraction_RscText {
     colorBackground[] = COLOR_BLACK(0);
 };
 
-class civInteraction_common_header_banner : civInteraction_RscPicture {
+class civ_interaction_common_header_banner : civ_interaction_RscPicture {
     idc = 7004;
     style = 48 + 0x800;
 
-    text = "\x\alive\addons\sys_civInteraction\data\images\banner_alive.paa";
+    text = "\x\alive\addons\sys_civ_interaction\data\images\banner_alive.paa";
 	x = 0.70 * safezoneW + safezoneX;
 	y = -0.000359978 * safezoneH + safezoneY;
 	w = 0.35 * safezoneW;
@@ -517,11 +517,11 @@ class civInteraction_common_header_banner : civInteraction_RscPicture {
 
 class menuStrip_button_action {
 
-    action = "['onMenuStripButtonClicked', _this] call ALiVE_fnc_civInteractionOnAction";
+    action = "['onMenuStripButtonClicked', _this] call ALiVE_fnc_civ_interactionOnAction";
 
 };
 
-class civInteraction_common_header_menuStrip : civInteraction_ctrlMenuStrip {
+class civ_interaction_common_header_menuStrip : civ_interaction_ctrlMenuStrip {
     idc = 7005;
 
 	x = safezoneX;
@@ -536,7 +536,7 @@ class civInteraction_common_header_menuStrip : civInteraction_ctrlMenuStrip {
 
     class Items {
 
-        items[] = {"civInteraction","FactionEditor","UnitEditor","GroupEditor","Export","Help"};
+        items[] = {"civ_interaction","FactionEditor","UnitEditor","GroupEditor","Export","Help"};
 
         class Default {
             enable = 0;
@@ -549,17 +549,17 @@ class civInteraction_common_header_menuStrip : civInteraction_ctrlMenuStrip {
 
         };
 
-        class civInteraction {
+        class civ_interaction {
 
             text = "ORBAT Creator";
-            items[] = {"civInteraction_Close"};
+            items[] = {"civ_interaction_Close"};
 
         };
 
-        class civInteraction_Close : menuStrip_button_action {
+        class civ_interaction_Close : menuStrip_button_action {
 
             text = "Close";
-            data = "civInteractionClose";
+            data = "civ_interactionClose";
 
         };
 
@@ -715,7 +715,7 @@ class civInteraction_common_header_menuStrip : civInteraction_ctrlMenuStrip {
 
 
 
-class civInteraction_common_popup_header : civInteraction_RscText {
+class civ_interaction_common_popup_header : civ_interaction_RscText {
 	idc = 7031;
 
 	text = "";
@@ -727,7 +727,7 @@ class civInteraction_common_popup_header : civInteraction_RscText {
 	colorBackground[] = COLOR_ARMA_BG;
 };
 
-class civInteraction_common_popup_background : civInteraction_RscText {
+class civ_interaction_common_popup_background : civ_interaction_RscText {
 	idc = 7032;
 
 	text = "";
@@ -738,7 +738,7 @@ class civInteraction_common_popup_background : civInteraction_RscText {
 	colorBackground[] = COLOR_GREY_HARD;
 };
 
-class civInteraction_common_popup_controlsGroup : civInteraction_RscControlsGroup {
+class civ_interaction_common_popup_controlsGroup : civ_interaction_RscControlsGroup {
     idc = 7033;
 	x = 0.266521 * safezoneW + safezoneX;
 	y = 0.15 * safezoneH + safezoneY;
@@ -746,7 +746,7 @@ class civInteraction_common_popup_controlsGroup : civInteraction_RscControlsGrou
 	h = 0.728 * safezoneH;
 };
 
-class civInteraction_common_popup_footer : civInteraction_RscText {
+class civ_interaction_common_popup_footer : civ_interaction_RscText {
 	idc = 7036;
 	x = 0.266667 * safezoneW + safezoneX;
 	y = 0.878 * safezoneH + safezoneY;
@@ -755,7 +755,7 @@ class civInteraction_common_popup_footer : civInteraction_RscText {
 	colorBackground[] = COLOR_GREY_DARK_HARD;
 };
 
-class civInteraction_common_popup_context : civInteraction_RscStructuredText {
+class civ_interaction_common_popup_context : civ_interaction_RscStructuredText {
 	idc = 7037;
 	x = 0.273958 * safezoneW + safezoneX;
 	y = 0.885 * safezoneH + safezoneY;
@@ -765,7 +765,7 @@ class civInteraction_common_popup_context : civInteraction_RscStructuredText {
 	colorBackground[] = COLOR_BLACK(0);
 };
 
-class civInteraction_common_popup_ok: civInteraction_ctrlButtonOk {
+class civ_interaction_common_popup_ok: civ_interaction_ctrlButtonOk {
 	idc = 7038;
 
 	text = "OK";
@@ -775,7 +775,7 @@ class civInteraction_common_popup_ok: civInteraction_ctrlButtonOk {
 	h = 0.028 * safezoneH;
 };
 
-class civInteraction_common_popup_cancel: civInteraction_ctrlButtonCancel {
+class civ_interaction_common_popup_cancel: civ_interaction_ctrlButtonCancel {
 	idc = 7039;
 
 	text = "Cancel";
@@ -786,12 +786,12 @@ class civInteraction_common_popup_cancel: civInteraction_ctrlButtonCancel {
 	h = 0.028 * safezoneH;
 };
 
-class civInteraction_common_popup_attribute_title : civInteraction_RscText {
+class civ_interaction_common_popup_attribute_title : civ_interaction_RscText {
 	colorText[] = COLOR_GREY_TITLE_HARD;
     sizeEx = BASE_SIZE_TEXT * 0.9;
 };
 
-class civInteraction_common_popup_attribute_subtitle : civInteraction_common_popup_attribute_title {
+class civ_interaction_common_popup_attribute_subtitle : civ_interaction_common_popup_attribute_title {
     style = 0x01;
     colorText[] = COLOR_WHITE_HARD;
 };
