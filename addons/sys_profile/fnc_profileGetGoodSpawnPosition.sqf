@@ -175,10 +175,10 @@ switch(_type) do {
 
                     if (!isnil "_roadsConnected" && {count _roadsConnected > 1}) then {
                         _roads = _roadsConnected;
-                        _direction = (_roads select 0) getRelDir (_roads select 1);
+                        _direction = (_roads select 0) getDir (_roads select 1);
                     } else {
                         if (count _roads > 1) then {
-                            _direction = (_roads select 0) getRelDir (_roads select 1);
+                            _direction = (_roads select 0) getDir (_roads select 1);
                         };
                     };
 
