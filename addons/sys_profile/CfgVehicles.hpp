@@ -133,6 +133,27 @@ class CfgVehicles {
                         description = "$STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER_COMMENT";
                         defaultvalue = "1";
                     };
+                    class seaTransport
+                    {
+                        displayName = "$STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT";
+                        description = "$STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT_COMMENT";
+                        class Values
+                        {
+                            class No
+                            {
+                                name = "No";
+                                value = false;
+                                default = 1;
+                            };
+                            class Yes
+                            {
+                                name = "Yes";
+                                value = true;
+                            };
+                        };
+                    };
+
+
                 };
 
         };
