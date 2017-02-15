@@ -270,7 +270,7 @@ switch(_operation) do {
             _debug = _logic getvariable ["debug",false];
             _queue = _logic getVariable ["queue",[]];
 
-            if ((isnil "_object") || {isnull _object}) exitwith {};
+            if (isnil "_object") exitwith {};
 
             switch (typeName _object) do
             {
