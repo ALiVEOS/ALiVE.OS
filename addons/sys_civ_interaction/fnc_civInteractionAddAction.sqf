@@ -24,19 +24,23 @@ Author:
 SpyderBlack723
 ---------------------------------------------------------------------------- */
 
-private _object = _this select 0;
+params ["_unit"];
 
-if (side _object != CIVILIAN || {isnil QGVAR(ROLES_DISABLED)} || {GVAR(ROLES_DISABLED)}) exitWith {}; // only add actions if civilian roles module field != none
+// only add actions if civilian roles module field != none
+systemchat str (!isnil QGVAR(ROLES_DISABLED));
+if (side _unit == CIVILIAN && {!isnil QGVAR(ROLES_DISABLED)} && {!GVAR(ROLES_DISABLED)}) then {
 
-private _id = _object addAction [
-    "Talk to civilian",
-    "['openInterface', _this] call ALiVE_fnc_civInteractionOnAction",
-    nil,
-    1,
-    false,
-    true,
-    "",
-    "alive _target"
-];
+    private _id = _unit addAction [
+        "Talk to civilian",
+        "['openInterface', _this] call ALiVE_fnc_civInteractionOnAction",
+        nil,
+        1,
+        false,
+        true,
+        "",
+        "alive _target"
+    ];
 
-true;
+};
+
+true

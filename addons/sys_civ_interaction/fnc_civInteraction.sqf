@@ -123,7 +123,7 @@ switch(_operation) do {
         // wait until serverside interaction handler has initialized
 
         waitUntil {
-            !isnil QMOD(civInteractionHandler) && {[MOD(civInteractionHandler),"startupComplete"] call ALiVE_fnc_hashGet};
+            !isnil QMOD(civInteractionHandler) && {MOD(civInteractionHandler) getvariable ["startupComplete", false]};
         };
 
         // wait for all OPCOM modules to initialize so we can grab factions
@@ -134,17 +134,20 @@ switch(_operation) do {
 
         private _handler = [_logic,"handler"] call MAINCLASS;
         private _asymFac = [_handler,"asymmetricFactions"] call ALiVE_fnc_hashGet;
-        private _convenFac = [_handler,"conventionalFactions"] call AliVE_fnc_hashGet;
+        private _convenFac = [_handler,"conventionalFactions"] call ALiVE_fnc_hashGet;
 
         {
             private _factions = [_x,"factions"] call ALiVE_fnc_hashGet;
 
-            if (([_x,"controlType"] call ALiVE_fnc_hashGet) == "asymmetric") then {
+            if (([_x,"controltype"] call ALiVE_fnc_hashGet) == "asymmetric") then {
                 {_asymFac pushbackunique _x} foreach _factions;
             } else {
                 {_convenFac pushbackunique _x} foreach _factions;
             };
         } foreach OPCOM_instances;
+
+        ["TEST: %1", _asymFac] call ALiVE_fnc_Dump;
+        ["TEST: %1", _asymFac] call ALiVE_fnc_DumpR;
 
         // set module as startup complete
 
@@ -220,16 +223,18 @@ switch(_operation) do {
 
         _result = [];
 
-        for "_i" from 0 to (count _configRoot - 1) do {
+        if (isclass _configRoot) then {
 
-            private _configEntry = _configRoot select _i;
+            for "_i" from 0 to (count _configRoot - 1) do {
+                private _configEntry = _configRoot select _i;
 
-            if (isclass _configEntry) then {
+                if (isclass _configEntry) then {
 
-                private _question = [_logic,"createQuestion", _configEntry] call MAINCLASS;
+                    private _question = [_logic,"createQuestion", _configEntry] call MAINCLASS;
 
-                _result pushback _question;
+                    _result pushback _question;
 
+                };
             };
 
         };
@@ -348,7 +353,7 @@ switch(_operation) do {
 
         // start gathering civ data on server
 
-        [nil,"", _civ] remoteExecCall [QUOTE(civInteractionHandler),2];
+        [nil,"getCivilianData", [_civ,player]] remoteExecCall [QUOTE(civInteractionHandler),2];
 
         // load default questions to list
 
@@ -404,6 +409,12 @@ switch(_operation) do {
 
     };
 
+    case "onCivilianDataReceived": {
+
+        private _civData = _args;
+
+    };
+
     case "onCivilianKilled": {
 
         [_logic,"onCloseClicked"] call MAINCLASS;
@@ -412,7 +423,50 @@ switch(_operation) do {
 
     case "onAskQuestionClicked": {
 
+        private _listLeft = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_Left );
+        private _listRight = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_RIGHT );
 
+        private _textToSpeak = ctrlText _listLeft;
+
+        if (ctrlVisible _listRight) then {
+            _textToSpeak = _textToSpeak + " " + ctrlText _listRight;
+        };
+
+        private _fillTime = 0.5 + (([_textToSpeak] call ALiVE_fnc_timeRead) * 2);
+
+        private _questionClassname = CI_getSelData( _listLeft );
+        private _functionToExecute = [QUOTE(MAINCLASS), [_logic,"askQuestion", _questionClassname]];
+
+        [_logic,"progressFillOverTime", [_bar,_fillTime,true,_functionToExecute]] spawn MAINCLASS;
+
+    };
+
+    case "askQuestion": {
+
+        private _questionClassname = _args;
+
+        private "_listRightData";
+        if (ctrlVisible _listRight) then {
+            // question in list left needs further information
+            // list right data provides that information
+
+            _listRightData = CI_ctrlGetSelData( _listRight );
+        };
+
+        private _handler = [_logic,"handler"] call MAINCLASS;
+
+        //private _questions = [_handler,"questions"] call ALiVE_fnc_hashGet;
+        //private _question = [_questions,_questionClassname] call ALiVE_fnc_hashGet;
+
+        private _config = missionConfigFile >> "ALiVE_civilian_interaction" >> "questions" >> _questionClassname;
+
+        if (!isclass _config) then {
+            _config = configFile >> "ALiVE_civilian_interaction" >> "questions" >> _questionClassname;
+        };
+
+        if (!isclass _config) exitwith {["ALiVE - Civilian Interaction: Question Not Found %1", _questionClassname] call ALiVE_fnc_DumpR};
+
+        // TODO: Pick up here once work on retrieving data from the server is done
 
     };
 
@@ -509,6 +563,39 @@ switch(_operation) do {
     case "onCloseClicked": {
 
         closeDialog 0;
+
+    };
+
+    // TODO: XLib
+    case "progressFillOverTime": {
+
+        _args params [
+            ["_bar", controlNull, [controlNull]],
+            ["_time", 1, [1]],
+            ["_reset", true, [true]],
+            ["_functionData", [], [[]]]
+        ];
+
+        private _startTime = time;
+
+        while {!isnull _bar && {progressPosition _bar < 1}} do {
+            _bar progressSetPosition ((time - _startTime) / _time);
+        };
+
+        if !(isnull _bar) then {
+            if (_reset) then {
+                _bar progressSetPosition 0;
+            };
+
+            _functionData params [
+                ["_function", {}, [{},""]],
+                ["_args", []]
+            ];
+
+            if (_function isEqualType "") then {_function = call compile _function};
+
+            [_function, _args] call CBA_fnc_directCall
+        };
 
     };
 

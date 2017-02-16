@@ -73,10 +73,10 @@ if(isServer) then {
     } else {
         GVAR(ROLES_DISABLED) = false;
 
-        MOD(civInteractionHandler) = [nil,"create"] call ALiVE_fnc_civInteraction;
-        [MOD(civInteractionHandler),"debug", _debug] call ALiVE_fnc_civInteraction;
-        [MOD(civInteractionHandler),"civilianRoles", _ambientCivilianRoles] call ALiVE_fnc_civInteraction;
-        [MOD(civInteractionHandler),"init"] call ALiVE_fnc_civInteraction;
+        MOD(civInteractionHandler) = [nil,"create"] call ALiVE_fnc_civInteractionHandler;
+        [MOD(civInteractionHandler),"debug", _debug] call ALiVE_fnc_civInteractionHandler;
+        [MOD(civInteractionHandler),"civilianRoles", _ambientCivilianRoles] call ALiVE_fnc_civInteractionHandler;
+        [MOD(civInteractionHandler),"init"] call ALiVE_fnc_civInteractionHandler;
     };
 
     PublicVariable QGVAR(ROLES_DISABLED);

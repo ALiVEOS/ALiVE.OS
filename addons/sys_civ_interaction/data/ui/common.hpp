@@ -44,6 +44,11 @@
 #define COLOR_GREEN_MODERATE        COLOR_GREEN(0.8)
 #define COLOR_GREEN_SOFT            COLOR_GREEN(0.7)
 
+#define COLOR_BURNT_ORANGE(alpha)   {0.788,0.443,0.157,alpha}
+#define COLOR_BURNT_ORANGE_HARD     COLOR_BURNT_ORANGE(1)
+#define COLOR_BURNT_ORANGE_MODERATE COLOR_BURNT_ORANGE(0.8)
+#define COLOR_BURNT_ORANGE_SOFT     COLOR_BURNT_ORANGE(0.7)
+
 // controls
 
 #define BASE_SIZE_TEXT          (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)
