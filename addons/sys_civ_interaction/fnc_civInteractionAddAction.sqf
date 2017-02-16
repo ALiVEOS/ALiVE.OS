@@ -30,7 +30,7 @@ if (side _object != CIVILIAN || {isnil QGVAR(ROLES_DISABLED)} || {GVAR(ROLES_DIS
 
 private _id = _object addAction [
     "Talk to civilian",
-    "['onCivilianInteracted', _this] call ALiVE_fnc_civInteractionOnAction",              // code
+    "['openInterface', _this] call ALiVE_fnc_civInteractionOnAction",
     nil,
     1,
     false,

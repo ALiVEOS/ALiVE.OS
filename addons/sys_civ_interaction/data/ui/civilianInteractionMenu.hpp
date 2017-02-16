@@ -1,15 +1,15 @@
 // GUI editor: configfile >> "ALiVE_civ_interaction_menu"
 
 class ALiVE_civ_interaction_menu {
-	idd = 923;
+	idd = 9200;
 	movingEnable = 1;
 	onLoad = "";
-	onUnload = "";
+	onUnload = "['onUnload'] call ALiVE_fnc_civInteractionOnAction";
 
 	class controlsBackground {
 
 		class civ_interaction_inventory_Background: civ_interaction_RscText {
-			idc = 9240;
+			idc = 9201;
 
 			x = 34.5 * GUI_GRID_W + GUI_GRID_X;
 			y = -2 * GUI_GRID_H + GUI_GRID_Y;
@@ -20,7 +20,7 @@ class ALiVE_civ_interaction_menu {
 		};
 
 		class civ_interaction_inventory_Header: civ_interaction_RscText {
-			idc = 9241;
+			idc = 9202;
 
 			moving = 1;
 			text = " Inventory";
@@ -33,7 +33,7 @@ class ALiVE_civ_interaction_menu {
 		};
 
 		class civ_interaction_Background: civ_interaction_RscText {
-			idc = 9231;
+			idc = 9203;
 
 			x = -2 * GUI_GRID_W + GUI_GRID_X;
 			y = -2 * GUI_GRID_H + GUI_GRID_Y;
@@ -43,7 +43,7 @@ class ALiVE_civ_interaction_menu {
 		};
 
 		class civ_interaction_Header: civ_interaction_RscText {
-			idc = 9232;
+			idc = 9204;
 
 			moving = 1;
 			text = "Civilian Interaction";
@@ -56,7 +56,7 @@ class ALiVE_civ_interaction_menu {
 		};
 
 		class civ_interaction_QuestionsTitle: civ_interaction_RscText {
-			idc = 9233;
+			idc = 9205;
 
 			text = "Questions";
 			x = 0.5 * GUI_GRID_W + GUI_GRID_X;
@@ -67,7 +67,7 @@ class ALiVE_civ_interaction_menu {
 		};
 
 		class civ_interaction_ResponseTitle: civ_interaction_RscText {
-			idc = 9238;
+			idc = 9206;
 
 			text = "Response";
 			x = 0.5 * GUI_GRID_W + GUI_GRID_X;
@@ -82,7 +82,7 @@ class ALiVE_civ_interaction_menu {
 	class controls {
 
 		class civ_interaction_CivName: civ_interaction_RscText {
-			idc = 9236;
+			idc = 9207;
 
 			text = "Name";
 			x = 12.5 * GUI_GRID_W + GUI_GRID_X;
@@ -93,7 +93,7 @@ class ALiVE_civ_interaction_menu {
 		};
 
 		class civ_interaction_QuestionListOne: civ_interaction_RscListBox {
-			idc = 9234;
+			idc = 9208;
 
 			text = "";
 			font = "PuristaMedium";
@@ -106,7 +106,7 @@ class ALiVE_civ_interaction_menu {
 		};
 
 		class civ_interaction_QuestionListTwo: civ_interaction_RscListBox {
-			idc = 9235;
+			idc = 9209;
 
 			text = "";
 			font = "PuristaMedium";
@@ -119,8 +119,7 @@ class ALiVE_civ_interaction_menu {
 		};
 
 		class civ_interaction_AskQuestion: civ_interaction_RscButton {
-			idc = 9247;
-			action = "[SpyderAddons_civilianInteraction,'prepQuestion'] call SpyderAddons_fnc_civilianInteraction";
+			idc = 9210;
 
 			text = "Ask Question";
 			x = -1 * GUI_GRID_W + GUI_GRID_X;
@@ -135,7 +134,7 @@ class ALiVE_civ_interaction_menu {
 		};
 
 		class civ_interaction_ResponseBox: civ_interaction_RscStructuredText {
-			idc = 9239;
+			idc = 9211;
 
 			x = -1.1 * GUI_GRID_W + GUI_GRID_X;
 			y = 14 * GUI_GRID_H + GUI_GRID_Y;
@@ -147,7 +146,7 @@ class ALiVE_civ_interaction_menu {
 		};
 
 		class civ_interaction_ProgressBarTitle: civ_interaction_RscText {
-			idc = 9248;
+			idc = 9212;
 
 			text = "";
 			x = 13.5 * GUI_GRID_W + GUI_GRID_X;
@@ -157,20 +156,19 @@ class ALiVE_civ_interaction_menu {
 			sizeEx = 1 * GUI_GRID_H;
 		};
 
-		//class civ_interaction_AskingProgressBar: civ_interaction_RscProgress
-		//{
-		//	idc = 9249;
-		//	x = -1.1 * GUI_GRID_W + GUI_GRID_X;
-		//	y = 21.5 * GUI_GRID_H + GUI_GRID_Y;
-		//	w = 34 * GUI_GRID_W;
-		//	h = 1 * GUI_GRID_H;
-		//	colorBackground[] = {0.788,0.443,0.157,1};
-		//	colorText[] = {0.788,0.443,0.157,1};
-		//};
+/* 		class civ_interaction_AskingProgressBar: civ_interaction_RscProgress
+		{
+			idc = 9213;
+			x = -1.1 * GUI_GRID_W + GUI_GRID_X;
+			y = 21.5 * GUI_GRID_H + GUI_GRID_Y;
+			w = 34 * GUI_GRID_W;
+			h = 1 * GUI_GRID_H;
+			colorBackground[] = {0.788,0.443,0.157,1};
+			colorText[] = {0.788,0.443,0.157,1};
+		}; */
 
 		class civ_interaction_Detain: civ_interaction_RscButton {
-			idc = 92311;
-			action = "[SpyderAddons_civilianInteraction,'Detain'] call SpyderAddons_fnc_civilianInteraction";
+			idc = 9214;
 
 			text = "Detain";
 			x = 7.5 * GUI_GRID_W + GUI_GRID_X;
@@ -182,8 +180,7 @@ class ALiVE_civ_interaction_menu {
 		};
 
 		class civ_interaction_GetDown: civ_interaction_RscButton {
-			idc = 92312;
-			action = "[SpyderAddons_civilianInteraction,'getDown'] call SpyderAddons_fnc_civilianInteraction";
+			idc = 9215;
 
 			text = "Get Down";
 			x = 13.5 * GUI_GRID_W + GUI_GRID_X;
@@ -195,8 +192,7 @@ class ALiVE_civ_interaction_menu {
 		};
 
 		class civ_interaction_GoAway: civ_interaction_RscButton {
-			idc = 92313;
-			action = "[SpyderAddons_civilianInteraction,'goAway'] call SpyderAddons_fnc_civilianInteraction";
+			idc = 9216;
 
 			text = "Go Away";
 			x = 19.5 * GUI_GRID_W + GUI_GRID_X;
@@ -208,8 +204,7 @@ class ALiVE_civ_interaction_menu {
 		};
 
 		class civ_interaction_Close: civ_interaction_RscButton {
-			idc = 9237;
-			action = "closeDialog 0";
+			idc = 9217;
 
 			text = "Close";
 			x = -2 * GUI_GRID_W + GUI_GRID_X;
@@ -221,8 +216,7 @@ class ALiVE_civ_interaction_menu {
 		};
 
 		class civ_interaction_Search: civ_interaction_RscButton {
-			idc = 9242;
-			action = "[SpyderAddons_civilianInteraction,'toggleSearchMenu'] call SpyderAddons_fnc_inventoryHandler";
+			idc = 9218;
 
 			text = "Search";
 			tooltip = "Search the civilian's inventory";
@@ -235,7 +229,7 @@ class ALiVE_civ_interaction_menu {
 		};
 
 		class civ_interaction_inventory_GearList: civ_interaction_RscListNBox {
-			idc = 9244;
+			idc = 9219;
 
 			x = 34.95 * GUI_GRID_W + GUI_GRID_X;
 			y = -1.5 * GUI_GRID_H + GUI_GRID_Y;
@@ -247,8 +241,7 @@ class ALiVE_civ_interaction_menu {
 		};
 
 		class civ_interaction_inventory_ButtonTwo: civ_interaction_RscButton {
-			idc = 9245;
-			action = "";
+			idc = 9220;
 
 			text = "";
 			x = 34.5 * GUI_GRID_W + GUI_GRID_X;
@@ -260,8 +253,7 @@ class ALiVE_civ_interaction_menu {
 		};
 
 		class civ_interaction_inventory_ButtonThree: civ_interaction_RscButton {
-			idc = 9246;
-			action = "";
+			idc = 9221;
 
 			text = "";
 			x = 34.5 * GUI_GRID_W + GUI_GRID_X;
