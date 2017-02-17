@@ -29,5 +29,11 @@
 <Key ID="STR_ALIVE_INDEXER_ERROR1">
     <Original>Only one Map Indexer module can be used</Original>
 </Key>
+<Key ID="STR_ALIVE_INDEXER_OS">
+    <Original>Operating System:</Original>
+</Key>
+<Key ID="STR_ALIVE_INDEXER_OS_COMMENT">
+    <Original>If map indexer crashes, try changing the operating system selection here.</Original>
+</Key>
 
 </Container></Package></Project>

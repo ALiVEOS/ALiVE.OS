@@ -167,6 +167,13 @@ ALiVE_fnc_INS_retreat = {
 
                     [_objective,_x] call ALiVE_fnc_HashRem;
                 } foreach ["factory","hq","ambush","depot","sabotage","ied","suicide"];
+                
+                // Reset all actions done on that objective so they can be performed again
+                [_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashSet;
+                
+                // Reduce hostility level after retreat
+                [_pos,_sides, 20] call ALiVE_fnc_updateSectorHostility;
+                [_pos, _allSides - _sides, -20] call ALiVE_fnc_updateSectorHostility;
 
                 _event = ['OPCOM_DEFEND',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
                 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
@@ -429,8 +436,10 @@ ALiVE_fnc_INS_roadblocks = {
                 // Spawn CQB
                 [_pos,_size,_CQB] spawn ALiVE_fnc_addCQBpositions;
 
-                // Spawn roadblock
-                [_pos, _size, ceil(_size/200), false] call ALiVE_fnc_createRoadblock;
+                // Spawn roadblock only if it hasn't been set up already (esp. if it has been reloaded from DB)
+                if (isnil "ALiVE_CIV_PLACEMENT_ROADBLOCKS" || {{_pos distance _x < _size} count ALiVE_CIV_PLACEMENT_ROADBLOCKS < ceil(_size/200)}) then {[_pos, _size, ceil(_size/200), false] call ALiVE_fnc_createRoadblock};
+                
+                // Identify location
                 [_objective,"roadblocks",[[],"convertObject",_pos nearestObject ""] call ALiVE_fnc_OPCOM] call ALiVE_fnc_HashSet;
 
                 _event = ['OPCOM_RESERVE',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
@@ -578,7 +587,7 @@ ALiVE_fnc_INS_recruit = {
                         if (!alive _HQ || {_created >= 5}) exitwith {};
 
                         _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
-                        _recruits = [_group, [_pos,_size] call CBA_fnc_RandPos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+                        _recruits = [_group, [_pos,10,_size,1,0,0,0,[],[_pos]] call BIS_fnc_findSafePos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
                         {[_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[_size + 200,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity} foreach _recruits;
 
                         [_pos,_sides, 10] call ALiVE_fnc_updateSectorHostility;

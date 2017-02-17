@@ -24,15 +24,15 @@ Author:
 Highhead
 ---------------------------------------------------------------------------- */
 
-private ["_input","_unitReady","_radius","_lastCheck"];
+private ["_input","_radius"];
 
 _input = _this;
 
-_currentPos = getposATL _input;
-_destination = _input getvariable [QGVAR(MOVEDESTINATION),_currentPos];
-_lastCheck = _input getVariable QGVAR(LASTCHECK);
-_unitReady = if (local _input) then {unitReady _input};
-_moving = true;
+private _currentPos = getposATL _input;
+private _destination = _input getvariable [QGVAR(MOVEDESTINATION),_currentPos];
+private _lastCheck = _input getVariable QGVAR(LASTCHECK);
+private _unitReady = if (local _input) then {unitReady _input};
+private _moving = true;
 
 if (isnil "_lastCheck") then {
     _lastCheck = [_currentPos,time]; _input setVariable [QGVAR(LASTCHECK),_lastCheck];

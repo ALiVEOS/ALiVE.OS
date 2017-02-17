@@ -184,6 +184,7 @@ switch(_operation) do {
 
         [_state,"groupEditor_selectedGroupCategory", ""] call ALiVE_fnc_hashSet;
         [_state,"groupEditor_selectedGroup", ""] call ALiVE_fnc_hashSet;
+        [_state,"groupEditor_selectedGroupDragTargetIndex", -1] call ALiVE_fnc_hashSet;
         [_state,"groupEditor_assetListDragTarget", ""] call ALiVE_fnc_hashSet;
 
         MOD(orbatCreator) = _logic;
@@ -232,22 +233,22 @@ switch(_operation) do {
 
     case "debug": {
 
-        if (typeName _args == "BOOL") then {
-            _logic setVariable ["debug", _args];
+        if (_args isEqualType true) then {
+            _logic setVariable [_operation, _args];
             _result = _args;
         } else {
-            _result = _logic getVariable ["debug", false];
+            _result = _logic getVariable [_operation, false];
         };
 
     };
 
     case "state": {
 
-        if (typeName _args == "ARRAY") then {
-            _logic setVariable ["debug", _args];
+        if (_args isEqualType []) then {
+            _logic setVariable [_operation, _args];
             _result = _args;
         } else {
-            _result = _logic getVariable ["debug", false];
+            _result = _logic getVariable [_operation, [] call ALiVE_fnc_hashCreate];
         };
 
     };
@@ -256,15 +257,15 @@ switch(_operation) do {
 
         _args params ["_operation","_args"];
 
+        /*
         switch (_operation) do {
-
-            case "openInterface": {
-                [_logic,_operation,_args] spawn MAINCLASS;
-            };
 
             default {[_logic,_operation,_args] call MAINCLASS};
 
         };
+        */
+
+        [_logic,_operation,_args] call MAINCLASS
 
     };
 
@@ -899,7 +900,9 @@ switch(_operation) do {
                 private _selectedGroupUnitList = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS );
                 _selectedGroupUnitList ctrlSetEventHandler ["LBSelChanged","['onGroupEditorSelectedGroupUnitChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
                 _selectedGroupUnitList ctrlSetEventHandler ["LBDrag","['onGroupEditorSelectedGroupListDragStart', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-                _selectedGroupUnitList ctrlSetEventHandler ["LBDrop","['onGroupEditorSelectedGroupListDragEnd', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+
+                private _groupUnitListGreenCover = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS_GREENCOVER );
+                _groupUnitListGreenCover ctrlshow false;
 
                 private _selectedGroupUnitRank = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_INPUT_UNITRANK );
                 _selectedGroupUnitRank ctrlSetEventHandler ["LBSelChanged","['onGroupEditorSelectedGroupUnitRankChangedClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
@@ -1950,7 +1953,7 @@ switch(_operation) do {
                     _result pushback _class;
                     _childrenFound = _childrenFound + 1;
                 } else {
-                    _entries pushback _x;
+                     _entries pushback _x;
                 };
             } foreach _allEntries;
 
@@ -3684,6 +3687,7 @@ switch(_operation) do {
             // reset camera
 
             if (_saveChanges) then {
+
                 private _selectedUnitData = [_logic,"getCustomUnit", _selectedUnitClassname] call MAINCLASS;
 
                 private _activeUnit = [_state,"unitEditor_activeUnitObject"] call ALiVE_fnc_hashGet;
@@ -3700,17 +3704,25 @@ switch(_operation) do {
                 private _ctrlListVoices = _displayArsenal displayCtrl (16 + _iconList);
                 private _ctrlListInsignia = _displayArsenal displayCtrl (17 + _iconList);
 
-                private _selFaceData = call compile (OC_ctrlGetSelData( _ctrlListFaces ));
-                private _selVoice = call compile (OC_ctrlGetSelData( _ctrlListVoices ));
-                private _selInsignia = OC_ctrlGetSelData( _ctrlListInsignia );
-
                 private _selVoiceIdentityType = [_logic,"getVoiceIdentityType", _selVoice select 0] call MAINCLASS;
 
                 private _identityTypes = [_selectedUnitData,"identityTypes"] call ALiVE_fnc_hashGet;
 
-                [_identityTypes,"face", _selFaceData select 0] call ALiVE_fnc_hashSet;
-                [_identityTypes,"voice", _selVoice select 0] call ALiVE_fnc_hashSet;
-                [_identityTypes,"insignia", _selInsignia] call ALiVE_fnc_hashSet;
+                if (lbCurSel _ctrlListFaces > -1) then {
+                    private _selFaceData = call compile (OC_ctrlGetSelData( _ctrlListFaces ));
+                    [_identityTypes,"face", _selFaceData select 0] call ALiVE_fnc_hashSet;
+                };
+
+                if (lbCurSel _selVoice > -1) then {
+                    private _selVoice = call compile (OC_ctrlGetSelData( _ctrlListVoices ));
+                    [_identityTypes,"voice", _selVoice select 0] call ALiVE_fnc_hashSet;
+                };
+
+                if (lbCurSel _ctrlListInsignia > -1) then {
+                    private _selInsignia = OC_ctrlGetSelData( _ctrlListInsignia );
+                    [_identityTypes,"insignia", _selInsignia] call ALiVE_fnc_hashSet;
+                };
+
             };
 
             // update list
@@ -4732,28 +4744,117 @@ switch(_operation) do {
         private _state = [_logic,"state"] call MAINCLASS;
         [_state,"groupEditor_assetListDragTarget", _draggedAsset] call ALiVE_fnc_hashSet;
 
+        (findDisplay OC_DISPLAY_GROUPEDITOR) displayAddEventHandler ["MouseButtonUp", "['groupEditorOnDragEnd', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+
+        private _groupUnitListGreenCover = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS_GREENCOVER );
+        _groupUnitListGreenCover ctrlshow true;
+
     };
 
-    case "onGroupEditorSelectedGroupListDragEnd": {
+    case "onGroupEditorSelectedGroupListDragStart": {
+
+        _args params ["_list","_dragData"];
+
+        private _selIndex = _dragData select 0 select 1;
 
         private _state = [_logic,"state"] call MAINCLASS;
-        private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
-        private _draggedAsset = [_state,"groupEditor_assetListDragTarget"] call ALiVE_fnc_hashGet;
+        [_state,"groupEditor_selectedGroupDragTargetIndex", _selIndex] call ALiVE_fnc_hashSet;
 
-        if (_group != "" && {_draggedAsset != ""}) then {
-            private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
-            private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
+        (findDisplay OC_DISPLAY_GROUPEDITOR) displayAddEventHandler ["MouseButtonUp","['groupEditorOnDragEnd', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+
+        // clicking the unit list causes it to be above the green cover
+        //private _groupUnitListGreenCover = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS_GREENCOVER );
+        //_groupUnitListGreenCover ctrlshow true;
+
+    };
+
+    case "groupEditorOnDragEnd": {
+
+        _args params ["_display","_button","_mouseX","_mouseY"];
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _assetListDragTarget = [_state,"groupEditor_assetListDragTarget"] call ALiVE_fnc_hashGet;
+        private _selectedGroupDragTargetIndex = [_state,"groupEditor_selectedGroupDragTargetIndex"] call ALiVE_fnc_hashGet;
+
+        private _posWithinCtrls = {
+            params ["_pos","_ctrls"];
+
+            private _validDrop = false;
+
+            {
+                private _ctrlPos = ctrlPosition _x;
+
+                if (
+                    _pos select 0 >= _ctrlPos select 0 &&
+                    {_pos select 1 >= _ctrlPos select 1} &&
+                    {_pos select 0 <= (_ctrlPos select 0) + (_ctrlPos select 2)} &&
+                    {_pos select 1 <= (_ctrlPos select 1) + (_ctrlPos select 3)}
+                ) then {
+                    _validDrop = true;
+                };
+            } foreach _ctrls;
+
+            _validDrop
+        };
+
+        // asset list to selected group unit list
+
+        if (_assetListDragTarget != "") then {
             private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
 
-            private _groupData = [_logic,"getFactionCategoryGroup", [_faction,_category,_group]] call MAINCLASS;
-            [_logic,"groupAddUnit", [_groupData,_draggedAsset]] call MAINCLASS;
+            if (_group != "") then {
+
+                private _validControlsForDrop = [_display displayCtrl OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS, _display displayCtrl OC_GROUPEDITOR_SELECTEDGROUP_HEADER];
+
+                private _validDrop = [[_mouseX,_mouseY],_validControlsForDrop] call _posWithinCtrls;
+
+                if (_validDrop) then {
+                    private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+                    private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
+                    private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
+
+                    private _groupData = [_logic,"getFactionCategoryGroup", [_faction,_category,_group]] call MAINCLASS;
+                    [_logic,"groupAddUnit", [_groupData,_assetListDragTarget]] call MAINCLASS;
+
+                    // update list
+
+                    [_logic,"groupEditorDisplayGroupUnits", _groupData] call MAINCLASS;
+                };
+            };
 
             [_state,"groupEditor_assetListDragTarget", ""] call ALiVE_fnc_hashSet;
 
-            // update list
-
-            [_logic,"groupEditorDisplayGroupUnits", _groupData] call MAINCLASS;
+            private _groupUnitListGreenCover = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS_GREENCOVER );
+            _groupUnitListGreenCover ctrlshow false;
         };
+
+        // selected group unit list to anywhere outside the list
+
+        if (_selectedGroupDragTargetIndex != -1) then {
+            private _ctrlsToAvoid = [_display displayCtrl OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS, _display displayCtrl OC_GROUPEDITOR_SELECTEDGROUP_HEADER];
+
+            private _validDrop = !([[_mouseX,_mouseY],_ctrlsToAvoid] call _posWithinCtrls);
+
+            if (_validDrop) then {
+                private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+                private _category = [_state,"groupEditor_selectedGroupCategory"] call ALiVE_fnc_hashGet;
+                private _group = [_state,"groupEditor_selectedGroup"] call ALiVE_fnc_hashGet;
+
+                private _groupData = [_logic,"getFactionCategoryGroup", [_faction,_category,_group]] call MAINCLASS;
+                [_logic,"groupRemoveUnit", [_groupData,_selectedGroupDragTargetIndex]] call MAINCLASS;
+
+                // update list
+
+                [_logic,"groupEditorDisplayGroupUnits", _groupData] call MAINCLASS;
+
+                private _groupUnitListGreenCover = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_LIST_UNITS_GREENCOVER );
+                _groupUnitListGreenCover ctrlshow false;
+            };
+
+            [_state,"groupEditor_selectedGroupDragTargetIndex", -1] call ALiVE_fnc_hashSet;
+        };
+
+        (findDisplay OC_DISPLAY_GROUPEDITOR) displayRemoveAllEventHandlers  "onMouseButtonUp";
 
     };
 
@@ -4950,6 +5051,7 @@ switch(_operation) do {
 
             _index = _selectedGroupUnitList lbAdd _unitDisplayName;
             _selectedGroupUnitList lbSetData [_index,_unitConfigName];
+            _selectedGroupUnitList lbSetValue [_index, _index];
             _selectedGroupUnitList lbSetTooltip [_index,_tooltip];
         } foreach _groupUnits;
 
@@ -5737,8 +5839,6 @@ switch(_operation) do {
         // forward declare non-local inherited units
 
         private _cfgVehicles = configFile >> "CfgVehicles";
-        private _importClass1 = "";
-        private _importClass2 = "";
 
         _result = _result + _newLine;
         {
@@ -5750,10 +5850,13 @@ switch(_operation) do {
                 _unitParentConfigName = configname (inheritsFrom (_cfgVehicles >> _unitParentConfigName));
             };
 
-            if (!(_unitParentConfigName in _forwardDeclared) && {!(_unitParentConfigName in _unitsToExport)}) then {
+            if (!(_unitParentConfigName in _forwardDeclared) && {!(_unitParentConfigName in _unitsToExport) || {!(_unitParentConfigName in _unitclasses)}}) then {
                 private _realUnitClass = [_logic,"getRealUnitClass", _unitParentConfigName] call MAINCLASS;
 
                 _result = _result + _indent + "class " + _unitParentConfigName + ";" + _newLine;
+
+                private _importClass1 = "";
+                private _importClass2 = "";
 
                 if (_realUnitClass isKindOf "Man") then {
                     _importClass1 = _unitParentConfigName + "_OCimport_01";
@@ -5967,6 +6070,7 @@ switch(_operation) do {
 
         private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
         _initEventHandler = _initEventHandler + "if (isServer) then {_unit = _this select 0;";
+        _initEventHandler = _initEventHandler + "_onSpawn = {_unit = _this select 0;";
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
 
         private _identityTypes = [_unit,"identityTypes"] call ALiVE_fnc_hashGet;
@@ -5993,6 +6097,9 @@ switch(_operation) do {
         // hack to reload weapons on spawn
 
         _initEventHandler = _initEventHandler + "reload _unit;";
+
+        _initEventHandler = _initEventHandler + "};"; // _onSpawn close
+        _initEventHandler = _initEventHandler + "[_unit] call _onSpawn;_unit addMPEventHandler ['MPRespawn', _onSpawn];";
 
         _initEventHandler = _initEventHandler + "};"; // if (isServer) close
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
@@ -6050,6 +6157,8 @@ switch(_operation) do {
         _result = "";
 
         private _initEventHandler = _initEventHandler + "if (isServer) then {_unit = _this select 0;";
+        _initEventHandler = _initEventHandler + "if (isServer) then {_unit = _this select 0;";
+        _initEventHandler = _initEventHandler + "_onSpawn = {_unit = _this select 0;";
 
         private _realVehicle = [_logic,"getRealUnitClass", _unitConfigName] call MAINCLASS;
         private _unitTextureArray = [_logic,"getVehicleTextureArray", [_realVehicle,_unitTexture]] call MAINCLASS;
@@ -6079,6 +6188,9 @@ switch(_operation) do {
             _result = _result + _indent + _indent + "};" + _newLine;
             _result = _result + _newLine;
         };
+
+        _initEventHandler = _initEventHandler + "};"; // _onSpawn close
+        _initEventHandler = _initEventHandler + "[_unit] call _onSpawn;_unit addMPEventHandler ['MPRespawn', _onSpawn];";
 
         _initEventHandler = _initEventHandler + "};"; // if (isServer) close
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
@@ -6119,8 +6231,13 @@ switch(_operation) do {
         private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
         private _sideText = [_factionSide] call ALiVE_fnc_sideNumberToText;
 
-        if (_sideText == "GUER") then {
-            _sideText = "Indep";
+        switch (_sideText) do {
+            case "GUER": {
+                _sideText = "Indep";
+            };
+            case "CIV": {
+                _sideText = "Civilian";
+            };
         };
 
         private _newLine = toString [13,10];

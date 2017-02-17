@@ -35,24 +35,33 @@ _response = "ALiVEPlugIn" callExtension _cmd;
 
 // diag_log format ["RESPONSE: %2:%1", _response, typeName _response];
 
-if (isNil "_response" || _response == "") exitWith { diag_log "THERE IS A PROBLEM WITH THE ALIVE PLUGIN!"; _response = "SYS_DATA_ERROR"; _response};
+// If null response return error
+if (isNil "_response" || _response == "") exitWith {
+	diag_log "THERE IS A PROBLEM WITH THE ALIVE PLUGIN!";
+	_response = "SYS_DATA_ERROR";
+	_response
+};
+
+// Need to check for errors here with new plugin grab 2nd and 3rd array values.
+if (([toLower(_response), "error"] call CBA_fnc_find != -1) && ([tolower(_response), "terror"] call CBA_fnc_find == -1)) exitWith {
+	["ALiVE Extension (ALiVEPlugIn) Error: %1 CMD: %2",_response,_cmd] call ALiVE_fnc_dump;
+
+	if (_response find "not authorized" != -1) then {
+		_response = "YOU ARE NOT AUTHORIZED";
+	} else {
+    	_response = "SYS_DATA_ERROR";
+    };
+    _response
+};
 
 _response = call compile _response;
 
 TRACE_1("SEND TO PLUGIN: ", _response);
 
-
 if (typeName _response == "ARRAY") then {
     if (count _response == 1) then {
         _response = _response select 0;
     };
-};
-
-
-// Need to check for errors here with new plugin grab 2nd and 3rd array values.
-if (([_response, "ERROR"] call CBA_fnc_find != -1 || [_response, "error"] call CBA_fnc_find != -1) && [_response, "terror"] call CBA_fnc_find == -1) then {
-
-    _response = "SYS_DATA_ERROR";
 };
 
 _response;

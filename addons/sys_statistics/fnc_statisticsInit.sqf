@@ -35,6 +35,9 @@ ADDON = false;
 
 TRACE_2("SYS_STATS",isDedicated,GVAR(ENABLED));
 
+// Make sure we don't init stats more than once on client/dedi
+if (!isNil QGVAR(statsInitialized)) exitWith {["ALiVE SYS STATS - Stats already initialised! Exiting..."] call ALiVE_fnc_Dump};
+
 if (isDedicated && GVAR(ENABLED)) then {
 
     // Setup data handler
@@ -60,7 +63,7 @@ if (isDedicated && GVAR(ENABLED)) then {
     // Server side handler to write data to DB
     QGVAR(UPDATE_EVENTS) addPublicVariableEventHandler {
 
-        private ["_data", "_post", "_gameTime", "_realTime","_hours","_minutes","_currenttime","_async"];
+        private ["_data", "_post", "_gameTime", "_realTime","_hours","_minutes","_currenttime","_async","_missionTime"];
         if (GVAR(ENABLED)) then {
             _data = _this select 1;
             _module = "events";
@@ -87,9 +90,10 @@ if (isDedicated && GVAR(ENABLED)) then {
 
             _gametime = format["%1%2", _hours, _minutes];
             _realtime = [] call ALIVE_fnc_getServerTime;
+            _missionTime = round time;
 
             // _data should be an array of key/value
-            _data = [ ["realTime",_realtime],["Server",GVAR(serverIP)],["Group",GVAR(groupTag)],["Operation",GVAR(operation)],["Map",worldName],["gameTime",_gametime] ] + _data;
+            _data = [["realTime",_realtime],["Server",GVAR(serverIP)],["Group",GVAR(groupTag)],["Operation",GVAR(operation)],["Map",worldName],["gameTime",_gametime]] + _data + [["missionTime",_missionTime]];
 
             // Write event data to DB
             if ((_data select 6) select 1 == "OperationFinish") then {
@@ -142,51 +146,16 @@ if (isDedicated && GVAR(ENABLED)) then {
     // Create shotsFired hash on both server
     GVAR(shotsFired) = [] call ALIVE_fnc_hashCreate;
 
-    /* Test Live Feed
-    [] spawn {
-        // Thread running on server to report state of every unit every 3 seconds
-        while {true} do {
-            diag_log format["Units: %1",count allUnits];
-            {
-                private ["_unit"];
-                _unit = vehicle _x;
-                if (alive _unit) then {
-                    private ["_name","_id","_pos","_dir","_class","_damage","_data","_streamName","_post","_result","_icon"];
-                    _name = name _unit;
-                    _id = [netid _unit, ,, "A"] call CBA_fnc_replace;
-                    _pos = getpos _unit;
-                    _position = format ["{""x"":%1,""y"":%2,""z"":%3}", _pos select 0, _pos select 1, _pos select 2];
-                    _dir = ceil(getdir _unit);
-                    _class = getText (configFile >> "cfgVehicles" >> (typeof _unit) >> "displayName");
-                    _damage = damage _unit;
-                    _side = side (group _unit);
-                    _fac = getText (((faction _unit) call ALiVE_fnc_configGetFactionClass) >> "displayName");
-
-                    _icon = switch (_side) do
-                    {
-                        case EAST :{"red.fw"};
-                        case WEST :{"green.fw"}:
-                        default {"yellow.fw"};
-                    };
-
-                    _data = format[" ""data"":{""name","%1"", ""id","%2"", ""pos"":%3, ""dir","%4"", ""type","%5"", ""damage"":%6, ""side","%7"", ""faction","%8"", ""icon","%9""}", _name, _id, _position, _dir, _class, _damage, _side, _fac, _icon];
-
-                    _streamName = "ALIVE_STREAM"; // GVAR(serverIP) + "_" + missionName;
-                    _post = format ["SendxRTML [""%2"", ""{%1}""]", _data, _streamName];
-                    "Arma2Net.Unmanaged" callExtension _post;
-                    sleep 0.33;
-                    _result = "Arma2Net.Unmanaged" callExtension "SendxRTML []";
-                };
-            } foreach allUnits;
-            sleep 1;
-        };
-    }; */
 };
 
+waitUntil {!isNil QGVAR(ENABLED)};
+
 // Run only in MP on clients where player object-variable exists (and not on HC)
-if (isMultiplayer && {hasInterface} && {GVAR(ENABLED)}) then {
+if (isMultiplayer && hasInterface && GVAR(ENABLED)) then {
 
     private ["_puid","_class","_PlayerSide","_PlayerFaction"];
+
+    ["Initialising stats for %1", player] call ALiVE_fnc_dump;
 
     _waitTime = diag_tickTime + 100000;
 
@@ -194,8 +163,7 @@ if (isMultiplayer && {hasInterface} && {GVAR(ENABLED)}) then {
 
     _puid = getplayeruid player;
 
-
-    if (isNil "_puid" || _puid == "") exitWith {};
+    if (isNil "_puid" || _puid == "") exitWith {["Exiting stats due to nil PUID"] call ALiVE_fnc_dump;};
 
     // Set player shotsFired
     GVAR(playerShotsFired) = [[primaryweapon player, 0, primaryweapon player, getText (configFile >> "cfgWeapons" >> primaryweapon player >> "displayName")]];
@@ -204,7 +172,7 @@ if (isMultiplayer && {hasInterface} && {GVAR(ENABLED)}) then {
 
     // Set up eventhandler to grab player profile from website
     "STATS_PLAYER_PROFILE" addPublicVariableEventHandler {
-        if (STATS_PLAYER_PROFILE_DONE) exitWith {}; // If i've loaded my player profile already, then quit
+        if (STATS_PLAYER_PROFILE_DONE) exitWith {}; // If i've loaded my player profile already exit
         private ["_data","_result"];
 
         TRACE_1("STATS PLAYER PROFILE",_this);
@@ -218,6 +186,15 @@ if (isMultiplayer && {hasInterface} && {GVAR(ENABLED)}) then {
         TRACE_1("STATS PLAYER PROFILE SUCCESS",_result);
 
         STATS_PLAYER_PROFILE_DONE = true;
+    };
+
+    // Addresses race condition at module start on client
+    if (isNil QGVAR(groupTag)) then {
+        private _waitTime = diag_tickTime + 100000;
+
+        waitUntil {!isNil QGVAR(groupTag) || diag_tickTime > _waitTime};
+
+        if (isNil QGVAR(groupTag)) then {GVAR(groupTag) = "Unknown";};
     };
 
     ["Adding Stats EHs to player %1", player] call ALiVE_fnc_dump;
@@ -245,10 +222,11 @@ if (isMultiplayer && {hasInterface} && {GVAR(ENABLED)}) then {
 
 
     // Setup the event data for player starting
+    _data = [ ["Event","PlayerStart"] , ["PlayerSide",_PlayerSide] , ["PlayerFaction",_PlayerFaction], ["PlayerName",_name] ,["PlayerType",typeof player] , ["PlayerClass",_class] , ["PlayerRank", rank player], ["Player",_puid], ["GeoPos",position player], ["playerGroup", [player] call ALiVE_fnc_getPlayerGroup] ];
+    GVAR(UPDATE_EVENTS) = _data;
+    publicVariableServer QGVAR(UPDATE_EVENTS);
 
-        _data = [ ["Event","PlayerStart"] , ["PlayerSide",_PlayerSide] , ["PlayerFaction",_PlayerFaction], ["PlayerName",_name] ,["PlayerType",typeof player] , ["PlayerClass",_class] , ["PlayerRank", rank player], ["Player",_puid], ["GeoPos",position player] ];
-        GVAR(UPDATE_EVENTS) = _data;
-        publicVariableServer QGVAR(UPDATE_EVENTS);
+    ["STATISTICS INITIALISED for %1", player] call ALiVE_fnc_dump;
 };
 
 
@@ -295,6 +273,8 @@ if(!isDedicated && !isHC && GVAR(ENABLED)) then {
                 ]
         ] call ALiVE_fnc_flexiMenu_Add;
 };
+
+GVAR(statsInitialized) = true;
 
 ADDON = true;
 

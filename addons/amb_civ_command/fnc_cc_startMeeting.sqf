@@ -59,9 +59,9 @@ switch (_state) do {
             private _partner = selectRandom _agents;
             private _partnerAgent = _partner select 2 select 5;
 
-            if!(_partnerAgent getVariable ["ALIVE_agentMeetingRequested",false]) then {
-                _partnerAgent setVariable ["ALIVE_agentMeetingRequested", true, false];
+            if(!(_partnerAgent getVariable ["ALIVE_agentMeetingRequested",false]) && {!(_partnerAgent getVariable ["ALIVE_agentGatheringRequested",false])}) then {
                 _partnerAgent setVariable ["ALIVE_agentMeetingTarget", _agent, false];
+                _partnerAgent setVariable ["ALIVE_agentMeetingRequested", true, false];
 
                 _nextState = "wait";
                 [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
@@ -85,6 +85,7 @@ switch (_state) do {
         // DEBUG -------------------------------------------------------------------------------------
 
         if(_agent getVariable ["ALIVE_agentMeetingComplete",false]) then {
+            _agent setVariable ["ALIVE_agentMeetingComplete", nil, false];
             _agent playMove "";
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;

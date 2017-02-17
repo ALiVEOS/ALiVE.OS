@@ -459,6 +459,20 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_OPCOM_FACTIONS_COMMENT";
                                 defaultValue = "";
                         };
+                        class simultanObjectives
+                        {
+                                displayName = "$STR_ALIVE_OPCOM_SIMULTAN";
+                                description = "$STR_ALIVE_OPCOM_SIMULTAN_COMMENT";
+                                typeName = "NUMBER";
+                                defaultValue = 10;
+                        };
+                        class minAgents
+                        {
+                                displayName = "$STR_ALIVE_OPCOM_MINAGENTS";
+                                description = "$STR_ALIVE_OPCOM_MINAGENTS_COMMENT";
+                                typeName = "NUMBER";
+                                defaultValue = 2;
+                        };
                 };
                 class ModuleDescription
                 {

@@ -88,7 +88,7 @@ _cfgValue = {
     };
 };
 
-_cfgFindFaction = {
+private _cfgFindFaction = {
     private ["_cfg","_faction","_detailed","_item","_text","_result","_findRecurse","_className"];
 
     _cfg = _this select 0;
@@ -322,7 +322,7 @@ if(_groupToFactionMappingOK || _factionToGroupMappingOK && (count _factionGroups
 
                 if!(isNil "_unitVehicle") then {
 
-                    _vehicleConfig = configfile >> "CfgVehicles" >> _unitVehicle;
+                    private _vehicleConfig = configfile >> "CfgVehicles" >> _unitVehicle;
 
                     if(count _vehicleConfig > 0) then {
 
@@ -468,7 +468,7 @@ _spawnPosition = (getPosATL player) getPos [10, 0];
                 sleep 10;
 
                 {
-                    _profileType = _x select 2 select 5;
+                    private _profileType = _x select 2 select 5;
 
                     if(_profileType == "entity") then {
                         [_x, "destroy"] call ALIVE_fnc_profileEntity;

@@ -140,7 +140,7 @@ switch (_operation) do {
             } foreach (ALIVE_factionDefaultContainers select 2);
 
             // Define logistics properties on all localities (containers: select 0 / objects: select 1 / exclude: select 2)
-            GVAR(CARRYABLE) = [["Man"],["Reammobox_F","Static","StaticWeapon","ThingX"],["House"] + (_logic getvariable ["BLACKLIST",[]])];
+            GVAR(CARRYABLE) = [["Man"],["Reammobox_F","Static","StaticWeapon","ThingX","NonStrategic"] + (_logic getvariable ["WHITELIST",[]]),["House"] + (_logic getvariable ["BLACKLIST",[]])];
             GVAR(TOWABLE) = [["Truck_F"],["Car","Ship"],[] + (_logic getvariable ["BLACKLIST",[]])];
             GVAR(STOWABLE) = [
                 ["Car","Truck_F","Helicopter","Ship"] + _aliveContainers,
@@ -402,7 +402,7 @@ switch (_operation) do {
 
             // Detach and reposition for a save placement
             detach _object;
-            _object setposATL [getposATL _object select 0, getposATL _object select 1,0];
+            _object setposATL [getposATL _object select 0, getposATL _object select 1,getposATL _object select 2];
 
             [[_logic,"updateObject",[_container,_object]],"ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
 
@@ -842,7 +842,13 @@ switch (_operation) do {
                 //Clientside only section
                 if (hasInterface) then {
                     //apply these EHs on players
-                    _object setvariable [QGVAR(EH_INVENTORYCLOSED), _object getvariable [QGVAR(EH_INVENTORYCLOSED), _object addEventHandler ["InventoryClosed", {[ALiVE_SYS_LOGISTICS,"updateObject",[_this select 1, _this select 0]] call ALIVE_fnc_logistics; if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {["ALiVE SYS LOGISTICS EH InventoryClosed firing"] call ALiVE_fnc_DumpR}}]]];
+                    _object setvariable [QGVAR(EH_INVENTORYCLOSED),_object getvariable [QGVAR(EH_INVENTORYCLOSED),
+                        
+                        _object addEventHandler ["InventoryClosed", {
+                            if !((_this select 1) isKindOf "Man") then {[ALiVE_SYS_LOGISTICS,"updateObject",[_this select 1, _this select 0]] call ALIVE_fnc_logistics};
+                            if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {["ALiVE SYS LOGISTICS EH InventoryClosed firing"] call ALiVE_fnc_DumpR};
+                        }]
+                    ]];
                 };
 
                 //Serverside only section

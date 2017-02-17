@@ -4293,9 +4293,11 @@ switch(_operation) do {
 
                                         _slingloadmax = [(configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue;
 
+                                        if!(isNil "_slingloadmax") then {
                                         _slingDiff = _slingloadmax - _payloadWeight;
 
                                         if ((_slingDiff < _currentDiff) && (_slingDiff > 0)) then {_currentDiff = _slingDiff; _vehicleClass = _x;};
+                                        };
 
                                     } foreach _transportGroups;
 

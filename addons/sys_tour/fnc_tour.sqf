@@ -1332,7 +1332,7 @@ switch(_operation) do {
                             _center = [_x,"center"] call ALIVE_fnc_hashGet;
                             _size = [_x,"size"] call ALIVE_fnc_hashGet;
                             _priority = [_x,"priority"] call ALIVE_fnc_hashGet;
-                            _type = [_x,"type"] call ALIVE_fnc_hashGet;
+                            _type = [_x,"objectiveType"] call ALIVE_fnc_hashGet;
                             _state = [_x,"tacom_state"] call ALIVE_fnc_hashGet;
                             _section = [_x,"section"] call ALIVE_fnc_hashGet;
                             _objectiveID = [_x,"objectiveID"] call ALIVE_fnc_hashGet;
@@ -1852,7 +1852,7 @@ switch(_operation) do {
                 _center = [_objective,"center"] call ALIVE_fnc_hashGet;
                 _size = [_objective,"size"] call ALIVE_fnc_hashGet;
                 _priority = [_objective,"priority"] call ALIVE_fnc_hashGet;
-                _type = [_objective,"type"] call ALIVE_fnc_hashGet;
+                _type = [_objective,"objectiveType"] call ALIVE_fnc_hashGet;
                 _orders = [_objective,"opcom_orders"] call ALIVE_fnc_hashGet;
                 _section = [_objective,"section"] call ALIVE_fnc_hashGet;
                 _objectiveID = [_objective,"objectiveID"] call ALIVE_fnc_hashGet;
@@ -2850,7 +2850,7 @@ switch(_operation) do {
                     _center = [_x,"center"] call ALIVE_fnc_hashGet;
                     _size = [_x,"size"] call ALIVE_fnc_hashGet;
                     _priority = [_x,"priority"] call ALIVE_fnc_hashGet;
-                    _type = [_x,"type"] call ALIVE_fnc_hashGet;
+                    _type = [_x,"objectiveType"] call ALIVE_fnc_hashGet;
                     _orders = [_x,"opcom_orders"] call ALIVE_fnc_hashGet;
                     _section = [_x,"section"] call ALIVE_fnc_hashGet;
                     _objectiveID = [_x,"objectiveID"] call ALIVE_fnc_hashGet;

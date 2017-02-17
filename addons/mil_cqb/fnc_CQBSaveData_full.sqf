@@ -34,17 +34,17 @@ if !(isDedicated && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)})
 [["ALiVE_LOADINGSCREEN"],"BIS_fnc_startLoadingScreen",true,false] call BIS_fnc_MP;
 [true, "ALiVE CQB persistence save data started", "cqbper"] call ALIVE_fnc_timer;
 
-_async = false;
-_missionName = [missionName, "%20","-"] call CBA_fnc_replace;
+private _async = false;
+private _missionName = [missionName, "%20","-"] call CBA_fnc_replace;
 _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName];
 
-_keys = [];
-_values = [];
-_data = [] call ALiVE_fnc_HashCreate;
+private _keys = [];
+private _values = [];
+private _data = [] call ALiVE_fnc_HashCreate;
 {
     if (call compile (_x getvariable ["CQB_persistent","false"])) then {
-        _state = [_x,"state"] call ALiVE_fnc_CQB;
-        _houses = [_state,"houses"] call ALiVE_fnc_HashGet;
+        private _state = [_x,"state"] call ALiVE_fnc_CQB;
+        private _houses = [_state,"houses"] call ALiVE_fnc_HashGet;
 
         _keys = _keys + (_houses select 1);
         _values = _values + (_houses select 2);

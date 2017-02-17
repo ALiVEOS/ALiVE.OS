@@ -1,7 +1,7 @@
 #include <\x\alive\addons\sys_data\script_component.hpp>
 SCRIPT(DataInit);
 
-#define AAR_DEFAULT_SAMPLE_RATE 10
+#define AAR_DEFAULT_SAMPLE_RATE 5
 #define AAR_DEFAULT_SAVE_INTERVAL 120
 #define SUPERCLASS ALIVE_fnc_baseClass
 #define MAINCLASS ALIVE_fnc_Data
@@ -17,7 +17,7 @@ PARAMS_2(_logic,_mode);
 ASSERT_DEFINED("ALIVE_fnc_Data","Main function missing");
 
 //Only one init per instance is allowed
-if !(isnil QUOTE(ADDON)) exitwith {["ALiVE SYS DATA - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+if (!isnil QUOTE(ADDON) && isDedicated) exitwith {["ALiVE SYS DATA - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
 
 // Check to see if module was placed... (might be auto enabled)
 if (isnil "_logic") then {
@@ -35,7 +35,7 @@ if (isnil "_logic") then {
         // If auto enabled allow
         if (_mode == 1) then { // override defaults and disable everything bar perf
             MOD(sys_data) setVariable ["disableStats","true"];
-             MOD(sys_data) setVariable ["disablePerfMon","false"];
+            MOD(sys_data) setVariable ["disablePerfMon","false"];
         };
 
         //Push to clients
@@ -80,9 +80,15 @@ if (isDedicated) then {
     GVAR(databaseName) = "arma3live";
     GVAR(source) = MOD(sys_data) getVariable ["source","CouchDB"];
 
-    _initmsg = [_logic getVariable ["disablePerfMon","true"]] call ALIVE_fnc_startALiVEPlugIn;
+    private _initmsg = [_logic getVariable ["disablePerfMon","true"]] call ALIVE_fnc_startALiVEPlugIn;
 
     ["ALIVE_SYS_DATA START PLUGIN: %1", _initmsg] call ALIVE_fnc_dump;
+
+    private _serverIP = [] call ALIVE_fnc_getServerIP;
+    // If the host IP web service is down, just use the serverName
+    if (_serverIP != "SYS_DATA_ERROR" && typeName _initmsg == "STRING" && {_initmsg == "YOU ARE NOT AUTHORIZED"}) then {
+        ["YOUR SERVER EXTERNAL IP ADDRESS AS SEEN BY WAR ROOM: %1 (Ensure it matches with your War Room server entry if you have any issues)",_serverIP] call ALiVE_fnc_dump;
+    };
 
     GVAR(GROUP_ID) = [] call ALIVE_fnc_getGroupID;
 
@@ -106,7 +112,7 @@ if (isDedicated) then {
     };
 
     // Check that the config loaded ok, if not then stop the data module
-    if (typeName _config == "STRING" || (_initmsg select 1 == "ERROR" && _initmsg select 2 != "ALiVE already initialized")) exitWith {
+    if (typeName _config == "STRING" || (typeName _initmsg == "STRING" && {_initmsg == "YOU ARE NOT AUTHORIZED"})) exitWith {
         ["CANNOT CONNECT TO DATABASE, DISABLING DATA MODULE"] call ALIVE_fnc_logger;
         GVAR(DISABLED) = true;
         publicVariable QGVAR(DISABLED);
@@ -150,6 +156,9 @@ if (isDedicated) then {
     if ([_config, "EventData","false"] call ALIVE_fnc_hashGet == "false") then {
         ["CONNECTED TO DATABASE, BUT STAT DATA HAS BEEN TURNED OFF"] call ALIVE_fnc_logger;
         ALIVE_sys_statistics_ENABLED = false;
+        publicVariable "ALIVE_sys_statistics_ENABLED";
+    } else {
+        ALIVE_sys_statistics_ENABLED = if (_logic getvariable ["disableStats","false"] == "false") then {true} else {false};
         publicVariable "ALIVE_sys_statistics_ENABLED";
     };
 
@@ -262,7 +271,7 @@ if (isDedicated) then {
 
             // Update CIV PLACEMENT Module so that roadblocks are not duplicated
             ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS = [MOD(PCOMPOSITIONS),"roadblock_locs",[]] call ALiVE_fnc_hashGet;
-            ALIVE_CIV_PLACEMENT_ROADBLOCKS = [MOD(PCOMPOSITIONS),"comp_roadblocks",[]] call ALiVE_fnc_hashGet;
+            ALIVE_CIV_PLACEMENT_ROADBLOCKS = [MOD(PCOMPOSITIONS),"comp_roadblocks",[]] call ALiVE_fnc_hashGet; // Should be in 1.2.9
 
             // Get all spawned composition data
             private _compositions = [MOD(PCOMPOSITIONS),"compositions",[[],[]]] call ALiVE_fnc_hashGet;
@@ -335,7 +344,7 @@ if (isDedicated) then {
     // AAR system - should prob be its own module
     TRACE_2("SYS_DATA AAR VAR", MOD(sys_data) getVariable "disableAAR", ALIVE_sys_AAR_ENABLED);
     // Start the AAR monitoring module
-    if (MOD(sys_data) getvariable ["disableAAR", "true"] == "false" && ALIVE_sys_AAR_ENABLED) then {
+    if (MOD(sys_data) getvariable ["disableAAR", "false"] == "false" && ALIVE_sys_AAR_ENABLED) then {
 
         ["DATA: Starting AAR system."] call ALIVE_fnc_dump;
 
@@ -359,9 +368,16 @@ if (isDedicated) then {
             private _missionName = [GVAR(operation), "%20","-"] call CBA_fnc_replace;
             _missionName = format["%1_%2", GVAR(GROUP_ID), _missionName];
 
-            while {MOD(sys_data) getVariable "disableAAR" == "false"} do {
+            while {MOD(sys_data) getVariable ["disableAAR","false"] == "false"} do {
 
-                if (count playableUnits > 0) then {
+                private _allPlayers = [];
+                {
+                    if (isPlayer _x) then
+                    {
+                        _allPlayers pushBack _x;
+                    };
+                } forEach playableUnits;
+                if (count _allPlayers > 0) then {
 
                     // Set up hash of unit positions
                     private _aarRecord = [] call ALIVE_fnc_hashCreate;
@@ -437,7 +453,7 @@ if (isDedicated) then {
                     [_aarRecord, "value", _aarArray] call ALIVE_fnc_hashSet;
 
                     // Send the inf data to DB
-                    private _keyName = format["%1_%2",_aarDocID,_missionTime];
+                    private _keyName = format["%1_%2_i",_aarDocID,_missionTime];
 
                     // store in aar hash
                     [_aar,_keyName,_aarRecord] call ALiVE_fnc_hashSet;
@@ -577,10 +593,10 @@ if (isDedicated) then {
                     [_aarVRecord, "value", _aarvehArray] call ALIVE_fnc_hashSet;
 
                     // Send the inf data to DB
-                    _keyName = format["%1_%2",_aarDocID,_missionTime];
+                    _keyName = format["%1_%2_v",_aarDocID,_missionTime];
 
                     // store in aar hash
-                    [_aar,_keyName,_aarRecord] call ALiVE_fnc_hashSet;
+                    [_aar,_keyName,_aarVRecord] call ALiVE_fnc_hashSet;
 
                     // Check to see if it's time to write to the DB
                     if (diag_tickTime > (_lastSave + AAR_DEFAULT_SAVE_INTERVAL))  then {

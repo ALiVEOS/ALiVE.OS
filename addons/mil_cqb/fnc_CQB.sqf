@@ -43,6 +43,7 @@ Wolffy, Highhead
 #define MTEMPLATE "ALiVE_CQB_%1"
 #define DEFAULT_BLACKLIST []
 #define DEFAULT_WHITELIST []
+#define DEFAULT_STATICWEAPONS ["B_HMG_01_high_F","O_Mortar_01_F","O_HMG_01_high_F"]
 
 private ["_logic","_operation","_args"];
 
@@ -158,6 +159,10 @@ switch(_operation) do {
             _amount = _logic getvariable ["CQB_amount","2"];
             if (typename (_amount) == "STRING") then {_amount = call compile _amount};
             _logic setVariable ["CQB_amount", _amount];
+
+            _staticWeaponsIntensity = _logic getvariable ["CQB_staticWeapons","0"];
+            if (typename (_staticWeaponsIntensity) == "STRING") then {_staticWeaponsIntensity = call compile _staticWeaponsIntensity};
+            _logic setVariable ["CQB_staticWeapons", _staticWeaponsIntensity];
 
             _type = _logic getvariable ["CQB_TYPE","regular"];
             _logic setVariable ["type", _type];
@@ -311,6 +316,7 @@ switch(_operation) do {
                 _logic setVariable ["amount",_amount,true];
                 _logic setVariable ["debugColor",_debugColor,true];
                 _logic setVariable ["debugPrefix",_type,true];
+                _logic setVariable ["staticWeaponsIntensity",_staticWeaponsIntensity,true];
                 [_logic, "houses",_result] call ALiVE_fnc_CQB;
                 [_logic, "factions",_factions] call ALiVE_fnc_CQB;
                 [_logic, "spawnDistance",_spawn] call ALiVE_fnc_CQB;
@@ -1063,12 +1069,13 @@ switch(_operation) do {
             // if a house and unit is provided start spawn process
             ASSERT_TRUE(typeName _args == "ARRAY",str typeName _args);
 
-            private ["_factions","_units","_blacklist","_faction","_houseFaction"];
+            private ["_factions","_units","_blacklist","_faction","_houseFaction","_staticWeapons","_staticWeaponsIntensity"];
 
             _house = _args select 0;
             _faction = _args select 1;
             _factions = (_logic getvariable ["factions",["OPF_F"]]);
             _blacklist = (_logic getvariable ["UnitsBlackList",GVAR(UNITBLACKLIST)]);
+            _staticWeaponsIntensity = _logic getvariable ["StaticWeaponsIntensity",0];
             _debug = _logic getVariable ["debug",false];
 
             private ["_side","_units"];
@@ -1125,13 +1132,22 @@ switch(_operation) do {
 
             // position AI
             _positions = [_house] call ALiVE_fnc_getBuildingPositions;
-            if (count _positions == 0) exitwith {_grp};
+            
+            if (count _positions == 0) exitwith {_args = _grp};
+
+            [_logic, "addGroup", [_house, _grp]] call ALiVE_fnc_CQB;
+            [_logic, "addStaticWeapons", [_house, _staticWeaponsIntensity]] call ALiVE_fnc_CQB;
 
             {
-                _pos = (selectRandom _positions);
-                _x setPosATL [_pos select 0, _pos select 1, (_pos select 2 + 0.4)];
-            } forEach units _grp;
-            [_logic, "addGroup", [_house, _grp]] call ALiVE_fnc_CQB;
+                private _unit = _x;
+                
+                {
+                    private _pos = _x;
+                    
+                    _unit setPosATL [_pos select 0, _pos select 1, (_pos select 2 + 0.4)];
+                } foreach _positions;
+                
+            } forEach (units _grp);
 
             // TODO Notify controller to start directing
             // TODO this needs to be refactored
@@ -1140,6 +1156,98 @@ switch(_operation) do {
             (leader _grp) setVariable ["FSM", [_hdl,_fsm], true];
             _args = _grp;
         };
+        _args;
+    };
+    
+    case "addStaticWeapons": {
+        
+	    if (isNil "_args" || {count _args < 2} || {isNull (_args select 0)} || {_args select 1 <= 0}) exitWith {
+            
+            //["ALiVE CQB Input does not allow for creation of static weapons: %1!",_args] call ALiVE_fnc_Dump;
+            
+	    	_args = [];
+            
+            _args;
+	    };
+        
+		private _building = _args select 0;
+        private _count = _args select 1;
+        
+        private _buildingPosition = getposATL _building;
+        
+        private _staticWeapons = _building getvariable ["staticWeapons",[]];
+        
+        if ({alive _x} count _staticWeapons > 0) exitwith {
+            
+            //["ALiVE CQB Static weapons exisiting: %1! Not creating new ones...",_staticWeapons] call ALiVE_fnc_DumpR;
+            
+        	_args = _staticWeapons;
+        
+        	_args;
+        };
+		
+		private _positions = _building call ALiVE_fnc_getBuildingPositions;
+		private _onTop = [];
+
+		
+		scopeName "#Main";
+		
+		_positions = [_positions,[],
+			{
+		    	_x select 2;
+		    		},"DESCENDING",{
+		    	
+			}
+		] call ALiVE_fnc_SortBy;
+        
+        //["ALiVE CQB Found building positions: %1",_positions] call ALiVE_fnc_DumpR;
+		
+		{
+		    private _position = AGLtoASL _x;
+		    private _checkPos = +_position; _checkPos set [2,(_checkpos select 2) + 10];
+		
+		    if (count lineIntersectsSurfaces [_position,_checkPos] == 0) then {
+		        _onTop pushBack (ASLtoAGL _position)
+		    };
+		} foreach _positions;
+
+        //["ALiVE CQB Found on top positions: %1",_onTop] call ALiVE_fnc_DumpR;
+
+		if (random 1 < _count && {count _onTop > 0}) then {
+
+        	_count = ceil _count;   
+            
+            [_onTop] call CBA_fnc_Shuffle;
+                		
+			{
+			    if (count _staticWeapons < _count) then {
+
+                    private _class = selectRandom DEFAULT_STATICWEAPONS;	                
+	                private _placement = _x;
+	                
+	                _placement set [2,(_placement select 2) + 0.3];
+                    _placement = [_placement,0.75,_placement getdir _buildingPosition] call BIS_fnc_relPos;
+
+			    	private _staticWeapon = createVehicle [_class, _placement, [], 0, "CAN_COLLIDE"];
+                    
+                    _staticWeapon setpos _placement;
+                    _staticWeapon setdir (_buildingPosition getDir _placement);
+                    
+			        _staticWeapons pushback _staticWeapon;
+			    } else {
+			        breakTo "#Main"
+			    };
+			} foreach _onTop;
+        };
+        
+        if (count _staticWeapons > 0) then {
+            _building setvariable ["staticWeapons",_staticWeapons,true];
+            
+            //["ALiVE CQB Static weapons created: %1",_staticWeapons] call ALiVE_fnc_DumpR;
+        };
+		
+		_args = _staticWeapons;
+        
         _args;
     };
 
@@ -1192,20 +1300,6 @@ switch(_operation) do {
                                             default {
                                                 _hosts = [false];
                                             };
-
-                                            /* // Always use server and then switch to new locality
-                                            case ("server") : {
-                                                _hosts = [false];
-                                            };
-                                            case ("HC") : {
-                                                if (count headlessClients > 0) then {_hosts = headlessClients} else {_hosts = [false]};
-                                            };
-                                            case ("client") : {
-                                                //Sort near players by FPS
-                                                _nearplayers = [_nearplayers,[],{_x getvariable ["averageFPS",30]},"DESCEND"] call ALiVE_fnc_SortBy;
-                                                _hosts = [_nearplayers select 0];
-                                            };
-                                            */
                                         };
 
                                         if (count _hosts > 0) then {
@@ -1222,8 +1316,6 @@ switch(_operation) do {
                                                     _faction = (selectRandom (_logic getvariable ["factions",["OPF_F"]]));
                                                 };
 
-                                                // Naught, ALiVE_fnc_BUS seems to be broken since movement into x_lib (Server to client calls fail)! Please check on dedicated server, switched to BIS_fnc_MP for now!
-                                                //[_host,"CQB",[[_logic, "spawnGroup", [_house,_faction]],{call ALiVE_fnc_CQB}]] call ALiVE_fnc_BUS;
                                                 /////////////////////////////////////////////////////////////
                                                 [[_logic, "spawnGroup", [_house,_faction]],"ALiVE_fnc_CQB",_host,false] call BIS_fnc_MP;
 

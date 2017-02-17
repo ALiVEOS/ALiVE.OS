@@ -24,20 +24,18 @@ Author:
 Highhead
 ---------------------------------------------------------------------------- */
 
-private ["_type","_unit","_profile","_profileID","_pos","_radius","_assignments","_group","_sidesEnemy"];
-
-_profile = [_this, 0, ["",[],[],nil], [[]]] call BIS_fnc_param;
-_params = [_this, 1, [], [[]]] call BIS_fnc_param;
-_sidesEnemy = [_params, 0, ["WEST"], [[]]] call BIS_fnc_param;
+private _profile = [_this, 0, ["",[],[],nil], [[]]] call BIS_fnc_param;
+private _params = [_this, 1, [], [[]]] call BIS_fnc_param;
+private _sidesEnemy = [_params, 0, ["WEST"], [[]]] call BIS_fnc_param;
 
 _sidesEnemy = +_sidesEnemy;
 
 if (isnil "_profile") exitwith {};
 
-_profileID = [_profile,"profileID"] call ALiVE_fnc_HashGet;
-_type = [_profile,"type",""] call ALiVE_fnc_HashGet;
-_assignments = [_profile,"vehicleAssignments",["",[],[],nil]] call ALIVE_fnc_HashGet;
-_pos = [_profile,"position"] call ALiVE_fnc_HashGet;
+private _profileID = [_profile,"profileID"] call ALiVE_fnc_HashGet;
+private _type = [_profile,"type",""] call ALiVE_fnc_HashGet;
+private _assignments = [_profile,"vehicleAssignments",["",[],[],nil]] call ALIVE_fnc_HashGet;
+private _pos = [_profile,"position"] call ALiVE_fnc_HashGet;
 
 if (isnil "_pos") exitwith {};
 
@@ -62,10 +60,10 @@ waituntil {sleep 0.5; !isnil {(_profile select 2 select 13)} && {!isnull (_profi
 
 if (_type == "entity") then {
 
-    private ["_driver","_gunner","_inVehicle"];
+    private ["_driver","_gunner"];
 
-    _group = _profile select 2 select 13;
-    _units = +(units _group);
+    private _group = _profile select 2 select 13;
+    private _units = +(units _group);
 
     waituntil {
         sleep 5;
@@ -73,14 +71,14 @@ if (_type == "entity") then {
         count ((getposATL (leader _group) nearEntities ["CAManBase",50]) - _units) > 0
     };
 
-    _side = side _group;
+    private _side = side _group;
     _units = +(units _group);
-    _speedMode = speedmode _group;
-    _behaviour = behaviour (leader _group);
-    _position = getposATL (leader _group);
+    private _speedMode = speedmode _group;
+    private _behaviour = behaviour (leader _group);
+    private _position = getposATL (leader _group);
 
-    _inVehicle = false;
-    _vehicle = vehicle (leader _group);
+    private _inVehicle = false;
+    private _vehicle = vehicle (leader _group);
 
     if (_vehicle != leader _group) then {
         _inVehicle = true;
@@ -88,20 +86,20 @@ if (_type == "entity") then {
         _gunner = gunner _vehicle;
     };
 
-    _fate = "attack"; if ((random 1) <= 0.3) then {_fate = "suicide"};
+    private _fate = "attack"; if ((random 1) <= 0.3) then {_fate = "suicide"};
 
     switch (_fate) do {
 
         case ("attack") : {
             private ["_target"];
 
-            _armed = false;
-            _tempGroupE = creategroup EAST;
+            private _armed = false;
+            private _tempGroupE = creategroup EAST;
 
             while {sleep 1; {alive _x} count _units > 0} do {
 
                 if (isnil "_target") then {
-                    _list = _position nearEntities ["CAManBase",60];
+                    private _list = _position nearEntities ["CAManBase",60];
 
                     {
                         if !((side _x) in _sidesEnemy) then {
@@ -123,7 +121,7 @@ if (_type == "entity") then {
 
                         if (isnull _tempGroupE) then {deletegroup _tempGroupE;_tempGroupE = creategroup EAST};
 
-                        _cwp = currentWaypoint _group;
+                        private _cwp = currentWaypoint _group;
                         _tempGroupE copyWaypoints _group;
 
                         _units join _tempGroupE;
@@ -198,7 +196,7 @@ if (_type == "entity") then {
             while {sleep 3; {alive _x} count _units > 0} do {
 
                 if (isnil "_target" || {!alive _target}) then {
-                    _list = _position nearEntities ["CAManBase",60];
+                    private _list = _position nearEntities ["CAManBase",60];
 
                     {
                         if !((side _x) in _sidesEnemy) then {

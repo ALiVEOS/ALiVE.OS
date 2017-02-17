@@ -97,7 +97,7 @@ switch (toUpper (_lb lbText _index)) do
         private ["_transportArray"];
         _transportArray = NEO_radioLogic getVariable format ["NEO_radioTrasportArray_%1", playerSide];
 
-        if (count _transportArray > 0) then
+        if ((count _transportArray > 0) && (isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" })) then
         {
             _transportUnitText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>UNIT</t>";
             _transportHelpUnitText ctrlSetStructuredText parseText "<t color='#FFFF00' size='0.7' font='PuristaMedium'>Select a unit</t>";
@@ -108,7 +108,6 @@ switch (toUpper (_lb lbText _index)) do
             if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" }) then
             {
                 _transportUnitLb ctrlEnable true;
-                lbClear _transportUnitLb;
                 {
                     if (vehicle player == (_x select 0)) then
                     {
@@ -142,7 +141,7 @@ switch (toUpper (_lb lbText _index)) do
         private ["_casArray"];
         _casArray = NEO_radioLogic getVariable format ["NEO_radioCasArray_%1", playerSide];
 
-        if (count _casArray > 0) then
+        if ((count _casArray > 0) && (isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" }) && (isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" })) then
         {
             _casUnitText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>UNIT</t>";
             _casHelpUnitText ctrlSetStructuredText parseText "<t color='#FFFF00' size='0.7' font='PuristaMedium'>Select a unit</t>";
@@ -173,7 +172,7 @@ switch (toUpper (_lb lbText _index)) do
         private ["_artyArray"];
         _artyArray = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", playerSide];
 
-        if (count _artyArray > 0) then
+        if ((count _artyArray > 0) && (isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" })) then
         {
             _artyUnitText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>BATTERY</t>";
             _artyHelpUnitText ctrlSetStructuredText parseText "<t color='#FFFF00' size='0.7' font='PuristaMedium'>Select a unit</t>";

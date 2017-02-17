@@ -53,8 +53,6 @@ ALIVE_fnc_restore = {
     _tkey = _this select 0;
     _tVal = _this select 1;
 
-
-
     if (count _this > 2) then {
         _arrayResult = _this select 2;
         TRACE_3("Restore Check", _key, _tkey, _tVal);
@@ -108,16 +106,15 @@ ALIVE_fnc_restore = {
                     private ["_tmp","_i","_tmpKey"];
                     TRACE_3("ARRAY RESTORE", _key, typeName _value, _value);
 
-                    /*if (typeName _value != "ARRAY") then {
-                        _value = [_value, "any", "nil"] call CBA_fnc_replace;
-                        _tmp = call compile _value;
-                    } else {
-                        _tmp = + _value;
-                    };*/
+                    if (typeName _value != "ARRAY") exitWith {
+                        ["ERROR: %1 value is not an ARRAY, restoring %2 as a STRING.", _key, _value] call ALiVE_fnc_dump;
+                        _data = _value;
+                    };
 
                     _data = [];
                     _i = 0;
                     {
+
                         private "_item";
                         if (_arrayResult) then {
                             _tmpKey = _tkey + "_" + str(_i);

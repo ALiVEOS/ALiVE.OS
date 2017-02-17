@@ -437,22 +437,22 @@ switch(_operation) do {
                 _center = [_objective,"center"] call ALIVE_fnc_hashGet;
                 _size = [_objective,"size"] call ALIVE_fnc_hashGet;
                 _priority = [_objective,"priority"] call ALIVE_fnc_hashGet;
-                _type = [_objective,"type"] call ALIVE_fnc_hashGet;
+                _type = [_objective,"objectiveType"] call ALIVE_fnc_hashGet;
                 _state = [_objective,"tacom_state","none"] call ALIVE_fnc_hashGet;
                 _objectiveID = [_objective,"objectiveID"] call ALIVE_fnc_hashGet;
                 _section = [_objective,"section",[]] call ALIVE_fnc_hashGet;
 
                 // Installations
-                _factory = [[],"convertObject",[_objective,"factory",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-                _HQ = [[],"convertObject",[_objective,"HQ",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-                _ambush = [[],"convertObject",[_objective,"ambush",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-                _depot = [[],"convertObject",[_objective,"depot",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-                _sabotage = [[],"convertObject",[_objective,"sabotage",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-                _ied = [[],"convertObject",[_objective,"ied",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-                _suicide = [[],"convertObject",[_objective,"suicide",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-                _roadblocks = [[],"convertObject",[_objective,"roadblocks",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+                private _factory = [[],"convertObject",[_objective,"factory",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+                private _HQ = [[],"convertObject",[_objective,"HQ",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+                private _ambush = [[],"convertObject",[_objective,"ambush",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+                private _depot = [[],"convertObject",[_objective,"depot",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+                private _sabotage = [[],"convertObject",[_objective,"sabotage",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+                private _ied = [[],"convertObject",[_objective,"ied",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+                private _suicide = [[],"convertObject",[_objective,"suicide",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+                private _roadblocks = [[],"convertObject",[_objective,"roadblocks",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
 
-                _installations = [_factory,_HQ,_ambush,_depot,_sabotage,_ied,_suicide,_roadblocks];
+                private _installations = [_factory,_HQ,_ambush,_depot,_sabotage,_ied,_suicide,_roadblocks];
 
                 private ["_profiles","_markers","_profileID","_profile","_alpha","_marker","_color","_dir","_position","_icon","_text","_m"];
 

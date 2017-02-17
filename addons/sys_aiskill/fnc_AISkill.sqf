@@ -392,11 +392,11 @@ switch(_operation) do {
             _skillFactionsRegular = ["OPF_F","OPF_G_F","OPF_T_F","BLU_F","BLU_G_F","BLU_T_F","BLU_CTRG_F","IND_F","IND_G_F","IND_C_F"];
         };
 
-        // min abil, max abil, aim acc, aim shake, aim speed, end, sdist, stime, cour, reload, comm, gen
-        _recruitSkill = [0.2,0.21,0.01,1,0.05,0.05,0.2,0.2,0.05,0.05,1,0.2];
-        _regularSkill = [0.2,0.25,0.05,0.9,0.1,0.1,0.5,0.4,0.1,0.1,1,0.5];
-        _veteranSkill = [0.2,0.3,0.1,0.75,0.2,0.2,0.75,0.6,0.2,0.2,1,0.6];
-        _expertSkill = [0.3,0.4,0.2,0.55,0.45,0.45,0.85,0.7,0.45,0.45,1,0.75];
+        // min abil, max abil, aim acc, aim shake, aim speed, end, sdist, stime, cour, fleeing, reload, comm, gen
+        _recruitSkill = [0.2,0.21,0.01,1,0.05,0.05,0.2,0.2,0.05,0.65,0.05,1,0.2];
+        _regularSkill = [0.2,0.25,0.05,0.9,0.1,0.1,0.5,0.4,0.1,0.45,0.1,1,0.5];
+        _veteranSkill = [0.2,0.3,0.1,0.75,0.2,0.2,0.75,0.6,0.2,0.25,0.2,1,0.6];
+        _expertSkill = [0.3,0.4,0.2,0.55,0.45,0.45,0.85,0.7,0.45,0.1,0.45,1,0.75];
         _customSkill = [_customSkillAbilityMin,_customSkillAbilityMax,_customSkillAimAccuracy,_customSkillAimShake,_customSkillAimSpeed,_customSkillEndurance,
         _customSkillSpotDistance,_customSkillSpotTime,_customSkillCourage,_customSkillFleeing,_customSkillReload,_customSkillCommanding,_customSkillGeneral];
 

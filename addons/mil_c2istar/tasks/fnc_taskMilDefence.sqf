@@ -74,20 +74,21 @@ switch (_taskState) do {
             // use selected map location or default player position
             if (count _targetPosition == 0) then {
                 _targetPosition = [
-                    _targetPosition,
-                    500,
+                    _taskLocation,
+                    50,
                     1500,
                     1,
                     0,
-                    100,
+                    0.25,
                     0,
                     [],
-                    [_targetPosition]
+                    [_taskLocation]
                 ] call BIS_fnc_findSafePos;
             };
 
             // spawn a populated composition
             _targetPosition = [_targetPosition, 250] call ALIVE_fnc_findFlatArea;
+            
             _compType = "Military";
             If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
                 _compType = "Guerrilla";
@@ -302,7 +303,7 @@ switch (_taskState) do {
                 _profiles = [_x, _position, random(360), true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
                 _profileID = _profiles select 0 select 2 select 4;
                 _position = (_taskPosition getPos [(random 40), (random 40)]);
-                _profileWaypoint = [_position, 100, "MOVE", "FULL", 100, [], "LINE", "NO CHANGE", "CARELESS"] call ALIVE_fnc_createProfileWaypoint;
+                _profileWaypoint = [_position, 100, "MOVE", "FULL", 100, [], "LINE", "NO CHANGE", "SAFE"] call ALIVE_fnc_createProfileWaypoint;
                 [(_profiles select 0), "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
                 _profileIDs pushback _profileID;
@@ -334,7 +335,7 @@ switch (_taskState) do {
                     _profiles = [_x, _position, random(360), true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
                     _profileID = _profiles select 0 select 2 select 4;
                     _position = (_taskPosition getPos [(random 40), (random 40)]);
-                    _profileWaypoint = [_position, 100, "MOVE", "FULL", 100, [], "LINE", "NO CHANGE", "CARELESS"] call ALIVE_fnc_createProfileWaypoint;
+                    _profileWaypoint = [_position, 100, "MOVE", "FULL", 100, [], "LINE", "NO CHANGE", "SAFE"] call ALIVE_fnc_createProfileWaypoint;
                     [(_profiles select 0), "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
                     _profileIDs pushback _profileID;

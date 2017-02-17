@@ -24,7 +24,7 @@ Author:
 Highhead
 ---------------------------------------------------------------------------- */
 
-private ["_type","_unit","_profile","_args","_pos","_radius","_onlyProfiles","_assignments","_group"];
+private ["_type","_waypoints","_unit","_profile","_args","_pos","_radius","_onlyProfiles","_assignments","_group"];
 
 _profile = [_this, 0, ["",[],[],nil], [[]]] call BIS_fnc_param;
 _args = [_this, 1, 200, [-1,[]]] call BIS_fnc_param;
