@@ -143,7 +143,7 @@ switch (_taskState) do {
 
                     private _taskLocation = [_objectives select _index,"center"] call ALiVE_fnc_HashGet;
                     private _clusterID = [_objectives select _index,"clusterID",""] call ALiVE_fnc_HashGet;
-                    private _type = [_objectives select _index,"type",""] call ALiVE_fnc_HashGet;
+                    private _type = [_objectives select _index,"objectiveType",""] call ALiVE_fnc_HashGet;
 
                     _targetTypes = [
                         "ALIVE_clustersMil",

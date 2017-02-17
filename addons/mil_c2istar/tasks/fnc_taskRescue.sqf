@@ -157,19 +157,20 @@ switch (_taskState) do {
             // spawn a populated composition
             if (count _returnPosition == 0) then {
                 _returnPosition = [
-                    _returnPosition,
-                    500,
+                    _taskLocation,
+                    50,
                     1500,
                     1,
                     0,
-                    100,
+                    0.25,
                     0,
                     [],
-                    [_returnPosition]
+                    [_taskLocation]
                 ] call BIS_fnc_findSafePos;
             };
 
             _returnPosition = [_returnPosition, 250] call ALIVE_fnc_findFlatArea;
+            
             _compType = "Military";
             If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
                 _compType = "Guerrilla";

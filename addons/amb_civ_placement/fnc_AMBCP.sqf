@@ -708,8 +708,8 @@ switch(_operation) do {
                         //["BUILDINGS: %1",_buildings] call ALIVE_fnc_dump;
 
                         private _countBuildings = count _buildings;
-                        private _parkingChance = 0.5 * _ambientVehicleAmount;
-                        _supportMax = 6 * _parkingChance;
+                        private _parkingChance = 0.25 * _ambientVehicleAmount;
+                        _supportMax = 3 * _parkingChance;
 
                         //["COUNT BUILDINGS: %1",_countBuildings] call ALIVE_fnc_dump;
                         //["CHANCE: %1",_parkingChance] call ALIVE_fnc_dump;

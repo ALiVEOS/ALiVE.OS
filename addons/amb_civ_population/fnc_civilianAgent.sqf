@@ -2,7 +2,7 @@
 SCRIPT(civilianAgent);
 
 /* ----------------------------------------------------------------------------
-Function: MAINCLASS
+Function: ALIVE_fnc_civilianAgent
 Description:
 Civilian agent class
 
@@ -333,22 +333,24 @@ switch(_operation) do {
 
         if !(_active) then {
 
-            //private _group = createGroup _sideObject;
+/*
+			// Causes units to return to group leader and pile up there - #277)
             private _group = [ALIVE_civilianPopulationSystem, "civGroup"] call ALiVE_fnc_HashGet;
-            if (isnil "_group") then {
+            if (isnil "_group" || {isnull _group}) then {
                 _group = createGroup _sideObject;
-                _group setBehaviour "CARELESS";
                 [ALIVE_civilianPopulationSystem, "civGroup", _group] call ALiVE_fnc_HashSet;
             };
-            if (isnull _group) then {
-                _group = createGroup _sideObject;
-                _group setBehaviour "CARELESS";
-                [ALIVE_civilianPopulationSystem, "civGroup", _group] call ALiVE_fnc_HashSet;
-            };
+*/
+			private _group = createGroup _sideObject;
             private _unit = _group createUnit [_agentClass, _homePosition, [], 0, "CAN_COLLIDE"];
-
+            
+            _unit disableAI "AUTOTARGET";
+            _unit disableAI "AUTOCOMBAT";
+            
             //set low skill to save performance
             _unit setSkill 0.1;
+            _unit setBehaviour "CARELESS";
+            _unit setSpeedMode "LIMITED";
 
             // set agent id on the unit
             _unit setVariable ["agentID", _agentID];
@@ -500,8 +502,9 @@ switch(_operation) do {
         if(_agentPosture >= 40 && {_agentPosture < 70}) then {_debugColor = "ColorYellow"};
         if(_agentPosture >= 70 && {_agentPosture < 100}) then {_debugColor = "ColorOrange"};
         if(_agentPosture >= 100) then {_debugColor = "ColorRed"};
+        if(_insurgentCommandActive) then {_debugColor = "ColorWhite"};
 
-        private _text = if (_insurgentCommandActive) then {_debugColor = "ColorWhite"; _activeCommands select 0 select 0} else {""};
+        private _text = if (count _activeCommands > 0) then {_activeCommands select 0 select 0} else {""};
         private _icon = "n_unknown";
 
         if(count _position > 0) then {
@@ -550,8 +553,9 @@ switch(_operation) do {
         if(_agentPosture >= 40 && {_agentPosture < 70}) then {_debugColor = "ColorYellow"};
         if(_agentPosture >= 70 && {_agentPosture < 100}) then {_debugColor = "ColorOrange"};
         if(_agentPosture >= 100) then {_debugColor = "ColorRed"};
-
-        private _text = if (_insurgentCommandActive) then {_debugColor = "ColorWhite"; _activeCommands select 0 select 0} else {""};
+        if(_insurgentCommandActive) then {_debugColor = "ColorWhite"};
+           
+        private _text = if (count _activeCommands > 0) then {_activeCommands select 0 select 0} else {""};
         private _debugIcon = "n_unknown";
 
         private _debugAlpha = 0.5;

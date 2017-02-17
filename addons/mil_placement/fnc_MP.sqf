@@ -357,14 +357,20 @@ switch(_operation) do {
                 _file = format["x\alive\addons\mil_placement\clusters\clusters.%1_mil.sqf", _worldName];
                 call compile preprocessFileLineNumbers _file;
                 ALIVE_loadedMilClusters = true;
-
-                // instantiate static vehicle position data
-                if(isNil "ALIVE_groupConfig") then {
-                    [] call ALIVE_fnc_groupGenerateConfigData;
-                };
             };
             waituntil {!(isnil "ALIVE_loadedMilClusters") && {ALIVE_loadedMilClusters}};
             waituntil {!(isnil "ALIVE_profileSystemInit")};
+
+            // all MP modules execute at the same time
+            // ALIVE_groupConfig is created, but not 100% filled
+            // before the rest of the modules start creating their profiles
+                                    
+            // instantiate static vehicle position data
+            if(isNil "ALIVE_groupConfig") then {
+                [] call ALIVE_fnc_groupGenerateConfigData;
+            };
+
+            waitUntil {!isnil "ALiVE_GROUP_CONFIG_DATA_GENERATED"};
 
             //Only spawn warning on version mismatch since map index changes were reduced
             //uncomment //_error = true; below for exit

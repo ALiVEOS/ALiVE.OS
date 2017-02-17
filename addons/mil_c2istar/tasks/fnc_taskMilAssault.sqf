@@ -76,20 +76,21 @@ switch (_taskState) do {
             // use selected map location or default player position
             if (count _targetPosition == 0) then {
                 _targetPosition = [
-                    _targetPosition,
-                    500,
+                    _taskLocation,
+                    50,
                     1500,
                     1,
                     0,
-                    100,
+                    0.25,
                     0,
                     [],
-                    [_targetPosition]
+                    [_taskLocation]
                 ] call BIS_fnc_findSafePos;
             };
 
             // spawn a populated composition
             _targetPosition = [_targetPosition, 250] call ALIVE_fnc_findFlatArea;
+            
             _compType = "Military";
             If (_taskEnemySide == "GUER") then {
                 _compType = "Guerrilla";

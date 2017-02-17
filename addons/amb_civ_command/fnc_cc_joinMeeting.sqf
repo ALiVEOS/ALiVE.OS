@@ -54,10 +54,11 @@ switch (_state) do {
 
         _agent setVariable ["ALIVE_agentBusy", true, false];
 
-        private _target = _agent getVariable "ALIVE_agentMeetingTarget";
+        private _target = _agent getVariable ["ALIVE_agentMeetingTarget",objNull];
 
-        if(isNil "_target") then {
+        if (isNil "_target" || isNull _target) then {
             _nextState = "done";
+            _nextStateArgs = [objNull,0,0];
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         }else{
             private _position = getPosASL _target;
@@ -118,17 +119,15 @@ switch (_state) do {
 
         _args params ["_target","_timeout","_timer"];
 
-        if(isNil "_target") then {
+        if(isNil "_target" || {isNull _target}) then {
             _nextState = "done";
+            _nextStateArgs = _args;
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         }else{
             if(_timer > _timeout) then
             {
-                _agent playMove "";
-                _target setVariable ["ALIVE_agentMeetingComplete", true, false];
-                _agent setVariable ["ALIVE_agentMeetingTarget", objNull, false];
-
                 _nextState = "done";
+                _nextStateArgs = _args;
                 [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
             }else{
                 _timer = _timer + 1;
@@ -147,7 +146,14 @@ switch (_state) do {
         };
         // DEBUG -------------------------------------------------------------------------------------
 
+		_args params ["_target","_timeout","_timer"];
+
+        _agent switchmove "";
+        _agent setVariable ["ALIVE_agentMeetingRequested", nil, false];
+        _agent setVariable ["ALIVE_agentMeetingTarget", nil, false];
         _agent setVariable ["ALIVE_agentBusy", false, false];
+        
+        _target setVariable ["ALIVE_agentMeetingComplete", true, false];
 
         _nextState = "complete";
         _nextStateArgs = [];

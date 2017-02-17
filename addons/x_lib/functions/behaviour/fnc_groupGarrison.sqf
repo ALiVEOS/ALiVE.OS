@@ -137,7 +137,7 @@ if(count _buildings > 0) then {
                             _unit setdir ((_unit getRelDir _building)-180);
                             _unit setUnitPos "UP";
                             
-                            //_unit disableAI "MOVE";
+                            _unit disableAI "PATH";
                             
                             dostop _unit;
                             sleep 0.03;

@@ -299,7 +299,7 @@ switch(_operation) do {
                                     _obj = [nil, "createhashobject"] call ALIVE_fnc_OPCOM;
                                     [_obj,"center",getposATL _mod] call ALiVE_fnc_HashSet;
                                     [_obj,"size",_size] call ALiVE_fnc_hashSet;
-                                    [_obj,"type",_type] call ALiVE_fnc_hashSet;
+                                    [_obj,"objectiveType",_type] call ALiVE_fnc_hashSet;
                                     [_obj,"priority",_priority] call ALiVE_fnc_hashSet;
                                     [_obj,"clusterID",""] call ALiVE_fnc_hashSet;
 
@@ -1144,6 +1144,7 @@ switch(_operation) do {
                 [_objective,"danger",-1] call AliVE_fnc_HashSet;
                 [_objective,"section",[]] call AliVE_fnc_HashSet;
                 [_objective,"opcom_orders","none"] call AliVE_fnc_HashSet;
+                [_objective,"objectiveType",[_objective,"objectiveType","MIL"] call AliVE_fnc_HashGet] call AliVE_fnc_HashSet;
 
                 // debug ---------------------------------------
                 if (_debug) then {_args setMarkerColorLocal "ColorWhite"};
@@ -1265,6 +1266,7 @@ switch(_operation) do {
                 //[_objective,"tacom_state","none"] call AliVE_fnc_HashSet;
                 //[_objective,"opcom_state","unassigned"] call AliVE_fnc_HashSet;
                 //[_objective,"section",[]] call AliVE_fnc_HashSet;
+                [_objective,"objectiveType",[_objective,"objectiveType","MIL"] call AliVE_fnc_HashGet] call AliVE_fnc_HashSet;
 
                 // debug ---------------------------------------
                 if (_debug) then {_args setMarkerColorLocal "ColorWhite"};
@@ -1721,7 +1723,7 @@ switch(_operation) do {
                         private ["_keys"];
 
                         _keys = [
-                                    "objectiveID","center","size","type","priority","opcom_state","clusterID","opcomID",
+                                    "objectiveID","center","size","objectiveType","priority","opcom_state","clusterID","opcomID",
                                     "opcom_orders","danger","sectionAssist","section","tacom_state",
                                     "factory","HQ","ambush","depot","sabotage","ied","suicide","roadblocks",
                                     "actionsFulfilled",
@@ -1866,7 +1868,7 @@ switch(_operation) do {
                     [_target, "objectiveID",_id] call ALIVE_fnc_HashSet;
                     [_target, "center",_pos] call ALIVE_fnc_HashSet;
                     [_target, "size",_size] call ALIVE_fnc_HashSet;
-                    [_target, "type",_type] call ALIVE_fnc_HashSet;
+                    [_target, "objectiveType",_type] call ALIVE_fnc_HashSet;
                     [_target, "priority",_priority] call ALIVE_fnc_HashSet;
                     [_target, "opcom_state",_opcom_state] call ALIVE_fnc_HashSet;
                     [_target, "clusterID",_clusterID] call ALIVE_fnc_HashSet;
@@ -1905,7 +1907,7 @@ switch(_operation) do {
 
                     private ["_objectives","_opcomID","_startpos","_side","_type","_typeOp","_pos","_height","_debug","_clusterID","_target","_asym_occupation","_factions"];
 
-                    //Collect objectives from SEP and order by distance from OPCOM module (for now)
+                    //Collect objectives from Military and Civilian Placement modules and order by distance from OPCOM module (for now)
                     _objectives = _args select 0;
                     _typeOp = _args select 1;
 
@@ -1931,9 +1933,9 @@ switch(_operation) do {
 
                     //Create objectives for OPCOM and set it on the OPCOM Handler
                     //GetObjectivesByPriority
-                    //_OID = (count (missionNameSpace getvariable ["OPCOM_instances",[]]))-1;
                     {
                         private ["_target","_id","_pos","_size","_type","_priority","_clusterID","_opcom_state"];
+                                
                                 _id = format["OPCOM_%1_objective_%2",_opcomID,_foreachIndex];
                                 _pos = _x select 0;
                                 _size = _x select 1;

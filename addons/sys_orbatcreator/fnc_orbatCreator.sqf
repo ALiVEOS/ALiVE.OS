@@ -3687,6 +3687,7 @@ switch(_operation) do {
             // reset camera
 
             if (_saveChanges) then {
+
                 private _selectedUnitData = [_logic,"getCustomUnit", _selectedUnitClassname] call MAINCLASS;
 
                 private _activeUnit = [_state,"unitEditor_activeUnitObject"] call ALiVE_fnc_hashGet;
@@ -3703,17 +3704,25 @@ switch(_operation) do {
                 private _ctrlListVoices = _displayArsenal displayCtrl (16 + _iconList);
                 private _ctrlListInsignia = _displayArsenal displayCtrl (17 + _iconList);
 
-                private _selFaceData = call compile (OC_ctrlGetSelData( _ctrlListFaces ));
-                private _selVoice = call compile (OC_ctrlGetSelData( _ctrlListVoices ));
-                private _selInsignia = OC_ctrlGetSelData( _ctrlListInsignia );
-
                 private _selVoiceIdentityType = [_logic,"getVoiceIdentityType", _selVoice select 0] call MAINCLASS;
 
                 private _identityTypes = [_selectedUnitData,"identityTypes"] call ALiVE_fnc_hashGet;
 
-                [_identityTypes,"face", _selFaceData select 0] call ALiVE_fnc_hashSet;
-                [_identityTypes,"voice", _selVoice select 0] call ALiVE_fnc_hashSet;
-                [_identityTypes,"insignia", _selInsignia] call ALiVE_fnc_hashSet;
+                if (lbCurSel _ctrlListFaces > -1) then {
+                    private _selFaceData = call compile (OC_ctrlGetSelData( _ctrlListFaces ));
+                    [_identityTypes,"face", _selFaceData select 0] call ALiVE_fnc_hashSet;
+                };
+
+                if (lbCurSel _selVoice > -1) then {
+                    private _selVoice = call compile (OC_ctrlGetSelData( _ctrlListVoices ));
+                    [_identityTypes,"voice", _selVoice select 0] call ALiVE_fnc_hashSet;
+                };
+
+                if (lbCurSel _ctrlListInsignia > -1) then {
+                    private _selInsignia = OC_ctrlGetSelData( _ctrlListInsignia );
+                    [_identityTypes,"insignia", _selInsignia] call ALiVE_fnc_hashSet;
+                };
+
             };
 
             // update list
@@ -5841,7 +5850,7 @@ switch(_operation) do {
                 _unitParentConfigName = configname (inheritsFrom (_cfgVehicles >> _unitParentConfigName));
             };
 
-            if (!(_unitParentConfigName in _forwardDeclared) && {!(_unitParentConfigName in _unitsToExport)}) then {
+            if (!(_unitParentConfigName in _forwardDeclared) && {!(_unitParentConfigName in _unitsToExport) || {!(_unitParentConfigName in _unitclasses)}}) then {
                 private _realUnitClass = [_logic,"getRealUnitClass", _unitParentConfigName] call MAINCLASS;
 
                 _result = _result + _indent + "class " + _unitParentConfigName + ";" + _newLine;
@@ -6222,8 +6231,13 @@ switch(_operation) do {
         private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
         private _sideText = [_factionSide] call ALiVE_fnc_sideNumberToText;
 
-        if (_sideText == "GUER") then {
-            _sideText = "Indep";
+        switch (_sideText) do {
+            case "GUER": {
+                _sideText = "Indep";
+            };
+            case "CIV": {
+                _sideText = "Civilian";
+            };
         };
 
         private _newLine = toString [13,10];
