@@ -100,6 +100,7 @@ switch(_operation) do {
 
             private _handler = [
                 [
+                    ["currentInteractionData", _currentInteractionData],
                     ["asymmetricFactions", []],
                     ["conventionalFactions", []],
                     ["questionss", _questions],
@@ -145,9 +146,6 @@ switch(_operation) do {
                 {_convenFac pushbackunique _x} foreach _factions;
             };
         } foreach OPCOM_instances;
-
-        ["TEST: %1", _asymFac] call ALiVE_fnc_Dump;
-        ["TEST: %1", _asymFac] call ALiVE_fnc_DumpR;
 
         // set module as startup complete
 
@@ -340,11 +338,10 @@ switch(_operation) do {
 		// stop civ from running
 
         [_civ,"MOVE"] remoteExecCall ["disableAI", _civ];
-		//[_civ, {_this disableAI "MOVE"}] remoteExecCall ["BIS_fnc_spawn",_civ];
 
         // close menu on civilian death
 
-        _civ addEventHandler ["Killed", format ["['onCivilianKilled'] remoteExecCall [%1,%2]"], QUOTE(ALiVE_fnc_civInteractionOnAction), clientOwner];
+        _civ addEventHandler ["Killed", format ["['onCivilianKilled'] remoteExecCall [%1,%2]", QUOTE(ALiVE_fnc_civInteractionOnAction), clientOwner]];
 
 		if (_civ getVariable "detained") then {
             private _detainButton = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_DETAIN_BUTTON );
@@ -359,7 +356,7 @@ switch(_operation) do {
 
         private _listLeft = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_LEFT );
 
-        private _questions = [_currentInteractionData,"questions"] call ALiVE_fnc_hashGet;
+/*         private _questions = [_handler,"questions"] call ALiVE_fnc_hashGet;
 
         {
             if ([_x,"isDefault"] call ALiVE_fnc_hashGet) then {
@@ -370,7 +367,7 @@ switch(_operation) do {
                 private _index = _listLeft lbAdd _questionText;
                 _listLeft lbSetData [_questionText, _questionClassname];
             };
-        } foreach _questions;
+        } foreach _questions; */
 
         private _askQuestionButton = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_DETAIN_BUTTON );
         _askQuestionButton ctrlSetEventHandler ["MouseButtonDown","['onAskQuestionClicked', _this] call ALiVE_fnc_civInteractionOnAction"];
@@ -384,7 +381,7 @@ switch(_operation) do {
         private _goAwayButton = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_GOAWAY_BUTTON );
         _goAwayButton ctrlSetEventHandler ["MouseButtonDown","['onGoAwayClicked', _this] call ALiVE_fnc_civInteractionOnAction"];
 
-        private _searchButton = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_SEARCh_BUTTON );
+        private _searchButton = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_SEARCH_BUTTON );
         _searchButton ctrlSetEventHandler ["MouseButtonDown","['onSearchClicked', _this] call ALiVE_fnc_civInteractionOnAction"];
 
         private _closeButton = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_CLOSE_BUTTON );
@@ -393,8 +390,8 @@ switch(_operation) do {
 		// create progress bar
         // doesn't like working when created via config
 
-		private _bar = CIV_INTERACTION_DISPLAY ctrlCreate ["RscProgress", -1];
-		_bar ctrlSetPosition [-0.0275, 0.86, 0.85, 0.04]; // should be set relative to background location
+		private _bar = (findDisplay CIV_INTERACTION_DISPLAY) ctrlCreate ["RscProgress", -1];
+		_bar ctrlSetPosition [-0.0275, 0.86, 0.85, 0.04]; // TODO: should be set relative to background location
 		_bar ctrlSetTextColor [0.788,0.443,0.157,1];
 		_bar progressSetPosition 0;
 		_bar ctrlCommit 0;
@@ -405,7 +402,13 @@ switch(_operation) do {
 
     case "onUnload": {
 
-        private _handler = [_logic,"handler"] call ALiVE_fnc_hashGet;
+        private _handler = [_logic,"handler"] call MAINCLASS;
+
+        private _currentInteractionData = [_handler,"currentInteractionData"] call ALiVE_fnc_hashGet;
+
+        private _civ = [_currentInteractionData,"civObject"] call ALiVE_fnc_hashGet;
+
+        [_civ,"MOVE"] remoteExecCall ["enableAI", _civ];
 
     };
 

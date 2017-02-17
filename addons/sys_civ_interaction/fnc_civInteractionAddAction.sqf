@@ -27,12 +27,12 @@ SpyderBlack723
 params ["_unit"];
 
 // only add actions if civilian roles module field != none
-systemchat str (!isnil QGVAR(ROLES_DISABLED));
-if (side _unit == CIVILIAN && {!isnil QGVAR(ROLES_DISABLED)} && {!GVAR(ROLES_DISABLED)}) then {
+
+if (side _unit == CIVILIAN && {!isnil QUOTE(ALiVE_amb_civ_population_ROLES_DISABLED)} && {!ALiVE_amb_civ_population_ROLES_DISABLED}) then {
 
     private _id = _unit addAction [
         "Talk to civilian",
-        "['openInterface', _this] call ALiVE_fnc_civInteractionOnAction",
+        "['openInterface', _this select 0] call ALiVE_fnc_civInteractionOnAction",
         nil,
         1,
         false,
