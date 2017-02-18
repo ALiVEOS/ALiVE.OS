@@ -126,6 +126,11 @@ _GC setVariable ["ALiVE_GC_INDIVIDUALTYPES", _logic getVariable ["ALiVE_GC_INDIV
 
 //---------------------------------------------------------------------------------------------------------//
 
+if (hasinterface) then {
+    //Start ALiVE loading screen
+    ["ALiVE_LOADINGSCREEN"] call BIS_fnc_startLoadingScreen;
+};
+
 // Only on Server
 if (isServer) then {
     //Sets global type of Versioning (Kick or Warn)
@@ -226,6 +231,11 @@ if (hasInterface) then {
 };
 
 waitUntil {!(isNil QMOD(REQUIRE_INITIALISED))};
+
+if (hasinterface) then {
+    //Wait until ALiVE require module has loaded and end loading screen
+    ["ALiVE_LOADINGSCREEN"] call BIS_fnc_EndLoadingScreen;
+};
 
 // Indicate Init is finished on server
 if (isServer) then {
