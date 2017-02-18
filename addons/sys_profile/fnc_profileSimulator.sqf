@@ -33,6 +33,7 @@ private ["_leader"]; // TODO
 params ["_markers","_cycleTime",["_debug", false]];
 
 private _speedModifier = [ALiVE_profileSystem,"speedModifier",1] call ALiVE_fnc_HashGet;
+private _boatsEnabled = [ALiVE_profileSystem,"seaTransport",false] call ALiVE_fnc_HashGet;
 private _combatRange = [MOD(profileCombatHandler),"combatRange"] call ALiVE_fnc_hashGet;
 
 private _moveDistModifier = _cycleTime * _speedModifier;
@@ -67,6 +68,7 @@ private _totalEntities = 0;
         private _side = _entityProfile select 2 select 3;                   // [_entityProfile, "side"] call ALIVE_fnc_hashGet;
         private _positions = _entityProfile select 2 select 18;             // [_entityProfile, "positions"] call ALIVE_fnc_hashGet;
         private _isPlayer = _entityProfile select 2 select 30;              // [_entityProfile, "isPlayer"] call ALIVE_fnc_hashGet;
+        private _faction = [_entityProfile, "faction"] call ALIVE_fnc_hashGet;
         private _locked = [_entityProfile, "locked",false] call ALIVE_fnc_HashGet;
         private _combat = [_entityProfile, "combat",false] call ALIVE_fnc_HashGet;
 
@@ -266,11 +268,96 @@ private _totalEntities = 0;
                                     [_vehicleProfile,"position",_newPosition] call ALIVE_fnc_profileVehicle;
                                     [_vehicleProfile,"direction",_direction] call ALIVE_fnc_profileVehicle;
                                     [_vehicleProfile,"mergePositions"] call ALIVE_fnc_profileVehicle;
+                                    
+                                    // Remove any boat if not on water anymore
+	                                if (_boatsEnabled && {!isnil {[_entityProfile,"boat"] call ALIVE_fnc_hashGet}} && {!surfaceIsWater _currentPosition}) then {
+
+										_boatProfile = ([_entityProfile,"boat"] call ALIVE_fnc_hashGet) select 0;
+
+                                    	_profileID = [_entityProfile,"profileID","no-ID"] call ALIVE_fnc_hashGet;
+                                        _boatID = [_boatProfile,"profileID","no-ID"] call ALIVE_fnc_hashGet;
+                                                                        	                                
+										if (_debug) then {["ALiVE Profile Simulator is removing boat %1 from entity profile %2",_boatID,_profileID] call ALiVE_fnc_Dump};
+                                                                                                                        
+                                        if (count _waypoints > 1) then {_waypoints deleteAt 0};
+	
+	                                    [_entityProfile,_boatProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
+	                                    [ALIVE_profileHandler, "unregisterProfile", _boatProfile] call ALIVE_fnc_profileHandler;
+	                                    
+	                                    [_entityProfile,"boat"] call ALIVE_fnc_hashRem;
+	                                };                                    
                                 };
                             } forEach _vehiclesInCommandOf;
                         }else{
 
                             //["PROFILE SIM SIMMED ENTITY %1 NOT IN COMMAND SET ENTITY POS: %2",_entityProfile select 2 select 4,_newPosition] call ALIVE_fnc_dump;
+							
+                            // Assign a boat to entities if on water
+							if (_boatsEnabled && {surfaceIsWater _currentPosition} && {surfaceIsWater _newPosition}) then {
+                                if (isnil {[_entityProfile,"boat"] call ALIVE_fnc_hashGet}) then {
+
+									if (_debug) then {["ALiVE Profile Simulator is adding a boat to entity profile %1",_profileID] call ALiVE_fnc_Dump};
+									
+									private _boatTypes = [(count _positions)-1, [_faction],"SHIP"] call ALiVE_fnc_findVehicleType;
+                                    private _boatType = if (count _boatTypes > 0) then {selectRandom _boatTypes} else {"C_Boat_Transport_02_F"};
+
+									_boatProfile = [_boatType,_side,_faction,_newPosition,0,false,"Boat",[]] call ALIVE_fnc_createProfileVehicle;                                                                      
+                                    [_entityProfile,_boatProfile] call ALIVE_fnc_createProfileVehicleAssignment;
+                                    
+                                    private _dirTo = [_destination,_currentPosition] call BIS_fnc_dirTo;
+                                    private _onWater = [];
+                                    private _distanceToCheck = 250;
+                                    private _radius = 1500;
+                                    
+                                    // Only perform this check if destination is on land or it will fail
+                                    if !(surfaceIsWater _destination) then {
+                                        
+                                        _radius = 250;
+                                    
+	                                    while {
+	                                        private _checkPos = _destination getpos [_distanceToCheck,_dirTo];
+	                                        
+                                            if (surfaceIsWater _checkPos) then {_onWater pushBack _checkPos} else {_onWater = []};
+	                                        
+	                                        count _onWater < 2 && {_distanceToCheck < 10000} 
+	                                    } do {
+	                                        _distanceToCheck = _distanceToCheck + 250;
+	                                    };
+                                    };
+                                    
+                                    private _searchPosition = if (count _onWater >= 2) then {_onwater select 0} else {_destination};
+                                    private _shore = [_searchPosition,0,_radius,3,0,0.5,1,[],[[0,0,0]]] call BIS_fnc_findSafePos;
+                                    
+                                    // If a shore position has been found insert a waypoint there
+                                    if !(_shore isEqualTo [0,0,0]) then {
+	                                    _shoreWaypoint = [_shore, 10] call ALIVE_fnc_createProfileWaypoint;
+	                                    [_entityProfile,"insertWaypoint",_shoreWaypoint] call ALIVE_fnc_profileEntity;                                    
+	
+	                                    //[format["shore_%1", _profileID], _shore,"ICON", [0.5,0.5],"COLORWHITE",format["Shore %1",_profileID],"mil_dot","FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal;
+									};
+
+									[_entityProfile,"boat",[_boatProfile,_newPosition]] call ALIVE_fnc_hashSet;                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                };
+
+                            } else {
+                                // Remove boat if not on water anymore (failsafe, will be handled by _vehicleCommander case above)
+                                if (_boatsEnabled && {!isnil {[_entityProfile,"boat"] call ALIVE_fnc_hashGet}}) then {
+
+									_boatProfile = ([_entityProfile,"boat"] call ALIVE_fnc_hashGet) select 0;
+                                    
+                                	_profileID = [_entityProfile,"profileID","no-ID"] call ALIVE_fnc_hashGet;
+                                    _boatID = [_boatProfile,"profileID","no-ID"] call ALIVE_fnc_hashGet;
+                                                                    	                                
+									if (_debug) then {["ALiVE Profile Simulator is removing boat %1 from entity profile %2",_boatID,_profileID] call ALiVE_fnc_Dump};
+                                                                        
+                                    if (count _waypoints > 1) then {_waypoints deleteAt 0};
+
+                                    [_entityProfile,_boatProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
+                                    [ALIVE_profileHandler, "unregisterProfile", _boatProfile] call ALIVE_fnc_profileHandler;
+                                    
+                                    [_entityProfile,"boat"] call ALIVE_fnc_hashRem;
+                                };
+                            };
 
                             // set the entity position and merge all unit positions to group position
                             [_entityProfile,"hasSimulated",true] call ALIVE_fnc_hashSet;
@@ -283,7 +370,7 @@ private _totalEntities = 0;
 
                         //[false, "ALiVE entity movement phase 2 virtual end...", format["profileSim_%1",_id]] call ALIVE_fnc_timer;
                     } else {
-                        //["Profile-Simulator corrupted profile detected %1: _currentPosition %2 _destination %3 _collected: %4",_profileID,_currentPosition,_destination,_collected] call ALIVE_fnc_dump;
+                        //["ALiVE Profile-Simulator corrupted profile detected %1: _currentPosition %2 _destination %3 _collected: %4",_profileID,_currentPosition,_destination,_collected] call ALIVE_fnc_dump;
                     };
 
                 // entity is spawned, update positions
@@ -292,10 +379,9 @@ private _totalEntities = 0;
                     //[true, "ALiVE entity movement phase 2 live start...", format["profileSim_%1",_id]] call ALIVE_fnc_timer;
 
                     private _group = _entityProfile select 2 select 13;
-
-                    _leader = leader _group; //_leader = [_profile,"leader"] call ALIVE_fnc_hashGet;
-                    private _newPosition = getPosATL _leader;
                     private _position = _entityProfile select 2 select 2; //_leader = [_profile,"position"] call ALIVE_fnc_hashGet;
+                    private _leader = leader _group; //_leader = [_profile,"leader"] call ALIVE_fnc_hashGet;
+                    private _newPosition = getPosATL _leader;
 
                     if (!(isnil "_newPosition") && {count _newPosition > 0} && {!(isnil "_position")} && {count _position > 0}) then {
 
@@ -309,7 +395,7 @@ private _totalEntities = 0;
 
                                 //_leader = _entityProfile select 2 select 10; //_leader = [_profile,"leader"] call ALIVE_fnc_hashGet;
 
-                                _newPosition = getPosATL vehicle _leader;
+                                private _newPosition = getPosATL vehicle _leader;
 
                                 {
                                     private _vehicleProfile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
@@ -321,6 +407,38 @@ private _totalEntities = 0;
                                         [_vehicleProfile,"mergePositions"] call ALIVE_fnc_profileVehicle;
                                     };
                                 } forEach _vehiclesInCommandOf;
+
+								_shallow = ((_newPosition) select 2) < 4;
+
+					            // Remove any boat if not on water anymore
+					            if (_boatsEnabled && {_shallow} && {!isnil {[_entityProfile,"boat"] call ALIVE_fnc_hashGet}} && {!(([_newPosition,0,50,0,0,0.5,1,[],[[0,0,0]]] call BIS_fnc_findSafePos) isEqualto [0,0,0])}) then {
+
+									_boatProfile = ([_entityProfile,"boat"] call ALIVE_fnc_hashGet) select 0;
+                                    _creation = ([_entityProfile,"boat"] call ALIVE_fnc_hashGet) select 1;
+                                                                  
+                                    if (_newPosition distance _creation > 100) then {
+
+	                                	_profileID = [_entityProfile,"profileID","no-ID"] call ALIVE_fnc_hashGet;
+	                                    _boatID = [_boatProfile,"profileID","no-ID"] call ALIVE_fnc_hashGet;
+	                                                                    	                                
+										if (_debug) then {["ALiVE Profile Simulator is removing boat %1 from entity profile %2",_boatID,_profileID] call ALiVE_fnc_Dump};
+
+                                        // deletevehicle
+                                        [ALiVE_SYS_GC,"trashIt",vehicle _leader] call ALiVE_fnc_GC;
+                                        
+						                [_entityProfile,_boatProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
+						                [ALIVE_profileHandler, "unregisterProfile", _boatProfile] call ALIVE_fnc_profileHandler;
+	                                    
+	                                    if (count _waypoints > 1) then {
+	                                        _waypoints deleteAt 0;
+	                                        
+	                                        [_waypoints, _group] call ALIVE_fnc_profileWaypointsToWaypoints;
+	                                    };
+						                
+						                [_entityProfile,"boat"] call ALIVE_fnc_hashRem;
+                                    };
+					            };
+
                             } else {
                                 //_leader = _entityProfile select 2 select 10; //_leader = [_profile,"leader"] call ALIVE_fnc_hashGet;
                                 _newPosition = getPosATL _leader;
