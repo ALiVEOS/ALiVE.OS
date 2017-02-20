@@ -515,7 +515,7 @@ switch(_operation) do {
 
                             if !(isnil "_unit") then {
                                 _group = group _unit;
-                                [_args, _group] call ALIVE_fnc_profileWaypointToWaypoint;
+                                [_args, _group, true] call ALIVE_fnc_profileWaypointToWaypoint;
                             };
                         };
                         _result = _args;
