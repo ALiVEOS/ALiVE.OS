@@ -965,6 +965,20 @@ class findHQ
     RECOMPILE;
 };
 
+class crossesSea
+{
+    file = "\x\alive\addons\x_lib\functions\map\fnc_crossesSea.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
+class findNearestShore
+{
+    file = "\x\alive\addons\x_lib\functions\map\fnc_findNearestShore.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
 class findIndoorHousePositions
 {
     file = "\x\alive\addons\x_lib\functions\map\fnc_findIndoorHousePositions.sqf";
