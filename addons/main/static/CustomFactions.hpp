@@ -311,8 +311,8 @@ Ryanzombiesfaction_mappings = [] call ALIVE_fnc_hashCreate;
 
 Ryanzombiesfaction_factionCustomGroups = [] call ALIVE_fnc_hashCreate;
 
-[Ryanzombiesfaction_mappings, "Side", "GUER"] call ALIVE_fnc_hashSet;
-[Ryanzombiesfaction_mappings, "GroupSideName", "GUER"] call ALIVE_fnc_hashSet;
+[Ryanzombiesfaction_mappings, "Side", "INDEP"] call ALIVE_fnc_hashSet;
+[Ryanzombiesfaction_mappings, "GroupSideName", "INDEP"] call ALIVE_fnc_hashSet;
 [Ryanzombiesfaction_mappings, "FactionName", "Ryanzombiesfaction"] call ALIVE_fnc_hashSet;
 [Ryanzombiesfaction_mappings, "GroupFactionName", "Ryanzombiesfaction"] call ALIVE_fnc_hashSet;
 
@@ -746,8 +746,8 @@ rhs_faction_insurgents_mappings = [] call ALIVE_fnc_hashCreate;
 
 rhs_faction_insurgents_factionCustomGroups = [] call ALIVE_fnc_hashCreate;
 
-[rhs_faction_insurgents_mappings, "Side", "GUER"] call ALIVE_fnc_hashSet;
-[rhs_faction_insurgents_mappings, "GroupSideName", "GUER"] call ALIVE_fnc_hashSet;
+[rhs_faction_insurgents_mappings, "Side", "INDEP"] call ALIVE_fnc_hashSet;
+[rhs_faction_insurgents_mappings, "GroupSideName", "INDEP"] call ALIVE_fnc_hashSet;
 [rhs_faction_insurgents_mappings, "FactionName", "rhs_faction_insurgents"] call ALIVE_fnc_hashSet;
 [rhs_faction_insurgents_mappings, "GroupFactionName", "rhs_faction_insurgents"] call ALIVE_fnc_hashSet;
 
