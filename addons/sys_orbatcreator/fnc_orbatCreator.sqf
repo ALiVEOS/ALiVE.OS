@@ -5764,7 +5764,7 @@ switch(_operation) do {
 
                 _result = "";
                 _result = _result + _typeMappings + _newLine + _factionCustomGroups + _newLine + _factionMappings + _newLine;
-                _result = _result + (format ["[ALIVE_factionCustomMappings,%1, %2] call ALiVE_fnc_hashSet;", str _faction, _factionMappingsVar]) + _newLine;
+                _result = _result + (format ["[ALiVE_factionCustomMappings,%1, %2] call ALiVE_fnc_hashSet;", str _faction, _factionMappingsVar]) + _newLine;
 
                 systemchat "Static data copied to clipboard";
                 copyToClipboard _result;
