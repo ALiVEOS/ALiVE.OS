@@ -63,6 +63,7 @@ switch(_operation) do {
         [_logic,"icon", ""] call ALiVE_fnc_hashSet;
         [_logic,"priority", 0] call ALiVE_fnc_hashSet;
         [_logic,"side", 0] call ALiVE_fnc_hashSet;
+        [_logic,"groupCategoriesRootName", ""] call ALiVE_fnc_hashSet;
 
         // CfgGroups
 
@@ -192,6 +193,17 @@ switch(_operation) do {
     case "side": {
 
         if (typename _args == "SCALAR") then {
+            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _result = _args;
+        } else {
+            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+        };
+
+    };
+
+    case "groupCategoriesRootName": {
+
+        if (typename _args == "STRING") then {
             [_logic,_operation,_args] call ALiVE_fnc_hashSet;
             _result = _args;
         } else {
