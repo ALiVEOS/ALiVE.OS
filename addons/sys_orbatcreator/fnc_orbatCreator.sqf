@@ -144,7 +144,9 @@ switch(_operation) do {
                 [_newFaction,"init"] call ALiVE_fnc_orbatCreatorFaction;
 
                 private _factionGroupCategories = [_newFaction,"groupCategories"] call ALiVE_fnc_hashGet;
-                _factionGroupCategories = [_logic,"initFactionGroupCategories", _factionGroupCategories] call MAINCLASS;
+                _factionGroupCategoriesData = [_logic,"initFactionGroupCategories", _factionGroupCategories] call MAINCLASS;
+
+                _factionGroupCategoriesData params ["_factionGroupCategoriesName","_factionGroupCategories"];
 
                 [_newFaction,"configName", _factionConfigName] call ALiVE_fnc_orbatCreatorFaction;
                 [_newFaction,"displayName", _factionDisplayName] call ALiVE_fnc_orbatCreatorFaction;
@@ -152,6 +154,7 @@ switch(_operation) do {
                 [_newFaction,"icon", _factionIcon] call ALiVE_fnc_orbatCreatorFaction;
                 [_newFaction,"priority", _factionPriority] call ALiVE_fnc_orbatCreatorFaction;
                 [_newFaction,"side", _factionSide] call ALiVE_fnc_orbatCreatorFaction;
+                [_newFaction,"groupCategoriesRootName", _factionGroupCategoriesName] call ALiVE_fnc_orbatCreatorFaction;
                 [_newFaction,"groupCategories", _factionGroupCategories] call ALiVE_fnc_orbatCreatorFaction;
                 [_newFaction,"assetCategories", _factionAssetCategories] call ALiVE_fnc_orbatCreatorFaction;
                 [_newFaction,"assets", _factionAssets] call ALiVE_fnc_orbatCreatorFaction;
@@ -1286,6 +1289,12 @@ switch(_operation) do {
 
             };
 
+            case "exportGroupsAllStaticData": {
+
+                [_logic,"exportConfig", "GroupsAllStaticData"] call MAINCLASS;
+
+            };
+
             case "exportFull": {
 
                 [_logic,"exportConfig", "Full"] call MAINCLASS;
@@ -1388,6 +1397,7 @@ switch(_operation) do {
 
         private _tmpHash = [] call ALiVE_fnc_hashCreate;
         private _factionConfigGroupCategories = _faction call ALiVE_fnc_configGetFactionGroups;
+        private _factionConfigGroupCategoryName = configname _factionConfigGroupCategories;
 
         for "_i" from 0 to (count _factionConfigGroupCategories - 1) do {
 
@@ -1470,7 +1480,8 @@ switch(_operation) do {
 
         };
 
-        _result = _factionGroupCategories;
+        _result = [_factionConfigGroupCategoryName,_factionGroupCategories];
+
     };
 
 
@@ -5092,9 +5103,6 @@ switch(_operation) do {
         private _button4 = OC_getControl( OC_DISPLAY_GROUPEDITOR , OC_GROUPEDITOR_SELECTEDGROUP_BUTTON_FOUR );
         _button4 ctrlShow true;
 
-        // TODO: unified approach to spawning units
-        // and handling camera movement
-
         [_logic,"displayVehicle", _unit] call MAINCLASS;
 
     };
@@ -5692,6 +5700,73 @@ switch(_operation) do {
                 _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
 
                 systemchat "Config data copied to clipboard";
+                copyToClipboard _result;
+
+            };
+
+            case "GroupsAllStaticData": {
+
+                private _state = [_logic,"state"] call MAINCLASS;
+                private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+
+                private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+                private _groupCategories = [_factionData,"groupCategories"] call ALiVE_fnc_hashGet;
+
+                _result = "";
+                private _indent = "    ";
+                private _newLine = toString [13,10];
+
+                // type mappings
+
+                private _typeMappingsVar = format ["%1_typeMappings", _faction];
+
+                private _typeMappings = "";
+                _typeMappings = _typeMappings + _typeMappingsVar + " = [] call ALiVE_fnc_hashCreate;" + _newLine;
+
+                // custom groups
+
+                private _groupCategories = [_factionData,"groupCategories"] call ALiVE_fnc_hashGet;
+
+                private _factionCustomGroupsVar = format ["%1_factionCustomGroups", _faction];
+
+                private _factionCustomGroups = "";
+                _factionCustomGroups = _factionCustomGroups + _factionCustomGroupsVar + " = [] call ALiVE_fnc_hashCreate;" + _newLine;
+
+                {
+                    private _groupCategory = [_groupCategories,_x] call ALiVE_fnc_hashGet;
+                    private _configName = [_groupCategory,"configName"] call ALiVE_fnc_hashGet;
+                    private _groups = ([_groupCategory,"groups"] call ALiVE_fnc_hashGet) select 2;
+
+                    private _groupClassnames = _groups apply {[_x,"configName"] call ALiVE_fnc_hashGet};
+
+                    _factionCustomGroups = _factionCustomGroups + (format ["[%1,%2, %3] call ALiVE_fnc_hashSet;", _factionCustomGroupsVar, str _configName, _groupClassnames]) + _newLine;
+                } foreach ALIVE_COMPATIBLE_GROUP_CATEGORIES;
+
+                // faction mappings
+
+                private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
+                private _factionSideText = [_factionSide] call ALiVE_fnc_sideNumberToText;
+
+                if (_factionSideText == "GUER") then {_factionSideText == "INDEP"};
+
+                private _groupCategoriesRootName = [_factionData,"groupCategoriesRootName"] call ALiVE_fnc_hashGet;
+
+                private _factionMappingsVar = format ["%1_mappings", _faction];
+
+                private _factionMappings = "";
+                _factionMappings = _factionMappings + _factionMappingsVar + " = [] call ALiVE_fnc_hashCreate;" + _newLine;
+                _factionMappings = _factionMappings + (format ["[%1,""Side"", %2] call ALiVE_fnc_hashSet;", _factionMappingsVar, str _factionSideText]) + _newLine;
+                _factionMappings = _factionMappings + (format ["[%1,""GroupSideName"", %2] call ALiVE_fnc_hashSet;", _factionMappingsVar, str _factionSideText]) + _newLine;
+                _factionMappings = _factionMappings + (format ["[%1,""FactionName"", %2] call ALiVE_fnc_hashSet;", _factionMappingsVar, str _faction]) + _newLine;
+                _factionMappings = _factionMappings + (format ["[%1,""GroupFactionName"", %2] call ALiVE_fnc_hashSet;", _factionMappingsVar, str _groupCategoriesRootName]) + _newLine;
+                _factionMappings = _factionMappings + (format ["[%1,""GroupFactionTypes"", %2] call ALiVE_fnc_hashSet;", _factionMappingsVar, _typeMappingsVar]) + _newLine;
+                _factionMappings = _factionMappings + (format ["[%1,""Groups"", %2] call ALiVE_fnc_hashSet;", _factionMappingsVar, _factionCustomGroupsVar]) + _newLine;
+
+                _result = "";
+                _result = _result + _typeMappings + _newLine + _factionCustomGroups + _newLine + _factionMappings + _newLine;
+                _result = _result + (format ["[ALIVE_factionCustomMappings,%1, %2] call ALiVE_fnc_hashSet;", str _faction, _factionMappingsVar]) + _newLine;
+
+                systemchat "Static data copied to clipboard";
                 copyToClipboard _result;
 
             };
