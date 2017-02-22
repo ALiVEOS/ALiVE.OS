@@ -31,7 +31,7 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_position","_destination","_dummyPosSource","_dummyPosDestination"];
+private ["_dummyPosSource","_dummyPosDestination"];
 
 params [
     ["_position", [0,0,0], [[]]],
@@ -39,7 +39,7 @@ params [
 ];
 
 private _onWater = [];
-private _distanceToCheck = 250;
+private _distanceToCheck = 100;
 private _radius = 1500;
 
 if !(_destination isEqualTo [0,0,0]) then {
@@ -61,14 +61,14 @@ if !(_destination isEqualTo [0,0,0]) then {
 	    
 	    count _onWater < 2 && {_distanceToCheck < 10000} 
 	} do {
-	    _distanceToCheck = _distanceToCheck + 250;
+	    _distanceToCheck = _distanceToCheck + 100;
 	};
     
 } else {
 	_dummyPosSource = _position;
 };
 
-private _searchPosition = if (count _onWater >= 2) then {_radius = 250; _onwater select 0} else {_dummyPosSource};
+private _searchPosition = if (count _onWater >= 2) then {_radius = 150; _onwater select 0} else {_dummyPosSource};
 private _shore = [_searchPosition,0,_radius,3,0,0.5,1,[],[[0,0,0]]] call BIS_fnc_findSafePos;
 
 _shore;
