@@ -197,8 +197,7 @@ switch(_operation) do {
         // get nearest objective
         // and grab any installations there
 
-        private _installations = [[],[],[],[]];
-        private _actions = [[],[],[],[]];
+        private _installations = [[], [], [],[], [], [], [], []];
 
         if (count _asymmFac > 0) then {
 
@@ -229,31 +228,19 @@ switch(_operation) do {
 
 			private _objectiveInstallations = [_logic,"getObjectiveInstallations", _objective] call MAINCLASS; // [_HQ,_depot,_factory,_roadblocks,_ambush,_sabotage,_ied,_suicide]
 
-			for "_i" from 0 to 3 do {
-				private _installation = _objectiveInstallations select _i;
-
-				if (_installation isEqualType objnull) then {
-					(_installations select _i) pushback _installation;
-				};
-			};
-
-			for "_i" from 4 to 7 do {
-				private _installation = _objectiveInstallations select _i;
-
-				if (_installation isEqualType objnull) then {
-					(_actions select (_i - 4)) pushback _installation;
-				};
-			};
+            {
+                if (_x isEqualType objNull && {!(isnull _x)}) then {
+                    _installations pushback _x;
+                };
+            } foreach _objectiveInstallations;
 
         };
-
-        private _installationsByType = [_installations,_actions];
 
         // get civ and town data
 
         private _civID = _civ getVariable ["agentID", ""];
 
-        private _civInfo = [];
+        private _civData = [];
 
         if (_civID != "") then {
 
@@ -267,13 +254,13 @@ switch(_operation) do {
 			private _hostilityIndividual = (_civProfile select 2) select 12;
 			private _hostilityTown = [_cluster, "posture"] call ALiVE_fnc_hashGet;	//_townHostility = (_cluster select 2) select 9; (Different)
 
-			_civInfo = [_homePos,_hostilityIndividual,_hostilityTown];
+			_civData = [_homePos,_hostilityIndividual,_hostilityTown];
 
         };
 
 		// get nearby hostile civilian
 
-		private _hostileCivInfo = [];
+		private _hostileCivData = [];
 		private _insurgentCommands = ["alive_fnc_cc_suicide","alive_fnc_cc_suicidetarget","alive_fnc_cc_rogue","alive_fnc_cc_roguetarget","alive_fnc_cc_sabotage","alive_fnc_cc_getweapons"];
 		private _agentsByCluster = [MOD(agentHandler), "agentsByCluster"] call ALiVE_fnc_hashGet;
 		private _nearCivs = [_agentsByCluster, _clusterID] call ALiVE_fnc_hashGet;
@@ -299,7 +286,7 @@ switch(_operation) do {
 						if (name _civ != name _unit) then {
 							private _homePos = (_agentID select 2) select 10;
 
-							_hostileCivInfo pushback [_unit,_homePos,_activeCommands];
+							_hostileCivData pushback [_unit,_homePos,_activeCommands];
 						};
 					};
 
@@ -310,11 +297,11 @@ switch(_operation) do {
 
 		// if multiple hostile civilians nearby, pick one at random
 
-		if (count _hostileCivInfo > 0) then {_hostileCivInfo = selectrandom _hostileCivInfo};
+		if (count _hostileCivData > 0) then {_hostileCivData = selectrandom _hostileCivData};
 
 		// send data to client
 
-		["onCivilianDataReceived", [_installations, _civInfo,_hostileCivInfo]] remoteExecCall [QUOTE(ALiVE_fnc_civInteractionOnAction),_player];
+		["onCivilianDataReceived", [_installations, _civData,_hostileCivData]] remoteExecCall [QUOTE(ALiVE_fnc_civInteractionOnAction),_player];
 
     };
 

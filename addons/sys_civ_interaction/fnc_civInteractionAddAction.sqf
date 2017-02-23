@@ -38,7 +38,7 @@ if (side _unit == CIVILIAN && {!isnil QUOTE(ALiVE_amb_civ_population_ROLES_DISAB
         false,
         true,
         "",
-        "alive _target"
+        "alive _target && {(_target getvariable ['agentID', '']) != ''}"
     ];
 
 };

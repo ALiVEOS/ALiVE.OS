@@ -20,6 +20,12 @@ class CfgFunctions {
                 RECOMPILE;
             };
 
+            class civInteractionHandlerOnAction {
+                description = "Serverside handling of civilian interactions";
+                file = "\x\alive\addons\sys_civ_interaction\fnc_civInteractionHandlerOnAction.sqf";
+                RECOMPILE;
+            };
+
             class civInteractionInit {
                 description = "Initializes civilian interaction";
                 file = "\x\alive\addons\sys_civ_interaction\fnc_civInteractionInit.sqf";

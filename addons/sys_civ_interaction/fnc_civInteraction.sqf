@@ -92,11 +92,37 @@ switch(_operation) do {
                 [_questions, _questionClassname, _x] call ALiVE_fnc_hashSet;
             } foreach _allQuestions;
 
+            private _nearInstallations = [
+                [
+                    ["HQ", []],
+                    ["WeaponsDepot", []],
+                    ["IEDFactory", []],
+                    ["Roadblock", []],
+                    ["Ambush", []],
+                    ["Sabotage", []],
+                    ["IED", []],
+                    ["Suicide", []]
+                ]
+            ] call ALiVE_fnc_hashCreate;
+
+            private _nearHostileCiv = [
+                [
+                    ["unitObject", objNull],
+                    ["homePosition", [0,0,0]],
+                    ["activeCommands", []]
+                ]
+            ] call ALiVE_fnc_hashCreate;
+
             private _currentInteractionData = [
                 [
                     ["civObject", objNull],
                     ["civKilledEHID", -1],
-                    ["isSearching", false]
+                    ["isSearching", false],
+                    ["homePosition", [0,0,0]],
+                    ["civHostility", 0],
+                    ["civTownHostility", 0],
+                    ["nearInstallations", _nearInstallations],
+                    ["nearHostileCiv", _nearHostileCiv]
                 ]
             ] call ALiVE_fnc_hashCreate;
 
@@ -354,26 +380,19 @@ switch(_operation) do {
 
         // start gathering civ data on server
 
-        [nil,"getCivilianData", [_civ,player]] remoteExecCall [QUOTE(civInteractionHandler),2];
+        ["getCivilianData", [_civ,player]] remoteExecCall [QUOTE(ALiVE_fnc_civInteractionHandlerOnAction),2];
 
         // load default questions to list
 
         private _listLeft = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_LEFT );
+        // TODO: Add selEH
 
-/*         private _questions = [_handler,"questions"] call ALiVE_fnc_hashGet;
+        private _listRight = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_RIGHT );
+        _listRight ctrlShow false;
+        // TODO: Add selEH
 
-        {
-            if ([_x,"isDefault"] call ALiVE_fnc_hashGet) then {
-                private _questionClassname = [_x,"classname"] call ALiVE_fnc_hashGet;
-                private _questionTexts = [_x,"questionTexts"] call ALiVE_fnc_hashGet;
-                private _quetionText = selectrandom _questionTexts;
-
-                private _index = _listLeft lbAdd _questionText;
-                _listLeft lbSetData [_questionText, _questionClassname];
-            };
-        } foreach _questions; */
-
-        private _askQuestionButton = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_DETAIN_BUTTON );
+        private _askQuestionButton = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_ASKQUESTION_BUTTON );
+        _buttonAskQuestion ctrlShow false;
         _askQuestionButton ctrlSetEventHandler ["MouseButtonDown","['onAskQuestionClicked', _this] call ALiVE_fnc_civInteractionOnAction"];
 
         private _detainButton = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_DETAIN_BUTTON );
@@ -391,13 +410,8 @@ switch(_operation) do {
         private _closeButton = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_CLOSE_BUTTON );
         _closeButton ctrlSetEventHandler ["MouseButtonDown","['onCloseClicked', _this] call ALiVE_fnc_civInteractionOnAction"];
 
-        // hide unused controls
-
-        private _buttonAskQuestion = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_ASKQUESTION_BUTTON );
-        //_buttonAskQuestion ctrlShow false;
-
-        private _listRight = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_RIGHT );
-        _listRight ctrlShow false;
+        private _responseText = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_RESPONSE_TEXT );
+        _responseText ctrlSetText "Loading . . .";
 
 		// create progress bar
         // doesn't like working when created via config
@@ -443,6 +457,87 @@ switch(_operation) do {
     case "onCivilianDataReceived": {
 
         private _civData = _args;
+
+        _civData params ["_installations","_civData","_hostileCivData"];
+
+        private _handler = [_logic,"handler"] call MAINCLASS;
+        private _currentInteractionData = [_handler,"currentInteractionData"] call ALiVE_fnc_hashGet;
+
+        // set installation data
+
+        private _nearInstallations = [_currentInteractionData,"nearInstallations"] call ALiVE_fnc_hashGet;
+
+        _installations params ["_hq","_weaponsDepot","_iedFactory","_roadblock","_ambush","_sabotage","_ied","_suicide"];
+
+        [_nearInstallations,"HQ", _hq] call ALiVE_fnc_hashSet;
+        [_nearInstallations,"WeaponsDepot", _weaponsDepot] call ALiVE_fnc_hashSet;
+        [_nearInstallations,"IEDFactory", _iedFactory] call ALiVE_fnc_hashSet;
+        [_nearInstallations,"Roadblock", _roadblock] call ALiVE_fnc_hashSet;
+        [_nearInstallations,"Ambush", _ambush] call ALiVE_fnc_hashSet;
+        [_nearInstallations,"Sabotage", _sabotage] call ALiVE_fnc_hashSet;
+        [_nearInstallations,"IED", _ied] call ALiVE_fnc_hashSet;
+        [_nearInstallations,"Suicide", _suicide] call ALiVE_fnc_hashSet;
+
+        // set civ data
+
+        _civData params ["_homePosition","_hostility","_townHostility"];
+
+        [_currentInteractionData,"homePosition", _homePosition] call ALiVE_fnc_hashSet;
+        [_currentInteractionData,"civHostility", _hostility] call ALiVE_fnc_hashSet;
+        [_currentInteractionData,"civTownHostility", _townHostility] call ALiVE_fnc_hashSet;
+
+        // set hostile civ data
+
+        _hostileCivData params ["_unit","_homePosition","_activeCommands"];
+
+        private _hostileCivData = [_currentInteractionData,"nearHostileCiv"] call ALiVE_fnc_hashGet;
+
+        [_hostileCivData,"unitObject", _unit] call ALiVE_fnc_hashSet;
+        [_hostileCivData,"homePosition", _homePosition] call ALiVE_fnc_hashSet;
+        [_hostileCivData,"activeCommands", _activeCommands] call ALiVE_fnc_hashSet;
+
+        // populate list with questions now that data is received
+
+        [_logic,"loadDefaultQuestionsToList"] call MAINCLASS;
+
+    };
+
+    case "loadDefaultQuestionsToList": {
+
+        // load variables so they are able to be
+        // used by the called condition below
+
+        private _handler = [_logic,"handler"] call ALiVE_fnc_hashCreate;
+        private _currentInteraction = [_handler,"currentInteractionData"] call ALiVE_fnc_hashGet;
+        private _nearInstallations = [_currentInteraction,"nearInstallations"] call ALiVE_fnc_hashGet;
+        private _nearHostileCiv = [_currentInteraction,"nearHostileCiv"] call ALiVE_fnc_hashGet;
+
+        private _civ = [_currentInteraction,"civObject"] call ALiVE_fnc_hashGet;
+
+        private _listLeft = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_LEFT );
+
+        private _root = configfile >> "ALiVE_civilian_interaction" >> "Questions";
+
+        for "_i" from 0 to (count _root - 1) do {
+            private _entry = _root select _i;
+
+            if (isclass _entry) then {
+                if (getnumber (_entry >> "isDefault") == 1) then {
+                    private _condition = gettext (_entry >> "condition");
+
+                    if (call _condition) then {
+
+                        private _text = gettext (_entry >> "text");
+                        private _questionPath = str _entry;
+
+                        private _index = _listLeft lbAdd _text;
+                        _listLeft lbSetData [_index, _questionPath];
+
+                    };
+
+                };
+            };
+        };
 
     };
 
