@@ -293,6 +293,7 @@ class CfgVehicles {
             vehicleClass = "Objects";
             destrType = "DestructTent";
             cost = 250;
+            ace_minedetector_detectable = 1;
         };
 
         class ALIVE_IEDUrbanSmall_Remote_Ammo : ALiVE_IED {
