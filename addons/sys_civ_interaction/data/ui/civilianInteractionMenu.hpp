@@ -4,31 +4,9 @@ class ALiVE_civ_interaction_menu {
 	idd = 9200;
 	movingEnable = 1;
 	onLoad = "";
-	onUnload = "['onUnload'] call ALiVE_fnc_civInteractionOnAction";
+	onUnload = "['onUnload', _this] call ALiVE_fnc_civInteractionOnAction";
 
 	class controlsBackground {
-
-		class civ_interaction_inventory_Background: civ_interaction_RscText {
-			idc = 9201;
-
-            x = 0.690312 * safezoneW + safezoneX;
-            y = 0.094 * safezoneH + safezoneY;
-            w = 0.190312 * safezoneW;
-            h = 0.7 * safezoneH;
-			colorBackground[] = COLOR_BLACK(1);
-		};
-
-		class civ_interaction_inventory_Header: civ_interaction_RscText {
-			idc = 9202;
-
-			moving = 1;
-			text = " Inventory";
-            x = 0.68375 * safezoneW + safezoneX;
-            y = 0.066 * safezoneH + safezoneY;
-            w = 0.196875 * safezoneW;
-            h = 0.028 * safezoneH;
-			colorBackground[] = COLOR_ARMA_BG;
-		};
 
 		class civ_interaction_Background: civ_interaction_RscText {
 			idc = 9203;
@@ -88,7 +66,7 @@ class ALiVE_civ_interaction_menu {
             x = 0.223063 * safezoneW + safezoneX;
             y = 0.542 * safezoneH + safezoneY;
             w = 0.439687 * safezoneW;
-            h = 0.224 * safezoneH;
+            h = 0.168 * safezoneH;
 			colorBackground[] = COLOR_BLACK(0);
 		};
 
@@ -139,6 +117,10 @@ class ALiVE_civ_interaction_menu {
             w = 0.44625 * safezoneW;
             h = 0.0336 * safezoneH;
 			colorBackground[] = COLOR_BURNT_ORANGE_MODERATE;
+            colorBackgroundActive[] = COLOR_WHITE_SOFT;
+            colorSelect[] = COLOR_BURNT_ORANGE_MODERATE;
+            colorSelect2[] = COLOR_BURNT_ORANGE_MODERATE;
+            colorFocused[] = COLOR_BURNT_ORANGE_MODERATE;
 		};
 
 		class civ_interaction_Detain: civ_interaction_RscButton {
@@ -193,39 +175,6 @@ class ALiVE_civ_interaction_menu {
             x = 0.611562 * safezoneW + safezoneX;
             y = 0.801 * safezoneH + safezoneY;
             w = 0.0721875 * safezoneW;
-            h = 0.0336 * safezoneH;
-			colorBackground[] = COLOR_BLACK_SOFT;
-		};
-
-		class civ_interaction_inventory_GearList: civ_interaction_RscListNBox {
-			idc = 9219;
-
-            x = 0.696219 * safezoneW + safezoneX;
-            y = 0.108 * safezoneH + safezoneY;
-            w = 0.177187 * safezoneW;
-            h = 0.672 * safezoneH;
-			colorBackground[] = COLOR_BLACK(0);
-			rowHeight = 0.08;
-		};
-
-		class civ_interaction_inventory_ButtonTwo: civ_interaction_RscButton {
-			idc = 9220;
-
-			text = "";
-            x = 0.690312 * safezoneW + safezoneX;
-            y = 0.8444 * safezoneH + safezoneY;
-            w = 0.190312 * safezoneW;
-            h = 0.0336 * safezoneH;
-			colorBackground[] = COLOR_BLACK_SOFT;
-		};
-
-		class civ_interaction_inventory_ButtonThree: civ_interaction_RscButton {
-			idc = 9221;
-
-			text = "";
-            x = 0.690312 * safezoneW + safezoneX;
-            y = 0.8878 * safezoneH + safezoneY;
-            w = 0.190312 * safezoneW;
             h = 0.0336 * safezoneH;
 			colorBackground[] = COLOR_BLACK_SOFT;
 		};

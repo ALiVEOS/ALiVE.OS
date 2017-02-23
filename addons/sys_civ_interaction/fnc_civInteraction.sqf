@@ -94,7 +94,9 @@ switch(_operation) do {
 
             private _currentInteractionData = [
                 [
-                    ["civObject", objNull]
+                    ["civObject", objNull],
+                    ["civKilledEHID", -1],
+                    ["isSearching", false]
                 ]
             ] call ALiVE_fnc_hashCreate;
 
@@ -341,7 +343,9 @@ switch(_operation) do {
 
         // close menu on civilian death
 
-        _civ addEventHandler ["Killed", format ["['onCivilianKilled'] remoteExecCall [%1,%2]", QUOTE(ALiVE_fnc_civInteractionOnAction), clientOwner]];
+        private _killedEHID = _civ addEventHandler ["Killed", format ["['onCivilianKilled', _this] remoteExecCall ['ALiVE_fnc_civInteractionOnAction',%1]", clientOwner]];
+
+        [_currentInteractionData,"civKilledEHID", _killedEHID] call ALiVE_fnc_hashSet;
 
 		if (_civ getVariable "detained") then {
             private _detainButton = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_DETAIN_BUTTON );
@@ -387,11 +391,24 @@ switch(_operation) do {
         private _closeButton = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_CLOSE_BUTTON );
         _closeButton ctrlSetEventHandler ["MouseButtonDown","['onCloseClicked', _this] call ALiVE_fnc_civInteractionOnAction"];
 
+        // hide unused controls
+
+        private _buttonAskQuestion = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_ASKQUESTION_BUTTON );
+        //_buttonAskQuestion ctrlShow false;
+
+        private _listRight = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_RIGHT );
+        _listRight ctrlShow false;
+
 		// create progress bar
         // doesn't like working when created via config
 
 		private _bar = (findDisplay CIV_INTERACTION_DISPLAY) ctrlCreate ["RscProgress", -1];
-		_bar ctrlSetPosition [-0.0275, 0.86, 0.85, 0.04]; // TODO: should be set relative to background location
+		_bar ctrlSetPosition [
+            0.224375 * safezoneW + safezoneX,
+            0.738 * safezoneH + safezoneY,
+            0.439687 * safezoneW,
+            0.037 * safezoneH
+        ];
 		_bar ctrlSetTextColor [0.788,0.443,0.157,1];
 		_bar progressSetPosition 0;
 		_bar ctrlCommit 0;
@@ -407,8 +424,19 @@ switch(_operation) do {
         private _currentInteractionData = [_handler,"currentInteractionData"] call ALiVE_fnc_hashGet;
 
         private _civ = [_currentInteractionData,"civObject"] call ALiVE_fnc_hashGet;
+        private _isSearching = [_currentInteractionData,"isSearching"] call ALiVE_fnc_hashGet;
 
-        [_civ,"MOVE"] remoteExecCall ["enableAI", _civ];
+        if (!_isSearching) then {
+            [_civ,"MOVE"] remoteExecCall ["enableAI", _civ];
+        };
+
+        // remove menu-closing EH
+
+        private _ehID = [_currentInteractionData,"civKilledEHID"] call ALiVE_fnc_hashGet;
+
+        _civ removeEventHandler ["Killed", _ehID];
+
+        [_currentInteractionData,"civKilledEHID", -1] call ALiVE_fnc_hashSet;
 
     };
 
@@ -559,7 +587,26 @@ switch(_operation) do {
 
     case "onSearchClicked": {
 
+        private _handler = [_logic,"handler"] call MAINCLASS;
 
+        private _currentInteractionData = [_handler,"currentInteractionData"] call ALiVE_fnc_hashGet;
+
+        private _civ = [_currentInteractionData,"civObject"] call ALiVE_fnc_hashGet;
+
+        [_currentInteractionData,"isSearching", true] call ALiVE_fnc_hashGet;
+
+        player action ["Gear", _civ];
+
+        player addEventHandler ["InventoryClosed", {
+            private _civ = _this select 1;
+
+            [_civ,"MOVE"] remoteExecCall ["enableAI", _civ];
+
+            private _handler = [ADDON,"handler"] call ALiVE_fnc_civInteraction;
+            private _currentInteractionData = [_handler,"currentInteractionData"] call ALiVE_fnc_hashGet;
+
+            [_currentInteractionData,"isSearching", false] call ALiVE_fnc_hashSet;
+        }];
 
     };
 
