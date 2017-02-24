@@ -385,6 +385,7 @@ switch(_operation) do {
         // load default questions to list
 
         private _listLeft = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_LEFT );
+        _listLeft ctrlSetEventHandler ["LBSelChanged", "['onQuestionSelected', _this] call ALiVE_fnc_civInteractionOnAction"];
         // TODO: Add selEH
 
         private _listRight = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_RIGHT );
@@ -547,10 +548,66 @@ switch(_operation) do {
 
     };
 
+    case "onQuestionSelected": {
+
+        _args params ["_listLeft","_selIndex"];
+
+        if (_selIndex >= 0) then {
+
+            private _selQuestion = _listLeft lbData _selIndex;
+            private _selQuestionConfig = call compile _selQuestion;
+
+            // this code should return an array of arrays
+            // each child array contains [text,data,tooltip]
+            // right list is populated with this data
+
+            private _retrieveArgsCode = gettext (_selQuestionConfig >> "fillArgumentsCode");
+
+            private _enableAskQuestion = true;
+
+            if (!isnil _retrieveArgsCode) then {
+                // init variables for use in called code
+
+                private _handler = [_logic,"handler"] call MAINCLASS;
+                private _currentInteraction = [_handler,"currentInteractionData"] call ALiVE_fnc_hashGet;
+                private _civ = [_currentInteraction,"civObject"] call ALiVE_fnc_hashGet;
+
+                private _listRight = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_RIGHT );
+
+                private _questionArgs = call _onSelectedCode;
+
+                if (_questionArgs isEqualType [] && {count _questionArgs > 0}) then {
+                    _enableAskQuestion = false;
+
+                    {
+                        _x params [
+                            ["_text","", [""]],
+                            ["_data", ""],
+                            ["_tooltip", "", [""]]
+                        ];
+
+                        private _index = _listRight lbAdd _text;
+                        _listRight lbSetData [_index,_data];
+                        _listRight lbSetTooltip [_index,_tooltip];
+                    } foreach _questionArgs;
+                };
+            };
+
+            if (_enableAskQuestion) then {
+                private _askQuestionButton = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_ASKQUESTION_BUTTON );
+                _askQuestionButton ctrlShow true;
+            };
+
+        };
+
+    };
+
     case "onAskQuestionClicked": {
 
-        private _listLeft = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_Left );
+        private _listLeft = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_LEFT );
         private _listRight = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_RIGHT );
+
+        // estimate time required to ask question
 
         private _textToSpeak = ctrlText _listLeft;
 
@@ -561,9 +618,21 @@ switch(_operation) do {
         private _fillTime = 0.5 + (([_textToSpeak] call ALiVE_fnc_timeRead) * 2);
 
         private _questionClassname = CI_getSelData( _listLeft );
-        private _functionToExecute = [QUOTE(MAINCLASS), [_logic,"askQuestion", _questionClassname]];
 
-        [_logic,"progressFillOverTime", [_bar,_fillTime,true,_functionToExecute]] spawn MAINCLASS;
+        // get function to execute
+
+        private _selQuestion = CI_ctrlGetSelData( _listLeft );
+        private _selQuestionConfig = call compile _selQuestion;
+        private _selQuestionConfigOnAsked = gettext (_selQuestionConfig >> "onAsked");
+
+        private _arguments = "";
+        if (ctrlVisible _listRight) then {
+            _arguments = CI_ctrlGetSelData( _listRight );
+        };
+
+        private _functionData = [_selQuestionConfigOnAsked,_arguments];
+
+        [_logic,"progressFillOverTime", [_bar,_fillTime,true,_functionData]] spawn MAINCLASS;
 
     };
 
