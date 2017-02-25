@@ -548,7 +548,17 @@ switch(_operation) do {
             };
 
             //Sort by distance
-            _troops = [_troopsUnsorted,[_pos],{if !(isnil "_x") then {_p = nil; _p = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler; if !(isnil "_p") then {([_p,"position",_Input0] call ALiVE_fnc_HashGet) distance _Input0} else {99999}} else {99999}},"ASCEND"] call ALiVE_fnc_SortBy;
+            _troops = [_troopsUnsorted,[_pos],
+		            	{
+		                 	([[ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler,"position",_Input0] call ALiVE_fnc_HashGet) distance _Input0
+		                }
+		                 ,"ASCEND",
+		                {
+                            private _profile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
+                            
+		                    !isnil "_profile" && {!(count ([_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashGet) > 0) || {(count ([_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashGet) > 0) && {!([[_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet,_Input0] call ALiVE_fnc_crossesSea)}}}
+		                } 
+		               ] call ALiVE_fnc_SortBy;
 
             //Collect section
             _section = [];
