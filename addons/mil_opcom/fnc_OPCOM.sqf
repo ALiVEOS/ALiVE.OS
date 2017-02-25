@@ -505,76 +505,72 @@ switch(_operation) do {
 
         case "NearestAvailableSection": {
 
-            private ["_st","_troopsunsorted","_types","_pos","_size","_troops","_busy","_section","_reserved","_profileIDs","_profile"];
+			//private _id = time; [true, "ALiVE OPCOM composing section!", format["OPCOM_nearestSection_%1",_id]] call ALIVE_fnc_timer;
+
+            private ["_radius","_troopsunsorted","_types","_pos","_size","_troops","_busy","_section","_reserved","_profileIDs","_profile"];
 
             _pos = _args select 0;
             _size = _args select 1;
             if (count _args > 2) then {_types = _args select 2} else {_types = ["infantry"]};
 
-            _troops = [];
-            {
-                _troops = _troops + ([_logic,_x,[]] call ALiVE_fnc_HashGet);
-            } foreach _types;
+			// Get troops from current OPCOM analysis
+            _troops = []; {_troops = _troops + ([_logic,_x,[]] call ALiVE_fnc_HashGet)} foreach _types;
 
             //subtract busy and reserved profiles
-            _busy = [];
-            {_busy pushback (_x select 1)} foreach ([_logic,"pendingorders",[]] call ALiVE_fnc_HashGet);
+            _busy = []; {_busy pushback (_x select 1)} foreach ([_logic,"pendingorders",[]] call ALiVE_fnc_HashGet);
             {_busy = _busy + ([_x,"section",[]] call ALiVE_fnc_HashGet)} foreach ([_logic,"objectives",[]] call ALiVE_fnc_HashGet);
             _reserved = [_logic,"ProfileIDsReserve",[]] call ALiVE_fnc_HashGet;
             _busy = _busy - _reserved;
 
-            if (_size >= 5) then {
-                _troops = _troops - _reserved;
-            } else {
-                _troops = _troops - (_busy + _reserved);
-            };
+			// If great amount of troops is requested reroute profiles if needed
+            _troops = if (_size >= 5) then {_troops - _reserved} else {_troops - (_busy + _reserved)};
 
-            _st = 2000;
+			// Filter troops
+            _radius = 2000;
             while
             {
-
-                _nearProfiles = [_pos, _st, [([_logic,"side","EAST"] call ALiVE_fnc_HashGet),"entity"]] call ALIVE_fnc_getNearProfiles;
+                private _nearProfiles = [_pos, _radius, [([_logic,"side","EAST"] call ALiVE_fnc_HashGet),"entity"]] call ALIVE_fnc_getNearProfiles;
+                
                 _troopsUnsorted = [];
+                
                 {
-                    _pi = _x select 2 select 4;
-                    _pp = _x select 2 select 2;
-
-                    if (_pi in _troops) then {_troopsUnsorted pushBack _pi};
+                    private _profile = _x;
+                    
+                    if (!isnil "_profile") then {
+                    
+	                    private _profileID = [_profile,"profileID",""] call ALiVE_fnc_HashGet;
+	                    private _commander = (count ([_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashGet) > 0);
+	                    private _busy = ([_profile,"busy",false] call ALiVE_fnc_HashGet);
+	                    
+	                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {_commander && {!([[_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet,_pos] call ALiVE_fnc_crossesSea)}}};
+	
+	                    if (_valid) then {_troopsUnsorted pushBack _profile};
+                    };
                 } foreach _nearProfiles;
 
-                ((count _troopsUnsorted <= _size) && {_st < 15000});
+                ((count _troopsUnsorted <= _size) && {_radius < 15000});
             } do {
-                _st = _st + 2000;
+                _radius = _radius + 2000;
             };
 
             //Sort by distance
             _troops = [_troopsUnsorted,[_pos],
-		            	{
-		                 	([[ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler,"position",_Input0] call ALiVE_fnc_HashGet) distance _Input0
-		                }
-		                 ,"ASCEND",
-		                {
-                            private _profile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
-                            
-		                    !isnil "_profile" && {!(count ([_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashGet) > 0) || {(count ([_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashGet) > 0) && {!([[_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet,_Input0] call ALiVE_fnc_crossesSea)}}}
-		                } 
-		               ] call ALiVE_fnc_SortBy;
+		            	{([_x,"position",_Input0] call ALiVE_fnc_HashGet) distance _Input0}
+		                	,"ASCEND",
+						{!isnil "_x" && {count _x > 2}}
+                      ] call ALiVE_fnc_SortBy;
 
-            //Collect section
+            //Collect to section
             _section = [];
             {
-                private ["_profile","_busy"];
-
                 if (count _section == _size) exitwith {};
 
-                _profile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
-
-                if (!isnil "_profile" && {!([_profile,"busy",false] call ALiVE_fnc_HashGet)}) then {
-                    _section pushback _x;
-                };
+                if (!isnil "_x") then {_section pushback ([_x,"profileID",""] call ALiVE_fnc_HashGet)};
             } foreach _troops;
-
+            
             _result = _section;
+            
+            //[false, "ALiVE OPCOM composing section!", format["OPCOM_nearestSection_%1",_id]] call ALIVE_fnc_timer;
         };
 
         case "entitiesnearsector": {
