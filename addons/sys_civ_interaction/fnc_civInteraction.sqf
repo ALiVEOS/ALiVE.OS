@@ -78,20 +78,6 @@ switch(_operation) do {
             _logic setVariable ["moduleType", QUOTE(ADDON)];
             _logic setVariable ["startupComplete", false];
 
-            private _questionsConfig = [_logic,"loadQuestionsFromConfig", configFile >> "ALiVE_civilian_interaction" >> "questions"] call MAINCLASS;
-            private _questionsMission = [_logic,"loadQuestionsFromConfig", missionConfigFile >> "ALiVE_civilian_interaction" >> "questions"] call MAINCLASS;
-
-            // iterate through mission questions second to allow overriding of config
-
-            private _allQuestions = _questionsConfig + _questionsMission;
-            private _questions = [] call ALiVE_fnc_hashCreate;
-
-            {
-                private _questionClassname = [_x,"classname"] call ALiVE_fnc_hashGet;
-
-                [_questions, _questionClassname, _x] call ALiVE_fnc_hashSet;
-            } foreach _allQuestions;
-
             private _nearInstallations = [
                 [
                     ["HQ", []],
@@ -131,7 +117,6 @@ switch(_operation) do {
                     ["currentInteractionData", _currentInteractionData],
                     ["asymmetricFactions", []],
                     ["conventionalFactions", []],
-                    ["questionss", _questions],
                     ["progessBar", controlNull]
                 ]
             ] call ALiVE_fnc_hashCreate;
@@ -243,30 +228,6 @@ switch(_operation) do {
 
     };
 
-    case "loadQuestionsFromConfig": {
-
-        private _configRoot = _args;
-
-        _result = [];
-
-        if (isclass _configRoot) then {
-
-            for "_i" from 0 to (count _configRoot - 1) do {
-                private _configEntry = _configRoot select _i;
-
-                if (isclass _configEntry) then {
-
-                    private _question = [_logic,"createQuestion", _configEntry] call MAINCLASS;
-
-                    _result pushback _question;
-
-                };
-            };
-
-        };
-
-    };
-
     case "createQuestion": {
 
         private _questionArgs = _args;
@@ -319,21 +280,6 @@ switch(_operation) do {
                 ["threatLevel", _threatLevel]
             ]
         ] call ALiVE_fnc_hashCreate;
-
-    };
-
-    case "addQuestions": {
-
-        private _questions = _args;
-
-        private _handler = [_logic,"handler"] call MAINCLASS;
-        private _questions = [_handler,"questions"] call ALiVE_fnc_hashGet;
-
-        {
-            private _questionClassname = [_x,"classname"] call ALiVE_fnc_hashGet;
-
-            [_questions,_questionClassname, _x] call ALiVE_fnc_hashSet;
-        } foreach _questions;
 
     };
 
@@ -516,29 +462,72 @@ switch(_operation) do {
         private _civ = [_currentInteraction,"civObject"] call ALiVE_fnc_hashGet;
 
         private _listLeft = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_LEFT );
+        private _listRight = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_RIGHT );
+
+        lbclear _listRight;
+        _listRight ctrlShow false;
 
         private _root = configfile >> "ALiVE_civilian_interaction" >> "Questions";
 
-        for "_i" from 0 to (count _root - 1) do {
-            private _entry = _root select _i;
+        {
+            for "_i" from 0 to (count _x  - 1) do {
+                private _entry = _x select _i;
 
-            if (isclass _entry) then {
-                if (getnumber (_entry >> "isDefault") == 1) then {
-                    private _condition = gettext (_entry >> "condition");
+                if (isclass _entry) then {
+                    if (getnumber (_entry >> "isDefault") == 1) then {
+                        private _condition = gettext (_entry >> "condition");
 
-                    if (call _condition) then {
+                        if (call _condition) then {
 
-                        private _text = gettext (_entry >> "text");
-                        private _questionPath = str _entry;
+                            private _text = gettext (_entry >> "text");
+                            private _x = str _entry;
 
-                        private _index = _listLeft lbAdd _text;
-                        _listLeft lbSetData [_index, _questionPath];
+                            private _index = _listLeft lbAdd _text;
+                            _listLeft lbSetData [_index, _x];
+
+                        };
 
                     };
-
                 };
             };
-        };
+        } foreach [
+            configFile >> "ALiVE_civilian_interaction" >> "Questions",
+            missionConfigFile >> "ALiVE_civilian_interaction" >> "Questions"
+        ];
+
+    };
+
+    case "loadQuestionsToList": {
+
+        private _questionClassnames = _args;
+
+        private _listLeft = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_LEFT );
+        private _listRight = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_RIGHT );
+
+        lbclear _listRight;
+        _listRight ctrlShow false;
+
+        // add questions to list in same order
+        // as the classname list
+
+        private _configRoot = configFile >> "ALiVE_civilian_interaction" >> "Questions";
+        private _missionRoot = missionConfigFile >> "ALiVE_civilian_interaction" >> "Questions";
+
+        {
+            private _path =_configRoot >> _x;
+
+            if (!isclass _path) then {_path = _missionRoot >> _x};
+
+            if (isclass _path) then {
+
+                private _text = gettext (_path >> "text");
+                private _x = str _path;
+
+                private _index = _listLeft lbAdd _text;
+                _listLeft lbSetData [_index, _x];
+
+            };
+        } foreach _questionClassnames;
 
     };
 
@@ -623,45 +612,97 @@ switch(_operation) do {
 
         private _selQuestion = CI_ctrlGetSelData( _listLeft );
         private _selQuestionConfig = call compile _selQuestion;
-        private _selQuestionConfigOnAsked = gettext (_selQuestionConfig >> "onAsked");
 
         private _arguments = "";
         if (ctrlVisible _listRight) then {
             _arguments = CI_ctrlGetSelData( _listRight );
         };
 
-        private _functionData = [_selQuestionConfigOnAsked,_arguments];
+        private _functionData = [QUOTE(MAINCLASS),[_logic,"onQuestionAsked", [_selQuestionConfig,_arguments]]];
 
         [_logic,"progressFillOverTime", [_bar,_fillTime,true,_functionData]] spawn MAINCLASS;
 
+        private _responseText = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_RESPONSE_TEXT );
+        _responseText ctrlsettext "";
+
     };
 
-    case "askQuestion": {
+    case "onQuestionAsked": {
 
-        private _questionClassname = _args;
-
-        private "_listRightData";
-        if (ctrlVisible _listRight) then {
-            // question in list left needs further information
-            // list right data provides that information
-
-            _listRightData = CI_ctrlGetSelData( _listRight );
-        };
+        _args params ["_questionConfig","_questionArgs"];
 
         private _handler = [_logic,"handler"] call MAINCLASS;
 
-        //private _questions = [_handler,"questions"] call ALiVE_fnc_hashGet;
-        //private _question = [_questions,_questionClassname] call ALiVE_fnc_hashGet;
+        // init variables for use in called code
 
-        private _config = missionConfigFile >> "ALiVE_civilian_interaction" >> "questions" >> _questionClassname;
+        private _question = configname _questionConfig;
 
-        if (!isclass _config) then {
-            _config = configFile >> "ALiVE_civilian_interaction" >> "questions" >> _questionClassname;
+        private _conventionalFactions = [_handler,"conventionalFactions"] call ALiVE_fnc_hashGet;
+        private _asymmetricFactions = [_handler,"asymmetricFactions"] call ALiVE_fnc_hashGet;
+
+        private _currentInteraction = [_handler,"currentInteractionData"] call ALiVE_fnc_hashGet;
+        private _civ = [_currentInteraction,"civObject"] call ALiVE_fnc_hashGet;
+        private _civHostility = [_currentInteraction,"civHostility"] call ALiVE_fnc_hashGet;
+        private _townHostility = [_currentInteraction,"civTownHostility"] call ALiVE_fnc_hashGet;
+        private _nearHostileCiv = [_currentInteraction,"nearHostileCiv"] call ALiVE_fnc_hashGet;
+
+        private _questionResponses = [];
+        private _questionResponsePath = _questionConfig >> "Responses";
+
+        // use while loop over recursion
+        // to avoid redefining above variables
+
+        private _hasResponses = true;
+
+        while {_hasResponses} do {
+
+            _hasResponses = false;
+
+            for "_i" from 0 to (count _questionResponsePath) do {
+                private _entry = _questionResponsePath select _i;
+
+                if (isclass _entry) then {
+                    private _condition = gettext (_entry >> "condition");
+
+                    // responses are evalutated in the order
+                    // they were defined in config
+
+                    if ([_arguments] call _condition) then {
+
+                        for "_j" from 0 to (count _entry - 1) do {
+                            _subResponsePath = _entry select _j;
+
+                            if (isclass _j) exitwith {
+                                _hasResponses = true;
+                            };
+                        };
+
+                        if (_hasResponses) then {
+                            _questionResponsePath = _entry;
+                        } else {
+                            // we've reached our base case
+                            // no further branching response paths
+                            // select a defined response at random
+
+                            private _responseToDisplay = selectrandom (getarray (_entry >> "texts"));
+                            private _onDisplayed = gettext (_entry >> "onDisplayed");
+                            private _followUpQuestions = getarray (_entry >> "followupQuestions");
+
+                            private _responseText = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_RESPONSE_TEXT );
+                            _responseText ctrlsettext _responseToDisplay;
+
+                            [_arguments] call _onDisplayed;
+
+                            if (count _followUpQuestions > 0) then {
+                                [_logic,"loadQuestionsToList", _followUpQuestions] call MAINCLASS;
+                            };
+                        };
+
+                    }; // possibly add support for "Else" subresponse path (useful if random conditions are used because it wont be the same value for two branching paths)
+                };
+            };
+
         };
-
-        if (!isclass _config) exitwith {["ALiVE - Civilian Interaction: Question Not Found %1", _questionClassname] call ALiVE_fnc_DumpR};
-
-        // TODO: Pick up here once work on retrieving data from the server is done
 
     };
 
