@@ -164,6 +164,22 @@ switch(_operation) do {
 
     };
 
+    case "onAction": {
+
+        _args params ["_operation","_args"];
+
+        /*
+        switch (_operation) do {
+
+            default {[_logic,_operation,_args] call MAINCLASS};
+
+        };
+        */
+
+        [_logic,_operation,_args] call MAINCLASS;
+
+    };
+
     case "getObjectiveInstallations": {
 
         private _objective = _args;
@@ -184,7 +200,7 @@ switch(_operation) do {
 
     case "getCivilianData": {
 
-        private _civ = _args;
+        _args params ["_civ","_player"];
 
         private _civPos = getPos _civ;
 
@@ -209,14 +225,14 @@ switch(_operation) do {
                 private _opcom = _x;
 
                 {
-                    if ({_x in ([_opcom, "factions"] call ALiVE_fnc_hashGet)}) exitwith {
+                    if (_x in ([_opcom, "factions"] call ALiVE_fnc_hashGet)) exitwith {
                         private _objectives = [_x, "objectives"] call ALiVE_fnc_hashGet;
                         _objectives = [_objectives,[_civPos],{_Input0 distance2D ([_x, "center"] call ALiVE_fnc_hashGet)},"ASCEND"] call ALiVE_fnc_sortBy;
 
                         _nearObjectives pushback (_objectives select 0);
                     };
                 } foreach _asymmFac;
-            } count OPCOM_instances;
+            } foreach OPCOM_instances;
 
             // grab closest of near objectives
 
@@ -272,7 +288,7 @@ switch(_operation) do {
 
 			if ([_agentID,"active"] call ALiVE_fnc_hashGet) then {
 
-				if ([_agentID, "type"] call ALiVE_fnc_hashGet == "agent") then {
+				if (([_agentID, "type"] call ALiVE_fnc_hashGet) == "agent") then {
 
 					private _activeCommands = [_agentID,"activeCommands",[]] call ALiVE_fnc_hashGet;
 

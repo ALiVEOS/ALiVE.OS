@@ -324,22 +324,28 @@ switch(_operation) do {
 			_detainButton ctrlSetText "Release";
 		};
 
-        // start gathering civ data on server
+        // show civilian name and role if they have one
 
-        ["getCivilianData", [_civ,player]] remoteExecCall [QUOTE(ALiVE_fnc_civInteractionHandlerOnAction),2];
+        private _civRole = [_logic,"getCivRole", _civ] call MAINCLASS;
+        private _nameText = name _civ;
+
+        if (_civRole != "") then {
+            _nameText = format ["%1 (%2)", _nameText, _civRole];
+        };
+
+        private _civNameText = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_CIV_NAME );
+        _civNameText ctrlsettext _nameText;
 
         // load default questions to list
 
         private _listLeft = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_LEFT );
         _listLeft ctrlSetEventHandler ["LBSelChanged", "['onQuestionSelected', _this] call ALiVE_fnc_civInteractionOnAction"];
-        // TODO: Add selEH
 
         private _listRight = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_LIST_RIGHT );
         _listRight ctrlShow false;
-        // TODO: Add selEH
 
         private _askQuestionButton = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_ASKQUESTION_BUTTON );
-        _buttonAskQuestion ctrlShow false;
+        _askQuestionButton ctrlShow false;
         _askQuestionButton ctrlSetEventHandler ["MouseButtonDown","['onAskQuestionClicked', _this] call ALiVE_fnc_civInteractionOnAction"];
 
         private _detainButton = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_DETAIN_BUTTON );
@@ -359,6 +365,10 @@ switch(_operation) do {
 
         private _responseText = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_RESPONSE_TEXT );
         _responseText ctrlSetText "Loading . . .";
+
+        // start gathering civ data on server
+
+        ["getCivilianData", [_civ,player]] remoteExecCall [QUOTE(ALiVE_fnc_civInteractionHandlerOnAction),2];
 
 		// create progress bar
         // doesn't like working when created via config
@@ -447,6 +457,11 @@ switch(_operation) do {
 
         [_logic,"loadDefaultQuestionsToList"] call MAINCLASS;
 
+        // remove loading text
+
+        private _responseText = CI_getControl( CIV_INTERACTION_DISPLAY , CIV_INTERACTION_RESPONSE_TEXT );
+        _responseText ctrlsettext "";
+
     };
 
     case "loadDefaultQuestionsToList": {
@@ -454,9 +469,15 @@ switch(_operation) do {
         // load variables so they are able to be
         // used by the called condition below
 
-        private _handler = [_logic,"handler"] call ALiVE_fnc_hashCreate;
+        private _handler = [_logic,"handler"] call MAINCLASS;
+
+        private _conventionalFactions = [_handler,"conventionalFactions"] call ALiVE_fnc_hashGet;
+        private _asymmetricFactions = [_handler,"asymmetricFactions"] call ALiVE_fnc_hashGet;
+
         private _currentInteraction = [_handler,"currentInteractionData"] call ALiVE_fnc_hashGet;
         private _nearInstallations = [_currentInteraction,"nearInstallations"] call ALiVE_fnc_hashGet;
+        private _civHostility = [_currentInteraction,"civHostility"] call ALiVE_fnc_hashGet;
+        private _townHostility = [_currentInteraction,"civTownHostility"] call ALiVE_fnc_hashGet;
         private _nearHostileCiv = [_currentInteraction,"nearHostileCiv"] call ALiVE_fnc_hashGet;
 
         private _civ = [_currentInteraction,"civObject"] call ALiVE_fnc_hashGet;
@@ -467,23 +488,21 @@ switch(_operation) do {
         lbclear _listRight;
         _listRight ctrlShow false;
 
-        private _root = configfile >> "ALiVE_civilian_interaction" >> "Questions";
-
         {
             for "_i" from 0 to (count _x  - 1) do {
                 private _entry = _x select _i;
 
                 if (isclass _entry) then {
-                    if (getnumber (_entry >> "isDefault") == 1) then {
+                    if (getnumber (_entry >> "isDefault") >= 1) then {
                         private _condition = gettext (_entry >> "condition");
 
-                        if (call _condition) then {
+                        if (_condition == "" || {call compile _condition}) then {
 
-                            private _text = gettext (_entry >> "text");
-                            private _x = str _entry;
+                            private _text = selectrandom (getarray (_entry >> "texts"));
+                            private _configPath = [_entry] call BIS_fnc_configPath;
 
                             private _index = _listLeft lbAdd _text;
-                            _listLeft lbSetData [_index, _x];
+                            _listLeft lbSetData [_index, str _configPath];
 
                         };
 
@@ -520,7 +539,7 @@ switch(_operation) do {
 
             if (isclass _path) then {
 
-                private _text = gettext (_path >> "text");
+                private _text = selectrandom (getarray (_path >> "texts"));
                 private _x = str _path;
 
                 private _index = _listLeft lbAdd _text;
@@ -544,7 +563,7 @@ switch(_operation) do {
         if (_selIndex >= 0) then {
 
             private _selQuestion = _listLeft lbData _selIndex;
-            private _selQuestionConfig = call compile _selQuestion;
+            private _selQuestionConfig = [_selQuestion, confignull] call BIS_fnc_configPath;
 
             // this code should return an array of arrays
             // each child array contains [text,data,tooltip]
@@ -554,7 +573,7 @@ switch(_operation) do {
 
             private _enableAskQuestion = true;
 
-            if (!isnil _retrieveArgsCode) then {
+            if (_retrieveArgsCode != "") then {
                 // init variables for use in called code
 
                 private _handler = [_logic,"handler"] call MAINCLASS;
@@ -600,25 +619,26 @@ switch(_operation) do {
 
         private _textToSpeak = ctrlText _listLeft;
 
-        if (ctrlVisible _listRight) then {
+        if (ctrlVisible CIV_INTERACTION_LIST_RIGHT) then {
             _textToSpeak = _textToSpeak + " " + ctrlText _listRight;
         };
 
-        private _fillTime = 0.5 + (([_textToSpeak] call ALiVE_fnc_timeRead) * 2);
-
-        private _questionClassname = CI_getSelData( _listLeft );
+        private _fillTime = 0.5 + (([_textToSpeak] call ALiVE_fnc_timeToRead) * 2);
 
         // get function to execute
 
         private _selQuestion = CI_ctrlGetSelData( _listLeft );
-        private _selQuestionConfig = call compile _selQuestion;
+        private _selQuestionConfig = [_selQuestion, confignull] call BIS_fnc_configPath;
 
         private _arguments = "";
-        if (ctrlVisible _listRight) then {
+        if (ctrlVisible CIV_INTERACTION_LIST_RIGHT) then {
             _arguments = CI_ctrlGetSelData( _listRight );
         };
 
         private _functionData = [QUOTE(MAINCLASS),[_logic,"onQuestionAsked", [_selQuestionConfig,_arguments]]];
+
+        private _handler = [_logic,"handler"] call MAINCLASS;
+        private _bar = [_handler,"progressBar"] call ALiVE_fnc_hashGet;
 
         [_logic,"progressFillOverTime", [_bar,_fillTime,true,_functionData]] spawn MAINCLASS;
 
@@ -630,6 +650,8 @@ switch(_operation) do {
     case "onQuestionAsked": {
 
         _args params ["_questionConfig","_questionArgs"];
+
+        systemchat str _args;
 
         private _handler = [_logic,"handler"] call MAINCLASS;
 
@@ -851,6 +873,23 @@ switch(_operation) do {
 
             [_function, _args] call CBA_fnc_directCall
         };
+
+    };
+
+    case "getCivRole": {
+
+        private _civ = _args;
+
+        private _role = "";
+        {
+            if (_civ getvariable [_x,false]) exitwith {
+                _role = _x;
+            };
+        } foreach ["townelder","major","priest","muezzin","politician"];
+
+        _role = [_role] call CBA_fnc_capitalize;
+
+        _result = _role;
 
     };
 
