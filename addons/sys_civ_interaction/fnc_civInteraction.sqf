@@ -627,7 +627,7 @@ switch(_operation) do {
 
         // get function to execute
 
-        private _selQuestion = CI_ctrlGetSelData( _listLeft );
+        private _selQuestion = call compile CI_ctrlGetSelData( _listLeft );
         private _selQuestionConfig = [_selQuestion, confignull] call BIS_fnc_configPath;
 
         private _arguments = "";
@@ -650,8 +650,6 @@ switch(_operation) do {
     case "onQuestionAsked": {
 
         _args params ["_questionConfig","_questionArgs"];
-
-        systemchat str _args;
 
         private _handler = [_logic,"handler"] call MAINCLASS;
 

@@ -17,7 +17,7 @@ class ALiVE_civilian_interaction {
             followQuestions[] = { };
             condition = "";
 
-            class Respones {
+            class Responses {
 
                 class HasAnswered {
                     condition = "_question in _answersGiven";
