@@ -93,6 +93,9 @@ MOD(require) = _logic;
 
 TRACE_1("Launching Base ALiVE Systems",true);
 
+//Start ALiVE loading screen on all localities during init
+["ALiVE_LOADINGSCREEN"] call BIS_fnc_startLoadingScreen;
+
 // NewsFeed
 [] spawn ALiVE_fnc_newsFeedInit;
 
@@ -125,11 +128,6 @@ _GC setVariable ["ALiVE_GC_INDIVIDUALTYPES", _logic getVariable ["ALiVE_GC_INDIV
 [_GC, "init"] spawn ALiVE_fnc_GC;
 
 //---------------------------------------------------------------------------------------------------------//
-
-if (hasinterface) then {
-    //Start ALiVE loading screen
-    ["ALiVE_LOADINGSCREEN"] call BIS_fnc_startLoadingScreen;
-};
 
 // Only on Server
 if (isServer) then {
@@ -232,10 +230,8 @@ if (hasInterface) then {
 
 waitUntil {!(isNil QMOD(REQUIRE_INITIALISED))};
 
-if (hasinterface) then {
-    //Wait until ALiVE require module has loaded and end loading screen
-    ["ALiVE_LOADINGSCREEN"] call BIS_fnc_EndLoadingScreen;
-};
+//Wait until ALiVE require module has loaded and end loading screen on all localities
+["ALiVE_LOADINGSCREEN"] call BIS_fnc_EndLoadingScreen;
 
 // Indicate Init is finished on server
 if (isServer) then {
