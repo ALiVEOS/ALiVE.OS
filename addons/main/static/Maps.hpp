@@ -5,35 +5,35 @@
  * due to incorrect map size values from config.
  */
 ALIVE_mapBounds = [] call ALIVE_fnc_hashCreate;
-[ALIVE_mapBounds, "utes", 5000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "fallujah", 11000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "Thirsk", 6000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "ThirskW", 6000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "Chernarus", 16000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "Chernarus_Summer", 16000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "FDF_Isle1_a", 21000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "Takistan", 13000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "IsolaDiCapraia", 11000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "fata", 11000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "hellskitchen", 6000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "hellskitchens", 6000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "Celle", 11000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "Takistan", 13000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "praa_av", 6000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "tavi", 26000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "Woodland_ACR", 8000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "utes", 5000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "fallujah", 11000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "Thirsk", 6000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "ThirskW", 6000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "Chernarus", 16000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "Chernarus_Summer", 16000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "FDF_Isle1_a", 21000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "Takistan", 13000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "IsolaDiCapraia", 11000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "fata", 11000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "hellskitchen", 6000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "hellskitchens", 6000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "Celle", 11000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "Takistan", 13000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "praa_av", 6000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "tavi", 26000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "Woodland_ACR", 8000] call ALIVE_fnc_hashSet;
 [ALIVE_mapBounds, "Imrali", 11000] call ALIVE_fnc_hashSet;
 [ALIVE_mapBounds, "wake", 11000] call ALIVE_fnc_hashSet;
 [ALIVE_mapBounds, "Colleville", 6000] call ALIVE_fnc_hashSet;
 //[ALIVE_mapBounds, "Panthera3", 10000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "anim_helvantis_v2", 10200] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "smd_sahrani_a3", 20480] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "Esseker", 13000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "Mog", 11000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "Pandora", 21000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "mske", 26000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "Kunduz", 6000] call ALIVE_fnc_hashSet;
-[ALIVE_mapBounds, "australia", 40960] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "anim_helvantis_v2", 10200] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "smd_sahrani_a3", 20480] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "Esseker", 13000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "Mog", 11000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "Pandora", 21000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "mske", 26000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "Kunduz", 6000] call ALIVE_fnc_hashSet;
+//[ALIVE_mapBounds, "australia", 40960] call ALIVE_fnc_hashSet;
 
 /*
  * CP MP building types for cluster generation
@@ -195,7 +195,7 @@ if (!_fileExists) then {
 
     };
 
-    // Esseker
+    /* // Esseker
     if(_worldName == "Esseker") then {
 
         ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
@@ -566,7 +566,7 @@ if (!_fileExists) then {
             "hotel"
         ];
 
-    };
+    }; */
 
     // Iron Front
     if(_worldName == "Baranow" || _worldName == "Staszow" || _worldName == "ivachev" || _worldName == "Panovo" || _worldName == "Colleville") then {
@@ -654,7 +654,7 @@ if (!_fileExists) then {
 
     };
 
-    // Kunduz
+    /* // Kunduz
     if(tolower(_worldName) == "kunduz") then {
         ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + ["pra3\pra3_tunnels\floor_sandy.p3d","pra3\pra3_tunnels\tunnel_small_ramp.p3d","pra3\pra3_tunnels\wood_beams_h_join.p3d","pra3\pra3_tunnels\wood_beams_h_sloped.p3d","pra3\pra3_tunnels\tunnel_large_winding.p3d","pra3\pra3_tunnels\tunnel_small_bend.p3d","pra3\pra3_tunnels\tunnel_large_s_bend.p3d","pra3\pra3_tunnels\tunnel_large_room_1door.p3d","pra3\pra3_tunnels\wood_beams_t.p3d","pra3\pra3_tunnels\wood_beams.p3d","pra3\pra3_tunnels\tunnel_large_room_4doors.p3d","pra3\pra3_tunnels\wood_beams_h.p3d","pra3\pra3_tunnels\cable_hanging.p3d","pra3\pra3_tunnels\cable_ground.p3d"];
         ALIVE_militaryParkingBuildingTypes = ALIVE_militaryParkingBuildingTypes + [];
@@ -3458,7 +3458,7 @@ if (!_fileExists) then {
 
     };
 
-    //Kalu Khan (6)
+    // Kalu Khan (6)
     if(tolower(_worldName) == "pja306") then {
         ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + ["ca\misc_e\fortified_nest_small_ep1.p3d","ca\structures_e\mil\mil_barracks_l_ep1.p3d","ca\buildings2\ind_tank\ind_tankbig.p3d","ca\structures_e\mil\mil_barracks_i_ep1.p3d","ca\misc_e\fortified_nest_big_ep1.p3d","ca\structures_e\mil\mil_house_ep1.p3d","ca\structures_e\mil\mil_guardhouse_ep1.p3d"];
         ALIVE_militaryParkingBuildingTypes = ALIVE_militaryParkingBuildingTypes + [];
@@ -4043,7 +4043,7 @@ if (!_fileExists) then {
 
     };
 
-    //Kunar Region
+    // Kunar Region
     if(tolower(_worldName) == "kunar_region") then {
         ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + ["ca\misc3\fort_watchtower.p3d","ca\misc\fort_razorwire.p3d","ca\misc3\camonetb_nato.p3d","ca\misc2\barrack2\barrack2.p3d","ca\misc3\antenna.p3d","ca\misc3\fort_bagfence_round.p3d","ca\misc2\guardshed.p3d","ca\misc3\fort_bagfence_long.p3d","ca\misc2\hbarrier5_round15.p3d","ca\misc3\fort_bagfence_corner.p3d","ca\misc3\tent2_west.p3d","ca\misc3\fort_rampart.p3d","ca\misc3\fortified_nest_big.p3d","ca\misc3\fortified_nest_small.p3d","ca\misc3\wf\wf_hesco_big_10x.p3d","ca\misc3\camonet_nato_var1.p3d","ca\structures_e\mil\mil_guardhouse_ep1.p3d","ca\structures_e\mil\mil_barracks_ep1.p3d","ca\structures_e\mil\mil_repair_center_ep1.p3d","ca\structures_e\mil\mil_barracks_i_ep1.p3d","ca\structures_e\mil\mil_barracks_l_ep1.p3d","ca\misc3\fort_artillery_nest.p3d"];
         ALIVE_militaryParkingBuildingTypes = ALIVE_militaryParkingBuildingTypes + ["ca\misc2\barrack2\barrack2.p3d","ca\structures_e\mil\mil_barracks_ep1.p3d","ca\structures_e\mil\mil_repair_center_ep1.p3d"];
@@ -4066,7 +4066,7 @@ if (!_fileExists) then {
         ALIVE_civilianConstructionBuildingTypes = ALIVE_civilianConstructionBuildingTypes + ["ca\structures_e\misc\misc_construction\misc_concbox_ep1.p3d","opxbuildings\ruin.p3d"];
     };
 
-    //Kapaulio - index by psvialli
+    // Kapaulio - index by psvialli
     if(tolower(_worldName) == "kapaulio") then {
         ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + ["a3\structures_f_epa\civ\constructions\portablelight_double_f.p3d","a3\structures_f\naval\piers\pier_small_f.p3d","a3\structures_f_epb\naval\fishing\fishinggear_01_f.p3d","a3\structures_f\walls\cncwall4_f.p3d","a3\structures_f_epa\items\medical\defibrillator_f.p3d","a3\structures_f_epa\items\medical\disinfectantspray_f.p3d","a3\structures_f_epa\items\tools\ducttape_f.p3d","a3\structures_f_bootcamp\items\food\foodcontainer_01_f.p3d","a3\structures_f_epa\items\medical\antibiotic_f.p3d","a3\structures_f_epa\items\medical\bandage_f.p3d","a3\roads_f\runway\runwaylights\flush_light_red_f.p3d","a3\structures_f\wrecks\wreck_hunter_f.p3d","a3\structures_f\mil\bagfence\bagfence_long_f.p3d","a3\structures_f_epb\naval\fishing\fishinggear_02_f.p3d","a3\structures_f\ind\wavepowerplant\wavepowerplant_f.p3d","a3\structures_f\ind\wavepowerplant\wavepowerplantbroken_f.p3d","jbad_misc\misc_market\jbad_crates.p3d","a3\structures_f_epc\dominants\ghosthotel\gh_stairs_f.p3d","a3\structures_f\training\rampconcrete_f.p3d","a3\structures_f\training\rampconcretehigh_f.p3d","a3\structures_f\wrecks\wreck_ural_f.p3d","a3\structures_f\items\electronics\survivalradio_f.p3d","a3\structures_f\items\food\tacticalbacon_f.p3d","a3\structures_f_epa\mil\scrapyard\pallet_milboxes_f.p3d","a3\structures_f_epa\items\medical\vitaminbottle_f.p3d","a3\structures_f_epa\items\food\ricebox_f.p3d","a3\structures_f_epa\civ\camping\woodentable_large_f.p3d","a3\structures_f\walls\cncwall1_f.p3d","a3\structures_f_epa\mil\scrapyard\paperbox_open_full_f.p3d","a3\structures_f\items\food\bottleplastic_v1_f.p3d","a3\structures_f_epa\items\food\bottleplastic_v2_f.p3d","a3\structures_f_epa\items\tools\fireextinguisher_f.p3d","a3\structures_f\items\electronics\fmradio_f.p3d","a3\structures_f\civ\infoboards\mapboard_f.p3d","a3\structures_f_epa\mil\scrapyard\paperbox_closed_f.p3d","a3\structures_f_epa\items\food\canteen_f.p3d","a3\structures_f_epa\mil\scrapyard\paperbox_open_empty_f.p3d","a3\structures_f_epa\items\tools\metalwire_f.p3d","a3\structures_f_epb\civ\dead\grave_dirt_f.p3d","a3\structures_f_epa\civ\constructions\pallets_stack_f.p3d","a3\structures_f\research\dome_b_cargo_entrance_f.p3d","a3\structures_f\research\dome_b_person_entrance_f.p3d","a3\structures_f\civ\infoboards\billboard_f.p3d","a3\structures_f_epc\civ\accessories\bench_01_f.p3d","a3\structures_f_epa\civ\camping\woodentable_small_f.p3d","a3\structures_f_epa\items\tools\gascanister_f.p3d","a3\structures_f\items\tools\meter3m_f.p3d","a3\structures_f_epb\items\vessels\barrelsand_grey_f.p3d","a3\structures_f_epa\items\vessels\tincontainer_f.p3d","a3\structures_f_epa\items\food\bakedbeans_f.p3d","a3\structures_f_epa\items\medical\heatpack_f.p3d","a3\structures_f\walls\cncbarrier_stripes_f.p3d","a3\structures_f\walls\cncbarriermedium4_f.p3d","a3\structures_f\mil\flags\mast_f.p3d","a3\structures_f_epa\mil\scrapyard\scrap_mrap_01_f.p3d","a3\structures_f\wrecks\wreck_uaz_f.p3d","a3\structures_f\civ\lamps\lampsolar_f.p3d","a3\structures_f\ind\cargo\cargo40_color_v2_ruins_f.p3d","a3\structures_f\households\addons\metal_shed_ruins_f.p3d","a3\structures_f\mil\bagfence\bagfence_round_f.p3d","a3\structures_f\mil\bagfence\bagfence_short_f.p3d","a3\structures_f\items\tools\drillaku_f.p3d","a3\structures_f\items\electronics\extensioncord_f.p3d","a3\structures_f\civ\camping\sleeping_bag_blue_f.p3d","a3\structures_f\items\tools\hammer_f.p3d","a3\structures_f\items\tools\pliers_f.p3d","a3\structures_f\items\electronics\portable_generator_f.p3d","a3\structures_f_epa\items\medical\painkillers_f.p3d","a3\structures_f_epa\mil\scrapyard\scrapheap_2_f.p3d","a3\structures_f_epa\items\food\cerealsbox_f.p3d","a3\structures_f\items\vessels\canisterfuel_f.p3d","a3\structures_f\items\documents\map_f.p3d","a3\structures_f\items\electronics\portablelongrangeradio_f.p3d","a3\structures_f\walls\rampart_f.p3d","a3\structures_f\ind\windpowerplant\wpp_turbine_v2_f.p3d","a3\structures_f_epa\civ\constructions\portablelight_single_f.p3d","a3\structures_f\civ\market\marketshelter_f.p3d","a3\structures_f\walls\cncshelter_f.p3d","a3\structures_f\mil\fortification\hbarrier_3_f.p3d","a3\structures_f_epb\items\vessels\barrelempty_grey_f.p3d","a3\structures_f_epb\items\vessels\barrelwater_grey_f.p3d","a3\structures_f\items\tools\axe_f.p3d","a3\structures_f\civ\camping\sleeping_bag_f.p3d","a3\structures_f\items\food\can_v1_f.p3d","a3\structures_f\items\food\can_v2_f.p3d","a3\structures_f\items\tools\gloves_f.p3d","a3\structures_f\civ\camping\sleeping_bag_brown_f.p3d","a3\structures_f_epa\items\tools\shovel_f.p3d","a3\structures_f_epa\civ\camping\woodenlog_f.p3d","a3\structures_f_epa\items\tools\gascooker_f.p3d","a3\structures_f\items\vessels\barrelempty_f.p3d","a3\structures_f\wrecks\wreck_bmp2_f.p3d","a3\structures_f_epa\items\tools\butanetorch_f.p3d","a3\structures_f_epb\items\luggage\luggageheap_02_f.p3d","a3\structures_f_epb\items\luggage\luggageheap_04_f.p3d","a3\structures_f_epc\civ\camping\sunshade_04_f.p3d","a3\structures_f\walls\indfnc_corner_f.p3d","a3\structures_f\furniture\tabledesk_f.p3d","a3\structures_f_epb\furniture\shelveswooden_f.p3d","a3\structures_f\furniture\chairwood_f.p3d","a3\structures_f_epa\mil\scrapyard\scrapheap_1_f.p3d","a3\structures_f_epb\furniture\shelveswooden_khaki_f.p3d","a3\structures_f\items\tools\dustmask_f.p3d","a3\structures_f_epc\civ\accessories\tableplastic_01_f.p3d","a3\structures_f\civ\ancient\ancientpillar_damaged_f.p3d","a3\structures_f\items\vessels\barreltrash_f.p3d","rspn_assets\models\cover_bluntstone.p3d","a3\structures_f\wrecks\wreck_t72_turret_f.p3d","rspn_assets\models\cover_dirt_inset.p3d","rspn_assets\models\cover_grass_inset.p3d","a3\structures_f\mil\bagfence\bagfence_corner_f.p3d","a3\structures_f\mil\bagfence\bagfence_end_f.p3d","a3\structures_f\civ\accessories\water_source_f.p3d","a3\structures_f_epc\civ\camping\sunshade_01_f.p3d","a3\structures_f_epa\items\tools\butanecanister_f.p3d","a3\structures_f_epa\items\tools\canopener_f.p3d","a3\structures_f\walls\wired_fence_4md_f.p3d","a3\structures_f_epb\civ\graffiti\graffiti_03_f.p3d","a3\structures_f_epb\items\documents\poster_05_f.p3d","a3\structures_f\civ\camping\camping_light_off_f.p3d","a3\structures_f\civ\camping\pillow_old_f.p3d","a3\structures_f\civ\camping\sleeping_bag_blue_folded_f.p3d","a3\structures_f_epa\items\medical\waterpurificationtablets_f.p3d","a3\structures_f\civ\camping\ground_sheet_blue_f.p3d","a3\structures_f\civ\camping\ground_sheet_f.p3d","a3\structures_f\civ\camping\ground_sheet_opfor_f.p3d","a3\structures_f\civ\camping\pillow_camouflage_f.p3d","a3\structures_f\civ\camping\pillow_f.p3d","a3\structures_f\items\vessels\canisteroil_f.p3d","a3\structures_f\civ\camping\pillow_grey_f.p3d","a3\structures_f\civ\camping\sleeping_bag_brown_folded_f.p3d","a3\structures_f_epb\items\luggage\luggageheap_03_f.p3d","a3\structures_f\items\documents\map_unfolded_f.p3d","a3\structures_f\research\dome_small_plates_f.p3d"];
         ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + ["a3\structures_f\walls\ancient_wall_8m_f.p3d","a3\structures_f\walls\ancient_wall_4m_f.p3d","a3\structures_f\ind\transmitter_tower\ttowerbig_1_f.p3d","a3\structures_f\mil\cargo\cargo_patrol_v1_f.p3d","a3\structures_f\mil\cargo\cargo_hq_v1_f.p3d","a3\structures_f\mil\barracks\i_barracks_v1_f.p3d","a3\structures_f\mil\cargo\cargo_house_v1_f.p3d","a3\structures_f\research\research_house_v1_f.p3d","jbad_misc\misc_com\jbad_com_tower.p3d","jbad_structures\mil\jbad_mil_controltower.p3d","jbad_structures\mil\jbad_mil_guardhouse.p3d","jbad_structures\mil\jbad_mil_barracks.p3d","a3\structures_f\mil\bagbunker\bagbunker_tower_f.p3d","a3\structures_f\ind\transmitter_tower\ttowerbig_2_f.p3d","a3\structures_f\mil\offices\miloffices_v1_f.p3d","a3\structures_f\mil\shelters\camonet_open_f.p3d","a3\structures_f\mil\barracks\i_barracks_v2_f.p3d","a3\structures_f\mil\cargo\medevac_house_v1_f.p3d","a3\structures_f_epc\items\electronics\device_disassembled_f.p3d","a3\structures_f\research\dome_big_f.p3d","a3\structures_f\mil\cargo\medevac_hq_v1_f.p3d","a3\structures_f\mil\shelters\camonet_big_f.p3d","a3\structures_f\mil\radar\radar_small_f.p3d","a3\structures_f\mil\shelters\camonet_f.p3d","a3\structures_f\mil\cargo\cargo_patrol_v3_f.p3d","a3\structures_f\mil\cargo\cargo_tower_v3_f.p3d","a3\structures_f\mil\bagbunker\bagbunker_large_f.p3d","a3\structures_f\mil\cargo\cargo_house_v3_f.p3d","a3\structures_f\mil\bagbunker\bagbunker_small_f.p3d","jbad_structures\ind\hangar_2\jbad_hangar_2.p3d","rspn_assets\models\cb_long.p3d","rspn_assets\models\cb_entrance02.p3d","rspn_assets\models\cb_h45.p3d","rspn_assets\models\cb_h90.p3d","rspn_assets\models\cb_intersect02.p3d","god_various\hut\hlidac_budka.p3d","rspn_assets\models\cb_intersect01.p3d","rspn_assets\models\cb_end01.p3d","a3\structures_f\mil\radar\radar_f.p3d","a3\structures_f\research\research_hq_f.p3d","a3\structures_f\research\dome_small_f.p3d","a3\structures_f_epc\items\electronics\device_assembled_f.p3d","a3\structures_f\training\target_popup_f.p3d","a3\structures_f\dominants\hospital\hospital_main_proxy_f.p3d","a3\structures_f\dominants\hospital\hospital_main_f.p3d","a3\structures_f\dominants\hospital\hospital_side2_f.p3d","a3\structures_f\mil\fortification\hbarriertower_f.p3d","jbad_structures\mil\hanger\jbad_hanger_withdoor.p3d","mbg\mbg_killhouses_a3\m\mbg_killhouse_1.p3d","a3\structures_f\mil\bunker\bunker_f.p3d","a3\structures_f\ind\airport\airport_tower_f.p3d","a3\structures_f\dominants\wip\wip_f.p3d","mbg\mbg_killhouses_a3\m\mbg_killhouse_3.p3d","mbg\mbg_killhouses_a3\m\mbg_killhouse_4.p3d","mbg\mbg_killhouses_a3\m\mbg_killhouse_2.p3d","a3\structures_f\mil\cargo\cargo_tower_v1_no2_f.p3d","a3\structures_f\training\shoot_house_tunnel_f.p3d","a3\structures_f\mil\barracks\u_barracks_v2_f.p3d","a3\structures_f\dominants\castle\castle_01_wall_11_f.p3d","a3\structures_f\dominants\castle\castle_01_tower_f.p3d","a3\structures_f\dominants\castle\castle_01_church_b_ruin_f.p3d","a3\structures_f\dominants\castle\castle_01_church_ruin_f.p3d","a3\structures_f\dominants\castle\castle_01_church_a_ruin_f.p3d","a3\structures_f\dominants\castle\castle_01_wall_08_f.p3d","a3\structures_f\dominants\castle\castle_01_house_ruin_f.p3d","a3\structures_f\mil\cargo\cargo_patrol_v2_f.p3d","mbg\mbg_killhouses_a3\m\mbg_warehouse.p3d","jbad_structures\afghan_house_a\a_stationhouse\jbad_a_stationhouse.p3d","a3\structures_f\mil\cargo\cargo_tower_v2_ruins_f.p3d","a3\structures_f\mil\cargo\cargo_hq_v2_f.p3d","a3\structures_f\mil\cargo\cargo_hq_v3_f.p3d","a3\structures_f\mil\tenthangar\tenthangar_v1_f.p3d","rspn_assets\models\cb_entrance01.p3d","a3\structures_f\ind\airport\hangar_f.p3d","a3\structures_f\mil\cargo\cargo_tower_v1_f.p3d","mbg\mbg_killhouses_a3\m\mbg_killhouse_5.p3d","mbg\mbg_killhouses_a3\m\mbg_shoothouse_1.p3d","a3\structures_f\mil\cargo\cargo_tower_v2_f.p3d","a3\structures_f\ind\airport\airport_right_proxy_f.p3d","a3\structures_f\ind\airport\airport_right_f.p3d","a3\structures_f\ind\airport\airport_center_f.p3d","a3\structures_f\ind\airport\airport_left_f.p3d","a3\structures_f\mil\cargo\cargo_house_v2_f.p3d","jbad_structures\afghan_house_a\a_buildingwip\jbad_a_buildingwip.p3d","a3\structures_f_epc\dominants\stadium\stadium_p9_f.p3d","a3\structures_f\mil\cargo\cargo_tower_v1_no7_f.p3d","a3\structures_f\dominants\hospital\hospital_f.p3d","a3\structures_f\mil\cargo\cargo_tower_v1_no5_f.p3d","a3\structures_f\mil\cargo\cargo_tower_v1_no4_f.p3d","a3\structures_f\mil\cargo\cargo_tower_v1_no3_f.p3d","a3\structures_f\mil\cargo\cargo_tower_v1_no1_f.p3d","a3\structures_f\mil\barracks\i_barracks_v2_dam_f.p3d","a3\structures_f\civ\camping\tentdome_f.p3d","a3\structures_f\civ\camping\tenta_f.p3d","a3\structures_f\ind\dieselpowerplant\dp_smallfactory_f.p3d","a3\structures_f\ind\dieselpowerplant\dp_mainfactory_f.p3d","a3\structures_f\ind\cargo\cargo20_blue_f.p3d","a3\structures_f\ind\cargo\cargo20_military_green_f.p3d","a3\structures_f\ind\cargo\cargo20_brick_red_f.p3d","a3\structures_f\ind\dieselpowerplant\dp_bigtank_f.p3d","a3\structures_f\ind\cargo\cargo40_light_green_f.p3d","a3\structures_f\ind\cargo\cargo40_military_green_f.p3d"];
@@ -4088,7 +4088,7 @@ if (!_fileExists) then {
         ALIVE_civilianRailBuildingTypes = ALIVE_civilianRailBuildingTypes + ["jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_rail_end.p3d","jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_rail.p3d","jbad_structures\ind\ind_coltan_mine\jbad_misc_tram.p3d","jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_rail_switch.p3d"];
         ALIVE_civilianFuelBuildingTypes = ALIVE_civilianFuelBuildingTypes + ["a3\structures_f\ind\reservoirtank\reservoirtank_airport_f.p3d","a3\structures_f\ind\dieselpowerplant\dp_smalltank_f.p3d","a3\structures_f\ind\tank\tank_rust_f.p3d","a3\structures_f\ind\carservice\carservice_f.p3d","a3\structures_f\ind\fuelstation\fuelstation_build_f.p3d","a3\structures_f\ind\fuelstation\fuelstation_shed_f.p3d","a3\structures_f\ind\fuelstation_small\fs_feed_f.p3d","a3\structures_f\ind\reservoirtank\reservoirtank_rust_f.p3d","a3\structures_f\ind\dieselpowerplant\dp_bigtank_f.p3d","a3\structures_f\ind\reservoirtank\reservoirtower_f.p3d","jbad_structures\ind\ind_garage01\jbad_ind_garage01.p3d","a3\structures_f\ind\fuelstation\fuelstation_feed_f.p3d","a3\structures_f\ind\fuelstation_small\fs_roof_f.p3d","a3\structures_f\ind\reservoirtank\reservoirtank_v1_f.p3d"];
         ALIVE_civilianConstructionBuildingTypes = ALIVE_civilianConstructionBuildingTypes + ["a3\structures_f\ind\windmill\i_windmill01_f.p3d","a3\structures_f\ind\shed\shed_big_f.p3d","a3\structures_f\ind\shed\u_shed_ind_f.p3d","a3\structures_f\ind\crane\crane_f.p3d","a3\structures_f\ind\shed\i_shed_ind_f.p3d","a3\structures_f\ind\concretemixingplant\cmp_shed_f.p3d","a3\structures_f\households\wip\unfinished_building_01_f.p3d","jbad_structures\ind\hangar_2\jbad_hangar_2.p3d","a3\structures_f\ind\dieselpowerplant\dp_smallfactory_f.p3d","a3\structures_f\ind\concretemixingplant\cmp_tower_f.p3d","a3\structures_f\ind\concretemixingplant\cmp_hopper_f.p3d","a3\structures_f\ind\factory\factory_tunnel_f.p3d","jbad_structures\afghan_houses_c\jbad_house_c_2.p3d","a3\structures_f\dominants\wip\wip_f.p3d","a3\structures_f\ind\dieselpowerplant\dp_mainfactory_f.p3d","a3\structures_f\ind\reservoirtank\reservoirtower_f.p3d","jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_conv1_10.p3d","jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_hopper.p3d","jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_conv1_main.p3d","jbad_structures\ind\ind_shed\jbad_ind_shed_01.p3d","a3\structures_f\ind\factory\factory_conv1_main_f.p3d","a3\structures_f\ind\factory\factory_main_f.p3d","a3\structures_f\ind\factory\factory_conv2_f.p3d","a3\structures_f\ind\factory\factory_hopper_f.p3d","a3\structures_f\ind\factory\factory_conv1_10_f.p3d","a3\structures_f\ind\dieselpowerplant\dp_mainfactory_addon1_f.p3d","jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_conv1_end.p3d","jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_conv2.p3d","jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_tunnel.p3d","jbad_structures\afghan_house_a\a_buildingwip\jbad_a_buildingwip.p3d"];
-    };
+    }; */
 
     if (count ALIVE_civilianPopulationBuildingTypes == 0) then { // if no buildings try loading from file
         ["MAP NOT INDEXED OR DEDI SERVER FILE LOAD... ALiVE LOADING MAP DATA: %1",_worldName] call ALIVE_fnc_dump;
