@@ -143,6 +143,9 @@ if (isServer) then {
     MOD(AI_DISTRIBUTION) = call compile (_logic getvariable [QMOD(AI_DISTRIBUTION),"false"]);
     MOD(AI_DISTRIBUTION) spawn ALiVE_fnc_AI_Distributor;
 
+    MOD(TABLET_MODEL) = _logic getvariable [QMOD(TABLET_MODEL), "Tablet01"];
+    Publicvariable QMOD(TABLET_MODEL);
+
     // Event Log
     ALIVE_eventLog = [nil, "create"] call ALIVE_fnc_eventLog;
     [ALIVE_eventLog, "init"] call ALIVE_fnc_eventLog;

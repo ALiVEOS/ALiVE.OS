@@ -600,7 +600,19 @@ switch(_operation) do {
 
                     [_logic,"commandState",_commandState] call MAINCLASS;
 
-                    createDialog "SCOMTablet";
+                    switch (MOD(TABLET_MODEL)) do {
+                        case "Tablet01": {
+                            createDialog "SCOMTablet";
+                        };
+
+                        case "Mapbag01": {
+                            createDialog "SCOMTablet_MapBag";
+                        };
+
+                        default {
+                            createDialog "SCOMTablet";
+                        };
+                    };
 
                 };
 
@@ -614,7 +626,19 @@ switch(_operation) do {
 
                     [_logic,"commandState",_commandState] call MAINCLASS;
 
-                    createDialog "SCOMTablet";
+                    switch (MOD(TABLET_MODEL)) do {
+                        case "Tablet01": {
+                            createDialog "SCOMTablet";
+                        };
+
+                        case "Mapbag01": {
+                            createDialog "SCOMTablet_MapBag";
+                        };
+
+                        default {
+                            createDialog "SCOMTablet";
+                        };
+                    };
 
                 };
 

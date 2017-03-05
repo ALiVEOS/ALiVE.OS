@@ -193,6 +193,26 @@ class CfgVehicles {
                     description = "$STR_ALIVE_GC_INDIVIDUALTYPES_COMMENT";
                     defaultValue = "";
             };
+            class ALiVE_TABLET_MODEL
+            {
+                displayName = "$STR_ALiVE_TABLET_MODEL";
+                description = "$STR_ALiVE_TABLET_MODEL_COMMENT";
+                typeName = "STRING";
+                class Values
+                {
+                    class Tablet01
+                    {
+                        name = "Tablet 1";
+                        value = "Tablet01";
+                        default = 1;
+                    };
+                    class MapBag01
+                    {
+                        name = "Mapbag 1";
+                        value = "Mapbag01";
+                    };
+                };
+            };
         };
     };
 };

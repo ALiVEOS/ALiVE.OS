@@ -396,7 +396,19 @@ switch(_operation) do {
 
                 case "OPEN": {
 
-                    createDialog "GMTablet";
+                    switch (MOD(TABLET_MODEL)) do {
+                        case "Tablet01": {
+                            createDialog "GMTablet";
+                        };
+
+                        case "Mapbag01": {
+                            createDialog "GMTablet_MapBag";
+                        };
+
+                        default {
+                            createDialog "GMTablet";
+                        };
+                    };
 
                 };
 
