@@ -1,6 +1,9 @@
 private["_worldName"];
+
 _worldName = tolower(worldName);
+
 ["ALiVE SETTING UP MAP: dakrong"] call ALIVE_fnc_dump;
+
 [ALIVE_mapBounds, worldName, 6000] call ALIVE_fnc_hashSet;
 ALIVE_Indexing_Blacklist = [];
 ALIVE_airBuildingTypes = [];
@@ -22,6 +25,8 @@ ALIVE_civilianRailBuildingTypes = [];
 ALIVE_civilianFuelBuildingTypes = [];
 ALIVE_civilianConstructionBuildingTypes = [];
 ALIVE_civilianSettlementBuildingTypes = [];
+
+ALiVE_mapCompositionType = "Pacific";
 
 if (tolower(_worldName) == "dakrong") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
