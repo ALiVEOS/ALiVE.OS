@@ -1354,7 +1354,19 @@ switch(_operation) do {
 
                 case "OPEN": {
 
-                    createDialog "PRTablet";
+                    switch (MOD(TABLET_MODEL)) do {
+                        case "Tablet01": {
+                            createDialog "PRTablet";
+                        };
+
+                        case "Mapbag01": {
+                            createDialog "PRTablet_MapBag";
+                        };
+
+                        default {
+                            createDialog "PRTablet";
+                        };
+                    };
 
                     // Display Current Force Pool
                     private ["_forcePool","_forcePoolStatus"];

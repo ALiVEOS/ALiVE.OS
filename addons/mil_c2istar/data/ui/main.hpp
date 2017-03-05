@@ -9,20 +9,22 @@ class C2Tablet
     onLoad = "[] call ALIVE_fnc_C2TabletOnLoad;";
     onUnload = "[] call ALIVE_fnc_C2TabletOnUnLoad;";
 
-    class controls
-    {
+    class controlsBackground {
 
-        class C2Tablet_background : RscPicture
-        {
+        class C2Tablet_background : RscPicture {
             idc = -1;
             x = 0.142424 * safezoneW + safezoneX;
             y = 0.0632 * safezoneH + safezoneY;
             w = 0.73 * safezoneW;
             h = 0.84 * safezoneH;
-            text = "x\alive\addons\sup_player_resupply\data\ui\ALIVE_toughbook_2.paa";
+            text = "x\alive\addons\mil_c2istar\data\ui\ALIVE_toughbook_2.paa";
             moving = 0;
-            colorBackground[] = {0,0,0,0};
         };
+
+    };
+
+    class controls
+    {
 
         class C2Tablet_mainTitle : C2Tablet_RscText
         {
@@ -758,6 +760,25 @@ class C2Tablet
             sizeEx = (safeZoneW / 75) + (safeZoneH / 275);
             rowHeight = (safeZoneW / 75) + (safeZoneH / 275);
         };
+
+    };
+};
+
+class C2Tablet_MapBag : C2Tablet {
+
+    class controlsBackground {
+        class C2Tablet_background : RscPicture {
+            idc = -1;
+            x = 0.142424 * safezoneW + safezoneX;
+            y = -0.242 * safezoneH + safezoneY;
+            w = 0.73 * safezoneW;
+            h = 1.372 * safezoneH;
+            text = "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
+            moving = 0;
+        };
+    };
+
+    class controls : controls {
 
     };
 };
