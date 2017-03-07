@@ -145,287 +145,6 @@ switch(_operation) do {
 
     };
 
-    case "assignObjectiveStates": {
-
-        private _occupationData = _args;
-
-        private _startTime = time;
-
-        private _handler = [_logic,"handler"] call MAINCLASS;
-
-        private _debug = [_handler,"debug"] call ALiVE_fnc_hashGet;
-
-        // get average objective priority
-
-        private _objectives = [_handler,"objectives"] call ALiVE_fnc_hashGet;
-        private _averageObjectivePriority = 0;
-
-        {
-            _averageObjectivePriority = _averageObjectivePriority + ([_x,"priority"] call ALiVE_fnc_hashGet);
-        } foreach _objectives;
-
-        _averageObjectivePriority = _averageObjectivePriority / (count _objectives);
-
-        // copy forces array as we will need to modify it
-
-        private _friendlyForces = + ([_handler,"forces"] call ALiVE_fnc_hashGet);
-        (_friendlyForces select 2) params ["_friendlyInfantry","_friendlySpecOps","_friendlyMotorized","_friendlyMechanized","_friendlyArmored","_friendlyArtillery","_friendlyAAA","_friendlyAir","_friendlyAirArmed","_friendlySea"];
-
-        private _countForAttack = [_handler,"profileAmountAttack"] call ALiVE_fnc_hashGet;
-        private _countForDefend = [_handler,"profileAmountDefend"] call ALiVE_fnc_hashGet;
-        private _countForHold = [_handler,"profileAmountHold"] call ALiVE_fnc_hashGet;
-
-        private _maxActiveReconTasks = [_handler,"maxActiveReconTasks"] call ALiVE_fnc_hashGet;
-        private _maxActiveStrikeTasks = [_handler,"maxActiveStrikeTasks"] call ALiVE_fnc_hashGet;
-        private _maxActiveAttackTasks = [_handler,"maxActiveAttackTasks"] call ALiVE_fnc_hashGet;
-
-        private _activeTasks = [_handler,"activeTasks"] call ALiVE_fnc_hashGet;
-        (_activeTasks select 2) params ["_activeReconTasks","_activeStrikeTasks","_activeAttackTasks","_activeDefendTasks"];
-
-        private _objectivesToRecon = [];
-        private _objectivesToStrike = [];
-        private _objectivesToAttack = [];
-        private _objectivesToDefend = [];
-        private _objectivesToHold = [];
-        private _objectivesToReinforce = [];
-        private _objectivesToIdle = [];
-
-        {
-            _x params ["_objective","_nearProfiles"];
-
-            _nearProfiles params ["_nearFriendlies","_nearEnemies"];
-
-            private _nearFriendlyCount = count _nearFriendlies;
-            private _nearEnemyCount = count _nearEnemies;
-            private _netEnemyCount = _nearEnemyCount - _nearFriendlyCount;
-
-            private _previousState = [_objective,"opcomState", "idle"] call ALiVE_fnc_hashGet;
-            private _timeLastRecon = [_objective,"timeLastRecon", 0] call ALiVE_fnc_hashGet;
-            private _objectivePriority = [_objective,"priority"] call ALiVE_fnc_hashGet;
-
-            private _newState = "idle";
-
-            switch (_previousState) do {
-
-                case "idle": {
-
-                    if (_nearEnemyCount > 0) then {
-                        if (_netEnemyCount > 0) then {
-
-                        } else {
-                            _newState = "reinforce";
-                        };
-                    } else {
-                        if (_nearFriendlyCount > 0) then {
-                            private _profilesNeeded = _countForHold - _nearFriendlyCount;
-
-                            if (_profilesNeeded > 0) then {
-                                // merge valid group categories from above
-                                // sort by distance
-                                // while _profilesNeeded > 0 add profile to task and deleteat 0
-                                // can this be a generic function?
-
-                                _newState = "reinforce";
-                            };
-                        } else {
-                            if ((count _objectivesToRecon) + (count _activeReconTasks) < _maxActiveReconTasks) then {
-                                private _friendlySpecOpsCount = count _friendlySpecOps > 0;
-                                private _friendlyAirCount = count _friendlyAir > 0;
-
-                                if (_friendlySpecOpsCount > 0 || {_friendlyAirCount > 0}) then {
-                                    if (_friendlySpecOpsCount > 0) then {
-                                        // create recon task with spec ops
-                                        // order profiles to objective to get closest
-
-                                        _friendlySpecOps deleteat 0;
-                                    } else {
-                                        // create recon task with air
-                                        // order profiles to objective to get closest
-
-                                        _friendlyAir deleteat 0;
-                                    };
-
-                                    _newState = "recon";
-                                } else {
-                                    _newState = "idle";
-                                };
-                            } else {
-                                _newState = "idle";
-                            }
-                        };
-                    };
-
-                    if (_nearFriendlyCount == 0 && {_nearEnemyCount == 0} && {(count _objectivesToRecon) + (count _activeReconTasks) < _maxActiveReconTasks}) then {
-                        _newState = "recon";
-                    } else {
-                        if (_nearFriendlyCount > 0) then {
-                            _newState = "hold";
-                        } else {
-                            _newState = "idle";
-                        };
-                    };
-
-                };
-
-                case "recon": {
-
-                    if (_netEnemyCount > 2) then {
-                        // TODO: check if there are appropriate groups available for a strike
-                        // if not, revert to idle or attack
-
-                        _newState = "strike";
-                    } else {
-                        // TODO: check if there are enough groups available for an attack
-                        // if not, revert to idle
-
-                        _newState = "attack";
-                    };
-
-                };
-
-                case "strike": {
-
-                    if (_netEnemyCount > 2) then {
-                        private _consecutiveStrikeTasks = [_objective,"consecutiveStrikeTasks", 0] call ALiVE_fnc_hashGet;
-
-                        if (_consecutiveStrikeTasks <= 2) then {
-                            // TODO: check if there are appropriate groups available for a strike
-                            // if not, revert to idle or attack
-
-                            _newState = "strike";
-
-                            [_objective,"consecutiveStrikeTasks", _consecutiveStrikeTasks + 1] call ALiVE_fnc_hashSet;
-                        } else {
-                            // TODO: check if there are enough groups available for an attack
-                            // if not, revert to idle
-
-                            _newState = "attack";
-                        };
-                    } else {
-                        // TODO: check if there are enough groups available for an attack
-                        // if not, revert to idle
-
-                        _newState = "attack";
-                    };
-
-                };
-
-                case "attack": {
-
-                    if (_netEnemyCount < 0) then {
-
-                    } else {
-
-                    };
-
-                };
-
-                case "hold": {
-
-                    if (_nearFriendlyCount == 0) then {
-                        _newState = "idle";
-                    } else {
-                        if (_netEnemyCount >= 2) then {
-                            _newState = "retreat";
-                        } else {
-                            if (_nearFriendlyCount - _nearEnemyCount < _countForHold) then {
-                                if (_nearEnemyCount > 0) then {
-                                    _newState = "defend";
-                                } else {
-                                    _newState = "reinforce";
-                                };
-                            } else {
-                                _newState = "hold";
-                            };
-
-                        };
-                    };
-
-                };
-
-                case "defend": {
-
-                    if (_nearEnemyCount > 0) then {
-                        if (_netEnemyCount >= 2) then {
-                            _newState = "retreat";
-                        } else {
-                            private _objectivePriority = [_objective,"priority"] call ALiVE_fnc_hashGet;
-                            private _consecutiveDefendTasks = [_objective,"consecutiveDefendTasks", 0] call ALiVE_fnc_hashGet;
-
-                            if (_nearFriendlyCount - _nearEnemyCount < _countForHold && {_objectivePriority > _averageObjectivePriority} && {_consecutiveDefendTasks < 2}) then {
-                                _newState = "defend";
-
-                                [_objective,"consecutiveDefendTasks", _consecutiveDefendTasks + 1] call ALiVE_fnc_hashSet;
-                            } else {
-                                _newState = "hold";
-                            };
-                        };
-                    } else {
-                        if (_nearFriendlyCount < _countForHold) then {
-                            _newState = "reinforce";
-                        } else {
-                            _newState = "hold";
-                        };
-                    };
-
-                };
-
-                case "reinforce": {
-
-                    if (_nearFriendlyCount == 0) then {
-                        _newState = "idle";
-                    } else {
-                        _newState = "hold";
-                    };
-
-                };
-
-                case "retreat": {
-
-                    _newState = "idle";
-
-                };
-
-            };
-
-            switch (_newState) do {
-                case "recon": {_objectivesToRecon pushback _objective};
-                case "strike": {_objectivesToStrike pushback _objective};
-                case "attack": {_objectivesToAttack pushback _objective};
-                case "defend": {_objectivesToDefend pushback _objective};
-                case "hold": {_objectivesToHold pushback _objective};
-                case "reinforce": {_objectivesToReinforce pushback _objective};
-                case "idle": {_objectivesToIdle pushback _objective};
-            };
-
-            [_objective,"opcomState", _newState] call MAINCLASS;
-
-            // set state
-            // fire event if significant state change
-            // etc fire event if objective goes from hold to defend
-            // if objective goes from idle to attack
-            // if objective goes from idle to recon
-        } foreach _occupationData;
-
-        private _objectivesByState = [
-            [
-                ["recon", _objectivesToRecon],
-                ["strike", _objectivesToStrike],
-                ["attack", _objectivesToAttack],
-                ["defend", _objectivesToDefend],
-                ["hold", _objectivesToHold],
-                ["idle", _objectivesToIdle]
-            ]
-        ] call ALiVE_fnc_hashCreate;
-
-        _result = _objectivesByState;
-
-        if (_debug) then {
-            ["ALiVE OPCOM - assignObjectiveStates: time taken: %1 seconds", time - _startTime] call ALiVE_fnc_Dump;
-        };
-
-    };
-
     case "cycleStart": {
 
         // cycle start event
@@ -455,24 +174,377 @@ switch(_operation) do {
 
     };
 
-    case "updateClusterOccupation": {
+    case "updateObjectiveState": {
+
+        // get next state for objective
+        // no checking for available units
+        // or assigning of tasks done in this step
+
+        _args params ["_occupationData",["_statesCount", []]];
+
+        private _startTime = time;
 
         private _handler = [_logic,"handler"] call MAINCLASS;
 
-        private _friendlyTroops = [_handler,"forces"] call ALiVE_fnc_hashGet;
-        private _visibleEnemies = [_handler,"knownEnemies"] call ALiVE_fnc_hashGet;
+        if (_statesCount isEqualTo []) then {
+            _statesCount = [_handler,"objectiveStatesCount"] call ALiVE_fnc_hashGet;
+        };
 
-        _friendlyTroops = [_logic,"condenseSortedProfiles", _friendlyTroops] call MAINCLASS;
-        _visibleEnemies = [_logic,"condenseSortedProfiles", _visibleEnemies] call MAINCLASS;
+        private _debug = [_handler,"debug"] call ALiVE_fnc_hashGet;
+        private _averageObjectivePriority = [_handler,"averageObjectivePriority"] call ALiVE_fnc_hashGet;
 
-        private _friendlyTroopEntities = [_logic,"sortProfilesEntities", _friendlyTroops] call MAINCLASS;
-        private _enemyTroopEntities = [_logic,"sortProfilesEntities", _visibleEnemies] call MAINCLASS;
+        private _countForAttack = [_handler,"profileAmountAttack"] call ALiVE_fnc_hashGet;
+        private _countForDefend = [_handler,"profileAmountDefend"] call ALiVE_fnc_hashGet;
+        private _countForHold = [_handler,"profileAmountHold"] call ALiVE_fnc_hashGet;
 
-        private _objectives = [_handler,"objectives"] call ALIVE_fnc_hashGet;
+        private _maxActiveReconTasks = [_handler,"maxActiveReconTasks"] call ALiVE_fnc_hashGet;
+        private _maxActiveStrikeTasks = [_handler,"maxActiveStrikeTasks"] call ALiVE_fnc_hashGet;
+        private _maxActiveAttackTasks = [_handler,"maxActiveAttackTasks"] call ALiVE_fnc_hashGet;
 
-        private _objectiveOccupationData = [_logic,"getObjectiveOccupation", [_objectives, [_friendlyTroopEntities,_enemyTroopEntities]]] call MAINCLASS;
+        private _activeTasks = [_handler,"activeTasks"] call ALiVE_fnc_hashGet;
+        (_activeTasks select 2) params ["_activeReconTasks","_activeStrikeTasks","_activeAttackTasks","_activeDefendTasks"];
 
-        [_handler,"objectiveOccupationData", _objectiveOccupationData] call ALiVE_fnc_hashSet;
+        _statesCount params ["_assignedIdle","_assignedRecon","_assignedStrike","_assignedAttack","_assignedHold","_assignedDefend","_assignedReinforce"];
+
+        _occupationData params ["_objective","_nearProfiles"];
+
+        _nearProfiles params ["_nearFriendlies","_nearEnemies"];
+
+        private _nearFriendlyCount = count _nearFriendlies;
+        private _nearEnemyCount = count _nearEnemies;
+        private _netEnemyCount = _nearEnemyCount - _nearFriendlyCount;
+
+        private _previousState = [_objective,"opcomState", "idle"] call ALiVE_fnc_hashGet;
+        private _objectivePriority = [_objective,"priority"] call ALiVE_fnc_hashGet;
+
+        private _newState = "idle";
+
+        switch (_previousState) do {
+
+            // DONE
+
+            case "idle": {
+
+                if (_nearEnemyCount > 0) then {
+                    if (_netEnemyCount > 0) then {
+                        if (_assignedAttack + (count _activeAttackTasks) < _maxActiveAttackTasks) then {
+                            _newState = "attack";
+                        } else {
+                            _newState = "idle";
+                        };
+                    } else {
+                        _newState = "reinforce";
+                    };
+                } else {
+                    if (_nearFriendlyCount > 0) then {
+                        if ((_countForHold - _nearFriendlyCount) > 0) then {
+                            _newState = "reinforce";
+                        };
+                    } else {
+                        private _timeLastRecon = [_objective,"timeLastRecon", 0] call ALiVE_fnc_hashGet;
+                        private _recentlyRecon = time - _timeLastRecon < (60 * 5);
+
+                        if (!_recentlyRecon && {_assignedRecon + (count _activeReconTasks) < _maxActiveReconTasks}) then {
+                            _newState = "recon";
+                        } else {
+                            if (_recentlyRecon) then {
+                                _newState = "reinforce";
+                            } else {
+                                _newState = "idle";
+                            };
+                        };
+                    };
+                };
+
+            };
+
+            // DONE
+
+            case "recon": {
+
+                if (_netEnemyCount > 2) then {
+                    private _consecutiveStrikeTasks = [_objective,"consecutiveStrikeTasks", 0] call ALiVE_fnc_hashGet;
+
+                    if (_consecutiveStrikeTasks < 2) then {
+                        _newState = "strike";
+                    } else {
+                        _newState = "idle";
+                    };
+                } else {
+                    _newState = "attack";
+                };
+
+            };
+
+            case "strike": {
+
+                if (_netEnemyCount > 2) then {
+                    private _consecutiveStrikeTasks = [_objective,"consecutiveStrikeTasks", 0] call ALiVE_fnc_hashGet;
+
+                    if (_consecutiveStrikeTasks < 2) then {
+                        _newState = "strike";
+
+                        [_objective,"consecutiveStrikeTasks", _consecutiveStrikeTasks + 1] call ALiVE_fnc_hashSet;
+                    } else {
+                        _newState = "attack";
+                    };
+                } else {
+                    if (_nearEnemyCount > 0) then {
+                        _newState = "attack";
+                    } else {
+                        _newState = "reinforce";
+                    };
+                };
+
+            };
+
+            case "attack": {
+
+                if (_netEnemyCount < 0) then {
+
+                } else {
+
+                };
+
+            };
+
+            case "hold": {
+
+                if (_nearFriendlyCount == 0) then {
+                    _newState = "idle";
+                } else {
+                    if (_netEnemyCount >= 2) then {
+                        _newState = "withdraw";
+                    } else {
+                        if (_nearFriendlyCount - _nearEnemyCount < _countForHold) then {
+                            if (_nearEnemyCount > 0) then {
+                                _newState = "defend";
+                            } else {
+                                _newState = "reinforce";
+                            };
+                        } else {
+                            _newState = "hold";
+                        };
+
+                    };
+                };
+
+            };
+
+            case "defend": {
+
+                if (_nearEnemyCount > 0) then {
+                    if (_netEnemyCount >= 2) then {
+                        _newState = "withdraw";
+                    } else {
+                        private _objectivePriority = [_objective,"priority"] call ALiVE_fnc_hashGet;
+                        private _consecutiveDefendTasks = [_objective,"consecutiveDefendTasks", 0] call ALiVE_fnc_hashGet;
+
+                        if (_nearFriendlyCount - _nearEnemyCount < _countForHold && {_objectivePriority > _averageObjectivePriority} && {_consecutiveDefendTasks < 2}) then {
+                            _newState = "defend";
+
+                            [_objective,"consecutiveDefendTasks", _consecutiveDefendTasks + 1] call ALiVE_fnc_hashSet;
+                        } else {
+                            _newState = "hold";
+                        };
+                    };
+                } else {
+                    if (_nearFriendlyCount < _countForHold) then {
+                        _newState = "reinforce";
+                    } else {
+                        _newState = "hold";
+                    };
+                };
+
+            };
+
+            case "reinforce": {
+
+                if (_nearFriendlyCount == 0) then {
+                    _newState = "idle";
+                } else {
+                    _newState = "hold";
+                };
+
+            };
+
+            case "withdraw": {
+
+                _newState = "idle";
+
+            };
+
+        };
+
+        [_objective,"opcomState", _newState] call ALiVE_fnc_hashSet;
+        [_objective,"currentStateHandled", false] call ALiVE_fnc_hashSet;
+
+        if (_previousState != _newState) then {
+            // fire event if state changes
+        };
+
+        _result = [_objective,_previousState,_newState,_nearProfiles];
+
+        if (_debug) then {
+            ["ALiVE OPCOM - updateObjectiveState: time taken: %1 seconds", time - _startTime] call ALiVE_fnc_Dump;
+        };
+
+    };
+
+    case "validateObjectiveState": {
+
+        private _objectiveStateData = _args;
+
+        private _handler = [_logic,"handler"] call MAINCLASS;
+
+        _objectiveStateData params ["_objective","_previousState","_newState","_nearProfiles"];
+
+        _nearProfiles params ["_nearFriendlies","_nearEnemies"];
+
+        // copy forces array so we can modify it
+
+        private _friendlyForces = +([_handler,"forces"] call ALiVE_fnc_hashGet);
+        (_friendlyForces select 2) params [
+            "_infantry",
+            "_specOps",
+            "_motorized",
+            "_mechanized",
+            "_armored",
+            "_artillery",
+            "_AAA",
+            "_air",
+            "_airArmed",
+            "_sea"
+        ];
+
+        // ensure there are enough troops of the appropriate state available
+        // grab recommended units if possible
+
+        private _troops = [];
+
+        switch (_newState) do {
+
+            case "idle": {
+
+                _troops = _nearFriendlies;
+
+            };
+
+            case "recon": {
+
+                private _validUnitTypes = [_specOps,_air];
+
+                {
+                    if (_troops isEqualTo []) then {
+                        if !(_x isEqualTo []) then {
+                            _troops pushback (_x select 0);
+                        };
+                    };
+                } foreach _validUnitTypes;
+
+            };
+
+            case "strike": {
+
+                private _objectivePriority = [_objective,"priority"] call ALiVE_fnc_hashGet;
+                private _maxTroopCount = 1;
+
+                if (_objectivePriority >= 100) then {
+                    _maxTroopCount = 2;
+                };
+
+                private _validUnitTypes = [_airArmed]; // artillery units cannot attack from ranged yet
+
+                {
+                    if (count _troops <= _maxTroopCount) then {
+                        if !(_x isEqualTo []) then {
+                            _troops pushback (_x select 0);
+                        };
+                    };
+                } foreach _validUnitTypes;
+
+            };
+
+            case "attack": {
+
+                // see file on desktop for assembling an "anti" composition
+
+            };
+
+            case "hold": {
+
+                _troops = _nearFriendlies;
+
+            };
+
+            case "defend": {
+
+                private _countForDefend = (count _nearEnemies) - (count _nearFriendlies);
+
+                if (_countForDefend > 0) then {
+
+                    // All Types: inf, specops, mot, mech, arm, arty, aaa, air, air armed, sea
+                    // Preferred: mot, mech, arm, inf
+
+                    private _typesByPriority = [2,3,4,0];
+
+                    {
+                        private _troopCount = count _troops;
+
+                        if (_troopCount < _countForHold) then {
+                            private _typeUnits = (_friendlyForces select 2) select _x;
+
+                            while {_troopCount < _countForHold && {!(_typeUnits isEqualTo [])}} do {
+                                _troops pushback (_typeUnits select 0);
+                                _typeUnits deleteat 0;
+                                _troopCount = _troopCount + 1;
+                            };
+                        };
+                    } foreach _typesByPriority;
+                } else {
+                    _newState = "hold";
+                };
+
+            };
+
+            case "reinforce": {
+
+                private _countForHold = [_handler,"profileAmountHold"] call ALiVE_fnc_hashGet;
+
+                // All Types: inf, specops, mot, mech, arm, arty, aaa, air, air armed, sea
+                // Preferred: inf, mot, mech, arm
+
+                private _typesByPriority = [0,2,3,4];
+
+                {
+                    private _troopCount = count _troops;
+
+                    if (_troopCount < _countForHold) then {
+                        private _typeUnits = (_friendlyForces select 2) select _x;
+
+                        while {_troopCount < _countForHold && {!(_typeUnits isEqualTo [])}} do {
+                            _troops pushback (_typeUnits select 0);
+                            _typeUnits deleteat 0;
+                            _troopCount = _troopCount + 1;
+                        };
+                    };
+                } foreach _typesByPriority;
+
+            };
+
+            case "withdraw": {
+
+                _troops = _nearFriendlies;
+
+            };
+
+        };
+
+        if (_newState != _newState) then {
+            _objectiveStateData set [2,_newState];
+        };
+
+        _objectiveStateData pushback _troops;
 
     };
 

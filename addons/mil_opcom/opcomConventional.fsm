@@ -1,0 +1,351 @@
+/*%FSM<COMPILE "D:\Steam\steamapps\common\Arma 3 Tools\FSMEditor\scriptedFSM.cfg, opcomConventional">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"INIT",0,250,-719.216370,-1197.294434,-629.216370,-1147.294434,0.000000,"INIT"};
+item1[] = {"Cycle_Start_Comp",4,218,-718.183167,-694.637756,-628.183167,-644.637756,0.000000,"Cycle Start" \n "Complete"};
+item2[] = {"Update_Friendly",2,250,-718.228149,-585.078247,-628.228149,-535.078247,0.000000,"Update" \n "Friendly" \n "Forces"};
+item3[] = {"Update_Done",4,218,-717.647949,-486.532562,-627.647949,-436.532562,0.000000,"Update" \n "Done"};
+item4[] = {"Update_Enemy_For",2,250,-718.442688,-378.482330,-628.442688,-328.482300,0.000000,"Update" \n "Enemy" \n "Forces"};
+item5[] = {"Update_Done",4,218,-718.849670,-272.386719,-628.849670,-222.386719,0.000000,"Update" \n "Done"};
+item6[] = {"Update_Objective",2,250,-717.554810,-163.779800,-627.554810,-113.779800,0.000000,"Update" \n "Objective" \n "Occupation"};
+item7[] = {"Update_Done",4,218,-715.984619,-48.338028,-625.984619,1.661972,0.000000,"Update" \n "Done"};
+item8[] = {"Cycle_Start",2,250,-717.734314,-803.337708,-627.734314,-753.337646,0.000000,"Cycle" \n "Start"};
+item9[] = {"_",-1,250,-433.177032,51.216019,-430.091949,51.216019,0.000000,""};
+item10[] = {"Post_Start",2,250,-716.884827,-1001.349426,-626.884827,-951.349426,0.000000,"Post" \n "Start"};
+item11[] = {"Init_Complete",8,218,-717.004578,-1098.547363,-627.004578,-1048.547363,0.000000,"Init" \n "Complete"};
+item12[] = {"Post_Start_Complete",8,218,-715.057922,-903.447571,-625.057922,-853.447571,0.000000,"Post Start" \n "Complete" \n ""};
+item13[] = {"Cycle_Done",2,250,-713.359192,603.718323,-623.359192,653.718262,0.000000,"Cycle" \n "Done"};
+item14[] = {"___seconds_passe",4,218,-188.194366,598.206421,-98.194366,648.206421,0.000000,"3 seconds" \n "passed"};
+item15[] = {"Update_Objective_1",2,250,-713.115601,68.661377,-623.115601,118.661377,0.000000,"Update" \n "Objective" \n "States"};
+item16[] = {"Update_Done",4,218,-712.763550,198.799332,-622.763550,248.799332,0.000000,"Update" \n "Done"};
+item17[] = {"Validate_Objective",2,4346,-712.963196,325.389191,-622.963196,375.389191,0.000000,"Validate" \n "Objective" \n "States"};
+item18[] = {"Validation_Compl",4,218,-712.406494,462.550659,-622.406494,512.550720,0.000000,"Validation" \n "Complete"};
+version=1;
+class LayoutItems
+{
+	class Item9
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
+};
+link0[] = {0,11};
+link1[] = {1,2};
+link2[] = {2,3};
+link3[] = {3,4};
+link4[] = {4,5};
+link5[] = {5,6};
+link6[] = {6,7};
+link7[] = {7,15};
+link8[] = {8,1};
+link9[] = {10,12};
+link10[] = {11,10};
+link11[] = {12,8};
+link12[] = {13,14};
+link13[] = {14,8};
+link14[] = {15,16};
+link15[] = {16,17};
+link16[] = {17,18};
+link17[] = {18,13};
+globals[] = {0.000000,0,0,0,0,640,480,1,110,6316128,1,-1019.674011,-145.171631,804.879272,-300.030212,668,844,1};
+window[] = {2,-1,-1,-32000,-32000,1013,64,1844,64,3,690};
+*//*%FSM</HEAD>*/
+class FSM
+{
+        fsmName = "opcomConventional";
+        class States
+        {
+                /*%FSM<STATE "INIT">*/
+                class INIT
+                {
+                        name = "INIT";
+                        itemno = 0;
+                        init = /*%FSM<STATEINIT""">*/"_logic = _this select 0;" \n
+                         "" \n
+                         "_handler = [_logic,""handler""] call ALiVE_fnc_OPCOMConventional;" \n
+                         "" \n
+                         "_debug = [_handler,""debug""] call ALiVE_fnc_HashGet;" \n
+                         "_opcomObjectives = [_handler,""objectives""] call ALiVE_fnc_HashGet;" \n
+                         "_opcomSide = [_handler,""side""] call ALiVE_fnc_HashGet;" \n
+                         "_opcomFactions = [_handler,""factions""] call ALiVE_fnc_HashGet;" \n
+                         "" \n
+                         "_colorSide = ""ColorRed"";" \n
+                         "switch (_opcomSide) do {" \n
+                         "    case (""WEST"") : {_colorside = ""ColorBlue""};" \n
+                         "    case (""EAST"") : {_colorside = ""ColorRed""};" \n
+                         "    case (""GUER"") : {_colorside = ""ColorGreen""};" \n
+                         "};"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Init_Complete">*/
+                                class Init_Complete
+                                {
+                                        itemno = 11;
+                                        priority = 0.000000;
+                                        to="Post_Start";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Update_Friendly">*/
+                class Update_Friendly
+                {
+                        name = "Update_Friendly";
+                        itemno = 2;
+                        init = /*%FSM<STATEINIT""">*/"_updateFriendlyForcesScriptHandle = [_logic,""updateFriendlyForces""] spawn ALiVE_fnc_OPCOMConventional;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Update_Done">*/
+                                class Update_Done
+                                {
+                                        itemno = 3;
+                                        priority = 0.000000;
+                                        to="Update_Enemy_For";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"scriptdone _updateFriendlyForcesScriptHandle"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"_updateFriendlyForcesScriptHandle = nil;"/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Update_Enemy_For">*/
+                class Update_Enemy_For
+                {
+                        name = "Update_Enemy_For";
+                        itemno = 4;
+                        init = /*%FSM<STATEINIT""">*/"_updateEnemyForcesScriptHandle = [_logic,""updateEnemyForces""] spawn ALiVE_fnc_OPCOMConventional;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Update_Done">*/
+                                class Update_Done
+                                {
+                                        itemno = 5;
+                                        priority = 0.000000;
+                                        to="Update_Objective";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"scriptdone _updateEnemyForcesScriptHandle"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"_updateEnemyForcesScriptHandle = nil;"/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Update_Objective">*/
+                class Update_Objective
+                {
+                        name = "Update_Objective";
+                        itemno = 6;
+                        init = /*%FSM<STATEINIT""">*/"_friendlyTroops = [_handler,""forces""] call ALiVE_fnc_hashGet;" \n
+                         "_visibleEnemies = [_handler,""knownEnemies""] call ALiVE_fnc_hashGet;" \n
+                         "" \n
+                         "_friendlyTroops = [_logic,""condenseSortedProfiles"", _friendlyTroops] call ALiVE_fnc_OPCOMConventional;" \n
+                         "_visibleEnemies = [_logic,""condenseSortedProfiles"", _visibleEnemies] call ALiVE_fnc_OPCOMConventional;" \n
+                         "" \n
+                         "_friendlyTroopEntities = [_logic,""sortProfilesEntities"", _friendlyTroops] call ALiVE_fnc_OPCOMConventional;" \n
+                         "_enemyTroopEntities = [_logic,""sortProfilesEntities"", _visibleEnemies] call ALiVE_fnc_OPCOMConventional;" \n
+                         "" \n
+                         "_objectivesUpdatedCount = 0;" \n
+                         "_objectivesOccupationData = [];"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/"if (_objectivesUpdatedCount < count _opcomObjectives) then {" \n
+                         "	_objectiveOccupationData = [_logic,""getObjectiveOccupation"", [_opcomObjectives select _objectivesUpdatedCount, [_friendlyTroopEntities,_enemyTroopEntities]]] call ALiVE_fnc_OPCOMConventional;" \n
+                         "" \n
+                         "	_objectivesOccupationData pushback _objectiveOccupationData;" \n
+                         "	_objectivesUpdatedCount = _objectivesUpdatedCount + 1;" \n
+                         "};"/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Update_Done">*/
+                                class Update_Done
+                                {
+                                        itemno = 7;
+                                        priority = 0.000000;
+                                        to="Update_Objective_1";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_objectivesUpdatedCount == count _opcomObjectives"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"_objectivesUpdatedCount = nil;"/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Cycle_Start">*/
+                class Cycle_Start
+                {
+                        name = "Cycle_Start";
+                        itemno = 8;
+                        init = /*%FSM<STATEINIT""">*/"_cycleTimeStart = time;" \n
+                         "" \n
+                         "[_logic,""cycleStart""] call ALiVE_fnc_OPCOMConventional;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Cycle_Start_Comp">*/
+                                class Cycle_Start_Comp
+                                {
+                                        itemno = 1;
+                                        priority = 0.000000;
+                                        to="Update_Friendly";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Post_Start">*/
+                class Post_Start
+                {
+                        name = "Post_Start";
+                        itemno = 10;
+                        init = /*%FSM<STATEINIT""">*/"[_logic,""postStart""] call ALiVE_fnc_OPCOMConventional;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Post_Start_Complete">*/
+                                class Post_Start_Complete
+                                {
+                                        itemno = 12;
+                                        priority = 0.000000;
+                                        to="Cycle_Start";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Cycle_Done">*/
+                class Cycle_Done
+                {
+                        name = "Cycle_Done";
+                        itemno = 13;
+                        init = /*%FSM<STATEINIT""">*/"[_logic,""cycleEnd""] call ALiVE_fnc_OPCOMConventional;" \n
+                         "" \n
+                         "_cycleEndTime = time;" \n
+                         "" \n
+                         "systemchat format [""OPCOM %1 cycle took %2 seconds"", _opcomSide, time - _cycleTimeStart];"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "___seconds_passe">*/
+                                class ___seconds_passe
+                                {
+                                        itemno = 14;
+                                        priority = 0.000000;
+                                        to="Cycle_Start";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"time - _cycleEndTime > 3"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Update_Objective_1">*/
+                class Update_Objective_1
+                {
+                        name = "Update_Objective_1";
+                        itemno = 15;
+                        init = /*%FSM<STATEINIT""">*/"// get average objective priority" \n
+                         "" \n
+                         "private _averageObjectivePriority = 0;" \n
+                         "" \n
+                         "{" \n
+                         "	_averageObjectivePriority = _averageObjectivePriority + ([_x,""priority""] call ALiVE_fnc_hashGet);" \n
+                         "} foreach _opcomObjectives;" \n
+                         "" \n
+                         "_averageObjectivePriority = _averageObjectivePriority / (count _opcomObjectives);" \n
+                         "" \n
+                         "[_handler,""averageObjectivePriority"", _averageObjectivePriority] call ALiVE_fnc_hashSet;" \n
+                         "" \n
+                         "" \n
+                         "" \n
+                         "_objectivesUpdatedCount = 0;" \n
+                         "_objectivesStateData = [];" \n
+                         "_statesCount = [0,0,0,0,0,0,0,0]; // [idle,recon,strike,attack,hold,defend,reinforce,withdraw]"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/"if (_objectivesUpdatedCount < count _objectivesOccupationData) then {" \n
+                         "	_objectiveStateData = [_logic,""updateObjectiveState"", [_objectivesOccupationData select _objectivesUpdatedCount,_statesCount]] call ALiVE_fnc_OPCOMConventional;" \n
+                         "" \n
+                         "	_objectiveState = _objectiveStateData select 2;" \n
+                         "" \n
+                         "	switch (_objectiveState) do {" \n
+                         "		case ""idle"": {_statesCount set [0, (_statesCount select 0) + 1};" \n
+                         "		case ""recon"": {_statesCount set [1, (_statesCount select 1) + 1};" \n
+                         "		case ""strike"": {_statesCount set [2, (_statesCount select 2) + 1};" \n
+                         "		case ""attack"": {_statesCount set [3, (_statesCount select 3) + 1};" \n
+                         "		case ""hold"": {_statesCount set [4, (_statesCount select 4) + 1};" \n
+                         "		case ""defend"": {_statesCount set [5, (_statesCount select 5) + 1};" \n
+                         "		case ""reinforce"": {_statesCount set [6, (_statesCount select 6) + 1};" \n
+                         "		case ""withdraw"": {_statesCount set [7, (_statesCount select 7) + 1};" \n
+                         "	};" \n
+                         "" \n
+                         "	_objectivesStateData pushback _objectiveStateData;" \n
+                         "	objectivesUpdatedCount = _objectivesUpdatedCount + 1;" \n
+                         "};"/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Update_Done">*/
+                                class Update_Done
+                                {
+                                        itemno = 16;
+                                        priority = 0.000000;
+                                        to="Validate_Objective";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_objectivesUpdatedCount == count _objectivesOccupationData"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"[_handler,""objectiveStatesCount"", +_statesCount] call ALiVE_fnc_hashSet;" \n
+                                         "" \n
+                                         "_statesCount = nil;" \n
+                                         "_objectivesUpdatedCount = nil;"/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Validate_Objective">*/
+                class Validate_Objective
+                {
+                        name = "Validate_Objective";
+                        itemno = 17;
+                        init = /*%FSM<STATEINIT""">*/"_objectivesUpdatedCount = 0;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/"if (_objectivesUpdatedCount < count _objectivesStateData) then {" \n
+                         "	[_logic,""validateObjectiveState"", _objectivesStateData select objectivesUpdatedCount] call ALiVE_fnc_OPCOMConventional;" \n
+                         "" \n
+                         "	objectivesUpdatedCount = _objectivesUpdatedCount + 1;" \n
+                         "};"/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Validation_Compl">*/
+                                class Validation_Compl
+                                {
+                                        itemno = 18;
+                                        priority = 0.000000;
+                                        to="Cycle_Done";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_objectivesUpdatedCount == count _objectivesStateData"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"_objectivesUpdatedCount = nil;"/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+        };
+        initState="INIT";
+        finalStates[] =
+        {
+        };
+};
+/*%FSM</COMPILE>*/

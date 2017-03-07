@@ -409,6 +409,8 @@ switch(_operation) do {
                     ["maxActiveAttackTasks", 3],
 
                     ["objectives", []],
+                    ["objectiveStatesCount", [0,0,0,0,0,0,0,0]],
+                    ["averageObjectivePriority", 50],
                     ["activeTasks", _activeTasks],
 
                     ["startForceStrength", [[], [], [], [], [], [], [], [], []]],
@@ -701,6 +703,7 @@ switch(_operation) do {
             switch (_controlType) do {
 
                 case ("invasion") : {
+                    /*
                     // [_logic,"postStart"] call ALiVE_fnc_OPCOMConventional;
                     // [_logic,"cycle"] spawn ALiVE_fnc_OPCOMConventional;
 
@@ -712,6 +715,9 @@ switch(_operation) do {
                     };
 
                     MOD(OPCOM_CONVENTIONAL_STATEMACHINE_LIST) pushback _logic;
+                    */
+
+                    private _opcomFSM = [_logic] execFSM "\x\alive\addons\mil_opcom\opcomConventional.fsm";
                 };
 
                 case ("occupation") : {
@@ -1212,10 +1218,10 @@ switch(_operation) do {
 
         _result = [];
 
-        private _profilesBySide = [MOD(profileHandler),"profilesBySideFull", _x] call ALiVE_fnc_hashGet;
+        private _profilesBySides = [MOD(profileHandler),"profilesBySideFull"] call ALiVE_fnc_hashGet;
 
         {
-            _result append (([_profilesBySide,_x] call ALiVE_fnc_hashGet) select 2);
+            _result append (([_profilesBySides,_x] call ALiVE_fnc_hashGet) select 2);
         } foreach _sides;
 
     };
@@ -1571,7 +1577,7 @@ switch(_operation) do {
 
     case "getObjectiveOccupation": {
 
-        _args params ["_objectives","_profiles"];
+        _args params ["_objective","_profiles"];
 
         _profiles params ["_friendlyProfiles","_enemyProfiles"];
 
@@ -1586,20 +1592,16 @@ switch(_operation) do {
 
         _result = [];
 
-        {
-            private _objective = _x;
+        private _objectiveID = [_objective,"objectiveID"] call ALiVE_fnc_HashGet;
+        private _objectivePos = [_objective,"center"] call ALiVE_fnc_HashGet;
+        private _objectiveSize = [_objective,"size"] call ALiVE_fnc_hashGet;
 
-            private _objectiveID = [_objective,"objectiveID"] call ALiVE_fnc_HashGet;
-            private _objectivePos = [_objective,"center"] call ALiVE_fnc_HashGet;
-            private _objectiveSize = [_objective,"size"] call ALiVE_fnc_hashGet;
+        private _dist = _objectiveSize max 600;
 
-            private _dist = _objectiveSize max 600;
+        private _inRangeFriendly = [_logic,"sortProfilesInRange", [_objectivePos,_dist,_friendlyProfiles]] call MAINCLASS;
+        private _inRangeEnemy = [_logic,"sortProfilesInRange", [_objectivePos,_dist,_enemyProfiles]] call MAINCLASS;
 
-            private _inRangeFriendly = [_logic,"sortProfilesInRange", [_objectivePos,_dist,_friendlyProfiles]] call MAINCLASS;
-            private _inRangeEnemy = [_logic,"sortProfilesInRange", [_objectivePos,_dist,_enemyProfiles]] call MAINCLASS;
-
-            _result pushback [_objective, [_inRangeFriendly,_inRangeEnemy]];
-        } foreach _objectives;
+        _result pushback [_objective, [_inRangeFriendly,_inRangeEnemy]];
 
         if (_debug) then {
             ["ALiVE OPCOM - getObjectiveOccupation: time taken: %1 ms", diag_tickTime - _startTime] call ALiVE_fnc_Dump;
