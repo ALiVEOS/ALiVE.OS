@@ -58,12 +58,13 @@ if (isNil "_fac") exitWith {
 
 // Find all the checkpoints pos
 _roads = _pos nearRoads (_radius + 20);
-// scan road positions and find those on outskirts
+// scan road positions, filter trails and find those roads on outskirts
 {
-    if (_x distance _pos < (_radius - 10)) then {
-        _roads = _roads - [_x];
+    if (_x distance _pos < (_radius - 10) || {!isOnRoad _x}) then {
+        _roads set [_foreachIndex,objNull];
     };
 } foreach _roads;
+_roads = _roads - [objNull];
 
 if (count _roads == 0) exitWith {["ALiVE No roads found for roadblock! Cannot create..."] call ALiVE_fnc_Dump};
 
@@ -88,14 +89,14 @@ for "_j" from 1 to (count _roadpoints) do {
 
     _roadpos = _roadpoints select (_j - 1);
 
-    if ({_roadpos distance _x < 100} count GVAR(ROADBLOCKS) > 0) exitWith {["ALiVE Roadblock to close to another! Not created..."] call ALiVE_fnc_Dump};
+    if ({_roadpos distance _x < 100} count GVAR(ROADBLOCKS) > 0) exitWith {["ALiVE Roadblock %1 to close to another! Not created...",_roadpos] call ALiVE_fnc_Dump};
 
-    // check for non road position
-    if (!isOnRoad _roadpos) exitWith {["ALiVE Roadblock is not on a road! Not created..."] call ALiVE_fnc_Dump};
+    // check for non road position (should be obsolete due to filtering at the beginning)
+    if (!isOnRoad _roadpos) exitWith {["ALiVE Roadblock %1 is not on a road %2! Not created...",_roadpos, position _roadpos] call ALiVE_fnc_Dump};
 
     _roadConnectedTo = roadsConnectedTo _roadpos;
 
-    if (count _roadConnectedTo == 0) exitWith {["ALiVE Selected road for roadblock is a dead end! Not created..."] call ALiVE_fnc_Dump};
+    if (count _roadConnectedTo == 0) exitWith {["ALiVE Selected road %1 for roadblock is a dead end! Not created...",_roadpos] call ALiVE_fnc_Dump};
 
     GVAR(ROADBLOCKS) pushBack (position _roadpos);
 

@@ -7,21 +7,23 @@ class NEO_resourceRadio
         onLoad = "[] spawn NEO_fnc_radioOnLoad; ";
         onUnload = "_this call NEO_fnc_radioOnUnload";
 
+        class controlsBackground {
+            //Background
+            class NEO_radioBackground : RscPicture
+            {
+                    idc = -1;
+                    x = 0.142424 * safezoneW + safezoneX;
+                    y = 0.0632 * safezoneH + safezoneY;
+                    w = 0.73 * safezoneW;
+                    h = 0.84 * safezoneH;
+                    text = "x\alive\addons\sup_combatsupport\scripts\NEO_radio\hpp\ALIVE_toughbook_2.paa";
+                    moving = 0;
+                    colorBackground[] = {0,0,0,0};
+            };
+        };
+
         class controls
         {
-
-        //Background
-                class NEO_radioBackground : RscPicture
-                {
-                        idc = -1;
-                        x = 0.142424 * safezoneW + safezoneX;
-                        y = 0.0632 * safezoneH + safezoneY;
-                        w = 0.73 * safezoneW;
-                        h = 0.84 * safezoneH;
-                        text = "x\alive\addons\sup_combatsupport\scripts\NEO_radio\hpp\ALIVE_toughbook_2.paa";
-                        moving = 0;
-                        colorBackground[] = {0,0,0,0};
-                };
                 //MAP
                 class NEO_radioMap : NEO_RscMap
                 {
@@ -762,4 +764,23 @@ class NEO_resourceRadio
                 };
 
         };
+};
+
+class NEO_resourceRadio_MapBag : NEO_resourceRadio {
+
+    class controlsBackground {
+        class NEO_radioBackground : RscPicture {
+            idc = -1;
+            x = 0.142424 * safezoneW + safezoneX;
+            y = -0.242 * safezoneH + safezoneY;
+            w = 0.73 * safezoneW;
+            h = 1.372 * safezoneH;
+            text = "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
+            moving = 0;
+        };
+    };
+
+    class controls : controls {
+
+    };
 };

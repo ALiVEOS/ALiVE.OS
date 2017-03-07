@@ -120,3 +120,5 @@ if(count _turret > 0) then {
         [_unit] orderGetIn false;
     };
 };
+
+(group (_driver select 0)) leaveVehicle _vehicle; 

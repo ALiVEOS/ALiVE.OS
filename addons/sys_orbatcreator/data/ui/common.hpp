@@ -632,7 +632,7 @@ class orbatCreator_common_header_menuStrip : orbatCreator_ctrlMenuStrip {
         class Export_Groups {
 
             text = "Groups";
-            items[] = {"Export_Groups_Selected","Export_Groups_All"};
+            items[] = {"Export_Groups_Selected","Export_Groups_All","Export_Groups_All_StaticData"};
             data = "exportGroups";
 
         };
@@ -690,6 +690,13 @@ class orbatCreator_common_header_menuStrip : orbatCreator_ctrlMenuStrip {
 
             text = "All Groups";
             data = "exportGroupsAll";
+
+        };
+
+        class Export_Groups_All_StaticData : menuStrip_button_action {
+
+            text = "All Groups (StaticData - Advanced Users Only)";
+            data = "exportGroupsAllStaticData";
 
         };
 

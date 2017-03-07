@@ -93,6 +93,9 @@ MOD(require) = _logic;
 
 TRACE_1("Launching Base ALiVE Systems",true);
 
+//Start ALiVE loading screen on all localities during init
+["ALiVE_LOADINGSCREEN"] call BIS_fnc_startLoadingScreen;
+
 // NewsFeed
 [] spawn ALiVE_fnc_newsFeedInit;
 
@@ -139,6 +142,9 @@ if (isServer) then {
     //Activates dynamic AI distribution to all available headless clients
     MOD(AI_DISTRIBUTION) = call compile (_logic getvariable [QMOD(AI_DISTRIBUTION),"false"]);
     MOD(AI_DISTRIBUTION) spawn ALiVE_fnc_AI_Distributor;
+
+    MOD(TABLET_MODEL) = _logic getvariable [QMOD(TABLET_MODEL), "Tablet01"];
+    Publicvariable QMOD(TABLET_MODEL);
 
     // Event Log
     ALIVE_eventLog = [nil, "create"] call ALIVE_fnc_eventLog;
@@ -226,6 +232,9 @@ if (hasInterface) then {
 };
 
 waitUntil {!(isNil QMOD(REQUIRE_INITIALISED))};
+
+//Wait until ALiVE require module has loaded and end loading screen on all localities
+["ALiVE_LOADINGSCREEN"] call BIS_fnc_EndLoadingScreen;
 
 // Indicate Init is finished on server
 if (isServer) then {

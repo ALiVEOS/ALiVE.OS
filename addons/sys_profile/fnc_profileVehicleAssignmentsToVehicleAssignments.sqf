@@ -27,14 +27,15 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_vehicleAssignments","_profile"];
+private ["_vehicleAssignments","_profile","_orderGetIn"];
 
 _vehicleAssignments = _this select 0;
 _profile = _this select 1;
+_orderGetIn = if (count _this > 2) then {_this select 2} else {false};
 
 if(count (_vehicleAssignments select 1) > 0) then {
     {
-        [_x, _profile] call ALIVE_fnc_profileVehicleAssignmentToVehicleAssignment;
+        [_x, _profile,_orderGetIn] call ALIVE_fnc_profileVehicleAssignmentToVehicleAssignment;
         sleep 0.5;
     } forEach (_vehicleAssignments select 2);
 };

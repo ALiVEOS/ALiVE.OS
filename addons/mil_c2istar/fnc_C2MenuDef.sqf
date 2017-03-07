@@ -163,7 +163,21 @@ if (_menuName == "C2ISTAR") then {
                      [QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable && {_csResult}
                 ],
                 ["Send SITREP",
-                    {createDialog "RscDisplayALIVESITREP"},
+                    {
+                        switch (MOD(TABLET_MODEL)) do {
+                            case "Tablet01": {
+                                createDialog "RscDisplayALIVESITREP";
+                            };
+
+                            case "Mapbag01": {
+                                createDialog "RscDisplayALIVESITREP_MapBag";
+                            };
+
+                            default {
+                                createDialog "RscDisplayALIVESITREP";
+                            };
+                        };
+                    },
                     "",
                     "",
                     "",
@@ -172,7 +186,21 @@ if (_menuName == "C2ISTAR") then {
                      _result
                 ],
                 ["Send PATROLREP",
-                    {createDialog "RscDisplayALIVEPATROLREP"},
+                    {
+                        switch (MOD(TABLET_MODEL)) do {
+                            case "Tablet01": {
+                                createDialog "RscDisplayALIVEPATROLREP";
+                            };
+
+                            case "Mapbag01": {
+                                createDialog "RscDisplayALIVEPATROLREP_MapBag";
+                            };
+
+                            default {
+                                createDialog "RscDisplayALIVEPATROLREP";
+                            };
+                        };
+                    },
                     "",
                     "",
                     "",
