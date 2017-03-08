@@ -1,6 +1,9 @@
 private["_worldName"];
+
 _worldName = tolower(worldName);
+
 ["ALiVE SETTING UP MAP: beketov"] call ALIVE_fnc_dump;
+
 [ALIVE_mapBounds, worldName, 21000] call ALIVE_fnc_hashSet;
 ALIVE_Indexing_Blacklist = [];
 ALIVE_airBuildingTypes = [];
@@ -22,7 +25,10 @@ ALIVE_civilianRailBuildingTypes = [];
 ALIVE_civilianFuelBuildingTypes = [];
 ALIVE_civilianConstructionBuildingTypes = [];
 ALIVE_civilianSettlementBuildingTypes = [];
-if(tolower(_worldName) == "beketov") then {
+
+ALiVE_mapCompositionType = "Woodland";
+
+if (tolower(_worldName) == "beketov") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
         "rus\les\les_10 100.p3d",
         "fmod\fmod_obj\bush\ker pichlavej.p3d",
