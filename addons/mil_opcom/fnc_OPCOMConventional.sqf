@@ -79,72 +79,6 @@ switch(_operation) do {
 
     };
 
-    case "cycle": {
-
-        private _handler = [_logic,"handler"] call MAINCLASS;
-
-        private _debug = [_handler,"debug"] call ALiVE_fnc_hashGet;
-
-        // begin cycling
-
-        while {!isnil "_logic" && {!(_logic getvariable ["stopped", false])}} do {
-
-            private _paused = _logic getvariable ["paused", false];
-
-            if (!_paused) then {
-
-                private _cycleStartTime = time;
-
-                // fire cycle start event here
-
-                // scan battlefield and update info
-
-
-                private _friendlyTroops = [_logic,"scanTroops"] call MAINCLASS;
-
-                [_handler,"forces", _friendlyTroops] call ALiVE_fnc_hashSet;
-
-                private _countFriendlyTroops = [_logic,"countSortedProfiles", _friendlyTroops] call MAINCLASS;
-                [_handler,"currentForceStrength", _countFriendlyTroops] call ALiVE_fnc_HashSet;
-
-                // update known units
-                // opcom should only act upon enemies it knows exist
-
-                private _visibleEnemies = [_logic,"getVisibleEnemies"] call MAINCLASS;
-
-                [_handler,"knownEnemies", _visibleEnemies] call ALiVE_fnc_hashSet;
-
-                // get cluster occupation
-
-                _friendlyTroops = [_logic,"condenseSortedProfiles", _friendlyTroops] call MAINCLASS;
-                _visibleEnemies = [_logic,"condenseSortedProfiles", _visibleEnemies] call MAINCLASS;
-
-                private _objectives = [_handler,"objectives"] call ALIVE_fnc_hashGet;
-
-                private _friendlyTroopEntities = [_logic,"sortProfilesEntities", _friendlyTroops] call MAINCLASS;
-                private _enemyTroopEntities = [_logic,"sortProfilesEntities", _visibleEnemies] call MAINCLASS;
-
-                private _objectiveOccupationData = [_logic,"getObjectiveOccupation", [_objectives, [_friendlyTroopEntities,_enemyTroopEntities]]] call MAINCLASS;
-
-                // TODO: evaluate active tasks success and logic here
-
-                // TODO: filter out objectives involved in existing tasks
-
-                private _objectiveStateData = [_logic,"assignObjectiveStates", _objectiveOccupationData] call MAINCLASS;
-
-                // TODO: attack known entities closest to friendly objectives
-                // if vehicle -- attack with vehicle : vice versa for infantry
-
-                if (_debug) then {
-                    ["ALiVE - OPCOM: Cycle completed in %1 seconds", time - _cycleStartTime] call ALiVE_fnc_Dump;
-                };
-
-            };
-
-        };
-
-    };
-
     case "cycleStart": {
 
         // cycle start event
@@ -155,6 +89,9 @@ switch(_operation) do {
 
         private _handler = [_logic,"handler"] call MAINCLASS;
 
+        private _debug = [_handler,"debug"] call ALiVE_fnc_hashGet;
+        private _startTime = diag_tickTime;
+
         private _friendlyTroops = [_logic,"scanTroops"] call MAINCLASS;
 
         [_handler,"forces", _friendlyTroops] call ALiVE_fnc_hashSet;
@@ -162,15 +99,26 @@ switch(_operation) do {
         private _countFriendlyTroops = [_logic,"countSortedProfiles", _friendlyTroops] call MAINCLASS;
         [_handler,"currentForceStrength", _countFriendlyTroops] call ALiVE_fnc_HashSet;
 
+        if (_debug) then {
+            ["[ALiVE] OPCOM - %1 time taken: %2 ms", _operation, diag_tickTime - _startTime] call ALiVE_fnc_Dump;
+        };
+
     };
 
     case "updateEnemyForces": {
 
         private _handler = [_logic,"handler"] call MAINCLASS;
 
+        private _debug = [_handler,"debug"] call ALiVE_fnc_hashGet;
+        private _startTime = diag_tickTime;
+
         private _visibleEnemies = [_logic,"getVisibleEnemies"] call MAINCLASS;
 
         [_handler,"knownEnemies", _visibleEnemies] call ALiVE_fnc_hashSet;
+
+        if (_debug) then {
+            ["[ALiVE] OPCOM - %1 time taken: %2 ms", _operation, diag_tickTime - _startTime] call ALiVE_fnc_Dump;
+        };
 
     };
 
@@ -181,8 +129,6 @@ switch(_operation) do {
         // or assigning of tasks done in this step
 
         _args params ["_occupationData",["_statesCount", []]];
-
-        private _startTime = time;
 
         private _handler = [_logic,"handler"] call MAINCLASS;
 
@@ -237,8 +183,10 @@ switch(_operation) do {
                     };
                 } else {
                     if (_nearFriendlyCount > 0) then {
-                        if ((_countForHold - _nearFriendlyCount) > 0) then {
+                        if (_countForHold - _nearFriendlyCount > 0) then {
                             _newState = "reinforce";
+                        } else {
+                            _newState = "hold";
                         };
                     } else {
                         private _timeLastRecon = [_objective,"timeLastRecon", 0] call ALiVE_fnc_hashGet;
@@ -376,18 +324,14 @@ switch(_operation) do {
 
         };
 
-        [_objective,"opcomState", _newState] call ALiVE_fnc_hashSet;
-        [_objective,"currentStateHandled", false] call ALiVE_fnc_hashSet;
+        // TODO: Set later on after validation - [_objective,"opcomState", _newState] call ALiVE_fnc_hashSet;
+        // TODO: Do we need this? - [_objective,"currentStateHandled", false] call ALiVE_fnc_hashSet;
 
         if (_previousState != _newState) then {
             // fire event if state changes
         };
 
-        _result = [_objective,_previousState,_newState,_nearProfiles];
-
-        if (_debug) then {
-            ["ALiVE OPCOM - updateObjectiveState: time taken: %1 seconds", time - _startTime] call ALiVE_fnc_Dump;
-        };
+        _result = [_objective,_nearProfiles,_previousState,_newState];
 
     };
 
@@ -397,7 +341,11 @@ switch(_operation) do {
 
         private _handler = [_logic,"handler"] call MAINCLASS;
 
-        _objectiveStateData params ["_objective","_previousState","_newState","_nearProfiles"];
+        _objectiveStateData params ["_objective","_nearProfiles","_previousState","_newState"];
+
+        // _previousState = state as of last opcom cycle
+        // _newState = state as recommended by opcom for new cycle
+        // _validatedState = state after checking if available units are available
 
         _nearProfiles params ["_nearFriendlies","_nearEnemies"];
 
@@ -421,14 +369,20 @@ switch(_operation) do {
         // grab recommended units if possible
 
         private _troops = [];
+        private _validatedState = _newState;
 
         switch (_newState) do {
+
+            // always valid
 
             case "idle": {
 
                 _troops = _nearFriendlies;
 
             };
+
+            // check if at least one recon-capable group is available
+            // fall back to idle if not
 
             case "recon": {
 
@@ -442,7 +396,14 @@ switch(_operation) do {
                     };
                 } foreach _validUnitTypes;
 
+                if !(_troops isEqualTo []) then {
+                    _validatedState = "idle";
+                };
+
             };
+
+            // check if at least one strike-capable group is available
+            // fall back to idle if not
 
             case "strike": {
 
@@ -463,23 +424,70 @@ switch(_operation) do {
                     };
                 } foreach _validUnitTypes;
 
+                if (count _troops == 0) then {
+                    _validatedState = "idle";
+                };
+
             };
 
             case "attack": {
 
                 // see file on desktop for assembling an "anti" composition
 
+                private _weaknessesByType = [_handler,"profileWeaknessesByType"] call ALiVE_fnc_hashGet;
+
+                private _nearEnemiesSorted = [_logic,"sortProfilesByType", _nearEnemies] call MAINCLASS;
+                private _nearFriendliesSorted = [_logic,"sortProfilesByType", _nearFriendlies] call MAINCLASS;
+
+                _nearEnemiesSorted = [_logic,"subtractSortedProfiles", [_nearEnemies,_nearFriendlies]] call MAINCLASS;
+
+                private _countUnmatched = 0; // how many enemy profiles weren't matched with a friendly profile
+
+                {
+                    private _countToGet = count _x;
+
+                    if (_countToGet > 0) then {
+                        private _typeWeaknesses = (_weaknessesByType select 2) select _forEachIndex;
+
+                        {
+                            private _typeUnits = [_friendlyForces, _x] call ALiVE_fnc_hashGet;
+
+                            while {_countToGet > 0 && {count _typeUnits > 0}} do {
+                                _troops pushback (_typeUnits select 0);
+                                _typeUnits deleteat 0;
+
+                                _countToGet = _countToGet - 1;
+                            };
+                        } foreach (_typeWeaknesses select 2);
+
+                        _countUnmatched = _countUnmatched + _countToGet;
+                    };
+                } foreach (_nearEnemiesSorted select 2);
+
+                if (_countUnmatched >= 2) then {
+                    private _acceptableDifference = (_nearEnemies / (_countUnmatched * 1.5)) >= 3;
+
+                    if (!_acceptableDifference) then {
+                        _newState = _previousState;
+                    };
+                };
+
             };
+
+            // always valid
 
             case "hold": {
 
                 _troops = _nearFriendlies;
+
+                _validatedState = _newState;
 
             };
 
             case "defend": {
 
                 private _countForDefend = (count _nearEnemies) - (count _nearFriendlies);
+                private _troopCount = 0;
 
                 if (_countForDefend > 0) then {
 
@@ -489,8 +497,6 @@ switch(_operation) do {
                     private _typesByPriority = [2,3,4,0];
 
                     {
-                        private _troopCount = count _troops;
-
                         if (_troopCount < _countForHold) then {
                             private _typeUnits = (_friendlyForces select 2) select _x;
 
@@ -502,14 +508,22 @@ switch(_operation) do {
                         };
                     } foreach _typesByPriority;
                 } else {
-                    _newState = "hold";
+                    _validatedState = "hold";
+                };
+
+                if (_troopCount == 0) then {
+                    _validatedState = _previousState;
                 };
 
             };
 
+            // find enough groups to reach limit for holding objective
+            // validate if at least one reinforcement group found
+
             case "reinforce": {
 
                 private _countForHold = [_handler,"profileAmountHold"] call ALiVE_fnc_hashGet;
+                private _troopCount = 0;
 
                 // All Types: inf, specops, mot, mech, arm, arty, aaa, air, air armed, sea
                 // Preferred: inf, mot, mech, arm
@@ -517,8 +531,6 @@ switch(_operation) do {
                 private _typesByPriority = [0,2,3,4];
 
                 {
-                    private _troopCount = count _troops;
-
                     if (_troopCount < _countForHold) then {
                         private _typeUnits = (_friendlyForces select 2) select _x;
 
@@ -530,7 +542,13 @@ switch(_operation) do {
                     };
                 } foreach _typesByPriority;
 
+                if (_troopCount == 0) then {
+                    _validatedState = _previousState;
+                };
+
             };
+
+            // always valid
 
             case "withdraw": {
 
@@ -540,11 +558,14 @@ switch(_operation) do {
 
         };
 
-        if (_newState != _newState) then {
-            _objectiveStateData set [2,_newState];
+        if (_validatedState != _newState && {_validatedState != _previousState}) then {
+            // fire event?
         };
 
+        _objectiveStateData pushback _validatedState;
         _objectiveStateData pushback _troops;
+
+        _result = _objectiveStateData;
 
     };
 

@@ -9,7 +9,7 @@ item4[] = {"Update_Enemy_For",2,250,-718.442688,-378.482330,-628.442688,-328.482
 item5[] = {"Update_Done",4,218,-718.849670,-272.386719,-628.849670,-222.386719,0.000000,"Update" \n "Done"};
 item6[] = {"Update_Objective",2,250,-717.554810,-163.779800,-627.554810,-113.779800,0.000000,"Update" \n "Objective" \n "Occupation"};
 item7[] = {"Update_Done",4,218,-715.984619,-48.338028,-625.984619,1.661972,0.000000,"Update" \n "Done"};
-item8[] = {"Cycle_Start",2,250,-717.734314,-803.337708,-627.734314,-753.337646,0.000000,"Cycle" \n "Start"};
+item8[] = {"Cycle_Start",2,4346,-717.734314,-803.337708,-627.734314,-753.337646,0.000000,"Cycle" \n "Start"};
 item9[] = {"_",-1,250,-433.177032,51.216019,-430.091949,51.216019,0.000000,""};
 item10[] = {"Post_Start",2,250,-716.884827,-1001.349426,-626.884827,-951.349426,0.000000,"Post" \n "Start"};
 item11[] = {"Init_Complete",8,218,-717.004578,-1098.547363,-627.004578,-1048.547363,0.000000,"Init" \n "Complete"};
@@ -18,7 +18,7 @@ item13[] = {"Cycle_Done",2,250,-713.359192,603.718323,-623.359192,653.718262,0.0
 item14[] = {"___seconds_passe",4,218,-188.194366,598.206421,-98.194366,648.206421,0.000000,"3 seconds" \n "passed"};
 item15[] = {"Update_Objective_1",2,250,-713.115601,68.661377,-623.115601,118.661377,0.000000,"Update" \n "Objective" \n "States"};
 item16[] = {"Update_Done",4,218,-712.763550,198.799332,-622.763550,248.799332,0.000000,"Update" \n "Done"};
-item17[] = {"Validate_Objective",2,4346,-712.963196,325.389191,-622.963196,375.389191,0.000000,"Validate" \n "Objective" \n "States"};
+item17[] = {"Validate_Objective",2,250,-712.963196,325.389191,-622.963196,375.389191,0.000000,"Validate" \n "Objective" \n "States"};
 item18[] = {"Validation_Compl",4,218,-712.406494,462.550659,-622.406494,512.550720,0.000000,"Validation" \n "Complete"};
 version=1;
 class LayoutItems
@@ -51,8 +51,8 @@ link14[] = {15,16};
 link15[] = {16,17};
 link16[] = {17,18};
 link17[] = {18,13};
-globals[] = {0.000000,0,0,0,0,640,480,1,110,6316128,1,-1019.674011,-145.171631,804.879272,-300.030212,668,844,1};
-window[] = {2,-1,-1,-32000,-32000,1013,64,1844,64,3,690};
+globals[] = {0.000000,0,0,0,0,640,480,1,110,6316128,1,-832.588135,-374.872589,837.913086,259.601929,668,844,1};
+window[] = {2,-1,-1,-32000,-32000,1141,192,1972,192,3,690};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -174,7 +174,8 @@ class FSM
                                         to="Update_Objective_1";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"_objectivesUpdatedCount == count _opcomObjectives"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"_objectivesUpdatedCount = nil;"/*%FSM</ACTION""">*/;
+                                        action=/*%FSM<ACTION""">*/"_objectivesUpdatedCount = nil;" \n
+                                         "_objectiveOccupationData = nil;"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };
@@ -233,7 +234,7 @@ class FSM
                 {
                         name = "Cycle_Done";
                         itemno = 13;
-                        init = /*%FSM<STATEINIT""">*/"[_logic,""cycleEnd""] call ALiVE_fnc_OPCOMConventional;" \n
+                        init = /*%FSM<STATEINIT""">*/"[_logic,""cycleEnd"", time - _cycleTimeStart] call ALiVE_fnc_OPCOMConventional;" \n
                          "" \n
                          "_cycleEndTime = time;" \n
                          "" \n
@@ -276,25 +277,26 @@ class FSM
                          "" \n
                          "_objectivesUpdatedCount = 0;" \n
                          "_objectivesStateData = [];" \n
+                         "" \n
                          "_statesCount = [0,0,0,0,0,0,0,0]; // [idle,recon,strike,attack,hold,defend,reinforce,withdraw]"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/"if (_objectivesUpdatedCount < count _objectivesOccupationData) then {" \n
                          "	_objectiveStateData = [_logic,""updateObjectiveState"", [_objectivesOccupationData select _objectivesUpdatedCount,_statesCount]] call ALiVE_fnc_OPCOMConventional;" \n
                          "" \n
-                         "	_objectiveState = _objectiveStateData select 2;" \n
+                         "	_objectiveState = _objectiveStateData select 3;" \n
                          "" \n
                          "	switch (_objectiveState) do {" \n
-                         "		case ""idle"": {_statesCount set [0, (_statesCount select 0) + 1};" \n
-                         "		case ""recon"": {_statesCount set [1, (_statesCount select 1) + 1};" \n
-                         "		case ""strike"": {_statesCount set [2, (_statesCount select 2) + 1};" \n
-                         "		case ""attack"": {_statesCount set [3, (_statesCount select 3) + 1};" \n
-                         "		case ""hold"": {_statesCount set [4, (_statesCount select 4) + 1};" \n
-                         "		case ""defend"": {_statesCount set [5, (_statesCount select 5) + 1};" \n
-                         "		case ""reinforce"": {_statesCount set [6, (_statesCount select 6) + 1};" \n
-                         "		case ""withdraw"": {_statesCount set [7, (_statesCount select 7) + 1};" \n
+                         "		case ""idle"": {_statesCount set [0, (_statesCount select 0) + 1]};" \n
+                         "		case ""recon"": {_statesCount set [1, (_statesCount select 1) + 1]};" \n
+                         "		case ""strike"": {_statesCount set [2, (_statesCount select 2) + 1]};" \n
+                         "		case ""attack"": {_statesCount set [3, (_statesCount select 3) + 1]};" \n
+                         "		case ""hold"": {_statesCount set [4, (_statesCount select 4) + 1]};" \n
+                         "		case ""defend"": {_statesCount set [5, (_statesCount select 5) + 1]};" \n
+                         "		case ""reinforce"": {_statesCount set [6, (_statesCount select 6) + 1]};" \n
+                         "		case ""withdraw"": {_statesCount set [7, (_statesCount select 7) + 1]};" \n
                          "	};" \n
                          "" \n
                          "	_objectivesStateData pushback _objectiveStateData;" \n
-                         "	objectivesUpdatedCount = _objectivesUpdatedCount + 1;" \n
+                         "	_objectivesUpdatedCount = _objectivesUpdatedCount + 1;" \n
                          "};"/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -309,7 +311,8 @@ class FSM
                                         action=/*%FSM<ACTION""">*/"[_handler,""objectiveStatesCount"", +_statesCount] call ALiVE_fnc_hashSet;" \n
                                          "" \n
                                          "_statesCount = nil;" \n
-                                         "_objectivesUpdatedCount = nil;"/*%FSM</ACTION""">*/;
+                                         "_objectivesUpdatedCount = nil;" \n
+                                         "_objectiveStateData = nil;"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };
@@ -320,11 +323,13 @@ class FSM
                 {
                         name = "Validate_Objective";
                         itemno = 17;
-                        init = /*%FSM<STATEINIT""">*/"_objectivesUpdatedCount = 0;"/*%FSM</STATEINIT""">*/;
+                        init = /*%FSM<STATEINIT""">*/"_objectivesUpdatedCount = 0;" \n
+                         "_validatedObjectivesStateData = [];"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/"if (_objectivesUpdatedCount < count _objectivesStateData) then {" \n
-                         "	[_logic,""validateObjectiveState"", _objectivesStateData select objectivesUpdatedCount] call ALiVE_fnc_OPCOMConventional;" \n
+                         "	_validatedObjectiveStateData = [_logic,""validateObjectiveState"", _objectivesStateData select _objectivesUpdatedCount] call ALiVE_fnc_OPCOMConventional;" \n
                          "" \n
-                         "	objectivesUpdatedCount = _objectivesUpdatedCount + 1;" \n
+                         "	_validatedObjectivesStateData pushback _validatedObjectiveStateData;" \n
+                         "	_objectivesUpdatedCount = _objectivesUpdatedCount + 1;" \n
                          "};"/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -336,7 +341,11 @@ class FSM
                                         to="Cycle_Done";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"_objectivesUpdatedCount == count _objectivesStateData"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"_objectivesUpdatedCount = nil;"/*%FSM</ACTION""">*/;
+                                        action=/*%FSM<ACTION""">*/"_objectivesUpdatedCount = nil;" \n
+                                         "_validatedObjectiveStateData = nil;" \n
+                                         "" \n
+                                         "private _cycleStates = _objectivesStateData apply {_x select 4};" \n
+                                         "copyToClipboard str _cycleStates;"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };

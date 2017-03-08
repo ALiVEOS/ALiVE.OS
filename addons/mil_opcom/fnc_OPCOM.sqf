@@ -121,7 +121,7 @@ switch(_operation) do {
 
     case "debug": {
 
-        if(_args isEqualTo true) then {
+        if (_args isEqualTo true) then {
             _logic setVariable [_operation, _args];
         } else {
             _result = _logic getVariable [_operation, _args];
@@ -133,7 +133,7 @@ switch(_operation) do {
 
     case "handler": {
 
-        if(_args isEqualType []) then {
+        if (_args isEqualType []) then {
             _logic setVariable [_operation, _args];
         } else {
             _result = _logic getVariable [_operation, _args];
@@ -143,7 +143,7 @@ switch(_operation) do {
 
     case "registryID": {
 
-        if(_args isEqualType "") then {
+        if (_args isEqualType "") then {
             _logic setVariable [_operation, _args];
         } else {
             _result = _logic getVariable [_operation, _args];
@@ -153,7 +153,7 @@ switch(_operation) do {
 
     case "controltype": {
 
-        if(_args isEqualType "") then {
+        if (_args isEqualType "") then {
             _logic setVariable [_operation, _args];
         } else {
             _result = _logic getVariable [_operation, _args];
@@ -163,7 +163,7 @@ switch(_operation) do {
 
     case "asym_occupation": {
 
-        if(_args isEqualType 0) then {
+        if (_args isEqualType 0) then {
             _logic setVariable [_operation, _args];
         } else {
             _result = _logic getVariable [_operation, _args];
@@ -173,7 +173,7 @@ switch(_operation) do {
 
     case "intelchance": {
 
-        if(_args isEqualType 0) then {
+        if (_args isEqualType 0) then {
             _logic setVariable [_operation, _args];
         } else {
             _result = _logic getVariable [_operation, _args];
@@ -183,7 +183,7 @@ switch(_operation) do {
 
     case "faction1": {
 
-        if(_args isEqualType "") then {
+        if (_args isEqualType "") then {
             _logic setVariable [_operation, _args];
         } else {
             _result = _logic getVariable [_operation, _args];
@@ -193,7 +193,7 @@ switch(_operation) do {
 
     case "faction2": {
 
-        if(_args isEqualType "") then {
+        if (_args isEqualType "") then {
             _logic setVariable [_operation, _args];
         } else {
             _result = _logic getVariable [_operation, _args];
@@ -203,7 +203,7 @@ switch(_operation) do {
 
     case "faction3": {
 
-        if(_args isEqualType "") then {
+        if (_args isEqualType "") then {
             _logic setVariable [_operation, _args];
         } else {
             _result = _logic getVariable [_operation, _args];
@@ -213,7 +213,7 @@ switch(_operation) do {
 
     case "faction4": {
 
-        if(_args isEqualType "") then {
+        if (_args isEqualType "") then {
             _logic setVariable [_operation, _args];
         } else {
             _result = _logic getVariable [_operation, _args];
@@ -223,7 +223,7 @@ switch(_operation) do {
 
     case "factions": {
 
-        if(_args isEqualType []) then {
+        if (_args isEqualType []) then {
             _logic setVariable [_operation, _args];
         } else {
             _result = _logic getVariable [_operation, _args];
@@ -233,7 +233,7 @@ switch(_operation) do {
 
     case "simultanObjectives": {
 
-        if(_args isEqualType 0) then {
+        if (_args isEqualType 0) then {
             _logic setVariable [_operation, _args];
         } else {
             _result = _logic getVariable [_operation, _args];
@@ -243,7 +243,7 @@ switch(_operation) do {
 
     case "minAgents": {
 
-        if(_args isEqualType 0) then {
+        if (_args isEqualType 0) then {
             _logic setVariable [_operation, _args];
         } else {
             _result = _logic getVariable [_operation, _args];
@@ -253,7 +253,7 @@ switch(_operation) do {
 
     case "persistent": {
 
-        if(_args isEqualType true) then {
+        if (_args isEqualType true) then {
             _logic setVariable [_operation, _args];
         } else {
             _result = _logic getVariable [_operation, _args];
@@ -263,7 +263,7 @@ switch(_operation) do {
 
     case "reinforcements": {
 
-        if(_args isEqualType 0) then {
+        if (_args isEqualType 0) then {
             _logic setVariable [_operation, _args];
         } else {
             _result = _logic getVariable [_operation, _args];
@@ -273,7 +273,7 @@ switch(_operation) do {
 
     case "roadblocks": {
 
-        if(_args isEqualType true) then {
+        if (_args isEqualType true) then {
             _logic setVariable [_operation, _args];
         } else {
             _result = _logic getVariable [_operation, _args];
@@ -382,6 +382,24 @@ switch(_operation) do {
             _logic setVariable ["stopped", false];
             _logic setVariable ["listenerID", ""];
 
+            // only includes land units
+            // air units are handled as support
+
+            private _weaknessesByType = [
+                [
+                    ["infantry", ["infantry","motorized","mechanized","armored"]],
+                    ["specops", ["motorized","infantry","mechanized","armored"]],
+                    ["motorized", ["mechanized","motorized","infantry","armored"]],
+                    ["mechanized", ["armored","mechanized","infantry","motorized"]],
+                    ["armored", ["armored","infantry","motorized","mechanized"]],
+                    ["artillery", ["mechanized","infantry","motorized","armored"]],
+                    ["aaa", ["mechanized","infantry","motorized","armored"]],
+                    ["air", ["motorized","mechanized","infantry","armored"]],
+                    ["airArmed", ["motorized","mechanized","infantry","armored"]],
+                    ["sea", ["sea","infantry","motorized","mechanized"]]
+                ]
+            ] call ALiVE_fnc_hashCreate;
+
             private _handler = [
                 [
                     ["module", _logic],
@@ -412,6 +430,7 @@ switch(_operation) do {
                     ["objectiveStatesCount", [0,0,0,0,0,0,0,0]],
                     ["averageObjectivePriority", 50],
                     ["activeTasks", _activeTasks],
+                    ["profileWeaknessesByType", _weaknessesByType],
 
                     ["startForceStrength", [[], [], [], [], [], [], [], [], []]],
                     ["forces", _forces],
@@ -988,21 +1007,25 @@ switch(_operation) do {
 
         private _id = [_objective,"objectiveID"] call ALiVE_fnc_hashGet;
         private _pos = [_objective,"center"] call ALiVE_fnc_hashGet;
+        private _size = [_objective,"size"] call ALiVE_fnc_hashGet;
         private _opcomTypePriority = [_objective,"opcomTypePriority"] call ALiVE_fnc_hashGet;
+        private _opcomState = [_objective,"opcomState", "idle"] call ALiVE_fnc_hashGet;
 
-        private _markerID = format [MTEMPLATE, _id];
+        private _markerID1 = format [MTEMPLATE, format ["%1_01", _id]];
+        private _markerID2 = format [MTEMPLATE, format ["%1_02", _id]];
 
-        if !(_markerID call ALiVE_fnc_markerExists) then {
 
-             private _color = switch (_side) do {
-                case "EAST" : {"COLORRED"};
-                case "WEST" : {"COLORBLUE"};
-                case "GUER" : {"COLORGREEN"};
-                default {"COLORYELLOW"};
-            };
-
-            _result = [_markerID, _pos, "ICON", [0.5,0.5], _color, format ["%1 #%2", _side, _opcomTypePriority], "mil_dot", "FDiagonal", 0, 0.5] call ALiVE_fnc_createMarkerGlobal;
+         private _color = switch (_side) do {
+            case "EAST" : {"COLORRED"};
+            case "WEST" : {"COLORBLUE"};
+            case "GUER" : {"COLORGREEN"};
+            default {"COLORYELLOW"};
         };
+
+        private _marker1 = [_markerID1, _pos, "ICON", [0.5,0.5], _color, format ["%1 #%2", _side, _opcomTypePriority], "mil_dot", "FDiagonal", 0, 0.5] call ALiVE_fnc_createMarkerGlobal;
+        private _marker2 = [_markerID2, _pos, "ELLIPSE", [_size,_size], _color, format ["%1 #%2", _side, _opcomTypePriority], "mil_dot", "FDiagonal", 0, 0.5] call ALiVE_fnc_createMarkerGlobal;
+
+        _result = [_marker1,_marker2];
 
     };
 
@@ -1590,8 +1613,6 @@ switch(_operation) do {
 
         // sort profiles
 
-        _result = [];
-
         private _objectiveID = [_objective,"objectiveID"] call ALiVE_fnc_HashGet;
         private _objectivePos = [_objective,"center"] call ALiVE_fnc_HashGet;
         private _objectiveSize = [_objective,"size"] call ALiVE_fnc_hashGet;
@@ -1601,7 +1622,7 @@ switch(_operation) do {
         private _inRangeFriendly = [_logic,"sortProfilesInRange", [_objectivePos,_dist,_friendlyProfiles]] call MAINCLASS;
         private _inRangeEnemy = [_logic,"sortProfilesInRange", [_objectivePos,_dist,_enemyProfiles]] call MAINCLASS;
 
-        _result pushback [_objective, [_inRangeFriendly,_inRangeEnemy]];
+        _result = [_objective, [_inRangeFriendly,_inRangeEnemy]];
 
         if (_debug) then {
             ["ALiVE OPCOM - getObjectiveOccupation: time taken: %1 ms", diag_tickTime - _startTime] call ALiVE_fnc_Dump;
@@ -1609,7 +1630,23 @@ switch(_operation) do {
 
     };
 
+    case "subtractSortedProfiles": {
 
+        _args params ["_sortedProfiles","_sortedProfilesToSubtract"];
+
+        _result = +_sortedProfiles;
+
+        {
+            private _countToRemove = count (_sortedProfilesToSubtract select _foreachIndex);
+
+            for "_i" from 0 to _countType do {
+                if (count _x > 0) then {
+                    _x deleteat 0;
+                };
+            };
+        } foreach _result;
+
+    };
 
 
 
