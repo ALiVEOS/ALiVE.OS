@@ -366,3 +366,22 @@ class SCOMTablet
 
     };
 };
+
+class SCOMTablet_MapBag : SCOMTablet {
+
+    class controlsBackground {
+        class SCOMTablet_background : SCOMTablet_RscPicture {
+            idc = -1;
+            x = 0.142424 * safezoneW + safezoneX;
+            y = -0.242 * safezoneH + safezoneY;
+            w = 0.73 * safezoneW;
+            h = 1.372 * safezoneH;
+            text = "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
+            moving = 0;
+        };
+    };
+
+    class controls : controls {
+
+    };
+};

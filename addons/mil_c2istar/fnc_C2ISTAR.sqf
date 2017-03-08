@@ -638,7 +638,7 @@ switch(_operation) do {
 
             _generateOptions = [];
             _generateValues = [];
-            
+
             if (!isnil "ALIVE_generatedTasks" && {count ALIVE_generatedTasks > 2}) then {
 	            {
 	                _task = [ALIVE_generatedTasks,_x] call ALIVE_fnc_hashGet;
@@ -896,7 +896,19 @@ switch(_operation) do {
 
                 case "OPEN": {
 
-                    createDialog "C2Tablet";
+                    switch (MOD(TABLET_MODEL)) do {
+                        case "Tablet01": {
+                            createDialog "C2Tablet";
+                        };
+
+                        case "Mapbag01": {
+                            createDialog "C2Tablet_MapBag";
+                        };
+
+                        default {
+                            createDialog "C2Tablet";
+                        };
+                    };
 
                 };
 
