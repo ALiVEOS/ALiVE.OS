@@ -402,7 +402,17 @@ switch(_operation) do {
                         };
 
                         case "Mapbag01": {
-                            createDialog "GMTablet_MapBag";
+                            createDialog "GMTablet";
+
+                            private _ctrlBackground = ((findDisplay 11001) displayCtrl 11002);
+                            _ctrlBackground ctrlsettext "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
+                            _ctrlBackground ctrlSetPosition [
+                                0.15 * safezoneW + safezoneX,
+                                -0.242 * safezoneH + safezoneY,
+                                0.72 * safezoneW,
+                                1.372 * safezoneH
+                            ];
+                            _ctrlBackground ctrlCommit 0;
                         };
 
                         default {
