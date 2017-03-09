@@ -387,20 +387,19 @@ switch(_operation) do {
 
         };
     };
+
     case "handleServerResponse": {
 
         // event handler for response from server command handler
 
-        private["_event","_eventData","_type","_message","_debug"];
+        if (_args isEqualType []) then {
 
-        if(typeName _args == "ARRAY") then {
+            private _event = _args;
+            private _type = [_event, "type"] call ALIVE_fnc_hashGet;
+            private _eventData = [_event, "data"] call ALIVE_fnc_hashGet;
+            private _message = [_event, "message"] call ALIVE_fnc_hashGet;
 
-            _event = _args;
-            _type = [_event, "type"] call ALIVE_fnc_hashGet;
-            _eventData = [_event, "data"] call ALIVE_fnc_hashGet;
-            _message = [_event, "message"] call ALIVE_fnc_hashGet;
-
-            _debug = [_logic, "debug"] call MAINCLASS;
+            private _debug = [_logic, "debug"] call MAINCLASS;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
@@ -415,73 +414,79 @@ switch(_operation) do {
             switch(_message) do {
                 case "OPCOM_SIDES_AVAILABLE": {
 
-                    [_logic,"enableIntelOPCOMSelect",_eventData] call MAINCLASS;
+                    [_logic,"enableIntelOPCOMSelect", _eventData] call MAINCLASS;
 
                 };
                 case "OPCOM_OBJECTIVES": {
 
-                    [_logic,"enableIntelOPCOMObjectives",_eventData] call MAINCLASS;
+                    [_logic,"enableIntelOPCOMObjectives", _eventData] call MAINCLASS;
 
                 };
                 case "UNIT_MARKING": {
 
-                    [_logic,"enableIntelUnitMarking",_eventData] call MAINCLASS;
+                    [_logic,"enableIntelUnitMarking", _eventData] call MAINCLASS;
 
                 };
                 case "IMINT_SOURCES_AVAILABLE": {
 
-                    [_logic,"enableIntelIMINT",_eventData] call MAINCLASS;
+                    [_logic,"enableIntelIMINT", _eventData] call MAINCLASS;
 
                 };
                 case "OPS_SIDES_AVAILABLE": {
 
-                    [_logic,"enableOpsOPCOMSelect",_eventData] call MAINCLASS;
+                    [_logic,"enableOpsOPCOMSelect", _eventData] call MAINCLASS;
 
                 };
                 case "OPS_GROUPS": {
 
-                    [_logic,"enableOpsHighCommand",_eventData] call MAINCLASS;
+                    [_logic,"enableOpsHighCommand", _eventData] call MAINCLASS;
 
                 };
                 case "OPS_PROFILE": {
 
-                    [_logic,"enableOpsProfile",_eventData] call MAINCLASS;
+                    [_logic,"enableOpsProfile", _eventData] call MAINCLASS;
 
                 };
                 case "OPS_RESET": {
 
-                    [_logic,"enableOpsInterface",_eventData] call MAINCLASS;
+                    [_logic,"enableOpsInterface", _eventData] call MAINCLASS;
 
                 };
                 case "OPS_PROFILE_WAYPOINTS": {
 
-                    [_logic,"enableGroupWaypointEdit",_eventData] call MAINCLASS;
+                    [_logic,"enableGroupWaypointEdit", _eventData] call MAINCLASS;
 
                 };
                 case "OPS_PROFILE_WAYPOINTS_CLEARED": {
 
-                    [_logic,"enableGroupWaypointEdit",_eventData] call MAINCLASS;
+                    [_logic,"enableGroupWaypointEdit", _eventData] call MAINCLASS;
 
                 };
                 case "OPS_PROFILE_WAYPOINTS_UPDATED": {
 
-                    [_logic,"enableGroupWaypointEdit",_eventData] call MAINCLASS;
+                    [_logic,"enableGroupWaypointEdit", _eventData] call MAINCLASS;
 
                 };
                 case "OPS_GROUP_JOIN_READY": {
 
-                    [_logic,"enableOpsJoinGroup",_eventData] call MAINCLASS;
+                    [_logic,"enableOpsJoinGroup", _eventData] call MAINCLASS;
 
                 };
                 case "OPS_GROUP_SPECTATE_READY": {
 
-                    [_logic,"enableOpsSpectateGroup",_eventData] spawn MAINCLASS;
+                    [_logic,"enableOpsSpectateGroup", _eventData] spawn MAINCLASS;
+
+                };
+                case "OPS_GROUP_LOCK_UPDATED": {
+
+                    [_logic,"opsGroupLockUpdated", _eventData] call MAINCLASS;
 
                 };
             };
         };
 
     };
+
     case "tabletOnLoad": {
 
         // on load of the tablet
@@ -1115,7 +1120,7 @@ switch(_operation) do {
                         _map ctrlMapAnimAdd [0.5, ctrlMapScale _map, _selectedValue select 1];
                         ctrlMapAnimCommit _map;
 
-                        [_logic, "enableGroupSelected"] call MAINCLASS;
+                        [_logic,"enableGroupSelected"] call MAINCLASS;
 
                     };
                 };
@@ -1272,15 +1277,39 @@ switch(_operation) do {
 
                     _event = ['OPS_SPECTATE_GROUP', [_requestID,_playerID,_profileID], "SCOM"] call ALIVE_fnc_event;
 
-                    if(isServer) then {
+                    if (isServer) then {
                         [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
-                    }else{
+                    } else {
                         [_event] remoteExecCall ["ALIVE_fnc_addEventToServer",2];
                     };
 
                     // close the tablet
 
                     closeDialog 0;
+
+                };
+
+                case "OPS_LOCK_GROUP": {
+
+                    _args params ["_mouseButtonClickArgs","_lock"];
+
+                    private _faction = [_logic,"faction"] call MAINCLASS;
+
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+
+                    private _selectedProfileData = [_commandState,"opsGroupsSelectedValue"] call ALiVE_fnc_hashGet;
+                    private _selectedProfileID = _selectedProfileData select 0;
+
+                    private _playerID = getPlayerUID player;
+                    private _requestID = format ["%1_%2", _faction, floor time];
+
+                    private _event = ["OPS_LOCK_GROUP", [_requestID,_playerID,_selectedProfileID,_lock], "SCOM"] call ALIVE_fnc_event;
+
+                    if (isServer) then {
+                        [MOD(eventLog),"addEvent", _event] call ALIVE_fnc_eventLog;
+                    } else {
+                        [_event] remoteExecCall ["ALIVE_fnc_addEventToServer",2];
+                    };
 
                 };
 
@@ -3365,86 +3394,80 @@ switch(_operation) do {
 
     case "enableOpsProfile": {
 
-        private["_buttonR3","_commandState","_status","_profile","_waypoints","_groupWaypoints",
-        "_position","_markerPos","_profilePosition"];
-
         // once the profile data has returned from the command handler
         // display the profiles waypoints
 
-        if(typeName _args == "ARRAY") then {
+        if (_args isEqualType []) then {
 
-            _commandState = [_logic,"commandState"] call MAINCLASS;
+            private _commandState = [_logic,"commandState"] call MAINCLASS;
 
             // hide the loading status text
 
-            _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
+            private _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
             _status ctrlShow false;
 
             _status ctrlSetText "";
 
-            _profile = _args select 1;
+            private _profileData = _args select 1;
 
-            /*
-            _profileData pushBack (_profile select 2 select 1); // active
-            _profileData pushBack (_profile select 2 select 3); // side
-            _profileData pushBack (_profile select 2 select 2); // position
-            _profileData pushBack (_profile select 2 select 13); // group
-            _profileData pushBack (_profile select 2 select 16); // waypoints
-            */
+            if !(_profileData isEqualTo []) then {
 
-            if(count(_profile) > 0) then {
+                _profileData params ["_profileActive","_profileSide","_profilePos","_profileGroup","_profileWaypoints","_profileBusy"];
 
                 // plot the waypoints on the map
 
-                _waypoints = _profile select 4;
-                _profilePosition = _profile select 2;
-
-                _groupWaypoints = [];
-
-                {
-                    _position = _x;
-                    _groupWaypoints pushback _position;
-                } forEach _waypoints;
-
-                [_commandState,"opsGroupSelectedProfile",_profile] call ALIVE_fnc_hashSet;
-                [_commandState,"opsGroupWaypoints",_groupWaypoints] call ALIVE_fnc_hashSet;
+                [_commandState,"opsGroupSelectedProfile", _profile] call ALIVE_fnc_hashSet;
+                [_commandState,"opsGroupWaypoints", _profileWaypoints] call ALIVE_fnc_hashSet;
 
                 // enable interface elements for interacting with profile
 
-                private["_allowSpectate","_allowJoin","_buttonL1","_buttonR1","_buttonL2"];
-
-                _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
+                private _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
                 _buttonL1 ctrlShow true;
                 _buttonL1 ctrlSetText "Edit Group Waypoints";
                 _buttonL1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_EDIT_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
-                _allowSpectate = [_logic,"scomOpsAllowSpectate"] call MAINCLASS;
-                _allowJoin = [_logic,"scomOpsAllowInstantJoin"] call MAINCLASS;
+                private _allowSpectate = [_logic,"scomOpsAllowSpectate"] call MAINCLASS;
+                private _allowJoin = [_logic,"scomOpsAllowInstantJoin"] call MAINCLASS;
 
-                if(_allowJoin) then {
+                if (_allowJoin) then {
 
-                    _buttonR1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
+                    private _buttonR1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
                     _buttonR1 ctrlShow true;
                     _buttonR1 ctrlSetText "Instant Join Group";
                     _buttonR1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_JOIN_GROUP',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                 };
 
-                if(_allowSpectate) then {
+                if (_allowSpectate) then {
 
-                    _buttonL2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL2);
-                    _buttonL2 ctrlShow true;
-                    _buttonL2 ctrlSetText "Spectate Group";
-                    _buttonL2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_SPECTATE_GROUP',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+                    private _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
+                    _buttonR2 ctrlShow true;
+                    _buttonR2 ctrlSetText "Spectate Group";
+                    _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_SPECTATE_GROUP',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                 };
 
-                [_logic,"commandState",_commandState] call MAINCLASS;
+                private _buttonL2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL2);
+                _buttonL2 ctrlShow true;
+
+                if (_profileBusy) then {
+
+                    _buttonL2 ctrlSetText "Unlock Group for AI Commander Control";
+                    _buttonL2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_LOCK_GROUP',[_this,false]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+                } else {
+
+                    _buttonL2 ctrlSetText "Lock Group from AI Commander Control";
+                    _buttonL2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_LOCK_GROUP',[_this,true]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+                };
+
+                //[_logic,"commandState", _commandState] call MAINCLASS;
 
 
-            }else{
+            } else {
 
-                _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
+                private _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
                 _status ctrlShow true;
 
                 _status ctrlSetText "No group found";
@@ -3645,7 +3668,39 @@ switch(_operation) do {
 
     };
 
+    case "opsGroupLockUpdated": {
+
+        private _eventData = _args select 1;
+
+        _eventData params ["_profileID","_lock"];
+
+        private _commandState = [_logic,"commandState"] call MAINCLASS;
+        private _selectedProfileData = [_commandState,"opsGroupsSelectedValue"] call ALiVE_fnc_hashGet;
+        private _selectedProfileID = _selectedProfileData select 0;
+
+        if (_profileID == _selectedProfileID) then {
+
+            private _buttonL2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL2);
+            _buttonL2 ctrlShow true;
+
+            if (_lock) then {
+
+                _buttonL2 ctrlSetText "Unlock Group for AI Commander Control";
+                _buttonL2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_LOCK_GROUP',[_this,false]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+            } else {
+
+                _buttonL2 ctrlSetText "Lock Group from AI Commander Control";
+                _buttonL2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_LOCK_GROUP',[_this,true]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+            };
+
+        };
+
+    };
+
     case "opsDrawWaypoints": {
+
         private ["_map","_commandState","_selectedProfile","_profilePos","_waypoint","_waypointPos",
         "_waypoints","_plannedWaypoints"];
 
@@ -3666,20 +3721,22 @@ switch(_operation) do {
 
             _waypoints = [_commandState,"opsGroupWaypoints", []] call ALiVE_fnc_hashGet;
 
+            private _colorBlue = [0.427,0.463,0.988,1];
+
             {
                 if (_forEachIndex > 0) then {
                     // Draw line from waypoint to waypoint
                     _map drawLine [
                         _waypoints select (_forEachIndex - 1),
                         _x,
-                        [0.427,0.463,0.988,1]
+                        _colorBlue
                     ];
                 } else {
                     // Draw line from profile to waypoint
                     _map drawLine [
                         _profilePos,
                         _x,
-                        [0.427,0.463,0.988,1]
+                        _colorBlue
                     ];
                 };
             } foreach _waypoints;
@@ -3688,13 +3745,15 @@ switch(_operation) do {
 
             _plannedWaypoints = [_commandState,"opsGroupPlannedWaypoints", []] call ALiVE_fnc_hashGet;
 
+            private _colorGreen = [0.502,1,0.635,1];
+
             {
                 if (_forEachIndex > 0) then {
                     // Draw line from planned waypoint to planned waypoint
                     _map drawLine [
                         _plannedWaypoints select (_forEachIndex - 1),
                         _x,
-                        [0.502,1,0.635,1]
+                        _colorGreen
                     ];
                 } else {
                     if (count _waypoints > 0) then {
@@ -3702,18 +3761,19 @@ switch(_operation) do {
                         _map drawLine [
                             _waypoints select (count _waypoints - 1),
                             _x,
-                            [0.502,1,0.635,1]
+                            _colorGreen
                         ];
                     } else {
                         _map drawLine [
                             _profilePos,
                             _x,
-                            [0.502,1,0.635,1]
+                            _colorGreen
                         ];
                     };
                 };
             } foreach _plannedWaypoints;
         };
+
     };
 
     case "enableWaypointSelected": {
