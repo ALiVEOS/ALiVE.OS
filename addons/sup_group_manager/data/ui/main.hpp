@@ -12,7 +12,7 @@ class GMTablet
     class controlsBackground {
         class GMTablet_background : RscPicture
         {
-            idc = -1;
+            idc = 11002;
             x = 0.142424 * safezoneW + safezoneX;
             y = 0.0632 * safezoneH + safezoneY;
             w = 0.73 * safezoneW;
@@ -247,25 +247,6 @@ class GMTablet
             w = 0.2325 * safezoneW;
             h = 0.45 * safezoneH;
         };
-
-    };
-};
-
-class GMTablet_MapBag : GMTablet {
-
-    class controlsBackground {
-        class GMTablet_background : RscPicture {
-            idc = -1;
-            x = 0.142424 * safezoneW + safezoneX;
-            y = -0.242 * safezoneH + safezoneY;
-            w = 0.73 * safezoneW;
-            h = 1.372 * safezoneH;
-            text = "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
-            moving = 0;
-        };
-    };
-
-    class controls : controls {
 
     };
 };
