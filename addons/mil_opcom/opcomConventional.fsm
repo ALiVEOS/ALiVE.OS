@@ -2,20 +2,20 @@
 /*%FSM<HEAD>*/
 /*
 item0[] = {"INIT",0,250,-719.216370,-1197.294434,-629.216370,-1147.294434,0.000000,"INIT"};
-item1[] = {"Cycle_Start_Comp",4,218,-718.183167,-694.637756,-628.183167,-644.637756,0.000000,"Cycle Start" \n "Complete"};
+item1[] = {"Cycle_Start_Comp",8,218,-718.183167,-694.637756,-628.183167,-644.637756,0.000000,"Cycle Start" \n "Complete"};
 item2[] = {"Update_Friendly",2,250,-718.228149,-585.078247,-628.228149,-535.078247,0.000000,"Update" \n "Friendly" \n "Forces"};
 item3[] = {"Update_Done",4,218,-717.647949,-486.532562,-627.647949,-436.532562,0.000000,"Update" \n "Done"};
 item4[] = {"Update_Enemy_For",2,250,-718.442688,-378.482330,-628.442688,-328.482300,0.000000,"Update" \n "Enemy" \n "Forces"};
 item5[] = {"Update_Done",4,218,-718.849670,-272.386719,-628.849670,-222.386719,0.000000,"Update" \n "Done"};
 item6[] = {"Update_Objective",2,250,-717.554810,-163.779800,-627.554810,-113.779800,0.000000,"Update" \n "Objective" \n "Occupation"};
 item7[] = {"Update_Done",4,218,-715.984619,-48.338028,-625.984619,1.661972,0.000000,"Update" \n "Done"};
-item8[] = {"Cycle_Start",2,4346,-717.734314,-803.337708,-627.734314,-753.337646,0.000000,"Cycle" \n "Start"};
+item8[] = {"Cycle_Start",2,250,-717.734314,-803.337708,-627.734314,-753.337646,0.000000,"Cycle" \n "Start"};
 item9[] = {"_",-1,250,-433.177032,51.216019,-430.091949,51.216019,0.000000,""};
 item10[] = {"Post_Start",2,250,-716.884827,-1001.349426,-626.884827,-951.349426,0.000000,"Post" \n "Start"};
 item11[] = {"Init_Complete",8,218,-717.004578,-1098.547363,-627.004578,-1048.547363,0.000000,"Init" \n "Complete"};
 item12[] = {"Post_Start_Complete",8,218,-715.057922,-903.447571,-625.057922,-853.447571,0.000000,"Post Start" \n "Complete" \n ""};
 item13[] = {"Cycle_Done",2,250,-713.359192,603.718323,-623.359192,653.718262,0.000000,"Cycle" \n "Done"};
-item14[] = {"___seconds_passe",4,218,-188.194366,598.206421,-98.194366,648.206421,0.000000,"3 seconds" \n "passed"};
+item14[] = {"___seconds_passe",4,218,-185.943939,601.582031,-95.943939,651.582031,0.000000,"3 seconds" \n "passed"};
 item15[] = {"Update_Objective_1",2,250,-713.115601,68.661377,-623.115601,118.661377,0.000000,"Update" \n "Objective" \n "States"};
 item16[] = {"Update_Done",4,218,-712.763550,198.799332,-622.763550,248.799332,0.000000,"Update" \n "Done"};
 item17[] = {"Validate_Objective",2,250,-712.963196,325.389191,-622.963196,375.389191,0.000000,"Validate" \n "Objective" \n "States"};
@@ -51,8 +51,8 @@ link14[] = {15,16};
 link15[] = {16,17};
 link16[] = {17,18};
 link17[] = {18,13};
-globals[] = {0.000000,0,0,0,0,640,480,1,110,6316128,1,-832.588135,-374.872589,837.913086,259.601929,668,844,1};
-window[] = {2,-1,-1,-32000,-32000,1141,192,1972,192,3,690};
+globals[] = {0.000000,0,0,0,0,640,480,1,112,6316128,1,-1133.265625,-259.942261,754.684387,-348.736023,668,844,1};
+window[] = {2,-1,-1,-32000,-32000,981,32,1812,32,3,690};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -199,7 +199,7 @@ class FSM
                                         priority = 0.000000;
                                         to="Update_Friendly";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -234,9 +234,9 @@ class FSM
                 {
                         name = "Cycle_Done";
                         itemno = 13;
-                        init = /*%FSM<STATEINIT""">*/"[_logic,""cycleEnd"", time - _cycleTimeStart] call ALiVE_fnc_OPCOMConventional;" \n
+                        init = /*%FSM<STATEINIT""">*/"[_logic,""cycleEnd""] call ALiVE_fnc_OPCOMConventional;" \n
                          "" \n
-                         "_cycleEndTime = time;" \n
+                         "_cycleTimeEnd = time;" \n
                          "" \n
                          "systemchat format [""OPCOM %1 cycle took %2 seconds"", _opcomSide, time - _cycleTimeStart];"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -249,7 +249,7 @@ class FSM
                                         priority = 0.000000;
                                         to="Cycle_Start";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"time - _cycleEndTime > 3"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"time - _cycleTimeEnd > 3"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -342,10 +342,7 @@ class FSM
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"_objectivesUpdatedCount == count _objectivesStateData"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"_objectivesUpdatedCount = nil;" \n
-                                         "_validatedObjectiveStateData = nil;" \n
-                                         "" \n
-                                         "private _cycleStates = _objectivesStateData apply {_x select 4};" \n
-                                         "copyToClipboard str _cycleStates;"/*%FSM</ACTION""">*/;
+                                         "_validatedObjectiveStateData = nil;"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };

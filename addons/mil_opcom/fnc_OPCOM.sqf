@@ -1014,16 +1014,27 @@ switch(_operation) do {
         private _markerID1 = format [MTEMPLATE, format ["%1_01", _id]];
         private _markerID2 = format [MTEMPLATE, format ["%1_02", _id]];
 
-
          private _color = switch (_side) do {
-            case "EAST" : {"COLORRED"};
-            case "WEST" : {"COLORBLUE"};
-            case "GUER" : {"COLORGREEN"};
-            default {"COLORYELLOW"};
+            case "EAST" : {"ColorRed"};
+            case "WEST" : {"ColorBlue"};
+            case "GUER" : {"ColorGreen"};
+            default {"ColorYellow"};
+        };
+
+        private _stateColor = switch (_opcomState) do {
+            case "idle": {"ColorWhite"};
+            case "recon": {"ColorYellow"};
+            case "strike": {"ColorOrange"};
+            case "attack": {"ColorRed"};
+            case "defend": {"ColorBlue"};
+            case "hold": {"ColorGreen"};
+            case "reinforce": {"ColorOrange"};
+            case "withdraw": {"ColorBrown"};
+            default {"ColorWhite"};
         };
 
         private _marker1 = [_markerID1, _pos, "ICON", [0.5,0.5], _color, format ["%1 #%2", _side, _opcomTypePriority], "mil_dot", "FDiagonal", 0, 0.5] call ALiVE_fnc_createMarkerGlobal;
-        private _marker2 = [_markerID2, _pos, "ELLIPSE", [_size,_size], _color, format ["%1 #%2", _side, _opcomTypePriority], "mil_dot", "FDiagonal", 0, 0.5] call ALiVE_fnc_createMarkerGlobal;
+        private _marker2 = [_markerID2, _pos, "ELLIPSE", [_size,_size], _stateColor, format ["%1 #%2", _side, _opcomTypePriority], "mil_dot", "FDiagonal", 0, 0.75] call ALiVE_fnc_createMarkerGlobal;
 
         _result = [_marker1,_marker2];
 
@@ -1031,10 +1042,11 @@ switch(_operation) do {
 
     case "enableObjectiveDebugMarkers": {
 
-        params ["_objectives",["_enabled", true]];
+        _args params ["_objectives",["_enabled", true]];
 
         if (_enabled) then {
-            private _side = [_logic,"side","EAST"] call ALiVE_fnc_HashGet;
+            private _handler = [_logic,"handler"] call MAINCLASS;
+            private _side = [_handler,"side"] call ALiVE_fnc_HashGet;
 
             private _color = switch (_side) do {
                 case "EAST" : {"ColorOpfor"};
@@ -1050,7 +1062,8 @@ switch(_operation) do {
             {
                 private _id = [_x,"objectiveID"] call ALiVE_fnc_HashGet;
 
-                deletemarker (format [MTEMPLATE, _id]);
+                deletemarker (format [MTEMPLATE, format ["%1_01", _id]]);
+                deletemarker (format [MTEMPLATE, format ["%1_02", _id]]);
             } foreach _objectives;
         };
 
@@ -1067,8 +1080,8 @@ switch(_operation) do {
             _found = false;
 
             {
-                private _factions = [_x,"factions",[]] call ALiVE_fnc_HashGet;
-                private _side = [[_x,"side",""] call ALiVE_fnc_HashGet];
+                private _factions = [_x,"factions"] call ALiVE_fnc_HashGet;
+                private _side = [[_x,"side"] call ALiVE_fnc_HashGet];
 
                 if (_logic in _factions || {_logic == _side}) exitwith {
                     _found = true;
@@ -1532,6 +1545,26 @@ switch(_operation) do {
 
     };
 
+    case "sortProfilesByDistance": {
+
+        _args params ["_profiles","_pos"];
+
+        _result = [_profiles,[_pos],{(_x select 2 select 2) distance2D _Input0},"ASCEND"] call ALiVE_fnc_SortBy;
+
+    };
+
+    case "sortSortedProfilesByDistance": {
+
+        _args params ["_sortedProfiles","_pos"];
+
+        _result = [];
+
+        {
+            _result pushback ( [_x,[_pos],{(_x select 2 select 2) distance2D _Input0},"ASCEND"] call ALiVE_fnc_SortBy );
+        } foreach (_sortedProfiles select 2);
+
+    };
+
     case "getVisibleEnemies": {
 
         private _handler = [_logic,"handler"] call MAINCLASS;
@@ -1617,7 +1650,7 @@ switch(_operation) do {
         private _objectivePos = [_objective,"center"] call ALiVE_fnc_HashGet;
         private _objectiveSize = [_objective,"size"] call ALiVE_fnc_hashGet;
 
-        private _dist = _objectiveSize max 600;
+        private _dist = _objectiveSize max 500;
 
         private _inRangeFriendly = [_logic,"sortProfilesInRange", [_objectivePos,_dist,_friendlyProfiles]] call MAINCLASS;
         private _inRangeEnemy = [_logic,"sortProfilesInRange", [_objectivePos,_dist,_enemyProfiles]] call MAINCLASS;
@@ -1634,12 +1667,14 @@ switch(_operation) do {
 
         _args params ["_sortedProfiles","_sortedProfilesToSubtract"];
 
+        ["%1 input: _args", _operation, _args] call ALiVE_fnc_Dump;
+
         _result = +_sortedProfiles;
 
         {
             private _countToRemove = count (_sortedProfilesToSubtract select _foreachIndex);
 
-            for "_i" from 0 to _countType do {
+            for "_i" from 0 to _countToRemove do {
                 if (count _x > 0) then {
                     _x deleteat 0;
                 };

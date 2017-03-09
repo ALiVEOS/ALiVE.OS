@@ -189,13 +189,13 @@ switch(_operation) do {
                             _newState = "hold";
                         };
                     } else {
-                        private _timeLastRecon = [_objective,"timeLastRecon", 0] call ALiVE_fnc_hashGet;
-                        private _recentlyRecon = time - _timeLastRecon < (60 * 5);
+                        private _timeLastRecon = [_objective,"timeLastRecon", -1] call ALiVE_fnc_hashGet;
+                        private _recentRecon = _timeLastRecon != -1 && {time - _timeLastRecon < (60 * 5)};
 
-                        if (!_recentlyRecon && {_assignedRecon + (count _activeReconTasks) < _maxActiveReconTasks}) then {
+                        if (!_recentRecon && {_assignedRecon + (count _activeReconTasks) < _maxActiveReconTasks}) then {
                             _newState = "recon";
                         } else {
-                            if (_recentlyRecon) then {
+                            if (_recentRecon) then {
                                 _newState = "reinforce";
                             } else {
                                 _newState = "idle";
@@ -216,7 +216,7 @@ switch(_operation) do {
                     if (_consecutiveStrikeTasks < 2) then {
                         _newState = "strike";
                     } else {
-                        _newState = "idle";
+                        _newState = "attack";
                     };
                 } else {
                     _newState = "attack";
@@ -249,9 +249,25 @@ switch(_operation) do {
             case "attack": {
 
                 if (_netEnemyCount < 0) then {
+                    private _consecutiveAttackTasks = [_objective,"consecutiveAttackTasks", 0] call ALiVE_fnc_hashGet;
 
+                    if (_consecutiveAttackTasks < 2) then {
+                        _newState = "attack";
+
+                        [_objective,"consecutiveAttackTasks", _consecutiveAttackTasks + 1] call ALiVE_fnc_hashSet;
+                    } else {
+                        _newState = "idle";
+                    };
                 } else {
-
+                    if (_nearFriendlyCount > 0) then {
+                        if (_countForHold -  _nearFriendlyCount > 0) then {
+                            _newState = "reinforce";
+                        } else {
+                            _newState = "hold";
+                        };
+                    } else {
+                        _newState = "attack";
+                    };
                 };
 
             };
@@ -343,6 +359,8 @@ switch(_operation) do {
 
         _objectiveStateData params ["_objective","_nearProfiles","_previousState","_newState"];
 
+        private _objectivePos = [_objective,"center"] call ALiVE_fnc_hashGet;
+
         // _previousState = state as of last opcom cycle
         // _newState = state as recommended by opcom for new cycle
         // _validatedState = state after checking if available units are available
@@ -352,6 +370,8 @@ switch(_operation) do {
         // copy forces array so we can modify it
 
         private _friendlyForces = +([_handler,"forces"] call ALiVE_fnc_hashGet);
+        _friendlyForces = [_logic,"sortSortedProfilesByDistance", [_friendlyForces,_objectivePos]] call MAINCLASS;
+
         (_friendlyForces select 2) params [
             "_infantry",
             "_specOps",
@@ -458,14 +478,17 @@ switch(_operation) do {
 
                                 _countToGet = _countToGet - 1;
                             };
-                        } foreach (_typeWeaknesses select 2);
+                        } foreach _typeWeaknesses;
 
                         _countUnmatched = _countUnmatched + _countToGet;
                     };
-                } foreach (_nearEnemiesSorted select 2);
+                } foreach _nearEnemiesSorted;
 
                 if (_countUnmatched >= 2) then {
-                    private _acceptableDifference = (_nearEnemies / (_countUnmatched * 1.5)) >= 3;
+                    private _countEnemies = 0;
+                    {_countEnemies = _countEnemies + (count _x)} foreach _nearEnemies;
+
+                    private _acceptableDifference = (_countEnemies / (_countUnmatched * 1.5)) >= 3;
 
                     if (!_acceptableDifference) then {
                         _newState = _previousState;
@@ -497,10 +520,10 @@ switch(_operation) do {
                     private _typesByPriority = [2,3,4,0];
 
                     {
-                        if (_troopCount < _countForHold) then {
+                        if (_troopCount < _countForDefend) then {
                             private _typeUnits = (_friendlyForces select 2) select _x;
 
-                            while {_troopCount < _countForHold && {!(_typeUnits isEqualTo [])}} do {
+                            while {_troopCount < _countForDefend && {!(_typeUnits isEqualTo [])}} do {
                                 _troops pushback (_typeUnits select 0);
                                 _typeUnits deleteat 0;
                                 _troopCount = _troopCount + 1;
@@ -565,13 +588,55 @@ switch(_operation) do {
         _objectiveStateData pushback _validatedState;
         _objectiveStateData pushback _troops;
 
+        [_objective,"opcomState", _validatedState] call ALiVE_fnc_hashSet; // TODO: Keep this here or migrate somewhere else?
+
+        // TEMP
+        private _activeTasks = [_handler,"activeTasks"] call ALiVE_fnc_hashGet;
+        (_activeTasks select 2) params ["_activeReconTasks","_activeStrikeTasks","_activeAttackTasks","_activeDefendTasks"];
+        switch (_validatedState) do {
+            case "idle": {
+
+            };
+            case "recon": {
+                _activeReconTasks pushback [];
+            };
+            case "strike": {
+                _activeStrikeTasks pushback [];
+            };
+            case "attack": {
+                _activeAttackTasks pushback [];
+            };
+            case "defend": {
+                _activeDefendTasks pushback [];
+            };
+            case "hold": {
+
+            };
+            case "reinforce": {
+
+            };
+            case "withdraw": {
+
+            };
+        };
+        // TEMP
+
         _result = _objectiveStateData;
 
     };
 
     case "cycleEnd": {
 
-        _logic setvariable ['lastCycleEndTime', time];
+        private _handler = [_logic,"handler"] call MAINCLASS;
+        private _debug = [_handler,"debug"] call ALiVE_fnc_hashGet;
+
+        // refresh objective markers
+
+        if (_debug) then {
+            private _objectives = [_handler,"objectives"] call ALiVE_fnc_hashGet;
+
+            [_logic,"enableObjectiveDebugMarkers", [_objectives,true]] call MAINCLASS;
+        };
 
     };
 

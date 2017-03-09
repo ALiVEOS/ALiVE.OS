@@ -79,7 +79,8 @@ switch(_operation) do {
                             ["opcomState", _opcomState],
                             ["clusterID", _clusterID],
                             ["opcomTypePriority", _opcomOrderPriority],
-                            ["_rev", _rev]
+                            ["_rev", _rev],
+                            ["timeLastRecon", -1]
                         ]
                     ] call ALiVE_fnc_hashCreate;
 
@@ -105,6 +106,7 @@ switch(_operation) do {
         [_logic,"clusterID", ""] call ALiVE_fnc_hashSet;
         [_logic,"opcomOrderPriority", 0] call ALiVE_fnc_hashSet;
         [_logic,"_rev", ""] call ALiVE_fnc_hashSet;
+        [_logic,"timeLastRecon", -1] call ALiVE_fnc_hashSet;
 
     };
 
