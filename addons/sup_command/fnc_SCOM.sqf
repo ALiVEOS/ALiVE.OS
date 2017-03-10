@@ -1845,26 +1845,20 @@ switch (_operation) do {
 
     case "enableIntelWaiting": {
 
-        private ["_status","_intelTypeList"];
-
-        _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
-
         // show waiting text and disable selection lists for ops
 
         if (typename _args == "BOOL") then {
 
             if (_args) then {
 
-                _status ctrlShow true;
-                _status ctrlSetText "Waiting...";
+                [_logic,"setOpsStatus", "Waiting..."] call MAINCLASS;
 
-                _intelTypeList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeList);
+                private _intelTypeList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeList);
                 _intelTypeList ctrlShow false;
 
             } else {
 
-                _status ctrlShow false;
-                _status ctrlSetText "";
+                [_logic,"setOpsStatus", ""] call MAINCLASS;
 
             };
 
@@ -1959,7 +1953,7 @@ switch (_operation) do {
 
     case "resetIntel": {
 
-        private ["_commandState","_status","_intelTypeTitle","_intelTypeList","_intelTypeListOptions"];
+        private ["_commandState","_intelTypeTitle","_intelTypeList","_intelTypeListOptions"];
 
         // display the intel type selection list to begin with
 
@@ -1967,10 +1961,7 @@ switch (_operation) do {
 
         // hide the loading status text
 
-        _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
-        _status ctrlShow false;
-
-        _status ctrlSetText "";
+        [_logic,"setOpsStatus", ""] call MAINCLASS;
 
         _intelTypeTitle = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeTitle);
         _intelTypeTitle ctrlShow true;
@@ -1985,7 +1976,7 @@ switch (_operation) do {
         _intelTypeList lbSetCurSel -1;
 
         {
-            _intelTypeList lbAdd format["%1", _x];
+            _intelTypeList lbAdd (format ["%1", _x]);
         } forEach _intelTypeListOptions;
 
         // set the event handler for the list selection event
@@ -1996,7 +1987,7 @@ switch (_operation) do {
 
     case "enableIntelOPCOMSelect": {
 
-        private["_back","_commandState","_status","_opcomData","_status","_intelTypeTitle","_intelTypeList","_intelTypeListOptions"];
+        private["_back","_commandState","_opcomData","_intelTypeTitle","_intelTypeList","_intelTypeListOptions"];
 
         // once the user has selected the OPCOM state analysis
         // display the available OPCOM sides
@@ -2016,10 +2007,7 @@ switch (_operation) do {
 
             // hide the loading status text
 
-            _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
-            _status ctrlShow false;
-
-            _status ctrlSetText "";
+            [_logic,"setOpsStatus", ""] call MAINCLASS;
 
             _opcomData = _args select 1;
 
@@ -2058,12 +2046,11 @@ switch (_operation) do {
 
                 _intelTypeList ctrlSetEventHandler ["LBSelChanged", "['INTEL_OPCOM_LIST_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
-            }else{
+            } else {
 
-                _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
-                _status ctrlShow true;
+                [_logic,"setOpsStatus", "No OPCOM instances found"] call MAINCLASS;
 
-                _status ctrlSetText "No OPCOM instances found";
+                [_logic,"setOpsStatus", ""] call MAINCLASS;
 
             };
 
@@ -2073,7 +2060,7 @@ switch (_operation) do {
 
     case "enableIntelUnitMarking": {
 
-        private["_back","_commandState","_profileBySide","_profileCount","_markers","_m","_intelTypeTitle","_status","_intelLimit","_side","_faction","_leaderSide","_leaderFaction","_display"];
+        private["_back","_commandState","_profileBySide","_profileCount","_markers","_m","_intelTypeTitle","_intelLimit","_side","_faction","_leaderSide","_leaderFaction","_display"];
 
         // perform unit marking display
 
@@ -2086,7 +2073,7 @@ switch (_operation) do {
 
         _back ctrlSetEventHandler ["MouseButtonClick", "['INTEL_RESET',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
-        if(typeName _args == "ARRAY") then {
+        if (_args isEqualType []) then {
 
             // hide the selection list title
 
@@ -2095,8 +2082,7 @@ switch (_operation) do {
 
             // hide the loading status text
 
-            _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
-            _status ctrlShow false;
+            [_logic,"setOpsStatus", ""] call MAINCLASS;
 
             _commandState = [_logic,"commandState"] call MAINCLASS;
 
@@ -2380,58 +2366,20 @@ switch (_operation) do {
                     false
                 } count _sideProfiles;
             } foreach _knownEnemiesBySide;
-/*
-            // display the markers for spawned groups
 
-            {
-                _leaderSide = str(side (leader _x));
-                _leaderFaction = faction (leader _x);
-                _display = false;
-
-                switch(_intelLimit) do {
-                    case "SIDE": {
-                        if(_side == _leaderSide) then {
-                            _display = true;
-                        };
-                    };
-                    case "FACTION": {
-                        if(_faction == _leaderFaction) then {
-                            _display = true;
-                        };
-                    };
-                    case "ALL": {
-                        _display = true;
-                    };
-                };
-
-                if (_display) then {
-
-                    _m = createMarkerLocal [format[MTEMPLATE, format["%1_active", _forEachIndex]], position (leader _x)];
-                    _m setMarkerSizeLocal [.7,.7];
-
-                    switch (_leaderSide) do {
-                        case "EAST": {
-                            _m setMarkerTypeLocal "o_unknown";
-                            _m setMarkerColorLocal "ColorOPFOR";
-                        };
-                        case "WEST": {
-                            _m setMarkerTypeLocal "b_unknown";
-                            _m setMarkerColorLocal "ColorBLUFOR";
-                        };
-                        case "GUER": {
-                            _m setMarkerTypeLocal "x_unknown";
-                            _m setMarkerColorLocal "ColorIndependent";
-                        };
-                    };
-
-                    _markers pushback _m;
-                };
-
-            } forEach allGroups;
-*/
             // store the marker state for clearing later
 
             [_logic,"marker",_markers] call MAINCLASS;
+
+            // add color key
+
+            _intelTypeList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeList);
+            lbclear _intelTypeList;
+            _intelTypeList ctrlShow true;
+
+            _intelTypeList lbadd "Red - Opfor";
+            _intelTypeList lbadd "Blue - Blufor";
+            _intelTypeList lbadd "Green - Independent";
 
         };
 
@@ -2439,16 +2387,15 @@ switch (_operation) do {
 
     case "enableIntelIMINT": {
 
-        private["_commandState","_status","_back","_sources","_intelTypeTitle","_intelTypeList","_listValues"];
+        private["_commandState","_back","_sources","_intelTypeTitle","_intelTypeList","_listValues"];
 
         // displays list of IMINT sources
 
         _commandState = [_logic,"commandState"] call MAINCLASS;
 
-        _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
-        _status ctrlShow false;
+        [_logic,"setOpsStatus", ""] call MAINCLASS;
 
-        if(typeName _args == "ARRAY") then {
+        if (_args isEqualType []) then {
 
             _listValues = [];
             _sources = _args select 1;
@@ -2499,37 +2446,31 @@ switch (_operation) do {
 
     case "enableIntelOPCOMObjectives": {
 
-        private["_commandState","_opcomData","_status","_intelTypeTitle","_intelTypeList","_intelTypeListOptions"];
-
         // preform OPCOM objective display
 
-        if(typeName _args == "ARRAY") then {
+        if (_args isEqualType []) then {
 
-            _commandState = [_logic,"commandState"] call MAINCLASS;
+            private _commandState = [_logic,"commandState"] call MAINCLASS;
 
-            _opcomData = _args select 1;
+            private _opcomData = _args select 1;
 
-            if(count(_opcomData) > 0) then {
+            if (count _opcomData > 0) then {
 
                 // hide the selection list title
 
-                _intelTypeTitle = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeTitle);
+                private _intelTypeTitle = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeTitle);
                 _intelTypeTitle ctrlShow false;
 
                 // hide the loading status text
 
-                _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
-                _status ctrlShow false;
+                [_logic,"setOpsStatus", ""] call MAINCLASS;
 
+                private _opcomSide = [_commandState,"intelOPCOMSelectedValue"] call ALIVE_fnc_hashGet;
 
-                _opcomSide = [_commandState,"intelOPCOMSelectedValue"] call ALIVE_fnc_hashGet;
+                private _color = "ColorYellow";
+                private _profileMarker = "b_unknown";
 
-                private ["_center","_size","_tacom_state","_opcom_state","_sections","_objectiveID","_alpha","_markers","_marker","_color","_dir","_position","_icon","_text","_m","_profileMarker","_opcomColor"];
-
-                _color = "ColorYellow";
-                _profileMarker = "b_unknown";
-
-                _markers = [];
+                private _markers = [];
 
                 // set the side color
                 switch(_opcomSide) do {
@@ -2555,13 +2496,13 @@ switch (_operation) do {
                 };
 
                 {
-                    _size = _x select 0;
-                    _center = _x select 1;
-                    _tacom_state = _x select 2;
-                    _opcom_state = _x select 3;
-                    _sections = _x select 4;
+                    private _size = _x select 0;
+                    private _center = _x select 1;
+                    private _tacom_state = _x select 2;
+                    private _opcom_state = _x select 3;
+                    private _sections = _x select 4;
 
-                    _opcomColor = "ColorWhite";
+                    private _opcomColor = "ColorWhite";
 
                     //-- Orders
                     switch (_opcom_state) do {
@@ -2585,10 +2526,10 @@ switch (_operation) do {
                         };
                     };
 
-                    _alpha = 1;
+                    private _alpha = 1;
 
                     // create the objective area marker
-                    _m = createMarkerLocal [format[MTEMPLATE, _forEachIndex], _center];
+                    private _m = createMarkerLocal [format[MTEMPLATE, _forEachIndex], _center];
                     _m setMarkerShapeLocal "Ellipse";
                     _m setMarkerBrushLocal "FDiagonal";
                     _m setMarkerSizeLocal [_size, _size];
@@ -2597,18 +2538,18 @@ switch (_operation) do {
 
                     _markers pushback _m;
 
-                    _icon = "EMPTY";
-                    _text = "";
+                    private _icon = "EMPTY";
+                    private _text = "";
 
-                    _objectiveID = _forEachIndex;
+                    private _objectiveID = _forEachIndex;
 
                     // create the profile marker
                     {
-                        _position = _x select 0;
-                        _dir = _x select 1;
+                        private _position = _x select 0;
+                        private _dir = _x select 1;
 
                         // create section marker
-                        _m = createMarkerLocal [format[MTEMPLATE, format["%1%2_profile", _objectiveID, _forEachIndex]], _position];
+                        private _m = createMarkerLocal [format[MTEMPLATE, format["%1%2_profile", _objectiveID, _forEachIndex]], _position];
                         _m setMarkerShapeLocal "ICON";
                         _m setMarkerSizeLocal [0.5,0.5];
                         _m setMarkerTypeLocal _profileMarker;
@@ -2617,12 +2558,12 @@ switch (_operation) do {
 
                         _markers pushback _m;
 
-                        if!(isNil "_tacom_state") then {
+                        if (!isnil "_tacom_state") then {
                             switch(_tacom_state) do {
                                 case "recon":{
 
                                     // create direction marker
-                                    _m = createMarkerLocal [format[MTEMPLATE, format["%1%2_dir", _objectiveID, _forEachIndex]], _position getpos [100, _dir]];
+                                    private _m = createMarkerLocal [format[MTEMPLATE, format["%1%2_dir", _objectiveID, _forEachIndex]], _position getpos [100, _dir]];
                                     _m setMarkerShapeLocal "ICON";
                                     _m setMarkerSizeLocal [0.5,0.5];
                                     _m setMarkerTypeLocal "mil_arrow";
@@ -2636,7 +2577,7 @@ switch (_operation) do {
                                 case "capture":{
 
                                     // create direction marker
-                                    _m = createMarkerLocal [format[MTEMPLATE, format["%1%2_dir", _objectiveID, _forEachIndex]], _position getpos [100, _dir]];
+                                    private _m = createMarkerLocal [format[MTEMPLATE, format["%1%2_dir", _objectiveID, _forEachIndex]], _position getpos [100, _dir]];
                                     _m setMarkerShapeLocal "ICON";
                                     _m setMarkerSizeLocal [0.5,0.5];
                                     _m setMarkerTypeLocal "mil_arrow2";
@@ -2652,7 +2593,7 @@ switch (_operation) do {
 
                     } forEach _sections;
 
-                    if!(isNil "_tacom_state") then {
+                    if (!isnil "_tacom_state") then {
                         switch(_tacom_state) do {
                             case "reserve":{
                                 _icon = "mil_marker";
@@ -2674,7 +2615,8 @@ switch (_operation) do {
                     };
 
                     // create type marker
-                    _m = createMarkerLocal [format[MTEMPLATE, format["%1_type", _objectiveID]], _center];
+
+                    private _m = createMarkerLocal [format[MTEMPLATE, format["%1_type", _objectiveID]], _center];
                     _m setMarkerShapeLocal "ICON";
                     _m setMarkerSizeLocal [0.5, 0.5];
                     _m setMarkerTypeLocal _icon;
@@ -2688,15 +2630,25 @@ switch (_operation) do {
 
                 // store the marker state for clearing later
 
-                [_logic,"marker",_markers] call MAINCLASS;
+                [_logic,"marker", _markers] call MAINCLASS;
 
+                // add color key
 
-            }else{
+                private _intelTypeList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeList);
+                lbclear _intelTypeList;
+                _intelTypeList ctrlshow true;
 
-                _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
-                _status ctrlShow true;
+                _intelTypeList lbadd "White - Unassigned";
+                _intelTypeList lbadd "Yellow - Idle";
+                _intelTypeList lbadd "Green - Reserve";
+                _intelTypeList lbadd "Red - Attack";
+                _intelTypeList lbadd "Blue - Defend";
 
-                _status ctrlSetText "No OPCOM instances found";
+            } else {
+
+                [_logic,"setOpsStatus", "No OPCOM instances found"] call MAINCLASS;
+
+                [_logic,"setOpsStatus", ""] call MAINCLASS;
 
             };
         };
@@ -2708,27 +2660,31 @@ switch (_operation) do {
 
     case "enableOpsWaiting": {
 
-        private ["_status"];
-
-        _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
-
         // show waiting text and disable selection lists for ops
 
-        if (typename _args == "BOOL") then {
+        if (_args isEqualType true) then {
 
             if (_args) then {
 
-                _status ctrlShow true;
-                _status ctrlSetText "Waiting...";
+                [_logic,"setOpsStatus", "Waiting..."] call MAINCLASS;
 
             } else {
 
-                _status ctrlShow false;
-                _status ctrlSetText "";
+                [_logic,"setOpsStatus", ""] call MAINCLASS;
 
             };
 
         };
+
+    };
+
+    case "setOpsStatus": {
+
+        private _statusText = _args;
+
+        _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
+        _status ctrlShow true;
+        _status ctrlSetText _statusText;
 
     };
 
@@ -2861,7 +2817,7 @@ switch (_operation) do {
         // add map draw eh
 
         _editMap ctrlAddEventHandler ["Draw",{
-            [ALIVE_SUP_COMMAND,"opsDrawWaypoints", _this] call ALiVE_fnc_SCOM;
+            [ALiVE_SUP_COMMAND,"opsDrawWaypoints", _this] call ALiVE_fnc_SCOM;
         }];
     };
 
@@ -2905,7 +2861,7 @@ switch (_operation) do {
 
     case "enableOpsOPCOMSelect": {
 
-        private["_back","_commandState","_status","_opcomData","_status","_opsTypeTitle","_opsTypeList","_opcomOptions","_sideDisplay"];
+        private["_back","_commandState","_opcomData","_opsTypeTitle","_opsTypeList","_opcomOptions","_sideDisplay"];
 
         // once the list of opcom instances has been loaded
         // display the available OPCOM sides
@@ -2923,16 +2879,13 @@ switch (_operation) do {
 
             _commandState = [_logic,"commandState"] call MAINCLASS;
 
-            // hide the loading status text
-
-            _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
-            _status ctrlShow false;
-
-            _status ctrlSetText "";
-
             _opcomData = _args select 1;
 
-            if(count(_opcomData) > 0) then {
+            if (count _opcomData > 0) then {
+
+                // hide the loading status text
+
+                [_logic,"setOpsStatus", ""] call MAINCLASS;
 
                 // display the opcom type selection list
 
@@ -2967,12 +2920,9 @@ switch (_operation) do {
 
                 _opsTypeList ctrlSetEventHandler ["LBSelChanged", "['OPS_OPCOM_LIST_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
-            }else{
+            } else {
 
-                _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
-                _status ctrlShow true;
-
-                _status ctrlSetText "No OPCOM instances found";
+                [_logic,"setOpsStatus", "No OPCOM instances found"] call MAINCLASS;
 
             };
 
@@ -2982,7 +2932,7 @@ switch (_operation) do {
 
     case "enableOpsHighCommand": {
 
-        private ["_commandState","_status","_selectedSide","_groupData","_editList","_options","_values",
+        private ["_commandState","_selectedSide","_groupData","_editList","_options","_values",
         "_opsTypeTitle","_opsTypeList","_rightMap","_mainMap","_profileID","_position","_label","_typePrefix"];
 
         // populate group list and map markers
@@ -3283,15 +3233,13 @@ switch (_operation) do {
 
                 _editMap ctrlSetEventHandler ["MouseButtonDown", "['OP_EDIT_MAP_CLICK',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
-                _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
-                _status ctrlShow false;
-                _status ctrlSetText "";
+                // hide the loading status text
 
-            }else{
+                [_logic,"setOpsStatus", ""] call MAINCLASS;
 
-                _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
-                _status ctrlShow false;
-                _status ctrlSetText "No OPCOM instances found";
+            } else {
+
+                [_logic,"setOpsStatus", "No OPCOM instances found"] call MAINCLASS;
 
             };
 
@@ -3329,15 +3277,13 @@ switch (_operation) do {
 
             private _commandState = [_logic,"commandState"] call MAINCLASS;
 
-            // hide the loading status text
-
-            private _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
-            _status ctrlShow false;
-            _status ctrlSetText "";
-
             private _profileData = _args select 1;
 
             if !(_profileData isEqualTo []) then {
+
+                // hide the loading status text
+
+                [_logic,"setOpsStatus", ""] call MAINCLASS;
 
                 _profileData params ["_profileActive","_profileSide","_profilePos","_profileGroup","_profileWaypoints","_profileBusy"];
 
@@ -3346,60 +3292,11 @@ switch (_operation) do {
                 [_commandState,"opsGroupSelectedProfile", _profileData] call ALIVE_fnc_hashSet;
                 [_commandState,"opsGroupWaypoints", _profileWaypoints] call ALIVE_fnc_hashSet;
 
-                // enable interface elements for interacting with profile
-
-                private _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
-                _buttonL1 ctrlShow true;
-                _buttonL1 ctrlSetText "Edit Group Waypoints";
-                _buttonL1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_EDIT_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
-
-                private _allowSpectate = [_logic,"scomOpsAllowSpectate"] call MAINCLASS;
-                private _allowJoin = [_logic,"scomOpsAllowInstantJoin"] call MAINCLASS;
-
-                if (_allowJoin) then {
-
-                    private _buttonR1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
-                    _buttonR1 ctrlShow true;
-                    _buttonR1 ctrlSetText "Instant Join Group";
-                    _buttonR1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_JOIN_GROUP',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
-
-                };
-
-                if (_allowSpectate) then {
-
-                    private _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
-                    _buttonR2 ctrlShow true;
-                    _buttonR2 ctrlSetText "Spectate Group";
-                    _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_SPECTATE_GROUP',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
-
-                };
-
-                private _buttonL2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL2);
-                _buttonL2 ctrlShow true;
-
-                if (_profileBusy) then {
-
-                    _buttonL2 ctrlSetText "Unlock Group for AI Commander Control";
-                    _buttonL2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_LOCK_GROUP',[_this,false]] call ALIVE_fnc_SCOMTabletOnAction"];
-
-                } else {
-
-                    _buttonL2 ctrlSetText "Lock Group from AI Commander Control";
-                    _buttonL2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_LOCK_GROUP',[_this,true]] call ALIVE_fnc_SCOMTabletOnAction"];
-
-                };
-
-                //private _buttonL3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL3);
-                //_buttonL3 ctrlShow true;
-                //_buttonL3 ctrlSetText "More actions...";
-                //_buttonL3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_MORE_OPTIONS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+                [_logic,"enableOpsProfileActionsPageOne"] call MAINCLASS;
 
             } else {
 
-                private _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
-                _status ctrlShow true;
-
-                _status ctrlSetText "No group found";
+                [_logic,"setOpsStatus", "No group found"] call MAINCLASS;
 
             };
 
@@ -3407,9 +3304,66 @@ switch (_operation) do {
 
     };
 
+    case "enableOpsProfileActionsPageOne": {
+
+        private _commandState = [_logic,"commandState"] call MAINCLASS;
+
+        private _selectedProfileData = [_commandState,"opsGroupSelectedProfile"] call ALIVE_fnc_hashGet;
+        _selectedProfileData params ["_profileActive","_profileSide","_profilePos","_profileGroup","_profileWaypoints","_profileBusy"];
+
+        // enable interface elements for interacting with profile
+
+        private _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
+        _buttonL1 ctrlShow true;
+        _buttonL1 ctrlSetText "Edit Group Waypoints";
+        _buttonL1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_EDIT_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+        private _allowSpectate = [_logic,"scomOpsAllowSpectate"] call MAINCLASS;
+        private _allowJoin = [_logic,"scomOpsAllowInstantJoin"] call MAINCLASS;
+
+        if (_allowJoin) then {
+
+            private _buttonR1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
+            _buttonR1 ctrlShow true;
+            _buttonR1 ctrlSetText "Instant Join Group";
+            _buttonR1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_JOIN_GROUP',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+        };
+
+        if (_allowSpectate) then {
+
+            private _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
+            _buttonR2 ctrlShow true;
+            _buttonR2 ctrlSetText "Spectate Group";
+            _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_SPECTATE_GROUP',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+        };
+
+        private _buttonL2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL2);
+        _buttonL2 ctrlShow true;
+
+        if (_profileBusy) then {
+
+            _buttonL2 ctrlSetText "Unlock Group for AI Commander Control";
+            _buttonL2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_LOCK_GROUP',[_this,false]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+        } else {
+
+            _buttonL2 ctrlSetText "Lock Group from AI Commander Control";
+            _buttonL2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_LOCK_GROUP',[_this,true]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+        };
+
+        private _buttonL3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL3);
+        _buttonL3 ctrlShow true;
+        _buttonL3 ctrlSetText "More actions...";
+        _buttonL3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_MORE_OPTIONS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+    };
+
     case "enableGroupWaypointEdit": {
 
-        private["_buttonR3","_commandState","_status","_profile","_waypoints","_groupWaypoints","_position",
+        private["_buttonR3","_commandState","_profile","_waypoints","_groupWaypoints","_position",
         "_markerPos","_rightMap","_editMap","_profilePosition","_waypointsOptions","_waypointsValues","_option","_waypointList",
         "_profileActive","_opsWPTypeOptions","_opsWPTypeValues","_selectedProfile","_profileID","_label","_marker"];
 
@@ -3422,10 +3376,7 @@ switch (_operation) do {
 
             // hide the loading status text
 
-            _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
-            _status ctrlShow false;
-
-            _status ctrlSetText "";
+            [_logic,"setOpsStatus", ""] call MAINCLASS;
 
             _profile = _args select 1;
 
@@ -3584,12 +3535,9 @@ switch (_operation) do {
                 _waypointBehaviourList ctrlSetEventHandler ["LBSelChanged", ""];
 
 
-            }else{
+            } else {
 
-                _status = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelStatus);
-                _status ctrlShow true;
-
-                _status ctrlSetText "No group found";
+                [_logic,"setOpsStatus", "No group found"] call MAINCLASS;
 
             };
 

@@ -838,7 +838,7 @@ switch(_operation) do {
                             if (_vehicle != _x && {driver _vehicle == _x} && {_vehicle isKindOf "Air"} && {!(_vehicle getVariable ["ALiVE_CombatSupport",false])}) then {
 
                                 // ensure unit is not uav ai logic...
-                                if !(["UAV_AI",typeOf _x] call BIS_fnc_inString) then {
+                                if !(unitIsUAV _x) then {
                                     private _vehicleName = getText (configFile >> "CfgVehicles" >> (typeOf _vehicle) >> "displayName");
                                     private _name = format ["%1 - %2", _vehicleName, name _x];
 
