@@ -1,11 +1,11 @@
 #include <\x\alive\addons\sup_command\script_component.hpp>
-SCRIPT(SCOMTabletEventToClient);
+SCRIPT(SCOMTabletEventToServer);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_SCOMTabletEventToClient
+Function: ALiVE_fnc_SCOMTabletEventToServer
 Description:
 
-Transfers event from server module to client instance
+Transfers event from client instance to server module
 
 Parameters:
 Array - event hash
@@ -21,4 +21,4 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-[MOD(SUP_COMMAND),"handleEvent", _this] call ALIVE_fnc_SCOM;
+[MOD(commandHandler),"handleEvent", _this] call ALiVE_fnc_commandHandler;
