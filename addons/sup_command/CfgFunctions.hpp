@@ -36,6 +36,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\sup_command\fnc_commandHandler.sqf";
                 RECOMPILE;
             };
+            class SCOMTabletEventToServer {
+                description = "Transfers event from client instance to server module";
+                file = "\x\alive\addons\sup_command\fnc_SCOMTabletEventToServer.sqf";
+                RECOMPILE;
+            };
         };
     };
 };
