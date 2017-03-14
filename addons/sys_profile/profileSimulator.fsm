@@ -1,7 +1,7 @@
 /*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, profile simulator">*/
 /*%FSM<HEAD>*/
 /*
-item0[] = {"INIT",0,4346,-191.791229,-248.493942,-101.791237,-198.494003,0.000000,"INIT"};
+item0[] = {"INIT",0,250,-191.791229,-248.493942,-101.791237,-198.494003,0.000000,"INIT"};
 item1[] = {"INIT_COMPLETE",4,218,-191.814072,-169.241699,-101.814072,-119.241699,0.000000,"INIT" \n "COMPLETE"};
 item2[] = {"_",-1,250,-440.685394,-235.585892,-437.600311,-235.585892,0.000000,""};
 item3[] = {"DESTROY",4,218,-71.868134,-91.997047,18.131832,-41.997047,0.000000,"DESTROY"};
@@ -16,15 +16,15 @@ item11[] = {"WAIT",4,218,-313.421509,-89.343033,-223.421524,-39.343060,4.000000,
 version=1;
 class LayoutItems
 {
-    class Item2
-    {
-        class ItemInfo
-        {
-            FontFace="Arial";
-            FontHeight=10;
-            lStyle=1;
-        };
-    };
+	class Item2
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
 };
 link0[] = {0,1};
 link1[] = {1,5};
@@ -38,8 +38,8 @@ link8[] = {8,5};
 link9[] = {9,10};
 link10[] = {10,8};
 link11[] = {11,5};
-globals[] = {0.000000,0,0,0,16777215,640,480,1,94,6316128,1,-384.671082,187.342346,395.960999,-323.929016,851,1030,1};
-window[] = {2,-1,-1,-1,-1,924,-1894,-271,26,3,869};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,94,6316128,1,-384.671082,187.342346,275.936066,-347.773407,852,929,1};
+window[] = {2,-1,-1,-1,-1,1008,110,1733,110,3,869};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -51,7 +51,7 @@ class FSM
     {
       name = "INIT";
       init = /*%FSM<STATEINIT""">*/"private [""_profileSystem"",""_startWait"",""_startSimulate"",""_simulationCycleTime"",""_lastSimulationTime"",""_doSimulation""," \n
-       """_destroy"",""_pause"",""_debug""];" \n
+       """_destroy"",""_pause"",""_debug"",""_profileEntityCount ""];" \n
        "" \n
        "_profileSystem = _this select 0;" \n
        "" \n
@@ -81,7 +81,7 @@ class FSM
           priority = 0.000000;
           to="SWITCH";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"([ALiVE_ProfileHandler, ""profileEntityCount"", 0] call ALIVE_fnc_hashGet) > 0"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
