@@ -6144,7 +6144,7 @@ switch(_operation) do {
         _result = "";
 
         private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
-        _initEventHandler = _initEventHandler + "if (isServer) then {_unit = _this select 0;";
+        _initEventHandler = _initEventHandler + "if (local (_this select 0)) then {_unit = _this select 0;";
         _initEventHandler = _initEventHandler + "_onSpawn = {_unit = _this select 0;";
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
 
