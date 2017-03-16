@@ -1379,15 +1379,11 @@ switch(_operation) do {
                     };
 
                     // Display Current Force Pool
-                    private ["_forcePool","_forcePoolStatus"];
-                    _forcePoolStatus = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ForcePool);
-                    if (!isNil "ALIVE_globalForcePool") then {
-                        _forcePool = [ALIVE_globalForcePool,faction player,0] call ALIVE_fnc_hashGet;
-                    } else {
-                        _forcePool = "WAITING...";
-                    };
-                    _forcePoolStatus ctrlSetText format["Current Force Pool: %1",_forcePool];
-                    _forcePoolStatus ctrlShow true;
+
+                    private _forcePoolStatus = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ForcePool);
+                    _forcePoolStatus ctrlsettext "WAITING...";
+
+                    [nil,"getForcePool", [player, faction player]] remoteExecCall [QUOTE(MAINCLASS),2];
 
                 };
 
@@ -2872,6 +2868,7 @@ switch(_operation) do {
         [_logic,"statusMarker",[]] call MAINCLASS;
 
         // Display Current Force Pool
+
         private ["_forcePool","_forcePoolStatus"];
         _forcePoolStatus = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ForcePool);
         if (!isNil "ALIVE_globalForcePool") then {
@@ -2957,6 +2954,26 @@ switch(_operation) do {
 
         _payloadStatusMap = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_StatusMap);
         _payloadStatusMap ctrlShow false;
+
+    };
+
+    case "getForcePool": {
+
+        _args params ["_player","_faction"];
+
+        private _forcePool = [MOD(globalForcePool),_faction, 0] call ALiVE_fnc_hashGet;
+
+        [nil,"displayForcePool", [_faction,_forcePool]] remoteExecCall [QUOTE(MAINCLASS),_player];
+
+    };
+
+    case "displayForcePool": {
+
+        _args params ["_faction","_forcepool"];
+
+        private _forcePoolStatus = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ForcePool);
+        _forcePoolStatus ctrlSetText format ["Current Force Pool: %1", _forcePool];
+        _forcePoolStatus ctrlShow true;
 
     };
 
