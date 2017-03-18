@@ -398,6 +398,14 @@ switch(_operation) do {
 
         // not already inactive
         if(_active) then {
+            
+            if (_unit getvariable ["detained",false]) exitwith {
+	            // DEBUG -------------------------------------------------------------------------------------
+	            if(_debug) then {
+	                ["Agent [%1] has not been despawned because it is detained at pos: %2",_agentID,_position] call ALIVE_fnc_dump;
+	            };
+	            // DEBUG -------------------------------------------------------------------------------------
+            };
 
             [_logic,"active",false] call ALIVE_fnc_hashSet;
 
