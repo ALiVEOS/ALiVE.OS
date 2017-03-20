@@ -41,6 +41,13 @@ class arrayBlockHandler
     RECOMPILE;
 };
 
+class arrayFrameSplitter
+{
+    file = "\x\alive\addons\x_lib\functions\arrays\fnc_arrayFrameSplitter.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
 class erase
 {
     file = "\x\alive\addons\x_lib\functions\arrays\fnc_erase.sqf";
