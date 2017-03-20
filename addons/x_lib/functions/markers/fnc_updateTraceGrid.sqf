@@ -43,7 +43,7 @@ _fill = if (count _this > 1) then {_this select 1} else {"Solid"};
         private _markerID = format["ALiVE_TraceGrid_%1%2",_gridpos select 0,_gridPos select 1];
         private _nearEnemy = [_gridPos,str(_side), 75] call ALiVE_fnc_isEnemyNear;
 
-        {
+        [{
             if (_markerID == _x) exitwith {
                 if (_nearEnemy) then {
                     if (_markerID in _cleared) then {
@@ -63,7 +63,7 @@ _fill = if (count _this > 1) then {_this select 1} else {"Solid"};
                     };
                 };
             };
-        } foreach _grid;
+        },_grid,10] call ALiVE_fnc_arrayFrameSplitter;
     };
 } foreach allPlayers;
 
