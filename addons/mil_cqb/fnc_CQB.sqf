@@ -576,28 +576,29 @@ switch(_operation) do {
         _color = _logic getVariable ["debugColor","ColorGreen"];
         _prefix = _logic getVariable ["debugPrefix","CQB"];
 
-          _houses = _houses - _housesPending;
+        _houses = _houses - _housesPending;
         _housesPending = _housesPending - _houses;
         _housesTotal = _housesPending + _houses;
 
         if (_args) then {
-            {
+
+            [{
                 private ["_type"];
 
                 if (isNil {_x getVariable "group"}) then {_type = "mil_dot"} else {_type = "Waypoint"};
 
                 [format[MTEMPLATE, _x], getposATL _x,"ICON", [0.5,0.5],_color,_prefix,_type,"FDiagonal",0,1] call ALIVE_fnc_createMarkerGlobal;
-            } forEach _houses;
+            },_houses,10] call ALiVE_fnc_arrayFrameSplitter;
 
-            {
+            [{
                 private ["_type"];
 
                 if (isNil {_x getVariable "group"}) then {_type = "mil_dot"} else {_type = "Waypoint"};
 
                 [format[MTEMPLATE, _x], getposATL _x,"ICON", [0.5,0.5],_color,_prefix,_type,"FDiagonal",0,0.2] call ALIVE_fnc_createMarkerGlobal;
-            } forEach _housesPending;
+            },_housesPending,10] call ALiVE_fnc_arrayFrameSplitter;
         } else {
-            {deleteMarker format[MTEMPLATE, _x]} foreach _housesTotal;
+	        [{deleteMarker format[MTEMPLATE, _x]},_housesTotal,10] call ALiVE_fnc_arrayFrameSplitter;
         };
 
         _args;
@@ -1286,7 +1287,8 @@ switch(_operation) do {
                         _useDominantFaction = _logic getvariable ["CQB_UseDominantFaction",false];
 
                         if (!isnil QMOD(CQB) && {!(MOD(CQB) getVariable ["pause", false])}) then {
-                            {
+
+                            [{
                                 // if conditions are right, spawn a group and place them
                                 _house = _x;
 
@@ -1320,7 +1322,7 @@ switch(_operation) do {
                                                 [[_logic, "spawnGroup", [_house,_faction]],"ALiVE_fnc_CQB",_host,false] call BIS_fnc_MP;
 
                                                 //["CQB Population: Group creation triggered on client %1 for house %2 and dominantfaction %3...",_host,_house,_faction] call ALiVE_fnc_Dump;
-                                                sleep 0.2;
+                                                //sleep 0.2;
                                             } else {
                                                 //["CQB ERROR: Nil object on host %1",_host] call ALiVE_fnc_DumpR;
                                             };
@@ -1328,8 +1330,9 @@ switch(_operation) do {
                                             //["CQB ERROR: No playerhosts for house %1!",_house] call ALiVE_fnc_DumpR;
                                         };
                                 };
-                            } forEach (_logic getVariable ["houses", []]);
-                            {
+                            },_logic getVariable ["houses", []],10] call ALiVE_fnc_arrayFrameSplitter;
+
+                            [{
                                 _grp = _x;
 
                                 if !(isnil "_grp" || {isnull _grp}) then {
@@ -1373,15 +1376,18 @@ switch(_operation) do {
                                     _logic setvariable ["groups",(_logic getVariable ["groups",[]]) - [grpNull]];
                                 };
 
-                            } forEach (_logic getVariable ["groups",[]]);
+                            },_logic getVariable ["groups",[]],4] call ALiVE_fnc_arrayFrameSplitter;
 
                             if (_debug) then {
-                                _remaincount = count (_logic getVariable ["houses", []]);
-                                _housesempty = {(isNil {_x getVariable "group"})} count (_logic getVariable ["houses", []]);
-                                _activecount = count (_logic getVariable ["groups", []]);
-                                _groupsempty = {(isNil {(leader _x) getVariable "house"})} count (_logic getVariable ["groups", []]);
-
-                               ["CQB Population: %1 remaing positions | %2 active positions | inactive houses %3 | groups with no house %4...", _remaincount, _activecount,_housesempty,_groupsempty] call ALiVE_fnc_Dump;
+                                
+                                {
+		                            _remaincount = count (_logic getVariable ["houses", []]);
+		                            _housesempty = {(isNil {_x getVariable "group"})} count (_logic getVariable ["houses", []]);
+		                            _activecount = count (_logic getVariable ["groups", []]);
+		                            _groupsempty = {(isNil {(leader _x) getVariable "house"})} count (_logic getVariable ["groups", []]);
+		
+		                           ["CQB Population: %1 remaing positions | %2 active positions | inactive houses %3 | groups with no house %4...", _remaincount, _activecount,_housesempty,_groupsempty] call ALiVE_fnc_Dump;
+                               } call CBA_fnc_DirectCall;
                             };
                         };
 
