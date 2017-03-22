@@ -49,6 +49,7 @@ if(isServer) then {
     private _speedModifier = _logic getVariable ["speedModifier",1];
     private _virtualCombatSpeedModifier = _logic getVariable ["virtualcombat_speedmodifier", "1"];
     private _seaTransport = call compile (_logic getVariable ["seaTransport", "false"]);
+    private _smoothSpawn = parseNumber (_logic getVariable ["smoothSpawn", "0.3"]);
 
     //Ensure Event Log is loaded
     if (isnil "ALIVE_eventLog") then {
@@ -70,6 +71,7 @@ if(isServer) then {
     [ALIVE_profileSystem, "speedModifier", _speedModifier] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "combatRate", parseNumber _virtualCombatSpeedModifier] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "seaTransport", _seaTransport] call ALIVE_fnc_profileSystem;
+    [ALIVE_profileSystem, "smoothSpawn", _smoothSpawn] call ALIVE_fnc_profileSystem;
 
     _logic setVariable ["handler",ALIVE_profileSystem];
     [ALIVE_profileSystem,"handler",_logic] call ALiVE_fnc_HashSet;

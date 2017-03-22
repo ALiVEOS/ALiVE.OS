@@ -13,7 +13,7 @@ item8[] = {"ANALYSE",2,250,-30.795383,198.355576,59.204765,248.355774,0.000000,"
 item9[] = {"DO_ACTIVATE",4,218,-32.234409,277.393127,57.765675,327.393188,0.000000,"DO" \n "ACTIVATE"};
 item10[] = {"DONE",2,250,-24.777973,806.307678,61.881523,852.967346,0.000000,"DONE"};
 item11[] = {"ACTIVATE_LOOP",2,250,-31.291431,358.900635,58.708664,408.900696,0.000000,"ACTIVATE" \n "LOOP"};
-item12[] = {"ITERATE",4,218,95.820595,358.710358,185.820602,408.710419,1.000000,"ITERATE"};
+item12[] = {"ITERATE",4,4314,95.820595,358.710358,185.820602,408.710419,1.000000,"ITERATE"};
 item13[] = {"END__LOOP",4,218,-31.355610,433.665924,58.644455,483.665924,0.000000,"END " \n "LOOP"};
 item14[] = {"WAIT",4,218,-318.101746,-18.262732,-228.101776,31.737242,4.000000,"WAIT"};
 item15[] = {"COMPLETE",4,218,-419.532806,358.389832,-329.532654,408.389679,0.000000,"COMPLETE"};
@@ -54,15 +54,15 @@ item49[] = {"CHECK_2",2,250,-190.560959,514.241638,-100.560959,564.241638,0.0000
 version=1;
 class LayoutItems
 {
-    class Item2
-    {
-        class ItemInfo
-        {
-            FontFace="Arial";
-            FontHeight=10;
-            lStyle=1;
-        };
-    };
+	class Item2
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
 };
 link0[] = {0,1};
 link1[] = {1,5};
@@ -368,6 +368,7 @@ class FSM
        "private [""_cluster"",""_clusterID"",""_clusterAgents""];" \n
        "" \n
        "_cluster = _toSpawn select _spawnCount;" \n
+       "_timeout = 0;" \n
        "" \n
        "if!(isnil ""_cluster"") then {" \n
        "    _clusterID = _cluster select 2 select 1;" \n
@@ -393,6 +394,8 @@ class FSM
        "            _inactiveAgents = _inactiveAgents + (_clusterAgents select 2);" \n
        "        };" \n
        "    };" \n
+       "" \n
+       "    _timeout = time;" \n
        "};" \n
        "" \n
        "_spawnCount = _spawnCount + 1;"/*%FSM</STATEINIT""">*/;
@@ -405,7 +408,7 @@ class FSM
           priority = 1.000000;
           to="ACTIVATE_LOOP";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"_spawnCount < _countToSpawn"/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_spawnCount < _countToSpawn && time - _timeout > ALiVE_smoothSpawn"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
@@ -654,7 +657,7 @@ class FSM
         {
           priority = 2.000000;
           to="ANALYSE_AGENTS";
-          precondition = /*%FSM<CONDPRECONDITION""">*/"time - _spawnDelay > 0.5"/*%FSM</CONDPRECONDITION""">*/;
+          precondition = /*%FSM<CONDPRECONDITION""">*/"time - _spawnDelay > ALiVE_smoothSpawn"/*%FSM</CONDPRECONDITION""">*/;
           condition=/*%FSM<CONDITION""">*/"_agentAnalysisCount < count _inactiveAgents"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
@@ -722,7 +725,7 @@ class FSM
         {
           priority = 1.000000;
           to="SPAWN_LOOP";
-          precondition = /*%FSM<CONDPRECONDITION""">*/"time - _spawnDelay > 0.5"/*%FSM</CONDPRECONDITION""">*/;
+          precondition = /*%FSM<CONDPRECONDITION""">*/"time - _spawnDelay > ALiVE_smoothSpawn"/*%FSM</CONDPRECONDITION""">*/;
           condition=/*%FSM<CONDITION""">*/"_spawnCount < _countToSpawn"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };

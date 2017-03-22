@@ -93,6 +93,10 @@ switch(_operation) do {
                         _spawnCycleTime = [_logic,"spawnCycleTime"] call ALIVE_fnc_hashGet;
                         _despawnCycleTime = [_logic,"despawnCycleTime"] call ALIVE_fnc_hashGet;
                         _combatRate = [_logic,"combatRate"] call ALIVE_fnc_hashGet;
+                        _smoothSpawn = [_logic,"smoothSpawn"] call ALIVE_fnc_hashGet;
+                        
+                        // set smoothSpawn value
+                        ALiVE_smoothSpawn = _smoothSpawn;
 
                         // set global profiles persistent var
                         ALIVE_loadProfilesPersistent = _persistent;
@@ -438,6 +442,13 @@ switch(_operation) do {
             } else {
                 _result = [_logic,_operation] call ALiVE_fnc_hashGet;
             };
+        };
+        case "smoothSpawn": {
+                if(typeName _args == "SCALAR") then {
+                        [_logic,"smoothSpawn",_args] call ALIVE_fnc_hashSet;
+                        ALIVE_spawnRadiusJet = _args;
+                };
+                _result = [_logic,"smoothSpawn"] call ALIVE_fnc_hashGet;
         };
         case "state": {
                 private["_state"];

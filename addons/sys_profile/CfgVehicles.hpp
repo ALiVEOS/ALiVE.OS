@@ -152,9 +152,12 @@ class CfgVehicles {
                             };
                         };
                     };
-
-
+                    class smoothSpawn
+                    {
+                        displayName = "$STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN";
+                        description = "$STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN_COMMENT";
+                        defaultvalue = "0.3";
+                    };
                 };
-
         };
 };

@@ -979,7 +979,7 @@ switch(_operation) do {
                                 };
                             };
                         };
-                        sleep 0.5;
+                        sleep ALiVE_smoothSpawn;
                     } forEach _unitClasses;
                     //[] call ALIVE_fnc_timer;
 
