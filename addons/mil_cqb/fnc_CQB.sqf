@@ -178,6 +178,8 @@ switch(_operation) do {
             _logic setVariable ["CQB_UseDominantFaction", _useDominantFaction];
 
             _CQB_Locations = _logic getvariable ["CQB_LOCATIONTYPE","towns"];
+            
+            if (isnil QMOD(smoothSpawn)) then {MOD(smoothSpawn) = 0.3};
 
             [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_BLACKLIST]] call ALiVE_fnc_CQB;
             [_logic, "whitelist", _logic getVariable ["whitelist", DEFAULT_WHITELIST]] call ALiVE_fnc_CQB;
@@ -1121,8 +1123,7 @@ switch(_operation) do {
 
             _grp = createGroup _side;
 
-            {if !(isnil "_x") then {_unit = _grp createUnit [_x, getPosATL _house, [], 0 , "NONE"]}; sleep 0.5} foreach _units;
-
+            {if !(isnil "_x") then {_unit = _grp createUnit [_x, getPosATL _house, [], 0 , "NONE"]}; sleep MOD(smoothSpawn)} foreach _units;
 
             if (count units _grp == 0) exitWith {
                 if (_debug) then {
@@ -1272,7 +1273,8 @@ switch(_operation) do {
 
             // spawn loop
             _process = _logic spawn {
-                private ["_logic","_units","_grp","_positions","_house","_debug","_spawn","_spawnHeli","_spawnJet","_maxgrps","_leader","_despawnGroup","_host","_players","_hosts","_faction","_useDominantFaction","_inRange","_locality","_pause"];
+                private ["_logic","_units","_grp","_positions","_house","_debug","_spawn","_spawnHeli","_spawnJet","_maxgrps","_leader","_despawnGroup","_host","_players","_hosts","_faction","_useDominantFaction","_inRange","_locality","_pause","_spawnPool"];
+                
                 _logic = _this;
 
                 // default functions - can be overridden
@@ -1285,8 +1287,12 @@ switch(_operation) do {
                         _spawnJet = _logic getVariable ["spawnDistanceJet", 0];
                         _locality = _logic getVariable ["locality", "server"];
                         _useDominantFaction = _logic getvariable ["CQB_UseDominantFaction",false];
+                        
+                        //[true,"cqb_performance","cqb_performance"] call ALiVE_fnc_Timer;
 
                         if (!isnil QMOD(CQB) && {!(MOD(CQB) getVariable ["pause", false])}) then {
+
+							_spawnPool = [];
 
                             [{
                                 // if conditions are right, spawn a group and place them
@@ -1317,10 +1323,11 @@ switch(_operation) do {
                                                 } else {
                                                     _faction = (selectRandom (_logic getvariable ["factions",["OPF_F"]]));
                                                 };
-
+                                                
+                                                
                                                 /////////////////////////////////////////////////////////////
-                                                [[_logic, "spawnGroup", [_house,_faction]],"ALiVE_fnc_CQB",_host,false] call BIS_fnc_MP;
-
+                                                _spawnPool pushback [_house,_faction,_host];
+                                                
                                                 //["CQB Population: Group creation triggered on client %1 for house %2 and dominantfaction %3...",_host,_house,_faction] call ALiVE_fnc_Dump;
                                                 //sleep 0.2;
                                             } else {
@@ -1331,6 +1338,8 @@ switch(_operation) do {
                                         };
                                 };
                             },_logic getVariable ["houses", []],10] call ALiVE_fnc_arrayFrameSplitter;
+                            
+                            {[[_logic, "spawnGroup", [_x select 0,_x select 1]],"ALiVE_fnc_CQB",_x select 2,false,false] call BIS_fnc_MP; sleep MOD(smoothSpawn)} foreach _spawnPool;
 
                             [{
                                 _grp = _x;
@@ -1390,6 +1399,8 @@ switch(_operation) do {
                                } call CBA_fnc_DirectCall;
                             };
                         };
+                        
+                        //[false,"cqb_performance","cqb_performance"] call ALiVE_fnc_Timer;
 
                         !([_logic,"active"] call ALiVE_fnc_CQB);
                     }; // end over-arching loop
