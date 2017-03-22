@@ -12,8 +12,8 @@ item7[] = {"START",4,218,-192.425964,-19.086315,-102.425903,30.913666,2.000000,"
 item8[] = {"ANALYSE",2,250,-121.637917,195.866745,-31.637772,245.866928,0.000000,"ANALYSE"};
 item9[] = {"DO_SPAWN",4,218,-123.076942,274.904297,-33.076859,324.904358,0.000000,"DO" \n "SPAWN"};
 item10[] = {"DONE",2,250,-120.598183,507.647278,-33.938690,554.306946,0.000000,"DONE"};
-item11[] = {"SPAWN_LOOP",2,4346,-122.133957,356.411804,-32.133873,406.411865,0.000000,"SPAWN" \n "LOOP"};
-item12[] = {"ITERATE",4,218,4.978054,356.221527,94.978058,406.221588,1.000000,"ITERATE"};
+item11[] = {"SPAWN_LOOP",2,250,-122.133957,356.411804,-32.133873,406.411865,0.000000,"SPAWN" \n "LOOP"};
+item12[] = {"ITERATE",4,4314,4.978054,356.221527,94.978058,406.221588,1.000000,"ITERATE"};
 item13[] = {"END__LOOP",4,218,-122.198143,431.177094,-32.198082,481.177094,0.000000,"END " \n "LOOP"};
 item14[] = {"WAIT",4,218,-318.101746,-18.262732,-228.101776,31.737242,3.000000,"WAIT"};
 item15[] = {"ANALYSE_1",2,250,-273.843933,196.692368,-183.843842,246.692383,0.000000,"ANALYSE"};
@@ -35,15 +35,15 @@ item30[] = {"ITERATE",4,218,2.160717,195.580490,92.160904,245.580521,2.000000,"I
 version=1;
 class LayoutItems
 {
-    class Item2
-    {
-        class ItemInfo
-        {
-            FontFace="Arial";
-            FontHeight=10;
-            lStyle=1;
-        };
-    };
+	class Item2
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
 };
 link0[] = {0,1};
 link1[] = {1,5};
@@ -85,8 +85,8 @@ link36[] = {27,21};
 link37[] = {28,10};
 link38[] = {29,15};
 link39[] = {30,8};
-globals[] = {0.000000,0,0,0,16777215,640,480,1,123,6316128,1,-664.444519,360.324585,915.253906,-19.923319,1018,929,1};
-window[] = {2,-1,-1,-1,-1,1118,220,1843,220,3,1035};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,123,6316128,1,-454.617889,150.497894,723.771606,171.558884,1018,929,1};
+window[] = {2,-1,-1,-32000,-32000,964,66,1689,66,3,1035};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -411,7 +411,7 @@ class FSM
         {
           priority = 1.000000;
           to="SPAWN_LOOP";
-          precondition = /*%FSM<CONDPRECONDITION""">*/"_timeout = time - _spawnDelay > 1; _timeoutFull = time - _spawnDelay > 10;" \n
+          precondition = /*%FSM<CONDPRECONDITION""">*/"_timeout = time - _spawnDelay > ALiVE_smoothSpawn; _timeoutFull = time - _spawnDelay > 10;" \n
            "_timeout;"/*%FSM</CONDPRECONDITION""">*/;
           condition=/*%FSM<CONDITION""">*/"//_spawnCount < _countToSpawn" \n
            "" \n

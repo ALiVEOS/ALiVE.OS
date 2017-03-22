@@ -81,15 +81,21 @@
     <Original>Toggle debug mode on the profile system</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER">
-    <Original>Virtual Combat Speed Modifier</Original>
+    <Original>Virtual Combat Speed Modifier:</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER_COMMENT">
     <Original>Modifies the speed of virtual combat. 1 means no change, 2 means twice the normal speed</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT">
-    <Original>Infantry sea transport</Original>
+    <Original>Infantry sea transport:</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT_COMMENT">
     <Original>Experimental! Adds a boat to a virtual infantry entity that tries to cross water!</Original>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN">
+    <Original>Smooth Spawn:</Original>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN_COMMENT">
+    <Original>Sleep values between spawning units to not overload engine</Original>
 </Key>
 </Container></Package></Project>
