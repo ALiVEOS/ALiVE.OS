@@ -1900,7 +1900,6 @@ switch (_operation) do {
         _intelTypeList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeList);
         _intelTypeList ctrlShow true;
 
-
         _editMap = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
         _editMap ctrlShow false;
 
@@ -2386,6 +2385,8 @@ switch (_operation) do {
             lbclear _intelTypeList;
             _intelTypeList ctrlShow true;
 
+            _intelTypeList ctrlRemoveAllEventHandlers "LBSelChanged";
+
             _intelTypeList lbadd "Red - Opfor";
             _intelTypeList lbadd "Blue - Blufor";
             _intelTypeList lbadd "Green - Independent";
@@ -2646,6 +2647,8 @@ switch (_operation) do {
                 private _intelTypeList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelTypeList);
                 lbclear _intelTypeList;
                 _intelTypeList ctrlshow true;
+
+                _intelTypeList ctrlRemoveAllEventHandlers "LBSelChanged";
 
                 _intelTypeList lbadd "White - Unassigned";
                 _intelTypeList lbadd "Yellow - Idle";
