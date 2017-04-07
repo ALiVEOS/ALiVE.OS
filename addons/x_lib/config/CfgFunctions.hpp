@@ -622,6 +622,34 @@ class isHash
     RECOMPILE;
 };
 
+class ProfileNameSpaceLoad
+{
+    file = "\x\alive\addons\x_lib\functions\data\fnc_ProfileNameSpaceLoad.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
+class ProfileNameSpaceSave
+{
+    file = "\x\alive\addons\x_lib\functions\data\fnc_ProfileNameSpaceSave.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
+class ProfileNameSpaceClear
+{
+    file = "\x\alive\addons\x_lib\functions\data\fnc_ProfileNameSpaceClear.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
+class ProfileNameSpaceWipe
+{
+    file = "\x\alive\addons\x_lib\functions\data\fnc_ProfileNameSpaceWipe.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
 class JSON
 {
     file = "\x\alive\addons\x_lib\functions\data\fnc_JSON.sqf";
