@@ -174,11 +174,16 @@ switch (_operation) do {
                 // Reset states with provided data;
                 if !(_logic getvariable ["DISABLEPERSISTENCE",false]) then {
                     if (isDedicated && {[QMOD(SYS_DATA)] call ALiVE_fnc_isModuleAvailable}) then {
+                        
+                        call ALiVE_fnc_ProfileNameSpaceClear;
+                        
                         waituntil {!isnil QMOD(SYS_DATA) && {MOD(SYS_DATA) getvariable ["startupComplete",false]}};
                     };
 
-                    _state = call ALiVE_fnc_logisticsLoadData;
-
+					_state = call ALiVE_fnc_logisticsLoadData;
+                    
+                    //_state = call ALiVE_fnc_logisticsLoadDataPNS;
+                    
                     if !(typeName _state == "BOOL") then {
                         GVAR(STORE) = _state;
                     };
@@ -187,15 +192,6 @@ switch (_operation) do {
                 GVAR(STORE) call ALIVE_fnc_inspectHash;
 
                 [_logic,"state",GVAR(STORE)] call ALiVE_fnc_logistics;
-
-                /*
-                //Hack for hideObjectGlobal not working prior to mission runtime, thanks BIS
-                [] spawn {
-                    waituntil {time > 0};
-
-                    {if !(simulationEnabled _x) then {_x hideObjectGlobal true}} foreach ([MOD(SYS_LOGISTICS),"allObjects"] call ALiVE_fnc_logistics);
-                };
-                */
 
                 _logic setVariable ["init", true, true];
             };
