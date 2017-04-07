@@ -111,6 +111,16 @@ class cfgFunctions {
                                 file = "\x\alive\addons\sys_logistics\fnc_logisticsLoadData.sqf";
                                 RECOMPILE;
                         };
+                        class logisticsSaveDataPNS {
+                                description = "Logistics save data to ProfileNameSpace";
+                                file = "\x\alive\addons\sys_logistics\fnc_logisticsSaveDataPNS.sqf";
+                                RECOMPILE;
+                        };
+                        class logisticsLoadDataPNS {
+                                description = "Logistics load data to ProfileNameSpace";
+                                file = "\x\alive\addons\sys_logistics\fnc_logisticsLoadDataPNS.sqf";
+                                RECOMPILE;
+                        };                        
                 };
         };
 };
