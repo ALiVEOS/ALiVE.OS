@@ -775,7 +775,7 @@ ALIVE_fnc_INS_buildingKilledEH = {
     if !(isnil "_depot") then {[_objective,"depot"] call ALiVE_fnc_HashRem; [_objective,"actionsFulfilled",([_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashGet) - ["depot"]] call ALiVE_fnc_HashSet};
     if !(isnil "_HQ") then {[_objective,"HQ"] call ALiVE_fnc_HashRem; [_objective,"actionsFulfilled",([_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashGet) - ["recruit"]] call ALiVE_fnc_HashSet};
 
-    {if (([_x,"opcomID"," "] call ALiVE_fnc_HashGet) == _opcomID) then {_opcom = _x}} foreach OPCOM_instances;
+    {if (([_x,"opcomID"," "] call ALiVE_fnc_HashGet) == _opcomID) exitwith {_opcom = _x}} foreach OPCOM_instances;
 
     if !(isnil "_opcom") then {
         _enemy = [_opcom,"sidesenemy",[]] call ALiVE_fnc_HashGet;
