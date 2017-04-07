@@ -54,6 +54,8 @@ if(!_moveInstantly) then {
 // stop leader
 doStop _leader;
 
+[_leader,"STAND_IA","FULL"] call BIS_fnc_ambientAnimCombat;
+
 // find and garrison any static weapons
 
 private ["_staticWeapons","_weapon","_positionCount","_unit"];
@@ -141,6 +143,8 @@ if(count _buildings > 0) then {
                             
                             dostop _unit;
                             sleep 0.03;
+                            
+                            [_unit,"WATCH","FULL"] call BIS_fnc_ambientAnimCombat;
                         }else{
                             _position = (_building buildingpos _x);
 
@@ -156,6 +160,8 @@ if(count _buildings > 0) then {
                                 waitUntil {sleep 1; _unit call ALiVE_fnc_unitReadyRemote};
 
                                 doStop _unit;
+                                
+                                [_unit,"WATCH","FULL"] call BIS_fnc_ambientAnimCombat;
                             };
 
                         };
@@ -200,6 +206,8 @@ if(count _buildings > 0) then {
                         //_unit disableAI "MOVE";
                         sleep 0.03;
                         doStop _unit;
+                        
+                        [_unit,"WATCH","FULL"] call BIS_fnc_ambientAnimCombat;
                         sleep 0.03;
                     }else{
                         //_position = (_building buildingpos _x);
@@ -217,6 +225,8 @@ if(count _buildings > 0) then {
                             waitUntil {sleep 0.5; _unit call ALiVE_fnc_unitReadyRemote};
 
                             doStop _unit;
+                            
+                            [_unit,"WATCH","FULL"] call BIS_fnc_ambientAnimCombat;
                         };
                     };
 
