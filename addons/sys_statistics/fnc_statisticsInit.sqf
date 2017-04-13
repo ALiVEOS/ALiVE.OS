@@ -29,6 +29,8 @@ PARAMS_1(_logic);
 // Confirm init function available
 ASSERT_DEFINED("ALIVE_fnc_data","Main function missing");
 
+If (isnil "ALiVE_SYS_DATA" || {ALiVE_SYS_DATA_DISABLED}) exitwith {["ALiVE SYS STATS REQUIRES SYS DATA! Exiting..."] call ALiVE_fnc_Dump};
+
 LOG(MSG_INIT);
 
 ADDON = false;

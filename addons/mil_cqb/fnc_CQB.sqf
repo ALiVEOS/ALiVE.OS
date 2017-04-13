@@ -552,10 +552,6 @@ switch(_operation) do {
                             publicVariable QMOD(CQB);
                         };
                 };
-
-                if(!isDedicated && !isHC) then {
-                        // TODO: remove
-                };
         };
 
     case "debug": {

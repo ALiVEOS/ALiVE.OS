@@ -52,7 +52,7 @@ waitUntil {
             _unit = _player;
             _found = true;
         };
-    } foreach playableUnits;
+    } foreach (playableunits + switchableUnits);
 
     _found || {_timeout};
 };

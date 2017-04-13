@@ -32,7 +32,7 @@ _result = false;
 
 if(ALIVE_loadProfilesPersistent) then {
 
-    if (isDedicated) then {
+    if (isServer) then {
 
         if (!isNil "ALIVE_sys_data" && {!ALIVE_sys_data_DISABLED}) then {
 
@@ -92,7 +92,7 @@ if(ALIVE_loadProfilesPersistent) then {
         }else{
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["ALiVE LOAD PROFILE DATA SYS DATA DOES NOT EXIST"] call ALIVE_fnc_dumpMPH;
+                ["ALiVE LOAD PROFILE DATA SYS DATA not existing or disabled!"] call ALIVE_fnc_dump;
             };
 
             ALIVE_loadProfilesPersistent = false;
@@ -101,7 +101,7 @@ if(ALIVE_loadProfilesPersistent) then {
     }else{
 
         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-            ["ALiVE LOAD PROFILE DATA Not run on dedicated server exiting"] call ALIVE_fnc_dump;
+            ["ALiVE LOAD PROFILE DATA Not run on server! exiting..."] call ALIVE_fnc_dump;
         };
 
         ALIVE_loadProfilesPersistent = false;

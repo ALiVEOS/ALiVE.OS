@@ -27,7 +27,7 @@ ARJay
 
 private ["_result","_data","_async","_missionName","_message","_messages","_saveResult"];
 
-if !(isDedicated && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
+if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     [true, "ALiVE TASK HANDLER - Saving data", "taskHandlerper"] call ALIVE_fnc_timer;

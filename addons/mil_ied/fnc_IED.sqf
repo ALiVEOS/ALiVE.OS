@@ -162,7 +162,7 @@ switch(_operation) do {
 
                     // Reset states with provided data;
                     if (_logic getvariable ["Persistence",false]) then {
-                        if (isDedicated && {[QMOD(SYS_DATA)] call ALiVE_fnc_isModuleAvailable}) then {
+                        if (isServer && {[QMOD(SYS_DATA)] call ALiVE_fnc_isModuleAvailable}) then {
                             waituntil {!isnil QMOD(SYS_DATA) && {MOD(SYS_DATA) getvariable ["startupComplete",false]}};
                         };
 
@@ -589,7 +589,7 @@ switch(_operation) do {
                         publicVariable QUOTE(ADDON);
                 };
 
-                if(!isDedicated && !isHC) then {
+                if(hasInterface) then {
                 };
         };
 };

@@ -1,7 +1,7 @@
 // Define player data getting and setting
 #define FILLER_ITEM QUOTE(ItemWatch);
 
-if (!isDedicated && !isHC) then {
+if (hasInterface) then {
     PLACEHOLDERCOUNT = 0;
 };
 

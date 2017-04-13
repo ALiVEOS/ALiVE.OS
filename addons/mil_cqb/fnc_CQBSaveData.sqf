@@ -29,7 +29,7 @@ Highhead
 
 private ["_result","_data","_async","_missionName","_message","_messages","_saveResult"];
 
-if !(isDedicated && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {};
+if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {};
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     [true, "ALiVE CQB - Saving data", "cqbper"] call ALIVE_fnc_timer;

@@ -27,11 +27,11 @@ Highhead
 
 if !(isServer) exitwith {};
 
-_allMissions = profileNamespace getVariable [QMOD(SAVEDMISSIONS), []];
+private _allVariables = +(allvariables profileNamespace);
 
 {
-    profileNamespace setVariable [_x,nil];
-} foreach _allMissions;
+  if ([tolower _x, "alive_"] call CBA_fnc_find != -1) then {profileNamespace setvariable [_x,nil]};
+} foreach _allVariables;
 
 profileNamespace setVariable [QMOD(SAVEDMISSIONS), nil];
 

@@ -241,6 +241,16 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_profilesLoadData.sqf";
                 RECOMPILE;
             };
+            class profilesSaveDataPNS {
+                description = "profilesSaveDataPNS";
+                file = "\x\alive\addons\sys_profile\fnc_profilesSaveDataPNS.sqf";
+                RECOMPILE;
+            };
+            class profilesLoadDataPNS {
+                description = "profilesLoadDataPNS";
+                file = "\x\alive\addons\sys_profile\fnc_profilesLoadDataPNS.sqf";
+                RECOMPILE;
+            };            
             class profileAttack {
                 description = "profileAttack";
                 file = "\x\alive\addons\sys_profile\fnc_profileAttack.sqf";
