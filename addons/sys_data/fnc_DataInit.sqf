@@ -55,7 +55,11 @@ if (isnil "_logic") then {
     _logic = MOD(sys_data);
 };
 
-
+if (isServer) then {
+    // Always set data logic defaults on server
+    GVAR(DISABLED) = true;
+    publicVariable QGVAR(DISABLED);
+};
 
 // Check data source
 GVAR(SOURCE) = _logic getVariable ["source","CouchDB"];
