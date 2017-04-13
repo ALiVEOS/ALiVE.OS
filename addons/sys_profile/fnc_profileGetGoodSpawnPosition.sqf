@@ -101,15 +101,15 @@ switch(_type) do {
                             _vehicleObjectType = _vehicleProfile select 2 select 6; //[_profile,"objectType"] call ALIVE_fnc_hashGet;
 
                             _vehicles pushback _vehicleProfile;
-
-                            if(_vehicleObjectType == "Car" || _vehicleObjectType == "Truck" || _vehicleObjectType == "Armored" || _vehicleObjectType == "Tank") then {
-                                _inCar = true;
-                            };
-                            if(_vehicleObjectType == "Plane" || _vehicleObjectType == "Helicopter") then {
-                                _inAir = true;
-                            };
-                            if(_vehicleObjectType == "Ship") then {
-                                _inShip = true;
+                            
+                            switch tolower(_vehicleObjectType) do {
+                                case "car" : {_inCar = true};
+                                case "truck" : {_inCar = true};
+                                case "armored" : {_inCar = true};
+                                case "tank" : {_inCar = true};
+                                case "helicopter" : {_inAir = true};
+                                case "plane" : {_inAir = true};
+                                case "ship" : {_inShip = true};
                             };
                         };
                     } forEach _vehiclesInCommandOf;
@@ -128,7 +128,8 @@ switch(_type) do {
                     if(surfaceIsWater _position) then {
 
                         //["GGSP [%1] - the position is water",_profileID] call ALIVE_fnc_dump;
-                        _spawnPosition = [_position] call ALIVE_fnc_getClosestLand;
+                        //_spawnPosition = [_position] call ALIVE_fnc_getClosestLand;
+                        _spawnPosition = [_position,0,500,1,0,0.5,0,[],[_position]] call BIS_fnc_findSafePos;
 
                         //[_spawnPosition,"LAND",_profileID] call _createMarker;
                     };
@@ -143,7 +144,8 @@ switch(_type) do {
                     if!(surfaceIsWater _position) then {
 
                         //["GGSP [%1] - ship - the position is land",_profileID] call ALIVE_fnc_dump;
-                        _spawnPosition = [_position] call ALIVE_fnc_getClosestSea;
+                        //_spawnPosition = [_position] call ALIVE_fnc_getClosestSea;
+                        _spawnPosition = [_position,0,100,1,1,0.5,0,[],[_position]] call BIS_fnc_findSafePos;
 
                         //[_spawnPosition,"SEA",_profileID] call _createMarker;
                     };
@@ -154,23 +156,29 @@ switch(_type) do {
 
                     //["GGSP [%1] - entity is in car get road position",_profileID] call ALIVE_fnc_dump;
 
+					///*
+
                     _spawnPosition = [_position] call ALIVE_fnc_getClosestRoad;
-                    _positionSeries = [_spawnPosition,200,10] call ALIVE_fnc_getSeriesRoadPositions;
+                    
+                    ///*
+                    _positionSeries = [_spawnPosition,100,10] call ALIVE_fnc_getSeriesRoadPositions;
 
                     if(count _positionSeries > 0) then {
                         _spawnPosition = selectRandom _positionSeries;
                     };
+                    //*/
 
-                    if(surfaceIsWater _spawnPosition) then {
+                    if (surfaceIsWater _spawnPosition) then {
                         //["GGSP [%1] - car closest road is water",_profileID] call ALIVE_fnc_dump;
-                        _spawnPosition = [_position] call ALIVE_fnc_getClosestLand;
+                        //_spawnPosition = [_position] call ALIVE_fnc_getClosestLand;
+                        _spawnPosition = [_position,0,500,1,1,0.5,0,[],[_position]] call BIS_fnc_findSafePos;
                     };
 
                     //Set position on ground
                     _spawnPosition set [2,0];
 
                     //Check direction of street
-                    _roads = _spawnPosition nearRoads 50;
+                    _roads = _spawnPosition nearRoads 25;
                     _roadsConnected = roadsConnectedTo (_roads select 0);
 
                     if (!isnil "_roadsConnected" && {count _roadsConnected > 1}) then {
@@ -181,6 +189,9 @@ switch(_type) do {
                             _direction = (_roads select 0) getDir (_roads select 1);
                         };
                     };
+                    //*/
+                    
+                    //_spawnPosition = [_position,0,100,10,0,0.5,0,[],[_position]] call BIS_fnc_findSafePos;
 
                     //["GGSP [%1] - road position: %2 road direction: %3",_profileID,_spawnPosition,_direction] call ALIVE_fnc_dump;
                     //[_spawnPosition,"ROAD",_profileID] call _createMarker;
@@ -222,6 +233,7 @@ switch(_type) do {
                         {
 
                             _vehicleProfile = _x;
+                            
                             _vehicleClass = _vehicleProfile select 2 select 11; //[_vehicleProfile,"vehicleClass"] call ALIVE_fnc_hashGet;
 
                             if(_inAir) then {
@@ -232,6 +244,8 @@ switch(_type) do {
 
                             //["GROUP POS: %1",_position] call ALIVE_fnc_dump;
                             //[_position,"GROUP",_profileID] call _createMarker;
+                            
+                            /*
 
                             _isFlat = _position isflatempty [
                                 3,                                //--- Minimal distance from another object
@@ -244,6 +258,10 @@ switch(_type) do {
 
                             if !(count _isFlat > 0) then {_position = [_position, 0, 50, 5, 0, 5 , 0, [], [_position]] call BIS_fnc_findSafePos};
 
+							*/
+                            
+                            _position = [_position,0,20,10,0,0.5,0,[],[_position]] call BIS_fnc_findSafePos;
+                            
                             //["GROUP POS FINAL: %1",_position] call ALIVE_fnc_dump;
                             //[_position,"GROUP FINAL",_profileID] call _createMarker;
 

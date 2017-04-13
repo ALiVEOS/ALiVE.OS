@@ -85,8 +85,8 @@ link36[] = {27,21};
 link37[] = {28,10};
 link38[] = {29,15};
 link39[] = {30,8};
-globals[] = {0.000000,0,0,0,16777215,640,480,1,123,6316128,1,-454.617889,150.497894,723.771606,171.558884,1018,929,1};
-window[] = {2,-1,-1,-32000,-32000,964,66,1689,66,3,1035};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,123,6316128,1,-581.810730,223.598297,815.285828,-18.855730,897,929,1};
+window[] = {2,-1,-1,-1,-1,1118,220,1843,220,3,914};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -340,6 +340,7 @@ class FSM
        "_profile = _toSpawn select _spawnCount;" \n
        "_spawnDelay = 0;" \n
        "_script = [] spawn {};" \n
+       "_position = [0,0,0];" \n
        "" \n
        "if!(isnil ""_profile"") then {" \n
        "    _profileType = _profile select 2 select 5;" \n
@@ -411,15 +412,11 @@ class FSM
         {
           priority = 1.000000;
           to="SPAWN_LOOP";
-          precondition = /*%FSM<CONDPRECONDITION""">*/"_timeout = time - _spawnDelay > ALiVE_smoothSpawn; _timeoutFull = time - _spawnDelay > 10;" \n
-           "_timeout;"/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"//_spawnCount < _countToSpawn" \n
-           "" \n
-           "_spawnCount < _countToSpawn && " \n
+          precondition = /*%FSM<CONDPRECONDITION""">*/"_timeout = time - _spawnDelay > ALiVE_smoothSpawn; _timeoutFull = time - _spawnDelay > 10;"/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_spawnCount < _countToSpawn && {_timeout} && " \n
            "{" \n
            "    isnil ""_profile"" ||" \n
            "    {[_profile,""active"",false] call ALiVE_fnc_HashGet} || " \n
-           "    {!([_position, _spawnDistance, _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir)} || " \n
            "    {_timeoutFull}" \n
            "};"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
@@ -437,8 +434,8 @@ class FSM
           priority = 0.000000;
           to="DONE";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"_spawnCount >= _countToSpawn"/*%FSM</CONDITION""">*/;
-          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_spawnCount >= _countToSpawn || {!([_position, _spawnDistance, _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir)}"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"//[""Ending spawn loop on profile %1"",_profileID] call ALiVE_fnc_DumpR;"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
       };

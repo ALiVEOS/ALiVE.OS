@@ -278,6 +278,10 @@ private _totalEntities = 0;
 
 										_boatProfileID = ([_entityProfile,"boat"] call ALIVE_fnc_hashGet) select 0;
                                         _boatProfile = [ALiVE_ProfileHandler,"getProfile",_boatProfileID] call ALiVE_fnc_ProfileHandler;
+                                        
+                                        if (isNil "_boatProfile") then {
+                                            ["ALiVE Profile Simulator _boatProfile is nil _entityProfile is %1",_entityProfile] call ALiVE_fnc_DumpR;
+                                        };
 
                                     	_profileID = [_entityProfile,"profileID","no-ID"] call ALIVE_fnc_hashGet;
                                         _boatID = [_boatProfile,"profileID","no-ID"] call ALIVE_fnc_hashGet;
@@ -325,6 +329,10 @@ private _totalEntities = 0;
 
 									_boatProfileID = ([_entityProfile,"boat"] call ALIVE_fnc_hashGet) select 0;
                                     _boatProfile = [ALiVE_ProfileHandler,"getProfile",_boatProfileID] call ALiVE_fnc_ProfileHandler;
+                                    
+                                    if (isNil "_boatProfile") then {
+                                        ["ALiVE Profile Simulator _boatProfile is nil _entityProfile is %1",_entityProfile] call ALiVE_fnc_DumpR;
+                                    };
                                     
                                 	_profileID = [_entityProfile,"profileID","no-ID"] call ALIVE_fnc_hashGet;
                                     _boatID = [_boatProfile,"profileID","no-ID"] call ALIVE_fnc_hashGet;
@@ -401,6 +409,10 @@ private _totalEntities = 0;
 									_boatProfileID = ([_entityProfile,"boat"] call ALIVE_fnc_hashGet) select 0;
                                     _boatProfile = [ALiVE_ProfileHandler,"getProfile",_boatProfileID] call ALiVE_fnc_ProfileHandler;
                                     _creation = ([_entityProfile,"boat"] call ALIVE_fnc_hashGet) select 1;
+                                    
+                                    if (isNil "_boatProfile") then {
+                                        ["ALiVE Profile Simulator _boatProfile is nil _entityProfile is %1",_entityProfile] call ALiVE_fnc_DumpR;
+                                    };
                                                                   
                                     if (_newPosition distance _creation > 100) then {
 
@@ -482,12 +494,14 @@ private _totalEntities = 0;
                     
                     //_group = group _leader;
                     private _group = _entityProfile select 2 select 13; //_leader = [_profile,"leader"] call ALIVE_fnc_hashGet;
+                    private _leader = _entityProfile select 2 select 10; //_leader = [_profile,"leader"] call ALIVE_fnc_hashGet;
                     
                     if((!isNull _group) && {currentWaypoint _group < count waypoints _group && currentWaypoint _group > 0}) then {
                         //["S1: %1 %2", currentWaypoint _group, count waypoints _group] call ALIVE_fnc_dump;
 
+						private _leader = leader _group;
                         private _newPosition = getPosATL _leader;
-                        private _position = _entityProfile select 2 select 2; //_leader = [_profile,"position"] call ALIVE_fnc_hashGet;
+                        private _position = _entityProfile select 2 select 2; //_position = [_profile,"position"] call ALIVE_fnc_hashGet;
 
                         if (!(isnil "_newPosition") && {count _newPosition > 0} && {!(isnil "_position")} && {count _position > 0}) then {
 
@@ -541,6 +555,10 @@ private _totalEntities = 0;
 	
 						_boatProfileID = ([_entityProfile,"boat"] call ALIVE_fnc_hashGet) select 0;
                         _boatProfile = [ALiVE_ProfileHandler,"getProfile",_boatProfileID] call ALiVE_fnc_ProfileHandler;
+                        
+                        if (isNil "_boatProfile") then {
+                                        ["ALiVE Profile Simulator _boatProfile is nil _entityProfile is %1",_entityProfile] call ALiVE_fnc_DumpR;
+                        };
 	                    
 	                	_profileID = [_entityProfile,"profileID","no-ID"] call ALIVE_fnc_hashGet;
 	                                                    	                                
