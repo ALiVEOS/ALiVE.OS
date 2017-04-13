@@ -464,8 +464,9 @@ switch(_operation) do {
                 _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet;
                 _vehicleAssignments = _logic select 2 select 7; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
                 _cargo = _logic select 2 select 27; //[_logic,"cargo"] call ALIVE_fnc_hashGet;
-                _slingload = _logic select 2 select 28;
-                _slung = _logic select 2 select 29;
+
+                _slingload = [_logic, "slingload", []] call ALIVE_fnc_HashGet; //unindexed: _slingload = _logic select 2 select 28;
+                _slung = [_logic, "slung", []] call ALIVE_fnc_HashGet; //unindexed: _slung = _logic select 2 select 29;
                 _paraDrop = false;
 
                 _locked = [_logic, "locked",false] call ALIVE_fnc_HashGet;
@@ -721,7 +722,8 @@ switch(_operation) do {
                 _vehicle = _logic select 2 select 10; //[_logic,"vehicle"] call ALIVE_fnc_hashGet;
                 _profileID = _logic select 2 select 4; //[_logic,"profileID"] call ALIVE_fnc_hashGet;
                 _cargo = _logic select 2 select 27; //[_logic,"cargo"] call ALIVE_fnc_hashGet;
-                _slingload = _logic select 2 select 28;
+                _slingload = [_logic, "slingload", []] call ALIVE_fnc_HashGet; //unindexed: _slingload = _logic select 2 select 28;
+                _slung = [_logic, "slung", []] call ALIVE_fnc_HashGet; //unindexed: _slung = _logic select 2 select 29;
 
                 // not already inactive
                 if(_active) then {
