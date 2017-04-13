@@ -27,7 +27,7 @@ Author:
 Highhead
 ---------------------------------------------------------------------------- */
 
-if !(isDedicated && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {};
+if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {};
 
 private ["_data","_instances"];
 

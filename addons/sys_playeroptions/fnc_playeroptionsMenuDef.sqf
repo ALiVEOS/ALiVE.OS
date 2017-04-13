@@ -141,7 +141,7 @@ if (_menuName == "playeroptions") then {
                     localize "STR_ALIVE_player_allowReset_ACTION_COMMENT",
                     "",
                     -1,
-                    !(isNil QGVAR(resetAvailable)),
+                    MOD(sys_player) getVariable ["allowReset", false],
                     !isNil QMOD(sys_player) && MOD(sys_player) getVariable ["enablePlayerPersistence",false] && (MOD(sys_player) getVariable ["allowReset", false])
                 ],
                 [localize "STR_ALIVE_player_allowManualSave_ACTION",

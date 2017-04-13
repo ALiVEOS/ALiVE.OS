@@ -163,7 +163,7 @@ switch(_operation) do {
                         publicVariable QUOTE(ADDON);
                 };
 
-                if(!isDedicated && !isHC) then {
+                if(hasInterface) then {
                         // remove main menu
                         [
                                 "player",

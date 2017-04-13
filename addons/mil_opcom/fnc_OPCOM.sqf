@@ -1493,105 +1493,102 @@ switch(_operation) do {
         case "saveData": {
             private ["_objectives","_exportObjectives","_objective","_objectiveID","_exportObjective","_objectivesGlobal","_save","_messages","_message","_saveResult"];
 
-            if (isDedicated) then {
+            if (isServer && {!isNil "ALIVE_sys_data"} && {!ALIVE_sys_data_DISABLED}) then {
 
-                if (!isNil "ALIVE_sys_data" && {!ALIVE_sys_data_DISABLED}) then {
+                private ["_exportProfiles","_async","_missionName"];
 
-                    private ["_exportProfiles","_async","_missionName"];
+                if(ALiVE_SYS_DATA_DEBUG_ON) then {
+                    ["ALiVE OPCOM - SAVE DATA TRIGGERED"] call ALiVE_fnc_Dump;
+                };
 
-                    if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                        ["ALiVE OPCOM - SAVE DATA TRIGGERED"] call ALiVE_fnc_Dump;
-                    };
+                _result = [false,[]];
+                _blacklist = ["code","actions"];
 
-                    _result = [false,[]];
-                    _blacklist = ["code","actions"];
+                //Save only every 60 seconds, bad hack because of this http://dev.withsix.com/issues/74321
+                //For normal each instance would save their own objectives but the hack collects all objectives of all OPCOMs on one save, FIFO principle
+                if (isnil QGVAR(OBJECTIVES_DB_SAVE) || {!(isnil QGVAR(OBJECTIVES_DB_SAVE)) && {time - (GVAR(OBJECTIVES_DB_SAVE) select 1) > 300}}) then {
 
-                    //Save only every 60 seconds, bad hack because of this http://dev.withsix.com/issues/74321
-                    //For normal each instance would save their own objectives but the hack collects all objectives of all OPCOMs on one save, FIFO principle
-                    if (isnil QGVAR(OBJECTIVES_DB_SAVE) || {!(isnil QGVAR(OBJECTIVES_DB_SAVE)) && {time - (GVAR(OBJECTIVES_DB_SAVE) select 1) > 300}}) then {
-
-                        _objectivesGlobal = [];
-                        {
-                            if ([_x,"persistent",false] call ALIVE_fnc_HashGet) then {
-                                _objectivesGlobal = _objectivesGlobal + ([_x, "objectives",[]] call ALiVE_fnc_HashGet);
-                            };
-                        } foreach OPCOM_INSTANCES;
-
-                        GVAR(OBJECTIVES_DB_SAVE) = [_objectivesGlobal,time];
-                        {
-                            if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                                ["ALiVE OPCOM - SAVE DATA Objective prepared for DB: %1",_x] call ALiVE_fnc_Dump;
-                            };
-                        } foreach (GVAR(OBJECTIVES_DB_SAVE) select 0);
-                        _save = true;
-                    };
-                    if (isnil "_save") exitwith {["ALiVE OPCOM - SAVE DATA Please wait at least 5 minutes before saving again!"] call ALiVE_fnc_Dump;};
-                    if (count (GVAR(OBJECTIVES_DB_SAVE) select 0) == 0) exitwith {["ALiVE SAVE OPCOM DATA Dataset is empty, not saving...!"] call ALiVE_fnc_Dump;};
-
-                    //If I didnt send you to hell - go and save, the feck!
-                    if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                        ["ALiVE OPCOM - SAVE DATA - SYS DATA EXISTS"] call ALIVE_fnc_dump;
-                    };
-
-                    if (isNil QGVAR(DATAHANDLER)) then {
-
-                        if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                            ["ALiVE OPCOM - CREATE DATA HANDLER!"] call ALIVE_fnc_dump;
-                        };
-
-                        GVAR(DATAHANDLER) = [nil, "create"] call ALIVE_fnc_Data;
-                        [GVAR(DATAHANDLER),"storeType",true] call ALIVE_fnc_Data;
-                       };
-
-                    _exportObjectives = [] call ALIVE_fnc_hashCreate;
-
+                    _objectivesGlobal = [];
                     {
-                        _objective = _x;
-                        _objectiveID = [_objective,"objectiveID",""] call ALiVE_fnc_HashGet;
-
-                        _exportObjective = [_objective, [], []] call ALIVE_fnc_hashCopy;
-
-                        if([_exportObjective, "_rev"] call ALIVE_fnc_hashGet == "") then {
-                            [_exportObjective, "_rev"] call ALIVE_fnc_hashRem;
+                        if ([_x,"persistent",false] call ALIVE_fnc_HashGet) then {
+                            _objectivesGlobal = _objectivesGlobal + ([_x, "objectives",[]] call ALiVE_fnc_HashGet);
                         };
+                    } foreach OPCOM_INSTANCES;
 
-                        {[_exportObjective, _x] call ALIVE_fnc_hashRem} foreach _blacklist;
-
-                        [_exportObjectives, _objectiveID, _exportObjective] call ALIVE_fnc_hashSet;
-
+                    GVAR(OBJECTIVES_DB_SAVE) = [_objectivesGlobal,time];
+                    {
                         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                            ["ALiVE OPCOM - EXPORT READY OBJECTIVE:"] call ALIVE_fnc_dump;
-                            _exportObjective call ALIVE_fnc_inspectHash;
+                            ["ALiVE OPCOM - SAVE DATA Objective prepared for DB: %1",_x] call ALiVE_fnc_Dump;
                         };
+                    } foreach (GVAR(OBJECTIVES_DB_SAVE) select 0);
+                    _save = true;
+                };
+                if (isnil "_save") exitwith {["ALiVE OPCOM - SAVE DATA Please wait at least 5 minutes before saving again!"] call ALiVE_fnc_Dump;};
+                if (count (GVAR(OBJECTIVES_DB_SAVE) select 0) == 0) exitwith {["ALiVE SAVE OPCOM DATA Dataset is empty, not saving...!"] call ALiVE_fnc_Dump;};
 
+                //If I didnt send you to hell - go and save, the feck!
+                if(ALiVE_SYS_DATA_DEBUG_ON) then {
+                    ["ALiVE OPCOM - SAVE DATA - SYS DATA EXISTS"] call ALIVE_fnc_dump;
+                };
 
-                    } forEach (GVAR(OBJECTIVES_DB_SAVE) select 0);
-
-
-                    _message = format["ALiVE OPCOM - Preparing to save %1 objectives..",count(_exportObjectives select 1)];
-                    _messages = _result select 1;
-                    _messages pushback _message;
-
-
-                    _async = false; // Wait for response from server
-                    _missionName = [missionName, "%20","-"] call CBA_fnc_replace;
-                    _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName]; // must include group_id to ensure mission reference is unique across groups
-
-                    if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                        ["ALiVE OPCOM - SAVE DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_Dump;
-                    };
-
-                    _saveResult = [GVAR(DATAHANDLER), "bulkSave", ["mil_opcom", _exportObjectives, _missionName, _async]] call ALIVE_fnc_Data;
-                    _result set [0,_saveResult];
-
-                    _message = format["ALiVE OPCOM - Save Result: %1",_saveResult];
-                    _messages = _result select 1;
-                    _messages pushback _message;
+                if (isNil QGVAR(DATAHANDLER)) then {
 
                     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                        ["ALiVE OPCOM - SAVE DATA RESULT (maybe truncated in RPT, dont worry): %1",_saveResult] call ALIVE_fnc_dump;
-                        ["ALiVE OPCOM - SAVE DATA SAVING COMPLETE!"] call ALiVE_fnc_Dump;
+                        ["ALiVE OPCOM - CREATE DATA HANDLER!"] call ALIVE_fnc_dump;
                     };
+
+                    GVAR(DATAHANDLER) = [nil, "create"] call ALIVE_fnc_Data;
+                    [GVAR(DATAHANDLER),"storeType",true] call ALIVE_fnc_Data;
+                   };
+
+                _exportObjectives = [] call ALIVE_fnc_hashCreate;
+
+                {
+                    _objective = _x;
+                    _objectiveID = [_objective,"objectiveID",""] call ALiVE_fnc_HashGet;
+
+                    _exportObjective = [_objective, [], []] call ALIVE_fnc_hashCopy;
+
+                    if([_exportObjective, "_rev"] call ALIVE_fnc_hashGet == "") then {
+                        [_exportObjective, "_rev"] call ALIVE_fnc_hashRem;
+                    };
+
+                    {[_exportObjective, _x] call ALIVE_fnc_hashRem} foreach _blacklist;
+
+                    [_exportObjectives, _objectiveID, _exportObjective] call ALIVE_fnc_hashSet;
+
+                    if(ALiVE_SYS_DATA_DEBUG_ON) then {
+                        ["ALiVE OPCOM - EXPORT READY OBJECTIVE:"] call ALIVE_fnc_dump;
+                        _exportObjective call ALIVE_fnc_inspectHash;
+                    };
+
+
+                } forEach (GVAR(OBJECTIVES_DB_SAVE) select 0);
+
+
+                _message = format["ALiVE OPCOM - Preparing to save %1 objectives..",count(_exportObjectives select 1)];
+                _messages = _result select 1;
+                _messages pushback _message;
+
+
+                _async = false; // Wait for response from server
+                _missionName = [missionName, "%20","-"] call CBA_fnc_replace;
+                _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName]; // must include group_id to ensure mission reference is unique across groups
+
+                if(ALiVE_SYS_DATA_DEBUG_ON) then {
+                    ["ALiVE OPCOM - SAVE DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_Dump;
+                };
+
+                _saveResult = [GVAR(DATAHANDLER), "bulkSave", ["mil_opcom", _exportObjectives, _missionName, _async]] call ALIVE_fnc_Data;
+                _result set [0,_saveResult];
+
+                _message = format["ALiVE OPCOM - Save Result: %1",_saveResult];
+                _messages = _result select 1;
+                _messages pushback _message;
+
+                if(ALiVE_SYS_DATA_DEBUG_ON) then {
+                    ["ALiVE OPCOM - SAVE DATA RESULT (maybe truncated in RPT, dont worry): %1",_saveResult] call ALIVE_fnc_dump;
+                    ["ALiVE OPCOM - SAVE DATA SAVING COMPLETE!"] call ALiVE_fnc_Dump;
                 };
             };
         };
@@ -1599,7 +1596,7 @@ switch(_operation) do {
         case "loadData": {
             private ["_stopped","_result"];
 
-            if !(isDedicated && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {["ALiVE LOAD OPCOM DATA FROM DB NOT POSSIBLE! NO SYS DATA MODULE AVAILABLE OR NOT DEDICATED!"] call ALIVE_fnc_dumpR};
+            if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {["ALiVE LOAD OPCOM DATA FROM DB NOT POSSIBLE! NO SYS DATA MODULE AVAILABLE OR NOT DEDICATED!"] call ALIVE_fnc_dumpR};
 
             //Stop OPCOM
             _stopped = [_logic,"stop"] call ALiVE_fnc_OPCOM;
@@ -1655,7 +1652,7 @@ switch(_operation) do {
             _opcomID = [_logic,"opcomID",""] call ALiVE_fnc_HashGet;
             _objectives = [];
 
-            if (isDedicated) then {
+            if (isServer) then {
 
                 if (!isNil "ALIVE_sys_data" && {!ALIVE_sys_data_DISABLED}) then {
                     private ["_importProfiles","_async","_missionName","_result","_stopped","_i"];

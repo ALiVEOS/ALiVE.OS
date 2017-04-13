@@ -53,18 +53,155 @@ if (isnil "_logic") then {
     MOD(sys_data) setVariable ["class", QUOTE(MAINCLASS)];
 
     _logic = MOD(sys_data);
-
 };
+
+
+
+// Check data source
+GVAR(SOURCE) = _logic getVariable ["source","CouchDB"];
+
+//////////////////////////////////////////////////////////////////
+//
+// Break out in case of PNS init
+
+if (GVAR(SOURCE) == "pns") exitwith {
+    
+    if (!isServer) exitwith {
+        ["ALiVE SYS_DATA - THE LOCAL MACHINE IS CLIENT! EXITING..."] call ALIVE_fnc_dump;
+    };
+    
+	_moduleID = [_logic, true] call ALIVE_fnc_dumpModuleInit;
+    
+    MOD(sys_data) = _logic;
+    publicVariable QMOD(SYS_DATA);
+
+	if (MOD(sys_data) getvariable ["debug", "false"] == "true") then {
+	    ALiVE_SYS_DATA_DEBUG_ON = true;
+	} else {
+	    ALiVE_SYS_DATA_DEBUG_ON = false;
+	};
+
+    //Set Data defaults
+    GVAR(DISABLED) = false;
+    publicVariable QGVAR(DISABLED);
+
+    GVAR(DATABASENAME) = "arma3live"; 
+    GVAR(GROUP_ID) = "ALiVE";
+    
+    GVAR(datahandler) = [nil, "create"] call ALIVE_fnc_Data;
+    GVAR(DictionaryRevs) = [];
+    MOD(DataDictionary) = [] call ALiVE_fnc_HashCreate;
+    GVAR(dictionaryLoaded) = true;
+
+    ALIVE_sys_statistics_EventLevel = 5;
+    MOD(sys_data) setVariable ["EventLevel", ALIVE_sys_statistics_EventLevel, true];
+    publicVariable "ALIVE_sys_statistics_EventLevel";
+
+    MOD(sys_data) setvariable ["disableStats", "true",true];
+    ALIVE_sys_statistics_ENABLED = false;
+    publicVariable "ALIVE_sys_statistics_ENABLED";
+
+    MOD(sys_data) setvariable ["disablePerf", "true",true];
+    ALIVE_sys_perf_ENABLED = false;
+    publicVariable "ALIVE_sys_perf_ENABLED";
+
+    MOD(sys_data) setvariable ["disableAAR", "true",true];
+    ALIVE_sys_AAR_ENABLED = false; 
+    publicVariable "ALIVE_sys_AAR_ENABLED";      
+
+    // Handle basic mission persistence - date/time and custom variables
+    GVAR(mission_data) = [] call CBA_fnc_hashCreate;
+    
+    if (GVAR(dictionaryLoaded) && (MOD(sys_data) getVariable ["saveDateTime","false"] == "true")) then {
+        private ["_missionName","_response"];
+        
+        // Read in date/time for mission
+        ["DATA: Loading basic mission data."] call ALIVE_fnc_dump;
+        _missionName = format["%1_%2", GVAR(GROUP_ID), missionName];
+        _response = [GVAR(datahandler), "read", ["sys_data", [], _missionName]] call ALIVE_fnc_Data;
+        
+        if ( typeName _response != "STRING") then {
+            GVAR(mission_data) = _response;
+
+            if(ALiVE_SYS_DATA_DEBUG_ON) then {
+                ["ALiVE SYS_DATA - MISSION DATA LOADED: %1",_response] call ALIVE_fnc_dump;
+            };
+
+            setdate ([GVAR(mission_data), "date", date] call CBA_fnc_hashGet);
+        } else {
+
+            if(ALiVE_SYS_DATA_DEBUG_ON) then {
+                ["ALiVE SYS_DATA - NO MISSION DATA AVAILABLE: %1",_response] call ALIVE_fnc_dump;
+            };
+
+        };
+    } else {
+
+        if(ALiVE_SYS_DATA_DEBUG_ON) then {
+            ["ALiVE SYS_DATA - EITHER DATA LOAD FAILED OR MISSION DATA PERSISTENCE TURNED OFF: %1",GVAR(dictionaryLoaded)] call ALIVE_fnc_dump;
+        };
+    };
+
+    // Handle compositions persistence
+    MOD(PCOMPOSITIONS) = [] call CBA_fnc_hashCreate;
+    
+    if (GVAR(dictionaryLoaded) && (MOD(sys_data) getVariable ["saveCompositions","false"] == "true")) then {
+        private ["_missionName","_response"];
+        
+        // Read in compositions for mission
+        ["DATA: Loading mission compositions data."] call ALIVE_fnc_dump;
+        _missionName = format["%1_%2_COMPOSITIONS", GVAR(GROUP_ID), missionName];
+        _response = [GVAR(datahandler), "read", ["sys_data", [], _missionName]] call ALIVE_fnc_Data;
+        
+        if ( typeName _response != "STRING") then {
+            MOD(PCOMPOSITIONS) = _response;
+
+            if(ALiVE_SYS_DATA_DEBUG_ON) then {
+                ["ALiVE SYS_DATA - MISSION COMPOSITION DATA LOADED: %1",_response] call ALIVE_fnc_dump;
+            };
+
+            // Update CIV PLACEMENT Module so that roadblocks are not duplicated
+            ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS = [MOD(PCOMPOSITIONS),"roadblock_locs",[]] call ALiVE_fnc_hashGet;
+            ALIVE_CIV_PLACEMENT_ROADBLOCKS = [MOD(PCOMPOSITIONS),"comp_roadblocks",[]] call ALiVE_fnc_hashGet; // Should be in 1.2.9
+
+            // Get all spawned composition data
+            private _compositions = [MOD(PCOMPOSITIONS),"compositions",[[],[]]] call ALiVE_fnc_hashGet;
+            // Spawn all compositions
+            {
+                private _entry = (_compositions select 1) select _forEachIndex;
+                [_entry select 0, _x, _entry select 1, _entry select 2] call ALiVE_fnc_spawnComposition;
+            } foreach (_compositions select 0);
+
+            MOD(COMPOSITIONS_LOADED) = true;
+
+        } else {
+
+            if(ALiVE_SYS_DATA_DEBUG_ON) then {
+                ["ALiVE SYS_DATA - NO MISSION COMPOSITION DATA AVAILABLE: %1",_response] call ALIVE_fnc_dump;
+            };
+        };
+    };
+
+	if (isServer && {!isnil QMOD(SYS_DATA)}) then {
+	    MOD(sys_data) setvariable ["startupComplete",true,true];
+	};
+
+	[_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;
+};
+
+//
+// End PNS init
+//////////////////////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////////////////////////
+// Default CouchDB init
+//
 
 TRACE_2("SYS_DATA",isDedicated, _logic);
 
 _moduleID = [_logic, true] call ALIVE_fnc_dumpModuleInit;
-
-if (_logic getvariable ["debug", "false"] == "true") then {
-    ALiVE_SYS_DATA_DEBUG_ON = true;
-}else{
-    ALiVE_SYS_DATA_DEBUG_ON = false;
-};
 
 if (isDedicated) then {
 
@@ -72,6 +209,13 @@ if (isDedicated) then {
     //[QGVAR(OPD), "OnPlayerDisconnected","ALIVE_fnc_data_OnPlayerDisconnected"] call BIS_fnc_addStackedEventHandler;
 
     MOD(sys_data) = _logic;
+    publicVariable QMOD(SYS_DATA);
+    
+    if (MOD(sys_data) getvariable ["debug", "false"] == "true") then {
+	    ALiVE_SYS_DATA_DEBUG_ON = true;
+	} else {
+	    ALiVE_SYS_DATA_DEBUG_ON = false;
+	};
 
     //Set Data logic defaults
     GVAR(DISABLED) = false;
@@ -619,7 +763,17 @@ if (isDedicated) then {
     };
 };
 
+//
+// End default CouchDB init
+//////////////////////////////////////////////////////////////////
 
+waituntil {
+    ["DATA: Waiting for global DISABLED variable..."] call ALIVE_fnc_dump;
+    !isnil QGVAR(DISABLED)
+};
+["DATA: SYS DATA enabled: %1",!(GVAR(DISABLED))] call ALIVE_fnc_dump;
+
+// Init complete
 if (isDedicated && {!isnil QMOD(SYS_DATA)}) then {
     MOD(sys_data) setvariable ["startupComplete",true,true];
 };
@@ -630,7 +784,6 @@ if (_logic getvariable ["disableStats","false"] == "false") then {
     ["DATA: Starting stats system."] call ALIVE_fnc_dump;
     [_logic] call ALIVE_fnc_statisticsInit;
 };
-
 
 
 [_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;

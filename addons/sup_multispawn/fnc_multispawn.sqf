@@ -701,7 +701,7 @@ switch(_operation) do {
                         publicVariable QMOD(MULTISPAWN);
                 };
 
-                if(!isDedicated && !isHC) then {
+                if(hasInterface) then {
                         // remove main menu
                         [
                                 "player",

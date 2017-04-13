@@ -24,7 +24,7 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-if !(isDedicated && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
+if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
 
 private ["_result","_data","_async","_missionName"];
 
@@ -50,7 +50,7 @@ if (isNil QGVAR(DATAHANDLER)) then {
     [GVAR(DATAHANDLER),"storeType",true] call ALIVE_fnc_Data;
 };
 
-_data = [GVAR(DATAHANDLER), "read", ["mil_logistics", [], _missionName]] call ALIVE_fnc_Data;
+_data = [GVAR(DATAHANDLER), "bulkLoad", ["mil_logistics", _missionName, _async]] call ALIVE_fnc_Data;
 
 if (!(isnil "_this") && {typeName _this == "BOOL"} && {!_this}) exitwith {
 

@@ -47,6 +47,11 @@ class CfgVehicles {
                                                 value = "CouchDB";
                                                 default = 1;
                                         };
+                                        class pns
+                                        {
+                                                name = "ProfileNamespace";
+                                                value = "pns";
+                                        };                                        
                                 };
                         };
                         class saveDateTime

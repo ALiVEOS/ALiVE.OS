@@ -1111,6 +1111,8 @@ switch(_operation) do {
             private ["_message","_messages","_saveResult","_datahandler","_exportProfiles","_async","_missionName","_message"];
 
             _result = [false,[]];
+            
+            _exportProfiles = [_logic, "exportProfileData"] call MAINCLASS;
 
             if(isNil"ALIVE_profileDatahandler") then {
 
@@ -1122,18 +1124,17 @@ switch(_operation) do {
                 [ALIVE_profileDatahandler,"storeType",true] call ALIVE_fnc_Data;
             };
 
-            _exportProfiles = [_logic, "exportProfileData"] call MAINCLASS;
-
             _message = format["ALiVE Profile System - Preparing to save %1 profiles..",count(_exportProfiles select 1)];
             _messages = _result select 1;
             _messages pushback _message;
 
+			
             _async = false; // Wait for response from server
             _missionName = [missionName, "%20", "-"] call CBA_fnc_replace;
-
             _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName]; // must include group_id to ensure mission reference is unique across groups
-
+            
             _saveResult = [ALIVE_profileDatahandler, "bulkSave", ["sys_profile", _exportProfiles, _missionName, _async]] call ALIVE_fnc_Data;
+           
             _result set [0,_saveResult];
 
             _message = format["ALiVE Profile System - Save Result: %1",_saveResult];
@@ -1158,11 +1159,9 @@ switch(_operation) do {
                 ALIVE_profileDatahandler = [nil, "create"] call ALIVE_fnc_Data;
                 [ALIVE_profileDatahandler,"storeType",true] call ALIVE_fnc_Data;
             };
-
+			
             _async = false; // Wait for response from server
-
             _missionName = [missionName, "%20", "-"] call CBA_fnc_replace;
-
             _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName]; // must include group_id to ensure mission reference is unique across groups
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {

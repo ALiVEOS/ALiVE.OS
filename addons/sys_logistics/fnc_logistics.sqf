@@ -173,16 +173,12 @@ switch (_operation) do {
 
                 // Reset states with provided data;
                 if !(_logic getvariable ["DISABLEPERSISTENCE",false]) then {
-                    if (isDedicated && {[QMOD(SYS_DATA)] call ALiVE_fnc_isModuleAvailable}) then {
-                        
-                        call ALiVE_fnc_ProfileNameSpaceClear;
+                    if (isServer && {[QMOD(SYS_DATA)] call ALiVE_fnc_isModuleAvailable}) then {
                         
                         waituntil {!isnil QMOD(SYS_DATA) && {MOD(SYS_DATA) getvariable ["startupComplete",false]}};
                     };
 
 					_state = call ALiVE_fnc_logisticsLoadData;
-                    
-                    //_state = call ALiVE_fnc_logisticsLoadDataPNS;
                     
                     if !(typeName _state == "BOOL") then {
                         GVAR(STORE) = _state;

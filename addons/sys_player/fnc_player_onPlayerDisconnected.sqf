@@ -15,7 +15,7 @@
 
 #include "script_component.hpp"
 
-if (!isNil QMOD(sys_player) && isDedicated) then {
+if (!isNil QMOD(sys_player) && isServer) then {
     private ["_unit","_id","_uid","_name","_check","_result","_test"];
 
     _unit = objNull;
@@ -48,7 +48,7 @@ if (!isNil QMOD(sys_player) && isDedicated) then {
             ["ALiVE SYS_PLAYER -  PLAYER UNIT FOUND IN PLAYABLEUNITS (%1)",_x] call ALIVE_fnc_dump;
             _unit = _x;
         };
-    } foreach playableUnits;
+    } foreach (playableUnits + switchableUnits);
 
     if (MOD(sys_player) getVariable ["enablePlayerPersistence",false]) then {
 
