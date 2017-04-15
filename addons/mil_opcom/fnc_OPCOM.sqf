@@ -1019,91 +1019,91 @@ switch(_operation) do {
                                 //Convert CQB modules
                                 _CQB = +_CQB; {_CQB set [_foreachIndex,[[],"convertObject",_x] call ALiVE_fnc_OPCOM]} foreach _CQB;
 
-                                {
-                                    private ["_center","_size"];
-
-                                    _objective = _x;
-
-                                    if (random 1 < _asym_occupation) then {
-
-                                        _center = [_objective,"center"] call ALiVE_fnc_HashGet;
-                                        _size = [_objective,"size",-1] call ALiVE_fnc_HashGet;
-                                        _id = [_objective,"objectiveID",""] call ALiVE_fnc_HashGet;
-
-                                        // Get sector data
-                                        _sector = [ALIVE_sectorGrid, "positionToSector", _center] call ALIVE_fnc_sectorGrid;
-                                        _sectorData = [_sector,"data",["",[],[],nil]] call ALIVE_fnc_hashGet;
-                                        _entitiesBySide = [_sectorData, "entitiesBySide",["",[],[],nil]] call ALIVE_fnc_hashGet;
-                                        _agents = [];
-
-                                        // Get amb civilian clusterdata
-                                        if ("clustersCiv" in (_sectorData select 1)) then {
-
-                                            if (isnil "ALIVE_agentHandler") exitwith {};
-
-                                            _civClusters = [_sectorData,"clustersCiv"] call ALIVE_fnc_hashGet;
-                                            _settlementClusters = [_civClusters,"settlement",[]] call ALIVE_fnc_hashGet;
-                                            _agentClusterData = [ALIVE_agentHandler,"agentsByCluster",["",[],[],nil]] call ALiVE_fnc_hashGet;
-
-                                            if (count _settlementClusters <= 0) exitwith {};
-
-                                            _settlementClusters = [_settlementClusters,[_center],{_Input0 distance (_x select 0)},"ASCEND"] call ALiVE_fnc_SortBy;
-                                            _agents =  ([_agentClusterData,_settlementClusters select 0 select 1,["",[],[],nil]] call ALiVE_fnc_HashGet) select 1;
-
-                                            [_objective,"agents",_agents] call ALiVE_fnc_HashSet;
-                                        };
-
-                                        private ["_building","_road"];
-
-                                        _buildings = [_center,_size] call ALIVE_fnc_getEnterableHouses;
-                                        _roads = _center nearRoads _size;
-                                        _faction = selectRandom _factions;
-                                        _dominantFaction = [_center, _size] call ALiVE_fnc_getDominantFaction;
-
-                                        if (isnil "_dominantFaction" || {!(([[_dominantFaction call ALiVE_fnc_factionSide] call ALiVE_fnc_SideObjectToNumber] call ALiVE_fnc_SideNumberToText) in _sidesEnemy)}) then {
-                                            if (count (_buildings + _roads) > 0) then {
-
-                                                if (count _buildings > 0) then {
-                                                    _type = selectRandom ["HQ","depot","factory"];
-                                                    _target = selectRandom _buildings;
-                                                } else {
-                                                    if (count _roads > 0) then {
-                                                        _type = selectRandom ["ied","roadblocks"];
-                                                        if !(_roadblocks) then {
-                                                            _type = "ied";
-                                                        };
-                                                        _target = selectRandom _roads;
-                                                    };
-                                                };
-
-                                                _target = [[],"convertObject",_target] call ALiVE_fnc_OPCOM;
-
-                                                switch _type do {
-                                                    case ("factory") : {
-                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents,+_CQB] spawn ALiVE_fnc_INS_factory;
-                                                    };
-                                                    case ("depot") : {
-                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents,+_CQB] spawn ALiVE_fnc_INS_depot;
-                                                    };
-                                                    case ("HQ") : {
-                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents,+_CQB] spawn ALiVE_fnc_INS_recruit;
-                                                    };
-                                                    case ("ied") : {
-                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents] spawn ALiVE_fnc_INS_ied;
-                                                    };
-                                                    /*
-                                                    case ("ambush") : {
-                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents] spawn ALiVE_fnc_INS_ambush;
-                                                    };
-                                                    */
-                                                    case ("roadblocks") : {
-                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents,+_CQB] spawn ALiVE_fnc_INS_roadblocks;
-                                                    };
-                                                };
-                                             };
-                                         };
-                                     };
-                                } foreach _objectives;
+								{
+	                                    private ["_center","_size"];
+	
+	                                    _objective = _x;
+	
+	                                    if (random 1 < _asym_occupation) then {
+	
+	                                        _center = [_objective,"center"] call ALiVE_fnc_HashGet;
+	                                        _size = [_objective,"size",-1] call ALiVE_fnc_HashGet;
+	                                        _id = [_objective,"objectiveID",""] call ALiVE_fnc_HashGet;
+	
+	                                        // Get sector data
+	                                        _sector = [ALIVE_sectorGrid, "positionToSector", _center] call ALIVE_fnc_sectorGrid;
+	                                        _sectorData = [_sector,"data",["",[],[],nil]] call ALIVE_fnc_hashGet;
+	                                        _entitiesBySide = [_sectorData, "entitiesBySide",["",[],[],nil]] call ALIVE_fnc_hashGet;
+	                                        _agents = [];
+	
+	                                        // Get amb civilian clusterdata
+	                                        if ("clustersCiv" in (_sectorData select 1)) then {
+	
+	                                            if (isnil "ALIVE_agentHandler") exitwith {};
+	
+	                                            _civClusters = [_sectorData,"clustersCiv"] call ALIVE_fnc_hashGet;
+	                                            _settlementClusters = [_civClusters,"settlement",[]] call ALIVE_fnc_hashGet;
+	                                            _agentClusterData = [ALIVE_agentHandler,"agentsByCluster",["",[],[],nil]] call ALiVE_fnc_hashGet;
+	
+	                                            if (count _settlementClusters <= 0) exitwith {};
+	
+	                                            _settlementClusters = [_settlementClusters,[_center],{_Input0 distance (_x select 0)},"ASCEND"] call ALiVE_fnc_SortBy;
+	                                            _agents =  ([_agentClusterData,_settlementClusters select 0 select 1,["",[],[],nil]] call ALiVE_fnc_HashGet) select 1;
+	
+	                                            [_objective,"agents",_agents] call ALiVE_fnc_HashSet;
+	                                        };
+	
+	                                        private ["_building","_road"];
+	
+	                                        _buildings = [_center,_size] call ALIVE_fnc_getEnterableHouses;
+	                                        _roads = _center nearRoads _size;
+	                                        _faction = selectRandom _factions;
+	                                        _dominantFaction = [_center, _size] call ALiVE_fnc_getDominantFaction;
+	
+	                                        if (isnil "_dominantFaction" || {!(([[_dominantFaction call ALiVE_fnc_factionSide] call ALiVE_fnc_SideObjectToNumber] call ALiVE_fnc_SideNumberToText) in _sidesEnemy)}) then {
+	                                            if (count (_buildings + _roads) > 0) then {
+	
+	                                                if (count _buildings > 0) then {
+	                                                    _type = selectRandom ["HQ","depot","factory"];
+	                                                    _target = selectRandom _buildings;
+	                                                } else {
+	                                                    if (count _roads > 0) then {
+	                                                        _type = selectRandom ["ied","roadblocks"];
+	                                                        if !(_roadblocks) then {
+	                                                            _type = "ied";
+	                                                        };
+	                                                        _target = selectRandom _roads;
+	                                                    };
+	                                                };
+	
+	                                                _target = [[],"convertObject",_target] call ALiVE_fnc_OPCOM;
+	
+	                                                switch _type do {
+	                                                    case ("factory") : {
+	                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents,+_CQB] call ALiVE_fnc_INS_factory;
+	                                                    };
+	                                                    case ("depot") : {
+	                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents,+_CQB] call ALiVE_fnc_INS_depot;
+	                                                    };
+	                                                    case ("HQ") : {
+	                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents,+_CQB] call ALiVE_fnc_INS_recruit;
+	                                                    };
+	                                                    case ("ied") : {
+	                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents] call ALiVE_fnc_INS_ied;
+	                                                    };
+	                                                    /*
+	                                                    case ("ambush") : {
+	                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents] spawn ALiVE_fnc_INS_ambush;
+	                                                    };
+	                                                    */
+	                                                    case ("roadblocks") : {
+	                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents,+_CQB] call ALiVE_fnc_INS_roadblocks;
+	                                                    };
+	                                                };
+	                                             };
+	                                         };
+	                                     };
+	                                } foreach _objectives;
                             };
 
                             case ("size") : {};
@@ -1168,115 +1168,118 @@ switch(_operation) do {
                 ASSERT_TRUE(typeName _args == "STRING",str _args);
                 private ["_objective"];
 
-                _id = _args;
-
-                _factions = [_logic,"factions",["OPF_F"]] call ALiVE_fnc_HashGet;
-                _sidesEnemy = [_logic,"sidesenemy",["WEST"]] call ALiVE_fnc_HashGet;
-                _sidesFriendly = [_logic,"sidesfriendly",["EAST"]] call ALiVE_fnc_HashGet;
-                _CQB = [_logic,"CQB",[]] call ALiVE_fnc_HashGet;
-                _debug = [_logic,"debug",false] call ALiVE_fnc_HashGet;
-
-                _objective = [_logic,"getobjectivebyid",_id] call ALiVE_fnc_OPCOM;
-                _center = [_objective,"center"] call AliVE_fnc_HashGet;
-                _size = [_objective,"size"] call AliVE_fnc_HashGet;
-
-                //Convert CQB modules
-                _CQB = +_CQB; {_CQB set [_foreachIndex,[[],"convertObject",_x] call ALiVE_fnc_OPCOM]} foreach _CQB;
-
-                // Get sector data
-                _sector = [ALIVE_sectorGrid, "positionToSector", _center] call ALIVE_fnc_sectorGrid;
-                _sectorData = [_sector,"data",["",[],[],nil]] call ALIVE_fnc_hashGet;
-                _entitiesBySide = [_sectorData, "entitiesBySide",["",[],[],nil]] call ALIVE_fnc_hashGet;
-                _agents = [];
-
-                // Get amb civilian clusterdata
-                if ("clustersCiv" in (_sectorData select 1)) then {
-
-                    if (isnil "ALIVE_agentHandler") exitwith {};
-
-                    _civClusters = [_sectorData,"clustersCiv"] call ALIVE_fnc_hashGet;
-                    _settlementClusters = [_civClusters,"settlement",[]] call ALIVE_fnc_hashGet;
-                    _agentClusterData = [ALIVE_agentHandler,"agentsByCluster",["",[],[],nil]] call ALiVE_fnc_hashGet;
-
-                    if (count _settlementClusters <= 0) exitwith {};
-
-                    _settlementClusters = [_settlementClusters,[_center],{_Input0 distance (_x select 0)},"ASCEND"] call ALiVE_fnc_SortBy;
-                    _agents =  ([_agentClusterData,_settlementClusters select 0 select 1,["",[],[],nil]] call ALiVE_fnc_HashGet) select 1;
-
-                    [_objective,"agents",_agents] call ALiVE_fnc_HashSet;
-                };
-
-                _factory = [_logic,"convertObject",[_objective,"factory",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-                _HQ = [_logic,"convertObject",[_objective,"HQ",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-                _ambush = [_logic,"convertObject",[_objective,"ambush",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-                _depot = [_logic,"convertObject",[_objective,"depot",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-                _sabotage = [_logic,"convertObject",[_objective,"sabotage",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-                _ied = [_logic,"convertObject",[_objective,"ied",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-                _suicide = [_logic,"convertObject",[_objective,"suicide",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-                _roadblocks = [_logic,"convertObject",[_objective,"roadblocks",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-
-                if (alive _factory) then {[time,_center,_id,_size,selectRandom _factions,[_objective,"factory",[]] call ALiVE_fnc_HashGet,_sidesEnemy,_agents,+_CQB] spawn ALiVE_fnc_INS_factory};
-                if (alive _HQ) then {[time,_center,_id,_size,selectRandom _factions,[_objective,"HQ",[]] call ALiVE_fnc_HashGet,_sidesEnemy,_agents,+_CQB] spawn ALiVE_fnc_INS_recruit};
-                if (alive _depot) then {[time,_center,_id,_size,selectRandom _factions,[_objective,"depot",[]] call ALiVE_fnc_HashGet,_sidesEnemy,_agents,+_CQB] spawn ALiVE_fnc_INS_depot};
-                if (alive _roadblocks) then {[time,_center,_id,_size,selectRandom _factions,[_objective,"roadblocks",[]] call ALiVE_fnc_HashGet,_sidesEnemy,_agents,+_CQB] spawn ALiVE_fnc_INS_roadblocks};
-                if (alive _ied) then {[time,_center,_id,_size,selectRandom _factions,[_objective,"ied",[]] call ALiVE_fnc_HashGet,_sidesEnemy,_agents] spawn ALiVE_fnc_INS_ied};
-                if (alive _ambush) then {[time,_center,_id,_size,selectRandom _factions,[_objective,"ambush",[]] call ALiVE_fnc_HashGet,_sidesEnemy,_agents] spawn ALiVE_fnc_INS_ambush};
-
-                if (alive _sabotage) then {
-                    private ["_buildings","_target"];
-
-                    //Selecting tallest enterable building as target...
-                    if (isnil "_buildings" || {count _buildings > 0}) then {
-                        if (isnil "_buildings") then {_buildings = [_center, _size] call ALiVE_fnc_getEnterableHouses};
-
-                        _buildings = [_buildings,[],{
-
-                            _maxHeight = -999;
-                            if (alive _x && {!((typeOf _x) isKindOf "House_Small_F")}) then {
-
-                            if !((getText(configfile >> "CfgVehicles" >> (typeOf _x) >> "destrType")) == "DestructNo") then {
-                                    _bbr = boundingBoxReal _x;
-                                    _p1 = _bbr select 0; _p2 = _bbr select 1;
-                                    _maxHeight = abs((_p2 select 2)-(_p1 select 2));
-                                };
-                            };
-                            _maxHeight
-
-                        },"DESCEND"] call ALiVE_fnc_SortBy;
-
-                        if (count _buildings > 0) then {_target = _buildings select 0; _target = [[],"convertObject",_target] call ALiVE_fnc_OPCOM} else {_target = [[],"convertObject",objNull] call ALiVE_fnc_OPCOM};
-                    };
-
-                    [time,_center,_id,_size,selectRandom _factions,[_objective,"sabotage",[]] call ALiVE_fnc_HashGet,_target,_sidesEnemy,_agents] spawn ALiVE_fnc_INS_sabotage;
-                };
-
-                if (alive _suicide) then {
-                    private ["_civFactions"];
-
-                    _civFactions = [];
-
-                    // Get civilian factions of existing groups
-                    {if ((side leader _x) == CIVILIAN) then {_civFactions = (_civFactions - [faction leader _x]) + [faction leader _x]}} foreach allgroups;
-
-                    // Get civilian factions from Amb Civs
-                    If (!isnil "ALiVE_Agenthandler") then {
-                        _AllAgents = [ALiVE_Agenthandler,"agents",["",[],[],nil]] call ALiVE_fnc_HashGet;
-                        if (count (_AllAgents select 2) > 0) exitwith {_civFactions = _civFactions + [[(_AllAgents select 2 select 0),"faction","CIV_F"] call ALiVE_fnc_HashGet]};
-                    };
-
-                    [time,_center,_id,_size,selectRandom _factions,[_objective,"suicide",[]] call ALiVE_fnc_HashGet,_sidesEnemy,_agents,_civFactions] spawn ALiVE_fnc_INS_suicide;
-                };
-
-                //Set default data
-                //[_objective,"opcom_orders","none"] call AliVE_fnc_HashSet;
-                //[_objective,"tacom_state","none"] call AliVE_fnc_HashSet;
-                //[_objective,"opcom_state","unassigned"] call AliVE_fnc_HashSet;
-                //[_objective,"section",[]] call AliVE_fnc_HashSet;
-                [_objective,"objectiveType",[_objective,"objectiveType","MIL"] call AliVE_fnc_HashGet] call AliVE_fnc_HashSet;
-
-                // debug ---------------------------------------
-                if (_debug) then {_args setMarkerColorLocal "ColorWhite"};
-                // debug ---------------------------------------
+				//{
+	                _id = _args;
+	
+	                _factions = [_logic,"factions",["OPF_F"]] call ALiVE_fnc_HashGet;
+	                _sidesEnemy = [_logic,"sidesenemy",["WEST"]] call ALiVE_fnc_HashGet;
+	                _sidesFriendly = [_logic,"sidesfriendly",["EAST"]] call ALiVE_fnc_HashGet;
+	                _CQB = [_logic,"CQB",[]] call ALiVE_fnc_HashGet;
+	                _debug = [_logic,"debug",false] call ALiVE_fnc_HashGet;
+	
+	                _objective = [_logic,"getobjectivebyid",_id] call ALiVE_fnc_OPCOM;
+	                _center = [_objective,"center"] call AliVE_fnc_HashGet;
+	                _size = [_objective,"size"] call AliVE_fnc_HashGet;
+	
+	                //Convert CQB modules
+	                _CQB = +_CQB; {_CQB set [_foreachIndex,[[],"convertObject",_x] call ALiVE_fnc_OPCOM]} foreach _CQB;
+	
+	                // Get sector data
+	                _sector = [ALIVE_sectorGrid, "positionToSector", _center] call ALIVE_fnc_sectorGrid;
+	                _sectorData = [_sector,"data",["",[],[],nil]] call ALIVE_fnc_hashGet;
+	                _entitiesBySide = [_sectorData, "entitiesBySide",["",[],[],nil]] call ALIVE_fnc_hashGet;
+	                _agents = [];
+	
+	                // Get amb civilian clusterdata
+	                if ("clustersCiv" in (_sectorData select 1)) then {
+	
+	                    if (isnil "ALIVE_agentHandler") exitwith {};
+	
+	                    _civClusters = [_sectorData,"clustersCiv"] call ALIVE_fnc_hashGet;
+	                    _settlementClusters = [_civClusters,"settlement",[]] call ALIVE_fnc_hashGet;
+	                    _agentClusterData = [ALIVE_agentHandler,"agentsByCluster",["",[],[],nil]] call ALiVE_fnc_hashGet;
+	
+	                    if (count _settlementClusters <= 0) exitwith {};
+	
+	                    _settlementClusters = [_settlementClusters,[_center],{_Input0 distance (_x select 0)},"ASCEND"] call ALiVE_fnc_SortBy;
+	                    _agents =  ([_agentClusterData,_settlementClusters select 0 select 1,["",[],[],nil]] call ALiVE_fnc_HashGet) select 1;
+	
+	                    [_objective,"agents",_agents] call ALiVE_fnc_HashSet;
+	                };
+	
+	                _factory = [_logic,"convertObject",[_objective,"factory",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+	                _HQ = [_logic,"convertObject",[_objective,"HQ",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+	                _ambush = [_logic,"convertObject",[_objective,"ambush",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+	                _depot = [_logic,"convertObject",[_objective,"depot",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+	                _sabotage = [_logic,"convertObject",[_objective,"sabotage",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+	                _ied = [_logic,"convertObject",[_objective,"ied",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+	                _suicide = [_logic,"convertObject",[_objective,"suicide",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+	                _roadblocks = [_logic,"convertObject",[_objective,"roadblocks",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+	
+	                if (alive _factory) then {[time,_center,_id,_size,selectRandom _factions,[_objective,"factory",[]] call ALiVE_fnc_HashGet,_sidesEnemy,_agents,+_CQB] spawn ALiVE_fnc_INS_factory};
+	                if (alive _HQ) then {[time,_center,_id,_size,selectRandom _factions,[_objective,"HQ",[]] call ALiVE_fnc_HashGet,_sidesEnemy,_agents,+_CQB] spawn ALiVE_fnc_INS_recruit};
+	                if (alive _depot) then {[time,_center,_id,_size,selectRandom _factions,[_objective,"depot",[]] call ALiVE_fnc_HashGet,_sidesEnemy,_agents,+_CQB] spawn ALiVE_fnc_INS_depot};
+	                if (alive _roadblocks) then {[time,_center,_id,_size,selectRandom _factions,[_objective,"roadblocks",[]] call ALiVE_fnc_HashGet,_sidesEnemy,_agents,+_CQB] spawn ALiVE_fnc_INS_roadblocks};
+	                if (alive _ied) then {[time,_center,_id,_size,selectRandom _factions,[_objective,"ied",[]] call ALiVE_fnc_HashGet,_sidesEnemy,_agents] spawn ALiVE_fnc_INS_ied};
+	                if (alive _ambush) then {[time,_center,_id,_size,selectRandom _factions,[_objective,"ambush",[]] call ALiVE_fnc_HashGet,_sidesEnemy,_agents] spawn ALiVE_fnc_INS_ambush};
+	
+	                if (alive _sabotage) then {
+	                    private ["_buildings","_target"];
+	
+	                    //Selecting tallest enterable building as target...
+	                    if (isnil "_buildings" || {count _buildings > 0}) then {
+	                        if (isnil "_buildings") then {_buildings = [_center, _size] call ALiVE_fnc_getEnterableHouses};
+	
+	                        _buildings = [_buildings,[],{
+	
+	                            _maxHeight = -999;
+	                            if (alive _x && {!((typeOf _x) isKindOf "House_Small_F")}) then {
+	
+	                            if !((getText(configfile >> "CfgVehicles" >> (typeOf _x) >> "destrType")) == "DestructNo") then {
+	                                    _bbr = boundingBoxReal _x;
+	                                    _p1 = _bbr select 0; _p2 = _bbr select 1;
+	                                    _maxHeight = abs((_p2 select 2)-(_p1 select 2));
+	                                };
+	                            };
+	                            _maxHeight
+	
+	                        },"DESCEND"] call ALiVE_fnc_SortBy;
+	
+	                        if (count _buildings > 0) then {_target = _buildings select 0; _target = [[],"convertObject",_target] call ALiVE_fnc_OPCOM} else {_target = [[],"convertObject",objNull] call ALiVE_fnc_OPCOM};
+	                    };
+	
+	                    [time,_center,_id,_size,selectRandom _factions,[_objective,"sabotage",[]] call ALiVE_fnc_HashGet,_target,_sidesEnemy,_agents] spawn ALiVE_fnc_INS_sabotage;
+	                };
+	
+	                if (alive _suicide) then {
+	                    private ["_civFactions"];
+	
+	                    _civFactions = [];
+	
+	                    // Get civilian factions of existing groups
+	                    {if ((side leader _x) == CIVILIAN) then {_civFactions = (_civFactions - [faction leader _x]) + [faction leader _x]}} foreach allgroups;
+	
+	                    // Get civilian factions from Amb Civs
+	                    If (!isnil "ALiVE_Agenthandler") then {
+	                        _AllAgents = [ALiVE_Agenthandler,"agents",["",[],[],nil]] call ALiVE_fnc_HashGet;
+	                        if (count (_AllAgents select 2) > 0) exitwith {_civFactions = _civFactions + [[(_AllAgents select 2 select 0),"faction","CIV_F"] call ALiVE_fnc_HashGet]};
+	                    };
+	
+	                    [time,_center,_id,_size,selectRandom _factions,[_objective,"suicide",[]] call ALiVE_fnc_HashGet,_sidesEnemy,_agents,_civFactions] spawn ALiVE_fnc_INS_suicide;
+	                };
+	
+	                //Set default data
+	                //[_objective,"opcom_orders","none"] call AliVE_fnc_HashSet;
+	                //[_objective,"tacom_state","none"] call AliVE_fnc_HashSet;
+	                //[_objective,"opcom_state","unassigned"] call AliVE_fnc_HashSet;
+	                //[_objective,"section",[]] call AliVE_fnc_HashSet;
+	                [_objective,"objectiveType",[_objective,"objectiveType","MIL"] call AliVE_fnc_HashGet] call AliVE_fnc_HashSet;
+	
+	                // debug ---------------------------------------
+	                if (_debug) then {_args setMarkerColorLocal "ColorWhite"};
+	                // debug ---------------------------------------
+                
+                //} call CBA_fnc_DirectCall;
 
                 _args = [_logic,"objectives",[]] call ALIVE_fnc_hashGet;
             };
@@ -1760,6 +1763,7 @@ switch(_operation) do {
                         [_logic,"clusteroccupation",[]] call ALiVE_fnc_HashSet;
 
                         _i = 10;
+ 
                         _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
                         {
                             private ["_oID","_section","_orders","_state"];
