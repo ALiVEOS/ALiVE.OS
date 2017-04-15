@@ -196,7 +196,7 @@ switch (_operation) do {
 
                 //Push to clients
                 PublicVariable QGVAR(STORE);
-
+                
                 _logic setVariable ["init", true, true];
             };
 
@@ -312,6 +312,10 @@ switch (_operation) do {
                         } else {
                             ["Did not Register Adv Marker controls for briefing screen: %1", player] call ALiVE_fnc_Dump;
                         };
+                    };
+                } else {
+                    if !(isMultiplayer) then {
+                        [_logic, "restoreMarkers", [GVAR(STORE)]] call ALiVE_fnc_marker;
                     };
                 };
 
