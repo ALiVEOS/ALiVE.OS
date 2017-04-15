@@ -36,10 +36,11 @@ _moveInstantly = _this select 3;
 _onlyProfiled = if (count _this > 4) then {_this select 4} else {false};
 
 _units = units _group;
+
+if (count _units < 2) exitwith {};
+
 _leader = leader (group (_units select 0));
 _units = _units - [_leader];
-
-if (count _units == 0) exitwith {};
 
 // load static data
 if(isNil "ALiVE_STATIC_DATA_LOADED") then {
