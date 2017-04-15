@@ -554,13 +554,16 @@ switch(_operation) do {
                 _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
                 if(_active) then {
                         _units = _logic select 2 select 21; //[_logic,"units"] call ALIVE_fnc_hashGet;
-                        _unit = _units select 0;
-                        _group = group _unit;
-                        while { count (waypoints _group) > 0 } do
-                        {
-                            deleteWaypoint ((waypoints _group) select 0);
+                        
+                        if (count _units > 0) then {
+	                        _unit = _units select 0;
+	                        _group = group _unit;
+	                        while { count (waypoints _group) > 0 } do
+	                        {
+	                            deleteWaypoint ((waypoints _group) select 0);
+	                        };
                         };
-                }
+                };
         };
         case "setActiveCommand": {
                 private ["_activeCommands","_type","_active"];
