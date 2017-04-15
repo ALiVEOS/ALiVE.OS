@@ -2023,10 +2023,11 @@ switch(_operation) do {
 
                                                 _slingloadmax = [(configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue;
 
-                                                _slingDiff = _slingloadmax - _payloadWeight;
+												if (!isnil "_slingloadmax") then {
+                                                	_slingDiff = _slingloadmax - _payloadWeight;
 
-                                                if ((_slingDiff < _currentDiff) && (_slingDiff > 0)) then {_currentDiff = _slingDiff; _vehicleClass = _x;};
-
+                                                	if ((_slingDiff < _currentDiff) && (_slingDiff > 0)) then {_currentDiff = _slingDiff; _vehicleClass = _x;};
+												};
                                             } foreach _transportGroups;
 
                                             // Cannot find vehicle big enough to slingload...
@@ -4294,11 +4295,10 @@ switch(_operation) do {
                                         _slingloadmax = [(configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue;
 
                                         if!(isNil "_slingloadmax") then {
-                                        _slingDiff = _slingloadmax - _payloadWeight;
+                                        	_slingDiff = _slingloadmax - _payloadWeight;
 
-                                        if ((_slingDiff < _currentDiff) && (_slingDiff > 0)) then {_currentDiff = _slingDiff; _vehicleClass = _x;};
+                                        	if ((_slingDiff < _currentDiff) && (_slingDiff > 0)) then {_currentDiff = _slingDiff; _vehicleClass = _x;};
                                         };
-
                                     } foreach _transportGroups;
 
                                     // Cannot find vehicle big enough to slingload...
@@ -4886,10 +4886,11 @@ switch(_operation) do {
 
                                                 _slingloadmax = [(configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue;
 
-                                                _slingDiff = _slingloadmax - _payloadWeight;
+												if (!isnil "_slingloadmax") then {
+                                                	_slingDiff = _slingloadmax - _payloadWeight;
 
-                                                if ((_slingDiff < _currentDiff) && (_slingDiff > 0)) then {_currentDiff = _slingDiff; _vehicleClass = _x;};
-
+                                                	if ((_slingDiff < _currentDiff) && (_slingDiff > 0)) then {_currentDiff = _slingDiff; _vehicleClass = _x;};
+												};
                                             } foreach _transportGroups;
 
                                             // Cannot find vehicle big enough to slingload...
