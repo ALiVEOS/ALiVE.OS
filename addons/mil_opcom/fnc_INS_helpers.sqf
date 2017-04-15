@@ -434,7 +434,7 @@ ALiVE_fnc_INS_roadblocks = {
                 {_CQB set [_foreachIndex,[[],"convertObject",_x] call ALiVE_fnc_OPCOM]} foreach _CQB;
 
                 // Spawn CQB
-                [_pos,_size,_CQB] spawn ALiVE_fnc_addCQBpositions;
+                [_pos,_size,_CQB] call ALiVE_fnc_addCQBpositions;
 
                 // Spawn roadblock only if it hasn't been set up already (esp. if it has been reloaded from DB)
                 if (isnil "ALiVE_CIV_PLACEMENT_ROADBLOCKS" || {{_pos distance _x < _size} count ALiVE_CIV_PLACEMENT_ROADBLOCKS < ceil(_size/200)}) then {[_pos, _size, ceil(_size/200), false] call ALiVE_fnc_createRoadblock};
@@ -499,7 +499,7 @@ ALiVE_fnc_INS_depot = {
                 _pos = _center;
 
                 // Spawn CQB
-                [_pos,_size,_CQB] spawn ALiVE_fnc_addCQBpositions;
+                [_pos,_size,_CQB] call ALiVE_fnc_addCQBpositions;
 
                 _event = ['OPCOM_RESERVE',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
                 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
@@ -564,7 +564,7 @@ ALiVE_fnc_INS_recruit = {
                 _pos = _center;
 
                 // Add CQB
-                [_pos,_size,_CQB] spawn ALiVE_fnc_addCQBpositions;
+                [_pos,_size,_CQB] call ALiVE_fnc_addCQBpositions;
 
                 // Recruit 5 times
                 [_pos,_size,_id,_faction,_HQ,_sides,_agents] spawn {
@@ -582,20 +582,24 @@ ALiVE_fnc_INS_recruit = {
                     _created = 0;
 
                     for "_i" from 1 to (count _agents) do {
-
+                        
+                        // Delay 30-60 mins before a recruitment takes place. 
+                        sleep (1800 + random 1800);
+                        
                         // Only recruit if there is an HQ existing and up to 5 groups at max to not spam the map
                         if (!alive _HQ || {_created >= 5}) exitwith {};
-
-                        _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
-                        _recruits = [_group, [_pos,10,_size,1,0,0,0,[],[_pos]] call BIS_fnc_findSafePos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
-                        {[_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[_size + 200,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity} foreach _recruits;
-
-                        [_pos,_sides, 10] call ALiVE_fnc_updateSectorHostility;
-                        [_pos,_allSides - _sides, -10] call ALiVE_fnc_updateSectorHostility;
-
-                        _created = _created + 1;
-
-                        sleep (900 + random 600);
+                        
+                        // 50/50 chance the agent turns into insurgents
+                        if (random 1 < 0.5) then {
+	                        _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
+	                        _recruits = [_group, [_pos,10,_size,1,0,0,0,[],[_pos]] call BIS_fnc_findSafePos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+	                        {[_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[_size + 200,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity} foreach _recruits;
+	
+	                        [_pos,_sides, 10] call ALiVE_fnc_updateSectorHostility;
+	                        [_pos,_allSides - _sides, -10] call ALiVE_fnc_updateSectorHostility;
+	
+	                        _created = _created + 1;
+                         };
                     };
                 };
 
