@@ -79,12 +79,6 @@ if (GVAR(SOURCE) == "pns") exitwith {
     MOD(sys_data) = _logic;
     publicVariable QMOD(SYS_DATA);
 
-	if (MOD(sys_data) getvariable ["debug", "false"] == "true") then {
-	    ALiVE_SYS_DATA_DEBUG_ON = true;
-	} else {
-	    ALiVE_SYS_DATA_DEBUG_ON = false;
-	};
-
     //Set Data defaults
     GVAR(DISABLED) = false;
     publicVariable QGVAR(DISABLED);
@@ -93,6 +87,15 @@ if (GVAR(SOURCE) == "pns") exitwith {
     GVAR(GROUP_ID) = "ALiVE";
     
     GVAR(datahandler) = [nil, "create"] call ALIVE_fnc_Data;
+
+	if (MOD(sys_data) getvariable ["debug", "false"] == "true") then {
+	    ALiVE_SYS_DATA_DEBUG_ON = true;
+	} else {
+	    ALiVE_SYS_DATA_DEBUG_ON = false;
+	};
+    
+    _missionName = format["%1_%2", GVAR(GROUP_ID), missionName];
+    
     GVAR(DictionaryRevs) = [];
     MOD(DataDictionary) = [] call ALiVE_fnc_HashCreate;
     GVAR(dictionaryLoaded) = true;
@@ -111,7 +114,16 @@ if (GVAR(SOURCE) == "pns") exitwith {
 
     MOD(sys_data) setvariable ["disableAAR", "true",true];
     ALIVE_sys_AAR_ENABLED = false; 
-    publicVariable "ALIVE_sys_AAR_ENABLED";      
+    publicVariable "ALIVE_sys_AAR_ENABLED";
+    
+    // Indicate to mission maker (editor), single player or MP-host that the mission is persistent and formerly stored data has been loaded!
+    if !(isNil {profileNameSpace getvariable _missionName}) then {
+       
+        [
+        	format["Welcome %!", name player],
+            "Formerly stored ALiVE mission data found. This missions data state will be reset! To delete current mission data execute 'call ALiVE_fnc_ProfileNameSpaceClear' in ALiVE Admin Actions > Debug Console when running this mission!"
+        ] call ALIVE_fnc_sendHint;
+    };
 
     // Handle basic mission persistence - date/time and custom variables
     GVAR(mission_data) = [] call CBA_fnc_hashCreate;
