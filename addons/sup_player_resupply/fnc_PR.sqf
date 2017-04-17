@@ -891,11 +891,7 @@ switch(_operation) do {
                         private _markers = [_logic,"destinationMarker"] call MAINCLASS;
 
                         {
-                            if (markerPos _x isEqualTo _position) then {
-
                                 deleteMarker _x;
-
-                            };
                         } foreach _markers;
 
                     };
@@ -3216,7 +3212,7 @@ switch(_operation) do {
 
         if(count _destinationMarkers > 0) then {
             {
-                deleteMarkerLocal _x;
+                deleteMarker _x;
             } forEach _destinationMarkers;
 
         };
