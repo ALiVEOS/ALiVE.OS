@@ -980,6 +980,40 @@ rhssaf_faction_un_mappings = [] call ALiVE_fnc_hashCreate;
 
 [ALiVE_factionCustomMappings,"rhssaf_faction_un", rhssaf_faction_un_mappings] call ALiVE_fnc_hashSet;
 
+[ALIVE_factionDefaultSupports,"rhsgref_faction_chdkz", ["rhssaf_group_un_motorized_infantry_team_at","rhssaf_group_un_motorized_infantry_team_aa","rhssaf_group_un_ural_squad","rhssaf_group_un_ural_squad_mg","rhssaf_group_un_ural_squad_sniper","rhssaf_group_un_ural_squad_mg_sniper"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport,"rhsgref_faction_chdkz", ["rhssaf_un_ural"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport,"rhsgref_faction_chdkz", ["rhssaf_airforce_ht48"]] call ALIVE_fnc_hashSet;
+
+// rhssaf_faction_army
+
+rhssaf_faction_army_typeMappings = [] call ALiVE_fnc_hashCreate;
+
+rhssaf_faction_army_factionCustomGroups = [] call ALiVE_fnc_hashCreate;
+[rhssaf_faction_army_factionCustomGroups,"Infantry", ["rhssaf_group_army_m10_digital_company_hq","rhssaf_group_army_m10_digital_platoon_hq","rhssaf_group_army_m10_digital_infantry_squad","rhssaf_group_army_m10_digital_infantry_weaponsquad","rhssaf_group_army_m10_digital_infantry_squad_sniper","rhssaf_group_army_m10_digital_infantry_team","rhssaf_group_army_m10_digital_infantry_team_mg","rhssaf_group_army_m10_digital_infantry_team_AA","rhssaf_group_army_m10_digital_infantry_team_support","rhssaf_group_army_m10_digital_infantry_team_heavy_at"]] call ALiVE_fnc_hashSet;
+[rhssaf_faction_army_factionCustomGroups,"SpecOps", ["rhssaf_group_army_m10_para_company_hq","rhssaf_group_army_m10_para_platoon_hq","rhssaf_group_army_m10_para_infantry_squad","rhssaf_group_army_m10_para_infantry_weaponsquad","rhssaf_group_army_m10_para_infantry_squad_sniper","rhssaf_group_army_m10_para_infantry_team","rhssaf_group_army_m10_para_infantry_team_mg","rhssaf_group_army_m10_para_infantry_team_AA","rhssaf_group_army_m10_para_infantry_team_support","rhssaf_group_army_m10_para_infantry_team_heavy_at"]] call ALiVE_fnc_hashSet;
+[rhssaf_faction_army_factionCustomGroups,"Motorized", ["rhssaf_group_army_motorized_infantry_team_hmg","rhssaf_group_army_motorized_infantry_team_at","rhssaf_group_army_motorized_infantry_team_aa","rhssaf_group_army_ural_squad","rhssaf_group_army_ural_squad_mg","rhssaf_group_army_ural_squad_sniper","rhssaf_group_army_ural_squad_mg_sniper"]] call ALiVE_fnc_hashSet;
+[rhssaf_faction_army_factionCustomGroups,"Motorized_MTP", []] call ALiVE_fnc_hashSet;
+[rhssaf_faction_army_factionCustomGroups,"Mechanized", []] call ALiVE_fnc_hashSet;
+[rhssaf_faction_army_factionCustomGroups,"Armored", ["rhssaf_army_group_t72s_platoon","rhssaf_army_group_t72s_section"]] call ALiVE_fnc_hashSet;
+[rhssaf_faction_army_factionCustomGroups,"Artillery", []] call ALiVE_fnc_hashSet;
+[rhssaf_faction_army_factionCustomGroups,"Naval", []] call ALiVE_fnc_hashSet;
+[rhssaf_faction_army_factionCustomGroups,"Air", []] call ALiVE_fnc_hashSet;
+[rhssaf_faction_army_factionCustomGroups,"Support", []] call ALiVE_fnc_hashSet;
+
+rhssaf_faction_army_mappings = [] call ALiVE_fnc_hashCreate;
+[rhssaf_faction_army_mappings,"Side", "GUER"] call ALiVE_fnc_hashSet;
+[rhssaf_faction_army_mappings,"GroupSideName", "GUER"] call ALiVE_fnc_hashSet;
+[rhssaf_faction_army_mappings,"FactionName", "rhssaf_faction_army"] call ALiVE_fnc_hashSet;
+[rhssaf_faction_army_mappings,"GroupFactionName", "rhssaf_faction_army"] call ALiVE_fnc_hashSet;
+[rhssaf_faction_army_mappings,"GroupFactionTypes", rhssaf_faction_army_typeMappings] call ALiVE_fnc_hashSet;
+[rhssaf_faction_army_mappings,"Groups", rhssaf_faction_army_factionCustomGroups] call ALiVE_fnc_hashSet;
+
+[ALiVE_factionCustomMappings,"rhssaf_faction_army", rhssaf_faction_army_mappings] call ALiVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports,"rhsgref_faction_chdkz", ["rhssaf_group_army_motorized_infantry_team_hmg","rhssaf_group_army_motorized_infantry_team_at","rhssaf_group_army_motorized_infantry_team_aa","rhssaf_group_army_ural_squad","rhssaf_group_army_ural_squad_mg","rhssaf_group_army_ural_squad_sniper","rhssaf_group_army_ural_squad_mg_sniper"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport,"rhsgref_faction_chdkz", ["rhssaf_army_ural","rhssaf_army_ural_open"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport,"rhsgref_faction_chdkz", ["rhssaf_airforce_ht48"]] call ALIVE_fnc_hashSet;
+
 // ---------------------------------------------------------------------------------------------------------------------
 
 
