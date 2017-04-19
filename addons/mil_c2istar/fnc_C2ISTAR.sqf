@@ -592,9 +592,11 @@ switch(_operation) do {
 
             private ["_file"];
 
-            // create the client task handler
-            ALIVE_taskHandlerClient = [] call ALiVE_fnc_HashCreate;
-            [ALIVE_taskHandlerClient, "init"] call ALIVE_fnc_taskHandlerClient;
+			// create the client task handler
+            if (isnil "ALIVE_taskHandlerClient") then {
+            	ALIVE_taskHandlerClient = [] call ALiVE_fnc_HashCreate;
+            	[ALIVE_taskHandlerClient, "init"] call ALIVE_fnc_taskHandlerClient;
+            };
 
             // load static data
             if(isNil "ALiVE_STATIC_DATA_LOADED") then {
