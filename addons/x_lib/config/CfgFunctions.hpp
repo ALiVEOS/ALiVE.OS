@@ -664,6 +664,13 @@ class parseJSON
     RECOMPILE;
 };
 
+class quadtree
+{
+    file = "\x\alive\addons\x_lib\functions\data\fnc_quadtree.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
 class unorderedMap
 {
     file = "\x\alive\addons\x_lib\functions\data\fnc_unorderedMap.sqf";
