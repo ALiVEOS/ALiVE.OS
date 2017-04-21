@@ -18,7 +18,7 @@ item13[] = {"ACTIONS___IEDS_SUICIDERS",2,250,-647.961060,-177.760864,-545.662231
 item14[] = {"ACTIONS___RECRUIT",2,250,-514.779175,-179.211487,-416.952698,-34.175232,0.000000,"ACTIONS:" \n "" \n "RECRUIT" \n "CACHES" \n "ROADBLOCKS"};
 item15[] = {"ORDERS_SELECTED",4,218,-719.547424,-21.761780,-629.547424,28.238159,0.000000,"ORDERS" \n "SELECTED"};
 item16[] = {"SECTION_MOVING",4,218,-978.297668,263.344055,-888.298279,313.343994,0.000000,"SECTION" \n "MOVING"};
-item17[] = {"SELECT_SECTION",2,250,-719.992188,73.293480,-629.992554,123.293404,0.000000,"SELECT" \n "SECTION"};
+item17[] = {"SELECT_SECTION",2,4346,-719.992188,73.293480,-629.992554,123.293404,0.000000,"SELECT" \n "SECTION"};
 item18[] = {"SECTION_SELECTED",4,218,-721.556396,167.032288,-631.556519,217.032288,1.000000,"SECTION" \n "SELECTED"};
 item19[] = {"MOVE_SECTION",2,250,-721.849487,265.364441,-631.849487,315.364441,0.000000,"MOVE" \n "SECTION"};
 item20[] = {"SECTION_READY",4,218,-723.792175,348.889465,-633.792175,398.889465,1.000000,"SECTION" \n "READY"};
@@ -80,8 +80,8 @@ link40[] = {30,33};
 link41[] = {31,26};
 link42[] = {32,26};
 link43[] = {33,34};
-globals[] = {0.000000,0,0,0,16777215,640,480,1,137,6316128,1,-1192.475586,-250.671600,552.769531,-465.007568,719,777,1};
-window[] = {0,-1,-1,-1,-1,1040,138,1690,132,1,736};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,137,6316128,1,-1192.475586,-250.671600,278.897278,-810.063538,672,777,1};
+window[] = {0,-1,-1,-1,-1,1084,176,1728,176,1,689};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -161,8 +161,8 @@ class FSM
        "    private [""_handler"",""_pos"",""_factions"",""_count"",""_section"",""_types""];" \n
        "    " \n
        "    _handler = _this select 0;" \n
-       "        _pos = _this select 1;" \n
-       "        _factions = _this select 2;" \n
+       "    _pos = _this select 1;" \n
+       "    _factions = _this select 2;" \n
        "    _count = _this select 3;" \n
        "    _types = _this select 4;" \n
        "" \n
@@ -180,7 +180,9 @@ class FSM
        "        {" \n
        "                _pf = [ALiVE_ProfileHandler,""getProfile"",_x] call ALiVE_fnc_ProfileHandler;" \n
        "" \n
-       "               !isnil ""_pf"" && {!([_pf,""busy"",false] call ALiVE_fnc_HashGet)} && {([_pf,""type"",""""] call ALiVE_fnc_HashGet) == ""entity""};" \n
+       "               !isnil ""_pf"" && {!([_pf,""busy"",false] call ALiVE_fnc_HashGet)} &&" \n
+       "		   {([_pf,""type"",""""] call ALiVE_fnc_HashGet) == ""entity""} &&" \n
+       "		   {{toLower(_x select 0) == ""alive_fnc_garrison""} count  ([_pf,""activeCommands"",[]] call ALiVE_fnc_HashGet) == 0}" \n
        "            }" \n
        "    ] call ALiVE_fnc_SortBy;" \n
        "    " \n
@@ -1176,6 +1178,8 @@ class FSM
        "    " \n
        "        _nearProfiles = [_OPCOM_HANDLER,_center,_factions,_sizeSection - (count _section),_types] call _fnc_selectSection;" \n
        "        _section = _section + _nearProfiles;" \n
+       "" \n
+       "	  //[""ALiVE Asymm Commander compiling _section %1 (nearProfiles %2)"",_section,_nearProfiles] call ALiVE_fnc_DumpR;" \n
        "    " \n
        "        // Add section" \n
        "        if ((count _section) >= ceil(_sizeSection/3)) then {" \n
