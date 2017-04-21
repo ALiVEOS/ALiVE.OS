@@ -35,7 +35,7 @@ _flag = _args select 2;
 
 TRACE_3("PNS bulkLoadData", _logic, _args, _flag);
 
-_data = profileNamespace getvariable _missionKey;
+_data = +(profileNamespace getvariable _missionKey);
 
 if (isnil "_data") exitwith {false};
 

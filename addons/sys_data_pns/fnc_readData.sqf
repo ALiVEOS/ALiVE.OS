@@ -37,7 +37,7 @@ _uid = _args select 2;
 
 TRACE_3("PNS readData", _logic, _args);
 
-_data = profileNamespace getvariable _uid;
+_data = +(profileNamespace getvariable _uid);
 
 if (isnil "_data") exitwith {"SYS_DATA_ERROR"};
 
