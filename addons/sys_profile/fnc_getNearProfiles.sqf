@@ -26,13 +26,11 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_position","_radius","_categorySelector","_radiusSquared","_result","_profiles","_categorySide","_categoryType","_categoryObjectType","_side","_type","_objectType","_profilePosition"];
+private ["_position","_radius","_categorySelector","_result","_profiles","_categorySide","_categoryType","_categoryObjectType","_side","_type","_objectType","_profilePosition"];
 
 _position = _this select 0;
 _radius = _this select 1;
 _categorySelector = if(count _this > 2) then {_this select 2} else {[]};
-
-_radiusSquared = _radius * _radius;
 
 _result = [];
 
@@ -63,7 +61,7 @@ if(count _categorySelector > 0) then {
 
                             _profilePosition = _x select 2 select 2;
 
-                            if(_position distanceSqr _profilePosition < _radiusSquared) then {
+                            if(_position distance _profilePosition < _radius) then {
                                 _result pushback _x;
                             };
                         };
@@ -71,7 +69,7 @@ if(count _categorySelector > 0) then {
 
                         _profilePosition = _x select 2 select 2;
 
-                        if(_position distanceSqr _profilePosition < _radiusSquared) then {
+                        if(_position distance _profilePosition < _radius) then {
                             _result pushback _x;
                         };
                     };
@@ -92,7 +90,7 @@ if(count _categorySelector > 0) then {
 
                 //diag_log format ["NearEntitiescheck: _profilePosition by select %1 | _pos by hash %2",_profilePosition,([_x,"position"] call ALIVE_fnc_hashGet)];
 
-                if(_position distanceSqr _profilePosition < _radiusSquared) then {
+                if(_position distance _profilePosition < _radius) then {
                     _result pushback _x;
                 };
             };
