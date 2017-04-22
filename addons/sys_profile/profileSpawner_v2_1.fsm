@@ -9,14 +9,14 @@ item4[] = {"END",1,250,43.372803,-89.655373,133.372833,-39.655460,0.000000,"END"
 item5[] = {"TIMER",2,250,-191.784912,-93.250328,-101.784897,-43.250317,0.000000,"TIMER"};
 item6[] = {"COMPLETE",4,218,116.471710,355.902557,206.472076,405.902588,0.000000,"COMPLETE"};
 item7[] = {"START",4,218,-192.425964,-19.086315,-102.425903,30.913666,2.000000,"START"};
-item8[] = {"ANALYSE",2,4346,-121.637917,195.866745,-31.637772,245.866928,0.000000,"ANALYSE"};
+item8[] = {"ANALYSE",2,250,-121.637917,195.866745,-31.637772,245.866928,0.000000,"ANALYSE"};
 item9[] = {"DO_SPAWN",4,218,-123.076942,274.904297,-33.076859,324.904358,0.000000,"DO" \n "SPAWN"};
 item10[] = {"DONE",2,250,-120.598183,507.647278,-33.938690,554.306946,0.000000,"DONE"};
 item11[] = {"SPAWN_LOOP",2,250,-122.133957,356.411804,-32.133873,406.411865,0.000000,"SPAWN" \n "LOOP"};
 item12[] = {"ITERATE",4,218,4.978054,356.221527,94.978058,406.221588,1.000000,"ITERATE"};
 item13[] = {"END__LOOP",4,218,-122.198143,431.177094,-32.198082,481.177094,0.000000,"END " \n "LOOP"};
 item14[] = {"WAIT",4,218,-318.101746,-18.262732,-228.101776,31.737242,3.000000,"WAIT"};
-item15[] = {"ANALYSE_1",2,250,-273.843933,196.692368,-183.843842,246.692383,0.000000,"ANALYSE"};
+item15[] = {"ANALYSE_1",2,4346,-273.843933,196.692368,-183.843842,246.692383,0.000000,"ANALYSE"};
 item16[] = {"DO__DESPAWN",4,218,-273.541809,276.163025,-183.541779,326.163147,1.000000,"DO " \n "DESPAWN"};
 item17[] = {"CHECK",2,250,-192.264313,52.674805,-102.264297,102.674797,0.000000,"CHECK"};
 item18[] = {"DESPAWN_LOOP",2,250,-273.384827,357.735229,-183.384796,407.735413,0.000000,"DESPAWN" \n "LOOP"};
@@ -86,7 +86,7 @@ link37[] = {28,10};
 link38[] = {29,15};
 link39[] = {30,8};
 globals[] = {0.000000,0,0,0,16777215,640,480,1,123,6316128,1,-581.810730,223.598297,615.953796,-218.187729,750,767,1};
-window[] = {0,-1,-1,-1,-1,964,66,1689,66,1,767};
+window[] = {0,-1,-1,-1,-1,942,44,1667,44,1,767};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -205,7 +205,7 @@ class FSM
       name = "ANALYSE";
       init = /*%FSM<STATEINIT""">*/"private [""_profile"",""_active"",""_position"",""_countToSpawn"",""_activeEntities"",""_activeEntityCount""];" \n
        "" \n
-       "_block = [ALIVE_arrayBlockHandler,""getNextBlock"", [format[""inactiveProfiles%1"",_side],_inactiveProfiles,30]] call ALIVE_fnc_arrayBlockHandler;" \n
+       "_block = [ALIVE_arrayBlockHandler,""getNextBlock"", [format[""inactiveProfiles%1"",_side],_inactiveProfiles,75]] call ALIVE_fnc_arrayBlockHandler;" \n
        "" \n
        "{" \n
        "" \n
@@ -235,7 +235,7 @@ class FSM
        "" \n
        "} forEach _block;" \n
        "" \n
-       "_analysisCount = _analysisCount + 30;" \n
+       "_analysisCount = _analysisCount + 75;" \n
        "" \n
        "// DEBUG -------------------------------------------------------------------------------------" \n
        "/*" \n
@@ -449,7 +449,7 @@ class FSM
       name = "ANALYSE_1";
       init = /*%FSM<STATEINIT""">*/"private [""_profile"",""_active"",""_leader"",""_position"",""_profileType"",""_group"",""_groupLeader"",""_countToDespawn"",""_stopDespawn""];" \n
        "" \n
-       "_block = [ALIVE_arrayBlockHandler,""getNextBlock"", [format[""activeProfiles%1"",_side],_activeProfiles,30]] call ALIVE_fnc_arrayBlockHandler;" \n
+       "_block = [ALIVE_arrayBlockHandler,""getNextBlock"", [format[""activeProfiles%1"",_side],_activeProfiles,75]] call ALIVE_fnc_arrayBlockHandler;" \n
        "" \n
        "_despawnDistance = _spawnDistance*1.2;" \n
        "_despawnTypeJetRadius = _spawnTypeJetRadius*1.1;" \n
@@ -490,7 +490,7 @@ class FSM
        "    };" \n
        "} forEach _block;" \n
        "" \n
-       "_analysisCount = _analysisCount + 30;" \n
+       "_analysisCount = _analysisCount + 75;" \n
        "" \n
        "" \n
        "// DEBUG -------------------------------------------------------------------------------------" \n
