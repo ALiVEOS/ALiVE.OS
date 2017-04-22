@@ -34,6 +34,8 @@ _data = _args select 1;
 _missionKey  = _args select 2;
 _async = _args select 3;
 
+_data = +_data;
+
 TRACE_3("Saving data", _logic, _args);
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
@@ -42,7 +44,7 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 
 _result = "";
 
-MOD(PNS_STORE) = profileNamespace getVariable [_missionKey, [] call ALiVE_fnc_HashCreate];
+MOD(PNS_STORE) = +(profileNamespace getVariable [_missionKey, [] call ALiVE_fnc_HashCreate]);
 
 [MOD(PNS_STORE),_module,_data] call ALiVE_fnc_HashSet;
 

@@ -748,15 +748,17 @@ switch(_operation) do {
                                 [_logic, "HQCluster", _x] call MAINCLASS;
                             };
                         } forEach _clusters;
-
-                        _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
-                        _profiles = [_group, position _hqBuilding, random 360, true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
-
-                        {
-                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[50,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
-                            };
-                        } foreach _profiles;
+                        
+                        if !(ALIVE_loadProfilesPersistent) then {
+	                        _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
+	                        _profiles = [_group, position _hqBuilding, random 360, true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+	
+	                        {
+	                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
+	                                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[50,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
+	                            };
+	                        } foreach _profiles;
+                         };
 
                         [_logic, "HQBuilding", _hqBuilding] call MAINCLASS;
 
