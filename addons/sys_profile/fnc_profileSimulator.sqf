@@ -113,34 +113,33 @@ private _totalEntities = 0;
                 // Find and attack enemy profiles in-range
 
                 private _nearEnemies = [];
-				{
-	                {
-	                    private _posInt = _x select 2 select 2;
-	                    private _typeInt = _x select 2 select 5;
-	                    private _isPlayerInt = [_x,"isPlayer",false] call ALiVE_fnc_hashGet;
-	
-	                    if (
-	                        (_typeInt == "entity") &&
-	                        {_posInt distance2D _currentPosition <= _combatRange} &&
-	                        {!_isPlayerInt}
-	                    ) then {
-	
-	                        private _sideObj = [_side] call ALiVE_fnc_sideTextToObject;
-	                        private _sideInt = _x select 2 select 3;
-	                        private _enemySides = [];
-	
-	                        if (_sideObj getfriend east < 0.6) then {_enemySides pushback "EAST"};
-	                        if (_sideObj getfriend west < 0.6) then {_enemySides pushback "WEST"};
-	                        if (_sideObj getfriend resistance < 0.6) then {_enemySides pushback "GUER"};
-	
-	                        if (_sideInt in _enemySides) then {
-	                            private _profileIDInt = _x select 2 select 4;
-	                            _nearEnemies pushback _profileIDInt;
-	                        };
-	                    };
-	
-	                } foreach (_profiles select 2);
-                } call CBA_fnc_DirectCall;
+                [{
+                    private _posInt = _x select 2 select 2;
+                    private _typeInt = _x select 2 select 5;
+                    private _isPlayerInt = [_x,"isPlayer",false] call ALiVE_fnc_hashGet;
+
+                    if (
+                        (_typeInt == "entity") &&
+                        {_posInt distance2D _currentPosition <= _combatRange} &&
+                        {!_isPlayerInt}
+                    ) then {
+
+                        private _sideObj = [_side] call ALiVE_fnc_sideTextToObject;
+                        private _sideInt = _x select 2 select 3;
+                        private _enemySides = [];
+
+                        if (_sideObj getfriend east < 0.6) then {_enemySides pushback "EAST"};
+                        if (_sideObj getfriend west < 0.6) then {_enemySides pushback "WEST"};
+                        if (_sideObj getfriend resistance < 0.6) then {_enemySides pushback "GUER"};
+
+                        if (_sideInt in _enemySides) then {
+                            private _profileIDInt = _x select 2 select 4;
+                            _nearEnemies pushback _profileIDInt;
+                        };
+                    };
+
+                },_profiles select 2,10] call ALiVE_fnc_ArrayFrameSplitter;
+                
 
                 if !(_nearEnemies isEqualTo []) then {
 
