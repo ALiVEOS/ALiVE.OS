@@ -29,8 +29,8 @@ Author:
 SpyderBlack723
 ---------------------------------------------------------------------------- */
 
-#define SUPERCLASS  ALIVE_fnc_baseClassHash
-#define MAINCLASS   ALIVE_fnc_quadtree
+#define SUPERCLASS  ALiVE_fnc_baseClassHash
+#define MAINCLASS   ALiVE_fnc_quadtree
 
 private "_result";
 
@@ -42,6 +42,24 @@ params [
 
 
 switch (_operation) do {
+
+    //////////////////////////////////////////////////
+    //
+    //  Create a new quadtree
+    //
+    //  Arguments:
+    //      Array:
+    //          Position: 2D Position of the quadtree, position should be the bottom-left corner of the rectangle
+    //          Width: Full width from left and right corners of the rectangle
+    //          Height: Full height from bottom to the top corners of the rectangle
+    //          Max Objects: Total objects a single quadtree can hold before dividing
+    //          Max Depth: Number of times a quadtree can divide
+    //          Depth: Depth of a quadtree, should not be set by user
+    //
+    //  Returns:
+    //      None
+    //
+    //////////////////////////////////////////////////
 
     case "create": {
 
@@ -56,9 +74,9 @@ switch (_operation) do {
 
         _result = [
             [
-                ["position", _position],
-                ["width", _width],
-                ["height", _height],
+                ["center", [(_position select 0) + _width * 0.50, (_position select 1) + _height * 0.50]],
+                ["halfWidth", _width * 0.50],
+                ["halfHeight", _height * 0.50],
                 ["children", []],
                 ["objects", []],
                 ["maxObjects", _maxObjects],
@@ -69,42 +87,32 @@ switch (_operation) do {
 
     };
 
-
-    ////////////// Bounding Box Helpers //////////////
-
-    case "contains": {
-
-        _args params ["_boundingBox","_point"];
-
-        _boundingBox params ["_boundingPos","_boundingSize"];
-
-        if (
-            (_point select 0) >= (_boundingPos select 0) &&
-            {(_point select 1) >= (_boundingPos select 1)} &&
-            {(_point select 0) <= ((_boundingPos select 0) + (_boundingSize select 0))} &&
-            {(_point select 1) <= ((_boundingPos select 1) + (_boundingSize select 1))}
-        ) then {
-            _result = true;
-        } else {
-            _result = false;
-        };
-
-    };
-
     //////////////////////////////////////////////////
-
+    //
+    //  Create 4 new quadtrees inside an existing quadtree
+    //
+    //  Arguments:
+    //      None
+    //
+    //  Notes:
+    //      - Should not be called by the user
+    //
+    //  Returns:
+    //      None
+    //
+    //////////////////////////////////////////////////
 
     case "subdivide": {
 
-        private _position = _logic select 2 select 0;
+        private _center = _logic select 2 select 0;
         private _maxObjects = _logic select 2 select 5;
         private _maxDepth = _logic select 2 select 7;
         private _depth = _logic select 2 select 6;
 
         if (_depth < _maxDepth) then {
 
-            private _childWidth = (_logic select 2 select 1) * 0.50;
-            private _childHeight = (_logic select 2 select 2) * 0.50;
+            private _childWidth = _logic select 2 select 1;
+            private _childHeight = _logic select 2 select 2;
             private _childDepth = _depth + 1;
 
             private _children = _logic select 2 select 3;
@@ -113,41 +121,62 @@ switch (_operation) do {
 
             // NW
 
-            _childTemplate set [0, +_position];
+            _childTemplate set [0, [(_center select 0) - _childWidth, _center select 1]];
             _children pushback ([nil,"create", +_childTemplate] call MAINCLASS);
 
             // NE
 
-            _childTemplate set [0, [(_position select 0) + _childWidth, _position select 1]];
+            _childTemplate set [0, +_center];
             _children pushback ([nil,"create", +_childTemplate] call MAINCLASS);
 
             // SW
 
-            _childTemplate set [0, [(_position select 0), (_position select 1) + _childHeight]];
+            _childTemplate set [0, [(_center select 0) - _childWidth, (_center select 1) - _childHeight]];
             _children pushback ([nil,"create", +_childTemplate] call MAINCLASS);
 
             // SE
 
-            _childTemplate set [0, [(_position select 0) + _childWidth, (_position select 1) + _childHeight]];
+            _childTemplate set [0, [_center select 0, (_center select 1) - _childHeight]];
             _children pushback ([nil,"create", +_childTemplate] call MAINCLASS);
 
         };
 
     };
 
+    //////////////////////////////////////////////////
+    //
+    //  Inserts an item into the quadtree at the correct location
+    //
+    //  Arguments:
+    //      Array:
+    //          Position: Position of the item in the world
+    //          Value: Value to be stored
+    //
+    //  Returns:
+    //      Success: True if added, false if outside of quadtree
+    //
+    //////////////////////////////////////////////////
+
     case "insert": {
 
+        /*
         _args params [
             "_dataPosition",
             "_dataValue"
         ];
+        */
 
-        private _position = _logic select 2 select 0;
-        private _size = [_logic select 2 select 1, _logic select 2 select 2];
+        private _dataPosition = _args select 0;
 
-        // ensure tree contains point
+        private _center = _logic select 2 select 0;
+        private _halfWidth = _logic select 2 select 1;
+        private _halfHeight = _logic select 2 select 2;
 
-        if ([nil,"contains", [[_position, _size], _dataPosition]] call MAINCLASS) then {
+        _result = false;
+
+        // check tree contains point
+
+        if (_dataPosition inArea [_center, _halfWidth, _halfHeight, 0, true]) then {
 
             private _maxObjects = _logic select 2 select 5;
             private _objects = _logic select 2 select 4;
@@ -156,7 +185,7 @@ switch (_operation) do {
             private _maxDepth = _logic select 2 select 7;
             private _children = _logic select 2 select 3;
 
-            if (count _objects <_maxObjects || {_children isEqualTo [] && _depth == _maxDepth}) exitwith {
+            if (count _objects < _maxObjects || {_children isEqualTo [] && _depth == _maxDepth}) exitwith {
                 _objects pushback _args;
                 _result = true;
             };
@@ -165,56 +194,265 @@ switch (_operation) do {
                 [_logic,"subdivide"] call MAINCLASS;
             };
 
-            private _added = false;
+            // find child to insert point
 
-            {
-                if (!_added) then {
-                    _added = [_x,"insert", _args] call MAINCLASS;
+            if ((_dataPosition select 0) < (_center select 0)) then {
+                // point is either in quad NW or SW
+
+                if ((_dataPosition select 1) < (_center select 1)) then {
+                    [(_children select 2),"insert", _args] call MAINCLASS;
+                } else {
+                    [(_children select 0),"insert", _args] call MAINCLASS;
                 };
-            } foreach _children;
+            } else {
+                // point is either in quad NE or SE
 
-            _result = false;
+                if ((_dataPosition select 1) < (_center select 1)) then {
+                    [(_children select 3),"insert", _args] call MAINCLASS;
+                } else {
+                    [(_children select 1),"insert", _args] call MAINCLASS;
+                };
+            };
 
         };
 
     };
 
-    case "queryRange": {
+    //////////////////////////////////////////////////
+    //
+    //  Retrieves items contained in a given rectangle
+    //
+    //  Arguments:
+    //      Array:
+    //          Position: Position of the bottom-left corner of the rectangle
+    //          Width: Full width of the rectangle from left to right corners
+    //          Height: FUll height of the rectangle from bottom to top corners
+    //
+    //  Returns:
+    //      Array:
+    //          Items in Range: Items that are contained in the passed rectangle, item format is [position,value]
+    //
+    //////////////////////////////////////////////////
 
-        _args params ["_rangePosition","_rangeWidth","_rangeHeight"];
+    case "queryRect": {
+
+        _args params ["_rangePosition","_rangeWidth","_rangeHeight", ["_inAreaArgs",[]]];
 
         _result = [];
 
         // check if passed bounding box intersects with tree
 
-        private _position = _logic select 2 select 0;
-        private _width = _logic select 2 select 1;
-        private _height = _logic select 2 select 2;
+        private _center = _logic select 2 select 0;
+        private _halfWidth = _logic select 2 select 1;
+        private _halfHeight = _logic select 2 select 2;
 
-        if (
-            ((_rangePosition select 0) + _rangeWidth) <= (_position select 0) ||
-            ((_position select 0) + _width) <= (_rangePosition select 0) ||
-            ((_rangePosition select 1) + _rangeHeight) <= (_position select 1) ||
-            ((_position select 1) + _height) <= (_rangePosition select 1)
-        ) exitwith {};
+        if !(
+            ((_rangePosition select 0) + _rangeWidth) <= (_center select 0) - _halfWidth ||
+            {((_center select 0) + _halfWidth) <= (_rangePosition select 0)} ||
+            {((_rangePosition select 1) + _rangeHeight) <= (_center select 1) - _halfHeight} ||
+            {((_center select 1) + _halfHeight) <= (_rangePosition select 1)}
+        ) then {
 
-        // return objects in this tree
+            // return objects in this tree
+            // that fit inside passed range
 
-        private _objects = _logic select 2 select 4;
+            if (_inAreaArgs isEqualTo []) then {
+                _inAreaArgs = [[(_rangePosition select 0) + _rangeWidth * 0.50, (_rangePosition select 1) + _rangeHeight * 0.50], _rangeWidth * 0.50, _rangeHeight * 0.50, 0, true];
+                _args pushback _inAreaArgs;
+            };
 
-        _result append _objects;
-
-        // add objects in sub trees
-
-        private _children = _logic select 2 select 3;
-
-        if !(_children isEqualTo []) then {
             {
-                _result append ([_x,"queryRange", _args] call MAINCLASS);
-            } foreach _children;
+                if ((_x select 0) inArea _inAreaArgs) then {
+                    _result pushback _x;
+                }
+            } foreach (_logic select 2 select 4); // objects
+
+            // add objects in sub trees
+
+            {
+                _result append ([_x,"queryRect", _args] call MAINCLASS);
+            } foreach (_logic select 2 select 3); // children
+
         };
 
     };
+
+    //////////////////////////////////////////////////
+    //
+    //  Retrieves items contained in a given circle
+    //
+    //  Arguments:
+    //      Array:
+    //          Position: Center of the circle
+    //          Radius: Radius of the circle
+    //
+    //  Returns:
+    //      Array:
+    //          Items in Range: Items that are contained in the passed rectangle, item format is [position,value]
+    //
+    //////////////////////////////////////////////////
+
+    case "queryRadius": {
+
+        _args params ["_circleCenter","_radius"];
+
+        _result = [];
+
+        // check if passed circle intersects with tree
+
+        private _center = _logic select 2 select 0;
+        private _halfWidth = _logic select 2 select 1;
+        private _halfHeight = _logic select 2 select 2;
+
+        private _distX = abs((_circleCenter select 0) - (_center select 0));
+        private _distY = abs((_circleCenter select 1) - (_center select 1));
+
+        private _intersect = (
+            // check if circle center is inside quad
+            _circleCenter inArea [_center, _halfWidth, _halfHeight, 0, true]
+
+            ||
+
+            // check if circle intersects quad
+            {
+                (!(_distX > (_halfWidth + _radius))) &&
+                {!(_distY > (_halfHeight + _radius))} ||
+
+                {_distX <= _halfWidth} ||
+                {_distY <= _halfHeight} ||
+
+                (((_distX - _halfWidth)^2) + ((_distY - _halfHeight)^2)) <= (_radius^2)
+            }
+        );
+
+        if (_intersect) then {
+
+            // return objects in this tree
+            // that fit within the passed circle
+
+            {
+                if ((_x select 0) inArea [_circleCenter, _radius, _radius, 0, false]) then {
+                    _result pushback _x;
+                };
+            } foreach (_logic select 2 select 4); // objects
+
+            // add objects in sub trees
+
+            private _children = _logic select 2 select 3;
+
+            if !(_children isEqualTo []) then {
+                {
+                    _result append ([_x,"queryRadius", _args] call MAINCLASS);
+                } foreach _children;
+            };
+
+        };
+
+    };
+
+    //////////////////////////////////////////////////
+    //
+    //  Retrieves items contained in a given polygon
+    //
+    //  Arguments:
+    //      Array:
+    //          Points: Points defining a rectangle
+    //
+    //  Returns:
+    //      Array:
+    //          Items in Range: Items that are contained in the passed rectangle, item format is [position,value]
+    //
+    //////////////////////////////////////////////////
+
+    case "queryPolygon": {
+
+        private _pointArray = _args;
+
+        if (count _pointArray < 3) exitwith {_result = []};
+
+        // generate bounding box for polygon
+        // significantly easier to test rect-rect
+        // intersection than rect-poly intersection
+
+        private _minX = 0;
+        private _minY = 0;
+        private _maxX = 0;
+        private _maxY = 0;
+
+        {
+            if ((_x select 0) < _minX) then {_minX = _x select 0} else {
+                if ((_x select 0) > _maxX) then {_maxX = _x select 0}
+            };
+            if ((_x select 1) < _minY) then {_minY = _x select 1} else {
+                if ((_x select 1) > _maxY) then {_maxY = _x select 1}
+            };
+
+            if (count _x < 3) then {_x pushback 0};
+        } foreach _pointArray;
+
+        private _polygonBB = [[_minX,_minY,0], _maxX - _minX, _maxY - _minY];
+
+        _result = [_logic,"queryPolygonInternal", [_pointArray,_polygonBB]] call MAINCLASS;
+
+    };
+
+    case "queryPolygonInternal": {
+
+        _args params ["_pointArray","_polygonBB"];
+
+        _result = [];
+
+        private _center = _logic select 2 select 0;
+        private _halfWidth = _logic select 2 select 1;
+        private _halfHeight = _logic select 2 select 2;
+
+        // check if polygon bounding box intersects quad
+
+        _polygonBB params ["_rangePosition","_rangeWidth","_rangeHeight"];
+
+        if !(
+            ((_rangePosition select 0) + _rangeWidth) <= (_center select 0) - _halfWidth ||
+            {((_center select 0) + _halfWidth) <= (_rangePosition select 0)} ||
+            {((_rangePosition select 1) + _rangeHeight) <= (_center select 1) - _halfHeight} ||
+            {((_center select 1) + _halfHeight) <= (_rangePosition select 1)}
+        ) then {
+            // return objects in this tree
+            // that fit inside passed polygon
+
+            // inPolygon requires 3D position vectors
+
+            {
+                if (count _x < 3) then {
+                    if ([_x select 0 select 0,_x select 0 select 1,0] inPolygon _pointArray) then {
+                        _result pushback _x;
+                    };
+                } else {
+                    if ((_x select 0) inPolygon _pointArray) then {
+                        _result pushback _x;
+                    };
+                };
+            } foreach (_logic select 2 select 4); // objects
+
+            // add objects in sub trees
+
+            {
+                _result append ([_x,"queryPolygonInternal", [_pointArray,_polygonBB]] call MAINCLASS);
+            } foreach (_logic select 2 select 3); // children
+        };
+
+    };
+
+    //////////////////////////////////////////////////
+    //
+    //  Clears all items from a quadtree and its children
+    //
+    //  Arguments:
+    //      None
+    //
+    //  Returns:
+    //      None
+    //
+    //////////////////////////////////////////////////
 
     case "clear": {
 
@@ -228,7 +466,7 @@ switch (_operation) do {
             [_x,"clear"] call MAINCLASS;
         } foreach _children;
 
-        _children resize 0;
+        _children resize 0; // might be worth ignoring in SQF if max depth is low enough and mem is not an issue
 
     };
 
