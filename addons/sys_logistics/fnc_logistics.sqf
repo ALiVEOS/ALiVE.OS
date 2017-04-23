@@ -394,7 +394,10 @@ switch (_operation) do {
 
             // Detach and reposition for a save placement
             detach _object;
-            _object setposATL [getposATL _object select 0, getposATL _object select 1,getposATL _object select 2];
+            // Reposition to fit surface gradient
+            _object setpos getpos _object;
+            // Set height correctly
+            _object setposATL [getposATL _object select 0, getposATL _object select 1, if !(isNull _container) then {getposATL _container select 2} else {getposATL _object select 2}];
 
             [[_logic,"updateObject",[_container,_object]],"ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
 
