@@ -5,13 +5,14 @@ SCRIPT(quadtree);
 Function: ALiVE_fnc_quadtree
 
 Description:
-Quadtree class
+A Spacial-Partioning structure. Sorts points by position in the world on insertion.
+Results in fast queries of objects contained within a range.
 
 Parameters:
 Any - Parameters for the given operation
 
 Returns:
-Array - The hash
+Any - The result of the given operation
 
 Examples:
 (begin example)
@@ -19,11 +20,8 @@ Create a quadtree with origin at [0,0,0]
 That covers the entire map
 Holds 20 objects per quad
 Subdivides up to 5 times
-_quadtree = [nil,"create", [[0,0,0], mapWidth, mapHeight, 20, 5]] call ALiVE_fnc_quadtree;
+_quadtree = [nil,"create", [[0,0,0], worldsize, worldsize, 20, 5]] call ALiVE_fnc_quadtree;
 (end)
-
-See Also:
-TODO: BoundingBox Class
 
 Author:
 SpyderBlack723
@@ -296,57 +294,9 @@ switch (_operation) do {
 
         _args params ["_circleCenter","_radius"];
 
-        _result = [];
+        _result = [_logic,"queryRect", [[(_circleCenter select 0) - _radius, (_circleCenter select 1) - _radius], _radius * 2, _radius * 2]] call MAINCLASS;
 
-        // check if passed circle intersects with tree
-
-        private _center = _logic select 2 select 0;
-        private _halfWidth = _logic select 2 select 1;
-        private _halfHeight = _logic select 2 select 2;
-
-        private _distX = abs((_circleCenter select 0) - (_center select 0));
-        private _distY = abs((_circleCenter select 1) - (_center select 1));
-
-        private _intersect = (
-            // check if circle center is inside quad
-            _circleCenter inArea [_center, _halfWidth, _halfHeight, 0, true]
-
-            ||
-
-            // check if circle intersects quad
-            {
-                (!(_distX > (_halfWidth + _radius))) &&
-                {!(_distY > (_halfHeight + _radius))} ||
-
-                {_distX <= _halfWidth} ||
-                {_distY <= _halfHeight} ||
-
-                (((_distX - _halfWidth)^2) + ((_distY - _halfHeight)^2)) <= (_radius^2)
-            }
-        );
-
-        if (_intersect) then {
-
-            // return objects in this tree
-            // that fit within the passed circle
-
-            {
-                if ((_x select 0) inArea [_circleCenter, _radius, _radius, 0, false]) then {
-                    _result pushback _x;
-                };
-            } foreach (_logic select 2 select 4); // objects
-
-            // add objects in sub trees
-
-            private _children = _logic select 2 select 3;
-
-            if !(_children isEqualTo []) then {
-                {
-                    _result append ([_x,"queryRadius", _args] call MAINCLASS);
-                } foreach _children;
-            };
-
-        };
+        _result select {(_x select 0) distance _circleCenter <= _radius};
 
     };
 
