@@ -94,7 +94,7 @@ switch(_operation) do {
                         _despawnCycleTime = [_logic,"despawnCycleTime"] call ALIVE_fnc_hashGet;
                         _combatRate = [_logic,"combatRate"] call ALIVE_fnc_hashGet;
                         _smoothSpawn = [_logic,"smoothSpawn"] call ALIVE_fnc_hashGet;
-
+                        
                         // set smoothSpawn value
                         ALiVE_smoothSpawn = _smoothSpawn;
 
@@ -227,8 +227,6 @@ switch(_operation) do {
 
                         // start analysis jobs
                         [ALIVE_liveAnalysis, "start"] call ALIVE_fnc_liveAnalysis;
-
-                        ALiVE_profiles_quadtree = [nil,"create", [[0,0,0], worldsize, worldsize, 10, 6]] call ALiVE_fnc_quadtree;
                 };
         };
         case "destroy": {
@@ -358,7 +356,7 @@ switch(_operation) do {
                 ASSERT_TRUE(typeName _args == "BOOL",str _args);
 
                 _result = _args;
-        };
+        };        
         case "plotSectors": {
                 if(typeName _args != "BOOL") then {
                         _args = [_logic,"plotSectors"] call ALIVE_fnc_hashGet;
