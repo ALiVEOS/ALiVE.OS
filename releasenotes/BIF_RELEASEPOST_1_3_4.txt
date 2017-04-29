@@ -11,6 +11,8 @@ Meanwhile the rest of the team has been working hard on some major performance i
 
 SpyderBlack continues to enhance his Orbat Tool.  If you have not tried it yet, it's well worth a go.  Many people have released some great new factions using the tool already and remember you don't need ALiVE to use them in missions (though of course we recommend you do!)
 
+Tupolov has returned from the wilderness of no interwebs and responded to a few community requests to index the shiny new Lythium map (welcome back Tup!)
+
 [b]ProfileNameSpace Usage[/b]
 This is the first iteration of PNS Persistence so please report bugs Github.  To use local persistence, select "ProfileNamespace" on the ALiVE Database module and make sure you have persistence enabled on the other modules as normal.  It is recommended you backup your user profile and/or server profile first (C:\Users\username\Documents\Arma 3 - Other Profiles\profilename).  We will add buttons for saving and clearing data soon but for now you can use the following functions in the debug console:
 
@@ -20,7 +22,7 @@ This is the first iteration of PNS Persistence so please report bugs Github.  To
 [b]Release Highlights[/b]
 
 Added a database-free local save option
-Map Index - FSF Adiyaman (thanks Vegas!); Diyala (thanks Heroes!); Lythium (thanks Tup!)
+Map Index - FSF Adiyaman (thanks Vegas!); Diyala (thanks Heroes!); Winthera & Dingor (thanks Whigital!); Lythium (thanks Tup!)
 Added adjustable Smooth Spawn™ for virtual AI
 Added group mapping for latest RHS update
 Several performance enhancements
