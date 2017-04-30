@@ -6,19 +6,15 @@
     <a href="https://github.com/ALiVEOS/ALiVE.OS/releases/latest">
         <img src="https://img.shields.io/github/release/ALiVEOS/ALiVE.OS.svg?maxAge=2592000" alt="ALiVE Version">
     </a>
-    
     <a href="https://forums.bistudio.com/topic/187954-alive-advanced-light-infantry-virtual-environment-10-ga/">
         <img src="https://img.shields.io/badge/BI-Forums-lightgrey.svg" alt="BI Forums">
     </a>
-    
     <a href="http://alivemod.com/forum">
         <img src="https://img.shields.io/badge/ALiVE-Forums-lightgrey.svg" alt="ALiVE Forums">
     </a>
-    
     <a href="http://alivemod.com/wiki">
         <img src="https://img.shields.io/badge/ALiVE-Wiki-lightgrey.svg" alt="ALiVE Wiki">
     </a>
-
     <a href="https://github.com/ALiVEOS/ALiVE.OS/blob/master/LICENSE.txt">
         <img src="https://img.shields.io/github/license/ALiVEOS/ALiVE.OS.svg?maxAge=2592000" alt="ALiVE License">
     </a>
@@ -28,7 +24,6 @@
     <a href="https://github.com/ALiVEOS/ALiVE.OS/issues">
         <img src="https://img.shields.io/github/issues/ALiVEOS/ALiVE.OS.svg?maxAge=2592000" alt="ALiVE Issues">
     </a>
-    
     <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=ready&title=Ready" alt="Ready">
     <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=WIP&title=WIP" alt="WIP">
     <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=Needs%20Testing&title=Testing" alt="Testing">
@@ -41,7 +36,7 @@
 
 Developed by the team that brought you Multi Session Operations (MSO), the **Advanced Light Infantry Virtual Environment (ALiVE)** is an easy to use modular mission framework that provides everything players and mission makers need to quickly set up and run realistic military operations in almost any scenario, including command, combat support, service support, logistics and more.
 
-###Main Features
+### Main Features
 
 ALiVE features the revolutionary **Virtual Profile System** that supports thousands of units operating simultaneously across the map with minimal impact on performance.  Unlike older caching systems, Virtual AI groups will continue to move, operate and fight and will seamlessly spawn into the visual game world when players are in range.
 
@@ -55,12 +50,12 @@ The intuitive, easy to use modular framework means mission making with ALiVE is 
 
 A recent addition is a fully in game GUI for building unit, group and faction configs without having to learn the intricacies of config editing.
 
-###Installation
+### Installation
 - Download and run as any normal mod for ArmA3 using -mod=@CBA_A3;@ALiVE
 - For Dedicated Servers use -mod=@CBA_A3;@ALiVEServer;@ALiVE
 - ALiVE requires CBA_A3
 
-###Help
+### Help
 There are several entries in the Field Manual which will guide you through interacting with key in game ALiVE features.
 
 - By default, ALiVE uses the **App Key** to open the ALiVE interaction menu.  The app key is found next to your right control key. If you do not have an app key or wish to use a different binding, you can remap it in the mods keybinding menu once in game. 
@@ -71,14 +66,14 @@ For full instructions refer to the wiki at http://alivemod.com/wiki/
 
 Our devs check our forum daily, so any issues please contact us via the forum at http://alivemod.com/forum/
 
-###ALiVE War Room
+### ALiVE War Room
 We highly recommend that you (as a player or a group admin) register with our ALiVE War Room at http://alivemod.com/user/register
 
 On the War Room you can create a new group or join a current group if they accept applications.  If you create a group, you can register one or more servers to enable database persistence, player stats and AAR.
 
 In order to capture data properly with ALiVE and ensure mission persistence, players should always use the **PLAYER EXIT** button when on a dedicated server. Administrators should use the **SERVER SAVE AND EXIT** button when closing down an MP session on a dedicated server. Both these buttons are available by pressing ESC to get to the main menu while in game.
 
-###How It Works
+### How It Works
 ALiVE is complex but not complicated. Each module is standalone but they can be synchronised to each other to create different scenarios. The modules work independently but will use data derived from another module if it is synchronised. This layered approach provides a high degree of flexibility and allows you to build custom scenarios quickly.
 
 Everything starts with the Placement modules. These modules fulfill two important functions: they identify a list of military and civilian objectives or areas of importance across the map and secondly, they place the AI groups. There are several module parameters for customising the type of objectives and also the shape and size of the AI forces. Refer to the Military and Civilian Placement Module pages for further details on these.

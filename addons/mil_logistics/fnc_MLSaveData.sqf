@@ -27,7 +27,7 @@ ARJay
 
 private ["_result","_data","_async","_missionName","_message","_messages","_saveResult"];
 
-if !(isDedicated && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
+if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     [true, "ALiVE MIL LOGISTICS - Saving data", "mlper"] call ALIVE_fnc_timer;
@@ -65,7 +65,7 @@ if (isNil QGVAR(DATAHANDLER)) then {
     [GVAR(DATAHANDLER),"storeType",true] call ALIVE_fnc_Data;
 };
 
-_saveResult = [GVAR(DATAHANDLER), "write", ["mil_logistics", _data, _async, _missionName]] call ALIVE_fnc_Data;
+_saveResult = [GVAR(DATAHANDLER), "bulkSave", ["mil_logistics", _data, _missionName,_async]] call ALIVE_fnc_Data;
 _result set [0,_saveResult];
 
 _message = format["ALiVE Military Logistics - Save Result: %1",_saveResult];

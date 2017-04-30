@@ -138,7 +138,7 @@ switch (_operation) do {
 
                 // Reset states with provided data;
                 if !(_logic getvariable ["DISABLEPERSISTENCE",false]) then {
-                    if (isDedicated && {[QMOD(SYS_DATA)] call ALiVE_fnc_isModuleAvailable}) then {
+                    if (isServer && {[QMOD(SYS_DATA)] call ALiVE_fnc_isModuleAvailable}) then {
                         waituntil {!isnil QMOD(SYS_DATA) && {MOD(SYS_DATA) getvariable ["startupComplete",false]}};
                     };
 
@@ -187,7 +187,7 @@ switch (_operation) do {
                     // If JIP then also restore when STORE is rebroadcast
                     QGVAR(STORE) addPublicVariableEventHandler {
                         // Restore Markers on map for JIP
-                        [ADDON, "restorespotreps", [GVAR(STORE)]] call ALiVE_fnc_spotrep;
+                        [ADDON, "restorespotreps", [(_this select 1)]] call ALiVE_fnc_spotrep;
                     };
                 } else {
                       // Restore Markers on map based on initial store

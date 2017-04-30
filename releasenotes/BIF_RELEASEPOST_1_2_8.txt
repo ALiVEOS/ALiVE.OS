@@ -1,0 +1,87 @@
+[center][url=https://github.com/ALiVEOS/ALiVE.OS.git][img=http://i.imgur.com/RFX0nkZ.jpg][/url][/center]
+[center][b][url=http://alivemod.com/]ALiVEmod.com[/url]
+[size=4]The next generation dynamic persistent mission addon for ArmA3[/size][/b][/center]
+[center][b]Release 1.2.8[/b][/center]
+[center][/center]
+ 
+[b]Hackathon and bugs squashing[/b]
+
+On a dark, cold and damn early Friday morning in London, at a secret location, the ALiVE mod team got together for its very first Hackathon! 5 devs travelled to London while members from Australia, Europe and the US connected remotely for what ended up as 16 hours of bug smashing and playtesting. After some initial technical issues (apologies on the lack of live stream and updates), the crew were up and running, fueled by a full english breakfast, pizza, coffee and prosecco(!) we smashed through numerous bugs. 1.2.8 release is the culmination of that work. Many thanks to Friznit for hosting, and to those that travelled - Tupolov, Gunny, Jman and Sacha - as well as our fellow ALiVE modders across the world. 
+
+We certainly look forward to the next ALiVE Hackathon in 2017.
+
+[b]Release Highlights[/b]
+
+    Players can now carry many different objects, mission makers can whitelist object classes
+    N'Ziwasogo re-indexed!
+    Improved numbers of ambient civilians (prepare for server meltdown)
+    Numerous bug fixes and enhancements 
+    Fix to AAR so sys_data_auto.pbo now truely does default to on for AAR!
+    Persistent markers and reports are now restored correctly for JIPs
+    CSAR and hostage rescue missions now work correctly
+
+
+[b]The grim details of bugs slain in the name of Arma[/b]
+
+[AMB CIVS] #205 Tested on Stratis Agia Marina. Extreme ~84 units. High ~30. Med ~ 21. Low ~ 10
+[AMB CIVS] Fixed script error when ambient music was generated (fix #238)
+[AMB_CIV_POPULATION] Fix module check var name
+[CIV_PLACEMENT] Fixed civlian military placement module randomly didn't place units even when correctly configured factions were used. (fix #237)
+[CIV_PLACEMENT] Fixed issue where vanilla OPF_G_F were spawned on roadblocks if no dominant faction was found. Fixes #193
+[Indexing] Re-index N'Ziwasogo 0.97
+[mil_C2ISTAR] Fix issue #142 Child Tasks not mirroring Parent State. Child Tasks now mirror parent state, also implemented if Parent Task is deleted so is child task
+[MIL_C2ISTAR] Hostage Rescue: Fixed rescue action not showing in SP and editor preview (fix #240). Fixed hostage not getting out of ambient animation (fix #194).
+[MIL_C2ISTAR] removed rogue diag
+[MIL_C2ISTAR] Task CSAR: Fixed no composition was placed at destination location and script error was thrown (fix #242). Fix Rescue option wasn't shown in SP (fix #241)
+[MIL_OPCOM] Fix error where TACOM was trying to give orders to null profiles
+[MIL_OPCOM] Only set up roadblocks until a maximum limit of roadblocks for the location size is reached (possible fix #234)
+[MIL_PLACEMENT_CUSTOM] Fix issue where custom objectives have debug enabled by default regardless. Fixes #236
+[ORBATCREATOR] Fix default misc identity datatype was string instead of array
+[SUP_COMBATSUPPORT] fix issue #243 talk to pilot
+[SYS_DATA] Fix data issue where server authorization was incorrectly processed
+[SYS_DATA] Improve tracking of player units for AAR
+[SYS_DATA] Update fnc_DataInit.sqf
+[SYS_LOGISTICS] Added Non_Strategic class to logistics canCarry, allowing people to carry various items. Ability to add any class by setting alive_sys_logistics setVariable ["WHITELIST",["YOUCLASSHERE"]]. Fixes #34
+[SYS_LOGISTICS] Fixes issue where carryable objects did not honour height of placement
+[SYS_MARKER] Fix issue where JIP does get persistent markers restored.
+[SYS_MARKER] fixed #245 Civ Marker script error
+[SYS_MARKERS] More fixes for JIP markers and reports
+[SYS_ORBATCREATOR] Add visual feedback for dragging asset list-->group unit list
+[SYS_ORBATCREATOR] Fix state operation working under the debug variable
+[SYS_ORBATCREATOR] Improve list dragging, units can now be dragged out of the selected group to remove them
+[SYS_PROFILE] Improve variable scoping and minor optimizations to fnc_profileSimulator (round 1)
+
+Thanks to everyone for feedback both here and on our forum!
+[center][b][url=http://alivemod.com/#Download]Download[/url][/b]
+Grab the latest version from [url=http://alivemod.com/#Download]ALiVEmod.com[/url]
+Also available from PlayWithSix, ArmAholic and Steam (Usually within 24 hours of this post)[/center]
+[center][b][url=http://alivemod.com/#ALiVEWarRoom]Join the War Room Now![/url][/b][/center]
+
+Please note that as with all updates, if you have an issue loading a mission made with a previous version of ALiVE, delete and replace the modules in that mission.
+
+See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
+
+[b]More Maps?[/b]
+The momentum is really beginning to build with the indexing tools and we are cracking through the [url=https://github.com/ALiVEOS/ALiVE.OS/issues/9]backlog[/url]. Instructions for using the Map Indexer can be found [url=http://alivemod.com/wiki/index.php/Map_Indexing]on our wiki [/url]
+
+[b]Known Issues & Support[/b]
+Existing bugs are listed on Github [url=https://github.com/ALiVEOS/ALiVE.OS/issues]here[/url]. Feel free to submit bugs (with repros) or discuss any issues or ideas on our forum at [url=http://alivemod.com/forum/]http://alivemod.com/forum/[/url].
+
+[b]Manual[/b]
+Please refer to the [url=http://www.alivemod.com/wiki]ALiVE Wiki[/url]. All the info you need is there. If anything is missing or unclear, please let us know.
+
+[b]Are you using Linux?[/b]
+ALiVE is fully supported on a Linux Dedicated Server (as well as Windows). In fact the ALiVE Official Server for testing is running Ubuntu. Here are some tips on getting ALiVE running smoothly on Linux and integrated with War Room - [url=http://www.alivemod.com/forum/1916-setting-up-linux-dedi-server]http://www.alivemod.com/forum/1916-setting-up-linux- dedi-server[/url]
+
+[b]Acknowledgements and Thanks[/b]
+Particular thanks to all those on our support forum who have worked closely with us to identify bugs, provide logs and generally help us improve ALiVE. Your assistance is valuable and your dedication to ALiVE makes it all worth the effort!
+
+[b]Disclaimer[/b]
+We may need to prune the persistent database data from the War Room, eliminating data that is older than 6-12 months. The ALiVE War Room database is run on a voluntary basis at a cost to the ALiVE development team. No guarantees can be given on the mission data stored or the availability of the service. We apologise for any downtime that may impact your MP persistent missions.
+
+[b]ALiVE has transformed my Arma 3 experience, how can I thank you?[/b]
+Please consider making a contribution to our server costs if you enjoy ALiVE! It costs us $65 per month to run our War Room website and the ALiVE Database servers and every little helps. Donate here [url=http://www.alivemod.com/#Donate]http://www.alivemod.com/#Donate[/url]
+
+Special thanks to everyone here for supporting us with donations to the ALiVE mod development effort.
+
+Have fun!

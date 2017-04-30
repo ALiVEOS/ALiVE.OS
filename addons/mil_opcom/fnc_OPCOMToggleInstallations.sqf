@@ -60,7 +60,7 @@ _markers = [];
 
                 _id = [_objective,"objectiveID",""] call ALiVE_fnc_HashGet;
                 _size = [_objective,"size",150] call ALiVE_fnc_HashGet;
-                _type = [_objective,"type","none"] call ALiVE_fnc_HashGet;
+                _type = [_objective,"objectiveType","none"] call ALiVE_fnc_HashGet;
 
                 _factory = [_OPCOM_HANDLER,"convertObject",[_objective,"factory",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
                 _HQ = [_OPCOM_HANDLER,"convertObject",[_objective,"HQ",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
@@ -71,8 +71,8 @@ _markers = [];
                 _suicide = [_OPCOM_HANDLER,"convertObject",[_objective,"suicide",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
                 _roadblocks = [_OPCOM_HANDLER,"convertObject",[_objective,"roadblocks",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
 
-                _markers append [[format["reg_%1",_id],_center,"ELLIPSE", [_size,_size],"ColorRed","IED", "n_installation", "FDiagonal",0,0.3] call ALIVE_fnc_createMarkerGlobal];
-                _markers append [[format["regI_%1",_id],_center,"ICON", [0.1,0.1],"ColorRed",format["%1 installation",_type], "mil_dot", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal];
+                _markers append [[format["reg_%1",_id],_center,"ELLIPSE", [_size,_size],"ColorRed","IED", "n_installation", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal];
+                _markers append [[format["regI_%1",_id],_center,"ICON", [0.1,0.1],"ColorRed",format["%1",_type], "mil_dot", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal];
 
                 if (alive _HQ && {!_enabled}) then {_markers append [[format["hq_%1",_id],getposATL _HQ,"ICON", [0.5,0.5],"ColorRed","Recruitment HQ", "n_installation", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal]} else {deleteMarker format["hq_%1",_id]};
                 if (alive _depot && {!_enabled}) then {_markers append [[format["depot_%1",_id],getposATL _depot,"ICON", [0.5,0.5],"ColorRed","Weapons depot", "n_installation", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal]} else {deleteMarker format["depot_%1",_id]};

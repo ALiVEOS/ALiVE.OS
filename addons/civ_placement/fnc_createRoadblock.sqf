@@ -33,31 +33,38 @@ to do: Current issue if road ahead bends.
 =======================================================================================================================
 */
 
-private ["_grp","_pos","_roadpos","_vehicle","_vehtype","_blockers","_roads","_fac","_debug","_roadConnectedTo", "_connectedRoad","_direction","_checkpoint","_checkpointComp","_roadpoints","_num"];
+private [
+    "_grp","_roadpos","_vehicle","_vehtype","_blockers","_roads",
+    "_roadConnectedTo", "_connectedRoad","_direction","_checkpoint",
+    "_checkpointComp","_roadpoints"
+];
 
-_pos = [_this, 0, [0,0,0], [[]]] call BIS_fnc_param;
-_radius = [_this, 1, 300, [-1]] call BIS_fnc_param;
-_num = [_this, 2, 1, [-1]] call BIS_fnc_param;
-_debug = [_this, 3, false, [true]] call BIS_fnc_param;
+params [
+    ["_pos", [0,0,0], [[]]],
+    ["_radius", 500, [-1]],
+    ["_num", 1, [-1]],
+    ["_debug", false, [true]]
+];
 
 if (isnil QGVAR(ROADBLOCKS)) then {GVAR(ROADBLOCKS) = []};
 
 if (_num > 5) then {_num = 5};
 
-_fac = [_pos, _radius] call ALiVE_fnc_getDominantFaction;
+private _fac = [_pos, _radius] call ALiVE_fnc_getDominantFaction;
 
-if (isNil "_fac") then {
-    _fac = "OPF_G_F";
+if (isNil "_fac") exitWith {
+    ["Unable to find a dominant faction within %1 radius", _radius] call ALiVE_fnc_Dump;
 };
 
 // Find all the checkpoints pos
 _roads = _pos nearRoads (_radius + 20);
-// scan road positions and find those on outskirts
+// scan road positions, filter trails and find those roads on outskirts
 {
-    if (_x distance _pos < (_radius - 10)) then {
-        _roads = _roads - [_x];
+    if (_x distance _pos < (_radius - 10) || {!isOnRoad _x}) then {
+        _roads set [_foreachIndex,objNull];
     };
 } foreach _roads;
+_roads = _roads - [objNull];
 
 if (count _roads == 0) exitWith {["ALiVE No roads found for roadblock! Cannot create..."] call ALiVE_fnc_Dump};
 
@@ -82,14 +89,14 @@ for "_j" from 1 to (count _roadpoints) do {
 
     _roadpos = _roadpoints select (_j - 1);
 
-    if ({_roadpos distance _x < 100} count GVAR(ROADBLOCKS) > 0) exitWith {["ALiVE Roadblock to close to another! Not created..."] call ALiVE_fnc_Dump};
+    if ({_roadpos distance _x < 100} count GVAR(ROADBLOCKS) > 0) exitWith {["ALiVE Roadblock %1 to close to another! Not created...",_roadpos] call ALiVE_fnc_Dump};
 
-    // check for non road position
-    if (!isOnRoad _roadpos) exitWith {["ALiVE Roadblock is not on a road! Not created..."] call ALiVE_fnc_Dump};
+    // check for non road position (should be obsolete due to filtering at the beginning)
+    if (!isOnRoad _roadpos) exitWith {["ALiVE Roadblock %1 is not on a road %2! Not created...",_roadpos, position _roadpos] call ALiVE_fnc_Dump};
 
     _roadConnectedTo = roadsConnectedTo _roadpos;
 
-    if (count _roadConnectedTo == 0) exitWith {["ALiVE Selected road for roadblock is a dead end! Not created..."] call ALiVE_fnc_Dump};
+    if (count _roadConnectedTo == 0) exitWith {["ALiVE Selected road %1 for roadblock is a dead end! Not created...",_roadpos] call ALiVE_fnc_Dump};
 
     GVAR(ROADBLOCKS) pushBack (position _roadpos);
 
@@ -109,7 +116,7 @@ for "_j" from 1 to (count _roadpoints) do {
     };
 
     // Get a composition
-    _compType = "Military";
+    private _compType = "Military";
 
     If (_fac call ALiVE_fnc_factionSide == RESISTANCE) then {
         _compType = "Guerrilla";
@@ -141,8 +148,8 @@ for "_j" from 1 to (count _roadpoints) do {
 
     // Spawn static virtual group if Profile System is loaded and get them to defend
     if !(isnil "ALiVE_ProfileHandler") then {
-        _group = ["Infantry",_fac] call ALIVE_fnc_configGetRandomGroup;
-        _guards = [_group, position _roadpos, random(360), true, _fac, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+        private _group = ["Infantry",_fac] call ALIVE_fnc_configGetRandomGroup;
+        private _guards = [_group, position _roadpos, random(360), true, _fac, true] call ALIVE_fnc_createProfilesFromGroupConfig;
 
         {
             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {

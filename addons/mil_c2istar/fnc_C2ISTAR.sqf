@@ -433,7 +433,7 @@ switch(_operation) do {
         [_gm, "debug", _debug] call ALIVE_fnc_GM;
         [_gm, "init",[]] call ALIVE_fnc_GM;
 
-        private["_scomOpsLimit","_scomIntelLimit","_scom"];
+        private["_scomOpsLimit","_scomIntelLimit","_scomOpsAllowSpectate","_scomOpsAllowJoin","_scom"];
 
         _scomOpsLimit = [_logic, "scomOpsLimit"] call MAINCLASS;
         _scomIntelLimit = [_logic, "scomIntelLimit"] call MAINCLASS;
@@ -487,7 +487,7 @@ switch(_operation) do {
 
                 if(_autoGenerateBLUFOR) then {
 
-                    _taskData = [];
+                    private _taskData = [];
                     _taskData set [0,"BLUFOR_TASK1"];
                     _taskData set [1,"1"];
                     _taskData set [2,"WEST"];
@@ -592,9 +592,11 @@ switch(_operation) do {
 
             private ["_file"];
 
-            // create the client task handler
-            ALIVE_taskHandlerClient = [] call ALiVE_fnc_HashCreate;
-            [ALIVE_taskHandlerClient, "init"] call ALIVE_fnc_taskHandlerClient;
+			// create the client task handler
+            if (isnil "ALIVE_taskHandlerClient") then {
+            	ALIVE_taskHandlerClient = [] call ALiVE_fnc_HashCreate;
+            	[ALIVE_taskHandlerClient, "init"] call ALIVE_fnc_taskHandlerClient;
+            };
 
             // load static data
             if(isNil "ALiVE_STATIC_DATA_LOADED") then {
@@ -638,11 +640,14 @@ switch(_operation) do {
 
             _generateOptions = [];
             _generateValues = [];
-            {
-                _task = [ALIVE_generatedTasks,_x] call ALIVE_fnc_hashGet;
-                _generateOptions pushback (_task select 0);
-                _generateValues pushback _x;
-            } forEach (ALIVE_generatedTasks select 1);
+
+            if (!isnil "ALIVE_generatedTasks" && {count ALIVE_generatedTasks > 2}) then {
+	            {
+	                _task = [ALIVE_generatedTasks,_x] call ALIVE_fnc_hashGet;
+	                _generateOptions pushback (_task select 0);
+	                _generateValues pushback _x;
+	            } forEach (ALIVE_generatedTasks select 1);
+            };
 
             private ["_taskingState","_playerListOptions","_playerListValues","_factionsDataSource"];
 
@@ -893,7 +898,29 @@ switch(_operation) do {
 
                 case "OPEN": {
 
-                    createDialog "C2Tablet";
+                    switch (MOD(TABLET_MODEL)) do {
+                        case "Tablet01": {
+                            createDialog "C2Tablet";
+                        };
+
+                        case "Mapbag01": {
+                            createDialog "C2Tablet";
+
+                            private _ctrlBackground = ((findDisplay 70001) displayCtrl 70002);
+                            _ctrlBackground ctrlsettext "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
+                            _ctrlBackground ctrlSetPosition [
+                                0.15 * safezoneW + safezoneX,
+                                -0.242 * safezoneH + safezoneY,
+                                0.72 * safezoneW,
+                                1.372 * safezoneH
+                            ];
+                            _ctrlBackground ctrlCommit 0;
+                        };
+
+                        default {
+                            createDialog "C2Tablet";
+                        };
+                    };
 
                 };
 

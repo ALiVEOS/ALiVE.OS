@@ -21,4 +21,4 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-[MOD(SUP_COMMAND),"handleServerResponse",_this] call ALIVE_fnc_SCOM;
+[MOD(SUP_COMMAND),"handleEvent", _this] call ALIVE_fnc_SCOM;

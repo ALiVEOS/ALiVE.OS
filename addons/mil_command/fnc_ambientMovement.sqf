@@ -24,12 +24,11 @@ Author:
 Highhead
 ---------------------------------------------------------------------------- */
 
-private ["_args","_debug","_waypoints","_unit","_profile","_vehiclesInCommandOf","_vehiclesInCargoOf","_obj",
+private ["_args","_debug","_waypoints","_unit","_vehiclesInCommandOf","_vehiclesInCargoOf","_obj",
 "_leader","_pos","_radius","_positions","_assignments","_profileWaypoint","_savepos","_type","_speed","_formation",
 "_behaviour","_type","_objs","_parkedAir","_locations","_vehicleProfile","_vehicleObjectType","_roads"];
 
-_profile = _this select 0;
-_params = _this select 1;
+params ["_profile","_params"];
 
 if (isnil "_profile") exitWith {};
 
@@ -91,7 +90,7 @@ if ((count _waypoints == 0) && {isnil "_parkedAir"}) then {
     if !(isnil "_locations") then {_locations = nearestLocations [_pos, ["NameCity","NameVillage","NameLocal"], _radius]} else {_locations = []};
 
     //defaults
-    _startPos = _pos;
+    private _startPos = _pos;
     _type = "MOVE";
     _speed = "LIMITED";
     _formation = "COLUMN";
@@ -110,7 +109,7 @@ if ((count _waypoints == 0) && {isnil "_parkedAir"}) then {
         };
 
         if (_roads) then {
-            _roadsArray = _pos nearRoads 200;
+            private _roadsArray = _pos nearRoads 200;
 
             if (count _roadsArray > 0) then {
                 _pos = getposATL (selectRandom _roadsArray);

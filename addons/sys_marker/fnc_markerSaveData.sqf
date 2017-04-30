@@ -29,7 +29,7 @@ Highhead
 
 private ["_result","_data","_async","_missionName","_message","_messages","_saveResult"];
 
-if !(isDedicated && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
+if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     [true, "ALiVE SYS MARKER - Save Data", "markerper"] call ALIVE_fnc_timer;
@@ -42,6 +42,9 @@ _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName];
 _data = [MOD(SYS_marker),"state"] call ALiVE_fnc_marker;
 
 if (count (_data select 1) == 0) exitwith {
+    
+    ["ALiVE SAVE SYS MARKER DATA HAS NO ENTRIES: %1! DO NOT SAVE...",_data] call ALIVE_fnc_dump;
+    
     //[["ALiVE_LOADINGSCREEN"],"BIS_fnc_endLoadingScreen",true,false] call BIS_fnc_MP;
 };
 

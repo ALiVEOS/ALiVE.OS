@@ -49,6 +49,4 @@ if(_sunOrMoon < 1) then {
 
 //["DAY STATE: %1",_dayState] call ALIVE_fnc_dump;
 
-ALIVE_currentEnvironment = [_dayState, _hour, _minute];
-
-ALIVE_currentEnvironment
+[_dayState, _hour, _minute];

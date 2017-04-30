@@ -29,7 +29,7 @@ Highhead
 
 private ["_result","_data","_async","_missionName","_message","_messages","_saveResult"];
 
-if !(isDedicated && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
+if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
 
 if (MOD(SYS_LOGISTICS) getvariable ["DISABLEPERSISTENCE", false] || MOD(SYS_LOGISTICS) getvariable ["DISABLELOG",false]) exitWith {false};
 

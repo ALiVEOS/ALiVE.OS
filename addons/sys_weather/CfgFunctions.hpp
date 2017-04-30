@@ -31,13 +31,16 @@
                                 file = "\x\alive\addons\sys_weather\fnc_weatherDebugEvent.sqf";
                                                                 RECOMPILE;
                         };
-
-                        class getWeather {
+                        class getRealWeather {
                                 description = "Gets real weather for a time and location function";
-                                file = "\x\alive\addons\sys_weather\fnc_getWeather.sqf";
+                                file = "\x\alive\addons\sys_weather\fnc_getRealWeather.sqf";
                                                                 RECOMPILE;
                         };
-
+                        class weatherEffects {
+                                description = "Weather effects";
+                                file = "\x\alive\addons\sys_weather\fnc_weatherEffects.sqf";
+                                                                RECOMPILE;
+                        };
                 };
         };
 };

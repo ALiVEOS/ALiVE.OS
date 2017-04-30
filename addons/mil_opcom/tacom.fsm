@@ -1,4 +1,4 @@
-/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, tacom">*/
+/*%FSM<COMPILE "G:\Program Files (x86)\Poseidon-SQF-Editor\Poseidon\Data\Packages\Bin\fsmEditor\scriptedFSM.cfg, tacom">*/
 /*%FSM<HEAD>*/
 /*
 item0[] = {"INIT",0,4346,-191.791229,-248.493942,-101.791237,-198.494003,0.000000,"INIT"};
@@ -33,15 +33,15 @@ item28[] = {"END",1,250,-205.443878,1033.162964,-115.443787,1083.162964,0.000000
 version=1;
 class LayoutItems
 {
-    class Item16
-    {
-        class ItemInfo
-        {
-            FontFace="Arial";
-            FontHeight=10;
-            lStyle=1;
-        };
-    };
+	class Item16
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
 };
 link0[] = {0,1};
 link1[] = {1,15};
@@ -83,8 +83,8 @@ link36[] = {24,25};
 link37[] = {25,26};
 link38[] = {26,10};
 link39[] = {27,28};
-globals[] = {0.000000,0,0,0,16777215,640,480,1,81,6316128,1,-308.844391,-64.628494,-108.831558,-305.720825,934,753,1};
-window[] = {0,-1,-1,-1,-1,906,22,1645,22,1,951};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,81,6316128,1,-308.844391,-64.628494,-108.831558,-305.720825,933,739,1};
+window[] = {0,-1,-1,-1,-1,945,1993,3616,61,1,951};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -143,6 +143,9 @@ class FSM
        "//Reset ambient movement on all controlled profiles" \n
        "{" \n
        "    _profile = [ALiVE_ProfileHandler,""getProfile"",_x] call ALiVE_fnc_ProfileHandler;" \n
+       "	if (isNil ""_profile"") exitWith {" \n
+       "		[""TACOM: NULL profile passed to FSM: %1"", _x] call ALiVE_fnc_dump;" \n
+       "	};" \n
        "    _vehiclesInCommandOf = [_profile,""vehiclesInCommandOf"",[]] call ALiVE_fnc_HashGet;" \n
        "" \n
        "    if (count _vehiclesInCommandOf > 0) then {" \n
@@ -957,7 +960,7 @@ class FSM
   initState="INIT";
   finalStates[] =
   {
-    "END",
+    "END"
   };
 };
 /*%FSM</COMPILE>*/

@@ -289,8 +289,10 @@ switch(_operation) do {
     case "start": {
         if (isServer) then {
 
-            private ["_debug","_clusterType","_placement","_worldName","_file","_clusters","_cluster","_taor","_taorClusters","_blacklist",
-            "_sizeFilter","_priorityFilter","_blacklistClusters","_center","_faction","_error"];
+            private [
+                "_debug","_clusterType","_placement","_worldName","_file","_clusters","_cluster","_taor","_taorClusters","_blacklist",
+                "_sizeFilter","_priorityFilter","_placeSeaPatrols","_blacklistClusters","_center","_faction","_error"
+            ];
 
             _debug = [_logic, "debug"] call MAINCLASS;
             _faction = [_logic, "faction"] call MAINCLASS;
@@ -310,6 +312,17 @@ switch(_operation) do {
             };
             waituntil {!(isnil "ALIVE_loadedCIVClusters") && {ALIVE_loadedCIVClusters}};
             waituntil {!(isnil "ALIVE_profileSystemInit")};
+
+            // instantiate static vehicle position data
+            if(isNil "ALIVE_groupConfig") then {
+                [] call ALIVE_fnc_groupGenerateConfigData;
+            };
+
+            // all CMP modules execute at the same time
+            // ALIVE_groupConfig is created, but not 100% filled
+            // before the rest of the modules start creating their profiles
+
+            waitUntil {!isnil "ALiVE_GROUP_CONFIG_DATA_GENERATED"};
 
             //Only spawn warning on version mismatch since map index changes were reduced
             //uncomment //_error = true; below for exit
@@ -520,7 +533,7 @@ switch(_operation) do {
                 if (_placeSeaPatrols > 0) then {
 
                     if !(isnil "ALIVE_clustersCivMarine") then {
-                        _marineClusters = ALIVE_clustersCivMarine select 2;
+                        private _marineClusters = ALIVE_clustersCivMarine select 2;
 
                         //["ALIVE CP [%1] - Marine Clusters Count: %2",_faction, count _marineClusters] call ALIVE_fnc_dump;
 
@@ -654,7 +667,7 @@ switch(_operation) do {
     case "placement": {
         if (isServer) then {
 
-            private ["_debug","_clusters","_cluster","_size","_type",
+            private ["_debug","_clusters","_cluster","_size","_roadBlocks","_type",
             "_faction","_ambientVehicleAmount","_placeHelis","_factionConfig","_factionSideNumber","_side","_countProfiles","_vehicleClass",
             "_position","_direction","_unitBlackist","_vehicleBlacklist","_groupBlacklist","_heliClasses","_nodes","_airClasses","_node",
             "_customInfantryCount","_customMotorisedCount","_customMechanisedCount","_customArmourCount","_customSpecOpsCount","_file"];
@@ -742,9 +755,11 @@ switch(_operation) do {
 
             // Spawn the main force
 
-            private ["_countArmored","_countMechanized","_countMotorized","_countInfantry",
-            "_countAir","_countSpecOps","_groups","_motorizedGroups","_infantryGroups","_group","_groupPerCluster","_totalCount","_center","_size","_position",
-            "_groupCount","_clusterCount","_countSeaPatrols"];
+            private [
+                "_countArmored","_countMechanized","_countMotorized","_countInfantry",
+                "_countAir","_countSpecOps","_groups","_motorizedGroups","_infantryGroups","_group","_groupPerCluster","_totalCount","_center","_size","_position",
+                "_groupCount","_clusterCount","_countSeaPatrols","_readiness","_placeSeaPatrols"
+            ];
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
@@ -932,7 +947,7 @@ switch(_operation) do {
             if (_placeSeaPatrols > 0) then {
 
                 // Check to see if there are any marine objectives
-                _marineClusters = [_logic, "objectivesMarine"] call MAINCLASS;
+                private _marineClusters = [_logic, "objectivesMarine"] call MAINCLASS;
 
                 if(_debug) then {
                     ["ALIVE CP [%1] - Placing Sea Patrols at %2 marine clusters",_faction, count _marineClusters] call ALIVE_fnc_dump;
@@ -941,14 +956,14 @@ switch(_operation) do {
                 { // For each marine cluster
 
                     // Get naval group
-                    _seaPatrolGroup = ["Naval", _faction] call ALIVE_fnc_configGetRandomGroup;
+                    private _seaPatrolGroup = ["Naval", _faction] call ALIVE_fnc_configGetRandomGroup;
 
                     // Check to see if a naval group is available
                     if (_seaPatrolGroup != "FALSE") then {
 
                         // Find nearest sea sector
                         _center = [_x, "center"] call ALIVE_fnc_hashGet;
-                        _pos = [_center, true] call ALiVE_fnc_getClosestSea;
+                        private _pos = [_center, true] call ALiVE_fnc_getClosestSea;
 
                         // Ensure position is in the water
                         if (surfaceIsWater _pos) then {
@@ -956,7 +971,7 @@ switch(_operation) do {
                             //chance of sea patrol
                             if ((random 1) < _placeSeaPatrols) then {
                                 // Create a sea patrol profile (mark it busy)
-                                _seaPatrol = [_seaPatrolGroup, _pos, random(360), true, _faction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+                                private _seaPatrol = [_seaPatrolGroup, _pos, random(360), true, _faction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
 
                                 // Set Waypoints for patrol
                                 {

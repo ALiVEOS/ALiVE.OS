@@ -828,7 +828,7 @@ switch(_operation) do {
                         publicVariable "NEO_radioLogic";
                 };
 
-                if(!isDedicated && !isHC) then {
+                if(hasInterface) then {
 
                 };
         };

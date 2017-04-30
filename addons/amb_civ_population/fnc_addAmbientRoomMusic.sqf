@@ -27,7 +27,7 @@ ARJay
 private _building = _this select 0;
 
 private _musicSource = "RoadCone_L_F" createVehicle position _building;
-private _musicSource attachTo [_building,[1,1,1]];
+_musicSource attachTo [_building,[1,1,1]];
 hideObject _musicSource;
 
 [_building, _musicSource] spawn {

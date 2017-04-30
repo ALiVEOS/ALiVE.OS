@@ -1,4 +1,4 @@
-/*%FSM<COMPILE "G:\Program Files (x86)\Poseidon-SQF-Editor\Poseidon\Data\Packages\Bin\fsmEditor\scriptedFSM.cfg, insurgency">*/
+/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, insurgency">*/
 /*%FSM<HEAD>*/
 /*
 item0[] = {"INIT",0,250,-717.630066,-1005.371277,-627.630066,-955.371338,0.000000,"INIT"};
@@ -10,15 +10,15 @@ item5[] = {"ATTACK",4,218,-928.976746,-250.825409,-838.976746,-200.825378,1.0000
 item6[] = {"DEFEND",4,218,-806.225098,-252.264771,-716.225098,-202.264740,2.000000,"DEFEND"};
 item7[] = {"TERRORIZE",4,218,-650.359680,-253.024353,-560.359680,-203.024323,3.000000,"TERRORIZE"};
 item8[] = {"RESERVE",4,218,-512.215454,-253.515350,-422.215546,-203.515259,4.000000,"RESERVE"};
-item9[] = {"_",4,218,-719.706787,-456.359070,-629.706787,-406.359070,0.000000,""};
-item10[] = {"SELECT_ORDERS",2,250,-724.372742,-364.088989,-634.372742,-314.088837,0.000000,"SELECT" \n "ORDERS"};
+item9[] = {"_",4,218,-721.646606,-456.359070,-631.646606,-406.359070,0.000000,""};
+item10[] = {"SELECT_ORDERS",2,250,-721.463013,-362.149170,-631.463013,-312.149017,0.000000,"SELECT" \n "ORDERS"};
 item11[] = {"ACTIONS___ASSAULT",2,250,-928.195251,-172.044922,-828.132568,-31.480927,0.000000,"ACTIONS:" \n "" \n "ASSAULT" \n "AMBUSH"};
 item12[] = {"ACTIONS___RETREAT",2,250,-806.544922,-175.131653,-706.482239,-34.567657,0.000000,"ACTIONS:" \n "" \n "RETREAT" \n "SURRENDER"};
 item13[] = {"ACTIONS___IEDS_SUICIDERS",2,250,-647.961060,-177.760864,-545.662231,-33.842651,0.000000,"ACTIONS:" \n "" \n "IEDS" \n "SUICIDERS" \n "SABOTAGE"};
-item14[] = {"ACTIONS___RECRUIT",2,4346,-514.779175,-179.211487,-416.952698,-34.175232,0.000000,"ACTIONS:" \n "" \n "RECRUIT" \n "CACHES" \n "ROADBLOCKS"};
+item14[] = {"ACTIONS___RECRUIT",2,250,-514.779175,-179.211487,-416.952698,-34.175232,0.000000,"ACTIONS:" \n "" \n "RECRUIT" \n "CACHES" \n "ROADBLOCKS"};
 item15[] = {"ORDERS_SELECTED",4,218,-719.547424,-21.761780,-629.547424,28.238159,0.000000,"ORDERS" \n "SELECTED"};
 item16[] = {"SECTION_MOVING",4,218,-978.297668,263.344055,-888.298279,313.343994,0.000000,"SECTION" \n "MOVING"};
-item17[] = {"SELECT_SECTION",2,250,-719.992188,73.293480,-629.992554,123.293404,0.000000,"SELECT" \n "SECTION"};
+item17[] = {"SELECT_SECTION",2,4346,-719.992188,73.293480,-629.992554,123.293404,0.000000,"SELECT" \n "SECTION"};
 item18[] = {"SECTION_SELECTED",4,218,-721.556396,167.032288,-631.556519,217.032288,1.000000,"SECTION" \n "SELECTED"};
 item19[] = {"MOVE_SECTION",2,250,-721.849487,265.364441,-631.849487,315.364441,0.000000,"MOVE" \n "SECTION"};
 item20[] = {"SECTION_READY",4,218,-723.792175,348.889465,-633.792175,398.889465,1.000000,"SECTION" \n "READY"};
@@ -33,7 +33,7 @@ item28[] = {"RESET",2,250,-858.935120,-677.046692,-768.935242,-627.046387,0.0000
 item29[] = {"DELAY",4,218,-721.785156,-677.785828,-631.785156,-627.785828,0.000000,"DELAY"};
 item30[] = {"RESET_1",2,250,-557.855774,-676.293335,-467.856445,-626.293030,0.000000,"RESET"};
 item31[] = {"ACTIONS_EXECUTIN",4,218,-969.264343,432.824890,-879.264343,482.824890,0.000000,"ACTIONS" \n "EXECUTING"};
-item32[] = {"IDLE",4,218,-920.655945,-363.002319,-830.655945,-313.002289,20.000000,"IDLE"};
+item32[] = {"IDLE",4,218,-922.595764,-362.032440,-832.595764,-312.032410,20.000000,"IDLE"};
 item33[] = {"EXIT",4,218,-179.589508,-871.612854,-89.589325,-821.612854,99.000000,"EXIT"};
 item34[] = {"END",1,250,-179.605621,-745.501648,-89.605438,-695.501343,0.000000,"END"};
 link0[] = {0,1};
@@ -80,8 +80,8 @@ link40[] = {30,33};
 link41[] = {31,26};
 link42[] = {32,26};
 link43[] = {33,34};
-globals[] = {0.000000,0,0,0,16777215,640,480,1,137,6316128,1,-1009.366821,-349.400360,340.539001,-372.665344,719,777,1};
-window[] = {0,-1,-1,-1,-1,1150,242,1794,242,1,736};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,137,6316128,1,-1192.475586,-250.671600,278.897278,-810.063538,672,777,1};
+window[] = {0,-1,-1,-1,-1,1084,176,1728,176,1,689};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -161,8 +161,8 @@ class FSM
        "    private [""_handler"",""_pos"",""_factions"",""_count"",""_section"",""_types""];" \n
        "    " \n
        "    _handler = _this select 0;" \n
-       "        _pos = _this select 1;" \n
-       "        _factions = _this select 2;" \n
+       "    _pos = _this select 1;" \n
+       "    _factions = _this select 2;" \n
        "    _count = _this select 3;" \n
        "    _types = _this select 4;" \n
        "" \n
@@ -180,7 +180,9 @@ class FSM
        "        {" \n
        "                _pf = [ALiVE_ProfileHandler,""getProfile"",_x] call ALiVE_fnc_ProfileHandler;" \n
        "" \n
-       "               !isnil ""_pf"" && {!([_pf,""busy"",false] call ALiVE_fnc_HashGet)} && {([_pf,""type"",""""] call ALiVE_fnc_HashGet) == ""entity""};" \n
+       "               !isnil ""_pf"" && {!([_pf,""busy"",false] call ALiVE_fnc_HashGet)} &&" \n
+       "		   {([_pf,""type"",""""] call ALiVE_fnc_HashGet) == ""entity""} &&" \n
+       "		   {{toLower(_x select 0) == ""alive_fnc_garrison""} count  ([_pf,""activeCommands"",[]] call ALiVE_fnc_HashGet) == 0}" \n
        "            }" \n
        "    ] call ALiVE_fnc_SortBy;" \n
        "    " \n
@@ -397,7 +399,7 @@ class FSM
        "" \n
        "if (_orders == ""none"") then {" \n
        "" \n
-       "    if (_hostility >= 100) then {_orders = ""defend""};" \n
+       "    if (_hostility >= 100 && {count _actionsFulfilled > 0}) then {_orders = ""defend""}  else {_orders = ""terrorize""};" \n
        "    if (_hostility >= 20 && {_hostility < 100}) then {_orders = ""terrorize""};" \n
        "    if (_hostility >= -50 && {_hostility < 20}) then {_orders = ""attack""};" \n
        "    if (_hostility < -50) then {_orders = ""reserve""};" \n
@@ -417,9 +419,9 @@ class FSM
           priority = 20.000000;
           to="RESET";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"isnil ""_orders"""/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"isnil ""_orders"" || {_orders == ""none""};"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"if (_debug) then {" \n
-           "    //[""No orders given for objective %1!"",_id] call ALiVE_fnc_DumpR;" \n
+           "    [""No orders given for objective %1!"",_id] call ALiVE_fnc_DumpR;" \n
            "};" \n
            "" \n
            "//[""FSM state: %1"",""ORDERS NIL""] call ALIVE_fnc_dumpR;"/*%FSM</ACTION""">*/;
@@ -1008,6 +1010,7 @@ class FSM
        "            _pos = _center;" \n
        "            _switch = false;" \n
        "            _faction = (selectRandom _factions);" \n
+       "		_behaviour = ""STEALTH"";" \n
        "" \n
        "            _handle = [[],""convertObject"",[_objective,""roadblocks"",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;" \n
        "" \n
@@ -1032,6 +1035,7 @@ class FSM
        "            _pos = _center;" \n
        "            _switch = false;" \n
        "            _faction = (selectRandom _factions);" \n
+       "		_behaviour = ""STEALTH"";" \n
        "" \n
        "            _building = [[],""convertObject"",[_objective,""depot"",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;" \n
        "" \n
@@ -1174,6 +1178,8 @@ class FSM
        "    " \n
        "        _nearProfiles = [_OPCOM_HANDLER,_center,_factions,_sizeSection - (count _section),_types] call _fnc_selectSection;" \n
        "        _section = _section + _nearProfiles;" \n
+       "" \n
+       "	  //[""ALiVE Asymm Commander compiling _section %1 (nearProfiles %2)"",_section,_nearProfiles] call ALiVE_fnc_DumpR;" \n
        "    " \n
        "        // Add section" \n
        "        if ((count _section) >= ceil(_sizeSection/3)) then {" \n
@@ -1696,7 +1702,7 @@ class FSM
   initState="INIT";
   finalStates[] =
   {
-    "END"
+    "END",
   };
 };
 /*%FSM</COMPILE>*/

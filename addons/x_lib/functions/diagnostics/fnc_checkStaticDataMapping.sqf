@@ -38,7 +38,7 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-_faction = _this select 0;
+private _faction = _this select 0;
 
 
 [_faction] spawn {
@@ -52,7 +52,7 @@ _faction = _this select 0;
 
     [""] call ALIVE_fnc_dump;
     [""] call ALIVE_fnc_dump;
-    _text = " ----------------------------------------------------------------------------------------------------------- ";
+    private _text = " ----------------------------------------------------------------------------------------------------------- ";
     [_text] call ALIVE_fnc_dump;
     [""] call ALIVE_fnc_dump;
     [""] call ALIVE_fnc_dump;
@@ -88,7 +88,7 @@ _faction = _this select 0;
     private ["_factionCustomMappings","_factionCustomDefaultSupports","_factionCustomDefaultTransports","_factionCustomDefaultAirTransports","_spawnPosition","_spawner","_factionVehicles","_vehicleClasses","_side","_faction","_spawnPosition","_vehicleClass","_configName","_vehicleCrew","_profiles"];
 
     _spawnPosition = (getPosATL player) getPos [10, 0];
-    _factionSide = [_side] call ALIVE_fnc_sideNumberToText;
+    private _factionSide = [_side] call ALIVE_fnc_sideNumberToText;
 
     _factionCustomMappings = [ALIVE_factionCustomMappings, _faction] call ALIVE_fnc_hashGet;
 
@@ -114,7 +114,7 @@ _faction = _this select 0;
 
             ["-- Name: %1",_configName] call ALIVE_fnc_dump;
 
-            _title = "<t size='1' color='#68a7b7' shadow='1'>Support Vehicle</t><br/>";
+            private _title = "<t size='1' color='#68a7b7' shadow='1'>Support Vehicle</t><br/>";
             _text = format["%1<t>%2</t><br/>",_title,_configName];
 
             ["openSideTopSmall"] call ALIVE_fnc_displayMenu;
@@ -128,7 +128,7 @@ _faction = _this select 0;
             sleep 10;
 
             {
-                _profileType = _x select 2 select 5;
+                private _profileType = _x select 2 select 5;
 
                 if(_profileType == "entity") then {
                     [_x, "destroy"] call ALIVE_fnc_profileEntity;

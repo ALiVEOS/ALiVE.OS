@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
@@ -20,10 +20,10 @@
     <Italian>ALiVE Richiedono</Italian>
     <Spanish>ALiVE Requieren </Spanish>
     <French>ALiVE Exiger</French>
-    <Czech>ALiVE Vyžadovat</Czech>
-    <Russian>ALiVE Требовать</Russian>
+    <Czech>ALiVE Vy�adovat</Czech>
+    <Russian>ALiVE ?????????</Russian>
     <Polish>ALiVE Wymagaj</Polish>
-    <Hungarian>ALiVE Igénylése</Hungarian>
+    <Hungarian>ALiVE Ig�nyl�se</Hungarian>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_ALIVE_VERSIONING">
     <Original>ALiVE Versioning:</Original>
@@ -67,4 +67,11 @@
 <Key ID="STR_ALIVE_REQUIRES_ALIVE_AI_DISTRIBUTION_COMMENT">
     <Original>Activates dynamic AI distribution of all AI to all available headless clients</Original>
 </Key>
+<Key ID="STR_ALiVE_TABLET_MODEL">
+    <Original>ALiVE Tablet Model</Original>
+</Key>
+<Key ID="STR_ALiVE_TABLET_MODEL_COMMENT">
+    <Original>Model used for the ALiVE Tablet Background</Original>
+</Key>
+
 </Container></Package></Project>

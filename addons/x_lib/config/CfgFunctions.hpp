@@ -41,6 +41,13 @@ class arrayBlockHandler
     RECOMPILE;
 };
 
+class arrayFrameSplitter
+{
+    file = "\x\alive\addons\x_lib\functions\arrays\fnc_arrayFrameSplitter.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
 class erase
 {
     file = "\x\alive\addons\x_lib\functions\arrays\fnc_erase.sqf";
@@ -615,6 +622,34 @@ class isHash
     RECOMPILE;
 };
 
+class ProfileNameSpaceLoad
+{
+    file = "\x\alive\addons\x_lib\functions\data\fnc_ProfileNameSpaceLoad.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
+class ProfileNameSpaceSave
+{
+    file = "\x\alive\addons\x_lib\functions\data\fnc_ProfileNameSpaceSave.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
+class ProfileNameSpaceClear
+{
+    file = "\x\alive\addons\x_lib\functions\data\fnc_ProfileNameSpaceClear.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
+class ProfileNameSpaceWipe
+{
+    file = "\x\alive\addons\x_lib\functions\data\fnc_ProfileNameSpaceWipe.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
 class JSON
 {
     file = "\x\alive\addons\x_lib\functions\data\fnc_JSON.sqf";
@@ -625,6 +660,13 @@ class JSON
 class parseJSON
 {
     file = "\x\alive\addons\x_lib\functions\data\fnc_parseJSON.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
+class quadtree
+{
+    file = "\x\alive\addons\x_lib\functions\data\fnc_quadtree.sqf";
     ext = ".sqf";
     RECOMPILE;
 };
@@ -961,6 +1003,20 @@ class findFlatArea
 class findHQ
 {
     file = "\x\alive\addons\x_lib\functions\map\fnc_findHQ.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
+class crossesSea
+{
+    file = "\x\alive\addons\x_lib\functions\map\fnc_crossesSea.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
+class findNearestShore
+{
+    file = "\x\alive\addons\x_lib\functions\map\fnc_findNearestShore.sqf";
     ext = ".sqf";
     RECOMPILE;
 };

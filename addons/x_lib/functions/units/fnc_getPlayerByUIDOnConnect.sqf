@@ -42,7 +42,7 @@ waitUntil {
     private ["_found","_player","_playerGUID","_currentUID"];
 
     _found = false;
-    _timeout = time - _time > 5;
+    private _timeout = time - _time > 5;
 
     {
         _player = _x;
@@ -52,7 +52,7 @@ waitUntil {
             _unit = _player;
             _found = true;
         };
-    } foreach playableUnits;
+    } foreach (playableunits + switchableUnits);
 
     _found || {_timeout};
 };

@@ -1,4 +1,4 @@
-/*%FSM<COMPILE "scriptedFSM.cfg, opcom">*/
+/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, opcom">*/
 /*%FSM<HEAD>*/
 /*
 item0[] = {"INIT",0,250,-717.630066,-1005.371277,-627.630066,-955.371338,0.000000,"INIT"};
@@ -39,15 +39,15 @@ item34[] = {"POST_ANALYSIS_DO",4,218,-1208.969116,-760.668579,-1118.969116,-710.
 version=1;
 class LayoutItems
 {
-    class Item15
-    {
-        class ItemInfo
-        {
-            FontFace="Arial";
-            FontHeight=10;
-            lStyle=1;
-        };
-    };
+	class Item15
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
 };
 link0[] = {0,1};
 link1[] = {1,17};
@@ -95,8 +95,8 @@ link42[] = {31,6};
 link43[] = {32,28};
 link44[] = {33,34};
 link45[] = {34,25};
-globals[] = {0.000000,0,0,0,16777215,640,480,1,87,6316128,1,-428.809021,210.125916,-493.463135,-1397.670166,672,951,1};
-window[] = {2,-1,-1,-1,-1,1099,150,1930,150,3,690};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,87,6316128,1,-428.809021,210.125916,-493.463135,-1397.670166,673,929,1};
+window[] = {2,-1,-1,-1,-1,1125,176,1956,176,3,690};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -168,7 +168,7 @@ class FSM
        "                                    _id = format[""OPCOM_objective_%1_%2"",_side,_foreachIndex]; [_target, ""objectiveID"",_id] call ALIVE_fnc_HashSet;" \n
        "                                    _pos = _x select 0; [_target, ""center"",_pos] call ALIVE_fnc_HashSet;" \n
        "                                    _size = _x select 1; [_target, ""size"",_size] call ALIVE_fnc_HashSet;" \n
-       "                                    _type = _x select 2; [_target, ""type"",_type] call ALIVE_fnc_HashSet;" \n
+       "                                    _type = _x select 2; [_target, ""objectiveType"",_type] call ALIVE_fnc_HashSet;" \n
        "                                    _priority = _x select 3; [_target, ""priority"",_priority] call ALIVE_fnc_HashSet;" \n
        "                                    _opcom_state = ""unassigned""; [_target, ""opcom_state"",_opcom_state] call ALIVE_fnc_HashSet;" \n
        "                        " \n
@@ -884,43 +884,94 @@ class FSM
        "" \n
        "    if (isnil ""_base"") exitwith {" \n
        "            if (_debug) then {[""ALiVE OPCOM - Requesting reinforcments for side %1 not possible! No position secured!"",_side] call ALiVE_fnc_DumpR};" \n
+       "	};" \n
+       "    " \n
+       "    [_base,_reinforce,_factions,_side] spawn {" \n
+       "" \n
+       "	  _base = _this select 0;" \n
+       "      _reinforce = _this select 1;" \n
+       "      _factions = _this select 2;" \n
+       "      _side = _this select 3;" \n
+       "	  _debug = false;" \n
+       "        " \n
+       "        _infantry = if ((_reinforce select 0) > 8) then {8} else {_reinforce select 1};" \n
+       "        _plane = if ((_reinforce select 4) > 5) then {5} else {_reinforce select 4};" \n
+       "        _heli = if ((_reinforce select 5) > 5) then {5} else {_reinforce select 5};" \n
+       "        _airAssets = _infantry + _plane + _heli;" \n
+       "" \n
+       "	    _position = [_base,""center""] call ALiVE_fnc_HashGet;" \n
+       "	    _faction = selectRandom _factions;        " \n
+       "                        " \n
+       "        if (_airAssets > 2) then {" \n
+       "" \n
+       "		    _forceMakeup = [" \n
+       "		        0," \n
+       "		        if ((_reinforce select 1) > 10) then {10} else {_reinforce select 1}," \n
+       "		        if ((_reinforce select 2) > 10) then {10} else {_reinforce select 2}," \n
+       "		        if ((_reinforce select 3) > 10) then {10} else {_reinforce select 3}," \n
+       "		        0," \n
+       "		        0" \n
+       "		    ];" \n
+       "" \n
+       "            _event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,""STANDARD""],""OPCOM""] call ALIVE_fnc_event;" \n
+       "	    	_eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;            " \n
+       "                                    " \n
+       "            for ""_i"" from 1 to ceil(_airAssets / 2) do {" \n
+       "                " \n
+       "                sleep 10;" \n
+       "" \n
+       "                _forceMakeup = [" \n
+       "                	if (_infantry > 2) then {_infantry = _infantry - 2; 2} else {_infantryTmp = _infantry; _infantry = 0; _infantryTmp}," \n
+       "                    0," \n
+       "                    0," \n
+       "                    0," \n
+       "                	if (_plane > 2) then {_plane = _plane - 2; 2} else {_planeTmp = _plane; _plane = 0; _planeTmp}," \n
+       "                	if (_heli > 2) then {_heli = _heli - 2; 2} else {_heliTmp = _heli; _heli = 0; _heliTmp}" \n
+       "                ];" \n
+       "                " \n
+       "                if (_infantry + _plane + _heli == 0) exitwith {diag_log ""done""};" \n
+       "                " \n
+       "                _event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,""STANDARD""],""OPCOM""] call ALIVE_fnc_event;" \n
+       "		    	_eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
+       "                " \n
+       "                sleep 60;" \n
+       "            };    " \n
+       "            " \n
+       "        } else {" \n
+       "" \n
+       "		    _forceMakeup = [" \n
+       "		        if ((_reinforce select 0) > 10) then {10} else {_reinforce select 0}," \n
+       "		        if ((_reinforce select 1) > 10) then {10} else {_reinforce select 1}," \n
+       "		        if ((_reinforce select 2) > 10) then {10} else {_reinforce select 2}," \n
+       "		        if ((_reinforce select 3) > 10) then {10} else {_reinforce select 3}," \n
+       "		        if ((_reinforce select 4) > 10) then {10} else {_reinforce select 4}," \n
+       "		        if ((_reinforce select 5) > 10) then {10} else {_reinforce select 5}" \n
+       "		    ];" \n
+       "		" \n
+       "		    _event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,""STANDARD""],""OPCOM""] call ALIVE_fnc_event;" \n
+       "		    _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
        "        };" \n
-       "" \n
-       "    _position = [_base,""center""] call ALiVE_fnc_HashGet;" \n
-       "    _faction = (selectRandom _factions);" \n
-       "" \n
-       "    //Limiting to not drop 100s of troops at once" \n
-       "    _forceMakeup = [" \n
-       "        if ((_reinforce select 0) > 10) then {10} else {_reinforce select 0}, // infantry" \n
-       "        if ((_reinforce select 1) > 10) then {10} else {_reinforce select 1}, // motorised" \n
-       "        if ((_reinforce select 2) > 10) then {10} else {_reinforce select 2}, // mechanised" \n
-       "        if ((_reinforce select 3) > 10) then {10} else {_reinforce select 3}, // armour" \n
-       "        if ((_reinforce select 4) > 10) then {10} else {_reinforce select 4}, // plane" \n
-       "        if ((_reinforce select 5) > 10) then {10} else {_reinforce select 5}  // heli" \n
-       "    ];" \n
-       "" \n
-       "    _event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,""STANDARD""],""OPCOM""] call ALIVE_fnc_event;" \n
-       "    _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
-       "" \n
-       "    if (_debug) then {" \n
-       "        {" \n
-       "            private [""_typeReinf""];" \n
-       "        " \n
-       "            _typeReinf = _foreachIndex;" \n
-       "        " \n
-       "            switch (_typeReinf) do {" \n
-       "                case 0 : {_typeReinf = ""infantry""};" \n
-       "                case 1 : {_typeReinf = ""motorised""};" \n
-       "                case 2 : {_typeReinf = ""mechanised""};" \n
-       "                case 3 : {_typeReinf= ""armour""};" \n
-       "                case 4 : {_typeReinf = ""plane""};" \n
-       "                case 5 : {_typeReinf = ""heli""};" \n
-       "                case 6 : {_typeReinf = ""AAA""};" \n
-       "                case 7 : {_typeReinf = ""Artillery""};" \n
-       "            };" \n
-       "        " \n
-       "            [""ALiVE OPCOM - Requesting reinforcments for side %3 %1x %2 units!"",_x,_typeReinf,_side] call ALiVE_fnc_DumpR;" \n
-       "        } foreach _reinforce;" \n
+       "	" \n
+       "	    if (_debug) then {" \n
+       "	        {" \n
+       "	            private [""_typeReinf""];" \n
+       "	        " \n
+       "	            _typeReinf = _foreachIndex;" \n
+       "	        " \n
+       "	            switch (_typeReinf) do {" \n
+       "	                case 0 : {_typeReinf = ""infantry""};" \n
+       "	                case 1 : {_typeReinf = ""motorised""};" \n
+       "	                case 2 : {_typeReinf = ""mechanised""};" \n
+       "	                case 3 : {_typeReinf= ""armour""};" \n
+       "	                case 4 : {_typeReinf = ""plane""};" \n
+       "	                case 5 : {_typeReinf = ""heli""};" \n
+       "	                case 6 : {_typeReinf = ""AAA""};" \n
+       "	                case 7 : {_typeReinf = ""Artillery""};" \n
+       "	            };" \n
+       "	        " \n
+       "	            [""ALiVE OPCOM - Requesting reinforcments for side %3 %1x %2 units!"",_x,_typeReinf,_side] call ALiVE_fnc_DumpR;" \n
+       "	        } foreach _reinforce;" \n
+       "	    };" \n
        "    };" \n
        "};" \n
        "" \n
@@ -1003,7 +1054,7 @@ class FSM
   initState="INIT";
   finalStates[] =
   {
-    "END"
+    "END",
   };
 };
 /*%FSM</COMPILE>*/

@@ -12,7 +12,7 @@ class SCOMTablet
     class controlsBackground {
         class SCOMTablet_background : SCOMTablet_RscPicture
         {
-            idc = -1;
+            idc = 12002;
             x = 0.142424 * safezoneW + safezoneX;
             y = 0.0632 * safezoneH + safezoneY;
             w = 0.73 * safezoneW;

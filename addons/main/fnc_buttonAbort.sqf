@@ -65,7 +65,6 @@ _savePlayer = {
         // sys_player module onPlayerDisconnected call
         [[_id, _name, _uid],"ALIVE_fnc_player_onPlayerDisconnected", false, false] call BIS_fnc_MP;
     };
-
 };
 
 // FUNCTION THAT HANDLES PLAYERS EXITING
@@ -418,7 +417,7 @@ _saveServer = {
     ["serversaved","BIS_fnc_endMission",_admin,false,false] spawn BIS_fnc_MP;
 };
 
-if (_mode == "SAVESERVERYO" && isDedicated && ALiVE_sys_data_DISABLED) then {
+if (_mode == "SAVESERVERYO" && isServer && ALiVE_sys_data_DISABLED) then {
 
     ["ALiVE Data is disabled, so server save will not occur, aborting..."] call ALIVE_fnc_dump;
     ["--------------------------------------------------------------"] call ALIVE_fnc_dump;
@@ -428,7 +427,7 @@ if (_mode == "SAVESERVERYO" && isDedicated && ALiVE_sys_data_DISABLED) then {
 };
 
 // Function run on server
-if (_mode == "SAVESERVERYO" && isDedicated) exitWith {
+if (_mode == "SAVESERVERYO" && isServer) exitWith {
     // Save server data
     [_saveServer,_exitServer,_adminUID] spawn {
         private ["_saveServer","_exitServer"];
@@ -443,7 +442,7 @@ if (_mode == "SAVESERVERYO" && isDedicated) exitWith {
 };
 
 // Function run on server
-if (_mode == "SERVERABORTYO" && isDedicated) exitwith {
+if (_mode == "SERVERABORTYO" && isServer) exitwith {
 
     // Exit server without saving
     [_exitServer] spawn {
@@ -457,13 +456,13 @@ if (_mode == "SERVERABORTYO" && isDedicated) exitwith {
 };
 
 // Function run on client
-if (_mode == "ABORT" && !isDedicated) then {
+if (_mode == "ABORT" && hasInterface) then {
     // Exit player without saving
     [player] call _exitPlayer;
 };
 
 // Function run on client
-if ((_mode == "SAVE" || _mode == "REMSAVE") && !isDedicated) then {
+if ((_mode == "SAVE" || _mode == "REMSAVE") && hasInterface) then {
     // Save player data
     if (!ALiVE_sys_data_DISABLED) then {
         [player] call _savePlayer;

@@ -27,14 +27,14 @@ Author:
 Highhead
 ---------------------------------------------------------------------------- */
 
-if !(isDedicated && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {};
+if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {};
 
 private ["_data","_instances"];
 
 [true, "ALiVE CQB persistence load data started", "cqbper"] call ALIVE_fnc_timer;
 
-_async = false;
-_missionName = [missionName, "%20","-"] call CBA_fnc_replace;
+private _async = false;
+private _missionName = [missionName, "%20","-"] call CBA_fnc_replace;
 _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName];
 
 if (isNil QGVAR(DATAHANDLER)) then {

@@ -12,7 +12,7 @@ class GMTablet
     class controlsBackground {
         class GMTablet_background : RscPicture
         {
-            idc = -1;
+            idc = 11002;
             x = 0.142424 * safezoneW + safezoneX;
             y = 0.0632 * safezoneH + safezoneY;
             w = 0.73 * safezoneW;

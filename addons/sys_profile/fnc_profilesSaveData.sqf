@@ -33,7 +33,7 @@ _result = [false,[]];
 
 if(ALIVE_saveProfilesPersistent) then {
 
-    if (isDedicated) then {
+    if (isServer) then {
 
         if (!isNil "ALIVE_sys_data" && {!ALIVE_sys_data_DISABLED}) then {
 

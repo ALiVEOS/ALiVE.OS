@@ -10,7 +10,7 @@ class RscDisplayALiVESITREP
     {
          class SITREP_Background : RscPicture
         {
-                idc = -1;
+                idc = 90002;
                 x = 0.142424 * safezoneW + safezoneX;
                 y = 0.0632 * safezoneH + safezoneY;
                 w = 0.73 * safezoneW;
@@ -369,5 +369,3 @@ class RscDisplayALiVESITREP
         };
     };
 };
-
-

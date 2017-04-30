@@ -12,11 +12,11 @@ item7[] = {"START",4,218,-192.425964,-19.086315,-102.425903,30.913666,2.000000,"
 item8[] = {"ANALYSE",2,250,-121.637917,195.866745,-31.637772,245.866928,0.000000,"ANALYSE"};
 item9[] = {"DO_SPAWN",4,218,-123.076942,274.904297,-33.076859,324.904358,0.000000,"DO" \n "SPAWN"};
 item10[] = {"DONE",2,250,-120.598183,507.647278,-33.938690,554.306946,0.000000,"DONE"};
-item11[] = {"SPAWN_LOOP",2,4346,-122.133957,356.411804,-32.133873,406.411865,0.000000,"SPAWN" \n "LOOP"};
+item11[] = {"SPAWN_LOOP",2,250,-122.133957,356.411804,-32.133873,406.411865,0.000000,"SPAWN" \n "LOOP"};
 item12[] = {"ITERATE",4,218,4.978054,356.221527,94.978058,406.221588,1.000000,"ITERATE"};
 item13[] = {"END__LOOP",4,218,-122.198143,431.177094,-32.198082,481.177094,0.000000,"END " \n "LOOP"};
 item14[] = {"WAIT",4,218,-318.101746,-18.262732,-228.101776,31.737242,3.000000,"WAIT"};
-item15[] = {"ANALYSE_1",2,250,-273.843933,196.692368,-183.843842,246.692383,0.000000,"ANALYSE"};
+item15[] = {"ANALYSE_1",2,4346,-273.843933,196.692368,-183.843842,246.692383,0.000000,"ANALYSE"};
 item16[] = {"DO__DESPAWN",4,218,-273.541809,276.163025,-183.541779,326.163147,1.000000,"DO " \n "DESPAWN"};
 item17[] = {"CHECK",2,250,-192.264313,52.674805,-102.264297,102.674797,0.000000,"CHECK"};
 item18[] = {"DESPAWN_LOOP",2,250,-273.384827,357.735229,-183.384796,407.735413,0.000000,"DESPAWN" \n "LOOP"};
@@ -35,15 +35,15 @@ item30[] = {"ITERATE",4,218,2.160717,195.580490,92.160904,245.580521,2.000000,"I
 version=1;
 class LayoutItems
 {
-    class Item2
-    {
-        class ItemInfo
-        {
-            FontFace="Arial";
-            FontHeight=10;
-            lStyle=1;
-        };
-    };
+	class Item2
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
 };
 link0[] = {0,1};
 link1[] = {1,5};
@@ -85,8 +85,8 @@ link36[] = {27,21};
 link37[] = {28,10};
 link38[] = {29,15};
 link39[] = {30,8};
-globals[] = {0.000000,0,0,0,16777215,640,480,1,123,6316128,1,-664.444519,360.324585,915.253906,-19.923319,1018,929,1};
-window[] = {2,-1,-1,-1,-1,1118,220,1843,220,3,1035};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,123,6316128,1,-581.810730,223.598297,615.953796,-218.187729,750,767,1};
+window[] = {0,-1,-1,-1,-1,942,44,1667,44,1,767};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -205,7 +205,7 @@ class FSM
       name = "ANALYSE";
       init = /*%FSM<STATEINIT""">*/"private [""_profile"",""_active"",""_position"",""_countToSpawn"",""_activeEntities"",""_activeEntityCount""];" \n
        "" \n
-       "_block = [ALIVE_arrayBlockHandler,""getNextBlock"", [format[""inactiveProfiles%1"",_side],_inactiveProfiles,30]] call ALIVE_fnc_arrayBlockHandler;" \n
+       "_block = [ALIVE_arrayBlockHandler,""getNextBlock"", [format[""inactiveProfiles%1"",_side],_inactiveProfiles,75]] call ALIVE_fnc_arrayBlockHandler;" \n
        "" \n
        "{" \n
        "" \n
@@ -216,6 +216,8 @@ class FSM
        "        if(count (_profile select 2) > 0) then {" \n
        "" \n
        "            _active = _profile select 2 select 1;" \n
+       "" \n
+       "		if (isnil ""_active"") then {[""ALiVE ProfileSpawner has corrupted profile input: %1"",_profile] call ALiVE_fnc_DumpR};" \n
        "" \n
        "            if!(_active) then {" \n
        "                _position = _profile select 2 select 2;" \n
@@ -233,7 +235,7 @@ class FSM
        "" \n
        "} forEach _block;" \n
        "" \n
-       "_analysisCount = _analysisCount + 30;" \n
+       "_analysisCount = _analysisCount + 75;" \n
        "" \n
        "// DEBUG -------------------------------------------------------------------------------------" \n
        "/*" \n
@@ -340,6 +342,7 @@ class FSM
        "_profile = _toSpawn select _spawnCount;" \n
        "_spawnDelay = 0;" \n
        "_script = [] spawn {};" \n
+       "_position = [0,0,0];" \n
        "" \n
        "if!(isnil ""_profile"") then {" \n
        "    _profileType = _profile select 2 select 5;" \n
@@ -411,15 +414,11 @@ class FSM
         {
           priority = 1.000000;
           to="SPAWN_LOOP";
-          precondition = /*%FSM<CONDPRECONDITION""">*/"_timeout = time - _spawnDelay > 1; _timeoutFull = time - _spawnDelay > 10;" \n
-           "_timeout;"/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"//_spawnCount < _countToSpawn" \n
-           "" \n
-           "_spawnCount < _countToSpawn && " \n
+          precondition = /*%FSM<CONDPRECONDITION""">*/"_timeout = time - _spawnDelay > ALiVE_smoothSpawn; _timeoutFull = time - _spawnDelay > 10;"/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_spawnCount < _countToSpawn && {_timeout} && " \n
            "{" \n
            "    isnil ""_profile"" ||" \n
            "    {[_profile,""active"",false] call ALiVE_fnc_HashGet} || " \n
-           "    {!([_position, _spawnDistance, _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir)} || " \n
            "    {_timeoutFull}" \n
            "};"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
@@ -437,8 +436,8 @@ class FSM
           priority = 0.000000;
           to="DONE";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"_spawnCount >= _countToSpawn"/*%FSM</CONDITION""">*/;
-          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_spawnCount >= _countToSpawn || {!([_position, _spawnDistance, _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir)}"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"//[""Ending spawn loop on profile %1"",_profileID] call ALiVE_fnc_DumpR;"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
       };
@@ -450,7 +449,7 @@ class FSM
       name = "ANALYSE_1";
       init = /*%FSM<STATEINIT""">*/"private [""_profile"",""_active"",""_leader"",""_position"",""_profileType"",""_group"",""_groupLeader"",""_countToDespawn"",""_stopDespawn""];" \n
        "" \n
-       "_block = [ALIVE_arrayBlockHandler,""getNextBlock"", [format[""activeProfiles%1"",_side],_activeProfiles,30]] call ALIVE_fnc_arrayBlockHandler;" \n
+       "_block = [ALIVE_arrayBlockHandler,""getNextBlock"", [format[""activeProfiles%1"",_side],_activeProfiles,75]] call ALIVE_fnc_arrayBlockHandler;" \n
        "" \n
        "_despawnDistance = _spawnDistance*1.2;" \n
        "_despawnTypeJetRadius = _spawnTypeJetRadius*1.1;" \n
@@ -491,7 +490,7 @@ class FSM
        "    };" \n
        "} forEach _block;" \n
        "" \n
-       "_analysisCount = _analysisCount + 30;" \n
+       "_analysisCount = _analysisCount + 75;" \n
        "" \n
        "" \n
        "// DEBUG -------------------------------------------------------------------------------------" \n

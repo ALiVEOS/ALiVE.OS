@@ -29,6 +29,6 @@ private ["_target", "_objectClass","_objects"];
 _target = _this select 0;
 _objectClass = _this select 1;
 
-_objects = [[_target,"TOP"],_objectClass,1,[(random 1)-0.1,(random 1)-0.1,0],(random 20)-10,{0},true] call BIS_fnc_spawnObjects;
+_objects = [[_target,"TOP"],_objectClass,1,[(random 0.6)-0.1,(random 0.6)-0.1,0],(random 20)-10,{0},true] call BIS_fnc_spawnObjects;
 
 _objects

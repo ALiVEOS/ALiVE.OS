@@ -15,7 +15,7 @@
 
 #include "script_component.hpp"
 
-if (!isNil QMOD(sys_player) && isDedicated) then {
+if (!isNil QMOD(sys_player) && isServer) then {
 
     private ["_id","_uid","_name","_module", "_result"];
 

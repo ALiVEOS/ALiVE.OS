@@ -26,14 +26,10 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_position","_distance","_near","_result","_player"];
+params ["_position","_distance","_targetSide"];
 
-_position = _this select 0;
-_distance = _this select 1;
-_targetSide = _this select 2;
-
-_near = [];
-_result = [];
+private _near = [];
+private _result = [];
 
 {
 
@@ -43,8 +39,7 @@ _result = [];
 } forEach allPlayers;
 
 if(count _near > 0) then {
-    _player = selectRandom _near;
-    _result = [_player];
+    _result = [selectRandom _near];
 };
 
 _result

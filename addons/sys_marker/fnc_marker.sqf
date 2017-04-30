@@ -153,7 +153,7 @@ switch (_operation) do {
              [_logic, "drawToggle", DEFAULT_TOGGLE] call ALIVE_fnc_marker;
              [_logic, "drawing", false] call ALIVE_fnc_marker;
 
-//             diag_log format["TOGGLE: %1", [_logic, "drawToggle",[]] call MAINCLASS];
+            //             diag_log format["TOGGLE: %1", [_logic, "drawToggle",[]] call MAINCLASS];
 
             // Define module basics on server
             if (isServer) then {
@@ -196,7 +196,7 @@ switch (_operation) do {
 
                 //Push to clients
                 PublicVariable QGVAR(STORE);
-
+                
                 _logic setVariable ["init", true, true];
             };
 
@@ -232,10 +232,15 @@ switch (_operation) do {
 
                  if (didJIP) then {
                     ["Registering Advanced Marker PVEH for %1. JIP: %2 ", player, didJIP] call ALiVE_fnc_Dump;
+
+                    // [ADDON, "restoreMarkers", [GVAR(STORE)]] call ALiVE_fnc_marker;
+
                     QGVAR(STORE) addPublicVariableEventHandler {
                         // Restore Markers on map for JIP
-                        [ADDON, "restoreMarkers", [GVAR(STORE)]] call ALiVE_fnc_marker;
+                        [ADDON, "restoreMarkers", [(_this select 1)]] call ALiVE_fnc_marker;
+                        // ["PVEH FIRING %1", _this] call ALiVE_fnc_dump;
                     };
+
                 };
 
                 TRACE_1("Initial STORE", GVAR(STORE));
@@ -308,6 +313,10 @@ switch (_operation) do {
                             ["Did not Register Adv Marker controls for briefing screen: %1", player] call ALiVE_fnc_Dump;
                         };
                     };
+                } else {
+                    if !(isMultiplayer) then {
+                        [_logic, "restoreMarkers", [GVAR(STORE)]] call ALiVE_fnc_marker;
+                    };
                 };
 
                 waitUntil {
@@ -354,8 +363,7 @@ switch (_operation) do {
             _result = MOD(SYS_marker);
         };
 
-         case "mouseButton":
-         { // Runs locally on client
+        case "mouseButton": { // Runs locally on client
 
             private ["_player","_shift","_alt","_ctr","_ok","_control","_xPos","_yPos","_toggle"];
             _player = player;
@@ -523,7 +531,7 @@ switch (_operation) do {
             // Handles pressing of certain keys on map
             private ["_player","_shift","_alt","_ctr","_key","_toggle","_width","_angle","_display"];
 
-//            diag_log str _this;
+                //            diag_log str _this;
 
             _params = _args select 1;
 

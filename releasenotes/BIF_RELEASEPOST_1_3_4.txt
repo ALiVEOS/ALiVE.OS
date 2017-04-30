@@ -1,0 +1,60 @@
+[center][url=https://github.com/ALiVEOS/ALiVE.OS.git][img=http://i.imgur.com/RFX0nkZ.jpg][/url][/center]
+[center][b][url=http://alivemod.com/]ALiVEmod.com[/url]
+[size=4]The next generation dynamic persistent mission addon for ArmA3[/size][/b][/center]
+[center][b]Release 1.3.4[/b][/center]
+[center][/center]
+ 
+[b]Local Persistence[/b]
+Highhead has worked his magic and delivered an option to persist ALiVE missions to your local machine without needing to install a database by saving data to your player profile, known as the ProfileNameSpace (PNS for short).  This works on your local machine in Single Player games or the hosts machine in Multiplayer, including on dedicated servers.  After several missions the files will get quite large so we recommend clearing out the data regularly - details for how to do that are below and on our wiki.  Setting up a local database using CouchDB is still an option for those with the technical skills do to so and of course for all those with dedicated servers, the ALiVE War Room is still the simplest method for mission persistence, stats, server monitoring and After Action Reviews.
+
+Meanwhile the rest of the team has been working hard on some major performance improvements in readiness for the upcoming Jets DLC.  There is now an option to adjust how fast the virtual profiles spawn when players are within range - slower & smooth helps prevent stuttering on busy missions but may take too long to spawn in for fast moving units, so adjust to taste.
+
+SpyderBlack continues to enhance his Orbat Tool.  If you have not tried it yet, it's well worth a go.  Many people have released some great new factions using the tool already and remember you don't need ALiVE to use them in missions (though of course we recommend you do!)
+
+Tupolov has returned from the wilderness of no interwebs and responded to a few community requests to index the shiny new Lythium map (welcome back Tup!)
+
+[b]ProfileNameSpace Usage[/b]
+This is the first iteration of PNS Persistence so please report bugs Github.  To use local persistence, select "ProfileNamespace" on the ALiVE Database module and make sure you have persistence enabled on the other modules as normal.  It is recommended you backup your user profile and/or server profile first (C:\Users\username\Documents\Arma 3 - Other Profiles\profilename).  We will add buttons for saving and clearing data soon but for now you can use the following functions in the debug console:
+
+[i]call ALiVE_fnc_ProfileNameSpaceClear[/i]:  clears data for the current mission only. Note that renaming the mission pbo will also start a fresh instance.
+[i]call ALiVE_fnc_ProfileNameSpaceWipe[/i]:  clears all ALiVE data from ProfileNameSpace completely.
+
+[b]Release Highlights[/b]
+
+Added a database-free local save option
+Map Index - FSF Adiyaman (thanks Vegas!); Diyala (thanks Heroes!); Winthera & Dingor (thanks Whigital!); Lythium (thanks Tup!)
+Added adjustable Smooth Spawn™ for virtual AI
+Added group mapping for latest RHS update
+Several performance enhancements
+	
+Many thanks to all those not mentioned here who contributed bug fixes, enhancements and map indexes!  See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
+    
+[center][b][url=http://alivemod.com/#Download]Download[/url][/b]
+Grab the latest version from [url=http://alivemod.com/#Download]ALiVEmod.com[/url]
+Also available from PlayWithSix, ArmAholic and Steam (Usually within 24 hours of this post)[/center]
+
+[center][b][url=http://alivemod.com/#ALiVEWarRoom]Join the War Room Now![/url][/b][/center]
+
+Please note that as with all updates, if you have an issue loading a mission made with a previous version of ALiVE, delete and replace the modules in that mission.
+
+[b]Known Issues & Support[/b]
+Existing bugs are listed on Github [url=https://github.com/ALiVEOS/ALiVE.OS/issues]here[/url]. Feel free to submit bugs (with repros) or discuss any issues or ideas on our forum at [url=http://alivemod.com/forum/]http://alivemod.com/forum/[/url].
+
+[b]Manual[/b]
+Please refer to the [url=http://www.alivemod.com/wiki]ALiVE Wiki[/url]. All the info you need is there. If anything is missing or unclear, please let us know.
+
+[b]Are you using Linux?[/b]
+ALiVE is fully supported on a Linux Dedicated Server (as well as Windows). In fact the ALiVE Official Server for testing is running Ubuntu. Here are some tips on getting ALiVE running smoothly on Linux and integrated with War Room - [url=http://www.alivemod.com/forum/1916-setting-up-linux-dedi-server]http://www.alivemod.com/forum/1916-setting-up-linux- dedi-server[/url]
+
+[b]Acknowledgements and Thanks[/b]
+Particular thanks to all those on our support forum who have worked closely with us to identify bugs, provide logs and generally help us improve ALiVE. Your assistance is valuable and your dedication to ALiVE makes it all worth the effort!
+
+[b]Disclaimer[/b]
+We may need to prune the persistent database data from the War Room, eliminating data that is older than 6-12 months. The ALiVE War Room database is run on a voluntary basis at a cost to the ALiVE development team. No guarantees can be given on the mission data stored or the availability of the service. We apologise for any downtime that may impact your MP persistent missions.
+
+[b]ALiVE has transformed my Arma 3 experience, how can I thank you?[/b]
+Please consider making a contribution to our server costs if you enjoy ALiVE! It costs us $65 per month to run our War Room website and the ALiVE Database servers and every little helps. Donate here [url=http://www.alivemod.com/#Donate]http://www.alivemod.com/#Donate[/url]
+
+Special thanks to everyone here for supporting us with donations to the ALiVE mod development effort.
+
+Have fun!

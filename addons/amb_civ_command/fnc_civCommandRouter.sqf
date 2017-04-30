@@ -2,7 +2,7 @@
 SCRIPT(civCommandRouter);
 
 /* ----------------------------------------------------------------------------
-Function: MAINCLASS
+Function: ALIVE_fnc_civCommandRouter
 Description:
 Command router for agent command system
 

@@ -891,11 +891,7 @@ switch(_operation) do {
                         private _markers = [_logic,"destinationMarker"] call MAINCLASS;
 
                         {
-                            if (markerPos _x isEqualTo _position) then {
-
                                 deleteMarker _x;
-
-                            };
                         } foreach _markers;
 
                     };
@@ -1354,18 +1350,36 @@ switch(_operation) do {
 
                 case "OPEN": {
 
-                    createDialog "PRTablet";
+                    switch (MOD(TABLET_MODEL)) do {
+                        case "Tablet01": {
+                            createDialog "PRTablet";
+                        };
+
+                        case "Mapbag01": {
+                            createDialog "PRTablet";
+
+                            private _ctrlBackground = ((findDisplay 60001) displayCtrl 60000);
+                            _ctrlBackground ctrlsettext "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
+                            _ctrlBackground ctrlSetPosition [
+                                0.15 * safezoneW + safezoneX,
+                                -0.242 * safezoneH + safezoneY,
+                                0.72 * safezoneW,
+                                1.372 * safezoneH
+                            ];
+                            _ctrlBackground ctrlCommit 0;
+                        };
+
+                        default {
+                            createDialog "PRTablet";
+                        };
+                    };
 
                     // Display Current Force Pool
-                    private ["_forcePool","_forcePoolStatus"];
-                    _forcePoolStatus = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ForcePool);
-                    if (!isNil "ALIVE_globalForcePool") then {
-                        _forcePool = [ALIVE_globalForcePool,faction player,0] call ALIVE_fnc_hashGet;
-                    } else {
-                        _forcePool = "WAITING...";
-                    };
-                    _forcePoolStatus ctrlSetText format["Current Force Pool: %1",_forcePool];
-                    _forcePoolStatus ctrlShow true;
+
+                    private _forcePoolStatus = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ForcePool);
+                    _forcePoolStatus ctrlsettext "WAITING...";
+
+                    [nil,"getForcePool", [player, faction player]] remoteExecCall [QUOTE(MAINCLASS),2];
 
                 };
 
@@ -2850,6 +2864,7 @@ switch(_operation) do {
         [_logic,"statusMarker",[]] call MAINCLASS;
 
         // Display Current Force Pool
+
         private ["_forcePool","_forcePoolStatus"];
         _forcePoolStatus = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ForcePool);
         if (!isNil "ALIVE_globalForcePool") then {
@@ -2935,6 +2950,26 @@ switch(_operation) do {
 
         _payloadStatusMap = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_StatusMap);
         _payloadStatusMap ctrlShow false;
+
+    };
+
+    case "getForcePool": {
+
+        _args params ["_player","_faction"];
+
+        private _forcePool = [MOD(globalForcePool),_faction, 0] call ALiVE_fnc_hashGet;
+
+        [nil,"displayForcePool", [_faction,_forcePool]] remoteExecCall [QUOTE(MAINCLASS),_player];
+
+    };
+
+    case "displayForcePool": {
+
+        _args params ["_faction","_forcepool"];
+
+        private _forcePoolStatus = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_ForcePool);
+        _forcePoolStatus ctrlSetText format ["Current Force Pool: %1", _forcePool];
+        _forcePoolStatus ctrlShow true;
 
     };
 
@@ -3177,7 +3212,7 @@ switch(_operation) do {
 
         if(count _destinationMarkers > 0) then {
             {
-                deleteMarkerLocal _x;
+                deleteMarker _x;
             } forEach _destinationMarkers;
 
         };

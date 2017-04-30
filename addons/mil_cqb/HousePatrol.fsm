@@ -1,7 +1,7 @@
 /*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, Simple House Patrol">*/
 /*%FSM<HEAD>*/
 /*
-item0[] = {"Start",0,4346,-155.232559,-241.279068,-65.232559,-191.279068,0.000000,"Start"};
+item0[] = {"Start",0,250,-155.232559,-241.279068,-65.232559,-191.279068,0.000000,"Start"};
 item1[] = {"Random_Delay",4,218,-154.883728,-168.604660,-64.883736,-118.604660,0.000000,"Random" \n "Delay"};
 item2[] = {"Select_floors",2,250,-154.302368,-88.372086,-64.302322,-38.372086,0.000000,"Select floors"};
 item3[] = {"Enemy_Spotted",4,218,-40.348866,-87.790695,49.651142,-37.790703,5.000000,"Enemy" \n "Spotted"};
@@ -9,7 +9,7 @@ item4[] = {"Wait_while_Enemy",2,250,75.348831,-88.372116,165.348816,-38.372097,0
 item5[] = {"",7,210,190.465103,-67.441856,198.465118,-59.441856,0.000000,""};
 item6[] = {"",7,210,190.469543,-147.626953,198.469543,-139.626953,0.000000,""};
 item7[] = {"_",8,218,-154.463562,-22.245586,-64.463570,27.754414,0.000000,""};
-item8[] = {"Garrison_Buildin",2,250,-155.005432,46.033588,-65.005432,96.033607,0.000000,"Garrison" \n "Buildings"};
+item8[] = {"Garrison_Buildings",2,250,-155.005432,46.033588,-65.005432,96.033607,0.000000,"Garrison" \n "Buildings and " \n "static weapons"};
 item9[] = {"",7,210,190.209213,67.273834,198.209213,75.273834,0.000000,""};
 item10[] = {"Wait_1_minute",4,218,-38.573677,45.691322,51.426323,95.691330,0.000000,"Wait 1 minute"};
 item11[] = {"set_user_waiting",2,250,77.103096,46.333992,167.103088,96.333992,0.000000,"set" \n "user waiting" \n "time"};
@@ -20,7 +20,7 @@ item15[] = {"Abort",4,218,-138.296738,126.212921,-48.296669,176.212936,9.000000,
 item16[] = {"Pass_FSM_and_End",1,250,80.389030,194.239243,170.389069,244.239197,0.000000,"Pass FSM" \n "and" \n "End"};
 item17[] = {"End_1",1,250,-30.944130,192.897903,59.055893,242.897858,0.000000,"End"};
 item18[] = {"Players__out_of",4,218,-262.983612,51.398300,-172.983444,101.398277,0.000000,"Players " \n "out of Range"};
-item19[] = {"Move_home",2,250,-382.479431,49.360733,-292.479431,99.360764,0.000000,"Move home"};
+item19[] = {"Move_home",2,4346,-382.479431,49.360733,-292.479431,99.360764,0.000000,"Move home"};
 item20[] = {"Players__in_Rang",4,218,-383.809692,-88.932213,-293.809418,-38.932289,0.000000,"Players " \n "in Range"};
 item21[] = {"At_home",4,218,-382.350586,131.043976,-292.350250,181.044006,2.000000,"At home"};
 item22[] = {"_",-1,250,-440.685394,-235.585892,-437.600311,-235.585892,0.000000,""};
@@ -29,15 +29,15 @@ item24[] = {"End_delete_group",1,250,-333.600098,194.266846,-243.600525,244.2668
 version=1;
 class LayoutItems
 {
-    class Item22
-    {
-        class ItemInfo
-        {
-            FontFace="Arial";
-            FontHeight=10;
-            lStyle=1;
-        };
-    };
+	class Item22
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
 };
 link0[] = {0,1};
 link1[] = {1,2};
@@ -70,8 +70,8 @@ link27[] = {19,23};
 link28[] = {20,2};
 link29[] = {21,24};
 link30[] = {23,24};
-globals[] = {0.000000,0,0,0,16777215,640,480,1,32,6316128,1,-505.414032,286.909515,262.642639,-593.418457,721,779,1};
-window[] = {0,-1,-1,-1,-1,976,66,1735,66,1,738};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,32,6316128,1,-485.998077,267.493408,460.280853,-376.031708,837,929,1};
+window[] = {2,-1,-1,-1,-1,954,44,1713,44,3,854};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -106,7 +106,7 @@ class FSM
        "//     wait time 600 sec between positions" \n
        "// 0 = [this, 50, true, 600] execVM ""scripts\crb_scripts\crB_HousePos.sqf"";" \n
        "//////////////////////////////////////////////////////////////////" \n
-       "private [""_pos"",""_debug"",""_abort"",""_pat"",""_wait"",""_guardpost"",""_markers""];" \n
+       "private [""_pos"",""_debug"",""_abort"",""_pat"",""_wait"",""_guardpost"",""_markers"",""_staticWeapons""];" \n
        "" \n
        "" \n
        "_debug = false;" \n
@@ -138,6 +138,7 @@ class FSM
        "_pos = getPosATL _leader;" \n
        "_posDespawn = _pos;" \n
        "_bldgpos = [_pos,_radius,""building""] call ALiVE_fnc_findNearHousePositions;" \n
+       "_staticWeapons = nearestObjects [_pos, [""StaticWeapon""], 20];" \n
        "" \n
        "if ((count _bldgpos) < (count units _grp)*1.2) then {" \n
        "    _pat = true;" \n
@@ -193,7 +194,7 @@ class FSM
         class _
         {
           priority = 0.000000;
-          to="Garrison_Buildin";
+          to="Garrison_Buildings";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
           condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
@@ -267,37 +268,59 @@ class FSM
       };
     };
     /*%FSM</STATE>*/
-    /*%FSM<STATE "Garrison_Buildin">*/
-    class Garrison_Buildin
+    /*%FSM<STATE "Garrison_Buildings">*/
+    class Garrison_Buildings
     {
-      name = "Garrison_Buildin";
+      name = "Garrison_Buildings";
       init = /*%FSM<STATEINIT""">*/"_timeout = time;" \n
        "" \n
        "_grp setbehaviour ""SAFE"";" \n
        "_grp setSpeedMode ""LIMITED"";" \n
        "_grp setCombatMode ""YELLOW"";" \n
        "" \n
+       "_staticWeaponsCopy = +_staticWeapons;" \n
+       "" \n
        "{" \n
-       "        _unit = _x;" \n
-       "        _HousePos = _unit getvariable [""HousePos"",nil];" \n
+       "    _unit = _x;" \n
+       "    _HousePos = _unit getvariable ""HousePos"";" \n
        "" \n
-       "        if ((isnil ""_HousePos"") || {random 1 < 0.4}) then {" \n
-       "            " \n
-       "            if (_pat) then {" \n
-       "                _pos = [_pos,100] call CBA_fnc_Randpos;" \n
-       "            } else {" \n
-       "                _pos = _bldgpos select 0;" \n
+       "	if (count _staticWeaponsCopy > 0 && {!alive gunner (_staticWeaponsCopy select 0)}) then {" \n
        "" \n
-       "                _bldgpos pushback _pos;" \n
-       "                _bldgpos set [0,""x""];" \n
+       "		private  _staticWeapon = _staticWeaponsCopy select 0;" \n
+       "	            " \n
+       "		_unit assignAsGunner _staticWeapon;" \n
+       "		[_unit] orderGetIn true;" \n
        "" \n
-       "                _bldgpos = _bldgpos - [""x""];" \n
-       "            };" \n
+       "		_unit moveInGunner _staticWeapon;" \n
        "" \n
-       "            _timeout = time;" \n
-       "            [_unit, _pos] call ALiVE_fnc_doMoveRemote;" \n
-       "            _unit setvariable [""HousePos"",_pos];" \n
-       "        };" \n
+       "		//[""ALiVE CQB Housepatrol assigned unit %1 as gunner of %2! Total static weapons %3"",_unit,_staticWeapon,_staticWeaponsCopy] call ALiVE_fnc_DumpR;" \n
+       "		" \n
+       "		_staticWeaponsCopy = _staticWeaponsCopy - [_staticWeapon];" \n
+       "	} else {" \n
+       "		if  ((isnil ""_HousePos"") || {random 1 < 0.4}) then {" \n
+       "		" \n
+       "			if (_pat) then {" \n
+       "			    _pos = [_pos,100] call CBA_fnc_Randpos;" \n
+       "" \n
+       "				//[""ALiVE CQB Housepatrol assigned unit %1 to patrol 100mtrs from %2!"",_unit,_pos] call ALiVE_fnc_DumpR;" \n
+       "" \n
+       "			} else {" \n
+       "			    _pos = _bldgpos select 0;" \n
+       "			" \n
+       "			    _bldgpos pushback _pos;" \n
+       "" \n
+       "				//[""ALiVE CQB Housepatrol assigned unit %1 to move to house position %2!"",_unit,_pos] call ALiVE_fnc_DumpR;" \n
+       "" \n
+       "				_bldgpos set [0,""x""];" \n
+       "				_bldgpos = _bldgpos - [""x""];" \n
+       "			};" \n
+       "		" \n
+       "			_timeout = time;" \n
+       "		" \n
+       "			[_unit, _pos] call ALiVE_fnc_doMoveRemote;" \n
+       "			_unit setvariable [""HousePos"",_pos];" \n
+       "		};" \n
+       "	};" \n
        "} foreach (units _grp);" \n
        "" \n
        "deleteMarkerLocal _mkr;" \n
@@ -496,6 +519,10 @@ class FSM
        "" \n
        "    _unit setSpeedMode ""FULL"";" \n
        "    _unit setbehaviour ""AWARE"";" \n
+       "" \n
+       "	unassignVehicle _unit ;" \n
+       "    [_unit] orderGetIn false;" \n
+       "" \n
        "    [_unit, _pos] call ALiVE_fnc_doMoveRemote;" \n
        "    _unit setvariable [""HousePos"",nil];" \n
        "} foreach (units _grp);"/*%FSM</STATEINIT""">*/;

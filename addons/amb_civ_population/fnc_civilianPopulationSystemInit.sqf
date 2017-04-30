@@ -41,6 +41,19 @@ if(isServer) then {
     private _hostilityIndep = parseNumber (_logic getVariable ["hostilityIndep","0"]);
     private _ambientCivilianRoles = call compile (_logic getVariable ["ambientCivilianRoles","[]"]);
 
+//Check if a SYS Profile Module is available
+    private _errorMessage = "No Virtual AI system module was found! Please use this module in your mission! %1 %2";
+    private _error1 = "";
+    private _error2 = ""; //defaults
+
+    if !([QMOD(sys_profile)] call ALiVE_fnc_isModuleAvailable) exitwith {
+        [_errorMessage,_error1,_error2] call ALIVE_fnc_dumpMPH;
+    };
+
+    if !([QMOD(amb_civ_population)] call ALiVE_fnc_isModuleAvailable) then {
+        ["WARNING: Civilian Placement module not placed!"] call ALiVE_fnc_DumpR;
+    };
+
     ALIVE_civilianHostility = [] call ALIVE_fnc_hashCreate;
     [ALIVE_civilianHostility, "WEST", _hostilityWest] call ALIVE_fnc_hashSet;
     [ALIVE_civilianHostility, "EAST", _hostilityEast] call ALIVE_fnc_hashSet;

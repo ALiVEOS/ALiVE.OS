@@ -36,7 +36,6 @@ class CfgVehicles {
                 };
             };
 
-
             class weather_debug_cycle_setting
             {
                 displayName = "$STR_ALIVE_WEATHER_DEBUG_CYCLE";
@@ -44,7 +43,6 @@ class CfgVehicles {
                 defaultValue = 60;
                 typeName = "NUMBER";
             };
-
 
             class weather_initial_setting
             {
@@ -60,7 +58,6 @@ class CfgVehicles {
                         default = 6;
                         value = 6;
                     };
-
                     class initialArid
                     {
                         name = "Arid";
@@ -70,35 +67,30 @@ class CfgVehicles {
                     {
                         name = "Continental";
                         value = 1;
-
                     };
                     class initialTropical
                     {
                         name = "Tropical";
                         value = 2;
-
                     };
                     class initialMediterranean
                     {
                         name = "Mediterranean";
                         value = 3;
-
                     };
                     class initialRandom
                     {
                         name = "Random";
                         value = 4;
                     };
-                   /*
                     class initialRealWeather
                     {
-                            name = "Real";
-                            value = 5;
+                        name = "Real";
+                        value = 5;
                     };
-                    */
+
                 };
             };
-
 
             class weather_override_setting
             {
@@ -113,58 +105,59 @@ class CfgVehicles {
                     name = "";
                     default = 0;
                     value = 0;
-                };
-                class overrideClear
-                {
-                    name = "Clear";
-                    value = 1;
-                };
-                class overrideOvercast
-                {
-                    name = "Overcast";
-                    value = 2;
+                    };
+                    class overrideClear
+                    {
+                        name = "Clear";
+                        value = 1;
+                    };
+                    class overrideOvercast
+                    {
+                        name = "Overcast";
+                        value = 2;
 
-                };
-                class overrideStormy
-                {
-                    name = "Stormy";
-                    value = 3;
-                };
-                class overrideFoggy
-                {
-                    name = "Foggy";
-                    value = 4;
+                    };
+                    class overrideStormy
+                    {
+                        name = "Stormy";
+                        value = 3;
+                    };
+                    class overrideFoggy
+                    {
+                        name = "Foggy";
+                        value = 4;
+                    };
+                    class overrideReal
+                    {
+                        name = "Real Weather: Use weather from real time not game time";
+                        value = 5;
+                    };
                 };
             };
-        };
 
+            class weather_cycle_delay_setting
+            {
+                displayName = "$STR_ALIVE_WEATHER_CYCLE_DELAY";
+                description = "$STR_ALIVE_WEATHER_CYCLE_DELAY_COMMENT";
+                defaultValue = 1800;
+                typeName = "NUMBER";
+            };
 
-        class weather_cycle_delay_setting
-        {
-            displayName = "$STR_ALIVE_WEATHER_CYCLE_DELAY";
-            description = "$STR_ALIVE_WEATHER_CYCLE_DELAY_COMMENT";
-            defaultValue = 1800;
-            typeName = "NUMBER";
-        };
+            class weather_cycle_variance_setting
+            {
+                displayName = "$STR_ALIVE_WEATHER_CYCLE_VARIANCE";
+                description = "$STR_ALIVE_WEATHER_CYCLE_VARIANCE_COMMENT";
+                defaultValue = 0.2;
+                typeName = "NUMBER";
+            };
 
-        class weather_cycle_variance_setting
-        {
-            displayName = "$STR_ALIVE_WEATHER_CYCLE_VARIANCE";
-            description = "$STR_ALIVE_WEATHER_CYCLE_VARIANCE_COMMENT";
-            defaultValue = 0.2;
-            typeName = "NUMBER";
-        };
-
-        /*
-        class weather_real_location_setting
-        {
-            displayName = "$STR_ALIVE_WEATHER_REAL_LOCATION";
-            description = "$STR_ALIVE_WEATHER_REAL_LOCATION_COMMENT";
-            defaultValue = "COUNTRY/CITY";
-            typeName = "STRING";
-
-        };
-        */
+            class weather_real_location_setting
+            {
+                displayName = "$STR_ALIVE_WEATHER_REAL_LOCATION";
+                description = "$STR_ALIVE_WEATHER_REAL_LOCATION_COMMENT";
+                defaultValue = "COUNTRY/CITY";
+                typeName = "STRING";
+            };
 
         };
 

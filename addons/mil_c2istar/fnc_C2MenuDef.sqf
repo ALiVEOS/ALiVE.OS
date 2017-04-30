@@ -163,7 +163,31 @@ if (_menuName == "C2ISTAR") then {
                      [QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable && {_csResult}
                 ],
                 ["Send SITREP",
-                    {createDialog "RscDisplayALIVESITREP"},
+                    {
+                        switch (MOD(TABLET_MODEL)) do {
+                            case "Tablet01": {
+                                createDialog "RscDisplayALIVESITREP";
+                            };
+
+                            case "Mapbag01": {
+                                createDialog "RscDisplayALIVESITREP";
+
+                                private _ctrlBackground = ((findDisplay 90001) displayCtrl 90002);
+                                _ctrlBackground ctrlsettext "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
+                                _ctrlBackground ctrlSetPosition [
+                                    0.15 * safezoneW + safezoneX,
+                                    -0.242 * safezoneH + safezoneY,
+                                    0.72 * safezoneW,
+                                    1.372 * safezoneH
+                                ];
+                                _ctrlBackground ctrlCommit 0;
+                            };
+
+                            default {
+                                createDialog "RscDisplayALIVESITREP";
+                            };
+                        };
+                    },
                     "",
                     "",
                     "",
@@ -172,7 +196,31 @@ if (_menuName == "C2ISTAR") then {
                      _result
                 ],
                 ["Send PATROLREP",
-                    {createDialog "RscDisplayALIVEPATROLREP"},
+                    {
+                        switch (MOD(TABLET_MODEL)) do {
+                            case "Tablet01": {
+                                createDialog "RscDisplayALIVEPATROLREP";
+                            };
+
+                            case "Mapbag01": {
+                                createDialog "RscDisplayALIVEPATROLREP";
+
+                                private _ctrlBackground = ((findDisplay 90002) displayCtrl 90003);
+                                _ctrlBackground ctrlsettext "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
+                                _ctrlBackground ctrlSetPosition [
+                                    0.15 * safezoneW + safezoneX,
+                                    -0.242 * safezoneH + safezoneY,
+                                    0.72 * safezoneW,
+                                    1.372 * safezoneH
+                                ];
+                                _ctrlBackground ctrlCommit 0;
+                            };
+
+                            default {
+                                createDialog "RscDisplayALIVEPATROLREP";
+                            };
+                        };
+                    },
                     "",
                     "",
                     "",

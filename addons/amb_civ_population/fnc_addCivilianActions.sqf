@@ -113,7 +113,7 @@ _id = _object addAction [
     _condition
 ];
 
-_text = "Arrest";
+_text = "Detain";
 _params = [];
 _code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; _group = group _object; [_object] joinsilent (group _caller); _object setvariable ['detained',true,true]; _group call ALiVE_fnc_DeleteGroupRemote};
 _condition = "alive _target" + "&&" + "!(_target getvariable ['detained',false])";
@@ -129,9 +129,29 @@ _id = _object addAction [
     _condition
 ];
 
+_text = "Arrest";
+_params = [];
+_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; _group = if (side (group _object) == Civilian) then {group _object} else {createGroup Civilian}; [_object] joinsilent _group; _object disableAI "PATH"};
+_condition = "alive _target" + "&&" + "(_target getvariable ['detained',false])";
+
+_id = _object addAction [
+    _text,
+    _code,
+    _params,
+    1,
+    false,
+    true,
+    "",
+    _condition
+];
+
 _text = "Release";
 _params = [];
-_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; _group = createGroup Civilian; [_object] joinsilent _group; _object setvariable ['detained',false,true]};
+_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; _group = if (side (group _object) == Civilian) then {group _object} else {createGroup Civilian}; [_object] joinsilent _group; _object setvariable ['detained',false,true]; _object enableAI "PATH"};
+/*
+// Causes units to return to group leader and pile up there - #277)
+_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; _group = [ALIVE_civilianPopulationSystem, "civGroup"] call ALiVE_fnc_HashSet; [_object] joinsilent _group; _object setvariable ['detained',false,true]};
+*/
 _condition = "alive _target" + "&&" + "_target getvariable ['detained',false]";
 
 _id = _object addAction [

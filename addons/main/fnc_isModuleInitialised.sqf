@@ -26,23 +26,18 @@ ARJay, Highhead
 Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
-private ["_waitModules","_initialising","_startupComplete"];
 
-_waitModules = _this;
-_initialising = false;
+private _waitModules = _this;
+private _initialising = true;
 
-waitUntil {
-    _initialising = true;
-    {
-        if (typeof _x in _waitModules) then {
-            _startupComplete = _x getVariable ["startupComplete",false];
+{
+    if (_initialising && {typeof _x in _waitModules}) then {
+        private _startupComplete = _x getVariable ["startupComplete",false];
 
-            if !(_startupComplete) then {
-                _initialising = false;
-            };
+        if !(_startupComplete) then {
+            _initialising = false;
         };
-    } foreach (entities "Module_F");
-    _initialising
-};
+    };
+} foreach (entities "Module_F");
 
-_initialising;
+_initialising

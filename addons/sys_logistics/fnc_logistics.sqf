@@ -140,7 +140,7 @@ switch (_operation) do {
             } foreach (ALIVE_factionDefaultContainers select 2);
 
             // Define logistics properties on all localities (containers: select 0 / objects: select 1 / exclude: select 2)
-            GVAR(CARRYABLE) = [["Man"],["Reammobox_F","Static","StaticWeapon","ThingX"],["House"] + (_logic getvariable ["BLACKLIST",[]])];
+            GVAR(CARRYABLE) = [["Man"],["Reammobox_F","Static","StaticWeapon","ThingX","NonStrategic"] + (_logic getvariable ["WHITELIST",[]]),["House"] + (_logic getvariable ["BLACKLIST",[]])];
             GVAR(TOWABLE) = [["Truck_F"],["Car","Ship"],[] + (_logic getvariable ["BLACKLIST",[]])];
             GVAR(STOWABLE) = [
                 ["Car","Truck_F","Helicopter","Ship"] + _aliveContainers,
@@ -173,12 +173,13 @@ switch (_operation) do {
 
                 // Reset states with provided data;
                 if !(_logic getvariable ["DISABLEPERSISTENCE",false]) then {
-                    if (isDedicated && {[QMOD(SYS_DATA)] call ALiVE_fnc_isModuleAvailable}) then {
+                    if (isServer && {[QMOD(SYS_DATA)] call ALiVE_fnc_isModuleAvailable}) then {
+                        
                         waituntil {!isnil QMOD(SYS_DATA) && {MOD(SYS_DATA) getvariable ["startupComplete",false]}};
                     };
 
-                    _state = call ALiVE_fnc_logisticsLoadData;
-
+					_state = call ALiVE_fnc_logisticsLoadData;
+                    
                     if !(typeName _state == "BOOL") then {
                         GVAR(STORE) = _state;
                     };
@@ -187,15 +188,6 @@ switch (_operation) do {
                 GVAR(STORE) call ALIVE_fnc_inspectHash;
 
                 [_logic,"state",GVAR(STORE)] call ALiVE_fnc_logistics;
-
-                /*
-                //Hack for hideObjectGlobal not working prior to mission runtime, thanks BIS
-                [] spawn {
-                    waituntil {time > 0};
-
-                    {if !(simulationEnabled _x) then {_x hideObjectGlobal true}} foreach ([MOD(SYS_LOGISTICS),"allObjects"] call ALiVE_fnc_logistics);
-                };
-                */
 
                 _logic setVariable ["init", true, true];
             };
@@ -402,7 +394,10 @@ switch (_operation) do {
 
             // Detach and reposition for a save placement
             detach _object;
-            _object setposATL [getposATL _object select 0, getposATL _object select 1,0];
+            // Reposition to fit surface gradient
+            _object setpos getpos _object;
+            // Set height correctly
+            _object setposATL [getposATL _object select 0, getposATL _object select 1, if !(isNull _container) then {getposATL _container select 2} else {getposATL _object select 2}];
 
             [[_logic,"updateObject",[_container,_object]],"ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
 
@@ -842,7 +837,13 @@ switch (_operation) do {
                 //Clientside only section
                 if (hasInterface) then {
                     //apply these EHs on players
-                    _object setvariable [QGVAR(EH_INVENTORYCLOSED), _object getvariable [QGVAR(EH_INVENTORYCLOSED), _object addEventHandler ["InventoryClosed", {[ALiVE_SYS_LOGISTICS,"updateObject",[_this select 1, _this select 0]] call ALIVE_fnc_logistics; if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {["ALiVE SYS LOGISTICS EH InventoryClosed firing"] call ALiVE_fnc_DumpR}}]]];
+                    _object setvariable [QGVAR(EH_INVENTORYCLOSED),_object getvariable [QGVAR(EH_INVENTORYCLOSED),
+                        
+                        _object addEventHandler ["InventoryClosed", {
+                            if !((_this select 1) isKindOf "Man") then {[ALiVE_SYS_LOGISTICS,"updateObject",[_this select 1, _this select 0]] call ALIVE_fnc_logistics};
+                            if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {["ALiVE SYS LOGISTICS EH InventoryClosed firing"] call ALiVE_fnc_DumpR};
+                        }]
+                    ]];
                 };
 
                 //Serverside only section

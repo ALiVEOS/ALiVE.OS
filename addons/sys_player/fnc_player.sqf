@@ -141,7 +141,7 @@ switch(_operation) do {
              TRACE_4("SYS_PLAYER1", typename (MOD(sys_player) getvariable "allowReset"), MOD(sys_player) getvariable "allowDiffClass",MOD(sys_player) getvariable "allowManualSave",MOD(sys_player) getvariable "storeToDB" );
 
 
-             if (isDedicated) then {
+             if (isServer) then {
 
                     // Push to clients
                     publicVariable QMOD(sys_player);
@@ -159,6 +159,7 @@ switch(_operation) do {
 
                         if (ALIVE_sys_data_DISABLED) exitWith {};
 
+						// FIXME: not used anywhere - is this needed at all?
                         _serverID = [] call ALIVE_fnc_getServerName;
                         MOD(sys_player) setVariable ["serverID", _serverID];
 
@@ -189,20 +190,24 @@ switch(_operation) do {
                             GVAR(player_data) call ALiVE_fnc_inspectHash;
                         };
 
+	                    // if SP or player that hosts a session execute connected EH manually
+	                    if (hasInterface) then {
+	                        ["sys_player", name player, getplayerUID player, owner player] call ALIVE_fnc_player_onPlayerConnected;
+	                    };   
+
                         // Set true that player data has been loaded
                         MOD(sys_player) setVariable ["loaded", true, true];
 
                         TRACE_1("LOADED PLAYER DATA", _res);
 
                         TRACE_3("SYS_PLAYER DATA", MOD(sys_player), GVAR(player_data),GVAR(datahandler));
-
                     };
 
                     MOD(sys_player) setVariable ["init", true, true];
 
 
             } else {
-                    if (!isServer && !isHC && (!isNil "ALIVE_sys_data" && {!ALIVE_sys_data_DISABLED})) then {
+                    if (hasInterface && (!isNil "ALIVE_sys_data" && {!ALIVE_sys_data_DISABLED})) then {
                         // any client side logic for model
                         TRACE_2("Adding player event handlers",isServer,isHC);
 
@@ -241,7 +246,7 @@ switch(_operation) do {
 
             TRACE_2("Adding menu",isDedicated,isHC);
 
-            if(!isServer && !isHC) then {
+            if(hasInterface) then {
                     // Initialise interaction key if undefined
                     if(isNil "SELF_INTERACTION_KEY") then {SELF_INTERACTION_KEY = [221,[false,false,false]];};
 
@@ -277,7 +282,7 @@ switch(_operation) do {
 
             TRACE_2("Setting player guid on logic",isDedicated,isHC);
             // For players waituntil the player is valid then let server know.
-            if(!isServer && !isHC) then {
+            if(hasInterface) then {
                 [] spawn {
                     private ["_puid"];
                     TRACE_1("SYS_PLAYER GETTING READY",player);
@@ -317,7 +322,7 @@ switch(_operation) do {
             };
 
             // Set up any checks - autoStorePlayer
-            if (isDedicated) then {
+            if (isServer) then {
 
                 [ALiVE_fnc_autoStorePlayer, DEFAULT_INTERVAL, [DEFAULT_INTERVAL]] call CBA_fnc_addPerFrameHandler;
 
@@ -326,7 +331,7 @@ switch(_operation) do {
             // Eventhandlers for other stuff here
 
             // Setup player eventhandler to handle get player calls
-            if(!isServer && !isHC) then {
+            if(hasInterface) then {
                 ["getPlayer", {[MOD(sys_player),(_this select 1)] call ALIVE_fnc_getPlayer;} ] call CBA_fnc_addLocalEventHandler;
             };
 
@@ -553,7 +558,7 @@ switch(_operation) do {
 
 
 
-                if(!isDedicated && !isHC) then {
+                if(hasInterface) then {
                         // remove main menu
                         [
                                 "player",

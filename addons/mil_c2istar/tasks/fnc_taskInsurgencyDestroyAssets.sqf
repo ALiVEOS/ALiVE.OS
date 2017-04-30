@@ -85,19 +85,19 @@ switch (_taskState) do {
         _targetBuildings = [];
 
         if(count _targetHQ > 0) then {
-            _targetBuilding = [];
+            private _targetBuilding = [];
             _targetBuilding pushBack ["Recruitment HQ",_targetHQ];
             _targetBuildings pushBack _targetBuilding;
         };
 
         if(count _targetDepot > 0) then {
-            _targetBuilding = [];
+            private _targetBuilding = [];
             _targetBuilding pushBack ["Arms Cache",_targetDepot];
             _targetBuildings pushBack _targetBuilding;
         };
 
         if(count _targetFactory > 0) then {
-            _targetBuilding = [];
+            private _targetBuilding = [];
             _targetBuilding pushBack ["IED Factory",_targetFactory];
             _targetBuildings pushBack _targetBuilding;
         };

@@ -42,7 +42,7 @@ if (isnil QGVAR(TRACEGRID_STORE)) then {GVAR(TRACEGRID_STORE) = [] call ALiVE_fn
 
 _grid = [];
 
-{
+[{
     private ["_gridPos","_markerID"];
 
     _gridPos = (getposATL _x) call ALiVE_fnc_GridPos;
@@ -52,6 +52,6 @@ _grid = [];
         [_markerID,_gridPos,"RECTANGLE", [50,50], "COLORRED", "", "EMPTY", _fill, 0, 0.5] call ALIVE_fnc_createMarkerGlobal;
         _grid pushBack _markerID;
     };
-} foreach ([_pos,_radius] call ALiVE_fnc_getEnterableHouses);
+},([_pos,_radius] call ALiVE_fnc_getEnterableHouses),5] call ALiVE_fnc_ArrayFrameSplitter;
 
 _grid
