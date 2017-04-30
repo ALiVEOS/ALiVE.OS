@@ -36,6 +36,11 @@
                                 file = "\x\alive\addons\sys_weather\fnc_getRealWeather.sqf";
                                                                 RECOMPILE;
                         };
+                        class weatherEffects {
+                                description = "Weather effects";
+                                file = "\x\alive\addons\sys_weather\fnc_weatherEffects.sqf";
+                                                                RECOMPILE;
+                        };
                 };
         };
 };
