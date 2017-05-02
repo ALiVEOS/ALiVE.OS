@@ -41,9 +41,13 @@ if (_object isKindOf "CAManBase") then {
     // Checks if default weapons[] is set with weapons
     _isArmed = count ((getArray(configfile >> "CfgVehicles" >> _object >> "weapons")) - ["Throw","Put","FakeWeapon"]) > 0;
 } else {
-    if (_object isKindOf "AllVehicles") then {
+    if (_object isKindOf "AllVehicles" && !(_object isKindof "Plane")) then {
         // Checks if magazines are set for the main turrets, tbc: AH9 Pawnee seems to be misconfiged (no magazines)
         _isArmed = count (getArray(configfile >> "CfgVehicles" >> _object >> "Turrets" >> "MainTurret" >> "Magazines")) > 0 || count (getArray(configfile >> "CfgVehicles" >> _object >> "Turrets" >> "M2_Turret" >> "Magazines")) > 0;
+    };
+    if (_object isKindOf "Plane") then {
+        // Checks for planez
+        _isArmed = count (getArray(configfile >> "CfgVehicles" >> _object >> "Weapons")) > 1; // more than just flare/chaff launcher
     };
 };
 
