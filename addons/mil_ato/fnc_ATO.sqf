@@ -341,7 +341,7 @@ switch(_operation) do {
         private _airspaceAssets = [_as, _assetAirspace,[]] call ALiVE_fnc_hashGet;
 
         private _profile = [ALiVE_ProfileHandler,'getProfile',_profileID] call ALiVE_fnc_ProfileHandler;
-        private _vehicleProfileIDs = [_profileID];
+        private _vehicleProfileIDs = [_profileID]; // assume its a vehicle profile
 
         // If this is an entity, then get all vehicles and register them
         private _type = [_profile,"type"] call ALIVE_fnc_hashGet;
@@ -395,6 +395,8 @@ switch(_operation) do {
                             // Get nearest building position
                             private _crewPos = selectRandom ((nearestBuilding _position) buildingPos -1);
 
+                            // Check for no building?
+
                             private _entityID = [ALIVE_profileHandler, "getNextInsertEntityID"] call ALIVE_fnc_profileHandler;
                             private _profileEntity = [nil, "create"] call ALIVE_fnc_profileEntity;
                             [_profileEntity, "init"] call ALIVE_fnc_profileEntity;
@@ -435,6 +437,14 @@ switch(_operation) do {
                 // Register asset in airspace
                 _airspaceAssets pushback _x;
 
+                if (_debug) then {
+                    ["ALIVE ATO %1 registered %2 (%3) as an asset.", _logic, _profileID, _vehicleClass] call ALIVE_fnc_dump;
+                };
+
+            } else {
+                if (_debug) then {
+                    ["ALIVE ATO %1 not registering %2 (%3) as it is unarmed.", _logic, _profileID, _vehicleClass] call ALIVE_fnc_dump;
+                };
             };
         } foreach _vehicleProfileIDs;
 
@@ -706,18 +716,20 @@ switch(_operation) do {
             // Set the base location
             [_logic,"currentBase", _baseCluster] call MAINCLASS;
 
-            // Tell OPCOM this is a high priority reserve objective
-            private _opcom = selectRandom _modules;
-            private _id = format["OPCOM_%1_objective_%2",[_opcom,"opcomID"] call ALiVE_fnc_hashGet, format["ATO_%1",ceil(random 1000)]];
-            private _pos = [_baseCluster, "center"] call ALiVE_fnc_hashGet;
-            private _size = [_baseCluster, "size"] call ALiVE_fnc_hashGet;
-            private _type = "strategic";
-            private _priority = 500;
-            private _opcom_state = "unassigned";
-            private _clusterID = [_baseCluster, "clusterID"] call ALiVE_fnc_hashGet;
-            private _opcomID = [_opcom,"opcomID"] call ALiVE_fnc_hashGet;
+            if(count _modules > 0) then {
+                // Tell OPCOM this is a high priority reserve objective
+                private _opcom = selectRandom _modules;
+                private _id = format["OPCOM_%1_objective_%2",[_opcom,"opcomID"] call ALiVE_fnc_hashGet, format["ATO_%1",ceil(random 1000)]];
+                private _pos = [_baseCluster, "center"] call ALiVE_fnc_hashGet;
+                private _size = [_baseCluster, "size"] call ALiVE_fnc_hashGet;
+                private _type = "strategic";
+                private _priority = 500;
+                private _opcom_state = "unassigned";
+                private _clusterID = [_baseCluster, "clusterID"] call ALiVE_fnc_hashGet;
+                private _opcomID = [_opcom,"opcomID"] call ALiVE_fnc_hashGet;
 
-            [_opcom,"addObjective",[_id,_pos,_size,_type,_priority,_opcom_state,_clusterID,_opcomID]] call ALiVE_fnc_OPCOM;
+                [_opcom,"addObjective",[_id,_pos,_size,_type,_priority,_opcom_state,_clusterID,_opcomID]] call ALiVE_fnc_OPCOM;
+            };
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
@@ -784,6 +796,10 @@ switch(_operation) do {
                 private _moduleAir = [_module,"air",[]] call ALiVE_fnc_HashGet;
                 _modulesAir append _moduleAir;
 
+                if (_debug) then {
+                    ["ALIVE ATO %1 OPCOM air assets: %2", _logic, _moduleAir] call ALiVE_fnc_dump;
+                };
+
                 // Get objectives?
                 private _objectives = [_module,"objectives"] call ALiVE_fnc_hashGet;
                 // (_objectives select 0) call ALIVE_fnc_inspectHash;
@@ -811,7 +827,7 @@ switch(_operation) do {
 
                             if ((count (_assignments)) == 0) then {
                                 private _objectType = [_profile,"objectType"] call ALIVE_fnc_hashGet;
-                                if (_objectType == "plane" || _objectType == "helicopter") then {
+                                if (tolower _objectType == "plane" || tolower _objectType == "helicopter") then {
                                         _modulesAir pushback _x;
                                 };
                             };
@@ -820,6 +836,10 @@ switch(_operation) do {
                 };
             } foreach _profileIDs;
 
+            if (_debug) then {
+                    ["ALIVE ATO %1 OPCOM overall air assets: %2", _logic, _modulesAir] call ALiVE_fnc_dump;
+            };
+
             // Go through all profiles and register them ---------------------------------------------------------------------------------------------------
             {
                 private _profileID = _x;
@@ -827,7 +847,6 @@ switch(_operation) do {
                 if !(isnil "_profile") then {
 
                     private _position = [_profile,"position"] call ALIVE_fnc_hashGet;
-                    private _airIndex = _forEachIndex;
 
                     // Check to see if asset is in an airspace
                     private _assetAirspace = nil;
@@ -843,12 +862,17 @@ switch(_operation) do {
                 };
             } foreach _modulesAir;
 
-            // If there are no air assets and place Air is true then place at least one plane or heli ------------------------------------
+
+            // If there are no armed air assets and place Air is true then place at least one armed plane or heli ------------------------------------
             private _placeAir = [_logic, "placeAir"] call MAINCLASS;
-            if (count (([_logic,"assets"] call MAINCLASS) select 1) < 2 && _placeAir) then {
+            private _airCount = [_logic,"assets"] call MAINCLASS;
+
+            ["ALIVE ATO %1 AIR ASSETS: %2",_logic, _airCount] call ALiVE_fnc_dump;
+
+            if (count (_airCount select 1) < 2 && _placeAir) then {
 
                 if(_debug) then {
-                    ["ALIVE ATO %1 - No air assets available, placing additional aircraft at base location", _logic] call ALIVE_fnc_dump;
+                    ["ALIVE ATO %1 - No armed air assets available, placing additional aircraft at base location", _logic] call ALIVE_fnc_dump;
                 };
 
                 private _baseCluster = [_logic, "currentBase"] call MAINCLASS;
@@ -899,20 +923,27 @@ switch(_operation) do {
 
                         if !(isNull _helipad) then {
 
-                            private _vehicleClass = _heliClasses call BIS_fnc_selectRandom;
+                            // Check helipad is not allocated to unarmed heli
+                            private _nearbyObj = nearestObjects [position _helipad, ["Helicopter"], 10];
+                            private _nearbyProfiles = [position _helipad, 10, [_side,"vehicle","Helicopter"]] call ALIVE_fnc_getNearProfiles;
 
-                            private _tmp = [_vehicleClass,_side,_faction,"CAPTAIN",_pos,_dir,false,_faction,false] call ALIVE_fnc_createProfilesCrewedVehicle;
-                            {
-                                // _x call ALIVE_fnc_inspectHash;
-                                if ([_x,"type"] call ALiVE_fnc_hashGet == "entity") then {
-                                    _profiles pushback ([_x,"profileID"] call ALiVE_fnc_hashGet);
-                                };
-                            } foreach _tmp;
+                            if (count _nearbyObj == 0 && _nearbyProfiles == 0) then {
+
+                                private _vehicleClass = _heliClasses call BIS_fnc_selectRandom;
+
+                                private _tmp = [_vehicleClass,_side,_faction,"CAPTAIN",_pos,_dir,false,_faction,false] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                {
+                                    // _x call ALIVE_fnc_inspectHash;
+                                    if ([_x,"type"] call ALiVE_fnc_hashGet == "entity") then {
+                                        _profiles pushback ([_x,"profileID"] call ALiVE_fnc_hashGet);
+                                    };
+                                } foreach _tmp;
+                            };
                         };
                     } forEach _nodes;
                 };
 
-                // IF there are no helipads, we want atleast 1 chopper. Spawn a composition
+                // IF there are no helipads available, we want atleast 1 chopper. Spawn a composition
                 if (count _profiles == 0) then {
                     // Spawn a heliport
                     private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
@@ -939,6 +970,14 @@ switch(_operation) do {
                             private _helipad = nearestObject [_flatpos, "HeliH"];
 
                             if !(isNull _helipad) then {
+
+                                // remove any pre-placed aircraft on composition?
+                                private _nearbyObj = nearestObjects [position _helipad, ["Helicopter"], 20];
+                                if (count _nearbyObj > 0) then {
+                                    {
+                                        deleteVehicle _x;
+                                    }foreach _nearbyObj;
+                                };
 
                                 private _vehicleClass = selectRandom _heliClasses;
 
@@ -980,44 +1019,50 @@ switch(_operation) do {
                     private _firstbuilding = true;
 
                     {
-                        if (_firstbuilding || random 1 > 0.50) then {
+                        // Check hanagr is not allocated to unarmed plane
+                        private _nearbyObj = nearestObjects [position _x, ["Plane","Helicopter"], 20];
+                        private _nearbyProfiles = [position _x, 10, [_side,"vehicle","Plane"]] call ALIVE_fnc_getNearProfiles;
 
-                            private _posi = [0,0,0];
-                            private _dire = 0;
-                            private _vehicleClass = _airClasses call BIS_fnc_selectRandom;
+                        if (count _nearbyObj == 0 && count _nearbyProfiles == 0) then {
+                            if (_firstbuilding || random 1 > 0.50) then {
 
-                            // Find safe place to put aircraft
-                            private ["_pavement","_runway","_position"];
-                            if (([typeOf _x, "hangar"] call CBA_fnc_find != -1 || [typeOf _x, "Hangar"] call CBA_fnc_find != -1) && _vehicleClass iskindof "Plane") then {
-                                _posi = position _x;
-                                _dire = direction _x;
-                            } else { // find a taxiway
-                                _runway = [];
-                                {
-                                    if (([str(_x),"taxiway"] call CBA_fnc_find != -1 && typeof _x == "")) then {
-                                        _runway pushback _x;
-                                    };
-                                } foreach (nearestObjects [position _x, [], 100]);
-                                if (count _runway > 0) then {
-                                    // diag_log format["Cannot find hangar, choosing safe taxiway from: %1", _runway];
-                                    _pavement = selectRandom _runway;
-                                    _posi = position _pavement;
-                                    _dire = direction _pavement;
-                                } else {
-                                    // Find safe place near by
-                                    diag_log format["Cannot find hangar or taxiway, looking for safe place to put aircraft %1", _x];
-                                    _posi = [position _x, 25, 100, 4, 0, 0.2, 0] call BIS_fnc_findSafePos;
+                                private _posi = [0,0,0];
+                                private _dire = 0;
+                                private _vehicleClass = _airClasses call BIS_fnc_selectRandom;
+
+                                // Find safe place to put aircraft
+                                private ["_pavement","_runway","_position"];
+                                if (([typeOf _x, "hangar"] call CBA_fnc_find != -1 || [typeOf _x, "Hangar"] call CBA_fnc_find != -1) && _vehicleClass iskindof "Plane") then {
+                                    _posi = position _x;
                                     _dire = direction _x;
+                                } else { // find a taxiway
+                                    _runway = [];
+                                    {
+                                        if (([str(_x),"taxiway"] call CBA_fnc_find != -1 && typeof _x == "")) then {
+                                            _runway pushback _x;
+                                        };
+                                    } foreach (nearestObjects [position _x, [], 100]);
+                                    if (count _runway > 0) then {
+                                        // diag_log format["Cannot find hangar, choosing safe taxiway from: %1", _runway];
+                                        _pavement = selectRandom _runway;
+                                        _posi = position _pavement;
+                                        _dire = direction _pavement;
+                                    } else {
+                                        // Find safe place near by
+                                        diag_log format["Cannot find hangar or taxiway, looking for safe place to put aircraft %1", _x];
+                                        _posi = [position _x, 25, 100, 4, 0, 0.2, 0] call BIS_fnc_findSafePos;
+                                        _dire = direction _x;
+                                    };
                                 };
+
+                                // Place Aircraft
+                                private _tmp = [_vehicleClass,_side,_faction,_posi,_dire,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                                // _tmp call ALIVE_fnc_inspectHash;
+                                _profiles pushback ([_tmp, "profileID"] call ALIVE_fnc_hashGet);
+
                             };
-
-                            // Place Aircraft
-                            private _tmp = [_vehicleClass,_side,_faction,_posi,_dire,false,_faction] call ALIVE_fnc_createProfileVehicle;
-                            // _tmp call ALIVE_fnc_inspectHash;
-                            _profiles pushback ([_tmp, "profileID"] call ALIVE_fnc_hashGet);
-
+                            _firstbuilding = false;
                         };
-                        _firstbuilding = false;
                     } forEach _buildings;
                 };
 
