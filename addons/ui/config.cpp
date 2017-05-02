@@ -68,6 +68,10 @@ class Extended_DisplayLoad_Eventhandlers
     {
         GVAR(onload) = QUOTE([(_this select 0)] call COMPILE_FILE(fnc_rscDisplayMPInterruptALiVE));
     };
+    class RscDisplayInterrupt 
+    {
+        GVAR(onload) = QUOTE([(_this select 0)] call COMPILE_FILE(fnc_rscDisplayInterruptALiVE));
+    };
 };
 
 class RscDisplayLoadMission: RscStandardDisplay
@@ -163,6 +167,38 @@ class RscDisplayMPInterrupt: RscStandardDisplay
         {
             x = "33 *             (            ((safezoneW / safezoneH) min 1.2) / 40) +             (safezoneX)";
         };
+    };
+};
+
+class RscDisplayInterrupt: RscStandardDisplay
+{
+    class controls
+    {
+
+        class ALiVETitle: RscTitle
+        {
+            idc = 599;
+            style = 0;
+            text = "ALiVE Menu";
+            x = "1 *             (((safezoneW / safezoneH) min 1.2) /40) + safezoneX + (16 * (((safezoneW / safezoneH) min 1.2) /40))";
+            y = "17.5 *             (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) +             (safezoneY + safezoneH -             (            ((safezoneW / safezoneH) min 1.2) / 1.2))";
+            w = "15 *             (            ((safezoneW / safezoneH) min 1.2) / 40)";
+            h = "1 *             (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
+            colorBackground[] = {0.69,0.75,0.5,0.8};
+        };
+        class ALiVEButtonSPSave: RscButtonMenu
+        {
+            idc = 195;
+            text = "ALiVE SAVE (Single Player)";
+            x = "1 *             (((safezoneW / safezoneH) min 1.2) /40) + safezoneX + (16 * (((safezoneW / safezoneH) min 1.2) /40))";
+            y = "18.6 *             (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) +             (safezoneY + safezoneH -             (            ((safezoneW / safezoneH) min 1.2) / 1.2))";
+            w = "15 *             (            ((safezoneW / safezoneH) min 1.2) / 40)";
+            h = "1 *             (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
+        };
+        class DebugConsole: RscDebugConsole
+        {
+            x = "33 *             (            ((safezoneW / safezoneH) min 1.2) / 40) +             (safezoneX)";
+        };                
     };
 };
 
