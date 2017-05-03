@@ -1019,7 +1019,7 @@ switch(_operation) do {
 
                         //[_x, "debug", true] call ALIVE_fnc_cluster;
                         {
-                            if(random 1 > 0.5) then {
+                            if(random 1 > 0.3) then {
 
                                 // Find safe place to put aircraft
                                 private ["_pavement","_runway"];
