@@ -44,7 +44,7 @@ Tupolov
 #define DEFAULT_ATO_TYPES ["CAP","OCA","SEAD","CAS","STRIKE","RECCE"]
 #define DEFAULT_REGISTRY_ID ""
 #define DEFAULT_OP_HEIGHT 1000
-#define DEFAULT_OP_DURATION 3
+#define DEFAULT_OP_DURATION 10
 #define DEFAULT_SPEED "NORMAL"
 #define DEFAULT_MIN_WEAP_STATE 0.5
 #define DEFAULT_MIN_FUEL_STATE 0.5
@@ -556,7 +556,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE ATO - Startup"] call ALIVE_fnc_dump;
+                ["ALIVE ATO %1 - Startup", _logic] call ALIVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -634,7 +634,7 @@ switch(_operation) do {
                 } foreach _buildings;
                 _buildings = _buildings - [-1];
 
-                // ["ALIVE ATO - Buildings: %1", _buildings] call ALIVE_fnc_dump;
+                // ["ALIVE ATO %1 - Buildings: %2", _logic, _buildings] call ALIVE_fnc_dump;
                 if(count _buildings > 0) then {
                     private _hqBuilding = _buildings select 0;
 
@@ -656,7 +656,7 @@ switch(_operation) do {
 
                     [_logic, "HQBuilding", _hqBuilding] call MAINCLASS;
 
-                    ["ALIVE ATO - ATO building selected: %1",[_logic, "HQBuilding"] call MAINCLASS] call ALIVE_fnc_dump;
+                    ["ALIVE ATO %1 - ATO building selected: %2", _logic, [_logic, "HQBuilding"] call MAINCLASS] call ALIVE_fnc_dump;
                 } else {
 
                     // Spawn a field HQ
@@ -701,7 +701,7 @@ switch(_operation) do {
                     if(_debug) then {
                         [_flatPos, 4] call ALIVE_fnc_placeDebugMarker;
 
-                        ["ALIVE ATO - Field ATO created: %1 - %2", configName _HQ, [_logic, "HQBuilding"] call MAINCLASS] call ALIVE_fnc_dump;
+                        ["ALIVE ATO %1 - Field ATO created: %2 - %3", _logic, configName _HQ, [_logic, "HQBuilding"] call MAINCLASS] call ALIVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
                 };
@@ -733,7 +733,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE ATO - Startup completed"] call ALIVE_fnc_dump;
+                ["ALIVE ATO %1 - Startup completed", _logic] call ALIVE_fnc_dump;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -745,7 +745,7 @@ switch(_operation) do {
                 // start initial analysis
                 [_logic, "initialAnalysis", _modules] call MAINCLASS;
             }else{
-                ["ALIVE ATO - Information no OPCOM modules synced to Military air tasking orders module. No CAS, Strike or Recce ATOs will be available"] call ALIVE_fnc_dump;
+                ["ALIVE ATO %1 - Information no OPCOM modules synced to Military air tasking orders module. No CAS, Strike or Recce ATOs will be available", _logic] call ALIVE_fnc_dump;
 
             };
         };
@@ -772,7 +772,7 @@ switch(_operation) do {
 
                 // If OPCOM isn't friendly don't add them
                 if !([[_moduleSide] call ALIVE_fnc_sideTextToObject,[[_logic, "side"] call MAINCLASS] call ALIVE_fnc_sideTextToObject] call BIS_fnc_sideIsFriendly) exitWith {
-                    ["ALIVE ATO - Warning, you synced an OPCOM to an ATO that is not side friendly."] call ALIVE_fnc_dumpR;
+                    ["ALIVE ATO %1 - Warning, you synced an OPCOM to an ATO that is not side friendly.", _logic] call ALIVE_fnc_dumpR;
                     _modules deleteAt _forEachIndex;
                 };
 
@@ -927,7 +927,7 @@ switch(_operation) do {
                             private _nearbyObj = nearestObjects [position _helipad, ["Helicopter"], 10];
                             private _nearbyProfiles = [position _helipad, 10, [_side,"vehicle","Helicopter"]] call ALIVE_fnc_getNearProfiles;
 
-                            if (count _nearbyObj == 0 && _nearbyProfiles == 0) then {
+                            if (count _nearbyObj == 0 && count _nearbyProfiles == 0) then {
 
                                 private _vehicleClass = _heliClasses call BIS_fnc_selectRandom;
 
@@ -1019,12 +1019,12 @@ switch(_operation) do {
                     private _firstbuilding = true;
 
                     {
-                        // Check hanagr is not allocated to unarmed plane
+                        // Check hangar is not allocated to unarmed plane
                         private _nearbyObj = nearestObjects [position _x, ["Plane","Helicopter"], 20];
-                        private _nearbyProfiles = [position _x, 10, [_side,"vehicle","Plane"]] call ALIVE_fnc_getNearProfiles;
+                        private _nearbyProfiles = [position _x, 20, [_side,"vehicle","Plane"]] call ALIVE_fnc_getNearProfiles;
 
                         if (count _nearbyObj == 0 && count _nearbyProfiles == 0) then {
-                            if (_firstbuilding || random 1 > 0.50) then {
+                            if (_firstbuilding || random 1 > 0.30) then {
 
                                 private _posi = [0,0,0];
                                 private _dire = 0;
@@ -1732,7 +1732,7 @@ switch(_operation) do {
                     _HQIsALive = alive _HQ;
                 };
 
-                ["ALIVE ATO - ATO HQ: %1 Base: %2 Faction:%3", _HQIsAlive,_baseCaptured,_dominantFaction] call ALIVE_fnc_dump;
+                ["ALIVE ATO %4 - ATO HQ online: %1 Base Captured: %2 Dominant Faction: %3", _HQIsAlive,_baseCaptured,_dominantFaction, _logic] call ALIVE_fnc_dump;
                 if (_HQIsAlive && !_baseCaptured) then {
 
                     // Check all available assets
@@ -1808,8 +1808,8 @@ switch(_operation) do {
 
                             // DEBUG -------------------------------------------------------------------------------------
                             if(_debug) then {
-                                ["ALIVE ATO - ATO request event received"] call ALIVE_fnc_dump;
-                                ["ALIVE ATO - %2 available assets for %1", _side, count _assets] call ALIVE_fnc_dump;
+                                ["ALIVE ATO %1 - ATO request event received", _logic] call ALIVE_fnc_dump;
+                                ["ALIVE ATO - %2 available assets for %1 %3", _side, count _assets, _assets] call ALIVE_fnc_dump;
                                 _event call ALIVE_fnc_inspectHash;
                             };
                             // DEBUG -------------------------------------------------------------------------------------
@@ -1828,7 +1828,7 @@ switch(_operation) do {
 
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
-                            ["ALIVE ATO - Air Tasking request denied, Joint Forces Air Component Commander for %1 has no available air assets", _eventFaction] call ALIVE_fnc_dump;
+                            ["ALIVE ATO %2 - Air Tasking request denied, Joint Forces Air Component Commander for %1 has no available air assets", _eventFaction, _logic] call ALIVE_fnc_dump;
                         };
                         // DEBUG -------------------------------------------------------------------------------------
 
@@ -1846,7 +1846,7 @@ switch(_operation) do {
                 } else {
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
-                        ["ALIVE ATO - Air Tasking request denied, Joint Forces Air Component Commander for %1 is not available", _eventFaction] call ALIVE_fnc_dump;
+                        ["ALIVE ATO %2 - Air Tasking request denied, Joint Forces Air Component Commander for %1 is not available", _eventFaction, _logic] call ALIVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
 
@@ -1890,7 +1890,7 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE ATO - Air component analysis started"] call ALIVE_fnc_dump;
+                    ["ALIVE ATO %1 - Air component analysis started", _logic] call ALIVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -1921,8 +1921,8 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE ATO - On demand analysis complete"] call ALIVE_fnc_dump;
-                    ["ALIVE ATO - Air assets still available: %1",_available] call ALIVE_fnc_dump;
+                    ["ALIVE ATO %1 - On demand analysis complete", _logic] call ALIVE_fnc_dump;
+                    ["ALIVE ATO %2 - Air assets still available: %1",_available, _logic] call ALIVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -1943,7 +1943,7 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE ATO - Request loop started"] call ALIVE_fnc_dump;
+                    ["ALIVE ATO %1 - Request loop started", _logic] call ALIVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -1996,7 +1996,7 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE ATO - Airspace Management loop started"] call ALIVE_fnc_dump;
+                    ["ALIVE ATO %1 - Airspace Management loop started", _logic] call ALIVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -2135,7 +2135,7 @@ switch(_operation) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALIVE ATO - Monitoring Event"] call ALIVE_fnc_dump;
+            ["ALIVE ATO %1 - Monitoring Event", _logic] call ALIVE_fnc_dump;
             _event call ALIVE_fnc_inspectHash;
             _requestAnalysis call ALIVE_fnc_inspectHash;
         };
@@ -2178,7 +2178,7 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE ATO - Event state: %1 event timer: %2 wait time on event: %3 ",_eventState, (time - _eventTime), _waitTime] call ALIVE_fnc_dump;
+                    ["ALIVE ATO %4 - Event state: %1 event timer: %2 wait time on event: %3 ",_eventState, (time - _eventTime), _waitTime, _logic] call ALIVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -2213,6 +2213,8 @@ switch(_operation) do {
                         };
                     } foreach _airspaceAssets;
 
+                    ["ALIVE ATO %1 OP ASSETS: %2", _logic, _opAssets] call ALiVE_fnc_dump;
+
                     // Get an asset from another airspace if it is CAS
                     if (count _opAssets == 0 && _eventType == "CAS") then {
 
@@ -2240,6 +2242,7 @@ switch(_operation) do {
                                 private _position = [_aircraft,"startPos"] call ALiVE_fnc_hashGet;
                                 private _currentOp = [_aircraft,"currentOp",""] call ALiVE_fnc_hashGet;
                                 private _profileType = [_profile, "type"] call ALiVE_fnc_hashGet;
+                                private _crewAvailable = true;
 
                                 if (_profileType == "entity") then {
                                     private _profileVehID = ([_profile, "vehiclesInCommandOf"] call ALiVE_fnc_hashGet) select 0;
@@ -2268,16 +2271,28 @@ switch(_operation) do {
                                     _ammo = _avail / count _ammoArray;
                                 };
 
-                                // diag_log format["F:%1, A:%2, D:%3",_fuel, _ammo, _damage];
+                                // diag_log format["ALIVE ATO %4 %5 F:%1, A:%2, D:%3, Dist:%6,",_fuel, _ammo, _damage, _logic, _profileID, _position distance _currentPosition];
 
                                 // Check crew are alive.
+                                private _crewID = [_aircraft,"crewID"] call ALiVE_fnc_hashGet;
+                                private _crewProfile = [ALIVE_profileHandler, "getProfile",_crewID] call ALIVE_fnc_profileHandler;
+                                if (isNil "_crewProfile") then {
+                                    _crewAvailable = false;
+                                };
 
                                 // If an asset is parked or flying a CAP (and the request is not CAP) then the aircraft is available (or if CAS is requested)
-                                if ( ( _position distance _currentPosition < 5 || (_currentOp == "CAP" && _eventType != "CAP") || (_eventType == "CAS") ) && (_fuel > _eventMinFuel && _ammo > _eventMinWeap && _damage < 0.5)) then {
-                                    [_aircraft,"currentPos",_currentPosition] call ALiVE_fnc_hashSet;
-                                    [_aircraft,"profileID",_x] call ALiVE_fnc_hashSet;
-                                    _selectedAsset pushback _aircraft;
+                                if (_crewAvailable) then {
+                                    if ( ( _position distance _currentPosition < 15 || (_currentOp == "CAP" && _eventType != "CAP") || (_eventType == "CAS") ) && (_fuel > _eventMinFuel && _ammo > _eventMinWeap && _damage < 0.5)) then {
+                                        [_aircraft,"currentPos",_currentPosition] call ALiVE_fnc_hashSet;
+                                        [_aircraft,"profileID",_x] call ALiVE_fnc_hashSet;
+                                        _selectedAsset pushback _aircraft;
+                                        // If the aircraft is on a CAP, send it to intercept
+                                        if (_currentOp == "CAP") exitWith {_selectedAsset = [_aircraft];};
+                                    };
+                                } else {
+                                    // Do something if crew not available?
                                 };
+
                             };
                         } foreach _opAssets;
 
@@ -2319,7 +2334,7 @@ switch(_operation) do {
                         private _takeoff = false;
 
                         // Get start position
-                        if (str _startPosition == str _currentPosition) then {
+                        if (_startPosition distance _currentPosition < 15) then {
                             _parked = true;
                         };
 
@@ -2359,14 +2374,16 @@ switch(_operation) do {
 
                         // Check for existing OP?
                         if (_currentOp != "") then {
-                            ["Rerouting %1 (%2) for new request %3", _profileID, _currentOp, _eventType] call ALiVE_fnc_dump;
+                            ["ALIVE ATO %4 Rerouting %1 (%2) for new request %3", _profileID, _currentOp, _eventType, _logic] call ALiVE_fnc_dump;
                             // Vehicle is active and doing something, so remove all existing waypoints in prep for new request
                             private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
-                            private _vehicleObj = [_profile, "vehicle",objnull] call ALiVE_fnc_hashGet;
-                            private _grp = group _vehicle;
-                            while {(count (waypoints _grp)) > 0} do
-                            {
-                                deleteWaypoint ((waypoints _grp) select 0);
+                            if (!isNil "_profile") then {
+                                private _vehicleObj = [_profile, "vehicle",objnull] call ALiVE_fnc_hashGet;
+                                private _grp = group _vehicleObj;
+                                while {(count (waypoints _grp)) > 0} do
+                                {
+                                    deleteWaypoint ((waypoints _grp) select 0);
+                                };
                             };
                         };
 
@@ -2379,7 +2396,15 @@ switch(_operation) do {
                         _eventData pushback _takeoff;
 
                         [_event, "friendlyProfiles", _eventFriendlyProfiles] call ALIVE_fnc_hashSet;
-                        [_event, "enemyProfiles", _eventTargets] call ALIVE_fnc_hashSet;
+
+                        // get the profile IDs for eventTargets
+                        _eventEnemyProfiles = [];
+                        {
+                            if (_x getVariable ["profileID",""] != "") then {
+                                _eventEnemyProfiles pushback (_x getVariable "profileID");
+                            };
+                        } foreach _eventTargets;
+                        [_event, "enemyProfiles", _eventEnemyProfiles] call ALIVE_fnc_hashSet;
                         [_event, "data", _eventData] call ALIVE_fnc_hashSet;
 
                         // update the state of the event
@@ -2397,7 +2422,7 @@ switch(_operation) do {
                         // An appropriate aircraft is not available to do the op
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
-                            ["ALIVE ATO - Air Tasking request denied, Joint Forces Air Component Commander for %1 has no appropriate available air assets", _eventFaction] call ALIVE_fnc_dump;
+                            ["ALIVE ATO %2 - Air Tasking request denied, Joint Forces Air Component Commander for %1 has no appropriate available air assets", _eventFaction, _logic] call ALIVE_fnc_dump;
                         };
                         // DEBUG -------------------------------------------------------------------------------------
 
@@ -2503,12 +2528,12 @@ switch(_operation) do {
 
                         } else {
 
-                            ["Airport busy %1 %2",_airportID,_airportBusy] call ALiVE_fnc_dump;
+                            ["ALIVE ATO %3 Airport busy %1 %2",_airportID,_airportBusy, _logic] call ALiVE_fnc_dump;
                         };
 
                     } else {
                         // if parked assign crew to vehicle if necessary, if at home move to ilsTaxiOut position at 100 feet, spawn aircraft at speed
-                        if (_startPosition distance _currentPosition < 5) then {
+                        if (_startPosition distance _currentPosition < 15) then {
 
                             private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
 
@@ -2550,7 +2575,7 @@ switch(_operation) do {
                     // Helicopter parked or flying
                     // if parked then spawn
                     // if flying then nothing to do
-                    if (_startPosition distance _currentPosition < 5) then {
+                    if (_startPosition distance _currentPosition < 15) then {
 
                         private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
                         [_profile,"preventDespawn",true] call ALiVE_fnc_profileVehicle;
@@ -2598,7 +2623,7 @@ switch(_operation) do {
                             // SAD waypoint, if targets then DESTROY
                             if (count _eventTargets > 0) then {
                                 _wp setWaypointType "DESTROY";
-                                _wp setWaypointPosition (_eventTargets select 0);
+                                _wp setWaypointPosition [position (_eventTargets select 0), 0];
                             } else {
                                 _wp setWaypointType "SAD";
                                 _wp setWaypointCompletionRadius _eventRange;
@@ -2609,8 +2634,9 @@ switch(_operation) do {
                         case "SEAD";
                         case "STRIKE": {
                             // DESTROY
+                            ["ALIVE ATO EVENT TARGET: %1 (%2)", _eventTargets select 0, typeName (_eventTargets select 0)] call ALiVE_fnc_dump;
                             _wp setWaypointType "DESTROY";
-                            _wp setWaypointPosition (_eventTargets select 0);
+                            _wp setWaypointPosition [position (_eventTargets select 0), 0];
                         };
                         default {
                             // CAP
@@ -2671,11 +2697,11 @@ switch(_operation) do {
 
                 ["ATO: aircraft distance %1 (%2)", (_eventPosition distance2D _vehicle),(_eventRange * 1.2)] call ALiVE_fnc_dump;
 
-                if( ((_eventPosition distance2D _vehicle) < (_eventRange * 1.2) && (getposATL _vehicle) select 2 > 10) || time > (_eventTime + (_eventDuration*60)) ) then {
+                if( ((_eventPosition distance2D _vehicle) < (_eventRange * 1.2) && (getposATL _vehicle) select 2 > 100) || time > (_eventTime + (_eventDuration*60)) ) then {
 
                     // Check to see if it has taken off, if hasn't launch it
                     if ((getposATL _vehicle) select 2 < 10) then {
-                        _vehicle setposATL [(getposATL _vehicle) select 0, (getposATL _vehicle) select 0, 100];
+                        _vehicle setposATL [(getposATL _vehicle) select 0, (getposATL _vehicle) select 1, 100];
                         _vehicle setVelocity [200,0,0];
                     };
 
@@ -2685,7 +2711,7 @@ switch(_operation) do {
                     // Aircraft is on station
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
-                        ["ALIVE ATO - Requested aircraft (%1 - %2) is on station", _profileID, typeof _vehicle] call ALIVE_fnc_dump;
+                        ["ALIVE ATO %3 - Requested aircraft (%1 - %2) is on station", _profileID, typeof _vehicle, _logic] call ALIVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
 
@@ -3018,7 +3044,7 @@ switch(_operation) do {
                 // send radio broadcast
                 _sideObject = [_eventSide] call ALIVE_fnc_sideTextToObject;
                 _factionName = getText((_eventFaction call ALiVE_fnc_configGetFactionClass) >> "displayName");
-                _assets = [ALIVE_globalForcePool,_eventFaction] call ALIVE_fnc_hashGet;
+                _assets = [ALIVE_globalATO,_eventFaction] call ALIVE_fnc_hashGet;
 
                 // send a message to all side players from HQ
                 //_message = format["%1 reinforcements have arrived. Available reinforcement level: %2",_factionName,_forcePool];
@@ -3059,7 +3085,7 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE ATO - Event state: %1 event timer: %2 wait time on event: %3 ",_eventState, (time - _eventTime), _waitTime] call ALIVE_fnc_dump;
+                    ["ALIVE ATO %4 - Event state: %1 event timer: %2 wait time on event: %3 ",_eventState, (time - _eventTime), _waitTime, _logic] call ALIVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -4166,7 +4192,7 @@ switch(_operation) do {
 
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
-                            ["ALIVE ATO - Profiles created: %1 ",_totalCount] call ALIVE_fnc_dump;
+                            ["ALIVE ATO %2 - Profiles created: %1 ",_totalCount, _logic] call ALIVE_fnc_dump;
                             switch(_eventType) do {
                                 case "PR_STANDARD": {
                                     [_logic, "createMarker", [_reinforcementPosition,_eventFaction,"PR CONVOY START"]] call MAINCLASS;
