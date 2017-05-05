@@ -51,7 +51,7 @@
 //    #define DEBUG_ENABLED_SUP_COMMAND
 //    #define DEBUG_ENABLED_X_LIB
 //    #define DEBUG_ENABLED_mil_ied
-      #define DEBUG_ENABLED_mil_ato
+//    #define DEBUG_ENABLED_mil_ato
 
 // Set automated tests
 // #define AUTOMATED_TESTS QUOTE(MAIN),QUOTE(SYS_LOGISTICS),QUOTE(SYS_GC),QUOTE(MIL_CQB),QUOTE(MIL_OPCOM)
