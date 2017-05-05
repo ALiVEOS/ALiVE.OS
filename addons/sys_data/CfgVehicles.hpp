@@ -43,15 +43,15 @@ class CfgVehicles {
                                 {
                                         class COUCHDB
                                         {
-                                                name = "CouchDB";
+                                                name = "Cloud";
                                                 value = "CouchDB";
                                                 default = 1;
                                         };
                                         class pns
                                         {
-                                                name = "ProfileNamespace";
+                                                name = "Local";
                                                 value = "pns";
-                                        };                                        
+                                        };
                                 };
                         };
                         class saveDateTime
