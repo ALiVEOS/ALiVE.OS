@@ -7,14 +7,14 @@
 [b]Local Persistence[/b]
 Highhead has worked his magic and delivered an option to persist ALiVE missions to your local machine without needing to install a database by saving data to your player profile, known as the ProfileNameSpace (PNS for short).  This works on your local machine in Single Player games or the hosts machine in Multiplayer, including on dedicated servers.  After several missions the files will get quite large so we recommend clearing out the data regularly - details for how to do that are below and on our wiki.  Setting up a local database using CouchDB is still an option for those with the technical skills do to so and of course for all those with dedicated servers, the ALiVE War Room is still the simplest method for mission persistence, stats, server monitoring and After Action Reviews.
 
-Meanwhile the rest of the team has been working hard on some major performance improvements in readiness for the upcoming Jets DLC.  There is now an option to adjust how fast the virtual profiles spawn when players are within range - slower & smooth helps prevent stuttering on busy missions but may take too long to spawn in for fast moving units, so adjust to taste.
+Meanwhile the rest of the team has been working hard on some major performance improvements in readiness for the upcoming Jets DLC.  There is now an option to adjust how fast the virtual profiles spawn when players are within range - slow & smooth helps prevent stuttering on busy missions but may take too long to spawn in for fast moving units, so adjust to taste.
 
 SpyderBlack continues to enhance his Orbat Tool.  If you have not tried it yet, it's well worth a go.  Many people have released some great new factions using the tool already and remember you don't need ALiVE to use them in missions (though of course we recommend you do!)
 
-Tupolov has returned from the wilderness of no interwebs and responded to a few community requests to index the shiny new Lythium map (welcome back Tup!)
+Tupolov has returned from the wilderness of no interwebs and responded to a few community requests to index the shiny new Lythium map (welcome back Tup!).
 
 [b]ProfileNameSpace Usage[/b]
-This is the first iteration of PNS Persistence so please report bugs Github.  To use local persistence, select "ProfileNamespace" on the ALiVE Database module and make sure you have persistence enabled on the other modules as normal.  It is recommended you backup your user profile and/or server profile first (C:\Users\username\Documents\Arma 3 - Other Profiles\profilename).  We will add buttons for saving and clearing data soon but for now you can use the following functions in the debug console:
+This is the first iteration of PNS Persistence so please report bugs Github.  To use local persistence, select "ProfileNamespace" on the ALiVE Database module and make sure you have persistence enabled on the other modules as normal.  It is recommended you backup your user profile and/or server profile first (C:\Users\username\Documents\Arma 3 - Other Profiles\profilename).  Use the ALiVE Save & Exit button when exiting the mission to save the mission data.  When you restart the mission, all saved items will load from PNS automatically - there is no "Load" button.  To clear the save and start over with a fresh mission, either rename the mission pbo or use the following functions in the debug console.  We will add buttons for clearing data in due course.
 
 [i]call ALiVE_fnc_ProfileNameSpaceClear[/i]:  clears data for the current mission only. Note that renaming the mission pbo will also start a fresh instance.
 [i]call ALiVE_fnc_ProfileNameSpaceWipe[/i]:  clears all ALiVE data from ProfileNameSpace completely.
@@ -25,6 +25,7 @@ Added a database-free local save option
 Map Index - FSF Adiyaman (thanks Vegas!); Diyala (thanks Heroes!); Winthera & Dingor (thanks Whigital!); Lythium (thanks Tup!)
 Added adjustable Smooth Spawn™ for virtual AI
 Added group mapping for latest RHS update
+Added air transport logistics scheduling to reduce instances of helicopter collisions
 Several performance enhancements
 	
 Many thanks to all those not mentioned here who contributed bug fixes, enhancements and map indexes!  See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
