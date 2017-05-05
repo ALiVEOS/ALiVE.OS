@@ -136,7 +136,7 @@ if(count _buildings > 0) then {
                         if(_moveInstantly) then {
                             _unit setposATL (_building buildingpos _x);
                             _unit setdir ((_unit getRelDir _building)-180);
-                            //_unit setUnitPos "UP"; Causes units to dance in combination with disableAI "PATH";
+                            //_unit setUnitPos "UP"; Causes units to dance in combination with disableAI "PATH" or setbehaviour "SAFE";
                             
                             _unit disableAI "PATH";
                             
@@ -197,11 +197,14 @@ if(count _buildings > 0) then {
                         //_unit setposATL (_building buildingpos _x);
                         _unit setposATL _x;
                         _unit setdir ((_unit getRelDir _building)-180);
-                        _unit setUnitPos "UP";
-                        //_unit disableAI "MOVE";
+                        
                         sleep 0.03;
                         doStop _unit;
                         sleep 0.03;
+                        
+                        //_unit setUnitPos "UP"; Causes units to dance in combination with disableAI "PATH" or setbehaviour "SAFE";                       
+                        
+                        _unit disableAI "PATH";
                     }else{
                         //_position = (_building buildingpos _x);
                         _position = _x;

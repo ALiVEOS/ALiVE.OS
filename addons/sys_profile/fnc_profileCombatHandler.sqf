@@ -166,24 +166,25 @@ switch (_operation) do {
         private _attackerID = [_attack,"attacker"] call ALiVE_fnc_hashGet;
         private _attackerSide = ([MOD(profileHandler),"getProfile", _attackerID] call ALiVE_fnc_profileHandler) select 2 select 3;
 
-        switch (_attackerSide) do {
-            case "EAST": {(_profilesInCombatBySide select 0) pushback _attackerID};
-            case "WEST": {(_profilesInCombatBySide select 1) pushback _attackerID};
-            case "GUER": {(_profilesInCombatBySide select 2) pushback _attackerID};
-        };
+		if !(isNil "_attackerSide") then {
+	        switch (_attackerSide) do {
+	            case "EAST": {(_profilesInCombatBySide select 0) pushback _attackerID};
+	            case "WEST": {(_profilesInCombatBySide select 1) pushback _attackerID};
+	            case "GUER": {(_profilesInCombatBySide select 2) pushback _attackerID};
+	        };
+	
+	        // log event
+	
+	        private _targets = _attack select 2 select 6;
+	        private _attackPosition = _attack select 2 select 3;
+	        private _maxRange = _attack select 2 select 7;
+	        private _cyclesLeft = _attack select 2 select 8;
+	
+	        private _event = ['PROFILE_ATTACK_START', [_attackID,_attackerID,_targets,_attackPosition,_attackerSide,_maxRange,_cyclesLeft], "profileCombatHandler"] call ALiVE_fnc_event;
+	        [MOD(eventLog), "addEvent", _event] call ALiVE_fnc_eventLog;
 
-        // log event
-
-        private _targets = _attack select 2 select 6;
-        private _attackPosition = _attack select 2 select 3;
-        private _maxRange = _attack select 2 select 7;
-        private _cyclesLeft = _attack select 2 select 8;
-
-        private _event = ['PROFILE_ATTACK_START', [_attackID,_attackerID,_targets,_attackPosition,_attackerSide,_maxRange,_cyclesLeft], "profileCombatHandler"] call ALiVE_fnc_event;
-        [MOD(eventLog), "addEvent", _event] call ALiVE_fnc_eventLog;
-
-        _result = _attackID;
-
+        	_result = _attackID;
+		};
     };
 
     case "removeAttacks": {

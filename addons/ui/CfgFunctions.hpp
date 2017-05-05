@@ -28,6 +28,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\ui\fnc_RscDisplayMPInterruptALiVE.sqf";
                 RECOMPILE;
             };
+            class RscDisplayInterruptALiVE {
+                description = "Hook SP interrupt screen";
+                file = "\x\alive\addons\ui\fnc_RscDisplayInterruptALiVE.sqf";
+                RECOMPILE;
+            };            
             class copyFactionClasses {
                 description = "Copy faction classes from selected objects in 3DEN to clipboard";
                 file = "\x\alive\addons\ui\fnc_copyFactionClasses.sqf";
