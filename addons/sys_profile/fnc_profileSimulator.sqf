@@ -151,14 +151,17 @@ private _totalEntities = 0;
                     [_profileAttack,"attackerSide", _side] call ALiVE_fnc_hashSet;
 
                     private _attackID = [MOD(profileCombatHandler),"addAttack", _profileAttack] call ALiVE_fnc_profileCombatHandler;
-
-                    _combat = true;
-                    [_entityProfile,"combat", _combat] call ALIVE_fnc_HashSet;
-                    [_entityProfile,"attackID", _attackID] call ALIVE_fnc_HashSet;
-
-                    _collected = true;
-
-                    //["ALiVE Profile Simulation - Profile %1 begins attacking profiles %2!",_profileID,_nearEnemies] call ALIVE_fnc_dump;
+                    
+                    if !(isNil "_attackID") then {
+	
+	                    _combat = true;
+	                    [_entityProfile,"combat", _combat] call ALIVE_fnc_HashSet;
+	                    [_entityProfile,"attackID", _attackID] call ALIVE_fnc_HashSet;
+	
+	                    _collected = true;
+	
+	                    //["ALiVE Profile Simulation - Profile %1 begins attacking profiles %2!",_profileID,_nearEnemies] call ALIVE_fnc_dump;
+	                };
                 };
             };
 
