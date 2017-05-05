@@ -492,7 +492,8 @@ switch(_operation) do {
                         if(_engineOn) then {
                             _special = "FLY";
 
-                            if ((_position select 2) < 50) then {_position set [2,50]};
+                            // Place them high enough so they don't crash
+                            if ((_position select 2) < 50) then {_position set [2,300]};
                         }else{
                             _special = "CAN_COLLIDE";
                             _position set [2,0];
@@ -744,6 +745,11 @@ switch(_operation) do {
                     };
 
                     if(([_logic,"spawnType"] call ALiVE_fnc_hashGet) select 0 == "preventDespawn") then {
+                        _despawnPrevented = true;
+                    };
+
+                    // Don't despawn if aircraft are airbourne?
+                    if ((position _vehicle) select 2 > 3) then {
                         _despawnPrevented = true;
                     };
 
