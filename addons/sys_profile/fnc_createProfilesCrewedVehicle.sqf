@@ -102,9 +102,10 @@ if(count _slingload > 0) then {
     [_profileVehicle, "slingload", _slingload] call ALIVE_fnc_profileVehicle;
 };
 
+/*
 if(_vehicleKind == "Plane" || _vehicleKind == "Helicopter") then {
     [_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
-};
+};*/
 
 if!(_spawnGoodPosition) then {
     [_profileVehicle, "despawnPosition", _position] call ALIVE_fnc_profileVehicle;
