@@ -620,7 +620,7 @@ switch(_operation) do {
                 private _faction = [_logic, "faction"] call MAINCLASS;
 
                 // Get nearest buildings
-                private _buildings = nearestObjects [_position, ["building"], 500];
+                private _buildings = nearestObjects [_position, ["building"], 750];
 
                 // Check to see if the buildings match our ALiVE types
                 {
@@ -663,7 +663,7 @@ switch(_operation) do {
                     private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
                     private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
                     private _HQ = nil;
-                    private _flatPos = [_pos,_size] call ALiVE_fnc_findFlatArea;
+                    private _flatPos = [_pos,_size,30] call ALiVE_fnc_findFlatArea;
 
                     if (isNil QMOD(COMPOSITIONS_LOADED)) then {
 
@@ -678,8 +678,12 @@ switch(_operation) do {
                             _HQ = selectRandom ([_compType, ["HQ","FieldHQ","Communications"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
                         };
 
-                        private _nearRoads = _flatpos nearRoads 1000;
-                        private _direction = if (count _nearRoads > 0) then {direction (_nearRoads select 0)} else {random 360};
+                        private _nearRoads = _flatpos nearRoads 750;
+                        private _direction = if (count _nearRoads > 0) then {
+                            direction (_nearRoads select 0);
+                        } else {
+                            random 360
+                        };
 
                         [_HQ, _flatPos, _direction, _faction] call ALiVE_fnc_spawnComposition;
                     };
@@ -949,7 +953,7 @@ switch(_operation) do {
                     private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
                     private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
                     private _heliport = nil;
-                    private _flatPos = [_pos,_size] call ALiVE_fnc_findFlatArea;
+                    private _flatPos = [_pos,_size,30] call ALiVE_fnc_findFlatArea;
 
                     if (isNil QMOD(COMPOSITIONS_LOADED)) then {
 
@@ -964,6 +968,8 @@ switch(_operation) do {
                         if !(isNil "_heliport") then {
                             private _nearRoads = _flatpos nearRoads 1000;
                             private _direct = if (count _nearRoads > 0) then {direction (_nearRoads select 0)} else {random 360};
+
+                            [_logic,"createMarker",[position (_nearRoads select 0)] FUCK] call MAINCLASS
 
                             [_heliport, _flatPos, _direct, _faction] call ALiVE_fnc_spawnComposition;
 
@@ -2236,6 +2242,7 @@ switch(_operation) do {
                         {
                             private _profileID = _x;
                             private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
+                            private _exit = false;
 
                             if !(isNil "_profile") then {
                                 private _aircraft = [_assets,_x] call ALiVE_fnc_hashGet;
@@ -2299,18 +2306,37 @@ switch(_operation) do {
 
                                 // If an asset is parked or flying a CAP (and the request is not CAP) then the aircraft is available (or if CAS is requested)
                                 if (_crewAvailable) then {
-                                    if ( ( _position distance _currentPosition < 15 || (_currentOp == "CAP" && _eventType != "CAP") || (_eventType == "CAS") ) && (_fuel > _eventMinFuel && _ammo > _eventMinWeap && _damage < 0.5)) then {
+
+                                    // Get active event type
+                                    if (_currentOp != "") then {
+                                        //Retrieve event data
+                                        private _currentEvent = [_eventQueue, _currentOp,[]] call ALIVE_fnc_hashGet;
+                                        private _currentOpState = [_currentEvent, "state",""] call ALIVE_fnc_hashGet;
+                                        if (_currentOpState != "aircraftLanding" && _currentOpState != "aircraftReturnWait") then {
+                                            _currentOp = [_currentEvent, "data"] call ALIVE_fnc_hashGet select 0;
+                                        } else {
+                                            // Aircraft is landing, so not available yet, set fuel measurement to zero
+                                            _fuel = 0;
+                                        };
+                                    };
+                                    if ( ( (_position distance _currentPosition < 15) || (_currentOp == "CAP" && _eventType != "CAP") || (_eventType == "CAS") ) && (_fuel > _eventMinFuel && _ammo > _eventMinWeap && _damage < 0.5)) then {
+
                                         [_aircraft,"currentPos",_currentPosition] call ALiVE_fnc_hashSet;
                                         [_aircraft,"profileID",_x] call ALiVE_fnc_hashSet;
                                         _selectedAsset pushback _aircraft;
-                                        // If the aircraft is on a CAP, send it to intercept
-                                        if (_currentOp == "CAP") exitWith {_selectedAsset = [_aircraft];};
+
+                                        // If the aircraft is on a CAP and not in the process of landing, send it to intercept
+                                        if (_currentOp == "CAP" && _eventType == "OCA") then {
+                                            _selectedAsset = [_aircraft];
+                                            _exit = true;
+                                        };
                                     };
                                 } else {
-                                    // Do something if crew not available?
+                                    // If crew is not available, ensure LOGCOM request goes in
                                 };
 
                             };
+                            if (_exit) exitWith {};
                         } foreach _opAssets;
 
                         if (count _selectedAsset > 0) then {
@@ -2391,6 +2417,8 @@ switch(_operation) do {
 
                         // Check for existing OP?
                         if (_currentOp != "") then {
+
+                            //
                             ["ALIVE ATO %4 Rerouting %1 (%2) for new request %3", _profileID, _currentOp, _eventType, _logic] call ALiVE_fnc_dump;
                             // Vehicle is active and doing something, so remove all existing waypoints in prep for new request
                             private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
@@ -2402,10 +2430,16 @@ switch(_operation) do {
                                     deleteWaypoint ((waypoints _grp) select 0);
                                 };
                             };
+
+                            // Remove old event so aircraft can switch to new tasking
+                            // set state to event complete
+                            private _oldEvent = [_eventQueue,_currentOp] call ALiVE_fnc_hashGet;
+                            [_oldEvent, "state", "eventComplete"] call ALIVE_fnc_hashSet;
+                            [_eventQueue, _eventID, _oldEvent] call ALIVE_fnc_hashSet;
                         };
 
                         // Update assets
-                        [_selectedAsset,"currentOp",_eventType] call ALiVE_fnc_hashSet;
+                        [_selectedAsset,"currentOp",_eventID] call ALiVE_fnc_hashSet;
                         [_assets,_profileID,_selectedAsset] call ALiVE_fnc_hashSet;
                         [_logic,"assets",_assets] call MAINCLASS;
 
@@ -2462,8 +2496,7 @@ switch(_operation) do {
                 private _startDir = [_aircraft,"startDir"] call ALiVE_fnc_hashGet;
                 private _vehicleClass = [_aircraft,"vehicleClass"] call ALiVE_fnc_hashGet;
                 private _currentPosition = [_aircraft,"currentPos"] call ALiVE_fnc_hashGet;
-
-                private _aircraftReady = false;
+                private _aircraftReady = [_aircraft,"ready",false] call ALiVE_fnc_hashGet;
 
                 if (_vehicleClass iskindof "Plane") then {
 
@@ -2520,6 +2553,7 @@ switch(_operation) do {
                                         _group addVehicle _vehicleObj;
                                         (units _group) orderGetIn true;
                                         _aircraftReady = true;
+                                        [_aircraft,"ready",true] call ALiVE_fnc_hashSet;
                                     };
                                 } else {
                                     // abort mission
@@ -2541,6 +2575,7 @@ switch(_operation) do {
                                 // Add a crew to the UAV
                                 createVehicleCrew _vehicleObj;
                                 _aircraftReady = true;
+                                [_aircraft,"ready",true] call ALiVE_fnc_hashSet;
                             };
 
                         } else {
@@ -2623,6 +2658,15 @@ switch(_operation) do {
                     private _profile = [ALIVE_profileHandler, "getProfile",_crewID] call ALIVE_fnc_profileHandler;
                     private _grp = [_profile,"group"] call ALiVE_fnc_hashGet;
                     if (unitReady (leader _grp)) then {
+
+                        // Make sure the group are not quiesced since last op
+                        _grp enableAttack true;
+                        {
+                            _x enableAI "TARGET";
+                            _x enableAI "AUTOTARGET";
+                            _x setCombatMode _eventROE;
+                        } foreach units _grp;
+
                         private _wp = _grp addWaypoint [_eventPosition,0,1,"ATO"];
                         _wp setWaypointSpeed _eventSpeed;
                         _wp setWaypointBehaviour "AWARE";
@@ -2692,6 +2736,8 @@ switch(_operation) do {
                     };
                 };
 
+                // Set aircraft state in case we are waiting for the pilot
+                [_assets,_aircraftID,_aircraft] call ALiVE_fnc_hashSet;
             };
 
             case "aircraftTravel": {
@@ -2750,7 +2796,6 @@ switch(_operation) do {
                         [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
                     };
                 };
-
             };
 
             case "aircraftExecuteWait": {
@@ -2824,7 +2869,6 @@ switch(_operation) do {
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
 
                 };
-
             };
 
             case "aircraftReturn": {
@@ -2879,7 +2923,6 @@ switch(_operation) do {
                 // set state to wait for return of transports
                 [_event, "state", "aircraftReturnWait"] call ALIVE_fnc_hashSet;
                 [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
-
             };
 
             case "aircraftReturnWait": {
@@ -2965,7 +3008,6 @@ switch(_operation) do {
                     };
 
                 };
-
             };
 
             case "aircraftLanding": {
@@ -3005,7 +3047,7 @@ switch(_operation) do {
 
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
-                        ["ALIVE ATO %3 - Aircraft (%1 - %2) has landed %4 time: %5", _vehicle, typeof _vehicle, _logic, _touchDown] call ALIVE_fnc_dump;
+                        ["ALIVE ATO %3 - Aircraft (%1 - %2) has landed at time: %4", _vehicle, typeof _vehicle, _logic, _touchDown] call ALIVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
 
@@ -3023,8 +3065,6 @@ switch(_operation) do {
                         private _taxiPositions = [_airportID, "ilsTaxiIn"] call ALiVE_fnc_getAirportTaxiPos;
                         private _taxiPosition = [_taxiPositions select (count _taxiPositions -2), _taxiPositions select (count _taxiPositions -1), 0];
                         _vehicle setpos _taxiPosition;
-                    } else {
-                        _vehicle setpos (position ([_aircraft,"helipad"] call ALiVE_fnc_hashGet));
                     };
 
                      while {(count (waypoints _grp)) > 0} do
@@ -3057,7 +3097,7 @@ switch(_operation) do {
                     // Turn off engine
                     _vehicle engineOn false;
 
-                    // Despawn and move back to original position
+                    //Move back to original position
                     _vehicle setDir ([_aircraft,"startDir"] call ALiVE_fnc_hashGet);
                     _vehicle setpos ([_aircraft,"startPos"] call ALiVE_fnc_hashGet);
 
@@ -3074,11 +3114,6 @@ switch(_operation) do {
                     // turn off prevent despawn
                     [_profile,"spawnType",[]] call ALiVE_fnc_profileVehicle;
 
-                    // Despawn
-                    [_profile,"despawn"] call ALiVE_fnc_profileVehicle;
-                    [_profile,"spawnType",["preventDespawn"]] call ALiVE_fnc_profileVehicle;
-
-
                     // remove currentOp from vehicle - add delay so it can't be used for 10 mins?
                     [_aircraft,"currentOp",""] call ALiVE_fnc_hashSet;
                     [_assets,_aircraftID,_aircraft] call ALiVE_fnc_hashSet;
@@ -3088,8 +3123,8 @@ switch(_operation) do {
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
 
                 };
-
             };
+
             case "eventComplete": {
 
 
@@ -3105,7 +3140,6 @@ switch(_operation) do {
 
                 // remove the event
                 [_logic, "removeEvent", _eventID] call MAINCLASS;
-
             };
 
             // PLAYER REQUEST ---------------------------------------------------------------------------------------------------------------------------------
