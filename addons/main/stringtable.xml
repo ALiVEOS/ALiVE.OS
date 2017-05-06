@@ -29,25 +29,25 @@
     <Original>ALiVE Versioning:</Original>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_ALIVE_VERSIONING_COMMENT">
-    <Original>Will output a warning or kick players on version mismatch</Original>
+    <Original>Will output a warning or kick players on version mismatch.</Original>
 </Key>
 <Key ID="STR_ALIVE_DISABLESAVE">
-    <Original>Disable SP Save:</Original>
+    <Original>Disable Default SP Save:</Original>
 </Key>
 <Key ID="STR_ALIVE_DISABLESAVE_COMMENT">
-    <Original>SP saving can lead due to out of memory crashes! Enable on own risks!</Original>
+    <Original>Default SP saving can cause out memory crashes.  Use local saving in ALiVE Data instead.</Original>
 </Key>
 <Key ID="STR_ALIVE_DISABLEMARKERS">
-    <Original>Disable Adv. Markers:</Original>
+    <Original>Disable Adv Markers:</Original>
 </Key>
 <Key ID="STR_ALIVE_DISABLEMARKERS_COMMENT">
-    <Original>Disable persistent Advanced Markers.</Original>
+    <Original>Disable persistent advanced Markers.</Original>
 </Key>
 <Key ID="STR_ALiVE_PAUSEMODULES">
     <Original>Auto Pause:</Original>
 </Key>
 <Key ID="STR_ALiVE_PAUSEMODULES_COMMENT">
-    <Original>Auto pauses modules like vAIs, vAI Commander, CQB, ambCIVs if no players are on server</Original>
+    <Original>Auto pauses vAI, AI Commander, CQB and Amb Civs if no players are on server</Original>
 </Key>
 <Key ID="STR_ALIVE_DISABLEADMINACTIONS">
     <Original>Disable Admin Actions:</Original>
@@ -65,13 +65,13 @@
     <Original>AI Distribution:</Original>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_ALIVE_AI_DISTRIBUTION_COMMENT">
-    <Original>Activates dynamic AI distribution of all AI to all available headless clients</Original>
+    <Original>Activates dynamic AI distribution of all AI to any available headless clients.</Original>
 </Key>
 <Key ID="STR_ALiVE_TABLET_MODEL">
     <Original>ALiVE Tablet Model</Original>
 </Key>
 <Key ID="STR_ALiVE_TABLET_MODEL_COMMENT">
-    <Original>Model used for the ALiVE Tablet Background</Original>
+    <Original>Model used for the ALiVE Tablet Bbckground.</Original>
 </Key>
 
 </Container></Package></Project>
