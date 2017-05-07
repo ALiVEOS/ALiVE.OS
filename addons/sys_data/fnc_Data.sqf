@@ -41,6 +41,7 @@ private ["_result", "_operation", "_args", "_logic", "_ops"];
 _logic = [_this, 0, objNull, [objNull,[]]] call BIS_fnc_param;
 _operation = [_this, 1, "", [""]] call BIS_fnc_param;
 _args = [_this, 2, objNull, [objNull,[],"",0,true,false]] call BIS_fnc_param;
+private _sourceOverride = param [3, "", [""]];
 
 //TRACE_3("SYS_DATA",_logic, _operation, _args);
 
@@ -53,7 +54,10 @@ if (_operation in _ops) then {
             ASSERT_TRUE(typeName _args == "ARRAY", _args);
             if(typeName _args == "ARRAY") then {
                 private ["_function","_script"];
-                _source = [_logic, "source"] call ALIVE_fnc_hashGet;
+                private _source = [_logic, "source"] call ALIVE_fnc_hashGet;
+                if (_sourceOverride != "") then {
+                    _source = _sourceOverride;
+                };
                 _script = format ["ALIVE_fnc_%1Data_%2", _operation, _source];
                 _function = call compile _script;
                 //TRACE_2("SYS_DATA: Operation Request - ",_source, _script);
