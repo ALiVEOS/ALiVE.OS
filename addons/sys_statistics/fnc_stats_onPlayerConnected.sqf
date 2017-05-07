@@ -41,7 +41,7 @@ if (GVAR(ENABLED) && isDedicated) then {
             /// Hmmmm connecting player isn't found...
         } else {
 
-            private _profile = [GVAR(datahandler), "read", [_module, [], _uid]] call ALIVE_fnc_data;
+            private _profile = [GVAR(datahandler), "read", [_module, [], _uid], "CouchDB"] call ALIVE_fnc_data;
             private _call = format["events/_design/playerPage/_view/playerTotals?group_level=1&key=""%1""&stale=ok",_uid];
             private _cmd = format ["SendJSON ['GET','%1','']", _call];
             private _stats = [_cmd] call ALIVE_fnc_sendToPlugIn;
