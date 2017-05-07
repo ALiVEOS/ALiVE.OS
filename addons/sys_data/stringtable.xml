@@ -57,7 +57,7 @@
                 <Original>Disable Stats:</Original>
             </Key>
             <Key ID="STR_ALIVE_Data_disableStats_COMMENT">
-                <Original>Disable the recording of player/operation stats to the website</Original>
+                <Original>Disable the recording of player/operation stats to the War Room</Original>
             </Key>
             <Key ID="STR_ALIVE_Data_disableAAR">
                 <Original>Disable AAR:</Original>
@@ -69,7 +69,7 @@
                 <Original>Disable PerfMon:</Original>
             </Key>
             <Key ID="STR_ALIVE_Data_disablePerf_COMMENT">
-                <Original>Disable the performance monitoring module</Original>
+                <Original>Disable the recording of server performance data to War Room </Original>
             </Key>
             <Key ID="STR_ALIVE_Data_disablePerfMon">
                 <Original>Disable OS PerfMon:</Original>
