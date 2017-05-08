@@ -1080,16 +1080,16 @@ switch(_operation) do {
 	
 	                                                switch _type do {
 	                                                    case ("factory") : {
-	                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents,+_CQB] call ALiVE_fnc_INS_factory;
+	                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents,+_CQB] spawn ALiVE_fnc_INS_factory;
 	                                                    };
 	                                                    case ("depot") : {
-	                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents,+_CQB] call ALiVE_fnc_INS_depot;
+	                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents,+_CQB] spawn ALiVE_fnc_INS_depot;
 	                                                    };
 	                                                    case ("HQ") : {
-	                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents,+_CQB] call ALiVE_fnc_INS_recruit;
+	                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents,+_CQB] spawn ALiVE_fnc_INS_recruit;
 	                                                    };
 	                                                    case ("ied") : {
-	                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents] call ALiVE_fnc_INS_ied;
+	                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents] spawn ALiVE_fnc_INS_ied;
 	                                                    };
 	                                                    /*
 	                                                    case ("ambush") : {
@@ -1097,7 +1097,7 @@ switch(_operation) do {
 	                                                    };
 	                                                    */
 	                                                    case ("roadblocks") : {
-	                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents,+_CQB] call ALiVE_fnc_INS_roadblocks;
+	                                                        [time,_center,_id,_size,_faction,_target,_sidesEnemy,_agents,+_CQB] spawn ALiVE_fnc_INS_roadblocks;
 	                                                    };
 	                                                };
 	                                             };
