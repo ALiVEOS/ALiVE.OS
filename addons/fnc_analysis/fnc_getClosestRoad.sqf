@@ -29,6 +29,7 @@ ARJay
 
 private _position = _this select 0;
 private _maxRadius = if (count _this > 1) then {_this select 1} else {5000};
+private _avoidRunways = param [2, false];
 
 private _radius = 100;
 private _inc = 100;
@@ -36,8 +37,17 @@ private _roads = [];
 
 while {
     _roads = _position nearroads _radius;
-    
+
     if (canSuspend) then {sleep 0.02};
+
+    if (_avoidRunways) then {
+    	{
+    		If (str(_x) find "invisible" != -1) then {
+    			_roads set [_foreachIndex, -1];
+    		};
+    	} foreach _roads;
+    	_roads = _roads - [-1];
+    };
 
     count (_roads) == 0 || {_radius > _maxRadius};
 } do {
