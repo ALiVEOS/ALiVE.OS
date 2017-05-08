@@ -678,12 +678,22 @@ switch(_operation) do {
                             _HQ = selectRandom ([_compType, ["HQ","FieldHQ","Communications"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
                         };
 
-                        private _nearRoads = _flatpos nearRoads 750;
-                        private _direction = if (count _nearRoads > 0) then {
-                            direction (_nearRoads select 0);
+                        private _nearRoad = [_flatpos, 750, true] call ALiVE_fnc_getClosestRoad;
+
+                        private _direction = if (_nearRoad distance _flatpos > 5) then {
+                            private _road = roadat _nearRoad;
+                            private _roadConnectedTo = roadsConnectedTo _road;
+                            if (count _roadConnectedTo > 0) then {
+                                private _connectedRoad = _roadConnectedTo select 0;
+                                (_road getDir _connectedRoad)
+                            } else {
+                                90
+                            };
                         } else {
-                            random 360
+                            0
                         };
+
+                        // [_logic,"createMarker",[_nearRoad,"WEST","HQ " + str(_direction),0]] call MAINCLASS;
 
                         [_HQ, _flatPos, _direction, _faction] call ALiVE_fnc_spawnComposition;
                     };
@@ -966,10 +976,22 @@ switch(_operation) do {
                         _heliport = selectRandom ([_compType, ["Heliports"], [], _faction] call ALiVE_fnc_getCompositions);
 
                         if !(isNil "_heliport") then {
-                            private _nearRoads = _flatpos nearRoads 1000;
-                            private _direct = if (count _nearRoads > 0) then {direction (_nearRoads select 0)} else {random 360};
+                            private _nearRoad = [_flatpos,750,true] call ALiVE_fnc_getClosestRoad;
 
-                            [_logic,"createMarker",[position (_nearRoads select 0)] FUCK] call MAINCLASS
+                            private _direct = if (_nearRoad distance _flatpos > 5) then {
+                                private _road = roadat _nearRoad;
+                                private _roadConnectedTo = roadsConnectedTo _road;
+                                if (count _roadConnectedTo > 0) then {
+                                    private _connectedRoad = _roadConnectedTo select 0;
+                                    (_road getDir _connectedRoad)
+                                } else {
+                                    90
+                                };
+                            } else {
+                                0
+                            };
+
+                            // [_logic,"createMarker",[_nearRoad,_side,str(_direct),0]] call MAINCLASS;
 
                             [_heliport, _flatPos, _direct, _faction] call ALiVE_fnc_spawnComposition;
 
@@ -2300,7 +2322,7 @@ switch(_operation) do {
                                 // Check crew are alive.
                                 private _crewID = [_aircraft,"crewID"] call ALiVE_fnc_hashGet;
                                 private _crewProfile = [ALIVE_profileHandler, "getProfile",_crewID] call ALIVE_fnc_profileHandler;
-                                if (isNil "_crewProfile") then {
+                                if (isNil "_crewProfile" && !(([_x,"vehicleClass"] call ALiVE_fnc_hashGet) isKindOf "UAV")) then {
                                     _crewAvailable = false;
                                 };
 
