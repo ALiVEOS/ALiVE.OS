@@ -23,11 +23,25 @@ See Also:
 Author:
 Tupolov
 ---------------------------------------------------------------------------- */
-private ["_profile","_params","_startPos","_type","_speed","_formation","_behaviour","_profileWaypoint","_vehiclesInCommandOf","_radius","_gpos","_debug","_objective","_isDiverTeam","_debugColor","_profileSide"];
+private ["_profile","_params","_startPos","_type","_speed","_formation","_behaviour","_profileWaypoint","_vehiclesInCommandOf","_radius","_debug","_objective","_isDiverTeam","_debugColor","_profileSide"];
+
 _profile = _this select 0;
 _params = _this select 1;
 
+_debug = true;
+
 if (isnil "_profile") exitWith {};
+
+private _profileID = [_profile,"profileID"] call ALiVE_fnc_HashGet;
+_startPos = [_profile,"position"] call ALiVE_fnc_HashGet;
+_profileSide = [_profile,"side"] call ALIVE_fnc_hashGet;
+
+["ALIVE SEA PATROL - Starting Sea Patrol for: %1 on water (%3) with params: %2",  _profileID, _params, surfaceIsWater _startPos] call ALIVE_fnc_dump;
+
+//defaults
+_type = "MOVE";
+_speed = "LIMITED";
+_formation = "COLUMN";
 
 if (typename _params == "ARRAY") then {
     _radius = _params select 0;
@@ -39,16 +53,6 @@ if (typename _params == "ARRAY") then {
     _objective = [_profile,"position"] call ALiVE_fnc_HashGet;
 };
 
-_debug = false;
-
-//defaults
-_startPos = [_profile,"position"] call ALiVE_fnc_HashGet;
-_type = "MOVE";
-_speed = "LIMITED";
-_formation = "COLUMN";
-
-
-_profileSide = [_profile,"side"] call ALIVE_fnc_hashGet;
 
 switch(_profileSide) do {
     case "EAST":{
@@ -77,14 +81,12 @@ if (_debug) then {
     [str(random 1000), _startPos, "ICON",[1,1],"COLOR:","ColorGreen","TYPE:","mil_dot","TEXT:",format ["Marine-%1-START",[_profile,"profileID"] call ALIVE_fnc_hashGet]] call CBA_fnc_createMarker;
 };
 
-
 // Adjust patrol radius based on vehicle availability
 _vehiclesInCommandOf = [_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_HashGet;
 if (count _vehiclesInCommandOf > 0) then {
 
      _radius = 1000;
      _isDiverTeam = false;
-
 } else { // Diver Team - get them to visit the objective too.
 
     _radius = 500;
@@ -103,12 +105,14 @@ if (count _vehiclesInCommandOf > 0) then {
 
 // Find other waypoints in the sea
 while {count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) < 5} do {
-    private ["_lastpos","_profileWaypoint"];
+
+    private ["_lastpos","_profileWaypoint","_gpos"];
+    private _last = false;
 
     if (isNil "_gpos") then {
-        _lastpos = _startPos;
+        _lastpos = +_startPos;
     } else {
-        _lastpos = _gpos;
+        _lastpos = +_gpos;
     };
 
     // Find a new position in the sea (doesn't have to be closest)
@@ -117,21 +121,29 @@ while {count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) < 5} do {
     if !(surfaceIsWater _gpos) then {
 
         if (_debug) then {
-            ["ALIVE SEA PATROL - ALERT NON WATER POSITION Pos: %1 - On Water: %2",  _gpos, surfaceIsWater _gpos] call ALIVE_fnc_dump;
+            ["ALIVE SEA PATROL - ALERT NON WATER INITIAL POSITION Pos: %1 - On Water: %2",  _gpos, surfaceIsWater _gpos] call ALIVE_fnc_dump;
         };
+
         // Find a position that is definitely in water
         _gpos = [_gpos, 15, _radius, 20, 2, 10, 0, [], [_startPos,_startPos]] call bis_fnc_findSafePos;
+
         // Add 3rd element because BIS_fnc_findSafePos returns an array of 2 elements...
         _gpos set [2, 0];
     };
 
-    //Loop last Waypoint
-    if (count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) == 4) then {
-        _gpos = _startPos;
-        _type = "CYCLE";
+    // if its still not water, then go back to start position.
+    if !(surfaceIsWater _gpos) then {
+        _gpos = +_startPos;
     };
 
-    if (surfaceIsWater _gpos) then {
+    //Loop last Waypoint
+    if (count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) == 4) then {
+        _gpos = +_startPos;
+        _type = "CYCLE";
+        _last = true;
+    };
+
+    if (surfaceIsWater _gpos || (_isDiverTeam && _last) ) then {
 
         // Check you don't have to cross land to get there in a boat
         if (!terrainIntersectASL [_lastpos,_gpos] || _isDiverTeam) then {
@@ -150,12 +162,15 @@ while {count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) < 5} do {
         };
 
     } else {
+        // start pos was not in water?
         if (_debug) then {
-            ["ALIVE AMB SEA PATROL [WP] - ALERT NON WATER POSITION Pos: %1 - On Water: %2",  _gpos, surfaceIsWater _gpos] call ALIVE_fnc_dump;
+            ["ALIVE AMB SEA PATROL [WP] - ALERT NON WATER FINAL POSITION Pos: %1 - On Water: %2",  _gpos, surfaceIsWater _gpos] call ALIVE_fnc_dump;
         };
+        _radius = _radius * 1.1;
+
     };
 };
 
 if (_debug) then {
-    ["ALIVE CP [%1] - Placing Sea Patrol: %2 at %3. On water: %4 with %5 waypoints",_faction, _seaPatrolGroup, _startPos, surfaceIsWater _startPos, count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet)] call ALIVE_fnc_dump;
+    ["ALIVE %1 - Placing Sea Patrol: %2 at %3. On water: %4 with %5 waypoints",_profileSide, _profileID, _startPos, surfaceIsWater _startPos, count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet)] call ALIVE_fnc_dump;
 };
