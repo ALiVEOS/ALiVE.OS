@@ -96,7 +96,7 @@ link43[] = {32,28};
 link44[] = {33,34};
 link45[] = {34,25};
 globals[] = {0.000000,0,0,0,16777215,640,480,1,87,6316128,1,-428.809021,210.125916,-493.463135,-1397.670166,673,929,1};
-window[] = {2,-1,-1,-1,-1,1125,176,1956,176,3,690};
+window[] = {2,-1,-1,-1,-1,1147,198,1978,198,3,690};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -894,7 +894,8 @@ class FSM
        "      _side = _this select 3;" \n
        "	  _debug = false;" \n
        "        " \n
-       "        _infantry = if ((_reinforce select 0) > 8) then {8} else {_reinforce select 1};" \n
+       "        _infantry = if ((_reinforce select 0) > 8) then {8} else {_reinforce select 0};" \n
+       "	  _motorized = if ((_reinforce select 1) > 5) then {5} else {_reinforce select 1};" \n
        "        _plane = if ((_reinforce select 4) > 5) then {5} else {_reinforce select 4};" \n
        "        _heli = if ((_reinforce select 5) > 5) then {5} else {_reinforce select 5};" \n
        "        _airAssets = _infantry + _plane + _heli;" \n
@@ -906,7 +907,7 @@ class FSM
        "" \n
        "		    _forceMakeup = [" \n
        "		        0," \n
-       "		        if ((_reinforce select 1) > 10) then {10} else {_reinforce select 1}," \n
+       "		        0," \n
        "		        if ((_reinforce select 2) > 10) then {10} else {_reinforce select 2}," \n
        "		        if ((_reinforce select 3) > 10) then {10} else {_reinforce select 3}," \n
        "		        0," \n
@@ -922,14 +923,14 @@ class FSM
        "" \n
        "                _forceMakeup = [" \n
        "                	if (_infantry > 2) then {_infantry = _infantry - 2; 2} else {_infantryTmp = _infantry; _infantry = 0; _infantryTmp}," \n
-       "                    0," \n
+       "                  if (_motorized > 2) then {_motorized = _motorized - 2; 2} else {_motorizedTmp = _motorized; _motorized = 0; _motorizedTmp}," \n
        "                    0," \n
        "                    0," \n
        "                	if (_plane > 2) then {_plane = _plane - 2; 2} else {_planeTmp = _plane; _plane = 0; _planeTmp}," \n
        "                	if (_heli > 2) then {_heli = _heli - 2; 2} else {_heliTmp = _heli; _heli = 0; _heliTmp}" \n
        "                ];" \n
        "                " \n
-       "                if (_infantry + _plane + _heli == 0) exitwith {diag_log ""done""};" \n
+       "                if (_infantry + _motorized + _plane + _heli == 0) exitwith {};" \n
        "                " \n
        "                _event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,""STANDARD""],""OPCOM""] call ALIVE_fnc_event;" \n
        "		    	_eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
