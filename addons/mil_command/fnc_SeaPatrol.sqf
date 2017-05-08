@@ -28,7 +28,7 @@ private ["_profile","_params","_startPos","_type","_speed","_formation","_behavi
 _profile = _this select 0;
 _params = _this select 1;
 
-_debug = true;
+// _debug = true;
 
 if (isnil "_profile") exitWith {};
 
@@ -36,7 +36,9 @@ private _profileID = [_profile,"profileID"] call ALiVE_fnc_HashGet;
 _startPos = [_profile,"position"] call ALiVE_fnc_HashGet;
 _profileSide = [_profile,"side"] call ALIVE_fnc_hashGet;
 
-["ALIVE SEA PATROL - Starting Sea Patrol for: %1 on water (%3) with params: %2",  _profileID, _params, surfaceIsWater _startPos] call ALIVE_fnc_dump;
+if (_debug) then {
+    ["ALIVE SEA PATROL - Starting Sea Patrol for: %1 on water (%3) with params: %2",  _profileID, _params, surfaceIsWater _startPos] call ALIVE_fnc_dump;
+};
 
 //defaults
 _type = "MOVE";
