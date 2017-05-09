@@ -61,6 +61,11 @@ class cfgFunctions {
                     file = "\x\alive\addons\sys_data_pns\fnc_deleteData.sqf";
                     RECOMPILE;
                 };
+                class autosave_pns {
+                    description = "Saves mission state in given interval to local profileNameSpace";
+                    file = "\x\alive\addons\sys_data_pns\fnc_autosave.sqf";
+                    RECOMPILE;
+                };      
             };
         };
 };
