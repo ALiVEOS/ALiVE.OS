@@ -57,20 +57,22 @@ for "_i" from 1 to 3000 do {
         ];
         if (count _pos > 0) then {
                 _pos set [2,0];
-                if (count (_pos nearRoads 20) != 0) then {
+                // Avoid roads and helipads
+                if ( (count (_pos nearRoads 20) != 0) || (count (_pos nearObjects ["HeliH", 30]) != 0) ) then {
                         _pos = [];
                 };
+
         };
         if (count _pos > 0) exitWith {
                 if (_debug) then {diag_log format["ALiVE-%1 Attempts to find flat area: %3 - found pos: %2", time, _pos, _i];};
-                
+
                 _pos;
         };
 };
 
 if (count _pos == 0) then {
         _pos = _position;
-        
+
         if (_debug) then {diag_log format["ALiVE-%1 ALiVE_fnc_findFlatArea defaulting to original pos after 3000 attempts: %2", time, _pos];};
 };
 

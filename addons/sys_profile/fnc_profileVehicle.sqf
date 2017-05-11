@@ -496,7 +496,14 @@ switch(_operation) do {
                             if ((_position select 2) < 50) then {_position set [2,300]};
                         }else{
                             _special = "CAN_COLLIDE";
-                            _position set [2,0];
+
+                            // Check to see if placed on carrier/ship
+                            if (count ((AGLtoASL _position) nearObjects ["StaticShip",300]) == 0) then {
+                                _position set [2,0];
+                            } else {
+                               _special = "NONE";
+                               //["SPAWN VEHICLE ON SHIP [%1] pos: %2",_profileID,_position] call ALIVE_fnc_dump;
+                            };
                         };
                     } else {
 
