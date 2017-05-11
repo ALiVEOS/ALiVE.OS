@@ -47,7 +47,7 @@
     <Original>Auto Pause:</Original>
 </Key>
 <Key ID="STR_ALiVE_PAUSEMODULES_COMMENT">
-    <Original>Auto pauses vAI, AI Commander, CQB and Amb Civs if no players are on server</Original>
+    <Original>Auto pauses vAI, AI Commander, CQB and Amb Civs if no players are on server.</Original>
 </Key>
 <Key ID="STR_ALIVE_DISABLEADMINACTIONS">
     <Original>Disable Admin Actions:</Original>
@@ -71,7 +71,7 @@
     <Original>ALiVE Tablet Model</Original>
 </Key>
 <Key ID="STR_ALiVE_TABLET_MODEL_COMMENT">
-    <Original>Model used for the ALiVE Tablet Bbckground.</Original>
+    <Original>Model used for the ALiVE Tablet Background.</Original>
 </Key>
 
 </Container></Package></Project>
