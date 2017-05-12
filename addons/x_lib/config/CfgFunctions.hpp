@@ -1357,20 +1357,6 @@ class getEnvironment
     RECOMPILE;
 };
 
-class getFactionConfig
-{
-    file = "\x\alive\addons\x_lib\functions\misc\fnc_getFactionConfig.sqf";
-    ext = ".sqf";
-    RECOMPILE;
-};
-
-class getFactions
-{
-    file = "\x\alive\addons\x_lib\functions\misc\fnc_getFactions.sqf";
-    ext = ".sqf";
-    RECOMPILE;
-};
-
 class getPos
 {
     file = "\x\alive\addons\x_lib\functions\misc\fnc_getPos.sqf";

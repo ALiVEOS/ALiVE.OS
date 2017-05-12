@@ -228,8 +228,6 @@ misc
     ALiVE_fnc_factionSide
     ALiVE_fnc_getDominantFaction
     ALiVE_fnc_getEnvironment
-    ALiVE_fnc_getFactionConfig
-    ALiVE_fnc_getFactions
     ALiVE_fnc_getPos
     ALiVE_fnc_getSideFactions
     ALiVE_fnc_isAbleToHost
