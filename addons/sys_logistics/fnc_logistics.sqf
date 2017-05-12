@@ -371,7 +371,11 @@ switch (_operation) do {
             _object setvariable [QGVAR(CONTAINER),_container,true];
             _container setvariable [QGVAR(CARGO),(_container getvariable [QGVAR(CARGO),[]]) + [_object],true];
 
-            _object attachTo [_container];
+            _object attachTo [_container, [
+                0,
+                1 - (boundingBox _container select 0 select 1) - (boundingBox _object select 0 select 1),
+                (boundingBox _container select 0 select 2) - (boundingBox _object select 0 select 2) + 0.4
+            ]];
 
             [[_logic,"updateObject",[_container,_object]],"ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
 
@@ -687,9 +691,9 @@ switch (_operation) do {
             switch (_operation) do {
                 case ("carryObject") : {
                     _text = "Carry object";
-                    _input = "cursortarget";
+                    _input = "(nearestObjects [_this select 1, ALiVE_SYS_LOGISTICS_CARRYABLE select 1, 5]) select 0";
                     _container = "_this select 1";
-                    _condition = "alive _target && {cursortarget distance _target < 5} && {isnil {cursortarget getvariable 'ALiVE_SYS_LOGISTICS_CONTAINER'}} && {[cursortarget,_target] call ALiVE_fnc_canCarry}";
+                    _condition = "private _nearestObject = (nearestObjects [_target, ALiVE_SYS_LOGISTICS_CARRYABLE select 1, 10]) select 0; alive _target && {_nearestObject distance _target < 5} && {isnil {_nearestObject getvariable 'ALiVE_SYS_LOGISTICS_CONTAINER'}} && {[_nearestObject,_target] call ALiVE_fnc_canCarry}";
                 };
                 case ("dropObject") : {
                     _text = "Drop object";
