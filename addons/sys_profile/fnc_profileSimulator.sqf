@@ -823,6 +823,7 @@ private _totalEntities = 0;
 	
 	                                            {
 	                                                [_targetToAttack,"removeUnit", _x] call ALiVE_fnc_profileEntity;
+                                                    _unitCount = _unitCount - 1;
 	                                            } foreach _indexesToRemove;
 	
 	                                            [_targetToAttack,"damages", _profileToAttackHealth] call ALiVE_fnc_hashSet;
