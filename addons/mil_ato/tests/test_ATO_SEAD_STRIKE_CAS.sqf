@@ -3,7 +3,14 @@
 #include <\x\alive\addons\mil_ato\script_component.hpp>
 SCRIPT(test_ATO_HELI_INSERT);
 
-//execVM "\x\alive\addons\mil_ato\tests\test_ATO_HELI_INSERT.sqf"
+//execVM "\x\alive\addons\mil_ato\tests\test_ATO_SEAD_STRIKE_CAS.sqf"
+
+#define DEFAULT_OP_HEIGHT 1000
+#define DEFAULT_OP_DURATION 7
+#define DEFAULT_SPEED "NORMAL"
+#define DEFAULT_MIN_WEAP_STATE 0.5
+#define DEFAULT_MIN_FUEL_STATE 0.5
+#define DEFAULT_RADAR_HEIGHT 100
 
 // ----------------------------------------------------------------------------
 
@@ -38,11 +45,13 @@ ASSERT_TRUE(!_result, _err);
 
 STAT("Create ATO event");
 
-// Create SEAD enemy, get strike target, get CAS target
+private _side = WEST;
+private _faction = "BLU_F";
+
 
 // Request in opposite priority order to test queue ordering
 private _type = "STRIKE";
-private _range = distance _positionStrike;
+private _range = (position player) distance (position targetStrike);
 private _args = [
     "RED",                // ROE
     DEFAULT_OP_HEIGHT,
@@ -51,13 +60,15 @@ private _args = [
     DEFAULT_MIN_FUEL_STATE,
     _range,       // RADIUS
     DEFAULT_OP_DURATION,
-    [_targetStrike]                      // TARGETS
+    [targetStrike]                      // TARGETS
 ];
-private _event = ['ATO_REQUEST', [_type, _side, _faction, _x, _args],"ATO"] call ALIVE_fnc_event;
+private _event = ['ATO_REQUEST', [_type, _side, _faction, "BLUE", _args],"ATO"] call ALIVE_fnc_event;
 private _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
+sleep 20;
+
 _type = "CAS";
-_range = distance _positionCAS;
+_range = (position player) distance (position targetCAS);
 _args = [
     "RED",                // ROE
     DEFAULT_OP_HEIGHT,
@@ -66,13 +77,15 @@ _args = [
     DEFAULT_MIN_FUEL_STATE,
     _range,       // RADIUS
     DEFAULT_OP_DURATION,
-    [_targetCAS]                      // TARGETS
+    [targetCAS]                      // TARGETS
 ];
-_event = ['ATO_REQUEST', [_type, _side, _faction, _x, _args],"ATO"] call ALIVE_fnc_event;
+_event = ['ATO_REQUEST', [_type, _side, _faction, "BLUE", _args],"ATO"] call ALIVE_fnc_event;
 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
+sleep 20;
+
 _type = "SEAD";
-_range = distance _positionSEAD;
+_range = (position player) distance (position targetSEAD);
 _args = [
     "RED",                // ROE
     DEFAULT_OP_HEIGHT,
@@ -81,8 +94,8 @@ _args = [
     DEFAULT_MIN_FUEL_STATE,
     _range,       // RADIUS
     DEFAULT_OP_DURATION,
-    [_targetSEAD]                      // TARGETS
+    [targetSEAD]                      // TARGETS
 ];
-_event = ['ATO_REQUEST', [_type, _side, _faction, _x, _args],"ATO"] call ALIVE_fnc_event;
+_event = ['ATO_REQUEST', [_type, _side, _faction, "BLUE", _args],"ATO"] call ALIVE_fnc_event;
 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 nil;

@@ -2610,7 +2610,7 @@ switch(_operation) do {
                                             _fuel = 0;
                                         };
                                     };
-                                    if ( ( (_position distance _currentPosition < 15) || (_currentOp == "CAP" && _eventType != "CAP") || (_eventType == "CAS") ) && (_fuel > _eventMinFuel && _ammo > _eventMinWeap && _damage < 0.5)) then {
+                                    if ( ( (_position distance _currentPosition < 250) || (_currentOp == "CAP" && _eventType != "CAP") || (_eventType == "CAS") ) && (_fuel > _eventMinFuel && _ammo > _eventMinWeap && _damage < 0.5)) then {
 
                                         [_aircraft,"currentPos",_currentPosition] call ALiVE_fnc_hashSet;
                                         [_aircraft,"profileID",_x] call ALiVE_fnc_hashSet;
@@ -3309,7 +3309,7 @@ switch(_operation) do {
                 private _aircraft = [_assets,_aircraftID] call ALiVE_fnc_hashGet;
                 private _eventPosition = _eventData select 5;
                 private _startPosition = [_aircraft,"startPos"] call ALiVE_fnc_hashGet;
-
+                private _isOnCarrier = [_aircraft,"isOnCarrier"] call ALiVE_fnc_hashGet;
                 private _profile = [ALIVE_profileHandler, "getProfile",_aircraftID] call ALIVE_fnc_profileHandler;
                 private _vehicle = [_profile,"vehicle"] call ALiVE_fnc_hashGet;
                 private _grp = group _vehicle;
@@ -3409,9 +3409,13 @@ switch(_operation) do {
                 private _vehicle = [_profile,"vehicle"] call ALiVE_fnc_hashGet;
                 private _grp = group _vehicle;
 
+
                 // Tailhook for carrier landings
                 if (_isOnCarrier && _vehicle iskindOf "Plane") then {
-                    [_vehicle] spawn BIS_fnc_aircraftTailhook;
+                    [_vehicle] spawn {
+                        private _vehicle = _this select 0;
+                        [_vehicle] call BIS_fnc_aircraftTailhook;
+                    };
                 };
 
                 private _landed = _vehicle getVariable [QGVAR(LANDED),false];
@@ -3419,7 +3423,7 @@ switch(_operation) do {
 
                 // manage taxi for planes
                 if (_touchDown > 0) then {
-                    if ( time > (_touchDown + 180) || (_isOnCarrier && time > (_touchDown + 20)) )  then {
+                    if ( time > (_touchDown + 180) || (_isOnCarrier && time > (_touchDown + 25)) )  then {
                         _landed = true;
                     };
                 };
