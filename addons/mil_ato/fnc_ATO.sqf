@@ -64,6 +64,60 @@ params [
     ["_args", objNull, [objNull,[],"",0,true,false]]
 ];
 
+ALiVE_fnc_catapultLaunch = {
+   params [
+        ["_vehicle", objNull, [objNull]],
+        ["_catapult", [], [[]]]
+    ];
+
+    private _result = false;
+
+    private _part = [_catapult, "part",objNull] call ALiVE_fnc_hashGet;
+    private _animations = [_catapult, "animations",[]] call ALiVE_fnc_hashGet;
+    private _partMemPoint = [_catapult, "memoryPoint",[]] call ALiVE_fnc_hashGet;
+
+    if (alive _vehicle && canMove _vehicle) then {
+
+        // Keep the aircraft level until takeoff
+        private _vectorUp = vectorUp _vehicle;
+        [_vehicle, _vectorUp] spawn {
+           params [
+                ["_vehicle", objNull, [objNull]],
+                ["_vectorUp", [], [[]]]
+            ];
+            private _configPath = configFile >> "CfgVehicles" >> typeOf _vehicle;
+            private _velocityLaunch = ((_configPath >> "CarrierOpsCompatability" >> "LaunchVelocity") call BIS_fnc_getCfgData) max 210;
+            while {speed _vehicle < _velocityLaunch} do {
+                _vehicle setVectorUp _vectorUp;
+            };
+        };
+
+        // Launch aircraft
+        [_part, _animations, _vehicle] spawn {
+            params [
+                ["_part", objNull, [objNull]],
+                ["_animations", [], [[]]],
+                ["_vehicle", objNull, [objNull]]
+            ];
+            [_part, _animations, 10] call BIS_fnc_Carrier01AnimateDeflectors;
+
+            sleep 10;
+
+            [_vehicle] call BIS_fnc_AircraftCatapultLaunch;
+
+            sleep 5;
+
+            [_part, _animations, 0] call BIS_fnc_Carrier01AnimateDeflectors;
+        };
+
+        _result = true;
+    } else {
+        _result = false;
+    };
+
+    _result
+};
+
 ALiVE_fnc_getAirportTaxiPos = {
     params [
         ["_airportID", 0, [0]],
@@ -75,13 +129,82 @@ ALiVE_fnc_getAirportTaxiPos = {
 
     if (_airportID == 0) then {
         _result = getArray(configFile >> "cfgWorlds" >> WorldName >> _taxiPos);
-    } else {
+    };
+
+    if ( (_airportID > 0) && (_airportID < 100) ) then {
         _result = getArray(((configFile >> "cfgWorlds" >> WorldName >> "SecondaryAirports") select (_airportID-1)) >> _taxiPos);
+    };
+
+    if (_airportID > 99) then {
+        // is a dynamic runway
+        private _runway = ALiVE_Carriers select (_airportID - 100);
+
+        _result = getArray(configFile >> "cfgVehicles" >> typeOf _runway >> _taxiPos);
+        for "_i" from 0 to (count _result-1) step 2 do {
+            private _pos = _runway modelToWorld [(_result select _i), (_result select _i+1), 0];
+            _result set [_i, _pos select 0];
+            _result set [_i+1, _pos select 1];
+        };
     };
 
     if (_scope != 0) then {
         _result resize _scope;
     };
+
+    _result
+};
+
+ALiVE_fnc_getNearestCatapult = {
+    params [
+        ["_pos", [], [[]]]
+    ];
+
+    private _result = [];
+
+    private _carrier = nearestObjects [_pos,["StaticShip"],400] select 0;
+    if (isNil "_carrier") exitWith {_result};
+
+    private _parts = getArray(configFile >> "CfgVehicles" >> typeof _carrier >> "multiStructureParts");
+    if (count _parts == 0) exitWith {_result};
+
+    private _catapults = [] call ALiVE_fnc_hashCreate;
+    private _catapultsPos = [];
+    {
+        private _part = _x select 0;
+        if (isClass (configFile >> "CfgVehicles" >> _part >> "Catapults")) then {
+
+            private _tmp = [configFile >> "CfgVehicles" >> _part >> "Catapults"] call ALiVE_fnc_configProperties;
+
+            private _addHash = {
+                private _partObject = nearestObjects [_pos,[_part],400] select 0;
+                [_value, "part", _partObject] call ALiVE_fnc_hashSet;
+
+                private _partMemPoint = [_value, "memoryPoint"] call ALiVE_fnc_hashGet;
+                private _partOffset = _partObject selectionPosition _partMemPoint;
+                private _position = _partObject modelToWorld _partOffset;
+                _catapultsPos pushback [_key, _position];
+
+                [_value, "position", _position] call ALiVE_fnc_hashSet;
+                [_catapults, _key, _value] call ALiVE_fnc_hashSet;
+            };
+
+            [_tmp, _addHash] call CBA_fnc_hashEachPair;
+
+        };
+    } foreach _parts;
+
+    if (count _catapultsPos == 0) exitWith {_result};
+
+    private _tmp = [
+                _catapultsPos,
+                [_pos],
+                {
+                    _Input0 distance (_x select 1);
+                },
+                "ASCEND"
+            ] call ALiVE_fnc_SortBy;
+
+    _result = [_catapults, (_tmp select 0) select 0] call ALiVE_fnc_hashGet;
 
     _result
 };
@@ -379,12 +502,19 @@ switch(_operation) do {
                 private _dir = [_vehicleProfile,"direction"] call ALIVE_fnc_HashGet;
                 [_asset,"startDir",_dir] call ALiVE_fnc_hashSet;
 
+                private _isOnCarrier = false;
+
+                if ( count (_position nearObjects ["StaticShip",700]) != 0 ) then {
+                    _isOnCarrier = true;
+                };
+
+                [_asset,"isOnCarrier", _isOnCarrier] call ALiVE_fnc_hashSet;
+
                 if (_vehicleClass iskindof "Plane") then {
                     // Get airportID
                     private _airportID = [_position] call ALiVE_fnc_getNearestAirportID;
                     [_asset,"airportID",_airportID] call ALiVE_fnc_hashSet;
                     [_logic,"addRunway",_airportID] call MAINCLASS;
-
                 } else {
                     // Get HeliH object
                     private _helipad = nearestObject [_position, "HeliH"];
@@ -405,9 +535,16 @@ switch(_operation) do {
 
                             private _side = [_profile,"side"] call ALiVE_fnc_hashGet;
                             private _faction = [_profile,"faction"] call ALiVE_fnc_hashGet;
+                            private _crewpos = _position;
 
                             // Get nearest building position
-                            private _crewPos = selectRandom ((nearestBuilding _position) buildingPos -1);
+                            if !(_isOnCarrier) then {
+                                _crewPos = selectRandom ((nearestBuilding _position) buildingPos -1);
+                            } else {
+                                private _bridge = (_position nearObjects ["Land_Carrier_01_island_02_F",700]) select 0;
+                                _crewPos = ASLtoATL (_bridge modelToWorld [-2.43359,1.98047,0]); // entities are saved as ATL positions
+                                // ["ALIVE ATO PLACE CREW AT %1 (pos: %2)", _crewpos, _position] call ALiVE_fnc_dump;
+                            };
 
                             // Check for no building?
 
@@ -635,6 +772,8 @@ switch(_operation) do {
             // Always use the carrier as the base if the module is close to the carrier
             if (_isCarrier) then {
                 _baseCluster = ([(AGLtoASL _position) nearObjects ["Strategic",700]] call ALiVE_fnc_findClusters) select 0;
+                [_baseCluster,"center", [[_baseCluster,"nodes"] call ALiVE_fnc_hashGet] call ALiVE_fnc_findClusterCenter] call ALiVE_fnc_hashSet;
+                [_baseCluster,"size",[_baseCluster,"size"] call ALiVE_fnc_cluster] call ALiVE_fnc_hashSet;
             };
 
             if (_debug) then {
@@ -642,7 +781,7 @@ switch(_operation) do {
                 _baseCluster call ALIVE_fnc_inspectHash;
             };
 
-            // Establish an HQ nearby
+            // If createHQ, select a suitable nearby building or create one, if not, choose a building or just use node
             private _createHQ = [_logic, "createHQ"] call MAINCLASS;
             If (_createHQ) then {
 
@@ -751,6 +890,48 @@ switch(_operation) do {
                     };
                     // DEBUG -------------------------------------------------------------------------------------
                 };
+            } else {
+                private _faction = [_logic, "faction"] call MAINCLASS;
+
+                // Get nearest buildings
+                private _buildings = nearestObjects [_position, ["building"], 750];
+                private _hqBuilding = objnull;
+
+                // Check for water, spawn carrier?
+
+
+                // Check to see if the buildings match our ALiVE types
+                {
+                    private _blg = typeof _x;
+                    if ( {(tolower _blg) find (tolower _x) != -1} count (ALiVE_militaryBuildingTypes + ALIVE_militaryHQBuildingTypes) == 0) then {
+                        _buildings set [_forEachIndex, -1];
+                    };
+                    if !([_x] call ALIVE_fnc_isHouseEnterable) then {
+                        _buildings set [_forEachIndex, -1];
+                    };
+                } foreach _buildings;
+                _buildings = _buildings - [-1];
+
+                // ["ALIVE ATO %1 - Buildings: %2", _logic, _buildings] call ALIVE_fnc_dump;
+                if(count _buildings > 0) then {
+
+                    _hqBuilding = _buildings select 0;
+
+                } else {
+
+                    _hqBuilding = ([_baseCluster,"nodes"] call ALiVE_fnc_hashGet) select 0;
+
+                };
+
+                // DEBUG -------------------------------------------------------------------------------------
+                if(_debug) then {
+                    [position _hqBuilding, 4] call ALIVE_fnc_placeDebugMarker;
+                };
+                // DEBUG -------------------------------------------------------------------------------------
+
+                [_logic, "HQBuilding", _hqBuilding] call MAINCLASS;
+
+                ["ALIVE ATO %1 - ATO building selected: %2", _logic, [_logic, "HQBuilding"] call MAINCLASS] call ALIVE_fnc_dump;
             };
 
             // Establish Anti-Air Defenses
@@ -848,7 +1029,7 @@ switch(_operation) do {
                 _modulesAir append _moduleAir;
 
                 if (_debug) then {
-                    ["ALIVE ATO %1 OPCOM air assets: %2", _logic, _moduleAir] call ALiVE_fnc_dump;
+                    ["ALIVE ATO %1 OPCOM registered air assets: %2", _logic, _moduleAir] call ALiVE_fnc_dump;
                 };
 
                 // Get objectives?
@@ -2399,7 +2580,7 @@ switch(_operation) do {
                                     private _vehicleObj = [_profile, "vehicle"] call ALiVE_fnc_hashGet;
                                     _damage = damage _vehicleObj;
                                     _fuel = fuel _vehicleObj;
-                                    _currentPosition = getpos _vehicleObj;
+                                    _currentPosition = getposATL _vehicleObj;
                                 };
 
                                 diag_log format["ALIVE ATO %4 %5 F:%1, A:%2, D:%3, Dist:%6,",_fuel, _ammo, _damage, _logic, _profileID, _position distance _currentPosition];
@@ -2607,6 +2788,7 @@ switch(_operation) do {
                 private _vehicleClass = [_aircraft,"vehicleClass"] call ALiVE_fnc_hashGet;
                 private _currentPosition = [_aircraft,"currentPos"] call ALiVE_fnc_hashGet;
                 private _aircraftReady = [_aircraft,"ready",false] call ALiVE_fnc_hashGet;
+                private _isOnCarrier = [_aircraft,"isOnCarrier",false] call ALiVE_fnc_hashGet;
 
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
 
@@ -2624,7 +2806,7 @@ switch(_operation) do {
                     // if plane check to see if runway is busy, wait
                     private _airportBusy = [_airports, _airportID] call ALiVE_fnc_hashGet;
 
-                    if !(_airportBusy) then {
+                    if (_airportBusy) then {
 
                         // Mark airport as no longer busy
                         [_airports, _airportID, false] call ALiVE_fnc_hashSet;
@@ -2653,6 +2835,21 @@ switch(_operation) do {
                             private _taxiPosition = [_taxiPositions select 0, _taxiPositions select 1];
                             private _taxiDir = _taxiPosition getDir [_taxiPositions select 2, _taxiPositions select 3];
 
+                            // Check to see if we are over water, assume aircraft carrier, check for catapult
+                            if (surfaceIsWater _taxiPosition && _isOnCarrier) then {
+                                _taxiPosition = _startPosition;
+                                private _catapult = [_taxiPosition] call ALiVE_fnc_getNearestCatapult;
+                                if !(isNil "_catapult") then {
+                                    _taxiPosition = [_catapult, "position", _taxiPosition] call ALiVE_fnc_hashGet;
+
+                                    private _part = [_catapult, "part"] call ALiVE_fnc_hashGet;
+                                    _taxiDir = [_catapult, "dirOffset", direction _part] call ALiVE_fnc_hashGet;
+                                    _taxiDir = [(direction _part) + 180 - _taxiDir] call ALiVE_fnc_modDegrees;
+
+                                    [_aircraft,"catapult",_catapult] call ALiVE_fnc_hashSet;
+                                };
+                            };
+
                             // Get profile
                             private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
                             private _vehicleObj = [_profile, "vehicle",objnull] call ALiVE_fnc_hashGet;
@@ -2666,8 +2863,15 @@ switch(_operation) do {
                                 [_profile,"spawn"] call ALiVE_fnc_profileVehicle;
                                 _vehicleObj = [_profile, "vehicle"] call ALiVE_fnc_hashGet;
                             } else {
-                                // If active, move the object to ilsTaxiIn position
-                                _vehicleObj setPos _taxiPosition;
+                                // If active, move the object to ilsTaxiIn position or neatest catapult on carrier
+                                // diag_log format["ALIVE ATO MOVING AIRCRAFT TO POSITION AT %1",_taxiPosition];
+                                // _profile call ALIVE_fnc_inspectHash;
+                                if (surfaceIsWater _taxiPosition && _isOnCarrier) then {
+                                    _taxiPosition set [2, (_taxiPosition select 2) - 1];
+                                    _vehicleObj setPosASL _taxiPosition;
+                                } else {
+                                    _vehicleObj setPos _taxiPosition;
+                                };
                                 _vehicleObj setDir _taxiDir;
                             };
 
@@ -2687,7 +2891,13 @@ switch(_operation) do {
                                         private _group = [_crewProfile,"group"] call ALiVE_fnc_hashGet;
                                         // diag_log _group;
                                         _group addVehicle _vehicleObj;
-                                        (units _group) orderGetIn true;
+                                        if (_isOnCarrier) then { // AI can't run to plane on carrier deck
+                                            {
+                                                _x moveInAny _vehicleObj;
+                                            } foreach (units _group);
+                                        } else {
+                                            (units _group) orderGetIn true;
+                                        };
                                         _aircraftReady = true;
                                         [_aircraft,"ready",true] call ALiVE_fnc_hashSet;
                                     };
@@ -2789,7 +2999,7 @@ switch(_operation) do {
                     private _grp = group _vehicle;
 
                     // Wait for driver or time expiration
-                    if ( !(isNUll (driver _vehicle)) || time > (_eventTime + ((_eventDuration/2)*60)) ) then {
+                    if ( !(isNUll (driver _vehicle)) || {time > (_eventTime + ((_eventDuration/2)*60))} || {_isOnCarrier}) then {
 
                         // Check driver is onboard if not put the crew in there
                         if (isNUll (driver _vehicle)) then {
@@ -2797,6 +3007,13 @@ switch(_operation) do {
                             {
                                 _x moveInAny _vehicle;
                             } foreach (units _grp);
+                        };
+
+                        // If on carrier then launch aircraft
+                        If (_isOnCarrier && _takeoff) then {
+                            private _catapult = [_aircraft,"catapult",[position _vehicle] call ALiVE_fnc_getNearestCatapult] call ALiVE_fnc_hashGet;
+                            private _result = [_vehicle, _catapult] call ALiVE_fnc_catapultLaunch;
+                            ["ALIVE ATO IS LAUNCHING AIRCRAFT %1 with result %2", _vehicle, _result] call ALIVE_fnc_dump;
                         };
 
                         // Make sure the group are not quiesced since last op
@@ -2912,10 +3129,10 @@ switch(_operation) do {
 
                 ["ATO: aircraft distance %1 (%2)", (_eventPosition distance2D _vehicle),(_eventRange * 1.2)] call ALiVE_fnc_dump;
 
-                if( ((_eventPosition distance2D _vehicle) < (_eventRange * 1.2) && (getposATL _vehicle) select 2 > 50) || time > (_eventTime + ((_eventDuration/2)*60)) ) then {
+                if( ((_eventPosition distance2D _vehicle) < (_eventRange * 1.2) && (getposATL _vehicle) select 2 > 50 && (getposASL _vehicle) select 2 > 50) || time > (_eventTime + ((_eventDuration/2)*60)) ) then {
 
                     // Check to see if it has taken off, if hasn't launch it
-                    if ((getposATL _vehicle) select 2 < 10) then {
+                    if ((getposATL _vehicle) select 2 < 10 || speed _vehicle < 30) then {
                         // Launch
                         _vehicle setposATL [(getposATL _vehicle) select 0, (getposATL _vehicle) select 1, 1000];
                         _vehicle setVelocity [200,0,0];
@@ -3134,7 +3351,12 @@ switch(_operation) do {
                             [_airports, _airportID, true] call ALiVE_fnc_hashSet;
                             [_logic,"runways",_airports] call MAINCLASS;
 
-                            _vehicle landAt _airportID;
+                            if (_airportID < 100) then {
+                                _vehicle landAt _airportID;
+                            } else {
+                                private _dynamicAirport =  nearestObject [_startPosition, "AirportBase"];
+                                _vehicle landAt _dynamicAirport;
+                            };
 
                             // DEBUG -------------------------------------------------------------------------------------
                             if(_debug) then {
@@ -3166,6 +3388,11 @@ switch(_operation) do {
 
             case "aircraftLanding": {
 
+                private _aircraftID = _eventFriendlyProfiles select 0;
+                private _aircraft = [_assets,_aircraftID] call ALiVE_fnc_hashGet;
+                private _isOnCarrier = [_aircraft,"isOnCarrier"] call ALiVE_fnc_hashGet;
+                private _startPosition = [_aircraft,"startPos"] call ALiVE_fnc_hashGet;
+
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
                 if(_count == 0) exitWith {
                     // Unlock runway
@@ -3178,26 +3405,26 @@ switch(_operation) do {
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
 
-                private _aircraftID = _eventFriendlyProfiles select 0;
-                private _aircraft = [_assets,_aircraftID] call ALiVE_fnc_hashGet;
-
-                private _startPosition = [_aircraft,"startPos"] call ALiVE_fnc_hashGet;
-
                 private _profile = [ALIVE_profileHandler, "getProfile",_aircraftID] call ALIVE_fnc_profileHandler;
                 private _vehicle = [_profile,"vehicle"] call ALiVE_fnc_hashGet;
                 private _grp = group _vehicle;
+
+                // Tailhook for carrier landings
+                if (_isOnCarrier && _vehicle iskindOf "Plane") then {
+                    [_vehicle] spawn BIS_fnc_aircraftTailhook;
+                };
 
                 private _landed = _vehicle getVariable [QGVAR(LANDED),false];
                 private _touchDown = _vehicle getVariable [QGVAR(LANDEDTOUCHDOWN),0];
 
                 // manage taxi for planes
                 if (_touchDown > 0) then {
-                    if (time > (_touchDown + 180)) then {
+                    if ( time > (_touchDown + 180) || (_isOnCarrier && time > (_touchDown + 20)) )  then {
                         _landed = true;
                     };
                 };
 
-                if (_vehicle iskindof "Helicopter" && (getposATL _vehicle) select 2 < 2) then {
+                if (_vehicle iskindof "Helicopter" && (getposATL _vehicle) select 2 < 2 && (getposASL _vehicle) select 2 < 2) then {
                     _landed = true;
                 };
 
@@ -3223,7 +3450,12 @@ switch(_operation) do {
                         private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                         private _taxiPositions = [_airportID, "ilsTaxiIn"] call ALiVE_fnc_getAirportTaxiPos;
                         private _taxiPosition = [_taxiPositions select (count _taxiPositions -2), _taxiPositions select (count _taxiPositions -1), 0];
-                        _vehicle setpos _taxiPosition;
+                        if (_isOnCarrier) then {
+                            _startPosition set [2, (_startPosition select 2) + 1];
+                            _vehicle setposATL _startPosition;
+                        } else {
+                            _vehicle setpos _taxiPosition;
+                        };
                     };
 
                      while {(count (waypoints _grp)) > 0} do
@@ -3237,9 +3469,19 @@ switch(_operation) do {
                         // Crew should be unassigned from aircraft
                         _grp leaveVehicle _vehicle;
 
-                        // tell crew to move to nearest building
                         private _crewpos = (selectRandom ((nearestBuilding _startPosition) buildingPos -1));
-                        (group _leader) move _crewPos;
+
+                        // tell crew to move to nearest building
+                        if (_isOnCarrier) then {
+                                private _bridge = (_startPosition nearObjects ["Land_Carrier_01_island_02_F",700]) select 0;
+                                _crewPos = ASLtoATL (_bridge modelToWorld [-2.43359,1.98047,0]);
+                                {
+                                    _x setposATL _crewpos;
+                                } foreach units _grp;
+                        } else {
+
+                            (group _leader) move _crewPos;
+                        };
 
                         // Set crew profile to move to building.
                         private _crewID = [_aircraft,"crewID"] call ALiVE_fnc_hashGet;
@@ -3258,7 +3500,10 @@ switch(_operation) do {
 
                     //Move back to original position
                     _vehicle setDir ([_aircraft,"startDir"] call ALiVE_fnc_hashGet);
-                    _vehicle setpos ([_aircraft,"startPos"] call ALiVE_fnc_hashGet);
+
+                    if !(_isOnCarrier) then {
+                        _vehicle setpos ([_aircraft,"startPos"] call ALiVE_fnc_hashGet);
+                    };
 
                     // Airport is no longer busy
                     private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;

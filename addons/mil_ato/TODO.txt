@@ -1,20 +1,33 @@
-- Carrier Ops
-- Spawning profiles on carrier
-- taxi aircraft on carrier
-- take off from carrier
+Carrier Ops
+
 - land at carrier
-- Work out spawn despawn of aircraft profiles with and without ATO
+- make sure CS air assets not used
+- make sure player driven aircraft not selected (or if so, request is made)
 - On demand analysis
 - OPCOM ATO request logic
-- remove OCA/CAP if no planes
--. add OCA/CAP if new planes
-- Crew reinforcement / aircraft reinforcement
--. Check for AA or AG weapons on aircraft
-- Multiple targets
--. SEAD/STRIKE/CAS/RECCE vs Profiles?
--. Place AA
-- Spawn Carrier if ATO module over sea
 - Tests
+    - spawned plane from runway
+    - profile plane from runway
+    - spawned UAV from runway
+    - profile UAV from runway
+    - spawned helo from helipad
+    - profile helo from helipad
+    - spawned plane from carrier
+    - profile plane from carrier
+    - spawned UAV from carrier
+    - profile UAV from carrier
+    - spawned helo from carrier
+    - profile helo from carrier
+    - CS vehicles not control
+
+- remove OCA/CAP if no planes
+- add OCA/CAP if new planes
+- Crew reinforcement / aircraft reinforcement
+- Check for AA or AG weapons on aircraft
+- Multiple targets
+- SEAD/STRIKE/CAS/RECCE vs Profiles?
+- Place AA
 - Option to include CS assets
 - kickoff rescue mission on downed bird
 - Player request handling
+- Spawn Carrier if ATO module over sea
