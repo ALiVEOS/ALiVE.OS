@@ -47,7 +47,7 @@ if(_profileType == "vehicle") then {
         _entityProfileActive = _entityProfile select 2 select 1; //[_entityProfile,"active"] call ALIVE_fnc_hashGet;
 
         if!(_entityProfileActive) then {
-            [_entityProfile,"spawn"] spawn ALIVE_fnc_profileEntity;
+            [_entityProfile,"spawn"] call ALIVE_fnc_profileEntity;
         } else {
             _units = _entityProfile select 2 select 21; //[_entityProfile,"units"] call ALIVE_fnc_hashGet;
             _indexes = _vehicleAssignment;
@@ -69,7 +69,7 @@ if(_profileType == "vehicle") then {
         _vehicleProfileActive =  _vehicleProfile select 2 select 1; //[_vehicleProfile,"active"] call ALIVE_fnc_hashGet;
 
         if!(_vehicleProfileActive) then {
-            [_vehicleProfile,"spawn"] spawn ALIVE_fnc_profileVehicle;
+            [_vehicleProfile,"spawn"] call ALIVE_fnc_profileVehicle;
         } else {
             _vehicle = _vehicleProfile select 2 select 10; //[_vehicleProfile,"vehicle"] call ALIVE_fnc_hashGet;
             _indexes = _vehicleAssignment;
