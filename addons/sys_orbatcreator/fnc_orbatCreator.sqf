@@ -3470,6 +3470,10 @@ switch(_operation) do {
             _unitListbutton2 ctrlSetTooltip "Edit selected vehicle";
             _unitListbutton2 ctrlSetEventHandler ["MouseButtonDown","['onUnitEditorEditVehicleClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
+            if (_realUnitClassname isKindOf "StaticWeapon") then {
+                _unitListbutton2 ctrlEnable false;
+            };
+
         };
 
     };
