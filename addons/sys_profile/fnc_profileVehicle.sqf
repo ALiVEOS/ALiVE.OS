@@ -472,7 +472,7 @@ switch(_operation) do {
                 _locked = [_logic, "locked",false] call ALIVE_fnc_HashGet;
 
                 // not already active and spawning has not yet been triggered
-                if (!_active && !_locked) then {
+                if (!_active && {!_locked}) then {
 
                     //Indicate spawn has been triggered and lock profile during spawn in case it is an asynchronous call
                     [_logic, "locked",true] call ALIVE_fnc_HashSet;
@@ -671,7 +671,7 @@ switch(_operation) do {
                         };
                     };
 
-                    if(_engineOn && (_vehicleType=="Plane")) then {
+                    if(_engineOn && {_vehicleType == "Plane"}) then {
                         _speed = 200;
                         _velocity = velocity _vehicle;
                         _vehicle setVelocity [(_velocity select 0)+(sin _direction*_speed),(_velocity select 1)+ (cos _direction*_speed),(_velocity select 2)];
