@@ -425,45 +425,9 @@ switch(_operation) do {
 
             // Assign groups
             private _groups = [];
-
-            for "_i" from 0 to _countArmored -1 do {
-                private _group = ["Armored",_faction] call ALIVE_fnc_configGetRandomGroup;
-                if!(_group == "FALSE") then {
-                    _groups pushback _group;
-                };
-            };
-
-            for "_i" from 0 to _countMechanized -1 do {
-                private _group = ["Mechanized",_faction] call ALIVE_fnc_configGetRandomGroup;
-                if!(_group == "FALSE") then {
-                    _groups pushback _group;
-                }
-            };
-
-            if(_countMotorized > 0) then {
-
-                private _motorizedGroups = [];
-
-                for "_i" from 0 to _countMotorized -1 do {
-                    private _group = ["Motorized",_faction] call ALIVE_fnc_configGetRandomGroup;
-                    if!(_group == "FALSE") then {
-                        _motorizedGroups pushback _group;
-                    };
-                };
-
-                if(count _motorizedGroups == 0) then {
-                    for "_i" from 0 to _countMotorized -1 do {
-                        private _group = ["Motorized_MTP",_faction] call ALIVE_fnc_configGetRandomGroup;
-                        if!(_group == "FALSE") then {
-                            _motorizedGroups pushback _group;
-                        };
-                    };
-                };
-
-                _groups = _groups + _motorizedGroups;
-            };
-
             private _infantryGroups = [];
+            private _motorizedGroups = [];
+            
             for "_i" from 0 to _countInfantry -1 do {
                 private _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
                 if!(_group == "FALSE") then {
@@ -477,10 +441,44 @@ switch(_operation) do {
                     _infantryGroups pushback _group;
                 };
             };
-
+            
             _groups append _infantryGroups;
-            _groups = _groups - ALiVE_PLACEMENT_GROUPBLACKLIST;
+
+            for "_i" from 0 to _countMotorized -1 do {
+                private _group = ["Motorized",_faction] call ALIVE_fnc_configGetRandomGroup;
+                if!(_group == "FALSE") then {
+                    _motorizedGroups pushback _group;
+                };
+            };
+
+            if(count _motorizedGroups == 0) then {
+                for "_i" from 0 to _countMotorized -1 do {
+                    private _group = ["Motorized_MTP",_faction] call ALIVE_fnc_configGetRandomGroup;
+                    if!(_group == "FALSE") then {
+                        _motorizedGroups pushback _group;
+                    };
+                };
+            };
+            
+            _groups append _motorizedGroups;
+
+            for "_i" from 0 to _countMechanized -1 do {
+                private _group = ["Mechanized",_faction] call ALIVE_fnc_configGetRandomGroup;
+                if!(_group == "FALSE") then {
+                    _groups pushback _group;
+                }
+            };                                                
+                                    
+            for "_i" from 0 to _countArmored -1 do {
+                private _group = ["Armored",_faction] call ALIVE_fnc_configGetRandomGroup;
+                if!(_group == "FALSE") then {
+                    _groups pushback _group;
+                };
+            };
+           
             _infantryGroups = _infantryGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
+            _motorizedGroups = _motorizedGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
+            _groups = _groups - ALiVE_PLACEMENT_GROUPBLACKLIST;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
@@ -495,57 +493,60 @@ switch(_operation) do {
 
             if(_groupCount > 0) then {
 
-                //Guards
-                if(count _infantryGroups > 0) then {
-                    private _guardGroup = (selectRandom _infantryGroups);
-                    private _guards = [_guardGroup, _position, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
-
-                    //ARJay, here we could place the default patrols/garrisons instead of the static garrisson if you like to (same is in CIV MP)
-                    {
-                        if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                            [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[200,"true",[0,0,0]]]] call ALIVE_fnc_profileEntity;
-                        };
-                    } foreach _guards;
-                };
-
-                //Main troops
-
                 private _readiness = parseNumber([_logic, "readinessLevel"] call MAINCLASS);
                 _readiness = (1 - _readiness) * _groupCount;
 
                 for "_i" from 0 to (_groupCount - 1) do {
-                    private ["_command","_radius","_position","_garrisonPos"];
-
-                    if (_totalCount < _readiness ) then {
-                        _command = "ALIVE_fnc_garrison";
-                        _garrisonPos = [position _logic, 50] call CBA_fnc_RandPos;
-                        _radius = [200,"true",[0,0,0]];
+                    
+                    private ["_command","_radius"];
+                    
+                    //Guards
+                    if (_i == 0 && {count _infantryGroups > 0}) then {
+                        
+	                    private _group = _groups select _i;
+	                    private _guards = [_group, _position, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+	
+	                    //ARJay, here we could place the default patrols/garrisons instead of the static garrisson if you like to (same is in CIV MP)
+	                    {
+	                        if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
+	                            [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[200,"true",[0,0,0]]]] call ALIVE_fnc_profileEntity;
+	                        };
+	                    } foreach _guards;
+                        
+                        _countProfiles = _countProfiles + count _guards;
+                        _totalCount = _totalCount + 1;                            
+                
+                	//Main Force
                     } else {
-                        _command = "ALIVE_fnc_ambientMovement";
-                        _radius = [200,"SAFE",[0,0,0]];
-                    };
+                        
+                        private _group = _groups select _i;
 
-                    private _group = _groups select _i;
-
-                    if (isnil "_garrisonPos") then {
-                        _position = [position _logic, random(500), random(360)] call BIS_fnc_relPos;
-                    } else {
-                        _position = [_garrisonPos, 50] call CBA_fnc_RandPos;
-                    };
-
-                    if !(surfaceIsWater _position) then {
-
-                        private _profiles = [_group, _position, random(360), false, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
-
-                        {
-                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                                [_x, "setActiveCommand", [_command,"spawn",_radius]] call ALIVE_fnc_profileEntity;
-                            };
-                        } foreach _profiles;
-
-                        _countProfiles = _countProfiles + count _profiles;
-                        _totalCount = _totalCount + 1;
-
+	                    if (_totalCount < _readiness) then {
+	                        _command = "ALIVE_fnc_garrison";
+	                        _radius = [200,"true",[0,0,0]];
+                            
+                            _position = [position _logic, 30] call CBA_fnc_RandPos;
+	                    } else {
+	                        _command = "ALIVE_fnc_ambientMovement";
+	                        _radius = [200,"SAFE",[0,0,0]];
+                            
+                            _position = [position _logic, random((_radius select 0) + ((_radius select 0)/0.25)), random(360)] call BIS_fnc_relPos;
+	                    };
+	
+	                    if !(surfaceIsWater _position) then {
+	
+	                        private _profiles = [_group, _position, random(360), false, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+	
+	                        {
+	                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
+	                                [_x, "setActiveCommand", [_command,"spawn",_radius]] call ALIVE_fnc_profileEntity;
+	                            };
+	                        } foreach _profiles;
+	
+	                        _countProfiles = _countProfiles + count _profiles;
+	                        _totalCount = _totalCount + 1;
+	
+	                    };
                     };
 
                 };
