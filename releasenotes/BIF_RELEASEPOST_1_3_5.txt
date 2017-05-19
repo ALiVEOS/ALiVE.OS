@@ -5,27 +5,37 @@
 [center][/center]
  
 [b]Local Persistence[/b]
-Highhead has worked his magic and delivered an option to persist ALiVE missions to your local machine without needing to install a database by saving data to your player profile, known as the ProfileNameSpace (PNS for short).  This works on your local machine in Single Player games or the hosts machine in Multiplayer, including on dedicated servers.  After several missions the files will get quite large so we recommend clearing out the data regularly - details for how to do that are below and on our wiki.  Setting up a local database using CouchDB is still an option for those with the technical skills do to so and of course for all those with dedicated servers, the ALiVE War Room is still the simplest method for mission persistence, stats, server monitoring and After Action Reviews.
+Highhead has worked his magic and delivered an option to persist ALiVE missions to your local machine without needing to install a database.  This works in Single Player games or on the hosts machine in Multiplayer, including on dedicated servers.  It's possible to use a scripted autosave option too, though it comes with a health warning: the server will desync for a few seconds while saving large missions.  Reseting persistent missions can be done the same way as before but we have included some extra commands for clearing data from the local ProfileNameSpace manually - details for how to do that are below and will be on our wiki.  Setting up a local database using CouchDB is still an option for those with the technical skills do to so and of course for all those with dedicated servers, the ALiVE War Room is still our recommended method for mission persistence, stats, server monitoring and After Action Reviews.
 
-Meanwhile the rest of the team has been working hard on some major performance improvements in readiness for the upcoming Jets DLC.  There is now an option to adjust how fast the virtual profiles spawn when players are within range - slow & smooth helps prevent stuttering on busy missions but may take too long to spawn in for fast moving units, so adjust to taste.
+Meanwhile the rest of the team has been working hard on some major performance improvements.  There is now an option to adjust how fast the virtual profiles spawn when players are within range - slow & smooth helps prevent stuttering on busy missions but may take too long to spawn in for fast moving units such as jets, so adjust to taste.
 
 SpyderBlack continues to enhance his Orbat Tool.  If you have not tried it yet, it's well worth a go.  Many people have released some great new factions using the tool already and remember you don't need ALiVE to use them in missions (though of course we recommend you do!)
 
-Tupolov has returned from the wilderness of no interwebs and responded to a few community requests to index the shiny new Lythium map (welcome back Tup!).
+Tupolov has returned from the wilderness of no interwebs and responded to a few community requests to index the shiny new Lythium map (welcome back Tup!).  He's also hard at work on an AI Air Component Commander to complement the Ground Ops Commander.  Air Command will issue Air Tasking Orders for all non-logistics aircraft in the AO, providing CAP, DCA, SEAD, CAS and Strike in support of ground forces.  You can see the design work in progress on github.
 
-[b]ProfileNameSpace Usage[/b]
-This is the first iteration of PNS Persistence so please report bugs Github.  To use local persistence, select "ProfileNamespace" on the ALiVE Database module and make sure you have persistence enabled on the other modules as normal.  It is recommended you backup your user profile and/or server profile first (C:\Users\username\Documents\Arma 3 - Other Profiles\profilename).  Use the ALiVE Save & Exit button when exiting the mission to save the mission data.  When you restart the mission, all saved items will load from PNS automatically - there is no "Load" button.  To clear the save and start over with a fresh mission, either rename the mission pbo or use the following functions in the debug console.  We will add buttons for clearing data in due course.
+[b]Local Persistence Usage[/b]
+This is the first iteration of Local Persistence so please report any bugs Github.  To use local persistence, select "Local" on the ALiVE Database module and make sure you have persistence enabled on the other modules as normal.  It is recommended you backup your user profile and/or server profile (C:\Users\username\Documents\Arma 3 - Other Profiles\profilename).  Use the ALiVE Save & Exit button when exiting the mission to save the mission data.  When you restart the mission, all saved items will load from your ProfileNameSpace automatically - there is no "Load" button.  To clear the save and start over with a fresh mission, either rename the mission pbo or use the following functions in the debug console.  We may add buttons for clearing data in due course.
 
 [i]call ALiVE_fnc_ProfileNameSpaceClear[/i]:  clears data for the current mission only. Note that renaming the mission pbo will also start a fresh instance.
 [i]call ALiVE_fnc_ProfileNameSpaceWipe[/i]:  clears all ALiVE data from ProfileNameSpace completely.
 
-[b]Release Highlights[/b]
+For Autosave, put the following in init.sqf
+[i]900 call ALiVE_fnc_AutoSave_PNS[/i] where 900 is the save interval in seconds
+[i]-1 call ALiVE_fnc_AutoSave_PNS[/i] run at any time will disable autosave
 
+[b]ALiVE War Room[/b]
+You can continue to use the War Room for mission stats, server monitoring and AAR with Persistence set to Local but you must run @aliveserver on the host machine, have a War Room account and the server details setup, just the same as now.
+
+[center][b][url=http://alivemod.com/#ALiVEWarRoom]Join the War Room Now![/url][/b][/center]
+
+[b]Release Highlights[/b]
 Added a database-free local save option
+Changed label of "CouchDB" persistence to "Cloud"
 Map Index - FSF Adiyaman (thanks Vegas!); Diyala (thanks Heroes!); Winthera & Dingor (thanks Whigital!); Lythium (thanks Tup!)
 Added adjustable Smooth Spawn™ for virtual AI
 Added group mapping for latest RHS update
 Added air transport logistics scheduling to reduce instances of helicopter collisions
+Fixed some issues that resulted in profiles being sent to 0,0,0
 Several performance enhancements
 	
 Many thanks to all those not mentioned here who contributed bug fixes, enhancements and map indexes!  See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
@@ -34,12 +44,10 @@ Many thanks to all those not mentioned here who contributed bug fixes, enhanceme
 Grab the latest version from [url=http://alivemod.com/#Download]ALiVEmod.com[/url]
 Also available from PlayWithSix, ArmAholic and Steam (Usually within 24 hours of this post)[/center]
 
-[center][b][url=http://alivemod.com/#ALiVEWarRoom]Join the War Room Now![/url][/b][/center]
-
 Please note that as with all updates, if you have an issue loading a mission made with a previous version of ALiVE, delete and replace the modules in that mission.
 
 [b]Known Issues & Support[/b]
-Existing bugs are listed on Github [url=https://github.com/ALiVEOS/ALiVE.OS/issues]here[/url]. Feel free to submit bugs (with repros) or discuss any issues or ideas on our forum at [url=http://alivemod.com/forum/]http://alivemod.com/forum/[/url].
+Existing bugs are listed on Github [url=https://github.com/ALiVEOS/ALiVE.OS/issues]here[/url]. Feel free to submit bugs (with vanilla repros please) or discuss any issues or ideas on our forum at [url=http://alivemod.com/forum/]http://alivemod.com/forum/[/url].
 
 [b]Manual[/b]
 Please refer to the [url=http://www.alivemod.com/wiki]ALiVE Wiki[/url]. All the info you need is there. If anything is missing or unclear, please let us know.
