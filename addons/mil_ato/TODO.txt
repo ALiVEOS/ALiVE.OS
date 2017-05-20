@@ -1,31 +1,29 @@
-Carrier Ops
-
-- land at carrier
-- make sure CS air assets not used
-- make sure player driven aircraft not selected (or if so, request is made)
-- On demand analysis
-- OPCOM ATO request logic
+ATO TO DO
 - Tests
-    - spawned plane from runway
-    - profile plane from runway
-    - spawned UAV from runway
-    - profile UAV from runway
+    - spawned plane from runway - done
+    - profile plane from runway - done
+    - spawned UAV from runway - done
+    - profile UAV from runway - done
+    - spawned plane from carrier - done
+    - profile plane from carrier - done
+    - spawned UAV from carrier - done
+    - profile UAV from carrier - done (sometimes clip catapult)
+    - spawned helo/vtol from carrier - retest
+    - profile helo/vtol from carrier - done
     - spawned helo from helipad
     - profile helo from helipad
-    - spawned plane from carrier
-    - profile plane from carrier
-    - spawned UAV from carrier
-    - profile UAV from carrier
-    - spawned helo from carrier
-    - profile helo from carrier
-    - CS vehicles not control
+    - helo/VTOL return - 
+- make sure CS air assets not used
+- make sure player driven aircraft not selected (or if so, request is made)
 
+- SEAD/STRIKE/CAS/RECCE vs Profiles?
+- On demand analysis
+- OPCOM ATO request logic
+- Crew reinforcement / aircraft reinforcement
 - remove OCA/CAP if no planes
 - add OCA/CAP if new planes
-- Crew reinforcement / aircraft reinforcement
-- Check for AA or AG weapons on aircraft
+- Check for AA or AG weapons on aircraft and select assets based on mission
 - Multiple targets
-- SEAD/STRIKE/CAS/RECCE vs Profiles?
 - Place AA
 - Option to include CS assets
 - kickoff rescue mission on downed bird

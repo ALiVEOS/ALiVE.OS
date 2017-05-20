@@ -5,6 +5,15 @@ SCRIPT(test_ATO);
 
 //execVM "\x\alive\addons\mil_ato\tests\test_ATO.sqf"
 
+
+#define DEFAULT_OP_HEIGHT 1000
+#define DEFAULT_OP_DURATION 7
+#define DEFAULT_SPEED "NORMAL"
+#define DEFAULT_MIN_WEAP_STATE 0.5
+#define DEFAULT_MIN_FUEL_STATE 0.5
+#define DEFAULT_RADAR_HEIGHT 100
+
+
 // ----------------------------------------------------------------------------
 
 private ["_result","_err","_logic","_amo","_position","_faction","_side","_forceMakeup","_event","_eventID"];
@@ -40,9 +49,12 @@ STAT("Create ATO event");
 
 // Pick OPCOM objective to recce
 
+private _side = WEST;
+private _faction = "BLU_F";
+
 // Create enemy aircraft in airspace
 private _type = "RECCE";
-private _range = distance _position;
+private _range = (position player) distance (position targetStrike);
 private _args = [
     "WHITE",                // ROE
     DEFAULT_OP_HEIGHT,
@@ -53,11 +65,8 @@ private _args = [
     DEFAULT_OP_DURATION,
     []                      // TARGETS
 ];
-private _event = ['ATO_REQUEST', [_type, _side, _faction, _x, _args],"ATO"] call ALIVE_fnc_event;
+private _event = ['ATO_REQUEST', [_type, _side, _faction, "BLUE", _args],"ATO"] call ALIVE_fnc_event;
 private _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
-
-
-
 
 
 nil;
