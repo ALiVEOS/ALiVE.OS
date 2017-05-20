@@ -98,4 +98,5 @@ _args = [
 ];
 _event = ['ATO_REQUEST', [_type, _side, _faction, "BLUE", _args],"ATO"] call ALIVE_fnc_event;
 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+
 nil;
