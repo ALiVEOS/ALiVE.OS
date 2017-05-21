@@ -127,12 +127,40 @@ class CfgVehicles {
                             };
                         };
                     };
-                    class virtualcombat_speedmodifier
+					class virtualcombat_speedmodifier
                     {
                         displayName = "$STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER";
                         description = "$STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER_COMMENT";
-                        defaultvalue = "1";
-                    };
+						class Values
+						{
+							class Regular
+							{
+								name = "Regular";
+								Value = 1;
+								default = 1;
+							};
+							class Fastest
+							{
+								name = "Fastest";
+								Value = 2;
+							};
+							class Faster
+							{
+								name = "Faster";
+								Value = 1.5;
+							};
+							class Slower
+							{
+								name = "Slower";
+								Value = 0.5;
+							};
+							class Slowest
+							{
+								name = "Slowest";
+								Value = 0.2;
+							};
+						};
+					};
                     class seaTransport
                     {
                         displayName = "$STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT";
