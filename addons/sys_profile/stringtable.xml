@@ -63,7 +63,7 @@
     <Original>The radius around player in helicopters to spawn AI. Set to 0 to disable spawning while in helicopters</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER">
-    <Original>Virutal Unit Speed:</Original>
+    <Original>Virtual Unit Speed:</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER_COMMENT">
     <Original>Alters how fast virtual AI move across the map. 25% means 25% of a unit's normal speed</Original>
