@@ -1616,6 +1616,13 @@ class getPlayerByUID
     RECOMPILE;
 };
 
+class setposAGLS
+{
+    file = "\x\alive\addons\x_lib\functions\units\fnc_setposAGLS.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
 class getPlayerByUIDOnConnect
 {
     file = "\x\alive\addons\x_lib\functions\units\fnc_getPlayerByUIDOnConnect.sqf";
