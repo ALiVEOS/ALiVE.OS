@@ -306,13 +306,12 @@ switch(_operation) do {
 
         // not already active
         if!(_active) then {
-            
-            private _creation = +_homePosition;
-            _creation set [2,500];
 
-            private _unit = createVehicle [_agentClass, _creation, [], 0, "NONE"];
+            private _unit = createVehicle [_agentClass, [0,0,500 + random 500], [], 0, "NONE"];
             
             _unit setDir _direction;
+            
+            _unit setVelocity [0,0,0];
             
             [_unit,_homePosition] call ALiVE_fnc_setPosAGLS;
             
