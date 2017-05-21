@@ -704,7 +704,7 @@ switch(_operation) do {
                         //["NODES: %1",_nodes] call ALIVE_fnc_dump;
 
                         private _buildings = [_nodes, ALIVE_civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
-
+                        
                         //["BUILDINGS: %1",_buildings] call ALIVE_fnc_dump;
 
                         private _countBuildings = count _buildings;
@@ -754,7 +754,6 @@ switch(_operation) do {
 
                                 private _building = _x;
 
-
                                 //["SUPPORT CLASSES: %1",_supportClasses] call ALIVE_fnc_dump;
                                 //["LAND CLASSES: %1",_landClasses] call ALIVE_fnc_dump;
 
@@ -770,20 +769,8 @@ switch(_operation) do {
                                 //["VEHICLE CLASS: %1",_vehicleClass] call ALIVE_fnc_dump;
 
                                 private _parkingPosition = [_vehicleClass,_building,false] call ALIVE_fnc_getParkingPosition;
-                                private _positionOK = true;
-
-                                {
-                                    private _position = _x select 0;
-                                    if((_parkingPosition select 0) distance _position < 10) then {
-                                        _positionOK = false;
-                                    };
-                                } forEach _usedPositions;
-
-                                //["POS OK: %1",_positionOK] call ALIVE_fnc_dump;
-
-                                if(_positionOK) then {
-
-                                    private _buildingPosition = getPos _building;
+                                
+                                if (!isnil "_parkingPosition" && {count _parkingPosition == 2} && {{(_parkingPosition select 0) distance (_x select 0) < 10} count _usedPositions == 0}) then {
 
                                     [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction,_clusterID,_parkingPosition select 0] call ALIVE_fnc_createCivilianVehicle;
 
