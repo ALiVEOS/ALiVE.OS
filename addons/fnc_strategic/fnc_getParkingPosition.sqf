@@ -36,7 +36,7 @@ _building = _this select 1;
 _debug = if(count _this > 2) then {_this select 2} else {false};
 
 if !(!isnil "_vehicleClass" && {!isnil "_building"}) exitwith {
-    diag_log "exit";
+    ["ALiVE getParkingPosition didn't receive fitting input: %1! Exiting...",_this] call ALiVE_fnc_DumpR;
 };
 
 _position = getpos _building;
