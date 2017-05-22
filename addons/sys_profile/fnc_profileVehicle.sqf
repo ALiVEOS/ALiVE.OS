@@ -494,6 +494,7 @@ switch(_operation) do {
 
                             // Place them high enough so they don't crash
                             if ((_position select 2) < 50) then {_position set [2,300]};
+
                         }else{
                             _special = "CAN_COLLIDE";
 
@@ -501,8 +502,10 @@ switch(_operation) do {
                             if (count ((AGLtoASL _position) nearObjects ["StaticShip",300]) == 0) then {
                                 _position set [2,0];
                             } else {
-                               _special = "NONE";
-                               //["SPAWN VEHICLE ON SHIP [%1] pos: %2",_profileID,_position] call ALIVE_fnc_dump;
+                               // _special = "NONE";
+                                if (_debug) then {
+                                    ["SPAWN VEHICLE ON SHIP [%1] pos: %2",_profileID,_position] call ALIVE_fnc_dump;
+                                };
                             };
                         };
                     } else {
@@ -681,8 +684,7 @@ switch(_operation) do {
 
                     if(_engineOn && {_vehicleType == "Plane"}) then {
                         _speed = 200;
-                        _velocity = velocity _vehicle;
-                        _vehicle setVelocity [(_velocity select 0)+(sin _direction*_speed),(_velocity select 1)+ (cos _direction*_speed),(_velocity select 2)];
+                        _vehicle setVelocity [(sin _direction*_speed), (cos _direction*_speed),0.1];
                     };
 
 
