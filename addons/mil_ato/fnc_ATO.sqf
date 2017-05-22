@@ -43,7 +43,7 @@ Tupolov
 #define DEFAULT_SIDE "EAST"
 #define DEFAULT_ATO_TYPES ["CAP","OCA","SEAD","CAS","STRIKE","RECCE"]
 #define DEFAULT_REGISTRY_ID ""
-#define DEFAULT_OP_HEIGHT 1000
+#define DEFAULT_OP_HEIGHT 100
 #define DEFAULT_OP_DURATION 7
 #define DEFAULT_SPEED "NORMAL"
 #define DEFAULT_MIN_WEAP_STATE 0.5
@@ -794,7 +794,7 @@ switch(_operation) do {
 
             // If createHQ, select a suitable nearby building or create one, if not, choose a building or just use node
             private _createHQ = [_logic, "createHQ"] call MAINCLASS;
-            If (_createHQ) then {
+            If (_createHQ && !_isCarrier) then {
 
                 private _faction = [_logic, "faction"] call MAINCLASS;
 
@@ -2329,7 +2329,7 @@ switch(_operation) do {
                                     private _range = if ((getMarkerSize _x) select 0 < (getMarkerSize _x) select 1) then {(getMarkerSize _x) select 0} else {(getMarkerSize _x) select 1};
                                     private _args = [
                                         "WHITE",                // ROE
-                                        DEFAULT_OP_HEIGHT,
+                                        1000,
                                         DEFAULT_SPEED,
                                         DEFAULT_MIN_WEAP_STATE,
                                         DEFAULT_MIN_FUEL_STATE,
@@ -2371,7 +2371,7 @@ switch(_operation) do {
                                         private _range = if ((getMarkerSize _x) select 0 > (getMarkerSize _x) select 1) then {(getMarkerSize _x) select 0} else {(getMarkerSize _x) select 1};
                                         private _args = [
                                             "RED",                // ROE
-                                            DEFAULT_OP_HEIGHT,
+                                            1000,
                                             "FULL",                 // SPEED MODE
                                             DEFAULT_MIN_WEAP_STATE,
                                             DEFAULT_MIN_FUEL_STATE,
@@ -2828,6 +2828,14 @@ switch(_operation) do {
 
                 if !(_aircraftReady) then {
 
+                    [_startPosition] spawn {
+                        // Play scramble alarm
+                        private _pos = _this select 0;
+                        private _alarm = createSoundSource ["Sound_AirRaidSiren", _pos, [], 0]; //starts alarm
+                        sleep 24;
+                        deleteVehicle _alarm; //stops alarm
+                    };
+
                     // Prep aircraft (launch if not spawned)
 
                     // vtol 0 = none, 1 = VTOL, 2 = STOVL, 3 = Semi VTOL, 4 = STOSL?
@@ -2874,6 +2882,7 @@ switch(_operation) do {
                                 private _vehicleObj = [_profile, "vehicle",objnull] call ALiVE_fnc_hashGet;
                                 [_profile,"spawnType",["preventDespawn"]] call ALiVE_fnc_profileVehicle;
 
+                                // Spawn vehicle if not active
                                 if !([_profile,"active"] call ALiVE_fnc_hashGet) then {
                                     // if not active, move profile position to ilsTaxin Position, spawn aircraft
                                     if (_isOnCarrier) then {
@@ -2891,7 +2900,7 @@ switch(_operation) do {
                                     // diag_log format["ALIVE ATO MOVING AIRCRAFT TO POSITION AT %1",_taxiPosition];
                                     // _profile call ALIVE_fnc_inspectHash;
                                     if (surfaceIsWater _taxiPosition && _isOnCarrier) then {
-                                        _taxiPosition set [2, (_taxiPosition select 2) - 1];
+                                        _taxiPosition set [2, (_taxiPosition select 2) - 0.3];
                                         _vehicleObj setPosASL _taxiPosition;
                                     } else {
                                         _vehicleObj setPos _taxiPosition;
@@ -2961,12 +2970,13 @@ switch(_operation) do {
 
                                 // If not active and not a UAV then launch, else go take off normally.
                                 if !([_profile,"active"] call ALiVE_fnc_hashGet || _vehicleClass iskindOf "UAV") then {
+
                                     // Assign crew to aircraft
                                     private _crewID = [_aircraft,"crewID"] call ALiVE_fnc_hashGet;
                                     private _crewProfile = [ALIVE_profileHandler, "getProfile",_crewID] call ALIVE_fnc_profileHandler;
-
                                     [_crewProfile,_profile] call ALIVE_fnc_createProfileVehicleAssignment;
 
+                                    // Set position relative to TaxiOff (but 300m up)
                                     private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                                     private _taxiPositions = [_airportID, "ilsTaxiOff",4] call ALiVE_fnc_getAirportTaxiPos;
                                     private _taxiPosition = [_taxiPositions select 0, _taxiPositions select 1, 300];
@@ -2975,17 +2985,21 @@ switch(_operation) do {
                                     };
                                     private _taxiDir = _taxiPosition getDir [_taxiPositions select 2, _taxiPositions select 3, _taxiPosition select 2];
 
+                                    // Set profile information
                                     [_profile,"engineOn",true] call ALiVE_fnc_profileVehicle;
                                     [_profile,"position",_taxiPosition] call ALiVE_fnc_profileVehicle;
                                     [_profile,"despawnPosition", _taxiPosition] call ALiVE_fnc_profileVehicle;
                                     [_profile,"direction",_taxiDir] call ALiVE_fnc_profileVehicle;
                                     [_profile,"spawnType",["preventDespawn"]] call ALiVE_fnc_profileVehicle;
-                                    [_profile,"spawn"] call ALiVE_fnc_profileVehicle;
 
+                                    // Spawn aircraft in air
+                                    [_profile,"spawn"] call ALiVE_fnc_profileVehicle;
                                     ["ATO: Spawning"] call ALiVE_fnc_dump;
                                     _profile call ALIVE_fnc_inspectHash;
 
+                                    // Set Aircraft as ready for mission
                                     _aircraftReady = true;
+                                    [_aircraft,"ready",true] call ALiVE_fnc_hashSet;
                                 } else {
                                     // If active, needs to takeoff properly
                                     _eventData set [6,true];
@@ -3033,6 +3047,7 @@ switch(_operation) do {
                                     _profile call ALIVE_fnc_inspectHash;
 
                                     _aircraftReady = true;
+                                    [_aircraft,"ready",true] call ALiVE_fnc_hashSet;
                                 } else {
                                     private _vehicleObj = [_profile, "vehicle",objnull] call ALiVE_fnc_hashGet;
                                     // If active, needs to takeoff properly
@@ -3097,7 +3112,7 @@ switch(_operation) do {
                     if ( !(isNUll (driver _vehicle)) || {time > (_eventTime + ((_eventDuration/2)*60))} || {_isOnCarrier}) then {
 
                         // Check driver is onboard if not put the crew in there
-                        if (isNUll (driver _vehicle)) then {
+                        if (isNUll (driver _vehicle) || {time > (_eventTime + ((_eventDuration/2)*60))} ) then {
                             diag_log ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ATO: NO CREW <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
                             {
                                 _x moveInAny _vehicle;
@@ -3109,14 +3124,17 @@ switch(_operation) do {
 
                         if !(isNUll (driver _vehicle)) then {
                             // If on carrier then launch aircraft
-                            If (_isOnCarrier && _takeoff) then {
+                            private _vtol = getNumber(configFile >> "CfgVehicles" >> _vehicleClass >> "vtol");
+                            If ( _isOnCarrier && _takeoff && (_vehicleClass iskindof "Plane" && ((_vtol mod 2) == 0)) ) then {
                                 // Get the engine started
                                 _vehicle engineOn true;
                                 // Get the catapult
                                 private _catapult = [_aircraft,"catapult",[position _vehicle] call ALiVE_fnc_getNearestCatapult] call ALiVE_fnc_hashGet;
                                 // Launch the aircraft
                                 private _result = [_vehicle, _catapult] call ALiVE_fnc_catapultLaunch;
-                                ["ALIVE ATO IS LAUNCHING AIRCRAFT %1 with result %2", _vehicle, _result] call ALIVE_fnc_dump;
+                                if (_debug) then {
+                                    ["ALIVE ATO IS LAUNCHING AIRCRAFT %1 with result %2", _vehicle, _result] call ALIVE_fnc_dump;
+                                };
                             };
 
                             // Make sure the group are not quiesced since last op
@@ -3127,51 +3145,53 @@ switch(_operation) do {
                                 _x setCombatMode _eventROE;
                             } foreach units _grp;
 
-                            private _wp = _grp addWaypoint [_eventPosition,0,1,"ATO"];
+
+                            private _wpPosition = _eventPosition;
+
+                            if (_eventType in ["CAS","OCA","SEAD","Strike"] && count _eventTargets > 0) then {
+                                _wpPosition = _eventTargets select 0;
+                            };
+
+                            private _wp = _grp addWaypoint [_wpPosition,0,1,"ATO"];
                             _wp setWaypointSpeed _eventSpeed;
                             _wp setWaypointBehaviour "AWARE";
                             _wp setWaypointCombatMode _eventROE;
                             _wp setWaypointStatements ["true","if (alive this) then {deleteWaypoint [group this, currentWaypoint (group this)]}"];
+                            _wp setWaypointCompletionRadius _eventRange;
 
                             switch (_eventType) do {
-                                case "RECCE": {
+                                case "Recce": {
                                     // Loiter waypoint
                                     _wp setWaypointType "LOITER";
                                     _wp setWaypointLoiterType "CIRCLE_L";
                                     _wp setWaypointLoiterRadius _eventRange * 0.9;
-                                    _wp setWaypointCompletionRadius _eventRange;
                                     _wp setWaypointTimeout [_eventDuration,_eventDuration,_eventDuration];
                                 };
                                 case "CAS": {
                                     // SAD waypoint, if targets then DESTROY
                                     if (count _eventTargets == 1) then {
                                         _wp setWaypointType "DESTROY";
-                                        _wp setWaypointPosition [position (_eventTargets select 0), 0];
-                                        _wp waypointAttachVehicle (_eventTargets select 0);
-                                        _wp setWaypointCompletionRadius 500;
+                                        _grp reveal (_eventTargets select 0);
                                     } else {
                                         _wp setWaypointType "SAD";
-                                        _wp setWaypointCompletionRadius _eventRange;
+                                        _wp setWaypointPosition [position (_eventTargets select 0), 0];
                                         _wp setWaypointTimeout [_eventDuration,_eventDuration,_eventDuration];
                                     };
                                 };
                                 case "OCA";
                                 case "SEAD";
-                                case "STRIKE": {
+                                case "Strike": {
                                     // DESTROY
                                     ["ALIVE ATO EVENT TARGET: %1 (%2)", _eventTargets select 0, typeName (_eventTargets select 0)] call ALiVE_fnc_dump;
                                     _wp setWaypointType "DESTROY";
-                                    _wp setWaypointPosition [position (_eventTargets select 0), 0];
-                                    _wp waypointAttachVehicle (_eventTargets select 0);
-                                    _wp setWaypointCompletionRadius 500;
+                                    _grp reveal (_eventTargets select 0);
                                 };
                                 default {
                                     // CAP
                                     _wp setWaypointType "LOITER";
                                     _wp setWaypointLoiterType "CIRCLE";
                                     _wp setWaypointLoiterRadius (_eventRange * 0.8);
-                                    _wp setWaypointCompletionRadius _eventRange;
-                                    // _wp setWaypointTimeout [_eventDuration,_eventDuration,_eventDuration];
+                                    _wp setWaypointTimeout [_eventDuration,_eventDuration,_eventDuration];
                                     _wp setWaypointBehaviour "SAFE";
                                 };
                             };
@@ -3194,12 +3214,49 @@ switch(_operation) do {
                             // Waiting on pilot to be ready
                             // DEBUG -------------------------------------------------------------------------------------
                             if(_debug) then {
-                                ["ALIVE ATO %3 - Requested aircraft (%1 - %2) is waiting on the pilot.", _profileID, typeof _vehicle, _logic] call ALIVE_fnc_dump;
+                                ["ALIVE ATO %3 - Requested aircraft (%1 - %2) is STILL waiting on the pilot.", _profileID, typeof _vehicle, _logic] call ALIVE_fnc_dump;
                             };
                             // DEBUG -------------------------------------------------------------------------------------
+
                             if (_vehicle isKindOf "UAV") then {
                                 createVehicleCrew _vehicle;
                             };
+
+                            // If we are still short of a driver and time is running out, can the request? Reroute?
+                            if (time > (_eventTime + ((_eventDuration/2)*60))) then {
+                                // DEBUG -------------------------------------------------------------------------------------
+                                if(_debug) then {
+                                    ["ALIVE ATO %3 - Requested aircraft (%1 - %2) is OUT OF TIME waiting on the pilot.", _profileID, typeof _vehicle, _logic] call ALIVE_fnc_dump;
+                                };
+                                // DEBUG -------------------------------------------------------------------------------------
+
+                                //Move back to original position
+                                _vehicle setDir ([_aircraft,"startDir"] call ALiVE_fnc_hashGet);
+
+                                if !(_isOnCarrier) then {
+                                    _vehicle setpos _startPosition;
+                                } else {
+                                    _vehicle setposATL [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1];
+                                };
+
+                                // remove currentOp from vehicle
+                                [_aircraft,"currentOp",""] call ALiVE_fnc_hashSet;
+                                [_assets,_aircraftID,_aircraft] call ALiVE_fnc_hashSet;
+
+                                // Unlock runway
+                                private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
+                                [_airports, _airportID, false] call ALiVE_fnc_hashSet;
+                                [_logic,"runways",_airports] call MAINCLASS;
+
+                                // set state to event complete
+                                if(_playerRequested) then {
+                                    private _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Logistics","REQUEST_LOST"] call ALIVE_fnc_event;
+                                    [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
+                                };
+                                [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
+                                [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
+                            };
+
                         };
 
 
@@ -3219,16 +3276,12 @@ switch(_operation) do {
 
             case "aircraftTravel": {
                 // wait for the aircraft to get on station
-
                 private _eventPosition = _eventData select 5;
                 private _aircraftID = _eventFriendlyProfiles select 0;
                 private _aircraft = [_assets,_aircraftID] call ALiVE_fnc_hashGet;
                 private _startPosition = [_aircraft,"startPos"] call ALiVE_fnc_hashGet;
-
-                if (isNil "_aircraft") then {
-                    _assets call ALIVE_fnc_inspectHash;
-                };
-
+                private _isOnCarrier = [_aircraft,"isOnCarrier",false] call ALiVE_fnc_hashGet;
+                private _launched = [_aircraft,"launched", false] call ALiVE_fnc_hashGet;
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
 
                 if(_count == 0) exitWith {
@@ -3251,13 +3304,14 @@ switch(_operation) do {
                 private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
                 private _vehicle = [_profile,"vehicle"] call ALiVE_fnc_hashGet;
 
+                // Reset aircraft launch ready state
+                [_aircraft,"ready",false] call ALiVE_fnc_hashSet;
 
-                ["ATO: aircraft distance %1 (%2)", (_eventPosition distance2D _vehicle),(_eventRange * 1.2)] call ALiVE_fnc_dump;
-
-                if( ((_eventPosition distance2D _vehicle) < (_eventRange * 1.2) && (getposATL _vehicle) select 2 > 50 && (getposASL _vehicle) select 2 > 50) || time > (_eventTime + ((_eventDuration/2)*60)) ) then {
+                // If aircraft is taking too much time, launch it
+                if (time > (_eventTime + ((_eventDuration/2)*60)) ) then {
 
                     // Check to see if it has taken off, if hasn't launch it
-                    if ((getposATL _vehicle) select 2 < 10 || speed _vehicle < 10) then {
+                    if ((getposATL _vehicle) select 2 < 10  || (_isOnCarrier && ((getposASL _vehicle) select 2 < 30))) then {
                         // Launch
                         _vehicle engineOn true;
                         _vehicle setposATL [(getposATL _vehicle) select 0, (getposATL _vehicle) select 1, 600];
@@ -3265,6 +3319,22 @@ switch(_operation) do {
                         private _speed = 200;
                         _vehicle setVelocity [(sin _direction*_speed), (cos _direction*_speed),0.1];
                     };
+                };
+
+                // If aircraft is airborne, unlock runway once
+                if ( (getposATL _vehicle) select 2 > 50 && (getposASL _vehicle) select 2 > 50 && !_launched) then {
+                    // Unlock runway now
+                    private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
+                    [_airports, _airportID, false] call ALiVE_fnc_hashSet;
+                    [_logic,"runways",_airports] call MAINCLASS;
+                    [_aircraft,"launched", true] call ALiVE_fnc_hashSet;
+                };
+
+                if (_debug) then {
+                    ["ALIVE ATO %3: aircraft %4 distance %1 (%2)", (_eventPosition distance2D _vehicle),(_eventRange * 1.2), _logic, _profileID] call ALiVE_fnc_dump;
+                };
+
+                if ( (_eventPosition distance2D _vehicle) < (_eventRange * 1.2) && (getposATL _vehicle) select 2 > 50 && (getposASL _vehicle) select 2 > 50 ) then {
 
                     [_event, "state", "aircraftExecuteWait"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
@@ -3276,16 +3346,14 @@ switch(_operation) do {
                     };
                     // DEBUG -------------------------------------------------------------------------------------
 
-                    // Unlock runway now
-                    private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
-                    [_airports, _airportID, false] call ALiVE_fnc_hashSet;
-                    [_logic,"runways",_airports] call MAINCLASS;
-
                     // respond to player request
                     if(_playerRequested) then {
                         private  _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Logistics","REQUEST_ARRIVED"] call ALIVE_fnc_event;
                         [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
                     };
+
+                    // Reset launched state
+                    [_aircraft,"launched", false] call ALiVE_fnc_hashSet;
                 };
             };
 
@@ -3561,7 +3629,7 @@ switch(_operation) do {
                     };
                 };
 
-                if (_vehicle iskindof "Helicopter" && (getposATL _vehicle) select 2 < 2 && (getposASL _vehicle) select 2 < 2) then {
+                if ( _vehicle iskindof "Helicopter" && ( (getposATL _vehicle) select 2 < 2 || (_isOnCarrier && (getposASL _vehicle) select 2 < 25) ) ) then {
                     _landed = true;
                 };
 
@@ -3588,8 +3656,7 @@ switch(_operation) do {
                         private _taxiPositions = [_airportID, "ilsTaxiIn"] call ALiVE_fnc_getAirportTaxiPos;
                         private _taxiPosition = [_taxiPositions select (count _taxiPositions -2), _taxiPositions select (count _taxiPositions -1), 0];
                         if (_isOnCarrier) then {
-                            _startPosition set [2, (_startPosition select 2) + 1];
-                            _vehicle setposATL _startPosition;
+                            _vehicle setposATL [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1];
                         } else {
                             _vehicle setpos _taxiPosition;
                         };

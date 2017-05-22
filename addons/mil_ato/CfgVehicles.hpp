@@ -1,3 +1,13 @@
+class CfgSFX
+{
+    class AirRaidSiren
+    {
+        Alarm_BLUFOR[] = {"A3\Sounds_F\sfx\alarm_blufor",1,1,800,1,0,0,0};
+        empty[] = {"", 0, 0, 0, 0, 0, 0, 0};
+        name = "Air Raid Siren";
+        sounds[] = {"Alarm_BLUFOR"};
+    };
+};
 class CfgVehicles
 {
     class ModuleAliveBase;
@@ -153,4 +163,13 @@ class CfgVehicles
 
         };
     };
+    class Sound;
+    class Sound_AirRaidSiren : Sound
+    {
+        author = "ALiVE Team";
+        displayName = "Air Raid Siren";
+        scope = 2;
+        sound = "AirRaidSiren";
+    };
 };
+

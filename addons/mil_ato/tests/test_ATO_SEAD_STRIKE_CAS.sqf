@@ -51,7 +51,7 @@ private _faction = "BLU_F";
 
 // Request in opposite priority order to test queue ordering
 private _type = "Strike";
-private _range = (position player) distance (position targetStrike);
+private _range = 1000;
 private _args = [
     "RED",                // ROE
     DEFAULT_OP_HEIGHT,
@@ -65,10 +65,10 @@ private _args = [
 private _event = ['ATO_REQUEST', [_type, _side, _faction, "BLUE", _args],"ATO"] call ALIVE_fnc_event;
 private _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
-sleep 20;
+sleep 60;
 
 _type = "CAS";
-_range = (position player) distance (position targetCAS);
+_range = 1000;
 _args = [
     "RED",                // ROE
     DEFAULT_OP_HEIGHT,
@@ -82,10 +82,10 @@ _args = [
 _event = ['ATO_REQUEST', [_type, _side, _faction, "BLUE", _args],"ATO"] call ALIVE_fnc_event;
 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
-sleep 20;
+sleep 60;
 
 _type = "SEAD";
-_range = (position player) distance (position targetSEAD);
+_range = 1000;
 _args = [
     "RED",                // ROE
     DEFAULT_OP_HEIGHT,
