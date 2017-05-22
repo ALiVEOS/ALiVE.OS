@@ -3,7 +3,7 @@
 #include <\x\alive\addons\mil_ato\script_component.hpp>
 SCRIPT(test_ATO);
 
-//execVM "\x\alive\addons\mil_ato\tests\test_ATO.sqf"
+//execVM "\x\alive\addons\mil_ato\tests\test_ATO_RECCE.sqf"
 
 
 #define DEFAULT_OP_HEIGHT 1000
@@ -53,7 +53,7 @@ private _side = WEST;
 private _faction = "BLU_F";
 
 // Create enemy aircraft in airspace
-private _type = "RECCE";
+private _type = "Recce";
 private _range = (position player) distance (position targetStrike);
 private _args = [
     "WHITE",                // ROE

@@ -5,7 +5,7 @@ SCRIPT(test_ATO_HELI_INSERT);
 
 //execVM "\x\alive\addons\mil_ato\tests\test_ATO_SEAD_STRIKE_CAS.sqf"
 
-#define DEFAULT_OP_HEIGHT 1000
+#define DEFAULT_OP_HEIGHT 100
 #define DEFAULT_OP_DURATION 7
 #define DEFAULT_SPEED "NORMAL"
 #define DEFAULT_MIN_WEAP_STATE 0.5
@@ -50,7 +50,7 @@ private _faction = "BLU_F";
 
 
 // Request in opposite priority order to test queue ordering
-private _type = "STRIKE";
+private _type = "Strike";
 private _range = (position player) distance (position targetStrike);
 private _args = [
     "RED",                // ROE
