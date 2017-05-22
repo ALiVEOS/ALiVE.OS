@@ -103,9 +103,7 @@ if (count _buildings > 0) then {
                     if (!isNil "_unit") then {
                         if (_moveInstantly) then {
                             
-                            diag_log _position;
-                            
-                            if (str(_position) find "0,0" != -1) then {
+                            if (str(_position) find "[0,0" != -1) then {
                                 ["ALiVE Group Garrison - Warning! %1 building-pos in %2 detected! Unit %3 reset to %4!",_position,_building,_unit,_origPos] call ALiVE_fnc_Dump;
                                 
                                 _unit setpos _origPos;
@@ -121,13 +119,14 @@ if (count _buildings > 0) then {
                             
                         } else {
                             
-                            [_unit,_origPos,_position] spawn {
+                            [_unit,_origPos,_position,_building] spawn {
                                                                 
                                 private _unit = _this select 0;
                                 private _origPos = _this select 1;
                                 private _position = _this select 2;
+                                private _building = _this select 3;
                                 
-	                            if (str(_position) find "0,0" != -1) then {
+	                            if (str(_position) find "[0,0" != -1) then {
                                     ["ALiVE Group Garrison - Warning! %1 building-pos in %2 detected! Unit %3 reset to %4!",_position,_building,_unit,_origPos] call ALiVE_fnc_Dump;
                                     
 	                                [_unit, _origPos] call ALiVE_fnc_doMoveRemote;
@@ -170,7 +169,7 @@ if (count _buildings > 0) then {
                     
                     if(_moveInstantly) then {
                         
-                        if (str(_position) find "0,0" != -1) then {
+                        if (str(_position) find "[0,0" != -1) then {
                             ["ALiVE Group Garrison - Warning! %1 building-pos in %2 detected! Unit %3 reset to %4!",_position,_building,_unit,_origPos] call ALiVE_fnc_Dump;
                             
                             _unit setpos _origPos;
@@ -185,13 +184,14 @@ if (count _buildings > 0) then {
                         sleep 0.03;
                         
                     } else {
-                        [_unit,_origPos,_position] spawn {
+                        [_unit,_origPos,_position,_building] spawn {
                                                             
                             private _unit = _this select 0;
                             private _origPos = _this select 1;
                             private _position = _this select 2;
+                            private _building = _this select 3;
                             
-                            if (str(_position) find "0,0" != -1) then {
+                            if (str(_position) find "[0,0" != -1) then {
                                 ["ALiVE Group Garrison - Warning! %1 building-pos in %2 detected! Unit %3 reset to %4!",_position,_building,_unit,_origPos] call ALiVE_fnc_Dump;
                                 
                                 [_unit, _origPos] call ALiVE_fnc_doMoveRemote;

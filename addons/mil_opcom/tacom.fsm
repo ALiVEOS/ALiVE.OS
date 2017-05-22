@@ -1,7 +1,7 @@
 /*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, tacom">*/
 /*%FSM<HEAD>*/
 /*
-item0[] = {"INIT",0,4346,-191.791229,-248.493942,-101.791237,-198.494003,0.000000,"INIT"};
+item0[] = {"INIT",0,250,-191.791229,-248.493942,-101.791237,-198.494003,0.000000,"INIT"};
 item1[] = {"INIT_COMPLETE",4,218,-194.557098,-181.067123,-104.557114,-131.067123,0.000000,"INIT" \n "COMPLETE"};
 item2[] = {"ANALYZE",2,250,-398.915314,190.635864,98.822098,238.500443,0.000000,"ANALYZE"};
 item3[] = {"RECEIVE",4,218,-194.508545,-19.777693,-104.508537,30.222303,0.000000,"RECEIVE"};
@@ -83,8 +83,8 @@ link36[] = {24,25};
 link37[] = {25,26};
 link38[] = {26,10};
 link39[] = {27,28};
-globals[] = {0.000000,0,0,0,16777215,640,480,1,81,6316128,1,-756.245850,382.772278,251.867264,-666.420410,934,753,1};
-window[] = {0,-1,-1,-1,-1,1016,132,1755,132,1,951};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,81,6316128,1,-756.245850,382.772278,710.971680,-207.315918,934,753,1};
+window[] = {0,-1,-1,-1,-1,972,88,1711,88,1,951};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -389,6 +389,9 @@ class FSM
        "                        if(_debug) then { [""TACOM %1 regrouping! Waiting for %2 groups!"",_ProfileID,({_objectiveID == (_x select 2)} count ([_OPCOM_HANDLER,""pendingorders"",[]] call ALiVE_fnc_HashGet))] call ALIVE_fnc_dumpR; };" \n
        "                        // debug ---------------------------------------" \n
        "                    };" \n
+       "" \n
+       "			  //Clear all waypoints" \n
+       "			  [_profile, ""clearWaypoints""] call ALIVE_fnc_profileEntity;" \n
        "" \n
        "                    //Command to garrison" \n
        "                    [_profile, ""clearActiveCommands""] call ALIVE_fnc_profileEntity;" \n

@@ -22,23 +22,26 @@ _result = ["B_Heli_Light_01_F", _building] call ALIVE_fnc_getParkingPosition;
 See Also:
 
 Author:
-ARJay
+Arjay, Highhead
+
 Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_vehicleClass","_building","_debug","_result"];
+
+private ["_vehicleClass","_building","_debug","_isEmpty","_direction","_bbr","_bboxA","_p1","_p2","_maxWidth","_maxLength","_longest","_buildingPosition","_position","_safePos","_center","_vehicleMapSize"];
 
 _vehicleClass = _this select 0;
 _building = _this select 1;
 _debug = if(count _this > 2) then {_this select 2} else {false};
 
-_result = [];
+if !(!isnil "_vehicleClass" && {!isnil "_building"}) exitwith {
+    ["ALiVE getParkingPosition didn't receive fitting input: %1! Exiting...",_this] call ALiVE_fnc_DumpR;
+};
 
-private ["_direction","_bbr","_bboxA","_p1","_p2","_maxWidth","_maxLength","_longest","_buildingPosition","_position","_safePos","_center","_vehicleMapSize"];
-
-_position = position _building;
-_direction = direction _building + (floor random 4)*90;
+_position = getpos _building;
+_nearRoads = _position nearRoads 50;
+_vehicleMapSize = getNumber(configFile >> "CfgVehicles" >> _vehicleClass >> "mapSize"); if (_vehicleMapSize < 5) then {_vehicleMapSize = 5};
 
 _bbr = boundingBoxReal _building;
 _p1 = _bbr select 0;
@@ -47,81 +50,74 @@ _maxWidth = abs ((_p2 select 0) - (_p1 select 0));
 _maxLength = abs ((_p2 select 1) - (_p1 select 1));
 _longest = _maxWidth max _maxLength;
 
-_position = _position getPos [(_longest + 2), _direction];
-
-
-// DEBUG -------------------------------------------------------------------------------------
 if(_debug) then {
-    //["POS1: %1",_position] call ALIVE_fnc_dump;
     [_position] call ALIVE_fnc_spawnDebugMarker;
     [_position] call ALIVE_fnc_placeDebugMarker;
 };
-// DEBUG -------------------------------------------------------------------------------------
 
+_isEmpty = false;
 
-_vehicleMapSize = getNumber(configFile >> "CfgVehicles" >> _vehicleClass >> "mapSize");
-if (_vehicleMapSize < 2) then {_vehicleMapSize = 2};
-
-//["VEHICLE MAP SIZE - Class: %1 VMS: %2",_vehicleClass, _vehicleMapSize] call ALIVE_fnc_dump;
-
-_anchor = _position;
-
-scopeName "parking_main";
-
-for "_i" from 1 to 3000 do {
-    _safePos = _anchor findEmptyPosition [0,50,_vehicleClass];
+for "_i" from 1 to 4 do {
     
-    if (count _safePos > 2 && {!(surfaceIsWater _safePos)}) then {
+	if(count _nearRoads > 0) then {
+	    _road = _nearRoads select 0;
         
-	    private _list = nearestObjects [_safePos, ["House","Wall"], _vehicleMapSize + 3];
-	    _list = _list + (nearestTerrainObjects [_safePos, ["TREE","SMALL TREE","ROCK","ROCKS","FENCE", "WALL"], _vehicleMapSize + 3]);
-	    
-	    if (count _list == 0) exitwith {
-			// DEBUG -------------------------------------------------------------------------------------
-			if(_debug) then {
-				["ALiVE getParkingPosition found position after %1 attempt(s) at %2!",_i,_safePos] call ALiVE_fnc_DumpR;
-			};
-			// DEBUG -------------------------------------------------------------------------------------
-			
-            breakTo "parking_main";
-	    };
+	    _roadConnectedTo = roadsConnectedTo _road;
+	    _connectedRoad = _roadConnectedTo select 0;
+        
+	    if!(isNil "_connectedRoad") then {
+	        _direction = _road getDir _connectedRoad;
+	    } else {
+            _direction = (getDir _road)-90;
+        };
+        
+        _position = _road getpos [1.5,_direction-90];
+        
+	} else {
+        _direction = (direction _building) + ((floor _i)*90);
+        _position = (getpos _building) getpos [_longest + 5, _direction];
+         
+        _direction = _direction - 90;
     };
     
-    _anchor = [_position,50] call CBA_fnc_RandPos;
+    private _list = (nearestObjects [_position, ["House","Wall"], 15]) + (nearestTerrainObjects [_position, ["TREE","SMALL TREE","ROCK","ROCKS","FENCE", "WALL","HIDE"],_vehicleMapSize + 1]);    
+    _list = [_list,[_position],{_Input0 distance _x},"ASCENDING"] call ALiVE_fnc_SortBy;
+    _list = if (count _list > 0) then {[_list select 0]} else {[]};
+    
+    _isEmpty = {_position_1 = getpos _x; _position_2 = +_position; _position_1 set [2,1]; _position_2 set [2,1]; lineIntersects [_position_1, _position_2]} count _list == 0;     
+
+    if (_isEmpty) exitwith {
+        if(_debug) then {
+            ["ALiVE getParkingPosition found empty parking position at %1 in direction %2",_position,_direction] call ALiVE_fnc_DumpR;
+        };
+    };
 };
 
-// if findEmptyPosition defaults to [] get an alternative safe position or default to given start position in worst case
-if (count _safePos == 0) then {_safePos = [_position,10,100,10,0,0.5,0,[],[_position]] call BIS_fnc_findSafePos};
+if (!_isEmpty) then {
+    _position = (_building getpos [_longest + 2, getdir _building]) findEmptyPosition [5,50,_vehicleClass];
+    
+    if (count _position == 0) then {
+        _position = [getpos _building,_longest + 5,100,15,0,0.5,0,[],[_building getpos [_longest + 2, getdir _building]]] call BIS_fnc_findSafePos;
+    };
 
-// Set position a little above ground to avoid bouncing vehicles.
-_position = _safePos;
+    if(_debug) then {
+        ["ALiVE getParkingPosition Failed! Assigned failsafe pos at %1 in direction %2",_position,_direction] call ALiVE_fnc_DumpR;
+        
+	    [_position, 2] call ALIVE_fnc_spawnDebugMarker;
+	    [_position, 2] call ALIVE_fnc_placeDebugMarker;
+	};    
+};
+
+//set a little above ground to avoid bouncing
 _position set [2,1];
 
-//["SAFE POS: %1",_position] call ALIVE_fnc_dump;
-
-private ["_nearRoads","_road","_roadConnectedTo","_connectedRoad"];
-
-_nearRoads = _position nearRoads 10;
-if(count _nearRoads > 0) then
-{
-    _road = _nearRoads select 0;
-    _roadConnectedTo = roadsConnectedTo _road;
-    _connectedRoad = _roadConnectedTo select 0;
-    if!(isNil '_connectedRoad') then {
-        _direction = _road getRelDir _connectedRoad;
-    };
-};
-
-
-// DEBUG -------------------------------------------------------------------------------------
 if(_debug) then {
-    //["POS2: %1",_position] call ALIVE_fnc_dump;
+    ["ALiVE getParkingPosition result is _pos %1 | _dir %2",_position,_direction] call ALiVE_fnc_DumpR;
+    
     [_position, 1] call ALIVE_fnc_spawnDebugMarker;
     [_position, 1] call ALIVE_fnc_placeDebugMarker;
+    
+    
 };
-// DEBUG -------------------------------------------------------------------------------------
 
-
-_result = [_position, _direction];
-
-_result
+[_position,_direction];

@@ -63,10 +63,10 @@
     <Original>The radius around player in helicopters to spawn AI. Set to 0 to disable spawning while in helicopters</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER">
-    <Original>Profile Speed Modifier:</Original>
+    <Original>Virtual Unit Speed:</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER_COMMENT">
-    <Original>Alters how fast virtual AI can move across the map. 25% means 25% of a unit's normal speed.</Original>
+    <Original>Alters how fast virtual AI move across the map. 25% means 25% of a unit's normal speed</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ERROR1">
     <Original>Only one Virtual AI System module can be used</Original>
@@ -81,10 +81,10 @@
     <Original>Toggle debug mode on the profile system</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER">
-    <Original>Virtual Combat Speed Modifier:</Original>
+    <Original>Virtual Combat Speed:</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER_COMMENT">
-    <Original>Modifies the speed of virtual combat. 1 means no change, 2 means twice the normal speed</Original>
+    <Original>Sets the pace of virtual combat. Fastest combat resolves twice as quickly as regular.</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT">
     <Original>Infantry sea transport:</Original>

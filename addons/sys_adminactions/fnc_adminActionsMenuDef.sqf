@@ -185,7 +185,7 @@ if (_menuName == "adminActions") then {
                     localize "STR_ALIVE_ADMINACTIONS_CONSOLE_COMMENT",
                     "",
                     -1,
-                    1,
+                    !isMultiplayer || {(getMissionConfigValue ["enableDebugConsole",0]) > 0},
                     true
                 ]
             ]

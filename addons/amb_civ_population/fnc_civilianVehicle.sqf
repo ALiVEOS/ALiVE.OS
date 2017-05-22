@@ -307,14 +307,20 @@ switch(_operation) do {
         // not already active
         if!(_active) then {
 
-            private _unit = createVehicle [_agentClass, _homePosition, [], 0, "NONE"];
+            private _unit = createVehicle [_agentClass, [0,0,500 + random 500], [], 0, "NONE"];
+            
             _unit setDir _direction;
+            
+            _unit setVelocity [0,0,0];
+            
+            [_unit,_homePosition] call ALiVE_fnc_setPosAGLS;
+            
             _unit setFuel _fuel;
 
             if(count _damage > 0) then {
                 [_unit, _damage] call ALIVE_fnc_vehicleSetDamage;
             };
-
+            
             // set profile id on the unit
             _unit setVariable ["agentID", _agentID];
 
