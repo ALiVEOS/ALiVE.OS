@@ -494,6 +494,9 @@ switch(_operation) do {
 
                             // Place them high enough so they don't crash
                             if ((_position select 2) < 50) then {_position set [2,300]};
+                            if (_debug) then {
+                                ["SPAWN VEHICLE IN AIR [%1] pos: %2",_profileID,_position] call ALIVE_fnc_dump;
+                            };
 
                         }else{
                             _special = "CAN_COLLIDE";

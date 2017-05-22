@@ -54,7 +54,7 @@ private _faction = "BLU_F";
 
 // Create enemy aircraft in airspace
 private _type = "Recce";
-private _range = (position player) distance (position targetStrike);
+private _range = 2000;
 private _args = [
     "WHITE",                // ROE
     DEFAULT_OP_HEIGHT,
