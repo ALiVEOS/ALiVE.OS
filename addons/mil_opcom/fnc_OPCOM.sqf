@@ -883,19 +883,21 @@ switch(_operation) do {
                 _section = [_x,"section",[]] call ALiVE_fnc_HashGet;
                 [_x,"sectionAssist",[]] call ALiVE_fnc_HashSet;
 
-                if !(isnil "_section") then {
+                if (count _section > 0) then {
                     if (_profileID in _section) then {
                         _section = _section - [_profileID];
+                        
                         [_x,"section",_section] call ALiVE_fnc_HashSet;
                     };
 
-                    if ((count _section) == 0) then {
+                    if (count _section == 0) then {
                         [_logic,"resetObjective",([_x,"objectiveID"] call ALiVE_fnc_HashGet)] call ALiVE_fnc_OPCOM;
                     };
                 };
             } foreach _objectives;
 
             _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
+            
             if !(isnil "_profile") then {
                _active = [_profile, "active", false] call ALIVE_fnc_HashGet;
                _activeCommands = [_profile, "activeCommands", []] call ALIVE_fnc_HashGet;
