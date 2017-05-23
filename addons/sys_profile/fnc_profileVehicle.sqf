@@ -502,7 +502,7 @@ switch(_operation) do {
                             _special = "CAN_COLLIDE";
 
                             // Check to see if placed on carrier/ship
-                            if (count ((AGLtoASL _position) nearObjects ["StaticShip",300]) == 0) then {
+                            if ([_position] call ALiVE_fnc_nearShip) then {
                                 _position set [2,0];
                             } else {
                                // _special = "NONE";
