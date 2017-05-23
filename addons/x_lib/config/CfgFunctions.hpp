@@ -1874,3 +1874,10 @@ class vehicleSetDamage
     ext = ".sqf";
     RECOMPILE;
 };
+
+class nearShip
+{
+    file = "\x\alive\addons\x_lib\functions\map\fnc_nearShip.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
