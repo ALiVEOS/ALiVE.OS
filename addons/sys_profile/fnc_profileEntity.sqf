@@ -951,7 +951,7 @@ switch(_operation) do {
 
                             // If on a ship, then setposATL
                             if (_isOnShip) then {
-                               ["SPAWN ENTITY FORMATION POS [%1] pos: %2 isOnShip: %3", _profileID, _unitPosition, _isOnShip] call ALIVE_fnc_dump;
+                               // ["SPAWN ENTITY FORMATION POS [%1] pos: %2 isOnShip: %3", _profileID, _unitPosition, _isOnShip] call ALIVE_fnc_dump;
                                _unit setPosATL [position _unit select 0, position _unit select 1, _unitposition select 2];
                             };
 

@@ -545,6 +545,20 @@ switch(_operation) do {
             private _vehicleClass = [_vehicleProfile,"vehicleClass",""] call ALIVE_fnc_HashGet;
             private _isVTOL = [_vehicleClass] call ALiVE_fnc_isVTOL;
 
+            // If Combat support asset, then do not register
+            private _isCombatSupport = false;
+            private _isPlayer = false;
+            if ([_vehicleProfile,"active",false] call ALiVE_fnc_hashGet) then {
+
+                private _vehicle = [_vehicleProfile,"vehicle"] call ALiVE_fnc_hashGet;
+                private _isCombatSupport = _vehicle getVariable ["ALIVE_CombatSupport", false];
+            };
+            if (_isCombatSupport) exitWith {
+
+                ["ALIVE ATO %1 ignoring %2 as it is a combat support asset", _logic, _vehicleClass] call ALiVE_fnc_dump;
+
+            };
+
             if ([_vehicleClass] call ALiVE_fnc_isArmed) then {
 
                 private _asset = [] call ALIVE_fnc_hashCreate;
@@ -656,12 +670,12 @@ switch(_operation) do {
                 _airspaceAssets pushback _x;
 
                 if (_debug) then {
-                    ["ALIVE ATO %1 registered %2 (%3) as an asset.", _logic, _profileID, _vehicleClass] call ALIVE_fnc_dump;
+                    ["ALIVE ATO %1 registered %2 (%3) as an asset.", _logic, _x, _vehicleClass] call ALIVE_fnc_dump;
                 };
 
             } else {
                 if (_debug) then {
-                    ["ALIVE ATO %1 not registering %2 (%3) as it is unarmed.", _logic, _profileID, _vehicleClass] call ALIVE_fnc_dump;
+                    ["ALIVE ATO %1 not registering %2 (%3) as it is unarmed.", _logic, _x, _vehicleClass] call ALIVE_fnc_dump;
                 };
             };
         } foreach _vehicleProfileIDs;
@@ -2676,7 +2690,7 @@ switch(_operation) do {
                                         //Retrieve event data
                                         private _currentEvent = [_eventQueue, _currentOp,[]] call ALIVE_fnc_hashGet;
                                         private _currentOpState = [_currentEvent, "state",""] call ALIVE_fnc_hashGet;
-                                        if (_currentOpState != "aircraftLanding" && _currentOpState != "aircraftReturnWait") then {
+                                        if !(_currentOpState in ["aircraftLanding","aircraftReturnWait","aircraftStart"]) then {
                                             _currentOp = [_currentEvent, "data"] call ALIVE_fnc_hashGet select 0;
                                         } else {
                                             // Aircraft is landing, so not available yet, set fuel measurement to zero
@@ -2891,14 +2905,6 @@ switch(_operation) do {
 
                 if !(_aircraftReady) then {
 
-                    [_startPosition] spawn {
-                        // Play scramble alarm
-                        private _pos = _this select 0;
-                        private _alarm = createSoundSource ["Sound_AirRaidSiren", _pos, [], 0]; //starts alarm
-                        sleep 24;
-                        deleteVehicle _alarm; //stops alarm
-                    };
-
                     // Prep aircraft (launch if not spawned)
 
                     if (_vehicleClass iskindof "Plane" && ((_isVTOL mod 2) == 0) ) then {
@@ -2911,6 +2917,14 @@ switch(_operation) do {
                             private _airportBusy = [_airports, _airportID] call ALiVE_fnc_hashGet;
 
                             if !(_airportBusy) then {
+
+                                [_startPosition] spawn {
+                                    // Play scramble alarm
+                                    private _pos = _this select 0;
+                                    private _alarm = createSoundSource ["Sound_AirRaidSiren", _pos, [], 0]; //starts alarm
+                                    sleep 24;
+                                    deleteVehicle _alarm; //stops alarm
+                                };
 
                                 // Mark airport as busy
                                 [_airports, _airportID, true] call ALiVE_fnc_hashSet;
@@ -2960,8 +2974,7 @@ switch(_operation) do {
                                     // diag_log format["ALIVE ATO MOVING AIRCRAFT TO POSITION AT %1",_taxiPosition];
                                     // _profile call ALIVE_fnc_inspectHash;
                                     if (surfaceIsWater _taxiPosition && _isOnCarrier) then {
-                                        _taxiPosition set [2, (_taxiPosition select 2) - 0.3];
-                                        _vehicleObj setPosASL _taxiPosition;
+                                        _vehicleObj setPosASL [_taxiPosition select 0, _taxiPosition select 1, (_taxiPosition select 2) - 0.3]; // might need to adjust for sea level changes?
                                     } else {
                                         _vehicleObj setPos _taxiPosition;
                                     };
@@ -3221,7 +3234,7 @@ switch(_operation) do {
                             _wp setWaypointSpeed _eventSpeed;
                             _wp setWaypointBehaviour "AWARE";
                             _wp setWaypointCombatMode _eventROE;
-                            _wp setWaypointStatements ["true","if (alive this) then {deleteWaypoint [group this, currentWaypoint (group this)]}"];
+                            _wp setWaypointStatements ["true","if (!isNil 'this' && {alive this}) then {deleteWaypoint [group this, currentWaypoint (group this)]}"];
                             _wp setWaypointCompletionRadius _eventRange;
 
                             switch (_eventType) do {
@@ -3290,7 +3303,7 @@ switch(_operation) do {
                             };
 
                             // If we are still short of a driver and time is running out, can the request? Reroute?
-                            if (time > (_eventTime + ((_eventDuration/2)*60))) then {
+                            if (time > (_eventTime + ((_eventDuration/3)*60))) then {
                                 // DEBUG -------------------------------------------------------------------------------------
                                 if(_debug) then {
                                     ["ALIVE ATO %3 - Requested aircraft (%1 - %2) is OUT OF TIME waiting on the pilot.", _profileID, typeof _vehicle, _logic] call ALIVE_fnc_dump;
