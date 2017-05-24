@@ -2,46 +2,6 @@
 <Project name="Arma3">
 <Package name="ZEC">
 <Container name="STR_DN">
-<!-- CATEGORIES - Civilian -->
-<Key ID="STR_ZEC_Civilian">
-    <Original>Civilian</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianDesert">
-    <Original>Civilian (Desert)</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianWoodland">
-    <Original>Civilian (Woodland)</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific">
-    <Original>Civilian (Pacific)</Original>
-</Key>
-<!-- CATEGORIES - Guerrilla -->
-<Key ID="STR_ZEC_Guerrilla">
-    <Original>Guerrilla</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaDesert">
-    <Original>Guerrilla (Desert)</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaWoodland">
-    <Original>Guerrilla (Woodland)</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific">
-    <Original>Guerrilla (Pacific)</Original>
-</Key>
-<!-- CATEGORIES - Military -->
-<Key ID="STR_ZEC_Military">
-    <Original>Military</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryDesert">
-    <Original>Military (Desert)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryWoodland">
-    <Original>Military (Woodland)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific">
-    <Original>Military (Pacific)</Original>
-</Key>
-<!-- GROUP - Names -->
 <Key ID="STR_ZEC_AirportsLarge">
     <Original>Airports (Large)</Original>
 </Key>
@@ -249,103 +209,12 @@
 <Key ID="STR_ZEC_SupportsSmall">
     <Original>Support (Small)</Original>
 </Key>
-<!-- COMPOSITION - Names -->
-<!-- Civilian Pacific - Names -->
-<Key ID="STR_ZEC_CivilianPacific_ConstructionLarge_BuildingSite1">
-    <Original>Building Site #1</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_ConstructionLarge_BuildingSite2">
-    <Original>Building Site #2</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_ConstructionSuppliesLarge_AllWalls">
-    <Original>Walls</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_ConstructionSuppliesLarge_AllWrecks">
-    <Original>Wrecks</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_ConstructionSuppliesLarge_FillerJunk">
-    <Original>Filler - Junk</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_ConstructionSuppliesLarge_FillerBox1">
-    <Original>Filler - Boxes #1</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_ConstructionSuppliesLarge_FillerBox2">
-    <Original>Filler - Boxes #2</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_ConstructionSuppliesLarge_FillerBoxSmall">
-    <Original>Filler - Boxes (Small)</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_IndustrialLarge_SugarCaneRefinery">
-    <Original>Sugar Cane Refinery</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_IndustrialLarge_SugarCanePlant">
-    <Original>Sugar Cane Plant</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_IndustrialLarge_ContainersYard">
-    <Original>Container Yard</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_IndustrialMedium_UnfinishedFactory">
-    <Original>Unfinished Factory</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_IndustrialMedium_SmugglersFactory">
-    <Original>Smugglers Factory</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_IndustrialMedium_Scrapyard">
-    <Original>Scrapyard</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_IndustrialMedium_ContainerYard">
-    <Original>Container Yard</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_IndustrialSmall_Factory1">
-    <Original>Factory #1</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_IndustrialSmall_Factory2">
-    <Original>Factory #2</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_IndustrialSmall_Factory3">
-    <Original>Factory #3</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_IndustrialSmall_WaterStorage">
-    <Original>Water Storage</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_MiningOilLarge_ProcessingPlant">
-    <Original>Processing Plant</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_MiningOilLarge_OreQuarry">
-    <Original>Ore Quarry</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_MiningOilMedium_OreProcessing">
-    <Original>Ore Processing</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_MiningOilMedium_OreStorageYard">
-    <Original>Ore Storage Yard</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_MiningOilSmall_OreStockpile">
-    <Original>Ore Stockpile</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_MiningOilSmall_LargeDigger">
-    <Original>Large Digger</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_PowerLarge_DieselPlant1">
-    <Original>Diesel Plant 1</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_PowerLarge_DieselPlant2">
-    <Original>Diesel Plant 2</Original>
-</Key>
-<Key ID="STR_ZEC_CivilianPacific_PowerSmall_DieselPlant">
-    <Original>Diesel Plant</Original>
-</Key>
-<!-- Civilian - Names -->
 <Key ID="STR_ZEC_Civilian_AirportsLarge_AltisTerminal">
     <Original>Altis Terminal</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Civilian_CommunicationsSmall_TransmitterTower">
     <Original>Transmitter Tower</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Civilian_ConstructionMedium_BuildingSite">
     <Original>Building Site 1</Original>
 </Key>
@@ -355,7 +224,6 @@
 <Key ID="STR_ZEC_Civilian_ConstructionMedium_ConstructionSiteShed">
     <Original>Construction Site - Shed</Original>
 </Key>
-
 <Key ID="STR_ZEC_Civilian_ConstructionSmall_OneFloorRuin">
     <Original>Construction Site - Shed</Original>
 </Key>
@@ -368,8 +236,6 @@
 <Key ID="STR_ZEC_Civilian_ConstructionSmall_ConstructionSite3">
     <Original>Construction Site #3</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Civilian_ConstructionSuppliesLarge_CommsSupports">
     <Original>Comms &amp; Supports</Original>
 </Key>
@@ -412,8 +278,6 @@
 <Key ID="STR_ZEC_Civilian_ConstructionSuppliesLarge_EdenPipes">
     <Original>Pipes</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Civilian_FuelLarge_FuelStationNew">
     <Original>Fuel Station - Modern</Original>
 </Key>
@@ -426,30 +290,24 @@
 <Key ID="STR_ZEC_Civilian_FuelLarge_DieselStorage">
     <Original>Diesel Storage</Original>
 </Key>
-
 <Key ID="STR_ZEC_Civilian_FuelMedium_TankerShed">
     <Original>Tanker Shed</Original>
 </Key>
 <Key ID="STR_ZEC_Civilian_FuelMedium_FuelDepot">
     <Original>Fuel Depot</Original>
 </Key>
-
-
-
 <Key ID="STR_ZEC_Civilian_GeneralLarge_SportsGround">
     <Original>Sports Ground</Original>
 </Key>
 <Key ID="STR_ZEC_Civilian_GeneralLarge_GhostHotel">
     <Original>Ghost Hotel</Original>
 </Key>
-
 <Key ID="STR_ZEC_Civilian_GeneralMedium_Church">
     <Original>Church</Original>
 </Key>
 <Key ID="STR_ZEC_Civilian_GeneralMedium_BasketballCourt">
     <Original>Basketball Court</Original>
 </Key>
-
 <Key ID="STR_ZEC_Civilian_GeneralSmall_MarketStall1">
     <Original>Market Stall #1</Original>
 </Key>
@@ -459,12 +317,9 @@
 <Key ID="STR_ZEC_Civilian_GeneralSmall_MarketStall3">
     <Original>Market Stall #3</Original>
 </Key>
-
 <Key ID="STR_ZEC_Civilian_HeliportsMedium_Heliport">
     <Original>Heliport</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Civilian_IndustrialLarge_IndustrialSite">
     <Original>Industrial Site</Original>
 </Key>
@@ -474,7 +329,6 @@
 <Key ID="STR_ZEC_Civilian_IndustrialLarge_StorageComplex">
     <Original>Storage Complex</Original>
 </Key>
-
 <Key ID="STR_ZEC_Civilian_IndustrialMedium_Factory1">
     <Original>Factory #1</Original>
 </Key>
@@ -496,33 +350,24 @@
 <Key ID="STR_ZEC_Civilian_IndustrialMedium_StorageShed3">
     <Original>Storage Shed #3</Original>
 </Key>
-
 <Key ID="STR_ZEC_Civilian_IndustrialSmall_TinShed">
     <Original>Tin Shed</Original>
 </Key>
 <Key ID="STR_ZEC_Civilian_IndustrialSmall_MetalSheds">
     <Original>Metal Sheds</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Civilian_MedicalLarge_Hospital">
     <Original>Hospital</Original>
 </Key>
 <Key ID="STR_ZEC_Civilian_MedicalMedium_MedicalCenter">
     <Original>Medical Center</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Civilian_MiningOilLarge_Refinery">
     <Original>Refinery</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Civilian_PowerLarge_SolarPlant">
     <Original>Solar Plant</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Civilian_PowerLarge_DieselPowerPlant">
     <Original>Diesel Power Plant</Original>
 </Key>
@@ -532,12 +377,9 @@
 <Key ID="STR_ZEC_Civilian_PowerLarge_PowerPlant2">
     <Original>Power Plant 2</Original>
 </Key>
-
 <Key ID="STR_ZEC_Civilian_PowerSmall_PowerTransformer">
     <Original>Power Transformer</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Civilian_SettlementsLarge_ShantyTown">
     <Original>Shanty Town</Original>
 </Key>
@@ -547,438 +389,6 @@
 <Key ID="STR_ZEC_Civilian_SettlementsSmall_WalledStoneHouse">
     <Original>Walled Stone House</Original>
 </Key>
-
-
-<!-- Guerrilla Pacific - Names -->
-
-
-<Key ID="STR_ZEC_GuerrillaPacific_AirportsLarge_Hangar">
-    <Original>Hangar</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CampsMedium_CampJungle1">
-    <Original>Jungle Camp #1</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CampsMedium_CampJungle2">
-    <Original>Jungle Camp #2</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CampsMedium_CampJungle3">
-    <Original>Jungle Camp #3</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CampsMedium_CampJungle4">
-    <Original>Jungle Camp #4</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CampsMedium_CampJungle5">
-    <Original>Jungle Camp #5</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampSite1">
-    <Original>Camp Site #1</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampSite2">
-    <Original>Camp Site #2</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_PicnicSite">
-    <Original>Picnic Site</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_JungleCamp">
-    <Original>Jungle Camp</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_CheckpointsBarricadesMedium_Barricade1">
-    <Original>Road Barricade #1</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CheckpointsBarricadesMedium_Barricade2">
-    <Original>Road Barricade #2</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CheckpointsBarricadesMedium_Barricade3">
-    <Original>Road Barricade #3</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CheckpointsBarricadesMedium_Barricade4">
-    <Original>Road Barricade #4</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CheckpointsBarricadesMedium_Barricade5">
-    <Original>Road Barricade #5</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_CommunicationsLarge_FortifiedCommsTower">
-    <Original>Fortified Comms Tower</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CommunicationsLarge_RadarDome">
-    <Original>Radar Dome</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CommunicationsLarge_CommunicationsPost">
-    <Original>Communications Post</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_CommunicationsMedium_RadioPost">
-    <Original>Radio Post (Bunker)</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CommunicationsMedium_UAVDepot">
-    <Original>UAV Depot</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_CommunicationsSmall_DataTerminal">
-    <Original>Data Terminal</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CommunicationsSmall_OperationsArea">
-    <Original>Operations Area</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CommunicationsSmall_RadioPostHidden">
-    <Original>Radio Post (Hidden)</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_CommunicationsSmall_RadioPostTemp">
-    <Original>Radio Post (Temp)</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_ConstructionSuppliesLarge_YardFortified">
-    <Original>Yard Fortified</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_ConstructionSuppliesLarge_WarehouseUrban">
-    <Original>Warehouse Urban</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_ConstructionSuppliesMedium_StorageCovered">
-    <Original>Storage Covered</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_ConstructionSuppliesMedium_StorageUrban">
-    <Original>Storage Urban</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_ConstructionSuppliesSmall_CargoFortifiedRusty">
-    <Original>Depot (Rusted)</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_ConstructionSuppliesSmall_AmmoCache1">
-    <Original>Cache (Ammo Boxes) #1</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_ConstructionSuppliesSmall_AmmoCache2">
-    <Original>Cache (Ammo Boxes) #2</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_ConstructionSuppliesSmall_ContainerStorage">
-    <Original>Container Storage</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_ConstructionSuppliesSmall_Cache1">
-    <Original>Cache #1</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_ConstructionSuppliesSmall_Cache2">
-    <Original>Cache #2</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_ConstructionSuppliesSmall_Cache3">
-    <Original>Cache #3</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_ConstructionSuppliesSmall_StorageArea1">
-    <Original>Storage Area #1</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_ConstructionSuppliesSmall_StorageArea2">
-    <Original>Storage Area #2</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_ConstructionSuppliesSmall_StorageArea3">
-    <Original>Storage Area #3</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_FieldHQLarge_Factory">
-    <Original>Factory</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FieldHQLarge_CargoTowerHQ">
-    <Original>Cargo Tower HQ</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FieldHQLarge_CargoHQ">
-    <Original>Cargo HQ</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FieldHQLarge_CargoPostHQ">
-    <Original>Cargo Post HQ</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_FieldHQMedium_ObservationTower">
-    <Original>Observation Tower</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FieldHQMedium_FieldHQ">
-    <Original>Field HQ</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FieldHQMedium_CargoHQ1">
-    <Original>Cargo HQ #1</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FieldHQMedium_CargoHQ2">
-    <Original>Cargo HQ #2</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FieldHQMedium_BunkerHQ1">
-    <Original>Bunker HQ #1</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FieldHQMedium_BunkerHQ2">
-    <Original>Bunker HQ #2</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FieldHQMedium_CargoHouseHQ1">
-    <Original>Cargo House HQ #1</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FieldHQMedium_CargoHouseHQ2">
-    <Original>Cargo House HQ #2</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_FieldHQSmall_ObservationTower">
-    <Original>Observation Tower</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FieldHQSmall_ObservationPost">
-    <Original>Observation Post</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_FortLarge_OldWarBunker">
-    <Original>Old War Bunker</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortLarge_ShopFortified">
-    <Original>Shop (Fortified)</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortLarge_GarageFortified">
-    <Original>Garage (Fortified)</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_FortMedium_OldWarBunker">
-    <Original>Old War Bunker</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortMedium_AAPosition">
-    <Original>AA Position</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortMedium_MortarBunker">
-    <Original>Mortar Bunker</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortMedium_TowerBunker1">
-    <Original>Tower Bunker #1</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortMedium_TowerBunker2">
-    <Original>Tower Bunker #2</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortMedium_TowerBunker3">
-    <Original>Tower Bunker #3</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortMedium_BunkerLarge1">
-    <Original>Bunker (Large) #1</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortMedium_BunkerLarge2">
-    <Original>Bunker (Large) #2</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortMedium_BunkerLarge3">
-    <Original>Bunker (Large) #3</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortMedium_BunkerLarge4">
-    <Original>Bunker (Large) #4</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_FortSmall_StaticAANet">
-    <Original>Static AA (Net)</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortSmall_BunkerHBbarNet">
-    <Original>Bunker (H-Barrier)t</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortSmall_BunkerSandbagsNet">
-    <Original>Bunker (Sandbags)</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortSmall_Net1">
-    <Original>Net #1</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortSmall_Net2">
-    <Original>Net #2</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortSmall_Net3">
-    <Original>Net #3</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortSmall_Net4">
-    <Original>Net #4</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortSmall_Net5">
-    <Original>Net #5</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortSmall_Net6">
-    <Original>Net #6</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FortSmall_OldWarBunker">
-    <Original>Old War Bunker</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_FuelSmall_StorageArea">
-    <Original>Storage Area</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FuelSmall_StorageTanks">
-    <Original>Storage Tanks</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_FuelMedium_StorageTank">
-    <Original>Storage Tank</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_FuelLarge_Depot">
-    <Original>Depot</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_FuelLarge_Refinery">
-    <Original>Refinery</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_HeliportsLarge_HelipadSquare">
-    <Original>Helipad (Square)</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_HeliportsMedium_HelipadSquare">
-    <Original>Helipad (Square)</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_HeliportsSmall_HelipadCircle">
-    <Original>Helipad (Circle)</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_HeliportsSmall_HelipadSquare">
-    <Original>Helipad (Square)</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_HQLarge_MainHQ">
-    <Original>Main Headquarters</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_HQLarge_FactoryHQ">
-    <Original>Factory Headquarters</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_MedicalLarge_AirAmbulance">
-    <Original>Air Ambulance</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_MedicalLarge_MedicalLabs">
-    <Original>Medical Laboratory</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_MedicalLarge_Hospital">
-    <Original>Hospital</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_MedicalLarge_EvacHospital">
-    <Original>Evacuation Hospital</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_MedicalMedium_FieldHospital">
-    <Original>Field Hospital</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_MedicalMedium_UrbanSurgery">
-    <Original>Urban Surgery</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_MedicalMedium_StationHospital">
-    <Original>Station Hospital</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_MedicalMedium_JungleSurgery">
-    <Original>Jungle Surgery</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_MedicalSmall_UrbanSurgery">
-    <Original>Urban Surgery</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_MedicalSmall_FieldHospital">
-    <Original>Field Hospital</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_MedicalSmall_CollectionStation">
-    <Original>Collection Station</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsLarge_LargeBungalow1">
-    <Original>Large Bungalow #1</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsLarge_LargeBungalow2">
-    <Original>Large Bungalow #2</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsLarge_Villa">
-    <Original>Villa</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsLarge_Apartment">
-    <Original>Apartment</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsLarge_Factory">
-    <Original>Factory</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsLarge_Warehouse">
-    <Original>Warehouse</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsMedium_Bungalow">
-    <Original>Bungalow</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsMedium_BrickBungalow">
-    <Original>BrickBungalow</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsMedium_GreyBungalow">
-    <Original>Grey Bungalow</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsMedium_YellowBungalow">
-    <Original>Yellow Bungalow</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsMedium_BlueBungalow">
-    <Original>Blue Bungalow</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsMedium_Shack">
-    <Original>Shack</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsMedium_ParkingHouse">
-    <Original>Parking House</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsMedium_GuardHouse">
-    <Original>GuardHouse</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsMedium_Junkyard">
-    <Original>Junkyard</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsMedium_BunkerLarge">
-    <Original>BunkerLarge</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsMedium_SmugglersOutpost1">
-    <Original>Smugglers Outpost #1</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsMedium_SmugglersOutpost2">
-    <Original>Smugglers Outpost #2</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsSmall_NativeHut">
-    <Original>Native Hut</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsSmall_SlumShack">
-    <Original>Slum Shack</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsSmall_Shed">
-    <Original>Shed</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsSmall_ShedSmall">
-    <Original>Shed (Small)</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsSmall_Shack">
-    <Original>Shack</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsSmall_ShedTiny">
-    <Original>Shed (Tiny)</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_OutpostsSmall_OldBungalow">
-    <Original>Old Bungalow</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_SupportsLarge_Workshop">
-    <Original>Workshop</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_SupportsLarge_PumpingStation">
-    <Original>Pumping Station</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_SupportsLarge_MotorPool">
-    <Original>Motor Pool</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_SupportsLarge_MilitaryFactory">
-    <Original>Military Factory</Original>
-</Key>
-
-<Key ID="STR_ZEC_GuerrillaPacific_SupportsMedium_Device">
-    <Original>Device (Nuclear)</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_SupportsMedium_VehicleShed">
-    <Original>Vehicle Shed</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_SupportsMedium_CargoPosts">
-    <Original>Cargo Posts</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_SupportsSmall_RepairBay">
-    <Original>Repair Bay</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_SupportsSmall_WaterStation">
-    <Original>Water Station</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_SupportsSmall_Canteen">
-    <Original>Canteen</Original>
-</Key>
-<Key ID="STR_ZEC_GuerrillaPacific_SupportsSmall_BriefingArea">
-    <Original>Briefing Area</Original>
-</Key>
-
-<!-- Guerrilla - Names -->
 <Key ID="STR_ZEC_Guerrilla_CheckpointsBarricadesMedium_Checkpoint">
     <Original>Checkpoint (Basic)</Original>
 </Key>
@@ -994,7 +404,6 @@
 <Key ID="STR_ZEC_Guerrilla_CheckpointsBarricadesSmall_RoadblockImprov1sed3">
     <Original>Roadblock Improv1sed #3</Original>
 </Key>
-
 <Key ID="STR_ZEC_Guerrilla_CheckpointsBarricadesMedium_Barricade1">
     <Original>Road Barricade #1</Original>
 </Key>
@@ -1031,8 +440,6 @@
 <Key ID="STR_ZEC_Guerrilla_ConstructionSmall_CacheHiddenAmmoBox">
     <Original>Cache - Hidden (Ammo Box)</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Guerrilla_FieldHQLarge_CargoTowerHQ">
     <Original>Cargo Tower HQ</Original>
 </Key>
@@ -1042,7 +449,6 @@
 <Key ID="STR_ZEC_Guerrilla_FieldHQLarge_CargoPostHQ">
     <Original>Cargo Post HQ</Original>
 </Key>
-
 <Key ID="STR_ZEC_Guerrilla_FieldHQMedium_CargoHQ1">
     <Original>Cargo HQ #1</Original>
 </Key>
@@ -1061,41 +467,33 @@
 <Key ID="STR_ZEC_Guerrilla_FieldHQMedium_CargoHouseHQ2">
     <Original>Cargo House HQ #2</Original>
 </Key>
-
 <Key ID="STR_ZEC_Guerrilla_FieldHQSmall_FieldHQ">
     <Original>Field HQ</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Guerrilla_FuelSmall_FuelDrop">
     <Original>Fuel Drop</Original>
 </Key>
 <Key ID="STR_ZEC_Guerrilla_FuelSmall_StorageArea">
     <Original>Storage Area</Original>
 </Key>
-
 <Key ID="STR_ZEC_Guerrilla_FuelMedium_StorageTanks">
     <Original>Storage Tanks</Original>
 </Key>
 <Key ID="STR_ZEC_Guerrilla_FuelMedium_DieselStorage">
     <Original>Diesel Storage</Original>
 </Key>
-
 <Key ID="STR_ZEC_Guerrilla_FuelLarge_Depot">
     <Original>Depot</Original>
 </Key>
 <Key ID="STR_ZEC_Guerrilla_FuelLarge_Refinery">
     <Original>Refinery</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Guerrilla_FortLarge_MortarBunker">
     <Original>Mortar Bunker</Original>
 </Key>
 <Key ID="STR_ZEC_Guerrilla_FortMedium_BunkerLarge">
     <Original>Bunker (Large)</Original>
 </Key>
-
 <Key ID="STR_ZEC_Guerrilla_FortSmall_BunkerConcrete">
     <Original>Bunker (Concrete)</Original>
 </Key>
@@ -1144,11 +542,9 @@
 <Key ID="STR_ZEC_Guerrilla_FortSmall_MortarSandbag">
     <Original>Mortar (Sandbag)</Original>
 </Key>
-
 <Key ID="STR_ZEC_Guerrilla_HeliportsMedium_SupplyDropPoint">
     <Original>Supply Drop Point</Original>
 </Key>
-
 <Key ID="STR_ZEC_Guerrilla_HQMedium_RuinFortified">
     <Original>Ruin (Fortified)</Original>
 </Key>
@@ -1158,8 +554,6 @@
 <Key ID="STR_ZEC_Guerrilla_HQMedium_ShedSandbags">
     <Original>Shed (Sandbags)</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Guerrilla_MedicalLarge_AirAmbulance">
 	<Original>Air Ambulance</Original>
 </Key>
@@ -1172,7 +566,6 @@
 <Key ID="STR_ZEC_Guerrilla_MedicalLarge_EvacHospital">
 	<Original>Evacuation Hospital</Original>
 </Key>
-
 <Key ID="STR_ZEC_Guerrilla_MedicalMedium_FieldHospital">
 	<Original>Field Hospital</Original>
 </Key>
@@ -1182,7 +575,6 @@
 <Key ID="STR_ZEC_Guerrilla_MedicalMedium_Surgery">
 	<Original>Surgery</Original>
 </Key>
-
 <Key ID="STR_ZEC_Guerrilla_MedicalSmall_UrbanSurgery">
 	<Original>Urban Surgery</Original>
 </Key>
@@ -1198,8 +590,6 @@
 <Key ID="STR_ZEC_Guerrilla_MedicalSmall_Surgery2">
 	<Original>Surgery #2</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Guerrilla_OutpostsMedium_DestroyedHouse">
     <Original>Destroyed House</Original>
 </Key>
@@ -1209,7 +599,6 @@
 <Key ID="STR_ZEC_Guerrilla_OutpostsMedium_HouseFortified">
     <Original>Fortified House</Original>
 </Key>
-
 <Key ID="STR_ZEC_Guerrilla_OutpostsSmall_SmallHouse">
     <Original>Small House</Original>
 </Key>
@@ -1219,1122 +608,6 @@
 <Key ID="STR_ZEC_Guerrilla_SupportsSmall_ServiceStation">
     <Original>Service Station</Original>
 </Key>
-
-<!-- Military Pacific - Names -->
-
-<Key ID="STR_ZEC_MilitaryPacific_SupportsLarge_PumpingStation_OPF_T_F">
-    <Original>Pumping Station [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsLarge_PumpingStation_BLU_T_F">
-    <Original>Pumping Station [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsLarge_MotorPool_OPF_T_F">
-    <Original>Motor Pool [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsLarge_MotorPool_BLU_T_F">
-    <Original>Motor Pool [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsLarge_BarracksGrey">
-    <Original>Barracks Grey</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsLarge_BarracksCamo">
-    <Original>Barracks Camo</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsLarge_BarracksOld">
-    <Original>Barracks Old</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsLarge_BarracksFortified">
-    <Original>Barracks Fortified</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsLarge_ResearchComplex">
-    <Original>Research Complex</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsMedium_DeviceNuclear_OPF_T_F">
-    <Original>Device (Nuclear) [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsMedium_DeviceNuclear_BLU_T_F">
-    <Original>Device (Nuclear) [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsMedium_VehicleShed_BLU_T_F">
-    <Original>Vehicle Shed [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsMedium_VehicleShed_OPF_T_F">
-    <Original>Vehicle Shed [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsMedium_WindTurbine1">
-    <Original>Wind Turbine #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsMedium_WindTurbine2">
-    <Original>Wind Turbine #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsMedium_CargoPosts">
-    <Original>Cargo Posts</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsMedium_ResearchCompound">
-    <Original>Research Compound</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_CargoPostFortified">
-    <Original>CargoPost (Fortified)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_CargoPost">
-    <Original>Cargo Post</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_CargoHouse1">
-    <Original>Cargo Post #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_CargoHouse2">
-    <Original>Cargo Post #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_BriefingArea_OPF_T_F">
-    <Original>Briefing Area [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_BriefingArea_BLU_T_F">
-    <Original>Briefing Area [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_RepairBay_OPF_T_F">
-    <Original>Repair Bay [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_RepairBay_BLU_T_F">
-    <Original>Repair Bay [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_WaterStation_OPF_T_F">
-    <Original>Water Station [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_WaterStation_BLU_T_F">
-    <Original>Water Station [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_Canteen_OPF_T_F">
-    <Original>Canteen [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_Canteen_BLU_T_F">
-    <Original>Canteen [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_ResearchCentre">
-    <Original>Research Centre</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SuppliesLarge_WarehouseUrban_OPF_T_F">
-    <Original>Warehouse (Urban) [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SuppliesLarge_WarehouseUrban_BLU_T_F">
-    <Original>Warehouse (Urban) [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsMedium_StorageShed">
-    <Original>Storage Shed</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsMedium_DeviceYard">
-    <Original>Device (Yard)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsMedium_StorageCovered_OPF_T_F">
-    <Original>Storage (Covered) [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsMedium_StorageCovered_BLU_T_F">
-    <Original>Storage (Covered) [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsMedium_StorageUrban_OPF_T_F">
-    <Original>Storage Urban [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsMedium_StorageUrban_BLU_T_F">
-    <Original>Storage Urban [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_AmmoCache1_OPF_T_F">
-    <Original>Cache (Ammo Boxes) [OPF] #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_AmmoCache2_OPF_T_F">
-    <Original>Cache (Ammo Boxes) [OPF] #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_ContainerStorage_OPF_T_F">
-    <Original>Container Storage [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_Cache1_OPF_T_F">
-    <Original>Cache [OPF] #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_Cache2_OPF_T_F">
-    <Original>Cache [OPF] #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_Cache3_OPF_T_F">
-    <Original>Cache [OPF] #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_StorageArea1_OPF_T_F">
-    <Original>Storage Area [OPF] #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_StorageArea2_OPF_T_F">
-    <Original>Storage Area [OPF] #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_StorageArea3_OPF_T_F">
-    <Original>Storage Area [OPF] #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_AmmoCache1_BLU_T_F">
-    <Original>Cache (Ammo Boxes) [BLU] #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_AmmoCache2_BLU_T_F">
-    <Original>Cache (Ammo Boxes) [BLU] #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_ContainerStorage_BLU_T_F">
-    <Original>Container Storage [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_Cache1_BLU_T_F">
-    <Original>Cache [BLU] #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_Cache2_BLU_T_F">
-    <Original>Cache [BLU] #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_Cache3_BLU_T_F">
-    <Original>Cache [BLU] #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_StorageArea1_BLU_T_F">
-    <Original>Storage Area [BLU] #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_StorageArea2_BLU_T_F">
-    <Original>Storage Area [BLU] #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_SupportsSmall_StorageArea3_BLU_T_F">
-    <Original>Storage Area [BLU] #3</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsLarge_LargeBungalow_OPF_T_F">
-    <Original>Large Bungalow [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsLarge_BungalowCompound_OPF_T_F">
-    <Original>Large Compound [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsLarge_Villa_OPF_T_F">
-    <Original>Villa [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsLarge_Apartment_OPF_T_F">
-    <Original>Apartment [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsLarge_LargeBungalow1_BLU_T_F">
-    <Original>Large Bungalow [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsLarge_LargeBungalow2_BLU_T_F">
-    <Original>Large Compound [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsLarge_Villa_BLU_T_F">
-    <Original>Villa [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsLarge_Apartment_BLU_T_F">
-    <Original>Apartment [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsLarge_OutpostHBarrier">
-    <Original>Outpost (H-Barrier)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsLarge_OutpostMilWall">
-    <Original>Outpost (MilWall)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsLarge_OutpostConcrete">
-    <Original>Outpost (Concrete)</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_SimpleOutpost01">
-    <Original>Simple Outpost #01</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_SimpleOutpost02">
-    <Original>Simple Outpost #02</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_SimpleOutpost03">
-    <Original>Simple Outpost #03</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_SimpleOutpost04">
-    <Original>Simple Outpost #04</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_SimpleOutpost05">
-    <Original>Simple Outpost #05</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_SimpleOutpost06">
-    <Original>Simple Outpost #06</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_SimpleOutpost07">
-    <Original>Simple Outpost #07</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_SimpleOutpost08">
-    <Original>Simple Outpost #08</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_SimpleOutpost09">
-    <Original>Simple Outpost #09</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_SimpleOutpost10">
-    <Original>Simple Outpost #10</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_SimpleOutpost11">
-    <Original>Simple Outpost #11</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_SimpleOutpost12">
-    <Original>Simple Outpost #12</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_SimpleOutpost13">
-    <Original>Simple Outpost #13</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_SimpleOutpost14">
-    <Original>Simple Outpost #14</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_SimpleOutpost15">
-    <Original>Simple Outpost #15</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_Bungalow_OPF_T_F">
-    <Original>Bungalow [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_BrickBungalow_OPF_T_F">
-    <Original>Brick Bungalow [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_GreyBungalow_OPF_T_F">
-    <Original>Grey Bungalow [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_YellowBungalow_OPF_T_F">
-    <Original>Yellow Bungalow [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_BlueBungalow_OPF_T_F">
-    <Original>Blue Bungalow [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_Shack_OPF_T_F">
-    <Original>Shack [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_ParkingHouse_OPF_T_F">
-    <Original>Parking House [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_GuardCompound_OPF_T_F">
-    <Original>Guard Compound [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_Junkyard_OPF_T_F">
-    <Original>Junkyard [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_Bungalow_BLU_T_F">
-    <Original>Bungalow [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_BrickBungalow_BLU_T_F">
-    <Original>Brick Bungalow [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_GreyBungalow_BLU_T_F">
-    <Original>Grey Bungalow [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_YellowBungalow_BLU_T_F">
-    <Original>Yellow Bungalow [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_BlueBungalow_BLU_T_F">
-    <Original>Blue Bungalow [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_Shack_BLU_T_F">
-    <Original>Shack [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_ParkingHouse_BLU_T_F">
-    <Original>Parking House [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_GuardCompound_BLU_T_F">
-    <Original>Guard Compound [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsMedium_Junkyard_BLU_T_F">
-    <Original>Junkyard [BLU]</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsSmall_OldBungalow_BLU_T_F">
-    <Original>Old Bungalow [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsSmall_NativeHouse_BLU_T_F">
-    <Original>Native Hut [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsSmall_SlumShack_BLU_T_F">
-    <Original>SlumShack [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsSmall_Shed_BLU_T_F">
-    <Original>Shed [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsSmall_ShedSmall_BLU_T_F">
-    <Original>Shed Small [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsSmall_Shack_BLU_T_F">
-    <Original>Shack [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsSmall_ShedTiny_BLU_T_F">
-    <Original>Shed Tiny [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsSmall_OldBungalow_OPF_T_F">
-    <Original>Old Bungalow [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsSmall_NativeHouse_OPF_T_F">
-    <Original>Native Hut [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsSmall_SlumShack_OPF_T_F">
-    <Original>SlumShack [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsSmall_Shed_OPF_T_F">
-    <Original>Shed [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsSmall_ShedSmall_OPF_T_F">
-    <Original>Shed Small [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsSmall_Shack_OPF_T_F">
-    <Original>Shack [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_OutpostsSmall_ShedTiny_OPF_T_F">
-    <Original>Shed Tiny [OPF]</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_MedicalLarge_MedicalComplex">
-    <Original>Medical Complex</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalMedium_MedicalCompound">
-    <Original>Medical Compound</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalSmall_MedicalCentre">
-    <Original>Medical Centre</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_MedicalLarge_AirAmbulance_BLU_T_F">
-	<Original>Air Ambulance [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalLarge_AirAmbulance_OPF_T_F">
-	<Original>Air Ambulance [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalLarge_MedicalLabs_BLU_T_F">
-	<Original>Medical Laboratory [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalLarge_MedicalLabs_OPF_T_F">
-	<Original>Medical Laboratory [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalLarge_Hospital_BLU_T_F">
-	<Original>Hospital [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalLarge_Hospital_OPF_T_F">
-	<Original>Hospital [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalLarge_EvacHospital_BLU_T_F">
-	<Original>Evacuation Hospital [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalLarge_EvacHospital_OPF_T_F">
-	<Original>Evacuation Hospital [OPF]</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_MedicalMedium_FieldHospital_BLU_T_F">
-	<Original>Field Hospital [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalMedium_UrbanSurgery1_BLU_T_F">
-	<Original>Urban Surgery #1 [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalMedium_UrbanSurgery2_BLU_T_F">
-	<Original>Urban Surgery #2 [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalMedium_AirStationHospital_BLU_T_F">
-	<Original>Air Station Hospital [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalMedium_AirStationHospital_OPF_T_F">
-	<Original>Air Station Hospital [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalMedium_JungleSurgery_BLU_T_F">
-	<Original>Jungle Surgery [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalMedium_UrbanHospital_OPF_T_F">
-	<Original>Urban Hospital [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalMedium_JungleSurgery_OPF_T_F">
-	<Original>Jungle Surgery [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalMedium_FieldHospital1_OPF_T_F">
-	<Original>Field Hospital #1 [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalMedium_FieldHospital2_OPF_T_F">
-	<Original>Field Hospital #2 [OPF]</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_MedicalSmall_UrbanEvacPoint1">
-	<Original>Urban Evac Point #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalSmall_UrbanEvacPoint2">
-	<Original>Urban Evac Point #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalSmall_FieldHospital_BLU_T_F">
-	<Original>Field Hospital [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalSmall_FieldHospital_OPF_T_F">
-	<Original>Field Hospital [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalSmall_CollectionStation_BLU_T_F">
-	<Original>Collection Station [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_MedicalSmall_CollectionStation_OPF_T_F">
-	<Original>Collection Station [OPF]</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_HQLarge_HQSquare">
-    <Original>Headquarters Square</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_HQLarge_HQCircle">
-    <Original>Headquarters Circle</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_HQLarge_HQLShape">
-    <Original>Headquarters L-Shape</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_HQLarge_MainHQ_OPF_T_F">
-    <Original>Main Headquarters [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_HQLarge_MainHQ_BLU_T_F">
-    <Original>Main Headquarters [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_HQLarge_TrainingCompound">
-    <Original>Training Compound</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_HQLarge_VIPCompound">
-    <Original>VIP Compound</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_HeliportsLarge_HeliportTemp">
-    <Original>Heliport (Temp)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_HeliportsLarge_HelipadSquare_OPF_T_F">
-    <Original>Helipad (Square) [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_HeliportsLarge_HelipadSquare_BLU_CTRG_F">
-    <Original>Helipad (Square) [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_HeliportsLarge_HeliportFortified">
-    <Original>HeliportFortified</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_HeliportsLarge_HeliportDual">
-    <Original>Heliport (Dual)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_HeliportsMedium_HelipadSquare">
-    <Original>Helipad (Square)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_HeliportsMedium_HelipadCircle">
-    <Original>Helipad (Circle)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_HeliportsMedium_HelipadSquare_BLU_CTRG_F">
-    <Original>Helipad (Square) [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_HeliportsMedium_HelipadSquare_OPF_T_F">
-    <Original>Helipad (Square) [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_HeliportsSmall_HelipadSquare">
-    <Original>Helipad (Square)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_HeliportsSmall_HelipadCircle">
-    <Original>Helipad (Circle)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FieldHQLarge_ObservationTower_OPF_T_F">
-    <Original>Observation Tower [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FieldHQLarge_ObservationTower_BLU_T_F">
-    <Original>Observation Tower [BLU]</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_FieldHQMedium_CargoHQRadio">
-    <Original>Cargo HQ (Radio)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FieldHQMedium_CargoHQ">
-    <Original>Cargo HQ</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FieldHQMedium_FieldHQ_OPF_T_F">
-    <Original>Field HQ [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FieldHQMedium_ObservationPost_OPF_T_F">
-    <Original>Observation Post [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FieldHQMedium_FieldHQ_BLU_T_F">
-    <Original>Field HQ [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FieldHQMedium_ObservationPost_BLU_T_F">
-    <Original>Observation Post [BLU]</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_FieldHQSmall_ObservationTower1">
-    <Original>Observation Tower #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FieldHQSmall_ObservationTower2">
-    <Original>Observation Tower #2</Original>
-</Key>
-
-
-
-<Key ID="STR_ZEC_MilitaryPacific_FuelSmall_StorageArea_BLU_T_F">
-    <Original>Storage Area [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FuelSmall_StorageTanks_BLU_T_F">
-    <Original>Storage Tanks [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FuelSmall_StorageArea_OPF_T_F">
-    <Original>Storage Area [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FuelSmall_StorageTanks_OPF_T_F">
-    <Original>Storage Tanks [OPF]</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_FuelMedium_StorageTank_BLU_T_F">
-    <Original>Storage Tank [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FuelMedium_StorageTank_OPF_T_F">
-    <Original>Storage Tank [OPF]</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_FuelLarge_Depot_BLU_T_F">
-    <Original>Depot [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FuelLarge_Refinery_BLU_T_F">
-    <Original>Refinery [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FuelLarge_Depot_OPF_T_F">
-    <Original>Depot [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FuelLarge_Refinery_OPF_T_F">
-    <Original>Refinery [OPF]</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_ConstructionSuppliesLarge_MilitaryFortifications">
-    <Original>Military Fortifications</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_ConstructionSuppliesLarge_MilitaryItems">
-    <Original>Military Items</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_ConstructionSuppliesLarge_Sandbags">
-    <Original>Sandbags</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CommunicationsLarge_RadarDome_OPF_T_F">
-    <Original>Radar Dome [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CommunicationsLarge_CommunicationsPost_OPF_T_F">
-    <Original>Communications Post [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CommunicationsLarge_UAVDepot_OPF_T_F">
-    <Original>UAV Depot [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CommunicationsLarge_RadarDome_BLU_T_F">
-    <Original>Radar Dome [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CommunicationsLarge_CommunicationsPost_BLU_T_F">
-    <Original>Communications Post [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CommunicationsLarge_UAVDepot_BLU_T_F">
-    <Original>UAV Depot [BLU]</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_CommunicationsMedium_BunkerListeningPost_OPF_T_F">
-    <Original>Bunker Listening Post [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CommunicationsMedium_BunkerListeningPost_BLU_T_F">
-    <Original>Bunker Listening Post [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CommunicationsMedium_BunkerLarge_BLU_T_F">
-    <Original>Radio Bunker [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CommunicationsMedium_BunkerLarge_OPF_T_F">
-    <Original>Radio Bunker [OPF]</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_CommunicationsSmall_RadioPostFortified">
-    <Original>Radio Post (Fortified)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CommunicationsSmall_RadioPostCargo">
-    <Original>Radio Post (Cargo)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CommunicationsSmall_OperationsArea_BLU_T_F">
-    <Original>Operations Area [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CommunicationsSmall_OperationsArea_OPF_T_F">
-    <Original>Operations Area [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_AirportsLarge_Hangar_OPF_T_F">
-    <Original>Hangar [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_AirportsLarge_Hangar_BLU_T_F">
-    <Original>Hangar [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_ReconCampTerminal_OPF_T_F">
-    <Original>Recon Camp (Terminal) [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSite_OPF_T_F">
-    <Original>Camp Site [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_PicnicSite_OPF_T_F">
-    <Original>Picnic Site [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampingSite_OPF_T_F">
-    <Original>Camping Site [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampJungle_OPF_T_F">
-    <Original>Camp (Jungle) [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_ReconCampTerminal_BLU_T_F">
-    <Original>Recon Camp (Terminal) [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSite_BLU_T_F">
-    <Original>Camp Site [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_PicnicSite_BLU_T_F">
-    <Original>Picnic Site [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampingSite_BLU_T_F">
-    <Original>Camping Site [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampJungle_BLU_T_F">
-    <Original>Camp (Jungle) [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesLarge_CheckpointHeavyWatchtower">
-    <Original>Checkpoint (Watchtower)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesLarge_CheckpointHBarrier">
-    <Original>Checkpoint (H-Barrier)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesLarge_CheckpointCargoPost">
-    <Original>Checkpoint (Cargo Post)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesLarge_Checkpoint_BLU_T_F">
-    <Original>Checkpoint [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesLarge_Checkpoint_OPF_T_F">
-    <Original>Checkpoint [OFP]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesMedium_CheckpointBunker">
-    <Original>Checkpoint (Bunker)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesMedium_Checkpoint_BLU_T_F">
-    <Original>Checkpoint [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesMedium_Checkpoint_OPF_T_F">
-    <Original>Checkpoint [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesMedium_CheckpointConcrete1">
-    <Original>Checkpoint (Concrete) #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesMedium_CheckpointConcrete2">
-    <Original>Checkpoint (Concrete) #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesMedium_CheckpointTowers">
-    <Original>Checkpoint (Towers)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesMedium_CheckpointVehicle">
-    <Original>Checkpoint (Vehicle Bunker)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesMedium_CheckpointWatchtower">
-    <Original>Checkpoint (Watchtower)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesSmall_CheckpointSandbags1">
-    <Original>Checkpoint (Sandbags) #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesSmall_CheckpointSandbags2">
-    <Original>Checkpoint (Sandbags) #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesSmall_CheckpointBunkers1">
-    <Original>Checkpoint (Bunkers) #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesSmall_CheckpointBunkers2">
-    <Original>Checkpoint (Bunkers) #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesSmall_CheckpointTower">
-    <Original>Checkpoint (Tower)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesSmall_Checkpoint_BLU_T_F">
-    <Original>Checkpoint [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesSmall_Checkpoint_OPF_T_F">
-    <Original>Checkpoint [OPF]</Original>
-</Key>
-
-
-<Key ID="STR_ZEC_MilitaryPacific_FortLarge_ArtilleryBattery">
-    <Original>Artillery Battery</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortLarge_TankBunkers">
-    <Original>Tank Bunkers</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortLarge_CircularBunkers">
-    <Original>Circular Bunkers</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortLarge_WatchtowerLine">
-    <Original>Watchtower Line</Original>
-</Key>
-
-
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_ArtilleryBunker">
-    <Original>Artillery Bunker</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_TankPositionFortified">
-    <Original>Tank Position (Fortified)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLargeRazor">
-    <Original>Bunker Large (Razor)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_TowerBunkerRazor">
-    <Original>Tower Bunker (Razor)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerRazor">
-    <Original>Bunker (Razor)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_MortarBunkerSandbags">
-    <Original>Mortar Bunker (Sandbags)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_MortarBunkerHBarrier">
-    <Original>Mortar Bunker (H-Barrier)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_MortarBunkerPit">
-    <Original>Mortar Bunker (Pit)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_WatchtowerRazor">
-    <Original>Watchtower (Razor)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_SandbagsRazor">
-    <Original>Sandbags (Razor)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLarge1_OPF_T_F">
-    <Original>Bunker Large [OPF] #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLarge2_OPF_T_F">
-    <Original>Bunker Large [OPF] #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLarge3_OPF_T_F">
-    <Original>Bunker Large [OPF] #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLarge4_OPF_T_F">
-    <Original>Bunker Large [OPF] #4</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_AAAPosition_OPF_T_F">
-    <Original>AAA Position [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_ArtilleryPosition_OPF_T_F">
-    <Original>Artillery Position [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_TowerBunker1_OPF_T_F">
-    <Original>Tower Bunker [OPF] #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_TowerBunker2_OPF_T_F">
-    <Original>Tower Bunker [OPF] #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_TowerBunker3_OPF_T_F">
-    <Original>Tower Bunker [OPF] #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLarge1_BLU_T_F">
-    <Original>Bunker Large [BLU] #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLarge2_BLU_T_F">
-    <Original>Bunker Large [BLU] #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLarge3_BLU_T_F">
-    <Original>Bunker Large [BLU] #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLarge4_BLU_T_F">
-    <Original>Bunker Large [BLU] #4</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_AAAPosition_BLU_T_F">
-    <Original>AAA Position [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_ArtilleryPosition_BLU_T_F">
-    <Original>Artillery Position [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_TowerBunker1_BLU_T_F">
-    <Original>Tower Bunker [BLU] #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_TowerBunker2_BLU_T_F">
-    <Original>Tower Bunker [BLU] #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_TowerBunker3_BLU_T_F">
-    <Original>Tower Bunker [BLU] #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_UndergroundBunker">
-    <Original>Underground Bunker</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerConcrete">
-    <Original>Bunker (Concrete)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Bunkerx2">
-    <Original>Bunker (Dual)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Bunker1">
-    <Original>Bunker #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Bunker2">
-    <Original>Bunker #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Bunker3">
-    <Original>Bunker #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerSandbags1">
-    <Original>Bunker (Sandbags) #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerSandbags2">
-    <Original>Bunker (Sandbags) #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerHBarrier1">
-    <Original>Bunker (H-Barrier) #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerHBarrier2">
-    <Original>Bunker (H-Barrier) #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerHBarrier3">
-    <Original>Bunker (H-Barrier) #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerHBarrier4">
-    <Original>Bunker (H-Barrier) #4</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerHBarrier5">
-    <Original>Bunker (H-Barrier) #5</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_AANet_OPF_T_F">
-    <Original>Static AA Net [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerSandbags_OPF_T_F">
-    <Original>Bunker (Sandbags) [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerHBarrierNet_OPF_T_F">
-    <Original>Bunker Net (H-Barrier) [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Net1_OPF_T_F">
-    <Original>Net [OPF] #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Net2_OPF_T_F">
-    <Original>Net [OPF] #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Net3_OPF_T_F">
-    <Original>Net [OPF] #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Net4_OPF_T_F">
-    <Original>Net [OPF] #4</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Net5_OPF_T_F">
-    <Original>Net [OPF] #5</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Net6_OPF_T_F">
-    <Original>Net [OPF] #6</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_AANet_BLU_T_F">
-    <Original>Static AA Net [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerSandbags_BLU_T_F">
-    <Original>Bunker (Sandbags) [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerHBarrierNet_BLU_T_F">
-    <Original>Bunker Net (H-Barrier) [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Net1_BLU_T_F">
-    <Original>Net [BLU] #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Net2_BLU_T_F">
-    <Original>Net [BLU] #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Net3_BLU_T_F">
-    <Original>Net [BLU] #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Net4_BLU_T_F">
-    <Original>Net [BLU] #4</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Net5_BLU_T_F">
-    <Original>Net [BLU] #5</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Net6_BLU_T_F">
-    <Original>Net [BLU] #6</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_TankPosition">
-    <Original>Tank Position</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerSmall1">
-    <Original>Bunker (Small) #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerSmall2">
-    <Original>Bunker (Small) #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerSmall3">
-    <Original>Bunker (Small) #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerSmall4">
-    <Original>Bunker (Small) #4</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerSmall5">
-    <Original>Bunker (Small) #5</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerSmall6">
-    <Original>Bunker (Small) #6</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerSmall7">
-    <Original>Bunker (Small) #7</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerSmall8">
-    <Original>Bunker (Small) #8</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerSmall9">
-    <Original>Bunker (Small) #9</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLarge1">
-    <Original>Bunker (Large) #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLarge2">
-    <Original>Bunker (Large) #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLarge3">
-    <Original>Bunker (Large) #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLarge4">
-    <Original>Bunker (Large) #4</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLarge5">
-    <Original>Bunker (Large) #5</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLarge6">
-    <Original>Bunker (Large) #6</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLarge7">
-    <Original>Bunker (Large) #7</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLarge8">
-    <Original>Bunker (Large) #8</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_BunkerLarge9">
-    <Original>Bunker (Large) #9</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_VehicleWatchtower">
-    <Original>Vehicle Watchtower</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_VehicleCargoPost">
-    <Original>Vehicle Cargo Post</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_VehicleLargeBunker">
-    <Original>Vehicle Bunker (Large)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_VehicleTower">
-    <Original>Vehicle Tower</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_VehicleSmallBunker">
-    <Original>Vehicle Bunker (Small)</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerHBar1">
-    <Original>Cargo Tower (HBar) #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerHBar2">
-    <Original>Cargo Tower (HBar) #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerHBar3">
-    <Original>Cargo Tower (HBar) #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerHBar4">
-    <Original>Cargo Tower (HBar) #4</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerHBar5">
-    <Original>Cargo Tower (HBar) #5</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerHBar6">
-    <Original>Cargo Tower (HBar) #6</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerHBar7">
-    <Original>Cargo Tower (HBar) #7</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerHBar8">
-    <Original>Cargo Tower (HBar) #8</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerHBar9">
-    <Original>Cargo Tower (HBar) #9</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerSandbag1">
-    <Original>Cargo Tower (Sandbag) #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerSandbag2">
-    <Original>Cargo Tower (Sandbag) #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerSandbag3">
-    <Original>Cargo Tower (Sandbag) #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerSandbag4">
-    <Original>Cargo Tower (Sandbag) #4</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerSandbag5">
-    <Original>Cargo Tower (Sandbag) #5</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerSandbag6">
-    <Original>Cargo Tower (Sandbag) #6</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerSandbag7">
-    <Original>Cargo Tower (Sandbag) #7</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerSandbag8">
-    <Original>Cargo Tower (Sandbag) #8</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortMedium_CargoTowerSandbag9">
-    <Original>Cargo Tower (Sandbag) #9</Original>
-</Key>
-
-
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_CargoPost1">
-    <Original>Cargo Post #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_CargoPost2">
-    <Original>Cargo Post #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_CargoPost3">
-    <Original>Cargo Post #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_CargoPost4">
-    <Original>Cargo Post #4</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_CargoPost5">
-    <Original>Cargo Post #5</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_CargoPost6">
-    <Original>Cargo Post #6</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_CargoPost7">
-    <Original>Cargo Post #7</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_CargoPost8">
-    <Original>Cargo Post #8</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_CargoPost9">
-    <Original>Cargo Post #9</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Watchtower1">
-    <Original>Watchtower #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Watchtower2">
-    <Original>Watchtower #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Watchtower3">
-    <Original>Watchtower #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Watchtower4">
-    <Original>Watchtower #4</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Watchtower5">
-    <Original>Watchtower #5</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Watchtower6">
-    <Original>Watchtower #6</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Watchtower7">
-    <Original>Watchtower #7</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Watchtower8">
-    <Original>Watchtower #8</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_Watchtower9">
-    <Original>Watchtower #9</Original>
-</Key>
-
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerTower1">
-    <Original>Bunker (Tower) #1</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerTower2">
-    <Original>Bunker (Tower) #2</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerTower3">
-    <Original>Bunker (Tower) #3</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerTower4">
-    <Original>Bunker (Tower) #4</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerTower5">
-    <Original>Bunker (Tower) #5</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerTower6">
-    <Original>Bunker (Tower) #6</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerTower7">
-    <Original>Bunker (Tower) #7</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerTower8">
-    <Original>Bunker (Tower) #8</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_FortSmall_BunkerTower9">
-    <Original>Bunker (Tower) #9</Original>
-</Key>
-
-
-<!-- Military - Names -->
-
-
 <Key ID="STR_ZEC_Military_ConstructionSuppliesLarge_MilitaryItems">
     <Original>Military Items</Original>
 </Key>
@@ -2362,7 +635,6 @@
 <Key ID="STR_ZEC_Military_ConstructionSuppliesLarge_FillerBox2">
     <Original>Filler - Boxes #2</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_CommunicationsMedium_RadarDome_OPF_F">
     <Original>Radar Dome [OPF]</Original>
 </Key>
@@ -2423,8 +695,6 @@
 <Key ID="STR_ZEC_Military_CommunicationsSmall_OpsControl2_IND_F">
     <Original>Ops Control [IND] #2</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Military_MedicalLarge_MedicalComplex">
     <Original>Medical Complex</Original>
 </Key>
@@ -2464,7 +734,6 @@
 <Key ID="STR_ZEC_Military_MedicalLarge_EvacHospital_IND_F">
 	<Original>Evacuation Hospital [IND]</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_MedicalMedium_MedicalCompound">
     <Original>Medical Compound</Original>
 </Key>
@@ -2495,7 +764,6 @@
 <Key ID="STR_ZEC_Military_MedicalMedium_Surgery_IND_F">
 	<Original>Surgery [IND]</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_MedicalSmall_MedicalCentre">
     <Original>Medical Centre</Original>
 </Key>
@@ -2544,8 +812,6 @@
 <Key ID="STR_ZEC_Military_MedicalSmall_Surgery2_IND_F">
 	<Original>Surgery [IND] #2</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Military_CheckpointsBarricadesLarge_CheckpointWatchtower">
     <Original>Checkpoint Watchtower</Original>
 </Key>
@@ -2564,7 +830,6 @@
 <Key ID="STR_ZEC_Military_CheckpointsBarricadesLarge_Checkpoint_IND_F">
     <Original>Checkpoint [IND]</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_CheckpointsBarricadesMedium_CheckpointConcrete">
     <Original>Checkpoint Concrete</Original>
 </Key>
@@ -2586,7 +851,6 @@
 <Key ID="STR_ZEC_Military_CheckpointsBarricadesMedium_Checkpoint_IND_F">
     <Original>Checkpoint [IND]</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_CheckpointsBarricadesSmall_CheckpointSandbags1">
     <Original>Checkpoint Sandbags #1</Original>
 </Key>
@@ -2608,29 +872,12 @@
 <Key ID="STR_ZEC_Military_CheckpointsBarricadesSmall_Checkpoint_OPF_F">
     <Original>Checkpoint [OPF]</Original>
 </Key>
-<Key ID="STR_ZEC_Military_CheckpointsBarricadesSmall_Checkpoint_IND_F">
-    <Original>Checkpoint [IND]</Original>
-</Key>
-
 <Key ID="STR_ZEC_Military_CampsMedium_Camp1_BLU_F">
     <Original>Camp [BLU] #1</Original>
 </Key>
 <Key ID="STR_ZEC_Military_CampsMedium_Camp2_BLU_F">
     <Original>Camp [BLU] #2</Original>
 </Key>
-<Key ID="STR_ZEC_Military_CampsMedium_Camp1_OPF_F">
-    <Original>Camp [OPF] #1</Original>
-</Key>
-<Key ID="STR_ZEC_Military_CampsMedium_Camp2_OPF_F">
-    <Original>Camp [OPF] #2</Original>
-</Key>
-<Key ID="STR_ZEC_Military_CampsMedium_Camp1_IND_F">
-    <Original>Camp [IND] #1</Original>
-</Key>
-<Key ID="STR_ZEC_Military_CampsMedium_Camp2_IND_F">
-    <Original>Camp [IND] #2</Original>
-</Key>
-
 <Key ID="STR_ZEC_Military_CampsSmall_CampSite1_OPF_F">
     <Original>Camp Site [OPF] #1</Original>
 </Key>
@@ -2649,9 +896,6 @@
 <Key ID="STR_ZEC_Military_CampsSmall_CampSite2_IND_F">
     <Original>Camp Site [IND] #2</Original>
 </Key>
-
-
-
 <Key ID="STR_ZEC_Military_HangarConverted_BLU_F">
     <Original>Hangar (Converted) [BLU]</Original>
 </Key>
@@ -2661,9 +905,6 @@
 <Key ID="STR_ZEC_Military_HangarConverted_IND_F">
     <Original>Hangar (Converted) [IND]</Original>
 </Key>
-
-
-
 <Key ID="STR_ZEC_Military_SupportsLarge_MilitaryLabs">
     <Original>Military Labs</Original>
 </Key>
@@ -2700,7 +941,6 @@
 <Key ID="STR_ZEC_Military_SupportsLarge_DetentionCentrePrison">
     <Original>Detention Centre (Prison)</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_SupportsMedium_DetentionCompound">
     <Original>Detention Compound (Prison)</Original>
 </Key>
@@ -2749,7 +989,6 @@
 <Key ID="STR_ZEC_Military_SupportsMedium_ResearchCompound">
     <Original>Research Compound</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_SupportsSmall_DetentionCamp">
     <Original>Detention Camp (Prison)</Original>
 </Key>
@@ -2816,14 +1055,8 @@
 <Key ID="STR_ZEC_Military_SupportsSmall_Canteen1_IND_F">
     <Original>Canteen [IND] #1</Original>
 </Key>
-<Key ID="STR_ZEC_Military_SupportsSmall_Canteen2_BLU_F">
-    <Original>Canteen [BLU] #2</Original>
-</Key>
 <Key ID="STR_ZEC_Military_SupportsSmall_Canteen2_OPF_F">
     <Original>Canteen [OPF] #2</Original>
-</Key>
-<Key ID="STR_ZEC_Military_SupportsSmall_Canteen2_IND_F">
-    <Original>Canteen [IND] #2</Original>
 </Key>
 <Key ID="STR_ZEC_Military_SupportsSmall_CargoFortifiedGreen">
     <Original>Cargo Fortified (Green)</Original>
@@ -2834,15 +1067,11 @@
 <Key ID="STR_ZEC_Military_SupportsSmall_ResearchCentre">
     <Original>Research Centre</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_FieldHQLarge_ForwardBase_BLU_F">
     <Original>Forward Base [BLU]</Original>
 </Key>
 <Key ID="STR_ZEC_Military_FieldHQLarge_ForwardBase_OPF_F">
     <Original>Forward Base [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_Military_FieldHQLarge_ForwardBase_IND_F">
-    <Original>Forward Base [IND]</Original>
 </Key>
 <Key ID="STR_ZEC_Military_FieldHQLarge_CommandOutpost">
     <Original>Command Outpost</Original>
@@ -2898,7 +1127,6 @@
 <Key ID="STR_ZEC_Military_FieldHQLarge_FieldHQ_OPF_F">
     <Original>Field HQ [OPF]</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_FieldHQMedium_FieldHQ_BLU_F">
     <Original>Field HQ [BLU]</Original>
 </Key>
@@ -2908,7 +1136,6 @@
 <Key ID="STR_ZEC_Military_FieldHQMedium_FieldHQ_IND_F">
     <Original>Field HQ [IND]</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_FieldHQSmall_ForwardOP">
     <Original>Forward OP Bunker OP</Original>
 </Key>
@@ -2921,7 +1148,6 @@
 <Key ID="STR_ZEC_Military_FieldHQSmall_FieldReconPost_IND_F">
     <Original>Field Recon Post [IND]</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_SuppliesMedium_StorageShed">
     <Original>StorageShed</Original>
 </Key>
@@ -2946,8 +1172,6 @@
 <Key ID="STR_ZEC_Military_SuppliesMedium_StorageNets_IND_F">
     <Original>Storage Nets [IND]</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Military_SuppliesSmall_CargoCacheBrown">
     <Original>Cargo Cache - Brown</Original>
 </Key>
@@ -2996,9 +1220,6 @@
 <Key ID="STR_ZEC_Military_SuppliesSmall_Storage3_BLU_F">
     <Original>Storage [BLU] #3</Original>
 </Key>
-<Key ID="STR_ZEC_Military_SuppliesSmall_StorageHBarrier1_BLU_F">
-    <Original>H-Barrier Supplies [BLU] #1</Original>
-</Key>
 <Key ID="STR_ZEC_Military_SuppliesSmall_StorageHBarrier2_BLU_F">
     <Original>H-Barrier Supplies [BLU] #2</Original>
 </Key>
@@ -3016,9 +1237,6 @@
 </Key>
 <Key ID="STR_ZEC_Military_SuppliesSmall_StorageFortified_BLU_F">
     <Original>Fortified Supplies [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_Military_SuppliesSmall_CacheAmmoBoxes_IND_F">
-    <Original>Cache Ammo [IND]</Original>
 </Key>
 <Key ID="STR_ZEC_Military_SuppliesSmall_Storage1_IND_F">
     <Original>Storage [IND] #1</Original>
@@ -3059,8 +1277,6 @@
 <Key ID="STR_ZEC_Military_SuppliesSmall_FencedCache_IND_F">
     <Original>Fenced Cache [IND]</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Military_HQLarge_Headquarters">
     <Original>Headquarters</Original>
 </Key>
@@ -3082,7 +1298,6 @@
 <Key ID="STR_ZEC_Military_HQLarge_CommandCentre">
     <Original>Command Centre</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_HQMedium_OfficersHQ">
     <Original>Officers HQ</Original>
 </Key>
@@ -3104,9 +1319,6 @@
 <Key ID="STR_ZEC_Military_HQMedium_OfficersHQ_IND_F">
     <Original>Officers HQ [IND]</Original>
 </Key>
-
-
-
 <Key ID="STR_ZEC_Military_HeliportsLarge_TemporaryLZ">
     <Original>Temporary LZ</Original>
 </Key>
@@ -3146,7 +1358,6 @@
 <Key ID="STR_ZEC_Military_HeliportsLarge_HeliportFortified_IND_F">
     <Original>Heliport - Fortified [IND]</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_HeliportsMedium_SquareLZ">
     <Original>Square LZ</Original>
 </Key>
@@ -3159,15 +1370,12 @@
 <Key ID="STR_ZEC_Military_HeliportsMedium_CargoPods_BLU_F">
     <Original>Cargo Pods (Huron) [BLU]</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_HeliportsSmall_SquareLZ">
     <Original>Square LZ</Original>
 </Key>
 <Key ID="STR_ZEC_Military_HeliportsSmall_CircleLZ">
     <Original>Circle LZ</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Military_OutpostsLarge_OutpostChain">
     <Original>Chain Fence Outpost</Original>
 </Key>
@@ -3186,7 +1394,6 @@
 <Key ID="STR_ZEC_Military_OutpostsLarge_BunkerSmall">
     <Original>Bunker (Small) Outpost</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_OutpostsMedium_SimpleOutpost01">
     <Original>Simple Outpost #01</Original>
 </Key>
@@ -3349,9 +1556,6 @@
 <Key ID="STR_ZEC_Military_OutpostsMedium_Lighthouse_IND_F">
     <Original>Lighthouse [IND]</Original>
 </Key>
-
-
-
 <Key ID="STR_ZEC_Military_OutpostsSmall_SmallHouse1_BLU_F">
     <Original>Small House [BLU] #1</Original>
 </Key>
@@ -3415,7 +1619,6 @@
 <Key ID="STR_ZEC_Military_OutpostsSmall_StoneHouse_IND_F">
     <Original>Stone House [IND]</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_FortLarge_BunkerSystem_BLU_F">
     <Original>Bunker System [BLU]</Original>
 </Key>
@@ -3458,7 +1661,6 @@
 <Key ID="STR_ZEC_Military_FortLarge_UndergroundBunkers">
     <Original>Underground Bunkers</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_FortMedium_FortifiedCargoTower">
     <Original>Fortified Cargo Tower</Original>
 </Key>
@@ -3582,7 +1784,6 @@
 <Key ID="STR_ZEC_Military_FortMedium_VehicleNet_IND_F">
     <Original>Vehicle Cover Net [IND]</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_FortSmall_TankPosition">
     <Original>Tank Position</Original>
 </Key>
@@ -3766,7 +1967,6 @@
 <Key ID="STR_ZEC_Military_FortSmall_BunkerSmall9">
     <Original>Bunker (Small) #9</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_FortMedium_BunkerLarge1">
     <Original>Bunker (Large) #1</Original>
 </Key>
@@ -3794,7 +1994,6 @@
 <Key ID="STR_ZEC_Military_FortMedium_BunkerLarge9">
     <Original>Bunker (Large) #9</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_FortSmall_CargoPost1">
     <Original>Cargo Post #1</Original>
 </Key>
@@ -3876,7 +2075,6 @@
 <Key ID="STR_ZEC_Military_FortSmall_BunkerTower9">
     <Original>Bunker (Tower) #9</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_FortMedium_VehicleWatchtower">
     <Original>Vehicle Watchtower</Original>
 </Key>
@@ -3946,8 +2144,6 @@
 <Key ID="STR_ZEC_Military_FortMedium_CargoTowerGreen9">
     <Original>Cargo Tower (Green) #9</Original>
 </Key>
-
-
 <Key ID="STR_ZEC_Military_FuelLarge_Depot_BLU_F">
     <Original>Depot [BLU]</Original>
 </Key>
@@ -3966,7 +2162,6 @@
 <Key ID="STR_ZEC_Military_FuelLarge_Refinery_IND_F">
     <Original>Refinery [IND]</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_FuelMedium_StorageTanks_BLU_F">
     <Original>Storage Tanks [BLU]</Original>
 </Key>
@@ -3985,7 +2180,6 @@
 <Key ID="STR_ZEC_Military_FuelMedium_DieselStorage_IND_F">
     <Original>Diesel Storage [IND]</Original>
 </Key>
-
 <Key ID="STR_ZEC_Military_FuelSmall_StorageArea_BLU_F">
     <Original>Storage Area [BLU]</Original>
 </Key>
@@ -4004,44 +2198,6 @@
 <Key ID="STR_ZEC_Military_FuelSmall_FuelDepot_IND_F">
     <Original>Fuel Depot [IND]</Original>
 </Key>
-
-
-<Key ID="STR_ALIVE_COMPOSITION_hq">
-    <Original>HQ</Original>
-</Key>
-<Key ID="STR_ALIVE_COMPOSITION_camps">
-    <Original>Camps</Original>
-</Key>
-<Key ID="STR_ALIVE_COMPOSITION_mediumAirstation1">
-    <Original>Airstation 1 [Medium]</Original>
-</Key>
-<Key ID="STR_ALIVE_COMPOSITION_power">
-    <Original>Power</Original>
-</Key>
-<Key ID="STR_ALIVE_COMPOSITION_communications">
-    <Original>Communications</Original>
-</Key>
-<Key ID="STR_ALIVE_COMPOSITION_fuel">
-    <Original>Fuel</Original>
-</Key>
-<Key ID="STR_ALIVE_COMPOSITION_smallFuelStation1">
-    <Original>Fuel Station 1 [Small]</Original>
-</Key>
-<Key ID="STR_ALIVE_COMPOSITION_mediumFuelSilo1">
-    <Original>Fuel Silo 1 [Medium]</Original>
-</Key>
-<Key ID="STR_ALIVE_COMPOSITION_marine">
-    <Original>Marine</Original>
-</Key>
-<Key ID="STR_ALIVE_COMPOSITION_constructionSupplies">
-    <Original>Construct Supplies</Original>
-</Key>
-<Key ID="STR_ALIVE_COMPOSITION_settlement">
-    <Original>Settlement</Original>
-</Key>
-<Key ID="STR_ALIVE_COMPOSITION_crashsites">
-    <Original>Crashsites</Original>
-</Key>
 <Key ID="STR_ALIVE_COMPOSITION_smallOspreyCrashsite1">
     <Original>Osprey site 1 [Small]</Original>
 </Key>
@@ -4051,17 +2207,7 @@
 <Key ID="STR_ALIVE_COMPOSITION_mediumc192Crash1">
     <Original>C192 site 1 [Medium]</Original>
 </Key>
-<Key ID="STR_ALIVE_COMPOSITION_objectives">
-    <Original>Objectives</Original>
-</Key>
 <Key ID="STR_ALIVE_COMPOSITION_IEDFactory1">
     <Original>IED Factory 1 [Small]</Original>
 </Key>
-
 </Container></Package></Project>
-
-<!--
-<Key ID="STR_ZEC_?_?_?">
-    <Original>???</Original>
-</Key>
--->
