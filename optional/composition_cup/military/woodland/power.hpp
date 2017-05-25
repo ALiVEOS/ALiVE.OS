@@ -12,6 +12,7 @@
 		class Generator_CUP_B_CDF {
 			name = $STR_ZECCUP_MilitaryWoodland_PowerSmall_Generator_CUP_O_RU; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_HBarrier_Big_F"; rank = ""; position[] = {-8.38342,1.38574,0}; dir = 105;};
 			class Object1 {side = 8; vehicle = "Land_CampingTable_F"; rank = ""; position[] = {-3.15759,-1.09424,0}; dir = 30.0008;};
 			class Object2 {side = 8; vehicle = "Land_CampingTable_F"; rank = ""; position[] = {-3.56506,-1.79883,0}; dir = 209.53;};
@@ -40,6 +41,7 @@
 		class Generator_CUP_O_RU {
 			name = $STR_ZECCUP_MilitaryWoodland_PowerSmall_Generator_CUP_B_CDF; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "MetalBarrel_burning_F"; rank = ""; position[] = {2.125,7.75,0}; dir = 330;};
 			class Object2 {side = 8; vehicle = "Barrel4"; rank = ""; position[] = {-0.660278,9.23438,0}; dir = 330;};
 			class Object3 {side = 8; vehicle = "Barrel4"; rank = ""; position[] = {-1.39917,9.1709,0}; dir = 330;};

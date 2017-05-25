@@ -4,6 +4,7 @@
 		class MortarBunker_BLU_G_F {
 			name = $STR_ZEC_Guerrilla_FortLarge_MortarBunker; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\fia_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {-2.17578,-10.3799,0}; dir = 35;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {-7.2666,-5.83862,0}; dir = 230;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {-4.07031,-7.35938,0}; dir = 200;};
@@ -56,6 +57,7 @@
 		class BunkerLarge_BLU_G_F {
 			name = $STR_ZEC_Guerrilla_FortMedium_BunkerLarge; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\fia_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Razorwire_F"; rank = ""; position[] = {-5.7735,-12.2795,0}; dir = 200;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_5_F"; rank = ""; position[] = {-4.2019,-10.0784,0}; dir = 195;};
 			class Object3 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {-11.2262,-7.33789,0}; dir = 30;};
@@ -89,6 +91,7 @@
 		class BunkerConcrete {
 			name = $STR_ZEC_Guerrilla_FortSmall_BunkerConcrete; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\u_installation.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {1.00726,-5.79395,0}; dir = 330.141;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-1.6366,-5.31323,0}; dir = 48.632;};
 			class Object3 {side = 8; vehicle = "Land_Sack_F"; rank = ""; position[] = {-2.25409,-4.74719,0}; dir = 345;};
@@ -124,6 +127,7 @@
 		class Bunkerx2 {
 			name = $STR_ZEC_Guerrilla_FortSmall_Bunkerx2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\u_installation.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {0.037735,0.0717773,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-3.68774,-1.88696,0}; dir = 30;};
 			class Object3 {side = 8; vehicle = "Land_HBarrier_1_F"; rank = ""; position[] = {0.875,1.11755,0}; dir = 0;};
@@ -161,6 +165,7 @@
 		class Bunker1 {
 			name = $STR_ZEC_Guerrilla_FortSmall_Bunker1; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\u_installation.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_BagBunker_Small_F"; rank = ""; position[] = {-0.5,-3.05542,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Wreck_Truck_dropside_F"; rank = ""; position[] = {-4.65088,2.02466,0}; dir = 240;};
 			class Object3 {side = 8; vehicle = "Land_BagFence_Short_F"; rank = ""; position[] = {-0.364258,0.498535,0}; dir = 180;};
@@ -174,6 +179,7 @@
 		class Bunker2 {
 			name = $STR_ZEC_Guerrilla_FortSmall_Bunker2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\u_installation.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_BagBunker_Small_F"; rank = ""; position[] = {0.25,-2.05542,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Wreck_BRDM2_F"; rank = ""; position[] = {-0.549805,5.06519,0}; dir = 75;};
 			class Object3 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {3.57959,-0.374023,0}; dir = 315;};
@@ -185,6 +191,7 @@
 		class Bunker3 {
 			name = $STR_ZEC_Guerrilla_FortSmall_Bunker3; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\u_installation.paa";
+			side = 8;
 			class Object2 {side = 8; vehicle = "Land_BagBunker_Small_F"; rank = ""; position[] = {0.375,-2.18042,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_Wreck_UAZ_F"; rank = ""; position[] = {-2.70508,4.27295,0}; dir = 300;};
 			class Object4 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-2.70459,2.24902,0}; dir = 135;};
@@ -197,6 +204,7 @@
 		class BunkerHBarrier1 {
 			name = $STR_ZEC_Guerrilla_FortSmall_BunkerHBarrier1; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\u_installation.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_BagBunker_Small_F"; rank = ""; position[] = {-0.875,-0.80542,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_5_F"; rank = ""; position[] = {-0.501465,4.75391,0}; dir = 180;};
 			class Object3 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {-2.88623,1.39795,0}; dir = 180;};
@@ -210,6 +218,7 @@
 		class BunkerHBarrier2 {
 			name = $STR_ZEC_Guerrilla_FortSmall_BunkerHBarrier2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\u_installation.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_BagBunker_Small_F"; rank = ""; position[] = {1.5,5.06958,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {3.63623,7.22705,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {4.50781,9.00977,0}; dir = 240;};
@@ -224,6 +233,7 @@
 		class BunkerHBarrier3 {
 			name = $STR_ZEC_Guerrilla_FortSmall_BunkerHBarrier3; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\u_installation.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_BagBunker_Small_F"; rank = ""; position[] = {1.625,4.94458,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {-0.48877,9.97705,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {1.13281,11.8848,0}; dir = 240;};
@@ -239,6 +249,7 @@
 		class BunkerHBarrier4 {
 			name = $STR_ZEC_Guerrilla_FortSmall_BunkerHBarrier4; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\u_installation.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {0.037735,0.0717773,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {-5.36393,2.22705,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {-1.89799,4.23889,0}; dir = 90;};
@@ -263,6 +274,7 @@
 		class BunkerUrban {
 			name = $STR_ZEC_Guerrilla_FortSmall_BunkerUrban; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\u_installation.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {-4.76172,-4.78906,0}; dir = 152.598;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_1_F"; rank = ""; position[] = {-0.460938,-2.61914,0}; dir = 147.241;};
 			class Object3 {side = 8; vehicle = "Land_WoodenTable_small_F"; rank = ""; position[] = {1.73828,-3.40234,0}; dir = 262.241;};
@@ -286,6 +298,7 @@
 		class BunkerSandbags1 {
 			name = $STR_ZEC_Guerrilla_FortSmall_BunkerSandbags1; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\u_installation.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-5.14523,-0.574463,0}; dir = 117.382;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_End_F"; rank = ""; position[] = {-6.00972,-2.24207,0}; dir = 152.241;};
 			class Object3 {side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {-2.8643,0.738037,0}; dir = 152.241;};
@@ -308,6 +321,7 @@
 		class BunkerSandbags2 {
 			name = $STR_ZEC_Guerrilla_FortSmall_BunkerSandbags2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\u_installation.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {-4.26555,-0.00390625,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_End_F"; rank = ""; position[] = {-4.56427,-2.28162,0}; dir = 107.241;};
 			class Object3 {side = 8; vehicle = "Land_BagFence_End_F"; rank = ""; position[] = {-2.88472,-2.49207,0}; dir = 152.241;};
@@ -326,6 +340,7 @@
 		class Sandbags1 {
 			name = $STR_ZEC_Guerrilla_FortSmall_Sandbags1; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\u_installation.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Wreck_BMP2_F"; rank = ""; position[] = {1.18994,-0.343506,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-4.06982,0.30957,0}; dir = 15;};
 			class Object3 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-1.51172,1.01563,0}; dir = 15;};
@@ -352,6 +367,7 @@
 		class Sandbags2 {
 			name = $STR_ZEC_Guerrilla_FortSmall_Sandbags2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\u_installation.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Wreck_HMMWV_F"; rank = ""; position[] = {1.29297,2.56665,0}; dir = 315;};
 			class Object2 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {0.680176,7.80957,0}; dir = 15;};
 			class Object3 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-5.20459,7.74902,0}; dir = 135;};
@@ -376,6 +392,7 @@
 		class Sandbags3 {
 			name = $STR_ZEC_Guerrilla_FortSmall_Sandbags3; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\u_installation.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Wreck_T72_hull_F"; rank = ""; position[] = {0.345703,6.40405,0}; dir = 225;};
 			class Object2 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {0.805176,7.68457,0}; dir = 15;};
 			class Object3 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {7.6709,11.49,0}; dir = 143.632;};
@@ -405,6 +422,7 @@
 		class MortarSandbag_BLU_G_F {
 			name = $STR_ZEC_Guerrilla_FortSmall_MortarSandbag; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\fia_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "B_G_Mortar_01_F"; rank = ""; position[] = {-3.375,2.24976,0}; dir = 229.998;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-1.49805,-2.45361,0}; dir = 197.528;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-4.14795,-2.73633,0}; dir = 17.5277;};

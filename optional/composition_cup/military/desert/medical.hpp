@@ -5,6 +5,7 @@
 		class Hospital_CUP_O_TK {
 			name = $STR_ZECCUP_MilitaryDesert_MedicalLarge_Hospital_CUP_O_TK; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "TK_WarfareBFieldhHospital_Base_EP1"; rank = ""; position[] = {0.195923,-5.93896,0}; dir = 210;};
 			class Object1 {side = 8; vehicle = "Land_CamoNetVar_EAST_EP1"; rank = ""; position[] = {-11.6127,-2.72363,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-15.3256,-8.50635,0}; dir = 270;};
@@ -64,6 +65,7 @@
 		class Hospital_CUP_B_USMC {
 			name = $STR_ZECCUP_MilitaryDesert_MedicalLarge_Hospital_CUP_B_USMC; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_CamoNetVar_NATO_EP1"; rank = ""; position[] = {-7.36267,-7.84863,0}; dir = 90;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier_large"; rank = ""; position[] = {-1.0127,-13.3354,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_large"; rank = ""; position[] = {-9.2627,-13.5854,0}; dir = 0;};

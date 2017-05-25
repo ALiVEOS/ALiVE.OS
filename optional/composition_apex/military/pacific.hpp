@@ -31,3 +31,5 @@
 #include "pacific\supports.hpp"
 
 #include "pacific\supplies.hpp"
+
+#include "pacific\training.hpp"

@@ -4,6 +4,7 @@
 		class ProcessingPlant {
 			name = $STR_ZEC_CivilianPacific_MiningOilLarge_ProcessingPlant; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\watertower_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Wall_IndCnc_4_D_F"; rank = ""; position[] = {-54.0645,-54.1152,0}; dir = 90;};
 			class Object1 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-54.0549,-60.1802,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-54.0549,-42.1802,0}; dir = 90;};
@@ -103,6 +104,7 @@
 		class OreQuarry {
 			name = $STR_ZEC_CivilianPacific_MiningOilLarge_OreQuarry; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_CraneRail_01_F"; rank = ""; position[] = {-31.863,-65.4941,0}; dir = 90;};
 			class Object1 {side = 8; vehicle = "Land_CraneRail_01_F"; rank = ""; position[] = {-31.863,-33.4941,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_GarbagePallet_F"; rank = ""; position[] = {-33.8018,21.4971,0}; dir = 297.971;};
@@ -177,6 +179,7 @@
 		class OreProcessing {
 			name = $STR_ZEC_CivilianPacific_MiningOilMedium_OreProcessing; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_TinWall_02_l_8m_F"; rank = ""; position[] = {-33.9,-32.377,0}; dir = 90;};
 			class Object1 {side = 8; vehicle = "Land_TinWall_02_l_8m_F"; rank = ""; position[] = {-33.9,-24.377,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_TinWall_02_l_8m_F"; rank = ""; position[] = {-29.8732,-36.3999,0}; dir = 0;};
@@ -259,6 +262,7 @@
 		class OreStorageYard {
 			name = $STR_ZEC_CivilianPacific_MiningOilMedium_OreStorageYard; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x3_F"; rank = ""; position[] = {-18.1451,-12.9258,0}; dir = 285;};
 			class Object1 {side = 8; vehicle = "Land_SCF_01_warehouse_F"; rank = ""; position[] = {-1.75269,-18.7944,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "C_Truck_02_covered_F"; rank = ""; position[] = {6.01013,-31.124,0}; dir = 90.0006;};
@@ -277,6 +281,7 @@
 		class OreStockpile {
 			name = $STR_ZEC_CivilianPacific_MiningOilSmall_OreStockpile; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_CraneRail_01_F"; rank = ""; position[] = {-13.4979,-9.84473,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_CraneRail_01_F"; rank = ""; position[] = {-13.4979,14.1553,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_SY_01_reclaimer_F"; rank = ""; position[] = {-0.257202,0.958496,0}; dir = 0;};
@@ -287,6 +292,7 @@
 		class S_LargeDigger {
 			name = $STR_ZEC_CivilianPacific_MiningOilSmall_LargeDigger; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_JunkPile_F"; rank = ""; position[] = {-7.97034,-19.5151,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "Land_GarbageHeap_03_F"; rank = ""; position[] = {-4.87256,-19.1157,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_GarbageBags_F"; rank = ""; position[] = {-5.5415,-16.5557,0}; dir = 121.534;};

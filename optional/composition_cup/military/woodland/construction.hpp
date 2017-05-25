@@ -9,6 +9,7 @@
 		class ContainerYard_CUP_O_RU {
 			name = $STR_ZECCUP_MilitaryWoodland_ConstructionMedium_ContainerYard_CUP_O_RU; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_fort_bagfence_round"; rank = ""; position[] = {-3.75232,-14.7109,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_fort_bagfence_long"; rank = ""; position[] = {-6.51392,-10.9846,0}; dir = 90;};
 			class Object3 {side = 8; vehicle = "Land_Misc_Cargo1a"; rank = ""; position[] = {-3.44971,-5.20947,0}; dir = 150;};
@@ -32,6 +33,7 @@
 		class ContainerYard_CUP_B_CDF {
 			name = $STR_ZECCUP_MilitaryWoodland_ConstructionMedium_ContainerYard_CUP_B_CDF; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Ind_Shed_01_EP1"; rank = ""; position[] = {0.25,-14.4268,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Misc_cargo_cont_small"; rank = ""; position[] = {-5.23438,-9.8689,0}; dir = 60;};
 			class Object3 {side = 8; vehicle = "Land_BagFenceLong"; rank = ""; position[] = {-4.3772,-16.6394,0}; dir = 180;};
@@ -68,6 +70,7 @@
 		class BaseObjects {
 			name = $STR_ZECCUP_MilitaryWoodland_ConstructionSuppliesLarge_BaseObjects; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Barrack2"; rank = ""; position[] = {-43.333,-11.0486,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_A_tent"; rank = ""; position[] = {-45.325,3.92505,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "CampEastC"; rank = ""; position[] = {-29.333,-11.3105,0}; dir = 0;};
@@ -131,6 +134,7 @@
 		class MiscItems {
 			name = $STR_ZECCUP_MilitaryWoodland_ConstructionSuppliesLarge_MiscItems; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Gunrack1"; rank = ""; position[] = {-2.05981,-13.9353,0}; dir = 90;};
 			class Object1 {side = 8; vehicle = "Gunrack1"; rank = ""; position[] = {-2.05981,-12.9353,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_WoodenTable_large_F"; rank = ""; position[] = {-14.2495,-19,0}; dir = 179.69;};
@@ -320,6 +324,7 @@
 		class ExternalItems {
 			name = $STR_ZECCUP_MilitaryWoodland_ConstructionSuppliesLarge_ExternalItems; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_ScrapHeap_1_F"; rank = ""; position[] = {-12.1576,-17.9597,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "WaterPump_01_forest_F"; rank = ""; position[] = {-3.25,-18.125,0}; dir = 0.00178549;};
 			class Object2 {side = 8; vehicle = "WaterPump_01_sand_F"; rank = ""; position[] = {-7.25,-18.125,0}; dir = 0.00329663;};
@@ -432,6 +437,7 @@
 		class Walls {
 			name = $STR_ZECCUP_MilitaryWoodland_ConstructionSuppliesLarge_Walls; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Hhedgehog_concreteBig"; rank = ""; position[] = {-17,-10,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Hhedgehog_concreteBig"; rank = ""; position[] = {-27,-10,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Hhedgehog_concreteBig"; rank = ""; position[] = {-37,-10,0}; dir = 0;};
@@ -515,6 +521,7 @@
 		class Sandbags_CUP_O_TK {
 			name = $STR_ZECCUP_MilitaryWoodland_ConstructionSuppliesLarge_Sandbags_CUP_O_TK; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_fort_bagfence_long"; rank = ""; position[] = {-16.6403,-17.3892,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_fort_bagfence_long"; rank = ""; position[] = {-19.6403,-17.3892,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_fort_bagfence_corner"; rank = ""; position[] = {-7.34546,-15.2134,0}; dir = 270;};
@@ -588,6 +595,7 @@
 		class Sandbags_CUP_B_USMC {
 			name = $STR_ZECCUP_MilitaryWoodland_ConstructionSuppliesLarge_Sandbags_CUP_B_USMC; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFenceCorner"; rank = ""; position[] = {0.269531,6.55518,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_BagFenceCorner"; rank = ""; position[] = {0.290527,3.23438,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_BagFenceCorner"; rank = ""; position[] = {3.61145,3.25537,0}; dir = 90;};
@@ -706,6 +714,7 @@
 		class FillerSupplies {
 			name = $STR_ZECCUP_MilitaryWoodland_ConstructionSuppliesLarge_FillerSupplies; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFenceRound"; rank = ""; position[] = {-17.8438,-14.4604,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "Land_BagFenceRound"; rank = ""; position[] = {-17.818,-6.28662,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_WaterTank_F"; rank = ""; position[] = {-19.0786,-15.6218,0}; dir = 359.847;};

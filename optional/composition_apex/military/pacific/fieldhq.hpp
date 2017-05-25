@@ -4,6 +4,7 @@
 		class ObservationTower_OPF_T_F {
 			name = $STR_ZEC_MilitaryPacific_FieldHQLarge_ObservationTower_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_HBarrier_01_big_4_green_F"; rank = ""; position[] = {-5.95117,-11.3472,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "CamoNet_ghex_open_F"; rank = ""; position[] = {-4.15137,9.26221,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_WaterTank_03_F"; rank = ""; position[] = {-10.5015,0.880371,0}; dir = 0;};
@@ -57,6 +58,7 @@
 		class ObservationTower_BLU_T_F {
 			name = $STR_ZEC_MilitaryPacific_FieldHQLarge_ObservationTower_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-16.1621,-7.24219,0}; dir = 45;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-15.9922,-3.21289,0}; dir = 135;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-13.7583,-7.85938,0}; dir = 0;};
@@ -111,6 +113,7 @@
 		class CargoHQRadio {
 			name = $STR_ZEC_MilitaryPacific_FieldHQMedium_CargoHQRadio; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\n_unknown.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-10.9844,-9.99182,0}; dir = 90;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier_01_line_3_green_F"; rank = ""; position[] = {-10.731,-1.86157,0}; dir = 225;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_short_green_F"; rank = ""; position[] = {-10.2416,-11.3765,0}; dir = 180;};
@@ -150,6 +153,7 @@
 		class CargoHQ {
 			name = $STR_ZEC_MilitaryPacific_FieldHQMedium_CargoHQ; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\n_unknown.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_HBarrier_01_big_4_green_F"; rank = ""; position[] = {-12.9028,-7.45135,0}; dir = 90;};
 			class Object1 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-3.0874,0.446777,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-10.7524,-8.11255,0}; dir = 0;};
@@ -215,6 +219,7 @@
 		class FieldHQ_OPF_T_F {
 			name = $STR_ZEC_MilitaryPacific_FieldHQMedium_FieldHQ_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_PaperBox_open_empty_F"; rank = ""; position[] = {-6.70605,-3.51245,0}; dir = 285;};
 			class Object1 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-7.854,-5.05052,0}; dir = 225;};
 			class Object2 {side = 8; vehicle = "Land_GarbageHeap_03_F"; rank = ""; position[] = {-6.19971,5.05396,0}; dir = 15;};
@@ -265,6 +270,7 @@
 		class FieldHQ_BLU_T_F {
 			name = $STR_ZEC_MilitaryPacific_FieldHQMedium_FieldHQ_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-7.60498,-6.35883,0}; dir = 359.964;};
 			class Object1 {side = 8; vehicle = "Land_Pallet_MilBoxes_F"; rank = ""; position[] = {-5.61548,0.263733,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_PaperBox_open_full_F"; rank = ""; position[] = {-7.47046,-3.35883,0}; dir = 270;};
@@ -328,6 +334,7 @@
 		class ObservationPost_OPF_T_F {
 			name = $STR_ZEC_MilitaryPacific_FieldHQMedium_ObservationPost_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-5.2627,-4.87427,0}; dir = 285;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier_01_tower_green_F"; rank = ""; position[] = {-6.34375,1.26685,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_01_big_4_green_F"; rank = ""; position[] = {-10.2222,-5.17407,0}; dir = 270;};
@@ -354,6 +361,7 @@
 		class ObservationPost_BLU_T_F {
 			name = $STR_ZEC_MilitaryPacific_FieldHQMedium_ObservationPost_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_GarbageBags_F"; rank = ""; position[] = {-3.7627,-8.2821,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_CratesShabby_F"; rank = ""; position[] = {-6.48047,-2.1405,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {-6.72266,-0.641968,0}; dir = 90;};
@@ -393,6 +401,7 @@
 		class ObservationTower1 {
 			name = $STR_ZEC_MilitaryPacific_FieldHQSmall_ObservationTower1; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\n_support.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_GarbageBags_F"; rank = ""; position[] = {-8.98682,4.60486,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {-8.57178,2.995,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-13.3135,-7.89557,0}; dir = 180;};
@@ -428,6 +437,7 @@
 		class ObservationTower2 {
 			name = $STR_ZEC_MilitaryPacific_FieldHQSmall_ObservationTower2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\n_support.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_PortableLight_single_F"; rank = ""; position[] = {-3.71777,-1.98438,0}; dir = 165;};
 			class Object1 {side = 8; vehicle = "Land_GarbageHeap_03_F"; rank = ""; position[] = {-3.57324,-6.53668,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-3.42041,-3.27789,0}; dir = 180;};

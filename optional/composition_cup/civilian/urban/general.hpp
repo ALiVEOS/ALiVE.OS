@@ -4,6 +4,7 @@
 		class Castle {
 			name = $STR_ZECCUP_Civilian_GeneralLarge_Castle; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_A_castle_bastion"; rank = ""; position[] = {-55.0627,7.27295,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_A_castle_wall2_30"; rank = ""; position[] = {-47.0984,-13.6108,0}; dir = 270;};
 			class Object3 {side = 8; vehicle = "Land_A_castle_wall2_end_2"; rank = ""; position[] = {-43.6001,-27.6685,0}; dir = 180;};
@@ -39,6 +40,7 @@
 		class Mosque {
 			name = $STR_ZECCUP_Civilian_GeneralLarge_Mosque; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\church_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_A_mosque_big_wall_ep1"; rank = ""; position[] = {-36.7964,0.462402,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_A_mosque_big_wall_corner_ep1"; rank = ""; position[] = {-26.0669,-22.2549,0}; dir = 180;};
 			class Object3 {side = 8; vehicle = "Land_A_mosque_big_wall_ep1"; rank = ""; position[] = {-26.063,-22.2642,0}; dir = 180;};

@@ -8,6 +8,7 @@
 		class BuildingSite1 {
 			name = $STR_ZEC_CivilianPacific_ConstructionLarge_BuildingSite1; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_NetFence_01_m_8m_F"; rank = ""; position[] = {-16.2421,-20.5298,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_Shed_05_F"; rank = ""; position[] = {-22.3791,2.02051,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_NetFence_01_m_8m_F"; rank = ""; position[] = {-19.2579,12.5298,0}; dir = 90;};
@@ -65,6 +66,7 @@
 		class BuildingSite2 {
 			name = $STR_ZEC_CivilianPacific_ConstructionLarge_BuildingSite2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Wall_Tin_4"; rank = ""; position[] = {-1.44568,-29.3345,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_Wall_Tin_4"; rank = ""; position[] = {-21.4457,-29.3345,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Wall_Tin_4"; rank = ""; position[] = {-29.4457,-29.3345,0}; dir = 0;};
@@ -153,6 +155,7 @@
 		class AllWalls {
 			name = $STR_ZEC_CivilianPacific_ConstructionSuppliesLarge_AllWalls; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_SlumWall_01_s_2m_F"; rank = ""; position[] = {-13.375,-16.197,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_SlumWall_01_s_4m_F"; rank = ""; position[] = {-14.3745,-14.25,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_StoneWall_01_s_d_F"; rank = ""; position[] = {-5.47266,-16.0564,0}; dir = 0;};
@@ -254,6 +257,7 @@
 		class FillerJunk {
 			name = $STR_ZEC_CivilianPacific_ConstructionSuppliesLarge_FillerJunk; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Wreck_Truck_F"; rank = ""; position[] = {-7.19019,-18.73,0}; dir = 120;};
 			class Object1 {side = 8; vehicle = "Land_Tyre_F"; rank = ""; position[] = {-18.5851,-7.8584,0}; dir = 191.759;};
 			class Object2 {side = 8; vehicle = "Land_GarbageHeap_03_F"; rank = ""; position[] = {-17.6039,-21.4873,0}; dir = 15;};
@@ -417,6 +421,7 @@
 		class FillerBox1 {
 			name = $STR_ZEC_CivilianPacific_ConstructionSuppliesLarge_FillerBox1; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {-7.73206,-14.2397,0}; dir = 29.158;};
 			class Object1 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {-2.67993,-4.74365,0}; dir = 149.158;};
 			class Object2 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {-13.4843,-2.8457,0}; dir = 194.158;};
@@ -517,6 +522,7 @@
 		class FillerBox2 {
 			name = $STR_ZEC_CivilianPacific_ConstructionSuppliesLarge_FillerBox2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Garbage_square3_F"; rank = ""; position[] = {-15.6365,-2.84668,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_GarbageBags_F"; rank = ""; position[] = {-17.463,-3.06934,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {-15.7578,-4.06543,0}; dir = 57.1656;};
@@ -640,6 +646,7 @@
 		class FillerBoxSmall {
 			name = $STR_ZEC_CivilianPacific_ConstructionSuppliesLarge_FillerBoxSmall; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {-15.152,-3.47314,0}; dir = 184.74;};
 			class Object1 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {-15.214,-15.4028,0}; dir = 249.076;};
 			class Object2 {side = 8; vehicle = "Land_Sacks_heap_F"; rank = ""; position[] = {-4,-15,0}; dir = 17.0981;};
@@ -705,6 +712,7 @@
 		class AllWrecks {
 			name = $STR_ZEC_CivilianPacific_ConstructionSuppliesLarge_AllWrecks; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_HistoricalPlaneWreck_02_rear_F"; rank = ""; position[] = {-23.3234,-13.9028,0}; dir = 345.058;};
 			class Object1 {side = 8; vehicle = "Land_HistoricalPlaneWreck_02_front_F"; rank = ""; position[] = {-22.3932,-29.2356,0}; dir = 0.0109076;};
 			class Object2 {side = 8; vehicle = "Land_HistoricalPlaneDebris_02_F"; rank = ""; position[] = {-19.2367,-21.9883,0}; dir = 300.029;};

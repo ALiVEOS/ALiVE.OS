@@ -31,3 +31,5 @@
 #include "woodland\supports.hpp"
 
 #include "woodland\supplies.hpp"
+
+#include "woodland\training.hpp"

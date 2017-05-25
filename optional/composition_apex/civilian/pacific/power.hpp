@@ -4,6 +4,7 @@
 		class DieselPlant1 {
 			name = $STR_ZEC_CivilianPacific_PowerLarge_DieselPlant1; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\power_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-36.2561,-38.2358,0}; dir = 90;};
 			class Object1 {side = 8; vehicle = "Land_Wall_IndCnc_4_D_F"; rank = ""; position[] = {-36.2656,-32.1709,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-36.2561,-20.2358,0}; dir = 90;};
@@ -106,6 +107,7 @@
 		class DieselPlant2 {
 			name = $STR_ZEC_CivilianPacific_PowerLarge_DieselPlant2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\power_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-29.0438,-24.5684,0}; dir = 185;};
 			class Object1 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-24.2645,-27.667,0}; dir = 185;};
 			class Object2 {side = 8; vehicle = "Land_JunkPile_F"; rank = ""; position[] = {-28.9708,-26.2461,0}; dir = 185;};
@@ -219,6 +221,7 @@
 		class DieselPlant {
 			name = $STR_ZEC_CivilianPacific_PowerSmall_DieselPlant; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\power_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_GarbagePallet_F"; rank = ""; position[] = {-16.9501,-14.8755,0}; dir = 47.871;};
 			class Object1 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-19.0718,-13.4624,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-15.3159,-17.9658,0}; dir = 270;};

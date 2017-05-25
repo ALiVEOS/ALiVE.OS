@@ -8,6 +8,7 @@
 		class HangarConverted_OPF_F {
 			name = $STR_ZEC_Military_HangarConverted_OPF_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_HBarrierWall6_F"; rank = ""; position[] = {-5.35205,-11.4375,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {-2.02441,-3.68701,0}; dir = 265.842;};
 			class Object3 {side = 8; vehicle = "Land_PowerGenerator_F"; rank = ""; position[] = {-3.06909,-8.95679,0}; dir = 0;};
@@ -84,6 +85,7 @@
 		class HangarConverted_BLU_F {
 			name = $STR_ZEC_Military_HangarConverted_BLU_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_TentHangar_V1_F"; rank = ""; position[] = {-3.26056,0.549316,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "B_Truck_01_mover_F"; rank = ""; position[] = {-7.75,-7.00635,0}; dir = 180.001;};
 			class Object3 {side = 8; vehicle = "Land_Razorwire_F"; rank = ""; position[] = {-15.3174,-4.60376,0}; dir = 270;};
@@ -145,6 +147,7 @@
 		class HangarConverted_IND_F {
 			name = $STR_ZEC_Military_HangarConverted_IND_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\aaf_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Cargo20_light_green_F"; rank = ""; position[] = {-13,-10.625,0}; dir = 165;};
 			class Object2 {side = 8; vehicle = "Land_Cargo10_brick_red_F"; rank = ""; position[] = {-7.25,-13.125,0}; dir = 135;};
 			class Object3 {side = 8; vehicle = "Land_PaperBox_open_full_F"; rank = ""; position[] = {-12.2545,-3.11694,0}; dir = 150;};

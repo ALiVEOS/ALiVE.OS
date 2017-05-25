@@ -4,6 +4,7 @@
 		class HelipadSquare_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_HeliportsLarge_HelipadSquare; // Credit: 2600K
 			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-17.2871,-9.24219,0}; dir = 45;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-17.1172,9.78711,0}; dir = 135;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-9.50781,-9.28711,0}; dir = 315;};
@@ -66,6 +67,7 @@
 		class HelipadSquare_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_HeliportsMedium_HelipadSquare; // Credit: 2600K
 			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-8.49219,9.78711,0}; dir = 135;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-8.66211,-9.24219,0}; dir = 45;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-0.882813,-9.28711,0}; dir = 315;};
@@ -117,6 +119,7 @@
 		class HelipadCircle {
 			name = $STR_ZEC_GuerrillaPacific_HeliportsSmall_HelipadCircle; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\n_air.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Portable_generator_F"; rank = ""; position[] = {-5.89709,-5.53577,0}; dir = 242.429;};
 			class Object1 {side = 8; vehicle = "FlexibleTank_01_forest_F"; rank = ""; position[] = {-5.50049,-6.37451,0}; dir = 360;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_end_green_F"; rank = ""; position[] = {-1.28821,-7.6051,0}; dir = 60;};
@@ -157,6 +160,7 @@
 		class HelipadSquare {
 			name = $STR_ZEC_GuerrillaPacific_HeliportsSmall_HelipadSquare; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\n_air.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-7.25024,-7.49988,0}; dir = 38.7715;};
 			class Object1 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-7.75024,-6.75,0}; dir = 353.752;};
 			class Object2 {side = 8; vehicle = "Land_BarrelEmpty_F"; rank = ""; position[] = {-6.38025,-7.53992,0}; dir = 359.989;};

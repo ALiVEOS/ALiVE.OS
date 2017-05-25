@@ -4,6 +4,7 @@
 		class Dam {
 			name = $STR_ZECCUP_Civilian_IndustrialLarge_Dam; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_dam_concp_20"; rank = ""; position[] = {-59.1169,12.3154,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_dam_conc_20"; rank = ""; position[] = {-40.071,12.2871,0}; dir = 0;};
 			class Object4 {side = 8; vehicle = "Land_dam_concp_20"; rank = ""; position[] = {-0.116943,12.3154,0}; dir = 0;};
@@ -15,6 +16,7 @@
 		class IndustrialBuilding1 {
 			name = $STR_ZECCUP_Civilian_IndustrialLarge_IndustrialBuilding1; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\watertower_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Ind_mlyn_03"; rank = ""; position[] = {-29.397,-43.3887,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_Ind_mlyn_02"; rank = ""; position[] = {-18.2349,-29.6333,0}; dir = 270;};
 			class Object3 {side = 8; vehicle = "Land_Ind_Pec_02"; rank = ""; position[] = {-13.6021,1.39844,0}; dir = 0;};
@@ -29,11 +31,12 @@
 		class IndustrialBuilding2 {
 			name = $STR_ZECCUP_Civilian_IndustrialLarge_IndustrialBuilding2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\watertower_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_D_VSilo_Pec"; rank = ""; position[] = {-47.9795,-1.26587,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Ind_Quarry"; rank = ""; position[] = {-64.9453,1.89868,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_Ind_silovelke_01"; rank = ""; position[] = {-22.0718,-21.2522,0}; dir = 180;};
 			class Object4 {side = 8; vehicle = "Land_Vez_Silo"; rank = ""; position[] = {-15.4395,-1.27319,0}; dir = 0;};
-			class Object5 {side = 8; vehicle = "Land_Ind_dopravnik_vez_pec"; rank = ""; position[] = {-12.9624,-12.0222,0}; dir = 90;};
+			class Object5 {side = 8; vehicle = "Land_Vez_Pec"; rank = ""; position[] = {-12.9624,-12.0222,0}; dir = 90;};
 			class Object6 {side = 8; vehicle = "Land_Ind_silomale"; rank = ""; position[] = {-15.042,24.8853,0}; dir = 180;};
 			class Object7 {side = 8; vehicle = "Land_Ind_silovelke_most"; rank = ""; position[] = {-2.84375,-1.4668,0}; dir = 0;};
 			class Object8 {side = 8; vehicle = "Land_Ind_silovelke_most"; rank = ""; position[] = {0.15625,-21.4668,0}; dir = 0;};
@@ -49,9 +52,10 @@
 		class Crane {
 			name = $STR_ZECCUP_Civilian_IndustrialMedium_Crane; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_A_crane_02b"; rank = ""; position[] = {-0.493896,2.00464,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_A_crane_02a"; rank = ""; position[] = {-0.54834,1.96387,0}; dir = 0;};
-			class Object3 {side = 8; vehicle = "CUP_A2_crane_rails"; rank = ""; position[] = {-0.543457,-7.03613,0}; dir = 0;};
+			class Object3 {side = 8; vehicle = "Land_A_crane_rails"; rank = ""; position[] = {-0.543457,-7.03613,0}; dir = 0;};
 			class Object4 {side = 8; vehicle = "CUP_A2_crane_rails_end"; rank = ""; position[] = {-0.492676,-6.57715,0}; dir = 0;};
 			class Object6 {side = 8; vehicle = "CUP_A2_crane_rails_end"; rank = ""; position[] = {-0.632324,14.8271,0}; dir = 180;};
 			class Object7 {side = 8; vehicle = "Land_A_crane_rails"; rank = ""; position[] = {-0.581543,15.2861,0}; dir = 180;};

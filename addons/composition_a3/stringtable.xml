@@ -249,6 +249,15 @@
 <Key ID="STR_ZEC_SupportsSmall">
     <Original>Support (Small)</Original>
 </Key>
+<Key ID="STR_ZEC_TrainingLarge">
+    <Original>Training (Large)</Original>
+</Key>
+<Key ID="STR_ZEC_TrainingMedium">
+    <Original>Training (Medium)</Original>
+</Key>
+<Key ID="STR_ZEC_TrainingSmall">
+    <Original>Training (Small)</Original>
+</Key>
 <!-- COMPOSITION - Names -->
 <!-- Civilian Pacific - Names -->
 <Key ID="STR_ZEC_CivilianPacific_ConstructionLarge_BuildingSite1">
@@ -570,11 +579,48 @@
 <Key ID="STR_ZEC_GuerrillaPacific_CampsMedium_CampJungle5">
     <Original>Jungle Camp #5</Original>
 </Key>
+
 <Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampSite1">
-    <Original>Camp Site #1</Original>
+    <Original>Camp Site #01</Original>
 </Key>
 <Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampSite2">
-    <Original>Camp Site #2</Original>
+    <Original>Camp Site #02</Original>
+</Key>
+<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampSite3">
+    <Original>Camp Site #03</Original>
+</Key>
+<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampSite4">
+    <Original>Camp Site #04</Original>
+</Key>
+<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampSite5">
+    <Original>Camp Site #05</Original>
+</Key>
+<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampSite6">
+    <Original>Camp Site #06</Original>
+</Key>
+<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampSite7">
+    <Original>Camp Site #07</Original>
+</Key>
+<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampSite8">
+    <Original>Camp Site #08</Original>
+</Key>
+<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampSite9">
+    <Original>Camp Site #09</Original>
+</Key>
+<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampSite10">
+    <Original>Camp Site #10</Original>
+</Key>
+<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampSite11">
+    <Original>Camp Site #11</Original>
+</Key>
+<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampSite12">
+    <Original>Camp Site #12</Original>
+</Key>
+<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampSite13">
+    <Original>Camp Site #13</Original>
+</Key>
+<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampSite14">
+    <Original>Camp Site #14</Original>
 </Key>
 <Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_PicnicSite">
     <Original>Picnic Site</Original>
@@ -582,6 +628,22 @@
 <Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_JungleCamp">
     <Original>Jungle Camp</Original>
 </Key>
+<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_MortarCamp1">
+    <Original>Mortar Camp #1</Original>
+</Key>
+<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_MortarCamp2">
+    <Original>Mortar Camp #2</Original>
+</Key>
+<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampSiteHMG">
+    <Original>Camp Site (HMG)</Original>
+</Key>
+<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampCargoPost1">
+    <Original>Camp (Cargo Post) #1</Original>
+</Key>
+<Key ID="STR_ZEC_GuerrillaPacific_CampsSmall_CampCargoPost2">
+    <Original>Camp (Cargo Post) #2</Original>
+</Key>
+
 
 <Key ID="STR_ZEC_GuerrillaPacific_CheckpointsBarricadesMedium_Barricade1">
     <Original>Road Barricade #1</Original>
@@ -979,6 +1041,37 @@
 </Key>
 
 <!-- Guerrilla - Names -->
+<Key ID="STR_ZEC_Guerrilla_CampsSmall_MortarCamp">
+    <Original>Mortar Camp</Original>
+</Key>
+<Key ID="STR_ZEC_Guerrilla_CampsSmall_CampSiteHMG">
+    <Original>Camp Site (HMG)</Original>
+</Key>
+<Key ID="STR_ZEC_Guerrilla_CampsSmall_CampCargoPost">
+    <Original>Camp (Cargo Post)</Original>
+</Key>
+<Key ID="STR_ZEC_Guerrilla_CampsSmall_CampSite1">
+    <Original>Camp Site #1</Original>
+</Key>
+<Key ID="STR_ZEC_Guerrilla_CampsSmall_CampSite2">
+    <Original>Camp Site #2</Original>
+</Key>
+<Key ID="STR_ZEC_Guerrilla_CampsSmall_CampSite3">
+    <Original>Camp Site #3</Original>
+</Key>
+<Key ID="STR_ZEC_Guerrilla_CampsSmall_CampSite4">
+    <Original>Camp Site #4</Original>
+</Key>
+<Key ID="STR_ZEC_Guerrilla_CampsSmall_CampSite5">
+    <Original>Camp Site #5</Original>
+</Key>
+<Key ID="STR_ZEC_Guerrilla_CampsSmall_CampSite6">
+    <Original>Camp Site #6</Original>
+</Key>
+<Key ID="STR_ZEC_Guerrilla_CampsSmall_CampSite7">
+    <Original>Camp Site #7</Original>
+</Key>
+
 <Key ID="STR_ZEC_Guerrilla_CheckpointsBarricadesMedium_Checkpoint">
     <Original>Checkpoint (Basic)</Original>
 </Key>
@@ -1834,36 +1927,85 @@
 <Key ID="STR_ZEC_MilitaryPacific_AirportsLarge_Hangar_BLU_T_F">
     <Original>Hangar [BLU]</Original>
 </Key>
+
+
 <Key ID="STR_ZEC_MilitaryPacific_CampsSmall_ReconCampTerminal_OPF_T_F">
     <Original>Recon Camp (Terminal) [OPF]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSite_OPF_T_F">
-    <Original>Camp Site [OPF]</Original>
 </Key>
 <Key ID="STR_ZEC_MilitaryPacific_CampsSmall_PicnicSite_OPF_T_F">
     <Original>Picnic Site [OPF]</Original>
 </Key>
-<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampingSite_OPF_T_F">
-    <Original>Camping Site [OPF]</Original>
-</Key>
 <Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampJungle_OPF_T_F">
     <Original>Camp (Jungle) [OPF]</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSite1_OPF_T_F">
+    <Original>Camp Site [OPF] #1</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSite2_OPF_T_F">
+    <Original>Camp Site [OPF] #2</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSite3_OPF_T_F">
+    <Original>Camp Site [OPF] #3</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSite4_OPF_T_F">
+    <Original>Camp Site [OPF] #4</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSite5_OPF_T_F">
+    <Original>Camp Site [OPF] #5</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSiteHMG1_OPF_T_F">
+    <Original>Camp Site (HMG) [OPF] #1</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSiteHMG2_OPF_T_F">
+    <Original>Camp Site (HMG) [OPF] #2</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_MortarSite_OPF_T_F">
+    <Original>Mortar Site [OPF]</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampCargoPost_OPF_T_F">
+    <Original>Cargo Post [OPF]</Original>
 </Key>
 <Key ID="STR_ZEC_MilitaryPacific_CampsSmall_ReconCampTerminal_BLU_T_F">
     <Original>Recon Camp (Terminal) [BLU]</Original>
 </Key>
-<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSite_BLU_T_F">
-    <Original>Camp Site [BLU]</Original>
-</Key>
 <Key ID="STR_ZEC_MilitaryPacific_CampsSmall_PicnicSite_BLU_T_F">
     <Original>Picnic Site [BLU]</Original>
-</Key>
-<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampingSite_BLU_T_F">
-    <Original>Camping Site [BLU]</Original>
 </Key>
 <Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampJungle_BLU_T_F">
     <Original>Camp (Jungle) [BLU]</Original>
 </Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSite1_BLU_T_F">
+    <Original>Camp Site [BLU] #1</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSite2_BLU_T_F">
+    <Original>Camp Site [BLU] #2</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSite3_BLU_T_F">
+    <Original>Camp Site [BLU] #3</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSite4_BLU_T_F">
+    <Original>Camp Site [BLU] #4</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSite5_BLU_T_F">
+    <Original>Camp Site [BLU] #5</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSiteHMG1_BLU_T_F">
+    <Original>Camp Site (HMG) [BLU] #1</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampSiteHMG2_BLU_T_F">
+    <Original>Camp Site (HMG) [BLU] #2</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_MortarSite_BLU_T_F">
+    <Original>Mortar Site [BLU]</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CampsSmall_CampCargoPost_BLU_T_F">
+    <Original>Cargo Post [BLU]</Original>
+</Key>
+
+
+
+
+
 <Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesLarge_CheckpointHeavyWatchtower">
     <Original>Checkpoint (Watchtower)</Original>
 </Key>
@@ -1879,6 +2021,7 @@
 <Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesLarge_Checkpoint_OPF_T_F">
     <Original>Checkpoint [OFP]</Original>
 </Key>
+
 <Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesMedium_CheckpointBunker">
     <Original>Checkpoint (Bunker)</Original>
 </Key>
@@ -1903,6 +2046,10 @@
 <Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesMedium_CheckpointWatchtower">
     <Original>Checkpoint (Watchtower)</Original>
 </Key>
+<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesMedium_CheckpointCargoPosts">
+    <Original>Checkpoint (Cargo Posts)</Original>
+</Key>
+
 <Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesSmall_CheckpointSandbags1">
     <Original>Checkpoint (Sandbags) #1</Original>
 </Key>
@@ -1923,6 +2070,12 @@
 </Key>
 <Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesSmall_Checkpoint_OPF_T_F">
     <Original>Checkpoint [OPF]</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesSmall_CheckpointConcretePost">
+    <Original>Checkpoint (Concrete Post)</Original>
+</Key>
+<Key ID="STR_ZEC_MilitaryPacific_CheckpointsBarricadesSmall_CheckpointSmallBunker">
+    <Original>Checkpoint (Small Bunker)</Original>
 </Key>
 
 
@@ -2586,6 +2739,9 @@
 <Key ID="STR_ZEC_Military_CheckpointsBarricadesMedium_Checkpoint_IND_F">
     <Original>Checkpoint [IND]</Original>
 </Key>
+<Key ID="STR_ZEC_Military_CheckpointsBarricadesMedium_CheckpointCargoPosts">
+    <Original>Checkpoint Cargo Posts</Original>
+</Key>
 
 <Key ID="STR_ZEC_Military_CheckpointsBarricadesSmall_CheckpointSandbags1">
     <Original>Checkpoint Sandbags #1</Original>
@@ -2611,24 +2767,11 @@
 <Key ID="STR_ZEC_Military_CheckpointsBarricadesSmall_Checkpoint_IND_F">
     <Original>Checkpoint [IND]</Original>
 </Key>
-
-<Key ID="STR_ZEC_Military_CampsMedium_Camp1_BLU_F">
-    <Original>Camp [BLU] #1</Original>
+<Key ID="STR_ZEC_Military_CheckpointsBarricadesSmall_CheckpointConcretePost">
+    <Original>Checkpoint Concrete Post</Original>
 </Key>
-<Key ID="STR_ZEC_Military_CampsMedium_Camp2_BLU_F">
-    <Original>Camp [BLU] #2</Original>
-</Key>
-<Key ID="STR_ZEC_Military_CampsMedium_Camp1_OPF_F">
-    <Original>Camp [OPF] #1</Original>
-</Key>
-<Key ID="STR_ZEC_Military_CampsMedium_Camp2_OPF_F">
-    <Original>Camp [OPF] #2</Original>
-</Key>
-<Key ID="STR_ZEC_Military_CampsMedium_Camp1_IND_F">
-    <Original>Camp [IND] #1</Original>
-</Key>
-<Key ID="STR_ZEC_Military_CampsMedium_Camp2_IND_F">
-    <Original>Camp [IND] #2</Original>
+<Key ID="STR_ZEC_Military_CheckpointsBarricadesSmall_CheckpointSmallBunker">
+    <Original>Checkpoint Bunker (Small)</Original>
 </Key>
 
 <Key ID="STR_ZEC_Military_CampsSmall_CampSite1_OPF_F">
@@ -2637,11 +2780,59 @@
 <Key ID="STR_ZEC_Military_CampsSmall_CampSite2_OPF_F">
     <Original>Camp Site [OPF] #2</Original>
 </Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampSite3_OPF_F">
+    <Original>Camp Site [OPF] #3</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampSite4_OPF_F">
+    <Original>Camp Site [OPF] #4</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampSite5_OPF_F">
+    <Original>Camp Site [OPF] #5</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampSiteHMG1_OPF_F">
+    <Original>Camp Site (HMG) [OPF] #1</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampSiteHMG2_OPF_F">
+    <Original>Camp Site (HMG) [OPF] #2</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_MortarSite_OPF_F">
+    <Original>Mortar Site [OPF]</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampCargoPost_OPF_F">
+    <Original>Cargo Post [OPF]</Original>
+</Key>
 <Key ID="STR_ZEC_Military_CampsSmall_CampSite1_BLU_F">
     <Original>Camp Site [BLU] #1</Original>
 </Key>
 <Key ID="STR_ZEC_Military_CampsSmall_CampSite2_BLU_F">
     <Original>Camp Site [BLU] #2</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampSite3_BLU_F">
+    <Original>Camp Site [BLU] #3</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampSite4_BLU_F">
+    <Original>Camp Site [BLU] #4</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampSite5_BLU_F">
+    <Original>Camp Site [BLU] #5</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampSite6_BLU_F">
+    <Original>Camp Site [BLU] #6</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampSite7_BLU_F">
+    <Original>Camp Site [BLU] #7</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampSiteHMG1_BLU_F">
+    <Original>Camp Site (HMG) [BLU] #1</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampSiteHMG2_BLU_F">
+    <Original>Camp Site (HMG) [BLU] #2</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_MortarSite_BLU_F">
+    <Original>Mortar Site [BLU]</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampCargoPost_BLU_F">
+    <Original>Cargo Post [BLU]</Original>
 </Key>
 <Key ID="STR_ZEC_Military_CampsSmall_CampSite1_IND_F">
     <Original>Camp Site [IND] #1</Original>
@@ -2649,8 +2840,27 @@
 <Key ID="STR_ZEC_Military_CampsSmall_CampSite2_IND_F">
     <Original>Camp Site [IND] #2</Original>
 </Key>
-
-
+<Key ID="STR_ZEC_Military_CampsSmall_CampSite3_IND_F">
+    <Original>Camp Site [IND] #3</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampSite4_IND_F">
+    <Original>Camp Site [IND] #4</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampSite5_IND_F">
+    <Original>Camp Site [IND] #5</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampSiteHMG1_IND_F">
+    <Original>Camp Site (HMG) [IND] #1</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampSiteHMG2_IND_F">
+    <Original>Camp Site (HMG) [IND] #2</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_MortarSite_IND_F">
+    <Original>Mortar Site [IND]</Original>
+</Key>
+<Key ID="STR_ZEC_Military_CampsSmall_CampCargoPost_IND_F">
+    <Original>Cargo Post [IND]</Original>
+</Key>
 
 <Key ID="STR_ZEC_Military_HangarConverted_BLU_F">
     <Original>Hangar (Converted) [BLU]</Original>
@@ -4005,57 +4215,88 @@
     <Original>Fuel Depot [IND]</Original>
 </Key>
 
+<Key ID="STR_ZEC_Military_TrainingLarge_ShootHouse01">
+    <Original>Shoot House</Original>
+</Key>
 
-<Key ID="STR_ALIVE_COMPOSITION_hq">
-    <Original>HQ</Original>
+<Key ID="STR_ZEC_Military_TrainingMedium_ShootHouse01">
+    <Original>Shoot House #01</Original>
 </Key>
-<Key ID="STR_ALIVE_COMPOSITION_camps">
-    <Original>Camps</Original>
+<Key ID="STR_ZEC_Military_TrainingMedium_ShootHouse02">
+    <Original>Shoot House #02</Original>
 </Key>
-<Key ID="STR_ALIVE_COMPOSITION_mediumAirstation1">
-    <Original>Airstation 1 [Medium]</Original>
+<Key ID="STR_ZEC_Military_TrainingMedium_ShootHouse03">
+    <Original>Shoot House #03</Original>
 </Key>
-<Key ID="STR_ALIVE_COMPOSITION_power">
-    <Original>Power</Original>
+<Key ID="STR_ZEC_Military_TrainingMedium_ShootHouse04">
+    <Original>Shoot House #04</Original>
 </Key>
-<Key ID="STR_ALIVE_COMPOSITION_communications">
-    <Original>Communications</Original>
+<Key ID="STR_ZEC_Military_TrainingMedium_ShootHouse05">
+    <Original>Shoot House #05</Original>
 </Key>
-<Key ID="STR_ALIVE_COMPOSITION_fuel">
-    <Original>Fuel</Original>
+<Key ID="STR_ZEC_Military_TrainingMedium_ShootHouse06">
+    <Original>Shoot House #06</Original>
 </Key>
-<Key ID="STR_ALIVE_COMPOSITION_smallFuelStation1">
-    <Original>Fuel Station 1 [Small]</Original>
+<Key ID="STR_ZEC_Military_TrainingMedium_ShootHouse07">
+    <Original>Shoot House #07</Original>
 </Key>
-<Key ID="STR_ALIVE_COMPOSITION_mediumFuelSilo1">
-    <Original>Fuel Silo 1 [Medium]</Original>
+<Key ID="STR_ZEC_Military_TrainingMedium_ShootHouse08">
+    <Original>Shoot House #08</Original>
 </Key>
-<Key ID="STR_ALIVE_COMPOSITION_marine">
-    <Original>Marine</Original>
+<Key ID="STR_ZEC_Military_TrainingMedium_ShootHouse09">
+    <Original>Shoot House #09</Original>
 </Key>
-<Key ID="STR_ALIVE_COMPOSITION_constructionSupplies">
-    <Original>Construct Supplies</Original>
+
+<Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse01">
+    <Original>Shoot House #01</Original>
 </Key>
-<Key ID="STR_ALIVE_COMPOSITION_settlement">
-    <Original>Settlement</Original>
+<Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse02">
+    <Original>Shoot House #02</Original>
 </Key>
-<Key ID="STR_ALIVE_COMPOSITION_crashsites">
-    <Original>Crashsites</Original>
+<Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse03">
+    <Original>Shoot House #03</Original>
 </Key>
-<Key ID="STR_ALIVE_COMPOSITION_smallOspreyCrashsite1">
-    <Original>Osprey site 1 [Small]</Original>
+<Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse04">
+    <Original>Shoot House #04</Original>
 </Key>
-<Key ID="STR_ALIVE_COMPOSITION_smallAH99Crashsite1">
-    <Original>AH-99 site 1 [Small]</Original>
+<Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse05">
+    <Original>Shoot House #05</Original>
 </Key>
-<Key ID="STR_ALIVE_COMPOSITION_mediumc192Crash1">
-    <Original>C192 site 1 [Medium]</Original>
+<Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse06">
+    <Original>Shoot House #06</Original>
 </Key>
-<Key ID="STR_ALIVE_COMPOSITION_objectives">
-    <Original>Objectives</Original>
+<Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse07">
+    <Original>Shoot House #07</Original>
 </Key>
-<Key ID="STR_ALIVE_COMPOSITION_IEDFactory1">
-    <Original>IED Factory 1 [Small]</Original>
+<Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse08">
+    <Original>Shoot House #08</Original>
+</Key>
+<Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse09">
+    <Original>Shoot House #09</Original>
+</Key>
+<Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse10">
+    <Original>Shoot House #10</Original>
+</Key>
+<Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse11">
+    <Original>Shoot House #11</Original>
+</Key>
+<Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse12">
+    <Original>Shoot House #12</Original>
+</Key>
+<Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse13">
+    <Original>Shoot House #13</Original>
+</Key>
+<Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse14">
+    <Original>Shoot House #14</Original>
+</Key>
+<Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse15">
+    <Original>Shoot House #15</Original>
+</Key>
+<Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse16">
+    <Original>Shoot House #16</Original>
+</Key>
+<Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse17">
+    <Original>Shoot House #17</Original>
 </Key>
 
 </Container></Package></Project>

@@ -4,6 +4,7 @@
 		class MedicalComplex {
 			name = $STR_ZEC_Military_MedicalLarge_MedicalComplex; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\n_med.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_Short_F"; rank = ""; position[] = {-28.9196,1.06128,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-31.1134,0.683838,0}; dir = 135;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-18.0668,-18.4111,0}; dir = 43.854;};
@@ -81,6 +82,7 @@
 		class AirAmbulance_IND_F {
 			name = $STR_ZEC_Military_MedicalLarge_AirAmbulance_IND_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\aaf_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-21.3179,4.32935,0}; dir = 120;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_Short_F"; rank = ""; position[] = {-18.1641,0.276367,0}; dir = 345;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_Short_F"; rank = ""; position[] = {-21.2983,2.17017,0}; dir = 75;};
@@ -134,6 +136,7 @@
 		class EvacHospital_IND_F {
 			name = $STR_ZEC_Military_MedicalLarge_EvacHospital_IND_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\aaf_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_End_F"; rank = ""; position[] = {-19.3472,-18.8308,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {-14.1255,-23.0161,0}; dir = 195;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {-16.9023,-22.272,0}; dir = 195;};
@@ -221,6 +224,7 @@
 		class MedicalLab_IND_F {
 			name = $STR_ZEC_Military_MedicalLarge_MedicalLab_IND_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\aaf_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "I_Truck_02_medical_F"; rank = ""; position[] = {-7.00684,-15.876,0}; dir = 270.001;};
 			class Object1 {side = 8; vehicle = "I_Truck_02_medical_F"; rank = ""; position[] = {7.99365,-16.8777,0}; dir = 255.001;};
 			class Object2 {side = 8; vehicle = "Land_Sacks_heap_F"; rank = ""; position[] = {-15.876,-8.67627,0}; dir = 203.249;};
@@ -283,6 +287,7 @@
 		class Hospital_IND_F {
 			name = $STR_ZEC_Military_MedicalLarge_Hospital_IND_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\aaf_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "I_Heli_Transport_02_F"; rank = ""; position[] = {-16.3608,-17.7844,0}; dir = 0.00315193;};
 			class Object1 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-28.6177,-21.8853,0}; dir = 154.905;};
 			class Object2 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-28.4438,-23.728,0}; dir = 169.905;};
@@ -338,6 +343,7 @@
 		class AirAmbulance_OPF_F {
 			name = $STR_ZEC_Military_MedicalLarge_AirAmbulance_OPF_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-28.5479,-14.4133,0}; dir = 315;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-31.082,-11.665,0}; dir = 135;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-31.1655,-14.3267,0}; dir = 45;};
@@ -411,6 +417,7 @@
 		class EvacHospital_OPF_F {
 			name = $STR_ZEC_Military_MedicalLarge_EvacHospital_OPF_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Mil_WallBig_Corner_F"; rank = ""; position[] = {-18.5454,-23.2097,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_Mil_WallBig_4m_F"; rank = ""; position[] = {-18.5195,-19.7129,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_Mil_WallBig_4m_F"; rank = ""; position[] = {-15.0288,-23.1812,0}; dir = 0;};
@@ -460,6 +467,7 @@
 		class MedicalLab_OPF_F {
 			name = $STR_ZEC_Military_MedicalLarge_MedicalLab_OPF_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_CncWall1_F"; rank = ""; position[] = {-19.3608,-11.2815,0}; dir = 30;};
 			class Object1 {side = 8; vehicle = "Land_CncWall1_F"; rank = ""; position[] = {-20.4067,-10.4739,0}; dir = 45;};
 			class Object2 {side = 8; vehicle = "Land_CncWall1_F"; rank = ""; position[] = {-21.1865,-9.40625,0}; dir = 60;};
@@ -540,6 +548,7 @@
 		class Hospital_OPF_F {
 			name = $STR_ZEC_Military_MedicalLarge_Hospital_OPF_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Sun_chair_green_F"; rank = ""; position[] = {-6.5,6.375,0}; dir = 165.001;};
 			class Object1 {side = 8; vehicle = "Land_Sun_chair_green_F"; rank = ""; position[] = {-5.5332,7.54907,0}; dir = 149.999;};
 			class Object2 {side = 8; vehicle = "Land_Cargo20_white_F"; rank = ""; position[] = {-9.875,8,0}; dir = 240;};
@@ -586,6 +595,7 @@
 		class AirAmbulance_BLU_F {
 			name = $STR_ZEC_Military_MedicalLarge_AirAmbulance_BLU_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Sacks_heap_F"; rank = ""; position[] = {-19.001,-3.55127,0}; dir = 203.249;};
 			class Object1 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-18.6245,7.875,0}; dir = 224.98;};
 			class Object2 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-19.2495,8.375,0}; dir = 299.971;};
@@ -655,6 +665,7 @@
 		class EvacHospital_BLU_F {
 			name = $STR_ZEC_Military_MedicalLarge_EvacHospital_BLU_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Sacks_heap_F"; rank = ""; position[] = {-3.75,-17.625,0}; dir = 203.249;};
 			class Object1 {side = 8; vehicle = "Land_Sacks_heap_F"; rank = ""; position[] = {-2.875,-18.25,0}; dir = 263.249;};
 			class Object2 {side = 8; vehicle = "Land_Cargo_Patrol_V1_F"; rank = ""; position[] = {-1.62793,-16.6218,0}; dir = 0;};
@@ -719,6 +730,7 @@
 		class MedicalLab_BLU_F {
 			name = $STR_ZEC_Military_MedicalLarge_MedicalLab_BLU_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_TTowerSmall_1_F"; rank = ""; position[] = {-12.606,-7.48828,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_Cargo20_white_F"; rank = ""; position[] = {-14.625,3.625,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_Cargo20_white_F"; rank = ""; position[] = {-18.25,3.625,0}; dir = 270;};
@@ -744,6 +756,7 @@
 		class Hospital_BLU_F {
 			name = $STR_ZEC_Military_MedicalLarge_Hospital_BLU_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_LampHalogen_F"; rank = ""; position[] = {-14.6089,-2.38428,0}; dir = 300;};
 			class Object1 {side = 8; vehicle = "Land_LampHalogen_F"; rank = ""; position[] = {-22,5.2688,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_Sun_chair_green_F"; rank = ""; position[] = {-6.625,-3.5,0}; dir = 270.004;};
@@ -822,6 +835,7 @@
 		class MedicalCompound {
 			name = $STR_ZEC_Military_MedicalMedium_MedicalCompound; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\n_med.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_HBarrier_5_F"; rank = ""; position[] = {-13.2461,-10.1238,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier_5_F"; rank = ""; position[] = {-21.1211,-3.62378,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_5_F"; rank = ""; position[] = {-19.8738,-3.50391,0}; dir = 0;};
@@ -879,6 +893,7 @@
 		class FieldHospital_IND_F {
 			name = $STR_ZEC_Military_MedicalMedium_FieldHospital_IND_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\aaf_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "I_Truck_02_medical_F"; rank = ""; position[] = {-9.24902,-10.3831,0}; dir = 180.001;};
 			class Object1 {side = 8; vehicle = "Land_BagBunker_Small_F"; rank = ""; position[] = {-13.7666,-20.7222,0}; dir = 45;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {-13.9829,-17.0754,0}; dir = 90;};
@@ -928,6 +943,7 @@
 		class AirStationHospital_IND_F {
 			name = $STR_ZEC_Military_MedicalMedium_AirStationHospital_IND_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\aaf_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {-0.100586,-16.6123,0}; dir = 54.076;};
 			class Object1 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-6.76172,-18.0049,0}; dir = 259.905;};
 			class Object2 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-6.74658,-16.0122,0}; dir = 176.367;};
@@ -986,6 +1002,7 @@
 		class Surgery_IND_F {
 			name = $STR_ZEC_Military_MedicalMedium_Surgery_IND_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\aaf_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "I_Truck_02_medical_F"; rank = ""; position[] = {0.125977,-10.3831,0}; dir = 180.001;};
 			class Object1 {side = 8; vehicle = "Land_Wreck_Car_F"; rank = ""; position[] = {11.7432,-18.614,0}; dir = 210;};
 			class Object2 {side = 8; vehicle = "Land_Cargo20_white_F"; rank = ""; position[] = {-7,-20.375,0}; dir = 165;};
@@ -1021,6 +1038,7 @@
 		class FieldHospital_OPF_F {
 			name = $STR_ZEC_Military_MedicalMedium_FieldHospital_OPF_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_FieldToilet_F"; rank = ""; position[] = {-7.25,3.87476,0}; dir = 0.00164506;};
 			class Object1 {side = 8; vehicle = "Land_FieldToilet_F"; rank = ""; position[] = {-8.375,3.375,0}; dir = 345.002;};
 			class Object2 {side = 8; vehicle = "Land_BagBunker_Tower_F"; rank = ""; position[] = {3.81396,-3.13916,0}; dir = 270;};
@@ -1069,6 +1087,7 @@
 		class AirStationHospital_OPF_F {
 			name = $STR_ZEC_Military_MedicalMedium_AirStationHospital_OPF_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {-2.06152,-19.1101,0}; dir = 3.41509e-006;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {1.05176,-16.0046,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-4.70264,-18.6567,0}; dir = 45;};
@@ -1103,6 +1122,7 @@
 		class Surgery_OPF_F {
 			name = $STR_ZEC_Military_MedicalMedium_Surgery_OPF_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {18.9907,-13.9709,0}; dir = 315;};
 			class Object1 {side = 8; vehicle = "Land_FieldToilet_F"; rank = ""; position[] = {-4.125,0.25,0}; dir = 75.0023;};
 			class Object2 {side = 8; vehicle = "Land_FieldToilet_F"; rank = ""; position[] = {-4.01025,2.07153,0}; dir = 102.361;};
@@ -1141,6 +1161,7 @@
 		class FieldHospital_BLU_F {
 			name = $STR_ZEC_Military_MedicalMedium_FieldHospital_BLU_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {-12.8789,-18.1094,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {-15.6289,-18.1094,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-10.2744,-17.7151,0}; dir = 315;};
@@ -1197,6 +1218,7 @@
 		class AirStationHospital_BLU_F {
 			name = $STR_ZEC_Military_MedicalMedium_AirStationHospital_BLU_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_PaperBox_open_empty_F"; rank = ""; position[] = {-9.625,2.74951,0}; dir = 186.432;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {-12.2329,-0.0759277,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-11.7798,2.56494,0}; dir = 135;};
@@ -1250,6 +1272,7 @@
 		class Surgery_BLU_F {
 			name = $STR_ZEC_Military_MedicalMedium_Surgery_BLU_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_GarbagePallet_F"; rank = ""; position[] = {-20.415,2.30273,0}; dir = 150;};
 			class Object1 {side = 8; vehicle = "Land_Pallet_F"; rank = ""; position[] = {-1.5,-16.125,0}; dir = 159.292;};
 			class Object2 {side = 8; vehicle = "Land_Sacks_heap_F"; rank = ""; position[] = {-8,1.125,0}; dir = 269.684;};
@@ -1291,6 +1314,7 @@
 		class MedicalCentre {
 			name = $STR_ZEC_Military_MedicalSmall_MedicalCentre; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\n_med.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_ToiletBox_F"; rank = ""; position[] = {-6.625,-2.375,0}; dir = 0.00190858;};
 			class Object1 {side = 8; vehicle = "Land_ToiletBox_F"; rank = ""; position[] = {-5.25,-2.375,0}; dir = 0.00190858;};
 			class Object2 {side = 8; vehicle = "Land_ToiletBox_F"; rank = ""; position[] = {-8.37512,-2.375,0}; dir = 15.0029;};
@@ -1315,6 +1339,7 @@
 		class FieldHospital_IND_F {
 			name = $STR_ZEC_Military_MedicalSmall_FieldHospital_IND_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\aaf_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "I_Truck_02_medical_F"; rank = ""; position[] = {-1.74463,-12.3723,0}; dir = 75.0004;};
 			class Object1 {side = 8; vehicle = "Land_Cargo20_white_F"; rank = ""; position[] = {-7.87646,-0.545654,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_Cargo20_white_F"; rank = ""; position[] = {-12.1265,-0.420654,0}; dir = 270;};
@@ -1353,6 +1378,7 @@
 		class CollectionStation_IND_F {
 			name = $STR_ZEC_Military_MedicalSmall_CollectionStation_IND_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\aaf_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {-17.2329,-14.7004,0}; dir = 90;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-16.8062,-9.26929,0}; dir = 135;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-16.8936,-17.4856,0}; dir = 45;};
@@ -1397,6 +1423,7 @@
 		class UrbanSurgery_IND_F {
 			name = $STR_ZEC_Military_MedicalSmall_UrbanSurgery_IND_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\aaf_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Sacks_heap_F"; rank = ""; position[] = {-6.50098,-9.80127,0}; dir = 203.249;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {-6.36963,-12.345,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {-3.50244,-12.3137,0}; dir = 0;};
@@ -1418,6 +1445,7 @@
 		class Surgery1_IND_F {
 			name = $STR_ZEC_Military_MedicalSmall_Surgery1_IND_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\aaf_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "I_Truck_02_medical_F"; rank = ""; position[] = {-7.00781,-21.4233,0}; dir = 255.001;};
 			class Object1 {side = 8; vehicle = "Land_TTowerSmall_1_F"; rank = ""; position[] = {5.01758,-18.4089,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_PortableLight_double_F"; rank = ""; position[] = {9.36133,-18.1887,0}; dir = 120;};
@@ -1443,6 +1471,7 @@
 		class Surgery2_IND_F {
 			name = $STR_ZEC_Military_MedicalSmall_Surgery2_IND_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\aaf_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "I_Truck_02_medical_F"; rank = ""; position[] = {-5.88135,-18.6277,0}; dir = 255.001;};
 			class Object1 {side = 8; vehicle = "Land_Cargo20_white_F"; rank = ""; position[] = {-5.63672,-5.70605,0}; dir = 240;};
 			class Object2 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-7.88232,-6.61475,0}; dir = 334.905;};
@@ -1470,6 +1499,7 @@
 		class FieldHospital_OPF_F {
 			name = $STR_ZEC_Military_MedicalSmall_FieldHospital_OPF_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_MetalCase_01_large_F"; rank = ""; position[] = {2.68652,-4.68604,0}; dir = 125.578;};
 			class Object1 {side = 8; vehicle = "O_Truck_03_medical_F"; rank = ""; position[] = {2.84229,-13.1304,0}; dir = 89.9983;};
 			class Object2 {side = 8; vehicle = "Land_MetalBarrel_empty_F"; rank = ""; position[] = {0.5,-5.375,0}; dir = 149.986;};
@@ -1507,6 +1537,7 @@
 		class CollectionStation_OPF_F {
 			name = $STR_ZEC_Military_MedicalSmall_CollectionStation_OPF_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_End_F"; rank = ""; position[] = {7.23096,-14.6533,0}; dir = 60;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_End_F"; rank = ""; position[] = {-7.61377,-10.9094,0}; dir = 225;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_End_F"; rank = ""; position[] = {10.0635,-11.7168,0}; dir = 240;};
@@ -1542,6 +1573,7 @@
 		class UrbanSurgery_OPF_F {
 			name = $STR_ZEC_Military_MedicalSmall_UrbanSurgery_OPF_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-7.47949,-12.6343,0}; dir = 30;};
 			class Object1 {side = 8; vehicle = "Land_FieldToilet_F"; rank = ""; position[] = {-0.125,-2.5,0}; dir = 30.0012;};
 			class Object2 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-8.59766,-5.51587,0}; dir = 270;};
@@ -1570,6 +1602,7 @@
 		class Surgery1_OPF_F {
 			name = $STR_ZEC_Military_MedicalSmall_Surgery1_OPF_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {-12.1855,-10.5962,0}; dir = 105;};
 			class Object1 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {4.07568,-15.1873,0}; dir = 89.9763;};
 			class Object2 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {4.70068,-14.9375,0}; dir = 224.98;};
@@ -1602,6 +1635,7 @@
 		class Surgery2_OPF_F {
 			name = $STR_ZEC_Military_MedicalSmall_Surgery2_OPF_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_TTowerSmall_1_F"; rank = ""; position[] = {3.85254,0.889404,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-0.25,-2.625,0}; dir = 299.971;};
 			class Object2 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-0.5,-3.62476,0}; dir = 89.9764;};
@@ -1637,6 +1671,7 @@
 		class FieldHospital_BLU_F {
 			name = $STR_ZEC_Military_MedicalSmall_FieldHospital_BLU_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-4.49756,-8.65845,0}; dir = 45;};
 			class Object1 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-11.6162,14.4465,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-13.4082,4.30908,0}; dir = 270;};
@@ -1690,6 +1725,7 @@
 		class CollectionStation_BLU_F {
 			name = $STR_ZEC_Military_MedicalSmall_CollectionStation_BLU_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "B_Truck_01_medical_F"; rank = ""; position[] = {3.39453,-13.5,0}; dir = 90.0014;};
 			class Object1 {side = 8; vehicle = "Land_ToiletBox_F"; rank = ""; position[] = {-6.47461,-13.1685,0}; dir = 285.006;};
 			class Object2 {side = 8; vehicle = "Land_TTowerSmall_1_F"; rank = ""; position[] = {-12.606,0.386719,0}; dir = 0;};
@@ -1719,6 +1755,7 @@
 		class UrbanSurgery_BLU_F {
 			name = $STR_ZEC_Military_MedicalSmall_UrbanSurgery_BLU_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-6.13623,1.56104,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-6.07324,-4.44312,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {-5.10938,-10.9961,0}; dir = 90;};
@@ -1755,6 +1792,7 @@
 		class Surgery1_BLU_F {
 			name = $STR_ZEC_Military_MedicalSmall_Surgery1_BLU_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_PalletTrolley_01_khaki_F"; rank = ""; position[] = {8.62158,-6.21069,0}; dir = 9.821;};
 			class Object1 {side = 8; vehicle = "Land_CratesShabby_F"; rank = ""; position[] = {9.99561,6.00635,0}; dir = 135;};
 			class Object2 {side = 8; vehicle = "Land_CratesShabby_F"; rank = ""; position[] = {9.43701,-3.62573,0}; dir = 315;};
@@ -1784,6 +1822,7 @@
 		class Surgery2_BLU_F {
 			name = $STR_ZEC_Military_MedicalSmall_Surgery2_BLU_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {-13.25,8.375,0}; dir = 111.378;};
 			class Object1 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-8.125,7.375,0}; dir = 224.98;};
 			class Object2 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-8.75,7.875,0}; dir = 299.971;};
