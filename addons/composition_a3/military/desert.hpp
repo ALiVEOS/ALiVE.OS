@@ -31,3 +31,5 @@
 #include "desert\supports.hpp"
 
 #include "desert\supplies.hpp"
+
+#include "desert\training.hpp"

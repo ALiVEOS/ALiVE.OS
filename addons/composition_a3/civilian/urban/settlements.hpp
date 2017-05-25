@@ -4,6 +4,7 @@
 		class ShantyTown {
 			name = $STR_ZEC_Civilian_SettlementsLarge_ShantyTown; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Slum_House03_F"; rank = ""; position[] = {-18.3867,-20.4414,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_cargo_house_slum_F"; rank = ""; position[] = {-22.9133,-7.64648,0}; dir = 255;};
 			class Object3 {side = 8; vehicle = "Land_Slum_House01_F"; rank = ""; position[] = {-23.4705,-16.042,0}; dir = 90;};
@@ -209,6 +210,7 @@
 		class CampSite {
 			name = $STR_ZEC_Civilian_SettlementsSmall_CampSite; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-2.13727,3.88806,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-2.112,-0.743164,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_GarbagePallet_F"; rank = ""; position[] = {-8.51038,-1.5918,0}; dir = 0;};
@@ -269,6 +271,7 @@
 		class WalledStoneHouse {
 			name = $STR_ZEC_Civilian_SettlementsSmall_WalledStoneHouse; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_u_House_Small_02_V1_F"; rank = ""; position[] = {-9.57169,-9.85522,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_Stone_8m_F"; rank = ""; position[] = {-8.14325,-16.6262,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_Stone_pillar_F"; rank = ""; position[] = {-3.89499,-16.605,0}; dir = 0;};

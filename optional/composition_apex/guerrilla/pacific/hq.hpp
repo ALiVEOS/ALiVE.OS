@@ -4,6 +4,7 @@
 		class MainHQ_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_HQLarge_MainHQ; // Credit: 2600K
 			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_HBarrier_01_line_5_green_F"; rank = ""; position[] = {-2.62109,-18.7687,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_Cargo10_light_blue_F"; rank = ""; position[] = {-9.125,11.875,0}; dir = 246.078;};
 			class Object2 {side = 8; vehicle = "Land_Cargo20_orange_F"; rank = ""; position[] = {-12.625,9.875,0}; dir = 228.145;};
@@ -69,6 +70,7 @@
 		class FactoryHQ_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_HQLarge_FactoryHQ; // Credit: 2600K
 			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "I_C_Offroad_02_unarmed_F"; rank = ""; position[] = {-27.2651,-33.5476,0}; dir = 149.999;};
 			class Object1 {side = 8; vehicle = "Land_Tank_rust_F"; rank = ""; position[] = {-17.2827,-10.8279,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-26.8789,-14.1079,0}; dir = 15;};

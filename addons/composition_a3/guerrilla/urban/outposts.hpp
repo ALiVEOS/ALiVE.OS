@@ -8,6 +8,7 @@
 		class DestroyedHouse_BLU_G_F {
 			name = $STR_ZEC_Guerrilla_OutpostsMedium_DestroyedHouse; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\fia_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Sacks_heap_F"; rank = ""; position[] = {-6.75,-2.125,0}; dir = 345;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier_Big_F"; rank = ""; position[] = {-8.7074,1.53516,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_Big_F"; rank = ""; position[] = {-8.4574,-6.71484,0}; dir = 90;};
@@ -39,6 +40,7 @@
 		class LongHouse_BLU_G_F {
 			name = $STR_ZEC_Guerrilla_OutpostsMedium_LongHouse; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\fia_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Stone_8m_F"; rank = ""; position[] = {-3.14325,-15.3762,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Stone_8m_F"; rank = ""; position[] = {-16.0013,-6.35669,0}; dir = 90;};
 			class Object3 {side = 8; vehicle = "Land_Stone_8m_F"; rank = ""; position[] = {-11.8932,-15.3762,0}; dir = 0;};
@@ -96,6 +98,7 @@
 		class HouseFortified_BLU_G_F {
 			name = $STR_ZEC_Guerrilla_OutpostsMedium_HouseFortified; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\fia_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {2.625,-2.375,0}; dir = 255.001;};
 			class Object1 {side = 8; vehicle = "Land_HBarrierWall4_F"; rank = ""; position[] = {-5.24976,-7.49951,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_PaperBox_open_empty_F"; rank = ""; position[] = {-8.62463,-0.874756,0}; dir = 75;};
@@ -136,6 +139,7 @@
 		class SmallHouse_BLU_G_F {
 			name = $STR_ZEC_Guerrilla_OutpostsSmall_SmallHouse; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\fia_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_WaterTank_F"; rank = ""; position[] = {-0.25,0.5,0}; dir = 0.00112158;};
 			class Object1 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {12.1251,1.875,0}; dir = 225.007;};
 			class Object2 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {11.5,2.375,0}; dir = 300.002;};

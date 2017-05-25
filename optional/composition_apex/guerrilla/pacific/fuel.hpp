@@ -4,6 +4,7 @@
 		class Depot_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FuelLarge_Depot; // Credit: 2600K
 			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-23.2422,-15.5879,0}; dir = 135;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-23.4648,-20.6279,0}; dir = 45;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-19.6328,-20.6621,0}; dir = 315;};
@@ -88,6 +89,7 @@
 		class Refinery_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FuelLarge_Refinery; // Credit: 2600K
 			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
+			side = 8;
 			 class Object0 {side = 8; vehicle = "Land_TinWall_02_l_4m_F"; rank = ""; position[] = {-17.1499,-25.25,0}; dir = 90;};
 			 class Object1 {side = 8; vehicle = "Land_TinWall_02_l_8m_F"; rank = ""; position[] = {-21.123,-23.2749,0}; dir = 0;};
 			 class Object2 {side = 8; vehicle = "Land_TinWall_02_l_8m_F"; rank = ""; position[] = {-25.1499,-11.2517,0}; dir = 90;};
@@ -204,6 +206,7 @@
 		class StorageTank_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FuelMedium_StorageTank; // Credit: 2600K
 			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_TinWall_02_l_8m_F"; rank = ""; position[] = {-2.87305,-15.1499,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_TinWall_02_l_8m_F"; rank = ""; position[] = {-16.8999,-3.12671,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "C_Truck_02_fuel_F"; rank = ""; position[] = {-4.73926,-10.8582,0}; dir = 285.015;};
@@ -263,6 +266,7 @@
 		class StorageArea_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FuelSmall_StorageArea; // Credit: 2600K
 			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Mil_WiredFence_Gate_F"; rank = ""; position[] = {-6.01318,-1.50635,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_TinWall_01_m_4m_v1_F"; rank = ""; position[] = {0.00927734,-7.50391,0}; dir = 30;};
 			class Object2 {side = 8; vehicle = "Land_TinWall_01_m_4m_v1_F"; rank = ""; position[] = {-3.73975,-6.49854,0}; dir = 0;};
@@ -306,6 +310,7 @@
 		class StorageTanks_IND_C_F {
 			name = $STR_ZEC_GuerrillaPacific_FuelSmall_StorageTanks; // Credit: 2600K
 			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_TinWall_02_l_8m_F"; rank = ""; position[] = {-8.61865,-12.0408,0}; dir = 90;};
 			class Object1 {side = 8; vehicle = "Land_TinWall_02_l_8m_F"; rank = ""; position[] = {-4.5918,-16.064,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_GarbageContainer_open_F"; rank = ""; position[] = {-1.55469,-2.21802,0}; dir = 189.741;};

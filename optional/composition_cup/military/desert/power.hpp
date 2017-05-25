@@ -13,6 +13,7 @@
 		class Generator_CUP_O_TK {
 			name = $STR_ZECCUP_MilitaryDesert_PowerSmall_Generator_CUP_O_TK; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "PowGen_Big"; rank = ""; position[] = {-1.90869,0.339844,0}; dir = 75;};
 			class Object1 {side = 8; vehicle = "FoldTable"; rank = ""; position[] = {-2.953,-5.50879,0}; dir = 240;};
 			class Object2 {side = 8; vehicle = "FoldChair"; rank = ""; position[] = {-3.74426,-5.38818,0}; dir = 255;};
@@ -39,6 +40,7 @@
 		class Generator_CUP_B_USMC {
 			name = $STR_ZECCUP_MilitaryDesert_PowerSmall_Generator_CUP_B_USMC; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_WoodenTable_large_F"; rank = ""; position[] = {-2.875,-0.25,0}; dir = 119.69;};
 			class Object1 {side = 8; vehicle = "AmmoCrate_NoInteractive_"; rank = ""; position[] = {-6.65771,1.25146,0}; dir = 150;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_End_F"; rank = ""; position[] = {-2.72205,-5.10596,0}; dir = 270;};

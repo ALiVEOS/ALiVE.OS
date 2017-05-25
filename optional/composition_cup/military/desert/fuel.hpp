@@ -9,6 +9,7 @@
 		class OilT_CUP_O_TK {
 			name = $STR_ZECCUP_MilitaryDesert_FuelMedium_OilT_CUP_O_TK; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-5.49365,-13.4504,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-11.3256,-8.00635,0}; dir = 270;};
 			class Object3 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-11.2006,-13.6313,0}; dir = 270;};
@@ -60,6 +61,7 @@
 		class FuelDump_CUP_O_TK {
 			name = $STR_ZECCUP_MilitaryDesert_FuelMedium_FuelDump_CUP_O_TK; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object3 {side = 8; vehicle = "Land_CamoNetB_EAST_EP1"; rank = ""; position[] = {-0.545288,4.7356,0}; dir = 0;};
 			class Object4 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-15.3256,2.61865,0}; dir = 270;};
 			class Object5 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-4.81018,4.31836,0}; dir = 75;};
@@ -110,6 +112,7 @@
 		class OilT_CUP_B_USMC {
 			name = $STR_ZECCUP_MilitaryDesert_FuelMedium_OilT_CUP_B_USMC; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-11.2994,-0.493652,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {0.756348,-2.20044,0}; dir = 180;};
 			class Object3 {side = 8; vehicle = "Flag_US_F"; rank = ""; position[] = {0.646973,-3.63867,0}; dir = 0;};
@@ -155,6 +158,7 @@
 		class FuelDump_CUP_B_USMC {
 			name = $STR_ZECCUP_MilitaryDesert_FuelMedium_FuelDump_CUP_B_USMC; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-3.86865,-1.82544,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-9.57556,-2.00635,0}; dir = 270;};
 			class Object3 {side = 8; vehicle = "Land_Ind_TankSmall2"; rank = ""; position[] = {-5.37366,1.53418,0}; dir = 180;};

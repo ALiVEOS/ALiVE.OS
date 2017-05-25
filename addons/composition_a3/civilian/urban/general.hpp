@@ -4,6 +4,7 @@
 		class SportsGround {
 			name = $STR_ZEC_Civilian_GeneralLarge_SportsGround; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Stadium_p6_F"; rank = ""; position[] = {4.14392,-9.13257,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Stadium_p7_F"; rank = ""; position[] = {4.13074,-9.17969,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_Stadium_p5_F"; rank = ""; position[] = {3.82031,-9.0752,0}; dir = 0;};
@@ -17,6 +18,7 @@
 		class GhostHotel {
 			name = $STR_ZEC_Civilian_GeneralLarge_GhostHotel; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_GH_MainBuilding_right_F"; rank = ""; position[] = {0.0170593,2.13867,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_GH_MainBuilding_middle_F"; rank = ""; position[] = {-0.0101624,2.21899,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_GH_MainBuilding_entry_F"; rank = ""; position[] = {-0.00213623,2.20776,0}; dir = 0;};
@@ -29,6 +31,7 @@
 		class Church {
 			name = $STR_ZEC_Civilian_GeneralMedium_Church; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\church_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Chapel_V1_F"; rank = ""; position[] = {11.3921,-9.02563,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_City_8m_F"; rank = ""; position[] = {-12.125,-10.9092,0}; dir = 270;};
 			class Object3 {side = 8; vehicle = "Land_City_8m_F"; rank = ""; position[] = {-1.59082,-14.125,0}; dir = 180;};
@@ -76,6 +79,7 @@
 		class BasketballCourt {
 			name = $STR_ZEC_Civilian_GeneralMedium_BasketballCourt; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_SportGround_fence_F"; rank = ""; position[] = {-14.5134,-16.9814,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_SportGround_fence_F"; rank = ""; position[] = {-17.0186,15.4866,0}; dir = 270;};
 			class Object3 {side = 8; vehicle = "Land_SportGround_fence_F"; rank = ""; position[] = {-17.0186,0.486572,0}; dir = 270;};
@@ -155,6 +159,7 @@
 		class MarketStall1 {
 			name = $STR_ZEC_Civilian_GeneralSmall_MarketStall1; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Garbage_square3_F"; rank = ""; position[] = {-9.48926,-2.70728,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_Pallet_vertical_F"; rank = ""; position[] = {-0.500488,1.99902,0}; dir = 210.001;};
 			class Object2 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-6.9873,-1.75073,0}; dir = 105;};
@@ -178,6 +183,7 @@
 		class MarketStall2 {
 			name = $STR_ZEC_Civilian_GeneralSmall_MarketStall2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {-8.91113,-3.47241,0}; dir = 69.076;};
 			class Object1 {side = 8; vehicle = "Land_CratesShabby_F"; rank = ""; position[] = {-2.24561,1.11865,0}; dir = 315;};
 			class Object2 {side = 8; vehicle = "Land_Sacks_heap_F"; rank = ""; position[] = {-7.375,0.25,0}; dir = 14.6844;};
@@ -204,6 +210,7 @@
 		class MarketStall3 {
 			name = $STR_ZEC_Civilian_GeneralSmall_MarketStall3; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_CratesShabby_F"; rank = ""; position[] = {-6.25781,-0.873535,0}; dir = 90;};
 			class Object1 {side = 8; vehicle = "Land_CratesShabby_F"; rank = ""; position[] = {-5.99658,0.13208,0}; dir = 195;};
 			class Object2 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {-4.375,-0.75,0}; dir = 0;};

@@ -4,6 +4,7 @@
 		class Hospital {
 			name = $STR_ZEC_Civilian_MedicalLarge_Hospital; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\hospital_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Hospital_side2_F"; rank = ""; position[] = {-0.301758,7.32251,0.6}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_HBarrier_1_F"; rank = ""; position[] = {-26,-28.0076,0}; dir = 0;};
 			class Object4 {side = 8; vehicle = "Land_HBarrier_5_F"; rank = ""; position[] = {-25.9988,-29.3789,0}; dir = 0;};
@@ -24,6 +25,7 @@
 		class MedicalCenter {
 			name = $STR_ZEC_Civilian_MedicalMedium_MedicalCenter; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\hospital_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Medevac_HQ_V1_F"; rank = ""; position[] = {-9.04492,-0.773193,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_Big_F"; rank = ""; position[] = {-18.4176,-4.28516,0}; dir = 270;};
 			class Object3 {side = 8; vehicle = "Land_HBarrier_5_F"; rank = ""; position[] = {-11.4988,-7.50391,0}; dir = 0;};

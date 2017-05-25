@@ -4,6 +4,7 @@
 		class Refinery {
 			name = $STR_ZEC_Civilian_MiningOilLarge_Refinery; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Concrete_SmallWall_8m_F"; rank = ""; position[] = {-34.8691,-44.49,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_Concrete_SmallWall_8m_F"; rank = ""; position[] = {-26.8691,-44.49,0}; dir = 180;};
 			class Object3 {side = 8; vehicle = "Land_dp_bigTank_F"; rank = ""; position[] = {-31.1206,-10.0742,0}; dir = 150;};

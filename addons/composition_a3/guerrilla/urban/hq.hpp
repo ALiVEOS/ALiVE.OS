@@ -8,6 +8,7 @@
 		class RuinFortified {
 			name = $STR_ZEC_Guerrilla_HQMedium_RuinFortified; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\n_installation.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_JunkPile_F"; rank = ""; position[] = {-3.37305,-9.79688,0}; dir = 320;};
 			class Object2 {side = 8; vehicle = "Land_WheelCart_F"; rank = ""; position[] = {4.12109,-12.2148,0}; dir = 165.085;};
 			class Object3 {side = 8; vehicle = "Land_Bricks_V3_F"; rank = ""; position[] = {2.01758,-11.3984,0}; dir = 210;};
@@ -55,6 +56,7 @@
 		class HangarFortified {
 			name = $STR_ZEC_Guerrilla_HQMedium_HangarFortified; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\n_installation.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_HBarrier_Big_F"; rank = ""; position[] = {-5.70386,-6.51648,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_Big_F"; rank = ""; position[] = {-11.2461,-3.49829,0}; dir = 90;};
 			class Object3 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {0.325562,-23.5812,0}; dir = 225;};
@@ -144,6 +146,7 @@
 		class ShedSandbags {
 			name = $STR_ZEC_Guerrilla_HQMedium_ShedSandbags; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\n_installation.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_HBarrier_5_F"; rank = ""; position[] = {-7.45068,-17.719,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {0.508057,-21.2095,0}; dir = 313.717;};
 			class Object4 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-2.09497,-21.1975,0}; dir = 41.309;};

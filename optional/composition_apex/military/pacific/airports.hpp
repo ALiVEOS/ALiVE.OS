@@ -4,6 +4,7 @@
 		class Hangar_OPF_T_F {
 			name = $STR_ZEC_MilitaryPacific_AirportsLarge_Hangar_OPF_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\csat_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {5.00525,-22.8447,0}; dir = 282.463;};
 			class Object1 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {4.34814,-26.7334,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {7.59912,-24.2383,0}; dir = 180;};
@@ -66,6 +67,7 @@
 		class Hangar_BLU_T_F {
 			name = $STR_ZEC_MilitaryPacific_AirportsLarge_Hangar_BLU_T_F; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_PaperBox_closed_F"; rank = ""; position[] = {-6.26251,-30.3774,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-7.03699,-25.9922,0}; dir = 45;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-4.61682,-26.7656,0}; dir = 180;};
