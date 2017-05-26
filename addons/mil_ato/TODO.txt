@@ -1,15 +1,14 @@
 ATO TO DO
 - Tests
-    - profile UAV from carrier - fails when assets are spawned later in mission?
-    - helo from carrier - if spawned, crew don't board?
+    - move back to start pos without exploding in certain circumstances
     - helo/VTOL return to carrier - can't land :(
     - helo/VTOL return to helipad - done?
 - Issue where asset is spawned, but no players around impacts takeoff?
 - Carrier height changes over time due to sea level??? implement height based relative model position
-- Check waypoint completions
+
+
 
 - VP integration
-- profile UAVs don't have to take off
 - make sure reroute is correct - don't reroute twice
 - SEAD/STRIKE/CAS/RECCE vs Profiles?
 - On demand analysis
@@ -19,13 +18,12 @@ ATO TO DO
 - add OCA/CAP if new planes
 - Check for AA or AG weapons on aircraft and select assets based on mission
 - ATO requests sent to player aircraft if available (via tasks?)
+    - CAS, SEAD, Strike, OCA, CAP?, CSAR
 - Multiple targets
 - Place AA
 - Option to include CS assets
-- kickoff rescue mission on downed bird
 - Player request handling
 - Spawn Carrier if ATO module over sea
-
 
 Tests Completed
     - spawned plane from runway - done
