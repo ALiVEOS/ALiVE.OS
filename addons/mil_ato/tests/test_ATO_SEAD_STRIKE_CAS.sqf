@@ -5,7 +5,7 @@ SCRIPT(test_ATO_HELI_INSERT);
 
 //execVM "\x\alive\addons\mil_ato\tests\test_ATO_SEAD_STRIKE_CAS.sqf"
 
-#define DEFAULT_OP_HEIGHT 100
+#define DEFAULT_OP_HEIGHT 1000
 #define DEFAULT_OP_DURATION 7
 #define DEFAULT_SPEED "NORMAL"
 #define DEFAULT_MIN_WEAP_STATE 0.5
@@ -50,16 +50,16 @@ private _faction = "BLU_F";
 
 
 _type = "CAS";
-_range = 1000;
+_range = 2000;
 _args = [
     "RED",                // ROE
-    DEFAULT_OP_HEIGHT,
+    500,
     "FULL",
     DEFAULT_MIN_WEAP_STATE,
     DEFAULT_MIN_FUEL_STATE,
     _range,       // RADIUS
     DEFAULT_OP_DURATION,
-    [targetCAS]                      // TARGETS
+    [targetCAS]  // TARGETS
 ];
 _event = ['ATO_REQUEST', [_type, _side, _faction, "BLUE", _args],"ATO"] call ALIVE_fnc_event;
 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
@@ -67,10 +67,10 @@ _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 sleep 60;
 
 _type = "SEAD";
-_range = 1000;
+_range = 2000;
 _args = [
     "RED",                // ROE
-    DEFAULT_OP_HEIGHT,
+    100,
     "FULL",
     DEFAULT_MIN_WEAP_STATE,
     DEFAULT_MIN_FUEL_STATE,
@@ -85,7 +85,7 @@ sleep 60;
 
 // Request in opposite priority order to test queue ordering
 private _type = "Strike";
-private _range = 1000;
+private _range = 2000;
 private _args = [
     "RED",                // ROE
     DEFAULT_OP_HEIGHT,
