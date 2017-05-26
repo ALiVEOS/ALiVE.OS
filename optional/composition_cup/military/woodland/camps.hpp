@@ -13,6 +13,7 @@
 		class Camp_CUP_O_RU {
 			name = $STR_ZECCUP_MilitaryWoodland_CampsSmall_Camp_CUP_O_RU; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_CamoNetVar_EAST"; rank = ""; position[] = {-0.198975,-0.350586,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_fort_bagfence_corner"; rank = ""; position[] = {-6.38623,-4.76758,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_TentA_F"; rank = ""; position[] = {-3.92456,-1.60254,0}; dir = 255;};
@@ -36,6 +37,7 @@
 		class Camp_CUP_B_CDF {
 			name = $STR_ZECCUP_MilitaryWoodland_CampsSmall_Camp_CUP_B_CDF; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_TentDome_F"; rank = ""; position[] = {-3.43848,0.661621,0}; dir = 210;};
 			class Object1 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-0.498779,-1.43359,0}; dir = 189.408;};
 			class Object2 {side = 8; vehicle = "Land_CanisterPlastic_F"; rank = ""; position[] = {-0.375,-4.625,0}; dir = 134.047;};

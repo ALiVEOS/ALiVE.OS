@@ -764,7 +764,7 @@ class FSM
           precondition = /*%FSM<CONDPRECONDITION""">*/"private [""_smoke""];" \n
            "" \n
            "if (sunOrMoon == 0) then {" \n
-           "    _smoke = _pos nearObjects [""B_IRStrobe"", 250] select 0;" \n
+           "    _smoke = _pos nearObjects [""IRStrobeBase"", 250] select 0;" \n
            "} else {" \n
            "    _smoke = _pos nearObjects [""SmokeShell"", 250] select 0;" \n
            "};" \n

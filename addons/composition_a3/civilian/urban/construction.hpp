@@ -8,6 +8,7 @@
 		class CommsSupports {
 			name = $STR_ZEC_Civilian_ConstructionSuppliesLarge_CommsSupports; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Medevac_house_V1_F"; rank = ""; position[] = {-30,-11.0215,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_Radar_Small_F"; rank = ""; position[] = {-31.4429,11.3974,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_HelipadCircle_F"; rank = ""; position[] = {6,-10,0}; dir = 0;};
@@ -21,6 +22,7 @@
 		class BuildingSite {
 			name = $STR_ZEC_Civilian_ConstructionMedium_BuildingSite; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Coil_F"; rank = ""; position[] = {1.92004,-14.53,0}; dir = 360;};
 			class Object2 {side = 8; vehicle = "Land_Concrete_SmallWall_8m_F"; rank = ""; position[] = {-7.91406,-12.6299,0}; dir = 180;};
 			class Object3 {side = 8; vehicle = "Land_Concrete_SmallWall_8m_F"; rank = ""; position[] = {-11.91,-1.396,0}; dir = 270;};
@@ -99,6 +101,7 @@
 		class TwoFloorRuin {
 			name = $STR_ZEC_Civilian_ConstructionMedium_TwoFloorRuin; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {0.0377197,0.0717773,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {4.65186,-16.2859,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {0.929932,-5.29077,0}; dir = 45;};
@@ -167,6 +170,7 @@
 		class ConstructionSiteShed {
 			name = $STR_ZEC_Civilian_ConstructionMedium_ConstructionSiteShed; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_u_Shed_Ind_F"; rank = ""; position[] = {-3.49915,-9.33008,0}; dir = 0;}; // Z: 0.5
 			class Object2 {side = 8; vehicle = "Land_Wall_Tin_4"; rank = ""; position[] = {-11.8622,-17.239,0}; dir = 360;};
 			class Object3 {side = 8; vehicle = "Land_Wall_Tin_4"; rank = ""; position[] = {-3.86218,-17.239,0}; dir = 360;};
@@ -226,6 +230,7 @@
 		class OneFloorRuin {
 			name = $STR_ZEC_Civilian_ConstructionSmall_OneFloorRuin; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-14.1445,-2.17578,0}; dir = 290.395;};
 			class Object2 {side = 8; vehicle = "Land_Portable_generator_F"; rank = ""; position[] = {-15.4609,-1.35352,0}; dir = 135.009;};
 			class Object3 {side = 8; vehicle = "Land_PortableLight_double_F"; rank = ""; position[] = {-15.1641,-2.48242,0}; dir = 227.355;};
@@ -261,6 +266,7 @@
 		class ConstructionSite1 {
 			name = $STR_ZEC_Civilian_ConstructionSmall_ConstructionSite1; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Unfinished_Building_01_F"; rank = ""; position[] = {-2.61914,5.73828,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_JunkPile_F"; rank = ""; position[] = {-9.20703,14.0742,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {-5.0293,9.26758,0}; dir = 0;};
@@ -286,6 +292,7 @@
 		class ConstructionSite2 {
 			name = $STR_ZEC_Civilian_ConstructionSmall_ConstructionSite2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Unfinished_Building_01_F"; rank = ""; position[] = {-2.5625,6.13281,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Wreck_Ural_F"; rank = ""; position[] = {-8.66211,-3.28711,0}; dir = 300;};
 			class Object3 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-10.2676,7.75391,0}; dir = 97.7588;};
@@ -349,6 +356,7 @@
 		class ConstructionSite3 {
 			name = $STR_ZEC_Civilian_ConstructionSmall_ConstructionSite3; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_ConcretePipe_F"; rank = ""; position[] = {-11.5742,-6.81055,0}; dir = 215.391;};
 			class Object2 {side = 8; vehicle = "Land_ConcretePipe_F"; rank = ""; position[] = {-12.3086,-2.87695,0}; dir = 255.482;};
 			class Object3 {side = 8; vehicle = "Land_Unfinished_Building_01_F"; rank = ""; position[] = {2.05078,6.26953,0}; dir = 0;};
@@ -414,6 +422,7 @@
 		class FillerClutter1 {
 			name = $STR_ZEC_Civilian_ConstructionSuppliesLarge_FillerClutter1; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {-16.4038,-14.5059,0}; dir = 180.001;};
 			class Object1 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {-6.5,-17.5,0}; dir = 60.0015;};
 			class Object2 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {-15.25,-7,0}; dir = 354.092;};
@@ -512,6 +521,7 @@
 		class FillerClutter2 {
 			name = $STR_ZEC_Civilian_ConstructionSuppliesLarge_FillerClutter2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Sacks_goods_F"; rank = ""; position[] = {-16.4521,-4.24829,0}; dir = 278.155;};
 			class Object1 {side = 8; vehicle = "Land_Pallet_vertical_F"; rank = ""; position[] = {-16.5833,-14.1104,0}; dir = 14.9863;};
 			class Object2 {side = 8; vehicle = "Land_Pallet_vertical_F"; rank = ""; position[] = {-16.0862,-15.2375,0}; dir = 269.994;};
@@ -595,6 +605,7 @@
 		class FillerClutter3 {
 			name = $STR_ZEC_Civilian_ConstructionSuppliesLarge_FillerClutter3; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Sacks_goods_F"; rank = ""; position[] = {-3.76416,-15.0066,0}; dir = 116.097;};
 			class Object1 {side = 8; vehicle = "Land_Sacks_goods_F"; rank = ""; position[] = {-15.48,-13.7351,0}; dir = 360;};
 			class Object2 {side = 8; vehicle = "Land_Sacks_goods_F"; rank = ""; position[] = {-5.4917,-3.74072,0}; dir = 300;};
@@ -697,6 +708,7 @@
 		class FillerJunkLarge {
 			name = $STR_ZEC_Civilian_ConstructionSuppliesLarge_FillerJunkLarge; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {-2.48523,-13.3359,0}; dir = 349.247;};
 			class Object1 {side = 8; vehicle = "Land_CratesShabby_F"; rank = ""; position[] = {-15.0396,-16.0823,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_CratesShabby_F"; rank = ""; position[] = {-3.99829,-4.50757,0}; dir = 336.49;};
@@ -816,6 +828,7 @@
 		class FillerJunkSmall {
 			name = $STR_ZEC_Civilian_ConstructionSuppliesLarge_FillerJunkSmall; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_IronPipes_F"; rank = ""; position[] = {-19.5688,-15.6226,0}; dir = 285;};
 			class Object2 {side = 8; vehicle = "Land_GarbageBags_F"; rank = ""; position[] = {-2.66504,-8.88989,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_GarbageBags_F"; rank = ""; position[] = {-12.665,-8.88989,0}; dir = 0;};
@@ -941,6 +954,7 @@
 		class FillerWrecks {
 			name = $STR_ZEC_Civilian_ConstructionSuppliesLarge_FillerWrecks; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Pallets_stack_F"; rank = ""; position[] = {-22.75,-19,0}; dir = 140.33;};
 			class Object1 {side = 8; vehicle = "Land_Tyre_F"; rank = ""; position[] = {-10.9685,-19.001,0}; dir = 0.0143491;};
 			class Object2 {side = 8; vehicle = "Land_Wreck_HMMWV_F"; rank = ""; position[] = {-8.0437,-15.2964,0}; dir = 326.015;};
@@ -1080,6 +1094,7 @@
 		class FillerConstruction {
 			name = $STR_ZEC_Civilian_ConstructionSuppliesLarge_FillerConstruction; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {-26.1154,-21.1328,0}; dir = 330;};
 			class Object1 {side = 8; vehicle = "Land_GarbageContainer_closed_F"; rank = ""; position[] = {-26.7212,-26.0195,0}; dir = 328.868;};
 			class Object2 {side = 8; vehicle = "Land_GarbageContainer_open_F"; rank = ""; position[] = {-29.875,-23.625,0}; dir = 300;};
@@ -1212,6 +1227,7 @@
 		class EdenJunkWrecks {
 			name = $STR_ZEC_Civilian_ConstructionSuppliesLarge_EdenJunkWrecks; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Wreck_Ural_F"; rank = ""; position[] = {-2.31165,-10.1016,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Wreck_BRDM2_F"; rank = ""; position[] = {-13.6341,-9.45264,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_Wreck_Truck_F"; rank = ""; position[] = {-7.83563,-10.5598,0}; dir = 0;};
@@ -1240,6 +1256,7 @@
 		class EdenTablesShelves {
 			name = $STR_ZEC_Civilian_ConstructionSuppliesLarge_EdenTablesShelves; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_CampingTable_F"; rank = ""; position[] = {-7.125,-7,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "Land_CampingChair_V1_F"; rank = ""; position[] = {-7.625,-7.5,0}; dir = 179.982;};
 			class Object2 {side = 8; vehicle = "Land_CampingChair_V1_F"; rank = ""; position[] = {-6.625,-7.625,0}; dir = 209.962;};
@@ -1321,6 +1338,7 @@
 		class EdenExteriorItems {
 			name = $STR_ZEC_Civilian_ConstructionSuppliesLarge_EdenExteriorItems; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_WheelCart_F"; rank = ""; position[] = {-7.4408,-3.21423,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_GarbageContainer_closed_F"; rank = ""; position[] = {-7.89844,8.86182,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_GarbageContainer_open_F"; rank = ""; position[] = {-7.79926,4.95178,0}; dir = 0;};
@@ -1355,6 +1373,7 @@
 		class EdenSmallItems {
 			name = $STR_ZEC_Civilian_ConstructionSuppliesLarge_EdenSmallItems; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Oil_Spill_F"; rank = ""; position[] = {-2.66797,0.369019,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_WoodenLog_F"; rank = ""; position[] = {0.466187,-3.20508,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_Axe_fire_F"; rank = ""; position[] = {0,0,0}; dir = 0;};
@@ -1482,6 +1501,7 @@
 		class EdenWalls {
 			name = $STR_ZEC_Civilian_ConstructionSuppliesLarge_EdenWalls; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Wall_Tin_4_2"; rank = ""; position[] = {-23.8726,-12.405,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Wall_Tin_4"; rank = ""; position[] = {-29.864,-10.3879,0}; dir = 90;};
 			class Object3 {side = 8; vehicle = "Land_Wall_Tin_4"; rank = ""; position[] = {-27.8622,-12.364,0}; dir = 0;};
@@ -1545,6 +1565,7 @@
 		class EdenPipes {
 			name = $STR_ZEC_Civilian_ConstructionSuppliesLarge_EdenPipes; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_IndPipe1_20m_F"; rank = ""; position[] = {-5.64893,-3.24561,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_IndPipe2_big_9_F"; rank = ""; position[] = {2.44629,-16.646,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_IndPipe2_Small_9_F"; rank = ""; position[] = {1.75244,-8.31836,0}; dir = 0;};

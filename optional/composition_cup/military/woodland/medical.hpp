@@ -5,6 +5,7 @@
 		class Hostpital_CUP_O_RU {
 			name = $STR_ZECCUP_MilitaryWoodland_MedicalLarge_Hospital_CUP_O_RU; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_fort_bagfence_corner"; rank = ""; position[] = {-4.33838,4.84521,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_fort_bagfence_long"; rank = ""; position[] = {-5.51392,8.51514,0}; dir = 90;};
 			class Object3 {side = 8; vehicle = "Barrel1"; rank = ""; position[] = {1.5,2.125,0}; dir = 225;};
@@ -35,6 +36,7 @@
 		class Hostpital_CUP_B_CDF {
 			name = $STR_ZECCUP_MilitaryWoodland_MedicalLarge_Hospital_CUP_B_CDF; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_CamoNet_NATO"; rank = ""; position[] = {-3.72583,-18.9492,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier_Big_F"; rank = ""; position[] = {-9.08972,-20.7925,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "B_Slingload_01_Medevac_F"; rank = ""; position[] = {-16.75,-2.75,0}; dir = 210;};

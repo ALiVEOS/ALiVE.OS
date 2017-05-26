@@ -8,6 +8,7 @@
 		class SupplyDropPoint {
 			name = $STR_ZEC_Guerrilla_HeliportsMedium_SupplyDropPoint; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\NATO\n_air.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_HBarrier_5_F"; rank = ""; position[] = {-17.0892,-5.47217,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier_5_F"; rank = ""; position[] = {-17.3108,-10.9539,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_5_F"; rank = ""; position[] = {-16.8738,0.246094,0}; dir = 2.73208e-005;};

@@ -4,6 +4,7 @@
 		class Refinery {
 			name = $STR_ZEC_Guerrilla_FuelLarge_Refinery; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\fia_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_End_F"; rank = ""; position[] = {-18.6846,-32.4775,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_End_F"; rank = ""; position[] = {-17.3501,-29.8906,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_End_F"; rank = ""; position[] = {-19.937,-28.4312,0}; dir = 180;};
@@ -132,6 +133,7 @@
 		class Depot {
 			name = $STR_ZEC_Guerrilla_FuelLarge_Depot; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\fia_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_CncBarrierMedium4_F"; rank = ""; position[] = {-21.8589,1.22852,0}; dir = 90;};
 			class Object1 {side = 8; vehicle = "Land_CncBarrierMedium4_F"; rank = ""; position[] = {2.59961,-16.6531,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_CncBarrierMedium4_F"; rank = ""; position[] = {-21.8589,-6.27148,0}; dir = 90;};
@@ -216,6 +218,7 @@
 		class DieselStorage {
 			name = $STR_ZEC_Guerrilla_FuelMedium_DieselStorage; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\fia_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "B_G_Van_01_fuel_F"; rank = ""; position[] = {-8.9917,-8.24438,0}; dir = 150;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-16.8735,-5.82935,0}; dir = 45;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-14.2563,-5.91602,0}; dir = 315;};
@@ -282,6 +285,7 @@
 		class StorageTanks {
 			name = $STR_ZEC_Guerrilla_FuelMedium_StorageTanks; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\fia_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Tank_rust_F"; rank = ""; position[] = {-12.2485,-13.9658,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "Land_Razorwire_F"; rank = ""; position[] = {-7.354,-16.9326,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Razorwire_F"; rank = ""; position[] = {-17.4326,-10.2712,0}; dir = 90;};
@@ -362,6 +366,7 @@
 		class StorageArea {
 			name = $STR_ZEC_Guerrilla_FuelSmall_StorageArea; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\fia_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-7.14209,-5.16797,0}; dir = 179.966;};
 			class Object1 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-7.08203,-4.45288,0}; dir = 29.9958;};
 			class Object2 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-7.8125,-4.2771,0}; dir = 315.008;};
@@ -411,6 +416,7 @@
 		class FuelDrop {
 			name = $STR_ZEC_Guerrilla_FuelSmall_FuelDrop; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\fia_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Tank_rust_F"; rank = ""; position[] = {-7.99854,4.03418,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "Land_Tank_rust_F"; rank = ""; position[] = {-7.99854,-3.96582,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_Tank_rust_F"; rank = ""; position[] = {-7.99854,0.0341797,0}; dir = 180;};

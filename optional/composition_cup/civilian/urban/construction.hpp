@@ -17,6 +17,7 @@
 		class FillerIndustrial {
 			name = $STR_ZECCUP_Civilian_ConstructionSuppliesLarge_FillerIndustrial; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_WoodPile_large_F"; rank = ""; position[] = {-10.4351,-30.2632,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {2.65771,-32.3921,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Pallet_vertical_F"; rank = ""; position[] = {2.09094,-30.8987,0}; dir = 244.294;};
@@ -100,6 +101,7 @@
 		class PipesSmall {
 			name = $STR_ZECCUP_Civilian_ConstructionSuppliesLarge_PipesSmall; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_IndPipe2_smallbuild2_l"; rank = ""; position[] = {-5.47314,-9.35571,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_IndPipe2_smallbuild1_l"; rank = ""; position[] = {-12.8496,-11.3713,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_IndPipe2_small_9"; rank = ""; position[] = {-20.8977,-3.198,0}; dir = 270;};
@@ -113,6 +115,7 @@
 		class PipesLarge {
 			name = $STR_ZECCUP_Civilian_ConstructionSuppliesLarge_PipesLarge; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_IndPipe2_bigbuild1_l"; rank = ""; position[] = {-27.1296,-8.14209,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_IndPipe2_bigbuild2_l"; rank = ""; position[] = {-28.0237,-16.9329,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_IndPipe2_bigl_r"; rank = ""; position[] = {-24.834,5.14478,0}; dir = 0;};
@@ -131,6 +134,7 @@
 		class WallsEastern  {
 			name = $STR_ZECCUP_Civilian_ConstructionSuppliesLarge_WallsEastern; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "CUP_A1_Plot_Ohrada_Zlomena"; rank = ""; position[] = {-2.87598,-23.3918,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "CUP_A1_Plot_Ohrada"; rank = ""; position[] = {-5.87598,-23.3918,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "CUP_A1_plot_istan3"; rank = ""; position[] = {-1.13135,2.43683,0}; dir = 0;};
@@ -193,6 +197,7 @@
 		class WallsWestern {
 			name = $STR_ZECCUP_Civilian_ConstructionSuppliesLarge_WallsWestern; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Wall_Tin_4"; rank = ""; position[] = {-5.70203,-10.7606,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "zed2_civil"; rank = ""; position[] = {-11.2986,-27.3039,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Plot_zed_drevo1_branka"; rank = ""; position[] = {-5.66699,-22.8661,0}; dir = 0;};
@@ -218,12 +223,12 @@
 			class Object22 {side = 8; vehicle = "CUP_A2_plutek"; rank = ""; position[] = {-12.2645,-2.85284,0}; dir = 0;};
 			class Object23 {side = 8; vehicle = "zidka01"; rank = ""; position[] = {-5.59375,6.01501,0}; dir = 0;};
 			class Object24 {side = 8; vehicle = "zidka02"; rank = ""; position[] = {-15.5938,6.00385,0}; dir = 0;};
-			class Object25 {side = 8; vehicle = "CUP_A1_zed_kamenna_desert"; rank = ""; position[] = {-8.51746,13.2205,0}; dir = 0;};
-			class Object26 {side = 8; vehicle = "CUP_A1_zed_kamenna_desert"; rank = ""; position[] = {-12.6425,13.2205,0}; dir = 0;};
-			class Object27 {side = 8; vehicle = "CUP_A1_zed_kamenna_desert"; rank = ""; position[] = {-4.39246,13.2205,0}; dir = 0;};
-			class Object28 {side = 8; vehicle = "CUP_A1_zed_kamenna"; rank = ""; position[] = {-8.51746,18.7205,0}; dir = 0;};
-			class Object29 {side = 8; vehicle = "CUP_A1_zed_kamenna"; rank = ""; position[] = {-12.6425,18.7205,0}; dir = 0;};
-			class Object30 {side = 8; vehicle = "CUP_A1_zed_kamenna"; rank = ""; position[] = {-4.39246,18.7205,0}; dir = 0;};
+			class Object25 {side = 8; vehicle = "zed_kamenna_desert"; rank = ""; position[] = {-8.51746,13.2205,0}; dir = 0;};
+			class Object26 {side = 8; vehicle = "zed_kamenna_desert"; rank = ""; position[] = {-12.6425,13.2205,0}; dir = 0;};
+			class Object27 {side = 8; vehicle = "zed_kamenna_desert"; rank = ""; position[] = {-4.39246,13.2205,0}; dir = 0;};
+			class Object28 {side = 8; vehicle = "zed_kamenna"; rank = ""; position[] = {-8.51746,18.7205,0}; dir = 0;};
+			class Object29 {side = 8; vehicle = "zed_kamenna"; rank = ""; position[] = {-12.6425,18.7205,0}; dir = 0;};
+			class Object30 {side = 8; vehicle = "zed_kamenna"; rank = ""; position[] = {-4.39246,18.7205,0}; dir = 0;};
 			class Object31 {side = 8; vehicle = "CUP_A2_plot_vlnplech1"; rank = ""; position[] = {-4.62585,1.19794,0}; dir = 0;};
 			class Object32 {side = 8; vehicle = "CUP_A2_plot_vlnplech1"; rank = ""; position[] = {-9.62585,1.19794,0}; dir = 0;};
 			class Object33 {side = 8; vehicle = "Land_Zidka_branka"; rank = ""; position[] = {-5.50281,6.51086,0}; dir = 180;};
@@ -307,6 +312,7 @@
 		class FillerMisc1 {
 			name = $STR_ZECCUP_Civilian_ConstructionSuppliesLarge_FillerMisc1; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Barrel4"; rank = ""; position[] = {-1.625,-24.1252,0}; dir = 15;};
 			class Object1 {side = 8; vehicle = "Barrel4"; rank = ""; position[] = {-2.75,-23.7502,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {-15.625,-26.75,0}; dir = 345;};
@@ -436,6 +442,7 @@
 		class FillerMisc2 {
 			name = $STR_ZECCUP_Civilian_ConstructionSuppliesLarge_FillerMisc2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_GarbagePallet_F"; rank = ""; position[] = {-15.6001,-22.7866,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-15.5872,-22.6782,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Hedgehog"; rank = ""; position[] = {-16.5107,-21.2545,0}; dir = 195;};

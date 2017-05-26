@@ -4,6 +4,7 @@
 		class MilitaryFortifications {
 			name = $STR_ZEC_MilitaryPacific_ConstructionSuppliesLarge_MilitaryFortifications; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Cargo_Tower_V1_F"; rank = ""; position[] = {-47.5532,-2.27002,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_Cargo_HQ_V1_F"; rank = ""; position[] = {-47.0801,20.8984,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Cargo_House_V1_F"; rank = ""; position[] = {-39.875,37.1035,0}; dir = 0;};
@@ -90,6 +91,7 @@
 		class MilitaryApex {
 			name = $STR_ZEC_MilitaryPacific_ConstructionSuppliesLarge_MilitaryItems; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_CargoBox_V1_F"; rank = ""; position[] = {-14.125,-9.125,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_TimberPile_01_F"; rank = ""; position[] = {-16.1414,-6.12598,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_WoodenPlanks_01_F"; rank = ""; position[] = {-7.82068,-1.14087,0}; dir = 0;};
@@ -132,6 +134,7 @@
 		class Sandbags {
 			name = $STR_ZEC_MilitaryPacific_ConstructionSuppliesLarge_Sandbags; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Military\unknown_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-8.6167,-20.6405,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-5.8667,-20.6405,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-3.76563,-18.3832,0}; dir = 270;};

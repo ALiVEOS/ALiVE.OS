@@ -4,6 +4,7 @@
 		class FuelStationNew {
 			name = $STR_ZEC_Civilian_FuelLarge_FuelStationNew; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\fuelstation_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Mound02_8m_F"; rank = ""; position[] = {-13.38,-10.8401,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Crash_barrier_F"; rank = ""; position[] = {-2.0625,-10.7117,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_Crash_barrier_F"; rank = ""; position[] = {-8.99988,-10.6838,0}; dir = 0;};
@@ -75,6 +76,7 @@
 		class FuelStationOld {
 			name = $STR_ZEC_Civilian_FuelLarge_FuelStationOld; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\fuelstation_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_FuelStation_Feed_F"; rank = ""; position[] = {-5.50049,-6.00244,0}; dir = -89.9995;};
 			class Object2 {side = 8; vehicle = "Land_FuelStation_Feed_F"; rank = ""; position[] = {-12.5005,-6.00244,0}; dir = -89.9995;};
 			class Object3 {side = 8; vehicle = "RoadCone_F"; rank = ""; position[] = {-1.00061,-9.49976,0}; dir = 0;};
@@ -125,6 +127,7 @@
 		class FuelDepot {
 			name = $STR_ZEC_Civilian_FuelLarge_FuelDepot; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\fuelstation_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-18.7344,-11.9482,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-22.8677,-10.0938,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_Wall_IndCnc_4_D_F"; rank = ""; position[] = {-22.938,-1.94458,0}; dir = 90;};
@@ -172,6 +175,7 @@
 		class DieselStorage {
 			name = $STR_ZEC_Civilian_FuelLarge_DieselStorage; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\fuelstation_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-15.9858,-18.8689,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-20.1191,-17.0144,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_Wall_IndCnc_4_D_F"; rank = ""; position[] = {-20.1895,-8.86523,0}; dir = 90;};
@@ -223,6 +227,7 @@
 		class TankerShed {
 			name = $STR_ZEC_Civilian_FuelMedium_TankerShed; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\fuelstation_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "C_Truck_02_fuel_F"; rank = ""; position[] = {-8.01807,-2.99609,0}; dir = 180.011;};
 			class Object1 {side = 8; vehicle = "C_Truck_02_fuel_F"; rank = ""; position[] = {-0.0166016,-2.9917,0}; dir = 195.011;};
 			class Object2 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {-10.3149,2.48096,0}; dir = 120;};
@@ -249,6 +254,7 @@
 		class FuelDepot {
 			name = $STR_ZEC_Civilian_FuelMedium_FuelDepot; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\fuelstation_ca.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-5.46777,-11.4214,0}; dir = 90;};
 			class Object1 {side = 8; vehicle = "Land_Wall_Tin_4"; rank = ""; position[] = {-7.36182,-3.13574,0}; dir = 79.9653;};
 			class Object2 {side = 8; vehicle = "Land_Wall_Tin_4"; rank = ""; position[] = {-6.98926,-10.8879,0}; dir = 90;};

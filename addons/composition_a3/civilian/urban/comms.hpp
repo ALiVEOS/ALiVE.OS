@@ -12,6 +12,7 @@
 		class TransmitterTower {
 			name = $STR_ZEC_Civilian_CommunicationsSmall_TransmitterTower; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\transmitter_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Net_Fence_4m_F"; rank = ""; position[] = {-7.86902,-4.77832,0}; dir = 240;};
 			class Object2 {side = 8; vehicle = "Land_Net_Fence_4m_F"; rank = ""; position[] = {-5.86304,-8.25,0}; dir = 180;};
 			class Object3 {side = 8; vehicle = "Land_Net_Fence_pole_F"; rank = ""; position[] = {-7.87512,-2.37476,0}; dir = 225;};

@@ -8,6 +8,7 @@
         class mediumc192Crash1
         {
               name = "$STR_ALIVE_COMPOSITION_mediumc192Crash1";
+              side = 8;
               class Object1 {side=8;vehicle="Land_BagFence_Round_F";rank="";position[]={-0.141113,-1.72705,-0.00561666};dir=209;};
               class Object2 {side=8;vehicle="Land_BagFence_Long_F";rank="";position[]={2.47437,-0.635254,-0.00531578};dir=79;};
               class Object3 {side=8;vehicle="Land_BagFence_Long_F";rank="";position[]={2.41846,2.20166,-0.00387716};dir=96;};
@@ -32,6 +33,7 @@
        class smallOspreyCrashsite1
         {
               name = "$STR_ALIVE_COMPOSITION_smallOspreyCrashsite1";
+              side = 8;
               class Object1 {side=8;vehicle="Land_Ammobox_rounds_F";rank="";position[]={0.153076,-0.882813,-0.00160456};dir=266.005;};
               class Object2 {side=8;vehicle="Land_Ammobox_rounds_F";rank="";position[]={-0.00366211,-0.90918,-0.00160217};dir=266.003;};
               class Object3 {side=8;vehicle="Land_Ammobox_rounds_F";rank="";position[]={-0.158203,-0.930176,-0.00160217};dir=266.003;};
@@ -57,6 +59,7 @@
         class smallAH99Crashsite1
         {
               name = "$STR_ALIVE_COMPOSITION_smallAH99Crashsite1";
+              side = 8;
               class Object1 {side=8;vehicle="Land_Sleeping_bag_F";rank="";position[]={1.62402,0.90918,-0.00431585};dir=248;};
               class Object2 {side=8;vehicle="Campfire_burning_F";rank="";position[]={2.97095,-1.00098,-0.00431585};dir=0;};
               class Object3 {side=8;vehicle="Land_Wreck_Heli_Attack_01_F";rank="";position[]={-2.78296,0.727539,-0.00431585};dir=0;};

@@ -9,6 +9,7 @@
 		class FuelDump_CUP_O_RU {
 			name = $STR_ZECCUP_MilitaryWoodland_FuelMedium_FuelDump_CUP_O_RU; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_CamoNet_EAST"; rank = ""; position[] = {0.14917,-0.199463,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_fort_rampart"; rank = ""; position[] = {0.375,-2.27441,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_fort_bagfence_round"; rank = ""; position[] = {-9.96082,0.377441,0}; dir = 270;};
@@ -38,6 +39,7 @@
 		class FuelDump_CUP_B_CDF {
 			name = $STR_ZECCUP_MilitaryWoodland_FuelMedium_FuelDump_CUP_B_CDF; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "CUP_A1_fuelstation_army"; rank = ""; position[] = {0.134888,-0.734131,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_BagFenceRound"; rank = ""; position[] = {-5.57751,-7.94995,0}; dir = 30;};
 			class Object3 {side = 8; vehicle = "Land_BagFenceLong"; rank = ""; position[] = {-2.7478,-7.9856,0}; dir = 0;};

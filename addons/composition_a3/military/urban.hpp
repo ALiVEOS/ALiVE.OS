@@ -31,3 +31,5 @@
 #include "urban\supports.hpp"
 
 #include "urban\supplies.hpp"
+
+#include "urban\training.hpp"

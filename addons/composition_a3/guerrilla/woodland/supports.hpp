@@ -12,6 +12,7 @@
         class IEDFactory1
         {
               name = "$STR_ALIVE_COMPOSITION_IEDFactory1";
+              side = 8;
               class Object0     {side = 8; vehicle = "Land_MetalWire_F"; rank = ""; position[] = {0,0,814132}; dir = -87.169;};
               class Object1     {side = 8; vehicle = "Land_DrillAku_F"; rank = ""; position[] = {-0.507813,1.48047,0.804727}; dir = -87.169;};
               class Object2     {side = 8; vehicle = "Land_MultiMeter_F"; rank = ""; position[] = {-0.148438,0.661377,0.824147}; dir = -87.169;};

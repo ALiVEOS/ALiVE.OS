@@ -4,6 +4,7 @@
 		class SolarPlant {
 			name = $STR_ZEC_Civilian_PowerLarge_SolarPlant; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\powersolar_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_IndFnc_9_F"; rank = ""; position[] = {-52.0024,-44.0654,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_Wall_IndCnc_4_D_F"; rank = ""; position[] = {-52.7324,-47.4995,0}; dir = 180;};
 			class Object3 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-58.6108,-47.4941,0}; dir = 180;};
@@ -175,6 +176,7 @@
 		class DieselPowerPlant {
 			name = $STR_ZEC_Civilian_PowerLarge_DieselPowerPlant; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\power_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Wall_IndCnc_4_D_F"; rank = ""; position[] = {-16.6895,-17.4902,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-16.6311,-23.4856,0}; dir = 90;};
 			class Object3 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-14.7644,-27.6311,0}; dir = 0;};
@@ -253,6 +255,7 @@
 		class PowerPlant1 {
 			name = $STR_ZEC_Civilian_PowerLarge_PowerPlant1; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\power_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-1.76416,-23.8811,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_IndPipe1_90degR_F"; rank = ""; position[] = {-15.5508,-13.1658,0}; dir = 270;};
 			class Object3 {side = 8; vehicle = "Land_Cargo40_red_F"; rank = ""; position[] = {-4,-22.375,0}; dir = 360;};
@@ -300,6 +303,7 @@
 		class PowerPlant2 {
 			name = $STR_ZEC_Civilian_PowerLarge_PowerPlant2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\power_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_dp_smallFactory_F"; rank = ""; position[] = {-22.6973,-0.247803,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_dp_smallTank_F"; rank = ""; position[] = {0.198242,-7.67456,0}; dir = 75;};
 			class Object3 {side = 8; vehicle = "Land_IndPipe1_20m_F"; rank = ""; position[] = {-4.2876,-7.27808,0}; dir = 90;};
@@ -334,6 +338,7 @@
 		class PowerTransformer {
 			name = $STR_ZEC_Civilian_PowerSmall_PowerTransformer; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_HighVoltageEnd_F"; rank = ""; position[] = {-10.748,0.0695801,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_IndFnc_9_F"; rank = ""; position[] = {-5.68359,-8.37622,0}; dir = 180;};
 			class Object3 {side = 8; vehicle = "Land_IndFnc_9_F"; rank = ""; position[] = {-13.1216,-4.39551,0}; dir = 270;};

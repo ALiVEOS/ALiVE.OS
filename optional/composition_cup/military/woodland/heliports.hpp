@@ -5,6 +5,7 @@
 		class AirFactory_CUP_O_RU {
 			name = $STR_ZECCUP_MilitaryWoodland_HeliportsLarge_AirFactory_CUP_O_RU; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_fort_rampart"; rank = ""; position[] = {-14.9753,-5.67383,0}; dir = 75;};
 			class Object1 {side = 8; vehicle = "Barrels"; rank = ""; position[] = {-14.375,-0.75,0}; dir = 60;};
 			class Object2 {side = 8; vehicle = "Land_WaterBarrel_F"; rank = ""; position[] = {-13.625,-6.5,0}; dir = 119.991;};
@@ -45,6 +46,7 @@
 
 			name = $STR_ZECCUP_MilitaryWoodland_HeliportsLarge_LandingZone_CUP_O_RU; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_fort_bagfence_long"; rank = ""; position[] = {-4.20276,-23.7031,0}; dir = 210;};
 			class Object2 {side = 8; vehicle = "Land_fort_bagfence_long"; rank = ""; position[] = {-1.57776,-25.2031,0}; dir = 210;};
 			class Object3 {side = 8; vehicle = "RU_WarfareBVehicleServicePoint"; rank = ""; position[] = {-2.70959,-22.2095,0}; dir = 30;};
@@ -136,6 +138,7 @@
 		class LandingZone_CUP_B_CDF {
 			name = $STR_ZECCUP_MilitaryWoodland_HeliportsLarge_LandingZone_CUP_B_CDF; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object2 {side = 8; vehicle = "Land_HBarrier_Big_F"; rank = ""; position[] = {-15.7853,-19.0825,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_HBarrier_Big_F"; rank = ""; position[] = {-27.5426,-5.91016,0}; dir = 270;};
 			class Object4 {side = 8; vehicle = "Land_HBarrier_Big_F"; rank = ""; position[] = {-24.1603,-19.2075,0}; dir = 0;};
@@ -225,6 +228,7 @@
 		class AirFactory_CUP_B_CDF {
 			name = $STR_ZECCUP_MilitaryWoodland_HeliportsLarge_AirFactory_CUP_B_CDF; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_HelipadCircle_F"; rank = ""; position[] = {-4.5,-6.75,0}; dir = 0;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier_Big_F"; rank = ""; position[] = {-8.31958,-19.9297,0}; dir = 195;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_Big_F"; rank = ""; position[] = {-16.5363,-11.0127,0}; dir = 255;};
@@ -285,6 +289,7 @@
 		class LandingZone_CUP_O_RU {
 			name = $STR_ZECCUP_MilitaryWoodland_HeliportsMedium_LandingZone_CUP_O_RU; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_fort_bagfence_round"; rank = ""; position[] = {-11.4608,-8.37256,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-1.96228,-10.1782,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_fort_bagfence_long"; rank = ""; position[] = {-9.38892,-4.10986,0}; dir = 90;};
@@ -337,6 +342,7 @@
 		class LandingZone_CUP_B_CDF {
 			name = $STR_ZECCUP_MilitaryWoodland_HeliportsMedium_LandingZone_CUP_B_CDF; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_HelipadCircle_F"; rank = ""; position[] = {-2.875,-8.875,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_BagFenceRound"; rank = ""; position[] = {-5.75757,-20.5825,0}; dir = 45;};
 			class Object3 {side = 8; vehicle = "Land_BagFenceRound"; rank = ""; position[] = {-0.0424805,-20.6323,0}; dir = 315;};
@@ -391,6 +397,7 @@
 		class LandingZone_CUP_O_RU {
 			name = $STR_ZECCUP_MilitaryWoodland_HeliportsSmall_LandingZone_CUP_O_RU; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_fort_bagfence_corner"; rank = ""; position[] = {-7.01208,-4.08496,0}; dir = 30;};
 			class Object2 {side = 8; vehicle = "Land_fort_bagfence_corner"; rank = ""; position[] = {-0.914795,-7.01221,0}; dir = 300;};
 			class Object3 {side = 8; vehicle = "Land_fort_bagfence_long"; rank = ""; position[] = {-4.60474,-6.12061,0}; dir = 210;};
@@ -418,6 +425,7 @@
 		class LandingZone_CUP_B_CDF {
 			name = $STR_ZECCUP_MilitaryWoodland_HeliportsSmall_LandingZone_CUP_B_CDF; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_BagFenceRound"; rank = ""; position[] = {-9.63257,-3.83252,0}; dir = 44.9999;};
 			class Object2 {side = 8; vehicle = "Land_BagFenceLong"; rank = ""; position[] = {-10.0144,-0.998047,0}; dir = 270;};
 			class Object3 {side = 8; vehicle = "Land_BagFenceEnd"; rank = ""; position[] = {-7.30042,-4.26074,0}; dir = 0;};

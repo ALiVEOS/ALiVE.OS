@@ -9,6 +9,7 @@
 		class AmmoDump_CUP_O_TK {
 			name = $STR_ZECCUP_MilitaryDesert_SuppliesMedium_AmmoDump_CUP_O_TK; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_fort_rampart_EP1"; rank = ""; position[] = {-13.0245,2.875,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_fort_bagfence_corner"; rank = ""; position[] = {0.536621,-5.27979,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Misc_concrete_High"; rank = ""; position[] = {-11.2813,5.23486,0}; dir = 0;};
@@ -46,6 +47,7 @@
 		class AmmoDump_CUP_B_USMC {
 			name = $STR_ZECCUP_MilitaryDesert_SuppliesMedium_AmmoDump_CUP_B_USMC; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-6.41736,-8.13232,0}; dir = 315;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-11.8824,-8.08203,0}; dir = 45;};
 			class Object3 {side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {-9.1228,-8.48535,0}; dir = 0;};
@@ -85,6 +87,7 @@
 		class Cache_CUP_O_TK {
 			name = $STR_ZECCUP_MilitaryDesert_SuppliesSmall_Cache_CUP_O_TK; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_CamoNetVar_EAST_EP1"; rank = ""; position[] = {-1.34875,0.237549,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier3"; rank = ""; position[] = {-4.96826,-4.46436,0}; dir = 180;};
 			class Object3 {side = 8; vehicle = "Land_HBarrier3"; rank = ""; position[] = {-7.08923,-3.28174,0}; dir = 270;};
@@ -115,6 +118,7 @@
 		class Cache_CUP_B_USMC {
 			name = $STR_ZECCUP_MilitaryDesert_SuppliesSmall_Cache_CUP_B_USMC; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "FoldTable"; rank = ""; position[] = {-3.61243,-0.0219727,0}; dir = 345;};
 			class Object2 {side = 8; vehicle = "FoldChair"; rank = ""; position[] = {-3.00146,-0.375488,0}; dir = 165;};
 			class Object3 {side = 8; vehicle = "FoldChair"; rank = ""; position[] = {-3.90247,-0.876709,0}; dir = 135;};

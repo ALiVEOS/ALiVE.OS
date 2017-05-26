@@ -12,6 +12,7 @@
 		class Workshop_BLU_G_F {
 			name = $STR_ZEC_Guerrilla_SupportsSmall_Workshop; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\fia_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "B_G_Quadbike_01_F"; rank = ""; position[] = {1.37164,-2.99927,0}; dir = 105;};
 			class Object2 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-4.74915,-5.20447,0}; dir = 45;};
 			class Object3 {side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {-5.14056,-2.62891,0}; dir = 270;};
@@ -52,6 +53,7 @@
 		class ServiceStation_BLU_G_F {
 			name = $STR_ZEC_Guerrilla_SupportsSmall_ServiceStation; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\fia_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "WaterPump_01_forest_F"; rank = ""; position[] = {-1.25,-5.24976,0}; dir = 270.001;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {-2.86389,-7.27295,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {0.179932,-7.31055,0}; dir = 345;};
@@ -89,6 +91,7 @@
         class IEDFactory1
         {
               name = "$STR_ALIVE_COMPOSITION_IEDFactory1";
+              side = 8;
               class Object0     {side = 8; vehicle = "Land_MetalWire_F"; rank = ""; position[] = {0,0,814132}; dir = -87.169;};
               class Object1     {side = 8; vehicle = "Land_DrillAku_F"; rank = ""; position[] = {-0.507813,1.48047,0.804727}; dir = -87.169;};
               class Object2     {side = 8; vehicle = "Land_MultiMeter_F"; rank = ""; position[] = {-0.148438,0.661377,0.824147}; dir = -87.169;};

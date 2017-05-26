@@ -4,6 +4,7 @@
 		class IndustrialSite {
 			name = $STR_ZEC_Civilian_IndustrialLarge_IndustrialSite; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\watertower_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_dp_smallTank_F"; rank = ""; position[] = {-25.1743,6.23999,0}; dir = 210;};
 			class Object2 {side = 8; vehicle = "Land_Sacks_heap_F"; rank = ""; position[] = {-25.7373,2.12671,0}; dir = 275;};
 			class Object3 {side = 8; vehicle = "Land_dp_smallTank_F"; rank = ""; position[] = {-25.625,18.02,0}; dir = 90;};
@@ -72,6 +73,7 @@
 		class FactorySite {
 			name = $STR_ZEC_Civilian_IndustrialLarge_FactorySite; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Metal_Shed_F"; rank = ""; position[] = {-32.2598,44.5054,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_Pallet_vertical_F"; rank = ""; position[] = {-32.3125,39.2412,0}; dir = 179.998;};
 			class Object3 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-32.1875,37.8672,0}; dir = 255.012;};
@@ -156,6 +158,7 @@
 		class StorageComplex {
 			name = $STR_ZEC_Civilian_IndustrialLarge_StorageComplex; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Wall_IndCnc_End_2_F"; rank = ""; position[] = {-51.1392,18.3857,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-51.1309,30.3894,0}; dir = 90;};
 			class Object3 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-51.1309,42.3894,0}; dir = 90;};
@@ -287,6 +290,7 @@
 		class Factory1 {
 			name = $STR_ZEC_Civilian_IndustrialMedium_Factory1; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\watertower_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_cmp_Shed_F"; rank = ""; position[] = {-2.84912,-12.4236,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_GarbageBags_F"; rank = ""; position[] = {-9.41504,-9.88989,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_GarbagePallet_F"; rank = ""; position[] = {-6.9751,-16.7866,0}; dir = 0;};
@@ -322,6 +326,7 @@
 		class Factory2 {
 			name = $STR_ZEC_Civilian_IndustrialMedium_Factory2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Unfinished_Building_01_F"; rank = ""; position[] = {-10.3516,-13.9497,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_GarbageBags_F"; rank = ""; position[] = {-4.79004,-10.5149,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_GarbagePallet_F"; rank = ""; position[] = {-5.8501,-8.53662,0}; dir = 0;};
@@ -368,6 +373,7 @@
 		class ContainerYard {
 			name = $STR_ZEC_Civilian_IndustrialMedium_ContainerYard; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Shed_Big_F"; rank = ""; position[] = {1,-7.02319,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Wall_IndCnc_4_D_F"; rank = ""; position[] = {-8.06055,-1.00977,0}; dir = 270;};
 			class Object3 {side = 8; vehicle = "Land_Wall_IndCnc_4_F"; rank = ""; position[] = {-7.9939,-7.0144,0}; dir = 270;};
@@ -403,6 +409,7 @@
 		class StorageYard {
 			name = $STR_ZEC_Civilian_IndustrialMedium_StorageYard; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_u_Shed_Ind_F"; rank = ""; position[] = {-3.24902,-10.2051,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_IronPipes_F"; rank = ""; position[] = {-9.68311,-20.7805,0}; dir = 335;};
 			class Object3 {side = 8; vehicle = "Land_CinderBlocks_F"; rank = ""; position[] = {-17.6147,-11.6245,0}; dir = 334.994;};
@@ -441,6 +448,7 @@
 		class StorageShed1 {
 			name = $STR_ZEC_Civilian_IndustrialMedium_StorageShed1; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_i_Shed_Ind_F"; rank = ""; position[] = {-1.30414,-0.207275,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Cargo40_white_F"; rank = ""; position[] = {-1.375,-5.625,0}; dir = 180;};
 			class Object3 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {0.0377197,0.0717773,0}; dir = 0;};
@@ -462,6 +470,7 @@
 		class StorageShed2 {
 			name = $STR_ZEC_Civilian_IndustrialMedium_StorageShed2; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_i_Shed_Ind_F"; rank = ""; position[] = {-6.4292,-7.33228,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_spp_Transformer_F"; rank = ""; position[] = {-4.50977,-12.4541,0}; dir = 270;};
 			class Object3 {side = 8; vehicle = "Land_JunkPile_F"; rank = ""; position[] = {-8.80176,-12.5969,0}; dir = 30;};
@@ -484,6 +493,7 @@
 		class StorageShed3 {
 			name = $STR_ZEC_Civilian_IndustrialMedium_StorageShed3; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_i_Shed_Ind_F"; rank = ""; position[] = {-1.41235,-2.0542,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_Bricks_V2_F"; rank = ""; position[] = {-4.09888,-4.39307,0.1}; dir = 0.0137256;};
 			class Object3 {side = 8; vehicle = "Land_Bricks_V4_F"; rank = ""; position[] = {-2.60571,-4.39746,0.1}; dir = 0.0125975;};
@@ -513,6 +523,7 @@
 		class TinShed {
 			name = $STR_ZEC_Civilian_IndustrialSmall_TinShed; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_GarbageBags_F"; rank = ""; position[] = {-2.29004,-4.88989,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_JunkPile_F"; rank = ""; position[] = {-2.02808,-5.80151,0}; dir = 300;};
 			class Object3 {side = 8; vehicle = "Land_GarbageBags_F"; rank = ""; position[] = {-4.04004,-5.38989,0}; dir = 0;};
@@ -529,6 +540,7 @@
 		class MetalSheds {
 			name = $STR_ZEC_Civilian_IndustrialSmall_MetalSheds; // Credit: 2600K
 			icon = "\a3\Ui_f\data\Map\MapControl\busstop_ca.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Metal_Shed_F"; rank = ""; position[] = {-11.9507,-0.649902,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "Land_GarbagePallet_F"; rank = ""; position[] = {-10.2251,3.58838,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-10.125,1.125,0}; dir = 60.0029;};

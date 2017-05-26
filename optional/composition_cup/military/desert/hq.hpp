@@ -4,6 +4,7 @@
 		class Headquarters_CUP_O_TK {
 			name = $STR_ZECCUP_MilitaryDesert_HQLarge_Headquarters_CUP_O_TK; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_fort_rampart_EP1"; rank = ""; position[] = {-17.6498,-19.2759,0}; dir = 30;};
 			class Object1 {side = 8; vehicle = "Land_fort_rampart_EP1"; rank = ""; position[] = {-26.5601,-10.4341,0}; dir = 60;};
 			class Object2 {side = 8; vehicle = "Land_fortified_nest_small_EP1"; rank = ""; position[] = {-24.4435,-16.4282,0}; dir = 45;};
@@ -53,6 +54,7 @@
 		class Headquarters_CUP_B_USMC {
 			name = $STR_ZECCUP_MilitaryDesert_HQLarge_Headquarters_CUP_B_USMC; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-33.2995,0.881348,0}; dir = 90;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-33.136,-4.42578,0}; dir = 75;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-31.577,-9.64502,0}; dir = 60;};
@@ -134,6 +136,7 @@
 		class HQCargo_CUP_O_TK {
 			name = $STR_ZECCUP_MilitaryDesert_HQMedium_HQCargo_CUP_O_TK; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "FlagCarrierRU"; rank = ""; position[] = {-13.603,-10.5137,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_fort_bagfence_corner"; rank = ""; position[] = {-17.7134,-15.6548,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_fort_bagfence_corner"; rank = ""; position[] = {-6.58838,-23.5298,0}; dir = 0;};
@@ -180,6 +183,7 @@
 		class HQCargo_CUP_B_USMC {
 			name = $STR_ZECCUP_MilitaryDesert_HQMedium_HQCargo_CUP_B_USMC; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object1 {side = 8; vehicle = "Land_Cargo_HQ_V3_F"; rank = ""; position[] = {-3.95508,-4.10156,0}; dir = 0;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-14.2006,-8.25635,0}; dir = 270;};
 			class Object3 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-9.86865,-9.57568,0}; dir = 180;};
@@ -213,6 +217,7 @@
 		class HQUnfoldedBRDM_CUP_O_TK {
 			name = $STR_ZECCUP_MilitaryDesert_HQSmall_HQUnfoldedBRDM_CUP_O_TK; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-11.5349,-8.59326,0}; dir = 15;};
 			class Object1 {side = 8; vehicle = "Barrel1"; rank = ""; position[] = {-4.93127,-8.60107,0}; dir = 300;};
 			class Object2 {side = 8; vehicle = "Barrel1"; rank = ""; position[] = {-4.625,-8,0}; dir = 180;};
@@ -242,6 +247,7 @@
 		class HQUnfoldedBMP_CUP_O_TK {
 			name = $STR_ZECCUP_MilitaryDesert_HQSmall_HQUnfoldedBMP_CUP_O_TK; // Credit: 2600K
 			icon = "\ca\data\flag_rus_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_CamoNet_EAST_EP1"; rank = ""; position[] = {-5.47583,-5.07422,0}; dir = 180;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier_large"; rank = ""; position[] = {-6.7373,-7.66455,0}; dir = 180;};
 			class Object2 {side = 8; vehicle = "Land_fort_bagfence_round"; rank = ""; position[] = {-12.3358,2.25244,0}; dir = 270;};
@@ -291,6 +297,7 @@
 		class HQUnfoldedM1130A_CUP_B_USMC {
 			name = $STR_ZECCUP_MilitaryDesert_HQSmall_HQUnfoldedM1130A_CUP_B_USMC; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_Fort_Watchtower_EP1"; rank = ""; position[] = {-4.76746,-12.1421,0}; dir = 270;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier1"; rank = ""; position[] = {-13.8656,-6.12402,0}; dir = 330;};
 			class Object2 {side = 8; vehicle = "Land_HBarrier1"; rank = ""; position[] = {-14.2426,-0.630859,0}; dir = 15;};
@@ -327,6 +334,7 @@
 		class HQUnfoldedM1130B_CUP_B_USMC {
 			name = $STR_ZECCUP_MilitaryDesert_HQSmall_HQUnfoldedM1130B_CUP_B_USMC; // Credit: 2600K
 			icon = "\ca\data\flag_usa_co.paa";
+			side = 8;
 			class Object0 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-5.86401,-10.6992,0}; dir = 255;};
 			class Object1 {side = 8; vehicle = "Land_HBarrier5"; rank = ""; position[] = {-7.20056,-5.50635,0}; dir = 270;};
 			class Object2 {side = 8; vehicle = "AmmoCrates_NoInteractive_Medium"; rank = ""; position[] = {-7.72546,-9.48633,0}; dir = 345;};
