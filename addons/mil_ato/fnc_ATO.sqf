@@ -41,20 +41,20 @@ Tupolov
 #define DEFAULT_EVENT_QUEUE []
 #define DEFAULT_ANALYSIS []
 #define DEFAULT_SIDE "EAST"
-#define DEFAULT_ATO_TYPES ["CAP","OCA","SEAD","CAS","STRIKE","RECCE"]
+#define DEFAULT_ATO_TYPES ["CAP","DCA","SEAD","CAS","STRIKE","RECCE"]
 #define DEFAULT_REGISTRY_ID ""
-#define DEFAULT_OP_HEIGHT 100
-#define DEFAULT_OP_DURATION 7
+#define DEFAULT_OP_HEIGHT 750
+#define DEFAULT_OP_DURATION 25
 #define DEFAULT_SPEED "NORMAL"
 #define DEFAULT_MIN_WEAP_STATE 0.5
 #define DEFAULT_MIN_FUEL_STATE 0.5
 #define DEFAULT_RADAR_HEIGHT 105
-#define WAIT_TIME_OCA 10
+#define WAIT_TIME_DCA 30
 #define WAIT_TIME_CAS 10
-#define WAIT_TIME_SEAD 20
-#define WAIT_TIME_STRIKE 30
-#define WAIT_TIME_RECCE 40
-#define WAIT_TIME_CAP 40
+#define WAIT_TIME_SEAD 60
+#define WAIT_TIME_STRIKE 90
+#define WAIT_TIME_RECCE 90
+#define WAIT_TIME_CAP 60
 
 TRACE_1("ATO - input",_this);
 
@@ -144,7 +144,7 @@ ALiVE_fnc_getAirportTaxiPos = {
         // is a dynamic runway
         private _runway = ALiVE_Carriers select (_airportID - 100);
 
-        _result = getArray(configFile >> "cfgVehicles" >> typeOf _runway >> _taxiPos);
+        _result = getArray(configFile >> "CfgVehicles" >> typeOf _runway >> _taxiPos);
         for "_i" from 0 to (count _result-1) step 2 do {
             private _pos = _runway modelToWorld [(_result select _i), (_result select _i+1), 0];
             _result set [_i, _pos select 0];
@@ -556,11 +556,16 @@ switch(_operation) do {
             };
             if (_isCombatSupport) exitWith {
 
-                ["ALIVE ATO %1 ignoring %2 as it is a combat support asset", _logic, _vehicleClass] call ALiVE_fnc_dump;
+                if (_debug) then {
+                    ["ALIVE ATO %1 ignoring %2 as it is a combat support asset", _logic, _vehicleClass] call ALiVE_fnc_dump;
+                };
 
             };
 
             if ([_vehicleClass] call ALiVE_fnc_isArmed) then {
+
+                // make sure vehicle is set to side of logic
+                [_vehicleProfile, "side", [_logic,"side"] call MAINCLASS] call ALiVE_fnc_profileVehicle;
 
                 private _asset = [] call ALIVE_fnc_hashCreate;
                 [_asset,"vehicleClass",_vehicleClass] call ALiVE_fnc_hashSet;
@@ -576,6 +581,10 @@ switch(_operation) do {
 
                 if ( [_position] call ALiVE_fnc_nearShip ) then {
                     _isOnCarrier = true;
+
+                    // Due to issues spawning aircraft on ships after changing sea levels keep assets spawned
+                    [_vehicleProfile,"spawnType",["preventDespawn"]] call ALiVE_fnc_profileVehicle;
+                    [_vehicleProfile,"spawn"] call ALiVE_fnc_profileVehicle;
                 };
 
                 [_asset,"isOnCarrier", _isOnCarrier] call ALiVE_fnc_hashSet;
@@ -911,7 +920,10 @@ switch(_operation) do {
 
                     [_logic, "HQBuilding", _hqBuilding] call MAINCLASS;
 
-                    ["ALIVE ATO %1 - ATO building selected: %2", _logic, [_logic, "HQBuilding"] call MAINCLASS] call ALIVE_fnc_dump;
+                    if (_debug) then {
+                        ["ALIVE ATO %1 - ATO building selected: %2", _logic, [_logic, "HQBuilding"] call MAINCLASS] call ALIVE_fnc_dump;
+                    };
+
                 } else {
 
                     // Spawn a field HQ
@@ -1015,7 +1027,9 @@ switch(_operation) do {
 
                 [_logic, "HQBuilding", _hqBuilding] call MAINCLASS;
 
-                ["ALIVE ATO %1 - ATO building selected: %2", _logic, [_logic, "HQBuilding"] call MAINCLASS] call ALIVE_fnc_dump;
+                if (_debug) then {
+                    ["ALIVE ATO %1 - ATO building selected: %2", _logic, [_logic, "HQBuilding"] call MAINCLASS] call ALIVE_fnc_dump;
+                };
             };
 
             // Establish Anti-Air Defenses
@@ -1184,7 +1198,9 @@ switch(_operation) do {
             private _placeAir = [_logic, "placeAir"] call MAINCLASS;
             private _airCount = [_logic,"assets"] call MAINCLASS;
 
-            ["ALIVE ATO %1 AIR ASSETS: %2",_logic, _airCount] call ALiVE_fnc_dump;
+            if (_debug) then {
+                ["ALIVE ATO %1 AIR ASSETS: %2",_logic, _airCount] call ALiVE_fnc_dump;
+            };
 
             // Don't place aircraft on carrier
             if (count (_airCount select 1) < 2 && _placeAir && !_isCarrier) then {
@@ -1225,7 +1241,7 @@ switch(_operation) do {
                 if(count _heliClasses > 0) then {
                     private _nodes = [_baseCluster, "nodes"] call ALIVE_fnc_hashGet;
 
-                    ["ALIVE ATO %1 - %3 Nodes: %2", _logic, _nodes, count _nodes] call ALIVE_fnc_dump;
+                    // ["ALIVE ATO %1 - %3 Nodes: %2", _logic, _nodes, count _nodes] call ALIVE_fnc_dump;
                     {
                         private _pos = [0,0,0];
                         private _dir = 0;
@@ -1317,7 +1333,7 @@ switch(_operation) do {
 
                                 private _tmp = [_vehicleClass,_side,_faction,"CAPTAIN",position _helipad,direction _helipad,true,_faction,false] call ALIVE_fnc_createProfilesCrewedVehicle;
                                 {
-                                    _x call ALIVE_fnc_inspectHash;
+                                    // _x call ALIVE_fnc_inspectHash;
                                     if ([_x,"type"] call ALiVE_fnc_hashGet == "entity") then {
                                         _profiles pushback ([_x,"profileID"] call ALiVE_fnc_hashGet);
                                     };
@@ -1348,7 +1364,7 @@ switch(_operation) do {
                     private _nodes = [_baseCluster, "nodes"] call ALIVE_fnc_hashGet;
 
                     private _buildings = [_nodes, (ALIVE_airBuildingTypes + ALIVE_militaryAirBuildingTypes)] call ALIVE_fnc_findBuildingsInClusterNodes;
-                    ["ALIVE ATO %1 - %3 Hangar Buildings: %2", _logic, _buildings, count _buildings] call ALIVE_fnc_dump;
+                    // ["ALIVE ATO %1 - %3 Hangar Buildings: %2", _logic, _buildings, count _buildings] call ALIVE_fnc_dump;
 
                     if (count _buildings == 0) then {
                         // No hangars, use HQ and check for runways
@@ -1477,10 +1493,41 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
+            // Broadcast radio message
+            private _faction = [_logic, "faction"] call MAINCLASS;
+            private _location = mapGridPosition (position ([_logic, "HQBuilding"] call MAINCLASS));
+            private _side = [_logic, "side"] call MAINCLASS;
+            private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
+            private _factionName = getText((_faction call ALiVE_fnc_configGetFactionClass) >> "displayName");
+            private _hqClass = switch (_sideObject) do {
+                case WEST: {
+                    "BLU"
+                };
+                case EAST: {
+                    "OPF"
+                };
+                case RESISTANCE: {
+                    "IND"
+                };
+                default {
+                    "HQ"
+                };
+            };
+            private _HQ = getText(configFile >> "CfgHQIdentities" >> _hqClass >> "name");
+
+            private _message = format[localize "STR_ALIVE_ATO_ESTABLISHED", _HQ, _factionName, _location];
+
             // If no air assets, exit
             if (count (([_logic,"assets"] call MAINCLASS) select 1) == 0) exitWith {
-                ["ALIVE ATO %1 - Warning, operations are being suspended as there are no available air assets within the airspace.", _logic] call ALIVE_fnc_dumpR;
+                ["ALIVE ATO %1 - Warning, operations are being suspended as there are no available air assets within the airspace.", _logic] call ALIVE_fnc_dump;
+                _message = format[localize "STR_ALIVE_ATO_NOT_ESTABLISHED", _HQ, _factionName];
+                private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
             };
+
+            // send a message to all side players from HQ
+            private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+            [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
 
             // register the module
             [ALIVE_ATOGlobalRegistry,"register",_logic] call ALIVE_fnc_ATOGlobalRegistry;
@@ -2011,6 +2058,7 @@ switch(_operation) do {
             private _factions = [_logic, "factions"] call MAINCLASS;
             private _eventSide = _eventData select 1;
             private _eventFaction = _eventData select 2;
+            private _airspace = _eventData select 3;
 
             // check if the faction in the event is handled
             // by this module
@@ -2094,6 +2142,27 @@ switch(_operation) do {
 
             if(_factionFound) then {
 
+
+                 // For radio broadcasts
+                private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
+                private _factionName = getText((_eventFaction call ALiVE_fnc_configGetFactionClass) >> "displayName");
+                private _hqClass = switch (_sideObject) do {
+                    case WEST: {
+                        "BLU"
+                    };
+                    case EAST: {
+                        "OPF"
+                    };
+                    case RESISTANCE: {
+                        "IND"
+                    };
+                    default {
+                        "HQ"
+                    };
+                };
+                private _HQID = getText(configFile >> "CfgHQIdentities" >> _hqClass >> "name");
+
+
                 // Check if this module is operating and has assets
 
                 // Check HQ is alive or baseCluster is not captured
@@ -2112,7 +2181,10 @@ switch(_operation) do {
                     _HQIsALive = alive _HQ;
                 };
 
-                ["ALIVE ATO %4 - ATO HQ online: %1 Base Captured: %2 Dominant Faction: %3", _HQIsAlive,_baseCaptured,_dominantFaction, _logic] call ALIVE_fnc_dump;
+                if (_debug) then {
+                     ["ALIVE ATO %4 - ATO HQ online: %1 Base Captured: %2 Dominant Faction: %3", _HQIsAlive,_baseCaptured,_dominantFaction, _logic] call ALIVE_fnc_dump;
+                };
+
                 if (_HQIsAlive && !_baseCaptured) then {
 
                     // Check all available assets
@@ -2164,7 +2236,9 @@ switch(_operation) do {
 
                         };
 
-                        _event call ALIVE_fnc_inspectHash;
+                        if (_debug) then {
+                            _event call ALIVE_fnc_inspectHash;
+                        };
 
                         if(_available) then {
 
@@ -2194,6 +2268,11 @@ switch(_operation) do {
                             };
                             // DEBUG -------------------------------------------------------------------------------------
 
+                            //Radio Broadcast
+                            private _message = format[localize "STR_ALIVE_ATO_REQUEST_ACKNOWLEDGED", _HQID, _factionName, _eventType, mapGridPosition (getMarkerPos _airspace)];
+                            // send a message to all side players from HQ
+                            private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                            [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
 
                             // trigger analysis
                             [_logic,"onDemandAnalysis"] call MAINCLASS;
@@ -2212,6 +2291,12 @@ switch(_operation) do {
                         };
                         // DEBUG -------------------------------------------------------------------------------------
 
+                        //Radio Broadcast
+                        private _message = format[localize "STR_ALIVE_ATO_UNAVAILABLE", _HQID];
+                        // send a message to all side players from HQ
+                        private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                        [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+
                         if(_eventType == "PR_STRIKE" || _eventType == "PR_RECCE" || _eventType == "PR_CAS") then {
 
                             private _requestID = _eventData select 5;
@@ -2229,6 +2314,12 @@ switch(_operation) do {
                         ["ALIVE ATO %2 - Air Tasking request denied, Joint Forces Air Component Commander for %1 is not available", _eventFaction, _logic] call ALIVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
+
+                    //Radio Broadcast
+                    private _message = format[localize "STR_ALIVE_ATO_OVERRUN", _HQID, _factionName, mapGridPosition _HQ];
+                    // send a message to all side players from HQ
+                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
 
                     if(_eventType == "PR_STRIKE" || _eventType == "PR_RECCE" || _eventType == "PR_CAS") then {
 
@@ -2405,7 +2496,7 @@ switch(_operation) do {
                                     private _range = if ((getMarkerSize _x) select 0 < (getMarkerSize _x) select 1) then {(getMarkerSize _x) select 0} else {(getMarkerSize _x) select 1};
                                     private _args = [
                                         "WHITE",                // ROE
-                                        1000,
+                                        DEFAULT_OP_HEIGHT,
                                         DEFAULT_SPEED,
                                         DEFAULT_MIN_WEAP_STATE,
                                         DEFAULT_MIN_FUEL_STATE,
@@ -2420,7 +2511,7 @@ switch(_operation) do {
                         } foreach _airspace;
 
                         // Check to see if there is an intruder in any airspace
-                        if ("OCA" in ([_logic,"types"] call MAINCLASS)) then {
+                        if ("DCA" in ([_logic,"types"] call MAINCLASS)) then {
 
                             // Check for intruders in each managed airspace
                             private _intruders = [_logic, "scanAirspace"] call MAINCLASS;
@@ -2429,25 +2520,25 @@ switch(_operation) do {
                             private _airspaceIntruders = _intruders select 1;
 
                             {
-                                // If intruder, check to see if there is an active OCA against it, if not scramble
+                                // If intruder, check to see if there is an active DCA against it, if not scramble
                                 private _bogeys = [_intruders, _x] call ALiVE_fnc_hashGet;
                                 if (count _bogeys > 0) then {
                                     private _currentOps = [_logic, "airspaceOps", _x] call MAINCLASS;
-                                    private _OCA = false;
+                                    private _DCA = false;
 
                                     {
-                                        if ((_x select 0) == "OCA") exitWith {
+                                        if ((_x select 0) == "DCA") exitWith {
                                             // check all intruders are being intercepted?
-                                            _OCA = true;
+                                            _DCA = true;
                                         };
                                     } foreach _currentOps;
 
-                                    if !(_OCA) then {
-                                        private _type = "OCA";
+                                    if !(_DCA) then {
+                                        private _type = "DCA";
                                         private _range = if ((getMarkerSize _x) select 0 > (getMarkerSize _x) select 1) then {(getMarkerSize _x) select 0} else {(getMarkerSize _x) select 1};
                                         private _args = [
                                             "RED",                // ROE
-                                            1000,
+                                            DEFAULT_OP_HEIGHT,
                                             "FULL",                 // SPEED MODE
                                             DEFAULT_MIN_WEAP_STATE,
                                             DEFAULT_MIN_FUEL_STATE,
@@ -2506,6 +2597,25 @@ switch(_operation) do {
         private _eventDuration = _eventATO select 6;
         private _eventTargets = _eventATO select 7;
 
+        // For radio broadcasts
+        private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
+        private _factionName = getText((_eventFaction call ALiVE_fnc_configGetFactionClass) >> "displayName");
+        private _hqClass = switch (_sideObject) do {
+            case WEST: {
+                "BLU"
+            };
+            case EAST: {
+                "OPF"
+            };
+            case RESISTANCE: {
+                "IND"
+            };
+            default {
+                "HQ"
+            };
+        };
+        private _HQ = getText(configFile >> "CfgHQIdentities" >> _hqClass >> "name");
+
         private _assets = [ALIVE_globalATO,_eventFaction] call ALIVE_fnc_hashGet;
         private _airspaceAssets = [[_logic,"airspaceAssets"] call MAINCLASS, _eventAirspace] call ALiVE_fnc_hashGet;
         private _airports = [_logic,"runways"] call MAINCLASS;
@@ -2541,8 +2651,8 @@ switch(_operation) do {
                     case "CAP": {
                         _waitTime = WAIT_TIME_CAP;
                     };
-                    case "OCA": {
-                        _waitTime = WAIT_TIME_OCA;
+                    case "DCA": {
+                        _waitTime = WAIT_TIME_DCA;
                     };
                     case "SEAD": {
                         _waitTime = WAIT_TIME_SEAD;
@@ -2564,6 +2674,8 @@ switch(_operation) do {
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
+
+
                 if((time - _eventTime) > _waitTime) then {
                     // Assuming assets are available, find nearest asset that can complete the task, if no appropriate asset report back
                     private _assetAvailable = false;
@@ -2576,7 +2688,7 @@ switch(_operation) do {
                     // Based on Op, check what type of aircraft we need
                     switch (_eventType) do {
                         case "CAP";
-                        case "OCA" : {
+                        case "DCA" : {
                             _aircraftType = ["Plane"];
                             _weaponType = "AA";
                         };
@@ -2595,7 +2707,7 @@ switch(_operation) do {
                         };
                     } foreach _airspaceAssets;
 
-                    ["ALIVE ATO %1 OP ASSETS: %2", _logic, _opAssets] call ALiVE_fnc_dump;
+                    // ["ALIVE ATO %1 OP ASSETS: %2", _logic, _opAssets] call ALiVE_fnc_dump;
 
                     // Get an asset from another airspace if it is CAS
                     if (count _opAssets == 0 && _eventType == "CAS") then {
@@ -2671,7 +2783,7 @@ switch(_operation) do {
                                     _currentPosition = getposATL _vehicleObj;
                                 };
 
-                                diag_log format["ALIVE ATO %4 %5 F:%1, A:%2, D:%3, Dist:%6,",_fuel, _ammo, _damage, _logic, _profileID, _position distance _currentPosition];
+                                // diag_log format["ALIVE ATO %4 %5 F:%1, A:%2, D:%3, Dist:%6,",_fuel, _ammo, _damage, _logic, _profileID, _position distance _currentPosition];
 
                                 // Check crew are alive if not UAV
 
@@ -2705,7 +2817,7 @@ switch(_operation) do {
                                         _selectedAsset pushback _aircraft;
 
                                         // If the aircraft is on a CAP and not in the process of landing, send it to intercept
-                                        if (_currentOp == "CAP" && _eventType == "OCA") then {
+                                        if (_currentOp == "CAP" && _eventType == "DCA") then {
                                             _selectedAsset = [_aircraft];
                                             _exit = true;
                                         };
@@ -2798,7 +2910,10 @@ switch(_operation) do {
                         if (_currentOp != "") then {
 
                             //
-                            ["ALIVE ATO %4 Rerouting %1 (%2) for new request %3", _profileID, _currentOp, _eventType, _logic] call ALiVE_fnc_dump;
+                            if (_debug) then {
+                                ["ALIVE ATO %4 Rerouting %1 (%2) for new request %3", _profileID, _currentOp, _eventType, _logic] call ALiVE_fnc_dump;
+                            };
+
                             // Vehicle is active and doing something, so remove all existing waypoints in prep for new request
                             private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
                             if (!isNil "_profile") then {
@@ -2856,6 +2971,12 @@ switch(_operation) do {
                         };
                         // DEBUG -------------------------------------------------------------------------------------
 
+                        //Radio Broadcast
+                        private _message = format[localize "STR_ALIVE_ATO_REQUEST_DENIED", _HQ, _eventType, mapGridPosition _eventPosition];
+                        // send a message to all side players from HQ
+                        private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                        [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+
                         // nothing to do so cancel..
                         [_logic, "removeEvent", _eventID] call MAINCLASS;
                     };
@@ -2883,6 +3004,11 @@ switch(_operation) do {
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
 
                 if(_count == 0) exitWith {
+                    private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
+                    private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
+                    // send a message to all side players from HQ
+                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
 
                     if(_playerRequested) then {
                         private _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Logistics","REQUEST_LOST"] call ALIVE_fnc_event;
@@ -3001,13 +3127,15 @@ switch(_operation) do {
                                         _taxiPosition = ASLtoATL _taxiPosition;
                                     };
 
-                                    diag_log format["ALIVE ATO %1 SPAWNING AIRCRAFT %2 AT POSITION %3", _logic, _profileID, _taxiPosition];
+                                    // diag_log format["ALIVE ATO %1 SPAWNING AIRCRAFT %2 AT POSITION %3", _logic, _profileID, _taxiPosition];
                                     [_profile,"position",_taxiPosition] call ALiVE_fnc_profileVehicle;
                                     [_profile,"despawnPosition", _taxiPosition] call ALiVE_fnc_profileVehicle;
                                     [_profile,"direction",_taxiDir] call ALiVE_fnc_profileVehicle;
                                     [_profile,"spawn"] call ALiVE_fnc_profileVehicle;
-                                    ["ATO: Spawning"] call ALiVE_fnc_dump;
-                                    _profile call ALIVE_fnc_inspectHash;
+                                    if (_debug) then {
+                                        ["ATO: Spawning"] call ALiVE_fnc_dump;
+                                        _profile call ALIVE_fnc_inspectHash;
+                                    };
 
                                 } else {
 
@@ -3039,7 +3167,7 @@ switch(_operation) do {
                                     // Move aircraft to start position
                                     if (_isPlane) then {
                                         // Move the plane to ilsTaxiIn position or nearest catapult on carrier
-                                        diag_log format["ALIVE ATO %1 MOVING AIRCRAFT %2 TO POSITION %3",_logic, _profileID, _taxiPosition];
+                                        // diag_log format["ALIVE ATO %1 MOVING AIRCRAFT %2 TO POSITION %3",_logic, _profileID, _taxiPosition];
                                         // _profile call ALIVE_fnc_inspectHash;
                                         if (surfaceIsWater _taxiPosition && _isOnCarrier) then {
                                             _vehicleObj setPosASL _taxiPosition; // might need to adjust for sea level changes?
@@ -3062,7 +3190,9 @@ switch(_operation) do {
 
                         } else {
                             // Airport is busy
-                            ["ALIVE ATO %3 Airport busy %1 %2",_airportID,_airportBusy, _logic] call ALiVE_fnc_dump;
+                            if (_debug) then {
+                                ["ALIVE ATO %3 Airport busy %1 %2",_airportID,_airportBusy, _logic] call ALiVE_fnc_dump;
+                            };
                         };
 
                     } else {
@@ -3125,8 +3255,10 @@ switch(_operation) do {
 
                                 // Spawn aircraft in air
                                 [_profile,"spawn"] call ALiVE_fnc_profileVehicle;
-                                ["ATO: Spawning"] call ALiVE_fnc_dump;
-                                _profile call ALIVE_fnc_inspectHash;
+                                if (_debug) then {
+                                    ["ATO: Spawning"] call ALiVE_fnc_dump;
+                                    _profile call ALIVE_fnc_inspectHash;
+                                };
 
                                 if (_vehicleClass isKindOf "UAV") then {
                                     private _vehicleObj = [_profile,"vehicle"] call ALiVE_fnc_hashGet;
@@ -3163,6 +3295,16 @@ switch(_operation) do {
                     private _vehicle = [_vehProfile,"vehicle"] call ALiVE_fnc_hashGet;
 
                     private _grp = group _vehicle;
+
+                    //Radio Broadcast
+                    private _callsign = groupID _grp;
+
+                    if (_callsign != "") then {
+                        private _message = format[localize "STR_ALIVE_ATO_START", _HQ, _callsign, _eventType, mapGridPosition _eventPosition];
+                        // send a message to all side players from HQ
+                        private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                        [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    };
 
                     // Wait for driver or time expiration
                     if ( !(isNUll (driver _vehicle)) || {time > (_eventTime + ((_eventDuration/3)*60))} || {_isOnCarrier}) then {
@@ -3209,7 +3351,7 @@ switch(_operation) do {
 
                             private _wpPosition = _eventPosition;
 
-                            if (_eventType in ["CAS","OCA","SEAD","Strike"] && count _eventTargets > 0) then {
+                            if (_eventType in ["CAS","DCA","SEAD","Strike"] && count _eventTargets > 0) then {
                                 _wpPosition = _eventTargets select 0;
                             };
 
@@ -3239,11 +3381,13 @@ switch(_operation) do {
                                         _wp setWaypointTimeout [_eventDuration,_eventDuration,_eventDuration];
                                     };
                                 };
-                                case "OCA";
+                                case "DCA";
                                 case "SEAD";
                                 case "Strike": {
                                     // DESTROY
-                                    ["ALIVE ATO EVENT TARGET: %1 (%2)", _eventTargets select 0, typeName (_eventTargets select 0)] call ALiVE_fnc_dump;
+                                    if (_debug) then {
+                                        ["ALIVE ATO EVENT TARGET: %1 (%2)", _eventTargets select 0, typeName (_eventTargets select 0)] call ALiVE_fnc_dump;
+                                    };
                                     _wp setWaypointType "DESTROY";
                                     // _wp setWaypointTimeout [_eventDuration,_eventDuration,_eventDuration];
                                     _grp reveal (_eventTargets select 0);
@@ -3350,6 +3494,12 @@ switch(_operation) do {
 
                 if(_count == 0) exitWith {
 
+                    private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
+                    private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
+                    // send a message to all side players from HQ
+                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+
                     // Unlock runway
                     private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                     [_logic, "unlockRunway", _airportID] call MAINCLASS;
@@ -3410,6 +3560,13 @@ switch(_operation) do {
                     };
                     // DEBUG -------------------------------------------------------------------------------------
 
+                    // Radio Broadcast
+                    private _callsign = groupID (group _vehicle);
+                    private _message = format[localize "STR_ALIVE_ATO_ON_STATION", _HQ, _callsign, mapGridPosition _vehicle, _eventType];
+                    // send a message to all side players from HQ
+                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+
                     // respond to player request
                     if(_playerRequested) then {
                         private  _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Logistics","REQUEST_ARRIVED"] call ALIVE_fnc_event;
@@ -3422,11 +3579,22 @@ switch(_operation) do {
             };
 
             case "aircraftExecuteWait": {
-
                 // wait for waypoint to be completed or bingo fuel/weapons or destroyed
+                private _eventPosition = _eventData select 5;
+                private _aircraftID = _eventFriendlyProfiles select 0;
+                private _aircraft = [_assets,_aircraftID] call ALiVE_fnc_hashGet;
+                private _vehicleClass = [_aircraft,"vehicleClass"] call ALiVE_fnc_hashGet;
 
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
                 if(_count == 0) exitWith {
+
+                    //Radio Broadcast
+                    private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
+                    private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
+                    // send a message to all side players from HQ
+                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+
                     if(_playerRequested) then {
                         private _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"ATO","REQUEST_LOST"] call ALIVE_fnc_event;
                         [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
@@ -3436,9 +3604,7 @@ switch(_operation) do {
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
 
-                private _eventPosition = _eventData select 5;
-                private _aircraftID = _eventFriendlyProfiles select 0;
-                private _aircraft = [_assets,_aircraftID] call ALiVE_fnc_hashGet;
+
                 private _profileID = [_aircraft,"profileID"] call ALiVE_fnc_hashGet;
 
                 private _missionComplete = false;
@@ -3446,6 +3612,7 @@ switch(_operation) do {
                 private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
                 private _vehicle = [_profile,"vehicle"] call ALiVE_fnc_hashGet;
 
+                private _radioChoice = "STR_ALIVE_ATO_RETURN";
                 if (count waypoints (group _vehicle) > 0) then {
                     // Check waypoint
                     if (time > (_eventTime + (_eventDuration*60)) ) then {
@@ -3459,12 +3626,14 @@ switch(_operation) do {
                 private _damage = damage _vehicle;
                 if (_damage > 0.5) then {
                     _healthIssue = true;
+                    _radioChoice = "STR_ALIVE_ATO_RETURN_DAMAGE";
                 };
 
                 // Check fuel
                 private _fuel = fuel _vehicle;
                 if (_fuel < 0.2) then {
                     _healthIssue = true;
+                    _radioChoice = "STR_ALIVE_ATO_RETURN_FUEL";
                 };
 
                 // Check Weapons
@@ -3477,6 +3646,7 @@ switch(_operation) do {
                 private _ammo = _avail / count _ammoArray;
                 if (_ammo < 0.1) then {
                     _healthIssue = true;
+                    _radioChoice = "STR_ALIVE_ATO_RETURN_AMMO";
                 };
 
                 // Check targets
@@ -3487,10 +3657,20 @@ switch(_operation) do {
                 // If waypoint has been completed
                 if(_missionComplete || _healthIssue) then {
 
-                    // returne home
+                    // return home
                     private _eventStateData set [0, _healthIssue];
                     private _eventStateData set [1, _missionComplete];
                     [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
+
+                    // Radio broadcast
+                    if !("ItemRadio" in (assignedItems driver _vehicle)) then {
+                        driver _vehicle addItem "ItemRadio";
+                    };
+                    private _callsign = groupID (group _vehicle);
+                    private _message = format[localize _radioChoice, _eventType];
+                    // send a message to all side players from HQ
+                    private _radioBroadcast = [driver _vehicle,_message,"side",_sideObject,true];
+                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
 
                     [_event, "state", "aircraftReturn"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
@@ -3499,9 +3679,19 @@ switch(_operation) do {
             };
 
             case "aircraftReturn": {
-
+                private _aircraftID = _eventFriendlyProfiles select 0;
+                private _aircraft = [_assets,_aircraftID] call ALiVE_fnc_hashGet;
+                private _vehicleClass = [_aircraft,"vehicleClass"] call ALiVE_fnc_hashGet;
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
                 if(_count == 0) exitWith {
+
+                    // Radio Broadcast
+                    private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
+                    private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
+                    // send a message to all side players from HQ
+                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+
                     // set state to event complete
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
@@ -3566,6 +3756,14 @@ switch(_operation) do {
 
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
                 if(_count == 0) exitWith {
+
+                    // Radio Broadcast
+                    private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
+                    private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
+                    // send a message to all side players from HQ
+                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+
                     // Unlock runway
                     if (_isPlane ) then {
                         private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
@@ -3692,6 +3890,14 @@ switch(_operation) do {
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
 
                 if(_count == 0) exitWith {
+
+                    // Radio Broadcast
+                    private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
+                    private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
+                    // send a message to all side players from HQ
+                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+
                     // Unlock runway
                     private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                     [_logic, "unlockRunway", _airportID] call MAINCLASS;
@@ -3707,16 +3913,16 @@ switch(_operation) do {
 
                 private _landingTime = _vehicle getVariable [QGVAR(LANDING), time];
 
+                private _landed = _vehicle getVariable [QGVAR(LANDED),false];
+                private _touchDown = _vehicle getVariable [QGVAR(LANDEDTOUCHDOWN),0];
+
                 // Tailhook for carrier landings
-                if (_isOnCarrier && _isPlane) then {
+                if (_isOnCarrier && _isPlane && !_landed) then {
                     [_vehicle] spawn {
                         private _vehicle = _this select 0;
                         [_vehicle] call BIS_fnc_aircraftTailhook;
                     };
                 };
-
-                private _landed = _vehicle getVariable [QGVAR(LANDED),false];
-                private _touchDown = _vehicle getVariable [QGVAR(LANDEDTOUCHDOWN),0];
 
                 // manage taxi for planes
                 if (_touchDown > 0) then {
@@ -3737,6 +3943,13 @@ switch(_operation) do {
                         ["ALIVE ATO %3 - Aircraft (%1 - %2) has landed at time: %4", _vehicle, typeof _vehicle, _logic, _touchDown] call ALIVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
+
+                    // Radio Broadcast
+                    private _callsign = groupID _grp;
+                    private _message = format[localize "STR_ALIVE_ATO_MISSION_COMPLETE", _HQ, _callsign, _eventType];
+                    // send a message to all side players from HQ
+                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
 
                     _vehicle setVariable [QGVAR(LANDED),false];
 
@@ -3843,1247 +4056,13 @@ switch(_operation) do {
                 _factionName = getText((_eventFaction call ALiVE_fnc_configGetFactionClass) >> "displayName");
                 _assets = [ALIVE_globalATO,_eventFaction] call ALIVE_fnc_hashGet;
 
-                // send a message to all side players from HQ
-                //_message = format["%1 reinforcements have arrived. Available reinforcement level: %2",_factionName,_forcePool];
-                //_radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,"HQ"];
-                //[_eventSide,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
-
                 // remove the event
                 [_logic, "removeEvent", _eventID] call MAINCLASS;
             };
 
             // PLAYER REQUEST ---------------------------------------------------------------------------------------------------------------------------------
 
-            // the units have been requested by a player
-            // spawn the units at the insertion point
-            case "playerRequested": { // TODO
-
-                private ["_waitTime"];
-
-                // according to the type of reinforcement
-                // adjust wait time for creation of profiles
-
-                switch(_reinforcementType) do {
-                    case "AIR": {
-                        _waitTime = WAIT_TIME_AIR;
-                    };
-                    case "HELI": {
-                        _waitTime = WAIT_TIME_HELI;
-                    };
-                    case "MARINE": {
-                        _waitTime = WAIT_TIME_MARINE;
-                    };
-                    case "DROP": {
-                        _waitTime = WAIT_TIME_DROP;
-                    };
-                };
-
-
-                // DEBUG -------------------------------------------------------------------------------------
-                if(_debug) then {
-                    ["ALIVE ATO %4 - Event state: %1 event timer: %2 wait time on event: %3 ",_eventState, (time - _eventTime), _waitTime, _logic] call ALIVE_fnc_dump;
-                };
-                // DEBUG -------------------------------------------------------------------------------------
-
-
-                // if the reinforcement objective is
-                // not available, cancel the event
-                if(_reinforcementAvailable) then {
-
-                    if((time - _eventTime) > _waitTime) then {
-
-                        private ["_reinforcementPosition","_playersInRange","_paraDrop","_remotePosition","_totalCount"];
-
-                        if(_eventType == "PR_STANDARD" || _eventType == "PR_HELI_INSERT") then {
-
-                            _reinforcementPosition = [_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet;
-
-                        }else{
-                            _reinforcementPosition = _eventPosition;
-                        };
-
-                        // players near check
-
-                        private _playersInRange = [_reinforcementPosition, 350] call ALiVE_fnc_anyPlayersInRange;
-
-                        // if players are in visible range
-                        // para drop groups instead of
-                        // spawning on the ground
-
-                        _paraDrop = false;
-                        if(_playersInRange > 0) then {
-                            _paraDrop = true;
-                            // remote position should probably be spawn range - risk of heli getting shot down though too...
-                            _remotePosition = [_reinforcementPosition, 1600] call ALIVE_fnc_getPositionDistancePlayers;
-                        }else{
-                            _remotePosition = _reinforcementPosition;
-                        };
-
-                        // wait time complete create profiles
-                        // get groups according to requested force makeup
-
-                        _totalCount = 0;
-
-
-                        private ["_position","_profiles","_profileID","_profileIDs","_emptyVehicleProfiles","_itemCategory","_infantryProfiles","_armourProfiles",
-                        "_mechanisedProfiles","_motorisedProfiles","_heliProfiles","_planeProfiles","_itemClass"];
-
-                        _infantryProfiles = [];
-                        _mechanisedProfiles = [];
-                        _motorisedProfiles = [];
-                        _armourProfiles = [];
-                        _heliProfiles = [];
-                        _planeProfiles = [];
-                        _marineProfiles = [];
-                        _specOpsProfiles = [];
-
-                        _payloadGroupProfiles = [];
-
-                        // empty vehicles
-
-                        _emptyVehicleProfiles = [];
-
-                        {
-                            _itemClass = _x select 0;
-
-                            _position = _reinforcementPosition getPos [random(200), random(360)];
-
-                            if!(surfaceIsWater _position) then {
-
-                                _itemCategory = _x select 1 select 1;
-
-                                switch(_itemCategory) do {
-                                    case "Car":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        };
-                                    };
-                                    case "Armored":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        };
-                                    };
-                                    case "Ship":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        } else {
-                                            // Find the nearest bit of water
-                                            _position = [_position, true] call ALIVE_fnc_getClosestSea;
-                                        };
-                                    };
-                                    case "Air":{
-                                        _position = _remotePosition getPos [random(200), random(360)];
-                                        _position set [2,1000];
-                                    };
-                                };
-
-                                if(_eventType == "PR_AIRDROP" || (_eventType == "PR_HELI_INSERT" && _itemCategory != "Air")) then {
-
-                                    if (_paraDrop && _eventType == "PR_HELI_INSERT") then {
-                                        _position = _remotePosition getPos [random(200), random(360)];
-                                        _position set [2,0]; // position might be in water :(
-                                    } else {
-                                        _position = _reinforcementPosition getPos [random(200), random(360)];
-                                    };
-
-                                    TRACE_2(">>>>>>>>>>>>>>>>>>>>>>>>",_itemClass, _position);
-
-                                    _profiles = [_itemClass,_side,_eventFaction,_position] call ALIVE_fnc_createProfileVehicle;
-                                    _profiles = [_profiles];
-                                    // Once spawned, prevent despawn while being slung
-                                    _profile = _profiles select 0;
-                                    [_profile, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
-
-                                }else{
-                                    _profiles = [_itemClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
-                                };
-
-                                _profileIDs = [];
-                                {
-                                    _profileID = _x select 2 select 4;
-                                    _profileIDs set [count _profileIDs, _profileID];
-                                } forEach _profiles;
-
-                                _emptyVehicleProfiles set [count _emptyVehicleProfiles, _profileIDs];
-
-                                switch(_itemCategory) do {
-                                    case "Car":{
-                                        _motorisedProfiles set [count _motorisedProfiles, _profileIDs];
-                                    };
-                                    case "Armored":{
-                                        _armourProfiles set [count _armourProfiles, _profileIDs];
-                                    };
-                                    case "Ship":{
-                                        _marineProfiles set [count _marineProfiles, _profileIDs];
-                                    };
-                                    case "Air":{
-                                        _heliProfiles set [count _heliProfiles, _profileIDs];
-
-                                        _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
-                                        _profile = _profiles select 0;
-                                        [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
-                                    };
-                                };
-
-                                _totalCount = _totalCount + 1;
-
-                            };
-
-                        } forEach _emptyVehicles;
-
-                        // set up slingload for empty vehicles
-                        if(_eventType == "PR_HELI_INSERT" && {_x select 1 select 1 != "Air"} count _emptyVehicles > 0) then {
-
-                            // create heli transport vehicles for the empty vehicles
-
-                            _transportGroups = [ALIVE_factionDefaultAirTransport,_eventFaction,[]] call ALIVE_fnc_hashGet;
-                            _transportProfiles = [];
-                            _transportVehicleProfiles = [];
-
-                            if(count _transportGroups == 0) then {
-                                _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
-                            };
-
-                            if(count _transportGroups > 0) then {
-
-                                // For each empty vehicle - create a heli to carry it
-                                {
-                                    private ["_currentDiff","_vehicleClass","_position","_payloadWeight","_slingLoadProfile"];
-
-                                    if (_paraDrop) then {
-                                        _position = _remotePosition getPos [random(200), random(360)];
-                                    } else {
-                                        _position = _reinforcementPosition getPos [random(200), random(360)];
-                                    };
-
-                                    // Get the profile
-                                    _slingLoadProfile = [ALiVE_ProfileHandler, "getProfile", (_x select 0)] call ALIVE_fnc_profileHandler;
-
-                                    // _slingloadProfile call ALIVE_fnc_inspectHash;
-
-                                    _payloadWeight = [(_slingLoadProfile select 2 select 11)] call ALIVE_fnc_getObjectWeight;
-
-                                    // Select helicopter that can slingload the vehicle
-                                    _vehicleClass = "";
-                                    _currentDiff = 15000;
-                                    {
-                                        private ["_capacity","_slingloadmax","_maxLoad","_slingDiff","_loadDiff"];
-
-                                        _slingloadmax = [(configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue;
-
-                                        _slingDiff = _slingloadmax - _payloadWeight;
-
-                                        if ((_slingDiff < _currentDiff) && (_slingDiff > 0)) then {_currentDiff = _slingDiff; _vehicleClass = _x;};
-
-                                    } foreach _transportGroups;
-
-                                    // Cannot find vehicle big enough to slingload...
-                                    if (_vehicleClass == "") exitWith {_totalCount = _totalCount - 1;};
-
-                                    if(_paraDrop) then {
-                                        _position set [2,PARADROP_HEIGHT];
-                                    };
-
-                                    // Create slingloading heli (slingloading another profile!)
-                                    _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,[], [[_x select 0], []]] call ALIVE_fnc_createProfilesCrewedVehicle;
-
-                                    // Set slingloaded profile
-                                    [_slingloadProfile,"slung",[[_profiles select 1 select 2 select 4]]] call ALIVE_fnc_profileVehicle;
-
-                                    _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
-                                    _transportVehicleProfiles set [count _transportVehicleProfiles, _profiles select 1 select 2 select 4];
-
-                                    _profileIDs = [];
-                                    {
-                                        _profileID = _x select 2 select 4;
-                                        _profileIDs set [count _profileIDs, _profileID];
-                                    } forEach _profiles;
-
-                                    _payloadGroupProfiles set [count _payloadGroupProfiles, _profileIDs];
-
-                                    _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
-                                    _profile = _profiles select 0;
-                                    [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
-
-                                    _totalCount = _totalCount + 1;
-
-                                } foreach _emptyVehicleProfiles;
-
-                            };
-
-                            _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
-                            _eventTransportVehiclesProfiles = _eventTransportVehiclesProfiles + _transportVehicleProfiles;
-
-                        };
-
-
-                        // static individuals
-
-                        private ["_staticIndividualProfiles","_unitClasses"];
-
-                        _staticIndividualProfiles = [];
-
-                        if(count _staticIndividuals > 0) then {
-
-                            _staticIndividualProfiles = [];
-
-                            _position = _reinforcementPosition getPos [random(200), random(360)];
-
-                            if(_paraDrop) then {
-                                if(_eventType == "PR_HELI_INSERT") then {
-                                    _position = _remotePosition;
-                                }else{
-                                    _position set [2,PARADROP_HEIGHT];
-                                };
-                            };
-
-                            _unitClasses = [];
-                            {
-                                _unitClasses set [count _unitClasses,_x select 0];
-                            } forEach _staticIndividuals;
-
-                            _profile = [_unitClasses,_side,_eventFaction,_position,0,_side,true] call ALIVE_fnc_createProfileEntity;
-                            _profileID = _profile select 2 select 4;
-                            _staticIndividualProfiles set [count _staticIndividualProfiles, [_profileID]];
-                            _infantryProfiles set [count _infantryProfiles, [_profileID]];
-
-                            _totalCount = _totalCount + 1;
-
-                        };
-
-
-                        // join individuals
-
-                        private ["_joinIndividualProfiles"];
-
-                        _joinIndividualProfiles = [];
-
-                        if(count _joinIndividuals > 0) then {
-
-                            _joinIndividualProfiles = [];
-
-                            _position = _reinforcementPosition getPos [random(200), random(360)];
-
-                            if(_paraDrop) then {
-                                if(_eventType == "PR_HELI_INSERT") then {
-                                    _position = _remotePosition;
-                                }else{
-                                    _position set [2,PARADROP_HEIGHT];
-                                };
-                            };
-
-                            _unitClasses = [];
-                            {
-                                _unitClasses set [count _unitClasses,_x select 0];
-                            } forEach _joinIndividuals;
-
-                            _profile = [_unitClasses,_side,_eventFaction,_position,0,_side,true] call ALIVE_fnc_createProfileEntity;
-                            _profileID = _profile select 2 select 4;
-                            _joinIndividualProfiles set [count _joinIndividualProfiles, [_profileID]];
-                            _infantryProfiles set [count _infantryProfiles, [_profileID]];
-
-                            _totalCount = _totalCount + 1;
-
-                        };
-
-                        // reinforce individuals
-
-                        private ["_reinforceIndividualProfiles"];
-
-                        _reinforceIndividualProfiles = [];
-
-                        if(count _reinforceIndividuals > 0) then {
-
-                            _reinforceIndividualProfiles = [];
-
-                            _position = _reinforcementPosition getPos [random(200), random(360)];
-
-                            if(_paraDrop) then {
-                                if(_eventType == "PR_HELI_INSERT") then {
-                                    _position = _remotePosition;
-                                }else{
-                                    _position set [2,PARADROP_HEIGHT];
-                                };
-                            };
-
-                            _unitClasses = [];
-                            {
-                                _unitClasses set [count _unitClasses,_x select 0];
-                            } forEach _reinforceIndividuals;
-
-                            _profile = [_unitClasses,_side,_eventFaction,_position,0,_side,true] call ALIVE_fnc_createProfileEntity;
-                            _profileID = _profile select 2 select 4;
-                            _reinforceIndividualProfiles set [count _reinforceIndividualProfiles, [_profileID]];
-                            _infantryProfiles set [count _infantryProfiles, [_profileID]];
-
-                            _totalCount = _totalCount + 1;
-
-                        };
-
-                        // Handle Groups - spawn inf and vehicles, slingload/paradrop vehicles if necessary
-
-                        // static groups
-
-                        private ["_staticGroupProfiles","_group"];
-
-                        _staticGroupProfiles = [];
-
-                        {
-
-                            _group = _x select 0;
-
-                            _position = _reinforcementPosition getPos [random(200), random(360)];
-
-                            if!(surfaceIsWater _position) then {
-
-                                _itemCategory = _x select 1 select 2;
-
-                                // Handle other infantry groups such as Infantry_WDL
-                                if ([_itemCategory,"Infantry"] call CBa_Fnc_find != -1) then {_itemCategory = "Infantry";};
-
-                                // Handle other Motorized groups such as Motorized_WDL
-                                if ([_itemCategory,"Motorized"] call CBa_Fnc_find != -1) then {_itemCategory = "Motorized";};
-
-                                switch(_itemCategory) do {
-                                    case "Naval":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        } else {
-                                            // Find the nearest bit of water
-                                            _position = [_position, true] call ALIVE_fnc_getClosestSea;
-                                        };
-                                    };
-                                    case "Air":{
-                                        _position = _remotePosition getPos [random(200), random(360)];
-                                        _position set [2,1000];
-                                    };
-                                    default {
-                                        if(_eventType == "PR_HELI_INSERT") then {
-                                            _position = _remotePosition;
-                                        }else{
-                                            if (_paraDrop) then {
-                                                _position set [2,PARADROP_HEIGHT];
-                                            };
-                                        };
-                                    };
-                                };
-
-                                TRACE_2(">>>>>>>>>>>>>>>>>>>>>>>>",_group, _position);
-                                _profiles = [_group, _position, random(360), false, _eventFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
-
-                                _profileIDs = [];
-                                {
-                                    _profileID = _x select 2 select 4;
-                                    _profileIDs set [count _profileIDs, _profileID];
-                                } forEach _profiles;
-
-                                _staticGroupProfiles set [count _staticGroupProfiles, _profileIDs];
-
-                                switch(_itemCategory) do {
-                                    case "Infantry":{
-                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
-                                    };
-                                    case "Support":{
-                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
-                                    };
-                                    case "SpecOps":{
-                                        _specOpsProfiles set [count _specOpsProfiles, _profileIDs];
-                                    };
-                                    case "Naval":{
-                                        _marineProfiles set [count _marineProfiles, _profileIDs];
-                                    };
-                                    case "Armored":{
-                                        _armourProfiles set [count _armourProfiles, _profileIDs];
-                                    };
-                                    case "Mechanized":{
-                                         _mechanisedProfiles set [count _mechanisedProfiles, _profileIDs];
-                                    };
-                                    case "Motorized":{
-                                         _motorisedProfiles set [count _motorisedProfiles, _profileIDs];
-                                    };
-                                    case "Air":{
-                                        _heliProfiles set [count _heliProfiles, _profileIDs];
-
-                                        _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
-                                        _profile = _profiles select 0;
-                                        [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
-                                    };
-                                };
-
-                                _totalCount = _totalCount + 1;
-
-                            };
-
-                        } forEach _staticGroups;
-
-
-                        // join groups
-
-                        private ["_joinGroupProfiles"];
-
-                        _joinGroupProfiles = [];
-
-                        {
-
-                            _group = _x select 0;
-
-                            _position = _reinforcementPosition getPos [random(200), random(360)];
-
-                            if!(surfaceIsWater _position) then {
-
-                                _itemCategory = _x select 1 select 2;
-
-                                // Handle other infantry groups such as Infantry_WDL
-                                if ([_itemCategory,"Infantry"] call CBa_Fnc_find != -1) then {_itemCategory = "Infantry";};
-
-                                // Handle other Motorized groups such as Motorized_WDL
-                                if ([_itemCategory,"Motorized"] call CBa_Fnc_find != -1) then {_itemCategory = "Motorized";};
-
-                                switch(_itemCategory) do {
-                                    case "Naval":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        } else {
-                                            // Find the nearest bit of water
-                                            _position = [_position, true] call ALIVE_fnc_getClosestSea;
-                                        };
-                                    };
-                                    case "Air":{
-                                        _position = _remotePosition getPos [random(200), random(360)];
-                                        _position set [2,1000];
-                                    };
-                                    default {
-                                            if(_eventType == "PR_HELI_INSERT") then {
-                                                _position = _remotePosition;
-                                            }else{
-                                                _position set [2,PARADROP_HEIGHT];
-                                            };
-                                    };
-                                };
-                                TRACE_2(">>>>>>>>>>>>>>>>>>>>>>>>",_group, _position);
-                                _profiles = [_group, _position, random(360), false, _eventFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
-
-                                _profileIDs = [];
-                                {
-                                    _profileID = _x select 2 select 4;
-                                    _profileIDs set [count _profileIDs, _profileID];
-                                } forEach _profiles;
-
-                                _joinGroupProfiles set [count _joinGroupProfiles, _profileIDs];
-
-                                switch(_itemCategory) do {
-                                    case "Infantry":{
-                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
-                                    };
-                                    case "Support":{
-                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
-                                    };
-                                    case "SpecOps":{
-                                        _specOpsProfiles set [count _specOpsProfiles, _profileIDs];
-                                    };
-                                    case "Naval":{
-                                        _marineProfiles set [count _marineProfiles, _profileIDs];
-                                    };
-                                    case "Armored":{
-                                        _armourProfiles set [count _armourProfiles, _profileIDs];
-                                    };
-                                    case "Mechanized":{
-                                         _mechanisedProfiles set [count _mechanisedProfiles, _profileIDs];
-                                    };
-                                    case "Motorized":{
-                                         _motorisedProfiles set [count _motorisedProfiles, _profileIDs];
-                                    };
-                                    case "Air":{
-                                        _heliProfiles set [count _heliProfiles, _profileIDs];
-
-                                        _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
-                                        _profile = _profiles select 0;
-                                        [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
-                                    };
-                                };
-
-                                _totalCount = _totalCount + 1;
-
-                            };
-
-                        } forEach _joinGroups;
-
-
-                        // reinforce groups
-
-                        private ["_reinforceGroupProfiles"];
-
-                        _reinforceGroupProfiles = [];
-
-                        {
-
-                            _group = _x select 0;
-
-                            _position = _reinforcementPosition getPos [random(200), random(360)];
-
-                            if!(surfaceIsWater _position) then {
-
-                                _itemCategory = _x select 1 select 2;
-
-                                // Handle other infantry groups such as Infantry_WDL
-                                if ([_itemCategory,"Infantry"] call CBA_fnc_find != -1) then {_itemCategory = "Infantry";};
-
-                                // Handle other Motorized groups such as Motorized_WDL
-                                if ([_itemCategory,"Motorized"] call CBA_fnc_find != -1) then {_itemCategory = "Motorized";};
-
-                                switch(_itemCategory) do {
-                                    case "Naval":{
-                                        if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
-                                        } else {
-                                            // Find the nearest bit of water
-                                            _position = [_position, true] call ALIVE_fnc_getClosestSea;
-                                        };
-                                    };
-                                    case "Air":{
-                                        _position = _remotePosition getPos [random(200), random(360)];
-                                        _position set [2,1000];
-                                    };
-                                    default {
-                                            if(_eventType == "PR_HELI_INSERT") then {
-                                                _position = _remotePosition;
-                                            }else{
-                                                _position set [2,PARADROP_HEIGHT];
-                                            };
-                                    };
-                                };
-                                TRACE_2(">>>>>>>>>>>>>>>>>>>>>>>>",_group, _position);
-                                _profiles = [_group, _position, random(360), false, _eventFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
-
-                                _profileIDs = [];
-                                {
-                                    _profileID = _x select 2 select 4;
-                                    _profileIDs set [count _profileIDs, _profileID];
-                                } forEach _profiles;
-
-                                _reinforceGroupProfiles set [count _reinforceGroupProfiles, _profileIDs];
-
-                                switch(_itemCategory) do {
-                                    case "Infantry":{
-                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
-                                    };
-                                    case "Support":{
-                                        _infantryProfiles set [count _infantryProfiles, _profileIDs];
-                                    };
-                                    case "SpecOps":{
-                                        _specOpsProfiles set [count _specOpsProfiles, _profileIDs];
-                                    };
-                                    case "Naval":{
-                                        _marineProfiles set [count _marineProfiles, _profileIDs];
-                                    };
-                                    case "Armored":{
-                                        _armourProfiles set [count _armourProfiles, _profileIDs];
-                                    };
-                                    case "Mechanized":{
-                                         _mechanisedProfiles set [count _mechanisedProfiles, _profileIDs];
-                                    };
-                                    case "Motorized":{
-                                         _motorisedProfiles set [count _motorisedProfiles, _profileIDs];
-                                    };
-                                    case "Air":{
-                                        _heliProfiles set [count _heliProfiles, _profileIDs];
-
-                                        _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
-                                        _profile = _profiles select 0;
-                                        [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
-                                    };
-                                };
-
-                                _totalCount = _totalCount + 1;
-
-                            };
-
-                        } forEach _reinforceGroups;
-
-                        // Handle infantry
-
-                        if(_eventType == "PR_STANDARD") then {
-
-                            // create ground transport vehicles for the profiles
-
-                            _transportGroups = [ALIVE_factionDefaultTransport,_eventFaction,[]] call ALIVE_fnc_hashGet;
-                            _transportProfiles = [];
-                            _transportVehicleProfiles = [];
-
-                            if(count _transportGroups == 0) then {
-                                _transportGroups = [ALIVE_sideDefaultTransport,_side] call ALIVE_fnc_hashGet;
-                            };
-
-                            if(count _transportGroups > 0) then {
-                                for "_i" from 0 to (count _infantryProfiles) -1 do {
-
-                                    _position = _reinforcementPosition getPos [random(200), random(360)];
-
-                                    if(_paraDrop) then {
-                                        _position set [2,PARADROP_HEIGHT];
-                                    };
-
-                                    if(count _transportGroups > 0) then {
-
-                                        _vehicleClass = selectRandom _transportGroups;
-
-                                        _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,false,true] call ALIVE_fnc_createProfilesCrewedVehicle;
-
-                                        _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
-                                        _transportVehicleProfiles set [count _transportVehicleProfiles, _profiles select 1 select 2 select 4];
-
-                                    }
-
-                                };
-                            };
-
-                            _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
-                            _eventTransportVehiclesProfiles = _eventTransportVehiclesProfiles + _transportVehicleProfiles;
-
-                        };
-
-                        if(_eventType == "PR_HELI_INSERT") then {
-
-                            private ["_infantryProfileID","_infantryProfile","_profileWaypoint","_profile"];
-
-                            // create air transport vehicles for the profiles
-
-                            _transportGroups = [ALIVE_factionDefaultAirTransport,_eventFaction,[]] call ALIVE_fnc_hashGet;
-                            _transportProfiles = [];
-                            _transportVehicleProfiles = [];
-
-                            if(count _transportGroups == 0) then {
-                                _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
-                            };
-
-                            if(count _transportGroups > 0) then {
-
-                                for "_i" from 0 to (count _infantryProfiles) -1 do {
-
-                                    if (_paraDrop) then {
-                                        _position = _remotePosition getPos [random(200), random(360)];
-                                    } else {
-                                        _position = _reinforcementPosition getPos [random(200), random(360)];
-                                    };
-
-                                    if(_paraDrop) then {
-                                        _position set [2,PARADROP_HEIGHT];
-                                    };
-
-                                    if(count _transportGroups > 0) then {
-
-                                        // Select helicopter that can carry most troops
-                                        private "_heliTransport";
-                                        _heliTransport = 2;
-                                        _vehicleClass = _transportGroups select 0;
-                                        {
-                                            private ["_transport"];
-                                            _transport = [(configFile >> "CfgVehicles" >> _x >> "transportSoldier")] call ALiVE_fnc_getConfigValue;
-                                            if (_transport > _heliTransport) then {_vehicleClass = _x};
-                                        } foreach _transportGroups;
-
-                                        // Create profiles
-                                        _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
-
-                                        _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
-                                        _transportVehicleProfiles set [count _transportVehicleProfiles, _profiles select 1 select 2 select 4];
-
-                                        _infantryProfileID = _infantryProfiles select _i select 0;
-                                        if!(isNil "_infantryProfileID") then {
-                                            _infantryProfile = [ALIVE_profileHandler, "getProfile", _infantryProfileID] call ALIVE_fnc_profileHandler;
-                                            if!(isNil "_infantryProfile") then {
-                                                [_infantryProfile,_profiles select 1] call ALIVE_fnc_createProfileVehicleAssignment;
-                                            };
-                                        };
-
-                                        _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
-                                        _profile = _profiles select 0;
-                                        [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
-
-                                    };
-
-                                };
-
-                            };
-
-                            _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
-                            _eventTransportVehiclesProfiles = _eventTransportVehiclesProfiles + _transportVehicleProfiles;
-
-                        };
-
-                        // Handle Groups
-                        // set up slingload for groups with vehicles
-
-                        _groupProfiles = _joinGroupProfiles + _reinforceGroupProfiles + _staticGroupProfiles;
-
-                        if(_eventType == "PR_HELI_INSERT" && (count _groupProfiles > 0)) then {
-
-                            // create heli transport vehicles for groups with vehicles
-
-                            _transportGroups = [ALIVE_factionDefaultAirTransport,_eventFaction,[]] call ALIVE_fnc_hashGet;
-                            _transportProfiles = [];
-                            _transportVehicleProfiles = [];
-
-                            if(count _transportGroups == 0) then {
-                                _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
-                            };
-
-                            if(count _transportGroups > 0) then {
-
-                                // For each group - create helis to carry their vehicles
-
-                                {
-                                    _groupProfile = _x;
-
-                                    {
-                                        private ["_currentDiff","_vehicleClass","_position","_payloadWeight","_slingLoadProfile"];
-
-                                        // Check to see if profile is a vehicle
-                                        if ([_x,"vehicle"] call CBA_fnc_find != -1) then {
-
-                                            if (_paraDrop) then {
-                                                _position = _remotePosition getPos [random(200), random(360)];
-                                            } else {
-                                                _position = _reinforcementPosition getPos [random(200), random(360)];
-                                            };
-
-                                            // Get the profile
-                                            _slingLoadProfile = [ALiVE_ProfileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-
-                                            // _slingloadProfile call ALIVE_fnc_inspectHash;
-
-                                            _payloadWeight = [(_slingLoadProfile select 2 select 11)] call ALIVE_fnc_getObjectWeight;
-
-                                            // Select helicopter that can slingload the vehicle
-                                            _vehicleClass = "";
-                                            _currentDiff = 15000;
-                                            {
-                                                private ["_capacity","_slingloadmax","_maxLoad","_slingDiff","_loadDiff"];
-
-                                                _slingloadmax = [(configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue;
-
-                                                _slingDiff = _slingloadmax - _payloadWeight;
-
-                                                if ((_slingDiff < _currentDiff) && (_slingDiff > 0)) then {_currentDiff = _slingDiff; _vehicleClass = _x;};
-
-                                            } foreach _transportGroups;
-
-                                            // Cannot find vehicle big enough to slingload...
-                                            if (_vehicleClass == "") exitWith {_totalCount = _totalCount - 1;};
-
-                                            _position set [2,PARADROP_HEIGHT];
-
-                                            // Create slingloading heli (slingloading another profile!)
-                                            _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,[], [[_x], []]] call ALIVE_fnc_createProfilesCrewedVehicle;
-
-                                            ["HELI PROFILE FOR SLINGLOADING: %1",_profiles select 1 select 2 select 4] call ALiVE_fnc_dump;
-                                            // Set slingloaded profile
-                                            [_slingloadProfile,"slung",[[_profiles select 1 select 2 select 4]]] call ALIVE_fnc_profileVehicle;
-
-                                            _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
-                                            _transportVehicleProfiles set [count _transportVehicleProfiles, _profiles select 1 select 2 select 4];
-
-                                            _profileIDs = [];
-                                            {
-                                                _profileID = _x select 2 select 4;
-                                                _profileIDs set [count _profileIDs, _profileID];
-                                            } forEach _profiles;
-
-                                            _payloadGroupProfiles set [count _payloadGroupProfiles, _profileIDs];
-
-                                            _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
-                                            _profile = _profiles select 0;
-                                            [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
-
-                                            _totalCount = _totalCount + 1;
-                                        };
-
-                                    } foreach _groupProfile;
-
-                                } foreach _groupProfiles;
-
-                            };
-
-                            _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
-                            _eventTransportVehiclesProfiles = _eventTransportVehiclesProfiles + _transportVehicleProfiles;
-
-                        };
-
-                        // Handle payload
-
-                        // spawn vehicles to fit the requested
-                        // payload items in
-
-                        private ["_payloadGroupProfiles","_transportGroups","_transportProfiles","_transportVehicleProfiles","_vehicleClass","_vehicle","_itemClass",
-                        "_itemWeight","_payloadWeight","_payloadcount","_payloadSize","_payloadMaxSize"];
-
-                        if(count _payload > 0) then {
-
-                            _payloadWeight = 0;
-                            _payloadSize = 0;
-                            _payloadMaxSize = 0;
-                            {
-                                _itemWeight = [_x] call ALIVE_fnc_getObjectWeight;
-                                _payloadWeight = _payloadWeight + _itemWeight;
-                                _itemSize = [_x] call ALIVE_fnc_getObjectSize;
-                                _payloadSize = _payloadSize + _itemSize;
-                                if (_itemSize > _payloadMaxSize) then {_payloadMaxSize = _itemSize;};
-                            } forEach _payload;
-
-                            _payloadcount = floor(_payloadWeight / 2000);
-                            if(_payloadcount <= 0) then {
-                                _payloadcount = 1;
-                            };
-                            _totalCount = _totalCount + _payloadcount;
-
-                            if(_eventType == "PR_STANDARD") then {
-
-                                // create ground transport vehicles for the payload
-
-                                _transportGroups = [ALIVE_factionDefaultTransport,_eventFaction,[]] call ALIVE_fnc_hashGet;
-                                _transportProfiles = [];
-                                _transportVehicleProfiles = [];
-
-                                if(count _transportGroups == 0) then {
-                                    _transportGroups = [ALIVE_sideDefaultTransport,_side] call ALIVE_fnc_hashGet;
-                                };
-
-                                if(count _transportGroups > 0) then {
-
-                                    _position = _reinforcementPosition getPos [random(200), random(360)];
-
-                                    if(_paraDrop) then {
-                                        _position set [2,PARADROP_HEIGHT];
-                                    };
-
-                                    _vehicleClass = selectRandom _transportGroups;
-
-                                    _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,false,true,_payload] call ALIVE_fnc_createProfilesCrewedVehicle;
-
-                                    _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
-                                    _transportVehicleProfiles set [count _transportVehicleProfiles, _profiles select 1 select 2 select 4];
-
-                                    _profileIDs = [];
-                                    {
-                                        _profileID = _x select 2 select 4;
-                                        _profileIDs set [count _profileIDs, _profileID];
-                                    } forEach _profiles;
-
-                                    _payloadGroupProfiles set [count _payloadGroupProfiles, _profileIDs];
-
-                                };
-
-                                _totalCount = _totalCount + 1;
-
-                                _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
-                                _eventTransportVehiclesProfiles = _eventTransportVehiclesProfiles + _transportVehicleProfiles;
-
-                            };
-
-                            if(_eventType == "PR_HELI_INSERT") then {
-
-                                // If payload weight is greater than maximumLoad, then items are put in a container and slingloaded.
-
-                                // create heli transport vehicles for the payload
-
-                                _transportGroups = [ALIVE_factionDefaultAirTransport,_eventFaction,[]] call ALIVE_fnc_hashGet;
-                                _transportProfiles = [];
-                                _transportVehicleProfiles = [];
-
-                                if(count _transportGroups == 0) then {
-                                    _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
-                                };
-
-                                if(count _transportGroups > 0) then {
-                                    private ["_slingload","_currentDiff"];
-
-                                    if (_paraDrop) then {
-                                        _position = _remotePosition getPos [random(200), random(360)];
-                                    } else {
-                                        _position = _reinforcementPosition getPos [random(200), random(360)];
-                                    };
-
-                                    // Select helicopter that can carry enough for payload
-                                    _vehicleClass = _transportGroups select 0;
-                                    _slingload = false;
-                                    _currentDiff = 15000;
-                                    {
-                                        private ["_capacity","_slingloadmax","_maxLoad","_slingDiff","_loadDiff"];
-
-                                        _slingloadmax = [(configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue;
-                                        _maxLoad = [(configFile >> "CfgVehicles" >> _x >> "maximumLoad")] call ALiVE_fnc_getConfigValue;
-
-                                        _slingDiff = _slingloadmax - _payloadWeight;
-                                        _loadDiff = _maxLoad - _payloadWeight;
-
-                                        if ((_slingDiff < _currentDiff) && (_slingDiff > 0)) then {_currentDiff = _slingDiff; _vehicleClass = _x; _slingload = true;};
-                                        if ((_loadDiff <= _currentDiff) && (_loadDiff > 0)) then {_currentDiff = _loadDiff; _vehicleClass = _x; _slingload = false;};
-
-                                    } foreach _transportGroups;
-
-                                    // If total size > vehicle size then force slingload if available
-                                    if ( (_payloadSize > [(configFile >> "CfgVehicles" >> _vehicleClass >> "mapSize")] call ALiVE_fnc_getConfigValue) && ([(configFile >> "CfgVehicles" >> _vehicleClass >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue > 0)) then {
-                                        _slingload = true;
-                                    };
-
-
-                                    _position set [2,PARADROP_HEIGHT];
-
-
-                                    if (!_slingload) then {
-                                        _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,_payload] call ALIVE_fnc_createProfilesCrewedVehicle;
-
-                                    } else {
-
-                                        // Do slingloading
-                                        private ["_containers","_containerClass","_container"];
-
-                                        LOG("RESUPPLY WILL BE SLINGLOADING");
-
-                                        // Get a suitable container
-                                        _containers = [ALIVE_factionDefaultContainers,_eventFaction,[]] call ALIVE_fnc_hashGet;
-
-                                        if(count _containers == 0) then {
-                                            _containers = [ALIVE_sideDefaultContainers,_side] call ALIVE_fnc_hashGet;
-                                        };
-
-                                        if(count _containers > 0) then {
-                                            private ["_tempContainer","_tempContainerSize"];
-                                            if (_paraDrop) then {
-                                                _position = _remotePosition getPos [random(200), random(360)];
-                                            } else {
-                                                _position = _reinforcementPosition getPos [random(200), random(360)];
-                                            };
-
-                                            // Choose a good sized container
-                                            _containerClass = _containers select 0;
-
-                                            // Find a container big enough and the helicopter can slingload
-                                            _tempContainer = _containerClass;
-                                            _tempContainerSize = [(configFile >> "CfgVehicles" >> _containerClass >> "mapSize")] call ALiVE_fnc_getConfigValue;
-                                            {
-                                                private ["_containerSize","_heliCanSling"];
-                                                _containerSize = [(configFile >> "CfgVehicles" >> _x >> "mapSize")] call ALiVE_fnc_getConfigValue;
-
-                                                // Work around for cargo container that is 7500kg
-                                                _heliCanSling = if ([(configFile >> "CfgVehicles" >> _vehicleClass >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue < 7500 && _x == "B_Slingload_01_Cargo_F") then {false;}else{true;};
-
-                                                if (_containerSize > _tempContainerSize && _heliCanSling) then {_tempContainer = _x; _tempContainerSize = _containerSize;};
-
-                                                TRACE_3("RESUPPLY", _payloadMaxSize, _containerSize, _x);
-
-                                                if ((_containerSize * 2) > _payloadMaxSize && _heliCanSling) exitWith {_containerClass = _x;};
-                                            } foreach _containers;
-
-                                            // If no container is big enough, then just use biggest
-                                            if (_tempContainerSize > [(configFile >> "CfgVehicles" >> _containerClass >> "mapSize")] call ALiVE_fnc_getConfigValue) then {
-                                                _containerClass = _tempContainer;
-                                            };
-
-                                            // Create slingloading heli
-                                            _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,[], [_containerClass, _payload]] call ALIVE_fnc_createProfilesCrewedVehicle;
-
-                                        };
-                                    };
-
-                                    _transportProfiles set [count _transportProfiles, _profiles select 0 select 2 select 4];
-                                    _transportVehicleProfiles set [count _transportVehicleProfiles, _profiles select 1 select 2 select 4];
-
-                                    _profileIDs = [];
-                                    {
-                                        _profileID = _x select 2 select 4;
-                                        _profileIDs set [count _profileIDs, _profileID];
-                                    } forEach _profiles;
-
-                                    _payloadGroupProfiles set [count _payloadGroupProfiles, _profileIDs];
-
-                                    _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
-                                    _profile = _profiles select 0;
-                                    [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
-
-                                };
-
-                                _totalCount = _totalCount + 1;
-
-                                _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
-                                _eventTransportVehiclesProfiles = _eventTransportVehiclesProfiles + _transportVehicleProfiles;
-
-                            };
-
-                            private ["_containers","_vehicle","_parachute","_soundFlyover"];
-
-                            if(_eventType == "PR_AIRDROP") then {
-
-                                _containers = [ALIVE_factionDefaultContainers,_eventFaction,[]] call ALIVE_fnc_hashGet;
-
-                                if(count _containers == 0) then {
-                                    _containers = [ALIVE_sideDefaultContainers,_side] call ALIVE_fnc_hashGet;
-                                };
-
-                                if(count _containers > 0) then {
-
-                                    _position = _reinforcementPosition getPos [random(200), random(360)];
-
-                                    if(_paraDrop) then {
-                                        _position set [2,PARADROP_HEIGHT];
-                                    };
-
-                                    _vehicleClass = selectRandom _containers;
-
-                                    //_profile = [_vehicleClass,_side,_eventFaction,_position,random(360),false,_eventFaction,_payload] call ALIVE_fnc_createProfileVehicle;
-
-                                    _vehicle = createVehicle [_vehicleClass, _position, [], 0, "NONE"];
-                                    [ALiVE_SYS_LOGISTICS,"fillContainer",[_vehicle,_payload]] call ALiVE_fnc_Logistics;
-
-                                    if(_paraDrop) then {
-                                        _parachute = createvehicle ["B_Parachute_02_F",position _vehicle ,[],0,"none"];
-                                        _vehicle attachto [_parachute,[0,0,(abs ((boundingbox _vehicle select 0) select 2))]];
-
-                                        _parachute setpos position _vehicle;
-                                        _parachute setdir direction _vehicle;
-                                        _parachute setvelocity [0,0,-1];
-
-                                        if (time - (missionnamespace getvariable ["bis_fnc_curatorobjectedited_paraSoundTime",0]) > 0) then {
-                                            _soundFlyover = selectRandom ["BattlefieldJet1","BattlefieldJet2"];
-                                            [_parachute,_soundFlyover,"say3d"] remoteExec ["bis_fnc_sayMessage"];
-                                            missionnamespace setvariable ["bis_fnc_curatorobjectedited_paraSoundTime",time + 10]
-                                        };
-
-                                        [_vehicle,_parachute] spawn {
-                                            _vehicle = _this select 0;
-                                            _parachute = _this select 1;
-
-                                            waituntil {isnull _parachute || isnull _vehicle};
-                                            _vehicle setdir direction _vehicle;
-                                            deletevehicle _parachute;
-                                        };
-                                    };
-
-                                };
-
-                                _totalCount = _totalCount + 1;
-                            };
-
-                        };
-
-
-                        [_playerRequestProfiles,"empty",_emptyVehicleProfiles] call ALIVE_fnc_hashSet;
-                        [_playerRequestProfiles,"joinIndividuals",_joinIndividualProfiles] call ALIVE_fnc_hashSet;
-                        [_playerRequestProfiles,"staticIndividuals",_staticIndividualProfiles] call ALIVE_fnc_hashSet;
-                        [_playerRequestProfiles,"reinforceIndividuals",_reinforceIndividualProfiles] call ALIVE_fnc_hashSet;
-                        [_playerRequestProfiles,"joinGroups",_joinGroupProfiles] call ALIVE_fnc_hashSet;
-                        [_playerRequestProfiles,"staticGroups",_staticGroupProfiles] call ALIVE_fnc_hashSet;
-                        [_playerRequestProfiles,"reinforceGroups",_reinforceGroupProfiles] call ALIVE_fnc_hashSet;
-                        [_playerRequestProfiles,"payloadGroups",_payloadGroupProfiles] call ALIVE_fnc_hashSet;
-                        [_event, "playerRequestProfiles", _playerRequestProfiles] call ALIVE_fnc_hashSet;
-
-
-                        [_eventCargoProfiles, "armour", _armourProfiles] call ALIVE_fnc_hashSet;
-                        [_eventCargoProfiles, "infantry", _infantryProfiles] call ALIVE_fnc_hashSet;
-                        [_eventCargoProfiles, "mechanised", _mechanisedProfiles] call ALIVE_fnc_hashSet;
-                        [_eventCargoProfiles, "motorised", _motorisedProfiles] call ALIVE_fnc_hashSet;
-                        [_eventCargoProfiles, "heli", _heliProfiles] call ALIVE_fnc_hashSet;
-                        [_eventCargoProfiles, "plane", _planeProfiles] call ALIVE_fnc_hashSet;
-
-
-                        // DEBUG -------------------------------------------------------------------------------------
-                        if(_debug) then {
-                            ["ALIVE ATO %2 - Profiles created: %1 ",_totalCount, _logic] call ALIVE_fnc_dump;
-                            switch(_eventType) do {
-                                case "PR_STANDARD": {
-                                    [_logic, "createMarker", [_reinforcementPosition,_eventFaction,"PR CONVOY START"]] call MAINCLASS;
-                                };
-                                case "PR_HELI_INSERT": {
-                                    [_logic, "createMarker", [_reinforcementPosition,_eventFaction,"PR AIR INSERTION"]] call MAINCLASS;
-                                };
-                                case "PR_AIRDROP": {
-                                    [_logic, "createMarker", [_eventPosition,_eventFaction,"PR AIRDROP"]] call MAINCLASS;
-                                };
-                            };
-                        };
-                        // DEBUG -------------------------------------------------------------------------------------
-
-
-                        if(_totalCount > 0) then {
-
-                            // remove the created group count
-                            // from the force pool
-                            _forcePool = _forcePool - _totalCount;
-                            // update the global force pool
-                            [ALIVE_ATOGlobalRegistry,"updateGlobalForcePool",[_registryID,_forcePool]] call ALIVE_fnc_ATOGlobalRegistry;
-
-                            switch(_eventType) do {
-                                case "PR_STANDARD": {
-
-                                    // update the state of the event
-                                    // next state is transport load
-                                    [_event, "state", "transportLoad"] call ALIVE_fnc_hashSet;
-
-                                    // dispatch event
-                                    _logEvent = ['LOGISTICS_INSERTION', [_reinforcementPosition,_eventFaction,_side,_eventID],"air tasking orders"] call ALIVE_fnc_event;
-                                    [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
-
-                                };
-                                case "PR_HELI_INSERT": {
-
-                                    // update the state of the event
-                                    // next state is transport load
-                                    [_event, "state", "heliTransportStart"] call ALIVE_fnc_hashSet;
-
-                                    // dispatch event
-                                    _logEvent = ['LOGISTICS_INSERTION', [_reinforcementPosition,_eventFaction,_side,_eventID],"air tasking orders"] call ALIVE_fnc_event;
-                                    [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
-
-                                };
-                                case "PR_AIRDROP": {
-
-                                    // update the state of the event
-                                    // next state is aridrop wait
-                                    [_event, "state", "airdropWait"] call ALIVE_fnc_hashSet;
-
-                                    // dispatch event
-                                    _logEvent = ['LOGISTICS_DESTINATION', [_eventPosition,_eventFaction,_side,_eventID],"air tasking orders"] call ALIVE_fnc_event;
-                                    [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
-
-                                };
-                            };
-
-                            [_event, "cargoProfiles", _eventCargoProfiles] call ALIVE_fnc_hashSet;
-                            [_event, "transportProfiles", _eventTransportProfiles] call ALIVE_fnc_hashSet;
-                            [_event, "transportVehiclesProfiles", _eventTransportVehiclesProfiles] call ALIVE_fnc_hashSet;
-
-                            [_logic, "prepareUnitCounts", _event] call MAINCLASS;
-
-                            [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
-
-                            // respond to player request
-                            _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"air tasking orders","REQUEST_INSERTION"] call ALIVE_fnc_event;
-                            [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
-
-                        }else{
-
-                            // respond to player request
-                            _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"air tasking orders","DENIED_FORCE_CREATION"] call ALIVE_fnc_event;
-                            [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
-
-                            // no profiles were created
-                            // nothing to do so cancel..
-                            [_logic, "removeEvent", _eventID] call MAINCLASS;
-                        };
-
-                    };
-                }else{
-
-                    // no insertion point available
-                    // nothing to do so cancel..
-                    [_logic, "removeEvent", _eventID] call MAINCLASS;
-
-                    // respond to player request
-                    _logEvent = ['LOGCOM_RESPONSE', [_requestID,_playerID],"air tasking orders","DENIED_NOT_AVAILABLE"] call ALIVE_fnc_event;
-                    [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
-
-                };
-            };
+            // Would conflict with Combat Support?
         };
     };
 

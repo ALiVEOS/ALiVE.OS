@@ -59,4 +59,49 @@
 <Key ID="STR_ALIVE_ATO_PLACE_AIR_COMMENT">
     <Original>If there are no available air assets, then place additional assets at the nearest airbase or helipad</Original>
 </Key>
+<Key ID="STR_ALIVE_ATO_NOT_ESTABLISHED">
+    <Original>All callsigns, this is %1, %2 forward airbase has not been established. Air Taskings are unavailable. Out.</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_ESTABLISHED">
+    <Original>All callsigns, this is %1, %2 forward airbase established at grid %3, Air Tasking Orders to follow. Out.</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_UNDER_ATTACK">
+    <Original>All callsigns, this is %1, %2 forward airbase established at grid %3 is under attack, request immediate support. Out.</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_OVERRUN">
+    <Original>All callsigns, this is %1, %2 forward airbase established at grid %3 is compromised. Relocating to alternate. Air combat operations unavailable until further notice. Out.</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_REQUEST_ACKNOWLEDGED">
+    <Original>All callsigns, this is %1, %2 has requested %3 at grid %4. Air Tasking Order will follow. Out.</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_UNAVAILABLE">
+    <Original>All callsigns, this is %1, aircraft unavailable, air combat operations suspended. Requesting resupply. Out.</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_REQUEST_DENIED">
+    <Original>All callsigns, this is %1, request for %2 at grid %3 has been denied. Aircraft not available. Out.</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_START">
+    <Original>All callsigns, this is %1, scrambling %2 on ATO %3 at grid %4. Out.</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_AIRCRAFT_LOST">
+    <Original>All callsigns, this is %1, we've lost radar contact with a %2 on %3. Out.</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_ON_STATION">
+    <Original>All callsigns, this is %1, %2 on station at grid %3. Executing %4 now. Out.</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_RETURN">
+    <Original>on %1. ATO complete, I'm RTB. Out.</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_RETURN_FUEL">
+    <Original>Bingo fuel, I am RTB. Out.</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_RETURN_AMMO">
+    <Original>Winchester, I am RTB. Out.</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_RETURN_DAMAGE">
+    <Original>AWe've been hit, I am RTB. Out.</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_MISSION_COMPLETE">
+    <Original>All callsigns, this is %1, %2 is back at base, %3 mission complete. Out.</Original>
+</Key>
 </Container></Package></Project>

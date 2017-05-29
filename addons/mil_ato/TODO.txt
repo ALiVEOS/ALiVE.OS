@@ -1,14 +1,9 @@
 ATO TO DO
-- Tests
-    - move back to start pos without exploding in certain circumstances
-    - helo/VTOL return to carrier - can't land :(
-    - helo/VTOL return to helipad - done?
-- Issue where asset is spawned, but no players around impacts takeoff?
-- Carrier height changes over time due to sea level??? implement height based relative model position
+- pilots on carrier are spawned underwater :(
+- Sometimes crews don't get put in aircraft
+- Sometimes aircraft damaged being returned to hangar/carrier position?
+- ATM Carrier based aircraft are spawned to avoid exploding issues later - need to fix ship based spawn code in profile system
 
-
-
-- VP integration
 - make sure reroute is correct - don't reroute twice
 - SEAD/STRIKE/CAS/RECCE vs Profiles?
 - On demand analysis
@@ -22,7 +17,8 @@ ATO TO DO
 - Multiple targets
 - Place AA
 - Option to include CS assets
-- Player request handling
+- Audio for radio
+- Player request handling?
 - Spawn Carrier if ATO module over sea
 
 Tests Completed
