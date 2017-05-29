@@ -71,7 +71,7 @@ class CfgVehicles
                 {
                         displayName = "$STR_ALIVE_ATO_TYPES";
                         description = "$STR_ALIVE_ATO_TYPES_COMMENT";
-                        defaultValue = "[''CAP'',''OCA'',''SEAD'',''CAS'',''Strike'',''Recce'']";
+                        defaultValue = "[''CAP'',''DCA'',''SEAD'',''CAS'',''Strike'',''Recce'']";
                 };
 
                 class airspace

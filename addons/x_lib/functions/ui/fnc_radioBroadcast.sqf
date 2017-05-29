@@ -70,6 +70,7 @@ _toGroup = if(count _this > 10) then {_this select 10} else {false};
 
 if(isNil "_message") exitWith {};
 
+
 // if from unit get the callSign of the unit
 if(_fromUnit || _toUnit) then {
 
@@ -89,7 +90,7 @@ if(_fromUnit || _toUnit) then {
     _fromCallSign = toString _fromCallSign;
 
     if(_fromUnit) then {
-        _message = format["this is %1 %2",_fromCallSign,_message];
+        _message = format["This is %1 %2",_fromCallSign,_message];
     }else{
         _message = format["%1 %2",_fromCallSign,_message];
     };

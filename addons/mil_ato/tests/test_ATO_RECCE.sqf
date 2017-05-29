@@ -57,7 +57,7 @@ private _type = "Recce";
 private _range = 2000;
 private _args = [
     "WHITE",                // ROE
-    DEFAULT_OP_HEIGHT,
+    800,
     DEFAULT_SPEED,
     DEFAULT_MIN_WEAP_STATE,
     DEFAULT_MIN_FUEL_STATE,
