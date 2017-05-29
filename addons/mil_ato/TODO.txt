@@ -1,9 +1,11 @@
 ATO TO DO
-- pilots on carrier are spawned underwater :(
-- Sometimes crews don't get put in aircraft
+- pilots on carrier are respawned underwater :(
+- Crew for choppers/planes on carrier sometimes don't get assigned if spawned
 - Sometimes aircraft damaged being returned to hangar/carrier position?
+
 - ATM Carrier based aircraft are spawned to avoid exploding issues later - need to fix ship based spawn code in profile system
 
+- If crewed vehicle placed, get crew out and manage as normal
 - make sure reroute is correct - don't reroute twice
 - SEAD/STRIKE/CAS/RECCE vs Profiles?
 - On demand analysis
