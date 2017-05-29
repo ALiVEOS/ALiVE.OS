@@ -571,7 +571,7 @@ switch(_operation) do {
                 [_asset,"vehicleClass",_vehicleClass] call ALiVE_fnc_hashSet;
                 [_asset,"airspace",_assetAirspace] call ALiVE_fnc_hashSet;
 
-                private _position = [_vehicleProfile,"position",""] call ALIVE_fnc_HashGet;
+                private _position = [_vehicleProfile,"position"] call ALIVE_fnc_HashGet;
                 [_asset,"startPos",_position] call ALiVE_fnc_hashSet;
 
                 private _dir = [_vehicleProfile,"direction"] call ALIVE_fnc_HashGet;
