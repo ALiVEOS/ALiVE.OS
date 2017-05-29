@@ -270,13 +270,39 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_CQB_SPAWNDISTANCEJET_COMMENT";
                                 defaultValue = 0;
                         };
-                        class CQB_staticWeapons
+						class CQB_staticWeapons
                         {
                                 displayName = "$STR_ALIVE_CQB_STATICWEAPONS";
                                 description = "$STR_ALIVE_CQB_STATICWEAPONS_COMMENT";
                                 defaultValue = 0;
+								class Values
+								{
+										class VeryHigh
+										{
+											name = "Very High";
+											Value = 2;
+										};
+										class High
+										{
+											name = "High";
+											Value = 1;
+										};
+										class Medium
+										{
+											name = "Medium";
+											Value = 0.5;
+										};
+										class VeryHigh
+										{
+											name = "Low";
+											Value = 0.25;
+										};
+										class VeryHigh
+										{
+											name = "None";
+											Value = 0;
+										};
                         };                        
-                        
                         class CQB_FACTIONS
                         {
                                 displayName = "$STR_ALIVE_CQB_FACTIONS";

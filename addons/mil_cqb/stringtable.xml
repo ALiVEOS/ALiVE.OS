@@ -18,7 +18,7 @@
     <Original>Persistent:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_PERSISTENT_COMMENT">
-    <Original>Enables CQB DB persistence (needs SYS DATA module and registration on ALiVE WarRoom)</Original>
+    <Original>Enables CQB persistence (requires ALiVE Data Module)</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_LOCALITY">
     <Original>Locality:</Original>
@@ -30,7 +30,7 @@
     <Original>AI Amount:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_AMOUNT_COMMENT">
-    <Original>Max. group size spawned per CQB location</Original>
+    <Original>Max group size spawned per CQB location</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_ENABLE">
     <Original>Enable CQB</Original>
@@ -66,13 +66,13 @@
     <Original>Only one CQB module can be used</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_USAGE">
-    <Original>Place the CQB module and select the preferred intensity. CQB can be synchronised (F5) to a Mil_MP or CIV_CP module (optionally).</Original>
+    <Original>Place the CQB module and select the preferred intensity. Optionally, CQB can be synced to a Mil/Civ Placement module.</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_LOCATIONTYPE">
     <Original>CQB locations:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_LOCATIONTYPE_COMMENT">
-    <Original>Selects the type of area in which CQB will be available, if synced to a MIL/CIV MP module this setting will be overwritten</Original>
+    <Original>Selects the type of area in which CQB will be available. If synced to a Mil/Civ Placement module this setting will be overwritten</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_BLACKLIST">
     <Original>Blacklist Marker:</Original>
@@ -102,19 +102,19 @@
     <Original>Spawn Ground:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCE_COMMENT">
-    <Original>Spawn distance for grunts! Note that spawn distance for strategic placements is factor 1.4 of this value</Original>
+    <Original>Spawn distance for ground units.  Note that spawn distance for strategic placements is a factor 1.4 of this value</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEHELI">
     <Original>Spawn Heli:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEHELI_COMMENT">
-    <Original>Spawn distance for helicopters (0 is no spawning)! Note that spawn distance for strategic placements is factor 1.4 of this value</Original>
+    <Original>Spawn distance for helicopters (0 to disable spawning). Note that spawn distance for strategic placements is a factor 1.4 of this value</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEJET">
     <Original>Spawn Jet:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEJET_COMMENT">
-    <Original>Spawn distance for jets (0 is no spawning)! Note that spawn distance for strategic placements is factor 1.4 of this value</Original>
+    <Original>Spawn distance for aircraft (0 to disable spawning). Note that spawn distance for strategic placements is a factor 1.4 of this value</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_DEBUG_ENABLE">
     <Original>Activate CQB Debug</Original>
@@ -132,6 +132,6 @@
     <Original>Static weapons:</Original>
 </Key>
 <Key ID="STR_ALIVE_CQB_STATICWEAPONS_COMMENT">
-    <Original>Creates static weapons on top positions by given intensity</Original>
+    <Original>Density of static weapon emplacements in CQB areas, such as mortars and machine guns</Original>
 </Key>
 </Container></Package></Project>
