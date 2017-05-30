@@ -1,26 +1,21 @@
 ATO TO DO
-- pilots on carrier are respawned underwater :(
-- Crew for choppers/planes on carrier sometimes don't get assigned if spawned
-- Sometimes aircraft damaged being returned to hangar/carrier position?
+- After a while entities on carrier are respawned underwater
 
-- ATM Carrier based aircraft are spawned to avoid exploding issues later - need to fix ship based spawn code in profile system
-
-- If crewed vehicle placed, get crew out and manage as normal
-- make sure reroute is correct - don't reroute twice
+- catapult direction for launch isn't quite right
 - SEAD/STRIKE/CAS/RECCE vs Profiles?
-- On demand analysis
+- Check for AA or AG weapons on aircraft and select assets based on mission
 - OPCOM ATO request logic
+- On demand analysis
 - Crew reinforcement / aircraft reinforcement
 - remove OCA/CAP if no planes
 - add OCA/CAP if new planes
-- Check for AA or AG weapons on aircraft and select assets based on mission
-- ATO requests sent to player aircraft if available (via tasks?)
-    - CAS, SEAD, Strike, OCA, CAP?, CSAR
 - Multiple targets
 - Place AA
-- Option to include CS assets
+- ATO requests sent to player aircraft if available (via tasks?)
+    - CAS, SEAD, Strike, OCA, CAP?, CSAR
 - Audio for radio
-- Player request handling?
+- Option to include CS assets?
+- If crewed vehicle placed by mission maker, get crew out and manage as normal
 - Spawn Carrier if ATO module over sea
 
 Tests Completed

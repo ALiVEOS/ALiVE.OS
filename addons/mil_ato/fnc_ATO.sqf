@@ -44,17 +44,17 @@ Tupolov
 #define DEFAULT_ATO_TYPES ["CAP","DCA","SEAD","CAS","STRIKE","RECCE"]
 #define DEFAULT_REGISTRY_ID ""
 #define DEFAULT_OP_HEIGHT 750
-#define DEFAULT_OP_DURATION 25
+#define DEFAULT_OP_DURATION 6
 #define DEFAULT_SPEED "NORMAL"
 #define DEFAULT_MIN_WEAP_STATE 0.5
 #define DEFAULT_MIN_FUEL_STATE 0.5
 #define DEFAULT_RADAR_HEIGHT 105
-#define WAIT_TIME_DCA 30
-#define WAIT_TIME_CAS 10
-#define WAIT_TIME_SEAD 60
-#define WAIT_TIME_STRIKE 90
-#define WAIT_TIME_RECCE 90
-#define WAIT_TIME_CAP 60
+#define WAIT_TIME_DCA 3
+#define WAIT_TIME_CAS 1
+#define WAIT_TIME_SEAD 6
+#define WAIT_TIME_STRIKE 9
+#define WAIT_TIME_RECCE 9
+#define WAIT_TIME_CAP 6
 
 TRACE_1("ATO - input",_this);
 
@@ -571,7 +571,7 @@ switch(_operation) do {
                 [_asset,"vehicleClass",_vehicleClass] call ALiVE_fnc_hashSet;
                 [_asset,"airspace",_assetAirspace] call ALiVE_fnc_hashSet;
 
-                private _position = [_vehicleProfile,"position"] call ALIVE_fnc_HashGet;
+                private _position = +([_vehicleProfile,"position"] call ALIVE_fnc_HashGet);
                 [_asset,"startPos",_position] call ALiVE_fnc_hashSet;
 
                 private _dir = [_vehicleProfile,"direction"] call ALIVE_fnc_HashGet;
@@ -626,7 +626,7 @@ switch(_operation) do {
 
                             private _side = [_profile,"side"] call ALiVE_fnc_hashGet;
                             private _faction = [_profile,"faction"] call ALiVE_fnc_hashGet;
-                            private _crewpos = _position;
+                            private _crewpos = +_position;
 
                             // Get nearest building position
                             if !(_isOnCarrier) then {
@@ -2806,20 +2806,26 @@ switch(_operation) do {
                                         if !(_currentOpState in ["aircraftLanding","aircraftReturnWait","aircraftStart"]) then {
                                             _currentOp = [_currentEvent, "data"] call ALIVE_fnc_hashGet select 0;
                                         } else {
-                                            // Aircraft is landing, so not available yet, set fuel measurement to zero
+                                            // Aircraft is starting/landing, so not available yet, set fuel measurement to zero
                                             _fuel = 0;
                                         };
                                     };
-                                    if ( ( (_position distance _currentPosition < 250) || (_currentOp == "CAP" && _eventType != "CAP") || (_eventType == "CAS") ) && (_fuel > _eventMinFuel && _ammo > _eventMinWeap && _damage < 0.5)) then {
 
-                                        [_aircraft,"currentPos",_currentPosition] call ALiVE_fnc_hashSet;
-                                        [_aircraft,"profileID",_x] call ALiVE_fnc_hashSet;
-                                        _selectedAsset pushback _aircraft;
+                                    // Don't reroute an aircraft twice
+                                    if !([_aircraft,"reroute", false] call ALiVE_fnc_hashGet) then {
 
-                                        // If the aircraft is on a CAP and not in the process of landing, send it to intercept
-                                        if (_currentOp == "CAP" && _eventType == "DCA") then {
-                                            _selectedAsset = [_aircraft];
-                                            _exit = true;
+                                        // If parked and not doing anything add, if on CAP and request is DCA,CAS,SEAD then reroute, if its CAS and currently on CAS don't reroute - make sure aircraft is fit for purpose
+                                        if ( ( ((_position distance _currentPosition < 15) && _currentOp == "") || (_currentOp == "CAP" && _eventType in ["DCA","CAS","SEAD"]) || (_currentOp != "CAS" && _eventType == "CAS") ) && (_fuel > _eventMinFuel && _ammo > _eventMinWeap && _damage < 0.5)) then {
+
+                                            [_aircraft,"currentPos",_currentPosition] call ALiVE_fnc_hashSet;
+                                            [_aircraft,"profileID",_x] call ALiVE_fnc_hashSet;
+                                            _selectedAsset pushback _aircraft;
+
+                                            // If the aircraft is on a CAP and not in the process of landing, send it to intercept
+                                            if (_currentOp == "CAP" && _eventType == "DCA") then {
+                                                _selectedAsset = [_aircraft];
+                                                _exit = true;
+                                            };
                                         };
                                     };
                                 } else {
@@ -2914,6 +2920,8 @@ switch(_operation) do {
                                 ["ALIVE ATO %4 Rerouting %1 (%2) for new request %3", _profileID, _currentOp, _eventType, _logic] call ALiVE_fnc_dump;
                             };
 
+                            // Radio Broadcast
+
                             // Vehicle is active and doing something, so remove all existing waypoints in prep for new request
                             private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
                             if (!isNil "_profile") then {
@@ -2924,6 +2932,8 @@ switch(_operation) do {
                                     deleteWaypoint ((waypoints _grp) select 0);
                                 };
                             };
+
+                            [_selectedAsset,"reroute",true] call ALiVE_fnc_hashSet;
 
                             // Remove old event so aircraft can switch to new tasking
                             // set state to event complete
@@ -3052,7 +3062,7 @@ switch(_operation) do {
                                 [_startPosition] spawn {
                                     private _pos = _this select 0;
                                     private _alarm = createSoundSource ["Sound_AirRaidSiren", _pos, [], 0]; //starts alarm
-                                    sleep 24;
+                                    sleep 30;
                                     deleteVehicle _alarm; //stops alarm
                                 };
 
@@ -3139,6 +3149,16 @@ switch(_operation) do {
 
                                 } else {
 
+                                    // Make sure crew are active
+                                    if (!(_vehicleClass isKindOf "UAV") && {!([_crewProfile,"active"] call ALiVE_fnc_hashGet)} ) then {
+
+                                        [_crewProfile,"spawn"] call ALiVE_fnc_profileEntity;
+                                        if (_debug) then {
+                                            ["ATO: Spawning crew (for aircraft already spawned)"] call ALiVE_fnc_dump;
+                                            _crewProfile call ALIVE_fnc_inspectHash;
+                                        };
+                                    };
+
                                     // Get vehicle
                                     private _vehicleObj = [_profile,"vehicle"] call ALiVE_fnc_hashGet;
 
@@ -3148,7 +3168,7 @@ switch(_operation) do {
 
                                         // DEBUG -------------------------------------------------------------------------------------
                                         if(_debug) then {
-                                            ["ALIVE ATO %3 - MOVING CREW TO AIRCRAFT (%1 - %2)", _profileID, _vehicleClass, _logic] call ALIVE_fnc_dump;
+                                            ["ALIVE ATO %3 - MOVING CREW (%4) TO AIRCRAFT (%1 - %2)", _profileID, _vehicleClass, _logic, _group] call ALIVE_fnc_dump;
                                         };
                                         // DEBUG -------------------------------------------------------------------------------------
 
@@ -3311,7 +3331,9 @@ switch(_operation) do {
 
                         // Check driver is onboard if not put the crew in there
                         if (isNUll (driver _vehicle) || {time > (_eventTime + ((_eventDuration/3)*60))} ) then {
-                            diag_log ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ATO: NO CREW <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
+                            if (_debug) then {
+                                ["ALIVE ATO %3 - aircraft (%1 - %2) is waiting on the pilot in group %4 with the units: %5.", _profileID, typeof _vehicle, _logic, _grp, units _grp] call ALIVE_fnc_dump;
+                            };
                             {
                                 _x moveInAny _vehicle;
                             } foreach (units _grp);
@@ -3464,7 +3486,6 @@ switch(_operation) do {
                             };
 
                         };
-
 
                     } else {
                         // Waiting on pilot to be ready
@@ -3833,10 +3854,11 @@ switch(_operation) do {
 
                         } else {
 
+                            private _helipad = [_aircraft,"helipad"] call ALiVE_fnc_hashGet;
+
                             // Helicopter or VTOL?
                             if !(_isVTOL mod 2 == 0) then {
 
-                                private _helipad = [_aircraft,"helipad"] call ALiVE_fnc_hashGet;
                                 _vehicle land "LAND";
                                 _vehicle landat _helipad;
                                  doGetOut (driver _vehicle);
@@ -3844,7 +3866,6 @@ switch(_operation) do {
                             } else {
 
                                 // Tell VTOL to GETOUT at position
-                                private _helipad = [_aircraft,"helipad"] call ALiVE_fnc_hashGet;
                                 private _wp = _grp addWaypoint [_startPosition, 400];
                                 _wp setWaypointBehaviour "CARELESS";
                                 _wp setWaypointCombatMode "BLUE";
@@ -4050,6 +4071,14 @@ switch(_operation) do {
             };
 
             case "eventComplete": {
+
+                if (count _eventFriendlyProfiles > 0) then {
+                    private _aircraftID = _eventFriendlyProfiles select 0;
+                    private _aircraft = [_assets,_aircraftID] call ALiVE_fnc_hashGet;
+                    //reset if rerouted
+                    [_aircraft,"reroute",false] call ALiVE_fnc_hashSet;
+                    [_assets,_aircraftID,_aircraft] call ALiVE_fnc_hashSet;
+                };
 
                 // send radio broadcast
                 _sideObject = [_eventSide] call ALIVE_fnc_sideTextToObject;
