@@ -35,5 +35,18 @@ for "_i" from 0 to ((count _Secondary)-1) do {
     _Airports pushback [_ILS,_i+1];
 };
 
+// Find all dynamic airports (IDs will be 100, 101 etc.)
+if (isNil "ALiVE_Carriers") then {
+
+		ALiVE_Carriers = [worldSize/2, worldSize/2,0] nearObjects ["AirportBase", worldSize*0.8];
+		{
+			_Airports pushback [position _x, 100 + _foreachIndex];
+		} foreach ALiVE_Carriers;
+} else {
+		{
+			_Airports pushback [position _x, 100 + _foreachIndex];
+		} foreach ALiVE_Carriers;
+};
+
 _Airports = [_Airports,[],{_pos distance (_x select 0)},"ASCEND"] call ALiVE_fnc_SortBy;
 _Airports select 0 select 1;

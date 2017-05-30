@@ -168,7 +168,7 @@ switch(_operation) do {
             ASSERT_TRUE(typeName _args == "BOOL",str _args);
 
             _result = _args;
-        };
+    };
     case "createFieldHQ": {
             if (typeName _args == "BOOL") then {
                 _logic setVariable ["createFieldHQ", _args];
@@ -364,7 +364,7 @@ switch(_operation) do {
             // all MP modules execute at the same time
             // ALIVE_groupConfig is created, but not 100% filled
             // before the rest of the modules start creating their profiles
-                                    
+
             // instantiate static vehicle position data
             if(isNil "ALIVE_groupConfig") then {
                 [] call ALIVE_fnc_groupGenerateConfigData;
@@ -748,11 +748,11 @@ switch(_operation) do {
                                 [_logic, "HQCluster", _x] call MAINCLASS;
                             };
                         } forEach _clusters;
-                        
+
                         if !(ALIVE_loadProfilesPersistent) then {
 	                        _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
 	                        _profiles = [_group, position _hqBuilding, random 360, true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
-	
+
 	                        {
 	                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
 	                                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[50,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
@@ -928,10 +928,7 @@ switch(_operation) do {
 
             };
 
-
-
             // Spawn helicopters on pads
-
             private ["_countCrewedHelis","_countUncrewedHelis"];
             _countCrewedHelis = 0;
             _countUncrewedHelis = 0;
@@ -942,10 +939,10 @@ switch(_operation) do {
                 _heliClasses = _heliClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
 
                 if(count _heliClasses > 0) then {
-                    
+
                     {
                         private _nodes = [_x, "nodes",[]] call ALIVE_fnc_hashGet;
-                        
+
                         //[_x, "debug", true] call ALIVE_fnc_cluster;
                         {
                             if (_x isKindOf "HeliH") then {
@@ -953,7 +950,7 @@ switch(_operation) do {
                                 _direction = direction _x;
                             } else {
                                 _helipad = nearestObject [position _x, "HeliH"];
-                                
+
                                 if !(isnull _helipad) then {
                                     //Helipad can be detected
 		                            _position = position _helipad;
@@ -962,24 +959,24 @@ switch(_operation) do {
                                     // Helipad is a built in object or misses config parents
                                     _position = position _x;
                                     _direction = direction _x;
-                                                                        
+
                                     //_helipad = createVehicle ["Land_HelipadEmpty_F", _position, [], 0, "CAN_COLLIDE"];
                                     //_helipad setdir _direction;
                                 };
                             };
-                            
+
                             _vehicleClass = (selectRandom _heliClasses);
-                            
+
                             if !(_position isEqualTo [0,0,0]) then {
-                            
+
 	                            if(random 1 > 0.8) then {
 	                                [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
-	                                
+
 	                                _countProfiles = _countProfiles + 1;
 	                                _countUncrewedHelis =_countUncrewedHelis + 1;
 	                            }else{
 	                                [_vehicleClass,_side,_faction,"CAPTAIN",_position,_direction,false,_faction] call ALIVE_fnc_createProfilesCrewedVehicle;
-	                                
+
 	                                _countProfiles = _countProfiles + 2;
 	                                _countCrewedHelis = _countCrewedHelis + 1;
 	                            };
@@ -1022,7 +1019,7 @@ switch(_operation) do {
 
                         //[_x, "debug", true] call ALIVE_fnc_cluster;
                         {
-                            if(random 1 > 0.66) then {
+                            if(random 1 > 0.3) then {
 
                                 // Find safe place to put aircraft
                                 private ["_pavement","_runway"];
@@ -1038,7 +1035,7 @@ switch(_operation) do {
                                     } foreach (nearestObjects [position _x, [], 100]);
                                     if (count _runway > 0) then {
                                         // diag_log format["Cannot find hangar, choosing safe taxiway from: %1", _runway];
-                                        _pavement = (selectRandom _runway);
+                                        _pavement = selectRandom _runway;
                                         _position = position _pavement;
                                         _direction = direction _pavement;
                                     } else {
@@ -1051,18 +1048,17 @@ switch(_operation) do {
 
                                 // Place Aircraft
                                 _vehicleClass = (selectRandom _airClasses);
-                                [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
-                                _countProfiles = _countProfiles + 1;
-                                _countUncrewedAir =_countUncrewedAir + 1;
+                                //if (random 1 > 1) then {
+                                    [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                                    _countProfiles = _countProfiles + 1;
+                                    _countUncrewedAir =_countUncrewedAir + 1;
+                                /*} else {
+                                    [_vehicleClass,_side,_faction,"CAPTAIN",_position,_direction,false,_faction,false,true] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                    _countProfiles = _countProfiles + 2;
+                                    _countCrewedAir = _countCrewedAir + 1;
+                                };*/
                             };
-                                /*
-                            }else{
-                                _position = [_position,0,100,5,0,20,0,[],[[_position,0,100,5,0,20,0,[],[_position]] call BIS_fnc_findSafePos]] call BIS_fnc_findSafePos;
-                                [_vehicleClass,_side,_faction,"CAPTAIN",_position,_direction,false,_faction] call ALIVE_fnc_createProfilesCrewedVehicle;
-                                _countProfiles = _countProfiles + 2;
-                                _countCrewedAir = _countCrewedAir + 1;
-                            };
-                            */
+
                         } forEach _buildings;
                     } forEach _airClusters;
                 };
@@ -1385,10 +1381,12 @@ switch(_operation) do {
 
             _groups = _groups + _infantryGroups;
 
-            for "_i" from 0 to _countAir -1 do {
-                _group = ["Air",_faction] call ALIVE_fnc_configGetRandomGroup;
-                if!(_group == "FALSE") then {
-                    _groups pushback _group;
+            if (_placeHelis) then {
+                for "_i" from 0 to _countAir -1 do {
+                    _group = ["Air",_faction] call ALIVE_fnc_configGetRandomGroup;
+                    if!(_group == "FALSE") then {
+                        _groups pushback _group;
+                    };
                 };
             };
 

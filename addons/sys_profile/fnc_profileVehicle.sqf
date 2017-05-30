@@ -492,10 +492,24 @@ switch(_operation) do {
                         if(_engineOn) then {
                             _special = "FLY";
 
-                            if ((_position select 2) < 50) then {_position set [2,50]};
+                            // Place them high enough so they don't crash
+                            if ((_position select 2) < 50) then {_position set [2,300]};
+                            if (_debug) then {
+                                ["SPAWN VEHICLE IN AIR [%1] pos: %2",_profileID,_position] call ALIVE_fnc_dump;
+                            };
+
                         }else{
                             _special = "CAN_COLLIDE";
-                            _position set [2,0];
+
+                            // Check to see if placed on carrier/ship
+                            if !([_position] call ALiVE_fnc_nearShip) then {
+                                _position set [2,0];
+                            } else {
+                               // _special = "NONE";
+                                if (_debug) then {
+                                    ["SPAWN VEHICLE ON SHIP [%1] pos: %2",_profileID,_position] call ALIVE_fnc_dump;
+                                };
+                            };
                         };
                     } else {
 
@@ -673,8 +687,7 @@ switch(_operation) do {
 
                     if(_engineOn && {_vehicleType == "Plane"}) then {
                         _speed = 200;
-                        _velocity = velocity _vehicle;
-                        _vehicle setVelocity [(_velocity select 0)+(sin _direction*_speed),(_velocity select 1)+ (cos _direction*_speed),(_velocity select 2)];
+                        _vehicle setVelocity [(sin _direction*_speed), (cos _direction*_speed),0.1];
                     };
 
 
@@ -744,6 +757,11 @@ switch(_operation) do {
                     };
 
                     if(([_logic,"spawnType"] call ALiVE_fnc_hashGet) select 0 == "preventDespawn") then {
+                        _despawnPrevented = true;
+                    };
+
+                    // Don't despawn if aircraft are airbourne?
+                    if ((position _vehicle) select 2 > 3) then {
                         _despawnPrevented = true;
                     };
 
