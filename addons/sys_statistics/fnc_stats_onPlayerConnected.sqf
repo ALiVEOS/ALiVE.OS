@@ -1,3 +1,4 @@
+#include "script_component.hpp"
 /*
  * Filename:
  * fnc_stats_onPlayerConnected.sqf
@@ -12,8 +13,6 @@
 
 // ====================================================================================
 // MAIN
-
-#include "script_component.hpp"
 
 if (GVAR(ENABLED) && isDedicated) then {
 
