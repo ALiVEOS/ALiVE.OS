@@ -174,7 +174,13 @@ switch (_taskState) do {
 
                             if (_clusterLocation distance _taskLocation < 15) exitwith {
 
-                                _targetBuildings = [_cluster,"nodes",[]] call ALiVE_fnc_HashGet;
+                                _targetBuildings = +([_cluster,"nodes",[]] call ALiVE_fnc_HashGet);
+                                
+								{
+                                    if !(_x isKindOf "House_F") then {_targetBuildings set [_foreachIndex,objNull]};
+                                } foreach _targetBuildings;
+                                
+                                _targetBuildings = _targetBuildings - [objNull];
                             };
                         };
 
