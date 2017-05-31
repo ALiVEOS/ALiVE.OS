@@ -168,7 +168,7 @@ if(_debug) then {
                         [_profileVehicle, "faction", faction _vehicle] call ALIVE_fnc_profileVehicle;
 
                         if(_vehicleKind == "Plane" || _vehicleKind == "Helicopter") then {
-                            [_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+                            // [_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
                         };
 
                         //["CPR profiling group vehicle..."] call ALIVE_fnc_dump;
@@ -339,7 +339,7 @@ _vehicleCount = 0;
             [_profileVehicle, "faction", faction _vehicle] call ALIVE_fnc_profileVehicle;
 
             if(_vehicleKind == "Plane" || _vehicleKind == "Helicopter") then {
-                [_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+                // [_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
             };
 
             if(_playerVehicle) then {
