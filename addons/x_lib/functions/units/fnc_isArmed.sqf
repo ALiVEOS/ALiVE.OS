@@ -44,30 +44,30 @@ if (_object isKindOf "CAManBase") then {
 
 } else {
 
-    if (_object isKindOf "AllVehicles" && !(_object isKindof "Plane")) then {
+    if (_object isKindOf "AllVehicles" && {!(_object isKindof "Plane")}) then {
         // Checks if magazines are set for the main turrets, tbc: AH9 Pawnee seems to be misconfiged (no magazines)
         _isArmed = count (getArray(configfile >> "CfgVehicles" >> _object >> "Turrets" >> "MainTurret" >> "Magazines")) > 0 || count (getArray(configfile >> "CfgVehicles" >> _object >> "Turrets" >> "M2_Turret" >> "Magazines")) > 0;
-    };
-
-    if (_object isKindOf "Plane") then {
-
-        // Checks for planez
-        _isArmed = count (getArray(configfile >> "CfgVehicles" >> _object >> "Weapons") - ["Laserdesignator_mounted", "CMFlareLauncher","Laserdesignator_pilotCamera"]) > 0; // more than just flare/chaff launcher
-
-        if !(_isArmed) then {
-            // Check for any turrets with weapons
-            {
-                _isArmed = count (getArray(configfile >> "CfgVehicles" >> _object >> "Turrets" >> _x >> "weapons") - ["Laserdesignator_mounted", "CMFlareLauncher","Laserdesignator_pilotCamera"]) > 0;
-                if (_isArmed) exitWith {};
-            } foreach (getArray(configfile >> "CfgVehicles" >> _object >> "Turrets"));
-        };
-
-        // Need to check for new dynamic loadout vehicles too - check pylons
-        if (!_isArmed) then {
-            _isArmed = count (configfile >> "CfgVehicles" >> _object >> "Components" >> "TransportPylonsComponent" >> "pylons") > 0;
-        };
-
-    };
+    } else {
+	    if (_object isKindOf "Plane") then {
+	
+	        // Checks for planez
+	        _isArmed = count (getArray(configfile >> "CfgVehicles" >> _object >> "Weapons") - ["Laserdesignator_mounted", "CMFlareLauncher","Laserdesignator_pilotCamera"]) > 0; // more than just flare/chaff launcher
+	
+	        if !(_isArmed) then {
+	            // Check for any turrets with weapons
+	            {
+	                _isArmed = count (getArray(configfile >> "CfgVehicles" >> _object >> "Turrets" >> _x >> "weapons") - ["Laserdesignator_mounted", "CMFlareLauncher","Laserdesignator_pilotCamera"]) > 0;
+	                if (_isArmed) exitWith {};
+	            } foreach (getArray(configfile >> "CfgVehicles" >> _object >> "Turrets"));
+	        };
+	
+	        // Need to check for new dynamic loadout vehicles too - check pylons
+	        if (!_isArmed) then {
+	            _isArmed = count (configfile >> "CfgVehicles" >> _object >> "Components" >> "TransportPylonsComponent" >> "pylons") > 0;
+	        };
+	
+	    };
+	};
 };
 
 _isArmed;
