@@ -727,7 +727,7 @@ switch(_operation) do {
                 };
         };
         case "despawn": {
-                private ["_debug","_active","_side","_vehicle","_profileID","_cargo","_position","_despawnPrevented","_linked","_spawnType","_slingload"];
+                private ["_debug","_active","_side","_vehicle","_inAir","_profileID","_cargo","_position","_despawnPrevented","_vehicleDespawnType","_linked","_spawnType","_slingload"];
 
                 _debug = _logic select 2 select 0; //[_logic,"debug"] call ALIVE_fnc_hashGet;
                 _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet;
@@ -737,12 +737,13 @@ switch(_operation) do {
                 _cargo = _logic select 2 select 27; //[_logic,"cargo"] call ALIVE_fnc_hashGet;
                 _slingload = [_logic, "slingload", []] call ALIVE_fnc_HashGet; //unindexed: _slingload = _logic select 2 select 28;
                 _slung = [_logic, "slung", []] call ALIVE_fnc_HashGet; //unindexed: _slung = _logic select 2 select 29;
+				_vehicleDespawnType = [_logic,"spawnType",[]] call ALiVE_fnc_hashGet;
+                _despawnPrevented = if (count _vehicleDespawnType > 0 && {_vehicleDespawnType select 0 == "preventDespawn"}) then {true} else {false};
 
                 // not already inactive
                 if(_active) then {
 
-                    // if any linked profiles have despawn prevented
-                    _despawnPrevented = false;
+                    // if any linked profiles have despawn prevented override _despawnPrevented variable
                     _linked = [_logic] call ALIVE_fnc_vehicleAssignmentsGetLinkedProfiles;
                     //_linked call ALIVE_fnc_inspectHash;
                     if(count (_linked select 1) > 1) then {
@@ -756,15 +757,23 @@ switch(_operation) do {
                         } forEach (_linked select 2);
                     };
 
-                    if(([_logic,"spawnType"] call ALiVE_fnc_hashGet) select 0 == "preventDespawn") then {
-                        _despawnPrevented = true;
-                    };
+					_position = getposATL _vehicle;
+                    _vehicleKind = (typeOf _vehicle) call ALIVE_fnc_vehicleGetKindOf;
+                    _inAir = _position select 2 > 25;
 
                     // Don't despawn if aircraft are airbourne?
-                    if ((position _vehicle) select 2 > 3) then {
+                    if (_inAir && {_vehicleKind == "Plane" || {_vehicleKind == "Helicopter"}} && {!_despawnPrevented}) then {
+                        [_logic,"spawnType",["preventDespawn"]] call ALiVE_fnc_hashSet;
+                        
                         _despawnPrevented = true;
+                    } else {
+                        if (!_inAir && {_vehicleKind == "Plane" || {_vehicleKind == "Helicopter"}}) then {
+                        	[_logic,"spawnType",[]] call ALiVE_fnc_hashSet;
+                            
+                            _despawnPrevented = false;
+                        };
                     };
-
+                    
                     if!(_despawnPrevented) then {
 
                         [_logic,"active",false] call ALIVE_fnc_hashSet;
@@ -772,8 +781,6 @@ switch(_operation) do {
                         // update profile vehicle assignments before despawn
                         [_logic,"clearVehicleAssignments"] call MAINCLASS;
                         [_logic] call ALIVE_fnc_vehicleAssignmentsToProfileVehicleAssignments;
-
-                        _position = getPosATL _vehicle;
 
                         // update profile before despawn
                         [_logic,"position", _position] call ALIVE_fnc_hashSet;
