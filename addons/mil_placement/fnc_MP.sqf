@@ -125,10 +125,10 @@ switch(_operation) do {
     };
     // Determine type of enemy force - valid values are: "Random","Armored","Mechanized","Motorized","Infantry","Air
     case "type": {
-        _result = [_logic,_operation,_args,DEFAULT_TYPE,["Random","Armored","Mechanized","Motorized","Infantry","Air"]] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,DEFAULT_TYPE,["Random","Armored","Mechanized","Motorized","Infantry"]] call ALIVE_fnc_OOsimpleOperation;
         if(_result == "Random") then {
             // Randomly pick an type
-            _result = (selectRandom ["Armored","Mechanized","Motorized","Infantry","Air"]);
+            _result = (selectRandom ["Armored","Mechanized","Motorized","Infantry"]);
             _logic setVariable ["type", _result];
         };
     };
