@@ -678,6 +678,13 @@ if (isDedicated || (isServer && _pns)) then {
             };
         };
     };
+} else {
+    if (GVAR(SOURCE) == "CouchDB" && {isServer && {hasInterface}}) then {
+        ["DATA: Cloud access is not granted for SP/EDITOR/HOST and only dedicated servers! Disabling SYS DATA..."] call ALIVE_fnc_dump;
+        
+        GVAR(DISABLED) = true;
+        PublicVariable QGVAR(DISABLED);
+    };
 };
 
 
