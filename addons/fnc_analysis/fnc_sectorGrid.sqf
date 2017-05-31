@@ -156,11 +156,10 @@ switch(_operation) do {
         case "debug": {
 
             if !(_args isEqualType true) then {
-                    _args = [_logic,"debug"] call ALiVE_fnc_hashGet;
+                _args = [_logic,"debug"] call ALiVE_fnc_hashGet;
             } else {
-                    [_logic,"debug",_args] call ALiVE_fnc_hashSet;
+                [_logic,"debug",_args] call ALiVE_fnc_hashSet;
             };
-            ASSERT_TRUE(_args isEqualType true, str _args);
 
             private _allSectors = [_logic,"sectors"] call ALiVE_fnc_hashGet;
 
@@ -197,7 +196,6 @@ switch(_operation) do {
 
                 _result = _state;
             } else {
-                ASSERT_TRUE(typeName _args == "ARRAY",str typeName _args);
 
                 // Restore state
 
@@ -495,8 +493,6 @@ switch(_operation) do {
         };
 
         case "sectorsInRadius": {
-
-            ASSERT_TRUE(typeName _args == "ARRAY",str typeName _args);
 
             if (_args isEqualType []) then {
 
