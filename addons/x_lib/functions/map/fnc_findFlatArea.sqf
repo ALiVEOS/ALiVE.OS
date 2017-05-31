@@ -58,7 +58,7 @@ for "_i" from 1 to 3000 do {
         if (count _pos > 0) then {
                 _pos set [2,0];
                 // Avoid roads and helipads
-                if ( (count (_pos nearRoads 20) != 0) || (count (_pos nearObjects ["HeliH", 30]) != 0) ) then {
+                if (count (_pos nearRoads 20) != 0 || {count (_pos nearObjects ["HeliH", 30]) != 0}) then {
                         _pos = [];
                 };
 
