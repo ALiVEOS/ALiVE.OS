@@ -214,7 +214,7 @@ if(_debug) then {
                         [_profileVehicle, "faction", faction _vehicle] call ALIVE_fnc_profileVehicle;
 
                         if(_vehicleKind == "Plane" || _vehicleKind == "Helicopter") then {
-                            [_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+                            // [_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
                         };
 
                         [ALIVE_profileHandler, "registerProfile", _profileVehicle] call ALIVE_fnc_profileHandler;
@@ -354,7 +354,7 @@ if(_debug) then {
             [_profileVehicle, "faction", faction _vehicle] call ALIVE_fnc_profileVehicle;
 
             if(_vehicleKind == "Plane" || _vehicleKind == "Helicopter") then {
-                [_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+                // [_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
             };
 
             if(_playerVehicle) then {
