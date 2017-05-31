@@ -757,21 +757,21 @@ switch(_operation) do {
                         } forEach (_linked select 2);
                     };
 
-					_position = getposATL _vehicle;
+					_position = getpos _vehicle;
                     _vehicleKind = (typeOf _vehicle) call ALIVE_fnc_vehicleGetKindOf;
-                    _inAir = _position select 2 > 25;
+                    _inAir = _position select 2 > 2;
 
-                    // Don't despawn if aircraft are airbourne?
+                    // Don't despawn if aircraft are airborne?
                     if (_inAir && {_vehicleKind == "Plane" || {_vehicleKind == "Helicopter"}} && {!_despawnPrevented}) then {
                         [_logic,"spawnType",["preventDespawn"]] call ALiVE_fnc_hashSet;
                         
                         _despawnPrevented = true;
-                    } else {
+                    /* } else {
                         if (!_inAir && {_vehicleKind == "Plane" || {_vehicleKind == "Helicopter"}}) then {
                         	[_logic,"spawnType",[]] call ALiVE_fnc_hashSet;
                             
                             _despawnPrevented = false;
-                        };
+                        }; */
                     };
                     
                     if!(_despawnPrevented) then {
@@ -783,8 +783,8 @@ switch(_operation) do {
                         [_logic] call ALIVE_fnc_vehicleAssignmentsToProfileVehicleAssignments;
 
                         // update profile before despawn
-                        [_logic,"position", _position] call ALIVE_fnc_hashSet;
-                        [_logic,"despawnPosition", _position] call ALIVE_fnc_hashSet;
+                        [_logic,"position", getposATL _vehicle] call ALIVE_fnc_hashSet;
+                        [_logic,"despawnPosition", getposATL _vehicle] call ALIVE_fnc_hashSet;
                         [_logic,"direction", getDir _vehicle] call ALIVE_fnc_hashSet;
                         [_logic,"damage", _vehicle call ALIVE_fnc_vehicleGetDamage] call ALIVE_fnc_hashSet;
                         [_logic,"fuel", fuel _vehicle] call ALIVE_fnc_hashSet;
