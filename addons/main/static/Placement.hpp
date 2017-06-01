@@ -30,7 +30,10 @@ ALiVE_PLACEMENT_UNITBLACKLIST = ALiVE_PLACEMENT_CUSTOM_UNITBLACKLIST +
     "O_Protagonist_VR_F",
     "I_Protagonist_VR_F",
     "C_Marshal_F",
-    "C_man_pilot_F"
+    "C_man_pilot_F",
+
+    // JETS
+    "B_Deck_Crew_F"
 ];
 
 /*
@@ -39,21 +42,12 @@ ALiVE_PLACEMENT_UNITBLACKLIST = ALiVE_PLACEMENT_CUSTOM_UNITBLACKLIST +
 
 ALiVE_PLACEMENT_VEHICLEBLACKLIST = ALiVE_PLACEMENT_CUSTOM_VEHICLEBLACKLIST +
 [
-    "O_UAV_02_F",
-    "O_UAV_02_CAS_F",
-    "O_UAV_01_F",
     "O_UGV_01_F",
     "O_UGV_01_rcws_F",
     "O_Parachute_02_F",
-    "B_UAV_01_F",
-    "B_UAV_02_F",
-    "B_UAV_02_CAS_F",
     "B_UGV_01_F",
     "B_UGV_01_rcws_F",
     "B_Parachute_02_F",
-    "I_UAV_02_F",
-    "I_UAV_02_CAS_F",
-    "I_UAV_01_F",
     "I_UGV_01_F",
     "I_UGV_01_rcws_F",
     "I_Parachute_02_F",
@@ -63,6 +57,8 @@ ALiVE_PLACEMENT_VEHICLEBLACKLIST = ALiVE_PLACEMENT_CUSTOM_VEHICLEBLACKLIST +
     "ParachuteEast",
     "ParachuteG",
     "ParachuteWest",
+    "B_Parachute",
+    "B_O_Parachute_02_F",
     "C_Kart_01_Blu_F",
     "C_Kart_01_F",
     "C_Kart_01_F_Base",
@@ -74,12 +70,14 @@ ALiVE_PLACEMENT_VEHICLEBLACKLIST = ALiVE_PLACEMENT_CUSTOM_VEHICLEBLACKLIST +
     "C_Kart_01_orange_F",
     "C_Kart_01_yellow_F",
     "C_Kart_01_green_F",
+    "Steerable_Parachute_F",
 
     // APEX
-    "B_T_UAV_03_F",
-    "O_T_UAV_04_CAS_F",
     "O_T_UGV_01_ghex_F",
-    "O_T_UGV_01_rcws_ghex_F"
+    "O_T_UGV_01_rcws_ghex_F",
+
+    // JETS - Carrier based UAV
+    "B_UAV_05_F"
 ];
 
 /*
