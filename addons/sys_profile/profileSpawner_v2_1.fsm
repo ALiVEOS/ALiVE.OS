@@ -1,4 +1,4 @@
-/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, profile spawner">*/
+/*%FSM<COMPILE "scriptedFSM.cfg, profile spawner">*/
 /*%FSM<HEAD>*/
 /*
 item0[] = {"INIT",0,250,-191.791229,-248.493942,-101.791237,-198.494003,0.000000,"INIT"};
@@ -85,8 +85,8 @@ link36[] = {27,21};
 link37[] = {28,10};
 link38[] = {29,15};
 link39[] = {30,8};
-globals[] = {0.000000,0,0,0,16777215,640,480,1,123,6316128,1,-581.810730,223.598297,615.953796,-218.187729,750,767,1};
-window[] = {0,-1,-1,-1,-1,942,44,1667,44,1,767};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,123,6316128,1,-581.810730,223.598297,776.322021,-169.507004,803,943,1};
+window[] = {0,-1,-1,-32000,-32000,1238,150,1886,150,1,821};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -465,6 +465,9 @@ class FSM
        "            " \n
        "            _leader = _profile select 2 select 10;" \n
        "            _position = getposATL _leader;" \n
+       "		" \n
+       "		private _inAir = false;" \n
+       "		private _tempLeader = _leader;" \n
        "" \n
        "            // if leader is null get a new leader if possible" \n
        "            if(isNull(_leader)) then {" \n
@@ -472,12 +475,16 @@ class FSM
        "                if(_profileType == ""entity"") then {" \n
        "                    _group = _profile select 2 select 13;" \n
        "                    _groupLeader = leader _group;" \n
+       "			 _tempLeader = _groupLeader;" \n
        "                    if(!isNull(_groupLeader)) then {" \n
        "                        [_profile, ""leader"",  _groupLeader] call ALIVE_fnc_hashSet;" \n
        "                        _position = getposATL _groupLeader;" \n
        "                    };" \n
        "                };                " \n
        "            };" \n
+       "" \n
+       "		_inAir = ((getpos _tempLeader) select 2) > 3;" \n
+       "		if (_inAir) exitWith {};" \n
        "" \n
        "            if !([_position, _despawnDistance, _despawnTypeJetRadius, _despawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
        "                if ([_position, _despawnDistance] call ALiVE_fnc_anyAutonomousInRange == 0) then {" \n
@@ -746,7 +753,7 @@ class FSM
   initState="INIT";
   finalStates[] =
   {
-    "END",
+    "END"
   };
 };
 /*%FSM</COMPILE>*/

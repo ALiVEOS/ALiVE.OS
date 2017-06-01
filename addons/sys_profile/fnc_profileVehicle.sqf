@@ -757,23 +757,6 @@ switch(_operation) do {
                         } forEach (_linked select 2);
                     };
 
-					_position = getpos _vehicle;
-                    _vehicleKind = (typeOf _vehicle) call ALIVE_fnc_vehicleGetKindOf;
-                    _inAir = _position select 2 > 2;
-
-                    // Don't despawn if aircraft are airborne?
-                    if (_inAir && {_vehicleKind == "Plane" || {_vehicleKind == "Helicopter"}} && {!_despawnPrevented}) then {
-                        [_logic,"spawnType",["preventDespawn"]] call ALiVE_fnc_hashSet;
-                        
-                        _despawnPrevented = true;
-                    /* } else {
-                        if (!_inAir && {_vehicleKind == "Plane" || {_vehicleKind == "Helicopter"}}) then {
-                        	[_logic,"spawnType",[]] call ALiVE_fnc_hashSet;
-                            
-                            _despawnPrevented = false;
-                        }; */
-                    };
-                    
                     if!(_despawnPrevented) then {
 
                         [_logic,"active",false] call ALIVE_fnc_hashSet;
