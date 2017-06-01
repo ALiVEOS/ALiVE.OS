@@ -947,7 +947,7 @@ switch(_operation) do {
                         {
                             // Check node does not have a helicopter placed already
                             private _nearbyObj = nearestObjects [position _x, ["Helicopter"], 15];
-                            if (count _nearbyObj == 0 && count _nearbyProfiles == 0) then {
+                            if (count _nearbyObj == 0) then {
                                 if (_x isKindOf "HeliH") then {
                                     _position = position _x;
                                     _direction = direction _x;
@@ -1025,6 +1025,12 @@ switch(_operation) do {
                         {
                             if(random 1 > 0.3) then {
 
+                                // Choose an aircraft
+                                _vehicleClass = (selectRandom _airClasses);
+
+                                // Check aircraft can fit in hangar
+
+
                                 // Find safe place to put aircraft
                                 private ["_pavement","_runway"];
                                 if ([typeOf _x, "hangar"] call CBA_fnc_find != -1 || [typeOf _x, "Hangar"] call CBA_fnc_find != -1) then {
@@ -1052,9 +1058,9 @@ switch(_operation) do {
 
                                 // Check node does not have a planes placed already
                                 private _nearbyObj = nearestObjects [position _x, ["Plane"], 15];
-                                if (count _nearbyObj == 0 && count _nearbyProfiles == 0) then {
+                                if (count _nearbyObj == 0) then {
                                     // Place Aircraft
-                                    _vehicleClass = (selectRandom _airClasses);
+
                                     //if (random 1 > 1) then {
                                         [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
                                         _countProfiles = _countProfiles + 1;
