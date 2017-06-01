@@ -4249,86 +4249,103 @@
 
 <Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse01">
     <Original>Shoot House #01</Original>
+</Key>
 <Key ID="STR_ALIVE_COMPOSITION_hq">
     <Original>HQ</Original>
 </Key>
 <Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse02">
     <Original>Shoot House #02</Original>
+</Key>
 <Key ID="STR_ALIVE_COMPOSITION_camps">
     <Original>Camps</Original>
 </Key>
 <Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse03">
     <Original>Shoot House #03</Original>
+</Key>
 <Key ID="STR_ALIVE_COMPOSITION_mediumAirstation1">
     <Original>Airstation 1 [Medium]</Original>
 </Key>
 <Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse04">
     <Original>Shoot House #04</Original>
+</Key>
 <Key ID="STR_ALIVE_COMPOSITION_power">
     <Original>Power</Original>
 </Key>
 <Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse05">
     <Original>Shoot House #05</Original>
+</Key>
 <Key ID="STR_ALIVE_COMPOSITION_communications">
     <Original>Communications</Original>
 </Key>
 <Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse06">
     <Original>Shoot House #06</Original>
+</Key>
 <Key ID="STR_ALIVE_COMPOSITION_fuel">
     <Original>Fuel</Original>
 </Key>
 <Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse07">
     <Original>Shoot House #07</Original>
+</Key>
 <Key ID="STR_ALIVE_COMPOSITION_smallFuelStation1">
     <Original>Fuel Station 1 [Small]</Original>
 </Key>
 <Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse08">
     <Original>Shoot House #08</Original>
+</Key>
 <Key ID="STR_ALIVE_COMPOSITION_mediumFuelSilo1">
     <Original>Fuel Silo 1 [Medium]</Original>
 </Key>
 <Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse09">
     <Original>Shoot House #09</Original>
+</Key>
 <Key ID="STR_ALIVE_COMPOSITION_marine">
     <Original>Marine</Original>
 </Key>
 <Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse10">
     <Original>Shoot House #10</Original>
+</Key>
 <Key ID="STR_ALIVE_COMPOSITION_constructionSupplies">
     <Original>Construct Supplies</Original>
 </Key>
 <Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse11">
     <Original>Shoot House #11</Original>
+</Key>
 <Key ID="STR_ALIVE_COMPOSITION_settlement">
     <Original>Settlement</Original>
 </Key>
 <Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse12">
     <Original>Shoot House #12</Original>
+</Key>
 <Key ID="STR_ALIVE_COMPOSITION_crashsites">
     <Original>Crashsites</Original>
 </Key>
 <Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse13">
     <Original>Shoot House #13</Original>
+</Key>
 <Key ID="STR_ALIVE_COMPOSITION_smallOspreyCrashsite1">
     <Original>Osprey site 1 [Small]</Original>
 </Key>
 <Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse14">
     <Original>Shoot House #14</Original>
+</Key>
 <Key ID="STR_ALIVE_COMPOSITION_smallAH99Crashsite1">
     <Original>AH-99 site 1 [Small]</Original>
 </Key>
 <Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse15">
     <Original>Shoot House #15</Original>
+</Key>
 <Key ID="STR_ALIVE_COMPOSITION_mediumc192Crash1">
     <Original>C192 site 1 [Medium]</Original>
 </Key>
 <Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse16">
     <Original>Shoot House #16</Original>
+</Key>
 <Key ID="STR_ALIVE_COMPOSITION_objectives">
     <Original>Objectives</Original>
 </Key>
 <Key ID="STR_ZEC_Military_TrainingSmall_ShootHouse17">
     <Original>Shoot House #17</Original>
+</Key>
 <Key ID="STR_ALIVE_COMPOSITION_IEDFactory1">
     <Original>IED Factory 1 [Small]</Original>
 </Key>
