@@ -576,9 +576,9 @@ switch(_operation) do {
         case "entitiesnearsector": {
                 ASSERT_TRUE(typeName _args == "ARRAY",str _args);
 
-                private ["_ent","_entArr","_side","_pos","_posP","_id","_profiles"];
+                private ["_ent","_entArr","_side","_pos","_posTmp","_posP","_id","_profiles"];
 
-                _pos = _args select 0; _pos set [2,0];
+                _pos = _args select 0; _pos = +_pos; _pos set [2,0];
                 _side = _args select 1;
                 _canSee = _args select 2;
 
@@ -604,8 +604,9 @@ switch(_operation) do {
                     if ({(_x select 1) distance _pos < 600} count _entArr > 0) then {
                         {
                             _id = _x select 0;
-                            (_x select 1) set [2,0];
-                            _posP = ATLtoASL (_x select 1);
+                            
+                            _posTmp = +(_x select 1); _posTmp set [2,0];
+                            _posP = ATLtoASL _posTmp;
                             _posP set [2,(_posP select 2) + 2];
 
                             if (((_x select 1) distance _pos < 500) && {!(terrainIntersectASL [_pos, _posP])}) then {
