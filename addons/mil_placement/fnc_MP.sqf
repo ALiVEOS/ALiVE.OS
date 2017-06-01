@@ -945,41 +945,45 @@ switch(_operation) do {
 
                         //[_x, "debug", true] call ALIVE_fnc_cluster;
                         {
-                            if (_x isKindOf "HeliH") then {
-                                _position = position _x;
-                                _direction = direction _x;
-                            } else {
-                                _helipad = nearestObject [position _x, "HeliH"];
-
-                                if !(isnull _helipad) then {
-                                    //Helipad can be detected
-		                            _position = position _helipad;
-	                                _direction = direction _helipad;
-                                } else {
-                                    // Helipad is a built in object or misses config parents
+                            // Check node does not have a helicopter placed already
+                            private _nearbyObj = nearestObjects [position _x, ["Helicopter"], 15];
+                            if (count _nearbyObj == 0 && count _nearbyProfiles == 0) then {
+                                if (_x isKindOf "HeliH") then {
                                     _position = position _x;
                                     _direction = direction _x;
+                                } else {
+                                    _helipad = nearestObject [position _x, "HeliH"];
 
-                                    //_helipad = createVehicle ["Land_HelipadEmpty_F", _position, [], 0, "CAN_COLLIDE"];
-                                    //_helipad setdir _direction;
+                                    if !(isnull _helipad) then {
+                                        //Helipad can be detected
+    		                            _position = position _helipad;
+    	                                _direction = direction _helipad;
+                                    } else {
+                                        // Helipad is a built in object or misses config parents
+                                        _position = position _x;
+                                        _direction = direction _x;
+
+                                        //_helipad = createVehicle ["Land_HelipadEmpty_F", _position, [], 0, "CAN_COLLIDE"];
+                                        //_helipad setdir _direction;
+                                    };
                                 };
-                            };
 
-                            _vehicleClass = (selectRandom _heliClasses);
+                                _vehicleClass = (selectRandom _heliClasses);
 
-                            if !(_position isEqualTo [0,0,0]) then {
+                                if !(_position isEqualTo [0,0,0]) then {
 
-	                            if(random 1 > 0.8) then {
-	                                [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
+    	                            if(random 1 > 0.8) then {
+    	                                [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
 
-	                                _countProfiles = _countProfiles + 1;
-	                                _countUncrewedHelis =_countUncrewedHelis + 1;
-	                            }else{
-	                                [_vehicleClass,_side,_faction,"CAPTAIN",_position,_direction,false,_faction] call ALIVE_fnc_createProfilesCrewedVehicle;
+    	                                _countProfiles = _countProfiles + 1;
+    	                                _countUncrewedHelis =_countUncrewedHelis + 1;
+    	                            }else{
+    	                                [_vehicleClass,_side,_faction,"CAPTAIN",_position,_direction,false,_faction] call ALIVE_fnc_createProfilesCrewedVehicle;
 
-	                                _countProfiles = _countProfiles + 2;
-	                                _countCrewedHelis = _countCrewedHelis + 1;
-	                            };
+    	                                _countProfiles = _countProfiles + 2;
+    	                                _countCrewedHelis = _countCrewedHelis + 1;
+    	                            };
+                                };
                             };
                         } forEach _nodes;
                     } forEach _heliClusters;
@@ -1046,17 +1050,21 @@ switch(_operation) do {
                                     };
                                 };
 
-                                // Place Aircraft
-                                _vehicleClass = (selectRandom _airClasses);
-                                //if (random 1 > 1) then {
-                                    [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
-                                    _countProfiles = _countProfiles + 1;
-                                    _countUncrewedAir =_countUncrewedAir + 1;
-                                /*} else {
-                                    [_vehicleClass,_side,_faction,"CAPTAIN",_position,_direction,false,_faction,false,true] call ALIVE_fnc_createProfilesCrewedVehicle;
-                                    _countProfiles = _countProfiles + 2;
-                                    _countCrewedAir = _countCrewedAir + 1;
-                                };*/
+                                // Check node does not have a planes placed already
+                                private _nearbyObj = nearestObjects [position _x, ["Plane"], 15];
+                                if (count _nearbyObj == 0 && count _nearbyProfiles == 0) then {
+                                    // Place Aircraft
+                                    _vehicleClass = (selectRandom _airClasses);
+                                    //if (random 1 > 1) then {
+                                        [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                                        _countProfiles = _countProfiles + 1;
+                                        _countUncrewedAir =_countUncrewedAir + 1;
+                                    /*} else {
+                                        [_vehicleClass,_side,_faction,"CAPTAIN",_position,_direction,false,_faction,false,true] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                        _countProfiles = _countProfiles + 2;
+                                        _countCrewedAir = _countCrewedAir + 1;
+                                    };*/
+                                };
                             };
 
                         } forEach _buildings;
