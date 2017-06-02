@@ -3,7 +3,7 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_ATO">
-    <Original>Joint Forces Air Component Commander</Original>
+    <Original>Military Air Component Commander</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_COMMENT">
     <Original>Joint Forces Air Component Commander</Original>
