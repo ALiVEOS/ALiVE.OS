@@ -1,11 +1,14 @@
 ATO TO DO
 - After a while entities on carrier are respawned underwater
 
-- catapult direction for launch isn't quite right
 - SEAD/STRIKE/CAS/RECCE vs Profiles?
 - Check for AA or AG weapons on aircraft and select assets based on mission
 - OPCOM ATO request logic
+
 - On demand analysis
+- if pilot despawned while going to aircraft, getin fails
+
+- aircraft can turn slightly when on catapult
 - Crew reinforcement / aircraft reinforcement
 - remove OCA/CAP if no planes
 - add OCA/CAP if new planes
@@ -16,6 +19,7 @@ ATO TO DO
 - Audio for radio
 - Option to include CS assets?
 - If crewed vehicle placed by mission maker, get crew out and manage as normal
+- Handled profiled crewed planes?
 - Spawn Carrier if ATO module over sea
 
 Tests Completed
