@@ -2550,7 +2550,7 @@ switch(_operation) do {
                                         DEFAULT_OP_DURATION,
                                         []                      // TARGETS
                                     ];
-                                    private _event = ['ATO_REQUEST', [_type, _side, _faction, getMarkerPos _x, _args],"ATO"] call ALIVE_fnc_event;
+                                    private _event = ['ATO_REQUEST', [_type, _side, _faction, _x, _args],"ATO"] call ALIVE_fnc_event;
                                     private _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
                                 };
                             };
