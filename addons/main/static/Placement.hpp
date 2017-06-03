@@ -71,6 +71,9 @@ ALiVE_PLACEMENT_VEHICLEBLACKLIST = ALiVE_PLACEMENT_CUSTOM_VEHICLEBLACKLIST +
     "C_Kart_01_yellow_F",
     "C_Kart_01_green_F",
     "Steerable_Parachute_F",
+    "O_UAV_01_F",
+    "B_UAV_01_F",
+    "I_UAV_01_F",
 
     // APEX
     "O_T_UGV_01_ghex_F",
