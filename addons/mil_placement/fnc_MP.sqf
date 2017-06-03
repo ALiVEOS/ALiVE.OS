@@ -946,8 +946,10 @@ switch(_operation) do {
                         //[_x, "debug", true] call ALIVE_fnc_cluster;
                         {
                             // Check node does not have a helicopter placed already
-                            private _nearbyObj = nearestObjects [position _x, ["Helicopter"], 15];
-                            if (count _nearbyObj == 0) then {
+                            private _nearbyObj = nearestObjects [position _x, ["Helicopter"], 20];
+                            private _nearbyProfiles = [position _x, 20, [_side,"vehicle","Helicopter"]] call ALIVE_fnc_getNearProfiles;
+                            if (count _nearbyObj == 0 && count _nearbyProfiles == 0) then {
+
                                 if (_x isKindOf "HeliH") then {
                                     _position = position _x;
                                     _direction = direction _x;
@@ -1029,11 +1031,21 @@ switch(_operation) do {
                                 _vehicleClass = (selectRandom _airClasses);
 
                                 // Check aircraft can fit in hangar
-
+                                private _large = false;
+                                private _hangarSize = _x call BIS_fnc_boundingBoxDimensions;
+                                private _aircraftSize = sizeOf _vehicleClass;
+                                if (_aircraftSize > 0) then {
+                                    _large = (_hangarSize select 0 < _aircraftSize) || (_hangarSize select 1 < _aircraftSize);
+                                } else {
+                                    private _tmpVehicle = (_vehicleClass createUnit [[0,0,0], (createGroup WEST)]);
+                                    _aircraftSize = sizeOf _vehicleClass;
+                                    //deleteVehicle _tmpVehicle;
+                                    _large = (_hangarSize select 0 < _aircraftSize) || (_hangarSize select 1 < _aircraftSize);
+                                };
 
                                 // Find safe place to put aircraft
                                 private ["_pavement","_runway"];
-                                if ([typeOf _x, "hangar"] call CBA_fnc_find != -1 || [typeOf _x, "Hangar"] call CBA_fnc_find != -1) then {
+                                if ( ([typeOf _x, "hangar"] call CBA_fnc_find != -1 || [typeOf _x, "Hangar"] call CBA_fnc_find != -1) && !_large) then {
                                     _position = position _x;
                                     _direction = direction _x;
                                 } else { // find a taxiway
@@ -1057,8 +1069,9 @@ switch(_operation) do {
                                 };
 
                                 // Check node does not have a planes placed already
-                                private _nearbyObj = nearestObjects [position _x, ["Plane"], 15];
-                                if (count _nearbyObj == 0) then {
+                                private _nearbyObj = nearestObjects [position _x, ["Plane"], 20];
+                                private _nearbyProfiles = [position _x, 20, [_side,"vehicle","Plane"]] call ALIVE_fnc_getNearProfiles;
+                                if (count _nearbyObj == 0 && count _nearbyProfiles == 0) then {
                                     // Place Aircraft
 
                                     //if (random 1 > 1) then {
