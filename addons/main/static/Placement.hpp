@@ -74,10 +74,7 @@ ALiVE_PLACEMENT_VEHICLEBLACKLIST = ALiVE_PLACEMENT_CUSTOM_VEHICLEBLACKLIST +
 
     // APEX
     "O_T_UGV_01_ghex_F",
-    "O_T_UGV_01_rcws_ghex_F",
-
-    // JETS - Carrier based UAV
-    "B_UAV_05_F"
+    "O_T_UGV_01_rcws_ghex_F"
 ];
 
 /*

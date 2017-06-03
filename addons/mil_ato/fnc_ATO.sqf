@@ -229,6 +229,40 @@ ALiVE_fnc_isVTOL = {
     _result
 };
 
+
+
+ALiVE_fnc_aircraftRoles = {
+    params [
+        ["_class", "", ["",objNull]]
+    ];
+    if (typeName _class == "OBJECT") then {_class = typeof _class};
+
+    // Attack aircraft have air to surface capability
+    // Fighter aircraft have air to air capability
+    // Recon aircraft are armed but have surveillance capability?
+    // Multi-role aircraft have both attack and fighter
+    private _result = [];
+
+    // Go through magazines and check capability
+    private _magazines = _class call BIS_fnc_magazinesEntityType;
+    {
+        // if magazine is cannon, then has guns and cas
+        // if bombs, then cas
+        // check ammo, if missile, then check maxSpeedTarget, < 200 = AGM, > 200 = AAM
+        // if pilotcamera then recon
+        //
+        private _magCfg = (configFile >> "CfgMagazines" >> _x);
+
+    } foreach _magazines;
+
+    if (_cas) then {_result pushback "CAS"};
+    if (_recce) then {_result pushback "Recon"};
+    if (_attack) then {_result pushback "Attack"};
+    if (_fighter) then {_result pushback "Fighter"};
+
+    _result
+};
+
 private _result = true;
 
 switch(_operation) do {
@@ -609,6 +643,10 @@ switch(_operation) do {
                     [_asset,"helipad",_helipad] call ALiVE_fnc_hashSet;
 
                 };
+
+                // Check role of aircraft
+                //private _role = [_vehicleClass] call ALiVE_fnc_getAircraftRole;
+                //[_asset,"role",_role] call ALiVE_fnc_hashSet;
 
                 if (_type == "entity") then {
 
@@ -2269,8 +2307,15 @@ switch(_operation) do {
                             };
                             // DEBUG -------------------------------------------------------------------------------------
 
+                            private _airspacePos = [];
+                            if (typeName _airspace == "STRING") then {
+                                _airspacePos = getMarkerPos _airspace;
+                            } else {
+                                _airspacePos = +_airspace;
+                            };
+
                             //Radio Broadcast
-                            private _message = format[localize "STR_ALIVE_ATO_REQUEST_ACKNOWLEDGED", _HQID, _factionName, _eventType, mapGridPosition (getMarkerPos _airspace)];
+                            private _message = format[localize "STR_ALIVE_ATO_REQUEST_ACKNOWLEDGED", _HQID, _factionName, _eventType, mapGridPosition _airspacePos];
                             // send a message to all side players from HQ
                             private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
                             [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
@@ -2505,7 +2550,7 @@ switch(_operation) do {
                                         DEFAULT_OP_DURATION,
                                         []                      // TARGETS
                                     ];
-                                    private _event = ['ATO_REQUEST', [_type, _side, _faction, _x, _args],"ATO"] call ALIVE_fnc_event;
+                                    private _event = ['ATO_REQUEST', [_type, _side, _faction, getMarkerPos _x, _args],"ATO"] call ALIVE_fnc_event;
                                     private _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
                                 };
                             };
@@ -2618,7 +2663,29 @@ switch(_operation) do {
         private _HQ = getText(configFile >> "CfgHQIdentities" >> _hqClass >> "name");
 
         private _assets = [ALIVE_globalATO,_eventFaction] call ALIVE_fnc_hashGet;
-        private _airspaceAssets = [[_logic,"airspaceAssets"] call MAINCLASS, _eventAirspace] call ALiVE_fnc_hashGet;
+        private _airspaceAssets = [_logic,"airspaceAssets"] call MAINCLASS;
+
+        // Check to see if airspace name or position has been provided
+        if (typename _eventAirspace == "ARRAY") then {
+            private _tmpAirspace = "";
+            {
+                if (_eventAirspace inArea _x) exitWith {
+                    _tmpAirspace = _x;
+                };
+            } foreach (_airspaceAssets select 1);
+            _eventAirspace = _tmpAirspace;
+            _eventData set [3,_eventAirspace];
+            [_event,"data",_eventData] call ALiVE_fnc_hashSet;
+        };
+
+        // Check to see if request is within airspace, if not use 1st airspace
+        if (_eventAirspace == "") then {
+            _eventAirspace = (_airspaceAssets select 1) select 0;
+            _eventData set [3,_eventAirspace];
+            [_event,"data",_eventData] call ALiVE_fnc_hashSet;
+        };
+
+        private _airspaceAssets = [_airspaceAssets, _eventAirspace] call ALiVE_fnc_hashGet;
         private _airports = [_logic,"runways"] call MAINCLASS;
 
         if(_playerRequested) then {
