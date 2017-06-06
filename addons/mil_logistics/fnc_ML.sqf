@@ -4056,19 +4056,25 @@ switch(_operation) do {
 
             case "eventComplete": {
 
-                private["_sideObject","_factionName","_forcePool","_message","_radioBroadcast"];
-
+                private["_sideObject","_factionName","_forcePool","_message","_radioBroadcast","_debug"];
+                
+                _debug = [_logic, "debug"] call MAINCLASS;
+                
                 [_logic, "setEventProfilesAvailable", _event] call MAINCLASS;
 
-                // send radio broadcast
-                _sideObject = [_eventSide] call ALIVE_fnc_sideTextToObject;
-                _factionName = getText((_eventFaction call ALiVE_fnc_configGetFactionClass) >> "displayName");
-                _forcePool = [ALIVE_globalForcePool,_eventFaction] call ALIVE_fnc_hashGet;
+				// Moved behind debug per request #348
+				if (_debug) then {
+                    
+	                // send radio broadcast
+	                _sideObject = [_eventSide] call ALIVE_fnc_sideTextToObject;
+	                _factionName = getText((_eventFaction call ALiVE_fnc_configGetFactionClass) >> "displayName");
+	                _forcePool = [ALIVE_globalForcePool,_eventFaction] call ALIVE_fnc_hashGet;
 
-                // send a message to all side players from HQ
-                _message = format["%1 reinforcements have arrived. Available reinforcement level: %2",_factionName,_forcePool];
-                _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,"HQ"];
-                [_eventSide,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+	                // send a message to all side players from HQ
+	                _message = format["%1 reinforcements have arrived. Available reinforcement level: %2",_factionName,_forcePool];
+	                _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,"HQ"];
+	                [_eventSide,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                };
 
                 // remove the event
                 [_logic, "removeEvent", _eventID] call MAINCLASS;
