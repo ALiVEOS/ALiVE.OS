@@ -76,20 +76,27 @@ ALiVE_fnc_catapultLaunch = {
     private _part = [_catapult, "part",objNull] call ALiVE_fnc_hashGet;
     private _animations = [_catapult, "animations",[]] call ALiVE_fnc_hashGet;
     private _partMemPoint = [_catapult, "memoryPoint",[]] call ALiVE_fnc_hashGet;
+    private _catPos = [_catapult, "position",getposASL _vehicle] call ALiVE_fnc_hashGet;
+    private _catDir = [_catapult, "dirOffset", direction _part] call ALiVE_fnc_hashGet;
+    private _ldir = [(direction _part) + 180 - _catDir] call ALiVE_fnc_modDegrees;
+    _vehicle setDir _ldir;
+    _vehicle setposASL _catPos;
 
     if (alive _vehicle && canMove _vehicle) then {
 
         // Keep the aircraft level until takeoff
         private _vectorUp = [0,0,1];
-        [_vehicle, _vectorUp] spawn {
+        [_vehicle, _vectorUp, _ldir] spawn {
            params [
                 ["_vehicle", objNull, [objNull]],
-                ["_vectorUp", [], [[]]]
+                ["_vectorUp", [], [[]]],
+                ["_ldir",0,[0]]
             ];
             private _configPath = configFile >> "CfgVehicles" >> typeOf _vehicle;
             private _velocityLaunch = ((_configPath >> "CarrierOpsCompatability" >> "LaunchVelocity") call BIS_fnc_getCfgData) max 270;
             while {speed _vehicle < _velocityLaunch} do {
                 // diag_log str(_vectorUp);
+                _vehicle setDir _ldir;
                 _vehicle setVectorUp _vectorUp;
             };
         };
@@ -230,11 +237,11 @@ ALiVE_fnc_isVTOL = {
 };
 
 
-
-ALiVE_fnc_aircraftRoles = {
+ALiVE_fnc_getAircraftRoles = {
     params [
         ["_class", "", ["",objNull]]
     ];
+
     if (typeName _class == "OBJECT") then {_class = typeof _class};
 
     // Attack aircraft have air to surface capability
@@ -242,17 +249,39 @@ ALiVE_fnc_aircraftRoles = {
     // Recon aircraft are armed but have surveillance capability?
     // Multi-role aircraft have both attack and fighter
     private _result = [];
+    private _cas = false;
+    private _recce = false;
+    private _attack = false;
+    private _fighter = false;
 
-    // Go through magazines and check capability
+    // Go through weapons and check for guns and cameras
+    private _weapons = _class call BIS_fnc_weaponsEntityType;
+    {
+        if (_x iskindof ["CannonCore", configFile >> "CfgWeapons"]) then {
+            _cas = true;
+        };
+        if (_x iskindof ["Laserdesignator_mounted", configFile >> "CfgWeapons"]) then {
+            _recce = true;
+        };
+    } foreach _weapons;
+
+    // Go through magazines and ammo and check capability for attack (AGM) and fighter (AAM)
     private _magazines = _class call BIS_fnc_magazinesEntityType;
     {
-        // if magazine is cannon, then has guns and cas
-        // if bombs, then cas
-        // check ammo, if missile, then check maxSpeedTarget, < 200 = AGM, > 200 = AAM
-        // if pilotcamera then recon
-        //
-        private _magCfg = (configFile >> "CfgMagazines" >> _x);
 
+        private _ammoCfg = configFile >> "CfgAmmo" >> (getText(configFile >> "CfgMagazines" >> _x >> "ammo"));
+        // Check for AGM and AA missiles
+        //if ((configName _ammoCfg) iskindof ["MissileBase", configFile >> "CfgAmmo"]) then {
+            private _maxLockSpeed = getNumber(_ammoCfg >> "missileLockMaxSpeed");
+            if (_maxLockSpeed > 0) then {
+                if (_maxLockSpeed < 150) then {
+                    _attack = true;
+                    _cas = true;
+                } else {
+                    _fighter = true;
+                };
+            };
+        //};
     } foreach _magazines;
 
     if (_cas) then {_result pushback "CAS"};
@@ -645,8 +674,8 @@ switch(_operation) do {
                 };
 
                 // Check role of aircraft
-                //private _role = [_vehicleClass] call ALiVE_fnc_getAircraftRole;
-                //[_asset,"role",_role] call ALiVE_fnc_hashSet;
+                private _roles = [_vehicleClass] call ALiVE_fnc_getAircraftRoles;
+                [_asset,"roles",_roles] call ALiVE_fnc_hashSet;
 
                 if (_type == "entity") then {
 
@@ -2750,7 +2779,7 @@ switch(_operation) do {
                     private _opAssets = [];
                     private _selectedAsset = [];
                     private _aircraftType = ["Plane","Helicopter"];
-                    private _weaponType = "AG";
+                    private _aircraftRole = "Attack";
                     private _eventPosition = getMarkerPos _eventAirspace;
 
                     // Based on Op, check what type of aircraft we need
@@ -2758,11 +2787,15 @@ switch(_operation) do {
                         case "CAP";
                         case "DCA" : {
                             _aircraftType = ["Plane"];
-                            _weaponType = "AA";
+                            _aircraftRole = "Fighter";
+                        };
+                        case "Recce" : {
+                            _aircraftType = ["Plane","Helicopter"];
+                            _aircraftRole = "Recon";
                         };
                         default {
                             _aircraftType = ["Plane","Helicopter"];
-                            _weaponType = "AG";
+                            _aircraftRole = "Attack";
                         };
                     };
 
@@ -2802,104 +2835,108 @@ switch(_operation) do {
 
                             if !(isNil "_profile") then {
                                 private _aircraft = [_assets,_x] call ALiVE_fnc_hashGet;
-                                private _position = [_aircraft,"startPos"] call ALiVE_fnc_hashGet;
-                                private _currentOp = [_aircraft,"currentOp",""] call ALiVE_fnc_hashGet;
-                                private _profileType = [_profile, "type"] call ALiVE_fnc_hashGet;
-                                private _crewAvailable = true;
 
-                                if (_profileType == "entity") then {
-                                    private _profileVehID = ([_profile, "vehiclesInCommandOf"] call ALiVE_fnc_hashGet) select 0;
-                                    _profile = [ALIVE_profileHandler, "getProfile",_profileVehID] call ALIVE_fnc_profileHandler;
-                                };
+                                // check aircraft has the correct role
+                                private _aircraftRoles = [_aircraft,"roles"] call ALiVE_fnc_hashGet;
+                                if (_aircraftRole in _aircraftRoles) then {
+                                    private _position = [_aircraft,"startPos"] call ALiVE_fnc_hashGet;
+                                    private _currentOp = [_aircraft,"currentOp",""] call ALiVE_fnc_hashGet;
+                                    private _profileType = [_profile, "type"] call ALiVE_fnc_hashGet;
+                                    private _crewAvailable = true;
 
-                                private _active = [_profile,"active"] call ALiVE_fnc_hashGet;
-                                private _damage = [_profile, "damage"] call ALiVE_fnc_hashGet;
-                                if (count _damage == 0) then {
-                                    _damage = 0;
-                                } else {
-                                    // Calculate % of damage
-                                    private _curDamage = 0;
-                                    {
-                                        _curDamage = _curDamage + (_x select 1);
-                                    } foreach _damage;
-                                    if (_curDamage == 0) then {
+                                    if (_profileType == "entity") then {
+                                        private _profileVehID = ([_profile, "vehiclesInCommandOf"] call ALiVE_fnc_hashGet) select 0;
+                                        _profile = [ALIVE_profileHandler, "getProfile",_profileVehID] call ALIVE_fnc_profileHandler;
+                                    };
+
+                                    private _active = [_profile,"active"] call ALiVE_fnc_hashGet;
+                                    private _damage = [_profile, "damage"] call ALiVE_fnc_hashGet;
+                                    if (count _damage == 0) then {
                                         _damage = 0;
                                     } else {
-                                        _damage = _curDamage / count _damage;
-                                    };
-                                };
-
-                                private _fuel = [_profile, "fuel"] call ALiVE_fnc_hashGet;
-                                private _currentPosition = [_profile, "position"] call ALiVE_fnc_hashGet;
-
-                                private _ammo = [_profile, "ammo"] call ALiVE_fnc_hashGet;
-                                if (count _ammo == 0) then {
-                                        _ammo = 1;
-                                } else {
-                                    // Calculate % of ammo
-                                    private _avail = 0;
-                                    {
-                                        _avail = _avail + ((_x select 1)/(_x select 2));
-                                    } foreach _ammo;
-                                    _ammo = _avail / count _ammo;
-                                };
-
-                                if (_active) then {
-                                    private _vehicleObj = [_profile, "vehicle"] call ALiVE_fnc_hashGet;
-                                    _damage = damage _vehicleObj;
-                                    _fuel = fuel _vehicleObj;
-                                    _currentPosition = getposATL _vehicleObj;
-                                };
-
-                                // diag_log format["ALIVE ATO %4 %5 F:%1, A:%2, D:%3, Dist:%6,",_fuel, _ammo, _damage, _logic, _profileID, _position distance _currentPosition];
-
-                                // Check crew are alive if not UAV
-
-                                if !(([_profile,"vehicleClass"] call ALiVE_fnc_hashGet) isKindOf "UAV") then {
-                                    private _crewID = [_aircraft,"crewID"] call ALiVE_fnc_hashGet;
-                                    private _crewProfile = [ALIVE_profileHandler, "getProfile",_crewID] call ALIVE_fnc_profileHandler;
-                                    if (isNil "_crewProfile") then {
-                                        _crewAvailable = false;
-                                    };
-                                };
-
-                                // If an asset is parked or flying a CAP (and the request is not CAP) then the aircraft is available (or if CAS is requested)
-                                if (_crewAvailable) then {
-
-                                    // Get active event type
-                                    if (_currentOp != "") then {
-                                        //Retrieve event data
-                                        private _currentEvent = [_eventQueue, _currentOp,[]] call ALIVE_fnc_hashGet;
-                                        private _currentOpState = [_currentEvent, "state",""] call ALIVE_fnc_hashGet;
-                                        if !(_currentOpState in ["aircraftLanding","aircraftReturnWait","aircraftStart"]) then {
-                                            _currentOp = [_currentEvent, "data"] call ALIVE_fnc_hashGet select 0;
+                                        // Calculate % of damage
+                                        private _curDamage = 0;
+                                        {
+                                            _curDamage = _curDamage + (_x select 1);
+                                        } foreach _damage;
+                                        if (_curDamage == 0) then {
+                                            _damage = 0;
                                         } else {
-                                            // Aircraft is starting/landing, so not available yet, set fuel measurement to zero
-                                            _fuel = 0;
+                                            _damage = _curDamage / count _damage;
                                         };
                                     };
 
-                                    // Don't reroute an aircraft twice
-                                    if !([_aircraft,"reroute", false] call ALiVE_fnc_hashGet) then {
+                                    private _fuel = [_profile, "fuel"] call ALiVE_fnc_hashGet;
+                                    private _currentPosition = [_profile, "position"] call ALiVE_fnc_hashGet;
 
-                                        // If parked and not doing anything add, if on CAP and request is DCA,CAS,SEAD then reroute, if its CAS and currently on CAS don't reroute - make sure aircraft is fit for purpose
-                                        if ( ( ((_position distance _currentPosition < 15) && _currentOp == "") || (_currentOp == "CAP" && _eventType in ["DCA","CAS","SEAD"]) || (_currentOp != "CAS" && _eventType == "CAS") ) && (_fuel > _eventMinFuel && _ammo > _eventMinWeap && _damage < 0.5)) then {
+                                    private _ammo = [_profile, "ammo"] call ALiVE_fnc_hashGet;
+                                    if (count _ammo == 0) then {
+                                            _ammo = 1;
+                                    } else {
+                                        // Calculate % of ammo
+                                        private _avail = 0;
+                                        {
+                                            _avail = _avail + ((_x select 1)/(_x select 2));
+                                        } foreach _ammo;
+                                        _ammo = _avail / count _ammo;
+                                    };
 
-                                            [_aircraft,"currentPos",_currentPosition] call ALiVE_fnc_hashSet;
-                                            [_aircraft,"profileID",_x] call ALiVE_fnc_hashSet;
-                                            _selectedAsset pushback _aircraft;
+                                    if (_active) then {
+                                        private _vehicleObj = [_profile, "vehicle"] call ALiVE_fnc_hashGet;
+                                        _damage = damage _vehicleObj;
+                                        _fuel = fuel _vehicleObj;
+                                        _currentPosition = getposATL _vehicleObj;
+                                    };
 
-                                            // If the aircraft is on a CAP and not in the process of landing, send it to intercept
-                                            if (_currentOp == "CAP" && _eventType == "DCA") then {
-                                                _selectedAsset = [_aircraft];
-                                                _exit = true;
+                                    // diag_log format["ALIVE ATO %4 %5 F:%1, A:%2, D:%3, Dist:%6,",_fuel, _ammo, _damage, _logic, _profileID, _position distance _currentPosition];
+
+                                    // Check crew are alive if not UAV
+
+                                    if !(([_profile,"vehicleClass"] call ALiVE_fnc_hashGet) isKindOf "UAV") then {
+                                        private _crewID = [_aircraft,"crewID"] call ALiVE_fnc_hashGet;
+                                        private _crewProfile = [ALIVE_profileHandler, "getProfile",_crewID] call ALIVE_fnc_profileHandler;
+                                        if (isNil "_crewProfile") then {
+                                            _crewAvailable = false;
+                                        };
+                                    };
+
+                                    // If an asset is parked or flying a CAP (and the request is not CAP) then the aircraft is available (or if CAS is requested)
+                                    if (_crewAvailable) then {
+
+                                        // Get active event type
+                                        if (_currentOp != "") then {
+                                            //Retrieve event data
+                                            private _currentEvent = [_eventQueue, _currentOp,[]] call ALIVE_fnc_hashGet;
+                                            private _currentOpState = [_currentEvent, "state",""] call ALIVE_fnc_hashGet;
+                                            if !(_currentOpState in ["aircraftLanding","aircraftReturnWait","aircraftStart"]) then {
+                                                _currentOp = [_currentEvent, "data"] call ALIVE_fnc_hashGet select 0;
+                                            } else {
+                                                // Aircraft is starting/landing, so not available yet, set fuel measurement to zero
+                                                _fuel = 0;
                                             };
                                         };
-                                    };
-                                } else {
-                                    // If crew is not available, ensure LOGCOM request goes in
-                                };
 
+                                        // Don't reroute an aircraft twice
+                                        if !([_aircraft,"reroute", false] call ALiVE_fnc_hashGet) then {
+
+                                            // If parked and not doing anything add, if on CAP and request is DCA,CAS,SEAD then reroute, if its CAS and currently on CAS don't reroute - make sure aircraft is fit for purpose
+                                            if ( ( ((_position distance _currentPosition < 15) && _currentOp == "") || (_currentOp == "CAP" && _eventType in ["DCA","CAS","SEAD"]) || (_currentOp != "CAS" && _eventType == "CAS") ) && (_fuel > _eventMinFuel && _ammo > _eventMinWeap && _damage < 0.5)) then {
+
+                                                [_aircraft,"currentPos",_currentPosition] call ALiVE_fnc_hashSet;
+                                                [_aircraft,"profileID",_x] call ALiVE_fnc_hashSet;
+                                                _selectedAsset pushback _aircraft;
+
+                                                // If the aircraft is on a CAP and not in the process of landing, send it to intercept
+                                                if (_currentOp == "CAP" && _eventType == "DCA") then {
+                                                    _selectedAsset = [_aircraft];
+                                                    _exit = true;
+                                                };
+                                            };
+                                        };
+                                    } else {
+                                        // If crew is not available, ensure LOGCOM request goes in
+                                    };
+                                };
                             };
                             if (_exit) exitWith {};
                         } foreach _opAssets;
@@ -2908,12 +2945,33 @@ switch(_operation) do {
 
                             // Get target position
                             if (_eventType != "CAP") then {
+
+                                // Spawn any event targets
+                                {
+                                    if (typeName _x == "STRING") then {
+                                         private _targetProfile = [ALiVE_profileHandler, "getProfile", _x] call ALiVE_fnc_ProfileHandler;
+                                         if !(isNil "_targetProfile") then {
+                                            [_targetProfile,"spawnType",["preventDespawn"]] call ALiVE_fnc_hashSet;
+
+                                            private _active = [_targetProfile,"active"] call ALiVE_fnc_hashGet;
+                                            if !(_active) then {
+                                                 private _type = [_targetProfile,"type"] call ALiVE_fnc_hashGet;
+                                                 if (_type == "entity") then {
+                                                    [_targetProfile,"spawn"] call ALiVE_fnc_profileEntity;
+                                                 } else {
+                                                    [_targetProfile,"spawn"] call ALiVE_fnc_profileVehicle;
+                                                    // diag_log format["SPAWNING TARGET: %1",_x];
+                                                };
+                                            };
+                                        };
+                                    };
+                                } foreach _eventTargets;
+
                                 // Work out distance to first target
-                                private _profileID = (_eventTargets select 0) getVariable ["profileID",""];
-                                if (_profileID == "") then {
+                                if (typeName (_eventTargets select 0) == "OBJECT") then {
                                     _eventPosition = position (_eventTargets select 0);
                                 } else {
-                                    private _targetProfile = [ALiVE_profileHandler, "getProfile", _profileID] call ALiVE_fnc_ProfileHandler;
+                                    private _targetProfile = [ALiVE_profileHandler, "getProfile", (_eventTargets select 0)] call ALiVE_fnc_ProfileHandler;
                                     _eventPosition = [_targetProfile,"position"] call ALiVE_fnc_hashGet;
                                 };
                             };
@@ -3020,14 +3078,32 @@ switch(_operation) do {
 
                         [_event, "friendlyProfiles", _eventFriendlyProfiles] call ALIVE_fnc_hashSet;
 
-                        // get the profile IDs for eventTargets
+                        // get the profile IDs for eventTargets (and convert any profiles to real targets)
                         _eventEnemyProfiles = [];
                         {
-                            if (_x getVariable ["profileID",""] != "") then {
-                                _eventEnemyProfiles pushback (_x getVariable "profileID");
+                            if (typeName _x == "OBJECT") then {
+                                if (_x getVariable ["profileID",""] != "") then {
+                                    _eventEnemyProfiles pushback (_x getVariable "profileID");
+                                };
+                            } else {
+                                _eventEnemyProfiles pushback _x;
+                                private _targetProfile = [ALiVE_profileHandler, "getProfile", _x] call ALiVE_fnc_ProfileHandler;
+                                if !(isNil "_targetProfile") then {
+                                    private _type = [_targetProfile,"type"] call ALiVE_fnc_hashGet;
+                                    // _targetProfile call ALIVE_fnc_inspectHash;
+                                    private _vehicle = objNull;
+                                    if (_type == "entity") then {
+                                        _vehicle = [_targetProfile,"leader"] call ALiVE_fnc_hashGet;
+                                    } else {
+                                        _vehicle = [_targetProfile,"vehicle"] call ALiVE_fnc_hashGet;
+                                    };
+                                    _eventTargets set [_foreachIndex, _vehicle];
+                                };
                             };
                         } foreach _eventTargets;
+
                         [_event, "enemyProfiles", _eventEnemyProfiles] call ALIVE_fnc_hashSet;
+
                         [_event, "data", _eventData] call ALIVE_fnc_hashSet;
 
                         // update the state of the event
@@ -3116,12 +3192,28 @@ switch(_operation) do {
 
                         private _airportBusy = false;
                         private _airportID = 0;
+                        private _UCAV = false;
+                        private _catapult = [];
 
-                        // If runway takeoff, handle runway deconfliction
+                        // If runway takeoff, handle runway/catapult deconfliction
                         if (_isPlane) then {
                             _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                             // if plane check to see if runway is busy, wait
                             _airportBusy = [_airports, _airportID] call ALiVE_fnc_hashGet;
+
+                            // Check catapult is free
+                            if (surfaceIsWater _startPosition && _isOnCarrier) then {
+                                _isUCAV = if (_vehicleClass isKindOf "B_UAV_05_F") then {true} else {false};
+                                _catapult = [_startPosition, _isUCAV] call ALiVE_fnc_getNearestCatapult;
+                                if !(isNil "_catapult") then {
+                                    private _position = [_catapult, "position"] call ALiVE_fnc_hashGet;
+                                    private _nearbyObj = nearestObjects [_position, ["Plane"], 3];
+                                    if (count _nearbyObj > 0) then {
+                                        // diag_log ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>. CATAPULT BUSY <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
+                                        _airportBusy = true;
+                                    };
+                                };
+                            };
                         };
 
                         if (!_airportBusy || !_isPlane) then {
@@ -3151,8 +3243,6 @@ switch(_operation) do {
                                     // Check to see if we are over water, assume aircraft carrier, check for catapult
                                     if (surfaceIsWater _taxiPosition && _isOnCarrier) then {
                                         _taxiPosition = +_startPosition;
-                                        private _isUCAV = if (_vehicleClass isKindOf "B_UAV_05_F") then {true} else {false};
-                                        private _catapult = [_taxiPosition, _isUCAV] call ALiVE_fnc_getNearestCatapult;
                                         if !(isNil "_catapult") then {
                                             _taxiPosition = [_catapult, "position", _taxiPosition] call ALiVE_fnc_hashGet;
 
@@ -3259,6 +3349,7 @@ switch(_operation) do {
                                         // _profile call ALIVE_fnc_inspectHash;
                                         if (surfaceIsWater _taxiPosition && _isOnCarrier) then {
                                             _vehicleObj setPosASL _taxiPosition; // might need to adjust for sea level changes?
+
                                         } else {
                                             _vehicleObj setPos _taxiPosition;
                                         };
@@ -3410,6 +3501,7 @@ switch(_operation) do {
                             };
                         };
 
+                        // Ok driver should be in vehicle now
                         if !(isNUll (driver _vehicle)) then {
 
                             // DEBUG -------------------------------------------------------------------------------------
@@ -3418,6 +3510,7 @@ switch(_operation) do {
                             };
                             // DEBUG -------------------------------------------------------------------------------------
 
+                            // Handle Carrier takeoff
                             If ( _isOnCarrier && _takeoff && _isPlane ) then {
                                 // Get the engine started
                                 _vehicle engineOn true;
@@ -4148,9 +4241,23 @@ switch(_operation) do {
                     [_assets,_aircraftID,_aircraft] call ALiVE_fnc_hashSet;
                 };
 
+                // despawn any existing targets
+                if (count _eventEnemyProfiles > 0) then {
+                    {
+                        private _targetProfile = [ALiVE_profileHandler, "getProfile", _x] call ALiVE_fnc_ProfileHandler;
+                        if !(isNil "_targetProfile") then {
+                            [_targetProfile,"spawnType",[]] call ALiVE_fnc_hashSet;
+                        };
+                    } foreach _eventEnemyProfiles;
+                };
+
                 // send radio broadcast
                 _sideObject = [_eventSide] call ALIVE_fnc_sideTextToObject;
                 _factionName = getText((_eventFaction call ALiVE_fnc_configGetFactionClass) >> "displayName");
+
+                // TODO RADIO MESSAGE
+
+                //  Update assets?
                 _assets = [ALIVE_globalATO,_eventFaction] call ALIVE_fnc_hashGet;
 
                 // remove the event
