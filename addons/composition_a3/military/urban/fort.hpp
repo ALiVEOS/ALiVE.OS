@@ -1974,7 +1974,6 @@
 			class Object31 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {4.60205,5.36401,0}; dir = 90;};
 			class Object32 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {4.30017,16.8533,0}; dir = 225;};
 			class Object33 {side = 8; vehicle = "Land_BagFence_Short_F"; rank = ""; position[] = {4.64685,14.8079,0}; dir = 90;};
-
 		};
 		class AAA_BLU_F {
 			name = $STR_ZEC_Military_FortMedium_AAA_BLU_F; // Credit: 2600K
@@ -3226,7 +3225,7 @@
 			class Object5 {side = 8; vehicle = "Land_BagFence_Round_F"; rank = ""; position[] = {-2.47969,-0.517822,0}; dir = 75;};
 			class Object6 {side = 8; vehicle = "Land_BagFence_Short_F"; rank = ""; position[] = {1.50641,1.36646,0}; dir = 225;};
 			class Object7 {side = 8; vehicle = "Land_BagFence_Short_F"; rank = ""; position[] = {-1.75652,1.3667,0}; dir = 300;};
-			class Object8 {side = 8; vehicle = "Land_BagFence_End_F"; rank = ""; position[] = {-0.992737,-2.16504,0}; dir = 45;};  
+			class Object8 {side = 8; vehicle = "Land_BagFence_End_F"; rank = ""; position[] = {-0.992737,-2.16504,0}; dir = 45;};
 		};
 		class AntiTankBunker_IND_F {
 			name = $STR_ZEC_Military_FortSmall_AntiTankBunker_IND_F; // Credit: 2600K
@@ -5040,6 +5039,6 @@
 			class Object10 {side = 8; vehicle = "Land_Razorwire_F"; rank = ""; position[] = {-4.55762,7.10376,0}; dir = 90;};
 			class Object12 {side = 8; vehicle = "Land_HBarrierTower_F"; rank = ""; position[] = {-0.500519,4.22339,0}; dir = 180;};
 			class Object13 {side = 8; vehicle = "Land_GarbagePallet_F"; rank = ""; position[] = {4.16162,0.399902,0}; dir = 270;};
-		};    
-};
+		};
+	};
 
