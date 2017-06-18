@@ -163,6 +163,83 @@ class CfgVehicles
 
         };
     };
+    class StaticMGWeapon;
+    class AAA_System_01_base_F : StaticMGWeapon
+    {
+        class textureSources
+        {
+            class Sand
+            {
+                factions[] = {"BLU_F","OPF_F"};
+            };
+        };
+    };
+    class B_AAA_System_01_F : AAA_System_01_base_F
+    {
+        class EventHandlers;
+    };
+    class O_AAA_System_01_F : B_AAA_System_01_F
+    {
+        class EventHandlers: EventHandlers {
+            init = "if (local (_this select 0)) then {[(_this select 0), """", false, false] call bis_fnc_initVehicle;};";
+        };
+        crew = "O_UAV_AI";
+        faction = "OPF_F";
+        side = 0;
+        typicalCargo[] = {"O_UAV_AI"};
+        textureList[] = {"Sand",1};
+    };
+    class SAM_System_01_base_F : StaticMGWeapon
+    {
+
+        class textureSources
+        {
+            class Sand
+            {
+                factions[] = {"BLU_F","OPF_F"};
+            };
+        };
+    };
+    class SAM_System_02_base_F : StaticMGWeapon
+    {
+        class textureSources
+        {
+            class Sand
+            {
+                factions[] = {"BLU_F","OPF_F"};
+            };
+        };
+    };
+    class B_SAM_System_01_F : SAM_System_01_base_F
+    {
+        class EventHandlers;
+    };
+    class O_SAM_System_01_F : B_SAM_System_01_F
+    {
+        class EventHandlers: EventHandlers {
+            init = "if (local (_this select 0)) then {[(_this select 0), """", false, false] call bis_fnc_initVehicle;};";
+        };
+        crew = "O_UAV_AI";
+        faction = "OPF_F";
+        side = 0;
+        typicalCargo[] = {"O_UAV_AI"};
+        textureList[] = {"Sand",1};
+    };
+    class B_SAM_System_02_F : SAM_System_02_base_F
+    {
+        class EventHandlers;
+    };
+    class O_SAM_System_02_F : B_SAM_System_02_F
+    {
+        class EventHandlers: EventHandlers {
+            init = "if (local (_this select 0)) then {[(_this select 0), """", false, false] call bis_fnc_initVehicle;};";
+        };
+        crew = "O_UAV_AI";
+        faction = "OPF_F";
+        side = 0;
+        typicalCargo[] = {"O_UAV_AI"};
+        textureList[] = {"Sand",1};
+    };
     class Sound;
     class Sound_AirRaidSiren : Sound
     {
