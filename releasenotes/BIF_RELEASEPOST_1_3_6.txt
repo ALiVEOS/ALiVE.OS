@@ -1,0 +1,50 @@
+[center][url=https://github.com/ALiVEOS/ALiVE.OS.git][img=http://i.imgur.com/RFX0nkZ.jpg][/url][/center]
+[center][b][url=http://alivemod.com/]ALiVEmod.com[/url]
+[size=4]The next generation dynamic persistent mission addon for ArmA3[/size][/b][/center]
+[center][b]Release 1.3.4[/b][/center]
+[center][/center]
+ 
+[b]AI Air Component Commander[/b]
+This update brings the first iteration of the AI Air Component Commander by Tupolov.  While the Military AI Commander is responsible for commanding operations on the ground, the Military Air Component Commander takes control of all air assets in theatre and issues Air Tasking Orders to available aircraft, with the exception of helicopters assigned to logistics taskings.  ATOs are prioritised depending on the tactical situation and available air assets and typically will include Combat Air Patrol (CAP), Defensive Counter Air (DCA) and Supression of Enemy Air Defences (SEAD) as a priority.  Secondary taskings in support of ground ops include Recce, Close Air Support and Strike missions on the current ground objectives.
+
+The ALiVE MACC module creates an Air Component HQ at the nearest airbase to the module location and optionally spawns Air Defences in the vicinity.  MACC uses existing aircraft spawned by the ALiVE Military Placement modules or, if none are available, can spawn additional fixed wing or rotary aircraft.  MACC is also capable of conducting naval aviation operations from the CVN-83 USS Freedom.  MACC is still very much work in progress and not all features are fully funtional yet so please provide feedback so we can continue to balance and adjust.
+
+Meanwhile there has been a whole lot of map indexing activity from community members, in particular thanks to Burdy323, and the Malden 2035 DLC - thanks to everyone who has contributed!
+
+[center][b][url=http://alivemod.com/#ALiVEWarRoom]Join the War Room Now![/url][/b][/center]
+
+[b]Release Highlights[/b]
+First iteration of Military Air Component Commander
+Map Index - Malden 2035, Omaha, SEA (Unsung), Nam, Neaville, Suonkomar Sahav, G.O.S N'Djenahoud
+Module UI Enhancement - changed some integer inputs to drop down selection menus
+Various bug fixes
+	
+See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
+    
+[center][b][url=http://alivemod.com/#Download]Download[/url][/b]
+Grab the latest version from [url=http://alivemod.com/#Download]ALiVEmod.com[/url]
+Also available from PlayWithSix, ArmAholic and Steam (Usually within 24 hours of this post)[/center]
+
+Please note that as with all updates, if you have an issue loading a mission made with a previous version of ALiVE, delete and replace the modules in that mission.
+
+[b]Known Issues & Support[/b]
+Existing bugs are listed on Github [url=https://github.com/ALiVEOS/ALiVE.OS/issues]here[/url]. Feel free to submit bugs (with vanilla repros please) or discuss any issues or ideas on our forum at [url=http://alivemod.com/forum/]http://alivemod.com/forum/[/url].
+
+[b]Manual[/b]
+Please refer to the [url=http://www.alivemod.com/wiki]ALiVE Wiki[/url]. All the info you need is there. If anything is missing or unclear, please let us know.
+
+[b]Are you using Linux?[/b]
+ALiVE is fully supported on a Linux Dedicated Server (as well as Windows). In fact the ALiVE Official Server for testing is running Ubuntu. Here are some tips on getting ALiVE running smoothly on Linux and integrated with War Room - [url=http://www.alivemod.com/forum/1916-setting-up-linux-dedi-server]http://www.alivemod.com/forum/1916-setting-up-linux- dedi-server[/url]
+
+[b]Acknowledgements and Thanks[/b]
+Particular thanks to all those on our support forum who have worked closely with us to identify bugs, provide logs and generally help us improve ALiVE. Your assistance is valuable and your dedication to ALiVE makes it all worth the effort!
+
+[b]Disclaimer[/b]
+We may need to prune the persistent database data from the War Room, eliminating data that is older than 6-12 months. The ALiVE War Room database is run on a voluntary basis at a cost to the ALiVE development team. No guarantees can be given on the mission data stored or the availability of the service. We apologise for any downtime that may impact your MP persistent missions.
+
+[b]ALiVE has transformed my Arma 3 experience, how can I thank you?[/b]
+Please consider making a contribution to our server costs if you enjoy ALiVE! It costs us $65 per month to run our War Room website and the ALiVE Database servers and every little helps. Donate here [url=http://www.alivemod.com/#Donate]http://www.alivemod.com/#Donate[/url]
+
+Special thanks to everyone here for supporting us with donations to the ALiVE mod development effort.
+
+Have fun!
