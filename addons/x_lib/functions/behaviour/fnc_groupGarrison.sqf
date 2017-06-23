@@ -20,22 +20,15 @@ Author:
 ARJay, Highhead
 ---------------------------------------------------------------------------- */
 
-private _group = _this select 0;
-private _position = _this select 1;
-private _radius = _this select 2;
-private _moveInstantly = _this select 3;
-private _onlyProfiled = if (count _this > 4) then {_this select 4} else {false};
-
+params ["_group", "_position", "_radius", "_moveInstantly", ["_onlyProfiled", false, [true]]];
 private _units = units _group;
-
 if (count _units < 2) exitwith {};
 
 private _leader = leader (group (_units select 0));
 private _units = _units - [_leader];
 
 if(isNil "ALiVE_STATIC_DATA_LOADED") then {
-    private _file = "\x\alive\addons\main\static\staticData.sqf";
-    call compile preprocessFileLineNumbers _file;
+    call compile preprocessFileLineNumbers "\x\alive\addons\main\static\staticData.sqf";
 };
 
 if (!_moveInstantly) then {
@@ -48,11 +41,10 @@ private _staticWeapons = nearestObjects [_position, ["StaticWeapon"], _radius];
 private _armedCars = nearestObjects [_position, ["Car"], _radius];
 {
     if (!([_x] call ALiVE_fnc_isArmed) || {_onlyProfiled && {isnil {_x getvariable "profileID"}}}) then {_armedCars = _armedCars - [_x]};
-} foreach _armedCars;
+} count _armedCars;
 _staticWeapons = _staticWeapons + _armedCars;
 
-if (count _staticWeapons > 0) then
-{
+if (count _staticWeapons > 0) then {
     {
         private _weapon = _x;
         private _positionCount = [_weapon] call ALIVE_fnc_vehicleCountEmptyPositions;
@@ -63,12 +55,11 @@ if (count _staticWeapons > 0) then
             
             if (!isNil "_unit") then {
                 
-                if(_positionCount > 0) then
-                {
+                if(_positionCount > 0) then {
                     if(_moveInstantly) then {
                         _unit assignAsGunner _weapon;
                         _unit moveInGunner _weapon;
-                    }else{
+                    } else {
                         _unit assignAsGunner _weapon;
                         [_unit] orderGetIn true;
                     };
@@ -77,18 +68,18 @@ if (count _staticWeapons > 0) then
                 _units = _units - [_unit];
             };
         };
-    } forEach _staticWeapons;
+    } count _staticWeapons;
 };
 
 if (count _units == 0) exitwith {};
 
-private _buildings = nearestObjects [_position,ALIVE_garrisonPositions select 1,_radius];
+private _buildings = nearestObjects [_position, ALIVE_garrisonPositions select 1, _radius];
 
 if (count _buildings > 0) then {
     {
         private _building = _x;
         private _class = typeOf _building;
-        private _buildingPositions = [ALIVE_garrisonPositions,_class] call ALIVE_fnc_hashGet;
+        private _buildingPositions = [ALIVE_garrisonPositions, _class] call ALIVE_fnc_hashGet;
         
         if !(isNil "_buildingPositions") then {
             {
@@ -120,11 +111,7 @@ if (count _buildings > 0) then {
                         } else {
                             
                             [_unit,_origPos,_position,_building] spawn {
-                                                                
-                                private _unit = _this select 0;
-                                private _origPos = _this select 1;
-                                private _position = _this select 2;
-                                private _building = _this select 3;
+                                params ["_unit", "_origPos", "_position", "_building"];
                                 
 	                            if (str(_position) find "[0,0" != -1) then {
                                     ["ALiVE Group Garrison - Warning! %1 building-pos in %2 detected! Unit %3 reset to %4!",_position,_building,_unit,_origPos] call ALiVE_fnc_Dump;
@@ -143,9 +130,9 @@ if (count _buildings > 0) then {
                         _units = _units - [_unit];
                     };
                 };
-            } foreach _buildingPositions;
+            } forEach _buildingPositions;
         };
-    } forEach _buildings;
+    } count _buildings;
     
 } else {
 
@@ -171,11 +158,8 @@ if (count _buildings > 0) then {
                         
                         if (str(_position) find "[0,0" != -1) then {
                             ["ALiVE Group Garrison - Warning! %1 building-pos in %2 detected! Unit %3 reset to %4!",_position,_building,_unit,_origPos] call ALiVE_fnc_Dump;
-                            
                             _unit setpos _origPos;
-                        } else {
-                            _unit setposATL _position;
-                        };
+                        } else { _unit setposATL _position; };
                         
                         _unit setdir ((_unit getRelDir _building)-180);
                         dostop _unit;
@@ -185,20 +169,13 @@ if (count _buildings > 0) then {
                         
                     } else {
                         [_unit,_origPos,_position,_building] spawn {
-                                                            
-                            private _unit = _this select 0;
-                            private _origPos = _this select 1;
-                            private _position = _this select 2;
-                            private _building = _this select 3;
+                            params ["_unit", "_origPos", "_position", "_building"];   
                             
                             if (str(_position) find "[0,0" != -1) then {
                                 ["ALiVE Group Garrison - Warning! %1 building-pos in %2 detected! Unit %3 reset to %4!",_position,_building,_unit,_origPos] call ALiVE_fnc_Dump;
-                                
                                 [_unit, _origPos] call ALiVE_fnc_doMoveRemote;
-                            } else {
-                                [_unit, _position] call ALiVE_fnc_doMoveRemote;
-                            };
-
+                            } else { [_unit, _position] call ALiVE_fnc_doMoveRemote; };
+                            
                             waitUntil {sleep 1; _unit call ALiVE_fnc_unitReadyRemote};
                             
                             doStop _unit;                                                 
@@ -208,5 +185,5 @@ if (count _buildings > 0) then {
                 };
             };
         } foreach _buildingPositions;
-    } forEach _buildings;
+    } count _buildings;
 };
