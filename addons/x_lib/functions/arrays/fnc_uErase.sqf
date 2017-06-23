@@ -4,7 +4,7 @@
 Function: ALiVE_fnc_uErase
 
 Description:
-    Erases a value from an array (unordered).
+    Erases a value from an array and replaces the erased element with the last element (unordered).
 
 Parameters:
     0 - Array [array]
@@ -26,9 +26,8 @@ Author:
     Naught
 ---------------------------------------------------------------------------- */
 
-private ["_arr", "_last"];
-_arr = _this select 0;
-_last = (count _arr) - 1;
+params ["_arr"];
+private _last = (count _arr) - 1;
 
 _arr set [(_this select 1), (_arr select _last)];
 _arr resize _last;

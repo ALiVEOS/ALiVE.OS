@@ -27,13 +27,11 @@ Author:
     Naught
 ---------------------------------------------------------------------------- */
 
-private ["_arr", "_idx", "_arrCount"];
-_arr = _this select 0;
-_idx = _this select 1;
+private ["_arrCount"];
+params ["_arr", "_idx"];
 _arrCount = count _arr;
 
-for "_i" from 1 to (_arrCount - _idx) do
-{
+for "_i" from 1 to (_arrCount - _idx) do {
     private ["_offset"];
     _offset = _arrCount - _i;
 

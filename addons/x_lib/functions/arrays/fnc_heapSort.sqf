@@ -29,10 +29,7 @@ Author:
 
 private ["_fnc_swap", "_fnc_siftDown"];
 _fnc_swap = {
-    private ["_array", "_pos1", "_pos2", "_temp"];
-    _array = _this select 0;
-    _pos1 = _this select 1;
-    _pos2 = _this select 2;
+    params ["_array", "_pos1", "_pos2"];
 
     _temp = _array select _pos1;
     _array set [_pos1, (_array select _pos2)];
@@ -40,38 +37,31 @@ _fnc_swap = {
 };
 
 _fnc_siftDown = {
-    private ["_array", "_start", "_end", "_compFunc", "_root"];
-    _array = _this select 0;
-    _start = _this select 1;
-    _end = _this select 2;
-    _compFunc = _this select 3;
+    private ["_root"];
+    params ["_array", "_start", "_end", "_compFunc"];
     _root = _start;
 
-    while {((_root * 2) + 1) <= _end} do
-    {
+    while {((_root * 2) + 1) <= _end} do {
         private ["_child", "_swap"];
         _child = (_root * 2) + 1;
         _swap = _root;
 
-        if (((_array select _swap) call _compFunc) < ((_array select _child) call _compFunc)) then
-        {
+        if (((_array select _swap) call _compFunc) < ((_array select _child) call _compFunc)) then {
             _swap = _child;
         };
 
-        if (((_child + 1) <= _end) && ((_array select _swap) < (_array select (_child + 1)))) then
-        {
+        if (((_child + 1) <= _end) && ((_array select _swap) < (_array select (_child + 1)))) then {
             _swap = _child + 1;
         };
 
-        if (_swap != _root) then
-        {
+        if (_swap != _root) then {
             [_array, _root, _swap] call _fnc_swap;
             _root = _swap;
         };
     };
 };
 
-private ["_array", "_compFunc", "_start", "_end"];
+private ["_start", "_end"];
 
 params [["_array", [], [[]]], ["_compFunc", nil, [{}]]];
 
@@ -80,16 +70,13 @@ if (_compFunc == nil) then { _compFunc = {_this}; };
 _start = ((count _array) - 2) / 2;
 _end = (count _array) - 1;
 
-if ((count _array) > 1) then
-{
-    while {_start >= 0} do
-    {
+if ((count _array) > 1) then {
+    while {_start >= 0} do {
         [_array, _start, _end, _compFunc] call _fnc_siftDown;
         _start = _start - 1;
     };
 
-    while {_end > 0} do
-    {
+    while {_end > 0} do {
         [_array, _end, 0] call _fnc_swap;
         _end = _end - 1;
         [_array, 0, _end, _compFunc] call _fnc_siftDown;

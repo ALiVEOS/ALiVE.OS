@@ -48,21 +48,16 @@ private ["_list", "_selectSortValue", "_item", "_i", "_j"];
 _list = +(_this select 0);
 _selectSortValue = {_this};
 
-if ((count _this) > 1) then
-{
-   if ((typeName (_this select 1)) == "CODE") then
-   {
+if ((count _this) > 1) then {
+   if ((typeName (_this select 1)) == "CODE") then {
       _selectSortValue = _this select 1;
-   }
-   else
-   {
+   } else {
       _selectSortValue = compile (_this select 1);
    };
 };
 
 // Insert Sort
-for "_i" from 1 to ((count _list) - 1) do
-{
+for "_i" from 1 to ((count _list) - 1) do {
    _item = +(_list select _i);
    _j = 0;
 

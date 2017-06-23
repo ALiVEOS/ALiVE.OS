@@ -17,7 +17,7 @@ Object - Nearest object
 
 Examples:
 (begin example)
-_nearest = [_point, _obj_array] call ALIVE_fnc_getNearestObjectInArray;
+_nearest = [_point, _obj, _array] call ALIVE_fnc_getNearestObjectInArray;
 (end)
 
 See Also:
@@ -28,9 +28,9 @@ Author:
 Wolffy.au
 ---------------------------------------------------------------------------- */
 
-private ["_point","_cluster","_minDistance","_maxDistance","_minObject","_distance","_err"];
-PARAMS_2(_point,_cluster);
-DEFAULT_PARAM(2,_maxDistance,999999);
+private ["_minDistance","_maxDistance","_minObject","_distance","_err"];
+
+params ["_point", "_cluster", ["_maxDistance", 999999]];
 
 _err = "point provided not valid";
 ASSERT_DEFINED("_point",_err);
@@ -50,4 +50,4 @@ _minObject = nil;
 } forEach _cluster;
 
 if(isNil "_minObject") then {_minObject = _point;};
-_minObject;
+_minObject

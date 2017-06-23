@@ -31,10 +31,7 @@ Highhead
 Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
-
-private _code = _this select 0;
-private _array = _this select 1;
-private _split = _this select 2;
+params ["_code", "_array", "_split"];
 
 private _count = count _array;
 private _range = ceil(_count / _split);

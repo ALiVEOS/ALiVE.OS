@@ -24,12 +24,11 @@ Author:
     Naught
 ---------------------------------------------------------------------------- */
 
-private ["_arr", "_arrCount"];
-_arr = _this select 0;
+private ["_arrCount"];
+params ["_arr"];
 _arrCount = count _arr;
 
-if (_arrCount > 0) then
-{
+if (_arrCount > 0) then {
     _arr resize (_arrCount - 1);
 };
 

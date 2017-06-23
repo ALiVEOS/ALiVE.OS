@@ -24,19 +24,13 @@ Author:
 Wolffy, Highhead
 ---------------------------------------------------------------------------- */
 
-private ["_choices","_bias","_result","_j"];
-_choices = _this select 0;
-_bias = _this select 1;
+params ["_choices", "_bias"];
 
-_result = [];
-_j = 0;
+private _result = [];
+private _j = 0;
 {
-    for "_i" from 1 to _x do {
-        _result pushback (_choices select _j);
-    };
+    for "_i" from 1 to _x do { _result pushback (_choices select _j); };
     _j = _j + 1;
-} forEach _bias;
-
+} count _bias;
 //hint str _result;
-
-selectRandom _result;
+selectRandom _result

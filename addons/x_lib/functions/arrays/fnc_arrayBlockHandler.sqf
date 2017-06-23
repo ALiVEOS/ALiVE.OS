@@ -81,11 +81,8 @@ switch(_operation) do {
                 */
         };
         case "getNextBlock": {
-                private ["_blockKey","_sourceArray","_blockLimit","_pointers","_currentPointer","_profiles","_limit","_block"];
-
-                _blockKey = _args select 0;
-                _sourceArray = _args select 1;
-                _blockLimit = _args select 2;
+                private ["_pointers","_currentPointer","_profiles","_limit","_block"];
+                _args params ["_blockKey", "_sourceArray", "_blockLimit"];
 
                 _pointers = [_logic,"pointers"] call ALIVE_fnc_hashGet;
 
