@@ -27,25 +27,18 @@ Author:
     Naught
 ---------------------------------------------------------------------------- */
 
-private ["_actor"];
-_actor = _this select 0;
+params ["_actor"];
 
-if (local _actor) then
-{
+if (local _actor) then {
     +(_this) spawn (_actor getVariable "ALiVE_actors_messageHandler");
-}
-else
-{
+} else {
     private ["_owner"];
     _owner = _actor getVariable ["ALiVE_actors_owner", -1];
     ALiVE_actors_newMessage = _this;
 
-    if (_owner < 0) then
-    {
+    if (_owner < 0) then {
         publicVariableServer "ALiVE_actors_newMessage";
-    }
-    else
-    {
+    } else {
         _owner publicVariableClient "ALiVE_actors_newMessage";
     };
 };
