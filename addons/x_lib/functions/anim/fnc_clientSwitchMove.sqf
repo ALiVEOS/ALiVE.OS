@@ -11,7 +11,7 @@ Parameters:
 Object - target object to perform switchMove on
 String - move to switch to
 
-Returns:
+Returns: Nothing
 
 Examples:
 (begin example)
@@ -23,9 +23,5 @@ See Also:
 Author:
 ARJay
 ---------------------------------------------------------------------------- */
-private ["_target","_move"];
 
-_target = _this select 0;
-_move = _this select 1;
-
-_target switchMove _move;
+(_this select 0) switchMove (_this select 1);

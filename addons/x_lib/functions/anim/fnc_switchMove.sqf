@@ -12,7 +12,7 @@ Parameters:
 Object - target object to perform switchMove on
 String - move to switch to
 
-Returns:
+Returns: Nothing
 
 Examples:
 (begin example)
@@ -24,16 +24,9 @@ See Also:
 Author:
 ARJay
 ---------------------------------------------------------------------------- */
-private ["_target","_move"];
 
-_target = _this select 0;
-_move = _this select 1;
+params ["_target", "_move"];
 
-if((isServer && isMultiplayer) || isDedicated) then
-{
+if((isServer && isMultiplayer) || isDedicated) then {
     [_target, _move] remoteExec ["ALIVE_fnc_clientSwitchMove"];
-}
-else
-{
-    _target switchMove _move;
-};
+} else { _target switchMove _move; };
