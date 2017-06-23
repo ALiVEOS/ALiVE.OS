@@ -38,7 +38,7 @@ Notes:
     This will increase performance when processing terrain data in very small precisions or very large areas.
 
 Author:
-    Naught
+    Naught, dixon13
 ---------------------------------------------------------------------------- */
 
 // Initialize benchmark code
@@ -51,22 +51,18 @@ Author:
 #endif
 
 // Process passed parameters
-private ["_boundingBox", "_precision", "_decPrecision"];
-_boundingBox = [_this, 0, ["ARRAY"], []] call ALiVE_fnc_param;
-_precision = [_this, 1, ["SCALAR"], 30] call ALiVE_fnc_param;
-private _multiProcess = [_this, 2, ["BOOL"], true] call ALiVE_fnc_param;
-_decPrecision = [_this, 3, ["SCALAR"], 1] call ALiVE_fnc_param;
+params [["_boundingBox", [], [[]]], ["_precision", 30, [0]],
+        ["_multiProcess", true, [true]], ["_decPrecision", 1, [0]]];
 
 // Retrieve map information
 private ["_mapEdge"];
 _mapEdge = (call ALiVE_fnc_getMapInfo) select 1;
 
 // Formulate bounding area
-private ["_bbX1", "_bbY1", "_bbX2", "_bbY2"];
-_bbX1 = [_boundingBox, 0, ["SCALAR"], 0] call ALiVE_fnc_param;
-_bbY1 = [_boundingBox, 1, ["SCALAR"], 0] call ALiVE_fnc_param;
-_bbX2 = [_boundingBox, 2, ["SCALAR"], (_mapEdge select 0)] call ALiVE_fnc_param;
-_bbY2 = [_boundingBox, 3, ["SCALAR"], (_mapEdge select 1)] call ALiVE_fnc_param;
+_boundingBox params [["_bbX1", 0, [0]], ["_bbY1", 0, [0]], ["_bbX2", nil, [0]], ["_bbY2", nil, [0]]];
+
+if (_bbX2 == nil) then { _bbX2 = _mapEdge select 0 };
+if (_bbY2 == nil) then { _bbY2 = _mapEdge select 1 };
 
 // Initialize process
 private ["_scripts", "_heightMap", "_fnc_processColumn"];
@@ -83,6 +79,7 @@ _fnc_processColumn = {
 
     // Load local (passed) variables
     private ["_column", "_x", "_bbY"];
+
     _column = (_this select 0) select (_this select 1);
     _x = _this select 2;
     _bbY = _this select 3;
@@ -110,7 +107,7 @@ for "_x" from _bbX1 to _bbX2 step _precision do
     // Load multi-process mechanism
     if (_multiProcess) then
     {
-        [_scripts, (_args spawn _fnc_processColumn)] call ALiVE_fnc_push;
+        _scripts pushBack (_args spawn _fnc_processColumn);
     }
     else
     {

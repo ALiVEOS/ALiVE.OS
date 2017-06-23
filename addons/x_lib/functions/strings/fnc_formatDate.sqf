@@ -34,8 +34,8 @@ Author:
     Naught
 ---------------------------------------------------------------------------- */
 
-private ["_date", "_month"];
-_date = _this select 0;
+private ["_month"];
+params ["_date"];
 
 _month = switch (_date select 1) do {
     case 1: {"January"};

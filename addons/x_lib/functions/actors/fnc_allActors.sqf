@@ -23,18 +23,21 @@ See Also:
     - <ALIVE_fnc_sendActorMessage>
 
 Author:
-    Naught
+    Naught, dixon13
 ---------------------------------------------------------------------------- */
 
-private ["_group"];
-_group = [_this, 1, ["GROUP"], ALiVE_actors_mainGroup] call ALiVE_fnc_param;
+params [["_group", grpNull]];
 
-if (!isNil "_group") then
-{
+if (_group == grpNull) then {
+    _group = ALiVE_actors_mainGroup;
+    if (!isNil "_group") then {
+        units _group
+    } else {
+        LOG_WARNING("ALiVE_fnc_allActors", "Attempted to list actors before the main actor group was created!");
+        []
+    };
+} else {
     units _group
 }
-else
-{
-    LOG_WARNING("ALiVE_fnc_allActors", "Attempted to list actors before the main actor group was created!");
-    []
-};
+
+

@@ -25,34 +25,25 @@ See Also:
     - <ALIVE_fnc_sendActorMessage>
 
 Author:
-    Naught
+    Naught, dixon13
 ---------------------------------------------------------------------------- */
 
-private ["_actor", "_group"];
-_actor = [_this, 1, ["OBJECT"], objNull] call ALiVE_fnc_param;
-_group = [_this, 2, ["GROUP"], ALiVE_actors_mainGroup] call ALiVE_fnc_param;
+params [["_code", {}, [{}]], ["_actor", objNull, [objNull]], ["_group", grpNull, [grpNull]]];
 
-if (!isNil "_group") then
-{
-    if (isNull _actor) then
-    {
+if (_group == grpNull) then { _group = ALiVE_actors_mainGroup; };
+
+if (!isNil "_group") then {
+    if (isNull _actor) then {
         _actor = _group createUnit ["logic", [0,0,0], [], 0, "NONE"];
-    }
-    else
-    {
-        if (!(isNull _group) && {(group _actor) != _group}) then
-        {
-            [_actor] joinSilent _group;
-        };
+    } else {
+        if (!(isNull _group) && {(group _actor) != _group}) then { [_actor] joinSilent _group; };
     };
 
     _actor setVariable ["ALiVE_actors_owner", ALiVE_clientId, true];
-    _actor setVariable ["ALiVE_actors_messageHandler", (_this select 0), false];
+    _actor setVariable ["ALiVE_actors_messageHandler", _code, false];
 
     _actor
-}
-else
-{
+} else {
     LOG_WARNING("ALiVE_fnc_createActor", "Attempted to create actor before the main actor group was created!");
     objNull
 };

@@ -29,27 +29,21 @@ Author:
     Naught
 ---------------------------------------------------------------------------- */
 
-if ([ALiVE_log_level,([toLower(_this select 0)] call ALiVE_fnc_convertLogLevel)] call ALiVE_fnc_selBinStr) then
-{
+params [["_level", "", [""]], ["_component", "", [""]], ["_message", "", [""]],
+        ["_params", [], [[]]], ["_path", "File Not Found", [""]], ["_lineNumber", 0, [0]]];
+
+if ([ALiVE_log_level,([toLower(_this select 0)] call ALiVE_fnc_convertLogLevel)] call ALiVE_fnc_selBinStr) then {
     private ["_output"];
     _output = format[
         "%1: %2 [ T: %3 | TT: %4 | F: '%5:%6' | M: '%7' | W: '%8' ] %9",
-        (_this select 0),
-        (_this select 1),
-        time,
-        diag_tickTime,
-        ([_this, 4, ["STRING"], "File Not Found"] call ALiVE_fnc_param),
-        str([_this, 5, ["SCALAR"], 0] call ALiVE_fnc_param),
-        missionName,
-        worldName,
-        format([_this select 2] + ([_this, 3, ["ARRAY"], []] call ALiVE_fnc_param))
+        _level, _component, time, diag_tickTime, _path, str(_lineNumber),
+        missionName, worldName, format([_message] + _params)
     ];
 
     diag_log text _output;
 
-    if (ALiVE_logToDiary) then
-    {
+    if (ALiVE_logToDiary) then {
         if (isNil "ALiVE_diaryLogQueue") then {ALiVE_diaryLogQueue = []};
-        [ALiVE_diaryLogQueue, _output] call ALiVE_fnc_push;
+        ALiVE_diaryLogQueue pushBack _output;
     };
 };

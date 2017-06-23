@@ -24,18 +24,10 @@ See Also:
     - <ALiVE_fnc_oErase>
 
 Author:
-    Naught
+    Naught, dixon13
 ---------------------------------------------------------------------------- */
 
-private ["_arr", "_arrCount"];
-_arr = _this select 0;
-_arrCount = count _arr;
-
-for "_i" from (_this select 1) to (_arrCount - 2) do
-{
-    _arr set [_i, (_arr select (_i + 1))];
-};
-
-_arr resize (_arrCount - 1);
-
+params [["_arr", [], [[]]], ["_idx", -1, [0]]];
+WARNING("ALiVE_fnc_erase - This function has been deprecated. Please use the deleteAt command instead.");
+_arr deleteAt _idx;
 _arr

@@ -24,14 +24,15 @@ Examples:
 See Also:
 
 Author:
-    Naught
+    Naught, dixon13
 ---------------------------------------------------------------------------- */
 
-private ["_condCode", "_maxDuration", "_traceComp", "_params", "_startTime", "_endTime", "_val"];
-_condCode = if (typeName(_this select 0) == "CODE") then {_this select 0} else {compile(_this select 0)};
-_maxDuration = [_this, 1, ["SCALAR"], -1] call ALiVE_fnc_param;
-_traceComp = [_this, 2, ["STRING"], "component"] call ALiVE_fnc_param;
-_params = [_this, 3, [], []] call ALiVE_fnc_param;
+private ["_startTime", "_endTime", "_val"];
+
+params ["_condCode", ["_maxDuration", -1, [0]], ["_traceComp", "component", ["_params", [], [[]]]]];
+
+_condCode = if (typeName(_condCode) == "CODE") then {_condCode} else {compile(_condCode)};
+
 _startTime = diag_tickTime;
 _endTime = _startTime + _maxDuration;
 

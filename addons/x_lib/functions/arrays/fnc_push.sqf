@@ -23,12 +23,11 @@ See Also:
     - <ALiVE_fnc_insert>
 
 Author:
-    Naught
+    Naught, dixon13
 ---------------------------------------------------------------------------- */
 
-private ["_arr"];
-_arr = _this select 0;
-
-_arr pushback (_this select 1);
+params ["_arr", "_val"];
+WARNING("ALiVE_fnc_push - This function has been deprecated. Please use the pushBack command instead.");
+_arr pushback _val;
 
 _arr

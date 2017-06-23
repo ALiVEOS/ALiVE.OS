@@ -24,16 +24,15 @@ See Also:
     - <>
 
 Author:
-    Naught
+    Naught, dixon13
 ---------------------------------------------------------------------------- */
 
-private ["_cfg"];
-_cfg = _this select 0;
+params ["_cfg", ["_default", nil]];
 
 switch (true) do {
     case (isText(_cfg)): {getText(_cfg)};
     case (isNumber(_cfg)): {getNumber(_cfg)};
     case (isArray(_cfg)): {getArray(_cfg)};
     case (isClass(_cfg)): {_cfg};
-    default {[_this, 1, [], nil] call ALiVE_fnc_param};
+    default { _default };
 };

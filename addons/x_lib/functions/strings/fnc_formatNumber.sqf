@@ -23,13 +23,10 @@ Examples:
 See Also:
 
 Author:
-    Naught
+    Naught, dixon13
 ---------------------------------------------------------------------------- */
 
-private ["_number", "_intWidth", "_decWidth"];
-_number = _this select 0;
-_intWidth = [_this, 1, ["SCALAR"], 1] call ALiVE_fnc_param;
-_decWidth = [_this, 2, ["SCALAR"], 0] call ALiVE_fnc_param;
+params [["_number", "",  ["", 0]], ["_intWidth", 1, [0]], ["_decWidth", 0, [0]]];
 
 if (typeName(_number) != "STRING") then {_number = str(_number)};
 
@@ -42,14 +39,14 @@ if (_decIndex >= 0) then // Decimal number
 {
     for "_i" from (_decIndex + 1) to ((count _integer) - 1) do
     {
-        [_decimal, (_integer select _i)] call ALiVE_fnc_push;
+        _decimal pushBack (_integer select _i);
     };
 
     _integer resize _decIndex;
 
     while {(count _decimal) < _decWidth} do
     {
-        [_decimal, 48] call ALiVE_fnc_push;
+        _decimal pushBack 48;
     };
 
     _decimal resize _decWidth;

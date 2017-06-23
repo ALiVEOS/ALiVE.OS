@@ -27,34 +27,28 @@ Author:
     Naught
 ---------------------------------------------------------------------------- */
 
-if (hasInterface) then // Don't do anything on non-GUI machines
-{
+if (hasInterface) then { // Don't do anything on non-GUI machines
     if (isNil "ALiVE_hintQueue") then {ALiVE_hintQueue = []};
 
-    [ALiVE_hintQueue, _this] call ALiVE_fnc_push;
+    ALiVE_hintQueue pushBack _this;
 
-    if ((count ALiVE_hintQueue) == 1) then // Run queue
-    {
-        0 spawn
-        {
-            while {(count ALiVE_hintQueue) > 0} do
-            {
-                private ["_curHint", "_text"];
-                _curHint = ALiVE_hintQueue select 0;
-                _text = format([_curHint select 0] + ([_curHint, 1, ["ARRAY"], []] call ALiVE_fnc_param));
+    if ((count ALiVE_hintQueue) == 1) then { // Run queue
+        0 spawn {
+            while {(count ALiVE_hintQueue) > 0} do {
+                private ["_text"];
+                (ALiVE_hintQueue select 0) params ["_arg0", ["_arg1", [], [[]]], ["_arg2", false, [true]], ["_arg3", -1, [0]]];
+                _text = format([_arg0] + _arg1);
+                if (_arg3 == -1) then { _arg3 = 1.5 + ([_text] call ALiVE_fnc_timeToRead); };
 
-                if ([_curHint, 2, ["BOOL"], false] call ALiVE_fnc_param) then // Silent
-                {
+                if (_arg2) then { // Silent
                     hintSilent parseText(_text);
-                }
-                else // Normal
-                {
+                } else { // Normal
                     hint parseText(_text);
                 };
 
-                uiSleep([_curHint, 3, ["SCALAR"], (1.5 + ([_text] call ALiVE_fnc_timeToRead))] call ALiVE_fnc_param);
+                uiSleep(_arg3);
 
-                [ALiVE_hintQueue, 0] call ALiVE_fnc_erase;
+                ALiVE_hintQueue deleteAt 0;
             };
         };
     };

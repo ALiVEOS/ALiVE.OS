@@ -72,8 +72,11 @@ _fnc_siftDown = {
 };
 
 private ["_array", "_compFunc", "_start", "_end"];
-_array = _this select 0;
-_compFunc = [_this, 1, ["CODE"], {_this}] call ALiVE_fnc_param;
+
+params [["_array", [], [[]]], ["_compFunc", nil, [{}]]];
+
+if (_compFunc == nil) then { _compFunc = {_this}; };
+
 _start = ((count _array) - 2) / 2;
 _end = (count _array) - 1;
 
