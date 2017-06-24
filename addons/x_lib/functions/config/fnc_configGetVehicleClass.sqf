@@ -22,13 +22,7 @@ _result = "B_Heli_Light_01_armed_F" call ALIVE_fnc_configGetVehicleClass;
 See Also:
 
 Author:
-ARJay
+ARJay, dixon13
 ---------------------------------------------------------------------------- */
 
-private ["_type","_result"];
-
-_type = _this;
-
-_result = getText(configFile >> "CfgVehicles" >> _type >> "vehicleClass");
-
-_result;
+getText(configFile >> "CfgVehicles" >> _this >> "vehicleClass")

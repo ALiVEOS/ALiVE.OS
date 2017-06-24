@@ -22,13 +22,7 @@ _result = "B_Heli_Light_01_armed_F" call ALIVE_fnc_configGetVehicleMaxSpeed;
 See Also:
 
 Author:
-ARJay
+ARJay, dixon13
 ---------------------------------------------------------------------------- */
 
-private ["_type","_result"];
-
-_type = _this;
-
-_result = getNumber(configFile >> "CfgVehicles" >> _type >> "maxSpeed");
-
-_result;
+getNumber(configFile >> "CfgVehicles" >> _this >> "maxSpeed")

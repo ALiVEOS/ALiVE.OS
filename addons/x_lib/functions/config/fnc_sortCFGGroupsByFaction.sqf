@@ -32,20 +32,15 @@ private ["_configPath","_sortedGroups","_factionClass","_factionName","_factionC
 
 params ["_side","_faction"];
 
-if(_side == "GUER") then {
-    _side = "INDEP";
-};
+if(_side == "GUER") then { _side = "INDEP"; };
 
 _configPath = _faction call ALiVE_fnc_configGetFactionGroups;
 
 _sortedGroups = [] call ALIVE_fnc_hashCreate;
 _categories = [] call ALIVE_fnc_hashCreate;
 
-for "_i" from 0 to ((count _configPath) - 1) do
-{
-
+for "_i" from 0 to ((count _configPath) - 1) do {
     _categoryClass = _configPath select _i;
-
     if (isClass _categoryClass) then {
 
         _categoryName = getText(_categoryClass >> "name");
@@ -54,26 +49,16 @@ for "_i" from 0 to ((count _configPath) - 1) do
 
         _groups = [] call ALIVE_fnc_hashCreate;
 
-        for "_i" from 0 to ((count _categoryConfig) - 1) do
-        {
-
+        for "_i" from 0 to ((count _categoryConfig) - 1) do {
             _groupClass = _categoryConfig select _i;
-
             if (isClass _groupClass) then {
-
                 _groupConfigName = configName _groupClass;
-
                 if!(_groupConfigName in ALiVE_PLACEMENT_GROUPBLACKLIST) then {
-
                     _groupName = getText(_groupClass >> "name");
-
                     [_groups,_groupConfigName,_groupName] call ALIVE_fnc_hashSet;
-
                 };
-
             };
         };
-
         [_categories,_categoryConfigName,_groups] call ALIVE_fnc_hashSet;
     };
 };

@@ -25,16 +25,12 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_type","_result","_findRecurse","_class"];
-
-_type = _this;
-
-_result = [];
+private ["_findRecurse","_class"];
+private _result = [];
 
 _findRecurse = {
-    private ["_root","_class","_path","_currentPath"];
-
-    _root = (_this select 0);
+    private ["_class","_path","_currentPath"];
+    params ["_root"];
     _path = +(_this select 1);
 
     for "_i" from 0 to count _root -1 do {
@@ -46,18 +42,16 @@ _findRecurse = {
 
             {
                 _result pushback [_x, _x call ALIVE_fnc_configGetWeaponMagazines, _currentPath, str _class];
-            } foreach getArray (_class >> "weapons");
+            } count getArray (_class >> "weapons");
 
             _class = _class >> "turrets";
 
-            if (isClass _class) then {
-                [_class, _currentPath] call _findRecurse;
-            };
+            if (isClass _class) then { [_class, _currentPath] call _findRecurse; };
         };
     };
 };
 
-_class = (configFile >> "CfgVehicles" >> _type >> "turrets");
+_class = (configFile >> "CfgVehicles" >> _this >> "turrets");
 
 [_class, []] call _findRecurse;
 

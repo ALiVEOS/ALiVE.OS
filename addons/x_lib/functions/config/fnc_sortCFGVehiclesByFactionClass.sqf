@@ -37,13 +37,9 @@ params [
 _configPath = configFile >> "CFGVehicles";
 _sortedVehicles = [] call ALIVE_fnc_hashCreate;
 
-for "_i" from 0 to ((count _configPath) - 1) do
-{
-
+for "_i" from 0 to ((count _configPath) - 1) do {
     private ["_item","_configName","_name"];
-
     _item = _configPath select _i;
-
     if (isClass _item) then {
 
         _configName = configName _item;
@@ -53,21 +49,15 @@ for "_i" from 0 to ((count _configPath) - 1) do
         _side = getNumber(_item >> "side");
 
         if(_scope == 2 && (_vehicleFaction == _faction || _side == 3)) then {
-
-            if(isNil "_vehicleClass") then {
-                _vehicleClass = "Unknown";
-            };
-            
-            if ((count _whitelist > 0 && {!(_configName in _whitelist)}) || {count _blacklist > 0 && {_configName in _blacklist}}) exitwith {};
-
+            if(isNil "_vehicleClass") then { _vehicleClass = "Unknown"; };
+            if ((count _whitelist > 0 && {!(_configName in _whitelist)}) || {count _blacklist > 0 && {_configName in _blacklist}}) exitwith {}; 
             if!(_vehicleClass in (_sortedVehicles select 1)) then {
                 [_sortedVehicles,_vehicleClass,[_configName]] call ALIVE_fnc_hashSet;
-            }else{
+            } else {
                 _subSorted = [_sortedVehicles,_vehicleClass] call ALIVE_fnc_hashGet;
                 _subSorted pushback _configName;
                 [_sortedVehicles,_vehicleClass,_subSorted] call ALIVE_fnc_hashSet;
             };
-
         };
     };
 };

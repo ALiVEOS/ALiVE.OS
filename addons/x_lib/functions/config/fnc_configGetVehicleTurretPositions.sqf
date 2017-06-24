@@ -9,8 +9,8 @@ Get turrets data for a vehicle class
 
 Parameters:
 String - vehicle class name
-Boolean - Ignore Gunner (optional)
-Boolean - Ignore Commander (optional)
+Boolean - Ignore Gunner (optional) Default: False
+Boolean - Ignore Commander (optional) Default: False
 
 Returns:
 Array of turret data
@@ -18,7 +18,7 @@ Array of turret data
 Examples:
 (begin example)
 // get vehicle turret data
-_result = "O_Heli_Attack_02_F" call ALIVE_fnc_configGetVehicleTurretPositions;
+_result = ["O_Heli_Attack_02_F"] call ALIVE_fnc_configGetVehicleTurretPositions;
 (end)
 
 See Also:
@@ -27,14 +27,9 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_type","_ignoreGunner","_ignoreCommander","_ignorePlayerTurrets","_ignoreCopilot","_ignoreNonPlayerTurrets","_result","_findRecurse","_class"];
+private ["_result","_findRecurse","_class"];
 
-_type = _this select 0;
-_ignoreGunner = if(count _this > 1) then {_this select 1} else {false};
-_ignoreCommander = if(count _this > 2) then {_this select 2} else {false};
-_ignorePlayerTurrets = if(count _this > 3) then {_this select 3} else {false};
-_ignoreCopilot = if(count _this > 4) then {_this select 4} else {false};
-_ignoreNonPlayerTurrets = if(count _this > 5) then {_this select 5} else {false};
+params ["_type", ["_ignoreGunner", false], ["_ignoreCommander", false], ["_ignorePlayerTurrets", false], ["_ignoreCopilot", false], ["_ignoreNonPlayerTurrets", false]];
 
 _result = [];
 
@@ -95,15 +90,11 @@ _findRecurse = {
 
             //["class: %1 ignore: %2 gunner: %3 observer: %4 person: %5",_class,_ignore,getNumber(_class >> "primaryGunner"),getNumber(_class >> "primaryObserver"),getNumber(_class >> "isPersonTurret")] call ALIVE_fnc_dump;
 
-            if!(_ignore) then {
-                _result pushback _currentPath;
-            };
+            if!(_ignore) then { _result pushback _currentPath; };
 
             _class = _class >> "turrets";
 
-            if (isClass _class) then {
-                [_class, _currentPath] call _findRecurse;
-            };
+            if (isClass _class) then { [_class, _currentPath] call _findRecurse; };
         };
     };
 };
@@ -117,4 +108,4 @@ _class = (configFile >> "CfgVehicles" >> _type >> "turrets");
 _result call ALIVE_fnc_inspectArray;
 */
 
-_result;
+_result

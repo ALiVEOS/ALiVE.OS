@@ -28,9 +28,7 @@ ARJay
 params ["_faction","_groupClass"];
 
 // instantiate static vehicle position data
-if(isNil "ALIVE_groupConfig") then {
-    [] call ALIVE_fnc_groupGenerateConfigData;
-};
+if(isNil "ALIVE_groupConfig") then { call ALIVE_fnc_groupGenerateConfigData; };
 
 _groupClass = format ["%1_%2", _faction, _groupClass];
 
@@ -45,9 +43,7 @@ if !(isNil "_groupData") then {
     _groupData params ["_configRoot","_groupData"];
     _config = _configRoot >> "CfgGroups";
 
-    for "_i" from 0 to (count _groupData - 1) do {
-        _config = _config select (_groupData select _i);
-    };
+    for "_i" from 0 to (count _groupData - 1) do { _config = _config select (_groupData select _i); };
 
     //["CFG: %1 %2",_config,_groupClass] call ALIVE_fnc_dump;
 };

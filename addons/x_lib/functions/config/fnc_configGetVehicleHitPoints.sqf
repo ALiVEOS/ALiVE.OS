@@ -25,23 +25,11 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_type","_result","_hitPoints","_hitPoint","_hitName"];
+private _result = [];
+private _hitPoints = configFile >> "CfgVehicles" >> _this >> "HitPoints";
 
-_type = _this;
-
-_result = [];
-
-_hitPoints = configFile >> "CfgVehicles" >> _type >> "HitPoints";
-
-for "_i" from 0 to (count _hitPoints)-1 do
-{
-    _hitPoint = _hitPoints select _i;
-
-    if(isClass _hitPoint) then
-    {
-        _hitName = configName _hitPoint;
-        _result pushback _hitName;
-    };
+for "_i" from 0 to (count _hitPoints)-1 do {
+    private _hitPoint = _hitPoints select _i;
+    if (isClass _hitPoint) then { _result pushback (configName _hitPoint); };
 };
-
-_result;
+_result

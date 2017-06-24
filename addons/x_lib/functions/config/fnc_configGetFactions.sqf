@@ -48,6 +48,6 @@ private _configPaths = [
             _factions pushback (configname _faction);
         };
     };
-} foreach _configPaths;
+} count _configPaths;
 
 _factions

@@ -26,26 +26,16 @@ Author:
 Highhead
 ---------------------------------------------------------------------------- */
 
-private ["_config","_find","_output"];
-
-_config = _this select 0;
-_find = _this select 1;
-
-_output = [];
+params ["_config", "_find"];
+private _output = [];
 
 for "_i" from 0 to (count _config)-1 do {
-
-     private ["_cfg","_default"];
-
-    _cfg = _config select _i;
+    private _cfg = _config select _i;
 
     if (isClass _cfg) then {
-        _default = configName _cfg;
-
-        if (((_default) find _find) > -1) then {
-            _output pushback _default;
-        };
+        private _default = configName _cfg;
+        if (((_default) find _find) > -1) then { _output pushback _default; };
     };
 };
 
-_output;
+_output

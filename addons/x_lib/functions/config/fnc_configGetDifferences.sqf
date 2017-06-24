@@ -23,8 +23,6 @@ Author:
 SpyderBlack723
 ---------------------------------------------------------------------------- */
 
-private ["_attribute","_childClassValue","_parentClassValue"];
-
 params ["_childClass","_parentClass"];
 
 private _childClassProperties = [_childClass] call ALiVE_fnc_configProperties;
@@ -34,18 +32,17 @@ private _attributes = _childClassProperties select 1;
 private _differences = [];
 
 {
-    _attribute = _x;
-
-    _childClassValue = [_childClassProperties,_attribute] call ALiVE_fnc_hashGet;
-    _parentClassValue = [_parentClassProperties,_attribute] call ALiVE_fnc_hashGet;
+    private _attribute = _x;
+    private _childClassValue = [_childClassProperties,_attribute] call ALiVE_fnc_hashGet;
+    private _parentClassValue = [_parentClassProperties,_attribute] call ALiVE_fnc_hashGet;
 
     if (isnil "_parentClassValue") then {
-        _differences pushback [_attribute,_childClassValue];
+        _differences pushback [_attribute, _childClassValue];
     } else {
         if !(_childClassValue isEqualTo _parentClassValue) then {
-            _differences pushback [_attribute,_childClassValue];
+            _differences pushback [_attribute, _childClassValue];
         };
     };
-} foreach _attributes;
+} count _attributes;
 
 _differences

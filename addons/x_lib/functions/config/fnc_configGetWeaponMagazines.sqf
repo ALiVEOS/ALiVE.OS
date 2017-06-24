@@ -25,16 +25,10 @@ Author:
 denisko.redisko (denvdmj)
 ---------------------------------------------------------------------------- */
 
-private ["_weaponClass","_weapon","_result"];
-
-_weaponClass = _this;
-
-_weapon = configFile >> "CfgWeapons" >> _weaponClass;
-_result = [];
+private _weapon = configFile >> "CfgWeapons" >> _this;
+private _result = [];
 {
-    _result = _result + getArray (
-        (if (_x == "this") then { _weapon } else { _weapon >> _x }) >> "magazines"
-    )
-} foreach getArray (_weapon >> "muzzles");
+    _result = _result + getArray ((if (_x == "this") then { _weapon } else { _weapon >> _x }) >> "magazines");
+} count getArray (_weapon >> "muzzles");
 
 _result

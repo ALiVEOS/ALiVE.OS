@@ -41,15 +41,9 @@ if (!isnil "ALiVE_factionCustomMappings") then {
 };
 
 if !(_factionSide isEqualType "") then {
-    if (_factionSide isEqualTo RESISTANCE) then {
-        _factionSide = "Indep";
-    } else {
-        _factionSide = str _factionSide;
-    };
+    if (_factionSide isEqualTo RESISTANCE) then { _factionSide = "Indep"; } else { _factionSide = str _factionSide; };
 } else {
-    if (_factionSide == "GUER") then {
-        _factionSide = "Indep";
-    };
+    if (_factionSide == "GUER") then { _factionSide = "Indep"; };
 };
 
 private _path = missionConfigFile >> "CfgGroups" >> _factionSide >> _faction;

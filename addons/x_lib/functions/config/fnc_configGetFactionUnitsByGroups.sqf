@@ -29,23 +29,18 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_groupCategory","_group","_unit"];
+private ["_groupCategory","_group"];
 
 private _units = [];
 private _groups = _this call ALiVE_fnc_configGetFactionGroups;
 
 for "_i" from 0 to (count _groups - 1) do {
     _groupCategory = _groups select _i;
-
     for "_j" from 0 to (count _groupCategory - 1) do {
         _group = _groupCategory select _j;
-
         for "_k" from 0 to (count _group - 1) do {
-            _unit = _group select _k;
-
-            if (isClass _unit) then {
-                _units pushbackunique (getText (_unit >> "vehicle"));
-            };
+            private _unit = _group select _k;
+            if (isClass _unit) then { _units pushBackUnique (getText (_unit >> "vehicle")); };
         };
     };
 };

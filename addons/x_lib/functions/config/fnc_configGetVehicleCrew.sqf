@@ -22,13 +22,7 @@ _result = "B_Heli_Light_01_armed_F" call ALIVE_fnc_configGetVehicleCrew;
 See Also:
 
 Author:
-ARJay
+ARJay, dixon13
 ---------------------------------------------------------------------------- */
 
-private ["_type","_result"];
-
-_type = _this;
-
-_result = getText(configFile >> "CfgVehicles" >> _type >> "crew");
-
-_result;
+getText(configFile >> "CfgVehicles" >> _this >> "crew")

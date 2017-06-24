@@ -20,8 +20,6 @@ Author:
 SpyderBlack723
 ---------------------------------------------------------------------------- */
 
-private ["_entry","_attribute","_value"];
-
 params ["_class"];
 
 private _propertiesRead = [] call ALiVE_fnc_hashCreate;
@@ -30,15 +28,9 @@ if (_class isEqualType configNull) then {
 
     for "_i" from 0 to (count _class - 1) do {
         _entry = _class select _i;
-
-        _attribute = configName _entry;
-        _value = [_entry] call ALiVE_fnc_getConfigValue;
-
-        if (_value isEqualType configNull) then {
-            _value = [_value] call ALiVE_fnc_configProperties;
-        };
-
-        [_propertiesRead,_attribute,_value] call ALiVE_fnc_hashSet;
+        private _value = [_entry] call ALiVE_fnc_getConfigValue;
+        _value = if (_value isEqualType configNull) then { [_value] call ALiVE_fnc_configProperties } else { _value };
+        [_propertiesRead, (configName _entry), _value] call ALiVE_fnc_hashSet;
     };
 
 };

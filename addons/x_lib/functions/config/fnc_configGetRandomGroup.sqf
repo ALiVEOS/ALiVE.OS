@@ -49,9 +49,7 @@ if(!isNil "ALIVE_factionCustomMappings") then {
         _groupFactionTypes = [_customMappings, "GroupFactionTypes"] call ALIVE_fnc_hashGet;
         _mappedType = [_groupFactionTypes, _type] call ALIVE_fnc_hashGet;
 
-        if!(isNil "_mappedType") then {
-            _type = _mappedType;
-        };
+        if!(isNil "_mappedType") then { _type = _mappedType; };
 
         if("Groups" in (_customMappings select 1)) then {
 
@@ -67,12 +65,8 @@ if(!isNil "ALIVE_factionCustomMappings") then {
 
                     if(count _groups > 0) then {
                         _groupName = _groups select floor(random count _groups);
-                    }else{
-                        _groupName = "FALSE";
-                    };
-
+                    } else { _groupName = "FALSE"; };
                     _customGroup = true;
-
                 } else {
                     ["Warning Side: %1 Faction: %3 could not find a %2 group",_side,_type,_faction] call ALIVE_fnc_dump;
                     _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
@@ -88,27 +82,23 @@ if(!isNil "ALIVE_factionCustomMappings") then {
                 _side = _factionSide call ALIVE_fnc_sideNumberToText;
             };
         };
-    }else{
+    } else {
         _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
 
         _factionSide = getNumber(_factionConfig >> "side");
         _side = _factionSide call ALIVE_fnc_sideNumberToText;
     };
-}else{
+} else {
     _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
 
     _factionSide = getNumber(_factionConfig >> "side");
     _side = _factionSide call ALIVE_fnc_sideNumberToText;
 };
 
-if(_side == "GUER") then {
-    _side = "INDEP";
-};
+if(_side == "GUER") then { _side = "INDEP"; };
 
 // If someone accidentally defined mappings as groups revert back to basics
-if(typename _type == "ARRAY") then {
-    _type = _this select 0;
-};
+if(typename _type == "ARRAY") then { _type = _this select 0; };
 
 // ["Side: %1 Type: %2 Faction: %3",_side,_type,_faction] call ALIVE_fnc_dump;
 
@@ -124,29 +114,20 @@ if!(_customGroup) then {
         _class = _typeConfig select _i;
 
         if (isClass _class) then {
-
             _countUnits = 0;
             for "_y" from 0 to count _class -1 do {
                 _unit = _class select _y;
-
-                if (isClass _unit) then {
-                    _countUnits = _countUnits + 1;
-                };
+                if (isClass _unit) then { _countUnits = _countUnits + 1; };
             };
 
-            if(_countUnits > 0) then {
-                _groups pushback _class;
-            };
+            if(_countUnits > 0) then { _groups pushback _class; };
         };
     };
 
     if(count _groups > 0) then {
         _group = _groups select floor(random count _groups);
         _groupName = configName _group;
-    }else{
-        _groupName = "FALSE";
-    };
-
+    } else { _groupName = "FALSE"; };
 };
 
 _groupName
