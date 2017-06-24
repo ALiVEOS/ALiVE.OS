@@ -28,12 +28,10 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_className","_configPaths","_configPath","_result","_item","_comp","_name","_foundComp","_cat"];
+private ["_configPath","_item","_comp","_name","_foundComp"];
+params ["_className", ["_cat", "Military"]];
 
-_className = _this select 0;
-_cat = if (count _this > 1) then {_this select 1;} else {"Military";};
-
-_configPaths = [
+private _configPaths = [
     missionConfigFile >> "CfgGroups" >> "Empty" >> _cat,
     configFile >> "CfgGroups" >> "Empty" >> _cat
 ];
@@ -43,12 +41,10 @@ scopeName "main";
 {
     _configPath = _x;
 
-    for "_i" from 0 to ((count _configPath) - 1) do
-    {
+    for "_i" from 0 to ((count _configPath) - 1) do {
         _item = _configPath select _i;
         if (isClass _item) then {
-            for "_i" from 0 to ((count _item) - 1) do
-            {
+            for "_i" from 0 to ((count _item) - 1) do {
                 _comp = _item select _i;
                 if (isClass _comp) then {
                     _name = configName _comp;
@@ -60,12 +56,6 @@ scopeName "main";
             };
         };
     };
-} foreach _configPaths;
+} count _configPaths;
 
-if!(isNil "_foundComp") then {
-    _result = _comp;
-}else{
-    _result = [];
-};
-
-_result
+if!(isNil "_foundComp") then { _comp } else { [] };

@@ -23,9 +23,7 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_configPath"];
-
-_configPath = configFile >> "CfgGroups" >> "Empty" >> "ALIVE";
+private _configPath = configFile >> "CfgGroups" >> "Empty" >> "ALIVE";
 
 
 ["EXPORT CfgGroups"] call ALIVE_fnc_dump;
@@ -33,28 +31,21 @@ _configPath = configFile >> "CfgGroups" >> "Empty" >> "ALIVE";
 [""] call ALIVE_fnc_dump;
 
 
-for "_i" from 0 to ((count _configPath) - 1) do
-{
-
-    private ["_item","_configName","_name"];
-
-    _item = _configPath select _i;
+for "_i" from 0 to ((count _configPath) - 1) do {
+    private _item = _configPath select _i;
 
     if (isClass _item) then {
 
-        _configName = configName _item;
-        _name = getText(_item >> "name");
+        private _configName = configName _item;
+        private _name = getText(_item >> "name");
 
         ["class %1",_configName] call ALIVE_fnc_dump;
         ["{"] call ALIVE_fnc_dump;
         ['name = "$STR_ALIVE_COMPOSITION_%1";',_configName] call ALIVE_fnc_dump;
 
-        for "_i" from 0 to ((count _item) - 1) do
-        {
+        for "_i" from 0 to ((count _item) - 1) do {
 
-            private ["_comp"];
-
-            _comp = _item select _i;
+            private _comp = _item select _i;
 
             if (isClass _comp) then {
 
@@ -65,11 +56,10 @@ for "_i" from 0 to ((count _configPath) - 1) do
                 ["{"] call ALIVE_fnc_dump;
                 ['name = "$STR_ALIVE_COMPOSITION_%1";',_configName] call ALIVE_fnc_dump;
 
-                for "_i" from 0 to ((count _comp) - 1) do
-                {
-                    private ["_object","_side","_vehicle","_rank","_position","_direction","_positionString"];
+                for "_i" from 0 to ((count _comp) - 1) do {
+                    private ["_side","_vehicle","_rank","_position","_direction","_positionString"];
 
-                    _object = _comp select _i;
+                    private _object = _comp select _i;
 
                     if (isClass _object) then {
 
@@ -81,11 +71,10 @@ for "_i" from 0 to ((count _configPath) - 1) do
                         _direction = getNumber(_object >> "dir");
 
                         _positionString = "";
-                        for "_i" from 0 to ((count _position) - 1) do
-                        {
+                        for "_i" from 0 to ((count _position) - 1) do {
                             if(_i == (count _position) - 1) then {
                                 _positionString = format["%1%2",_positionString, _position select _i];
-                            }else{
+                            } else {
                                 _positionString = format["%1%2,",_positionString, _position select _i];
                             };
                         };
@@ -120,28 +109,22 @@ for "_i" from 0 to ((count _configPath) - 1) do
     </Key>
 */
 
-for "_i" from 0 to ((count _configPath) - 1) do
-{
+for "_i" from 0 to ((count _configPath) - 1) do {
 
-    private ["_item","_configName","_name"];
-
-    _item = _configPath select _i;
+    private _item = _configPath select _i;
 
     if (isClass _item) then {
 
-        _configName = configName _item;
-        _name = getText(_item >> "name");
+        private _configName = configName _item;
+        private _name = getText(_item >> "name");
 
         ['<Key ID="STR_ALIVE_COMPOSITION_%1">',_configName] call ALIVE_fnc_dump;
         ['<Original>%1</Original>',_name] call ALIVE_fnc_dump;
         ['</Key>'] call ALIVE_fnc_dump;
 
-        for "_i" from 0 to ((count _item) - 1) do
-        {
+        for "_i" from 0 to ((count _item) - 1) do {
 
-            private ["_comp"];
-
-            _comp = _item select _i;
+            private _comp = _item select _i;
 
             if (isClass _comp) then {
 
@@ -151,8 +134,6 @@ for "_i" from 0 to ((count _configPath) - 1) do
                 ['<Key ID="STR_ALIVE_COMPOSITION_%1">',_configName] call ALIVE_fnc_dump;
                 ['<Original>%1</Original>',_name] call ALIVE_fnc_dump;
                 ['</Key>'] call ALIVE_fnc_dump;
-
-
             };
         };
     };
@@ -172,24 +153,13 @@ for "_i" from 0 to ((count _configPath) - 1) do
     };
 */
 
-for "_i" from 0 to ((count _configPath) - 1) do
-{
-
-    private ["_item","_configName","_name"];
-
-    _item = _configPath select _i;
-
+for "_i" from 0 to ((count _configPath) - 1) do {
+    private _item = _configPath select _i;
     if (isClass _item) then {
 
-        for "_i" from 0 to ((count _item) - 1) do
-        {
-
-            private ["_comp"];
-
-            _comp = _item select _i;
-
+        for "_i" from 0 to ((count _item) - 1) do {
+            private _comp = _item select _i;
             if (isClass _comp) then {
-
                 _configName = configName _comp;
                 _name = getText(_comp >> "name");
 
@@ -198,8 +168,6 @@ for "_i" from 0 to ((count _configPath) - 1) do
                 ['name = "$STR_ALIVE_COMPOSITION_%1";',_configName] call ALIVE_fnc_dump;
                 ['value = "%1";',_configName] call ALIVE_fnc_dump;
                 ["};"] call ALIVE_fnc_dump;
-
-
             };
         };
     };

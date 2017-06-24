@@ -71,16 +71,12 @@ private _groups = [];
 
 for "_i" from 0 to _countArmored -1 do {
     private _group = ["Armored",_faction] call ALIVE_fnc_configGetRandomGroup;
-    if (_group != "FALSE") then {
-        _groups pushback _group;
-    };
+    if (_group != "FALSE") then { _groups pushback _group; };
 };
 
 for "_i" from 0 to _countMechanized -1 do {
     private _group = ["Mechanized",_faction] call ALIVE_fnc_configGetRandomGroup;
-    if (_group != "FALSE") then {
-        _groups pushback _group;
-    }
+    if (_group != "FALSE") then { _groups pushback _group; };
 };
 
 if(_countMotorized > 0) then {
@@ -88,17 +84,13 @@ if(_countMotorized > 0) then {
 
     for "_i" from 0 to _countMotorized -1 do {
         private _group = ["Motorized",_faction] call ALIVE_fnc_configGetRandomGroup;
-        if (_group != "FALSE") then {
-            _motorizedGroups pushback _group;
-        };
+        if (_group != "FALSE") then { _motorizedGroups pushback _group; };
     };
 
     if(count _motorizedGroups == 0) then {
         for "_i" from 0 to _countMotorized -1 do {
             private _group = ["Motorized_MTP",_faction] call ALIVE_fnc_configGetRandomGroup;
-            if (_group != "FALSE") then {
-                _motorizedGroups pushback _group;
-            };
+            if (_group != "FALSE") then { _motorizedGroups pushback _group; };
         };
     };
 
@@ -108,18 +100,14 @@ if(_countMotorized > 0) then {
 private _infantryGroups = [];
 for "_i" from 0 to _countInfantry -1 do {
     private _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
-    if (_group != "FALSE") then {
-        _infantryGroups pushback _group;
-    }
+    if (_group != "FALSE") then { _infantryGroups pushback _group; };
 };
 
 _groups append _infantryGroups;
 
 for "_i" from 0 to _countSpecOps -1 do {
     private _group = ["SpecOps",_faction] call ALIVE_fnc_configGetRandomGroup;
-    if (_group != "FALSE") then {
-        _groups pushback _group;
-    };
+    if (_group != "FALSE") then { _groups pushback _group; };
 };
 
 _groups = _groups - ALiVE_PLACEMENT_GROUPBLACKLIST;
@@ -139,7 +127,7 @@ if(_groupCount > 0) then {
             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
                 [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[100,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
             };
-        } foreach _guards;
+        } count _guards;
     };
 
     for "_i" from 0 to _groupCount -1 do {
@@ -153,7 +141,7 @@ if(_groupCount > 0) then {
                 if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
                     [_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[100,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity;
                 };
-            } foreach _units;
+            } count _units;
         };
     };
 };
