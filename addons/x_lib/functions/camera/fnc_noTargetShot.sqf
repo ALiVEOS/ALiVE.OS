@@ -22,12 +22,8 @@ Examples:
 See Also:
 
 Author:
-ARJay
+ARJay, dixon13
 ---------------------------------------------------------------------------- */
 
-private ["_camera", "_duration"];
-
-_camera = _this select 0;
-_duration = if(count _this > 1) then {_this select 1} else {5};
-
-_camera camCommitPrepared _duration;
+params ["_camera", ["_duration", 5]];
+(_this select 0) camCommitPrepared _duration;

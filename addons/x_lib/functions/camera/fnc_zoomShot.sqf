@@ -27,20 +27,12 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_camera", "_target", "_hideTarget", "_duration","_cameraPosition","_targetPosition"];
+params ["_camera", "_target", ["_duration", 5], ["_hideTarget", false]];
 
-_camera = _this select 0;
-_target = _this select 1;
-_duration = if(count _this > 3) then {_this select 3} else {5};
-_hideTarget = if(count _this > 4) then {_this select 4} else {false};
+if(_hideTarget) then { hideObject _target; };
 
-if(_hideTarget) then
-{
-    hideObject _target;
-};
-
-_cameraPosition = getPosATL _camera;
-_targetPosition = getPosATL _target;
+private _cameraPosition = getPosATL _camera;
+private _targetPosition = getPosATL _target;
 
 if((_targetPosition select 2) > (_cameraPosition select 2)) then {
     _cameraPosition set [2,(_targetPosition select 2) + (_cameraPosition select 2)];

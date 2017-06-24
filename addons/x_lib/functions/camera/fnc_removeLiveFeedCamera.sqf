@@ -23,4 +23,4 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-[] call BIS_fnc_liveFeedTerminate;
+call BIS_fnc_liveFeedTerminate;

@@ -21,11 +21,7 @@ Examples:
 See Also:
 
 Author:
-ARJay
+ARJay, dixon13
 ---------------------------------------------------------------------------- */
 
-private ["_camera"];
-
-_camera = _this select 0;
-
-camDestroy _camera;
+camDestroy (_this select 0);

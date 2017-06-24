@@ -26,11 +26,6 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_camera", "_target", "_duration"];
-
-_camera = _this select 0;
-_target = _this select 1;
-_duration = if(count _this > 2) then {_this select 2} else {5};
-
+params ["_camera", "_target", ["_duration", 5]];
 _camera camPrepareTarget _target;
 _camera camCommitPrepared _duration;

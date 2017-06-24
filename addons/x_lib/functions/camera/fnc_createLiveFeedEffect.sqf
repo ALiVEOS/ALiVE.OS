@@ -24,22 +24,8 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_type"];
-
-_type = _this select 0;
-
-switch(_type) do
-{
-    case "NIGHT_VISION":
-        {
-            1 call BIS_fnc_liveFeedEffects;
-        };
-    case "THERMAL":
-        {
-            2 call BIS_fnc_liveFeedEffects;
-        };
-    case "DEFAULT":
-        {
-            [] call BIS_fnc_liveFeedEffects;
-        };
+switch(_this select 0) do {
+    case "NIGHT_VISION": { 1 call BIS_fnc_liveFeedEffects; };
+    case "THERMAL": { 2 call BIS_fnc_liveFeedEffects; };
+    case "DEFAULT": { call BIS_fnc_liveFeedEffects; };
 };

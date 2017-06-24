@@ -13,7 +13,7 @@ Object - source object
 Boolean - hide source object
 String - starting camera angle DEFAULT,LOW,EYE,HIGH,BIRDS_EYE,UAV,SATELITE
 
-Returns:
+Returns: camera object
 
 
 Examples:
@@ -31,20 +31,14 @@ ALIVE_cameraPOV = 0.700;
 ALIVE_cameraTakenFrom = "";
 ALIVE_cameraTakenFromView = "";
 
-private ["_camera", "_position", "_source", "_angle", "_hideSource"];
+private ["_camera", "_position"];
+params ["_source", ["_hideSource", false, [true]], ["_angle", "DEFAULT", [""]]];
 
-_source = _this select 0;
-_hideSource = if(count _this > 1) then {_this select 1} else {false};
-_angle = if(count _this > 2) then {_this select 2} else {"DEFAULT"};
-
-if(_hideSource) then
-{
-    hideObject _source;
-};
+if(_hideSource) then { hideObject _source; };
 
 _position = getPosATL _source;
 _position = [_position, _angle] call ALIVE_fnc_setCameraAngle;
 
 _camera = "camera" camCreate (_position);
-_camera camPrepareFOV ALIVE_cameraPOV;
+_camera camPrepareFov ALIVE_cameraPOV;
 _camera

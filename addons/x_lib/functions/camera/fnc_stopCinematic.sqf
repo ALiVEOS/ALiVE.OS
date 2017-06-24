@@ -25,17 +25,10 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_camera","_instant"];
-
-_camera = _this select 0;
-_instant = if(count _this > 1) then {_this select 1} else {false};
+params ["_camera", ["_instant", false]];
 
 if!(_instant) then {
     2000 cutText ["", "BLACK", 1];
-    sleep 1;
-    2000 cutFadeOut 1;
-
-    sleep 1;
+    sleep 1; 2000 cutFadeOut 1; sleep 1;
 };
-
 _camera cameraEffect ["Terminate", "Back"];

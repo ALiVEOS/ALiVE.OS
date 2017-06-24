@@ -28,20 +28,11 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_camera", "_target", "_angle", "_duration", "_position", "_hideTargets"];
+params ["_camera", "_target", ["_angle", "DEFAULT"], ["_duration", 5], ["_hideTargets", false]];
 
-_camera = _this select 0;
-_target = _this select 1;
-_angle = if(count _this > 2) then {_this select 2} else {"DEFAULT"};
-_duration = if(count _this > 3) then {_this select 3} else {5};
-_hideTargets = if(count _this > 4) then {_this select 4} else {false};
+if(_hideTargets) then { hideObject _target; };
 
-if(_hideTargets) then
-{
-    hideObject _target;
-};
-
-_position = getPosATL _target;
+private _position = getPosATL _target;
 _position = [_position, _angle] call ALIVE_fnc_setCameraAngle;
 
 _camera camPreparePos _position;

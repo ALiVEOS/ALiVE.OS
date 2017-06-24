@@ -29,19 +29,9 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_camera", "_target1", "_target2", "_hideTargets", "_duration"];
+params ["_camera", "_target1", "_target2", ["_duration", 5], ["_hideTargets", false]];
 
-_camera = _this select 0;
-_target1 = _this select 1;
-_target2 = _this select 2;
-_duration = if(count _this > 3) then {_this select 3} else {5};
-_hideTargets = if(count _this > 4) then {_this select 4} else {false};
-
-if(_hideTargets) then
-{
-    hideObject _target1;
-    hideObject _target2;
-};
+if(_hideTargets) then { hideObject _target1; hideObject _target2; };
 
 _camera camPrepareTarget _target1;
 _camera camCommitPrepared _duration;

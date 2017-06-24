@@ -26,14 +26,10 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_camera", "_height", "_duration", "_position", "_Y"];
+params ["_camera", "_height", ["_duration", 5]];
 
-_camera = _this select 0;
-_height = _this select 1;
-_duration = if(count _this > 2) then {_this select 2} else {5};
-
-_position = getPosATL _camera;
-_Y = _position select 2;
+private _position = getPosATL _camera;
+private _Y = _position select 2;
 _position set [2,_Y-_height];
 
 _camera camPreparePos _position;
