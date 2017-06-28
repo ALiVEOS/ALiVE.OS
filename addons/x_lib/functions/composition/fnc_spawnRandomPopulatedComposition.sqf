@@ -41,29 +41,27 @@ ARJay
 
 params [
     "_position",
-    "_type",
-    "_category",
+    ["_type",[]],
+    ["_category",["camps", "communications", "fieldhq", "fort", "fuel", "heliports", "hq", "medical", "outposts", "power", "supports", "supplies"]],
     "_faction",
     ["_size", []], // Large, Medium, Small
     ["_countInfantry", random 3],
     ["_countMotorized", 0],
     ["_countMechanized", 0],
     ["_countArmored", 0],
-    ["_countSpecOps", 0]
+    ["_countSpecOps", 0],
+    ["_recursive",false],
+    ["_searchString",[]],
+    ["_direction",random 360]
 ];
 
-// Spawn a composition
-if (isNil "_category") then {
-    _category = ["camps", "communications", "fieldhq", "fort", "fuel", "heliports", "hq", "medical", "outposts", "power", "supports", "supplies"];
-};
-
-private _compositions = [_type, _category, _size, _faction] call ALiVE_fnc_getCompositions;
+private _compositions = [_type, _category, _size, _faction, _recursive, _searchString] call ALiVE_fnc_getCompositions;
 private _composition = selectRandom _compositions;
 
 // should probably exit if no composition is spawned
 // TODO: return spawned composition (and maybe it's guard groups)
 if (count _composition > 0) then {
-    [_composition, _position, random 360, _faction] call ALIVE_fnc_spawnComposition;
+    [_composition, _position, _direction, _faction] call ALIVE_fnc_spawnComposition;
 };
 
 // Assign groups

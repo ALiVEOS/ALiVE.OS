@@ -44,6 +44,7 @@ private _size = if (typeName (_this select 2) == "ARRAY") then {_this select 2} 
 private _env = "Urban";
 private _faction = [];
 private _enemyFactions = [];
+private _searchString = [];
 private _result = [];
 private _recursive = false;
 
@@ -53,6 +54,10 @@ if (count _this > 3) then {
 
 if (count _this > 4) then {
     _recursive = _this select 4;
+};
+
+if (count _this > 5) then {
+    _searchString = _this select 5;
 };
 
 if (!isNil "ALiVE_mapCompositionType") then {
@@ -71,7 +76,7 @@ private _configPaths = [
 // Default to regular if additional PBOs are not loaded
 if (!isClass (_configPaths select 0) && !isClass(_configPaths select 1)) then {
     ["WARNING: You don't appear to have the %1 compositions loaded, make sure you have added the composition PBOs to your @ALiVE or @ALiVEServer addon folders! Falling back to %2!", _compType,_comp] call ALiVE_fnc_dump;
-    
+
     _configPaths = [
         missionConfigFile >> "CfgGroups" >> "Empty" >> _comp,
         configFile >> "CfgGroups" >> "Empty" >> _comp
@@ -141,11 +146,12 @@ if (count _faction != 0) then {
                     private _comp = _item select _i;
                     // diag_log str(_comp);
                     if (isClass _comp) then {
-                            // diag_log _enemyFactions;
-
-                            if ({(configName _comp) find _x != -1} count _enemyFactions == 0 ||  count _faction == 0  ) then {
+                        // diag_log _enemyFactions;
+                        if ({(configName _comp) find _x != -1} count _enemyFactions == 0 ||  count _faction == 0  ) then {
+                            if ({(configName _comp) find _x != -1} count _searchString > 0 ||  count _searchString == 0  ) then {
                                 _result pushback _comp;
                             };
+                        };
                     };
                 };
             };
