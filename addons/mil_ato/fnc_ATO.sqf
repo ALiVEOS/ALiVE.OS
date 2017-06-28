@@ -36,7 +36,7 @@ Tupolov
 #define SUPERCLASS ALIVE_fnc_baseClass
 #define MAINCLASS ALIVE_fnc_ATO
 #define MTEMPLATE "ALiVE_ATO_%1"
-#define DEFAULT_FACTION ""
+#define DEFAULT_FACTION "OPF_F"
 #define DEFAULT_AIRSPACE []
 #define DEFAULT_EVENT_QUEUE []
 #define DEFAULT_ANALYSIS []
@@ -80,26 +80,9 @@ ALiVE_fnc_catapultLaunch = {
     private _catDir = [_catapult, "dirOffset", direction _part] call ALiVE_fnc_hashGet;
     private _ldir = [(direction _part) + 180 - _catDir] call ALiVE_fnc_modDegrees;
     _vehicle setDir _ldir;
-    _vehicle setposASL _catPos;
+    //_vehicle setposASL _catPos;
 
-    if (alive _vehicle && canMove _vehicle) then {
-
-        // Keep the aircraft level until takeoff
-        private _vectorUp = [0,0,1];
-        [_vehicle, _vectorUp, _ldir] spawn {
-           params [
-                ["_vehicle", objNull, [objNull]],
-                ["_vectorUp", [], [[]]],
-                ["_ldir",0,[0]]
-            ];
-            private _configPath = configFile >> "CfgVehicles" >> typeOf _vehicle;
-            private _velocityLaunch = ((_configPath >> "CarrierOpsCompatability" >> "LaunchVelocity") call BIS_fnc_getCfgData) max 270;
-            while {speed _vehicle < _velocityLaunch} do {
-                // diag_log str(_vectorUp);
-                _vehicle setDir _ldir;
-                _vehicle setVectorUp _vectorUp;
-            };
-        };
+    if (alive _vehicle) then {
 
         // Launch aircraft
         [_part, _animations, _vehicle] spawn {
@@ -108,17 +91,31 @@ ALiVE_fnc_catapultLaunch = {
                 ["_animations", [], [[]]],
                 ["_vehicle", objNull, [objNull]]
             ];
+
             [_part, _animations, 10] call BIS_fnc_Carrier01AnimateDeflectors;
 
-            sleep 10;
+            sleep 3;
 
+            (driver _vehicle) disableAI "MOVE";
+            _vehicle setFuel 1;
+            private _startpos = getPosWorld _vehicle;
+            private _startdir = getdir _vehicle;
+            private _starttime = time + 6;
+            _vehicle engineOn true;
             _vehicle allowDamage false;
 
-            [_vehicle] call BIS_fnc_AircraftCatapultLaunch;
+            WaitUntil {
+                _vehicle setPosWorld _startpos;
+                _vehicle setDir _startdir;
+                time >= _starttime
+            };
 
-            sleep 5;
+            (driver _vehicle) enableAI "MOVE";
+            [_vehicle, _startdir] spawn BIS_fnc_AircraftCatapultLaunch;
 
-            [_part, _animations, 0] call BIS_fnc_Carrier01AnimateDeflectors;
+            sleep 4;
+
+            [_part, _animations, 0] spawn BIS_fnc_Carrier01AnimateDeflectors;
 
             _vehicle allowDamage true;
         };
@@ -196,7 +193,7 @@ ALiVE_fnc_getNearestCatapult = {
                 private _position = _partObject modelToWorld _partOffset;
 
                 // Check to see if object is suitable for Carrier catapults
-                if !(_isUCAV && (_partMemPoint == "pos_catapult_01" || _partMemPoint == "pos_catapult_04")) then {
+                if !(_partMemPoint == "pos_catapult_04" || _partMemPoint == "pos_catapult_01") then { // Planes have tendency to crash when launching from outside catapults
                     _catapultsPos pushback [_key, _position];
                     [_value, "part", _partObject] call ALiVE_fnc_hashSet;
                     [_value, "position", _position] call ALiVE_fnc_hashSet;
@@ -497,6 +494,9 @@ switch(_operation) do {
     case "enemyFactions": {
         _result = [_logic,_operation,_args,[]] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "enemySides": {
+        _result = [_logic,_operation,_args,[]] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "registryID": {
         _result = [_logic,_operation,_args,DEFAULT_REGISTRY_ID] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -560,6 +560,26 @@ switch(_operation) do {
         } foreach vehicles;
 
         _result = _intruders;
+    };
+    case "scanAirDefenses": {
+
+        private _airspace = [_logic,"airspace"] call MAINCLASS;
+        private _airDefenses = [] call ALIVE_fnc_hashCreate;
+
+        // Scan all air defenses on map, assign to closest ATO
+        private _enemySides = [_logic,"enemySides"] call MAINCLASS;
+
+        {
+            private _vehicle = _x;
+            if ((_vehicle iskindOf "AAA_System_01_base_F" || _vehicle iskindOf "SAM_System_01_base_F" || _vehicle iskindOf "SAM_System_02_base_F" ) && {str(side _vehicle) in _enemySides}) then {
+                private _tmpAS = [_airspace,[_vehicle],{_Input0 distance (getMarkerPos _x)},"ASCEND"] call ALiVE_fnc_SortBy;
+                private _tmp = [_airDefenses, (_tmpAS select 0), []] call ALiVE_fnc_hashGet;
+                _tmp pushback _vehicle;
+                [_airDefenses, (_tmpAS select 0), _tmp] call ALiVE_fnc_hashSet;
+            };
+        } foreach vehicles;
+
+        _result = _airDefenses;
     };
     case "requestAnalysis": {
         _result = [_logic,_operation,_args,DEFAULT_ANALYSIS] call ALIVE_fnc_OOsimpleOperation;
@@ -816,6 +836,7 @@ switch(_operation) do {
             } foreach _sidesEnemy;
 
             [_logic,"enemyFactions",_enemyFactions] call MAINCLASS;
+            [_logic,"enemySides",_sidesEnemy] call MAINCLASS;
 
             // If no airspace marker, then use the whole map
             if (count _airspace == 0) then {
@@ -1104,6 +1125,78 @@ switch(_operation) do {
             private _placeAA = [_logic, "placeAA"] call MAINCLASS;
             If (_placeAA) then {
                 // Dedicated AA protecting your ATO base
+
+                // Get static AA for faction
+
+                // If available, place 1 AA composition or static AA by HQ
+
+                if (isNil QMOD(COMPOSITIONS_LOADED)) then {
+
+                    // Spawn a AA composition
+                    private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
+                    private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
+                    private _flatPos = [_pos,(_size*4),70] call ALiVE_fnc_findFlatArea;
+                    private _AA = nil;
+
+                    private _searchString = ["AA_Bunker","SAM_Site","SAM_Bunker","AA_Site"];
+
+                    // Get a composition
+                    private _compType = "Military";
+                    If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                        _compType = "Guerrilla";
+                    };
+                    // Find an Anti Air site or SAM Site
+                    _AA = selectRandom ([_compType, ["fort"], [], _faction, false, _searchString] call ALiVE_fnc_getCompositions);
+
+                    if (isNil "_AA") then { // Look for smaller AA bunker
+                        _AA = selectRandom ([_compType, ["fort"], [], _faction, false, ["AntiAirBunker"]] call ALiVE_fnc_getCompositions);
+                        _searchString = ["AntiAirBunker"];
+                    };
+
+                    if !(isNil "_AA") then {
+                        private _nearRoad = [_flatpos, 750, true] call ALiVE_fnc_getClosestRoad;
+
+                        private _direction = if (_nearRoad distance _flatpos > 5) then {
+                            private _road = roadat _nearRoad;
+                            private _roadConnectedTo = roadsConnectedTo _road;
+                            if (count _roadConnectedTo > 0) then {
+                                private _connectedRoad = _roadConnectedTo select 0;
+                                (_road getDir _connectedRoad)
+                            } else {
+                                90
+                            };
+                        } else {
+                            0
+                        };
+
+                        [_flatPos, _compType, ["fort"], _faction, [], 2, 0, 0, 0, 0, false, _searchString, _direction] call ALiVE_fnc_spawnRandomPopulatedComposition;
+
+                        if (_debug) then {
+                            ["ALIVE ATO %1 - Placing %4 AA: %2 at %3", _logic, _AA, _flatpos, _faction] call ALIVE_fnc_dump;
+                        };
+                    } else {
+                        // Spawn Static AA
+
+                    };
+
+                    // Add crew to SAM or AA or man static (crew are not stored as part of composition)
+                    if !(isNil "_AA") then {
+                        private _vehicles = nearestObjects [_flatpos, ["AAA_System_01_base_F","SAM_System_01_base_F","SAM_System_02_base_F"], 70];
+
+                        {
+                            // Create profiles that are not despawned? This ensures they are put back after restart
+                            createVehicleCrew _x;
+                            if (side _x == WEST) then {
+                                [_x, "Green", [], false] call BIS_fnc_initVehicle;
+                            };
+                        } foreach _vehicles;
+                    } else {
+                        // Man Statics
+                    };
+
+                };
+
+
             };
 
             // Set the base location
@@ -1608,6 +1701,7 @@ switch(_operation) do {
         };
     };
 
+    // Listen for events
     case "listen": {
         private["_listenerID"];
 
@@ -1615,6 +1709,7 @@ switch(_operation) do {
         _logic setVariable ["listenerID", _listenerID];
     };
 
+    // Handle events
     case "handleEvent": {
         private["_event","_type","_eventData"];
 
@@ -1628,6 +1723,7 @@ switch(_operation) do {
         };
     };
 
+    // Handle status request
     case "ATO_STATUS_REQUEST": { //TODO
 
         private["_debug","_event","_eventData","_eventQueue","_side","_factions","_eventFaction","_eventSide","_factionFound",
@@ -1790,6 +1886,7 @@ switch(_operation) do {
         };
     };
 
+    // Handle cancel request
     case "ATO_CANCEL_REQUEST": { //TODO
 
         private["_debug","_event","_eventData","_eventQueue","_side","_factions","_eventFaction","_eventSide","_factionFound",
@@ -2088,6 +2185,7 @@ switch(_operation) do {
         };
     };
 
+    // Handle ATO request
     case "ATO_REQUEST": {
 
         if(typeName _args == "ARRAY") then {
@@ -2626,6 +2724,49 @@ switch(_operation) do {
                                     };
                                 };
                             } foreach _airspaceIntruders
+                        };
+
+                        // Check to see if there are any static air defences
+                        if ("SEAD" in ([_logic,"types"] call MAINCLASS)) then {
+
+                            // Check for static air defenses near ATO
+                            private _airDefenses = [_logic, "scanAirDefenses"] call MAINCLASS;
+
+                            // Grab air defense targets
+                            private _airDefenseTargets = _airDefenses select 1;
+
+                            {
+                                // If there's no SEAD mission already, then launch one against the target
+                                private _targets = [_airDefenses, _x] call ALiVE_fnc_hashGet;
+                                if (count _targets > 0) then {
+                                    private _currentOps = [_logic, "airspaceOps", _x] call MAINCLASS;
+                                    private _SEAD = false;
+
+                                    {
+                                        if ((_x select 0) == "SEAD") exitWith {
+                                            // check all intruders are being intercepted?
+                                            _SEAD = true;
+                                        };
+                                    } foreach _currentOps;
+
+                                    if !(_SEAD) then {
+                                        private _type = "SEAD";
+                                        private _range = 4000;
+                                        private _args = [
+                                            "RED",                // ROE
+                                            100,
+                                            "FULL",                 // SPEED MODE
+                                            DEFAULT_MIN_WEAP_STATE,
+                                            DEFAULT_MIN_FUEL_STATE,
+                                            _range * 0.9,       // RADIUS / RANGE
+                                            DEFAULT_OP_DURATION,
+                                            _targets                 // TARGETS
+                                        ];
+                                        private _event = ['ATO_REQUEST', [_type, _side, _faction, _x, _args],"ATO"] call ALIVE_fnc_event;
+                                        private _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+                                    };
+                                };
+                            } foreach _airDefenseTargets;
                         };
                     };
 
@@ -3337,6 +3478,7 @@ switch(_operation) do {
                                             {
                                                 _x moveInAny _vehicleObj;
                                             } foreach (units _group);
+
                                         } else {
                                             (units _group) orderGetIn true;
                                         };
@@ -3348,7 +3490,10 @@ switch(_operation) do {
                                         // diag_log format["ALIVE ATO %1 MOVING AIRCRAFT %2 TO POSITION %3",_logic, _profileID, _taxiPosition];
                                         // _profile call ALIVE_fnc_inspectHash;
                                         if (surfaceIsWater _taxiPosition && _isOnCarrier) then {
+
                                             _vehicleObj setPosASL _taxiPosition; // might need to adjust for sea level changes?
+
+                                            _vehicleObj setFuel 0;
 
                                         } else {
                                             _vehicleObj setPos _taxiPosition;
@@ -3512,12 +3657,12 @@ switch(_operation) do {
 
                             // Handle Carrier takeoff
                             If ( _isOnCarrier && _takeoff && _isPlane ) then {
-                                // Get the engine started
-                                _vehicle engineOn true;
+
                                 // Get the catapult
                                 private _catapult = [_aircraft,"catapult",[position _vehicle] call ALiVE_fnc_getNearestCatapult] call ALiVE_fnc_hashGet;
                                 // Launch the aircraft
                                 private _result = [_vehicle, _catapult] call ALiVE_fnc_catapultLaunch;
+
                                 if (_debug) then {
                                     ["ALIVE ATO %3 IS CATAPULT LAUNCHING AIRCRAFT %1 with result %2", _profileID, _result, _Logic] call ALIVE_fnc_dump;
                                 };
@@ -4270,6 +4415,7 @@ switch(_operation) do {
         };
     };
 
+    // Check to see if aircraft is still alive etc
     case "checkEvent": {
 
         private _event = _args;
@@ -4312,6 +4458,7 @@ switch(_operation) do {
         _result = _totalCount;
     };
 
+    // Remove profiles that are nolonger valid
     case "removeUnregisteredProfiles": {
 
         private ["_profiles","_profile"];
@@ -4345,6 +4492,7 @@ switch(_operation) do {
         _result = _profiles;
     };
 
+    // Remove event
     case "removeEvent": {
         private["_debug","_eventID","_eventQueue"];
 
