@@ -5161,10 +5161,12 @@ switch(_operation) do {
                                     };
 
                                     _vehicleClass = selectRandom _containers;
-
+									
                                     //_profile = [_vehicleClass,_side,_eventFaction,_position,random(360),false,_eventFaction,_payload] call ALIVE_fnc_createProfileVehicle;
 
                                     _vehicle = createVehicle [_vehicleClass, _position, [], 0, "NONE"];
+									
+									clearItemCargo _vehicle;
                                     [ALiVE_SYS_LOGISTICS,"fillContainer",[_vehicle,_payload]] call ALiVE_fnc_Logistics;
 
                                     if(_paraDrop) then {
