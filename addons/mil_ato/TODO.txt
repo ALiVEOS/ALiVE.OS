@@ -1,18 +1,17 @@
 ATO TO DO
 
+- Balance SEAD
 - OPCOM ATO request logic
 
 - On demand analysis
 - if pilot despawned while going to aircraft, getin fails
 - check catapult is not in use
-- aircraft can turn slightly when on catapult
-- Crew reinforcement / aircraft reinforcement
-- remove OCA/CAP if no planes
-- add OCA/CAP if new planes
-- Multiple targets
-- Place AA
 - ATO requests sent to player aircraft if available (via tasks?)
     - CAS, SEAD, Strike, OCA, CAP?, CSAR
+- Crew reinforcement / aircraft reinforcement
+- remove OCA/CAP check if no planes
+- add OCA/CAP check if new planes
+- Multiple targets
 - Audio for radio
 - Option to include CS assets?
 - If crewed vehicle placed by mission maker, get crew out and manage as normal
