@@ -50,9 +50,11 @@ if (typename _config == "ARRAY") then {
     _config = [_config, configFile] call BIS_fnc_configPath;
 };
 
+/*
 if (configName _config in _brokenCheckpoints) then {
     _azi = [_azi + 90] call ALiVE_fnc_modDegrees;
 };
+*/
 
 //Function to multiply a [2, 2] matrix by a [2, 1] matrix
 private _multiplyMatrixFunc =
