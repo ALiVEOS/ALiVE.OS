@@ -58,9 +58,9 @@ if (isNil "_fac") exitWith {
 
 // Find all the checkpoints pos
 _roads = _pos nearRoads (_radius + 20);
-// scan road positions, filter trails and find those roads on outskirts
+// scan road positions, filter trails and find those roads on outskirts, filter runways
 {
-    if (_x distance _pos < (_radius - 10) || {!isOnRoad _x}) then {
+    if (_x distance _pos < (_radius - 10) || {!isOnRoad _x} || {str(_x) find "invisible" != -1}) then {
         _roads set [_foreachIndex,objNull];
     };
 } foreach _roads;
