@@ -897,7 +897,7 @@ switch(_operation) do {
 
             // check modules are available
             if !(["ALiVE_sys_profile","ALiVE_mil_opcom"] call ALiVE_fnc_isModuleAvailable) exitwith {
-                ["Military air tasking orders reports that Virtual AI module or OPCOM is not placed! Exiting..."] call ALiVE_fnc_DumpR;
+                ["Military Air Component Commander reports that Virtual AI module or Military AI Commander is not placed! Exiting..."] call ALiVE_fnc_DumpR;
             };
             waituntil {!(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
 
@@ -1233,7 +1233,7 @@ switch(_operation) do {
                 // start initial analysis
                 [_logic, "initialAnalysis", _modules] call MAINCLASS;
             }else{
-                ["ALIVE ATO %1 - Information no OPCOM modules synced to Military air tasking orders module. No CAS, Strike or Recce ATOs will be available", _logic] call ALIVE_fnc_dump;
+                ["ALIVE ATO %1 - Information, no AI Commanders are synced to Military Air Component Commander module. No CAS, Strike or Recce ATOs available", _logic] call ALIVE_fnc_dump;
 
             };
         };
@@ -1269,7 +1269,7 @@ switch(_operation) do {
 
                 // If OPCOM isn't friendly don't add them
                 if !([[_moduleSide] call ALIVE_fnc_sideTextToObject,[[_logic, "side"] call MAINCLASS] call ALIVE_fnc_sideTextToObject] call BIS_fnc_sideIsFriendly) exitWith {
-                    ["ALIVE ATO %1 - Warning, you synced an OPCOM to an ATO that is not side friendly.", _logic] call ALIVE_fnc_dumpR;
+                    ["ALIVE ATO %1 - Warning, AI Commander is synced to an Air Component Commander that is not side friendly.", _logic] call ALIVE_fnc_dumpR;
                     _modules deleteAt _forEachIndex;
                 };
 
@@ -1680,7 +1680,7 @@ switch(_operation) do {
 
             // If no air assets, exit
             if (count (([_logic,"assets"] call MAINCLASS) select 1) == 0) exitWith {
-                ["ALIVE ATO %1 - Warning, operations are being suspended as there are no available air assets within the airspace.", _logic] call ALIVE_fnc_dump;
+                ["ALIVE ATO %1 - Warning, air operations are being suspended as there are no available air assets within the airspace.", _logic] call ALIVE_fnc_dump;
                 _message = format[localize "STR_ALIVE_ATO_NOT_ESTABLISHED", _HQ, _factionName];
                 private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
                 [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
@@ -1879,7 +1879,7 @@ switch(_operation) do {
                 };
 
                 // respond to player request
-                _logEvent = ['ATO_RESPONSE', [_eventRequestID,_eventPlayerID,_response],"Joint Forces Air Component Commander","STATUS"] call ALIVE_fnc_event;
+                _logEvent = ['ATO_RESPONSE', [_eventRequestID,_eventPlayerID,_response],"Military Air Component Commander","STATUS"] call ALIVE_fnc_event;
                 [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
             };
@@ -2213,7 +2213,7 @@ switch(_operation) do {
                     _requestID = _eventData select 5;
                     _playerID = _eventData select 6;
                     // respond to player request
-                    _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Joint Forces Air Component Commander","DENIED_WAITING_INIT"] call ALIVE_fnc_event;
+                    _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Military Air Component Commander","DENIED_WAITING_INIT"] call ALIVE_fnc_event;
                     [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
                 };
             };
@@ -2288,7 +2288,7 @@ switch(_operation) do {
                         private _playerID = _eventData select 6;
                         private _requestID = _eventData select 5;
                         // respond to player request
-                        _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Joint Forces Air Component Commander","DENIED_FACTION_HANDLER_NOT_FOUND"] call ALIVE_fnc_event;
+                        _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Military Air Component Commander","DENIED_FACTION_HANDLER_NOT_FOUND"] call ALIVE_fnc_event;
                         [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
                     };
 
@@ -2348,7 +2348,7 @@ switch(_operation) do {
                 };
 
                 if (_debug) then {
-                     ["ALIVE ATO %4 - ATO HQ online: %1 Base Captured: %2 Dominant Faction: %3", _HQIsAlive,_baseCaptured,_dominantFaction, _logic] call ALIVE_fnc_dump;
+                     ["ALIVE ATO %4 - MACC HQ online: %1 Base Captured: %2 Dominant Faction: %3", _HQIsAlive,_baseCaptured,_dominantFaction, _logic] call ALIVE_fnc_dump;
                 };
 
                 if (_HQIsAlive && !_baseCaptured) then {
@@ -2397,7 +2397,7 @@ switch(_operation) do {
                             [_event, "playerRequested", true] call ALIVE_fnc_hashSet;
 
                             // respond to player request
-                            private _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Joint Forces Air Component Commander","ACKNOWLEDGED"] call ALIVE_fnc_event;
+                            private _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Military Air Component Commander","ACKNOWLEDGED"] call ALIVE_fnc_event;
                             [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
                         };
@@ -2460,7 +2460,7 @@ switch(_operation) do {
 
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
-                            ["ALIVE ATO %2 - Air Tasking request denied, Joint Forces Air Component Commander for %1 has no available air assets", _eventFaction, _logic] call ALIVE_fnc_dump;
+                            ["ALIVE ATO %2 - Air Tasking request denied, Military Air Component Commander for %1 has no available air assets", _eventFaction, _logic] call ALIVE_fnc_dump;
                         };
                         // DEBUG -------------------------------------------------------------------------------------
 
@@ -2476,7 +2476,7 @@ switch(_operation) do {
                             private _playerID = _eventData select 6;
 
                             // respond to player request
-                            private _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Joint Forces Air Component Commander","DENIED_ATO_UNAVAILABLE"] call ALIVE_fnc_event;
+                            private _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Military Air Component Commander","DENIED_ATO_UNAVAILABLE"] call ALIVE_fnc_event;
                             [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
                         };
@@ -2484,7 +2484,7 @@ switch(_operation) do {
                 } else {
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
-                        ["ALIVE ATO %2 - Air Tasking request denied, Joint Forces Air Component Commander for %1 is not available", _eventFaction, _logic] call ALIVE_fnc_dump;
+                        ["ALIVE ATO %2 - Air Tasking request denied, Miltiary Air Component Commander for %1 is not available", _eventFaction, _logic] call ALIVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
 
@@ -2500,7 +2500,7 @@ switch(_operation) do {
                         private _playerID = _eventData select 6;
 
                         // respond to player request
-                        private _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Joint Forces Air Component Commander","DENIED_ATO_UNAVAILABLE"] call ALIVE_fnc_event;
+                        private _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"MIlitary Air Component Commander","DENIED_ATO_UNAVAILABLE"] call ALIVE_fnc_event;
                         [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
                     };
@@ -3262,7 +3262,7 @@ switch(_operation) do {
                         // An appropriate aircraft is not available to do the op
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
-                            ["ALIVE ATO %2 - Air Tasking request denied, Joint Forces Air Component Commander for %1 has no appropriate available air assets", _eventFaction, _logic] call ALIVE_fnc_dump;
+                            ["ALIVE ATO %2 - Air Tasking request denied, Military Air Component Commander for %1 has no appropriate air assets available", _eventFaction, _logic] call ALIVE_fnc_dump;
                         };
                         // DEBUG -------------------------------------------------------------------------------------
 
