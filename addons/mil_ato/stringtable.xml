@@ -39,7 +39,7 @@
     <Original>Enter the marker names representing the airspace managed by this module</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_USAGE">
-    <Original>Place a JFACC module to provide combat air patrol and suppresion of enemy air defenses over your airspace. Sync to an OPCOM in order for OPCOM to request Recce, Strike or CAS</Original>
+    <Original>Place a MACC module to provide Combat Air Patrol and Suppresion of Enemy Air Defenses over your airspace. Sync to an AI Commander module to enable Recce, Strike or Close Air Support requests</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_CREATE_HQ">
     <Original>Create HQ:</Original>
@@ -51,7 +51,7 @@
     <Original>Place Anti-Air:</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_PLACE_AA_COMMENT">
-    <Original>Place Anti-Air around the existing JFACC HQ</Original>
+    <Original>Places Ground Based Air Defenses around the existing MACC HQ</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_PLACE_AIR">
     <Original>Place Air Assets:</Original>
@@ -60,25 +60,25 @@
     <Original>If there are no available air assets, then place additional assets at the nearest airbase or helipad</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_NOT_ESTABLISHED">
-    <Original>All callsigns, this is %1, %2 forward airbase has not been established. Air Taskings are unavailable. Out.</Original>
+    <Original>All callsigns, this is %1, %2 forward airbase has not been established. No air assets available for tasking. Out.</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_ESTABLISHED">
     <Original>All callsigns, this is %1, %2 forward airbase established at grid %3, Air Tasking Orders to follow. Out.</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_UNDER_ATTACK">
-    <Original>All callsigns, this is %1, %2 forward airbase established at grid %3 is under attack, request immediate support. Out.</Original>
+    <Original>All callsigns, this is %1, %2 forward airbase at grid %3 is under attack by enemy forces, request immediate support. Out.</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_OVERRUN">
-    <Original>All callsigns, this is %1, %2 forward airbase established at grid %3 is compromised. Relocating to alternate. Air combat operations unavailable until further notice. Out.</Original>
+    <Original>All callsigns, this is %1, %2 forward airbase at grid %3 is compromised. Relocating to alternate. Air combat operations unavailable until further notice. Out.</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_REQUEST_ACKNOWLEDGED">
-    <Original>All callsigns, this is %1, %2 has requested %3 at grid %4. Air Tasking Order will follow. Out.</Original>
+    <Original>All callsigns, this is %1, %2 has requested %3 at grid %4. Air Tasking Order to follow. Out.</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_UNAVAILABLE">
-    <Original>All callsigns, this is %1, aircraft unavailable, air combat operations suspended. Requesting resupply. Out.</Original>
+    <Original>All callsigns, this is %1, aircraft unavailable, air combat operations suspended. Requesting replen. Out.</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_REQUEST_DENIED">
-    <Original>All callsigns, this is %1, request for %2 at grid %3 has been denied. Aircraft not available. Out.</Original>
+    <Original>All callsigns, this is %1, request for %2 at grid %3 denied. Aircraft not available. Out.</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_START">
     <Original>All callsigns, this is %1, scrambling %2 on ATO %3 at grid %4. Out.</Original>
@@ -87,10 +87,10 @@
     <Original>All callsigns, this is %1, we've lost radar contact with a %2 on %3. Out.</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_ON_STATION">
-    <Original>All callsigns, this is %1, %2 on station at grid %3. Executing %4 now. Out.</Original>
+    <Original>All callsigns, this is %1, %2 on station at grid %3. Commencing %4 now. Out.</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_RETURN">
-    <Original>on %1. ATO complete, I'm RTB. Out.</Original>
+    <Original>on %1. Air tasking complete, I am RTB. Out.</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_RETURN_FUEL">
     <Original>Bingo fuel, I am RTB. Out.</Original>
@@ -99,7 +99,7 @@
     <Original>Winchester, I am RTB. Out.</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_RETURN_DAMAGE">
-    <Original>AWe've been hit, I am RTB. Out.</Original>
+    <Original>We've been hit, critical damage sustained, I am RTB. Out.</Original>
 </Key>
 <Key ID="STR_ALIVE_ATO_MISSION_COMPLETE">
     <Original>All callsigns, this is %1, %2 is back at base, %3 mission complete. Out.</Original>
