@@ -42,12 +42,17 @@ switch (_taskState) do {
         _requestPlayerID = _task select 1;
         _taskSide = _task select 2;
         _taskFaction = _task select 3;
+        _taskDesination = _task select 4;
         _taskLocationType = _task select 5;
         _taskLocation = _task select 6;
         _taskPlayers = _task select 7;
         _taskEnemyFaction = _task select 8;
-        _taskCurrent = _taskData select 9;
-        _taskApplyType = _taskData select 10;
+        _taskCurrent = _task select 9;
+        _taskApplyType = _task select 10;
+        
+        _aircraft = nil;
+        
+        if (count _task > 11) then {_aircraft = _task select 11};
 
         _tasksCurrent = ([ALiVE_TaskHandler,"tasks",["",[],[],nil]] call ALiVE_fnc_HashGet) select 2;
 
@@ -70,19 +75,18 @@ switch (_taskState) do {
         _dialogOptions = [ALIVE_generatedTasks,"CSAR"] call ALIVE_fnc_hashGet;
         _dialogOptions = _dialogOptions select 1;
         _choice = round (random ((count _dialogOptions)-1));
-
-        // establish the location for the task
-        // get enemy cluster position
-
         If (_choice == 0) then { // Downed pilot
-            _targetPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
             _crashsite = false;
         };
-
         if (_choice == 1) then { // Crashsite
-            _targetPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
             _crashsite = true;
         };
+        
+        // establish the location for the task
+        // get enemy cluster position
+		if (isNil "_taskDestination") then {
+		    _targetPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
+		};
 
         if(count _targetPosition == 0) then {
 
@@ -140,8 +144,9 @@ switch (_taskState) do {
         if!(isNil "_targetPosition" || isNil "_returnPosition") then {
 
             // Get a faction aircraft
-            _aircraft = selectRandom ((([0,_taskFaction,"Helicopter"] call ALiVE_fnc_findVehicleType) + ([0,_taskFaction,"Plane"] call ALiVE_fnc_findVehicleType)) - ALiVE_PLACEMENT_VEHICLEBLACKLIST);
-
+            if (isNil "_aircraft") then {
+            	_aircraft = selectRandom ((([0,_taskFaction,"Helicopter"] call ALiVE_fnc_findVehicleType) + ([0,_taskFaction,"Plane"] call ALiVE_fnc_findVehicleType)) - ALiVE_PLACEMENT_VEHICLEBLACKLIST);
+			};
             if (isNil "_aircraft") then {
                 _aircraft = "C_Heli_Light_01_civil_F";
             };
