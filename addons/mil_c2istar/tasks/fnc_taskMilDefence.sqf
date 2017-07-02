@@ -44,8 +44,8 @@ switch (_taskState) do {
         _taskLocation = _task select 6;
         _taskPlayers = _task select 7;
         _taskEnemyFaction = _task select 8;
-        _taskCurrent = _taskData select 9;
-        _taskApplyType = _taskData select 10;
+        _taskCurrent = _task select 9;
+        _taskApplyType = _task select 10;
 
         if (_taskID == "") exitwith {["C2ISTAR - Task Mil Defence - Wrong input for _taskID!"] call ALiVE_fnc_Dump};
         if (_requestPlayerID == "") exitwith {["C2ISTAR - Task Mil Defence - Wrong input for _requestPlayerID!"] call ALiVE_fnc_Dump};
