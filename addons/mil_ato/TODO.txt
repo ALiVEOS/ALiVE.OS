@@ -1,14 +1,12 @@
 ATO TO DO
 
 - OPCOM ATO request logic
-
+- Pause between CAPs (random 5-15 mins)
+- Aircraft take random (5-10 mins to be refueled/repaired)
 - On demand analysis
 - if pilot despawned while going to aircraft, getin fails
 - check catapult is not in use
-- aircraft can turn slightly when on catapult
 - Crew reinforcement / aircraft reinforcement
-- remove OCA/CAP if no planes
-- add OCA/CAP if new planes
 - Multiple targets
 - Place AA
 - ATO requests sent to player aircraft if available (via tasks?)
@@ -31,3 +29,25 @@ Tests Completed
     - profile helo/vtol from carrier - done
     - spawned helo from helipad - done
     - profile helo from helipad - done
+    
+
+Extra to do....
+    SEAD logic 
+    - Send SEAD (send 2 aircraft)
+    - If aircraft destroyed, request OPCOM take out air defense via ground, halt SEAD for that target
+    - Add eventhandler to aircraft, if missile fired at them, register target and create SEAD ATO
+
+	Resupply logic
+	- Auto - Aircraft auto replaced after 15 mins if destroyed, if LOGCOM sync'd then aircraft and crew are auto resupplied via LOGCOM
+	- None - No resupply of aircraft (No ATO once all airframes lost)
+	
+	C2ISTAR logic
+	- If plane destroyed but pilot survives (and it happens over land), send CSAR/Rescue C2ISTAR task
+	- If SEAD not successful, send destroy vehicle C2ISTAR task
+	- need to update c2istar tasks to accept pre-existing crashed aircraft, non-profiled vehicle?, pre-existing composition
+	- add function to requestPlayerTask
+	- decide where to call function, 
+	
+	On demand analysis? Needed for reinforcement
+	
+	
