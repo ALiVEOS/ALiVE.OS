@@ -1,7 +1,8 @@
 ATO TO DO
 
 - OPCOM ATO request logic
-
+- Pause between CAPs (random 5-15 mins)
+- Aircraft take random (5-10 mins to be refueled/repaired)
 - On demand analysis
 - if pilot despawned while going to aircraft, getin fails
 - check catapult is not in use
@@ -32,7 +33,6 @@ Tests Completed
 
 Extra to do....
     SEAD logic 
-    - Scan map, allocate each static air defense to nearest airspace
     - Send SEAD (send 2 aircraft)
     - If aircraft destroyed, request OPCOM take out air defense via ground, halt SEAD for that target
     - Add eventhandler to aircraft, if missile fired at them, register target and create SEAD ATO

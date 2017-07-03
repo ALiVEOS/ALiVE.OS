@@ -421,6 +421,24 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "generateTasks": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["generateTasks", _args];
+        } else {
+            _args = _logic getVariable ["generateTasks", false];
+        };
+        if (typeName _args == "STRING") then {
+            if (_args == "true") then {
+                _args = true;
+            } else {
+                _args = false;
+            };
+            _logic setVariable ["generateTasks", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
     case "persistent": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["persistent", _args];
@@ -471,6 +489,16 @@ switch(_operation) do {
             _logic setVariable [_operation, call compile _args];
         };
         if(typeName _args == "ARRAY") then {
+            _logic setVariable [_operation, _args];
+        };
+
+        _result = _logic getVariable [_operation, DEFAULT_ATO_TYPES];
+    };
+    case "origTypes": {
+        if (typeName _args == "STRING") then {
+            _logic setVariable [_operation, call compile _args];
+        };
+        if (typeName _args == "ARRAY") then {
             _logic setVariable [_operation, _args];
         };
 
@@ -536,8 +564,28 @@ switch(_operation) do {
             } foreach (_eventQueue select 2);
         };
     };
+    case "airspaceLastCAP": {
+        _result = 0;
+        if (isNil QGVAR(lastCAP)) then {
+            GVAR(lastCAP) = [] call ALiVE_fnc_hashCreate;
+        };
+        if (typeName _args == "STRING") then {
+            _result = [GVAR(lastCAP), _args, 0] call ALiVE_fnc_hashGet;
+        };
+        if (typename _args == "ARRAY") then {
+            _result = [GVAR(lastCAP), _args select 0, _args select 1] call ALiVE_fnc_hashSet;
+        };
+    };
 
     // Methods
+    case "registerThreat": {
+        private _threat = _args select 0;
+        if (isNil QGVAR(threats)) then {GVAR(threats) = [] call ALiVE_fnc_hashCreate;};
+        private _threatArray = [GVAR(threats), str(_logic)] call ALiVE_fnc_hashGet;
+        _threatArray pushbackUnique _threat;
+        [GVAR(threats), str(_logic), _threatArray] call ALiVE_fnc_hashSet;
+    };
+
     case "scanAirspace": {
 
         private _airspace = [_logic,"airspace"] call MAINCLASS;
@@ -569,6 +617,7 @@ switch(_operation) do {
         // Scan all air defenses on map, assign to closest ATO
         private _enemySides = [_logic,"enemySides"] call MAINCLASS;
 
+        // Check for AA sites
         {
             private _vehicle = _x;
             if ((_vehicle iskindOf "AAA_System_01_base_F" || _vehicle iskindOf "SAM_System_01_base_F" || _vehicle iskindOf "SAM_System_02_base_F" ) && {str(side _vehicle) in _enemySides}) then {
@@ -578,6 +627,19 @@ switch(_operation) do {
                 [_airDefenses, (_tmpAS select 0), _tmp] call ALiVE_fnc_hashSet;
             };
         } foreach vehicles;
+
+        private _threats = [GVAR(threats),str(_logic),[]] call ALiVE_fnc_hashGet;
+        // Check for known AA units
+        {
+            private _profile = [ALiVE_profileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
+            if !(isNil "_profile") then {
+                private _position = [_profile, "position"] call ALiVE_fnc_hashGet;
+                private _tmpAS = [_airspace,[_position],{_Input0 distance (getMarkerPos _x)},"ASCEND"] call ALiVE_fnc_SortBy;
+                private _tmp = [_airDefenses, (_tmpAS select 0), []] call ALiVE_fnc_hashGet;
+                _tmp pushback _x;
+                [_airDefenses, (_tmpAS select 0), _tmp] call ALiVE_fnc_hashSet;
+            };
+        } foreach _threats;
 
         _result = _airDefenses;
     };
@@ -802,6 +864,9 @@ switch(_operation) do {
             _logic setVariable ["analysisInProgress", false];
             _logic setVariable ["eventQueue", [] call ALIVE_fnc_hashCreate];
             _logic setVariable ["position", getposATL _logic];
+
+            GVAR(threats) = [] call ALiVE_fnc_hashCreate;
+            GVAR(lastCAP) = [] call ALiVE_fnc_hashCreate;
 
             private _debug = [_logic, "debug"] call MAINCLASS;
             private _faction = [_logic, "faction"] call MAINCLASS;
@@ -2337,7 +2402,9 @@ switch(_operation) do {
                 private _HQIsALive = true;
 
                 private _dominantFaction = [[_baseCluster,"center"] call ALiVE_fnc_hashGet] call ALiVE_fnc_getDominantFaction;
+
                 if (isNil "_dominantFaction") then {_dominantFaction = _eventFaction;};
+
                 if !([(_dominantFaction call ALiVE_fnc_factionSide), [_eventSide] call ALIVE_fnc_sideTextToObject] call BIS_fnc_sideIsFriendly) then {
                     _baseCaptured = true;
                 };
@@ -2347,7 +2414,7 @@ switch(_operation) do {
                     _HQIsALive = alive _HQ;
                 };
 
-                if (_debug) then {
+                if (_debug || !(_HQIsAlive) || _baseCaptured ) then {
                      ["ALIVE ATO %4 - MACC HQ online: %1 Base Captured: %2 Dominant Faction: %3", _HQIsAlive,_baseCaptured,_dominantFaction, _logic] call ALIVE_fnc_dump;
                 };
 
@@ -2548,6 +2615,35 @@ switch(_operation) do {
                     _available = false;
                 };
 
+                // Check to see the current state of air assets, if less than 2 restrict ATOs
+                if (count (_assets select 1) <= 2) then {
+                    private _types = [_logic, "types"] call MAINCLASS;
+                    private _orig = [_logic,"origTypes"] call MAINCLASS;
+                    if (count _orig == 0) then {
+                       [_logic,"origTypes",_types] call MAINCLASS;
+                    };
+                    private _tmpTypes = [];
+                    if (["CAP"] in _types) then {
+                        _tmpTypes pushback ["CAP"];
+                    };
+                    if (["DCA"] in _types) then {
+                        _tmpTypes pushback ["DCA"];
+                    };
+                    _types = _tmpTypes;
+                    [_logic,"types",_types] call MAINCLASS;
+
+                    // Order resupply
+
+                };
+
+                if (count (_assets select 1) > 2) then {
+                    private _origTypes = [_logic, "origTypes"] call MAINCLASS;
+                    // Reset ATOs
+                    [_logic,"types",_origTypes] call MAINCLASS;
+                    // Reset origTypes
+                    [_logic,"origTypes",[]] call MAINCLASS;
+                };
+
                 // if not order new assets from LOGCOM
 
                 // Check to see if there are new assets?
@@ -2663,8 +2759,11 @@ switch(_operation) do {
                                     };
                                 } foreach _currentOps;
 
+                                private _lastCAPTime = [_logic, "airspaceLastCAP", _x] call MAINCLASS;
+                                private _CAPTime = time > _lastCAPTime + (300 + random 600);
+
                                 // If no cap then request one
-                                if !(_CAP) then {
+                                if (!_CAP && (_CAPTime || time < 600) ) then {
                                     private _type = "CAP";
                                     private _range = if ((getMarkerSize _x) select 0 < (getMarkerSize _x) select 1) then {(getMarkerSize _x) select 0} else {(getMarkerSize _x) select 1};
                                     private _args = [
@@ -2977,13 +3076,18 @@ switch(_operation) do {
                             if !(isNil "_profile") then {
                                 private _aircraft = [_assets,_x] call ALiVE_fnc_hashGet;
 
+                                // Check aircraft is not under maintenance
+                                private _maintenanceTime = [_aircraft,"maintenance",0] call ALiVE_fnc_hashGet;
+                                private _underMaintenance = (time < (_maintenanceTime + (180 + random 600))) && (time > 600);
+
                                 // check aircraft has the correct role
                                 private _aircraftRoles = [_aircraft,"roles"] call ALiVE_fnc_hashGet;
-                                if (_aircraftRole in _aircraftRoles) then {
+                                if (_aircraftRole in _aircraftRoles && !_underMaintenance) then {
                                     private _position = [_aircraft,"startPos"] call ALiVE_fnc_hashGet;
                                     private _currentOp = [_aircraft,"currentOp",""] call ALiVE_fnc_hashGet;
                                     private _profileType = [_profile, "type"] call ALiVE_fnc_hashGet;
                                     private _crewAvailable = true;
+
 
                                     if (_profileType == "entity") then {
                                         private _profileVehID = ([_profile, "vehiclesInCommandOf"] call ALiVE_fnc_hashGet) select 0;
@@ -3734,6 +3838,20 @@ switch(_operation) do {
 
                             _vehicle flyInHeight _eventHeight;
 
+                            // If SEAD available add eventhandler to aircraft to detect any GBAD
+                            if ("SEAD" in ([_logic,"types"] call MAINCLASS)) then {
+                                private _code = {
+                                    private _attacker = _this select 2;
+                                    if ( (vehicle _attacker) iskindof "Car" || (vehicle _attacker) iskindof "Tank" || (vehicle _attacker) iskindof "Armored") then {
+                                        private _profile = _attacker getVariable "profileID";
+                                        if !(isNil "_profile") then {
+                                            [_logic,"registerThreat", _profile] call MAINCLASS;
+                                        };
+                                    };
+                                };
+                                _vehicle addEventHandler ["IncomingMissile",_code];
+                            };
+
                             // dispatch event
                             private _logEvent = ['ATO_DESTINATION', [_eventPosition,_eventFaction,_side,_eventID],"air tasking orders"] call ALIVE_fnc_event;
                             [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
@@ -4365,7 +4483,8 @@ switch(_operation) do {
                     // turn off prevent despawn
                     [_profile,"spawnType",[]] call ALiVE_fnc_profileVehicle;
 
-                    // remove currentOp from vehicle - add delay so it can't be used for 10 mins?
+                    // remove currentOp from vehicle - place aircraft under maintenance
+                    [_aircraft,"maintenance",time] call ALiVE_fnc_hashSet;
                     [_aircraft,"currentOp",""] call ALiVE_fnc_hashSet;
                     [_assets,_aircraftID,_aircraft] call ALiVE_fnc_hashSet;
 
@@ -4396,7 +4515,12 @@ switch(_operation) do {
                     } foreach _eventEnemyProfiles;
                 };
 
-                // send radio broadcast
+                // Register finish time of last CAP
+                if (_eventType == "CAP") then {
+                    [_logic, format ["airspaceLast%1",_eventType],[_eventAirspace, time]] call MAINCLASS;
+                };
+
+                 // send radio broadcast
                 _sideObject = [_eventSide] call ALIVE_fnc_sideTextToObject;
                 _factionName = getText((_eventFaction call ALiVE_fnc_configGetFactionClass) >> "displayName");
 
