@@ -579,7 +579,7 @@ switch(_operation) do {
 
     // Methods
     case "registerThreat": {
-        private _threat = _args select 0;
+        private _threat = _args;
         if (isNil QGVAR(threats)) then {GVAR(threats) = [] call ALiVE_fnc_hashCreate;};
         private _threatArray = [GVAR(threats), str(_logic)] call ALiVE_fnc_hashGet;
         _threatArray pushbackUnique _threat;
@@ -3841,14 +3841,17 @@ switch(_operation) do {
                             // If SEAD available add eventhandler to aircraft to detect any GBAD
                             if ("SEAD" in ([_logic,"types"] call MAINCLASS)) then {
                                 private _code = {
+                                    private _vehicle = _this select 0;
                                     private _attacker = _this select 2;
+                                    hint str(_this);
                                     if ( (vehicle _attacker) iskindof "Car" || (vehicle _attacker) iskindof "Tank" || (vehicle _attacker) iskindof "Armored") then {
-                                        private _profile = _attacker getVariable "profileID";
+                                        private _profile = _attacker getVariable ["profileID",nil];
                                         if !(isNil "_profile") then {
-                                            [_logic,"registerThreat", _profile] call MAINCLASS;
+                                            [_vehicle getvariable QGVAR(logic),"registerThreat", _profile] call MAINCLASS;
                                         };
                                     };
                                 };
+                                _vehicle setVariable [QGVAR(logic),_logic];
                                 _vehicle addEventHandler ["IncomingMissile",_code];
                             };
 
