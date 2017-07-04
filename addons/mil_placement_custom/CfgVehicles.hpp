@@ -116,20 +116,20 @@ class CfgVehicles {
                         };
                         class createHQ
                         {
-                                displayName = "$STR_ALIVE_MP_CREATE_HQ";
-                                description = "$STR_ALIVE_MP_CREATE_HQ_COMMENT";
+                                displayName = "$STR_ALIVE_CMP_CREATE_HQ";
+                                description = "$STR_ALIVE_CMP_CREATE_HQ_COMMENT";
                                 class Values
                                 {
                                         class Yes
                                         {
                                                 name = "Yes";
                                                 value = true;
-                                                default = 1;
                                         };
                                         class No
                                         {
                                                 name = "No";
                                                 value = false;
+                                                default = 1;
                                         };
                                 };
                         };

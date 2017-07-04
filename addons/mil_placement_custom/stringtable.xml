@@ -66,7 +66,7 @@
     <Original>Spawn Composition:</Original>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_COMMENT">
-    <Original>Enter in the classname of a composition > Go to Config Viewer, CfgGroups > Empty and copy the classname</Original>
+    <Original>Enter in the type (HQ, Fort, Heliport etc.) or classname of a composition (Go to Config Viewer, CfgGroups > Empty and copy the classname)</Original>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_A">
     <Original>BIS - Camp Audacity</Original>
@@ -85,6 +85,12 @@
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_F">
     <Original>BIS - Camp Fortitude</Original>
+</Key>
+<Key ID="STR_ALIVE_CMP_CREATE_HQ">
+    <Original>Create as HQ:</Original>
+</Key>
+<Key ID="STR_ALIVE_CMP_CREATE_HQ_COMMENT">
+    <Original>Selects HQ objective close to the module or if unavailable spawns an HQ composition at the module position</Original>
 </Key>
 <Key ID="STR_ALIVE_CMP_USAGE">
     <Original>Place the Custom Military Objective module in the editor, select the desired Size, Priority and force composition. Custom factions can be entered in the text box (separated by a comma).</Original>
