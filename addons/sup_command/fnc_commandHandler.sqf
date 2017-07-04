@@ -165,7 +165,7 @@ switch(_operation) do {
 
                 case "OPS_JOIN_GROUP": {
 
-                    [_logic,"opsJoinGroup", _data] call MAINCLASS;
+                    [_logic,"opsJoinGroup", _data] spawn MAINCLASS;
 
                 };
 

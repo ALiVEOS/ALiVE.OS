@@ -462,7 +462,7 @@ switch (_operation) do {
 
                 case "OPS_GROUP_JOIN_READY": {
 
-                    [_logic,"enableOpsJoinGroup", _data] call MAINCLASS;
+                    [_logic,"enableOpsJoinGroup", _data] spawn MAINCLASS;
 
                 };
 
