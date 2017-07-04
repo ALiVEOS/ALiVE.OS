@@ -350,10 +350,13 @@ switch(_operation) do {
                         _compType = "Guerrilla";
                     };
 
-                    _composition = [_composition, _compType] call ALIVE_fnc_findComposition;
+                    private _comp = [_composition, _compType] call ALIVE_fnc_findComposition;
 
-                    if(count _composition > 0) then {
-                        [_composition, _position, direction _logic, _faction] call ALIVE_fnc_spawnComposition;
+                    if (count _comp > 0) then {
+                        [_comp, _position, direction _logic, _faction] call ALIVE_fnc_spawnComposition;
+                    } else {
+                        _comp = selectRandom ([_compType, [_composition], [], _faction] call ALiVE_fnc_getCompositions);
+                        [_comp, _position, direction _logic, _faction] call ALIVE_fnc_spawnComposition;
                     };
                 };
             };
@@ -427,7 +430,7 @@ switch(_operation) do {
             private _groups = [];
             private _infantryGroups = [];
             private _motorizedGroups = [];
-            
+
             for "_i" from 0 to _countInfantry -1 do {
                 private _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
                 if!(_group == "FALSE") then {
@@ -441,7 +444,7 @@ switch(_operation) do {
                     _infantryGroups pushback _group;
                 };
             };
-            
+
             _groups append _infantryGroups;
 
             for "_i" from 0 to _countMotorized -1 do {
@@ -459,7 +462,7 @@ switch(_operation) do {
                     };
                 };
             };
-            
+
             _groups append _motorizedGroups;
 
             for "_i" from 0 to _countMechanized -1 do {
@@ -467,15 +470,15 @@ switch(_operation) do {
                 if!(_group == "FALSE") then {
                     _groups pushback _group;
                 }
-            };                                                
-                                    
+            };
+
             for "_i" from 0 to _countArmored -1 do {
                 private _group = ["Armored",_faction] call ALIVE_fnc_configGetRandomGroup;
                 if!(_group == "FALSE") then {
                     _groups pushback _group;
                 };
             };
-           
+
             _infantryGroups = _infantryGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
             _motorizedGroups = _motorizedGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
             _groups = _groups - ALiVE_PLACEMENT_GROUPBLACKLIST;
@@ -497,55 +500,55 @@ switch(_operation) do {
                 _readiness = (1 - _readiness) * _groupCount;
 
                 for "_i" from 0 to (_groupCount - 1) do {
-                    
+
                     private ["_command","_radius"];
-                    
+
                     //Guards
                     if (_i == 0 && {count _infantryGroups > 0}) then {
-                        
+
 	                    private _group = _groups select _i;
 	                    private _guards = [_group, _position, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
-	
+
 	                    //ARJay, here we could place the default patrols/garrisons instead of the static garrisson if you like to (same is in CIV MP)
 	                    {
 	                        if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
 	                            [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[200,"true",[0,0,0]]]] call ALIVE_fnc_profileEntity;
 	                        };
 	                    } foreach _guards;
-                        
+
                         _countProfiles = _countProfiles + count _guards;
-                        _totalCount = _totalCount + 1;                            
-                
+                        _totalCount = _totalCount + 1;
+
                 	//Main Force
                     } else {
-                        
+
                         private _group = _groups select _i;
 
 	                    if (_totalCount < _readiness) then {
 	                        _command = "ALIVE_fnc_garrison";
 	                        _radius = [200,"true",[0,0,0]];
-                            
+
                             _position = [position _logic, 30] call CBA_fnc_RandPos;
 	                    } else {
 	                        _command = "ALIVE_fnc_ambientMovement";
 	                        _radius = [200,"SAFE",[0,0,0]];
-                            
+
                             _position = [position _logic, random((_radius select 0) + ((_radius select 0)/0.25)), random(360)] call BIS_fnc_relPos;
 	                    };
-	
+
 	                    if !(surfaceIsWater _position) then {
-	
+
 	                        private _profiles = [_group, _position, random(360), false, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
-	
+
 	                        {
 	                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
 	                                [_x, "setActiveCommand", [_command,"spawn",_radius]] call ALIVE_fnc_profileEntity;
 	                            };
 	                        } foreach _profiles;
-	
+
 	                        _countProfiles = _countProfiles + count _profiles;
 	                        _totalCount = _totalCount + 1;
-	
+
 	                    };
                     };
 
@@ -574,6 +577,28 @@ switch(_operation) do {
                 _buildings = [_buildings,[_modulePosition],{_Input0 distance _x},"ASCENDING",{[_x] call ALIVE_fnc_isHouseEnterable}] call ALiVE_fnc_SortBy;
 
                 if (count _buildings == 0) then {_buildings = [_modulePosition, _size, ALIVE_militaryBuildingTypes + ALIVE_militaryHQBuildingTypes] call ALIVE_fnc_findNearObjectsByType};
+
+                if (count _buildings == 0) then {
+                    ["ALIVE CMP - Warning no HQ locations found, spawning composition"] call ALIVE_fnc_dump;
+
+                    if (isNil QMOD(COMPOSITIONS_LOADED)) then {
+
+                        // Get a composition
+                        private _compType = "Military";
+                        If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                            _compType = "Guerrilla";
+                        };
+                        private _HQ = (selectRandom ([_compType, ["FieldHQ"], ["Large","Medium"], _faction] call ALiVE_fnc_getCompositions));
+
+                        if (isNil "_HQ") then {
+                            _HQ = (selectRandom ([_compType, ["HQ","FieldHQ"], ["Medium","Small"], _faction] call ALiVE_fnc_getCompositions));
+                        };
+
+                        [_HQ, _modulePosition, direction _logic, _faction] call ALiVE_fnc_spawnComposition;
+
+                        _buildings = [_modulePosition, _size, ALIVE_militaryBuildingTypes + ALIVE_militaryHQBuildingTypes] call ALIVE_fnc_findNearObjectsByType;
+                    };
+                };
 
                 if (count _buildings > 0) then {
 
