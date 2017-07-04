@@ -1,7 +1,5 @@
 ### Prerequisites
 
-**Raising a BUG**
-
 * [ ] Can you reproduce the problem using ALiVE and CBA Only?
 * [ ] Are you running the latest version of ALiVE ?
 * [ ] Are you running the latest version of CBA_A3?
