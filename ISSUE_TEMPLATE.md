@@ -1,6 +1,7 @@
 ### Prerequisites
 
-**Raising a BUG **
+**Raising a BUG**
+
 * [ ] Can you reproduce the problem using ALiVE and CBA Only?
 * [ ] Are you running the latest version of ALiVE  <a href="https://github.com/ALiVEOS/ALiVE.OS/releases/latest">
         <img src="https://img.shields.io/github/release/ALiVEOS/ALiVE.OS.svg?maxAge=2592000" alt="ALiVE Version">
