@@ -7,7 +7,7 @@
     </a>?
 * [ ] Are you running the latest version of CBA_A3 <a href="https://github.com/CBATeam/CBA_A3/releases/latest">
         <img src="https://img.shields.io/github/release/CBATeam/CBA_A3.svg?maxAge=2592000" alt="CBA Version">
-    </a>??
+    </a>?
 * [ ] Have you attached an unbinarized SQM?
 * [ ] Have you attached your RPT (If the issue relates to data, also attch Server RPT and ALiVE Plugin Log)?
 * [ ] Have you attached screenshots of the Parameters set on the offending Module?
