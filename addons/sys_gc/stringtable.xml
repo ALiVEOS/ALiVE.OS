@@ -15,7 +15,7 @@
     <Original>Enables GC Module Debug</Original>
 </Key>
 <Key ID="STR_ALIVE_GC_INDIVIDUALTYPES">
-    <Original>Garbage Collector Exclude:</Original>
+    <Original>Garbage Collector Clutter Types</Original>
 </Key>
 <Key ID="STR_ALIVE_GC_INDIVIDUALTYPES_COMMENT">
     <Original>Include certain non-unit or non-vehicle objects in collection eg: ["Box_NATO_Wps_F","Box_NATO_AmmoOrd_F"]</Original>
