@@ -2872,11 +2872,10 @@ switch(_operation) do {
         } else {
             _forcePool = "WAITING...";
         };
+
         _forcePoolStatus ctrlSetText format["Current Force Pool: %1",_forcePool];
         _forcePoolStatus ctrlShow true;
-
         // setup the delivery type list
-
         private ["_deliveryList","_deliveryListOptions","_deliveryListValues","_selectedDeliveryListIndex"];
 
         _deliveryList = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_DeliveryList);
@@ -2951,12 +2950,15 @@ switch(_operation) do {
         _payloadStatusMap = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_StatusMap);
         _payloadStatusMap ctrlShow false;
 
+
+         [nil,"getForcePool", [player, faction player]] remoteExecCall [QUOTE(MAINCLASS),2];
     };
 
     case "getForcePool": {
 
         _args params ["_player","_faction"];
-
+        //Wait until MIL_LOG has init and Force Pool Set
+        waituntil {!(isnil "ALIVE_globalForcePool")};
         private _forcePool = [MOD(globalForcePool),_faction, 0] call ALiVE_fnc_hashGet;
 
         [nil,"displayForcePool", [_faction,_forcePool]] remoteExecCall [QUOTE(MAINCLASS),_player];
