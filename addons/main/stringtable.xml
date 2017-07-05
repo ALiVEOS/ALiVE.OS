@@ -20,10 +20,10 @@
     <Italian>ALiVE Richiedono</Italian>
     <Spanish>ALiVE Requieren </Spanish>
     <French>ALiVE Exiger</French>
-    <Czech>ALiVE Vyžadovat</Czech>
+    <Czech>ALiVE Vyï¿½adovat</Czech>
     <Russian>ALiVE ?????????</Russian>
     <Polish>ALiVE Wymagaj</Polish>
-    <Hungarian>ALiVE Igénylése</Hungarian>
+    <Hungarian>ALiVE Igï¿½nylï¿½se</Hungarian>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_ALIVE_VERSIONING">
     <Original>ALiVE Versioning:</Original>
@@ -73,5 +73,7 @@
 <Key ID="STR_ALiVE_TABLET_MODEL_COMMENT">
     <Original>Model used for the ALiVE Tablet Background.</Original>
 </Key>
-
+<Key ID="STR_ALIVE_REQUIRES_USAGE">
+    <Original>Simply place ALiVE (Required) in the editor and choose the settings as desired. Do not sync it to anything.</Original>
+</Key>
 </Container></Package></Project>

@@ -1,6 +1,23 @@
 class CfgVehicles {
-        class ModuleAliveBase;
-        class ADDON : ModuleAliveBase
+        class Logic;
+        class Module_F : Logic
+        {
+            class AttributesBase
+            {
+                class Edit; // Default edit box (i.e., text input field)
+                class Combo; // Default combo box (i.e., drop-down menu)
+                class ModuleDescription; // Module description
+            };
+        };
+        class ModuleAliveBase: Module_F
+        {
+            class AttributesBase : AttributesBase
+            {
+                class ALiVE_ModuleSubTitle;
+            };
+            class ModuleDescription;
+        };
+        class ADDON: ModuleAliveBase
         {
                 scope = 2;
                 displayName = "$STR_ALIVE_C2ISTAR";
@@ -10,180 +27,183 @@ class CfgVehicles {
                 isGlobal = 1;
                 icon = "x\alive\addons\mil_C2ISTAR\icon_mil_C2.paa";
                 picture = "x\alive\addons\mil_C2ISTAR\icon_mil_C2.paa";
-                class Arguments
+                class Attributes : AttributesBase
                 {
-                    class debug
+                    class debug : Combo
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_DEBUG";
                             description = "$STR_ALIVE_C2ISTAR_DEBUG_COMMENT";
+                            defaultValue = """false""";
                             class Values
                             {
                                     class Yes
                                     {
                                             name = "Yes";
-                                            value = true;
+                                            value = "true";
                                     };
                                     class No
                                     {
                                             name = "No";
-                                            value = false;
-                                            default = 1;
+                                            value = "false";
+
                                     };
                             };
                     };
-                    class c2_item
+                    class c2_item : Edit
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_ALLOW";
                             description = "$STR_ALIVE_C2ISTAR_ALLOW_COMMENT";
-                            defaultValue = "LaserDesignator";
+                            defaultValue = """LaserDesignator""";
                     };
                     // TASKING
-                    class TASKING {
-                            displayName = "";
-                            class Values
-                            {
-                                    class Divider
-                                    {
-                                            name = "----- Tasking --------------------------------------------------------";
-                                            value = "";
-                                    };
-                            };
-                    };
-                    class persistent
+                    class TASKING : ALiVE_ModuleSubTitle
                     {
+                            property = QGVAR(__LINE__);
+                            displayName = " TASKING PARAMETERS";
+                    };
+                    class persistent : Combo
+                    {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_PERSISTENT";
                             description = "$STR_ALIVE_C2ISTAR_PERSISTENT_COMMENT";
+                            defaultValue = """false""";
                             class Values
                             {
                                     class No
                                     {
                                             name = "No";
-                                            value = false;
-                                            default = 1;
+                                            value = "false";
                                     };
                                     class Yes
                                     {
                                             name = "Yes";
-                                            value = true;
+                                            value = "true";
                                     };
                             };
                     };
-                    class autoGenerateBlufor
+                    class autoGenerateBlufor : Combo
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR";
                             description = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_COMMENT";
+                            defaultValue = """false""";
                             class Values
                             {
                                     class No
                                     {
                                             name = "No";
-                                            value = false;
-                                            default = 1;
+                                            value = "false";
                                     };
                                     class Yes
                                     {
                                             name = "Yes";
-                                            value = true;
+                                            value = "true";
                                     };
                             };
                     };
-                    class autoGenerateBluforFaction
+                    class autoGenerateBluforFaction : Edit
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_FACTION";
                             description = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_FACTION_COMMENT";
                             defaultValue = "BLU_F";
                     };
-                    class autoGenerateBluforEnemyFaction
+                    class autoGenerateBluforEnemyFaction : Edit
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_ENEMY_FACTION";
                             description = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_ENEMY_FACTION_COMMENT";
                             defaultValue = "OPF_F";
                     };
-                    class autoGenerateOpfor
+                    class autoGenerateOpfor : Combo
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR";
                             description = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_COMMENT";
+                            defaultValue = """false""";
                             class Values
                             {
                                     class No
                                     {
                                             name = "No";
-                                            value = false;
-                                            default = 1;
+                                            value = "false";
                                     };
                                     class Yes
                                     {
                                             name = "Yes";
-                                            value = true;
+                                            value = "true";
                                     };
                             };
                     };
-                    class autoGenerateOpforFaction
+                    class autoGenerateOpforFaction : Edit
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_FACTION";
                             description = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_FACTION_COMMENT";
                             defaultValue = "OPF_F";
                     };
-                    class autoGenerateOpforEnemyFaction
+                    class autoGenerateOpforEnemyFaction : Edit
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_ENEMY_FACTION";
                             description = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_ENEMY_FACTION_COMMENT";
                             defaultValue = "BLU_F";
                     };
-                    class autoGenerateIndfor
+                    class autoGenerateIndfor : Combo
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR";
                             description = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_COMMENT";
+                            defaultValue = """false""";
                             class Values
                             {
                                     class No
                                     {
                                             name = "No";
-                                            value = false;
-                                            default = 1;
+                                            value = "false";
                                     };
                                     class Yes
                                     {
                                             name = "Yes";
-                                            value = true;
+                                            value = "true";
                                     };
                             };
                     };
-                    class autoGenerateIndforFaction
+                    class autoGenerateIndforFaction : Edit
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_FACTION";
                             description = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_FACTION_COMMENT";
                             defaultValue = "IND_F";
                     };
-                    class autoGenerateIndforEnemyFaction
+                    class autoGenerateIndforEnemyFaction : Edit
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_ENEMY_FACTION";
                             description = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_ENEMY_FACTION_COMMENT";
                             defaultValue = "OPF_F";
                     };
                     // GROUP MANAGEMENT
-                    class GROUP_MANAGEMENT {
-                            displayName = "";
-                            class Values
-                            {
-                                    class Divider
-                                    {
-                                            name = "----- Group Management ---------------------------------------------";
-                                            value = "";
-                                    };
-                            };
-                    };
-                    class gmLimit
+                    class GROUP_MANAGEMENT: ALiVE_ModuleSubTitle
                     {
+                            property = QGVAR(__LINE__);
+                            displayName = " GROUP MANAGEMENT PARAMETERS ";
+                    };
+                    class gmLimit : Combo
+                    {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_GM_LIMIT";
                             description = "$STR_ALIVE_C2ISTAR_GM_LIMIT_COMMENT";
+                            defaultValue = """SIDE""";
                             class Values
                             {
                                     class SIDE
                                     {
                                             name = "$STR_ALIVE_C2ISTAR_GM_LIMIT_SIDE";
                                             value = "SIDE";
-                                            default = 1;
+
                                     };
                                     class FACTION
                                     {
@@ -193,28 +213,23 @@ class CfgVehicles {
                             };
                     };
                     // OPERATIONS
-                    class OPERATIONS_TABLET {
-                            displayName = "";
-                            class Values
-                            {
-                                    class Divider
-                                    {
-                                            name = "----- Operations Tablet --------------------------------------------";
-                                            value = "";
-                                    };
-                            };
-                    };
-                    class scomOpsLimit
+                    class OPERATIONS_TABLET: ALiVE_ModuleSubTitle
                     {
+                            property = QGVAR(__LINE__);
+                            displayName = " OPERATIONS TABLET PARAMETERS";
+                    };
+                    class scomOpsLimit : Combo
+                    {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_SCOM_OPS_LIMIT";
                             description = "$STR_ALIVE_C2ISTAR_SCOM_OPS_LIMIT_COMMENT";
+                            defaultValue = """SIDE""";
                             class Values
                             {
                                     class SIDE
                                     {
                                             name = "$STR_ALIVE_C2ISTAR_SCOM_OPS_LIMIT_SIDE";
                                             value = "SIDE";
-                                            default = 1;
                                     };
                                     class FACTION
                                     {
@@ -228,60 +243,58 @@ class CfgVehicles {
                                     };
                             };
                     };
-                    class scomOpsAllowSpectate
+                    class scomOpsAllowSpectate : Combo
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_SPECTATE";
                             description = "$STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_SPECTATE_COMMENT";
+                            defaultValue = """true""";
                             class Values
                             {
                                     class No
                                     {
                                             name = "No";
-                                            value = false;
+                                            value = "false";
                                     };
                                     class Yes
                                     {
                                             name = "Yes";
-                                            value = true;
-                                            default = 1;
+                                            value = "true";
                                     };
                             };
                     };
-                    class scomOpsAllowInstantJoin
+                    class scomOpsAllowInstantJoin : Combo
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_JOIN";
                             description = "$STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_JOIN_COMMENT";
+                            defaultValue = """true""";
                             class Values
                             {
                                     class No
                                     {
                                             name = "No";
-                                            value = false;
+                                            value = "false";
                                     };
                                     class Yes
                                     {
                                             name = "Yes";
-                                            value = true;
-                                            default = 1;
+                                            value = "true";
                                     };
                             };
                     };
                     // INTEL TABLET
-                    class INTEL_TABLET {
-                            displayName = "";
-                            class Values
-                            {
-                                    class Divider
-                                    {
-                                            name = "----- Intel Tablet -------------------------------------------------";
-                                            value = "";
-                                    };
-                            };
-                    };
-                    class scomIntelLimit
+                    class INTEL_TABLET: ALiVE_ModuleSubTitle
                     {
+                            property = QGVAR(__LINE__);
+                            displayName = " INTEL TABLET PARAMETERS";
+                    };
+                    class scomIntelLimit : Combo
+                    {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_SCOM_INTEL_LIMIT";
                             description = "$STR_ALIVE_C2ISTAR_SCOM_INTEL_LIMIT_COMMENT";
+                            defaultValue = """SIDE""";
                             class Values
                             {
                                     class SIDE
@@ -303,40 +316,37 @@ class CfgVehicles {
                             };
                     };
                     // INTEL
-                    class INTEL {
-                            displayName = "";
-                            class Values
-                            {
-                                    class Divider
-                                    {
-                                            name = "----- Global Intel -------------------------------------------------";
-                                            value = "";
-                                    };
-                            };
-                    };
-                    class displayIntel
+                    class INTEL : ALiVE_ModuleSubTitle
                     {
+                            property = QGVAR(__LINE__);
+                            displayName = " GLOBAL INTEL PARAMETERS";
+                    };
+                    class displayIntel : Combo
+                    {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_DISPLAY_INTEL";
                             description = "$STR_ALIVE_C2ISTAR_DISPLAY_INTEL_COMMENT";
+                            defaultValue = """false""";
                             class Values
                             {
                                     class Yes
                                     {
                                             name = "Yes";
-                                            value = true;
+                                            value = "true";
                                     };
                                     class No
                                     {
                                             name = "No";
-                                            value = false;
-                                            default = 1;
+                                            value = "false";
                                     };
                             };
                     };
-                    class intelChance
+                    class intelChance : Combo
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE";
                             description = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_COMMENT";
+                            defaultValue = """1""";
                             class Values
                             {
                                     class LOW
@@ -358,65 +368,68 @@ class CfgVehicles {
                                     {
                                             name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_TOTAL";
                                             value = "1";
-                                            default = 1;
                                     };
                             };
                     };
-                    class friendlyIntel
+                    class friendlyIntel : Combo
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_FRIENDLY_INTEL";
                             description = "$STR_ALIVE_C2ISTAR_FRIENDLY_INTEL_COMMENT";
+                            defaultValue = """false""";
                             class Values
                             {
                                     class Yes
                                     {
                                             name = "Yes";
-                                            value = true;
+                                            value = "true";
                                     };
                                     class No
                                     {
                                             name = "No";
-                                            value = false;
-                                            default = 1;
+                                            value = "false";
                                     };
                             };
                     };
-                    class friendlyIntelRadius
+                    class friendlyIntelRadius : Edit
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_FRIENDLY_INTEL_RADIUS";
                             description = "$STR_ALIVE_C2ISTAR_FRIENDLY_INTEL_RADIUS_COMMENT";
-                            defaultValue = "2000";
+                            defaultValue = """2000""";
                     };
-                    class displayMilitarySectors
+                    class displayMilitarySectors : Combo
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_DISPLAY_MIL_SECTORS";
                             description = "$STR_ALIVE_C2ISTAR_DISPLAY_MIL_SECTORS_COMMENT";
+                            defaultValue = """false""";
                             class Values
                             {
                                     class Yes
                                     {
                                             name = "Yes";
-                                            value = true;
+                                            value = "true";
                                     };
                                     class No
                                     {
                                             name = "No";
-                                            value = false;
-                                            default = 1;
+                                            value = "false";
                                     };
                             };
                     };
-                    class displayTraceGrid
+                    class displayTraceGrid : Combo
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_DISPLAY_TRACEGRID";
                             description = "$STR_ALIVE_C2ISTAR_DISPLAY_TRACEGRID_COMMENT";
+                            defaultValue = """None""";
                             class Values
                             {
                                     class None
                                     {
                                             name = "None";
                                             value = "None";
-                                            default = 1;
                                     };
                                     class Solid
                                     {
@@ -450,34 +463,47 @@ class CfgVehicles {
                                     };
                             };
                     };
-                    class displayPlayerSectors
+                    class displayPlayerSectors : Combo
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_DISPLAY_PLAYER_SECTORS";
                             description = "$STR_ALIVE_C2ISTAR_DISPLAY_PLAYER_SECTORS_COMMENT";
+                            defaultValue = """false""";
                             class Values
                             {
                                     class Yes
                                     {
                                             name = "Yes";
-                                            value = true;
+                                            value = "true";
                                     };
                                     class No
                                     {
                                             name = "No";
-                                            value = false;
-                                            default = 1;
+                                            value = "false";
                                     };
                             };
                     };
-                    class runEvery
+                    class runEvery: Edit
                     {
+                            property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_RUN_EVERY";
                             description = "$STR_ALIVE_C2ISTAR_RUN_EVERY_COMMENT";
-                            defaultValue = 2;
+                            defaultValue = "2";
                             typeName = "NUMBER";
                     };
+                    class ModuleDescription: ModuleDescription{};
                 };
 
+                class ModuleDescription: ModuleDescription
+                {
+                    //description = "$STR_ALIVE_C2ISTAR_COMMENT"; // Short description, will be formatted as structured text
+                    description[] = {
+                            "$STR_ALIVE_C2ISTAR_COMMENT",
+                            "",
+                            "$STR_ALIVE_C2ISTAR_USAGE"
+                    };
+                    sync[] = {}; // Array of synced entities (can contain base classes)
+                };
         };
 
 };

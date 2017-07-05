@@ -200,4 +200,7 @@
 <Key ID="STR_ALIVE_C2ISTAR_RUN_EVERY_COMMENT">
     <Original>Update sector markings every number of minutes entered</Original>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_USAGE">
+    <Original>Place the C2ISTAR module in the editor. Do not sync it to anything. Players require a laser designator (by default) in their inventory to access the functions from the ALiVE Action Menu. The required item can be changed in the module settings, for example the alive_tablet, which can be found in a standard support crate.</Original>
+</Key>
 </Container></Package></Project>
