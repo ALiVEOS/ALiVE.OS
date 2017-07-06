@@ -244,7 +244,6 @@ ALiVE_fnc_isVTOL = {
     _result
 };
 
-
 ALiVE_fnc_getAircraftRoles = {
     params [
         ["_class", "", ["",objNull]]
@@ -278,18 +277,23 @@ ALiVE_fnc_getAircraftRoles = {
     {
 
         private _ammoCfg = configFile >> "CfgAmmo" >> (getText(configFile >> "CfgMagazines" >> _x >> "ammo"));
+
         // Check for AGM and AA missiles
-        //if ((configName _ammoCfg) iskindof ["MissileBase", configFile >> "CfgAmmo"]) then {
-            private _maxLockSpeed = getNumber(_ammoCfg >> "missileLockMaxSpeed");
-            if (_maxLockSpeed > 0) then {
-                if (_maxLockSpeed < 150) then {
-                    _attack = true;
-                    _cas = true;
-                } else {
+        private _maxLockSpeed = getNumber(_ammoCfg >> "missileLockMaxSpeed"); // New A3 1.70 targeting
+        private _airLock = getNumber(_ammoCfg >> "airLock"); // legacy targeting
+        private _laserDesignate = getText(_ammoCfg >> "simulation") == "laserDesignate";
+        if (_maxLockSpeed > 0 || _airlock > 0) then {
+            if (_maxLockSpeed < 150 || (_airlock == 1 && !_laserDesignate)) then {
+                _attack = true;
+                _cas = true;
+                if ((_airlock == 1 && !_laserDesignate) && _class iskindof "Plane") then {
                     _fighter = true;
                 };
+            } else {
+                _fighter = true;
             };
-        //};
+        };
+
     } foreach _magazines;
 
     if (_cas) then {_result pushback "CAS"};
@@ -596,7 +600,6 @@ switch(_operation) do {
         _threatArray pushbackUnique _threat;
         [GVAR(threats), str(_logic), _threatArray] call ALiVE_fnc_hashSet;
     };
-
     case "scanAirspace": {
 
         private _airspace = [_logic,"airspace"] call MAINCLASS;
@@ -1013,6 +1016,10 @@ switch(_operation) do {
             // If no runways etc then look for helipads
             if (count _airClusters == 0) then {
                 _airClusters = [(ALIVE_clustersMilHeli select 2), _airspace] call ALIVE_fnc_clustersInsideMarker;
+            };
+
+            if (count _airClusters == 0) then {
+                 _airClusters = [(ALIVE_clustersMil select 2), _airspace] call ALIVE_fnc_clustersInsideMarker;
             };
 
             // Select the nearest cluster to the module or use Aircraft Carrier
