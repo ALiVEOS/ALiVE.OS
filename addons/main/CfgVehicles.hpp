@@ -92,7 +92,7 @@ class CfgVehicles {
             {
                     property =  QGVAR(debug);
                     displayName = "$STR_ALIVE_DEBUG";
-                    description = "$STR_ALIVE_DEBUG_COMMENT";
+                    tooltip = "$STR_ALIVE_DEBUG_COMMENT";
                     defaultValue = """false""";
                     class Values
                     {
@@ -112,7 +112,7 @@ class CfgVehicles {
             {
                     property =  QGVAR(Versioning);
                     displayName = "$STR_ALIVE_REQUIRES_ALIVE_VERSIONING";
-                    description = "$STR_ALIVE_REQUIRES_ALIVE_VERSIONING_COMMENT";
+                    tooltip = "$STR_ALIVE_REQUIRES_ALIVE_VERSIONING_COMMENT";
                     defaultValue = """warning""";
                     class Values
                     {
@@ -133,7 +133,7 @@ class CfgVehicles {
             {
                     property =  QGVAR(AI_DISTRIBUTION);
                     displayName = "$STR_ALIVE_REQUIRES_ALIVE_AI_DISTRIBUTION";
-                    description = "$STR_ALIVE_REQUIRES_ALIVE_AI_DISTRIBUTION_COMMENT";
+                    tooltip = "$STR_ALIVE_REQUIRES_ALIVE_AI_DISTRIBUTION_COMMENT";
                     defaultValue = """false""";
                     class Values
                     {
@@ -154,7 +154,7 @@ class CfgVehicles {
             {
                     property =  QGVAR(DISABLESAVE);
                     displayName = "$STR_ALIVE_DISABLESAVE";
-                    description = "$STR_ALIVE_DISABLESAVE_COMMENT";
+                    tooltip = "$STR_ALIVE_DISABLESAVE_COMMENT";
                     defaultValue = """true""";
                     class Values
                     {
@@ -174,7 +174,7 @@ class CfgVehicles {
             {
                     property =  QGVAR(DISABLEMARKERS);
                     displayName = "$STR_ALIVE_DISABLEMARKERS";
-                    description = "$STR_ALIVE_DISABLEMARKERS_COMMENT";
+                    tooltip = "$STR_ALIVE_DISABLEMARKERS_COMMENT";
                     typeName = "BOOL";
                     defaultValue = "false";
                     class Values
@@ -196,7 +196,7 @@ class CfgVehicles {
                     property =  QGVAR(DISABLEADMINACTIONS);
 
                     displayName = "$STR_ALIVE_DISABLEADMINACTIONS";
-                    description = "$STR_ALIVE_DISABLEADMINACTIONS_COMMENT";
+                    tooltip = "$STR_ALIVE_DISABLEADMINACTIONS_COMMENT";
                     typeName = "BOOL";
                     defaultValue = "false";
                     class Values
@@ -217,7 +217,7 @@ class CfgVehicles {
             {
                     property =  QGVAR(PAUSEMODULES);
                     displayName = "$STR_ALiVE_PAUSEMODULES";
-                    description = "$STR_ALiVE_PAUSEMODULES_COMMENT";
+                    tooltip = "$STR_ALiVE_PAUSEMODULES_COMMENT";
                     typeName = "BOOL";
                     defaultValue = "false";
                     class Values
@@ -238,28 +238,28 @@ class CfgVehicles {
             {
                     property =  QGVAR(GC_INTERVAL);
                     displayName = "$STR_ALIVE_GC_INTERVAL";
-                    description = "$STR_ALIVE_GC_INTERVAL_COMMENT";
+                    tooltip = "$STR_ALIVE_GC_INTERVAL_COMMENT";
                     defaultValue = """300""";
             };
             class ALiVE_GC_THRESHHOLD: Edit
             {
                     property =  QGVAR(GC_THRESHHOLD);
                     displayName = "$STR_ALIVE_GC_THRESHHOLD";
-                    description = "$STR_ALIVE_GC_THRESHHOLD_COMMENT";
+                    tooltip = "$STR_ALIVE_GC_THRESHHOLD_COMMENT";
                     defaultValue = """100""";
             };
             class ALiVE_GC_INDIVIDUALTYPES: Edit
             {
                     property =  QGVAR(GC_INDIVIDUALTYPES);
                     displayName = "$STR_ALIVE_GC_INDIVIDUALTYPES";
-                    description = "$STR_ALIVE_GC_INDIVIDUALTYPES_COMMENT";
+                    tooltip = "$STR_ALIVE_GC_INDIVIDUALTYPES_COMMENT";
                     defaultValue = """""";
             };
             class ALiVE_TABLET_MODEL: Combo
             {
                 property =  QGVAR(TABLET_MODEL);
                 displayName = "$STR_ALiVE_TABLET_MODEL";
-                description = "$STR_ALiVE_TABLET_MODEL_COMMENT";
+                tooltip = "$STR_ALiVE_TABLET_MODEL_COMMENT";
                 typeName = "STRING";
                 defaultValue = """Tablet01""";
                 class Values
