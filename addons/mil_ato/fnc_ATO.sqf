@@ -113,6 +113,17 @@ ALiVE_fnc_catapultLaunch = {
             (driver _vehicle) enableAI "MOVE";
             [_vehicle, _startdir] spawn BIS_fnc_AircraftCatapultLaunch;
 
+            sleep 2.2;
+
+            if (((getposASLW _vehicle) select 2) < 24) then {
+                private _vel = velocity _vehicle;
+                private _dir = direction _vehicle;
+                _vehicle setVelocity [
+                    (_vel select 0) + (sin _dir * 70),
+                    (_vel select 1) + (cos _dir * 70),
+                    (_vel select 2) + 50
+                ];
+            };
             sleep 4;
 
             [_part, _animations, 0] spawn BIS_fnc_Carrier01AnimateDeflectors;
