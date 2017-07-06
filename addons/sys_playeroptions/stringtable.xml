@@ -20,13 +20,13 @@
 <Key ID="STR_ALIVE_playeroptionsPARAMS_COMMENT">
     <Original>Over-ride default parameters for the Module Template</Original>
 </Key>
-<Key ID="STR_ALIVE_playeroptions_USAGE">
-    <Original>Place the module and configure player options</Original>
-</Key>
 <Key ID="STR_ALIVE_playeroptions_DEBUG">
     <Original>Debug:</Original>
 </Key>
 <Key ID="STR_ALIVE_playeroptions_DEBUG_COMMENT">
     <Original>Enable Debug</Original>
+</Key>
+<Key ID="STR_ALIVE_playeroptions_USAGE">
+    <Original>Simply place the ALiVE Player Options module and set the appropriate parameters. You do not need to sync, position or orientate this module.</Original>
 </Key>
 </Container></Package></Project>

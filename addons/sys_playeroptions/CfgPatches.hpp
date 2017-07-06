@@ -4,7 +4,7 @@ class CfgPatches {
         units[] = {};
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
-        requiredAddons[] = {"ALIVE_main","cba_ui"};
+        requiredAddons[] = {"A3_Modules_F","ALiVE_main","cba_ui"};
         versionDesc = "ALiVE";
         VERSION_CONFIG;
         author = MODULE_AUTHOR;
