@@ -113,14 +113,14 @@ class CfgVehicles {
                             property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_FACTION";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_FACTION_COMMENT";
-                            defaultValue = "BLU_F";
+                            defaultValue = """BLU_F""";
                     };
                     class autoGenerateBluforEnemyFaction : Edit
                     {
                             property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_ENEMY_FACTION";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_ENEMY_FACTION_COMMENT";
-                            defaultValue = "OPF_F";
+                            defaultValue = """OPF_F""";
                     };
                     class autoGenerateOpfor : Combo
                     {
@@ -147,14 +147,14 @@ class CfgVehicles {
                             property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_FACTION";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_FACTION_COMMENT";
-                            defaultValue = "OPF_F";
+                            defaultValue = """OPF_F""";
                     };
                     class autoGenerateOpforEnemyFaction : Edit
                     {
                             property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_ENEMY_FACTION";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_ENEMY_FACTION_COMMENT";
-                            defaultValue = "BLU_F";
+                            defaultValue = """BLU_F""";
                     };
                     class autoGenerateIndfor : Combo
                     {
@@ -181,14 +181,14 @@ class CfgVehicles {
                             property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_FACTION";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_FACTION_COMMENT";
-                            defaultValue = "IND_F";
+                            defaultValue = """IND_F""";
                     };
                     class autoGenerateIndforEnemyFaction : Edit
                     {
                             property = QGVAR(__LINE__);
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_ENEMY_FACTION";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_ENEMY_FACTION_COMMENT";
-                            defaultValue = "OPF_F";
+                            defaultValue = """OPF_F""";
                     };
                     // GROUP MANAGEMENT
                     class GROUP_MANAGEMENT: ALiVE_ModuleSubTitle
