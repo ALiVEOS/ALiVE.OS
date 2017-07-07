@@ -749,7 +749,7 @@ switch(_operation) do {
 
                 [_asset,"isOnCarrier", _isOnCarrier] call ALiVE_fnc_hashSet;
 
-                if (_vehicleClass iskindof "Plane" && ((_isVTOL mod 2) == 0) ) then {
+                if (_vehicleClass iskindof "Plane" && (_isVTOL < 3) ) then {
 
                     // Get airportID
                     private _airportID = [_position] call ALiVE_fnc_getNearestAirportID;
@@ -1055,9 +1055,6 @@ switch(_operation) do {
                 // Get nearest buildings
                 private _buildings = nearestObjects [_position, ["building"], 750];
 
-                // Check for water, spawn carrier?
-
-
                 // Check to see if the buildings match our ALiVE types
                 {
                     private _blg = typeof _x;
@@ -1167,7 +1164,6 @@ switch(_operation) do {
 
                 // Check for water, spawn carrier?
 
-
                 // Check to see if the buildings match our ALiVE types
                 {
                     private _blg = typeof _x;
@@ -1276,10 +1272,7 @@ switch(_operation) do {
                     } else {
                         // Man Statics
                     };
-
                 };
-
-
             };
 
             // Set the base location
@@ -3416,7 +3409,7 @@ switch(_operation) do {
                 private _currentPosition = [_aircraft,"currentPos"] call ALiVE_fnc_hashGet;
                 private _aircraftReady = [_aircraft,"ready",false] call ALiVE_fnc_hashGet;
                 private _isOnCarrier = [_aircraft,"isOnCarrier",false] call ALiVE_fnc_hashGet;
-                private _isPlane = _vehicleClass iskindof "Plane" && ((_isVTOL mod 2) == 0);
+                private _isPlane = _vehicleClass iskindof "Plane" && (_isVTOL < 3);
 
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
 
@@ -3645,7 +3638,7 @@ switch(_operation) do {
                         // if parked assign crew to vehicle if necessary, if at home move to ilsTaxiOut position at 300 feet, spawn aircraft at speed
                         if (_startPosition distance _currentPosition < 15) then {
 
-                            private _isPlane = _vehicleClass iskindof "Plane" && ((_isVTOL mod 2) == 0);
+                            private _isPlane = _vehicleClass iskindof "Plane" && (_isVTOL < 3);
                             private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
 
                             // If not active and not a UAV then launch, else go take off normally.
@@ -3699,7 +3692,7 @@ switch(_operation) do {
                                 [_profile,"direction",_taxiDir] call ALiVE_fnc_profileVehicle;
                                 [_profile,"spawnType",["preventDespawn"]] call ALiVE_fnc_profileVehicle;
 
-                                // Spawn aircraft in air
+                                // Spawn aircraft
                                 [_profile,"spawn"] call ALiVE_fnc_profileVehicle;
                                 if (_debug) then {
                                     ["ATO: Spawning"] call ALiVE_fnc_dump;
@@ -3916,7 +3909,7 @@ switch(_operation) do {
 
 
                                 // Unlock runway
-                                if (_vehicleClass iskindof "Plane" && ((_isVTOL mod 2) == 0) ) then {
+                                if (_vehicleClass iskindof "Plane" && (_isVTOL < 3)) then {
                                     private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                                     [_logic, "unlockRunway", _airportID] call MAINCLASS;
                                 };
@@ -4003,7 +3996,7 @@ switch(_operation) do {
                 // If aircraft is airborne, unlock runway once
                 if ( (getposATL _vehicle) select 2 > 50 && (getposASL _vehicle) select 2 > 50 && !_launched) then {
                     // Unlock runway now
-                    if (_vehicleClass iskindof "Plane" && ((_isVTOL mod 2) == 0) ) then {
+                    if (_vehicleClass iskindof "Plane" && (_isVTOL < 3) ) then {
                         private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                         [_logic, "unlockRunway", _airportID] call MAINCLASS;
                     };
@@ -4218,7 +4211,7 @@ switch(_operation) do {
                 private _startPosition = [_aircraft,"startPos"] call ALiVE_fnc_hashGet;
                 private _vehicleClass = [_aircraft,"vehicleClass"] call ALiVE_fnc_hashGet;
                 private _isVTOL = [_vehicleClass] call ALiVE_fnc_isVTOL;
-                private _isPlane = _vehicleClass iskindof "Plane" && ((_isVTOL mod 2) == 0);
+                private _isPlane = _vehicleClass iskindof "Plane" && (_isVTOL < 3);
 
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
                 if(_count == 0) exitWith {
@@ -4302,7 +4295,7 @@ switch(_operation) do {
                             private _helipad = [_aircraft,"helipad"] call ALiVE_fnc_hashGet;
 
                             // Helicopter or VTOL?
-                            if !(_isVTOL mod 2 == 0) then {
+                            if !(_isVTOL < 3) then {
 
                                 _vehicle land "LAND";
                                 _vehicle landat _helipad;
@@ -4352,7 +4345,7 @@ switch(_operation) do {
                 private _startPosition = [_aircraft,"startPos"] call ALiVE_fnc_hashGet;
                 private _vehicleClass = [_aircraft,"vehicleClass"] call ALiVE_fnc_hashGet;
                 private _isVTOL = [_vehicleClass] call ALiVE_fnc_isVTOL;
-                private _isPlane = _vehicleClass iskindof "Plane" && ((_isVTOL mod 2) == 0);
+                private _isPlane = _vehicleClass iskindof "Plane" && (_isVTOL < 3);
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
 
                 if(_count == 0) exitWith {
