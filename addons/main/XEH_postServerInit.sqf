@@ -43,7 +43,7 @@ ALiVE_fnc_onPlayerDisconnected = {
     };
 };
 
-QGVAR(OPD) = ["PlayerDisconnected","ALiVE_fnc_OnPlayerDisconnected"];
+GVAR(OPD) = ["PlayerDisconnected","ALiVE_fnc_OnPlayerDisconnected"];
 
 ALiVE_fnc_onPlayerConnected = {
 
@@ -95,4 +95,4 @@ ALiVE_fnc_onPlayerConnected = {
     };
 };
 
-QGVAR(OPC) = ["PlayerConnected","ALiVE_fnc_OnPlayerConnected"];
+GVAR(OPC) = ["PlayerConnected","ALiVE_fnc_OnPlayerConnected"];
