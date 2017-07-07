@@ -830,8 +830,8 @@ switch (_operation) do {
                             [MOD(SYS_LOGISTICS),"removeActions",_object] call ALIVE_fnc_logistics;
                         };
 
-                        //Remove object from store
-                        [MOD(SYS_LOGISTICS),"removeObject",_object] call ALIVE_fnc_logistics;
+                        //Update object to persist the destroyed state
+                        [MOD(SYS_LOGISTICS),"updateObject",[_object]] call ALIVE_fnc_logistics;
 
                         if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {
                             ["ALiVE SYS LOGISTICS EH Killed firing"] call ALiVE_fnc_DumpR;
