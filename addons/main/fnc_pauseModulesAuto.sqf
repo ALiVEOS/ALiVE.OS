@@ -27,7 +27,7 @@ if !(isServer) exitwith {};
 ["ALiVE - Auto Pause Modules Initialising..."] call ALiVE_fnc_Dump;
 
 
-QMOD(PAUSEMODULES_EH_DISCONNECTED) = addMissionEventHandler ["PlayerDisconnected", {
+MOD(PAUSEMODULES_EH_DISCONNECTED) = addMissionEventHandler ["PlayerDisconnected", {
     [] spawn {
 
         sleep 30;
@@ -49,14 +49,14 @@ QMOD(PAUSEMODULES_EH_DISCONNECTED) = addMissionEventHandler ["PlayerDisconnected
     };
 }];
 
-QMOD(PAUSEMODULES_EH_CONNECTED) = addMissionEventHandler ["PlayerConnected", {
+MOD(PAUSEMODULES_EH_CONNECTED) = addMissionEventHandler ["PlayerConnected", {
 
-            if (!isnil QGVAR(PAUSEMODULES_PAUSED)) then {
+    if (!isnil QGVAR(PAUSEMODULES_PAUSED)) then {
 
-                GVAR(PAUSEMODULES_PAUSED) = nil;
-                PublicVariable QGVAR(PAUSEMODULES_PAUSED);
+        GVAR(PAUSEMODULES_PAUSED) = nil;
+        PublicVariable QGVAR(PAUSEMODULES_PAUSED);
 
-                ["ALiVE - Starting Modules"] call ALiVE_fnc_DumpR;
+        ["ALiVE - Starting Modules"] call ALiVE_fnc_DumpR;
 
         [
             "ALIVE_SYS_PROFILE",
