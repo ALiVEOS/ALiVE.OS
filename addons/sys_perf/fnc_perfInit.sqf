@@ -56,9 +56,6 @@ if (isDedicated && GVAR(ENABLED)) then {
     //GVAR(serverhostname) = ["ServerHostName"] call ALIVE_fnc_sendToPlugIn;
     //diag_log GVAR(serverhostname);
 
-    // Setup OPC and OPD events
-    //[QGVAR(OPD), "OnPlayerDisconnected","ALIVE_fnc_perf_OnPlayerDisconnected"] call BIS_fnc_addStackedEventHandler;
-
     // Setup Module Data Listener
     // Server side handler to write data to DB
     QGVAR(UPDATE_PERF) addPublicVariableEventHandler {

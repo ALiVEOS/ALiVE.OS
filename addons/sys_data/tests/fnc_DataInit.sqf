@@ -68,20 +68,17 @@ if (_logic getvariable ["debug", "false"] == "true") then {
 
 if (isServer) then {
 
-    // Setup OPC and OPD events
-    //[QGVAR(OPD), "OnPlayerDisconnected","ALIVE_fnc_data_OnPlayerDisconnected"] call BIS_fnc_addStackedEventHandler;
-
 	MOD(sys_data) = _logic;
 
     //Set Data logic defaults
     GVAR(DISABLED) = false;
-    publicVariable QGVAR(DISABLED);   
+    publicVariable QGVAR(DISABLED);
 
     GVAR(databaseName) = "arma3live";
     GVAR(source) = MOD(sys_data) getVariable ["source","CouchDB"];
-    
+
     switch GVAR(source) do {
-        
+
         case "pns" : {
 
             GVAR(GROUP_ID) = "ALiVE";
@@ -100,67 +97,67 @@ if (isServer) then {
 
             MOD(sys_data) setvariable ["disablePerf", "true",true];
             ALIVE_sys_perf_ENABLED = false;
-            publicVariable "ALIVE_sys_perf_ENABLED";         
+            publicVariable "ALIVE_sys_perf_ENABLED";
 
             MOD(sys_data) setvariable ["disableAAR", "true",true];
-            ALIVE_sys_AAR_ENABLED = false; 
-            publicVariable "ALIVE_sys_AAR_ENABLED";                                                 
+            ALIVE_sys_AAR_ENABLED = false;
+            publicVariable "ALIVE_sys_AAR_ENABLED";
         };
-        
+
         case "CouchDB" : {
-    		
+
 		    if (!isDedicated) exitWith {
 		        ["SYS DATA COUCHDB NOT RUN ON DEDICATED SERVER, DISABLING DATA MODULE"] call ALIVE_fnc_logger;
-                
+
 		        GVAR(DISABLED) = true;
 		        publicVariable QGVAR(DISABLED);
-		        
+
 	            MOD(sys_data) setvariable ["disableStats", "true"];
 		        ALIVE_sys_statistics_ENABLED = false;
 		        publicVariable "ALIVE_sys_statistics_ENABLED";
-		        
+
 	            MOD(sys_data) setvariable ["disablePerf", "true"];
 		        ALIVE_sys_perf_ENABLED = false;
 		        publicVariable "ALIVE_sys_perf_ENABLED";
-                
+
                 MOD(sys_data) = nil;
 		    };
 
 		    //Set Data logic defaults
 		    GVAR(DISABLED) = false;
-		    publicVariable QGVAR(DISABLED);                
+		    publicVariable QGVAR(DISABLED);
 
 		    private _initmsg = [_logic getVariable ["disablePerfMon","true"]] call ALIVE_fnc_startALiVEPlugIn;
-		
+
 		    ["ALIVE_SYS_DATA START PLUGIN: %1", _initmsg] call ALIVE_fnc_dump;
-		
+
 		    private _serverIP = [] call ALIVE_fnc_getServerIP;
 		    // If the host IP web service is down, just use the serverName
 		    if (_serverIP != "SYS_DATA_ERROR" && typeName _initmsg == "STRING" && {_initmsg == "YOU ARE NOT AUTHORIZED"}) then {
 		        ["YOUR SERVER EXTERNAL IP ADDRESS AS SEEN BY WAR ROOM: %1 (Ensure it matches with your War Room server entry if you have any issues)",_serverIP] call ALiVE_fnc_dump;
 		    };
-		
+
 		    GVAR(GROUP_ID) = [] call ALIVE_fnc_getGroupID;
-		
+
 		    if(ALiVE_SYS_DATA_DEBUG_ON) then {
 		        ["ALiVE SYS_DATA - GROUP NAME: %1",GVAR(GROUP_ID)] call ALIVE_fnc_dump;
 		    };
-		
+
 		    // Setup data handler
 		    GVAR(datahandler) = [nil, "create"] call ALIVE_fnc_Data;
-		
+
 		    // Setup Data Dictionary
 		    ALIVE_DataDictionary = [] call ALIVE_fnc_hashCreate;
-		
+
 		    ["DATA: Loading ALiVE config from database."] call ALIVE_fnc_dump;
-		
+
 		    // Get global config information
 		    _config = [GVAR(datahandler), "read", ["sys_data", [], "config"]] call ALIVE_fnc_Data;
-		
+
 		    if(ALiVE_SYS_DATA_DEBUG_ON) then {
 		        ["ALiVE SYS_DATA - CONFIG: %1",_config] call ALIVE_fnc_dump;
 		    };
-		
+
 		    // Check that the config loaded ok, if not then stop the data module
 		    if (typeName _config == "STRING" || (typeName _initmsg == "STRING" && {_initmsg == "YOU ARE NOT AUTHORIZED"})) exitWith {
 		        ["CANNOT CONNECT TO DATABASE, DISABLING DATA MODULE"] call ALIVE_fnc_logger;
@@ -173,7 +170,7 @@ if (isServer) then {
 		        ALIVE_sys_perf_ENABLED = false;
 		        publicVariable "ALIVE_sys_perf_ENABLED";
 		    };
-		
+
 		    // Check to see if the service is off
 		    if ([_config, "On"] call ALIVE_fnc_hashGet == "false") exitWith {
 		        ["CONNECTED TO DATABASE, BUT SERVICE HAS BEEN TURNED OFF"] call ALIVE_fnc_logger;
@@ -186,9 +183,9 @@ if (isServer) then {
 		        ALIVE_sys_statistics_ENABLED = false;
 		        publicVariable "ALIVE_sys_statistics_ENABLED";
 		    };
-		
+
 		    ["CONNECTED TO DATABASE OK"] call ALIVE_fnc_logger;
-		
+
 		    // Global config overrides module settings
 		    if ([_config, "PerfData","false"] call ALIVE_fnc_hashGet != "none") then {
 		        if ([_config, "PerfData","false"] call ALIVE_fnc_hashGet == "true") then {
@@ -202,7 +199,7 @@ if (isServer) then {
 		            publicVariable "ALIVE_sys_perf_ENABLED";
 		        };
 		    };
-		
+
 		    if ([_config, "EventData","false"] call ALIVE_fnc_hashGet == "false") then {
 		        ["CONNECTED TO DATABASE, BUT STAT DATA HAS BEEN TURNED OFF"] call ALIVE_fnc_logger;
 		        ALIVE_sys_statistics_ENABLED = false;
@@ -211,71 +208,71 @@ if (isServer) then {
 		        ALIVE_sys_statistics_ENABLED = if (_logic getvariable ["disableStats","false"] == "false") then {true} else {false};
 		        publicVariable "ALIVE_sys_statistics_ENABLED";
 		    };
-		
+
 		    if ([_config, "AAR","false"] call ALIVE_fnc_hashGet == "false") then {
 		        ["CONNECTED TO DATABASE, BUT AAR HAS BEEN TURNED OFF"] call ALIVE_fnc_logger;
 		        ALIVE_sys_AAR_ENABLED = false;
 		    } else {
 		        ALIVE_sys_AAR_ENABLED = true;
 		    };
-		
+
 		    // Set event level on data module
 		     ALIVE_sys_statistics_EventLevel = parseNumber([_config, "EventLevel","5"] call ALIVE_fnc_hashGet);
 		    // Set stats level
 		    MOD(sys_data) setVariable ["EventLevel", ALIVE_sys_statistics_EventLevel, true];
-		
+
 		    // Load Data Dictionary from central public database
 		    _dictionaryName = format["dictionary_%1_%2", GVAR(GROUP_ID), missionName];
-		
+
 		    GVAR(DictionaryRevs) = [];
-		
+
 		    // Try loading dictionary from db
 		    ["DATA: Loading data dictionary %1.", _dictionaryName] call ALIVE_fnc_dump;
-		
+
 		    _response = [GVAR(datahandler), "read", ["sys_data", [], _dictionaryName]] call ALIVE_fnc_Data;
 		    if ( typeName _response != "STRING") then {
 		        ALIVE_DataDictionary = _response;
-		
+
 		        // Capture Dictionary revision information
 		        GVAR(DictionaryRevs) pushback ([ALIVE_DataDictionary, "_rev"] call CBA_fnc_hashGet);
-		
+
 		        // Try loading more dictionary entries
 		        private ["_i","_newresponse","_addResponse"];
 		        _i = 1;
 		        while {_dictionaryName = format["dictionary_%1_%2_%3", GVAR(GROUP_ID), missionName, _i]; _newresponse = [GVAR(datahandler), "read", ["sys_data", [], _dictionaryName]] call ALIVE_fnc_Data; typeName _newresponse != "STRING"} do {
-		
+
 		            _addResponse = {
 		                [ALIVE_DataDictionary, _key, _value] call CBA_fnc_hashSet;
 		            };
-		
+
 		            [_newresponse, _addResponse] call CBA_fnc_hashEachPair;
 		            GVAR(DictionaryRevs) pushback ([_newresponse, "_rev"] call CBA_fnc_hashGet);
 		            _i = _i + 1;
 		        };
-		
+
 		        GVAR(dictionaryLoaded) = true;
-		
+
 		        if(ALiVE_SYS_DATA_DEBUG_ON) then {
 		            ["ALiVE SYS_DATA - DICTIONARY LOADED: %1",ALIVE_DataDictionary] call ALIVE_fnc_dump;
 		        };
-		
+
 		    } else {
 		        ["DATA: No data dictionary found, might be new mission"] call ALIVE_fnc_dump;
 		        if(ALiVE_SYS_DATA_DEBUG_ON) then {
 		            ["ALiVE SYS_DATA - NO DICTIONARY AVAILABLE: %1",_response] call ALIVE_fnc_dump;
 		        };
-		
+
 		        // Need to cancel loading data if there is no dictionary
 		        GVAR(dictionaryLoaded) = false;
 		    };
-            
+
 		    // Spawn a process to handle async writes
-		
+
 		    // loop and wait for queue to be updated
 		    // When queue changes process request, wait for response
 		    GVAR(ASYNC_QUEUE) = [];
 		    publicVariable QGVAR(ASYNC_QUEUE);
-		
+
 		    // Need to optimise this with PFH
 		    [] spawn {
 		        ["ALiVE SYS_DATA - ASYNC WRITE LOOP STARTING"] call ALIVE_fnc_dump;
@@ -287,31 +284,31 @@ if (isServer) then {
 		            {
 		                private ["_cmd","_response"];
 		                _cmd = _x;
-		
+
 		                //"Arma2Net.Unmanaged" callExtension _cmd;
 		                "ALiVEPlugIn" callExtension _cmd;
-		
+
 		                waitUntil {sleep 0.3; _response = ["SendJSONAsync []"] call ALIVE_fnc_sendToPlugIn; _response != "WAITING"};
-		
+
 		                GVAR(ASYNC_QUEUE) deleteAt _forEachIndex;
-		
+
 		                TRACE_3("ASYNC WRITE LOOP", _cmd, _response, count GVAR(ASYNC_QUEUE));
-		
+
 		                if(ALiVE_SYS_DATA_DEBUG_ON) then {
 		                    ["ALiVE SYS_DATA - ASYNC WRITE LOOP: %1 : %2", _cmd, _response] call ALIVE_fnc_dump;
 		                };
-		
+
 		                sleep 0.3;
-		
+
 		            } foreach GVAR(ASYNC_QUEUE);
 		            sleep 5;
 		        };
-		    };            
-        };                
+		    };
+        };
     };
-    
-    if (GVAR(DISABLED)) exitwith {};                          
-                        		
+
+    if (GVAR(DISABLED)) exitwith {};
+
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
         ["ALiVE SYS_DATA - MISSION: %1 %2 %3",_logic, MOD(sys_data), MOD(sys_data) getVariable "saveDateTime"] call ALIVE_fnc_dump;
     };
@@ -346,7 +343,7 @@ if (isServer) then {
         };
 
     };
-	
+
     // Handle compositions persistence
     MOD(PCOMPOSITIONS) = [] call CBA_fnc_hashCreate;
     if (GVAR(dictionaryLoaded) && (MOD(sys_data) getVariable ["saveCompositions","false"] == "true")) then {

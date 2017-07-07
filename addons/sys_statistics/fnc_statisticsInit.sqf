@@ -57,10 +57,6 @@ if (isDedicated && GVAR(ENABLED)) then {
         GVAR(serverIP) = GVAR(serverName);
     };
 
-    // Setup OPC and OPD events
-    //[QGVAR(OPC), "OnPlayerConnected","ALIVE_fnc_stats_OnPlayerConnected"] call BIS_fnc_addStackedEventHandler;
-    //[QGVAR(OPD), "OnPlayerDisconnected","ALIVE_fnc_stats_OnPlayerDisconnected"] call BIS_fnc_addStackedEventHandler;
-
     // Setup Module Data Listener
     // Server side handler to write data to DB
     QGVAR(UPDATE_EVENTS) addPublicVariableEventHandler {

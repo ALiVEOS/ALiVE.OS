@@ -26,7 +26,8 @@ if !(isServer) exitwith {};
 
 ["ALiVE - Auto Pause Modules Initialising..."] call ALiVE_fnc_Dump;
 
-[QMOD(PAUSEMODULES_EH_DISCONNECTED),"onPlayerDisconnected", {
+
+QMOD(PAUSEMODULES_EH_DISCONNECTED) = addMissionEventHandler ["PlayerDisconnected", {
     [] spawn {
 
         sleep 30;
@@ -46,9 +47,9 @@ if !(isServer) exitwith {};
             PublicVariable QGVAR(PAUSEMODULES_PAUSED);
         };
     };
-}] call BIS_fnc_addStackedEventHandler;
+}];
 
-[QMOD(PAUSEMODULES_EH_CONNECTED),"onPlayerConnected", {
+QMOD(PAUSEMODULES_EH_CONNECTED) = addMissionEventHandler ["PlayerConnected", {
 
             if (!isnil QGVAR(PAUSEMODULES_PAUSED)) then {
 
@@ -64,4 +65,4 @@ if !(isServer) exitwith {};
             "ALIVE_AMB_CIV_POPULATION"
         ] call ALiVE_fnc_unPauseModule;
     };
-}] call BIS_fnc_addStackedEventHandler;
+}];
