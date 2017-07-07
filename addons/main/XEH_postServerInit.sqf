@@ -43,7 +43,7 @@ ALiVE_fnc_onPlayerDisconnected = {
     };
 };
 
-GVAR(OPD) = ["PlayerDisconnected","ALiVE_fnc_OnPlayerDisconnected"];
+GVAR(OPD) = addMissionEventHandler ["PlayerDisconnected","ALiVE_fnc_OnPlayerDisconnected"];
 
 ALiVE_fnc_onPlayerConnected = {
 
@@ -95,4 +95,4 @@ ALiVE_fnc_onPlayerConnected = {
     };
 };
 
-GVAR(OPC) = ["PlayerConnected","ALiVE_fnc_OnPlayerConnected"];
+GVAR(OPC) = addMissionEventHandler ["PlayerConnected","ALiVE_fnc_OnPlayerConnected"];
