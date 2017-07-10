@@ -1852,7 +1852,7 @@ switch(_operation) do {
                         };
                         // Check helicopters can slingload
                         {
-                            _slingAvailable = [(configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue > 1000;
+                            _slingAvailable = [(configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass"), 0] call ALiVE_fnc_getConfigValue > 1000;
                             if (_slingAvailable) exitWith {};
                         } foreach  _airTrans;
 
