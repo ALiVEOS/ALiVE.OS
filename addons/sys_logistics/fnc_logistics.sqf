@@ -822,12 +822,17 @@ switch (_operation) do {
 
                         _object = _this select 0;
 
-                        if (isPlayer _object && {vehicle _object == _object}) then {
-                            //Drop object if player is carrying while beeing killed
-                            {[MOD(SYS_LOGISTICS),"dropObject",[_x,_object]] call ALIVE_fnc_logistics} foreach (_object getvariable [QGVAR(CARGO),[]]);
-
+                        if (isPlayer _object) then {
+                            if (vehicle _object == _object) then {
+	                            //Drop object if player is carrying while beeing killed
+	                            {[MOD(SYS_LOGISTICS),"dropObject",[_x,_object]] call ALIVE_fnc_logistics} foreach (_object getvariable [QGVAR(CARGO),[]]);
+                            } else {
+                                //Update vehicle if player is in a vehicle
+		                        [MOD(SYS_LOGISTICS),"updateObject",[vehicle _object]] call ALIVE_fnc_logistics;
+                            };
+                            
                             //Deactivate actions
-                            [MOD(SYS_LOGISTICS),"removeActions",_object] call ALIVE_fnc_logistics;
+                            [MOD(SYS_LOGISTICS),"removeActions",_object] call ALIVE_fnc_logistics;                   
                         };
 
                         //Update object to persist the destroyed state
