@@ -50,7 +50,7 @@ if !(isClass _path) then {
 		   		_path = missionConfigFile >> "CfgFactionClasses" >> _x;
 				if !(isClass _path) then {_path = configFile >> "CfgFactionClasses" >> _x};
 		   };
-
+			false
 		} count (ALiVE_factionCustomMappings select 1);
 	};
 };

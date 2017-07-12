@@ -48,6 +48,7 @@ switch(_type) do {
             private _he = ["Mo_shells", _x] call BIS_fnc_inString;
             if (!_he) then { _he = ["he", _x] call BIS_fnc_inString; };
             if (_he) then { _ords pushBack _x; };
+            false
         } count _mags;
     };
     case "SMOKE": {
@@ -55,18 +56,21 @@ switch(_type) do {
             private _smoke = ["Mo_smoke", _x] call BIS_fnc_inString;
             if (!_smoke) then { _smoke = ["smoke", _x] call BIS_fnc_inString; };
             if (_smoke) then { _ords pushBack _x; };
+            false
         } count _mags;
     };
     case "SADARM": {
         {
             private _guided = ["Mo_guided", _x] call BIS_fnc_inString;
             if (_guided) then { _ords pushBack _x; };
+            false
         } count _mags;
     };
     case "CLUSTER": {
         {
             private _cluster = ["Mo_Cluster", _x] call BIS_fnc_inString;
             if (_cluster) then { _ords pushBack _x; };
+            false
         } count _mags;
     };
     case "LASER": {
@@ -74,24 +78,28 @@ switch(_type) do {
             private _lg = ["Mo_LG", _x] call BIS_fnc_inString;
             if (!_lg) then { _lg = ["laser", _x] call BIS_fnc_inString; };
             if (_lg) then { _ords pushBack _x; };
+            false
         } count _mags;
     };
     case "MINE": {
         {
             private _mine = ["Mo_mine", _x] call BIS_fnc_inString;
             if (_mine) then { _ords pushBack _x; };
+            false
         } count _mags;
     };
     case "AT MINE": {
         {
             private _atmine = ["Mo_AT_mine", _x] call BIS_fnc_inString;
             if (_atmine) then { _ords pushBack _x; };
+            false
         } count _mags;
     };
     case "ROCKETS": {
         {
             private _rockets = ["rockets", _x] call BIS_fnc_inString;
             if (_rockets) then { _ords pushBack _x; };
+            false
         } count _mags;
     };
 
@@ -100,6 +108,7 @@ switch(_type) do {
             private _illum = ["illum", _x] call BIS_fnc_inString;
             if (!_illum) then { _illum = ["flare", _x] call BIS_fnc_inString; };
             if (_illum) then { _ords pushBack _x; };
+            false
         } count _mags;
     };
     case default { _ord = ""; };

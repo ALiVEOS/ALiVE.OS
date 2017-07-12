@@ -42,6 +42,7 @@ _findRecurse = {
 
             {
                 _result pushback [_x, _x call ALIVE_fnc_configGetWeaponMagazines, _currentPath, str _class];
+                false
             } count getArray (_class >> "weapons");
 
             _class = _class >> "turrets";
