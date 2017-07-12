@@ -29,4 +29,6 @@ params ["_target", "_move"];
 
 if((isServer && isMultiplayer) || isDedicated) then {
     [_target, _move] remoteExec ["ALIVE_fnc_clientSwitchMove"];
-} else { _target switchMove _move; };
+} else {
+    _target switchMove _move;
+};
