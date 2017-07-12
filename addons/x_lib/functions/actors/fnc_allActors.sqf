@@ -26,18 +26,20 @@ Author:
     Naught, dixon13
 ---------------------------------------------------------------------------- */
 
+private "_return";
+
 params [["_group", grpNull]];
 
-if (_group == grpNull) then {
+if (isNull "_group") then {
     _group = ALiVE_actors_mainGroup;
     if (!isNil "_group") then {
-        units _group
+        _return = units _group;
     } else {
         LOG_WARNING("ALiVE_fnc_allActors", "Attempted to list actors before the main actor group was created!");
-        []
+        _return = [];
     };
 } else {
-    units _group
-}
+    _return = units _group;
+};
 
-
+_return

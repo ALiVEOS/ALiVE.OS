@@ -30,7 +30,9 @@ Author:
 
 params [["_code", {}, [{}]], ["_actor", objNull, [objNull]], ["_group", grpNull, [grpNull]]];
 
-if (_group == grpNull) then { _group = ALiVE_actors_mainGroup; };
+private "_return";
+
+if (isNull "_group") then { _group = ALiVE_actors_mainGroup; };
 
 if (!isNil "_group") then {
     if (isNull _actor) then {
@@ -42,8 +44,10 @@ if (!isNil "_group") then {
     _actor setVariable ["ALiVE_actors_owner", ALiVE_clientId, true];
     _actor setVariable ["ALiVE_actors_messageHandler", _code, false];
 
-    _actor
+    _return = _actor;
 } else {
     LOG_WARNING("ALiVE_fnc_createActor", "Attempted to create actor before the main actor group was created!");
-    objNull
+    _return = objNull;
 };
+
+_return
