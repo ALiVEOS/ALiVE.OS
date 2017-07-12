@@ -35,20 +35,25 @@ MOD(player_count) = 0;
 
 
 ALiVE_fnc_onPlayerDisconnected = {
+    params ["_id", "_uid", "_name", "_jip", "_owner"];
 
     TRACE_1("OPD DATA",_this);
+
+    ["OPD DATA %1",_this] call ALiVE_fnc_dump;
 
     if (_name != "__SERVER__") then {
         MOD(player_count) = MOD(player_count) - 1;
     };
 };
 
-GVAR(OPD) = addMissionEventHandler ["PlayerDisconnected","ALiVE_fnc_OnPlayerDisconnected"];
+GVAR(OPD) = addMissionEventHandler ["PlayerDisconnected",{_this call ALiVE_fnc_OnPlayerDisconnected}];
 
 ALiVE_fnc_onPlayerConnected = {
+    params ["_id", "_uid", "_name", "_jip", "_owner"];
 
     TRACE_1("OPC DATA",_this);
-    //    ["OPC DATA",_this] call ALiVE_fnc_dump;
+
+    ["OPC DATA %1",_this] call ALiVE_fnc_dump;
 
     if !(isNil QMOD(sys_statistics)) then {
         // Stats module onPlayerConnected call
@@ -95,4 +100,4 @@ ALiVE_fnc_onPlayerConnected = {
     };
 };
 
-GVAR(OPC) = addMissionEventHandler ["PlayerConnected","ALiVE_fnc_OnPlayerConnected"];
+GVAR(OPC) = addMissionEventHandler ["PlayerConnected",{_this call ALiVE_fnc_OnPlayerConnected}];
