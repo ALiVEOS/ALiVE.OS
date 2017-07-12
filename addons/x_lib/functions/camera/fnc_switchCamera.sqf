@@ -34,8 +34,8 @@ ALIVE_cameraTakenFrom = cameraOn;
 ALIVE_cameraTakenFromView = cameraView;
 
 switch(_type) do {
-    case "FIRST_PERSON": { _target switchCamera "INTERNAL"; };
-    case "OPTICS": { _target switchCamera "GUNNER"; };
-    case "THIRD_PERSON": { _target switchCamera "EXTERNAL"; };
-    case "FIRST_PERSON_REAL": { _target switchCamera "VIEW"; };
+    case "FIRST_PERSON": {      _target switchCamera "INTERNAL"; };
+    case "OPTICS": {            _target switchCamera "GUNNER";   };
+    case "THIRD_PERSON": {      _target switchCamera "EXTERNAL"; };
+    case "FIRST_PERSON_REAL": { _target switchCamera "VIEW";     };
 };

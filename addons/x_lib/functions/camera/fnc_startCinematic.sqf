@@ -32,7 +32,9 @@ if(_cinemaBorder) then { showCinemaBorder true; };
 
 if!(_instant) then {
     2000 cutText ["", "BLACK", 1];
-    sleep 1; 2000 cutFadeOut 1; sleep 1;
+    sleep 1;
+    2000 cutFadeOut 1;
+    sleep 1;
 };
 
 _camera cameraEffect ["Internal", "Back"];

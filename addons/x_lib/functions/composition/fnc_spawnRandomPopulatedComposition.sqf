@@ -141,6 +141,7 @@ if(_groupCount > 0) then {
                 if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
                     [_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[100,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity;
                 };
+                false
             } count _units;
         };
     };

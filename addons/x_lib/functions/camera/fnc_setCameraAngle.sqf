@@ -31,12 +31,12 @@ private _y = _position select 2;
 
 switch(_angle) do {
     case "DEFAULT": {};
-    case "LOW": { _position set [2,_y+1]; };
-    case "EYE": { _position set [2,_y+1.3]; };
-    case "HIGH": { _position set [2,_y+2]; };
-    case "BIRDS_EYE": { _position set [2,_y+20]; };
-    case "UAV": { _position set [2,_y+100]; };
-    case "SATELITE": { _position set [2,_y+500]; };
+    case "LOW": {       _position set [2,_y+1];   };
+    case "EYE": {       _position set [2,_y+1.3]; };
+    case "HIGH": {      _position set [2,_y+2];   };
+    case "BIRDS_EYE": { _position set [2,_y+20];  };
+    case "UAV": {       _position set [2,_y+100]; };
+    case "SATELITE": {  _position set [2,_y+500]; };
 };
 
 _position

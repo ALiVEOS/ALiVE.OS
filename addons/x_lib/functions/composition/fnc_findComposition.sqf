@@ -56,6 +56,8 @@ scopeName "main";
             };
         };
     };
+    false
 } count _configPaths;
 
-if!(isNil "_foundComp") then { _comp } else { [] };
+_result = if!(isNil "_foundComp") then { _comp } else { [] };
+_result

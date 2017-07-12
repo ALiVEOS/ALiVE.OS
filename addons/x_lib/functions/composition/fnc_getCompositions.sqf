@@ -106,10 +106,13 @@ if (count _faction != 0) then {
                 if !(_x in _enemyFactions) then {
                     _enemyFactions pushback _x;
                 };
+                false
             } count (_enemy call ALiVE_fnc_getSideFactions);
             // diag_log format["FRIEND %1",_friendlySide];
             // diag_log format["ENEMY %1",_enemy];
+            false
         } count _enemySide;
+        false
     } count _faction;
 
 };
@@ -138,6 +141,7 @@ if (count _faction != 0) then {
             };
         };
     };
+    false
 } count _configPaths;
 
 
@@ -145,7 +149,8 @@ if (count _result == 0 && !_recursive) then {
     private _temp = "Urban";
     if (!isNil "ALiVE_mapCompositionType") then {
         // If we can't find any compositions for the current environment i.e. desert/woodland then check urban for any size composition
-        _temp = ALiVE_mapCompositionType; ALiVE_mapCompositionType = nil;
+        _temp = ALiVE_mapCompositionType;
+        ALiVE_mapCompositionType = nil;
     };
     // Another attempt at getting a composition (might not fit environment)
     _result = [_comp,_cat,[],_faction, true] call ALiVE_fnc_getCompositions;
