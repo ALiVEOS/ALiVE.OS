@@ -41,6 +41,7 @@ private _staticWeapons = nearestObjects [_position, ["StaticWeapon"], _radius];
 private _armedCars = nearestObjects [_position, ["Car"], _radius];
 {
     if (!([_x] call ALiVE_fnc_isArmed) || {_onlyProfiled && {isnil {_x getvariable "profileID"}}}) then {_armedCars = _armedCars - [_x]};
+    false
 } count _armedCars;
 _staticWeapons = _staticWeapons + _armedCars;
 
@@ -68,6 +69,7 @@ if (count _staticWeapons > 0) then {
                 _units = _units - [_unit];
             };
         };
+        false
     } count _staticWeapons;
 };
 
@@ -132,6 +134,7 @@ if (count _buildings > 0) then {
                 };
             } forEach _buildingPositions;
         };
+        false
     } count _buildings;
     
 } else {
@@ -159,7 +162,9 @@ if (count _buildings > 0) then {
                         if (str(_position) find "[0,0" != -1) then {
                             ["ALiVE Group Garrison - Warning! %1 building-pos in %2 detected! Unit %3 reset to %4!",_position,_building,_unit,_origPos] call ALiVE_fnc_Dump;
                             _unit setpos _origPos;
-                        } else { _unit setposATL _position; };
+                        } else {
+                            _unit setposATL _position;
+                        };
                         
                         _unit setdir ((_unit getRelDir _building)-180);
                         dostop _unit;
@@ -174,7 +179,9 @@ if (count _buildings > 0) then {
                             if (str(_position) find "[0,0" != -1) then {
                                 ["ALiVE Group Garrison - Warning! %1 building-pos in %2 detected! Unit %3 reset to %4!",_position,_building,_unit,_origPos] call ALiVE_fnc_Dump;
                                 [_unit, _origPos] call ALiVE_fnc_doMoveRemote;
-                            } else { [_unit, _position] call ALiVE_fnc_doMoveRemote; };
+                            } else {
+                                [_unit, _position] call ALiVE_fnc_doMoveRemote;
+                            };
                             
                             waitUntil {sleep 1; _unit call ALiVE_fnc_unitReadyRemote};
                             
@@ -185,5 +192,6 @@ if (count _buildings > 0) then {
                 };
             };
         } foreach _buildingPositions;
+        false
     } count _buildings;
 };
