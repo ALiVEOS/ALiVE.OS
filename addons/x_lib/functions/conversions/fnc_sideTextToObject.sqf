@@ -22,35 +22,17 @@ _result = ["EAST"] call ALIVE_fnc_sideTextToObject;
 See Also:
 
 Author:
-ARJay
+ARJay, dixon13
 ---------------------------------------------------------------------------- */
 
-private ["_side", "_result"];
-
-_side = _this select 0;
-
-switch(_side) do {
-    case "WEST": {
-        _result = west;
-    };
-    case "EAST": {
-        _result = east;
-    };
-    case "GUER": {
-        _result = resistance;
-    };
-    case "CIV": {
-        _result = civilian;
-    };
-    case "ENEMY": {
-        _result = east;
-    };
-    case "UNKNOWN": {
-        _result = civilian;
-    };
-    default {
-        _result = civilian;
-    };
+_result = switch(_this select 0) do {
+    case "WEST": { west };
+    case "EAST": { east };
+    case "GUER": { resistance };
+    case "CIV": { civilian };
+    case "ENEMY": { east };
+    case "UNKNOWN": { civilian };
+    default { civilian };
 };
 
 _result

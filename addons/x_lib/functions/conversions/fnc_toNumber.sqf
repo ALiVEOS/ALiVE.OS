@@ -24,29 +24,24 @@ Notes:
     1. Not safe for user input.
 
 Author:
-    Naught
+    Naught, dixon13
 ---------------------------------------------------------------------------- */
 
-private ["_val"];
-_val = _this select 0;
+params ["_val"];
 
-if (typeName(_val) == "STRING") then
-{
+if (_val isEqualType "") then {
     _val = compile _val;
 };
 
-if (typeName(_val) == "CODE") then
-{
+if (_val isEqualType {}) then {
     _val = call _val;
 };
 
-if (typeName(_val) == "BOOL") then
-{
-    _val = if (_val) then {1} else {0};
+if (_val isEqualType true) then {
+    _val = [0, 1] select _val;
 };
 
-if (typeName(_val) != "SCALAR") then
-{
+if (typeName _val != "SCALAR") then {
     _val = -1;
 };
 

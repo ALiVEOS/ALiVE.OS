@@ -22,29 +22,15 @@ _result = ["EAST"] call ALIVE_fnc_sideTextToLong;
 See Also:
 
 Author:
-ARJay
+ARJay, dixon13
 ---------------------------------------------------------------------------- */
 
-private ["_side", "_result"];
-
-_side = _this select 0;
-
-switch(_side) do {
-    case "WEST": {
-        _result = "BLUFOR";
-    };
-    case "EAST": {
-        _result = "OPFOR";
-    };
-    case "GUER": {
-        _result = "Independent";
-    };
-    case "CIV": {
-        _result = "Civilian";
-    };
-    default {
-        _result = "Civilian";
-    };
+_result = switch(_this select 0) do {
+    case "WEST": { "BLUFOR" };
+    case "EAST": { "OPFOR" };
+    case "GUER": { "Independent" };
+    case "CIV": { "Civilian" };
+    default { "Civilian" };
 };
 
 _result

@@ -25,10 +25,9 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-if (typeName(_this) != "ARRAY") then {_this = [_this]};
+if (typeName _this != "ARRAY") then {_this = [_this]};
 
-switch (_this select 0) do
-{
+switch (_this select 0) do {
     case 0: {"EAST"};
     case 1: {"WEST"};
     case 2: {"GUER"};

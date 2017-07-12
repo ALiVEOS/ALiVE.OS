@@ -22,29 +22,15 @@ _result = ["EAST"] call ALIVE_fnc_sideTextToNumber;
 See Also:
 
 Author:
-ARJay
+ARJay, dixon13
 ---------------------------------------------------------------------------- */
 
-private ["_side", "_result"];
-
-_side = _this select 0;
-
-switch(_side) do {
-    case "WEST": {
-        _result = 1;
-    };
-    case "EAST": {
-        _result = 0;
-    };
-    case "GUER": {
-        _result = 2;
-    };
-    case "CIV": {
-        _result = 3;
-    };
-    default {
-        _result = 3;
-    };
+_result = switch(_this select 0) do {
+    case "WEST": { 1 };
+    case "EAST": { 0 };
+    case "GUER": { 2 };
+    case "CIV": { 3 };
+    default { 3 };
 };
 
 _result

@@ -24,33 +24,24 @@ Notes:
     1. Not safe for user input.
 
 Author:
-    Naught
+    Naught, dixon13
 ---------------------------------------------------------------------------- */
 
-private ["_eval"];
-_eval = _this select 0;
+params ["_eval"];
 
-if (typeName(_eval) == "STRING") then
-{
-    _eval = if (_eval == "") then {false} else {compile _eval};
+if (_eval isEqualType "") then {
+    _eval = if (_eval isEqualTo "") then {false} else {compile _eval};
 };
 
-if (typeName(_eval) == "CODE") then
-{
+if (_eval isEqualType {}) then {
     _eval = (if ((count _this) > 1) then {_this select 1} else {[]}) call _eval;
 };
 
-if (typeName(_eval) == "SCALAR") then
-{
-    switch (_eval) do
-    {
-        case 0: {_eval = false;};
-        case 1: {_eval = true;};
-    };
+if (_eval isEqualType 0) then {
+    _eval = [false, true] select _eval;
 };
 
-if (typeName(_eval) != "BOOL") then
-{
+if (typeName _eval != "BOOL") then {
     _eval = false;
 };
 

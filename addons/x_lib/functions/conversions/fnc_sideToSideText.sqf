@@ -24,8 +24,7 @@ Author:
     Naught
 ---------------------------------------------------------------------------- */
 
-switch (_this select 0) do
-{
+switch (_this select 0) do {
     case WEST: {'WEST'};
     case EAST: {'EAST'};
     case RESISTANCE: {'GUER'};

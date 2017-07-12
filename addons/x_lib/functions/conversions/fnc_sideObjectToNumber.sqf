@@ -25,12 +25,7 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_side","_sideNumber"];
-
-_side = _this select 0;
-
-switch (_side) do
-{
+switch (_this select 0) do {
     case EAST: {0};
     case WEST: {1};
     case RESISTANCE: {2};

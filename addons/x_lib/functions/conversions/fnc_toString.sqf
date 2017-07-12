@@ -24,14 +24,11 @@ Author:
     Naught
 ---------------------------------------------------------------------------- */
 
-private ["_val"];
-_val = _this select 0;
+params ["_val"];
 
-switch (typeName(_val)) do
-{
+_return = switch (typeName _val) do {
     case "STRING": {_val};
-    case "ARRAY":
-    {
+    case "ARRAY": {
         private ["_ret"];
         _ret = "";
 
@@ -45,3 +42,5 @@ switch (typeName(_val)) do
     case "SIDE": {[_val] call ALiVE_fnc_sideToText};
     default {str(_val)};
 };
+
+_return
