@@ -32,8 +32,7 @@ if (isNil QMOD(PNS_STORE)) then {
     MOD(PNS_STORE) = [] call ALiVE_fnc_HashCreate;
 };
 
-private _id = _this select 0;
-private _data = _this select 1;
+params ["_id", "_data"];
 
 private _mission = format["ALiVE_%1",missionName];
 private _allMissions = profileNamespace getVariable [QMOD(SAVEDMISSIONS),[]];

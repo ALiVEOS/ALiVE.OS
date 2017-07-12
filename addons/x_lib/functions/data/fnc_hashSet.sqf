@@ -27,13 +27,8 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_hash","_key","_value","_index","_isDefault"];
-
-_hash = _this select 0;
-_key = _this select 1;
-_value = _this select 2;
-
-private ["_index", "_isDefault"];
+private ["_index","_isDefault"];
+params ["_hash", "_key", "_value"];
 
 if (isNil "BIS_fnc_areEqual") then { LOG( "WARNING: BIS_fnc_areEqual is Nil") };
 
@@ -42,10 +37,8 @@ _isDefault = [if (isNil "_value") then { nil } else { _value },
 _hash select HASH_DEFAULT_VALUE] call (uiNamespace getVariable "BIS_fnc_areEqual");
 
 _index = (_hash select HASH_KEYS) find _key;
-if (_index >= 0) then
-{
-    if (_isDefault) then
-    {
+if (_index >= 0) then {
+    if (_isDefault) then {
         // Remove the key, if the new value is the default value.
         // Do this by copying the key and value of the last element
         // in the hash to the position of the element to be removed.
@@ -67,10 +60,9 @@ if (_index >= 0) then
     };
 } else {
     // Ignore values that are the same as the default.
-    if (not _isDefault) then
-    {
-        PUSH(_hash select HASH_KEYS,_key);
-        PUSH(_hash select HASH_VALUES,_value);
+    if (not _isDefault) then {
+        (_hash select HASH_KEYS) pushBack _key;
+        (_hash select HASH_VALUES) pushBack _value;
     };
 };
 

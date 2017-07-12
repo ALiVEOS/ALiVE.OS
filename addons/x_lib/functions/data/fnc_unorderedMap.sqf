@@ -67,71 +67,53 @@ Author:
     Naught
 ---------------------------------------------------------------------------- */
 
-private ["_data", "_func", "_args"];
-_data = _this select 0;
-_func = _this select 1;
-_args = _this param [2, []];
+params ["_data", "_func", ["_args", []]];
 
-switch (_func) do
-{
-    case "new": // _args = nil
-    {
+switch (_func) do {
+    case "new": { // _args = nil
         ["unordered_map", [], []] // Return empty map data
     };
 
-    case "delete": // _args = nil
-    {
+    case "delete": { // _args = nil
         _data set [1, []];
         _data set [2, []];
         true; // Return true on success
     };
 
-    case "at": // _args = "key" or ["key", default]
-    {
+    case "at": { // _args = "key" or ["key", default]
         private ["_index"];
-        _index = (_data select 1) find ([_args, 0, ""] call BIS_fnc_param);
+        _index = (_data select 1) find (_args param [0, ""]);
 
-        if (_index >= 0) then
-        {
+        if (_index >= 0) then {
             (_data select 2) select _index;
-        }
-        else
-        {
-            [_args, 1, nil] call BIS_fnc_param; // Return default or nil on failure
+        } else {
+            _args param [1, nil]; // Return default or nil on failure
         };
     };
 
-    case "find": // _args = "key"
-    {
+    case "find": { // _args = "key"
         (_data select 1) find _args;
     };
 
-    case "size": // _args = nil
-    {
+    case "size": { // _args = nil
         count (_data select 1);
     };
 
-    case "count": // _args = "key"
-    {
+    case "count": { // _args = "key"
         {_x == _args} count (_data select 1);
     };
 
-    case "in": // _args = "key"
-    {
+    case "in": { // _args = "key"
         _args in (_data select 1);
     };
 
-    case "insert": // _args = ["key", value]
-    {
-        private ["_key", "_keys"];
-        _key = _args select 0;
-        _keys = _data select 1;
+    case "insert": { // _args = ["key", value]
+        params ["_key", "_keys"];
 
         private ["_index"];
         _index = _keys find _key;
 
-        if (_index < 0) then
-        {
+        if (_index < 0) then {
             _index = count _keys;
             _keys set [_index, _key];
         };
@@ -141,17 +123,13 @@ switch (_func) do
         _index
     };
 
-    case "erase": // _args = "key"
-    {
-        private ["_keys", "_values"];
-        _keys = _data select 1;
-        _values = _data select 2;
+    case "erase": { // _args = "key"
+        params ["_keys", "_values"];
 
         private ["_index"];
         _index = _keys find _args;
 
-        if (_index >= 0) then
-        {
+        if (_index >= 0) then {
             _keys set [_index, objNull];
             _data set [1, (_keys - [objNull])];
 
@@ -159,9 +137,7 @@ switch (_func) do
             _data set [2, (_values - [objNull])];
 
             true; // Return true on success
-        }
-        else
-        {
+        } else {
             false; // Return false on failure
         };
     };

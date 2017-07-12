@@ -31,7 +31,8 @@ private _allVariables = +(allvariables profileNamespace);
 
 {
   if ([tolower _x, "alive_"] call CBA_fnc_find != -1) then {profileNamespace setvariable [_x,nil]};
-} foreach _allVariables;
+  false
+} count _allVariables;
 
 profileNamespace setVariable [QMOD(SAVEDMISSIONS), nil];
 

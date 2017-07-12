@@ -24,9 +24,9 @@ Author:
 Tupolov
 ---------------------------------------------------------------------------- */
 
-private ["_gametime","_realTime","_groupID","_operation","_currenttime","_minutes","_hours","_hash"];
+private ["_gametime","_realTime","_groupID","_operation","_currenttime","_minutes","_hours"];
 
-_hash = _this select 0;
+params ["_hash"];
 
 // Get local time and format please.
 _currenttime = date;
@@ -51,7 +51,7 @@ _groupID = [] call ALIVE_fnc_getGroupID;
 _operation = getText (missionConfigFile >> "OnLoadName");
 
 if (_operation == "") then {
-        _operation = missionName;
+    _operation = missionName;
 };
 
 [_hash, "gameTime", _gametime] call ALIVE_fnc_hashSet;
@@ -59,6 +59,5 @@ if (_operation == "") then {
 [_hash, "Group", _groupID] call ALIVE_fnc_hashSet;
 [_hash, "Operation", _operation] call ALIVE_fnc_hashSet;
 [_hash, "Map", worldName] call ALIVE_fnc_hashSet;
-
 
 _hash

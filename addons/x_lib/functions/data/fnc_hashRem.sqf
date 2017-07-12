@@ -25,12 +25,9 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_hash","_key","_defaultValue"];
-
-_hash = _this select 0;
-_key = _this select 1;
-
 private ["_defaultValue"];
+
+params ["_hash", "_key"];
 
 _defaultValue = _hash select HASH_DEFAULT_VALUE;
 [_hash, _key, if (isNil "_defaultValue") then { nil } else { _defaultValue }] call ALIVE_fnc_hashSet;

@@ -26,11 +26,9 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_target","_whitelist","_blacklist","_hash","_key","_value","_copy","_hashCopy","_arrayCopy"];
+private ["_hash","_key","_value","_copy","_hashCopy","_arrayCopy"];
 
-_target = _this select 0;
-_whitelist = if(count _this > 1) then {_this select 1} else {[]};
-_blacklist = if(count _this > 2) then {_this select 2} else {[]};
+params ["_target", ["_whitelist", []], ["_blacklist", []]];
 
 _hash = [] call ALIVE_fnc_hashCreate;
 
@@ -54,7 +52,7 @@ _hash = [] call ALIVE_fnc_hashCreate;
     };
 
     if(_copy) then {
-        if(typeName _value == "ARRAY") then {
+        if(_value isEqualType []) then {
             if([_value] call ALIVE_fnc_isHash) then {
                 _hashCopy = [_value, _whitelist, _blacklist] call ALiVE_fnc_hashCopy;
                 [_hash, _key, _hashCopy] call ALIVE_fnc_hashSet;
@@ -67,7 +65,7 @@ _hash = [] call ALIVE_fnc_hashCreate;
             [_hash, _key, _value] call ALIVE_fnc_hashSet;
         }
     };
-
-} forEach (_target select 1);
+    false
+} count (_target select 1);
 
 _hash

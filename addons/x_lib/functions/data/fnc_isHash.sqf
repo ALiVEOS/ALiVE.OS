@@ -31,13 +31,11 @@ CBA
 #define HASH_ID 0
 #define TYPE_HASH "#CBA_HASH#"
 
-private ["_value","_result"];
+params ["_value"];
 
-_value = _this select 0;
+private _result = false;
 
-_result = false;
-
-if ((typeName _value) == "ARRAY" && {(count _value) == 4} && {(typeName (_value select HASH_ID)) == (typeName TYPE_HASH)}) then {
+if ((_value isEqualType []) && {(count _value) == 4} && {(typeName (_value select HASH_ID)) == (typeName TYPE_HASH)}) then {
     _result = ((_value select HASH_ID) == TYPE_HASH);
 };
 

@@ -50,14 +50,10 @@ private ["_string","_charArray","_mode","_type","_result","_pos","_retval"];
 JSON_fnc_parse = {
     // Accepts array of characters as ASCII codes
     // Returns Hash | Array values and pos
-    private ["_charArray","_pos","_mode","_return","_type","_key","_done","_result","_tmpArr","_value","_tmpHash","_tmpStr","_origType"];
+    private ["_return","_key","_done","_result","_tmpArr","_value","_tmpHash","_tmpStr","_origType"];
 
     // TRACE_1("Parse", toString (_this select 0));
-
-    _charArray = _this select 0;
-    _pos = _this select 1;
-    _mode = _this select 2;
-    _type = _this select 3;
+    params ["_charArray", "_pos", "_mode", "_type"];
     _origType = _type;
     _key = "";
     _return = false;

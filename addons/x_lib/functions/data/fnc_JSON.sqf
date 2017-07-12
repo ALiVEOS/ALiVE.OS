@@ -39,17 +39,12 @@ Author:
     Naught
 ---------------------------------------------------------------------------- */
 
-private ["_data", "_func", "_args"];
-_data = _this select 0;
-_func = _this select 1;
-_args = _this param [2, []];
+params ["_data", "_func", ["_args", []]];
 
 #define JSON_DATA_TYPES ["","BOOL","SCALAR","STRING","ARRAY"]
 
-switch (_func) do
-{
-    case "encode": // _args = any
-    {
+switch (_func) do {
+    case "encode": { // _args = any
         private ["_fnc_varSqfToJson"];
         _fnc_varSqfToJson = {
             if (isNil "_this") exitWith {"null"};
@@ -57,10 +52,8 @@ switch (_func) do
             private ["_typeName"];
             _typeName = typeName _this;
 
-            if (_typeName == "ARRAY") exitWith
-            {
-                if (!(_this isEqualTo []) && {typeName(_this select 0) == "STRING"} && {(_this select 0) == "unordered_map"}) then
-                {
+            if (_typeName == "ARRAY") exitWith {
+                if (!(_this isEqualTo []) && {(_this select 0) isEqualType ""} && {(_this select 0) == "unordered_map"}) then {
                     private ["_values", "_ret"];
                     _values = _this select 2;
                     _ret = "{";
@@ -71,9 +64,7 @@ switch (_func) do
                     } forEach (_this select 1);
 
                     _ret + "}" // Return js object
-                }
-                else // Standard array
-                {
+                } else { // Standard array
                     private ["_ret"];
                     _ret = "[";
 

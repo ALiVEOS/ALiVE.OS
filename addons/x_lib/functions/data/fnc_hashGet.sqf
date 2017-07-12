@@ -31,25 +31,21 @@ ARJay
 Wolffy
 ---------------------------------------------------------------------------- */
 
-private ["_hash","_key","_default","_result"];
-
-_hash = _this select 0;
-_key = _this select 1;
+private ["_default","_result"];
+params ["_hash", "_key", ["_default", []]];
 
 //Avoid passing a non-existing hash or key to the CBA function
-if (isnil "_hash" || {isnil "_key"} || {!(typeName _hash == "ARRAY")}) exitwith {
+if (isnil "_hash" || {isnil "_key"} || {!(_hash isEqualType [])}) exitWith {
     ["ALiVE_fnc_HashGet retrieved wrong input %1 from %2!",_this,_fnc_scriptNameParent] call ALiVE_fnc_Dump;
 };
 
-if(count _this > 2) then {
-    _default = _this select 2;
+if(count _default > 0) then {
     _result = [_hash, _key, _default] call CBA_fnc_hashGet;
 } else {
     _result = [_hash, _key] call CBA_fnc_hashGet;
 };
 // check for default value
-if(!(isNil "_result") && {typeName _result == "STRING"} && {_result == "UNDEF"} && {count _this > 2}) then {
-    _default = _this select 2;
+if(!(isNil "_result") && {_result isEqualType ""} && {_result == "UNDEF"} && {count _default > 0}) then {
     _result = _default;
 };
 
