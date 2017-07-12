@@ -193,7 +193,7 @@ switch(_operation) do {
 	                    // if SP or player that hosts a session execute connected EH manually
 	                    if (hasInterface) then {
 	                        ["sys_player", name player, getplayerUID player, owner player] call ALIVE_fnc_player_onPlayerConnected;
-	                    };   
+	                    };
 
                         // Set true that player data has been loaded
                         MOD(sys_player) setVariable ["loaded", true, true];
@@ -459,7 +459,9 @@ switch(_operation) do {
 
                             _result = true;
                     } else {
-                        TRACE_1("SYS_PLAYER PLAYER DATA DOES NOT EXIST",_unit);
+                        if ([_logic,"debug"] call MAINCLASS) then {
+                            ["SYS_PLAYER PLAYER DATA DOES NOT EXIST for connecting unit: %1",_unit] call ALiVE_fnc_dump;
+                        };
                         _result = false;
                     };
         };
