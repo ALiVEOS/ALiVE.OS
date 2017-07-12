@@ -31,6 +31,7 @@ private _j = 0;
 {
     for "_i" from 1 to _x do { _result pushback (_choices select _j); };
     _j = _j + 1;
+    false
 } count _bias;
 //hint str _result;
 selectRandom _result

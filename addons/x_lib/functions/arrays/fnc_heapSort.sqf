@@ -65,7 +65,7 @@ private ["_start", "_end"];
 
 params [["_array", [], [[]]], ["_compFunc", nil, [{}]]];
 
-if (_compFunc == nil) then { _compFunc = {_this}; };
+if (isNil "_compFunc") then { _compFunc = {_this}; };
 
 _start = ((count _array) - 2) / 2;
 _end = (count _array) - 1;
