@@ -1029,6 +1029,7 @@ switch(_operation) do {
 
                                 // Choose an aircraft
                                 _vehicleClass = (selectRandom _airClasses);
+                                private _position = position _x;
 
                                 // Check aircraft can fit in hangar
                                 private _large = false;
@@ -1037,16 +1038,19 @@ switch(_operation) do {
                                 if (_aircraftSize > 0) then {
                                     _large = (_hangarSize select 0 < _aircraftSize) || (_hangarSize select 1 < _aircraftSize);
                                 } else {
-                                    private _tmpVehicle = (_vehicleClass createUnit [[0,0,0], (createGroup WEST)]);
+                                    private _tmpVehicle = _vehicleClass createVehicle [0,0,5000];
                                     _aircraftSize = sizeOf _vehicleClass;
-                                    //deleteVehicle _tmpVehicle;
+                                    deleteVehicle _tmpVehicle;
                                     _large = (_hangarSize select 0 < _aircraftSize) || (_hangarSize select 1 < _aircraftSize);
+                                };
+
+                                if (!_large && {_aircraftSize > 39}) then {
+                                    _large = true;
                                 };
 
                                 // Find safe place to put aircraft
                                 private ["_pavement","_runway"];
-                                if ( ([typeOf _x, "hangar"] call CBA_fnc_find != -1 || [typeOf _x, "Hangar"] call CBA_fnc_find != -1) && !_large) then {
-                                    _position = position _x;
+                                if ( ([tolower(typeOf _x), "hangar"] call CBA_fnc_find != -1) && !_large) then {
                                     _direction = direction _x;
                                 } else { // find a taxiway
                                     _runway = [];
@@ -1057,20 +1061,22 @@ switch(_operation) do {
                                     } foreach (nearestObjects [position _x, [], 100]);
                                     if (count _runway > 0) then {
                                         // diag_log format["Cannot find hangar, choosing safe taxiway from: %1", _runway];
+
                                         _pavement = selectRandom _runway;
-                                        _position = position _pavement;
+                                        _position = [_pavement, 0, _aircraftSize * 3, _aircraftSize * 1.2, 0, 0.065, 0, [], [position _pavement, position _pavement]] call BIS_fnc_findSafePos;
+
                                         _direction = direction _pavement;
                                     } else {
                                         // Find safe place near by
                                         // diag_log format["Cannot find hangar or taxiway, looking for safe place to put aircraft %1", _x];
-                                        _position = [position _x, 25, 100, 4, 0, 0.2, 0] call BIS_fnc_findSafePos;
+                                        _position = [position _x, 25, 200, _aircraftSize, 0, 0.2, 0] call BIS_fnc_findSafePos;
                                         _direction = direction _x;
                                     };
                                 };
 
                                 // Check node does not have a planes placed already
-                                private _nearbyObj = nearestObjects [position _x, ["Plane"], 20];
-                                private _nearbyProfiles = [position _x, 20, [_side,"vehicle","Plane"]] call ALIVE_fnc_getNearProfiles;
+                                private _nearbyObj = nearestObjects [_position, ["Plane"], _aircraftSize];
+                                private _nearbyProfiles = [_position, _aircraftSize, [_side,"vehicle","Plane"]] call ALIVE_fnc_getNearProfiles;
                                 if (count _nearbyObj == 0 && count _nearbyProfiles == 0) then {
                                     // Place Aircraft
 
