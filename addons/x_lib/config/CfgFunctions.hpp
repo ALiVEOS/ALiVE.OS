@@ -692,6 +692,13 @@ class checkConfigCompatibility
     RECOMPILE;
 };
 
+class checkConfigWarnings
+{
+    file = "\x\alive\addons\x_lib\functions\diagnostics\fnc_checkConfigWarnings.sqf";
+    ext = ".sqf";
+    RECOMPILE;
+};
+
 class checkStaticDataMapping
 {
     file = "\x\alive\addons\x_lib\functions\diagnostics\fnc_checkStaticDataMapping.sqf";
