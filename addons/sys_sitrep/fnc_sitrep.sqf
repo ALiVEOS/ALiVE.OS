@@ -220,7 +220,7 @@ switch (_operation) do {
 
                         _waitTime = diag_tickTime + 60;
                         waitUntil {
-                             ["%1 : %2", _display, ((findDisplay _display) displayCtrl MAP_CONTROL)] call ALiVE_fnc_Dump;
+                             // ["%1 : %2", _display, ((findDisplay _display) displayCtrl MAP_CONTROL)] call ALiVE_fnc_Dump;
 
                             str ((findDisplay _display) displayCtrl MAP_CONTROL) != "No control" || diag_tickTime > _waitTime;
                         };
