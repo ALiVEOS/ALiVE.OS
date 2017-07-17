@@ -144,7 +144,7 @@ switch (_operation) do {
                 // Init
                 TRACE_1("Init Logic",_moduleLogic);
                 _code = missionNamespace getVariable format ["%1Init", _fnc];
-                [_moduleLogic,"init"] spawn _code;
+                [_moduleLogic,"init"] call _code;
 
             } forEach _playerOptionLogics;
 
