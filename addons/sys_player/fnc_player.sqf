@@ -204,7 +204,7 @@ switch(_operation) do {
                     };
 
                     MOD(sys_player) setVariable ["init", true, true];
-
+                    MOD(sys_player) setVariable ["startupComplete", true, true];
 
             } else {
                     if (hasInterface && (!isNil "ALIVE_sys_data" && {!ALIVE_sys_data_DISABLED})) then {
@@ -339,6 +339,7 @@ switch(_operation) do {
             TRACE_4("SYS_PLAYER4", typename (MOD(sys_player) getvariable "allowReset"), MOD(sys_player) getvariable "allowDiffClass",MOD(sys_player) getvariable "allowManualSave",MOD(sys_player) getvariable "storeToDB" );
 
             _logic setVariable ["bis_fnc_initModules_activate",true];
+
 
             TRACE_1("After module init",_logic);
             //"Player Persistence - Initialisation Completed" call ALiVE_fnc_logger;

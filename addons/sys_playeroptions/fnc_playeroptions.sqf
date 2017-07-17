@@ -148,12 +148,22 @@ switch (_operation) do {
 
             } forEach _playerOptionLogics;
 
-            TRACE_1("After module init",_logic);
-
             // Indicate Init is finished on server
             if (isServer) then {
+
+                // Wait for sys player to init.
+                waitUntil {
+                    private _exit = false;
+                    if !(isNil QMOD(sys_player)) then {
+                        _exit = MOD(sys_player) getVariable ["startupComplete",false];
+                    };
+                    _exit
+                };
+
                 _logic setVariable ["startupComplete", true, true];
             };
+
+            TRACE_1("After module init",_logic);
 
             if(!isDedicated && !isHC) then {
                 // Initialise interaction key if undefined
