@@ -6140,6 +6140,13 @@ switch(_operation) do {
         private _unitSide = [_unit,"side"] call ALiVE_fnc_hashGet;
         private _unitLoadout = [_unit,"loadout"] call ALiVE_fnc_hashGet;
 
+        private _identityTypes = [_unit,"identityTypes"] call ALiVE_fnc_hashGet;
+        private _identityFace = [_identityTypes,"face"] call ALiVE_fnc_hashGet;
+        private _identityVoice = [_identityTypes,"voice"] call ALiVE_fnc_hashGet;
+        private _identityMisc = [_identityTypes,"misc"] call ALiVE_fnc_hashGet;
+
+        private _identityInsignia = [_identityTypes,"insignia"] call ALiVE_fnc_hashGet;
+
         // format result
 
         private _newLine = toString [13,10];
@@ -6147,41 +6154,38 @@ switch(_operation) do {
         private _eventHandlers = [] call ALiVE_fnc_hashCreate;
         _result = "";
 
-        private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
-        _initEventHandler = _initEventHandler + "if (local (_this select 0)) then {_unit = _this select 0;";
-        _initEventHandler = _initEventHandler + "_onSpawn = {_unit = _this select 0;";
-        [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
+        // prepare string versions of data
 
-        private _identityTypes = [_unit,"identityTypes"] call ALiVE_fnc_hashGet;
-        private _identityFace = [_identityTypes,"face"] call ALiVE_fnc_hashGet;
-        private _identityVoice = [_identityTypes,"voice"] call ALiVE_fnc_hashGet;
-        private _identityInsignia = [_identityTypes,"insignia"] call ALiVE_fnc_hashGet;
-        private _identityMisc = [_identityTypes,"misc"] call ALiVE_fnc_hashGet;
+        private _identityTypesString = [_logic,"arrayToConfigArrayString", [_identityFace,_identityVoice] + _identityMisc - [""]] call MAINCLASS;
+        private _loadoutString = [str _unitLoadout,"""","'"] call CBA_fnc_replace;
+
+        private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
+        _initEventHandler = _initEventHandler + "if (local (_this select 0)) then {";
+        _initEventHandler = _initEventHandler + "private _onSpawn = {_this = _this select 0;";
+        _initEventHandler = _initEventHandler + "sleep 0.2; _backpack = gettext(configfile >> 'cfgvehicles' >> (typeof _this) >> 'backpack'); waituntil {sleep 0.2; backpack _this == _backpack};";
+
+        // insignia can only be added via SQF
+
+        if (_identityInsignia != "") then {
+            _initEventHandler = _initEventHandler + (format ["[_this,'%1'] call BIS_fnc_setUnitInsignia;};", _identityInsignia]);
+        };
+
+        _initEventHandler = _initEventHandler + format ["_this setunitloadout %1;", _loadoutString];
+
+        _initEventHandler = _initEventHandler + "reload _this";
+
+        _initEventHandler = _initEventHandler + "};"; // _onSpawn close
+        _initEventHandler = _initEventHandler + "_this spawn _onSpawn;";
+        _initEventHandler = _initEventHandler + "_unit addMPEventHandler ['MPRespawn', _onSpawn]";
+        _initEventHandler = _initEventHandler + "};"; // if (local _unit) close
+
+        [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;\
+
+        // apply identity
 
         private _identityTypesString = [_logic,"arrayToConfigArrayString", [_identityFace,_identityVoice] + _identityMisc - [""]] call MAINCLASS;
 
-        // insignia must be added via init eh
-
-        if (_identityInsignia != "") then {
-            _initEventHandler = _initEventHandler + (format ["_unit spawn {sleep 0.05;[_this,'%1'] call BIS_fnc_setUnitInsignia;};", _identityInsignia]);
-        };
-
         _result = _result + _indent + _indent + "identityTypes[] = " + _identityTypesString + ";" + _newLine;
-
-        // loadout
-
-        private _unitLoadoutString = [str _unitLoadout,"""","'"] call CBA_fnc_replace;
-        _initEventHandler = _initEventHandler + "_unit setUnitLoadout " + _unitLoadoutString + ";";
-
-        // hack to reload weapons on spawn
-
-        _initEventHandler = _initEventHandler + "reload _unit;";
-
-        _initEventHandler = _initEventHandler + "};"; // _onSpawn close
-        _initEventHandler = _initEventHandler + "[_unit] call _onSpawn;_unit addMPEventHandler ['MPRespawn', _onSpawn];";
-
-        _initEventHandler = _initEventHandler + "};"; // if (isServer) close
-        [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
 
         // event handlers
 
