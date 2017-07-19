@@ -6239,8 +6239,7 @@ switch(_operation) do {
         private _eventHandlers = [] call ALiVE_fnc_hashCreate;
         _result = "";
 
-        private _initEventHandler = _initEventHandler + "if (isServer) then {_unit = _this select 0;";
-        _initEventHandler = _initEventHandler + "if (isServer) then {_unit = _this select 0;";
+        private _initEventHandler = "if (local (_this select 0)) then {";
         _initEventHandler = _initEventHandler + "_onSpawn = {_unit = _this select 0;";
 
         private _realVehicle = [_logic,"getRealUnitClass", _unitConfigName] call MAINCLASS;
@@ -6248,7 +6247,7 @@ switch(_operation) do {
 
         if (count _unitTextureArray > 0) then {
             {
-                _initEventHandler = _initEventHandler + "(_this select 0) setObjectTextureGlobal " + (format ["[%1,'%2']",_forEachIndex,_x]) + ";";
+                _initEventHandler = _initEventHandler + "_unit setObjectTextureGlobal " + (format ["[%1,'%2']",_forEachIndex,_x]) + ";";
             } foreach _unitTextureArray;
             [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
         };
@@ -6275,7 +6274,7 @@ switch(_operation) do {
         _initEventHandler = _initEventHandler + "};"; // _onSpawn close
         _initEventHandler = _initEventHandler + "[_unit] call _onSpawn;_unit addMPEventHandler ['MPRespawn', _onSpawn];";
 
-        _initEventHandler = _initEventHandler + "};"; // if (isServer) close
+        _initEventHandler = _initEventHandler + "};"; // if (local (_this select 0)) close
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
 
         // event handlers
@@ -6289,10 +6288,10 @@ switch(_operation) do {
         private _eventHandlerStrings = _eventHandlers select 2;
 
         for "_i" from 0 to (count _eventHandlerTypes - 1) do {
-            _eventHandlerType = _eventHandlerTypes select _i;
-            _eventHandlerStatements = _eventHandlerStrings select _i;
+            private _eventHandlerType = _eventHandlerTypes select _i;
+            private _eventHandlerStatements = _eventHandlerStrings select _i;
 
-            _EHString = _eventHandlerType + " = " + """" + _eventHandlerStatements + """" + ";";
+            private _EHString = _eventHandlerType + " = " + """" + _eventHandlerStatements + """" + ";";
 
             _result = _result + _newLine + _indent + _indent + _indent + _indent + _EHString;
         };
