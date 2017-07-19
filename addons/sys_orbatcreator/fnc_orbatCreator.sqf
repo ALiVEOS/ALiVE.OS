@@ -6240,7 +6240,7 @@ switch(_operation) do {
         _result = "";
 
         private _initEventHandler = "if (local (_this select 0)) then {";
-        _initEventHandler = _initEventHandler + "_onSpawn = {_unit = _this select 0;";
+        _initEventHandler = _initEventHandler + "_onSpawn = {sleep 0.25; _unit = _this select 0;";
 
         private _realVehicle = [_logic,"getRealUnitClass", _unitConfigName] call MAINCLASS;
         private _unitTextureArray = [_logic,"getVehicleTextureArray", [_realVehicle,_unitTexture]] call MAINCLASS;
