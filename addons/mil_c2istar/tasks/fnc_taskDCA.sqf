@@ -47,26 +47,18 @@ switch (_taskState) do {
         _taskCurrent = _task select 9;
         _taskApplyType = _task select 10;
 
-        if (_taskID == "") exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _taskID!"] call ALiVE_fnc_Dump};
-        if (_requestPlayerID == "") exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _requestPlayerID!"] call ALiVE_fnc_Dump};
-        if (_taskFaction == "") exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _taskFaction!"] call ALiVE_fnc_Dump};
-        if (_taskLocationType == "") exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _taskLocationType!"] call ALiVE_fnc_Dump};
-        if (count _taskLocation == 0) exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _taskLocation!"] call ALiVE_fnc_Dump};
-        if (count _taskPlayers == 0) exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _taskPlayers!"] call ALiVE_fnc_Dump};
-        if (_taskEnemyFaction == "") exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _taskEnemyFaction!"] call ALiVE_fnc_Dump};
-        if (_taskApplyType == "") exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _taskApplyType!"] call ALiVE_fnc_Dump};
-
+        if (_taskID == "") exitwith {["C2ISTAR - Task DCA - Wrong input for _taskID!"] call ALiVE_fnc_Dump};
+        if (_requestPlayerID == "") exitwith {["C2ISTAR - Task DCA - Wrong input for _requestPlayerID!"] call ALiVE_fnc_Dump};
+        if (_taskFaction == "") exitwith {["C2ISTAR - Task DCA - Wrong input for _taskFaction!"] call ALiVE_fnc_Dump};
+        if (_taskLocationType == "") exitwith {["C2ISTAR - Task DCA - Wrong input for _taskLocationType!"] call ALiVE_fnc_Dump};
+        if (count _taskLocation == 0) exitwith {["C2ISTAR - Task DCA - Wrong input for _taskLocation!"] call ALiVE_fnc_Dump};
+        if (count _taskPlayers == 0) exitwith {["C2ISTAR - Task DCA - Wrong input for _taskPlayers!"] call ALiVE_fnc_Dump};
+        if (_taskEnemyFaction == "") exitwith {["C2ISTAR - Task DCA - Wrong input for _taskEnemyFaction!"] call ALiVE_fnc_Dump};
+        if (_taskApplyType == "") exitwith {["C2ISTAR - Task DCA - Wrong input for _taskApplyType!"] call ALiVE_fnc_Dump};
 
         _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideObjectToNumber;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideNumberToText;
-
-        // establish the location for the task
-        // get enemy vehicles
-
-        //Freezes game for a few seconds
-        //_targetSector = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorVehicles;
-        //_targetVehicles = [_targetSector,_taskEnemySide] call ALIVE_fnc_taskGetRandomSideVehicleFromSector;
 
         if (count _task > 11) then {
 
@@ -74,7 +66,7 @@ switch (_taskState) do {
 
         } else {
 
-            _targets = +([ALiVE_profileHandler, "getProfilesByType", "vehicle"] call ALIVE_fnc_profileHandler);
+            _targets = +([ALiVE_profileHandler, "getProfilesByVehicleType", "Plane"] call ALIVE_fnc_profileHandler);
 
             _targets = [_targets,[_taskLocation,_taskEnemySide],{
                 private ["_profile","_pos"];
@@ -99,28 +91,19 @@ switch (_taskState) do {
 
             private["_targetVehicle","_vehicleProfile","_vehiclePosition","_vehicleType","_vehicleName"];
 
-            private _targetVehicle = _targetVehicles select 0;
-            private _vehicleProfile = [];
-            private _vehiclePosition = _taskLocation;
-            private _vehicleType = "";
+            _targetVehicle = _targetVehicles select 0;
 
-            if (typeName _targetVehicle != "OBJECT") then {
-                _vehicleProfile = [ALIVE_profileHandler, "getProfile", _targetVehicle] call ALIVE_fnc_profileHandler;
-                _vehicleProfile call ALIVE_fnc_inspectHash;
-                _vehiclePosition = _vehicleProfile select 2 select 2;
-                _vehicleType = _vehicleProfile select 2 select 11;
-            } else {
-                _vehiclePosition = position _targetVehicle;
-                _vehicleType = typeof _targetVehicle;
-            };
-
+            _vehicleProfile = [ALIVE_profileHandler, "getProfile", _targetVehicle] call ALIVE_fnc_profileHandler;
+            _vehicleProfile call ALIVE_fnc_inspectHash;
+            _vehiclePosition = _vehicleProfile select 2 select 2;
+            _vehicleType = _vehicleProfile select 2 select 11;
             _vehicleName = getText(configFile >> "CfgVehicles" >> _vehicleType >> "displayName");
 
             private["_stagingPosition","_dialogOptions","_dialogOption"];
 
             // select the random text
 
-            _dialogOptions = [ALIVE_generatedTasks,"DestroyVehicles"] call ALIVE_fnc_hashGet;
+            _dialogOptions = [ALIVE_generatedTasks,"DCA"] call ALIVE_fnc_hashGet;
             _dialogOptions = _dialogOptions select 1;
             _dialogOption = +(selectRandom _dialogOptions);
 
@@ -129,6 +112,18 @@ switch (_taskState) do {
             private["_nearestTown","_dialog","_formatTitle","_formatDescription","_formatChat","_formatMessage","_formatMessageText"];
 
             _nearestTown = [_vehiclePosition] call ALIVE_fnc_taskGetNearestLocationName;
+
+            private _player = (_taskPlayers select 0) select 0;
+            _player = [_player] call ALiVE_fnc_getPlayerbyUID;
+
+            if (isNull _player) then {
+                _player = selectRandom (_taskPlayers select 0);
+                _player = [_player] call ALIVE_fnc_getPlayerByUID;
+            };
+
+            private _bearing = round(_player getRelDir _vehiclePosition);
+            private _range = round((_vehiclePosition distance _player) / 1000);
+            private _height = ceil(((ATLtoASL _vehiclePosition) select 2) / 1000);
 
             _dialog = [_dialogOption,"Parent"] call ALIVE_fnc_hashGet;
 
@@ -149,10 +144,12 @@ switch (_taskState) do {
             _formatChat = [_dialog,"chat_start"] call ALIVE_fnc_hashGet;
             _formatMessage = _formatChat select 0;
             _formatMessageText = _formatMessage select 1;
-            _formatMessageText = format[_formatMessageText,_vehicleName,_nearestTown];
+            _formatMessageText = format[_formatMessageText,_vehicleName,_nearestTown, _bearing, _range, _height];
             _formatMessage set [1,_formatMessageText];
             _formatChat set [0,_formatMessage];
             [_dialog,"chat_start",_formatChat] call ALIVE_fnc_hashSet;
+
+            _dialogOption call ALIVE_fnc_inspectHash;
 
             // create the tasks
 
@@ -172,7 +169,7 @@ switch (_taskState) do {
             _dialog = [_dialogOption,"Parent"] call ALIVE_fnc_hashGet;
             _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
             _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
-            _taskSource = format["%1-DestroyVehicles-Parent",_taskID];
+            _taskSource = format["%1-DCA-Parent",_taskID];
             _newTask = [_taskID,_requestPlayerID,_taskSide,_vehiclePosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,"N","None",_taskSource,false];
 
             _tasks pushback _newTask;
@@ -184,7 +181,7 @@ switch (_taskState) do {
             _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
             _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
             _newTaskID = format["%1_c2",_taskID];
-            _taskSource = format["%1-DestroyVehicles-Destroy",_taskID];
+            _taskSource = format["%1-DCA-Destroy",_taskID];
             _newTask = [_newTaskID,_requestPlayerID,_taskSide,_vehiclePosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,_taskCurrent,_taskID,_taskSource,true];
 
             _tasks pushback _newTask;
@@ -205,7 +202,7 @@ switch (_taskState) do {
             _result = [_tasks,_taskParams];
 
         } else {
-            ["C2ISTAR - Task DestroyVehicles - No vehicles for side %1 found! Aborting...",_taskEnemySide] call ALiVE_fnc_Dump;
+            ["C2ISTAR - Task DCA - No vehicles for side %1 found! Aborting...",_taskEnemySide] call ALiVE_fnc_Dump;
         };
 
     };
@@ -233,23 +230,15 @@ switch (_taskState) do {
 
         if(_lastState != "Destroy") then {
 
+            _currentTaskDialog call ALIVE_fnc_inspectHash;
+
             ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
             [_params,"lastState","Destroy"] call ALIVE_fnc_hashSet;
         };
 
-        if (typename (_vehicleProfiles select 0) == "STRING") then {
-            _vehiclesState = [_vehicleProfiles] call ALIVE_fnc_taskGetStateOfVehicleProfiles;
-            _allDestroyed = [_vehiclesState,"allDestroyed"] call ALIVE_fnc_hashGet;
-        } else {
-            _allDestroyed = true;
-            {
-                if (alive _x) then {
-                    _allDestroyed = false;
-                };
-            } foreach _vehicleProfiles;
-            _vehiclesState = [] call ALIVE_fnc_hashCreate;
-        };
+        _vehiclesState = [_vehicleProfiles] call ALIVE_fnc_taskGetStateOfVehicleProfiles;
+        _allDestroyed = [_vehiclesState,"allDestroyed"] call ALIVE_fnc_hashGet;
 
         if(_allDestroyed) then {
 
@@ -272,7 +261,7 @@ switch (_taskState) do {
             _taskEnemyFaction = [_params,"enemyFaction"] call ALIVE_fnc_hashGet;
             _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
 
-            _profiles = [_vehiclesState,"profiles",[]] call ALIVE_fnc_hashGet;
+            _profiles = [_vehiclesState,"profiles"] call ALIVE_fnc_hashGet;
 
             {
                 _position = _x select 2 select 2;
