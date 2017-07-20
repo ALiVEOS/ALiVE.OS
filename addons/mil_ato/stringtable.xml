@@ -59,6 +59,12 @@
 <Key ID="STR_ALIVE_ATO_PLACE_AIR_COMMENT">
     <Original>If there are no available air assets, then place additional assets at the nearest airbase or helipad</Original>
 </Key>
+<Key ID="STR_ALIVE_ATO_GENERATE_TASKS">
+    <Original>Generate Player Tasks:</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_GENERATE_TASKS_COMMENT">
+    <Original>Automatically generate player Air Tasking Orders (CSAR, CAS, Strike)</Original>
+</Key>
 <Key ID="STR_ALIVE_ATO_NOT_ESTABLISHED">
     <Original>All callsigns, this is %1, %2 forward airbase has not been established. No air assets available for tasking. Out.</Original>
 </Key>
