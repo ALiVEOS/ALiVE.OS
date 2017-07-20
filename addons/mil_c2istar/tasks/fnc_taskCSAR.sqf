@@ -397,6 +397,7 @@ switch (_taskState) do {
                             removeGoggles _x;
                             removeHeadgear _x;
                             removeAllAssignedItems _x;
+                            _x setRank "PRIVATE";
                             if ((random 1) > 0.5) then {
                                 _x setDamage (random 0.6);
                             };
