@@ -1,11 +1,11 @@
 #include <\x\alive\addons\mil_C2ISTAR\script_component.hpp>
-SCRIPT(taskDestroyVehicles);
+SCRIPT(taskSEAD);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_taskDestroyVehicles
+Function: ALIVE_fnc_taskSEAD
 
 Description:
-Assault Task
+SEAD
 
 Parameters:
 
@@ -47,14 +47,14 @@ switch (_taskState) do {
         _taskCurrent = _task select 9;
         _taskApplyType = _task select 10;
 
-        if (_taskID == "") exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _taskID!"] call ALiVE_fnc_Dump};
-        if (_requestPlayerID == "") exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _requestPlayerID!"] call ALiVE_fnc_Dump};
-        if (_taskFaction == "") exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _taskFaction!"] call ALiVE_fnc_Dump};
-        if (_taskLocationType == "") exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _taskLocationType!"] call ALiVE_fnc_Dump};
-        if (count _taskLocation == 0) exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _taskLocation!"] call ALiVE_fnc_Dump};
-        if (count _taskPlayers == 0) exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _taskPlayers!"] call ALiVE_fnc_Dump};
-        if (_taskEnemyFaction == "") exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _taskEnemyFaction!"] call ALiVE_fnc_Dump};
-        if (_taskApplyType == "") exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _taskApplyType!"] call ALiVE_fnc_Dump};
+        if (_taskID == "") exitwith {["C2ISTAR - Task SEAD - Wrong input for _taskID!"] call ALiVE_fnc_Dump};
+        if (_requestPlayerID == "") exitwith {["C2ISTAR - Task SEAD - Wrong input for _requestPlayerID!"] call ALiVE_fnc_Dump};
+        if (_taskFaction == "") exitwith {["C2ISTAR - Task SEAD - Wrong input for _taskFaction!"] call ALiVE_fnc_Dump};
+        if (_taskLocationType == "") exitwith {["C2ISTAR - Task SEAD - Wrong input for _taskLocationType!"] call ALiVE_fnc_Dump};
+        if (count _taskLocation == 0) exitwith {["C2ISTAR - Task SEAD - Wrong input for _taskLocation!"] call ALiVE_fnc_Dump};
+        if (count _taskPlayers == 0) exitwith {["C2ISTAR - Task SEAD - Wrong input for _taskPlayers!"] call ALiVE_fnc_Dump};
+        if (_taskEnemyFaction == "") exitwith {["C2ISTAR - Task SEAD - Wrong input for _taskEnemyFaction!"] call ALiVE_fnc_Dump};
+        if (_taskApplyType == "") exitwith {["C2ISTAR - Task SEAD - Wrong input for _taskApplyType!"] call ALiVE_fnc_Dump};
 
 
         _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
@@ -120,7 +120,7 @@ switch (_taskState) do {
 
             // select the random text
 
-            _dialogOptions = [ALIVE_generatedTasks,"DestroyVehicles"] call ALIVE_fnc_hashGet;
+            _dialogOptions = [ALIVE_generatedTasks,"SEAD"] call ALIVE_fnc_hashGet;
             _dialogOptions = _dialogOptions select 1;
             _dialogOption = +(selectRandom _dialogOptions);
 
@@ -172,7 +172,7 @@ switch (_taskState) do {
             _dialog = [_dialogOption,"Parent"] call ALIVE_fnc_hashGet;
             _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
             _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
-            _taskSource = format["%1-DestroyVehicles-Parent",_taskID];
+            _taskSource = format["%1-SEAD-Parent",_taskID];
             _newTask = [_taskID,_requestPlayerID,_taskSide,_vehiclePosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,"N","None",_taskSource,false];
 
             _tasks pushback _newTask;
@@ -184,7 +184,7 @@ switch (_taskState) do {
             _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
             _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
             _newTaskID = format["%1_c2",_taskID];
-            _taskSource = format["%1-DestroyVehicles-Destroy",_taskID];
+            _taskSource = format["%1-SEAD-Destroy",_taskID];
             _newTask = [_newTaskID,_requestPlayerID,_taskSide,_vehiclePosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,_taskCurrent,_taskID,_taskSource,true];
 
             _tasks pushback _newTask;
@@ -205,7 +205,7 @@ switch (_taskState) do {
             _result = [_tasks,_taskParams];
 
         } else {
-            ["C2ISTAR - Task DestroyVehicles - No vehicles for side %1 found! Aborting...",_taskEnemySide] call ALiVE_fnc_Dump;
+            ["C2ISTAR - Task SEAD - No vehicles for side %1 found! Aborting...",_taskEnemySide] call ALiVE_fnc_Dump;
         };
 
     };
@@ -242,13 +242,14 @@ switch (_taskState) do {
             _vehiclesState = [_vehicleProfiles] call ALIVE_fnc_taskGetStateOfVehicleProfiles;
             _allDestroyed = [_vehiclesState,"allDestroyed"] call ALIVE_fnc_hashGet;
         } else {
+            _vehiclesState = [] call ALIVE_fnc_hashCreate;
             _allDestroyed = true;
             {
                 if (alive _x) then {
                     _allDestroyed = false;
                 };
             } foreach _vehicleProfiles;
-            _vehiclesState = [] call ALIVE_fnc_hashCreate;
+
         };
 
         if(_allDestroyed) then {
