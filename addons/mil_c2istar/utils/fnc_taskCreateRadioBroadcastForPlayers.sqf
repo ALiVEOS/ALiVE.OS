@@ -28,6 +28,8 @@ _taskDialog = _this select 1;
 _taskSide = _this select 2;
 _taskPlayers = _this select 3;
 
+["RADIO BROADCAST: %1",_this] call ALiVE_fnc_dump;
+
 if(_messageCode in (_taskDialog select 1)) then {
 
     _sideObject = [_taskSide] call ALIVE_fnc_sideTextToObject;
@@ -68,7 +70,7 @@ if(_messageCode in (_taskDialog select 1)) then {
 
             } forEach _taskPlayers;
 
-            sleep 3;
+            sleep ([_message] call ALiVE_fnc_timeToRead);
 
         } forEach _messages;
 
