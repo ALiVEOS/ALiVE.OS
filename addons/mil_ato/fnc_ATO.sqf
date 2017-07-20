@@ -41,7 +41,7 @@ Tupolov
 #define DEFAULT_EVENT_QUEUE []
 #define DEFAULT_ANALYSIS []
 #define DEFAULT_SIDE "EAST"
-#define DEFAULT_ATO_TYPES ["CAP","DCA","SEAD","CAS","STRIKE","RECCE"]
+#define DEFAULT_ATO_TYPES ["CAP","DCA","SEAD","CAS","STRIKE","RECCE","AS"]
 #define DEFAULT_REGISTRY_ID ""
 #define DEFAULT_OP_HEIGHT 750
 #define DEFAULT_OP_DURATION 25
@@ -49,12 +49,14 @@ Tupolov
 #define DEFAULT_MIN_WEAP_STATE 0.5
 #define DEFAULT_MIN_FUEL_STATE 0.5
 #define DEFAULT_RADAR_HEIGHT 105
+#define DEFAULT_WAIT_TIME 60
 #define WAIT_TIME_CAS 10
 #define WAIT_TIME_DCA 30
 #define WAIT_TIME_CAP 60
 #define WAIT_TIME_SEAD 60
 #define WAIT_TIME_STRIKE 90
 #define WAIT_TIME_RECCE 90
+#define CHANCE_OF_RESCUE 0.5
 
 
 TRACE_1("ATO - input",_this);
@@ -861,6 +863,178 @@ switch(_operation) do {
         [_as, _assetAirspace, _airspaceAssets] call ALIVE_fnc_hashSet;
         [_logic,"airspaceAssets", _as] call MAINCLASS;
     };
+    case "requestCSARPlayerTask": {
+
+        private _aircraft = _args;
+        private _target = [_aircraft,"vehicleClass"] call ALiVE_fnc_hashGet;
+        private _crewID = [_aircraft,"crewID"] call ALiVE_fnc_hashGet;
+        private _destination = [_aircraft,"currentPos"] call ALiVE_fnc_hashGet;
+
+        private _crewProfile = [ALiVE_profileHandler,"getProfile",_crewID] call ALiVE_fnc_ProfileHandler;
+        private _isALive = false;
+
+        // Check to see if crew are alive, if so rescue
+        if !(isNil "_crewProfile") then {
+            _destination = [_crewProfile,"position"] call ALiVE_fnc_hashGet;
+            _destination set [2,0]; // make sure the position isn't in the air (in case they are currently in a parachute)
+            _isAlive = true;
+
+            // Set the crew so they don't run away
+            [_crewProfile, "clearWaypoints"] call ALiVE_fnc_profileEntity;
+
+            private _waypoint = [_destination, 10] call ALIVE_fnc_createProfileWaypoint;
+            [_crewProfile, "addWaypoint",_waypoint] call ALiVE_fnc_profileEntity;
+
+        };
+
+        private _probability = If (_isAlive) then {true} else {(random 1) < CHANCE_OF_RESCUE};
+
+        private _isEnemyNear = [_destination, _side, 3000, true] call ALiVE_fnc_isEnemyNear;
+        private _dominantFaction = [_destination, 3000] call ALiVE_fnc_getDominantFaction;
+
+        private _enemyTerritory = ([_side] call ALIVE_fnc_sideTextToObject) getFriend (_dominantFaction call ALIVE_fnc_factionSide) < 0.6;
+
+        if ((_isEnemyNear || _enemyTerritory)  && _probability) then {
+
+            private _faction = [_logic,"faction"] call MAINCLASS;
+            private _side = [_logic, "side"] call MAINCLASS;
+            private _enemyFaction = _dominantFaction;
+
+            if (_isEnemyNear && !_enemyTerritory) then {
+                private _enemySides = [_logic, "enemySides"] call MAINCLASS;
+                private _enemySide = _enemySides select 0;
+                _enemyFaction = (([_destination,3000,[_enemySide,"entity"]] call ALIVE_fnc_getNearProfiles) select 0) select 2 select 29;
+            };
+
+            private _requestID = format["%1_%2",_faction,floor(time)];
+
+            // Don' specify a player
+            private _playerID =  "ATO";
+
+            // All players in side
+            private _sidePlayers = [_side] call ALiVE_fnc_getPlayersDataSource;
+            _sidePlayers = [_sidePlayers select 1,_sidePlayers select 0];
+
+            private _current = "Y";
+            private _apply = "Side";
+
+            private _location = "MEDIUM";
+
+            private _taskData = [_requestID,_playerID,_side,_faction,"CSAR",_location,_destination,_sidePlayers,_enemyFaction,_current,_apply,_target];
+
+            if (_isAlive) then {
+                _taskData pushback _crewID;
+            };
+
+            private _event = ['TASK_GENERATE', _taskData, "C2ISTAR"] call ALIVE_fnc_event;
+            [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+        };
+
+    };
+    case "requestPlayerTask": {
+
+        private _type = _args select 0;
+        private _targets = +(_args select 1);
+        private _friendly = "";
+
+        if (count _args > 2) then {
+            _friendly = _args select 2;
+        };
+
+        // 1st target will be handled by ATO, check other targets for player
+        _targets set [0, -1];
+        _targets = _targets - [-1];
+
+        if (isNil QGVAR(playerRequests)) then {
+            GVAR(playerRequests) = [] call ALiVE_fnc_hashCreate;
+        };
+
+        // Check to see if this target has already been handed to players
+        private _target = nil;
+        private _currentTargets = [GVAR(playerRequests),_type,[]] call ALiVE_fnc_hashGet;
+
+        {
+            if !(_x in _currentTargets) exitWith {
+                _target = _x;
+            };
+        } foreach _targets;
+
+        // ["ALIVE PLAYER ATO TASK %1 %2", _args, _target] call ALIVE_fnc_dump;
+
+        // If not create a task to destroy the target
+        if !(isNil "_target") then {
+
+            _currentTargets pushback _target;
+
+            private _destination = [];
+            private _enemyFaction = "BLU_F";
+
+            // Target could be profiled aircraft, profile AA, non-profiled AA, building, HQ
+            if (typeName _target == "STRING") then {
+                private _targetProfile = [ALiVE_profileHandler, "getProfile", (_targets select 1)] call ALiVE_fnc_ProfileHandler;
+                if !(isNil "_targetProfile") then {
+                    _destination = [_targetProfile,"position"] call ALiVE_fnc_hashGet;
+                    _enemyFaction = [_targetProfile,"faction"] call ALiVE_fnc_hashGet;
+                };
+            } else {
+                _destination = position _target;
+                _enemyFaction = faction _target;
+            };
+
+            // Request task - Defend HQ?, Destroy Vehicles, CSAR
+            private _side = [_logic,"side"] call MAINCLASS;
+            private _faction = [_logic,"faction"] call MAINCLASS;
+            private _requestID = format["%1_%2",_faction,floor(time)];
+
+            // Don' specify a player
+            private _playerID =  "ATO";
+
+            // All players in side
+            private _sidePlayers = [_side] call ALiVE_fnc_getPlayersDataSource;
+            _sidePlayers = [_sidePlayers select 1, _sidePlayers select 0];
+
+            private _current = "Y";
+            private _apply = "Side";
+
+            private _taskType = _type;
+
+            switch (_type) do {
+                case "DCA": {
+                    _taskType = "DCA";
+                };
+                case "DefendHQ": {
+                    _taskType = "MilDefence"; // Might need to change this to clear area or something
+                };
+                case "OCA": {
+                    _taskType = "DestroyBuilding";
+                };
+                case "SEAD": {
+                    _taskType = "SEAD";
+                };
+                case "CAS": {
+                    _taskType = "CAS";
+                };
+                default {
+                     _taskType = "DestroyVehicles";
+                };
+            };
+
+            if (_debug) then {
+                ["CREATING PLAYER ATO TASK %1 %2", _args, [_requestID,_playerID,_side,_faction,_taskType,"MEDIUM",_destination,_sidePlayers,_enemyFaction,_current,_apply,[_target]]] call ALIVE_fnc_dump;
+            };
+
+            private _taskData = [_requestID,_playerID,_side,_faction,_taskType,"MEDIUM",_destination,_sidePlayers,_enemyFaction,_current,_apply,[_target]];
+
+            if (_type == "CAS") then {
+                _taskData pushback _friendly;
+            };
+
+            private _event = ["TASK_GENERATE", _taskData, "C2ISTAR"] call ALIVE_fnc_event;
+            [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+
+            [GVAR(playerRequests), _type, _currentTargets] call ALiVE_fnc_hashSet;
+        };
+    };
 
     // Main process
     // Set module variables and attributes
@@ -891,6 +1065,9 @@ switch(_operation) do {
             private _factions = [_logic, "factions",[_faction]] call MAINCLASS;
             private _types = [_logic, "types", _logic getVariable ["types", DEFAULT_ATO_TYPES]] call MAINCLASS;
             private _airspace = [_logic, "airspace", _logic getVariable ["airspace", DEFAULT_AIRSPACE]] call MAINCLASS;
+
+            [_logic,"generateTasks", _logic getVariable ["generateTasks", false]] call MAINCLASS;
+
             [_logic,"assets",[] call ALiVE_fnc_hashCreate] call MAINCLASS;
             [_logic,"airspaceAssets",[] call ALiVE_fnc_hashCreate] call MAINCLASS;
             [_logic,"runways",[] call ALiVE_fnc_hashCreate] call MAINCLASS;
@@ -938,6 +1115,7 @@ switch(_operation) do {
                 ["ALIVE ATO - Create HQ: %1",[_logic, "createHQ"] call MAINCLASS] call ALIVE_fnc_dump;
                 ["ALIVE ATO - Place Anti-Air: %1",[_logic, "placeAA"] call MAINCLASS] call ALIVE_fnc_dump;
                 ["ALIVE ATO - Place Air Assets: %1",[_logic, "placeAir"] call MAINCLASS] call ALIVE_fnc_dump;
+                ["ALIVE ATO - Generate Tasks: %1",[_logic, "generateTasks"] call MAINCLASS] call ALIVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1890,7 +2068,6 @@ switch(_operation) do {
                 if((count _factionOPCOMModules == 0) && (count _sideOPCOMModules == 1) && (_side == _eventSide)) then {
                     _factionFound = true;
                 };
-
             };
 
             if!(_factionFound) exitWith {};
@@ -1957,7 +2134,6 @@ switch(_operation) do {
                 // respond to player request
                 _logEvent = ['ATO_RESPONSE', [_eventRequestID,_eventPlayerID,_response],"Military Air Component Commander","STATUS"] call ALIVE_fnc_event;
                 [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
-
             };
         };
     };
@@ -2477,7 +2653,6 @@ switch(_operation) do {
                             // respond to player request
                             private _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Military Air Component Commander","ACKNOWLEDGED"] call ALIVE_fnc_event;
                             [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
-
                         };
 
                         if (_debug) then {
@@ -2685,7 +2860,7 @@ switch(_operation) do {
     case "monitor": {
         if (isServer) then {
 
-            // spawn monitoring loop - 1. to check for requests from OPCOM and 2. to scan airspace
+            // spawn monitoring loop - 1. Monitor events and 2. to scan airspace/air defense etc
 
             [_logic] spawn {
 
@@ -2744,6 +2919,10 @@ switch(_operation) do {
                 private _debug = [_logic, "debug"] call MAINCLASS;
                 private _side = [_logic,"side"] call MAINCLASS;
                 private _faction = [_logic,"faction"] call MAINCLASS;
+                // Check to see if generateTasks
+                private _generateTasks = [_logic,"generateTasks"] call MAINCLASS;
+                // Check to see if C2ISTAR is available
+                private _C2ISTARisAvailable = ["ALiVE_mil_C2ISTAR"] call ALiVE_fnc_isModuleAvailable;
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
@@ -2753,9 +2932,11 @@ switch(_operation) do {
 
                 waituntil {
 
-                    sleep (60);
+                    sleep (60 + (random 120));
 
                     if!([_logic, "pause"] call MAINCLASS) then {
+
+
 
                         // Check to see if there is a CAP
                         private _airspace = [_logic,"airspace"] call MAINCLASS;
@@ -2831,7 +3012,19 @@ switch(_operation) do {
                                         ];
                                         private _event = ['ATO_REQUEST', [_type, _side, _faction, _x, _args],"ATO"] call ALIVE_fnc_event;
                                         private _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+
+                                        if (count _bogeys > 1) then {
+                                            // DEBUG -------------------------------------------------------------------------------------
+                                            if(_debug) then {
+                                                ["ALIVE ATO %1 - Request Player help %2 %3", _logic, _generateTasks, _C2ISTARisAvailable] call ALIVE_fnc_dump;
+                                            };
+                                            // DEBUG -------------------------------------------------------------------------------------
+                                            if (count _bogeys > 1 && _generateTasks && _C2ISTARisAvailable) then {
+                                                [_logic, "requestPlayerTask", ["DCA",_targets]] call MAINCLASS;
+                                            };
+                                        };
                                     };
+
                                 };
                             } foreach _airspaceIntruders
                         };
@@ -2872,8 +3065,28 @@ switch(_operation) do {
                                             DEFAULT_OP_DURATION,
                                             _targets                 // TARGETS
                                         ];
+
+                                        ["ALIVE ATO %1 - Request Player help %2 %3", _logic, _generateTasks, _C2ISTARisAvailable] call ALIVE_fnc_dump;
+
                                         private _event = ['ATO_REQUEST', [_type, _side, _faction, _x, _args],"ATO"] call ALIVE_fnc_event;
                                         private _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+
+                                        if (count _targets > 1) then {
+
+                                            // Request that players handle SEAD
+                                            // DEBUG -------------------------------------------------------------------------------------
+                                            if(_debug) then {
+                                                ["ALIVE ATO %1 - Request Player help %2 %3", _logic, _generateTasks, _C2ISTARisAvailable] call ALIVE_fnc_dump;
+                                            };
+                                            // DEBUG -------------------------------------------------------------------------------------
+
+                                            if (_generateTasks && _C2ISTARisAvailable) then {
+
+                                                [_logic, "requestPlayerTask", ["SEAD",_targets]] call MAINCLASS;
+
+                                            };
+                                        };
+
                                     };
                                 };
                             } foreach _airDefenseTargets;
@@ -2922,6 +3135,11 @@ switch(_operation) do {
         private _eventRange = _eventATO select 5;
         private _eventDuration = _eventATO select 6;
         private _eventTargets = _eventATO select 7;
+
+        // Check to see if generateTasks
+        private _generateTasks = [_logic,"generateTasks"] call MAINCLASS;
+        // Check to see if C2ISTAR is available
+        private _C2ISTARisAvailable = ["ALiVE_mil_C2ISTAR"] call ALiVE_fnc_isModuleAvailable;
 
         // For radio broadcasts
         private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
@@ -3014,6 +3232,9 @@ switch(_operation) do {
                     case "RECCE": {
                         _waitTime = WAIT_TIME_RECCE;
                     };
+                    case default {
+                        _waitTime = DEFAULT_WAIT_TIME;
+                    };
                 };
 
                 // DEBUG -------------------------------------------------------------------------------------
@@ -3021,8 +3242,6 @@ switch(_operation) do {
                     ["ALIVE ATO %4 - Event state: %1 event timer: %2 wait time on event: %3 ",_eventState, (time - _eventTime), _waitTime, _logic] call ALIVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
-
-
 
                 if((time - _eventTime) > _waitTime) then {
                     // Assuming assets are available, find nearest asset that can complete the task, if no appropriate asset report back
@@ -3245,7 +3464,7 @@ switch(_operation) do {
                     };
 
                     // If asset is available set data needed
-                    if(_assetAvailable) then {
+                    if (_assetAvailable) then {
 
                         private _profileID = [_selectedAsset,"profileID"] call ALiVE_fnc_hashGet;
                         private _startPosition = [_selectedAsset,"startPos"] call ALiVE_fnc_hashGet;
@@ -3374,21 +3593,45 @@ switch(_operation) do {
 
                     }else{
 
-                        // An appropriate aircraft is not available to do the op
-                        // DEBUG -------------------------------------------------------------------------------------
-                        if(_debug) then {
-                            ["ALIVE ATO %2 - Air Tasking request denied, Military Air Component Commander for %1 has no appropriate air assets available", _eventFaction, _logic] call ALIVE_fnc_dump;
+                        // Check to see if there are any player controlled aircraft - if so, reroute request via C2ISTAR
+
+                        private _playersInAircraft = [];
+                        {
+                            private _player = _x;
+                            {
+                                if ((vehicle _player) iskindof _x && (driver (vehicle _player) == _player)) exitWith {
+                                    _playersInAircraft pushback _x;
+                                };
+                            } foreach _aircraftType;
+                        } foreach allPlayers;
+
+                        if (count _playersInAircraft > 0 && _generateTasks && _C2ISTARisAvailable) then {
+
+                            [_logic,"requestPlayerTask",[_eventType,_eventTargets]] call MAINCLASS;
+
+                            // REMOVE EVENT from ATO
+                            [_logic, "removeEvent", _eventID] call MAINCLASS;
+
+                        } else {
+
+                            // An appropriate aircraft is not available to do the op
+                            // DEBUG -------------------------------------------------------------------------------------
+                            if(_debug) then {
+                                ["ALIVE ATO %2 - Air Tasking request denied, Military Air Component Commander for %1 has no appropriate air assets available", _eventFaction, _logic] call ALIVE_fnc_dump;
+                            };
+                            // DEBUG -------------------------------------------------------------------------------------
+
+                            //Radio Broadcast
+                            private _message = format[localize "STR_ALIVE_ATO_REQUEST_DENIED", _HQ, _eventType, mapGridPosition _eventPosition];
+                            // send a message to all side players from HQ
+                            private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                            [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+
+                            // nothing to do so cancel..
+                            [_logic, "removeEvent", _eventID] call MAINCLASS;
+
                         };
-                        // DEBUG -------------------------------------------------------------------------------------
 
-                        //Radio Broadcast
-                        private _message = format[localize "STR_ALIVE_ATO_REQUEST_DENIED", _HQ, _eventType, mapGridPosition _eventPosition];
-                        // send a message to all side players from HQ
-                        private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
-                        [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
-
-                        // nothing to do so cancel..
-                        [_logic, "removeEvent", _eventID] call MAINCLASS;
                     };
                 };
             };
@@ -3978,6 +4221,7 @@ switch(_operation) do {
 
                 // Reset aircraft launch ready state
                 [_aircraft,"ready",false] call ALiVE_fnc_hashSet;
+                [_aircraft,"currentPos", position _vehicle] call ALiVE_fnc_hashSet;
 
                 // If aircraft is taking too much time, launch it
                 if (time > (_eventTime + ((_eventDuration/2)*60)) ) then {
@@ -4070,6 +4314,8 @@ switch(_operation) do {
                 private _healthIssue = false;
                 private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
                 private _vehicle = [_profile,"vehicle"] call ALiVE_fnc_hashGet;
+
+                [_aircraft,"currentPos", position _vehicle] call ALiVE_fnc_hashSet;
 
                 private _radioChoice = "STR_ALIVE_ATO_RETURN";
                 if (count waypoints (group _vehicle) > 0) then {
@@ -4238,6 +4484,8 @@ switch(_operation) do {
                 private _profile = [ALIVE_profileHandler, "getProfile",_aircraftID] call ALIVE_fnc_profileHandler;
                 private _vehicle = [_profile,"vehicle"] call ALiVE_fnc_hashGet;
                 private _grp = group _vehicle;
+
+                [_aircraft,"currentPos", position _vehicle] call ALiVE_fnc_hashSet;
 
                 // Check to see if aircraft is in vicinty of starting position
                 if(_vehicle getVariable [QGVAR(RTB),false]) then {
@@ -4606,13 +4854,24 @@ switch(_operation) do {
         {
             _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
             if(isNil "_profile") then {
-                _profiles set [_forEachIndex,"DELETE"];
                 // Remove the asset
                 private _assets = [_logic,"assets"] call MAINCLASS;
                 if ([_assets,_x] call CBA_fnc_hashHasKey) then {
 
+                    private _asset = [_assets, _x] call ALiVE_fnc_hashGet;
+
+                    // Check to see if generateTasks
+                    private _generateTasks = [_logic,"generateTasks"] call MAINCLASS;
+                    // Check to see if C2ISTAR is available
+                    private _C2ISTARisAvailable = ["ALiVE_mil_C2ISTAR"] call ALiVE_fnc_isModuleAvailable;
+
+                    if (_generateTasks && _C2ISTARisAvailable) then {
+                        [_logic, "requestCSARPlayerTask", _asset] call MAINCLASS;
+                    };
+
                     // remove it from airspace assets first
-                    private _airspace = [[_assets,_x] call ALiVE_fnc_hashGet,"airspace"] call ALiVE_fnc_hashGet;
+                    private _airspace = [_asset,"airspace"] call ALiVE_fnc_hashGet;
+
                     private _as = [[_logic,"airspaceAssets"] call MAINCLASS, _airspace] call ALiVE_fnc_hashGet;
                     _as = _as - [_x];
                     [[_logic,"airspaceAssets"] call MAINCLASS, _airspace, _as] call ALiVE_fnc_hashSet;
@@ -4621,6 +4880,7 @@ switch(_operation) do {
                     [_assets,_x] call CBA_fnc_hashRem;
                     [_logic,"assets",_assets] call MAINCLASS;
                 };
+                _profiles set [_forEachIndex,"DELETE"];
             };
 
         } forEach _profiles;

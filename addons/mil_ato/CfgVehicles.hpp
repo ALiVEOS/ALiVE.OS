@@ -137,6 +137,25 @@ class CfgVehicles
                                 };
                         };
                 };
+                class generateTasks
+                {
+                        displayName = "$STR_ALIVE_ATO_GENERATE_TASKS";
+                        description = "$STR_ALIVE_ATO_GENERATE_TASKS_COMMENT";
+                        class Values
+                        {
+                                class No
+                                {
+                                        name = "No";
+                                        value = false;
+                                        default = 1;
+                                };
+                                class Yes
+                                {
+                                        name = "Yes";
+                                        value = true;
+                                };
+                        };
+                };
         };
         class ModuleDescription
         {
