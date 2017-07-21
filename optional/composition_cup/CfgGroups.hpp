@@ -6,6 +6,7 @@ class CfgGroups
 		name = "Compositions";
 		class Civilian
 		{
+            name = "Civilian";
             #include "civilian\urban.hpp"
         };
 	    class Civilian_Desert
@@ -26,6 +27,7 @@ class CfgGroups
 
 		class Guerrilla
 		{
+            name = "Guerrilla";
             #include "guerrilla\urban.hpp"
         };
 	    class Guerrilla_Desert
@@ -46,6 +48,7 @@ class CfgGroups
 
 		class Military
 		{
+            name = "Military";
             #include "military\urban.hpp"
         };
 	    class Military_Desert
