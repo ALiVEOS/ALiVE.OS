@@ -6,64 +6,64 @@ class CfgGroups
         name = "Compositions";
         class Civilian
         {
-            name = "Civilian";
+            name = "$STR_ZEC_Civilian";
             #include "civilian\urban.hpp"
         };
         class Civilian_Desert
         {
-            name = "Civilian (Desert)";
+            name = "$STR_ZEC_CivilianDesert";
             #include "civilian\desert.hpp"
         };
         class Civilian_Woodland
         {
-            name = "Civilian (Woodland)";
+            name = "$STR_ZEC_CivilianWoodland";
             #include "civilian\woodland.hpp"
         };
         class Civilian_Pacific
         {
-            name = "Civilian (Pacific)";
+            name = "$STR_ZEC_CivilianPacific";
             #include "civilian\pacific.hpp"
         };
 
         class Guerrilla
         {
-            name = "Guerrilla";
+            name = "$STR_ZEC_Guerrilla";
             #include "guerrilla\urban.hpp"
         };
         class Guerrilla_Desert
         {
-            name = "Guerrilla (Desert)";
+            name = "$STR_ZEC_GuerrillaDesert";
             #include "guerrilla\desert.hpp"
         };
         class Guerrilla_Woodland
         {
-            name = "Guerrilla (Woodland)";
+            name = "$STR_ZEC_GuerrillaWoodland";
             #include "guerrilla\woodland.hpp"
         };
         class Guerrilla_Pacific
         {
-            name = "Guerrilla (Pacific)";
+            name = "$STR_ZEC_GuerrillaPacific";
             #include "guerrilla\pacific.hpp"
         };
 
         class Military
         {
-            name = "Military";
+            name = "$STR_ZEC_Military";
             #include "military\urban.hpp"
         };
         class Military_Desert
         {
-            name = "Military (Desert)";
+            name = "$STR_ZEC_MilitaryDesert";
             #include "military\desert.hpp"
         };
         class Military_Woodland
         {
-            name = "Military (Woodland)";
+            name = "$STR_ZEC_MilitaryWoodland";
             #include "military\woodland.hpp"
         };
         class Military_Pacific
         {
-            name = "Military (Pacific)";
+            name = "$STR_ZEC_MilitaryPacific";
             #include "military\pacific.hpp"
         };
     };
