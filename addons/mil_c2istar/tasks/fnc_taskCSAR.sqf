@@ -88,9 +88,11 @@ switch (_taskState) do {
 
         // establish the location for the task
         // get enemy cluster position
-		if (isNil "_taskDestination") then {
+		if (isNil "_taskLocation") then {
 		    _targetPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
-		};
+		} else {
+            _targetPosition = _taskLocation;
+        };
 
         if(count _targetPosition == 0) then {
 
@@ -111,6 +113,7 @@ switch (_taskState) do {
 
         // establish the location for the return task
         // get friendly cluster
+        if (_taskLocationType == "NULL") then {_taskLocationType = "MEDIUM";};
         _returnPosition = [_taskLocation,_taskLocationType,_taskSide] call ALIVE_fnc_taskGetSideCluster;
 
         if(count _returnPosition == 0) then {
@@ -575,6 +578,8 @@ switch (_taskState) do {
 
             [_params,"lastState","DefenceWave"] call ALIVE_fnc_hashSet;
             [_params,"defend",_defend] call ALIVE_fnc_hashSet;
+
+            _result = _task;
         };
 
         if(_currentWave > _lastWave && _defend) then {

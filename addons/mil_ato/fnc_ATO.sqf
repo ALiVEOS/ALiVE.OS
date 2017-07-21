@@ -56,7 +56,7 @@ Tupolov
 #define WAIT_TIME_SEAD 60
 #define WAIT_TIME_STRIKE 90
 #define WAIT_TIME_RECCE 90
-#define CHANCE_OF_RESCUE 0.5
+#define CHANCE_OF_RESCUE 1
 
 
 TRACE_1("ATO - input",_this);
@@ -878,27 +878,43 @@ switch(_operation) do {
             _destination = [_crewProfile,"position"] call ALiVE_fnc_hashGet;
             _destination set [2,0]; // make sure the position isn't in the air (in case they are currently in a parachute)
             _isAlive = true;
+        };
 
+        // Find crashsite and check if its on land
+        private _crashsites = [];
+        {
+            if !(alive _x) then {
+                _crashsites pushback _x;
+            };
+        } foreach (entities _target);
+        if (count _crashsites > 0) then {
+            _crashsites = [_crashsites,[_destination],{_Input0 distance _x},"ASCEND"] call ALiVE_fnc_SortBy;
+            _destination = if !(surfaceIsWater (position (_crashsites select 0))) then {position (_crashsites select 0)} else {_destination};
+            deleteVehicle (_crashsites select 0);
+        };
+
+        if (_isAlive) then {
             // Set the crew so they don't run away
             [_crewProfile, "clearWaypoints"] call ALiVE_fnc_profileEntity;
 
             private _waypoint = [_destination, 10] call ALIVE_fnc_createProfileWaypoint;
             [_crewProfile, "addWaypoint",_waypoint] call ALiVE_fnc_profileEntity;
-
         };
 
         private _probability = If (_isAlive) then {true} else {(random 1) < CHANCE_OF_RESCUE};
 
         private _isEnemyNear = [_destination, _side, 3000, true] call ALiVE_fnc_isEnemyNear;
-        private _dominantFaction = [_destination, 3000] call ALiVE_fnc_getDominantFaction;
+        private _enemyTerritory = false;
+        private _enemyFaction = [_destination, 3000] call ALiVE_fnc_getDominantFaction;
 
-        private _enemyTerritory = ([_side] call ALIVE_fnc_sideTextToObject) getFriend (_dominantFaction call ALIVE_fnc_factionSide) < 0.6;
+        if !(isNil "_enemyFaction") then {
+            _enemyTerritory = ([_side] call ALIVE_fnc_sideTextToObject) getFriend (_enemyFaction call ALIVE_fnc_factionSide) < 0.6;
+        };
 
         if ((_isEnemyNear || _enemyTerritory)  && _probability) then {
 
             private _faction = [_logic,"faction"] call MAINCLASS;
             private _side = [_logic, "side"] call MAINCLASS;
-            private _enemyFaction = _dominantFaction;
 
             if (_isEnemyNear && !_enemyTerritory) then {
                 private _enemySides = [_logic, "enemySides"] call MAINCLASS;
@@ -918,7 +934,7 @@ switch(_operation) do {
             private _current = "Y";
             private _apply = "Side";
 
-            private _location = "MEDIUM";
+            private _location = "NULL";
 
             private _taskData = [_requestID,_playerID,_side,_faction,"CSAR",_location,_destination,_sidePlayers,_enemyFaction,_current,_apply,_target];
 
@@ -1020,10 +1036,10 @@ switch(_operation) do {
             };
 
             if (_debug) then {
-                ["CREATING PLAYER ATO TASK %1 %2", _args, [_requestID,_playerID,_side,_faction,_taskType,"MEDIUM",_destination,_sidePlayers,_enemyFaction,_current,_apply,[_target]]] call ALIVE_fnc_dump;
+                ["CREATING PLAYER ATO TASK %1 %2", _args, [_requestID,_playerID,_side,_faction,_taskType,"NULL",_destination,_sidePlayers,_enemyFaction,_current,_apply,[_target]]] call ALIVE_fnc_dump;
             };
 
-            private _taskData = [_requestID,_playerID,_side,_faction,_taskType,"MEDIUM",_destination,_sidePlayers,_enemyFaction,_current,_apply,[_target]];
+            private _taskData = [_requestID,_playerID,_side,_faction,_taskType,"NULL",_destination,_sidePlayers,_enemyFaction,_current,_apply,[_target]];
 
             if (_type == "CAS") then {
                 _taskData pushback _friendly;
@@ -2932,15 +2948,15 @@ switch(_operation) do {
 
                 waituntil {
 
-                    sleep (60 + (random 120));
+                    sleep (60 + (random 90));
 
                     if!([_logic, "pause"] call MAINCLASS) then {
-
-
 
                         // Check to see if there is a CAP
                         private _airspace = [_logic,"airspace"] call MAINCLASS;
                         {
+
+                            sleep (random 5);
 
                             if ("CAP" in ([_logic,"types"] call MAINCLASS)) then {
                                 private _currentOps = [_logic, "airspaceOps", _x] call MAINCLASS;
@@ -2984,6 +3000,7 @@ switch(_operation) do {
                             private _airspaceIntruders = _intruders select 1;
 
                             {
+                                sleep (random 5);
                                 // If intruder, check to see if there is an active DCA against it, if not scramble
                                 private _bogeys = [_intruders, _x] call ALiVE_fnc_hashGet;
                                 if (count _bogeys > 0) then {
@@ -3039,6 +3056,7 @@ switch(_operation) do {
                             private _airDefenseTargets = _airDefenses select 1;
 
                             {
+                                sleep (random 5);
                                 // If there's no SEAD mission already, then launch one against the target
                                 private _targets = [_airDefenses, _x] call ALiVE_fnc_hashGet;
                                 if (count _targets > 0) then {
