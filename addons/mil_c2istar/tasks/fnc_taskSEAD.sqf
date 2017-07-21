@@ -88,8 +88,9 @@ switch (_taskState) do {
 
                 _profile = [ALiVE_ProfileHandler, "getProfile",_x] call ALIVE_fnc_ProfileHandler;
                 _side = [_profile,"side"] call ALiVE_fnc_HashGet;
+                _isAA = [([_profile,"vehicleClass"] call ALiVE_fnc_HashGet)] call ALiVE_fnc_isAA;
 
-                count ([_profile,"entitiesInCommandOf",[]] call ALiVE_fnc_HashGet) > 0 && {_side == _Input1};
+                count ([_profile,"entitiesInCommandOf",[]] call ALiVE_fnc_HashGet) > 0 && {_side == _Input1 && _isAA};
             }] call ALiVE_fnc_SortBy;
 
             _targetVehicles = if (count _targets > 0) then {[_targets select 0]} else {[]};
