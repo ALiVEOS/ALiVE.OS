@@ -84,3 +84,5 @@ ALIVE_factionDefaultContainers = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultContainers, "BLU_T_F", ["ALIVE_B_supplyCrate_F","B_CargoNet_01_ammo_F","CargoNet_01_box_F","B_Slingload_01_Cargo_F"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "BLU_CTRG_F", ["ALIVE_B_supplyCrate_F","B_CargoNet_01_ammo_F","CargoNet_01_box_F","B_Slingload_01_Cargo_F","C_T_supplyCrate_F"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "Gendarmerie", ["CargoNet_01_box_F"]] call ALIVE_fnc_hashSet;
+
+#include "logistics\3CB.hpp"
