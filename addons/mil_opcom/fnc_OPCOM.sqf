@@ -265,6 +265,16 @@ switch(_operation) do {
                     //Load Data from DB
                     if ([_handler,"persistent",false] call ALIVE_fnc_HashGet) then {
                         _objectives = [_handler,"loadObjectivesDB"] call ALiVE_fnc_OPCOM;
+
+                        // Load starting forces
+                        private _missionName = [missionName, "%20", "-"] call CBA_fnc_replace;
+                        private _key = format ["%1_%2-starting-forces", ALIVE_sys_data_GROUP_ID, _missionName];
+                        private _result = [GVAR(DATAHANDLER), "read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
+
+                        if (_result isEqualType []) then {
+                            private _startingForces = [_result, "data"] call CBA_fnc_hashGet;
+                            [_handler, "startForceStrength", _startingForces] call CBA_fnc_hashSet;
+                        };
                     };
 
                     if (!(isnil "_objectives") && {count _objectives > 0}) then {
@@ -1611,6 +1621,21 @@ switch(_operation) do {
                 _messages = _result select 1;
                 _messages pushback _message;
 
+                // Save starting forces (every session to allow users to modify the array and persist it)
+                if (!isnil {[_logic,"startForceStrength"] call ALiVE_fnc_HashGet}) then {
+                    private _key = format ["%1-starting-forces", _missionName];
+                    private _prev = [GVAR(DATAHANDLER), "read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
+
+                    private _startForceStrength = [_logic,"startForceStrength"] call ALiVE_fnc_HashGet;
+                    private _data = [[["data", _startForceStrength]]] call CBA_fnc_hashCreate;
+
+                    if (_prev isEqualType []) then {
+                        [_data, "_rev", [_prev, "_rev"] call CBA_fnc_hashGet] call CBA_fnc_hashSet;
+                    };
+
+                    [GVAR(DATAHANDLER), "write", ["mil_opcom", _data, false, _key]] call ALIVE_fnc_Data;
+                };
+
                 if(ALiVE_SYS_DATA_DEBUG_ON) then {
                     ["ALiVE OPCOM - SAVE DATA RESULT (maybe truncated in RPT, dont worry): %1",_saveResult] call ALIVE_fnc_dump;
                     ["ALiVE OPCOM - SAVE DATA SAVING COMPLETE!"] call ALiVE_fnc_Dump;
@@ -2442,7 +2467,9 @@ switch(_operation) do {
 
             _count = [count _inf,count _mot,count _mech,count _arm,count _air,count _sea,count _arty,count _AAA];
 
-            if (isnil {[_logic,"startForceStrength"] call ALiVE_fnc_HashGet}) then {[_logic,"startForceStrength",+_count] call ALiVE_fnc_HashSet};
+            if (isnil {[_logic,"startForceStrength"] call ALiVE_fnc_HashGet}) then {
+                [_logic,"startForceStrength",+_count] call ALiVE_fnc_HashSet
+            };
             _currentForceStrength = [_logic,"currentForceStrength",_count] call ALiVE_fnc_HashSet;
 
             _duration = time - _duration;
