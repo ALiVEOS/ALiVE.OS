@@ -1630,7 +1630,11 @@ switch(_operation) do {
                     private _data = [[["data", _startForceStrength]]] call CBA_fnc_hashCreate;
 
                     if (_prev isEqualType []) then {
-                        [_data, "_rev", [_prev, "_rev"] call CBA_fnc_hashGet] call CBA_fnc_hashSet;
+                        private _rev = [_prev, "_rev"] call CBA_fnc_hashGet;
+
+                        if (!isNil {_rev}) then {
+                            [_data, "_rev", _rev] call CBA_fnc_hashSet;
+                        };
                     };
 
                     [GVAR(DATAHANDLER), "write", ["mil_opcom", _data, false, _key]] call ALIVE_fnc_Data;
