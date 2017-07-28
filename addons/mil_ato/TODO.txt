@@ -1,52 +1,28 @@
 ATO TO DO
-
 - OPCOM ATO request logic
-- Pause between CAPs (random 5-15 mins)
-- Aircraft take random (5-10 mins to be refueled/repaired)
+- Persistence (HQ, AA, ATO state)
 - On demand analysis
 - if pilot despawned while going to aircraft, getin fails
-- check catapult is not in use
 - Crew reinforcement / aircraft reinforcement
 - Multiple targets
-- Place AA
-- ATO requests sent to player aircraft if available (via tasks?)
-    - CAS, SEAD, Strike, OCA, CAP?, CSAR
 - Audio for radio
 - Option to include CS assets?
 - If crewed vehicle placed by mission maker, get crew out and manage as normal
 - Handled profiled crewed planes?
 - Spawn Carrier if ATO module over sea
-
-Tests Completed
-    - spawned plane from runway - done
-    - profile plane from runway - done
-    - spawned UAV from runway - done
-    - profile UAV from runway - done
-    - spawned plane from carrier - done
-    - profile plane from carrier - done
-    - spawned UAV from carrier - done
-    - spawned helo/vtol from carrier - done
-    - profile helo/vtol from carrier - done
-    - spawned helo from helipad - done
-    - profile helo from helipad - done
     
 
 Extra to do....
     SEAD logic 
     - Send SEAD (send 2 aircraft)
     - If aircraft destroyed, request OPCOM take out air defense via ground, halt SEAD for that target
-    - Add eventhandler to aircraft, if missile fired at them, register target and create SEAD ATO
 
 	Resupply logic
 	- Auto - Aircraft auto replaced after 15 mins if destroyed, if LOGCOM sync'd then aircraft and crew are auto resupplied via LOGCOM
 	- None - No resupply of aircraft (No ATO once all airframes lost)
 	
 	C2ISTAR logic
-	- If plane destroyed but pilot survives (and it happens over land), send CSAR/Rescue C2ISTAR task
 	- If SEAD not successful, send destroy vehicle C2ISTAR task
-	- need to update c2istar tasks to accept pre-existing crashed aircraft, non-profiled vehicle?, pre-existing composition
-	- add function to requestPlayerTask
-	- decide where to call function, 
 	
 	On demand analysis? Needed for reinforcement
 	

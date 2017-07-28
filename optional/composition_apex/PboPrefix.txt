@@ -1,8 +1,0 @@
-x\alive\addons\composition_apex
-======<HEADER>=======
-prefix=x\alive\addons\composition_apex
-product=Arma 3
-version=1
-Pbo Type is: Arma Addon
-======</HEADER>============
-

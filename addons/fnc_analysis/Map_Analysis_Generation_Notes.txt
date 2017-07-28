@@ -1,0 +1,6 @@
+Generating Sector Grid Map Analysis
+==========================================================================
+
+Run analysis generator
+
+execVM "\x\alive\addons\fnc_analysis\tests\test_runMapAnalysis.sqf"

@@ -68,36 +68,52 @@ switch (_taskState) do {
         //_targetSector = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorVehicles;
         //_targetVehicles = [_targetSector,_taskEnemySide] call ALIVE_fnc_taskGetRandomSideVehicleFromSector;
 
-        _targets = +([ALiVE_profileHandler, "getProfilesByType", "vehicle"] call ALIVE_fnc_profileHandler);
+        if (count _task > 11) then {
 
-        _targets = [_targets,[_taskLocation,_taskEnemySide],{
-            private ["_profile","_pos"];
+            _targetVehicles = _task select 11;
 
-            _profile = [ALiVE_ProfileHandler, "getProfile",_x] call ALIVE_fnc_ProfileHandler;
-            _pos = [_profile,"position"] call ALiVE_fnc_HashGet;
+        } else {
 
-            _pos distance _Input0
-        },"ASCEND",{
-            private ["_profile","_side"];
+            _targets = +([ALiVE_profileHandler, "getProfilesByType", "vehicle"] call ALIVE_fnc_profileHandler);
 
-            _profile = [ALiVE_ProfileHandler, "getProfile",_x] call ALIVE_fnc_ProfileHandler;
-            _side = [_profile,"side"] call ALiVE_fnc_HashGet;
+            _targets = [_targets,[_taskLocation,_taskEnemySide],{
+                private ["_profile","_pos"];
 
-            count ([_profile,"entitiesInCommandOf",[]] call ALiVE_fnc_HashGet) > 0 && {_side == _Input1};
-        }] call ALiVE_fnc_SortBy;
+                _profile = [ALiVE_ProfileHandler, "getProfile",_x] call ALIVE_fnc_ProfileHandler;
+                _pos = [_profile,"position"] call ALiVE_fnc_HashGet;
 
-        _targetVehicles = if (count _targets > 0) then {[_targets select 0]} else {[]};
+                _pos distance _Input0
+            },"ASCEND",{
+                private ["_profile","_side"];
+
+                _profile = [ALiVE_ProfileHandler, "getProfile",_x] call ALIVE_fnc_ProfileHandler;
+                _side = [_profile,"side"] call ALiVE_fnc_HashGet;
+
+                count ([_profile,"entitiesInCommandOf",[]] call ALiVE_fnc_HashGet) > 0 && {_side == _Input1};
+            }] call ALiVE_fnc_SortBy;
+
+            _targetVehicles = if (count _targets > 0) then {[_targets select 0]} else {[]};
+        };
 
         if(count _targetVehicles > 0) then {
 
             private["_targetVehicle","_vehicleProfile","_vehiclePosition","_vehicleType","_vehicleName"];
 
-            _targetVehicle = _targetVehicles select 0;
+            private _targetVehicle = _targetVehicles select 0;
+            private _vehicleProfile = [];
+            private _vehiclePosition = _taskLocation;
+            private _vehicleType = "";
 
-            _vehicleProfile = [ALIVE_profileHandler, "getProfile", _targetVehicle] call ALIVE_fnc_profileHandler;
-            _vehicleProfile call ALIVE_fnc_inspectHash;
-            _vehiclePosition = _vehicleProfile select 2 select 2;
-            _vehicleType = _vehicleProfile select 2 select 11;
+            if (typeName _targetVehicle != "OBJECT") then {
+                _vehicleProfile = [ALIVE_profileHandler, "getProfile", _targetVehicle] call ALIVE_fnc_profileHandler;
+                _vehicleProfile call ALIVE_fnc_inspectHash;
+                _vehiclePosition = _vehicleProfile select 2 select 2;
+                _vehicleType = _vehicleProfile select 2 select 11;
+            } else {
+                _vehiclePosition = position _targetVehicle;
+                _vehicleType = typeof _targetVehicle;
+            };
+
             _vehicleName = getText(configFile >> "CfgVehicles" >> _vehicleType >> "displayName");
 
             private["_stagingPosition","_dialogOptions","_dialogOption"];
@@ -222,8 +238,18 @@ switch (_taskState) do {
             [_params,"lastState","Destroy"] call ALIVE_fnc_hashSet;
         };
 
-        _vehiclesState = [_vehicleProfiles] call ALIVE_fnc_taskGetStateOfVehicleProfiles;
-        _allDestroyed = [_vehiclesState,"allDestroyed"] call ALIVE_fnc_hashGet;
+        if (typename (_vehicleProfiles select 0) == "STRING") then {
+            _vehiclesState = [_vehicleProfiles] call ALIVE_fnc_taskGetStateOfVehicleProfiles;
+            _allDestroyed = [_vehiclesState,"allDestroyed"] call ALIVE_fnc_hashGet;
+        } else {
+            _allDestroyed = true;
+            {
+                if (alive _x) then {
+                    _allDestroyed = false;
+                };
+            } foreach _vehicleProfiles;
+            _vehiclesState = [] call ALIVE_fnc_hashCreate;
+        };
 
         if(_allDestroyed) then {
 
@@ -246,7 +272,7 @@ switch (_taskState) do {
             _taskEnemyFaction = [_params,"enemyFaction"] call ALIVE_fnc_hashGet;
             _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
 
-            _profiles = [_vehiclesState,"profiles"] call ALIVE_fnc_hashGet;
+            _profiles = [_vehiclesState,"profiles",[]] call ALIVE_fnc_hashGet;
 
             {
                 _position = _x select 2 select 2;

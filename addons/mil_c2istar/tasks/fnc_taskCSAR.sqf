@@ -49,10 +49,14 @@ switch (_taskState) do {
         _taskEnemyFaction = _task select 8;
         _taskCurrent = _task select 9;
         _taskApplyType = _task select 10;
-        
+
         _aircraft = nil;
-        
+
+        private _crewID = "";
+
         if (count _task > 11) then {_aircraft = _task select 11};
+
+        if (count _task > 12) then {_crewID = _task select 12};
 
         _tasksCurrent = ([ALiVE_TaskHandler,"tasks",["",[],[],nil]] call ALiVE_fnc_HashGet) select 2;
 
@@ -81,12 +85,14 @@ switch (_taskState) do {
         if (_choice == 1) then { // Crashsite
             _crashsite = true;
         };
-        
+
         // establish the location for the task
         // get enemy cluster position
-		if (isNil "_taskDestination") then {
+		if (isNil "_taskLocation") then {
 		    _targetPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
-		};
+		} else {
+            _targetPosition = _taskLocation;
+        };
 
         if(count _targetPosition == 0) then {
 
@@ -102,11 +108,12 @@ switch (_taskState) do {
                     [_taskLocation]
                 ] call BIS_fnc_findSafePos;
         };
-        
+
         _targetPosition = [_targetPosition, 250] call ALIVE_fnc_findFlatArea;
 
         // establish the location for the return task
         // get friendly cluster
+        if (_taskLocationType == "NULL") then {_taskLocationType = "MEDIUM";};
         _returnPosition = [_taskLocation,_taskLocationType,_taskSide] call ALIVE_fnc_taskGetSideCluster;
 
         if(count _returnPosition == 0) then {
@@ -129,7 +136,7 @@ switch (_taskState) do {
             };
 
             _returnPosition = [_returnPosition, 250] call ALIVE_fnc_findFlatArea;
-            
+
             // spawn a populated composition
             private _compType = "Military";
             If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
@@ -299,6 +306,7 @@ switch (_taskState) do {
             [_taskParams,"nextTask",_taskIDs select 1] call ALIVE_fnc_hashSet;
             [_taskParams,"taskIDs",_taskIDs] call ALIVE_fnc_hashSet;
             [_taskParams,"dialog",_dialogOption] call ALIVE_fnc_hashSet;
+            [_taskParams,"crewID",_crewID] call ALIVE_fnc_hashSet;
             [_taskParams,"crewSpawned",false] call ALIVE_fnc_hashSet;
             [_taskParams,"crewSpawnType",_spawnType] call ALIVE_fnc_hashSet;
             [_taskParams,"currentWave",1] call ALIVE_fnc_hashSet;
@@ -344,6 +352,7 @@ switch (_taskState) do {
         _lastState = [_params,"lastState"] call ALIVE_fnc_hashGet;
         _taskDialog = [_params,"dialog"] call ALIVE_fnc_hashGet;
         _currentTaskDialog = [_taskDialog,_taskState] call ALIVE_fnc_hashGet;
+        private _crewID = [_params,"crewID"] call ALIVE_fnc_hashGet;
         _crewSpawned = [_params,"crewSpawned"] call ALIVE_fnc_hashGet;
         _crewSpawnType = [_params,"crewSpawnType"] call ALIVE_fnc_hashGet;
         _startTime = [_params,"startTime"] call ALIVE_fnc_hashGet;
@@ -378,11 +387,18 @@ switch (_taskState) do {
 
                         private["_units","_crewProfile1","_crewProfile1ID","_crewGroup","_crew","_crew1Active"];
 
-                        // Get an aircraft list of crew, spawn as profiles
-                        _units = _vehicleClass call ALIVE_fnc_configGetVehicleCrew;
+                        if (_crewID != "") then {
+                            _crewProfile1 = [ALIVE_ProfileHandler,"getProfile",_crewID] call ALIVE_fnc_profileHandler;
+                            _crewProfile1ID = _crewID;
+                        };
 
-                        _crewProfile1 = [[_units],_taskSide,_taskFaction,_targetPosition,random(360),_taskFaction,true] call ALIVE_fnc_createProfileEntity;
-                        _crewProfile1ID = _crewProfile1 select 2 select 4;
+                        if (isNil "_crewProfile1") then {
+                            // Get an aircraft list of crew, spawn as profiles
+                            _units = _vehicleClass call ALIVE_fnc_configGetVehicleCrew;
+
+                            _crewProfile1 = [[_units], _taskSide, _taskFaction, _targetPosition, random(360), _taskFaction, true] call ALIVE_fnc_createProfileEntity;
+                            _crewProfile1ID = _crewProfile1 select 2 select 4;
+                        };
 
                         waitUntil {
                             sleep 1;
@@ -397,6 +413,7 @@ switch (_taskState) do {
                             removeGoggles _x;
                             removeHeadgear _x;
                             removeAllAssignedItems _x;
+                            _x setRank "PRIVATE";
                             if ((random 1) > 0.5) then {
                                 _x setDamage (random 0.6);
                             };
@@ -408,8 +425,6 @@ switch (_taskState) do {
 
                         _crewGroup setBehaviour "STEALTH";
                         _crewGroup setCombatMode "GREEN";
-
-
 
                         // store the data on the params
                         [_params, "startTime", time] call ALIVE_fnc_hashSet;
@@ -563,6 +578,8 @@ switch (_taskState) do {
 
             [_params,"lastState","DefenceWave"] call ALIVE_fnc_hashSet;
             [_params,"defend",_defend] call ALIVE_fnc_hashSet;
+
+            _result = _task;
         };
 
         if(_currentWave > _lastWave && _defend) then {
@@ -845,6 +862,11 @@ switch (_taskState) do {
                 ["chat_success",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
                 [_currentTaskDialog,_taskSide,_taskFaction] call ALIVE_fnc_taskCreateReward;
+
+                if (_requestPlayerID == "ATO") then {                     // TODO
+                    // return pilot to ATO
+
+                };
             };
 
         };

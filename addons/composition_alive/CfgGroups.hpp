@@ -10,6 +10,10 @@ class CfgGroups
 	    {
 	    	#include "guerrilla\desert.hpp"
 	    };
+	    class Guerrilla_Pacific
+	    {
+	    	#include "guerrilla\pacific.hpp"
+	    };
 	    class Guerrilla_Woodland
 	    {
 	    	#include "guerrilla\woodland.hpp"
@@ -22,6 +26,10 @@ class CfgGroups
 	    class Military_Desert
 	    {
 	    	#include "military\desert.hpp"
+	    };
+	    class Military_Pacific
+	    {
+	    	#include "military\pacific.hpp"
 	    };
 	    class Military_Woodland
 	    {

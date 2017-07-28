@@ -1,317 +1,343 @@
 
 actors
 
-    ALiVE_fnc_allActors
-    ALiVE_fnc_createActor
-    ALiVE_fnc_sendActorMessage
+	ALiVE_fnc_allActors
+	ALiVE_fnc_createActor
+	ALiVE_fnc_sendActorMessage
 
 anim
 
-    ALiVE_fnc_clientSwitchMove
-    ALiVE_fnc_switchMove
+	ALiVE_fnc_clientSwitchMove
+	ALiVE_fnc_switchMove
 
 arrays
 
-    ALiVE_fnc_arrayBlockHandler
-    ALiVE_fnc_erase
-    ALiVE_fnc_getNearestObjectInArray
-    ALiVE_fnc_heapSort
-    ALiVE_fnc_insert
-    ALiVE_fnc_insertSort
-    ALiVE_fnc_oErase
-    ALiVE_fnc_pop
-    ALiVE_fnc_push
-    ALiVE_fnc_selectRandom
-    ALiVE_fnc_shellSort
-    ALiVE_fnc_uErase
+	ALiVE_fnc_arrayBlockHandler
+	ALiVE_fnc_arrayFrameSplitter
+	ALiVE_fnc_erase
+	ALiVE_fnc_getNearestObjectInArray
+	ALiVE_fnc_heapSort
+	ALiVE_fnc_insert
+	ALiVE_fnc_insertSort
+	ALiVE_fnc_oErase
+	ALiVE_fnc_pop
+	ALiVE_fnc_push
+	ALiVE_fnc_selectRandom
+	ALiVE_fnc_shellSort
+	ALiVE_fnc_uErase
 
 behaviour
 
-    ALiVE_fnc_groupGarrison
+	ALiVE_fnc_groupGarrison
 
 camera
 
-    ALiVE_fnc_addCamera
-    ALiVE_fnc_chaseAngleShot
-    ALiVE_fnc_chaseShot
-    ALiVE_fnc_chaseSideShot
-    ALiVE_fnc_chaseWheelShot
-    ALiVE_fnc_createLiveFeedCamera
-    ALiVE_fnc_createLiveFeedEffect
-    ALiVE_fnc_flyInShot
-    ALiVE_fnc_lowerCamera
-    ALiVE_fnc_moveCamera
-    ALiVE_fnc_noTargetShot
-    ALiVE_fnc_panShot
-    ALiVE_fnc_raiseCamera
-    ALiVE_fnc_removeCamera
-    ALiVE_fnc_removeLiveFeedCamera
-    ALiVE_fnc_revertCamera
-    ALiVE_fnc_setCameraAngle
-    ALiVE_fnc_startCinematic
-    ALiVE_fnc_staticShot
-    ALiVE_fnc_stopCinematic
-    ALiVE_fnc_switchCamera
-    ALiVE_fnc_zoomShot
+	ALiVE_fnc_addCamera
+	ALiVE_fnc_chaseAngleShot
+	ALiVE_fnc_chaseShot
+	ALiVE_fnc_chaseSideShot
+	ALiVE_fnc_chaseWheelShot
+	ALiVE_fnc_createLiveFeedCamera
+	ALiVE_fnc_createLiveFeedEffect
+	ALiVE_fnc_flyInShot
+	ALiVE_fnc_lowerCamera
+	ALiVE_fnc_moveCamera
+	ALiVE_fnc_noTargetShot
+	ALiVE_fnc_panShot
+	ALiVE_fnc_raiseCamera
+	ALiVE_fnc_removeCamera
+	ALiVE_fnc_removeLiveFeedCamera
+	ALiVE_fnc_revertCamera
+	ALiVE_fnc_setCameraAngle
+	ALiVE_fnc_startCinematic
+	ALiVE_fnc_staticShot
+	ALiVE_fnc_stopCinematic
+	ALiVE_fnc_switchCamera
+	ALiVE_fnc_zoomShot
 
 composition
 
-    ALiVE_fnc_exportComposition
-    ALiVE_fnc_findComposition
-    ALiVE_fnc_spawnComposition
-    ALiVE_fnc_spawnRandomPopulatedComposition
+	ALiVE_fnc_exportComposition
+	ALiVE_fnc_findComposition
+	ALiVE_fnc_getCompositions
+	ALiVE_fnc_spawnComposition
+	ALiVE_fnc_spawnRandomPopulatedComposition
 
 config
 
-    ALiVE_fnc_configGetFactionClass
-    ALiVE_fnc_configGetFactionGroups
-    ALiVE_fnc_configGetFactions
-    ALiVE_fnc_configGetFactionUnitsByGroups
-    ALiVE_fnc_configGetGroup
-    ALiVE_fnc_configGetRandomGroup
-    ALiVE_fnc_configGetVehicleClass
-    ALiVE_fnc_configGetVehicleCrew
-    ALiVE_fnc_configGetVehicleEmptyPositions
-    ALiVE_fnc_configGetVehicleHitPoints
-    ALiVE_fnc_configGetVehicleMaxSpeed
-    ALiVE_fnc_configGetVehicleTurretPositions
-    ALiVE_fnc_configGetVehicleTurrets
-    ALiVE_fnc_configGetWeaponMagazines
-    ALiVE_fnc_getArtyMagazineType
-    ALiVE_fnc_getArtyRounds
-    ALiVE_fnc_getConfigValue
-    ALiVE_fnc_getFactionsDataSource
-    ALiVE_fnc_sortCFGGroupsByFaction
-    ALiVE_fnc_sortCFGGroupsBySide
-    ALiVE_fnc_sortCFGVehiclesByClass
-    ALiVE_fnc_sortCFGVehiclesByFactionClass
+	ALiVE_fnc_configFindEntries
+	ALiVE_fnc_configGetDifferences
+	ALiVE_fnc_configGetFactionClass
+	ALiVE_fnc_configGetFactionGroups
+	ALiVE_fnc_configGetFactions
+	ALiVE_fnc_configGetFactionUnitsByGroups
+	ALiVE_fnc_configGetGroup
+	ALiVE_fnc_configGetRandomGroup
+	ALiVE_fnc_configGetVehicleClass
+	ALiVE_fnc_configGetVehicleCrew
+	ALiVE_fnc_configGetVehicleEmptyPositions
+	ALiVE_fnc_configGetVehicleHitPoints
+	ALiVE_fnc_configGetVehicleMaxSpeed
+	ALiVE_fnc_configGetVehicleTurretPositions
+	ALiVE_fnc_configGetVehicleTurrets
+	ALiVE_fnc_configGetWeaponMagazines
+	ALiVE_fnc_configProperties
+	ALiVE_fnc_getArtyMagazineType
+	ALiVE_fnc_getArtyRounds
+	ALiVE_fnc_getConfigValue
+	ALiVE_fnc_getFactionsDataSource
+	ALiVE_fnc_sortCFGGroupsByFaction
+	ALiVE_fnc_sortCFGGroupsBySide
+	ALiVE_fnc_sortCFGVehiclesByClass
+	ALiVE_fnc_sortCFGVehiclesByFactionClass
 
 conversions
 
-    ALiVE_fnc_sideNumberToText
-    ALiVE_fnc_sideObjectToNumber
-    ALiVE_fnc_sideTextToLong
-    ALiVE_fnc_sideTextToNumber
-    ALiVE_fnc_sideTextToObject
-    ALiVE_fnc_sideToText
-    ALiVE_fnc_toBool
-    ALiVE_fnc_toNumber
-    ALiVE_fnc_toString
+	ALiVE_fnc_dirToText
+	ALiVE_fnc_sideNumberToText
+	ALiVE_fnc_sideObjectToNumber
+	ALiVE_fnc_sideTextToLong
+	ALiVE_fnc_sideTextToNumber
+	ALiVE_fnc_sideTextToObject
+	ALiVE_fnc_sideToSideText
+	ALiVE_fnc_sideToText
+	ALiVE_fnc_toBool
+	ALiVE_fnc_toNumber
+	ALiVE_fnc_toString
 
 data
 
-    ALiVE_fnc_encodeJSON
-    ALiVE_fnc_hashAddWarRoomData
-    ALiVE_fnc_hashCopy
-    ALiVE_fnc_hashCreate
-    ALiVE_fnc_hashGet
-    ALiVE_fnc_hashRem
-    ALiVE_fnc_hashSet
-    ALiVE_fnc_isHash
-    ALiVE_fnc_JSON
-    ALiVE_fnc_parseJSON
-    ALiVE_fnc_unorderedMap
+	ALiVE_fnc_encodeJSON
+	ALiVE_fnc_hashAddWarRoomData
+	ALiVE_fnc_hashCopy
+	ALiVE_fnc_hashCreate
+	ALiVE_fnc_hashGet
+	ALiVE_fnc_hashRem
+	ALiVE_fnc_hashSet
+	ALiVE_fnc_isHash
+	ALiVE_fnc_JSON
+	ALiVE_fnc_parseJSON
+	ALiVE_fnc_ProfileNameSpaceClear
+	ALiVE_fnc_ProfileNameSpaceLoad
+	ALiVE_fnc_ProfileNameSpaceSave
+	ALiVE_fnc_ProfileNameSpaceWipe
+	ALiVE_fnc_quadtree
+	ALiVE_fnc_unorderedMap
 
 diagnostics
 
-    ALiVE_fnc_canSee
-    ALiVE_fnc_checkConfigCompatibility
-    ALiVE_fnc_checkStaticDataMapping
-    ALiVE_fnc_cursorTargetInfo
-    ALiVE_fnc_debugBuildingPositions
-    ALiVE_fnc_debugHandler
-    ALiVE_fnc_estimateMemoryUsage
-    ALiVE_fnc_factionCreateStaticData
-    ALiVE_fnc_inspectArray
-    ALiVE_fnc_inspectClasses
-    ALiVE_fnc_inspectConfig
-    ALiVE_fnc_inspectConfigItem
-    ALiVE_fnc_inspectConfigRecurse
-    ALiVE_fnc_inspectEnvironment
-    ALiVE_fnc_inspectHash
-    ALiVE_fnc_inspectObject
-    ALiVE_fnc_inspectVehicle
-    ALiVE_fnc_placeDebugMarker
-    ALiVE_fnc_spawnDebugMarker
-    ALiVE_fnc_timer
+	ALiVE_fnc_canSee
+	ALiVE_fnc_checkConfigCompatibility
+	ALiVE_fnc_checkConfigWarnings
+	ALiVE_fnc_checkStaticDataMapping
+	ALiVE_fnc_cursorTargetInfo
+	ALiVE_fnc_debugBuildingPositions
+	ALiVE_fnc_debugHandler
+	ALiVE_fnc_estimateMemoryUsage
+	ALiVE_fnc_factionCreateStaticData
+	ALiVE_fnc_inspectArray
+	ALiVE_fnc_inspectClasses
+	ALiVE_fnc_inspectConfig
+	ALiVE_fnc_inspectConfigItem
+	ALiVE_fnc_inspectConfigRecurse
+	ALiVE_fnc_inspectEnvironment
+	ALiVE_fnc_inspectHash
+	ALiVE_fnc_inspectObject
+	ALiVE_fnc_inspectVehicle
+	ALiVE_fnc_placeDebugMarker
+	ALiVE_fnc_spawnDebugMarker
+	ALiVE_fnc_timer
 
 events
 
-    ALiVE_fnc_addEventToServer
-    ALiVE_fnc_event
-    ALiVE_fnc_eventLog
+	ALiVE_fnc_addEventToServer
+	ALiVE_fnc_event
+	ALiVE_fnc_eventLog
 
 filesystem
 
-    ALiVE_fnc_isFilePath
+	ALiVE_fnc_fileExists
+	ALiVE_fnc_isFilePath
 
 groups
 
-    ALiVE_fnc_getGroupDetailDataSource
-    ALiVE_fnc_getGroupsDataSource
-    ALiVE_fnc_groupCountAlive
-    ALiVE_fnc_groupGenerateConfigData
-    ALiVE_fnc_groupIsReady
-    ALiVE_fnc_randomGroup
-    ALiVE_fnc_randomGroupByType
+	ALiVE_fnc_DeleteGroupRemote
+	ALiVE_fnc_getGroupDetailDataSource
+	ALiVE_fnc_getGroupsDataSource
+	ALiVE_fnc_groupCountAlive
+	ALiVE_fnc_groupFinder
+	ALiVE_fnc_groupGenerateConfigData
+	ALiVE_fnc_groupIsReady
+	ALiVE_fnc_MoveRemote
+	ALiVE_fnc_randomGroup
+	ALiVE_fnc_randomGroupByType
 
 logging
 
-    ALiVE_fnc_convertLogLevel
-    ALiVE_fnc_dump
-    ALiVE_fnc_dumpClipboard
-    ALiVE_fnc_dumpH
-    ALiVE_fnc_dumpLogo
-    ALiVE_fnc_dumpModuleInit
-    ALiVE_fnc_dumpMP
-    ALiVE_fnc_dumpMPH
-    ALiVE_fnc_dumpR
-    ALiVE_fnc_log
-    ALiVE_fnc_logger
-    ALiVE_fnc_setLogLevel
+	ALiVE_fnc_convertLogLevel
+	ALiVE_fnc_dump
+	ALiVE_fnc_dumpClipboard
+	ALiVE_fnc_dumpH
+	ALiVE_fnc_dumpLogo
+	ALiVE_fnc_dumpModuleInit
+	ALiVE_fnc_dumpMP
+	ALiVE_fnc_dumpMPH
+	ALiVE_fnc_dumpR
+	ALiVE_fnc_log
+	ALiVE_fnc_logger
+	ALiVE_fnc_setLogLevel
 
 map
 
-    ALiVE_fnc_findFlatArea
-    ALiVE_fnc_findHQ
-    ALiVE_fnc_findIndoorHousePositions
-    ALiVE_fnc_findNearHousePositions
-    ALiVE_fnc_findObjectID
-    ALiVE_fnc_findObjectIDString
-    ALiVE_fnc_getAllEnterableHouses
-    ALiVE_fnc_getBuildingPositions
-    ALiVE_fnc_getEnterableHouses
-    ALiVE_fnc_getMapBounds
-    ALiVE_fnc_getMapInfo
-    ALiVE_fnc_getMaxBuildingPositions
-    ALiVE_fnc_GetNearestAirportID
-    ALiVE_fnc_getObjectsByType
-    ALiVE_fnc_getRandomPositionLand
-    ALiVE_fnc_getSeriesRoadPositions
-    ALiVE_fnc_gridPos
-    ALiVE_fnc_isHouseEnterable
-    ALiVE_fnc_processTerrain
+	ALiVE_fnc_crossesSea
+	ALiVE_fnc_findFlatArea
+	ALiVE_fnc_findHQ
+	ALiVE_fnc_findIndoorHousePositions
+	ALiVE_fnc_findNearestShore
+	ALiVE_fnc_findNearHousePositions
+	ALiVE_fnc_findNearObjectsByType
+	ALiVE_fnc_findObjectID
+	ALiVE_fnc_findObjectIDString
+	ALiVE_fnc_getAllEnterableHouses
+	ALiVE_fnc_getBuildingPositions
+	ALiVE_fnc_getEnterableHouses
+	ALiVE_fnc_getMapBounds
+	ALiVE_fnc_getMapInfo
+	ALiVE_fnc_getMaxBuildingPositions
+	ALiVE_fnc_GetNearestAirportID
+	ALiVE_fnc_getObjectsByType
+	ALiVE_fnc_getRandomPositionLand
+	ALiVE_fnc_getSeriesRoadPositions
+	ALiVE_fnc_gridPos
+	ALiVE_fnc_isHouseEnterable
+	ALiVE_fnc_nearShip
+	ALiVE_fnc_processTerrain
 
 markers
 
-    ALiVE_fnc_createLineMarker
-    ALiVE_fnc_createLink
-    ALiVE_fnc_createMarker
-    ALiVE_fnc_createMarkerGlobal
-    ALiVE_fnc_createTraceGrid
-    ALiVE_fnc_deleteLink
-    ALiVE_fnc_inArea
-    ALiVE_fnc_MarkerExists
-    ALiVE_fnc_updateTraceGrid
-    ALiVE_fnc_validateLocations
+	ALiVE_fnc_createLineMarker
+	ALiVE_fnc_createLink
+	ALiVE_fnc_createMarker
+	ALiVE_fnc_createMarkerGlobal
+	ALiVE_fnc_createTraceGrid
+	ALiVE_fnc_deleteLink
+	ALiVE_fnc_inArea
+	ALiVE_fnc_MarkerExists
+	ALiVE_fnc_updateTraceGrid
+	ALiVE_fnc_validateLocations
 
 math
 
-    ALiVE_fnc_decHasBin
-    ALiVE_fnc_decToBinArr
-    ALiVE_fnc_dirTo
-    ALiVE_fnc_modDegrees
-    ALiVE_fnc_random
-    ALiVE_fnc_roundDecimal
+	ALiVE_fnc_decHasBin
+	ALiVE_fnc_decToBinArr
+	ALiVE_fnc_dirTo
+	ALiVE_fnc_modDegrees
+	ALiVE_fnc_random
+	ALiVE_fnc_roundDecimal
 
 misc
 
-    ALiVE_fnc_addActionGlobal
-    ALiVE_fnc_allSides
-    ALiVE_fnc_classSide
-    ALiVE_fnc_compileReadableDate
-    ALiVE_fnc_emptyInit
-    ALiVE_fnc_exportCfgVehicles
-    ALiVE_fnc_exportCfgVehicleWeapons
-    ALiVE_fnc_exportCfgWeapons
-    ALiVE_fnc_exportMapWarRoom
-    ALiVE_fnc_factionSide
-    ALiVE_fnc_getDominantFaction
-    ALiVE_fnc_getEnvironment
-    ALiVE_fnc_getPos
-    ALiVE_fnc_getSideFactions
-    ALiVE_fnc_isAbleToHost
-    ALiVE_fnc_isHC
-    ALiVE_fnc_isServerAdmin
-    ALiVE_fnc_param
-    ALiVE_fnc_pointAt
-    ALiVE_fnc_wait
+	ALiVE_fnc_addActionGlobal
+	ALiVE_fnc_allSides
+	ALiVE_fnc_classSide
+	ALiVE_fnc_compileReadableDate
+	ALiVE_fnc_emptyInit
+	ALiVE_fnc_exportCfgVehicles
+	ALiVE_fnc_exportCfgVehicleWeapons
+	ALiVE_fnc_exportCfgWeapons
+	ALiVE_fnc_exportMapWarRoom
+	ALiVE_fnc_factionSide
+	ALiVE_fnc_getDominantFaction
+	ALiVE_fnc_getEnvironment
+	ALiVE_fnc_getPos
+	ALiVE_fnc_getSideFactions
+	ALiVE_fnc_isAbleToHost
+	ALiVE_fnc_isHC
+	ALiVE_fnc_isServerAdmin
+	ALiVE_fnc_param
+	ALiVE_fnc_pointAt
+	ALiVE_fnc_sortBy
+	ALiVE_fnc_unitReadyRemote
+	ALiVE_fnc_wait
 
 network
 
-    ALiVE_fnc_BUS
+	ALiVE_fnc_BUS
 
 oop
 
-    ALiVE_fnc_BaseClass
-    ALiVE_fnc_BaseClassHash
-    ALiVE_fnc_OOsimpleOperation
+	ALiVE_fnc_BaseClass
+	ALiVE_fnc_BaseClassHash
+	ALiVE_fnc_OOsimpleOperation
 
 strings
 
-    ALiVE_fnc_dateToDTG
-    ALiVE_fnc_formatDate
-    ALiVE_fnc_formatNumber
-    ALiVE_fnc_realTimeToDTG
-    ALiVE_fnc_selBinStr
-    ALiVE_fnc_timeToRead
+	ALiVE_fnc_dateToDTG
+	ALiVE_fnc_formatDate
+	ALiVE_fnc_formatNumber
+	ALiVE_fnc_realTimeToDTG
+	ALiVE_fnc_selBinStr
+	ALiVE_fnc_timeToRead
 
 ui
 
-    ALiVE_fnc_hint
-    ALiVE_fnc_hintS
-    ALiVE_fnc_listSelectData
-    ALiVE_fnc_radioBroadcast
-    ALiVE_fnc_radioBroadcastToSide
-    ALiVE_fnc_sendHint
-    ALiVE_fnc_sideC
+	ALiVE_fnc_hint
+	ALiVE_fnc_hintS
+	ALiVE_fnc_listSelectData
+	ALiVE_fnc_radioBroadcast
+	ALiVE_fnc_radioBroadcastToSide
+	ALiVE_fnc_sendHint
+	ALiVE_fnc_sideC
 
 units
 
-    ALiVE_fnc_addToEnemyGroup
-    ALiVE_fnc_anyPlayersInRange
-    ALiVE_fnc_anyPlayersInRangeExcludeAir
-    ALiVE_fnc_anyPlayersInRangeIncludeAir
-    ALiVE_fnc_chooseRandomUnits
-    ALiVE_fnc_getGroupsDataSource
-    ALiVE_fnc_getNearUnits
-    ALiVE_fnc_getPlayerByUID
-    ALiVE_fnc_getPlayerByUIDOnConnect
-    ALiVE_fnc_getPlayersDataSource
-    ALiVE_fnc_getPlayersInGroupDataSource
-    ALiVE_fnc_getRandomManNear
-    ALiVE_fnc_getRandomManOrPlayerNear
-    ALiVE_fnc_getRandomPlayerNear
-    ALiVE_fnc_getSideManNear
-    ALiVE_fnc_getSideManOrPlayerNear
-    ALiVE_fnc_getSidePlayerNear
-    ALiVE_fnc_isArmed
-    ALiVE_fnc_isEnemyNear
-    ALiVE_fnc_PlayersInRangeIncludeAir
-    ALiVE_fnc_unitArrayFilterDead
-    ALiVE_fnc_unitArrayGetVehiclesWithin
-    ALiVE_fnc_unitArraySortByRank
-    ALiVE_fnc_unitArraySortSide
+	ALiVE_fnc_addToEnemyGroup
+	ALiVE_fnc_anyPlayersInRange
+	ALiVE_fnc_anyPlayersInRangeExcludeAir
+	ALiVE_fnc_anyPlayersInRangeIncludeAir
+	ALiVE_fnc_chooseRandomUnits
+	ALiVE_fnc_doMoveRemote
+	ALiVE_fnc_getNearUnits
+	ALiVE_fnc_getPlayerByUID
+	ALiVE_fnc_getPlayerByUIDOnConnect
+	ALiVE_fnc_getPlayersDataSource
+	ALiVE_fnc_getPlayersInGroupDataSource
+	ALiVE_fnc_getRandomManNear
+	ALiVE_fnc_getRandomManOrPlayerNear
+	ALiVE_fnc_getRandomPlayerNear
+	ALiVE_fnc_getSideManNear
+	ALiVE_fnc_getSideManOrPlayerNear
+	ALiVE_fnc_getSidePlayerNear
+	ALiVE_fnc_isArmed
+	ALiVE_fnc_isEnemyNear
+	ALiVE_fnc_landAtRemote
+	ALiVE_fnc_landRemote
+	ALiVE_fnc_PlayersInRangeIncludeAir
+	ALiVE_fnc_setposAGLS
+	ALiVE_fnc_unitArrayFilterDead
+	ALiVE_fnc_unitArrayGetVehiclesWithin
+	ALiVE_fnc_unitArraySortByRank
+	ALiVE_fnc_unitArraySortSide
 
 vehicles
 
-    ALiVE_fnc_anyAutonomousInRange
-    ALiVE_fnc_findVehicleType
-    ALiVE_fnc_isAA
-    ALiVE_fnc_isArtillery
-    ALiVE_fnc_vehicleAssignGroup
-    ALiVE_fnc_vehicleCountEmptyPositions
-    ALiVE_fnc_vehicleDismount
-    ALiVE_fnc_vehicleGenerateEmptyPositionData
-    ALiVE_fnc_vehicleGetAmmo
-    ALiVE_fnc_vehicleGetDamage
-    ALiVE_fnc_vehicleGetEmptyPositions
-    ALiVE_fnc_vehicleGetGroupsWithin
-    ALiVE_fnc_vehicleGetKindOf
-    ALiVE_fnc_vehicleGetSpeedPerSecond
-    ALiVE_fnc_vehicleHasRoomForGroup
-    ALiVE_fnc_vehicleIsGroupIn
-    ALiVE_fnc_vehicleMount
-    ALiVE_fnc_vehicleMoveIn
-    ALiVE_fnc_vehicleSetAmmo
-    ALiVE_fnc_vehicleSetDamage
+	ALiVE_fnc_anyAutonomousInRange
+	ALiVE_fnc_findVehicleType
+	ALiVE_fnc_isAA
+	ALiVE_fnc_isArtillery
+	ALiVE_fnc_vehicleAssignGroup
+	ALiVE_fnc_vehicleCountEmptyPositions
+	ALiVE_fnc_vehicleDismount
+	ALiVE_fnc_vehicleGenerateEmptyPositionData
+	ALiVE_fnc_vehicleGetAmmo
+	ALiVE_fnc_vehicleGetDamage
+	ALiVE_fnc_vehicleGetEmptyPositions
+	ALiVE_fnc_vehicleGetGroupsWithin
+	ALiVE_fnc_vehicleGetKindOf
+	ALiVE_fnc_vehicleGetSpeedPerSecond
+	ALiVE_fnc_vehicleHasRoomForGroup
+	ALiVE_fnc_vehicleIsGroupIn
+	ALiVE_fnc_vehicleMount
+	ALiVE_fnc_vehicleMoveIn
+	ALiVE_fnc_vehicleSetAmmo
+	ALiVE_fnc_vehicleSetDamage
