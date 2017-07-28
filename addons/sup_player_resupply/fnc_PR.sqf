@@ -609,10 +609,29 @@ switch(_operation) do {
 
             // Create HQ Audio source
             if (_audio) then {
-                ALIVE_PR_HQ = (createGroup west) createUnit ["Logic", [10,10,1000], [], 0, "NONE"];
-                ALIVE_PR_HQ setGroupId [(getText(configFile >> "CfgHQIdentities" >> "HQ" >> "name"))];
-                ALIVE_PR_HQ setIdentity "EPC_B_BHQ";
+                private _hqClass = "HQ";
+                private _identity = "EPC_B_BHQ";
+                switch (_playerSide) do {
+                    case EAST: {
+                        _hqClass = "OPF";
+                        _identity = "Male01PER";
+                    };
+                    case RESISTANCE: {
+                        _hqClass = "IND";
+                        _identity = "Male01GRE";
+                    };
+                    default {
+                        _identity = "EPC_B_BHQ";
+                        _hqClass = "HQ";
+                    };
+                };
+                private _HQ = getText(configFile >> "CfgHQIdentities" >> _hqClass >> "name");
+                ALIVE_PR_HQ = (createGroup _playerSide) createUnit ["Logic", [10,10,1000], [], 0, "NONE"];
+                ALIVE_PR_HQ setGroupId [_HQ];
+                ALIVE_PR_HQ setIdentity _identity;
                 ALIVE_PR_HQ kbAddtopic["ALIVE_PR_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
+
+
             };
 
             // Initialise interaction key if undefined
@@ -716,6 +735,21 @@ switch(_operation) do {
 
             _audio = [_logic,"pr_audio"] call MAINCLASS;
 
+            private _HQ = switch (_sideObject) do {
+                case WEST: {
+                    "BLU"
+                };
+                case EAST: {
+                    "OPF"
+                };
+                case RESISTANCE: {
+                    "IND"
+                };
+                default {
+                    "HQ"
+                };
+            };
+
             _radioMessage = "";
 
             if (_audio) then {
@@ -734,7 +768,7 @@ switch(_operation) do {
 
                         _radioMessage = "Request acknowledged, stand by";
 
-                        _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,"HQ"];
+                        _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
                         [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
                     };
@@ -757,7 +791,7 @@ switch(_operation) do {
                         };
                     };
 
-                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,"HQ"];
+                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
                     [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
 
@@ -776,7 +810,7 @@ switch(_operation) do {
                         };
                     };
 
-                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,"HQ"];
+                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
                     [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
 
@@ -795,7 +829,7 @@ switch(_operation) do {
                         };
                     };
 
-                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,"HQ"];
+                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
                     [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
 
@@ -836,7 +870,7 @@ switch(_operation) do {
                         _radioMessage = format["%1, Payload transport vehicle is RTB.",_radioMessage];
                     };
 
-                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,"HQ"];
+                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
                     [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
 
@@ -917,7 +951,7 @@ switch(_operation) do {
                         };
                     };
 
-                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,"HQ"];
+                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
                     [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
 
@@ -943,7 +977,7 @@ switch(_operation) do {
 
                     _radioMessage = "Your request for support has been denied. Insufficient resources available";
 
-                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,"HQ"];
+                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
                     [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
 
@@ -968,7 +1002,7 @@ switch(_operation) do {
 
                     _radioMessage = "Your request for support has been denied. No insertion point is available";
 
-                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,"HQ"];
+                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
                     [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
 
@@ -993,7 +1027,7 @@ switch(_operation) do {
 
                     _radioMessage = "Your request for support has been denied. The forces requested are not available";
 
-                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,"HQ"];
+                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
                     [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
 
@@ -1018,7 +1052,7 @@ switch(_operation) do {
 
                     _radioMessage = "Your request for support has been denied. LOGCOM is still setting up.";
 
-                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,"HQ"];
+                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
                     [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
 
@@ -1043,7 +1077,7 @@ switch(_operation) do {
 
                     _radioMessage = "Your request for support has been denied. No military logistics supply chain found for your players faction.";
 
-                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,"HQ"];
+                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
                     [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
 
@@ -1196,7 +1230,7 @@ switch(_operation) do {
 
                     _radioMessage = "Your request to cancel has been denied. Requested units cannot RTB at this time.";
 
-                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,"HQ"];
+                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
                     [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
 
@@ -1221,7 +1255,7 @@ switch(_operation) do {
 
                     _radioMessage = "Your request for support has been cancelled.";
 
-                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,"HQ"];
+                    _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
                     [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
 
@@ -2495,11 +2529,27 @@ switch(_operation) do {
 
                                 _side = [_logic,"side"] call MAINCLASS;
                                 _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
+
+                                private _HQ = switch (_sideObject) do {
+                                    case WEST: {
+                                        "BLU"
+                                    };
+                                    case EAST: {
+                                        "OPF"
+                                    };
+                                    case RESISTANCE: {
+                                        "IND"
+                                    };
+                                    default {
+                                        "HQ"
+                                    };
+                                };
+
                                 _callSignPlayer = format ["%1", group player];
 
                                 _radioMessage = "Requesting logistics support at the supplied location";
 
-                                _radioBroadcast = [player,_radioMessage,"side",_sideObject,true,false,true,false,"HQ"];
+                                _radioBroadcast = [player,_radioMessage,"side",_sideObject,true,false,true,false,_HQ];
 
                                 [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
                             };
