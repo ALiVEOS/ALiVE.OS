@@ -4057,22 +4057,36 @@ switch(_operation) do {
             case "eventComplete": {
 
                 private["_sideObject","_factionName","_forcePool","_message","_radioBroadcast","_debug"];
-                
+
                 _debug = [_logic, "debug"] call MAINCLASS;
-                
+
                 [_logic, "setEventProfilesAvailable", _event] call MAINCLASS;
 
 				// Moved behind debug per request #348
 				if (_debug) then {
-                    
+
 	                // send radio broadcast
 	                _sideObject = [_eventSide] call ALIVE_fnc_sideTextToObject;
 	                _factionName = getText((_eventFaction call ALiVE_fnc_configGetFactionClass) >> "displayName");
 	                _forcePool = [ALIVE_globalForcePool,_eventFaction] call ALIVE_fnc_hashGet;
 
+                    private _HQ = switch (_sideObject) do {
+                        case WEST: {
+                            "BLU"
+                        };
+                        case EAST: {
+                            "OPF"
+                        };
+                        case RESISTANCE: {
+                            "IND"
+                        };
+                        default {
+                            "HQ"
+                        };
+                    };
 	                // send a message to all side players from HQ
 	                _message = format["%1 reinforcements have arrived. Available reinforcement level: %2",_factionName,_forcePool];
-	                _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,"HQ"];
+	                _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_HQ];
 	                [_eventSide,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
                 };
 
@@ -5043,11 +5057,11 @@ switch(_operation) do {
 
                                         _slingloadmax = [(configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue;
                                         _maxLoad = [(configFile >> "CfgVehicles" >> _x >> "maximumLoad")] call ALiVE_fnc_getConfigValue;
-                                        
+
                                         if (!isNil "_slingloadmax" && {!isNil "_maxLoad"}) then {
 	                                        _slingDiff = _slingloadmax - _payloadWeight;
 	                                        _loadDiff = _maxLoad - _payloadWeight;
-	
+
 	                                        if ((_slingDiff < _currentDiff) && (_slingDiff > 0)) then {_currentDiff = _slingDiff; _vehicleClass = _x; _slingload = true;};
 	                                        if ((_loadDiff <= _currentDiff) && (_loadDiff > 0)) then {_currentDiff = _loadDiff; _vehicleClass = _x; _slingload = false;};
                                         };
@@ -5161,15 +5175,15 @@ switch(_operation) do {
                                     };
 
                                     _vehicleClass = selectRandom _containers;
-									
+
                                     //_profile = [_vehicleClass,_side,_eventFaction,_position,random(360),false,_eventFaction,_payload] call ALIVE_fnc_createProfileVehicle;
 
                                     _vehicle = createVehicle [_vehicleClass, _position, [], 0, "NONE"];
-									
+
 									clearItemCargoGlobal _vehicle;
 									clearMagazineCargoGlobal _vehicle;
 									clearWeaponCargoGlobal _vehicle;
-									
+
                                     [ALiVE_SYS_LOGISTICS,"fillContainer",[_vehicle,_payload]] call ALiVE_fnc_Logistics;
 
                                     if(_paraDrop) then {
