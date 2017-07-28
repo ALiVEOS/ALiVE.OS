@@ -3,7 +3,7 @@
 /*
 item0[] = {"INIT",0,250,-191.791229,-248.493942,-101.791237,-198.494003,0.000000,"INIT"};
 item1[] = {"INIT_COMPLETE",4,218,-194.557098,-181.067123,-104.557114,-131.067123,0.000000,"INIT" \n "COMPLETE"};
-item2[] = {"ANALYZE",2,250,-398.915314,190.635864,98.822098,238.500443,0.000000,"ANALYZE"};
+item2[] = {"ANALYZE",2,4346,-398.915314,190.635864,98.822098,238.500443,0.000000,"ANALYZE"};
 item3[] = {"RECEIVE",4,218,-194.508545,-19.777693,-104.508537,30.222303,0.000000,"RECEIVE"};
 item4[] = {"CAPTURE_Conditio",4,218,-296.383759,269.200836,-206.383591,319.200775,3.000000,"CAPTURE" \n "Conditions"};
 item5[] = {"",7,210,176.004105,761.434937,184.004105,769.434814,0.000000,""};
@@ -83,8 +83,8 @@ link36[] = {24,25};
 link37[] = {25,26};
 link38[] = {26,10};
 link39[] = {27,28};
-globals[] = {0.000000,0,0,0,16777215,640,480,1,81,6316128,1,-756.245850,382.772278,710.971680,-207.315918,934,753,1};
-window[] = {0,-1,-1,-1,-1,972,88,1711,88,1,951};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,81,6316128,1,-666.800781,293.326508,514.854492,-259.209595,934,753,1};
+window[] = {0,-1,-1,-1,-1,928,44,1667,44,1,951};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -113,6 +113,7 @@ class FSM
        "_sidesEnemy = [_OPCOM_HANDLER,""sidesenemy"",""WEST""] call ALiVE_fnc_HashGet;" \n
        "" \n
        "_lastanalyze = 0;" \n
+       "_lastEnemyScan = 0;" \n
        "_cycleTime = 120;" \n
        "_pause = false;" \n
        "" \n
@@ -223,42 +224,60 @@ class FSM
        "    //select data operation" \n
        "    switch (_DATA_OPERATION) do {" \n
        "" \n
-       "        case (""analyze_internal"") : {" \n
-       "        // Empty for now" \n
-       "        };" \n
+       "	   case (""analyze_internal"") : {" \n
+       "		// Scan for enemies when inactive more than 60 seconds" \n
+       "" \n
+       "		//[""Analyze internal | %1 | %2"",time,_lastEnemyScan] call ALiVE_fnc_DumpR;" \n
+       "" \n
+       "		if (time - _lastEnemyScan > 60) then {" \n
+       "" \n
+       "			[_OPCOM_HANDLER,""scanallenemies""] spawn ALIVE_fnc_OPCOM;" \n
+       "" \n
+       "			_targets = [_OPCOM_HANDLER,""knownentities"",[]] call ALiVE_fnc_HashGet;" \n
+       "" \n
+       "		   	//[""TACOM %2 found enemies: %1"",_targets,_side] call ALiVE_fnc_DumpR;" \n
+       "	" \n
+       "	       	 //Attack reported enemy directly" \n
+       "	       	 if (count _targets > 0) then {" \n
+       "	" \n
+       "	            	_targetID = _targets select 0 select 0;" \n
+       "	" \n
+       "	            	if (isnil ""_targetID"") exitwith {};" \n
+       "	" \n
+       "	            	_target = [ALIVE_profileHandler, ""getProfile"",_targetID] call ALIVE_fnc_profileHandler;" \n
+       "	" \n
+       "	            	if (isnil ""_target"") exitwith {};" \n
+       "	" \n
+       "	            	_vehicle = ([_target,""vehicleAssignments"",[[],[]]] call ALIVE_fnc_hashGet) select 1;" \n
+       "	" \n
+       "	           		if (count _vehicle > 0) then {" \n
+       "	                    	// Attack with one air vehicle if target is in a vehicle" \n
+       "				  	[""TACOM %2 sends QRF of type air on %1"",_targetID,_side] call ALiVE_fnc_Dump;" \n
+       "" \n
+       "	                    	_attackers = [_OPCOM_HANDLER, ""attackentity"",[_targetID,1,""air""]] call ALIVE_fnc_OPCOM;" \n
+       "	                	} else {" \n
+       "	                    	// Send 2 infantry groups if target is not in a vehicle" \n
+       "				  	[""TACOM %2 sends QRF of type infantry on %1"",_targetID,_side] call ALiVE_fnc_Dump;" \n
+       "" \n
+       "	                    	_attackers = [_OPCOM_HANDLER, ""attackentity"",[_targetID,2,""infantry""]] call ALIVE_fnc_OPCOM;" \n
+       "	            	};" \n
+       "	        	};" \n
+       "					" \n
+       "			_lastEnemyScan = time;" \n
+       "		};" \n
+       "	   };" \n
        "        " \n
        "        //Analyze sent data" \n
        "        case (""analyze"") : {" \n
-       "            _objective = _DATA_VALUE;" \n
-       "            _pos = [_objective,""center""] call AliVE_fnc_HashGet;" \n
-       "            _opcom_orders = [_objective,""opcom_orders""] call AliVE_fnc_HashGet;" \n
-       "            _state = [_objective,""opcom_state""] call AliVE_fnc_HashGet;" \n
-       "            _playertasks = [_OPCOM_HANDLER,""playertasks"",[]] call ALiVE_fnc_HashGet;" \n
        "" \n
-       "            //Attack reported enemy directly" \n
-       "            if (count ([_OPCOM_HANDLER,""knownentities"",[]] call ALiVE_fnc_HashGet) > 0) then {" \n
-       "" \n
-       "                //[""TAC Attack direct""] call ALiVE_fnc_DumpR;" \n
-       "" \n
-       "                _trgt = ([_OPCOM_HANDLER,""knownentities"",[]] call ALiVE_fnc_HashGet) select 0 select 0;" \n
-       "" \n
-       "                if !(isnil ""_trgt"") then {" \n
-       "" \n
-       "                    _prf = [ALIVE_profileHandler, ""getProfile"",_trgt] call ALIVE_fnc_profileHandler;" \n
-       "" \n
-       "                    if  (isnil ""_prf"") exitwith {};" \n
-       "" \n
-       "                    _ass= ([_prf,""vehicleAssignments"",[[],[]]] call ALIVE_fnc_hashGet) select 1;" \n
-       "" \n
-       "                    if (count _ass > 0) then {" \n
-       "                            // Attack with one air vehicle if target is in a vehicle" \n
-       "                            _attackers = [_OPCOM_HANDLER, ""attackentity"",[_trgt,1,""air""]] call ALIVE_fnc_OPCOM;" \n
-       "                        } else {" \n
-       "                            // Send 2 infantry groups if target is not in a vehicle" \n
-       "                            _attackers = [_OPCOM_HANDLER, ""attackentity"",[_trgt,2,""infantry""]] call ALIVE_fnc_OPCOM;" \n
-       "                    };" \n
-       "                };" \n
-       "            };" \n
+       "			private [""_targets"",""_targetID"",""_target"",""_vehicle""];" \n
+       "	" \n
+       "	        _objective = _DATA_VALUE;" \n
+       "	        _pos = [_objective,""center""] call AliVE_fnc_HashGet;" \n
+       "	        _opcom_orders = [_objective,""opcom_orders""] call AliVE_fnc_HashGet;" \n
+       "	        _state = [_objective,""opcom_state""] call AliVE_fnc_HashGet;" \n
+       "	        _playertasks = [_OPCOM_HANDLER,""playertasks"",[]] call ALiVE_fnc_HashGet;" \n
+       "			" \n
        "" \n
        "            //select internal TACOM orders by global OPCOM order and set appropriate conditions for execution" \n
        "            switch (_opcom_orders) do {" \n

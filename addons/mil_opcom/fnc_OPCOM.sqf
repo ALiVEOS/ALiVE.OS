@@ -635,7 +635,7 @@ switch(_operation) do {
             _reserved = [_logic,"ProfileIDsReserve",[]] call ALiVE_fnc_HashGet;
             _profile = [ALiVE_ProfileHandler,"getProfile",_target] call ALiVE_fnc_ProfileHandler;
 
-               _section = [];
+            _section = [];
             _profileIDs = [];
             _dist = 1000;
 
@@ -651,20 +651,18 @@ switch(_operation) do {
             {
                 if ((isnil "_x") || {_x select 0 == _target} || {!((_x select 0) in _profileIDs)}) then {
                     _knownE set [_foreachIndex,"x"];
-                    _knownE = _knownE - ["x"];
-
-                    [_logic,"knownentities",_knownE] call ALiVE_fnc_HashSet;
                 };
             } foreach _knownE;
+            _knownE = _knownE - ["x"];
+			[_logic,"knownentities",_knownE] call ALiVE_fnc_HashSet;
 
             {
                 if ((isnil "_x") || {time - (_x select 3) > 90} || {!((_x select 0) in _profileIDs)}) then {
                     _attackedE set [_foreachIndex,"x"];
-                    _attackedE = _attackedE - ["x"];
-
-                    [_logic,"attackedentities",_attackedE] call ALiVE_fnc_HashSet;
                 };
             } foreach _attackedE;
+            _attackedE = _attackedE - ["x"];
+            [_logic,"attackedentities",_attackedE] call ALiVE_fnc_HashSet;            
 
             if ({!(isnil "_x") && {_x select 0 == _target}} count _attackedE < 1) then {
                 switch (_type) do {
@@ -692,6 +690,27 @@ switch(_operation) do {
                         _dist = 15000;
                         _rtb = true;
                     };
+                };
+                
+                if (!isnil "_rtb" && {["ALiVE_mil_ATO"] call ALiVE_fnc_IsModuleAvailable}) exitwith {
+                    
+                    // ["Calling ATO event"] call ALiVE_fnc_DumpR;
+
+					_args = [
+					    "RED",	// ROE
+					    200,
+					    "FULL",
+					    0.1,
+					    0.1,
+					    2000,	// RADIUS
+					    10,
+					    [_target]  // TARGETS either profile or unit
+					];
+					_event = ['ATO_REQUEST', ["CAS", [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, "", _args],"ATO"] call ALIVE_fnc_event;
+					_eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+                    
+                    _attackedE pushback [_target,_pos,_section,time];
+                    [_logic,"attackedentities",_attackedE] call ALiVE_fnc_HashSet;
                 };
 
                 if (count _profiles > 0) then {
@@ -2294,7 +2313,7 @@ switch(_operation) do {
                     _id = _x select 0;
                     _posP = _x select 1;
 
-                   if !({(!(isnil "_x") && {(_x select 0) == _id})} count _knownEntities > 0) then {
+                   if ({!(isnil "_x") && {(_x select 0) == _id}} count _knownEntities == 0) then {
                         _knownEntities pushback _x;
                     };
                 } foreach _visibleEnemies;
@@ -2302,6 +2321,26 @@ switch(_operation) do {
             };
 
             _result = _knownEntities;
+        };
+        
+        case "scanallenemies": {
+
+            private _factions = [_logic,"factions",[]] call ALiVE_fnc_HashGet;
+            
+            //private _duration = time; ["TACOM Trigger enemyscan for %1 at %2",_factions,_duration] call ALiVE_fnc_DumpR;
+
+			private _profiles = [];
+			{
+				_profiles = _profiles + ([ALiVE_ProfileHandler,"getProfilesByFaction",_x] call ALiVE_fnc_ProfileHandler);
+			} foreach _factions;
+            
+			{
+				private _pos = [([ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler),"position"] call ALiVE_fnc_HashGet;
+				
+                if !(isnil "_pos") then {[_logic,"scanenemies",_pos] call ALiVE_fnc_OPCOM};
+			} foreach _profiles;
+            
+            //["TACOM enemyscan for %1 finished in %2 seconds",_factions, time - _duration] call ALiVE_fnc_DumpR;
         };
 
         case "scantroops" : {
