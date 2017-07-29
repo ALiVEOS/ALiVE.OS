@@ -39,7 +39,33 @@ _missionName = format["%1_%2_FORCE_POOL", ALIVE_sys_data_GROUP_ID, _missionName]
 
 _data = ALIVE_globalForcePool;
 
-if (count (_data select 1) == 0) exitwith {
+// Check whether there's at least 1 mil_logistics module with persistence set to true
+//
+// TODO(marcel): This can probably be done in a more fancy way, e.g. check which factions
+// are or aren't persisted and remove them from a copy of ALIVE_globalForcePool and pass
+// that to ALiVE_fnc_Data.
+private _isPersistent = false;
+
+{
+    private _opcom = _x;
+    private _module = [_opcom, "module"] call CBA_fnc_hashGet;
+
+    {
+        private _object = _x;
+
+        if (_object isKindOf "alive_mil_logistics") then {
+            private _persistent = [_object, "persistent"] call ALiVE_fnc_ML;
+
+            if (_persistent) exitWith {
+                _isPersistent = true;
+            };
+        };
+    } forEach (synchronizedObjects _module);
+
+    if (_isPersistent) exitWith {};
+} forEach OPCOM_instances;
+
+if (!_isPersistent || count (_data select 1) == 0) exitwith {
     //[["ALiVE_LOADINGSCREEN"],"BIS_fnc_endLoadingScreen",true,false] call BIS_fnc_MP;
 };
 
