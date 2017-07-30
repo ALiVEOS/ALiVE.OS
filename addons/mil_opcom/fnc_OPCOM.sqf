@@ -647,6 +647,7 @@ switch(_operation) do {
 
             _section = [];
             _profileIDs = [];
+            _profiles = [];
             _dist = 1000;
 
             if (isnil "_profile") exitwith {_result = _section};
@@ -675,31 +676,53 @@ switch(_operation) do {
             [_logic,"attackedentities",_attackedE] call ALiVE_fnc_HashSet;            
 
             if ({!(isnil "_x") && {_x select 0 == _target}} count _attackedE < 1) then {
+            
+            	private _infantry = [_logic,"infantry",[]] call ALiVE_fnc_HashGet;
+            	private _motorized = [_logic,"motorized",[]] call ALiVE_fnc_HashGet;
+            	private _mechanized = [_logic,"mechandized",[]] call ALiVE_fnc_HashGet;
+            	private _armored = [_logic,"armored",[]] call ALiVE_fnc_HashGet;
+            	private _artillery = [_logic,"artillery",[]] call ALiVE_fnc_HashGet;
+            	private _AAA = [_logic,"AAA",[]] call ALiVE_fnc_HashGet;
+            	private _air = [_logic,"air",[]] call ALiVE_fnc_HashGet;
+            
                 switch (_type) do {
                     case ("infantry") : {
-                        _profiles = [_logic,"infantry"] call ALiVE_fnc_HashGet;
+                        _profiles = _infantry;
                         _dist = 1000;
                     };
+                    case ("motorized") : {
+                        _profiles = _motorized;
+                        _dist = 3000;
+                    };
                     case ("mechandized") : {
-                        _profiles = [_logic,"mechandized"] call ALiVE_fnc_HashGet;
+                        _profiles = _mechanized;
                     };
                     case ("armored") : {
-                        _profiles = [_logic,"armored"] call ALiVE_fnc_HashGet;
+                        _profiles = _armored;
                         _dist = 3000;
                     };
                     case ("artillery") : {
-                        _profiles = [_logic,"artillery"] call ALiVE_fnc_HashGet;
+                        _profiles = _artillery;
                         _dist = 5000;
                     };
                     case ("AAA") : {
-                        _profiles = [_logic,"AAA"] call ALiVE_fnc_HashGet;
+                        _profiles = _AAA;
                         _dist = 5000;
                     };
                     case ("air") : {
-                        _profiles = [_logic,"air"] call ALiVE_fnc_HashGet;
-                        _dist = 15000;
+                        _profiles = _air;
+                        _dist = 30000;
                         _rtb = true;
                     };
+                    default {
+                    	_profiles = _infantry;
+                    };
+                };
+                
+                if (count _profiles == 0) then {
+                	{
+                		if (count _x > 0) exitwith {_profiles = _x};
+                	} foreach [_armored,_mechanized,_motorized,_infantry];                
                 };
                 
                 if (!isnil "_rtb" && {["ALiVE_mil_ATO"] call ALiVE_fnc_IsModuleAvailable}) exitwith {
@@ -790,6 +813,8 @@ switch(_operation) do {
                         [_logic,"attackedentities",_attackedE] call ALiVE_fnc_HashSet;
                         //player sidechat format["Group %1 is attacked by %2",_target, _section];
                     };
+                } else {
+                	["OPCOM has no troops to respond on TACOM request for QRF on %1 of type %2",_target,_type] call ALiVE_fnc_DumpR;
                 };
             } else {
                 //player sidechat format["Target %1 already beeing attacked, dead or not existing for any reason...!",_target];
@@ -2356,7 +2381,7 @@ switch(_operation) do {
 
             private _factions = [_logic,"factions",[]] call ALiVE_fnc_HashGet;
             
-            //private _duration = time; ["TACOM Trigger enemyscan for %1 at %2",_factions,_duration] call ALiVE_fnc_DumpR;
+            // private _duration = time; ["TACOM Trigger enemyscan for %1 at %2",_factions,_duration] call ALiVE_fnc_DumpR;
 
 			private _profiles = [];
 			{
@@ -2369,7 +2394,7 @@ switch(_operation) do {
                 if !(isnil "_pos") then {[_logic,"scanenemies",_pos] call ALiVE_fnc_OPCOM};
 			} foreach _profiles;
             
-            //["TACOM enemyscan for %1 finished in %2 seconds",_factions, time - _duration] call ALiVE_fnc_DumpR;
+            // ["TACOM enemyscan for %1 finished in %2 seconds",_factions, time - _duration] call ALiVE_fnc_DumpR;
         };
 
         case "scantroops" : {
