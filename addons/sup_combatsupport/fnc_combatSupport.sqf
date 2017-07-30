@@ -376,17 +376,16 @@ switch(_operation) do {
                              _veh lockDriver true;
                             [_grp,0] setWaypointPosition [(getPos _veh),0];
 
-                              _codeArray = [_code, ";"] Call CBA_fnc_split;
+                            _codeArray = [_code, ";"] call CBA_fnc_split;
                             {
-                                   If(_x != "") then {
-                                                    [_veh, _x] spawn {
-                                                                        private ["_veh", "_spawn"];
-                                                                        _veh = _this select 0;
-                                                                        _spawn = compile(_this select 1);
-                                                                         [_veh] spawn _spawn;
-                                                                      };
-                                                        };
-
+                                if (_x != "") then {
+                                    [_veh, _x] spawn {
+                                        private ["_veh", "_spawn"];
+                                        _veh = _this select 0;
+                                        _spawn = compile(_this select 1);
+                                        [_veh] spawn _spawn;
+                                    };
+                                };
                             } forEach _codeArray;
 
                             //Set Group ID
@@ -512,18 +511,16 @@ switch(_operation) do {
                             [_grp,0] setWaypointPosition [(getPos _veh),0];
 
 
-                            _codeArray = [_code, ";"] Call CBA_fnc_split;
+                            _codeArray = [_code, ";"] call CBA_fnc_split;
                             {
-                                   If(_x != "") then {
-                                                    [_veh, _x] spawn {
-                                                                        private ["_veh", "_spawn"];
-                                                                        _veh = _this select 0;
-                                                                        _spawn = compile(_this select 1);
-                                                                         [_veh] spawn _spawn;
-                                                                      };
-                                                        };
-
-
+                                if (_x != "") then {
+                                    [_veh, _x] spawn {
+                                        private ["_veh", "_spawn"];
+                                        _veh = _this select 0;
+                                        _spawn = compile(_this select 1);
+                                        [_veh] spawn _spawn;
+                                    };
+                                };
                             } forEach _codeArray;
 
                             // Set Group ID
@@ -669,12 +666,11 @@ switch(_operation) do {
                             [[(units _grp select 0),_callsign], "fnc_setGroupID", false, false] spawn BIS_fnc_MP;
 
 
-                            //[_veh, _grp, _units, units _grp] spawn _code;
-                            _codeArray = [_code, ";"] Call CBA_fnc_split;
+                            _codeArray = [_code, ";"] call CBA_fnc_split;
                             {
                                 _vehicle = _x;
                                 {
-                                    If(_x != "") then {
+                                    if (_x != "") then {
                                         [_vehicle, _x] spawn {
                                             private ["_vehicle", "_spawn"];
                                             _vehicle = _this select 0;
