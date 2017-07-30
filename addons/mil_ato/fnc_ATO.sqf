@@ -41,7 +41,7 @@ Tupolov
 #define DEFAULT_EVENT_QUEUE []
 #define DEFAULT_ANALYSIS []
 #define DEFAULT_SIDE "EAST"
-#define DEFAULT_ATO_TYPES ["CAP","DCA","SEAD","CAS","STRIKE","RECCE","AS"]
+#define DEFAULT_ATO_TYPES ["CAP","DCA","SEAD","CAS","Strike","Recce","AS"]
 #define DEFAULT_REGISTRY_ID ""
 #define DEFAULT_OP_HEIGHT 750
 #define DEFAULT_OP_DURATION 25
@@ -54,8 +54,8 @@ Tupolov
 #define WAIT_TIME_DCA 30
 #define WAIT_TIME_CAP 60
 #define WAIT_TIME_SEAD 60
-#define WAIT_TIME_STRIKE 90
-#define WAIT_TIME_RECCE 90
+#define WAIT_TIME_Strike 90
+#define WAIT_TIME_Recce 90
 #define CHANCE_OF_RESCUE 1
 
 
@@ -1981,6 +1981,7 @@ switch(_operation) do {
 
     // Handle events
     case "handleEvent": {
+
         private["_event","_type","_eventData"];
 
         if(typeName _args == "ARRAY") then {
@@ -2468,23 +2469,12 @@ switch(_operation) do {
 
             private _debug = [_logic, "debug"] call MAINCLASS;
             private _types = [_logic, "types"] call MAINCLASS;
+
             private _event = _args;
             private _eventData = [_event, "data"] call ALIVE_fnc_hashGet;
             private _eventType = _eventData select 0;
 
             private _initComplete = true;
-
-            // TODO
-            if (_eventType == "PR_STRIKE" || _eventType == "PR_RECCE" || _eventType == "PR_CAS") then {
-                _initComplete = _logic getVariable "initialAnalysisComplete";
-                if!(_initComplete) then {
-                    _requestID = _eventData select 5;
-                    _playerID = _eventData select 6;
-                    // respond to player request
-                    _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Military Air Component Commander","DENIED_WAITING_INIT"] call ALIVE_fnc_event;
-                    [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
-                };
-            };
 
             if !(_initComplete) exitWith {};
 
@@ -2501,83 +2491,11 @@ switch(_operation) do {
                 _factionFound = true;
             };
 
-            // check if any other mil air tasking orders modules can handle this event
-            if(_eventType == "PR_STRIKE" || _eventType == "PR_RECCE" || _eventType == "PR_CAS") then {
-
-                // faction not handled by this mil air tasking orders module
-                if!(_factionFound) then {
-
-                    private _sideOPCOMModules = [];
-                    private _factionOPCOMModules = [];
-
-                    // loop through OPCOM modules with mil air tasking orders synced and find any matching the events side and faction
-                    {
-                        private _checkModule = _x;
-                        private _moduleType = _x getVariable "moduleType";
-
-                        if!(isNil "_moduleType") then {
-
-                            if(_moduleType == "ALIVE_OPCOM") then {
-
-                                private _handler = _checkModule getVariable "handler";
-                                private _OPCOMSide = [_handler,"side"] call ALIVE_fnc_hashGet;
-                                private _OPCOMFactions = [_handler,"factions"] call ALIVE_fnc_hashGet;
-                                private _OPCOMHasATO = false;
-
-                                for "_i" from 0 to ((count synchronizedObjects _checkModule)-1) do {
-
-                                    private _mod = (synchronizedObjects _checkModule) select _i;
-
-                                    if ((typeof _mod) == "ALiVE_mil_ato") then {
-                                        _OPCOMHasATO = true;
-                                    };
-                                };
-
-                                if(_OPCOMHasATO) then {
-
-                                    if(_OPCOMSide == _eventSide) then {
-                                        _sideOPCOMModules pushback _checkModule;
-                                    };
-
-                                    {
-                                        if(_x == _eventFaction) then {
-                                            _factionOPCOMModules pushback _checkModule;
-                                        };
-
-                                    } forEach _OPCOMFactions;
-
-                                };
-                            };
-                        };
-                    } forEach (entities "Module_F");
-
-                    // if no mil air tasking orders handles this faction, and there is more than one mil air tasking orders for this side return an error
-                    if(((count _factionOPCOMModules == 0) && (count _sideOPCOMModules > 1)) || ((count _factionOPCOMModules == 0) && (count _sideOPCOMModules == 0))) then {
-                        private _playerID = _eventData select 6;
-                        private _requestID = _eventData select 5;
-                        // respond to player request
-                        _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Military Air Component Commander","DENIED_FACTION_HANDLER_NOT_FOUND"] call ALIVE_fnc_event;
-                        [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
-                    };
-
-                    // if no mil air tasking orders handles this faction, and there is one mil air tasking orders for this side and this module handles that side
-                    if((count _factionOPCOMModules == 0) && (count _sideOPCOMModules == 1) && (_side == _eventSide)) then {
-
-                        _factionFound = true;
-
-                        _eventData set [1,_factions select 0];
-                        [_event, "data", _eventData] call ALIVE_fnc_hashSet;
-                        _eventFaction = _factions select 0;
-                    };
-                };
-            };
-
             if!(_factionFound) exitWith {};
 
             if(_factionFound) then {
 
-
-                 // For radio broadcasts
+                // For radio broadcasts
                 private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
                 private _factionName = getText((_eventFaction call ALiVE_fnc_configGetFactionClass) >> "displayName");
                 private _hqClass = switch (_sideObject) do {
@@ -2596,6 +2514,10 @@ switch(_operation) do {
                 };
                 private _HQID = getText(configFile >> "CfgHQIdentities" >> _hqClass >> "name");
 
+                // Validate airspace
+                if (typeName _airspace == "STRING" && {_airspace == ""}) then {
+                    _airpsace = ([_logic, "airspace"] call MAINCLASS) select 0;
+                };
 
                 // Check if this module is operating and has assets
 
@@ -2650,27 +2572,6 @@ switch(_operation) do {
 
                         };
 
-                        if(_eventType == "PR_STRIKE" || _eventType == "PR_RECCE" || _eventType == "PR_CAS") then {
-
-                            private _requestID = _eventData select 5;
-                            private _playerID = _eventData select 6;
-
-                            // if it's a player request
-                            // accept automatically
-
-                            _available = true;
-
-                            // set the state of the event
-                            [_event, "state", "playerRequested"] call ALIVE_fnc_hashSet;
-
-                            // set the player requested flag on the event
-                            [_event, "playerRequested", true] call ALIVE_fnc_hashSet;
-
-                            // respond to player request
-                            private _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Military Air Component Commander","ACKNOWLEDGED"] call ALIVE_fnc_event;
-                            [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
-                        };
-
                         if (_debug) then {
                             _event call ALIVE_fnc_inspectHash;
                         };
@@ -2723,7 +2624,11 @@ switch(_operation) do {
                         }else{
 
                             // nothing left after non allowed types ruled out
-
+                            // DEBUG -------------------------------------------------------------------------------------
+                            if(_debug) then {
+                                ["ALIVE ATO %2 - ATO type %1 is not in list of ATOs supported %3", _eventType, _logic, _types] call ALIVE_fnc_dump;
+                            };
+                            // DEBUG -------------------------------------------------------------------------------------
                         };
                     }else{
 
@@ -2753,7 +2658,7 @@ switch(_operation) do {
                 } else {
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
-                        ["ALIVE ATO %2 - Air Tasking request denied, Miltiary Air Component Commander for %1 is not available", _eventFaction, _logic] call ALIVE_fnc_dump;
+                        ["ALIVE ATO %2 - Air Tasking request denied, Military Air Component Commander for %1 is not available", _eventFaction, _logic] call ALIVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
 
@@ -2763,16 +2668,6 @@ switch(_operation) do {
                     private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
                     [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
 
-                    if(_eventType == "PR_STRIKE" || _eventType == "PR_RECCE" || _eventType == "PR_CAS") then {
-
-                        private _requestID = _eventData select 5;
-                        private _playerID = _eventData select 6;
-
-                        // respond to player request
-                        private _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"MIlitary Air Component Commander","DENIED_ATO_UNAVAILABLE"] call ALIVE_fnc_event;
-                        [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
-
-                    };
                 };
             };
 
@@ -2822,7 +2717,7 @@ switch(_operation) do {
                     private _types = [_logic, "types"] call MAINCLASS;
                     private _orig = [_logic,"origTypes"] call MAINCLASS;
                     if (count _orig == 0) then {
-                       [_logic,"origTypes",_types] call MAINCLASS;
+                       [_logic,"origTypes",+_types] call MAINCLASS;
                     };
                     private _tmpTypes = [];
                     if (["CAP"] in _types) then {
@@ -2839,11 +2734,15 @@ switch(_operation) do {
                 };
 
                 if (count (_assets select 1) > 2) then {
-                    private _origTypes = [_logic, "origTypes"] call MAINCLASS;
+                    private _types = [_logic, "types"] call MAINCLASS;
+                    private _orig = [_logic, "origTypes",[]] call MAINCLASS;
+                    if (count _orig == 0) then {
+                       [_logic,"origTypes",+_types] call MAINCLASS;
+                    };
                     // Reset ATOs
-                    [_logic,"types",_origTypes] call MAINCLASS;
-                    // Reset origTypes
-                    [_logic,"origTypes",[]] call MAINCLASS;
+                    if (count _types < count _orig) then {
+                        [_logic,"types",+_orig] call MAINCLASS;
+                    };
                 };
 
                 // if not order new assets from LOGCOM
@@ -3244,11 +3143,11 @@ switch(_operation) do {
                     case "CAS": {
                         _waitTime = WAIT_TIME_CAS;
                     };
-                    case "STRIKE": {
-                        _waitTime = WAIT_TIME_STRIKE;
+                    case "Strike": {
+                        _waitTime = WAIT_TIME_Strike;
                     };
-                    case "RECCE": {
-                        _waitTime = WAIT_TIME_RECCE;
+                    case "Recce": {
+                        _waitTime = WAIT_TIME_Recce;
                     };
                     case default {
                         _waitTime = DEFAULT_WAIT_TIME;
