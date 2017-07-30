@@ -108,7 +108,8 @@ switch(_operation) do {
 
                                         _callsign = _entry getvariable ["CS_CALLSIGN",groupID (group _entry)];
                                         _height = _entry getvariable ["CS_HEIGHT",0];
-                                        _code = "";
+                                        _code = _entry getvariable ["CS_CODE",""];
+                                        _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
 
                                         _position = getposATL _entry;
                                         _id = [_position] call ALiVE_fnc_getNearestAirportID;
@@ -125,6 +126,7 @@ switch(_operation) do {
                                         _callsign = _entry getvariable ["CS_CALLSIGN",groupID (group _entry)];
                                         _height = _entry getvariable ["CS_HEIGHT",0];
                                         _code = _entry getvariable ["CS_CODE",""];
+                                        _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
                                         _slingloading = _entry getvariable ["CS_SLINGLOADING",true];
                                         _containers = _entry getvariable ["CS_CONTAINERS",0];
 
@@ -150,6 +152,7 @@ switch(_operation) do {
                                         _callsign = _entry getvariable ["CS_CALLSIGN",groupID (group _entry)];
                                         _height = _entry getvariable ["CS_HEIGHT",0];
                                         _code = _entry getvariable ["CS_CODE",""];
+                                        _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
                                         _slingloading = _entry getvariable ["CS_SLINGLOADING",true];
                                         _containers = _entry getvariable ["CS_CONTAINERS",0];
 
@@ -195,7 +198,8 @@ switch(_operation) do {
                                         _rockets = ["ROCKETS",parsenumber(_entry getvariable ["CS_artillery_rockets","16"])];
 
                                         _ordnance = [_he,_illum,_smoke,_guided,_cluster,_lg,_mine,_atmine, _rockets];
-                                        _code = "";
+                                        _code = _entry getvariable ["CS_CODE",""];
+                                        _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
                                         _artyArray = [_position,_class, _callsign,3,_ordnance,_code];
                                         _artyArrays pushback _artyArray;
                                     };
