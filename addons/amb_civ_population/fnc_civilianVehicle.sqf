@@ -297,7 +297,6 @@ switch(_operation) do {
         private _agentID = _logic select 2 select 3;        //[_logic,"agentID"] call ALIVE_fnc_hashGet;
         private _agentClass = _logic select 2 select 6;     //[_logic,"agentClass"] call ALIVE_fnc_hashGet;
         private _side = _logic select 2 select 8;           //[_logic,"side"] call ALIVE_fnc_hashGet;
-        private _homePosition = _logic select 2 select 10;  //[_logic,"homePosition"] call ALIVE_fnc_hashGet;
         private _direction = _logic select 2 select 11;     //[_logic,"direction"] call ALIVE_fnc_hashGet;
         private _fuel = _logic select 2 select 12;          //[_logic,"fuel"] call ALIVE_fnc_hashGet;
         private _damage = _logic select 2 select 13;        //[_logic,"damage"] call ALIVE_fnc_hashGet;
@@ -312,8 +311,8 @@ switch(_operation) do {
             _unit setDir _direction;
             
             _unit setVelocity [0,0,0];
-            
-            [_unit,_homePosition] call ALiVE_fnc_setPosAGLS;
+
+            [_unit,+_position] call ALiVE_fnc_setPosAGLS;
             
             _unit setFuel _fuel;
 
@@ -361,6 +360,7 @@ switch(_operation) do {
             [_logic,"active",false] call ALIVE_fnc_hashSet;
 
             private _position = getPosATL _unit;
+            _position set [2, (_position select 2) + 1];
 
             // update profile before despawn
             [_logic,"position", _position] call ALIVE_fnc_hashSet;
