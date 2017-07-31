@@ -84,7 +84,7 @@ link37[] = {25,26};
 link38[] = {26,10};
 link39[] = {27,28};
 globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-666.800781,293.326508,622.951965,-124.384804,912,727,1};
-window[] = {0,-1,-1,-1,-1,949,141,1728,65,1,929};
+window[] = {0,-1,-1,-1,-1,994,115,1702,110,1,929};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -238,7 +238,9 @@ class FSM
                          "" \n
                          "			_targets = [_OPCOM_HANDLER,""knownentities"",[]] call ALiVE_fnc_HashGet;" \n
                          "" \n
-                         "		   	[""TACOM %2 found enemies: %1"",_targets,_side] call ALiVE_fnc_DumpR;" \n
+                         "				if (_debug) then {" \n
+                         "		   		[""TACOM %2 found enemies when scanning for enemies: %1"",_targets,_side] call ALiVE_fnc_DumpR;" \n
+                         "				};" \n
                          "	" \n
                          "	       	 //Attack reported enemy directly" \n
                          "	       	 if (count _targets > 0) then {" \n
@@ -254,18 +256,20 @@ class FSM
                          "	            	_vehicle = ([_target,""vehicleAssignments"",[[],[]]] call ALIVE_fnc_hashGet) select 1;" \n
                          "	" \n
                          "	           		if (count _vehicle > 0) then {" \n
+                         "" \n
                          "	               	// Attack with one air vehicle if target is in a vehicle" \n
-                         "								if (_debug) then {" \n
-                         "				  				//[""TACOM %2 sends QRF request to OPCOM (%1)"",_targetID,_side] call ALiVE_fnc_Dump;" \n
+                         "							if (_debug) then {" \n
+                         "				  				[""TACOM %2 sends QRF request to OPCOM (%1)"",_targetID,_side] call ALiVE_fnc_DumpR;" \n
                          "							};" \n
                          "" \n
-                         "							_OPCOM_FSM setFSMVariable [""_OPCOM_DATA"",[""QRF"",[_targetID]]];" \n
+                         "								_OPCOM_FSM setFSMVariable [""_OPCOM_DATA"",[""QRF"",[_targetID]]];" \n
                          "" \n
-                         "	                  //_attackers = [_OPCOM_HANDLER, ""attackentity"",[_targetID,1,""air""]] call ALIVE_fnc_OPCOM;" \n
+                         "	                  	//_attackers = [_OPCOM_HANDLER, ""attackentity"",[_targetID,1,""air""]] call ALIVE_fnc_OPCOM;" \n
                          "	                } else {" \n
-                         "	                	// Send 2 infantry groups if target is not in a vehicle" \n
+                         "	                	" \n
+                         "							// Send 2 infantry groups if target is not in a vehicle" \n
                          "							if (_debug) then {" \n
-                         "				  				//[""TACOM %2 sends QRF of type infantry on %1"",_targetID,_side] call ALiVE_fnc_Dump;" \n
+                         "				  				[""TACOM %2 sends QRF of type infantry on %1"",_targetID,_side] call ALiVE_fnc_DumpR;" \n
                          "							};" \n
                          "	                  _attackers = [_OPCOM_HANDLER, ""attackentity"",[_targetID,2,""infantry""]] call ALIVE_fnc_OPCOM;" \n
                          "	            	};" \n
