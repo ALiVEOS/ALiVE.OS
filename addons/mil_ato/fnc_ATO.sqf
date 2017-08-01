@@ -2936,7 +2936,7 @@ switch(_operation) do {
                                             };
                                             // DEBUG -------------------------------------------------------------------------------------
                                             if (count _bogeys > 1 && _generateTasks && _C2ISTARisAvailable) then {
-                                                [_logic, "requestPlayerTask", ["DCA",_targets]] call MAINCLASS;
+                                                [_logic, "requestPlayerTask", ["DCA",_bogeys]] call MAINCLASS;
                                             };
                                         };
                                     };
@@ -3032,6 +3032,7 @@ switch(_operation) do {
         private _eventData = [_event, "data"] call ALIVE_fnc_hashGet;
         private _eventTime = [_event, "time"] call ALIVE_fnc_hashGet;
         private _eventState = [_event, "state"] call ALIVE_fnc_hashGet;
+        private _eventSender = [_event, "from","OPCOM"] call ALIVE_fnc_hashGet;
         private _eventStateData = [_event, "stateData"] call ALIVE_fnc_hashGet;
         private _eventFriendlyProfiles = [_event, "friendlyProfiles"] call ALIVE_fnc_hashGet;
         private _eventEnemyProfiles = [_event, "enemyProfiles"] call ALIVE_fnc_hashGet;
@@ -3152,6 +3153,10 @@ switch(_operation) do {
                     case default {
                         _waitTime = DEFAULT_WAIT_TIME;
                     };
+                };
+
+                if (_eventSender == "OPCOM") then {
+                    _waitTime = 0;
                 };
 
                 // DEBUG -------------------------------------------------------------------------------------
@@ -3962,7 +3967,6 @@ switch(_operation) do {
                             _wp setWaypointSpeed _eventSpeed;
                             _wp setWaypointBehaviour "AWARE";
                             _wp setWaypointCombatMode _eventROE;
-                            // _wp setWaypointStatements ["true","if (alive this) then {deleteWaypoint [group this, currentWaypoint (group this)]}"];
 
                             switch (_eventType) do {
                                 case "Recce": {
@@ -3978,6 +3982,7 @@ switch(_operation) do {
                                     if (count _eventTargets == 1) then {
                                         _wp setWaypointType "DESTROY";
                                         _grp reveal (_eventTargets select 0);
+                                        _wp waypointAttachVehicle (_eventTargets select 0);
                                     } else {
                                         _wp setWaypointType "SAD";
                                         _wp setWaypointPosition [position (_eventTargets select 0), 0];
@@ -3994,6 +3999,11 @@ switch(_operation) do {
                                     _wp setWaypointType "DESTROY";
                                     // _wp setWaypointTimeout [_eventDuration,_eventDuration,_eventDuration];
                                     _grp reveal (_eventTargets select 0);
+                                    _wp waypointAttachVehicle (_eventTargets select 0);
+                                    if ( (_eventTargets select 0) iskindof "House") then {
+                                        private _laze = "LaserTargetW" createVehicle getPos (_eventTargets select 0);
+                                        _laze attachTo [(_eventTargets select 0),[0,0,0]];
+                                    };
 
                                 };
                                 default {
@@ -4014,7 +4024,7 @@ switch(_operation) do {
                                 private _code = {
                                     private _vehicle = _this select 0;
                                     private _attacker = _this select 2;
-                                    hint str(_this);
+
                                     if ( (vehicle _attacker) iskindof "Car" || (vehicle _attacker) iskindof "Tank" || (vehicle _attacker) iskindof "Armored") then {
                                         private _profile = _attacker getVariable ["profileID",nil];
                                         if !(isNil "_profile") then {
@@ -4607,6 +4617,10 @@ switch(_operation) do {
                         _grp leaveVehicle _vehicle;
 
                         private _crewpos = (selectRandom ((nearestBuilding _startPosition) buildingPos -1));
+
+                        if (isNil "_crewPos") then {
+                            _crewPos = _startPosition getpos [25, random 360];
+                        };
 
                         // tell crew to move to nearest building
                         if (_isOnCarrier) then {

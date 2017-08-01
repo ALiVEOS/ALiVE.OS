@@ -1,15 +1,14 @@
 ATO TO DO
-- OPCOM ATO request logic
+- OPCOM ATO request logic testing
+- Register threats
 - Persistence (HQ, AA, ATO state)
 - On demand analysis
+- if CSAR task successful crew should be added back to ATO.
 - if pilot despawned while going to aircraft, getin fails
 - Crew reinforcement / aircraft reinforcement
-- Multiple targets
 - Audio for radio
 - Option to include CS assets?
 - If crewed vehicle placed by mission maker, get crew out and manage as normal
-- Handled profiled crewed planes?
-- Spawn Carrier if ATO module over sea
     
 
 Extra to do....
