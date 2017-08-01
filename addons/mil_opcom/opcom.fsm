@@ -101,7 +101,7 @@ link46[] = {34,25};
 link47[] = {35,36};
 link48[] = {36,6};
 globals[] = {0.000000,0,0,0,0,640,480,1,89,6316128,1,-1350.146484,118.797607,268.652100,-1076.323486,865,792,1};
-window[] = {0,-1,-1,-1,-1,1037,88,1868,88,1,882};
+window[] = {0,-1,-1,-1,-1,1015,66,1846,66,1,882};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -1155,7 +1155,7 @@ class FSM
                          "				10," \n
                          "				[_building]  // TARGETS either profile or unit" \n
                          "			];" \n
-                         "			_event = ['ATO_REQUEST', [""Strike"", [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, """", _args],""ATO""] call ALIVE_fnc_event;" \n
+                         "			_event = ['ATO_REQUEST', [""Strike"", [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, """", _args],""OPCOM""] call ALIVE_fnc_event;" \n
                          "			_eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
                          "   		};" \n
                          "	};" \n
