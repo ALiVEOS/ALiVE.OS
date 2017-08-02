@@ -142,11 +142,11 @@ switch (_taskState) do {
                                         _targetBuildings pushbackUnique _x;
                                     } foreach _nearBuildings;
                                     if (count _targetBuildings > 0) then {
-                                        ["C2ISTAR - Task OCA - cluster %1 has a %3, found buildings %2",_clusterID, _nearBuildings, _x] call ALiVE_fnc_Dump;
+                                        // ["C2ISTAR - Task OCA - cluster %1 has a %3, found buildings %2",_clusterID, _nearBuildings, _x] call ALiVE_fnc_Dump;
                                     };
                                 };
                                 if (count _targetBuildings > 3) exitWith {
-                                    ["C2ISTAR - Task OCA - OPCOM objective at cluster %1 target buildings: %2",_clusterID, _targetBuildings] call ALiVE_fnc_Dump;
+                                    // ["C2ISTAR - Task OCA - OPCOM objective at cluster %1 target buildings: %2",_clusterID, _targetBuildings] call ALiVE_fnc_Dump;
                                     _found = true;
                                 };
                             } foreach _buildings;
