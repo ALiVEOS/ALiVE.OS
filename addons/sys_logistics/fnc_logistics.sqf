@@ -859,7 +859,20 @@ switch (_operation) do {
                 if (isServer) then {
                     //apply these EHs on vehicles
                     if ({_object isKindOf _x} count ["LandVehicle","Air","Ship"] > 0) then {
-                        _object setvariable [QGVAR(EH_GETOUT), _object getvariable [QGVAR(EH_GETOUT), _object addEventHandler ["GetOut", {if (isPlayer (_this select 2) && {!((_this select 1) == "cargo")}) then {[ALiVE_SYS_LOGISTICS,"updateObject",[_this select 0]] call ALIVE_fnc_logistics; if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {["ALiVE SYS LOGISTICS EH Getout firing"] call ALiVE_fnc_DumpR}}}]]];
+
+                        _object setvariable [QGVAR(EH_GETOUT), _object getvariable [QGVAR(EH_GETOUT), _object addEventHandler ["GetOut",
+                            {
+                                if (isPlayer (_this select 2) && {!((_this select 1) == "cargo")}) then {
+                                    private _blacklist = if !(isNil QMOD(SYS_LOGISTICS)) then {MOD(SYS_LOGISTICS) getVariable ["blacklist", DEFAULT_BLACKLIST]} else {[]};
+                                    if !(typeof (_this select 0) in _blacklist) then {
+                                        [ALiVE_SYS_LOGISTICS,"updateObject",[_this select 0]] call ALIVE_fnc_logistics;
+                                        if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {
+                                            ["ALiVE SYS LOGISTICS EH Getout firing"] call ALiVE_fnc_DumpR
+                                        };
+                                    };
+                                };
+                            }
+                        ]]];
                     };
                 };
             } foreach _objects;
@@ -940,7 +953,10 @@ switch (_operation) do {
             //Set ID on all startobjects
             TRACE_1("ALiVE SYS LOGISTICS Setting IDs and EHs on existing objects!",_logic);
 
-            {[_logic,"id",_x] call ALiVE_fnc_logistics; [_logic,"setEH",[_x]] call ALiVE_fnc_logistics} foreach _startObjects;
+            {
+                [_logic,"id",_x] call ALiVE_fnc_logistics;
+                [_logic,"setEH",[_x]] call ALiVE_fnc_logistics
+            } foreach _startObjects;
 
             //Check if provided data is valid
             if (count (_args select 1) == 0) exitwith {};
