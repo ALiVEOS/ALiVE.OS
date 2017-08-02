@@ -266,14 +266,16 @@ switch(_operation) do {
                     if ([_handler,"persistent",false] call ALIVE_fnc_HashGet) then {
                         _objectives = [_handler,"loadObjectivesDB"] call ALiVE_fnc_OPCOM;
 
-                        // Load starting forces
-                        private _missionName = [missionName, "%20", "-"] call CBA_fnc_replace;
-                        private _key = format ["%1_%2-starting-forces", ALIVE_sys_data_GROUP_ID, _missionName];
-                        private _result = [GVAR(DATAHANDLER), "read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
+                        if (!isNil "ALIVE_sys_data" && {!ALIVE_sys_data_DISABLED}) then {
+                            // Load starting forces
+                            private _missionName = [missionName, "%20", "-"] call CBA_fnc_replace;
+                            private _key = format ["%1_%2-starting-forces", ALIVE_sys_data_GROUP_ID, _missionName];
+                            private _result = [GVAR(DATAHANDLER), "read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
 
-                        if (_result isEqualType []) then {
-                            private _startingForces = [_result, "data"] call CBA_fnc_hashGet;
-                            [_handler, "startForceStrength", _startingForces] call CBA_fnc_hashSet;
+                            if (_result isEqualType []) then {
+                                private _startingForces = [_result, "data"] call CBA_fnc_hashGet;
+                                [_handler, "startForceStrength", _startingForces] call CBA_fnc_hashSet;
+                            };
                         };
                     };
 
