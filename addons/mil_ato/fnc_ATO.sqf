@@ -797,6 +797,10 @@ switch(_operation) do {
                             // Get nearest building position
                             if !(_isOnCarrier) then {
                                 _crewPos = selectRandom ((nearestBuilding _position) buildingPos -1);
+                                if (isNil "_crewPos") then {
+                                    _crewPos = _position getpos [25, random 360];
+                                };
+
                             } else {
                                 private _bridge = (_position nearObjects ["Land_Carrier_01_island_02_F",700]) select 0;
                                 _crewPos = ASLtoATL (_bridge modelToWorld [-2.43359,1.98047,0]); // entities are saved as ATL positions
@@ -1708,74 +1712,74 @@ switch(_operation) do {
                             };
                         };
                     } forEach _nodes;
-                };
 
-                // IF there are no helipads available, we want atleast 1 chopper. Spawn a composition
-                if (count _profiles == 0) then {
-                    // Spawn a heliport
-                    private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
-                    private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
-                    private _heliport = nil;
-                    private _flatPos = [_pos,_size,30] call ALiVE_fnc_findFlatArea;
+                    // IF there are no helipads available, we want atleast 1 chopper. Spawn a composition
+                    if (count _profiles == 0) then {
+                        // Spawn a heliport
+                        private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
+                        private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
+                        private _heliport = nil;
+                        private _flatPos = [_pos,_size,30] call ALiVE_fnc_findFlatArea;
 
-                    if (isNil QMOD(COMPOSITIONS_LOADED)) then {
+                        if (isNil QMOD(COMPOSITIONS_LOADED)) then {
 
-                        // Get a composition
-                        private _compType = "Military";
-                        If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
-                            _compType = "Guerrilla";
-                        };
-
-                        _heliport = selectRandom ([_compType, ["Heliports"], [], _faction] call ALiVE_fnc_getCompositions);
-
-                        if !(isNil "_heliport") then {
-                            private _nearRoad = [_flatpos,750,true] call ALiVE_fnc_getClosestRoad;
-
-                            private _direct = if (_nearRoad distance _flatpos > 5) then {
-                                private _road = roadat _nearRoad;
-                                private _roadConnectedTo = roadsConnectedTo _road;
-                                if (count _roadConnectedTo > 0) then {
-                                    private _connectedRoad = _roadConnectedTo select 0;
-                                    (_road getDir _connectedRoad)
-                                } else {
-                                    90
-                                };
-                            } else {
-                                0
+                            // Get a composition
+                            private _compType = "Military";
+                            If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                                _compType = "Guerrilla";
                             };
 
-                            // [_logic,"createMarker",[_nearRoad,_side,str(_direct),0]] call MAINCLASS;
+                            _heliport = selectRandom ([_compType, ["Heliports"], [], _faction] call ALiVE_fnc_getCompositions);
 
-                            [_heliport, _flatPos, _direct, _faction] call ALiVE_fnc_spawnComposition;
+                            if !(isNil "_heliport") then {
+                                private _nearRoad = [_flatpos,750,true] call ALiVE_fnc_getClosestRoad;
 
-                            private _helipad = nearestObject [_flatpos, "HeliH"];
-
-                            if !(isNull _helipad) then {
-
-                                // remove any pre-placed aircraft on composition?
-                                private _nearbyObj = nearestObjects [position _helipad, ["Helicopter"], 20];
-                                if (count _nearbyObj > 0) then {
-                                    {
-                                        deleteVehicle _x;
-                                    }foreach _nearbyObj;
+                                private _direct = if (_nearRoad distance _flatpos > 5) then {
+                                    private _road = roadat _nearRoad;
+                                    private _roadConnectedTo = roadsConnectedTo _road;
+                                    if (count _roadConnectedTo > 0) then {
+                                        private _connectedRoad = _roadConnectedTo select 0;
+                                        (_road getDir _connectedRoad)
+                                    } else {
+                                        90
+                                    };
+                                } else {
+                                    0
                                 };
 
-                                private _vehicleClass = selectRandom _heliClasses;
+                                // [_logic,"createMarker",[_nearRoad,_side,str(_direct),0]] call MAINCLASS;
 
-                                private _tmp = [_vehicleClass,_side,_faction,"CAPTAIN",position _helipad,direction _helipad,true,_faction,false] call ALIVE_fnc_createProfilesCrewedVehicle;
-                                {
-                                    // _x call ALIVE_fnc_inspectHash;
-                                    if ([_x,"type"] call ALiVE_fnc_hashGet == "entity") then {
-                                        _profiles pushback ([_x,"profileID"] call ALiVE_fnc_hashGet);
+                                [_heliport, _flatPos, _direct, _faction] call ALiVE_fnc_spawnComposition;
+
+                                private _helipad = nearestObject [_flatpos, "HeliH"];
+
+                                if !(isNull _helipad) then {
+
+                                    // remove any pre-placed aircraft on composition?
+                                    private _nearbyObj = nearestObjects [position _helipad, ["Helicopter"], 20];
+                                    if (count _nearbyObj > 0) then {
+                                        {
+                                            deleteVehicle _x;
+                                        }foreach _nearbyObj;
                                     };
-                                } foreach _tmp;
+
+                                    private _vehicleClass = selectRandom _heliClasses;
+
+                                    private _tmp = [_vehicleClass,_side,_faction,"CAPTAIN",position _helipad,direction _helipad,true,_faction,false] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                    {
+                                        // _x call ALIVE_fnc_inspectHash;
+                                        if ([_x,"type"] call ALiVE_fnc_hashGet == "entity") then {
+                                            _profiles pushback ([_x,"profileID"] call ALiVE_fnc_hashGet);
+                                        };
+                                    } foreach _tmp;
+                                };
                             };
                         };
                     };
-                };
 
-                if(_debug) then {
-                    ["ALIVE ATO %1 - %3 Helicopters to be added: %2", _logic, _profiles, count _profiles] call ALIVE_fnc_dump;
+                    if(_debug) then {
+                        ["ALIVE ATO %1 - %3 Helicopters to be added: %2", _logic, _profiles, count _profiles] call ALIVE_fnc_dump;
+                    };
                 };
 
                 // Place planes
