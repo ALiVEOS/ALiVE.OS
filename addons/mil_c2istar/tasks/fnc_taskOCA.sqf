@@ -52,7 +52,7 @@ switch (_taskState) do {
 
         _tasksCurrent = ([ALiVE_TaskHandler,"tasks",["",[],[],nil]] call ALiVE_fnc_HashGet) select 2;
 
-        /*
+
         //Inputs
         ["%1 | %2 | %3 | %4 | %5 | %6 | %7 | %8 | %9 | %10",
             _taskID,
@@ -66,7 +66,7 @@ switch (_taskState) do {
             _taskCurrent,
             _taskApplyType
         ] call ALiVE_fnc_Dump;
-        */
+
 
         if (_taskID == "") exitwith {["C2ISTAR - Task OCA - Wrong input for _taskID!"] call ALiVE_fnc_Dump};
         if (_requestPlayerID == "") exitwith {["C2ISTAR - Task OCA - Wrong input for _requestPlayerID!"] call ALiVE_fnc_Dump};
@@ -76,11 +76,11 @@ switch (_taskState) do {
         if (count _taskPlayers == 0) exitwith {["C2ISTAR - Task OCA - Wrong input for _taskPlayers!"] call ALiVE_fnc_Dump};
         if (_taskEnemyFaction == "") exitwith {["C2ISTAR - Task OCA - Wrong input for _taskEnemyFaction!"] call ALiVE_fnc_Dump};
         if (_taskApplyType == "") exitwith {["C2ISTAR - Task OCA - Wrong input for _taskApplyType!"] call ALiVE_fnc_Dump};
-        
-        if (count _targetBuildings < 5 && _taskLocationType == "NULL") exitwith {["C2ISTAR - Task OCA - Wrong input for _targetBuilding!"] call ALiVE_fnc_Dump};
+
+        if (count _targetBuildings < 4 && _taskLocationType == "NULL") exitwith {["C2ISTAR - Task OCA - Wrong input for _targetBuilding!"] call ALiVE_fnc_Dump};
 
 		// TODO - find airfield and nearest hangar/runway/helipad and aircraft
-		
+
         _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideObjectToNumber;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideNumberToText;
@@ -88,7 +88,7 @@ switch (_taskState) do {
        // establish the location for the task
        // get enemy location based on input
 
-        if ((count _targetBuildings < 5) && _taskLocationType in ["Short","Medium","Long"]) then {
+        if ((count _targetBuildings < 4) && _taskLocationType in ["Short","Medium","Long"]) then {
 
             if (!isnil "OPCOM_instances") then {
 
@@ -121,69 +121,60 @@ switch (_taskState) do {
                     };
                 } foreach OPCOM_instances;
 
+
                 if (count _objectives > 0) then {
-                    private _objectives = [_objectives,[getposATL _player],{_Input0 distance ([_x,"center"] call ALiVE_fnc_HashGet)},"ASCEND",{
+                    private _OCAClusters = [] call ALiVE_fnc_hashCreate;
+                    private _objectives = [_objectives,[getposATL _player],{_Input0 distance ([_x,"center"] call ALiVE_fnc_HashGet)},"ASCEND"] call ALiVE_fnc_SortBy;
 
-                        private _id = [_x,"opcomID",""] call ALiVE_fnc_HashGet;
-                        private _pos = [_x,"center"] call ALiVE_fnc_HashGet;
-                        private _opcom = [objNull,"getOPCOMbyid",_id] call ALiVE_fnc_OPCOM;
-                        private _side = [_opcom,"side",""] call ALiVE_fnc_HashGet;
+                    {
+                        private _found = false;
+                        private _clusterID = [_x, "clusterID"] call ALIVE_fnc_hashGet;
+                        private _cluster = [ALiVE_clustersMil, _clusterID] call ALiVE_fnc_HashGet;
 
-                        !([_pos,_side,500,true] call ALiVE_fnc_isEnemyNear);
-                    }] call ALiVE_fnc_SortBy;
+                        if !(isNil "_cluster") then {
+                            private _size = [_cluster,"size", 150] call ALiVE_fnc_hashGet;
+                            private _buildings = [_cluster,"nodes",[]] call ALiVE_fnc_HashGet;
+                            _targetBuildings = [];
+                            {
+                                if ( (tolower(typeof _x) find "hangar") != -1 || (tolower(typeof _x) find "helipad") != -1) then {
+                                    private _nearBuildings = (position _x) nearObjects ["House", _size/2];
+                                    {
+                                        _targetBuildings pushbackUnique _x;
+                                    } foreach _nearBuildings;
+                                    if (count _targetBuildings > 0) then {
+                                        ["C2ISTAR - Task OCA - cluster %1 has a %3, found buildings %2",_clusterID, _nearBuildings, _x] call ALiVE_fnc_Dump;
+                                    };
+                                };
+                                if (count _targetBuildings > 3) exitWith {
+                                    ["C2ISTAR - Task OCA - OPCOM objective at cluster %1 target buildings: %2",_clusterID, _targetBuildings] call ALiVE_fnc_Dump;
+                                    _found = true;
+                                };
+                            } foreach _buildings;
+                        };
+                        if (_found) then {
+                            ["C2ISTAR - Task OCA - OPCOM objective at cluster %1 has %2 target buildings.",_clusterID, count _targetBuildings] call ALiVE_fnc_Dump;
+                            [_OCAClusters, _clusterID, +(_targetBuildings)] call ALiVE_fnc_hashSet;
+                        };
+                    } foreach _objectives;
 
-                    private _totalIndexes = (count _objectives)-1;
-                    private _index = 0;
 
-                    if (count _objectives > 1) then {
+                    // Choose cluster
+                    if (count (_OCAClusters select 1) > 1) then {
+
+                        private _totalIndexes = (count (_OCAClusters select 1))-1;
+                        private _index = 0;
                         switch (_taskLocationType) do {
                             case ("Short") : {_index = floor(_totalIndexes/ceil(_totalIndexes*0.8)); _index = floor(random _index)};
                             case ("Medium") : {_index = floor(_totalIndexes/ceil(_totalIndexes*0.5))};
                             case ("Long") : {_index = floor(_totalIndexes/ceil(_totalIndexes*0.1))};
                         };
+
+                        _targetBuildings = [_OCAClusters, ((_OCAClusters select 1) select _index)] call ALiVE_fnc_hashGet;
+                        private _cluster = [ALiVE_clustersMil, ((_OCAClusters select 1) select _index)] call ALiVE_fnc_HashGet;
+                        _taskLocation = [_cluster,"center"] call ALiVE_fnc_hashGet;
                     };
-
-                    private _taskLocation = [_objectives select _index,"center"] call ALiVE_fnc_HashGet;
-                    private _clusterID = [_objectives select _index,"clusterID",""] call ALiVE_fnc_HashGet;
-                    private _type = [_objectives select _index,"objectiveType",""] call ALiVE_fnc_HashGet;
-
-                    _targetTypes = [
-                        "ALIVE_clustersMilAir",
-                        "ALIVE_clustersMilHeli"
-                    ];
-
-                    {
-                        private _clusters = _x;
-
-                        if (!(isnil {call compile _clusters}) && {_clusterID in ((call compile _clusters) select 1)}) then {
-
-                            private _cluster = [call compile _clusters,_clusterID] call ALiVE_fnc_HashGet;
-                            private _clusterLocation = [_cluster,"center"] call ALiVE_fnc_HashGet;
-
-                            _clusterLocation resize 2;
-                            _taskLocation resize 2;
-
-                            if (_clusterLocation distance _taskLocation < 15) exitwith {
-
-                                _targetBuildings = +([_cluster,"nodes",[]] call ALiVE_fnc_HashGet);
-                                
-								{ // ADD RUNWAY, HELIPAD, HANGAR
-									if !(_x isKindOf "House_F") then {_targetBuildings set [_foreachIndex,objNull]};
-                                } foreach _targetBuildings;
-                                
-                                _targetBuildings = _targetBuildings - [objNull];
-                            };
-                        };
-
-                        if (!isnil "_targetBuildings" && {count _targetBuildings > 4}) exitwith {};
-                    } foreach _targetTypes;
-
-                    ["C2ISTAR - Task OCA - OPCOM index %2 selected as objective at position %1",_taskLocation,_index] call ALiVE_fnc_Dump;
-                    ["C2ISTAR - Task OCA - Buildings in %3 cluster %2: %1",_targetBuildings,_clusterID,_type] call ALiVE_fnc_Dump;
                 } else {
-                    ["C2ISTAR - Task OCA - Currently there are no OPCOM objectives available, using map locations!"] call ALiVE_fnc_Dump;
-
-                    _taskLocation = position (selectRandom (nearestLocations [getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition"), ["Airport"], 30000]));
+                    ["C2ISTAR - Task OCA - Currently there are no OPCOM objectives available!"] call ALiVE_fnc_Dump;
                 };
             };
         };
@@ -191,7 +182,7 @@ switch (_taskState) do {
         if (isnil "_taskLocation") exitwith {["C2ISTAR - Task OCA - No location selected!"] call ALiVE_fnc_Dump};
 
 		//still no suitable buildings? fuck off...
-        if (count _targetBuildings == 0) exitwith {["C2ISTAR - Task OCA - There are no buildings to attack at the target area!"] call ALiVE_fnc_Dump};
+        if (count _targetBuildings < 3) exitwith {["C2ISTAR - Task OCA - There are no buildings or objectives to attack!"] call ALiVE_fnc_Dump};
 
         private["_targetPosition","_targetID","_targetDisplayType"];
 
@@ -200,7 +191,7 @@ switch (_taskState) do {
         _targetID = str(floor(_targetPosition select 0)) + str(floor(_targetPosition select 1));
         _targetDisplayType = getText(configfile >> "CfgVehicles" >> (typeOf _targetBuilding) >> "displayName");
 
-        ["C2ISTAR - Task OCA - Building: %1 | Type: %2 | Pos: %3!",_targetBuildings,_targetDisplayType,_targetPosition] call ALiVE_fnc_Dump;
+        ["C2ISTAR - Task OCA - Building: %1 | Type: %2 | Pos: %3!", _targetBuildings, _targetDisplayType, _targetPosition] call ALiVE_fnc_Dump;
 
         private["_stagingPosition","_dialogOptions","_dialogOption","_buildingType","_reward"];
 
@@ -310,8 +301,7 @@ switch (_taskState) do {
             [_params,"lastState","Destroy"] call ALIVE_fnc_hashSet;
         };
 
-        _targetsState = if ([!alive _x] count _targets > 4) then {true} else {false};
-        _allDestroyed = [_targetsState,"allDestroyed"] call ALIVE_fnc_hashGet;
+        _allDestroyed = if ({!alive _x} count _targets > 2) then {true} else {false};
 
         if(_allDestroyed) then {
 
