@@ -83,8 +83,8 @@ link36[] = {24,25};
 link37[] = {25,26};
 link38[] = {26,10};
 link39[] = {27,28};
-globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-666.800781,293.326508,622.951965,-124.384804,912,727,1};
-window[] = {0,-1,-1,-1,-1,994,115,1702,110,1,929};
+globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-666.800781,293.326508,849.231140,-211.578201,658,727,1};
+window[] = {0,-1,-1,-1,-1,928,44,1869,44,1,675};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -257,20 +257,15 @@ class FSM
                          "	" \n
                          "	           		if (count _vehicle > 0) then {" \n
                          "" \n
-                         "	               	// Attack with one air vehicle if target is in a vehicle" \n
-                         "							if (_debug) then {" \n
-                         "				  				[""TACOM %2 sends QRF request to OPCOM (%1)"",_targetID,_side] call ALiVE_fnc_DumpR;" \n
-                         "							};" \n
+                         "	               	// Attack with 1 air vehicle if target is in a vehicle" \n
+                         "							if (_debug) then {[""TACOM %2 sends QRF request to OPCOM (%1)"",_targetID,_side] call ALiVE_fnc_DumpR};" \n
                          "" \n
-                         "								_OPCOM_FSM setFSMVariable [""_OPCOM_DATA"",[""QRF"",[_targetID]]];" \n
-                         "" \n
-                         "	                  	//_attackers = [_OPCOM_HANDLER, ""attackentity"",[_targetID,1,""air""]] call ALIVE_fnc_OPCOM;" \n
+                         "							_OPCOM_FSM setFSMVariable [""_OPCOM_DATA"",[""QRF"",[_targetID]]];" \n
                          "	                } else {" \n
                          "	                	" \n
                          "							// Send 2 infantry groups if target is not in a vehicle" \n
-                         "							if (_debug) then {" \n
-                         "				  				[""TACOM %2 sends QRF of type infantry on %1"",_targetID,_side] call ALiVE_fnc_DumpR;" \n
-                         "							};" \n
+                         "							if (_debug) then {[""TACOM %2 sends QRF of type infantry on %1"",_targetID,_side] call ALiVE_fnc_DumpR};" \n
+                         "" \n
                          "	                  _attackers = [_OPCOM_HANDLER, ""attackentity"",[_targetID,2,""infantry""]] call ALIVE_fnc_OPCOM;" \n
                          "	            	};" \n
                          "	        	};" \n
@@ -298,7 +293,7 @@ class FSM
                          "                    _danger = [_objective,""danger"",-1] call AliVE_fnc_HashGet;" \n
                          "                    _size = _sectionsamount_attack;" \n
                          "" \n
-                         "                    switch (_danger < 1) do {" \n
+                         "                    switch (_danger < 0) do {" \n
                          "                        case (true) : {_recon = [_objective,_size]};" \n
                          "                        case (false) : {_capture = [_objective,_size]};" \n
                          "                    };" \n
@@ -362,27 +357,28 @@ class FSM
                          "                        if(_debug) then { [""TACOM %1 regrouping! Waiting for %2 groups!"",_ProfileID,({_objectiveID == (_x select 2)} count ([_OPCOM_HANDLER,""pendingorders"",[]] call ALiVE_fnc_HashGet))] call ALIVE_fnc_dumpR; };" \n
                          "                        // debug ---------------------------------------" \n
                          "                    };" \n
+                         "								//All groups are in position" \n
                          "                        //Scan for visible enemies (done only once on recon for performance sake - regulary scan every 2 minutes done by OPCOM)" \n
-                         "                        _visibleEnemies = [_OPCOM_HANDLER,""scanenemies"",_posP] call ALiVE_fnc_OPCOM;" \n
-                         "" \n
-                         "								if (count _visibleEnemies > 0) then {" \n
-                         "									if (_debug) then {" \n
-                         "										[""TACOM %2 sends request for QRF to OPCOM during recconnaissance of %1!"",_objectiveID,_side] call ALiVE_fnc_Dump;" \n
-                         "									};" \n
-                         "" \n
-                         "									_OPCOM_FSM setFSMVariable [""_OPCOM_DATA"",[""QRF"",[_objectiveID]]];" \n
-                         "								};" \n
+                         "                        _danger = count ([_OPCOM_HANDLER,""scanenemies"",_posP] call ALiVE_fnc_OPCOM);" \n
                          "" \n
                          "                        // TBD: Calculate danger level depending on recon outcome (sector analysis)" \n
-                         "                        [_objective,""danger"",5] call AliVE_fnc_HashSet;" \n
+                         "                        [_objective,""danger"",_danger] call AliVE_fnc_HashSet;" \n
+                         "" \n
+                         "								if (_danger > 0) then {" \n
+                         "									if (_debug) then {[""TACOM %2 spotted %3 enemies at %1!"",_objectiveID,_side,_danger] call ALiVE_fnc_DumpR};" \n
+                         "" \n
+                         "									_OPCOM_FSM setFSMVariable [""_OPCOM_DATA"",[""QRF"",[_objectiveID]]];" \n
+                         "								} else {" \n
+                         "									if (_debug) then {[""TACOM %2 didn't spot any enemies at %1!"",_objectiveID,_side] call ALiVE_fnc_DumpR};" \n
+                         "								};" \n
                          "" \n
                          "                        //analyse as recon is completed" \n
                          "                        _dataset = {_TACOM_DATA = [""analyze"",_objective]};" \n
                          "" \n
                          "                        // log event --------------------------------------------------------------------------------------------" \n
                          "                        // ADDED ARJay ---------------------------------------------------------------------------------------" \n
-                         "                                _event = ['OPCOM_RECON', [_side,_objective],""OPCOM""] call ALIVE_fnc_event;" \n
-                         "                                   _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
+                         "                        _event = ['OPCOM_RECON', [_side,_objective],""OPCOM""] call ALIVE_fnc_event;" \n
+                         "                        _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
                          "                };" \n
                          "                case (""capture"") : {" \n
                          "                    if !([_OPCOM_HANDLER,""synchronizeorders"",_ProfileID] call ALiVE_fnc_OPCOM) exitwith {" \n
@@ -429,8 +425,8 @@ class FSM
                          "                        // debug ---------------------------------------" \n
                          "                    };" \n
                          "" \n
-                         "			  //Clear all waypoints" \n
-                         "			  [_profile, ""clearWaypoints""] call ALIVE_fnc_profileEntity;" \n
+                         "			  				//Clear all waypoints" \n
+                         "			  				[_profile, ""clearWaypoints""] call ALIVE_fnc_profileEntity;" \n
                          "" \n
                          "                    //Command to garrison" \n
                          "                    [_profile, ""clearActiveCommands""] call ALIVE_fnc_profileEntity;" \n

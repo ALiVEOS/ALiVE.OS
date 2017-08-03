@@ -633,7 +633,7 @@ switch(_operation) do {
         case "attackentity": {
             ASSERT_TRUE(typeName _args == "ARRAY",str _args);
 
-            private ["_target","_reserved","_sides","_size","_type","_proIDs","_knownE","_attackedE","_pos","_profiles","_profileIDs","_profile","_section","_profileID","_i","_waypoints","_posAttacker","_dist","_rtb"];
+            private ["_target","_reserved","_sides","_size","_type","_proIDs","_knownE","_attackedE","_pos","_profiles","_profileIDs","_profile","_section","_profileID","_i","_waypoints","_posAttacker","_dist","_rtb","_vehicleProfile","_vehicleType","_ATOtype"];
 
             _target = _args select 0;
             _size = _args select 1;
@@ -646,6 +646,12 @@ switch(_operation) do {
             _attackedE = [_logic,"attackedentities",[]] call ALiVE_fnc_HashGet;
             _reserved = [_logic,"ProfileIDsReserve",[]] call ALiVE_fnc_HashGet;
             _profile = [ALiVE_ProfileHandler,"getProfile",_target] call ALiVE_fnc_ProfileHandler;
+            _pos = [_profile,"position"] call ALiVE_fnc_HashGet;
+	        
+	        _vehicles = ([_profile,"vehicleAssignments",[[],[]]] call ALIVE_fnc_hashGet) select 1;
+	        if (count _vehicles > 0) then {
+	        	_vehicleProfile = [ALiVE_ProfileHandler,"getProfile",_vehicles select 0] call ALiVE_fnc_ProfileHandler;
+	        };
 
             _section = [];
             _profileIDs = [];
@@ -658,9 +664,7 @@ switch(_operation) do {
                 _proIDs = [ALIVE_profileHandler, "getProfilesBySide",_x] call ALIVE_fnc_profileHandler;
                 _profileIDs = _profileIDs + _proIDs;
             } foreach _sides;
-
-            _pos = [_profile,"position"] call ALiVE_fnc_HashGet;
-
+            
             {
                 if ((isnil "_x") || {_x select 0 == _target} || {!((_x select 0) in _profileIDs)}) then {
                     _knownE set [_foreachIndex,"x"];
@@ -728,6 +732,19 @@ switch(_operation) do {
                 };
                 
                 if (!isnil "_rtb" && {["ALiVE_mil_ATO"] call ALiVE_fnc_IsModuleAvailable}) exitwith {
+                
+                	_ATOtype = "CAS";
+                	
+                	//Determine to request OCA or CAS
+                	if !(isnil "_vehicleProfile") then {
+                		_vehicleType = [_vehicleProfile,"objectType",""] call ALiVE_fnc_HashGet;
+                		
+                		switch _vehicleType do {
+                			case ("Plane") : {_ATOtype = "OCA"};
+                			case ("Helicopter") : {"OCA"};
+                			default {_ATOtype = "CAS"};
+                		};
+                	};
                     
                     // ["Calling ATO event"] call ALiVE_fnc_DumpR;
 
@@ -741,7 +758,7 @@ switch(_operation) do {
 					    10,
 					    [_target]  // TARGETS either profile or unit
 					];
-					_event = ['ATO_REQUEST', ["CAS", [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, _pos, _args],"OPCOM"] call ALIVE_fnc_event;
+					_event = ['ATO_REQUEST', [_ATOtype, [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, _pos, _args],"OPCOM"] call ALIVE_fnc_event;
 					_eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
                     
                     _attackedE pushback [_target,_pos,_section,time];
