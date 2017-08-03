@@ -741,7 +741,7 @@ switch(_operation) do {
 					    10,
 					    [_target]  // TARGETS either profile or unit
 					];
-					_event = ['ATO_REQUEST', ["CAS", [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, "", _args],"OPCOM"] call ALIVE_fnc_event;
+					_event = ['ATO_REQUEST', ["CAS", [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, _pos, _args],"OPCOM"] call ALIVE_fnc_event;
 					_eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
                     
                     _attackedE pushback [_target,_pos,_section,time];
