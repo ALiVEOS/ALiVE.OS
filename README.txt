@@ -1,3 +1,50 @@
+ALiVE
+
+Developed by the team that brought you Multi Session Operations (MSO), the Advanced Light Infantry Virtual Environment (ALiVE) is an easy to use modular mission framework that provides everything players and mission makers need to quickly set up and run realistic military operations in almost any scenario, including command, combat support, service support, logistics and more.
+
+Main Features
+
+ALiVE features the revolutionary *Virtual Profile System* that supports thousands of units operating simultaneously across the map with minimal impact on performance.  Unlike older caching systems, Virtual AI groups will continue to move, operate and fight and will seamlessly spawn into the visual game world when players are in range.
+
+ALiVE identifies key military, industrial and civilian installations automatically for any map. It uses an advanced, multi-layered AI *Operational Command* structure which assesses the strategic, operational and tactical situation across the battlespace, analyses the relative strengths of enemy and friendly forces and issues missions accordingly. The result is a fluid, dynamic and credibly realistic battlefield as forces modelled on real world Combined Arms doctrines fight for key objectives.
+
+The second generation *Persistent Campaign* system automatically retains mission critical data on an external database without any user installations required - no need for complicated MySQL databases, it is all handled completely automatically!
+
+ALiVE have created and fully integrated the *aliveMod.com War-Room*, which tracks operations in near-realtime and provides powerful analytical tools to review every kill and every shot fired.
+
+ALiVE also provides a variety of popular *Player Support* utilities such as View Distance, Respawn and Revive Manager, Long Range Communications Rebroadcast for ACRE and an integrated Support Radio Suite for AI controlled Combat and Combat Service Support.
+
+The intuitive, easy to use *modular framework* means mission making with ALiVE is quick and easy, even if you have never opened the editor before.  Simply place modules down and play.  ALiVE can be used completely stand alone or as part of more complex missions and scripts.
+
+Further information, including details of the technical innovations behind ALiVE and the full development history can be found on the wiki
+
+Core Team
+
+Friznit - Product/Project Owner
+Tupolov - Developer, Data Lead
+Highhead - Developer, QA Lead
+ARJay - Developer, Web Lead
+Gunny - Developer
+Jman - Developer, Build Lead
+SpyderBlack - Developer
+Ligthert - Contributor / Tester
+SavageCDN - Testing
+Hazey - Developer / Tester
+Raptor - Developer / Tester
+
+Alumni
+
+Secure - Developer (ALiVEPlugIn)
+WobblyHeadedBob - Developer
+Naught - Developer
+Cameroon - Developer
+Wolffy.au - Co-founder, Developer
+Rye - Social Media
+
+Music
+
+Johari
+
 ﻿----------------------------------------------------
 ALiVE Instructions
 ----------------------------------------------------
