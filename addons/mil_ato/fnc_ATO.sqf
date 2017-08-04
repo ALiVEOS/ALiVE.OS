@@ -4002,8 +4002,13 @@ switch(_operation) do {
                                     _grp reveal (_eventTargets select 0);
                                     _wp waypointAttachVehicle (_eventTargets select 0);
                                     if ( (_eventTargets select 0) iskindof "House") then {
-                                        private _laze = "LaserTargetW" createVehicle getPos (_eventTargets select 0);
-                                        _laze attachTo [(_eventTargets select 0),[0,0,0]];
+                                        // Attach lazer markers to first 3 targets only
+                                        {
+                                            if (_foreachIndex < 3) then {
+                                                private _laze = "LaserTargetW" createVehicle getPos _x;
+                                                _laze attachTo [_x,[0,0,0]];
+                                            };
+                                        } foreach _eventTargets;
                                     };
 
                                 };
