@@ -41,7 +41,7 @@ Tupolov
 #define DEFAULT_EVENT_QUEUE []
 #define DEFAULT_ANALYSIS []
 #define DEFAULT_SIDE "EAST"
-#define DEFAULT_ATO_TYPES ["CAP","DCA","SEAD","CAS","Strike","Recce","AS"]
+#define DEFAULT_ATO_TYPES ["CAP","DCA","SEAD","CAS","Strike","Recce","AS","OCA"]
 #define DEFAULT_REGISTRY_ID ""
 #define DEFAULT_OP_HEIGHT 750
 #define DEFAULT_OP_DURATION 25
@@ -949,7 +949,6 @@ switch(_operation) do {
             private _event = ['TASK_GENERATE', _taskData, "C2ISTAR"] call ALIVE_fnc_event;
             [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
         };
-
     };
     case "requestPlayerTask": {
 
@@ -1019,23 +1018,14 @@ switch(_operation) do {
             private _taskType = _type;
 
             switch (_type) do {
-                case "DCA": {
-                    _taskType = "DCA";
-                };
                 case "DefendHQ": {
                     _taskType = "MilDefence"; // Might need to change this to clear area or something
                 };
-                case "OCA": {
+                case "Strike": {
                     _taskType = "DestroyBuilding";
                 };
-                case "SEAD": {
-                    _taskType = "SEAD";
-                };
-                case "CAS": {
-                    _taskType = "CAS";
-                };
                 default {
-                     _taskType = "DestroyVehicles";
+                    _taskType = _type;
                 };
             };
 
@@ -1043,7 +1033,13 @@ switch(_operation) do {
                 ["CREATING PLAYER ATO TASK %1 %2", _args, [_requestID,_playerID,_side,_faction,_taskType,"NULL",_destination,_sidePlayers,_enemyFaction,_current,_apply,[_target]]] call ALIVE_fnc_dump;
             };
 
-            private _taskData = [_requestID,_playerID,_side,_faction,_taskType,"NULL",_destination,_sidePlayers,_enemyFaction,_current,_apply,[_target]];
+            private _targetArray = [_target];
+
+            if (_type == "OCA") then {
+                _targetArray = _targets;
+            };
+
+            private _taskData = [_requestID,_playerID,_side,_faction,_taskType,"NULL",_destination,_sidePlayers,_enemyFaction,_current,_apply,_targetArray];
 
             if (_type == "CAS") then {
                 _taskData pushback _friendly;
@@ -3993,6 +3989,7 @@ switch(_operation) do {
                                         _wp setWaypointTimeout [_eventDuration,_eventDuration,_eventDuration];
                                     };
                                 };
+                                case "OCA";
                                 case "DCA";
                                 case "SEAD";
                                 case "Strike": {
