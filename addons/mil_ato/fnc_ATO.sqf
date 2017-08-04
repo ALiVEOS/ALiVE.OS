@@ -3353,11 +3353,11 @@ switch(_operation) do {
                                             private _active = [_targetProfile,"active"] call ALiVE_fnc_hashGet;
                                             if !(_active) then {
                                                  private _type = [_targetProfile,"type"] call ALiVE_fnc_hashGet;
+                                                 diag_log format["ATO %3 SPAWNING %4 TARGET %1: %2",_type, _x, _logic, _eventType];
                                                  if (_type == "entity") then {
                                                     [_targetProfile,"spawn"] call ALiVE_fnc_profileEntity;
                                                  } else {
                                                     [_targetProfile,"spawn"] call ALiVE_fnc_profileVehicle;
-                                                    // diag_log format["SPAWNING TARGET: %1",_x];
                                                 };
                                             };
                                         };
@@ -3956,11 +3956,30 @@ switch(_operation) do {
                                 _x setCombatMode _eventROE;
                             } foreach units _grp;
 
+                            // Make sure targets are spawned
+                            {
+                                if (isNull _x) then {
+                                    private _profileID = _eventEnemyProfiles select _foreachIndex;
+                                    private _targetProfile = [ALiVE_profileHandler, "getProfile", _profileID] call ALiVE_fnc_ProfileHandler;
+                                    if !(isNil "_targetProfile") then {
+                                        private _type = [_targetProfile,"type"] call ALiVE_fnc_hashGet;
+                                        private _vehicle = objNull;
+                                        if (_type == "entity") then {
+                                            _vehicle = [_targetProfile,"leader"] call ALiVE_fnc_hashGet;
+                                        } else {
+                                            _vehicle = [_targetProfile,"vehicle"] call ALiVE_fnc_hashGet;
+                                        };
+                                        _eventTargets set [_foreachIndex, _vehicle];
+                                    };
+                                };
+                            } foreach _eventTargets;
 
                             private _wpPosition = _eventPosition;
 
                             if (_eventType in ["CAS","DCA","SEAD","Strike"] && count _eventTargets > 0) then {
-                                _wpPosition = _eventTargets select 0;
+                                if !(isNull (_eventTargets select 0)) then {
+                                    _wpPosition = _eventTargets select 0;
+                                };
                             };
 
                             private _wp = _grp addWaypoint [_wpPosition,0,1,"ATO"];
@@ -3979,13 +3998,13 @@ switch(_operation) do {
                                 };
                                 case "CAS": {
                                     // SAD waypoint, if targets then DESTROY
-                                    if (count _eventTargets == 1) then {
+                                    if ( count _eventTargets == 1 && !(isNull (_eventTargets select 0)) ) then {
                                         _wp setWaypointType "DESTROY";
                                         _grp reveal (_eventTargets select 0);
                                         _wp waypointAttachVehicle (_eventTargets select 0);
                                     } else {
                                         _wp setWaypointType "SAD";
-                                        _wp setWaypointPosition [position (_eventTargets select 0), 0];
+                                        _wp setWaypointPosition [_eventPosition, 0];
                                         _wp setWaypointTimeout [_eventDuration,_eventDuration,_eventDuration];
                                     };
                                 };
