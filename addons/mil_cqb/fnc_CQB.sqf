@@ -41,9 +41,12 @@ Wolffy, Highhead
 #define MAINCLASS ALIVE_fnc_CQB
 
 #define MTEMPLATE "ALiVE_CQB_%1"
+#define GTEMPLATE "ALiVE_CQB_g_%1"
+#define STEMPLATE "ALiVE_CQB_s_%1"
 #define DEFAULT_BLACKLIST []
 #define DEFAULT_WHITELIST []
 #define DEFAULT_STATICWEAPONS ["B_HMG_01_high_F","O_Mortar_01_F","O_HMG_01_high_F"]
+#define SUBGRID_SIZE 10
 
 private ["_logic","_operation","_args"];
 
@@ -557,7 +560,6 @@ switch(_operation) do {
         };
 
     case "debug": {
-
         if(isNil "_args") then {
             _args = _logic getVariable ["debug", false];
         } else {
@@ -583,22 +585,31 @@ switch(_operation) do {
         if (_args) then {
 
             [{
-                private ["_type"];
+                private _type = if (isNil {_x getVariable "group"}) then { "mil_dot" } else { "Waypoint" };
+                private _alpha = if (_x in _housesPending) then { 0.2 } else { 1 };
 
-                if (isNil {_x getVariable "group"}) then {_type = "mil_dot"} else {_type = "Waypoint"};
+                [format[MTEMPLATE, _x], getposATL _x,"ICON", [0.5,0.5],_color,_prefix,_type,"FDiagonal",0,_alpha] call ALIVE_fnc_createMarkerGlobal;
 
-                [format[MTEMPLATE, _x], getposATL _x,"ICON", [0.5,0.5],_color,_prefix,_type,"FDiagonal",0,1] call ALIVE_fnc_createMarkerGlobal;
-            },_houses,10] call ALiVE_fnc_arrayFrameSplitter;
+                private _sector = [ALIVE_sectorGrid, "positionToSector", getPosATL _x] call ALIVE_fnc_sectorGrid;
+                private _subSector = [_sector, SUBGRID_SIZE, getPosATL _x] call ALiVE_fnc_positionToSubSector;
+                private _subSectorID = [_subSector, "id"] call ALiVE_fnc_sector;
+                private _subSectorPosition = [_subSector, "position"] call ALiVE_fnc_sector;
+                private _subSectorDimensions = [_subSector, "dimensions"] call ALiVE_fnc_sector;
 
-            [{
-                private ["_type"];
+                if (getMarkerType (format [GTEMPLATE, _subSectorID]) == "") then {
+                    [format[GTEMPLATE, _subSectorID], _subSectorPosition, "RECTANGLE", _subSectorDimensions, "ColorBlack", _subSectorID, "", "Solid", 0, 0.6] call ALIVE_fnc_createMarkerGlobal;
+                };
 
-                if (isNil {_x getVariable "group"}) then {_type = "mil_dot"} else {_type = "Waypoint"};
-
-                [format[MTEMPLATE, _x], getposATL _x,"ICON", [0.5,0.5],_color,_prefix,_type,"FDiagonal",0,0.2] call ALIVE_fnc_createMarkerGlobal;
-            },_housesPending,10] call ALiVE_fnc_arrayFrameSplitter;
+                if (getMarkerType (format [STEMPLATE, _subSectorID]) == "") then {
+                    [format[STEMPLATE, _subSectorID], _subSectorPosition, "ICON", [0.5, 0.5], "ColorBlack", _subSectorID, "mil_dot", "FDiagonal", 0, 1] call ALIVE_fnc_createMarkerGlobal;
+                };
+            },_houses + _housesPending,10] call ALiVE_fnc_arrayFrameSplitter;
         } else {
-	        [{deleteMarker format[MTEMPLATE, _x]},_housesTotal,10] call ALiVE_fnc_arrayFrameSplitter;
+            [{
+                deleteMarker format[MTEMPLATE, _x];
+                deleteMarker format[GTEMPLATE, _x getVariable ["sectorID", ""]];
+                deleteMarker format[STEMPLATE, _x getVariable ["sectorID", ""]];
+            },_housesTotal,10] call ALiVE_fnc_arrayFrameSplitter;
         };
 
         _args;
@@ -678,13 +689,16 @@ switch(_operation) do {
             //Restore data Identifyer
             _logic setvariable ["_rev",[_args,"_rev"] call ALiVE_fnc_hashGet,true];
 
-            // TODO(marcel): Can be deleted since we no longer store houses
             //Restore houselist and groups if a houselist is provided
             if (count (([_args, "houses",["",[],[],nil]] call ALiVE_fnc_hashGet) select 1) > 0) then {
 
                 //Reset groups and markers
                 {[_logic, "delGroup", _x] call ALiVE_fnc_CQB} forEach (_logic getVariable ["groups",[]]);
-                {deleteMarker format[MTEMPLATE, _x]} foreach (_logic getVariable ["houses",[]]);
+                {
+                    deleteMarker format[MTEMPLATE, _x];
+                    deleteMarker format[GTEMPLATE, _x getVariable ["sectorID", ""]];
+                    deleteMarker format[STEMPLATE, _x getVariable ["sectorID", ""]];
+                } foreach (_logic getVariable ["houses",[]]);
 
                 //Reset dynamic houselist and groups
                 _logic setVariable ["houses",[]];
@@ -828,6 +842,8 @@ switch(_operation) do {
             if (_debug) then {
                 { // forEach
                     deleteMarker format[MTEMPLATE, _x];
+                    deleteMarker format[GTEMPLATE, _x getVariable ["sectorID", ""]];
+                    deleteMarker format[STEMPLATE, _x getVariable ["sectorID", ""]];
                 } forEach (_logic getVariable ["houses", []]);
             };
 
@@ -849,7 +865,7 @@ switch(_operation) do {
                 private _sectorID = [_sector, "id"] call ALiVE_fnc_sector;
 
                 // Divide sector into x rows and columns
-                private _subSector = [_sector, 10, _housePosition] call ALiVE_fnc_positionToSubSector;
+                private _subSector = [_sector, SUBGRID_SIZE, _housePosition] call ALiVE_fnc_positionToSubSector;
                 private _subSectorID = [_subSector, "id"] call ALiVE_fnc_sector;
                 private _subSectorDimensions = [_subSector, "dimensions"] call ALiVE_fnc_sector;
                 private _subSectorPosition = [_subSector, "position"] call ALiVE_fnc_sector;
@@ -858,25 +874,6 @@ switch(_operation) do {
                     if (!(_sectorID in _cleared) && !(_subSectorID in _cleared)) then {
                         _houses pushBack _x;
                         _x setVariable ["sectorID", _subSectorID];
-
-                        // TODO(marcel): Move to debug function
-                        if (getMarkerType format ["ALiVE_SECTOR_%1", format["g%1", _subSectorID]] == "") then {
-                            private _m = objNull;
-
-                            _m = createMarker [format["ALiVE_SECTOR_%1", format["g%1",_subSectorID]], _subSectorPosition];
-                            _m setMarkerShape "RECTANGLE";
-                            _m setMarkerSize _subSectorDimensions;
-                            _m setMarkerAlpha 0.6;
-                            _m setMarkerBrush "Solid";
-                            _m setMarkerColor "ColorBlack";
-
-                            _m = createMarker [format["ALiVE_SECTOR_%1", format["%1",_subSectorID]], _subSectorPosition];
-                            _m setMarkerShape "ICON";
-                            _m setMarkerSize [0.5, 0.5];
-                            _m setMarkerType "mil_dot";
-                            _m setMarkerColor "ColorBlack";
-                            _m setMarkerText _subSectorID;
-                        };
                     };
                 };
             } forEach _args;
@@ -886,23 +883,7 @@ switch(_operation) do {
 
             // mark all strategic and non-strategic houses in debug
             if (_debug) then {
-                { // forEach
-                    private ["_m"];
-                    _m = format[MTEMPLATE, _x];
-                    if(str getMarkerPos _m == "[0,0,0]") then {
-                        createmarker [_m, getPosATL _x];
-                        _m setMarkerShape "Icon";
-                        _m setMarkerSize [1,1];
-                        if (isNil {_x getVariable "group"}) then {
-                            _m setMarkerType "mil_Dot";
-                        } else{
-                            // mark active houses
-                            _m setMarkerType "Waypoint";
-                        };
-                        _m setMarkerColor (_logic getVariable ["debugColor","ColorGreen"]);
-                        _m setMarkerText (_logic getVariable ["debugPrefix","CQB"]);
-                    };
-                } forEach (_logic getVariable ["houses", []]);
+                [_logic, "debug", true] call MAINCLASS;
             };
         };
 
@@ -919,15 +900,7 @@ switch(_operation) do {
 
             if (_logic getVariable ["debug", false]) then {
                 ["CQB Population: Adding house %1...", _house] call ALiVE_fnc_Dump;
-                _m = format[MTEMPLATE, _house];
-                if(str getMarkerPos _m == "[0,0,0]") then {
-                    createmarker [_m, getPosATL _house];
-                    _m setMarkerShape "Icon";
-                    _m setMarkerSize [1,1];
-                    _m setMarkerType "mil_Dot";
-                    _m setMarkerColor (_logic getVariable ["debugColor","ColorGreen"]);
-                    _m setMarkerText (_logic getVariable ["debugPrefix","CQB"]);
-                };
+                [_logic, "debug", true] call MAINCLASS;
             };
         };
     };
@@ -961,6 +934,9 @@ switch(_operation) do {
                 if ({(_x getVariable ["sectorID","in"]) == _sectorID} count (MOD(CQB) getvariable ["houses",[]]) == 0) then {
                     ["ALiVE MIL CQB Cleared sector %1!", _sectorID] call ALiVE_fnc_Dump;
                     MOD(CQB) setvariable ["cleared",(MOD(CQB) getvariable ["cleared",[]]) + [_sectorID]];
+
+                    deleteMarker format[GTEMPLATE, _house getVariable ["sectorID", ""]];
+                    deleteMarker format[STEMPLATE, _house getVariable ["sectorID", ""]];
                 };
             } else {
                 ["ALiVE MIL CQB Warning: Group %1 is still alive! Removing...", _grp] call ALiVE_fnc_Dump;
