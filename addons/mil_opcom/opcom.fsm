@@ -39,9 +39,9 @@ item34[] = {"POST_ANALYSIS_DO",4,218,-1208.969116,-760.668579,-1118.969116,-710.
 item35[] = {"QRF_Conditions",4,218,-133.845856,-306.268250,-43.845856,-256.268250,0.000000,"QRF" \n "Conditions"};
 item36[] = {"REQUEST_QRF",2,250,-133.738892,-834.303589,-43.738892,-784.303650,0.000000,"REQUEST" \n "QRF"};
 item37[] = {"RECON_Conditions",4,218,9.105785,-308.301544,99.105774,-258.301483,0.000000,"RECON" \n "Conditions"};
-item38[] = {"REQUEST_RECON",2,250,10.006296,-836.706787,100.006363,-786.706909,0.000000,"REQUEST" \n "RECON"};
+item38[] = {"REQUEST_RECON",2,4346,10.006296,-836.706787,100.006363,-786.706909,0.000000,"REQUEST" \n "RECON"};
 item39[] = {"OCA_Conditions",4,218,150.274902,-304.513031,240.274811,-254.513000,0.000000,"OCA" \n "Conditions"};
-item40[] = {"REQUEST_OCA",2,4346,150.634949,-836.432495,240.634949,-786.432495,0.000000,"REQUEST" \n "OCA"};
+item40[] = {"REQUEST_OCA",2,250,150.634949,-836.432495,240.634949,-786.432495,0.000000,"REQUEST" \n "OCA"};
 version=1;
 class LayoutItems
 {
@@ -111,7 +111,7 @@ link52[] = {38,6};
 link53[] = {39,40};
 link54[] = {40,6};
 globals[] = {0.000000,0,0,0,0,640,480,1,93,6316128,1,-1316.330688,242.341431,332.800323,-967.516541,1460,1218,1};
-window[] = {0,-1,-1,-1,-1,1478,28,2718,115,1,1478};
+window[] = {0,-1,-1,-1,-1,1375,45,2735,12,1,1478};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -1252,7 +1252,7 @@ class FSM
        "	// Only send recce if enemies are near (OPCOM doesn't know this but avoids sending recce's to friendly territory)" \n
        "	private _enemyterritory = [_center, _side, 1000, true] call ALIVE_fnc_isEnemyNear;" \n
        "" \n
-       "	if (_enemyTerritory) then {" \n
+       "	if (_enemyTerritory && _size > 150) then {" \n
        "		// Get objective buildings and filter for ALiVE types" \n
        "   		private _buildings = nearestObjects [_center, [""House_F""], _size];" \n
        "   		{	" \n
@@ -1273,6 +1273,8 @@ class FSM
        "				// debug ---------------------------------------" \n
        "                    " \n
        "				// [""Calling ATO event""] call ALiVE_fnc_DumpR;" \n
+       "" \n
+       "				waitUntil {[""ALiVE_mil_ATO""] call ALiVE_fnc_isModuleInitialised};" \n
        "" \n
        "				_args = [" \n
        "					""GREEN"",	// ROE" \n
