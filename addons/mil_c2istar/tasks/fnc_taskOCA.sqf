@@ -52,7 +52,7 @@ switch (_taskState) do {
 
         _tasksCurrent = ([ALiVE_TaskHandler,"tasks",["",[],[],nil]] call ALiVE_fnc_HashGet) select 2;
 
-
+        /*
         //Inputs
         ["%1 | %2 | %3 | %4 | %5 | %6 | %7 | %8 | %9 | %10",
             _taskID,
@@ -66,7 +66,7 @@ switch (_taskState) do {
             _taskCurrent,
             _taskApplyType
         ] call ALiVE_fnc_Dump;
-
+        */
 
         if (_taskID == "") exitwith {["C2ISTAR - Task OCA - Wrong input for _taskID!"] call ALiVE_fnc_Dump};
         if (_requestPlayerID == "") exitwith {["C2ISTAR - Task OCA - Wrong input for _requestPlayerID!"] call ALiVE_fnc_Dump};
