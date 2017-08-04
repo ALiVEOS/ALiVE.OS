@@ -338,7 +338,9 @@ switch(_operation) do {
                         private ["_cqb_logic"];
                         _cqb_logic = _x;
 
-                        {[_cqb_logic,"state",_x] call ALiVE_fnc_CQB} foreach (_data select 2);
+                        {
+                            [_cqb_logic,"state",_x] call ALiVE_fnc_CQB
+                        } foreach (_data select 2);
                     } foreach (MOD(CQB) getVariable ["instances",[]]);
 
                     ["ALiVE CQB DATA loaded from DB! CQB states were reset!"] call ALiVE_fnc_Dump;
@@ -676,6 +678,7 @@ switch(_operation) do {
             //Restore data Identifyer
             _logic setvariable ["_rev",[_args,"_rev"] call ALiVE_fnc_hashGet,true];
 
+            // TODO(marcel): Can be deleted since we no longer store houses
             //Restore houselist and groups if a houselist is provided
             if (count (([_args, "houses",["",[],[],nil]] call ALiVE_fnc_hashGet) select 1) > 0) then {
 
@@ -838,16 +841,43 @@ switch(_operation) do {
             };
 
             //Exclude houses in formerly cleared areas from input list and flag the rest with sectorID on server for persistence
-            private ["_cleared"];
-            _cleared = MOD(CQB) getvariable ["cleared",[]];
+            private _cleared = MOD(CQB) getVariable ["cleared", []];
+
             { // forEach
-                private ["_sectorID"];
+                private _housePosition = getPosATL _x;
+                private _sector = [ALIVE_sectorGrid, "positionToSector", _housePosition] call ALIVE_fnc_sectorGrid;
+                private _sectorID = [_sector, "id"] call ALiVE_fnc_sector;
 
-                _sectorID = [([ALIVE_sectorGrid, "positionToSector", getposATL _x] call ALIVE_fnc_sectorGrid), "id"] call ALiVE_fnc_HashGet;
+                // Divide sector into x rows and columns
+                private _subSector = [_sector, 10, _housePosition] call ALiVE_fnc_positionToSubSector;
+                private _subSectorID = [_subSector, "id"] call ALiVE_fnc_sector;
+                private _subSectorDimensions = [_subSector, "dimensions"] call ALiVE_fnc_sector;
+                private _subSectorPosition = [_subSector, "position"] call ALiVE_fnc_sector;
 
-                if (!isnil "_sectorID" && {!(_sectorID in _cleared)}) then {
-                    _houses pushback _x;
-                    _x setVariable ["sectorID", _sectorID];
+                if (!isNil "_sectorID" && !isNil "_subSectorID") then {
+                    if (!(_sectorID in _cleared) && !(_subSectorID in _cleared)) then {
+                        _houses pushBack _x;
+                        _x setVariable ["sectorID", _subSectorID];
+
+                        // TODO(marcel): Move to debug function
+                        if (getMarkerType format ["ALiVE_SECTOR_%1", format["g%1", _subSectorID]] == "") then {
+                            private _m = objNull;
+
+                            _m = createMarker [format["ALiVE_SECTOR_%1", format["g%1",_subSectorID]], _subSectorPosition];
+                            _m setMarkerShape "RECTANGLE";
+                            _m setMarkerSize _subSectorDimensions;
+                            _m setMarkerAlpha 0.6;
+                            _m setMarkerBrush "Solid";
+                            _m setMarkerColor "ColorBlack";
+
+                            _m = createMarker [format["ALiVE_SECTOR_%1", format["%1",_subSectorID]], _subSectorPosition];
+                            _m setMarkerShape "ICON";
+                            _m setMarkerSize [0.5, 0.5];
+                            _m setMarkerType "mil_dot";
+                            _m setMarkerColor "ColorBlack";
+                            _m setMarkerText _subSectorID;
+                        };
+                    };
                 };
             } forEach _args;
 
