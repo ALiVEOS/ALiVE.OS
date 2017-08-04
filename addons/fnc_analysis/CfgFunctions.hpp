@@ -201,6 +201,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\fnc_analysis\fnc_militaryIntel.sqf";
                 RECOMPILE;
             };
+            class positionToSubSector {
+                description = "positionToSubSector";
+                file = "\x\alive\addons\fnc_analysis\fnc_positionToSubSector.sqf";
+                RECOMPILE;
+            };
         };
     };
 };
