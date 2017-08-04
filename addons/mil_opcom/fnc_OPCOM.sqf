@@ -2388,20 +2388,36 @@ switch(_operation) do {
         case "scanallenemies": {
 
             private _factions = [_logic,"factions",[]] call ALiVE_fnc_HashGet;
-
+            
             // private _duration = time; ["TACOM Trigger enemyscan for %1 at %2",_factions,_duration] call ALiVE_fnc_DumpR;
 
 			private _profiles = [];
 			{
 				_profiles = _profiles + ([ALiVE_ProfileHandler,"getProfilesByFaction",_x] call ALiVE_fnc_ProfileHandler);
 			} foreach _factions;
-
+            
 			{
-				private _pos = [([ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler),"position"] call ALiVE_fnc_HashGet;
-
-                if !(isnil "_pos") then {[_logic,"scanenemies",_pos] call ALiVE_fnc_OPCOM};
+				private _profile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
+				
+				if (!isnil "_profile") then {
+				
+					private _pos = [_profile,"position"] call ALiVE_fnc_HashGet;
+					
+                	if !(isnil "_pos") then {
+                		[_logic,"scanenemies",_pos] call ALiVE_fnc_OPCOM;
+                	};
+                };
 			} foreach _profiles;
-
+			
+			// Cleanup
+			private _knownEntities = [_logic,"knownentities",[]] call ALiVE_fnc_HashGet;
+			private _alive = ([AliVE_profileHandler,"profiles",[[],[]]] call Alive_fnc_hashGet) select 1;
+			
+			{if !((_x select 0) in _alive) then {_knownEntities set [_foreachIndex,"x"]}} foreach _knownEntities;
+			_knownEntities = _knownEntities - ["x"];
+			
+			_knownEntities = [_logic,"knownentities",_knownEntities] call ALiVE_fnc_HashSet;
+			
             // ["TACOM enemyscan for %1 finished in %2 seconds",_factions, time - _duration] call ALiVE_fnc_DumpR;
         };
 
