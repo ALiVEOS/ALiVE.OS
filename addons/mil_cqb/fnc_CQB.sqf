@@ -930,13 +930,40 @@ switch(_operation) do {
                 [_logic,"houses",[_house],true,true] call BIS_fnc_variableSpaceRemove;
                 [MOD(CQB),"houses",[_house],true,true] call BIS_fnc_variableSpaceRemove;
 
-                //Check if all CQB houses have been cleared in that sector!
-                if ({(_x getVariable ["sectorID","in"]) == _sectorID} count (MOD(CQB) getvariable ["houses",[]]) == 0) then {
-                    ["ALiVE MIL CQB Cleared sector %1!", _sectorID] call ALiVE_fnc_Dump;
-                    MOD(CQB) setvariable ["cleared",(MOD(CQB) getvariable ["cleared",[]]) + [_sectorID]];
+                private _parentSectorID = _sectorID select [0, 3]; // substr
+                private _parentCount = 0;
+                private _count = 0;
+
+                {
+                    private _houseSectorID = _x getVariable ["sectorID", "in"];
+                    private _houseParentSectorID = _houseSectorID select [0, 3]; // substr
+                    _count = _count + (parseNumber (_houseSectorID == _sectorID));
+                    _parentCount = _parentCount + (parseNumber (_houseParentSectorID == _parentSectorID));
+                } forEach (MOD(CQB) getvariable ["houses",[]]);
+
+                // 100x100m sub sector doesn't have any CQB houses
+                if (_count == 0) then {
+                    ["ALiVE MIL CQB Cleared sub sector %1!", _sectorID] call ALiVE_fnc_Dump;
+
+                    private _cleared = MOD(CQB) getVariable ["cleared", []];
+                    _cleared pushBack _sectorID;
 
                     deleteMarker format[GTEMPLATE, _house getVariable ["sectorID", ""]];
                     deleteMarker format[STEMPLATE, _house getVariable ["sectorID", ""]];
+
+                    // 1x1km sector doesn't have any CQB houses
+                    if (_parentCount == 0) then {
+                        ["ALiVE MIL CQB Cleared sector %1!", _parentSectorID] call ALiVE_fnc_Dump;
+                        _cleared pushBack _parentSectorID;
+
+                        // Remove sub sectors from cleared variable
+                        for "_x" from 0 to SUBGRID_SIZE do {
+                            for "_y" from 0 to SUBGRID_SIZE do {
+                                private _id = format ["%1_%2_%3", _parentSectorID, _x, _y];
+                                _cleared deleteAt (_cleared find _id);
+                            };
+                        };
+                    };
                 };
             } else {
                 ["ALiVE MIL CQB Warning: Group %1 is still alive! Removing...", _grp] call ALiVE_fnc_Dump;
