@@ -86,3 +86,7 @@ ALIVE_factionDefaultContainers = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultContainers, "Gendarmerie", ["CargoNet_01_box_F"]] call ALIVE_fnc_hashSet;
 
 #include "logistics\3CB.hpp"
+#include "logistics\RHS_AFRF.hpp"
+#include "logistics\RHS_GREF.hpp"
+#include "logistics\RHS_SAF.hpp"
+#include "logistics\RHS_USAF.hpp"
