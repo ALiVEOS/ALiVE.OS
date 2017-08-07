@@ -12,6 +12,7 @@ _spSave = _display displayctrl 195;
 
 _spSave ctrladdeventhandler ["buttonclick","
 	if (call ALiVE_fnc_isServerAdmin) then {
+		(ctrlParent (_this select 0)) closeDisplay 1;
 	    ['SERVERSAVE'] spawn alive_fnc_buttonAbort;
 	};
 "];
