@@ -6,7 +6,7 @@ SCRIPT(test_ATO_HELI_INSERT);
 //execVM "\x\alive\addons\mil_ato\tests\test_ATO_SEAD_STRIKE_CAS.sqf"
 
 #define DEFAULT_OP_HEIGHT 750
-#define DEFAULT_OP_DURATION 7
+#define DEFAULT_OP_DURATION 25
 #define DEFAULT_SPEED "NORMAL"
 #define DEFAULT_MIN_WEAP_STATE 0.5
 #define DEFAULT_MIN_FUEL_STATE 0.5
@@ -58,13 +58,14 @@ _args = [
     DEFAULT_MIN_FUEL_STATE,
     _range,       // RADIUS
     DEFAULT_OP_DURATION,
-    [targetCAS]  // TARGETS
+    ["OPF_F-vehicle_36"]                      // TARGETS
 ];
-_event = ['ATO_REQUEST', [_type, _side, _faction, "BLUE", _args],"ATO"] call ALIVE_fnc_event;
+_event = ['ATO_REQUEST', [_type, _side, _faction, "", _args],"ATO"] call ALIVE_fnc_event;
 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
-sleep 60;
+sleep 15;
 
+/*
 _type = "SEAD";
 _range = 2000;
 _args = [
@@ -75,12 +76,13 @@ _args = [
     DEFAULT_MIN_FUEL_STATE,
     _range,       // RADIUS
     DEFAULT_OP_DURATION,
-    [targetSEAD]                      // TARGETS
+    ["BLU_F-entity_74"]                      // TARGETS
 ];
-_event = ['ATO_REQUEST', [_type, _side, _faction, "BLUE", _args],"ATO"] call ALIVE_fnc_event;
+_event = ['ATO_REQUEST', [_type, _side, _faction, "", _args],"ATO"] call ALIVE_fnc_event;
 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
 sleep 60;
+*/
 
 // Request in opposite priority order to test queue ordering
 private _type = "Strike";
@@ -93,12 +95,12 @@ private _args = [
     DEFAULT_MIN_FUEL_STATE,
     _range,       // RADIUS
     DEFAULT_OP_DURATION,
-    [targetStrike]                      // TARGETS
+    ["OPF_F-vehicle_36"]                      // TARGETS
 ];
-private _event = ['ATO_REQUEST', [_type, _side, _faction, "BLUE", _args],"ATO"] call ALIVE_fnc_event;
+private _event = ['ATO_REQUEST', [_type, _side, _faction, "", _args],"OPCOM"] call ALIVE_fnc_event;
 private _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
-sleep 60;
+sleep 15;
 
 private _type = "Recce";
 private _range = 2000;
@@ -110,9 +112,9 @@ private _args = [
     DEFAULT_MIN_FUEL_STATE,
     _range,       // RADIUS
     DEFAULT_OP_DURATION,
-    [targetStrike]                      // TARGETS
+    ["OPF_F-vehicle_36"]                      // TARGETS
 ];
-private _event = ['ATO_REQUEST', [_type, _side, _faction, "BLUE", _args],"ATO"] call ALIVE_fnc_event;
+private _event = ['ATO_REQUEST', [_type, _side, _faction, "", _args],"OPCOM"] call ALIVE_fnc_event;
 private _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
 nil;
