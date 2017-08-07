@@ -1,6 +1,4 @@
 ATO TO DO
-- OPCOM ATO request logic testing
-- Register threats
 - Persistence (HQ, AA, ATO state)
 - On demand analysis
 - if CSAR task successful crew should be added back to ATO.
