@@ -28,6 +28,11 @@ Highhead
 if !(isServer) exitwith {};
 
 private _mission = format["ALiVE_%1",missionName];
+
+if (count (profileNamespace getVariable [_mission,[]]) == 0) then {
+	_mission = [_mission,"%20","-"] call CBA_fnc_replace;
+};
+
 private _missionCompositions = format["ALiVE_%1_compositions",missionName];
 private _missionDateTime = format["ALiVE_%1_force_pool",missionName];
 private _dictionary = format["dictionary_alive_%1",missionName];
