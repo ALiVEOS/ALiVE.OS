@@ -72,7 +72,8 @@ ALIVE_fnc_restore = {
     // Address each data type accordingly
     switch(_type) do {
             case "HASH": {
-                    _data = [_logic, "restore", [_value]] call ALIVE_fnc_Data;
+                    [_value, ALIVE_fnc_restore] call CBA_fnc_hashEachPair;
+                    _data = _value;
             };
             case "STRING": {
                     _data = _value;
