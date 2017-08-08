@@ -9,10 +9,10 @@ _display = _this select 0;
 
 // ALIVE ADMIN BUTTONS
 _serverSave = _display displayctrl 195;
-_serverSave ctrladdeventhandler ["buttonclick","with uinamespace do {if (serverCommandAvailable '#kick') then {['SERVERSAVE'] call alive_fnc_buttonAbort};};"];
+_serverSave ctrladdeventhandler ["buttonclick","with uinamespace do {if (serverCommandAvailable '#kick') then {(ctrlParent (_this select 0)) closeDisplay 1; ['SERVERSAVE'] call alive_fnc_buttonAbort};};"];
 
 _serverExit = _display displayctrl 196;
-_serverExit ctrladdeventhandler ["buttonclick","with uinamespace do {if (serverCommandAvailable '#kick') then {closeDialog 0; ['SERVERABORT'] call alive_fnc_buttonAbort};};"];
+_serverExit ctrladdeventhandler ["buttonclick","with uinamespace do {if (serverCommandAvailable '#kick') then {(ctrlParent (_this select 0)) closeDisplay 1; ['SERVERABORT'] call alive_fnc_buttonAbort};};"];
 
 if !(["ALiVE_sys_data"] call ALIVE_fnc_isModuleAvailable) then {
     _serverSave ctrlEnable false;
