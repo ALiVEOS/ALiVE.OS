@@ -61,9 +61,40 @@ switch(_operation) do {
             [_logic,"modules",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
             [_logic,"persistenceLoaded",false] call ALIVE_fnc_hashSet;
 
+            private _persistent = _args;
+
             // set the global ATO
             if(isNil "ALIVE_globalATO") then {
                 ALIVE_globalATO = [] call ALIVE_fnc_hashCreate;
+            };
+
+            // If any module is persistent, then load data and store
+            if (_persistent && !([_logic,"persistenceLoaded",false] call ALIVE_fnc_hashGet)) then {
+
+                // DEBUG -------------------------------------------------------------------------------------
+                if(_debug) then {
+                    ["ATO Global registry loading persistent ATOs."] call ALIVE_fnc_dump;
+                };
+                // DEBUG -------------------------------------------------------------------------------------
+
+                _data = call ALIVE_fnc_ATOLoadData;
+
+                if(typeName _data == "ARRAY") then {
+
+                    GVAR(STORE) = _data;
+
+                    // DEBUG -------------------------------------------------------------------------------------
+                    if(_debug) then {
+                        ["ATO Global registry persistent data loaded:"] call ALIVE_fnc_dump;
+                        GVAR(STORE) call ALIVE_fnc_inspectHash;
+                    };
+                    // DEBUG -------------------------------------------------------------------------------------
+
+                    [_logic,"persistenceLoaded",true] call ALIVE_fnc_hashSet;
+
+                } else {
+                    [_logic,"persistenceLoaded",false] call ALIVE_fnc_hashSet;
+                };
             };
 
         };
@@ -99,46 +130,28 @@ switch(_operation) do {
 
         [_module, "registryID", _moduleID] call ALIVE_fnc_ATO;
 
-
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
             ["ATO Global register module: %1",_moduleID] call ALIVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
-
         _persistent = [_module, "persistent"] call ALIVE_fnc_ATO;
         _assets = [_module, "assets"] call ALIVE_fnc_ATO;
 
-        [_logic,"updateGlobalATO",[_moduleID,_assets]] call MAINCLASS;
-
-        if(_persistent) then {
-            if!([_logic,"persistenceLoaded"] call ALIVE_fnc_hashGet) then {
-                [_logic,"persistenceLoaded",true] call ALIVE_fnc_hashSet;
-
+        // For persistent ATO, just overwrite ATO state
+        if(_persistent && ([_logic,"persistenceLoaded",false] call ALIVE_fnc_hashGet)) then {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ATO Global registry load persistent ATOs."] call ALIVE_fnc_dump;
+                    ["ATO Global registry adding persistent ATOs."] call ALIVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
-
-                _data = call ALIVE_fnc_ATOLoadData;
-
-                if(typeName _data == "ARRAY") then {
-
-                    ALIVE_globalATO = _data;
-
-
-                    // DEBUG -------------------------------------------------------------------------------------
-                    if(_debug) then {
-                        ["ATO Global registry persistent data loaded:"] call ALIVE_fnc_dump;
-                        ALIVE_globalATO call ALIVE_fnc_inspectHash;
-                    };
-                    // DEBUG -------------------------------------------------------------------------------------
-                };
-            };
+                // TODO only register this modules assets rather than overwriting globalATO (would allow mix of persistent/non persistence ATO modules)
+                ALIVE_globalATO = GVAR(STORE);
+        } else {
+            [_logic,"updateGlobalATO",[_moduleID,_assets]] call MAINCLASS;
         };
     };
     case "updateGlobalATO": {
