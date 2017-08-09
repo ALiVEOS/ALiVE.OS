@@ -148,7 +148,7 @@ _saveServer = {
     ["ADMIN: %1",_admin] call ALIVE_fnc_dump;
 
     //[["ALiVE_LOADINGSCREEN"],"BIS_fnc_startLoadingScreen",true,false] call BIS_fnc_MP;
-    ["ALIVE_SYS_PROFILE","ALIVE_MIL_OPCOM","ALIVE_AMB_CIV_POPULATION","ALIVE_MIL_LOGISTICS","ALIVE_SYS_AISKILL"] call ALiVE_fnc_pauseModule;
+    ["ALIVE_SYS_PROFILE","ALIVE_MIL_OPCOM","ALIVE_AMB_CIV_POPULATION","ALIVE_MIL_LOGISTICS","ALIVE_SYS_AISKILL","ALIVE_MIL_ATO"] call ALiVE_fnc_pauseModule;
 
     if!(isNil "_admin") then {
         [["open"],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
@@ -390,6 +390,29 @@ _saveServer = {
         ["ALiVE Exit - Server Save Task State"] call ALIVE_fnc_dump;
 
         _result = [] call ALiVE_fnc_taskHandlerSaveData;
+
+        if(!(isNil "_admin") && !(isNil "_result")) then {
+            _messages = _result select 1;
+            if(count _messages > 0) then {
+                reverse _messages;
+                {
+                    [["updateList",_x],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
+                } forEach _messages;
+            };
+        };
+    };
+
+    if (["ALiVE_mil_ato"] call ALiVE_fnc_isModuleAvailable) then {
+
+        private ["_results","_result","_messages"];
+
+        if!(isNil "_admin") then {
+            [["updateList","ALiVE Military Air Component Commander - Saving Data"],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
+        };
+
+        ["ALiVE Exit - Server Save ATO State"] call ALIVE_fnc_dump;
+
+        _result = [] call ALiVE_fnc_ATOSaveData;
 
         if(!(isNil "_admin") && !(isNil "_result")) then {
             _messages = _result select 1;

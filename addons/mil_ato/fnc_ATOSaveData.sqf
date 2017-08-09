@@ -27,7 +27,7 @@ ARJay
 
 private ["_result","_data","_async","_missionName","_message","_messages","_saveResult"];
 
-if !(isDedicated && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
+if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     [true, "ALiVE MIL air tasking orders - Saving data", "atoper"] call ALIVE_fnc_timer;
@@ -39,13 +39,35 @@ _missionName = format["%1_%2_ATO", ALIVE_sys_data_GROUP_ID, _missionName];
 
 _data = ALIVE_globalATO;
 
-if (count (_data select 1) == 0) exitwith {
+private _isPersistent = false;
+
+{
+    private _opcom = _x;
+    private _module = [_opcom, "module"] call CBA_fnc_hashGet;
+
+    {
+        private _object = _x;
+
+        if (_object isKindOf "alive_mil_ato") then {
+            private _persistent = [_object, "persistent"] call ALiVE_fnc_ATO;
+
+            if (_persistent) exitWith {
+                _isPersistent = true;
+            };
+        };
+    } forEach (synchronizedObjects _module);
+
+    if (_isPersistent) exitWith {};
+} forEach OPCOM_instances;
+
+if (!_isPersistent || count (_data select 1) == 0) exitwith {
     //[["ALiVE_LOADINGSCREEN"],"BIS_fnc_endLoadingScreen",true,false] call BIS_fnc_MP;
+    _result = [false,[]];
 };
 
 _result = [false,[]];
 
-_message = format["ALiVE Military air tasking orders - Preparing to save %1 ATOs..",count(_data select 1)];
+_message = format["ALiVE Military air tasking orders - Preparing to save ATO data for %1 factions ..",count(_data select 1)];
 _messages = _result select 1;
 _messages set [count _messages,_message];
 
@@ -65,7 +87,7 @@ if (isNil QGVAR(DATAHANDLER)) then {
     [GVAR(DATAHANDLER),"storeType",true] call ALIVE_fnc_Data;
 };
 
-_saveResult = [GVAR(DATAHANDLER), "write", ["mil_ato", _data, _async, _missionName]] call ALIVE_fnc_Data;
+_saveResult = [GVAR(DATAHANDLER), "bulkSave", ["mil_ato", _data, _missionName, _async]] call ALIVE_fnc_Data;
 _result set [0,_saveResult];
 
 _message = format["ALiVE Military air tasking orders - Save Result: %1",_saveResult];
