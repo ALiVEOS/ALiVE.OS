@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_MODULETEMPLATE">
+	<English>Template Module</English>
+</Key>
+<Key ID="STR_ALIVE_MODULETEMPLATE_COMMENT">
+	<English>Autostarting ALiVE Module template (uses additional module to configure parameters)</English>
+</Key>
+<Key ID="STR_ALIVE_MODULETEMPLATEPARAMS">
+	<English>Template Parameters</English>
+</Key>
+<Key ID="STR_ALIVE_MODULETEMPLATE_ERROR1">
+	<English>Only one module template allowed</English>
+</Key>
+<Key ID="STR_ALIVE_MODULETEMPLATEPARAMS_COMMENT">
+	<English>Over-ride default parameters for the Module Template</English>
+</Key>
+<Key ID="STR_ALIVE_MODULETEMPLATEPARAMS_USAGE">
+	<English>Place the module and configure the over-rides</English>
+</Key>
+<Key ID="STR_ALIVE_MODULETEMPLATE_DEBUG">
+	<English>Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_MODULETEMPLATE_DEBUG_COMMENT">
+	<English>Enable Debug</English>
+</Key>
+</Container></Package></Project>
