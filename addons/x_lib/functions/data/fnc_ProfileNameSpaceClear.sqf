@@ -37,6 +37,7 @@ private _missionCompositions = format["ALiVE_%1_compositions",missionName];
 private _missionDateTime = format["ALiVE_%1_force_pool",missionName];
 private _dictionary = format["dictionary_alive_%1",missionName];
 private _missionTasks = format["ALiVE_%1_task",missionName];
+private _ato = format["ALiVE_%1_ato",missionName];
 
 private _allMissions = profileNamespace getVariable [QMOD(SAVEDMISSIONS),[]];
 profileNamespace setVariable [QMOD(SAVEDMISSIONS), _allMissions - [_mission]];
@@ -46,5 +47,6 @@ profileNamespace setVariable [_missionDateTime, nil];
 profileNamespace setVariable [_missionTasks, nil];
 profileNamespace setVariable [_dictionary, nil];
 profileNamespace setVariable [_mission, nil];
+profileNamespace setVariable [_ato, nil];
 
 saveProfileNamespace
