@@ -1017,14 +1017,25 @@ switch (_operation) do {
                 };
              } foreach ((GVAR(STORE) select 1) - _existing);
 
-             //reset cargo
+             //reset object state or delete if destroyed
              {
                 _args = [GVAR(STORE),_x getvariable QGVAR(ID)] call ALiVE_fnc_HashGet;
 
                 if !(isnil "_args") then {
-
-                    TRACE_1("ALiVE SYS LOGISTICS Resetting cargo for object!",_x);
-                    [_x,_args] call ALiVE_fnc_setObjectState;
+                
+                	private _damage = [_args,QGVAR(DAMAGE),0] call ALiVE_fnc_HashGet;
+                
+                	if !(_damage == 1) then {
+                	
+                    	TRACE_1("ALiVE SYS LOGISTICS Resetting state for object!",_x);
+                    	[_x,_args] call ALiVE_fnc_setObjectState;
+	
+                   	} else {
+                   	
+                   		TRACE_1("ALiVE SYS LOGISTICS Deleting object which has been destroyed in a previous session!",_x);
+                   		deleteVehicle _x;
+                   		
+                   	};
                 };
              } foreach (_startObjects + _createdObjects);
 
