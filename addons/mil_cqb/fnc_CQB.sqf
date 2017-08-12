@@ -930,13 +930,13 @@ switch(_operation) do {
                 [_logic,"houses",[_house],true,true] call BIS_fnc_variableSpaceRemove;
                 [MOD(CQB),"houses",[_house],true,true] call BIS_fnc_variableSpaceRemove;
 
-                private _parentSectorID = _sectorID select [0, 3]; // substr
+                private _parentSectorID = ((_sectorID splitString "_") select [0, 2]) joinString "_";
                 private _parentCount = 0;
                 private _count = 0;
 
                 {
                     private _houseSectorID = _x getVariable ["sectorID", "in"];
-                    private _houseParentSectorID = _houseSectorID select [0, 3]; // substr
+                    private _houseParentSectorID = ((_houseSectorID splitString "_") select [0, 2]) joinString "_";
                     _count = _count + (parseNumber (_houseSectorID == _sectorID));
                     _parentCount = _parentCount + (parseNumber (_houseParentSectorID == _parentSectorID));
                 } forEach (MOD(CQB) getvariable ["houses",[]]);
