@@ -6161,7 +6161,7 @@ switch(_operation) do {
 
         private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
         _initEventHandler = _initEventHandler + "if (local (_this select 0)) then {";
-        _initEventHandler = _initEventHandler + "private _onSpawn = {_this = _this select 0;";
+        _initEventHandler = _initEventHandler + "_onSpawn = {_this = _this select 0;";
         _initEventHandler = _initEventHandler + "sleep 0.2; _backpack = gettext(configfile >> 'cfgvehicles' >> (typeof _this) >> 'backpack'); waituntil {sleep 0.2; backpack _this == _backpack};";
 
         // insignia can only be added via SQF
@@ -6240,7 +6240,7 @@ switch(_operation) do {
         _result = "";
 
         private _initEventHandler = "if (local (_this select 0)) then {";
-        _initEventHandler = _initEventHandler + "_onSpawn = {sleep 0.25; _unit = _this select 0;";
+        _initEventHandler = _initEventHandler + "_onSpawn = {sleep 0.3; _unit = _this select 0;";
 
         private _realVehicle = [_logic,"getRealUnitClass", _unitConfigName] call MAINCLASS;
         private _unitTextureArray = [_logic,"getVehicleTextureArray", [_realVehicle,_unitTexture]] call MAINCLASS;
@@ -6272,7 +6272,7 @@ switch(_operation) do {
         };
 
         _initEventHandler = _initEventHandler + "};"; // _onSpawn close
-        _initEventHandler = _initEventHandler + "[_unit] call _onSpawn;_unit addMPEventHandler ['MPRespawn', _onSpawn];";
+        _initEventHandler = _initEventHandler + "[_unit] spawn _onSpawn;_unit addMPEventHandler ['MPRespawn', _onSpawn];";
 
         _initEventHandler = _initEventHandler + "};"; // if (local (_this select 0)) close
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
