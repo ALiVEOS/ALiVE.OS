@@ -2451,9 +2451,9 @@ switch(_operation) do {
 
                 if !(isnil "_profile") then {
 
-                    _type = [_profile,"type"] call ALIVE_fnc_hashGet;
-                    _objectType = [_profile,"objectType"] call ALIVE_fnc_hashGet;
-                    _vehicleClass = [_profile,"vehicleClass"] call ALIVE_fnc_hashGet;
+                    _type = [_profile,"type",""] call ALIVE_fnc_hashGet;
+                    _objectType = [_profile,"objectType",""] call ALIVE_fnc_hashGet;
+                    _vehicleClass = [_profile,"vehicleClass",""] call ALIVE_fnc_hashGet;
 
                     switch (tolower _type) do {
 
@@ -2487,12 +2487,15 @@ switch(_operation) do {
                                     case "ship": {
                                             {if !(_x in _sea) then {_sea pushback _x}} foreach _assignments;
                                     };
+
+                                    /* // Since ATO is in place do not control air assets and pilots
                                     case "helicopter": {
                                             {if !(_x in _air) then {_air pushback _x}} foreach _assignments;
                                     };
                                     case "plane": {
                                             {if !(_x in _air) then {_air pushback _x}} foreach _assignments;
                                     };
+                                    */
                                 };
                             };
                         };
@@ -2500,8 +2503,13 @@ switch(_operation) do {
                         case ("entity") : {
 
                             _assignments = ([_profile,"vehicleAssignments",["",[],[],nil]] call ALIVE_fnc_hashGet) select 1;
+                            _unitClasses = [_profile,"unitClasses",[]] call ALIVE_fnc_hashGet;
 
-                            if (((count _assignments) == 0) && {!([_profile,"isPlayer",false] call ALIVE_fnc_hashGet)}) then {
+                            if (
+                                count _assignments == 0 && // entity is not assigned to a vehicle
+                                {!([_profile,"isPlayer",false] call ALIVE_fnc_hashGet)} && // not a player
+                                {{[toLower _x, "pilot"] call CBA_fnc_find != -1} count _unitClasses == 0} // no pilots in entity
+                               ) then {
                                 _inf pushback _x;
                             };
                         };
@@ -2518,7 +2526,16 @@ switch(_operation) do {
             [_logic,"air",_air] call ALiVE_fnc_HashSet;
             [_logic,"sea",_sea] call ALiVE_fnc_HashSet;
 
-            _count = [count _inf,count _mot,count _mech,count _arm,count _air,count _sea,count _arty,count _AAA];
+            _count = [
+                count _inf,
+                count _mot,
+                count _mech,
+                count _arm,
+                count _air,
+                count _sea,
+                count _arty,
+                count _AAA
+            ];
 
             if (isnil {[_logic,"startForceStrength"] call ALiVE_fnc_HashGet}) then {
                 [_logic,"startForceStrength",+_count] call ALiVE_fnc_HashSet
