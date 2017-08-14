@@ -2703,6 +2703,10 @@ switch(_operation) do {
             if (!(_args) && {!(typeName _hdl == "BOOL")}) then {
                     terminate _hdl;
                     [_logic,"monitor",nil] call AliVE_fnc_HashSet;
+
+                    if ([_this,"debug",false] call ALiVE_fnc_HashGet) then {
+                        ["OPCOM and TACOM monitoring ended..."] call ALIVE_fnc_dumpR;
+                    };
             } else {
                 _hdl = _logic spawn {
 
@@ -2714,16 +2718,44 @@ switch(_operation) do {
                     _FSM_OPCOM = [_this,"OPCOM_FSM"] call AliVE_fnc_HashGet;
                     _FSM_TACOM = [_this,"TACOM_FSM"] call AliVE_fnc_HashGet;
 
+                    private _OPCOM_OBJECTIVES = [_this,"objectives",[]] call AliVE_fnc_HashGet;
+
+                    if (isnil QGVAR(MONITOR_FULL)) then {GVAR(MONITOR_FULL) = false};
+
                     while {true} do {
 
                             _state = _FSM_OPCOM getfsmvariable "_OPCOM_status";
-                            _state_TACOM = _FSM_TACOM getfsmvariable "_TACOM_status";
+                            _OPCOM_busy = _FSM_OPCOM getfsmvariable "_busy";
                             _side = _FSM_OPCOM getfsmvariable "_side";
                             _cycleTime = _FSM_OPCOM getfsmvariable "_cycleTime";
                             _timestamp = floor(time - (_FSM_OPCOM getfsmvariable "_timestamp"));
+                            _OPC_DATA = _FSM_OPCOM getfsmvariable ["_OPCOM_DATA","nil"];
+                            _OPC_QUEUE = _FSM_OPCOM getfsmvariable ["_OPCOM_QUEUE",[]];
+                            _state_TACOM = _FSM_TACOM getfsmvariable "_TACOM_status";
+                            _TACOM_busy = _FSM_TACOM getfsmvariable "_busy";
 
                             //Exit if FSM has ended
                             if (isnil "_cycleTime") exitwith {["Exiting OPCOM Monitor"] call ALiVE_fnc_Dump};
+                            
+                            if (GVAR(MONITOR_FULL)) then {
+                                
+                                private _currentForceStrength = [_this,"currentForceStrength",[]] call ALiVE_fnc_HashGet;
+
+                                private _states = [] call ALiVE_fnc_HashCreate;
+
+                                {
+                                    private _objective = _x;
+                                    private _state = [_objective,"opcom_state","none"] call ALiVE_fnc_Hashget;
+
+                                    [_states,_state,([_states, _state, 0] call ALiVE_fnc_HashGet) + 1] call ALiVE_fnc_HashSet; 
+                                } foreach _OPCOM_OBJECTIVES;
+
+                                _message = parsetext format[
+                                        "OPC state: %1 (%2s %3)<br/>TAC state: %4 (%5)<br/>OPC data: %6<br/>OPC processes queued: %7<br/><br/>OPC states: %8<br/>OPC statecount: %9<br/>OPC forces: %10",
+                                        _state,_timestamp,_OPCOM_busy,_state_TACOM,_TACOM_busy,_OPC_DATA,count _OPC_QUEUE,_states select 1,_states select 2,_currentForceStrength,_maxLimit
+                                    ];
+                                hintsilent _message;
+                            };
 
                             _maxLimit = _cycleTime + ((count allunits)*2);
 
