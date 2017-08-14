@@ -2736,6 +2736,8 @@ switch(_operation) do {
 
                             //Exit if FSM has ended
                             if (isnil "_cycleTime") exitwith {["Exiting OPCOM Monitor"] call ALiVE_fnc_Dump};
+
+                            _maxLimit = _cycleTime + ((count allunits)*2);
                             
                             if (GVAR(MONITOR_FULL)) then {
                                 
@@ -2756,8 +2758,6 @@ switch(_operation) do {
                                     ];
                                 hintsilent _message;
                             };
-
-                            _maxLimit = _cycleTime + ((count allunits)*2);
 
                             if (_timestamp > _maxLimit) then {
                             //if (true) then {
