@@ -2451,9 +2451,9 @@ switch(_operation) do {
 
                 if !(isnil "_profile") then {
 
-                    _type = [_profile,"type"] call ALIVE_fnc_hashGet;
-                    _objectType = [_profile,"objectType"] call ALIVE_fnc_hashGet;
-                    _vehicleClass = [_profile,"vehicleClass"] call ALIVE_fnc_hashGet;
+                    _type = [_profile,"type",""] call ALIVE_fnc_hashGet;
+                    _objectType = [_profile,"objectType",""] call ALIVE_fnc_hashGet;
+                    _vehicleClass = [_profile,"vehicleClass",""] call ALIVE_fnc_hashGet;
 
                     switch (tolower _type) do {
 
@@ -2487,12 +2487,15 @@ switch(_operation) do {
                                     case "ship": {
                                             {if !(_x in _sea) then {_sea pushback _x}} foreach _assignments;
                                     };
+
+                                    /* // Since ATO is in place do not control air assets and pilots
                                     case "helicopter": {
                                             {if !(_x in _air) then {_air pushback _x}} foreach _assignments;
                                     };
                                     case "plane": {
                                             {if !(_x in _air) then {_air pushback _x}} foreach _assignments;
                                     };
+                                    */
                                 };
                             };
                         };
@@ -2500,8 +2503,13 @@ switch(_operation) do {
                         case ("entity") : {
 
                             _assignments = ([_profile,"vehicleAssignments",["",[],[],nil]] call ALIVE_fnc_hashGet) select 1;
+                            _unitClasses = [_profile,"unitClasses",[]] call ALIVE_fnc_hashGet;
 
-                            if (((count _assignments) == 0) && {!([_profile,"isPlayer",false] call ALIVE_fnc_hashGet)}) then {
+                            if (
+                                count _assignments == 0 && // entity is not assigned to a vehicle
+                                {!([_profile,"isPlayer",false] call ALIVE_fnc_hashGet)} && // not a player
+                                {{[toLower _x, "pilot"] call CBA_fnc_find != -1} count _unitClasses == 0} // no pilots in entity
+                               ) then {
                                 _inf pushback _x;
                             };
                         };
@@ -2518,7 +2526,16 @@ switch(_operation) do {
             [_logic,"air",_air] call ALiVE_fnc_HashSet;
             [_logic,"sea",_sea] call ALiVE_fnc_HashSet;
 
-            _count = [count _inf,count _mot,count _mech,count _arm,count _air,count _sea,count _arty,count _AAA];
+            _count = [
+                count _inf,
+                count _mot,
+                count _mech,
+                count _arm,
+                count _air,
+                count _sea,
+                count _arty,
+                count _AAA
+            ];
 
             if (isnil {[_logic,"startForceStrength"] call ALiVE_fnc_HashGet}) then {
                 [_logic,"startForceStrength",+_count] call ALiVE_fnc_HashSet
@@ -2686,6 +2703,10 @@ switch(_operation) do {
             if (!(_args) && {!(typeName _hdl == "BOOL")}) then {
                     terminate _hdl;
                     [_logic,"monitor",nil] call AliVE_fnc_HashSet;
+
+                    if ([_this,"debug",false] call ALiVE_fnc_HashGet) then {
+                        ["OPCOM and TACOM monitoring ended..."] call ALIVE_fnc_dumpR;
+                    };
             } else {
                 _hdl = _logic spawn {
 
@@ -2697,18 +2718,46 @@ switch(_operation) do {
                     _FSM_OPCOM = [_this,"OPCOM_FSM"] call AliVE_fnc_HashGet;
                     _FSM_TACOM = [_this,"TACOM_FSM"] call AliVE_fnc_HashGet;
 
+                    private _OPCOM_OBJECTIVES = [_this,"objectives",[]] call AliVE_fnc_HashGet;
+
+                    if (isnil QGVAR(MONITOR_FULL)) then {GVAR(MONITOR_FULL) = false};
+
                     while {true} do {
 
                             _state = _FSM_OPCOM getfsmvariable "_OPCOM_status";
-                            _state_TACOM = _FSM_TACOM getfsmvariable "_TACOM_status";
+                            _OPCOM_busy = _FSM_OPCOM getfsmvariable "_busy";
                             _side = _FSM_OPCOM getfsmvariable "_side";
                             _cycleTime = _FSM_OPCOM getfsmvariable "_cycleTime";
                             _timestamp = floor(time - (_FSM_OPCOM getfsmvariable "_timestamp"));
+                            _OPC_DATA = _FSM_OPCOM getfsmvariable ["_OPCOM_DATA","nil"];
+                            _OPC_QUEUE = _FSM_OPCOM getfsmvariable ["_OPCOM_QUEUE",[]];
+                            _state_TACOM = _FSM_TACOM getfsmvariable "_TACOM_status";
+                            _TACOM_busy = _FSM_TACOM getfsmvariable "_busy";
 
                             //Exit if FSM has ended
                             if (isnil "_cycleTime") exitwith {["Exiting OPCOM Monitor"] call ALiVE_fnc_Dump};
 
                             _maxLimit = _cycleTime + ((count allunits)*2);
+                            
+                            if (GVAR(MONITOR_FULL)) then {
+                                
+                                private _currentForceStrength = [_this,"currentForceStrength",[]] call ALiVE_fnc_HashGet;
+
+                                private _states = [] call ALiVE_fnc_HashCreate;
+
+                                {
+                                    private _objective = _x;
+                                    private _state = [_objective,"opcom_state","none"] call ALiVE_fnc_Hashget;
+
+                                    [_states,_state,([_states, _state, 0] call ALiVE_fnc_HashGet) + 1] call ALiVE_fnc_HashSet; 
+                                } foreach _OPCOM_OBJECTIVES;
+
+                                _message = parsetext format[
+                                        "OPC state: %1 (%2s %3)<br/>TAC state: %4 (%5)<br/>OPC data: %6<br/>OPC processes queued: %7<br/><br/>OPC states: %8<br/>OPC statecount: %9<br/>OPC forces: %10",
+                                        _state,_timestamp,_OPCOM_busy,_state_TACOM,_TACOM_busy,_OPC_DATA,count _OPC_QUEUE,_states select 1,_states select 2,_currentForceStrength,_maxLimit
+                                    ];
+                                hintsilent _message;
+                            };
 
                             if (_timestamp > _maxLimit) then {
                             //if (true) then {
