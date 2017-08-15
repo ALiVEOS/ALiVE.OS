@@ -6176,7 +6176,7 @@ switch(_operation) do {
 
         _initEventHandler = _initEventHandler + "};"; // _onSpawn close
         _initEventHandler = _initEventHandler + "_this spawn _onSpawn;";
-        _initEventHandler = _initEventHandler + "_unit addMPEventHandler ['MPRespawn', _onSpawn]";
+        _initEventHandler = _initEventHandler + "(_this select 0) addMPEventHandler ['MPRespawn', _onSpawn]";
         _initEventHandler = _initEventHandler + "};"; // if (local _unit) close
 
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;\
@@ -6272,7 +6272,8 @@ switch(_operation) do {
         };
 
         _initEventHandler = _initEventHandler + "};"; // _onSpawn close
-        _initEventHandler = _initEventHandler + "[_unit] spawn _onSpawn;_unit addMPEventHandler ['MPRespawn', _onSpawn];";
+        _initEventHandler = _initEventHandler + "_this spawn _onSpawn;";
+        _initEventHandler = _initEventHandler + "(_this select 0) addMPEventHandler ['MPRespawn', _onSpawn];";
 
         _initEventHandler = _initEventHandler + "};"; // if (local (_this select 0)) close
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
