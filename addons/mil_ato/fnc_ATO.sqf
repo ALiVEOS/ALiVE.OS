@@ -4133,18 +4133,39 @@ switch(_operation) do {
                                     if (_debug) then {
                                         ["ALIVE ATO EVENT TARGET: %1 (%2)", _eventTargets select 0, typeName (_eventTargets select 0)] call ALiVE_fnc_dump;
                                     };
-                                    _wp setWaypointType "DESTROY";
-                                    // _wp setWaypointTimeout [_eventDuration,_eventDuration,_eventDuration];
+
                                     _grp reveal (_eventTargets select 0);
-                                    _wp waypointAttachVehicle (_eventTargets select 0);
+
                                     if ( (_eventTargets select 0) iskindof "House") then {
-                                        // Attach lazer markers to first 3 targets only
+
+                                        _wp setWaypointType "SAD";
+
                                         {
                                             if (_foreachIndex < 3) then {
-                                                private _laze = "LaserTargetW" createVehicle getPos _x;
-                                                _laze attachTo [_x,[0,0,0]];
+
+                                                private _dummy = createVehicle ["Balloon_01_air_NoPop_F", getPos _x, [], 0, "CAN_COLLIDE"];
+                                                _dummy enableSimulation false;
+                                                hideobject _dummy;
+
+                                                //["ALiVE ATO Created Dummy %1!",_dummy] call ALiVE_fnc_DumpR;
+
+                                                private _lazor = "LaserTargetE";
+                                                if (side _grp getFriend WEST > 0.6) then {_lazor = "LaserTargetW"} else {_lazor = "LaserTargetE"};
+
+                                                private _laze = _lazor createVehicle getPos _x;
+                                                _laze attachTo [_dummy,[-15 + (random 30),-15 + (random 30), 1]];
+
+                                                //["ALiVE ATO Created lazer %1 and attached it to %2!",_laze,_dummy] call ALiVE_fnc_DumpR;
+
+                                                _grp reveal _laze;
+                                                (units _grp) doTarget _laze;
+
+                                                //_wp setWaypointStatements ["true", "diag_log ['GroupLeader: ', this]; diag_log ['Units: ', thislist]"];
                                             };
                                         } foreach _eventTargets;
+                                    } else {
+                                        _wp setWaypointType "DESTROY";
+                                        _wp waypointAttachVehicle (_eventTargets select 0);
                                     };
 
                                 };
