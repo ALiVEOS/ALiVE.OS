@@ -1046,6 +1046,9 @@ switch (_operation) do {
                         _object setvariable [QGVAR(ID),_x,true];
                         _object setposATL ([_args,QGVAR(POSITION)] call ALiVE_fnc_HashGet);
                         _object setVectorDirAndUp ([_args,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
+
+                        ["ALiVE SYS LOGISTICS - recreated non existing object %1 of type %2",_object,_type] call ALiVE_fnc_Dump;
+
                     } else {
                         TRACE_1("ALiVE SYS LOGISTICS Remapping existing map object!",_x);
 
@@ -1053,6 +1056,8 @@ switch (_operation) do {
 
                         [_args,QGVAR(ID),[MOD(SYS_LOGISTICS),"id",_object] call ALiVE_fnc_logistics] call ALiVE_fnc_HashSet;
                         [_args,QGVAR(POSITION),getposATL _object] call ALiVE_fnc_hashSet;
+
+                        ["ALiVE SYS LOGISTICS - remapped existing object %1 of type %2",_object,_type] call ALiVE_fnc_Dump;
                     };
 
                     _createdObjects pushback _object;
@@ -1062,6 +1067,8 @@ switch (_operation) do {
                     [_logic,"removeObject",_x] call ALiVE_fnc_logistics;
                 };
              } foreach ((GVAR(STORE) select 1) - _existing);
+
+             private _buildings = [];
 
              //reset object state or delete if destroyed
              {
@@ -1077,17 +1084,30 @@ switch (_operation) do {
                     	[_x,_args] call ALiVE_fnc_setObjectState;
 	
                    	} else {
+
                         if (_x isKindOf "House") then {
                             TRACE_1("ALiVE SYS LOGISTICS Destroying building which has been destroyed in a previous session!",_x);
 
-                            _x setDamage [1,false];
+                            ["ALiVE SYS LOGISTICS - Destroying building %1 which has been destroyed in a previous session!",_x] call ALiVE_fnc_Dump;
+
+                            // Do not setdamage or delete directly here but destroy the buildings when mission has started
+                            _buildings pushback _x;
                         } else {
                    		    TRACE_1("ALiVE SYS LOGISTICS Deleting object which has been destroyed in a previous session!",_x);
+
+                            ["ALiVE SYS LOGISTICS - Deleting object %1 which has been destroyed in a previous session!",_x] call ALiVE_fnc_Dump;
+
                    		    deleteVehicle _x;
                         };
                    	};
                 };
              } foreach (_startObjects + _createdObjects);
+
+            // Delay building destruction to start of mission or clients and dedicated server will be out of sync
+            _buildings spawn {
+                waituntil {time > 0};
+                {_x setDamage [1,false]} foreach _this;
+            };
 
             _result = GVAR(STORE);
         };
