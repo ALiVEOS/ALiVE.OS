@@ -205,6 +205,8 @@ switch (_operation) do {
             if (isServer) then {
                 // Set eventhandlers for logistics objects
                 //[_logic,"setEH",[_logic,"allObjects"] call ALiVE_fnc_logistics] call ALiVE_fnc_logistics;
+
+                [_logic,"setEH",QGVAR(BUILDINGCHANGED)] call ALiVE_fnc_logistics;
             };
 
             TRACE_1("Spawning clientside processes",hasInterface);
@@ -809,7 +811,30 @@ switch (_operation) do {
             switch (typeName _args) do {
                 case ("OBJECT") : {_objects = [_args]};
                 case ("ARRAY") : {_objects = _args};
+                case ("STRING") : {_objects = []};
                 default {_objects = _args};
+            };
+
+            if (typeName _args == "STRING") exitWith {
+                switch _args do {
+                    case (QGVAR(BUILDINGCHANGED)) : {
+
+                        _result = addMissionEventHandler ["BuildingChanged", 
+                        {
+                            params ["_from", "_to", "_isRuins"];
+
+                            if (damage _from >= 1) then {
+                                [ALiVE_SYS_LOGISTICS,"updateObject",[_from]] call ALIVE_fnc_logistics;
+                            };
+
+                            if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {
+                                ["ALiVE SYS LOGISTICS EH BUILDINGCHANGED firing"] call ALiVE_fnc_DumpR;
+                            };
+                        }];
+                    };
+                };
+
+                _result;
             };
 
             {
@@ -982,7 +1007,7 @@ switch (_operation) do {
                 if !(isnil "_args") then {
                     private ["_pos","_vDirUp","_container","_cargo"];
 
-                    TRACE_1("ALiVE SYS LOGISTICS Resetting state of existing object!",_x);
+                    TRACE_1("ALiVE SYS LOGISTICS Resetting state of editor placed object!",_x);
 
                     //apply values
                     _x setposATL ([_args,QGVAR(POSITION)] call ALiVE_fnc_HashGet);
@@ -993,25 +1018,46 @@ switch (_operation) do {
                 };
             } foreach _startObjects;
 
-            //create non existing vehicles
+            //creating and remapping non existing vehicles
             {
                 private ["_args","_object"];
 
                 _args = [GVAR(STORE),_x] call ALiVE_fnc_HashGet;
-                _type = ([_args,QGVAR(TYPE)] call ALiVE_fnc_hashGet);
+                _type = [_args,QGVAR(TYPE)] call ALiVE_fnc_hashGet;
 
                 if (({_type iskindOf _x} count _blacklist) == 0) then {
 
-                    TRACE_1("ALiVE SYS LOGISTICS Creating non existing object from store!",_x);
+                    //Get 2D position without altering original data
+                    private _position = +([_args,QGVAR(POSITION)] call ALiVE_fnc_hashGet); _position resize 2;
+                    
+                    //Filter existing objects of same type in a 1m² radius
+                    private _near = nearestObjects [_position,[_type],20];
+                    private _exists = [];
+                    {
+                        if (_position distance2D _x < 1) then {
+                            _exists pushback _x;
+                        };
+                    } foreach _near;
 
-                    _object = _type createVehicle ([_args,QGVAR(POSITION)] call ALiVE_fnc_hashGet);
-                    _object setvariable [QGVAR(ID),_x,true];
-                    _object setposATL ([_args,QGVAR(POSITION)] call ALiVE_fnc_HashGet);
-                    _object setVectorDirAndUp ([_args,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
+                    if (count _exists == 0) then {
+                        TRACE_1("ALiVE SYS LOGISTICS Creating non existing object from store!",_x);
+
+                        _object = _type createVehicle ([_args,QGVAR(POSITION)] call ALiVE_fnc_hashGet);
+                        _object setvariable [QGVAR(ID),_x,true];
+                        _object setposATL ([_args,QGVAR(POSITION)] call ALiVE_fnc_HashGet);
+                        _object setVectorDirAndUp ([_args,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
+                    } else {
+                        TRACE_1("ALiVE SYS LOGISTICS Remapping existing map object!",_x);
+
+                        _object = _exists select 0;
+
+                        [_args,QGVAR(ID),[MOD(SYS_LOGISTICS),"id",_object] call ALiVE_fnc_logistics] call ALiVE_fnc_HashSet;
+                        [_args,QGVAR(POSITION),getposATL _object] call ALiVE_fnc_hashSet;
+                    };
 
                     _createdObjects pushback _object;
                 } else {
-                    TRACE_1("ALiVE SYS LOGISTICS Removing non-existing unit from store!",_x);
+                    TRACE_1("ALiVE SYS LOGISTICS Removing blacklisted object from store!",_x);
 
                     [_logic,"removeObject",_x] call ALiVE_fnc_logistics;
                 };
@@ -1031,10 +1077,14 @@ switch (_operation) do {
                     	[_x,_args] call ALiVE_fnc_setObjectState;
 	
                    	} else {
-                   	
-                   		TRACE_1("ALiVE SYS LOGISTICS Deleting object which has been destroyed in a previous session!",_x);
-                   		deleteVehicle _x;
-                   		
+                        if (_x isKindOf "House") then {
+                            TRACE_1("ALiVE SYS LOGISTICS Destroying building which has been destroyed in a previous session!",_x);
+
+                            _x setDamage [1,false];
+                        } else {
+                   		    TRACE_1("ALiVE SYS LOGISTICS Deleting object which has been destroyed in a previous session!",_x);
+                   		    deleteVehicle _x;
+                        };
                    	};
                 };
              } foreach (_startObjects + _createdObjects);
