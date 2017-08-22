@@ -4129,23 +4129,25 @@ switch(_operation) do {
                                 case "DCA";
                                 case "SEAD";
                                 case "Strike": {
+
+                                    private _targetObject = _eventTargets select 0;
+
                                     // DESTROY
                                     if (_debug) then {
-                                        ["ALIVE ATO EVENT TARGET: %1 (%2)", _eventTargets select 0, typeName (_eventTargets select 0)] call ALiVE_fnc_dump;
+                                        ["ALIVE ATO EVENT TARGET: %1 (%2)", _targetObject, typeName _targetObject] call ALiVE_fnc_dump;
                                     };
 
-                                    _grp reveal (_eventTargets select 0);
+                                    _grp reveal _targetObject;
 
-                                    if ( (_eventTargets select 0) iskindof "House") then {
+                                    if ( _targetObject iskindof "House") then {
 
                                         _wp setWaypointType "SAD";
 
                                         {
                                             if (_foreachIndex < 3) then {
 
-                                                private _dummy = createVehicle ["Balloon_01_air_NoPop_F", getPos _x, [], 0, "CAN_COLLIDE"];
-                                                _dummy enableSimulation false;
-                                                hideobject _dummy;
+                                                private _dummyGrp = createGroup SideLogic;
+                                                private _dummy = _dummyGrp createUnit ["Logic", getPos _x, [], 0, "NONE"];
 
                                                 //["ALiVE ATO Created Dummy %1!",_dummy] call ALiVE_fnc_DumpR;
 
@@ -4160,12 +4162,30 @@ switch(_operation) do {
                                                 _grp reveal _laze;
                                                 (units _grp) doTarget _laze;
 
+                                                _targetObject setvariable [QGVAR(DUMMY),_dummy];
+                                                _targetObject setvariable [QGVAR(LAZE),_laze];
+
+                                                _targetObject addEventHandler["KILLED", {
+                                                    params ["_unit","_killer"];
+
+                                                    private _dummy = _unit getvariable [QGVAR(DUMMY),objNull];
+                                                    private _laze = _unit getvariable [QGVAR(LAZE),objNull];
+                                                    private _dummyGrp = group _dummy;
+
+                                                    //["ALiVE ATO Dummy object %1 has been destroyed by %2!",_unit,_killer] call ALiVE_fnc_DumpR;
+                                                    
+                                                    deletevehicle _laze;
+                                                    deletevehicle _dummy;
+                                                    deletevehicle _unit;
+                                                    deleteGroup _dummyGrp;
+                                                }];
+
                                                 //_wp setWaypointStatements ["true", "diag_log ['GroupLeader: ', this]; diag_log ['Units: ', thislist]"];
                                             };
                                         } foreach _eventTargets;
                                     } else {
                                         _wp setWaypointType "DESTROY";
-                                        _wp waypointAttachVehicle (_eventTargets select 0);
+                                        _wp waypointAttachVehicle _targetObject;
                                     };
 
                                 };
