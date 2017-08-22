@@ -84,10 +84,10 @@ switch(_operation) do {
                     GVAR(STORE) = _data;
 
                     // DEBUG -------------------------------------------------------------------------------------
-                    if(_debug) then {
+                    // if(_debug) then {
                         ["ATO Global registry persistent data loaded:"] call ALIVE_fnc_dump;
                         GVAR(STORE) call ALIVE_fnc_inspectHash;
-                    };
+                    // };
                     // DEBUG -------------------------------------------------------------------------------------
 
                     [_logic,"persistenceLoaded",true] call ALIVE_fnc_hashSet;

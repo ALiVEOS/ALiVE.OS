@@ -790,7 +790,7 @@ switch(_operation) do {
 
                 } else {
 
-                    if !(ALIVE_loadProfilesPersistent) then {
+                    if !(ALIVE_loadProfilesPersistent && {[ALIVE_ATOGlobalRegistry,"persistenceLoaded", false] call ALIVE_fnc_hashGet}) then {
                         // Register a crew
                         // Check to see if this is just a vehicle (likely a plane), if so create the crew in a nearby building
                         if ([_profile,"type"] call ALiVE_fnc_hashGet == "vehicle" && !(_vehicleClass iskindof "UAV")) then {
