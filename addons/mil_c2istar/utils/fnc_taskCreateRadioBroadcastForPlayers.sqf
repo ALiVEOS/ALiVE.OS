@@ -28,7 +28,7 @@ _taskDialog = _this select 1;
 _taskSide = _this select 2;
 _taskPlayers = _this select 3;
 
-["RADIO BROADCAST: %1",_this] call ALiVE_fnc_dump;
+// ["RADIO BROADCAST: %1",_this] call ALiVE_fnc_dump;
 
 if(_messageCode in (_taskDialog select 1)) then {
 
