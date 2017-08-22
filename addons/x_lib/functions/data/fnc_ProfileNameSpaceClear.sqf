@@ -30,14 +30,15 @@ if !(isServer) exitwith {};
 private _mission = format["ALiVE_%1",missionName];
 
 if (count (profileNamespace getVariable [_mission,[]]) == 0) then {
-	_mission = [_mission,"%20","-"] call CBA_fnc_replace;
+	_mission = [missionName,"%20","-"] call CBA_fnc_replace;
+	_mission = format["ALiVE_%1",_mission];
 };
 
-private _missionCompositions = format["ALiVE_%1_compositions",missionName];
-private _missionDateTime = format["ALiVE_%1_force_pool",missionName];
-private _dictionary = format["dictionary_alive_%1",missionName];
-private _missionTasks = format["ALiVE_%1_task",missionName];
-private _ato = format["ALiVE_%1_ato",missionName];
+private _missionCompositions = format["%1_compositions",_mission];
+private _missionDateTime = format["%1_force_pool",_mission];
+private _dictionary = format["dictionary_%1",_mission];
+private _missionTasks = format["%1_task",_mission];
+private _ato = format["%1_ato",_mission];
 
 private _allMissions = profileNamespace getVariable [QMOD(SAVEDMISSIONS),[]];
 profileNamespace setVariable [QMOD(SAVEDMISSIONS), _allMissions - [_mission]];
