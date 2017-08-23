@@ -192,7 +192,7 @@ switch tolower _mode do {
                     if (_capture) then {
                         sleep 1;
                         {
-                            "scr_cap" callExtension format["exportCfg\%1_CfgWeapons_%2.png",_product,_x select 0];
+                            screenshot format["exportCfg\%1_CfgWeapons_%2.png",_product,_x select 0];
                         } foreach _vehicleWeapons;
                         sleep 0.01;
                     } else {

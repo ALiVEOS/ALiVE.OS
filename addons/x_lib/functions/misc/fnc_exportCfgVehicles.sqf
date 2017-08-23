@@ -104,7 +104,7 @@ switch tolower _mode do {
         showcinemaborder false;
         setaperture 47;
         setdate [2035,5,28,9,0];
-        0 setfog 0.2;
+        0 setfog 0.0;
         if (_mode == "json") then {
             diag_log "{ 'vehicles' : [";
         };
@@ -246,7 +246,7 @@ switch tolower _mode do {
                     if (_capture) then {
                         sleep 3;
 
-                        "scr_cap" callExtension format["exportCfg\%1_CfgVehicles_%2.png",_product,_class];
+                        screenshot format["exportCfg\%1_CfgVehicles_%2.png",_product,_class];
 
                         sleep 0.01;
                     } else {
