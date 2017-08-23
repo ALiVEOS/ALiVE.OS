@@ -347,7 +347,7 @@ if (_mode == "json") then {
             if (_capture && _itemType != "UnknownWeapon") then {
                 sleep 1;
 
-                    "scr_cap" callExtension format["exportCfg\%1_CfgWeapons_%2.png",_productShort,_class];
+                    screenshot format["exportCfg\%1_CfgWeapons_%2.png",_productShort,_class];
 
                 sleep 0.01;
             } else {
