@@ -56,4 +56,10 @@
 <Key ID="STR_ALIVE_PR_RESTRICTION_WHITELIST_COMMENT">
     <Original>Only these config classes will be used (Box_IND_Ammo_F,B_Soldier_diver_base_F,B_MRAP_01_F,...)! Caution: case sensitive!</Original>
 </Key>
+<Key ID="STR_ALIVE_PR_FACTION_WHITELIST">
+    <Original>Faction Whitelist</Original>
+</Key>
+<Key ID="STR_ALIVE_PR_FACTION_WHITELIST_COMMENT">
+    <Original>If defined, only vehicles/groups from these factions (BLU_F,BLU_T_F...) can be delivered. If undefined, defaults to player faction. Caution: case sensitive!</Original>
+</Key>
 </Container></Package></Project>
