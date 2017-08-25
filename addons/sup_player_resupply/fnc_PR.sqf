@@ -48,6 +48,7 @@ Peer Reviewed:
 #define DEFAULT_STATE "INIT"
 #define DEFAULT_SIDE "WEST"
 #define DEFAULT_FACTION "BLU_F"
+#define DEFAULT_FACTIONS []
 #define DEFAULT_MARKER []
 #define DEFAULT_DESTINATION_MARKER []
 #define DEFAULT_DESTINATION []
@@ -314,6 +315,35 @@ switch(_operation) do {
         _result = [_logic,_operation,_args,DEFAULT_MARKER] call ALIVE_fnc_OOsimpleOperation;
     };
 
+    case "factions": {
+        if !(isnil "_args") then {
+            if(typeName _args == "STRING") then {
+                if !(_args == "") then {
+                    _args = [_args, " ", ""] call CBA_fnc_replace;
+                    _args = [_args, "[", ""] call CBA_fnc_replace;
+                    _args = [_args, "]", ""] call CBA_fnc_replace;
+                    _args = [_args, "'", ""] call CBA_fnc_replace;
+                    _args = [_args, """", ""] call CBA_fnc_replace;
+                    _args = [_args, ","] call CBA_fnc_split;
+
+                    if(count _args > 0) then {
+                        _logic setVariable [_operation, _args];
+                    };
+                } else {
+                    _logic setVariable [_operation, []];
+                };
+            } else {
+                if(typeName _args == "ARRAY") then {
+                    _logic setVariable [_operation, _args];
+                };
+            };
+        };
+
+        _args = _logic getVariable [_operation, DEFAULT_FACTIONS];
+
+        _result = _args;
+    };
+
     case "blacklist": {
         if !(isnil "_args") then {
             if(typeName _args == "STRING") then {
@@ -393,6 +423,9 @@ switch(_operation) do {
             call compile preprocessFileLineNumbers _file;
         };
 
+        // Set faction whitelist
+        ALIVE_PR_FACTIONLIST = [_logic, "factions", _logic getVariable ["pr_factionWhitelist", DEFAULT_FACTIONS]] call MAINCLASS;
+
         // Set final blacklist
         ALiVE_PR_BLACKLIST = ([_logic, "blacklist", _logic getVariable ["pr_restrictionBlacklist", DEFAULT_RESTRICTION_BLACKLIST]] call MAINCLASS) + ALiVE_PR_BLACKLIST + ALiVE_PLACEMENT_VEHICLEBLACKLIST;
 
@@ -434,6 +467,10 @@ switch(_operation) do {
             private ["_playerFaction"];
 
             _playerFaction = faction player;
+
+            if (count ALIVE_PR_FACTIONLIST == 0) then {
+                ALIVE_PR_FACTIONLIST pushback _playerFaction;
+            };
 
             [_logic,"faction",_playerFaction] call MAINCLASS;
 
@@ -581,26 +618,39 @@ switch(_operation) do {
                 call compile preprocessFileLineNumbers _file;
             };
 
-
-            private ["_sortedGroups","_sortedVehicles"];
+            private _sortedVehicles = [] call ALiVE_fnc_hashCreate;
+            private _sortedGroups = [] call ALiVE_fnc_hashCreate;
 
             // get sorted config data
-
             if(_restrictionType == "SIDE") then {
                 _sortedVehicles = [_sideText,ALiVE_PR_BLACKLIST,ALiVE_PR_WHITELIST] call ALIVE_fnc_sortCFGVehiclesByClass;
             }else{
-                _sortedVehicles = [_playerFaction,ALiVE_PR_BLACKLIST,ALiVE_PR_WHITELIST] call ALIVE_fnc_sortCFGVehiclesByFactionClass;
+                {
+                    private _tempVehicles = [_x,ALiVE_PR_BLACKLIST,ALiVE_PR_WHITELIST] call ALIVE_fnc_sortCFGVehiclesByFactionClass;
+                    private _mergeHash = {
+                        private _listOfVeh = [_sortedVehicles, _key, []] call ALiVE_fnc_hashGet;
+                        {
+                            private _item = _x;
+                            _listOfVeh pushbackUnique _item;
+                        } foreach _Value;
+                        [_sortedVehicles,_key,_listOfVeh] call ALIVE_fnc_hashSet;
+                    };
+                    [_tempVehicles, _mergeHash] call CBA_fnc_hashEachPair;
+                } foreach ALIVE_PR_FACTIONLIST;
             };
 
             [_logic,"sortedVehicles",_sortedVehicles] call MAINCLASS;
 
 
             // get sorted group data
-
             if(_restrictionType == "SIDE") then {
                 _sortedGroups = [_sideText] call ALIVE_fnc_sortCFGGroupsBySide;
             }else{
-                _sortedGroups = [_sideText,_playerFaction] call ALIVE_fnc_sortCFGGroupsByFaction;
+                {
+                    private _tempGroups = [_sideText, _x] call ALIVE_fnc_sortCFGGroupsByFaction;
+                    private _factionGroups = [_tempGroups, _x] call ALiVE_fnc_hashGet;
+                    [_sortedGroups, _x, _factionGroups] call ALiVE_fnc_hashSet;
+                } foreach ALIVE_PR_FACTIONLIST;
             };
 
             [_logic,"sortedGroups",_sortedGroups] call MAINCLASS;
@@ -630,7 +680,6 @@ switch(_operation) do {
                 ALIVE_PR_HQ setGroupId [_HQ];
                 ALIVE_PR_HQ setIdentity _identity;
                 ALIVE_PR_HQ kbAddtopic["ALIVE_PR_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
-
 
             };
 

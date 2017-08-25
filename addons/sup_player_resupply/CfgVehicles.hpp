@@ -16,6 +16,7 @@ class CfgVehicles {
                     {
                             displayName = "$STR_ALIVE_PR_ALLOW";
                             description = "$STR_ALIVE_PR_ALLOW_COMMENT";
+                            typeName = "STRING";
                             defaultValue = "LaserDesignator";
                     };
                     class pr_restrictionType
@@ -37,6 +38,14 @@ class CfgVehicles {
                                     };
                             };
                     };
+                    class pr_factionWhitelist
+                    {
+                                displayName = "$STR_ALIVE_PR_FACTION_WHITELIST";
+                                description = "$STR_ALIVE_PR_FACTION_WHITELIST_COMMENT";
+                                typeName = "STRING";
+                                defaultValue = "";
+                    };
+
                     class pr_restrictionDeliveryAirDrop
                     {
                             displayName = "$STR_ALIVE_PR_RESTRICTION_DELIVERY_AIRDROP";
