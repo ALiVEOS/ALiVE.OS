@@ -18,7 +18,7 @@
     <Original>Restrict to</Original>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_COMMENT">
-    <Original>Restrict the player selection to items from own side, or own faction</Original>
+    <Original>Restrict the player selection to items from own side or their own faction / whitelisted factions (defined below)</Original>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_SIDE">
     <Original>Side</Original>
