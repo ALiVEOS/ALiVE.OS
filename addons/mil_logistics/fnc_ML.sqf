@@ -4488,6 +4488,21 @@ switch(_operation) do {
                                 // Handle other Motorized groups such as Motorized_WDL
                                 if ([_itemCategory,"Motorized"] call CBa_Fnc_find != -1) then {_itemCategory = "Motorized";};
 
+                                // RHS hacky stuff :(
+                                if !(_itemCategory in ["Infantry", "Support", "SpecOps", "Naval", "Armored", "Mechanized", "Motorized", "Air"]) then {
+                                    private _side = [getNumber (configFile >> "CfgFactionClasses" >> _eventFaction >> "side")] call ALIVE_fnc_sideNumberToText;
+
+                                    if (_side == "GUER") then {
+                                        _side = "Indep";
+                                    };
+
+                                    private _configPath = configFile >> "CfgGroups" >> _side >> _eventFaction >> ((_x select 1) select 2) >> "aliveCategory";
+
+                                    if (isText _configPath) then {
+                                        _itemCategory = getText _configPath;
+                                    };
+                                };
+
                                 switch(_itemCategory) do {
                                     case "Naval":{
                                         if(_paraDrop) then {
@@ -4583,6 +4598,21 @@ switch(_operation) do {
                                 // Handle other Motorized groups such as Motorized_WDL
                                 if ([_itemCategory,"Motorized"] call CBa_Fnc_find != -1) then {_itemCategory = "Motorized";};
 
+                                // RHS hacky stuff :(
+                                if !(_itemCategory in ["Infantry", "Support", "SpecOps", "Naval", "Armored", "Mechanized", "Motorized", "Air"]) then {
+                                    private _side = [getNumber (configFile >> "CfgFactionClasses" >> _eventFaction >> "side")] call ALIVE_fnc_sideNumberToText;
+
+                                    if (_side == "GUER") then {
+                                        _side = "Indep";
+                                    };
+
+                                    private _configPath = configFile >> "CfgGroups" >> _side >> _eventFaction >> ((_x select 1) select 2) >> "aliveCategory";
+
+                                    if (isText _configPath) then {
+                                        _itemCategory = getText _configPath;
+                                    };
+                                };
+
                                 switch(_itemCategory) do {
                                     case "Naval":{
                                         if(_paraDrop) then {
@@ -4674,6 +4704,21 @@ switch(_operation) do {
 
                                 // Handle other Motorized groups such as Motorized_WDL
                                 if ([_itemCategory,"Motorized"] call CBA_fnc_find != -1) then {_itemCategory = "Motorized";};
+
+                                // RHS hacky stuff :(
+                                if !(_itemCategory in ["Infantry", "Support", "SpecOps", "Naval", "Armored", "Mechanized", "Motorized", "Air"]) then {
+                                    private _side = [getNumber (configFile >> "CfgFactionClasses" >> _eventFaction >> "side")] call ALIVE_fnc_sideNumberToText;
+
+                                    if (_side == "GUER") then {
+                                        _side = "Indep";
+                                    };
+
+                                    private _configPath = configFile >> "CfgGroups" >> _side >> _eventFaction >> ((_x select 1) select 2) >> "aliveCategory";
+
+                                    if (isText _configPath) then {
+                                        _itemCategory = getText _configPath;
+                                    };
+                                };
 
                                 switch(_itemCategory) do {
                                     case "Naval":{
@@ -6785,4 +6830,4 @@ switch(_operation) do {
 };
 
 TRACE_1("ML - output",_result);
-_result;
+_result ;
