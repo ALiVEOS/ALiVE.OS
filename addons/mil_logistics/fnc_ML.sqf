@@ -4481,6 +4481,7 @@ switch(_operation) do {
                             if!(surfaceIsWater _position) then {
 
                                 _itemCategory = _x select 1 select 2;
+                                private _groupFaction = _x select 1 select 1;
 
                                 // Handle other infantry groups such as Infantry_WDL
                                 if ([_itemCategory,"Infantry"] call CBa_Fnc_find != -1) then {_itemCategory = "Infantry";};
@@ -4490,13 +4491,13 @@ switch(_operation) do {
 
                                 // RHS hacky stuff :(
                                 if !(_itemCategory in ["Infantry", "Support", "SpecOps", "Naval", "Armored", "Mechanized", "Motorized", "Air"]) then {
-                                    private _side = [getNumber (configFile >> "CfgFactionClasses" >> _eventFaction >> "side")] call ALIVE_fnc_sideNumberToText;
+                                    private _side = [getNumber (configFile >> "CfgFactionClasses" >> _groupFaction >> "side")] call ALIVE_fnc_sideNumberToText;
 
                                     if (_side == "GUER") then {
                                         _side = "Indep";
                                     };
 
-                                    private _configPath = configFile >> "CfgGroups" >> _side >> _eventFaction >> ((_x select 1) select 2) >> "aliveCategory";
+                                    private _configPath = configFile >> "CfgGroups" >> _side >> _groupFaction >> ((_x select 1) select 2) >> "aliveCategory";
 
                                     if (isText _configPath) then {
                                         _itemCategory = getText _configPath;
@@ -4528,7 +4529,7 @@ switch(_operation) do {
                                 };
 
                                 TRACE_2(">>>>>>>>>>>>>>>>>>>>>>>>",_group, _position);
-                                _profiles = [_group, _position, random(360), false, _eventFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+                                _profiles = [_group, _position, random(360), false, _groupFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
 
                                 _profileIDs = [];
                                 {
@@ -4591,6 +4592,7 @@ switch(_operation) do {
                             if!(surfaceIsWater _position) then {
 
                                 _itemCategory = _x select 1 select 2;
+                                private _groupFaction = _x select 1 select 1;
 
                                 // Handle other infantry groups such as Infantry_WDL
                                 if ([_itemCategory,"Infantry"] call CBa_Fnc_find != -1) then {_itemCategory = "Infantry";};
@@ -4600,13 +4602,13 @@ switch(_operation) do {
 
                                 // RHS hacky stuff :(
                                 if !(_itemCategory in ["Infantry", "Support", "SpecOps", "Naval", "Armored", "Mechanized", "Motorized", "Air"]) then {
-                                    private _side = [getNumber (configFile >> "CfgFactionClasses" >> _eventFaction >> "side")] call ALIVE_fnc_sideNumberToText;
+                                    private _side = [getNumber (configFile >> "CfgFactionClasses" >> _groupFaction >> "side")] call ALIVE_fnc_sideNumberToText;
 
                                     if (_side == "GUER") then {
                                         _side = "Indep";
                                     };
 
-                                    private _configPath = configFile >> "CfgGroups" >> _side >> _eventFaction >> ((_x select 1) select 2) >> "aliveCategory";
+                                    private _configPath = configFile >> "CfgGroups" >> _side >> _groupFaction >> ((_x select 1) select 2) >> "aliveCategory";
 
                                     if (isText _configPath) then {
                                         _itemCategory = getText _configPath;
@@ -4635,7 +4637,7 @@ switch(_operation) do {
                                     };
                                 };
                                 TRACE_2(">>>>>>>>>>>>>>>>>>>>>>>>",_group, _position);
-                                _profiles = [_group, _position, random(360), false, _eventFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+                                _profiles = [_group, _position, random(360), false, _groupFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
 
                                 _profileIDs = [];
                                 {
@@ -4698,6 +4700,7 @@ switch(_operation) do {
                             if!(surfaceIsWater _position) then {
 
                                 _itemCategory = _x select 1 select 2;
+                                private _groupFaction = _x select 1 select 1;
 
                                 // Handle other infantry groups such as Infantry_WDL
                                 if ([_itemCategory,"Infantry"] call CBA_fnc_find != -1) then {_itemCategory = "Infantry";};
@@ -4707,13 +4710,13 @@ switch(_operation) do {
 
                                 // RHS hacky stuff :(
                                 if !(_itemCategory in ["Infantry", "Support", "SpecOps", "Naval", "Armored", "Mechanized", "Motorized", "Air"]) then {
-                                    private _side = [getNumber (configFile >> "CfgFactionClasses" >> _eventFaction >> "side")] call ALIVE_fnc_sideNumberToText;
+                                    private _side = [getNumber (configFile >> "CfgFactionClasses" >> _groupFaction >> "side")] call ALIVE_fnc_sideNumberToText;
 
                                     if (_side == "GUER") then {
                                         _side = "Indep";
                                     };
 
-                                    private _configPath = configFile >> "CfgGroups" >> _side >> _eventFaction >> ((_x select 1) select 2) >> "aliveCategory";
+                                    private _configPath = configFile >> "CfgGroups" >> _side >> _groupFaction >> ((_x select 1) select 2) >> "aliveCategory";
 
                                     if (isText _configPath) then {
                                         _itemCategory = getText _configPath;
@@ -4742,7 +4745,7 @@ switch(_operation) do {
                                     };
                                 };
                                 TRACE_2(">>>>>>>>>>>>>>>>>>>>>>>>",_group, _position);
-                                _profiles = [_group, _position, random(360), false, _eventFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+                                _profiles = [_group, _position, random(360), false, _groupFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
 
                                 _profileIDs = [];
                                 {
