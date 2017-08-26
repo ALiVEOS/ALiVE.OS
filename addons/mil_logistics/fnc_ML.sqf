@@ -4491,13 +4491,12 @@ switch(_operation) do {
 
                                 // RHS hacky stuff :(
                                 if !(_itemCategory in ["Infantry", "Support", "SpecOps", "Naval", "Armored", "Mechanized", "Motorized", "Air"]) then {
-                                    private _side = [getNumber (configFile >> "CfgFactionClasses" >> _groupFaction >> "side")] call ALIVE_fnc_sideNumberToText;
-
-                                    if (_side == "GUER") then {
-                                        _side = "Indep";
-                                    };
-
-                                    private _configPath = configFile >> "CfgGroups" >> _side >> _groupFaction >> ((_x select 1) select 2) >> "aliveCategory";
+                                    private _key = format ["%1_%2", _groupFaction, _group];
+                                    private _value = [ALIVE_groupConfig, _key] call CBA_fnc_hashGet;
+                                    private _side = (_value select 1) select 0;
+                                    private _faction = (_value select 1) select 1;
+                                    private _category = (_value select 1) select 2;
+                                    private _configPath = ((((configFile >> "CfgGroups") select _side) select _faction) select _category) >> "aliveCategory";
 
                                     if (isText _configPath) then {
                                         _itemCategory = getText _configPath;
@@ -4602,13 +4601,12 @@ switch(_operation) do {
 
                                 // RHS hacky stuff :(
                                 if !(_itemCategory in ["Infantry", "Support", "SpecOps", "Naval", "Armored", "Mechanized", "Motorized", "Air"]) then {
-                                    private _side = [getNumber (configFile >> "CfgFactionClasses" >> _groupFaction >> "side")] call ALIVE_fnc_sideNumberToText;
-
-                                    if (_side == "GUER") then {
-                                        _side = "Indep";
-                                    };
-
-                                    private _configPath = configFile >> "CfgGroups" >> _side >> _groupFaction >> ((_x select 1) select 2) >> "aliveCategory";
+                                    private _key = format ["%1_%2", _groupFaction, _group];
+                                    private _value = [ALIVE_groupConfig, _key] call CBA_fnc_hashGet;
+                                    private _side = (_value select 1) select 0;
+                                    private _faction = (_value select 1) select 1;
+                                    private _category = (_value select 1) select 2;
+                                    private _configPath = ((((configFile >> "CfgGroups") select _side) select _faction) select _category) >> "aliveCategory";
 
                                     if (isText _configPath) then {
                                         _itemCategory = getText _configPath;
@@ -4710,13 +4708,12 @@ switch(_operation) do {
 
                                 // RHS hacky stuff :(
                                 if !(_itemCategory in ["Infantry", "Support", "SpecOps", "Naval", "Armored", "Mechanized", "Motorized", "Air"]) then {
-                                    private _side = [getNumber (configFile >> "CfgFactionClasses" >> _groupFaction >> "side")] call ALIVE_fnc_sideNumberToText;
-
-                                    if (_side == "GUER") then {
-                                        _side = "Indep";
-                                    };
-
-                                    private _configPath = configFile >> "CfgGroups" >> _side >> _groupFaction >> ((_x select 1) select 2) >> "aliveCategory";
+                                    private _key = format ["%1_%2", _groupFaction, _group];
+                                    private _value = [ALIVE_groupConfig, _key] call CBA_fnc_hashGet;
+                                    private _side = (_value select 1) select 0;
+                                    private _faction = (_value select 1) select 1;
+                                    private _category = (_value select 1) select 2;
+                                    private _configPath = ((((configFile >> "CfgGroups") select _side) select _faction) select _category) >> "aliveCategory";
 
                                     if (isText _configPath) then {
                                         _itemCategory = getText _configPath;
