@@ -36,7 +36,7 @@ class CfgVehicles {
                     };
                     class debug : Combo
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_debug";
                             displayName = "$STR_ALIVE_C2ISTAR_DEBUG";
                             tooltip = "$STR_ALIVE_C2ISTAR_DEBUG_COMMENT";
                             defaultValue = """false""";
@@ -57,7 +57,7 @@ class CfgVehicles {
                     };
                     class c2_item : Edit
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_c2_item";
                             displayName = "$STR_ALIVE_C2ISTAR_ALLOW";
                             tooltip = "$STR_ALIVE_C2ISTAR_ALLOW_COMMENT";
                             defaultValue = """LaserDesignator""";
@@ -70,7 +70,7 @@ class CfgVehicles {
                     };
                     class persistent : Combo
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_persistent";
                             displayName = "$STR_ALIVE_C2ISTAR_PERSISTENT";
                             tooltip = "$STR_ALIVE_C2ISTAR_PERSISTENT_COMMENT";
                             defaultValue = """false""";
@@ -90,7 +90,7 @@ class CfgVehicles {
                     };
                     class autoGenerateBlufor : Combo
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_autoGenerateBlufor";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_COMMENT";
                             defaultValue = """false""";
@@ -110,21 +110,21 @@ class CfgVehicles {
                     };
                     class autoGenerateBluforFaction : Edit
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_autoGenerateBluforFaction";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_FACTION";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_FACTION_COMMENT";
                             defaultValue = """BLU_F""";
                     };
                     class autoGenerateBluforEnemyFaction : Edit
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_autoGenerateBluforEnemyFaction";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_ENEMY_FACTION";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_ENEMY_FACTION_COMMENT";
                             defaultValue = """OPF_F""";
                     };
                     class autoGenerateOpfor : Combo
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_autoGenerateOpfor";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_COMMENT";
                             defaultValue = """false""";
@@ -144,21 +144,21 @@ class CfgVehicles {
                     };
                     class autoGenerateOpforFaction : Edit
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_autoGenerateOpforEnemyFaction";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_FACTION";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_FACTION_COMMENT";
                             defaultValue = """OPF_F""";
                     };
                     class autoGenerateOpforEnemyFaction : Edit
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_autoGenerateBluforEnemyFaction";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_ENEMY_FACTION";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_ENEMY_FACTION_COMMENT";
                             defaultValue = """BLU_F""";
                     };
                     class autoGenerateIndfor : Combo
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_autoGenerateIndfor";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_COMMENT";
                             defaultValue = """false""";
@@ -178,14 +178,14 @@ class CfgVehicles {
                     };
                     class autoGenerateIndforFaction : Edit
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_autoGenerateIndforFaction";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_FACTION";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_FACTION_COMMENT";
                             defaultValue = """IND_F""";
                     };
                     class autoGenerateIndforEnemyFaction : Edit
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_autoGenerateIndforEnemyFaction";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_ENEMY_FACTION";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_ENEMY_FACTION_COMMENT";
                             defaultValue = """OPF_F""";
@@ -198,7 +198,7 @@ class CfgVehicles {
                     };
                     class gmLimit : Combo
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_gmLimit";
                             displayName = "$STR_ALIVE_C2ISTAR_GM_LIMIT";
                             tooltip = "$STR_ALIVE_C2ISTAR_GM_LIMIT_COMMENT";
                             defaultValue = """SIDE""";
@@ -225,7 +225,7 @@ class CfgVehicles {
                     };
                     class scomOpsLimit : Combo
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_scomOpsLimit";
                             displayName = "$STR_ALIVE_C2ISTAR_SCOM_OPS_LIMIT";
                             tooltip = "$STR_ALIVE_C2ISTAR_SCOM_OPS_LIMIT_COMMENT";
                             defaultValue = """SIDE""";
@@ -250,7 +250,7 @@ class CfgVehicles {
                     };
                     class scomOpsAllowSpectate : Combo
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_scomOpsAllowSpectate";
                             displayName = "$STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_SPECTATE";
                             tooltip = "$STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_SPECTATE_COMMENT";
                             defaultValue = """true""";
@@ -270,7 +270,7 @@ class CfgVehicles {
                     };
                     class scomOpsAllowInstantJoin : Combo
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_scomOpsAllowInstantJoin";
                             displayName = "$STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_JOIN";
                             tooltip = "$STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_JOIN_COMMENT";
                             defaultValue = """true""";
@@ -296,7 +296,7 @@ class CfgVehicles {
                     };
                     class scomIntelLimit : Combo
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_scomIntelLimit";
                             displayName = "$STR_ALIVE_C2ISTAR_SCOM_INTEL_LIMIT";
                             tooltip = "$STR_ALIVE_C2ISTAR_SCOM_INTEL_LIMIT_COMMENT";
                             defaultValue = """SIDE""";
@@ -328,7 +328,7 @@ class CfgVehicles {
                     };
                     class displayIntel : Combo
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_displayIntel";
                             displayName = "$STR_ALIVE_C2ISTAR_DISPLAY_INTEL";
                             tooltip = "$STR_ALIVE_C2ISTAR_DISPLAY_INTEL_COMMENT";
                             defaultValue = """false""";
@@ -348,7 +348,7 @@ class CfgVehicles {
                     };
                     class intelChance : Combo
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_intelChance";
                             displayName = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE";
                             tooltip = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_COMMENT";
                             defaultValue = """1""";
@@ -378,7 +378,7 @@ class CfgVehicles {
                     };
                     class friendlyIntel : Combo
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_friendlyIntel";
                             displayName = "$STR_ALIVE_C2ISTAR_FRIENDLY_INTEL";
                             tooltip = "$STR_ALIVE_C2ISTAR_FRIENDLY_INTEL_COMMENT";
                             defaultValue = """false""";
@@ -398,14 +398,14 @@ class CfgVehicles {
                     };
                     class friendlyIntelRadius : Edit
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_friendlyIntelRadius";
                             displayName = "$STR_ALIVE_C2ISTAR_FRIENDLY_INTEL_RADIUS";
                             tooltip = "$STR_ALIVE_C2ISTAR_FRIENDLY_INTEL_RADIUS_COMMENT";
                             defaultValue = """2000""";
                     };
                     class displayMilitarySectors : Combo
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_displayMilitarySectors";
                             displayName = "$STR_ALIVE_C2ISTAR_DISPLAY_MIL_SECTORS";
                             tooltip = "$STR_ALIVE_C2ISTAR_DISPLAY_MIL_SECTORS_COMMENT";
                             defaultValue = """false""";
@@ -425,7 +425,7 @@ class CfgVehicles {
                     };
                     class displayTraceGrid : Combo
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_displayTraceGrid";
                             displayName = "$STR_ALIVE_C2ISTAR_DISPLAY_TRACEGRID";
                             tooltip = "$STR_ALIVE_C2ISTAR_DISPLAY_TRACEGRID_COMMENT";
                             defaultValue = """None""";
@@ -470,7 +470,7 @@ class CfgVehicles {
                     };
                     class displayPlayerSectors : Combo
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_displayPlayerSectors";
                             displayName = "$STR_ALIVE_C2ISTAR_DISPLAY_PLAYER_SECTORS";
                             tooltip = "$STR_ALIVE_C2ISTAR_DISPLAY_PLAYER_SECTORS_COMMENT";
                             defaultValue = """false""";
@@ -490,7 +490,7 @@ class CfgVehicles {
                     };
                     class runEvery: Edit
                     {
-                            property = QGVAR(__LINE__);
+                            property = "ALiVE_MIL_C2ISTAR_runEvery";
                             displayName = "$STR_ALIVE_C2ISTAR_RUN_EVERY";
                             tooltip = "$STR_ALIVE_C2ISTAR_RUN_EVERY_COMMENT";
                             defaultValue = "2";
