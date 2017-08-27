@@ -109,8 +109,8 @@ class CfgVehicles {
                         };
                         class agent_debug
                         {
-                                displayName = "$STR_ALIVE_ADMINACTIONS_AGENTS_DEBUG";
-                                description = "$STR_ALIVE_ADMINACTIONS_AGENTS_DEBUG_COMMENT";
+                                displayName = "$STR_ALIVE_ADMINACTIONS_AGENT_DEBUG";
+                                description = "$STR_ALIVE_ADMINACTIONS_AGENT_DEBUG_COMMENT";
                                 class Values
                                 {
                                         class Yes
