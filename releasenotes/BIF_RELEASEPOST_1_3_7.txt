@@ -13,8 +13,8 @@ In other news, thanks to feedback from Vegas and others, we have reviewed the wa
 
 Finally, a couple of important house keeping notes for mission editors and server admins
 1. Since APEX assets are now available to all, the APEX compositions have been merged into the main branch and are no longer in optional folder
-2. We have started updating our modules to support the 3DEN configuration (Player Options, ALiVE Required).  In some cases this may cause issues on legacy missions.  If so simply delete and replace the modules.
-3. Note that logistics replacements for destroyed aircraft is coming in the next release.  For now, when all aircraft are lost or destroyed MACC will exit.
+2. We have started updating our modules to support the 3DEN configuration (Player Options, ALiVE Required, C2ISTAR).  In case of issues, simply delete and replace the modules and check the modules settings.
+3. Logistics replacements for destroyed aircraft is coming in the next release.  For now, when all aircraft are lost or destroyed MACC will exit.
 
 [b]ALiVE War Room[/b]
 The ALiVE War Room is seeing more activity than ever and the introduction of the new AAR tool provided by Titan has seen a big increase in the amount of data we handle each week.  The War Room service is completely free to end users and the server costs are paid for out of donations.  If you enjoy using the War Room, please consider supporting our server costs with a small donation to keep it ALiVE!
@@ -23,9 +23,11 @@ The ALiVE War Room is seeing more activity than ever and the introduction of the
 
 [b]Release Highlights[/b]
 Military Air Component Commander Air Tasking Orders
-Map Index - Prei Khmaoch Luong; Xcam Taunus; Saint Kapaulio (fix); Saralite (fix)
-Enhanced Mod Compatability - 3CB and RHS logistics units added to static data
+Map Index - Prei Khmaoch Luong; Xcam Taunus; Saint Kapaulio (fix); Saralite (fix); I44 Merderet/V2/Winter; I44 Battle of Bulge; I44 Sark; 
+Enhanced Mod Compatability - 3CB and RHS logistics unit mapping added to static data
 Persistant Start State - Battle Casualty Replacement requests are now based original force size and not just the force size at the last mission start.
+Persistent Building State - destroyed buildings are now persisted
+Player Logistics - add ability to whitelist logistics supplies by faction
 	
 See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
     
