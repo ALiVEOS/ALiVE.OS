@@ -1,7 +1,7 @@
 /*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, opcom">*/
 /*%FSM<HEAD>*/
 /*
-item0[] = {"INIT",0,250,-717.630066,-1005.371277,-627.630066,-955.371338,0.000000,"INIT"};
+item0[] = {"INIT",0,4346,-717.630066,-1005.371277,-627.630066,-955.371338,0.000000,"INIT"};
 item1[] = {"INIT_COMPLETE",4,218,-720.395935,-937.944458,-630.395935,-887.944458,0.000000,"INIT" \n "COMPLETE"};
 item2[] = {"ANALYZE",2,250,-915.210754,-306.293610,-417.475098,-258.428986,0.000000,"ANALYZE"};
 item3[] = {"OPCOM_FEEDER",4,218,-711.187256,-222.682648,-621.187195,-172.682648,1.000000,"OPCOM" \n "FEEDER"};
@@ -10,7 +10,7 @@ item5[] = {"",7,210,-341.155090,36.380066,-333.155060,44.380096,0.000000,""};
 item6[] = {"",7,210,-347.610199,-817.749023,-339.610168,-809.749023,0.000000,""};
 item7[] = {"DEFEND_condition",4,218,-787.492737,-203.595917,-697.492737,-153.595917,4.000000,"DEFEND" \n "conditions"};
 item8[] = {"RESERVE_conditio",4,218,-642.570801,-201.616302,-552.570740,-151.616302,3.000000,"RESERVE" \n "conditions"};
-item9[] = {"OPCOM_RECEIVER",4,4314,-717.074463,-838.579346,-627.074646,-788.579346,1.000000,"OPCOM" \n "RECEIVER"};
+item9[] = {"OPCOM_RECEIVER",4,218,-717.074463,-838.579346,-627.074646,-788.579346,1.000000,"OPCOM" \n "RECEIVER"};
 item10[] = {"CUSTOM_condition",4,218,-502.155029,-201.889679,-412.155121,-151.889679,2.000000,"CUSTOM" \n "conditions"};
 item11[] = {"ORDER_TACOM",2,250,-924.860840,-94.510040,-425.593536,-50.306946,0.000000,"ORDER" \n "TACOM"};
 item12[] = {"TACOM_CONFIRM",4,218,-651.682068,14.823029,-561.682068,64.823029,0.000000,"TACOM" \n "CONFIRM"};
@@ -110,8 +110,8 @@ link51[] = {37,38};
 link52[] = {38,6};
 link53[] = {39,40};
 link54[] = {40,6};
-globals[] = {0.000000,0,0,0,0,640,480,1,94,6316128,1,-998.704529,-433.507751,-219.055542,-974.044739,676,903,1};
-window[] = {2,-1,-1,-1,-1,1290,198,2130,198,3,693};
+globals[] = {0.000000,0,0,0,0,640,480,1,94,6316128,1,-933.076355,-367.879578,-372.896179,-1127.885376,676,903,1};
+window[] = {2,-1,-1,-1,-1,1246,154,2086,154,3,693};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -1050,7 +1050,7 @@ class FSM
                          "        _infantry = if ((_reinforce select 0) > 8) then {8} else {_reinforce select 0};" \n
                          "        _motorized = if ((_reinforce select 1) > 5) then {5} else {_reinforce select 1};" \n
                          "        _mechanized = if ((_reinforce select 2) > 10) then {10} else {_reinforce select 2};" \n
-                         "        _armoured = if ((_reinforce select 3) > 10) then {10} else {_reinforce select 3};" \n
+                         "        _armoured = if (((_reinforce select 3) + (_reinforce select 6) + (_reinforce select 7)) > 10) then {10} else {((_reinforce select 3) + (_reinforce select 6) + (_reinforce select 7))};" \n
                          "        _air = if ((_reinforce select 4) > 5) then {5} else {_reinforce select 4};" \n
                          "        " \n
                          "        _position = [_base,""center""] call ALiVE_fnc_HashGet;" \n
@@ -1068,7 +1068,7 @@ class FSM
                          "                _mechanized,	//mechanized" \n
                          "                _armoured,		//armoured" \n
                          "                0,				//planes" \n
-                         "                0					//helicopters" \n
+                         "                0				//helicopters" \n
                          "            ];" \n
                          "" \n
                          "            _event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,""STANDARD""],""OPCOM""] call ALIVE_fnc_event;" \n
@@ -1102,7 +1102,7 @@ class FSM
                          "                if ((_reinforce select 0) > 10) then {10} else {_reinforce select 0}," \n
                          "                if ((_reinforce select 1) > 10) then {10} else {_reinforce select 1}," \n
                          "                if ((_reinforce select 2) > 10) then {10} else {_reinforce select 2}," \n
-                         "                if ((_reinforce select 3) > 10) then {10} else {_reinforce select 3}," \n
+                         "                if (((_reinforce select 3) + (_reinforce select 6) + (_reinforce select 7)) > 10) then {10} else {((_reinforce select 3) + (_reinforce select 6) + (_reinforce select 7))}," \n
                          "                if ((_reinforce select 4) > 10) then {10} else {_reinforce select 4}," \n
                          "                if ((_reinforce select 5) > 10) then {10} else {_reinforce select 5}" \n
                          "            ];" \n
@@ -1130,6 +1130,15 @@ class FSM
                          "            " \n
                          "                [""ALiVE OPCOM - Requesting reinforcments for side %3 %1x %2 units!"",_x,_typeReinf,_side] call ALiVE_fnc_DumpR;" \n
                          "            } foreach _reinforce;" \n
+                         "" \n
+                         "				[""ALiVE OPCOM - FORCEMAKEUP DATA %1 | %2 | %3 | %4""," \n
+                         "                    _infantry," \n
+                         "                    _motorized," \n
+                         "                    _mechanized," \n
+                         "                    _armoured," \n
+                         "                    0," \n
+                         "                    0" \n
+                         "                ] call ALiVE_fnc_DumpR;" \n
                          "        };" \n
                          "    };" \n
                          "};" \n
