@@ -2762,167 +2762,6 @@ switch(_operation) do {
 
             };
 
-            case "heliTransportUnloadWait": {
-
-                // wait until all vehicles
-                // have unloaded their cargo
-
-                private ["_waitTotalIterations","_waitIterations","_infantryProfile","_active","_units",
-                "_unloadedUnits","_loadedUnits","_waypointsCompleted","_waypointsNotCompleted","_profile","_position","_distance","_count"];
-
-                _count = [_logic, "checkEvent", _event] call MAINCLASS;
-                if(_count == 0) exitWith {
-                    // set state to event complete
-                    [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
-                    [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
-                };
-
-                // mechanism for aborting this state
-                // once set time limit has passed
-                // if all units haven't reached objective
-                _waitTotalIterations = 30;
-                _waitIterations = 0;
-                if(count _eventStateData > 0) then {
-                    _waitIterations = _eventStateData select 0;
-                };
-
-
-                // Check to see if Infantry profiles are unloaded
-                _infantryProfiles = [_eventCargoProfiles, 'infantry'] call ALIVE_fnc_hashGet;
-                _unloadedUnits = [];
-                _loadedUnits = [];
-                _units = [];
-
-                {
-
-                    _infantryProfile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
-                    if!(isNil "_infantryProfile") then {
-
-                        _active = _infantryProfile select 2 select 1;
-
-                        // only need to worry about this is there are
-                        // players nearby
-
-                        if(_active) then {
-
-                            _units = _infantryProfile select 2 select 21;
-
-                            // catagorise units into loaded and not
-                            // loaded arrays
-                            {
-                                if(alive _x) then {
-                                    if(vehicle _x == _x) then {
-                                        _unloadedUnits pushback _x;
-                                    }else{
-                                        _loadedUnits pushback _x;
-                                    };
-                                };
-                            } forEach _units;
-
-                        }else{
-
-                            // profiles are not active, can skip this wait
-                            // continue on to travel
-
-                            _unloadedUnits = [];
-
-                        };
-
-                    };
-
-                } forEach _infantryProfiles;
-
-
-                // Check to see if payload profiles are ready to return
-                // Slingloaders can return once done.
-                // If vehicle no longer has cargo it can return
-                private ["_payloadUnloaded","_payloadProfiles"];
-                _payloadUnloaded = true;
-
-                _payloadProfiles = if (_playerRequested) then {_playerRequestProfiles select 2 select 7};
-
-                if (!isnil "_payloadProfiles") then {
-                    _payloadProfiles append ([_eventCargoProfiles, "payloadGroups"] call ALIVE_fnc_hashGet);
-                } else {
-                    _payloadProfiles = [_eventCargoProfiles, "payloadGroups"] call ALIVE_fnc_hashGet;
-                };
-
-                if (!isNil "_payloadProfiles") then {
-
-                    {
-                        private ["_vehicleProfile"];
-
-                        if (count _x > 1) then {
-
-                            _vehicleProfile = [ALIVE_profileHandler, "getProfile", _x select 1] call ALIVE_fnc_profileHandler;
-
-                            if!(isNil "_vehicleProfile") then {
-
-                                private ["_active","_slingLoading","_slingload","_noCargo","_vehicle"];
-
-                                _vehicleProfile call ALIVE_fnc_inspectHash;
-
-                                _active = _vehicleProfile select 2 select 1;
-
-                                _slingLoading = [_vehicleProfile,"slingloading",false] call ALiVE_fnc_hashGet;
-
-                                _vehicle = _vehicleProfile select 2 select 10;
-                                _noCargo = count (_vehicle getvariable ["ALiVE_SYS_LOGISTICS_CARGO",[]]) == 0;
-
-                                // If payload vehicle is not slingloading and its cargo is empty - its done.
-                                TRACE_2("PR UNLOADED", !_slingLoading, _noCargo);
-                                if( _active && _noCargo && !_slingloading ) then {
-
-                                    _payloadUnloaded = true;
-
-                                } else {
-
-                                    _payloadUnloaded = false;
-
-                                };
-
-                                // If we've run out of time, dump cargo
-                                if(_waitIterations == _waitTotalIterations) then {
-                                    if (_active && !_noCargo) then {
-                                        [MOD(SYS_LOGISTICS),"unloadObjects",[_vehicle,_vehicle]] call ALiVE_fnc_logistics;
-                                    };
-                                };
-                            };
-                        };
-                    } foreach _payloadProfiles;
-                };
-
-                TRACE_2("PR UNLOADED", _loadedUnits, _payloadUnloaded);
-
-                // If all inf units are unloaded and all payloads are unloaded, then complete
-                if(count _loadedUnits == 0 && _payloadUnloaded) then {
-
-                    // all unloaded
-                    // continue on to travel
-                    _eventStateData set [0, 0];
-                    [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
-
-                    [_event, "state", "heliTransportComplete"] call ALIVE_fnc_hashSet;
-                    [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
-
-                };
-
-                _waitIterations = _waitIterations + 1;
-                _eventStateData set [0, _waitIterations];
-                [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
-
-                if(_waitIterations > _waitTotalIterations) then {
-
-                    _eventStateData set [0, 0];
-                    [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
-
-                    [_event, "state", "heliTransportComplete"] call ALIVE_fnc_hashSet;
-                    [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
-
-                };
-
-            };
-
             case "heliTransportReturn": {
 
                 private ["_position","_profileWaypoint","_profile","_reinforcementPosition","_count"];
@@ -3494,16 +3333,13 @@ switch(_operation) do {
 
             };
 
-            case "transportUnloadWait": {
-
+            case "transportUnloadWait";
+            case "heliTransportUnloadWait": {
                 // wait until all vehicles
                 // have unloaded their cargo
+                private _count = [_logic, "checkEvent", _event] call MAINCLASS;
 
-                private ["_waitTotalIterations","_waitIterations","_infantryProfile","_active","_units",
-                "_unloadedUnits","_loadedUnits","_waypointsCompleted","_waypointsNotCompleted","_profile","_position","_distance","_count"];
-
-                _count = [_logic, "checkEvent", _event] call MAINCLASS;
-                if(_count == 0) exitWith {
+                if (_count == 0) exitWith {
                     // set state to event complete
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
@@ -3512,99 +3348,79 @@ switch(_operation) do {
                 // mechanism for aborting this state
                 // once set time limit has passed
                 // if all units haven't reached objective
-                _waitTotalIterations = 40;
-                _waitIterations = 0;
-                if(count _eventStateData > 0) then {
+                private _waitTotalIterations = 40;
+                private _waitIterations = 0;
+
+                if (count _eventStateData > 0) then {
                     _waitIterations = _eventStateData select 0;
                 };
 
-                _infantryProfiles = [_eventCargoProfiles, 'infantry'] call ALIVE_fnc_hashGet;
-                _unloadedUnits = [];
-                _loadedUnits = [];
+                private _infantryProfiles = [_eventCargoProfiles, "infantry"] call ALIVE_fnc_hashGet;
+                private _loadedUnits = 0;
 
                 {
+                    private _infantryProfile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
 
-                    _infantryProfile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
-                    if!(isNil "_infantryProfile") then {
+                    if !(isNil "_infantryProfile") then {
+                        private _active = _infantryProfile select 2 select 1;
 
-                        _active = _infantryProfile select 2 select 1;
+                        // only need to worry about this if there are players nearby
+                        if (_active) then {
+                            private _units = _infantryProfile select 2 select 21;
 
-                        // only need to worry about this is there are
-                        // players nearby
-
-                        if(_active) then {
-
-                            _units = _infantryProfile select 2 select 21;
-
-                            // catagorise units into loaded and not
-                            // loaded arrays
                             {
-                                if(alive _x) then {
-                                    if(vehicle _x == _x) then {
-                                        _unloadedUnits pushback _x;
-                                    }else{
-                                        _loadedUnits pushback _x;
-                                    };
+                                if (alive _x && vehicle _x != _x) then {
+                                    _loadedUnits = _loadedUnits + 1;
                                 };
                             } forEach _units;
-
-                        }else{
-
+                        } else {
                             // profiles are not active, can skip this wait
-
+                            /* TODO(marcel): Why?! Seems kinda pointless
                             [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                             [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
-
+                            */
                         };
-
                     };
-
                 } forEach _infantryProfiles;
 
                 // Check to see if payload profiles are ready to return
                 // If vehicle no longer has cargo it can return
-                private ["_payloadUnloaded","_payloadProfiles"];
-                _payloadUnloaded = true;
-                _payloadProfiles = if (_playerRequested) then {_playerRequestProfiles select 2 select 7};
+                private _payloadUnloaded = true;
+                private _payloadProfiles = [];
 
-                if (!isnil "_payloadProfiles") then {
-                    _payloadProfiles append ([_eventCargoProfiles, "payloadGroups"] call ALIVE_fnc_hashGet);
-                } else {
-                    _payloadProfiles = [_eventCargoProfiles, "payloadGroups"] call ALIVE_fnc_hashGet;
+                if (_playerRequested) then {
+                    _payloadProfiles append ((_playerRequestProfiles select 2) select 7)
                 };
+
+                _payloadProfiles append ([_eventCargoProfiles, "payloadGroups"] call ALIVE_fnc_hashGet);
+
                 if (!isNil "_payloadProfiles") then {
                     {
-                        private ["_vehicleProfile"];
+                        if (count _x > 1) then {
+                            private _vehicleProfile = [ALIVE_profileHandler, "getProfile", _x select 1] call ALIVE_fnc_profileHandler;
 
-                        _vehicleProfile = [ALIVE_profileHandler, "getProfile", _x select 1] call ALIVE_fnc_profileHandler;
+                            if !(isNil "_vehicleProfile") then {
+                                _vehicleProfile call ALIVE_fnc_inspectHash; // TODO(marcel): Wrap in debug
 
-                        if!(isNil "_vehicleProfile") then {
+                                private _active = (_vehicleProfile select 2) select 1;
+                                private _vehicle = (_vehicleProfile select 2) select 10;
+                                private _noCargo = count (_vehicle getvariable ["ALiVE_SYS_LOGISTICS_CARGO", []]) == 0;
+                                private _slingLoading = [_vehicleProfile, "slingloading", false] call ALiVE_fnc_hashGet;
 
-                            private ["_active","_noCargo","_vehicle"];
+                                // If payload vehicle is not slingloading and its cargo is empty - its done.
+                                TRACE_1("PR UNLOADED", !_slingLoading, _noCargo);
 
-                            _vehicleProfile call ALIVE_fnc_inspectHash;
+                                if (_active && _noCargo && !_slingLoading) then {
+                                    _payloadUnloaded = true;
+                                } else {
+                                    _payloadUnloaded = false;
+                                };
 
-                            _active = _vehicleProfile select 2 select 1;
-
-                            _vehicle = _vehicleProfile select 2 select 10;
-                            _noCargo = count (_vehicle getvariable ["ALiVE_SYS_LOGISTICS_CARGO",[]]) == 0;
-
-                            // If payload vehicle is not slingloading and its cargo is empty - its done.
-                            TRACE_1("PR UNLOADED", _noCargo);
-                            if( _active && _noCargo) then {
-
-                                _payloadUnloaded = true;
-
-                            } else {
-
-                                _payloadUnloaded = false;
-
-                            };
-
-                            // If we've run out of time, dump cargo
-                            if(_waitIterations == _waitTotalIterations) then {
-                                if (_active && !_noCargo) then {
-                                    [MOD(SYS_LOGISTICS),"unloadObjects",[_vehicle,_vehicle]] call ALiVE_fnc_logistics;
+                                // If we've run out of time, dump cargo
+                                if (_waitIterations == _waitTotalIterations) then {
+                                    if (_active && !_noCargo) then {
+                                        [MOD(SYS_LOGISTICS), "unloadObjects", [_vehicle, _vehicle]] call ALiVE_fnc_logistics;
+                                    };
                                 };
                             };
                         };
@@ -3614,32 +3430,24 @@ switch(_operation) do {
                 TRACE_2("PR UNLOADED", _loadedUnits, _payloadUnloaded);
 
                 // If all inf units are unloaded and all payloads are unloaded, then complete
-                if(count _loadedUnits == 0 && _payloadUnloaded) then {
-
+                if ((_loadedUnits == 0 && _payloadUnloaded) || _waitIterations > _waitTotalIterations) then {
                     // all unloaded
                     // continue on to travel
                     _eventStateData set [0, 0];
                     [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
 
-                    [_event, "state", "transportComplete"] call ALIVE_fnc_hashSet;
-                    [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
+                    if (_event == "heliTransportUnloadWait") then {
+                        [_event, "state", "heliTransportComplete"] call ALIVE_fnc_hashSet;
+                    } else {
+                        [_event, "state", "transportComplete"] call ALIVE_fnc_hashSet;
+                    };
 
+                    [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
 
                 _waitIterations = _waitIterations + 1;
                 _eventStateData set [0, _waitIterations];
                 [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
-
-                if(_waitIterations > _waitTotalIterations) then {
-
-                    _eventStateData set [0, 0];
-                    [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
-
-                    [_event, "state", "transportComplete"] call ALIVE_fnc_hashSet;
-                    [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
-
-                };
-
             };
 
             case "transportComplete";
