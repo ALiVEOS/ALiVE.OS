@@ -24,7 +24,7 @@ The ALiVE War Room is seeing more activity than ever and the introduction of the
 [b]Release Highlights[/b]
 Military Air Component Commander Air Tasking Orders
 Map Indexes - Prei Khmaoch Luong; Xcam Taunus; Saint Kapaulio (fix); Saralite (fix); I44 Merderet/V2/Winter; I44 Battle of Bulge; I44 Sark; 
-Enhanced Mod Compatability - 3CB and RHS logistics unit mapping added to static data
+Enhanced Mod Compatability - IFA3, 3CB and RHS logistics unit mapping added to static data
 Persistant Start State - Battle Casualty Replacement requests are now based original force size and not just the force size at the last mission start.
 Persistent Building State - destroyed buildings are now persisted
 Player Logistics - add ability to whitelist logistics supplies by faction
