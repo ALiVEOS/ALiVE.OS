@@ -1856,6 +1856,8 @@ switch(_operation) do {
                             if (_slingAvailable) exitWith {};
                         } foreach  _airTrans;
 
+                        // TBD: WHAT THE FUCK IS THIS PILE OF SHIT BELOW?! THIS NEEDS TO BE REDONE PROPERLY!
+
                         // If OPCOM request airdrop of tanks, change to convoy
                         if (_eventType == "AIRDROP" && !_noHeavy) then {_eventType = "STANDARD";};
 
@@ -1867,6 +1869,9 @@ switch(_operation) do {
 
                         // If sling is not available then its an AIRDROP
                         If (_eventType == "HELI_INSERT" && _eventForceMotorised > 0 && !_slingAvailable && _noHeavy) then {_eventType = "AIRDROP";};
+
+                        // If still Heli Insert is chosen after all and armoured vehicles are requested override to convoy
+                        If (_eventType == "HELI_INSERT" && {!_noHeavy}) then {_eventType = "STANDARD"};
 
                         if (_water && !_noHeavy) then {_eventType = "STANDARD"}; // COULD DELIVER TO NEAREST BEACH?
 
