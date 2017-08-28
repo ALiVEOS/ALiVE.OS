@@ -3436,7 +3436,7 @@ switch(_operation) do {
                     _eventStateData set [0, 0];
                     [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
 
-                    if (_event == "heliTransportUnloadWait") then {
+                    if (_eventState == "heliTransportUnloadWait") then {
                         [_event, "state", "heliTransportComplete"] call ALIVE_fnc_hashSet;
                     } else {
                         [_event, "state", "transportComplete"] call ALIVE_fnc_hashSet;
