@@ -600,9 +600,11 @@ switch(_operation) do {
                     [format[GTEMPLATE, _subSectorID], _subSectorPosition, "RECTANGLE", _subSectorDimensions, "ColorBlack", _subSectorID, "", "Solid", 0, 0.6] call ALIVE_fnc_createMarkerGlobal;
                 };
 
+                /*
                 if (getMarkerType (format [STEMPLATE, _subSectorID]) == "") then {
                     [format[STEMPLATE, _subSectorID], _subSectorPosition, "ICON", [0.5, 0.5], "ColorBlack", _subSectorID, "mil_dot", "FDiagonal", 0, 1] call ALIVE_fnc_createMarkerGlobal;
                 };
+                */
             },_houses + _housesPending,10] call ALiVE_fnc_arrayFrameSplitter;
         } else {
             [{
