@@ -1131,14 +1131,14 @@ switch(_operation) do {
 	                                                if (count _buildings > 0) then {
 	                                                    _type = selectRandom ["HQ","depot","factory"];
 	                                                    _target = selectRandom _buildings;
-	                                                } else {
-	                                                    if (count _roads > 0) then {
-	                                                        _type = selectRandom ["ied","roadblocks"];
+	                                                };
+	                                                
+	                                                if (count _roads > 0 && {(random 1) < 0.45 || count _buildings == 0}) then {
+	                                                        _type = ["ied","roadblocks"] selectRandomWeighted [0.7,0.3];
 	                                                        if !(_roadblocks) then {
 	                                                            _type = "ied";
 	                                                        };
 	                                                        _target = selectRandom _roads;
-	                                                    };
 	                                                };
 
 	                                                _target = [[],"convertObject",_target] call ALiVE_fnc_OPCOM;
