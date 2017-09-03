@@ -14,13 +14,13 @@ _id = _this select 2;
 
 _IEDCharge = _IED getVariable ["charge", nil];
 
-//Display timer for IED disarm
+//Display timer for IED disarm?
 hint "Disarming IED…";
 // timer graphic hint?
 // sleep 120;
 
 // Get disarming unit to do something (choose red wire or blue wire). Chance that device is new and therefore requires disarmer to guess how to disarm
-if ((random 1) > 0.85) then {
+if ((random 1) > 0.90) then {
 
     if ((random 1) > 0.5) then {
         _wire = "blue";
@@ -59,10 +59,14 @@ if ((random 1) > 0.85) then {
             deleteVehicle _x;
         } foreach _trgr;
 
+        // Update Sector Hostility
+    	[[position _IED, [side player], +10] ,"ALiVE_fnc_updateSectorHostility", false, false, true] call BIS_fnc_MP;  
+
         [[ADDON, "removeIED", _IED] ,"ALiVE_fnc_IED", false, false, true] call BIS_fnc_MP;
 
         deleteVehicle _IEDCharge;
         deleteVehicle _IED;
+        
     } else {
 
         // Remove triggers
@@ -76,9 +80,13 @@ if ((random 1) > 0.85) then {
             _IEDCharge removeEventHandler ["handleDamage", _IED getVariable "ehID"];
         };
 
+        // Update Sector Hostility
+    	[[position _IED, [side player], -20] ,"ALiVE_fnc_updateSectorHostility", false, false, true] call BIS_fnc_MP; 
+
         [[ADDON, "removeIED", _IED] ,"ALiVE_fnc_IED", false, false, true] call BIS_fnc_MP;
 
         hint "You guessed correct! IED is disarmed";
+        
     };
 
 } else {
@@ -99,6 +107,9 @@ if ((random 1) > 0.85) then {
         _IEDCharge removeEventHandler ["handleDamage", _IED getVariable "ehID"];
     };
 
+    // Update Sector Hostility
+    [[position _IED, [side player], -20] ,"ALiVE_fnc_updateSectorHostility", false, false, true] call BIS_fnc_MP; 
+    	
     [[ADDON, "removeIED", _IED] ,"ALiVE_fnc_IED", false, false, true] call BIS_fnc_MP;
 
      hint "IED is disarmed";
