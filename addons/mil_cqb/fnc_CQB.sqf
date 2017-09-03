@@ -322,6 +322,7 @@ switch(_operation) do {
                 _logic setVariable ["debugColor",_debugColor,true];
                 _logic setVariable ["debugPrefix",_type,true];
                 _logic setVariable ["staticWeaponsIntensity",_staticWeaponsIntensity,true];
+                _logic setVariable ["cleared", []];
                 [_logic, "houses",_result] call ALiVE_fnc_CQB;
                 [_logic, "factions",_factions] call ALiVE_fnc_CQB;
                 [_logic, "spawnDistance",_spawn] call ALiVE_fnc_CQB;
@@ -686,7 +687,7 @@ switch(_operation) do {
             [_logic, "factions", [_args, "factions"] call ALiVE_fnc_hashGet] call ALiVE_fnc_CQB;
 
             //Restore global cleared sectors
-            MOD(CQB) setvariable ["cleared",[_args,"cleared"] call ALiVE_fnc_hashGet,true];
+            MOD(CQB) setvariable ["cleared", [_args, "cleared", []] call ALiVE_fnc_hashGet,true];
 
             //Restore data Identifyer
             _logic setvariable ["_rev",[_args,"_rev"] call ALiVE_fnc_hashGet,true];
