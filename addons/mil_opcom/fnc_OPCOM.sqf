@@ -1134,7 +1134,7 @@ switch(_operation) do {
 	                                                };
 	                                                
 	                                                if (count _roads > 0 && {(random 1) < 0.45 || count _buildings == 0}) then {
-	                                                        _type = ["ied","roadblocks"] selectRandomWeighted [0.7,0.3];
+	                                                        _type = selectRandom ["ied","roadblocks"];
 	                                                        if !(_roadblocks) then {
 	                                                            _type = "ied";
 	                                                        };
