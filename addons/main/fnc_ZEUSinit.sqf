@@ -48,15 +48,29 @@ ALiVE_fnc_ZeusRegister = {
 if (hasInterface) then {
     [] spawn {
         private ["_curatorLogic","_curatorCamPos"];
+        
         while {true} do {
-            _curatorLogic = getAssignedCuratorLogic player;
+            private _curatorLogic = getAssignedCuratorLogic player;
 
             if !(isnil "_curatorLogic") then {
-                 if !(isnull curatorcamera) then {
+                if !(isnull curatorcamera) then {
+                    //["Zeus is active"] call ALiVE_fnc_DumpR;
+
                     _curatorCamPos = getposATL curatorcamera;
                     _curatorLogic setposATL _curatorCamPos;
                 } else {
-                    _curatorLogic setposATL [-5000,-5000,5000];
+                    if (cameraOn == vehicle player) then {
+                        //["Zeus is inactive and no unit is remote controlled"] call ALiVE_fnc_DumpR;
+
+                        _curatorLogic setposATL [-5000,-5000,5000];
+                    } else {
+                        if !(isNull cameraOn) then {
+                            //["Zeus is inactive and unit %1 is remote controlled",_controlledObject] call ALiVE_fnc_DumpR;
+                            
+                            _curatorCamPos = getposATL cameraOn;
+                            _curatorLogic setposATL _curatorCamPos;
+                        };
+                    };
                 };
             };
             sleep 1;
