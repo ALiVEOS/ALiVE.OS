@@ -184,7 +184,7 @@ for "_j" from 1 to _numIEDs do {
                 "M_Mo_120mm_AT" createVehicle [(getpos (_this select 0)) select 0, (getpos (_this select 0)) select 1,0];
 
 				// Update Sector Hostility
-    			[position _IED, [side (_this select 3)], +10] call ALiVE_fnc_updateSectorHostility; 
+    			[position _IED, [str(side (_this select 3))], +10] call ALiVE_fnc_updateSectorHostility;
 
                 deletevehicle (_this select 0);
                 deleteVehicle _IED;

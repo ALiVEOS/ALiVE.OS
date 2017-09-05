@@ -60,13 +60,13 @@ if ((random 1) > 0.90) then {
         } foreach _trgr;
 
         // Update Sector Hostility
-    	[[position _IED, [side player], +10] ,"ALiVE_fnc_updateSectorHostility", false, false, true] call BIS_fnc_MP;  
+    	[[position _IED, [str(side player)], +10] ,"ALiVE_fnc_updateSectorHostility", false, false, true] call BIS_fnc_MP;
 
         [[ADDON, "removeIED", _IED] ,"ALiVE_fnc_IED", false, false, true] call BIS_fnc_MP;
 
         deleteVehicle _IEDCharge;
         deleteVehicle _IED;
-        
+
     } else {
 
         // Remove triggers
@@ -81,12 +81,12 @@ if ((random 1) > 0.90) then {
         };
 
         // Update Sector Hostility
-    	[[position _IED, [side player], -20] ,"ALiVE_fnc_updateSectorHostility", false, false, true] call BIS_fnc_MP; 
+    	[[position _IED, [str(side player)], -20] ,"ALiVE_fnc_updateSectorHostility", false, false, true] call BIS_fnc_MP;
 
         [[ADDON, "removeIED", _IED] ,"ALiVE_fnc_IED", false, false, true] call BIS_fnc_MP;
 
         hint "You guessed correct! IED is disarmed";
-        
+
     };
 
 } else {
@@ -108,8 +108,8 @@ if ((random 1) > 0.90) then {
     };
 
     // Update Sector Hostility
-    [[position _IED, [side player], -20] ,"ALiVE_fnc_updateSectorHostility", false, false, true] call BIS_fnc_MP; 
-    	
+    [[position _IED, [str(side player)], -20] ,"ALiVE_fnc_updateSectorHostility", false, false, true] call BIS_fnc_MP;
+
     [[ADDON, "removeIED", _IED] ,"ALiVE_fnc_IED", false, false, true] call BIS_fnc_MP;
 
      hint "IED is disarmed";

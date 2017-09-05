@@ -103,6 +103,9 @@ _ehID = _IED addeventhandler ["HandleDamage",{
         deleteVehicle _x;
     } foreach _trgr;
 
+    // Update Sector Hostility
+    [position (_this select 0), [str(side (_this select 3))], +10] call ALiVE_fnc_updateSectorHostility;
+
     deletevehicle (_this select 0);
 }];
 
