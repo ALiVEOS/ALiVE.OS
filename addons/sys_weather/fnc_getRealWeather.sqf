@@ -63,6 +63,9 @@ if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
     diag_log format ["WEATHER LOCATION: %1 = %2",_location, _newloc];
 
     private _year = _date select 0;
+    private _mon = _date select 1;
+    private _day = _date select 2;
+    private _hour = _date select 3;
 
     // Work out which year should be used
 
@@ -73,15 +76,22 @@ if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
     private _curDay = parseNumber (_curDate select 0);
     private _curHour = parseNumber (_curDate select 3);
 
-    // Check to see if we are in the future or earlier than 2007
-    if (((_date select 0) >= _curYear && (_date select 1) >= _curMon && (_date select 2) > _curDay) || ((_date select 0) < 2007)) then {
-        _date set [0,_curYear - 1]; // set year
+    if (_year > _curYear || _year < 2007) then {
+        _date set [0,_curYear - 1];
     };
 
-    // If we are going for current time then move back 1 hour
-    if ((_date select 0) == _curYear && (_date select 1) == _curMon && (_date select 2) == _curDay && (_date select 3) >= _curHour) then {
-        _date set [3,_curHour -1];
+    if (_year == _curYear && _mon > _curMon) then {
+        _date set [1,_curMon - 1];
     };
+
+    if (_year == _curYear && _mon == _curMon && _day > _curDay) then {
+        _date set [2,_curDay - 1];
+    };
+
+    if (_year == _curYear && _mon == _curMon && _day == _curDay && _hour >= _curHour) then {
+        _date set [3,_curHour - 1];
+    };
+
 
     // convert date back to string to handle values less than 10
     {
