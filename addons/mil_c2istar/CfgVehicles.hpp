@@ -144,7 +144,7 @@ class CfgVehicles {
                     };
                     class autoGenerateOpforFaction : Edit
                     {
-                            property = "ALiVE_MIL_C2ISTAR_autoGenerateOpforEnemyFaction";
+                            property = "ALiVE_MIL_C2ISTAR_autoGenerateOpforFaction";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_FACTION";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_FACTION_COMMENT";
                             defaultValue = """OPF_F""";
