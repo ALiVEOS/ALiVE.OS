@@ -712,6 +712,29 @@ ALiVE_fnc_INS_spawnIEDfactory = {
     _building setvariable [QGVAR(factory),_id];
     _building addEventHandler["killed", ALIVE_fnc_INS_buildingKilledEH];
 
+    [
+        _building,
+        "disable the IED factory!",
+        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+        "_this distance _target < 4 && {isnil {_this getvariable 'ALiVE_MIL_OPCOM_FACTORY_DISABLED'}}",
+        "_caller distance _target < 4",
+        {},
+        {},
+        {
+            params ["_target", "_caller", "_ID", "_arguments"];
+
+            _target setVariable [QGVAR(FACTORY_DISABLED),true,true];
+
+            [_target, _caller] remoteExec ["ALIVE_fnc_INS_buildingKilledEH",2];
+
+            ["Nice Job", format ["%1 disabled the IED factory at grid %2!",name _caller, mapGridPosition _target]] call BIS_fnc_showSubtitle;
+        },
+        {},
+        [],
+        10 + ((count (_building getvariable [QGVAR(furnitured),[]]))*4)
+    ] remoteExec ["BIS_fnc_holdActionAdd", 0];
+
     [_building,true,false,false] call ALiVE_fnc_spawnFurniture;
 };
 
@@ -726,6 +749,30 @@ ALiVE_fnc_INS_spawnHQ = {
     _building setvariable [QGVAR(HQ),_id];
     _building addEventHandler["killed", ALIVE_fnc_INS_buildingKilledEH];
 
+    [
+        _building,
+        "disable the Recruitment HQ!",
+        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+        "_this distance _target < 4 && {isnil {_this getvariable 'ALiVE_MIL_OPCOM_HQ_DISABLED'}}",
+        "_caller distance _target < 4",
+        {},
+        {},
+        {
+            params ["_target", "_caller", "_ID", "_arguments"];
+
+            _target setVariable [QGVAR(HQ_DISABLED),true,true];
+            [_target, _caller] remoteExec ["ALIVE_fnc_INS_buildingKilledEH",2];
+
+            ["Congratulations", format ["%1 disabled the Recruitment HQ at grid %2!",name _caller, mapGridPosition _target]] call BIS_fnc_showSubtitle;
+        },
+        {},
+        [],
+        10 + ((count (_building getvariable [QGVAR(furnitured),[]]))*4)
+    ] remoteExec ["BIS_fnc_holdActionAdd", 0];
+
+    [_building,true,false,false] call ALiVE_fnc_spawnFurniture;
+
     [_building,true,true,false] call ALiVE_fnc_spawnFurniture;
 };
 
@@ -739,6 +786,28 @@ ALiVE_fnc_INS_spawnDepot = {
 
     _building setvariable [QGVAR(depot),_id];
     _building addEventHandler["killed", ALIVE_fnc_INS_buildingKilledEH];
+
+    [
+        _building,
+        "disable the weapons depot!",
+        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+        "_this distance _target < 4 && {isnil {_this getvariable 'ALiVE_MIL_OPCOM_DEPOT_DISABLED'}}",
+        "_caller distance _target < 4",
+        {},
+        {},
+        {
+            params ["_target", "_caller", "_ID", "_arguments"];
+
+            _target setVariable [QGVAR(DEPOT_DISABLED),true,true];
+            [_target, _caller] remoteExec ["ALIVE_fnc_INS_buildingKilledEH",2];
+
+            ["Good work", format ["%1 disabled the weapons depot at grid %2!",name _caller, mapGridPosition _target]] call BIS_fnc_showSubtitle;
+        },
+        {},
+        [],
+        10 + ((count (_building getvariable [QGVAR(furnitured),[]]))*4)
+    ] remoteExec ["BIS_fnc_holdActionAdd", 0];    
 
     [_building,true,false,true] call ALiVE_fnc_spawnFurniture;
 };
