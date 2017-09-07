@@ -151,7 +151,7 @@ class CfgVehicles {
                     };
                     class autoGenerateOpforEnemyFaction : Edit
                     {
-                            property = "ALiVE_MIL_C2ISTAR_autoGenerateBluforEnemyFaction";
+                            property = "ALiVE_MIL_C2ISTAR_autoGenerateOpforEnemyFaction";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_ENEMY_FACTION";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_ENEMY_FACTION_COMMENT";
                             defaultValue = """BLU_F""";
