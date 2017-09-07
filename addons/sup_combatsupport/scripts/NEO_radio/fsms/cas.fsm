@@ -1,8 +1,8 @@
-/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, cas">*/
+/*%FSM<COMPILE "scriptedFSM.cfg, cas">*/
 /*%FSM<HEAD>*/
 /*
-item0[] = {"react",0,4346,-37.443069,45.098049,52.556931,95.098053,0.000000,"react"};
-item1[] = {"killed",4,218,-231.102844,45.315475,-141.102768,95.315475,50.000000,"killed"};
+item0[] = {"react",0,250,-37.443069,45.098049,52.556931,95.098053,0.000000,"react"};
+item1[] = {"killed",4,4314,-231.102844,45.315475,-141.102768,95.315475,50.000000,"killed"};
 item2[] = {"end1",1,250,-612.799438,40.307156,-522.799500,90.307144,0.000000,"end1"};
 item3[] = {"New_Task",4,218,-37.668053,138.662827,52.331947,188.662827,10.000000,"New Task"};
 item4[] = {"_",2,250,-37.496964,235.797745,52.503052,285.797729,0.000000,""};
@@ -84,8 +84,8 @@ link44[] = {32,28};
 link45[] = {33,16};
 link46[] = {33,34};
 link47[] = {34,15};
-globals[] = {0.000000,0,0,0,0,640,480,1,66,6316128,1,-649.148804,643.881836,1098.154297,-125.089523,982,929,1};
-window[] = {2,-1,-1,-32000,-32000,847,110,1370,110,3,999};
+globals[] = {0.000000,0,0,0,0,640,480,1,66,6316128,1,-649.148804,643.881836,1098.154297,-125.089523,981,1311,1};
+window[] = {2,-1,-1,-1,-1,787,50,1310,50,3,999};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -172,7 +172,7 @@ class FSM
            "{!_aliveDriver}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"_veh setVariable [""NEO_radioCasUnitStatus"", ""KILLED"", true];" \n
            "" \n
-           "deleteVehicle _h;"/*%FSM</ACTION""">*/;
+           "if !(isNil ""_h"") then {deleteVehicle _h};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
         /*%FSM<LINK "New_Task">*/
@@ -246,7 +246,7 @@ class FSM
            "{!_aliveDriver}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"_veh setVariable [""NEO_radioCasUnitStatus"", ""KILLED"", true];" \n
            "" \n
-           "deleteVehicle _h;"/*%FSM</ACTION""">*/;
+           "if !(isNil ""_h"") then {deleteVehicle _h};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
         /*%FSM<LINK "New_Task">*/
@@ -419,7 +419,7 @@ class FSM
            "{!_aliveDriver}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"_veh setVariable [""NEO_radioCasUnitStatus"", ""KILLED"", true];" \n
            "" \n
-           "deleteVehicle _h;"/*%FSM</ACTION""">*/;
+           "if !(isNil ""_h"") then {deleteVehicle _h};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
         /*%FSM<LINK "New_Task">*/
@@ -522,7 +522,7 @@ class FSM
            "{!_aliveDriver}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"_veh setVariable [""NEO_radioCasUnitStatus"", ""KILLED"", true];" \n
            "" \n
-           "deleteVehicle _h;"/*%FSM</ACTION""">*/;
+           "if !(isNil ""_h"") then {deleteVehicle _h};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
         /*%FSM<LINK "New_Task">*/
@@ -634,7 +634,7 @@ class FSM
            "{!_aliveDriver}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"_veh setVariable [""NEO_radioCasUnitStatus"", ""KILLED"", true];" \n
            "" \n
-           "deleteVehicle _h;"/*%FSM</ACTION""">*/;
+           "if !(isNil ""_h"") then {deleteVehicle _h};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
         /*%FSM<LINK "New_Task">*/
@@ -695,7 +695,7 @@ class FSM
            "{!_aliveDriver}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"_veh setVariable [""NEO_radioCasUnitStatus"", ""KILLED"", true];" \n
            "" \n
-           "deleteVehicle _h;"/*%FSM</ACTION""">*/;
+           "if !(isNil ""_h"") then {deleteVehicle _h};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
         /*%FSM<LINK "New_Task">*/
@@ -779,7 +779,7 @@ class FSM
            "{!_aliveDriver}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"_veh setVariable [""NEO_radioCasUnitStatus"", ""KILLED"", true];" \n
            "" \n
-           "deleteVehicle _h;"/*%FSM</ACTION""">*/;
+           "if !(isNil ""_h"") then {deleteVehicle _h};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
         /*%FSM<LINK "New_Task">*/
@@ -842,7 +842,7 @@ class FSM
            "{!_aliveDriver}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"_veh setVariable [""NEO_radioCasUnitStatus"", ""KILLED"", true];" \n
            "" \n
-           "deleteVehicle _h;"/*%FSM</ACTION""">*/;
+           "if !(isNil ""_h"") then {deleteVehicle _h};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
         /*%FSM<LINK "New_Task">*/
@@ -923,7 +923,7 @@ class FSM
            "{!_aliveDriver}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"_veh setVariable [""NEO_radioCasUnitStatus"", ""KILLED"", true];" \n
            "" \n
-           "deleteVehicle _h;"/*%FSM</ACTION""">*/;
+           "if !(isNil ""_h"") then {deleteVehicle _h};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
         /*%FSM<LINK "New_Task">*/
@@ -1001,7 +1001,7 @@ class FSM
            "{!_aliveDriver}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"_veh setVariable [""NEO_radioCasUnitStatus"", ""KILLED"", true];" \n
            "" \n
-           "deleteVehicle _h;"/*%FSM</ACTION""">*/;
+           "if !(isNil ""_h"") then {deleteVehicle _h};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
         /*%FSM<LINK "New_Task">*/
@@ -1092,7 +1092,7 @@ class FSM
            "{!_aliveDriver}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"_veh setVariable [""NEO_radioCasUnitStatus"", ""KILLED"", true];" \n
            "" \n
-           "deleteVehicle _h;"/*%FSM</ACTION""">*/;
+           "if !(isNil ""_h"") then {deleteVehicle _h};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
         /*%FSM<LINK "New_Task">*/
@@ -1271,7 +1271,7 @@ class FSM
            "{!_aliveDriver}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"_veh setVariable [""NEO_radioCasUnitStatus"", ""KILLED"", true];" \n
            "" \n
-           "deleteVehicle _h;"/*%FSM</ACTION""">*/;
+           "if !(isNil ""_h"") then {deleteVehicle _h};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
         /*%FSM<LINK "New_Task">*/
@@ -1332,7 +1332,7 @@ class FSM
            "{!_aliveDriver}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/"_veh setVariable [""NEO_radioCasUnitStatus"", ""KILLED"", true];" \n
            "" \n
-           "deleteVehicle _h;"/*%FSM</ACTION""">*/;
+           "if !(isNil ""_h"") then {deleteVehicle _h};"/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
         /*%FSM<LINK "New_Task">*/
@@ -1381,7 +1381,7 @@ class FSM
   initState="react";
   finalStates[] =
   {
-    "end1",
+    "end1"
   };
 };
 /*%FSM</COMPILE>*/
