@@ -624,7 +624,7 @@ ALiVE_fnc_spawnFurniture = {
     _add = _this select 2;
     _ammo = _this select 3;
 
-    if (!(alive _building) || {_building getvariable [QGVAR(furnitured),false]}) exitwith {[]};
+    if (!(alive _building) || {count (_building getvariable [QGVAR(furnitured),[]]) > 0}) exitwith {[]};
 
     _furnitures = ["Land_RattanTable_01_F"];
     _bombs = ["ALIVE_IEDUrbanSmall_Remote_Ammo","ALIVE_IEDLandSmall_Remote_Ammo","ALIVE_IEDLandBig_Remote_Ammo"];
@@ -636,8 +636,6 @@ ALiVE_fnc_spawnFurniture = {
     _positions = [_pos,15] call ALIVE_fnc_findIndoorHousePositions;
 
     if (count _positions == 0) exitwith {[]};
-
-    _building setvariable [QGVAR(furnitured),true];
 
     {
         private ["_pos"];
@@ -697,6 +695,8 @@ ALiVE_fnc_spawnFurniture = {
             };
         };
     } foreach _positions;
+
+    _building setvariable [QGVAR(furnitured),_created];
 
     _created
 };
@@ -764,6 +764,7 @@ ALIVE_fnc_INS_buildingKilledEH = {
     _factory = _building getvariable QGVAR(factory);
     _depot = _building getvariable QGVAR(depot);
     _HQ = _building getvariable QGVAR(HQ);
+    _furniture = _building getvariable [QGVAR(furnitured),[]];
 
     if !(isnil "_factory") then {_id = _factory};
     if !(isnil "_depot") then {_id = _depot};
@@ -778,6 +779,9 @@ ALIVE_fnc_INS_buildingKilledEH = {
     if !(isnil "_factory") then {[_objective,"factory"] call ALiVE_fnc_HashRem; [_objective,"actionsFulfilled",([_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashGet) - ["factory"]] call ALiVE_fnc_HashSet};
     if !(isnil "_depot") then {[_objective,"depot"] call ALiVE_fnc_HashRem; [_objective,"actionsFulfilled",([_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashGet) - ["depot"]] call ALiVE_fnc_HashSet};
     if !(isnil "_HQ") then {[_objective,"HQ"] call ALiVE_fnc_HashRem; [_objective,"actionsFulfilled",([_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashGet) - ["recruit"]] call ALiVE_fnc_HashSet};
+    
+    {deleteVehicle _x} foreach _furniture;
+    _building setvariable [QGVAR(furnitured),[]];
 
     {if (([_x,"opcomID"," "] call ALiVE_fnc_HashGet) == _opcomID) exitwith {_opcom = _x}} foreach OPCOM_instances;
 
