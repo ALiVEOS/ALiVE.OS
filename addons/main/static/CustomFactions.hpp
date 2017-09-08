@@ -377,6 +377,11 @@ ALIVE_RHSResupplyVehicleOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyVehicleOptions, "rhs_faction_rva", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyVehicleOptions, "rhs_faction_insurgents", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
 
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_cdf_ground", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_nationalist", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhssaf_faction_un", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+
 
 
 ALIVE_RHSResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
@@ -402,6 +407,11 @@ ALIVE_RHSResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyIndividualOptions, "rhs_faction_vvs_c", ALIVE_RHSResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "rhs_faction_rva", ALIVE_RHSResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "rhs_faction_insurgents", ALIVE_RHSResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_cdf_ground", ALIVE_RHSResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_nationalist", ALIVE_RHSResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhssaf_faction_un", ALIVE_RHSResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 
 
 
@@ -523,6 +533,11 @@ ALIVE_RHSResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyGroupOptions, "rhs_faction_vvs_c", ALIVE_RHSResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "rhs_faction_rva", ALIVE_RHSResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "rhs_faction_insurgents", ALIVE_RHSResupplyGroupOptions] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_cdf_ground", ALIVE_RHSResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_nationalist", ALIVE_RHSResupplyGroupOptions] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultResupplyGroupOptions, "rhssaf_faction_un", ALIVE_RHSResupplyGroupOptions] call ALIVE_fnc_hashSet;
 
 
 
