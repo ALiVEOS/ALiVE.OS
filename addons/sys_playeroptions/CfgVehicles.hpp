@@ -1,3 +1,6 @@
+#define MODULE_NAME ALiVE_SYS_playeroptions
+#define MVAR(var) DOUBLES(MODULE_NAME,var)
+
 class CfgVehicles
 {
     class Logic;
@@ -39,7 +42,7 @@ class CfgVehicles
             };
             class debug: Combo
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(debug);
                     displayName = "$STR_ALIVE_playeroptions_DEBUG";
                     tooltip = "$STR_ALIVE_playeroptions_DEBUG_COMMENT";
                     defaultValue = """false""";
@@ -61,33 +64,33 @@ class CfgVehicles
             // VIEW DISTANCE
             class VIEW_DISTANCE: ALiVE_ModuleSubTitle
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(VIEW_DISTANCE);
                     displayName = "ViEW DISTANCE PARAMETERS";
             };
             class maxVD: Edit
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(maxVD);
                     displayName = "$STR_ALIVE_VDIST_MAX";
                     tooltip = "$STR_ALIVE_VDIST_MAX_COMMENT";
                     defaultvalue = """20000""";
             };
             class minVD: Edit
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(minVD);
                     displayName = "$STR_ALIVE_VDIST_MIN";
                     tooltip = "$STR_ALIVE_VDIST_MIN_COMMENT";
                     defaultvalue = """500""";
             };
             class maxTG: Edit
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(maxTG);
                     displayName = "$STR_ALIVE_TGRID_MAX";
                     tooltip = "$STR_ALIVE_TGRID_MAX_COMMENT";
                     defaultvalue = """5""";
             };
             class minTG: Edit
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(minTG);
                     displayName = "$STR_ALIVE_TGRID_MIN";
                     tooltip = "$STR_ALIVE_TGRID_MIN_COMMENT";
                     defaultvalue = """1""";
@@ -101,7 +104,7 @@ class CfgVehicles
             };
             class enablePlayerPersistence: Combo
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(enablePlayerPersistence);
                     displayName = "$STR_ALIVE_player_ENABLE";
                     tooltip = "$STR_ALIVE_player_ENABLE_COMMENT";
                     defaultValue = """true""";
@@ -121,7 +124,7 @@ class CfgVehicles
             };
             class allowReset: Combo
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(allowReset);
                     displayName = "$STR_ALIVE_player_allowReset";
                     tooltip = "$STR_ALIVE_player_allowReset_COMMENT";
                     defaultValue = """true""";
@@ -142,7 +145,7 @@ class CfgVehicles
             };
             class allowManualSave: Combo
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(allowManualSave);
                     displayName = "$STR_ALIVE_player_allowManualSave";
                     tooltip = "$STR_ALIVE_player_allowManualSave_COMMENT";
                     defaultValue = """true""";
@@ -164,7 +167,7 @@ class CfgVehicles
             };
             class allowDiffClass: Combo
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(allowDiffClass);
                     displayName = "$STR_ALIVE_player_allowDiffClass";
                     tooltip = "$STR_ALIVE_player_allowDiffClass_COMMENT";
                     defaultValue = """false""";
@@ -185,7 +188,7 @@ class CfgVehicles
             };
             class saveLoadout: Combo
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(saveLoadout);
                     displayName = "$STR_ALIVE_player_SAVELOADOUT";
                     tooltip = "$STR_ALIVE_player_SAVELOADOUT_COMMENT";
                     defaultValue = """true""";
@@ -206,7 +209,7 @@ class CfgVehicles
             };
             class saveAmmo: Combo
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(saveAmmo);
                     displayName = "$STR_ALIVE_player_SAVEAMMO";
                     tooltip = "$STR_ALIVE_player_SAVEAMMO_COMMENT";
                     defaultValue = """true""";
@@ -227,7 +230,7 @@ class CfgVehicles
             };
             class saveHealth: Combo
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(saveHealth);
                     displayName = "$STR_ALIVE_player_SAVEHEALTH";
                     tooltip = "$STR_ALIVE_player_SAVEHEALTH_COMMENT";
                     defaultValue = """true""";
@@ -248,7 +251,7 @@ class CfgVehicles
             };
             class savePosition: Combo
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(savePosition);
                     displayName = "$STR_ALIVE_player_SAVEPOSITION";
                     tooltip = "$STR_ALIVE_player_SAVEPOSITION_COMMENT";
                     defaultValue = """true""";
@@ -269,7 +272,7 @@ class CfgVehicles
             };
             class saveScores: Combo
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(saveScores);
                     displayName = "$STR_ALIVE_player_SAVESCORES";
                     tooltip = "$STR_ALIVE_player_SAVESCORES_COMMENT";
                     defaultValue = """true""";
@@ -290,7 +293,7 @@ class CfgVehicles
             };
             class storeToDB: Combo
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(storeToDB);
                     displayName = "$STR_ALIVE_player_storeToDB";
                     tooltip = "$STR_ALIVE_player_storeToDB_COMMENT";
                     defaultValue = """false""";
@@ -311,7 +314,7 @@ class CfgVehicles
             };
             class autoSaveTime: Edit
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(autoSaveTime);
                     displayName = "$STR_ALIVE_player_autoSaveTime";
                     tooltip = "$STR_ALIVE_player_autoSaveTime_COMMENT";
                     defaultValue = """0""";
@@ -325,7 +328,7 @@ class CfgVehicles
             };
             class crewinfo_ui_setting: Combo
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(crewinfo_ui_setting);
                     displayName = "$STR_ALIVE_CREWINFO_UI";
                     tooltip = "$STR_ALIVE_CREWINFO_UI_COMMENT";
                     defaultValue = """0""";
@@ -359,7 +362,7 @@ class CfgVehicles
             };
             class playertags_style_setting: Combo
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(playertags_style_setting);
                     displayName = "$STR_ALIVE_PLAYERTAGS_STYLE";
                     tooltip = "$STR_ALIVE_PLAYERTAGS_STYLE_COMMENT";
                     defaultValue = """modern""";
@@ -385,7 +388,7 @@ class CfgVehicles
             };
             class playertags_onview_setting: Combo
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(playertags_onview_setting);
                     displayName = "$STR_ALIVE_PLAYERTAGS_ONVIEW";
                     tooltip = "$STR_ALIVE_PLAYERTAGS_ONVIEW_COMMENT";
                     defaultValue = """false""";
@@ -407,7 +410,7 @@ class CfgVehicles
             };
             class playertags_displayrank_setting: Combo
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(playertags_displayrank_setting);
                     displayName = "$STR_ALIVE_PLAYERTAGS_RANK";
                     tooltip = "$STR_ALIVE_PLAYERTAGS_RANK_COMMENT";
                     defaultValue = """true""";
@@ -430,7 +433,7 @@ class CfgVehicles
             };
             class playertags_displaygroup_setting: Combo
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(playertags_displaygroup_setting);
                     displayName = "$STR_ALIVE_PLAYERTAGS_GROUP";
                     tooltip = "$STR_ALIVE_PLAYERTAGS_GROUP_COMMENT";
                     defaultValue = """true""";
@@ -453,7 +456,7 @@ class CfgVehicles
             };
             class playertags_invehicle_setting: Combo
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(playertags_invehicle_setting);
                     displayName = "$STR_ALIVE_PLAYERTAGS_INVEHICLE";
                     tooltip = "$STR_ALIVE_PLAYERTAGS_INVEHICLE_COMMENT";
                     defaultValue = """false""";
@@ -476,14 +479,14 @@ class CfgVehicles
             };
             class playertags_targets_setting: Edit
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(playertags_targets_setting);
                     displayName = "$STR_ALIVE_PLAYERTAGS_TARGETS";
                     tooltip = "$STR_ALIVE_PLAYERTAGS_TARGETS_COMMENT";
                     defaultValue = """['CAManBase', 'Car', 'Tank', 'StaticWeapon', 'Helicopter', 'Plane']""";
             };
             class playertags_distance_setting: Edit
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(playertags_distance_setting);
                     displayName = "$STR_ALIVE_PLAYERTAGS_DISTANCE";
                     tooltip = "$STR_ALIVE_PLAYERTAGS_DISTANCE_COMMENT";
                     defaultValue = "20";
@@ -491,7 +494,7 @@ class CfgVehicles
             };
             class playertags_tolerance_setting: Edit
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(playertags_tolerance_setting);
                     displayName = "$STR_ALIVE_PLAYERTAGS_TOLERANCE";
                     tooltip = "$STR_ALIVE_PLAYERTAGS_TOLERANCE_COMMENT";
                     defaultValue = "0.75";
@@ -499,7 +502,7 @@ class CfgVehicles
             };
             class playertags_scale_setting: Edit
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(playertags_scale_setting);
                     displayName = "$STR_ALIVE_PLAYERTAGS_SCALE";
                     tooltip = "$STR_ALIVE_PLAYERTAGS_SCALE_COMMENT";
                     defaultValue = "0.65";
@@ -507,7 +510,7 @@ class CfgVehicles
             };
             class playertags_height_setting: Edit
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(playertags_height_setting);
                     displayName = "$STR_ALIVE_PLAYERTAGS_HEIGHT";
                     tooltip = "$STR_ALIVE_PLAYERTAGS_HEIGHT_COMMENT";
                     defaultValue = "1.1";
@@ -515,7 +518,7 @@ class CfgVehicles
             };
             class playertags_namecolour_setting: Edit
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(playertags_namecolour_setting);
                     displayName = "$STR_ALIVE_PLAYERTAGS_NAMECOLOUR";
                     tooltip = "$STR_ALIVE_PLAYERTAGS_NAMECOLOUR_COMMENT";
                     defaultValue = """#FFFFFF"""; // white
@@ -523,7 +526,7 @@ class CfgVehicles
             };
             class playertags_groupcolour_setting: Edit
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(playertags_groupcolour_setting);
                     displayName = "$STR_ALIVE_PLAYERTAGS_GROUPCOLOUR";
                     tooltip = "$STR_ALIVE_PLAYERTAGS_GROUPCOLOUR_COMMENT";
                     defaultValue = """#A8F000"""; // green
@@ -531,7 +534,7 @@ class CfgVehicles
             };
             class playertags_thisgroupleadernamecolour_setting: Edit
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(playertags_thisgroupleadernamecolour_setting);
                     displayName = "$STR_ALIVE_PLAYERTAGS_THISGROUPLEADERNAMECOLOUR";
                     tooltip = "$STR_ALIVE_PLAYERTAGS_THISGROUPLEADERNAMECOLOUR_COMMENT";
                     defaultValue = """#FFB300"""; // yellow
@@ -539,7 +542,7 @@ class CfgVehicles
             };
             class playertags_thisgroupcolour_setting: Edit
             {
-                    property = QGVAR(__LINE__);
+                    property = MVAR(playertags_thisgroupcolour_setting);
                     displayName = "$STR_ALIVE_PLAYERTAGS_THISGROUPCOLOUR";
                     tooltip = "$STR_ALIVE_PLAYERTAGS_THISGROUPCOLOUR_COMMENT";
                     defaultValue = """#009D91"""; // cyan
