@@ -73,49 +73,49 @@ class CfgSounds
         sound[] = {"x\alive\addons\amb_civ_population\audio\radio6.ogg", 1, 1, 30};
         titles[] = {};
     };
-        class Track13
+    class Track13
     {
         name = "Track13";
         sound[] = {"x\alive\addons\amb_civ_population\audio\snoring.ogg", 1, 1, 15};
         titles[] = {};
     };
-        class Track14
+    class Track14
     {
         name = "Track14";
         sound[] = {"x\alive\addons\amb_civ_population\audio\sex.ogg", 1, 1, 20};
         titles[] = {};
     };
-        class Track15
+    class Track15
     {
         name = "Track15";
         sound[] = {"x\alive\addons\amb_civ_population\audio\crying.ogg", 1, 1, 20};
         titles[] = {};
     };
-        class Track16
+    class Track16
     {
         name = "Track16";
         sound[] = {"x\alive\addons\amb_civ_population\audio\caralarm.ogg", 1, 1, 15};
         titles[] = {};
     };
-        class Track17
+    class Track17
     {
         name = "Track17";
         sound[] = {"x\alive\addons\amb_civ_population\audio\baby.ogg", 1, 1, 20};
         titles[] = {};
     };
-        class Track18
+    class Track18
     {
         name = "Track18";
         sound[] = {"x\alive\addons\amb_civ_population\audio\smalldog.ogg", 1, 1, 30};
         titles[] = {};
     };
-        class Track19
+    class Track19
     {
         name = "Track19";
         sound[] = {"x\alive\addons\amb_civ_population\audio\largedog.ogg", 1, 1, 30};
         titles[] = {};
     };
-        class Track20
+    class Track20
     {
         name = "Track20";
         sound[] = {"x\alive\addons\amb_civ_population\audio\meddog.ogg", 1, 1, 30};
