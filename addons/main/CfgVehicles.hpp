@@ -1,3 +1,6 @@
+#define MODULE_NAME ALiVE_require
+#define MVAR(var) DOUBLES(MODULE_NAME,var)
+
 // Add a game logic which does nothing except requires the addon in the mission.
 
 class CfgFactionClasses {
@@ -72,6 +75,16 @@ class CfgVehicles {
                 control = "ALiVE_ModuleSubTitle";
                 defaultValue = "''";
             };
+            class ALiVE_EditMulti3 : Default
+            {
+                control = "EditMulti3";
+                defaultValue = "''";
+            };
+            class ALiVE_EditMulti5 : Default
+            {
+                control = "EditMulti5";
+                defaultValue = "''";
+            };
         };
     };
 
@@ -90,7 +103,7 @@ class CfgVehicles {
         {
             class debug: Combo
             {
-                    property =  QGVAR(debug);
+                    property =  MVAR(debug);
                     displayName = "$STR_ALIVE_DEBUG";
                     tooltip = "$STR_ALIVE_DEBUG_COMMENT";
                     defaultValue = """false""";
@@ -110,7 +123,7 @@ class CfgVehicles {
             };
             class ALiVE_Versioning: Combo
             {
-                    property =  QGVAR(Versioning);
+                    property =  MVAR(ALiVE_Versioning);
                     displayName = "$STR_ALIVE_REQUIRES_ALIVE_VERSIONING";
                     tooltip = "$STR_ALIVE_REQUIRES_ALIVE_VERSIONING_COMMENT";
                     defaultValue = """warning""";
@@ -131,7 +144,7 @@ class CfgVehicles {
 
             class ALiVE_AI_DISTRIBUTION: Combo
             {
-                    property =  QGVAR(AI_DISTRIBUTION);
+                    property =  MVAR(ALiVE_AI_DISTRIBUTION);
                     displayName = "$STR_ALIVE_REQUIRES_ALIVE_AI_DISTRIBUTION";
                     tooltip = "$STR_ALIVE_REQUIRES_ALIVE_AI_DISTRIBUTION_COMMENT";
                     defaultValue = """false""";
@@ -152,7 +165,7 @@ class CfgVehicles {
 
             class ALiVE_DISABLESAVE: Combo
             {
-                    property =  QGVAR(DISABLESAVE);
+                    property =  MVAR(ALiVE_DISABLESAVE);
                     displayName = "$STR_ALIVE_DISABLESAVE";
                     tooltip = "$STR_ALIVE_DISABLESAVE_COMMENT";
                     defaultValue = """true""";
@@ -172,7 +185,7 @@ class CfgVehicles {
             };
             class ALiVE_DISABLEMARKERS: Combo
             {
-                    property =  QGVAR(DISABLEMARKERS);
+                    property =  MVAR(ALiVE_DISABLEMARKERS);
                     displayName = "$STR_ALIVE_DISABLEMARKERS";
                     tooltip = "$STR_ALIVE_DISABLEMARKERS_COMMENT";
                     typeName = "BOOL";
@@ -193,7 +206,7 @@ class CfgVehicles {
             };
             class ALiVE_DISABLEADMINACTIONS: Combo
             {
-                    property =  QGVAR(DISABLEADMINACTIONS);
+                    property =  MVAR(ALiVE_DISABLEADMINACTIONS);
 
                     displayName = "$STR_ALIVE_DISABLEADMINACTIONS";
                     tooltip = "$STR_ALIVE_DISABLEADMINACTIONS_COMMENT";
@@ -215,7 +228,7 @@ class CfgVehicles {
             };
             class ALiVE_PAUSEMODULES: Combo
             {
-                    property =  QGVAR(PAUSEMODULES);
+                    property =  MVAR(ALiVE_PAUSEMODULES);
                     displayName = "$STR_ALiVE_PAUSEMODULES";
                     tooltip = "$STR_ALiVE_PAUSEMODULES_COMMENT";
                     typeName = "BOOL";
@@ -236,28 +249,28 @@ class CfgVehicles {
             };
             class ALiVE_GC_INTERVAL: Edit
             {
-                    property =  QGVAR(GC_INTERVAL);
+                    property =  MVAR(ALiVE_GC_INTERVAL);
                     displayName = "$STR_ALIVE_GC_INTERVAL";
                     tooltip = "$STR_ALIVE_GC_INTERVAL_COMMENT";
                     defaultValue = """300""";
             };
             class ALiVE_GC_THRESHHOLD: Edit
             {
-                    property =  QGVAR(GC_THRESHHOLD);
+                    property =  MVAR(ALiVE_GC_THRESHHOLD);
                     displayName = "$STR_ALIVE_GC_THRESHHOLD";
                     tooltip = "$STR_ALIVE_GC_THRESHHOLD_COMMENT";
                     defaultValue = """100""";
             };
             class ALiVE_GC_INDIVIDUALTYPES: Edit
             {
-                    property =  QGVAR(GC_INDIVIDUALTYPES);
+                    property =  MVAR(ALiVE_GC_INDIVIDUALTYPES);
                     displayName = "$STR_ALIVE_GC_INDIVIDUALTYPES";
                     tooltip = "$STR_ALIVE_GC_INDIVIDUALTYPES_COMMENT";
                     defaultValue = """""";
             };
             class ALiVE_TABLET_MODEL: Combo
             {
-                property =  QGVAR(TABLET_MODEL);
+                property =  MVAR(ALiVE_TABLET_MODEL);
                 displayName = "$STR_ALiVE_TABLET_MODEL";
                 tooltip = "$STR_ALiVE_TABLET_MODEL_COMMENT";
                 typeName = "STRING";
