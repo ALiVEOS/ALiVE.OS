@@ -53,7 +53,15 @@ class CfgMissions
             overviewPicture = "x\alive\addons\missions\logo_alive.paa";
             overviewText = "Stratis is reeling from a brutal insurgency campaign. IED's litter the landscape, its your job to identify and disarm IEDs to ensure the safety of the civilian population. Beware of the local militia!";
             author = "ALiVE Mod Team";   
-        };                    
+        };
+        class Showcase_Air_Superiority
+        {
+            briefingName = "ALiVE | Air Superiortiy";
+            directory = "x\alive\addons\missions\mpscenarios\ALiVE_air_superiority.Altis";
+            overviewPicture = "x\alive\addons\missions\logo_alive.paa";
+            overviewText = "Obtain Air Superiority over Altis and eliminate the given targets! AA positions have been confirmed all over the coastline - plan your mission waypoints carefully!";
+            author = "ALiVE Mod Team";
+        };                      
     };
     class MPMissions
     {
@@ -80,6 +88,14 @@ class CfgMissions
             overviewPicture = "x\alive\addons\missions\logo_alive.paa";
             overviewText = "This is the basic quick start mission (on Tanoa) featured in the ALiVE documentation and Wiki (alivemod.com)";
             author = "ALiVE Mod Team";                    
+        };
+        class MP_COOP_Air_Superiority
+        {
+            briefingName = "ALiVE | Air Superiortiy (CO 12)";
+            directory = "x\alive\addons\missions\mpscenarios\ALiVE_air_superiority.Altis";
+            overviewPicture = "x\alive\addons\missions\logo_alive.paa";
+            overviewText = "Obtain Air Superiority over Altis and eliminate the given targets! AA positions have been confirmed all over the coastline - plan your mission waypoints carefully!";
+            author = "ALiVE Mod Team";
         };                 
         class MP_COOP_Air_Assault
         {
@@ -87,7 +103,7 @@ class CfgMissions
             directory = "x\alive\addons\missions\mpscenarios\ALiVE_Air_Assault.Altis";
             overviewPicture = "x\alive\addons\missions\logo_alive.paa";
             overviewText = "Steal the prototype MI-48 from the airbase at Salakano and bring it to your Command base in the north! Try to survive!";
-            author = "ALiVE Mod Team";   
+            author = "ALiVE Mod Team";
         };
         class MP_COOP_HurtLocker
         {
