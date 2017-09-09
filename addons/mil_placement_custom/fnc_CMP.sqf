@@ -219,6 +219,13 @@ switch(_operation) do {
                 _logic setVariable ["composition", _args];
         };
 
+        // Catch a bug that was introduced by the conversion of the
+        // "composition" module field from dropdown to text field
+        if (_args == "false") then {
+            _logic setVariable ["composition", ""];
+            _args = "";
+        };
+
         _result = _args;
     };
 
@@ -342,7 +349,7 @@ switch(_operation) do {
 
             // Spawn the composition
 
-            if (typeName _composition == "STRING" && _composition != "") then {
+            if (typeName _composition == "STRING" && _composition != "" && _composition != "false") then {
                 if (isNil QMOD(COMPOSITIONS_LOADED)) then {
                     // Get a composition
                     private _compType = "Military";
