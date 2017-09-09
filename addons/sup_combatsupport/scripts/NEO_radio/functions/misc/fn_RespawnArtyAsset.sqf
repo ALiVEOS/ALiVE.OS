@@ -97,6 +97,10 @@ if (_side == WEST && _type == "BUS_MotInf_MortTeam") then {
         _units pushback _veh;
         _artyBatteries pushback _veh;
 
+        // Exclude CS from VCOM
+        // CS only runs serverside so no PV is needed
+        (driver _veh) setvariable ["VCOM_NOAI", true];
+
         // set ownership flag for other modules
         _veh setVariable ["ALIVE_CombatSupport", true];
     };

@@ -75,6 +75,9 @@ If(_height > 0) then {
 _veh setVelocity [0,0,-1];
 _veh lockDriver true;
 
+// Exclude CS from VCOM
+// CS only runs serverside so no PV is needed
+(driver _veh) setvariable ["VCOM_NOAI", true];
 
 _ffvTurrets = [_type,true,true,false,true] call ALIVE_fnc_configGetVehicleTurretPositions;
 _gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
