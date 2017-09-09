@@ -358,6 +358,9 @@ switch(_operation) do {
                                 _grp = group (driver _veh);
                             };
 
+                            // Exclude CS from VCOM
+                            // CS only runs serverside so no PV is needed
+                            (driver _veh) setvariable ["VCOM_NOAI", true];
 
                             _ffvTurrets = [_type,true,true,false,true] call ALIVE_fnc_configGetVehicleTurretPositions;
                             _gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
@@ -492,6 +495,11 @@ switch(_operation) do {
                                 _veh = _veh select 0;
                                 _grp = group (driver _veh);
                             };
+
+                            // Exclude CS from VCOM
+                            // CS only runs serverside so no PV is needed
+                            (driver _veh) setvariable ["VCOM_NOAI", true];
+
                                 _ffvTurrets = [_type,true,true,false,true] call ALIVE_fnc_configGetVehicleTurretPositions;
                                 _gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
                                 _ffvTurrets = _ffvTurrets - _gunnerTurrets;
@@ -613,10 +621,14 @@ switch(_operation) do {
                                     _veh lock true;
                                     _vehDir = _vehDir + 90;
 
+                                    [_veh, _grp] call BIS_fnc_spawnCrew;
+
                                     // set ownership flag for other modules
                                     _veh setVariable ["ALIVE_CombatSupport", true];
 
-                                    [_veh, _grp] call BIS_fnc_spawnCrew;
+                                    // Exclude CS from VCOM
+                                    // CS only runs serverside so no PV is needed
+                                    (driver _veh) setvariable ["VCOM_NOAI", true];
 
                                     if (_i == 1) then {leader _grp setRank "CAPTAIN"};
 

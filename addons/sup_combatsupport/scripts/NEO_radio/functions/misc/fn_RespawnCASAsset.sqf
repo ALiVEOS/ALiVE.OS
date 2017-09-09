@@ -77,7 +77,9 @@ if (getNumber(configFile >> "CfgVehicles" >> _type >> "isUav")==1) then {
     [_veh, _grp] call BIS_fnc_spawnCrew;
 };
 
-
+// Exclude CS from VCOM
+// CS only runs serverside so no PV is needed
+(driver _veh) setvariable ["VCOM_NOAI", true];
 
 _veh lockDriver true;
 

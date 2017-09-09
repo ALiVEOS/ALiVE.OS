@@ -40,6 +40,10 @@
             _grp = createGroup _side;
             [_veh, _grp] call BIS_fnc_spawnCrew;
 
+            // Exclude CS from VCOM
+            // CS only runs serverside so no PV is needed
+            (driver _veh) setvariable ["VCOM_NOAI", true];
+
               _ffvTurrets = [_type,true,true,false,true] call ALIVE_fnc_configGetVehicleTurretPositions;
                             _gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
                             _ffvTurrets = _ffvTurrets - _gunnerTurrets;
@@ -122,15 +126,19 @@
 
             private ["_grp"];
             _grp = createGroup _side;
-              If (getNumber(configFile >> "CfgVehicles" >> _type >> "isUav") == 1) then {
-                                    createVehicleCrew _veh;
-                                } else {
-                                    [_veh, _grp] call BIS_fnc_spawnCrew;
-                                };
+            If (getNumber(configFile >> "CfgVehicles" >> _type >> "isUav") == 1) then {
+                createVehicleCrew _veh;
+            } else {
+                [_veh, _grp] call BIS_fnc_spawnCrew;
+            };
 
-              _ffvTurrets = [_type,true,true,false,true] call ALIVE_fnc_configGetVehicleTurretPositions;
-                            _gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
-                            _ffvTurrets = _ffvTurrets - _gunnerTurrets;
+            // Exclude CS from VCOM
+            // CS only runs serverside so no PV is needed
+            (driver _veh) setvariable ["VCOM_NOAI", true];
+
+            _ffvTurrets = [_type,true,true,false,true] call ALIVE_fnc_configGetVehicleTurretPositions;
+            _gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
+            _ffvTurrets = _ffvTurrets - _gunnerTurrets;
 
 
 
