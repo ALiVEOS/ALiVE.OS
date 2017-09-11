@@ -219,13 +219,6 @@ switch(_operation) do {
                 _logic setVariable ["composition", _args];
         };
 
-        // Catch a bug that was introduced by the conversion of the
-        // "composition" module field from dropdown to text field
-        if (_args == "false") then {
-            _logic setVariable ["composition", ""];
-            _args = "";
-        };
-
         _result = _args;
     };
 
@@ -349,7 +342,7 @@ switch(_operation) do {
 
             // Spawn the composition
 
-            if (typeName _composition == "STRING" && _composition != "" && _composition != "false") then {
+            if (typeName _composition == "STRING" && _composition != "") then {
                 if (isNil QMOD(COMPOSITIONS_LOADED)) then {
                     // Get a composition
                     private _compType = "Military";
@@ -821,27 +814,32 @@ switch(_operation) do {
                             //["VEHICLE CLASS: %1",_vehicleClass] call ALIVE_fnc_dump;
 
                             private _parkingPosition = [_vehicleClass,_building] call ALIVE_fnc_getParkingPosition;
-                            private _positionOK = true;
+                            
+                            if (count _parkingPosition == 2) then {
 
-                            {
-                                private _position = _x select 0;
-                                if((_parkingPosition select 0) distance _position < 10) then {
-                                    _positionOK = false;
+                                private _positionOK = true;
+
+                                {
+                                    private _position = _x select 0;
+                                    if((_parkingPosition select 0) distance _position < 10) then {
+                                        _positionOK = false;
+                                    };
+                                } forEach _usedPositions;
+
+                                //["POS OK: %1",_positionOK] call ALIVE_fnc_dump;
+
+                                if(_positionOK) then {
+                                    [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction] call ALIVE_fnc_createProfileVehicle;
+
+                                    _countLandUnits = _countLandUnits + 1;
+
+                                    _usedPositions pushback _parkingPosition;
+
+                                    if(_supportPlacement) then {
+                                        _supportCount = _supportCount + 1;
+                                    };
                                 };
-                            } forEach _usedPositions;
 
-                            //["POS OK: %1",_positionOK] call ALIVE_fnc_dump;
-
-                            if(_positionOK) then {
-                                [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction] call ALIVE_fnc_createProfileVehicle;
-
-                                _countLandUnits = _countLandUnits + 1;
-
-                                _usedPositions pushback _parkingPosition;
-
-                                if(_supportPlacement) then {
-                                    _supportCount = _supportCount + 1;
-                                };
                             };
                         };
 
