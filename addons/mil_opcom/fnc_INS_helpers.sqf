@@ -677,6 +677,7 @@ ALiVE_fnc_spawnFurniture = {
                     _bomb setvariable ["charge", _charge, true];
 
                     _created pushback _bomb;
+                    _created pushback _charge;
                 };
             } else {
                 if (_add && {random 1 < 0.5}) then {
