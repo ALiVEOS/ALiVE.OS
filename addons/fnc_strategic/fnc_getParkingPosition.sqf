@@ -12,7 +12,7 @@ String - Vehicle class name
 Object - Building object
 
 Returns:
-Array - array containing parking position and direction
+Array - array containing parking position and direction or [] if no parking position was found
 
 Examples:
 (begin example)
@@ -29,7 +29,7 @@ nil
 ---------------------------------------------------------------------------- */
 
 
-private ["_vehicleClass","_building","_debug","_isEmpty","_direction","_bbr","_bboxA","_p1","_p2","_maxWidth","_maxLength","_longest","_buildingPosition","_position","_safePos","_center","_vehicleMapSize"];
+private ["_vehicleClass","_building","_debug","_isEmpty","_isFlatEmpty","_direction","_bbr","_bboxA","_p1","_p2","_maxWidth","_maxLength","_longest","_buildingPosition","_position","_safePos","_center","_vehicleMapSize"];
 
 _vehicleClass = _this select 0;
 _building = _this select 1;
@@ -55,12 +55,14 @@ if(_debug) then {
     [_position] call ALIVE_fnc_placeDebugMarker;
 };
 
-_isEmpty = false;
+private _isEmpty = false;
 
 for "_i" from 1 to 4 do {
     
 	if(count _nearRoads > 0) then {
 	    _road = _nearRoads select 0;
+        _isEmpty = false;
+        _isFlatEmpty = false;
         
 	    _roadConnectedTo = roadsConnectedTo _road;
 	    _connectedRoad = _roadConnectedTo select 0;
@@ -74,23 +76,35 @@ for "_i" from 1 to 4 do {
         _position = _road getpos [1.5,_direction-90];
         
 	} else {
-        _direction = (direction _building) + ((floor _i)*90);
+        _direction = ((direction _building)-90) + ((floor _i)*90);
         _position = (getpos _building) getpos [_longest + 5, _direction];
+
+        _position = _position findEmptyPosition [_longest, 50, _vehicleClass];
          
         _direction = _direction - 90;
     };
-    
-    private _list = (nearestObjects [_position, ["House","Wall"], 15]) + (nearestTerrainObjects [_position, ["TREE","SMALL TREE","ROCK","ROCKS","FENCE", "WALL","HIDE"],_vehicleMapSize + 1]);    
-    _list = [_list,[_position],{_Input0 distance _x},"ASCENDING"] call ALiVE_fnc_SortBy;
-    _list = if (count _list > 0) then {[_list select 0]} else {[]};
-    
-    _isEmpty = {_position_1 = getpos _x; _position_2 = +_position; _position_1 set [2,1]; _position_2 set [2,1]; lineIntersects [_position_1, _position_2]} count _list == 0;     
+
+    if (count _position >= 2) then {
+        private _list = (nearestObjects [_position, ["House","Wall"], 15]) + (nearestTerrainObjects [_position, ["TREE","SMALL TREE","ROCK","ROCKS","FENCE", "WALL","HIDE"],_vehicleMapSize + 1]);    
+        _list = [_list,[_position],{_Input0 distance _x},"ASCENDING"] call ALiVE_fnc_SortBy;
+        _list = if (count _list > 0) then {[_list select 0]} else {[]};
+        
+        _isEmpty = {_position_1 = getpos _x; _position_2 = +_position; _position_1 set [2,1]; _position_2 set [2,1]; lineIntersects [_position_1, _position_2]} count _list == 0;     
+    };
 
     if (_isEmpty) exitwith {
         if(_debug) then {
             ["ALiVE getParkingPosition found empty parking position at %1 in direction %2",_position,_direction] call ALiVE_fnc_DumpR;
         };
     };
+};
+
+if (!_isEmpty || {isNil "_position"} || {count _position < 2}) exitwith {
+        if(_debug) then {
+            ["ALiVE getParkingPosition didn't find any suiting parking position!",_position,_direction] call ALiVE_fnc_DumpR;
+        };
+
+    [];
 };
 
 if (!_isEmpty) then {
