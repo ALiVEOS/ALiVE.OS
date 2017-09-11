@@ -1207,26 +1207,30 @@ switch(_operation) do {
                                 //["VEHICLE CLASS: %1",_vehicleClass] call ALIVE_fnc_dump;
 
                                 _parkingPosition = [_vehicleClass,_building] call ALIVE_fnc_getParkingPosition;
-                                _positionOK = true;
 
-                                {
-                                    _position = _x select 0;
-                                    if((_parkingPosition select 0) distance _position < 10) then {
-                                        _positionOK = false;
-                                    };
-                                } forEach _usedPositions;
+                                if (count _parkingPosition == 2) then {
 
-                                //["POS OK: %1",_positionOK] call ALIVE_fnc_dump;
+                                    private _positionOK = true;
 
-                                if(_positionOK) then {
-                                    [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                                    {
+                                        _position = _x select 0;
+                                        if((_parkingPosition select 0) distance _position < 10) then {
+                                            _positionOK = false;
+                                        };
+                                    } forEach _usedPositions;
 
-                                    _countLandUnits = _countLandUnits + 1;
+                                    //["POS OK: %1",_positionOK] call ALIVE_fnc_dump;
 
-                                    _usedPositions pushback _parkingPosition;
+                                    if(_positionOK) then {
+                                        [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction] call ALIVE_fnc_createProfileVehicle;
 
-                                    if(_supportPlacement) then {
-                                        _supportCount = _supportCount + 1;
+                                        _countLandUnits = _countLandUnits + 1;
+
+                                        _usedPositions pushback _parkingPosition;
+
+                                        if(_supportPlacement) then {
+                                            _supportCount = _supportCount + 1;
+                                        };
                                     };
                                 };
                             };
