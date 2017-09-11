@@ -863,18 +863,23 @@ switch(_operation) do {
             { // forEach
                 private _housePosition = getPosATL _x;
                 private _sector = [ALIVE_sectorGrid, "positionToSector", _housePosition] call ALIVE_fnc_sectorGrid;
-                private _sectorID = [_sector, "id"] call ALiVE_fnc_sector;
 
-                // Divide sector into x rows and columns
-                private _subSector = [_sector, SUBGRID_SIZE, _housePosition] call ALiVE_fnc_positionToSubSector;
-                private _subSectorID = [_subSector, "id"] call ALiVE_fnc_sector;
-                private _subSectorDimensions = [_subSector, "dimensions"] call ALiVE_fnc_sector;
-                private _subSectorPosition = [_subSector, "position"] call ALiVE_fnc_sector;
+                // Make sure we got back a hash because we might be testing a
+                // position outside the ALIVE_sectorGrid returning ["",[],[],nil]
+                if ([_sector] call CBA_fnc_isHash) then {
+                    private _sectorID = [_sector, "id"] call ALiVE_fnc_sector;
 
-                if (!isNil "_sectorID" && !isNil "_subSectorID") then {
-                    if (!(_sectorID in _cleared) && !(_subSectorID in _cleared)) then {
-                        _houses pushBack _x;
-                        _x setVariable ["sectorID", _subSectorID];
+                    // Divide sector into x rows and columns
+                    private _subSector = [_sector, SUBGRID_SIZE, _housePosition] call ALiVE_fnc_positionToSubSector;
+                    private _subSectorID = [_subSector, "id"] call ALiVE_fnc_sector;
+                    private _subSectorDimensions = [_subSector, "dimensions"] call ALiVE_fnc_sector;
+                    private _subSectorPosition = [_subSector, "position"] call ALiVE_fnc_sector;
+
+                    if (!isNil "_sectorID" && !isNil "_subSectorID") then {
+                        if (!(_sectorID in _cleared) && !(_subSectorID in _cleared)) then {
+                            _houses pushBack _x;
+                            _x setVariable ["sectorID", _subSectorID];
+                        };
                     };
                 };
             } forEach _args;
