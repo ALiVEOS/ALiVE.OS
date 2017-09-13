@@ -75,6 +75,7 @@ private _multiplyMatrixFunc =
 private _objects = [];
 private _positions = [];
 private _azis = [];
+private _created = [];
 private _isFurniture = false;
 
 if (str(_config) find "Furniture" != -1) then {
@@ -125,8 +126,9 @@ for "_i" from 0 to ((count _objects) - 1) do {
     } else {
         _newObj setDir (_azi + _azimuth);
         _newObj setPos _newPos;
-    };
 
+        _created pushBack _newObj;
+    };
 };
 
 if (isNil QMOD(PCOMPOSITIONS)) then {
@@ -148,3 +150,12 @@ if !(_position in (_comp select 0)) then {
     (_comp select 1) pushBack [_config,_azi,_faction];
     [MOD(PCOMPOSITIONS), "compositions",_comp] call ALiVE_fnc_hashSet;
 };
+
+// Save created objects for removal during runtime
+_charge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo",_position, [], 0, "CAN_COLLIDE"];
+_charge setvariable [QGVAR(COMPOSITION_OBJECTS),_created];
+_charge enableSimulation false;
+_charge hideObject true;
+
+
+
