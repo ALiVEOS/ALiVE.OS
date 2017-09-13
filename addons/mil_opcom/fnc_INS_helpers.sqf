@@ -469,7 +469,7 @@ ALiVE_fnc_INS_roadblocks = {
                 };
                 
                 // Identify location
-                [_objective,"roadblocks",[[],"convertObject",_pos nearestObject "Building"] call ALiVE_fnc_OPCOM] call ALiVE_fnc_HashSet;
+                [_objective,"roadblocks",[[],"convertObject",_pos nearestObject ""] call ALiVE_fnc_OPCOM] call ALiVE_fnc_HashSet;
 
                 _event = ['OPCOM_RESERVE',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
                 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
