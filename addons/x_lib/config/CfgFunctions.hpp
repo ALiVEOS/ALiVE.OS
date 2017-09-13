@@ -314,6 +314,13 @@ class spawnComposition
 	RECOMPILE;
 };
 
+class removeComposition
+{
+	file = "\x\alive\addons\x_lib\functions\composition\fnc_removeComposition.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class spawnRandomPopulatedComposition
 {
 	file = "\x\alive\addons\x_lib\functions\composition\fnc_spawnRandomPopulatedComposition.sqf";
