@@ -437,10 +437,39 @@ ALiVE_fnc_INS_roadblocks = {
                 [_pos,_size,_CQB] call ALiVE_fnc_addCQBpositions;
 
                 // Spawn roadblock only if it hasn't been set up already (esp. if it has been reloaded from DB)
-                if (isnil "ALiVE_CIV_PLACEMENT_ROADBLOCKS" || {{_pos distance _x < _size} count ALiVE_CIV_PLACEMENT_ROADBLOCKS < ceil(_size/200)}) then {[_pos, _size, ceil(_size/200), false] call ALiVE_fnc_createRoadblock};
+                if (isnil "ALiVE_CIV_PLACEMENT_ROADBLOCKS" || {{_pos distance _x < _size} count ALiVE_CIV_PLACEMENT_ROADBLOCKS < ceil(_size/200)}) then {
+                    private _road = [_pos, _size, ceil(_size/200), false] call ALiVE_fnc_createRoadblock;
+
+                    private _charge = "ALIVE_DemoCharge_Remote_Ammo" createvehicle (getpos _road);
+
+                    [
+                        _charge,
+                        "disable the roadblock!",
+                        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+                        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+                        "_this distance2D _target < 2.5",
+                        "_caller distance2D _target < 2.5",
+                        {},
+                        {},
+                        {
+                            params ["_target", "_caller", "_ID", "_arguments"];
+
+                            private _charge = _arguments select 0;
+
+                            [getpos _charge,30] remoteExec  ["ALiVE_fnc_RemoveComposition",2];
+
+                            ["Nice Job", format ["%1 disabled the roadblock at grid %2!",name _caller, mapGridPosition _target]] call BIS_fnc_showSubtitle;
+
+                            deletevehicle _charge;
+                        },
+                        {},
+                        [_charge],
+                        15
+                    ] remoteExec ["BIS_fnc_holdActionAdd", 0];
+                };
                 
                 // Identify location
-                [_objective,"roadblocks",[[],"convertObject",_pos nearestObject ""] call ALiVE_fnc_OPCOM] call ALiVE_fnc_HashSet;
+                [_objective,"roadblocks",[[],"convertObject",_pos nearestObject "Building"] call ALiVE_fnc_OPCOM] call ALiVE_fnc_HashSet;
 
                 _event = ['OPCOM_RESERVE',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
                 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
