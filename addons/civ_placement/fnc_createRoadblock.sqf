@@ -18,7 +18,7 @@ Returns:
 Boolean - success flag
 
 Example(s):
-null = [group this,(getPos this)] call ALiVE_fnc_createRoadBlock
+_selectedRoadObject = [group this,(getPos this)] call ALiVE_fnc_createRoadBlock
 
 -----------------------------------------------------------------------------------------------------------------------
 Notes:
@@ -182,3 +182,6 @@ for "_j" from 1 to (count _roadpoints) do {
 
 };
 
+if !(isnil "_roadpos") then {
+    _roadpos;
+};
