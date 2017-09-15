@@ -16,11 +16,11 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=657;
+		nextID=662;
 	};
 	class Camera
 	{
-		pos[]={20770.568,35.277424,7244.6929};
+		pos[]={20725.846,79.376129,7219.5068};
 		dir[]={0.81892657,-0.36750153,0.44106591};
 		up[]={0.32390946,0.92984587,0.17445435};
 		aside[]={0.47423214,-5.0810631e-006,-0.88051319};
@@ -40,7 +40,7 @@ addons[]=
 	"A3_Structures_F_Heli_Civ_Market",
 	"A3_Misc_F_Helpers",
 	"A3_Structures_F_EPA_Civ_Constructions",
-	"ALiVE_Missions",
+	"Desert",
 	"A3_Ui_F",
 	"A3_Structures_F_Civ_Camping",
 	"A3_Weapons_F",
@@ -134,8 +134,8 @@ class AddonsMetaData
 		};
 		class Item7
 		{
-			className="ALiVE_Missions";
-			name="ALiVE_Missions";
+			className="Desert";
+			name="Desert";
 		};
 		class Item8
 		{
@@ -3907,7 +3907,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="Infantry";
+							value="Mechanized";
 						};
 					};
 				};
