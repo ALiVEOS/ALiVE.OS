@@ -6,8 +6,8 @@ SCRIPT(test_baseClass);
 //execVM "\x\alive\addons\main\tests\test_anyPlayersInRangeExcludeAir.sqf"
 
 // ----------------------------------------------------------------------------
-
-private ["_result"];
+
+private ["_result"];
 
 LOG("Testing BaseClass");
 
