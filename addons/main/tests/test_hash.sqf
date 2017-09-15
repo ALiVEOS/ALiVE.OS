@@ -22,7 +22,7 @@ waitUntil{CONT}; \
 diag_log ["TEST("+str player+": "+msg]; \
 titleText [msg,"PLAIN"]
 
-private ["_expected","_returned","_hash","_value"];
+private ["_expected","_returned","_hash","_value"];
 
 STAT("Test Create Hash");
 _expected = [];
