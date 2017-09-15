@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=662;
+		nextID=667;
 	};
 	class Camera
 	{
@@ -40,7 +40,7 @@ addons[]=
 	"A3_Structures_F_Heli_Civ_Market",
 	"A3_Misc_F_Helpers",
 	"A3_Structures_F_EPA_Civ_Constructions",
-	"Desert",
+	"ALiVE_Missions",
 	"A3_Ui_F",
 	"A3_Structures_F_Civ_Camping",
 	"A3_Weapons_F",
@@ -134,8 +134,8 @@ class AddonsMetaData
 		};
 		class Item7
 		{
-			className="Desert";
-			name="Desert";
+			className="ALiVE_Missions";
+			name="ALiVE_Missions";
 		};
 		class Item8
 		{
