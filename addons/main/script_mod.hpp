@@ -3,8 +3,8 @@
 
 // TODO: Consider Mod-wide or Component-narrow versions (or both, depending on wishes!)
 #define MAJOR 1
-#define MINOR 3
-#define PATCHLVL 7
+#define MINOR 4
+#define PATCHLVL 0
 // BUILD should be YYMMDDR eg 1311211
 #define BUILD 1709151
 
