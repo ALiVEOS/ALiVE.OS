@@ -458,7 +458,7 @@ ALiVE_fnc_INS_roadblocks = {
 
                             [getpos _charge,30] remoteExec  ["ALiVE_fnc_RemoveComposition",2];
 
-                            ["Nice Job", format ["%1 disabled the roadblock at grid %2!",name _caller, mapGridPosition _target]] call BIS_fnc_showSubtitle;
+                            ["Nice Job", format ["%1 disabled the roadblock at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side _caller];
 
                             deletevehicle _charge;
                         },
@@ -758,7 +758,7 @@ ALiVE_fnc_INS_spawnIEDfactory = {
 
             [_target, _caller] remoteExec ["ALIVE_fnc_INS_buildingKilledEH",2];
 
-            ["Nice Job", format ["%1 disabled the IED factory at grid %2!",name _caller, mapGridPosition _target]] call BIS_fnc_showSubtitle;
+            ["Nice Job", format ["%1 disabled the IED factory at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side _caller];
         },
         {},
         [],
@@ -794,7 +794,7 @@ ALiVE_fnc_INS_spawnHQ = {
             _target setVariable [QGVAR(HQ_DISABLED),true,true];
             [_target, _caller] remoteExec ["ALIVE_fnc_INS_buildingKilledEH",2];
 
-            ["Congratulations", format ["%1 disabled the Recruitment HQ at grid %2!",name _caller, mapGridPosition _target]] call BIS_fnc_showSubtitle;
+            ["Congratulations", format ["%1 disabled the Recruitment HQ at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side _caller];
         },
         {},
         [],
@@ -832,7 +832,7 @@ ALiVE_fnc_INS_spawnDepot = {
             _target setVariable [QGVAR(DEPOT_DISABLED),true,true];
             [_target, _caller] remoteExec ["ALIVE_fnc_INS_buildingKilledEH",2];
 
-            ["Good work", format ["%1 disabled the weapons depot at grid %2!",name _caller, mapGridPosition _target]] call BIS_fnc_showSubtitle;
+            ["Good work", format ["%1 disabled the weapons depot at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side _caller];
         },
         {},
         [],
