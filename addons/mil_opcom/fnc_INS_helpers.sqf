@@ -465,7 +465,7 @@ ALiVE_fnc_INS_roadblocks = {
                         {},
                         [_charge],
                         15
-                    ] remoteExec ["BIS_fnc_holdActionAdd", 0];
+                    ] remoteExec ["BIS_fnc_holdActionAdd", 0,true];
                 };
                 
                 // Identify location
@@ -763,7 +763,7 @@ ALiVE_fnc_INS_spawnIEDfactory = {
         {},
         [],
         10 + ((count (_building getvariable [QGVAR(furnitured),[]]))*4)
-    ] remoteExec ["BIS_fnc_holdActionAdd", 0];
+    ] remoteExec ["BIS_fnc_holdActionAdd", 0, true];
 
     [_building,true,false,false] call ALiVE_fnc_spawnFurniture;
 };
@@ -799,7 +799,7 @@ ALiVE_fnc_INS_spawnHQ = {
         {},
         [],
         10 + ((count (_building getvariable [QGVAR(furnitured),[]]))*4)
-    ] remoteExec ["BIS_fnc_holdActionAdd", 0];
+    ] remoteExec ["BIS_fnc_holdActionAdd", 0,true];
 
     [_building,true,false,false] call ALiVE_fnc_spawnFurniture;
 
@@ -837,7 +837,7 @@ ALiVE_fnc_INS_spawnDepot = {
         {},
         [],
         10 + ((count (_building getvariable [QGVAR(furnitured),[]]))*4)
-    ] remoteExec ["BIS_fnc_holdActionAdd", 0];    
+    ] remoteExec ["BIS_fnc_holdActionAdd", 0,true];    
 
     [_building,true,false,true] call ALiVE_fnc_spawnFurniture;
 };
