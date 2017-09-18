@@ -11,7 +11,6 @@
     Section: General Function Initialization
 */
 
-[] call ALiVE_fnc_isHC;
 [] call ALiVE_fnc_BUS;
 
 /* Load Logging Configuration */
