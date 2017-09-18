@@ -57,7 +57,7 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
     private _HC_index = 0;
     private _debug = false;
 
-    waitUntil {!isNil 'MOD(REQUIRE_INITIALISED)'};
+    waitUntil {!isNil QMOD(REQUIRE_INITIALISED)};
 
     ["ALIVE AI Distributor firing up."] call ALiVE_fnc_Dump;
 
