@@ -1468,6 +1468,13 @@ class isAbleToHost
 	RECOMPILE;
 };
 
+class isHC
+{
+	file = "\x\alive\addons\x_lib\functions\misc\fnc_isHC.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class isServerAdmin
 {
 	file = "\x\alive\addons\x_lib\functions\misc\fnc_isServerAdmin.sqf";
