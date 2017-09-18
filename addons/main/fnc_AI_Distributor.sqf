@@ -15,7 +15,7 @@ Examples:
 (begin example)
 [true] spawn ALiVE_fnc_AI_Distributor
 [true, 30] spawn ALiVE_fnc_AI_Distributor
-[] spawn ALiVE_fnc_AI_Distributor
+[false] spawn ALiVE_fnc_AI_Distributor
 (end)
 
 See Also:
@@ -36,15 +36,18 @@ if (!isServer) exitwith {["ALiVE AI Distributor should ONLY run on the server !"
 waituntil {time > 0};
 
 // ACEX Headless detection //
-if ((isClass(configFile >> "CfgPatches" >> "acex_headless")) && {!isNil "acex_headless_enabled"}) exitWith {["ALiVE AI Distributor detected ACEX Headless module enabled, shutting down !"] call ALiVE_fnc_Dump};
+if ((isClass(configFile >> "CfgPatches" >> "acex_headless")) && !(isNil "acex_headless_enabled")) exitWith {["ALiVE AI Distributor detected ACEX Headless module enabled, shutting down !"] call ALiVE_fnc_Dump};
 
 GVAR(AI_DISTRIBUTOR_MODE) = _mode;
 
+// Handle mode: <false> (disabled) calls //
+if (!GVAR(AI_DISTRIBUTOR_MODE) && (isNil QGVAR(AI_DISTRIBUTOR))) exitWith {["ALiVE AI Distributor not enabled (mode: %1).", GVAR(AI_DISTRIBUTOR_MODE)] call ALiVE_fnc_Dump};
+
 // Handle duplicate calls //
-if (GVAR(AI_DISTRIBUTOR_MODE) && {!isNil QGVAR(AI_DISTRIBUTOR)}) exitwith {["ALiVE AI Distributor already running !"] call ALiVE_fnc_Dump};
+if (GVAR(AI_DISTRIBUTOR_MODE) && !(isNil QGVAR(AI_DISTRIBUTOR))) exitwith {["ALiVE AI Distributor already running !"] call ALiVE_fnc_Dump};
 
 // Handle shutdown call //
-if (!GVAR(AI_DISTRIBUTOR_MODE) && {!isNil QGVAR(AI_DISTRIBUTOR)}) exitWith {
+if (!GVAR(AI_DISTRIBUTOR_MODE) && !(isNil QGVAR(AI_DISTRIBUTOR))) exitWith {
     ["ALiVE AI Distributor shutting down (mode: %1).", GVAR(AI_DISTRIBUTOR_MODE)] call ALiVE_fnc_Dump;
     terminate GVAR(AI_DISTRIBUTOR);
 };
@@ -59,7 +62,7 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
 
     waitUntil {MOD(REQUIRE_INITIALISED)};
 
-    ["ALIVE AI Distributor firing up."] call ALiVE_fnc_Dump;
+    ["ALIVE AI Distributor starting."] call ALiVE_fnc_Dump;
 
     while {GVAR(AI_DISTRIBUTOR_MODE)} do {
 
@@ -69,12 +72,12 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
         // Detect HCs //
         GVAR(AI_DISTRIBUTOR_HCLIST) = [];
 
-		{
-			if ((typeOf _x) == "HeadlessClient_F") then
-			{
-				GVAR(AI_DISTRIBUTOR_HCLIST) pushBack _x;
-			};
-		} forEach allPlayers;
+        {
+            if ((typeOf _x) == "HeadlessClient_F") then
+            {
+                GVAR(AI_DISTRIBUTOR_HCLIST) pushBack _x;
+            };
+        } forEach allPlayers;
 
         {
             // Abandon loop if no HCs connected //
@@ -117,5 +120,5 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
         sleep _delay;
     };
 
-    ["ALiVE AI Distributor spooled down."] call ALiVE_fnc_Dump;
+    ["ALiVE AI Distributor stopped."] call ALiVE_fnc_Dump;
 };
