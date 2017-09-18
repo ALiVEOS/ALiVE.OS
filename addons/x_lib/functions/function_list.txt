@@ -252,6 +252,7 @@ misc
 	ALiVE_fnc_getPos
 	ALiVE_fnc_getSideFactions
 	ALiVE_fnc_isAbleToHost
+	ALiVE_fnc_isHC
 	ALiVE_fnc_isServerAdmin
 	ALiVE_fnc_param
 	ALiVE_fnc_pointAt
