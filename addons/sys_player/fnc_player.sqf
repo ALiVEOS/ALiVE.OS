@@ -126,10 +126,17 @@ switch(_operation) do {
 
             MOD(sys_player) setVariable ["saved", false];
 
-           MOD(sys_player) setVariable ["super", QUOTE(SUPERCLASS)];
-           MOD(sys_player) setVariable ["class", QUOTE(MAINCLASS)];
+            MOD(sys_player) setVariable ["super", QUOTE(SUPERCLASS)];
+            MOD(sys_player) setVariable ["class", QUOTE(MAINCLASS)];
 
-           if !(_logic getVariable ["enablePlayerPersistence",true]) exitWith {_logic setVariable ["bis_fnc_initModules_activate",true]; ["ALiVE SYS PLAYER - Feature turned off! Exiting..."] call ALiVE_fnc_Dump};
+            if !(_logic getVariable ["enablePlayerPersistence",true]) exitWith {
+                _logic setVariable ["bis_fnc_initModules_activate",true];
+
+                MOD(sys_player) setVariable ["init", true, true];
+                MOD(sys_player) setVariable ["startupComplete", true, true];
+
+                ["ALiVE SYS PLAYER - Feature turned off! Exiting..."] call ALiVE_fnc_Dump;
+            };
 
             // DEFINE PLAYER DATA
             #include <playerData.hpp>
