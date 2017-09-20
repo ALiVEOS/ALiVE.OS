@@ -39,7 +39,7 @@ class CfgVehicles {
                             property = "ALiVE_MIL_C2ISTAR_debug";
                             displayName = "$STR_ALIVE_C2ISTAR_DEBUG";
                             tooltip = "$STR_ALIVE_C2ISTAR_DEBUG_COMMENT";
-                            defaultValue = """false""";
+                            defaultValue = "false";
                             class Values
                             {
                                     class Yes
@@ -93,18 +93,23 @@ class CfgVehicles {
                             property = "ALiVE_MIL_C2ISTAR_autoGenerateBlufor";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_COMMENT";
-                            defaultValue = """false""";
+                            defaultValue = """None""";
                             class Values
                             {
-                                    class No
+                                    class None
                                     {
-                                            name = "No";
-                                            value = "false";
+                                            name = "None";
+                                            value = "None";
                                     };
-                                    class Yes
+                                    class Strategic
                                     {
-                                            name = "Yes";
-                                            value = "true";
+                                            name = "Strategic";
+                                            value = "Strategic";
+                                    };
+                                    class Constant
+                                    {
+                                            name = "Constant";
+                                            value = "Constant";
                                     };
                             };
                     };
@@ -127,18 +132,23 @@ class CfgVehicles {
                             property = "ALiVE_MIL_C2ISTAR_autoGenerateOpfor";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_COMMENT";
-                            defaultValue = """false""";
+                            defaultValue = """None""";
                             class Values
                             {
-                                    class No
+                                    class None
                                     {
-                                            name = "No";
-                                            value = "false";
+                                            name = "None";
+                                            value = "None";
                                     };
-                                    class Yes
+                                    class Strategic
                                     {
-                                            name = "Yes";
-                                            value = "true";
+                                            name = "Strategic";
+                                            value = "Strategic";
+                                    };
+                                    class Constant
+                                    {
+                                            name = "Constant";
+                                            value = "Constant";
                                     };
                             };
                     };
@@ -161,18 +171,23 @@ class CfgVehicles {
                             property = "ALiVE_MIL_C2ISTAR_autoGenerateIndfor";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_COMMENT";
-                            defaultValue = """false""";
+                            defaultValue = """None""";
                             class Values
                             {
-                                    class No
+                                    class None
                                     {
-                                            name = "No";
-                                            value = "false";
+                                            name = "None";
+                                            value = "None";
                                     };
-                                    class Yes
+                                    class Strategic
                                     {
-                                            name = "Yes";
-                                            value = "true";
+                                            name = "Strategic";
+                                            value = "Strategic";
+                                    };
+                                    class Constant
+                                    {
+                                            name = "Constant";
+                                            value = "Constant";
                                     };
                             };
                     };
@@ -194,7 +209,7 @@ class CfgVehicles {
                     class GROUP_MANAGEMENT: ALiVE_ModuleSubTitle
                     {
                             property = QGVAR(__LINE__);
-                            displayName = " GROUP MANAGEMENT PARAMETERS ";
+                            displayName = " GROUP MANAGEMENT PARAMETERS";
                     };
                     class gmLimit : Combo
                     {
@@ -306,7 +321,6 @@ class CfgVehicles {
                                     {
                                             name = "$STR_ALIVE_C2ISTAR_SCOM_INTEL_LIMIT_SIDE";
                                             value = "SIDE";
-                                            default = 1;
                                     };
                                     class FACTION
                                     {

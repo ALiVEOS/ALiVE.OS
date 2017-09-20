@@ -35,7 +35,7 @@
 	[_taskData,"title","Neutralise Enemy"] call ALIVE_fnc_hashSet;
 	[_taskData,"description","Neutralise all enemy in the vicinity in order to secure the objective"] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_start",[["PLAYERS","My callsign established in overwatch position, Over"],["HQ","Assault Objective"]]] call ALIVE_fnc_hashSet;
-	[_taskData,"chat_success",[["PLAYERS","All enemy area have been neutralised, objective is secure, Over"],["HQ","Roger, send SITREP and standby for further tasking, Out."]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_success",[["PLAYERS","All enemy in the area have been neutralised, objective is secure, Over"],["HQ","Roger, send SITREP and standby for further tasking, Out."]]] call ALIVE_fnc_hashSet;
 	[_taskData,"reward",["forcePool",10]] call ALIVE_fnc_hashSet;
 	[_tasksData,"Destroy",_taskData] call ALIVE_fnc_hashSet;
 
@@ -63,6 +63,29 @@
 	_options set [count _options,_tasksData];
 
 	[ALIVE_generatedTasks, "MilAssault", ["Military Objective Assault",_options]] call ALIVE_fnc_hashSet;
+
+// Military Objective Capture Task
+
+	_options = [];
+
+	_tasksData = [] call ALIVE_fnc_hashCreate;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Capture Objective"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Capture the objective near %1, neutralising all enemy and denying any weapons and materiel."] call ALIVE_fnc_hashSet;
+	[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Clear Area of Enemy"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Neutralise all enemy in the vicinity in order to secure the objective. Friendly forces will be in the area."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","We need immediate assistance in capturing an objective near %1, assault objective, watch for friendlies. Over."],["PLAYERS","Roger Out"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_success",[["PLAYERS","All enemy in the area have been neutralised, objective is secure, Over"],["HQ","Roger, send SITREP and standby for further tasking, Out."]]] call ALIVE_fnc_hashSet;
+	[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
+	[_tasksData,"Destroy",_taskData] call ALIVE_fnc_hashSet;
+
+	_options set [count _options,_tasksData];
+
+	[ALIVE_generatedTasks, "CaptureObjective", ["Capture Military Objective",_options]] call ALIVE_fnc_hashSet;
 
 // Military Objective Defence Task
 

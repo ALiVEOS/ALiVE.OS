@@ -1771,7 +1771,7 @@ switch(_operation) do {
 
                                 if(_sideAutoGeneration select 0) then {
 
-                                    sleep 10;
+                                    sleep (10 + (random 50));
 
                                     private ["_requestPlayerID","_taskFaction","_taskEnemyFaction","_generate"];
 

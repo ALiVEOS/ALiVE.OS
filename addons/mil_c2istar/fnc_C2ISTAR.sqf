@@ -50,6 +50,7 @@ Peer Reviewed:
 #define DEFAULT_TASK_REVISION ""
 #define DEFAULT_TASK_ID ""
 #define DEFAULT_FACTION ""
+#define DEFAULT_AUTO_TASK_TYPE "None"
 
 #define DEFAULT_GM_LIMIT "SIDE"
 
@@ -147,7 +148,6 @@ switch(_operation) do {
             [_logic, "destroy"] call SUPERCLASS;
         };
     };
-
     case "debug": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["debug", _args];
@@ -181,17 +181,13 @@ switch(_operation) do {
     };
     case "autoGenerateBlufor": {
         if (typeName _args == "BOOL") then {
-            _logic setVariable ["autoGenerateBlufor", _args];
-        } else {
-            _args = _logic getVariable ["autoGenerateBlufor", false];
+            if (_args) then {
+                _args = "Constant";
+            } else {
+                _args = "None";
+            };
         };
-        if (typeName _args == "STRING") then {
-                if(_args == "true") then {_args = true;} else {_args = false;};
-                _logic setVariable ["autoGenerateBlufor", _args];
-        };
-        ASSERT_TRUE(typeName _args == "BOOL",str _args);
-
-        _result = _args;
+        _result = [_logic,_operation,_args,DEFAULT_AUTO_TASK_TYPE] call ALIVE_fnc_OOsimpleOperation;
     };
     case "autoGenerateBluforFaction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION] call ALIVE_fnc_OOsimpleOperation;
@@ -201,17 +197,13 @@ switch(_operation) do {
     };
     case "autoGenerateIndfor": {
         if (typeName _args == "BOOL") then {
-            _logic setVariable ["autoGenerateIndfor", _args];
-        } else {
-            _args = _logic getVariable ["autoGenerateIndfor", false];
+            if (_args) then {
+                _args = "Constant";
+            } else {
+                _args = "None";
+            };
         };
-        if (typeName _args == "STRING") then {
-                if(_args == "true") then {_args = true;} else {_args = false;};
-                _logic setVariable ["autoGenerateIndfor", _args];
-        };
-        ASSERT_TRUE(typeName _args == "BOOL",str _args);
-
-        _result = _args;
+        _result = [_logic,_operation,_args,DEFAULT_AUTO_TASK_TYPE] call ALIVE_fnc_OOsimpleOperation;
     };
     case "autoGenerateIndforFaction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION] call ALIVE_fnc_OOsimpleOperation;
@@ -221,17 +213,13 @@ switch(_operation) do {
     };
     case "autoGenerateOpfor": {
         if (typeName _args == "BOOL") then {
-            _logic setVariable ["autoGenerateOpfor", _args];
-        } else {
-            _args = _logic getVariable ["autoGenerateOpfor", false];
+            if (_args) then {
+                _args = "Constant";
+            } else {
+                _args = "None";
+            };
         };
-        if (typeName _args == "STRING") then {
-                if(_args == "true") then {_args = true;} else {_args = false;};
-                _logic setVariable ["autoGenerateOpfor", _args];
-        };
-        ASSERT_TRUE(typeName _args == "BOOL",str _args);
-
-        _result = _args;
+        _result = [_logic,_operation,_args,DEFAULT_AUTO_TASK_TYPE] call ALIVE_fnc_OOsimpleOperation;
     };
     case "autoGenerateOpforFaction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION] call ALIVE_fnc_OOsimpleOperation;
@@ -347,11 +335,9 @@ switch(_operation) do {
 
         _result = _args;
     };
-
     case "displayTraceGrid": {
         _result = [_logic,_operation,_args,DEFAULT_TRACEFILL] call ALIVE_fnc_OOsimpleOperation;
     };
-
     case "runEvery": {
         if(typeName _args == "STRING") then {
             _args = parseNumber(_args);
@@ -365,8 +351,6 @@ switch(_operation) do {
             _result = floor(_result * 60);
         };
     };
-
-
     case "state": {
         _result = [_logic,_operation,_args,DEFAULT_STATE] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -376,11 +360,9 @@ switch(_operation) do {
     case "faction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION] call ALIVE_fnc_OOsimpleOperation;
     };
-
     case "taskingState": {
         _result = [_logic,_operation,_args,DEFAULT_TASKING_STATE] call ALIVE_fnc_OOsimpleOperation;
     };
-
     case "taskMarker": {
         _result = [_logic,_operation,_args,DEFAULT_TASKING_MARKER] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -399,7 +381,6 @@ switch(_operation) do {
     case "taskID": {
         _result = [_logic,_operation,_args,DEFAULT_TASK_ID] call ALIVE_fnc_OOsimpleOperation;
     };
-
 
     case "init": {
 
@@ -485,7 +466,7 @@ switch(_operation) do {
 
                 sleep 120;
 
-                if(_autoGenerateBLUFOR) then {
+                if(_autoGenerateBLUFOR == "Constant") then {
 
                     private _taskData = [];
                     _taskData set [0,"BLUFOR_TASK1"];
@@ -498,7 +479,7 @@ switch(_operation) do {
                     [ALIVE_taskHandler, "autoGenerateTasks", _taskData] call ALIVE_fnc_taskHandler;
                 };
 
-                if(_autoGenerateOPFOR) then {
+                if(_autoGenerateOPFOR == "Constant") then {
 
                     _taskData = [];
                     _taskData set [0,"OPFOR_TASK1"];
@@ -511,7 +492,7 @@ switch(_operation) do {
                     [ALIVE_taskHandler, "autoGenerateTasks", _taskData] call ALIVE_fnc_taskHandler;
                 };
 
-                if(_autoGenerateINDFOR) then {
+                if(_autoGenerateINDFOR == "Constant") then {
 
                     _taskData = [];
                     _taskData set [0,"INDFOR_TASK1"];
@@ -582,6 +563,16 @@ switch(_operation) do {
                 {deleteMarker _x} foreach _grid;
 
                 _logic setvariable ["grid",nil];
+            };
+
+            if (_debug) then {
+                ["---------------------------- ALiVE C2ISTAR %1 - Initial Settings ---------------------------------", _logic] call ALiVE_fnc_dump;
+                private _settings = allVariables _logic;
+                _settings = _settings - ["super","class"];
+                {
+                    ["C2ISTAR %1 %2 : %3", _logic, _x, _logic getVariable _x] call ALiVE_fnc_dump;
+                } foreach _settings;
+                ["---------------------------------------------------------------------------------------------------", _logic] call ALiVE_fnc_dump;
             };
         };
 
@@ -736,8 +727,8 @@ switch(_operation) do {
         };
 
         [_logic, "start"] call MAINCLASS;
-
     };
+
     case "start": {
 
         // set module as startup complete
@@ -749,14 +740,15 @@ switch(_operation) do {
             [_logic,"listen"] call MAINCLASS;
 
         };
-
     };
+
     case "listen": {
         private["_listenerID"];
 
         _listenerID = [ALIVE_eventLog, "addListener",[_logic, ["TASKS_UPDATED"]]] call ALIVE_fnc_eventLog;
         _logic setVariable ["listenerID", _listenerID];
     };
+
     case "handleEvent": {
 
         private["_event","_eventData"];
@@ -792,6 +784,7 @@ switch(_operation) do {
 
         };
     };
+
     case "handleServerResponse": {
 
         // event handler for response from server
@@ -2045,8 +2038,8 @@ switch(_operation) do {
             };
 
         };
-
     };
+
     case "loadInitialData": {
 
         private ["_side","_playerID","_event"];
@@ -2065,6 +2058,7 @@ switch(_operation) do {
             [_event] remoteExec ["ALIVE_fnc_addEventToServer", 2];
         };
     };
+
     case "updateCurrentTaskList": {
 
         private["_taskState","_autoGenerateState","_taskingState","_task","_newTask","_newPlayers","_newPlayerIDs","_newPlayerNames","_players",
@@ -2185,8 +2179,8 @@ switch(_operation) do {
         } forEach _listOptions;
 
         _taskCurrentList ctrlSetEventHandler ["LBSelChanged", "['TASK_CURRENT_TASK_LIST_SELECT',[_this]] call ALIVE_fnc_C2TabletOnAction"];
-
     };
+
     case "disableAll": {
 
         [_logic,"disableMainMenu"] call MAINCLASS;
@@ -2200,8 +2194,8 @@ switch(_operation) do {
         [_logic,"disableGenerateTask"] call MAINCLASS;
         [_logic,"disableGenerateTaskManagePlayers"] call MAINCLASS;
         [_logic,"disableAutoGenerateTasks"] call MAINCLASS;
-
     };
+
     case "enableTasking": {
 
         private ["_taskingState","_autoGenerate","_title","_backButton","_abortButton","_addTaskButton","_generateTaskButton","_autoGenerateTaskButton"];
@@ -2253,8 +2247,8 @@ switch(_operation) do {
 
         _taskCurrentDeleteButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskCurrentListDeleteButton);
         _taskCurrentDeleteButton ctrlShow false;
-
     };
+
     case "disableTasking": {
 
         private ["_title","_backButton","_abortButton","_playerList","_addTaskButton","_generateTaskButton","_autoGenerateTaskButton"];
@@ -2289,8 +2283,8 @@ switch(_operation) do {
 
         _taskCurrentDeleteButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskCurrentListDeleteButton);
         _taskCurrentDeleteButton ctrlShow false;
-
     };
+
     case "enableAutoGenerateTasks": {
 
         private ["_taskingState","_autoGenerate","_autoGenerateFaction"];
@@ -2365,10 +2359,8 @@ switch(_operation) do {
 
         _createButton ctrlShow true;
         _createButton ctrlSetEventHandler ["MouseButtonClick", "['TASK_AUTO_GENERATE_CREATE_BUTTON_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
-
-
-
     };
+
     case "disableAutoGenerateTasks": {
 
         private ["_taskingState"];
@@ -2405,8 +2397,8 @@ switch(_operation) do {
 
         _statusText = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddStatusText);
         _statusText ctrlShow false;
-
     };
+
     case "enableGenerateTask": {
 
         private ["_taskingState"];
@@ -2543,8 +2535,8 @@ switch(_operation) do {
         _statusText ctrlShow true;
 
         _statusText ctrlSetText "";
-
     };
+
     case "disableGenerateTask": {
 
         private ["_taskingState"];
@@ -2623,9 +2615,8 @@ switch(_operation) do {
 
         _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMap);
         _map ctrlShow false;
-
-
     };
+
     case "enableGenerateTaskManagePlayers": {
 
         private ["_taskingState","_side"];
@@ -2699,6 +2690,7 @@ switch(_operation) do {
 
         };
     };
+
     case "disableGenerateTaskManagePlayers": {
 
         private ["_title","_backButton","_abortButton"];
@@ -2738,8 +2730,8 @@ switch(_operation) do {
 
         _selectedPlayersClearButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskSelectedPlayersClearButton);
         _selectedPlayersClearButton ctrlShow false;
-
     };
+
     case "enableAddTask": {
 
         private ["_taskingState"];
@@ -2861,8 +2853,8 @@ switch(_operation) do {
         _createButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddCreateButton);
         _createButton ctrlShow true;
         _createButton ctrlSetEventHandler ["MouseButtonClick", "['TASK_ADD_CREATE_BUTTON_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
-
     };
+
     case "disableAddTask": {
 
         private ["_taskingState"];
@@ -2932,8 +2924,8 @@ switch(_operation) do {
 
         _createButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddCreateButton);
         _createButton ctrlShow false;
-
     };
+
     case "enableAddTaskManagePlayers": {
 
         private ["_taskingState","_side"];
@@ -3007,6 +2999,7 @@ switch(_operation) do {
 
         };
     };
+
     case "disableAddTaskManagePlayers": {
 
         private ["_title","_backButton","_abortButton"];
@@ -3046,8 +3039,8 @@ switch(_operation) do {
 
         _selectedPlayersClearButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskSelectedPlayersClearButton);
         _selectedPlayersClearButton ctrlShow false;
-
     };
+
     case "enableEditTask": {
 
         private ["_taskingState","_currentTask","_selectedPlayerListOptions","_selectedPlayerListValues"];
@@ -3255,8 +3248,8 @@ switch(_operation) do {
             [_logic,"taskDestination",_position] call MAINCLASS;
 
         };
-
     };
+
     case "disableEditTask": {
 
         private ["_taskingState"];
@@ -3326,8 +3319,8 @@ switch(_operation) do {
 
         _editButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskEditUpdateButton);
         _editButton ctrlShow false;
-
     };
+
     case "enableEditTaskManagePlayers": {
 
         private ["_taskingState","_side","_currentTask"];
@@ -3400,8 +3393,8 @@ switch(_operation) do {
         [_taskingState,"selectedPlayerListValues",[]] call ALIVE_fnc_hashSet;
         [_taskingState,"selectedPlayerListSelectedIndex",DEFAULT_SELECTED_INDEX] call ALIVE_fnc_hashSet;
         [_taskingState,"selectedPlayerListSelectedValue",DEFAULT_SELECTED_VALUE] call ALIVE_fnc_hashSet;
-
     };
+
     case "disableEditTaskManagePlayers": {
 
         private ["_title","_backButton","_abortButton","_playerList"];
@@ -3439,7 +3432,6 @@ switch(_operation) do {
 
         _selectedPlayersClearButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskSelectedPlayersClearButton);
         _selectedPlayersClearButton ctrlShow false;
-
     };
 };
 
