@@ -138,7 +138,7 @@ private _totalEntities = 0;
                         };
                     };
 
-                },_profiles select 2,20] call ALiVE_fnc_ArrayFrameSplitter;
+                },_profiles select 2,2] call ALiVE_fnc_ArrayFrameSplitter;
                 
 
                 if !(_nearEnemies isEqualTo []) then {
