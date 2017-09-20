@@ -52,7 +52,7 @@ _savePlayer = {
 
     ["ALiVE Exit - Save Player Data id: %1 name: %2 uid: %3",_id,_name,_uid] call ALIVE_fnc_dump;
 
-    if !(isNil QMOD(sys_player)) then {
+    if (!isNil QMOD(sys_player) && {MOD(sys_player) getVariable ["enablePlayerPersistence",false]}) then {
         ["ALiVE Exit - Player Data OPD"] call ALIVE_fnc_dump;
         // Update Gear
          if (MOD(sys_player) getvariable "saveLoadout") then {
