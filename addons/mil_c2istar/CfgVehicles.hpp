@@ -39,7 +39,7 @@ class CfgVehicles {
                             property = "ALiVE_MIL_C2ISTAR_debug";
                             displayName = "$STR_ALIVE_C2ISTAR_DEBUG";
                             tooltip = "$STR_ALIVE_C2ISTAR_DEBUG_COMMENT";
-                            defaultValue = "false";
+                            defaultValue = """false""";
                             class Values
                             {
                                     class Yes
