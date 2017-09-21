@@ -70,6 +70,9 @@ if (GVAR(ENABLED)) then {
     // if killed is a player or a vehicle then record, if killer is player or player in a vehicle
     if ( (_killed == player) || !(_killed iskindof "Man") || (isPlayer _killer) ) then {
 
+        private _killFeed = MOD(sys_data) getvariable ["killFeed","None"];
+        private _message = "";
+
         //diag_log format["Unit Killed: vehicle: %1, killed: %2, killer: %3, killerunit: %4 (%5)", typeof vehicle _killed, typeof _killed, typeof _killer, _killer, isPlayer _killer];
 
         _sideKilled = side (group _killed); // group side is more reliable
@@ -127,6 +130,17 @@ if (GVAR(ENABLED)) then {
 
             if (_killer == _killed) then { // Suicide?
                 _data = _data + [["suicide",true]];
+
+                _message = format ["Damn! %1 accidentally killed themselves with a %2!", name _killer, _killerweapon];
+            };
+
+            if (_message == "") then {
+                _message = format ["Man Down! %1 was killed by a %2 with a %3 from %4m.", name _killed, _killertype, _killerweapon, _distance];
+            };
+
+            if (_killFeed != "None") then {
+                _radioBroadcast = [_killed,_message,_killFeed,_sideKilled];
+                [str(_sideKilled),_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
             };
 
             _data = _data + [ ["Death","true"] , ["Player",getplayeruid _killed], ["PlayerName",name _killed], ["playerGroup", [_killed] call ALiVE_fnc_getPlayerGroup] ];
@@ -137,23 +151,37 @@ if (GVAR(ENABLED)) then {
 
         if (!(_killed iskindof "Man") && (_killedPos != "000000") && (_killedPos != "000999") && (_killedPos != "999000") && (_killedPos != "999999")  ) then { // vehicle was killed
 
-                if (isPlayer _killer || isPlayer (gunner _killer) || isPlayer (driver _killer)) then {
-                    _data = _data + [["Player",getplayeruid _killer] , ["PlayerName",name _killer], ["playerGroup", [_killer] call ALiVE_fnc_getPlayerGroup] ];
+            if (isPlayer _killer || isPlayer (gunner _killer) || isPlayer (driver _killer)) then {
+                _data = _data + [["Player",getplayeruid _killer] , ["PlayerName",name _killer], ["playerGroup", [_killer] call ALiVE_fnc_getPlayerGroup] ];
+
+                _message = format ["Vehicle destroyed! %1 was destroyed by %2 with a %3 from %4m!", _killedtype, name _killer, _killerweapon, _distance];
+
+                if (_killFeed != "None") then {
+                    _radioBroadcast = [_killer,_message,_killFeed,_sideKiller];
+                    [str(_sideKiller),_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
                 };
-                // Send data to server to be written to DB
-                GVAR(UPDATE_EVENTS) = _data;
-                publicVariableServer QGVAR(UPDATE_EVENTS);
+            };
+
+            // Send data to server to be written to DB
+            GVAR(UPDATE_EVENTS) = _data;
+            publicVariableServer QGVAR(UPDATE_EVENTS);
         };
 
         if (isPlayer _killer && (_killer != _killed) && (_killed iskindof "Man")) then { // Player was killer
 
-                // Check to see if player is in a vehicle and firing the weapon
+            // Check to see if player is in a vehicle and firing the weapon
+            _data = _data + [ ["Player",getplayeruid _killer] , ["PlayerName",name _killer], ["playerGroup", [_killer] call ALiVE_fnc_getPlayerGroup] ];
 
-                    _data = _data + [ ["Player",getplayeruid _killer] , ["PlayerName",name _killer], ["playerGroup", [_killer] call ALiVE_fnc_getPlayerGroup] ];
-                    // Send data to server to be written to DB
-                    GVAR(UPDATE_EVENTS) = _data;
-                    publicVariableServer QGVAR(UPDATE_EVENTS);
+            _message = format ["Kill Shot! A %1 was killed by %2 with a %3 from %4m.", _killedtype, name _killer, _killerweapon, _distance];
 
+            if (_killFeed != "None") then {
+                _radioBroadcast = [_killer,_message,_killFeed,_sideKiller];
+                [str(_sideKiller),_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+            };
+
+            // Send data to server to be written to DB
+            GVAR(UPDATE_EVENTS) = _data;
+            publicVariableServer QGVAR(UPDATE_EVENTS);
 
         };
 

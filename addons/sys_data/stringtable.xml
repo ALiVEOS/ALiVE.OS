@@ -52,7 +52,13 @@
             </Key>
             <Key ID="STR_ALIVE_Data_SAVECOMPOSITIONS_COMMENT">
                 <Original>Enable/disable saving any compositions that are spawned for camps, checkpoints etc</Original>
-            </Key>            
+            </Key>    
+            <Key ID="STR_ALIVE_Data_killFeed">
+                <Original>Enable Chat Kill Feed:</Original>
+            </Key>
+            <Key ID="STR_ALIVE_Data_killFeed_COMMENT">
+                <Original>Enable kill feed in players group or side chat.</Original>
+            </Key>                    
             <Key ID="STR_ALIVE_Data_disableStats">
                 <Original>Disable Stats:</Original>
             </Key>
