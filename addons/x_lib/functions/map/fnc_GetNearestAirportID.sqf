@@ -38,7 +38,7 @@ for "_i" from 0 to ((count _Secondary)-1) do {
 // Find all dynamic airports (IDs will be 100, 101 etc.)
 if (isNil "ALiVE_Carriers") then {
 
-		ALiVE_Carriers = (allAirports select 1);
+		ALiVE_Carriers = [worldSize/2, worldSize/2,0] nearObjects ["AirportBase", worldSize*0.8];
 		{
 			_Airports pushback [position _x, 100 + _foreachIndex];
 		} foreach ALiVE_Carriers;
