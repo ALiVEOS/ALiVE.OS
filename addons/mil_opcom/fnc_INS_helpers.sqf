@@ -436,40 +436,43 @@ ALiVE_fnc_INS_roadblocks = {
                 // Spawn CQB
                 [_pos,_size,_CQB] call ALiVE_fnc_addCQBpositions;
 
-                // Spawn roadblock only if it hasn't been set up already (esp. if it has been reloaded from DB)
+                // Spawn roadblock only until a max amount of roadblocks per objective is reached (size 600 will allow for 3 roadblocks)
                 if (isnil "ALiVE_CIV_PLACEMENT_ROADBLOCKS" || {{_pos distance _x < _size} count ALiVE_CIV_PLACEMENT_ROADBLOCKS < ceil(_size/200)}) then {
-                    private _road = [_pos, _size, ceil(_size/200), false] call ALiVE_fnc_createRoadblock;
+                    private _roads = [_pos, _size, ceil(_size/200), false] call ALiVE_fnc_createRoadblock;
 
-                    private _charge = "ALIVE_DemoCharge_Remote_Ammo" createvehicle (getpos _road);
+                    // Create disable action on newly created roadblocks
+                    {
+                        private _charge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo", position _x, [], 0, "CAN_COLLIDE"];
 
-                    [
-                        _charge,
-                        "disable the roadblock!",
-                        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
-                        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
-                        "_this distance2D _target < 2.5",
-                        "_caller distance2D _target < 2.5",
-                        {},
-                        {},
-                        {
-                            params ["_target", "_caller", "_ID", "_arguments"];
+                        [
+                            _charge,
+                            "disable the roadblock!",
+                            "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+                            "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+                            "_this distance2D _target < 2.5",
+                            "_caller distance2D _target < 2.5",
+                            {},
+                            {},
+                            {
+                                params ["_target", "_caller", "_ID", "_arguments"];
 
-                            private _charge = _arguments select 0;
+                                private _charge = _arguments select 0;
 
-                            [getpos _charge,30] remoteExec  ["ALiVE_fnc_RemoveComposition",2];
+                                [getpos _charge,30] remoteExec  ["ALiVE_fnc_RemoveComposition",2];
 
-                            ["Nice Job", format ["%1 disabled the roadblock at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side _caller];
+                                ["Nice Job", format ["%1 disabled the roadblock at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side _caller];
 
-                            deletevehicle _charge;
-                        },
-                        {},
-                        [_charge],
-                        15
-                    ] remoteExec ["BIS_fnc_holdActionAdd", 0,true];
+                                deletevehicle _charge;
+                            },
+                            {},
+                            [_charge],
+                            15
+                        ] remoteExec ["BIS_fnc_holdActionAdd", 0,true];
+                    } foreach _roads;
                 };
-                
+
                 // Identify location
-                [_objective,"roadblocks",[[],"convertObject",_pos nearestObject ""] call ALiVE_fnc_OPCOM] call ALiVE_fnc_HashSet;
+                [_objective,"roadblocks",[[],"convertObject",_pos nearestObject "building"] call ALiVE_fnc_OPCOM] call ALiVE_fnc_HashSet;
 
                 _event = ['OPCOM_RESERVE',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
                 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
@@ -802,7 +805,6 @@ ALiVE_fnc_INS_spawnHQ = {
     ] remoteExec ["BIS_fnc_holdActionAdd", 0,true];
 
     [_building,true,false,false] call ALiVE_fnc_spawnFurniture;
-
     [_building,true,true,false] call ALiVE_fnc_spawnFurniture;
 };
 
