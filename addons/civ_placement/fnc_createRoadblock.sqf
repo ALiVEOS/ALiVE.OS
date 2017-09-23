@@ -15,10 +15,10 @@ _this select 0: defense position (Array)
 _this select 2: number
 
 Returns:
-Boolean - success flag
+Array of road positions where roadblocks have been created
 
 Example(s):
-_selectedRoadObject = [group this,(getPos this)] call ALiVE_fnc_createRoadBlock
+_selectedRoadObjects = [group this,(getPos this)] call ALiVE_fnc_createRoadBlock
 
 -----------------------------------------------------------------------------------------------------------------------
 Notes:
@@ -36,7 +36,7 @@ to do: Current issue if road ahead bends.
 private [
     "_grp","_roadpos","_vehicle","_vehtype","_blockers","_roads",
     "_roadConnectedTo", "_connectedRoad","_direction","_checkpoint",
-    "_checkpointComp","_roadpoints"
+    "_checkpointComp","_roadpoints","_result"
 ];
 
 params [
@@ -48,17 +48,23 @@ params [
 
 if (isnil QGVAR(ROADBLOCKS)) then {GVAR(ROADBLOCKS) = []};
 
-if (_num > 5) then {_num = 5};
-
 private _fac = [_pos, _radius] call ALiVE_fnc_getDominantFaction;
 
 if (isNil "_fac") exitWith {
     ["Unable to find a dominant faction within %1 radius", _radius] call ALiVE_fnc_Dump;
+
+    _result;
 };
 
-// Find all the checkpoints pos
+// Limit Roadblock number
+if (_num > 5) then {_num = 5};
+
+// Find all the roads
 _roads = _pos nearRoads (_radius + 20);
-// scan road positions, filter trails and find those roads on outskirts, filter runways
+
+private _result = [];
+
+// scan road positions, filter trails, filter runways and find those roads on outskirts
 {
     if (_x distance _pos < (_radius - 10) || {!isOnRoad _x} || {str(_x) find "invisible" != -1}) then {
         _roads set [_foreachIndex,objNull];
@@ -66,12 +72,11 @@ _roads = _pos nearRoads (_radius + 20);
 } foreach _roads;
 _roads = _roads - [objNull];
 
-if (count _roads == 0) exitWith {["ALiVE No roads found for roadblock! Cannot create..."] call ALiVE_fnc_Dump};
+if (count _roads == 0) exitWith {["ALiVE No roads found for roadblock! Cannot create..."] call ALiVE_fnc_Dump; _result};
 
 if (_num > count _roads) then {_num = count _roads};
 
 _roadpoints = [];
-
 for "_i" from 1 to _num do {
     private "_roadsel";
     while {
@@ -82,7 +87,6 @@ for "_i" from 1 to _num do {
     };
 
     _roadpoints pushback _roadsel;
-
 };
 
 for "_j" from 1 to (count _roadpoints) do {
@@ -134,6 +138,8 @@ for "_j" from 1 to (count _roadpoints) do {
     // Spawn compositions
     [_checkpoint,_roadpos,_direction,_fac] spawn {[_this select 0, position (_this select 1), _this select 2, _this select 3] call ALiVE_fnc_spawnComposition};
 
+    _result pushback _roadpos;
+
     // Place a vehicle
     _vehtype = (selectRandom ([1, _fac, "Car"] call ALiVE_fnc_findVehicleType));
     if (!isNil "_vehtype") then {
@@ -182,6 +188,6 @@ for "_j" from 1 to (count _roadpoints) do {
 
 };
 
-if !(isnil "_roadpos") then {
-    _roadpos;
+if !(isnil "_result") then {
+    _result;
 };
