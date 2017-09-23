@@ -60,7 +60,7 @@ if (_name == "__SERVER__") then {
             };
 
             // Add any roadblock locations from civ placement
-            if (["ALiVE_civ_placement"] call ALiVE_fnc_isModuleAvailable) then {
+            if (["ALiVE_civ_placement"] call ALiVE_fnc_isModuleAvailable && {!isnil "ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS"} && {count ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS > 0}) then {
                 [MOD(PCOMPOSITIONS),"roadblock_locs",ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS] call ALiVE_fnc_hashSet;
             };
 
