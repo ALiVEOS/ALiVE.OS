@@ -180,6 +180,7 @@ switch(_operation) do {
         _result = [_logic,_operation,_args,DEFAULT_C2_ITEM] call ALIVE_fnc_OOsimpleOperation;
     };
     case "autoGenerateBlufor": {
+
         if (typeName _args == "BOOL") then {
             if (_args) then {
                 _args = "Constant";
@@ -187,7 +188,33 @@ switch(_operation) do {
                 _args = "None";
             };
         };
+        if (typeName _args == "STRING" && {_args == "true"}) then {_args = "Constant";};
+        if (typeName _args == "STRING" && {_args == "false"}) then {_args = "None";};
+
         _result = [_logic,_operation,_args,DEFAULT_AUTO_TASK_TYPE] call ALIVE_fnc_OOsimpleOperation;
+
+        if (typeName _result == "BOOL") then {
+            if (_result) then {
+                _result = "Constant";
+                _logic setVariable [_operation,_result];
+            } else {
+                _result = "None";
+                _logic setVariable [_operation,_result];
+            };
+        };
+
+        if (typeName _result == "STRING") then {
+            if (_result == "true") then {
+                _result = "Constant";
+                _logic setVariable [_operation,_result];
+            };
+            if (_result == "false") then {
+                _result = "None";
+                _logic setVariable [_operation,_result];
+            };
+        };
+
+        ["ALIVE AUTO GEN DUMP: %1, %2, %3", _result, typeName _result, _args] call ALiVE_fnc_dump;
     };
     case "autoGenerateBluforFaction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION] call ALIVE_fnc_OOsimpleOperation;
@@ -203,7 +230,31 @@ switch(_operation) do {
                 _args = "None";
             };
         };
+        if (typeName _args == "STRING" && {_args == "true"}) then {_args = "Constant";};
+        if (typeName _args == "STRING" && {_args == "false"}) then {_args = "None";};
+
         _result = [_logic,_operation,_args,DEFAULT_AUTO_TASK_TYPE] call ALIVE_fnc_OOsimpleOperation;
+
+        if (typeName _result == "BOOL") then {
+            if (_result) then {
+                _result = "Constant";
+                _logic setVariable [_operation,_result];
+            } else {
+                _result = "None";
+                _logic setVariable [_operation,_result];
+            };
+        };
+
+        if (typeName _result == "STRING") then {
+            if (_result == "true") then {
+                _result = "Constant";
+                _logic setVariable [_operation,_result];
+            };
+            if (_result == "false") then {
+                _result = "None";
+                _logic setVariable [_operation,_result];
+            };
+        };
     };
     case "autoGenerateIndforFaction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION] call ALIVE_fnc_OOsimpleOperation;
@@ -219,7 +270,31 @@ switch(_operation) do {
                 _args = "None";
             };
         };
+        if (typeName _args == "STRING" && {_args == "true"}) then {_args = "Constant";};
+        if (typeName _args == "STRING" && {_args == "false"}) then {_args = "None";};
+
         _result = [_logic,_operation,_args,DEFAULT_AUTO_TASK_TYPE] call ALIVE_fnc_OOsimpleOperation;
+
+        if (typeName _result == "BOOL") then {
+            if (_result) then {
+                _result = "Constant";
+                _logic setVariable [_operation,_result];
+            } else {
+                _result = "None";
+                _logic setVariable [_operation,_result];
+            };
+        };
+
+        if (typeName _result == "STRING") then {
+            if (_result == "true") then {
+                _result = "Constant";
+                _logic setVariable [_operation,_result];
+            };
+            if (_result == "false") then {
+                _result = "None";
+                _logic setVariable [_operation,_result];
+            };
+        };
     };
     case "autoGenerateOpforFaction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION] call ALIVE_fnc_OOsimpleOperation;
