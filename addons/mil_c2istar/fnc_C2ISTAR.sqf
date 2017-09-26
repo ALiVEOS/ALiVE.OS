@@ -214,7 +214,6 @@ switch(_operation) do {
             };
         };
 
-        ["ALIVE AUTO GEN DUMP: %1, %2, %3", _result, typeName _result, _args] call ALiVE_fnc_dump;
     };
     case "autoGenerateBluforFaction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION] call ALIVE_fnc_OOsimpleOperation;
@@ -549,7 +548,7 @@ switch(_operation) do {
                     _taskData set [2,"WEST"];
                     _taskData set [3,_autoGenerateBLUFORFaction];
                     _taskData set [4,_autoGenerateBLUFOREnemyFaction];
-                    _taskData set [5,true];
+                    _taskData set [5,"Constant"];
 
                     [ALIVE_taskHandler, "autoGenerateTasks", _taskData] call ALIVE_fnc_taskHandler;
                 };
@@ -562,7 +561,7 @@ switch(_operation) do {
                     _taskData set [2,"EAST"];
                     _taskData set [3,_autoGenerateOPFORFaction];
                     _taskData set [4,_autoGenerateOPFOREnemyFaction];
-                    _taskData set [5,true];
+                    _taskData set [5,"Constant"];
 
                     [ALIVE_taskHandler, "autoGenerateTasks", _taskData] call ALIVE_fnc_taskHandler;
                 };
@@ -575,7 +574,7 @@ switch(_operation) do {
                     _taskData set [2,"GUER"];
                     _taskData set [3,_autoGenerateINDFORFaction];
                     _taskData set [4,_autoGenerateINDFOREnemyFaction];
-                    _taskData set [5,true];
+                    _taskData set [5,"Constant"];
 
                     [ALIVE_taskHandler, "autoGenerateTasks", _taskData] call ALIVE_fnc_taskHandler;
                 };
@@ -780,7 +779,7 @@ switch(_operation) do {
             [_taskingState,"generateFactionListSelectedIndex",DEFAULT_SELECTED_INDEX] call ALIVE_fnc_hashSet;
             [_taskingState,"generateFactionListSelectedValue",DEFAULT_SELECTED_VALUE] call ALIVE_fnc_hashSet;
 
-            [_taskingState,"autoGenerateTasks",false] call ALIVE_fnc_hashSet;
+            [_taskingState,"autoGenerateTasks","None"] call ALIVE_fnc_hashSet;
             [_taskingState,"autoGenerateTasksFactionValue",""] call ALIVE_fnc_hashSet;
 
             [_logic,"taskingState",_taskingState] call MAINCLASS;
@@ -1872,7 +1871,7 @@ switch(_operation) do {
 
                     [_logic,"taskingState",_taskingState] call MAINCLASS;
 
-                    //_taskingState call ALIVE_fnc_inspectHash;
+                    // _taskingState call ALIVE_fnc_inspectHash;
                 };
 
                 case "TASK_GENERATE_MAP_CLICK": {
@@ -2048,7 +2047,7 @@ switch(_operation) do {
 
                     [_logic,"taskingState",_taskingState] call MAINCLASS;
 
-                    //_taskingState call ALIVE_fnc_inspectHash;
+                    _taskingState call ALIVE_fnc_inspectHash;
                 };
 
                 case "TASK_AUTO_GENERATE_CREATE_BUTTON_CLICK": {
@@ -2060,10 +2059,10 @@ switch(_operation) do {
 
                     _autoGenerate = [_taskingState,"autoGenerateTasks"] call ALIVE_fnc_hashGet;
 
-                    if(_autoGenerate) then {
-                        [_taskingState,"autoGenerateTasks",false] call ALIVE_fnc_hashSet;
+                    if(_autoGenerate == "Constant" || _autoGenerate == "Strategic") then {
+                        [_taskingState,"autoGenerateTasks","None"] call ALIVE_fnc_hashSet;
                     }else{
-                        [_taskingState,"autoGenerateTasks",true] call ALIVE_fnc_hashSet;
+                        [_taskingState,"autoGenerateTasks","Constant"] call ALIVE_fnc_hashSet;
                     };
 
                     _autoGenerate = [_taskingState,"autoGenerateTasks"] call ALIVE_fnc_hashGet;
@@ -2302,7 +2301,7 @@ switch(_operation) do {
         _autoGenerateTaskButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAutoGenerateButton);
         _autoGenerateTaskButton ctrlShow true;
 
-        if(_autoGenerate) then {
+        if(_autoGenerate == "Constant" || _autoGenerate == "Strategic") then {
             _autoGenerateTaskButton ctrlSetText "Disable auto generated tasks for my side";
         }else{
             _autoGenerateTaskButton ctrlSetText "Auto generate tasks for my side";
@@ -2421,7 +2420,7 @@ switch(_operation) do {
 
         _createButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAutoGenerateCreateButton);
 
-        if(_autoGenerate) then {
+        if(_autoGenerate == "Constant" || _autoGenerate == "Strategic") then {
             _createButton ctrlSetText "Disable Auto Generated Tasks";
             _statusText ctrlSetText "Auto generated tasks are enabled";
             _statusText ctrlSetTextColor [0.384,0.439,0.341,1];
