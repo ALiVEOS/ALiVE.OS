@@ -779,11 +779,24 @@ switch(_operation) do {
             [_taskingState,"generateFactionListSelectedIndex",DEFAULT_SELECTED_INDEX] call ALIVE_fnc_hashSet;
             [_taskingState,"generateFactionListSelectedValue",DEFAULT_SELECTED_VALUE] call ALIVE_fnc_hashSet;
 
-            [_taskingState,"autoGenerateTasks","None"] call ALIVE_fnc_hashSet;
-            [_taskingState,"autoGenerateTasksFactionValue",""] call ALIVE_fnc_hashSet;
+            private _autoGenerate = [_logic, "autoGenerateBlufor"] call MAINCLASS;
+            private _autoGenerateEnemyFaction = [_logic, "autoGenerateBluforEnemyFaction"] call MAINCLASS;
+
+            switch (side player) do {
+                case EAST: {
+                    _autoGenerate = [_logic, "autoGenerateOpfor"] call MAINCLASS;
+                    _autoGenerateEnemyFaction = [_logic, "autoGenerateOpforEnemyFaction"] call MAINCLASS;
+                };
+                case resistance: {
+                    _autoGenerate = [_logic, "autoGenerateIndfor"] call MAINCLASS;
+                    _autoGenerateEnemyFaction = [_logic, "autoGenerateIndforEnemyFaction"] call MAINCLASS;
+                };
+            };
+
+            [_taskingState,"autoGenerateTasks",_autoGenerate] call ALIVE_fnc_hashSet;
+            [_taskingState,"autoGenerateTasksFactionValue",_autoGenerateEnemyFaction] call ALIVE_fnc_hashSet;
 
             [_logic,"taskingState",_taskingState] call MAINCLASS;
-
 
             // Initialise interaction key if undefined
             TRACE_2("Menu pre-req",SELF_INTERACTION_KEY,ALIVE_fnc_logisticsMenuDef);
@@ -1177,9 +1190,9 @@ switch(_operation) do {
 
                         _event = ['TASK_CREATE', [_requestID,_playerID,_side,_destination,_faction,_title,_description,_selectedPlayers,_state,_apply,_current,_parent,_source,_editingDisabled,_rev,_id], "C2ISTAR"] call ALIVE_fnc_event;
 
-                        if(isServer) then {
+                        if (isServer) then {
                             [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
-                        }else{
+                        } else {
                             [_event] remoteExec ["ALIVE_fnc_addEventToServer", 2];
                             //["server","ALIVE_ADD_EVENT",[[_event],"ALIVE_fnc_addEventToServer"]] call ALiVE_fnc_BUS;
                         };
@@ -2303,7 +2316,7 @@ switch(_operation) do {
 
         if(_autoGenerate == "Constant" || _autoGenerate == "Strategic") then {
             _autoGenerateTaskButton ctrlSetText "Disable auto generated tasks for my side";
-        }else{
+        } else {
             _autoGenerateTaskButton ctrlSetText "Auto generate tasks for my side";
         };
 
