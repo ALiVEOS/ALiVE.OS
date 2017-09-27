@@ -33,25 +33,38 @@ params
 
 if (!isServer) exitwith {["ALiVE AI Distributor should ONLY run on the server !"] call ALiVE_fnc_Dump};
 
+GVAR(AI_DISTRIBUTOR_MODE) = _mode;
+
+// Initialize GVAR as correctly //
+if (isNil QGVAR(AI_DISTRIBUTOR)) then {
+    GVAR(AI_DISTRIBUTOR) = scriptNull;
+};
+
+// Handle mode: <false> (disabled) calls //
+if (!GVAR(AI_DISTRIBUTOR_MODE) && {isNull GVAR(AI_DISTRIBUTOR)}) exitWith {["ALiVE AI Distributor not enabled (mode: %1).", GVAR(AI_DISTRIBUTOR_MODE)] call ALiVE_fnc_dump};
+
+// Handle duplicate start calls //
+if (GVAR(AI_DISTRIBUTOR_MODE) && {!isNull GVAR(AI_DISTRIBUTOR)}) exitwith {["ALiVE AI Distributor already running !"] call ALiVE_fnc_dump};
+
+// Handle shutdown call //
+if (!GVAR(AI_DISTRIBUTOR_MODE) && {!isNull GVAR(AI_DISTRIBUTOR)}) exitWith {
+    ["ALiVE AI Distributor shutting down (mode: %1).", GVAR(AI_DISTRIBUTOR_MODE)] call ALiVE_fnc_dump;
+    terminate GVAR(AI_DISTRIBUTOR);
+    waitUntil {scriptDone GVAR(AI_DISTRIBUTOR)};
+};
+
 waituntil {time > 0};
 
 // ACEX Headless detection //
-if ((isClass(configFile >> "CfgPatches" >> "acex_headless")) && {!isNil "acex_headless_enabled"}) exitWith {["ALiVE AI Distributor detected ACEX Headless module enabled, shutting down !"] call ALiVE_fnc_Dump};
+if (isClass(configFile >> "CfgPatches" >> "acex_headless")) then {
+    waitUntil {!isNil "acex_headless_enabled"};
 
-GVAR(AI_DISTRIBUTOR_MODE) = _mode;
-
-// Handle mode: <false> (disabled) calls //
-if (!GVAR(AI_DISTRIBUTOR_MODE) && {isNil QGVAR(AI_DISTRIBUTOR)}) exitWith {["ALiVE AI Distributor not enabled (mode: %1).", GVAR(AI_DISTRIBUTOR_MODE)] call ALiVE_fnc_Dump};
-
-// Handle duplicate calls //
-if (GVAR(AI_DISTRIBUTOR_MODE) && {!isNil QGVAR(AI_DISTRIBUTOR)}) exitwith {["ALiVE AI Distributor already running !"] call ALiVE_fnc_Dump};
-
-// Handle shutdown call //
-if (!GVAR(AI_DISTRIBUTOR_MODE) && {!isNil QGVAR(AI_DISTRIBUTOR)}) exitWith {
-    ["ALiVE AI Distributor shutting down (mode: %1).", GVAR(AI_DISTRIBUTOR_MODE)] call ALiVE_fnc_Dump;
-    terminate GVAR(AI_DISTRIBUTOR);
+    if (acex_headless_enabled) then {
+        ["ALiVE AI Distributor detected ACEX Headless module enabled, shutting down !"] call ALiVE_fnc_dump;
+        terminate _thisScript;
+        waitUntil {scriptDone _thisScript};
+    };
 };
-
 
 GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
 
@@ -96,7 +109,9 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
                 ["ALIVE AI Distributor switching group '%1' to HC '%2'.", _x, _HC] call ALiVE_fnc_Dump;
             };
 
-            [GVAR(AI_LOCALITIES), (groupOwner _x), ([GVAR(AI_LOCALITIES), (groupOwner _x), []] call ALiVE_fnc_HashGet) + [_x]] call ALiVE_fnc_HashSet;
+            if (_debug) then {
+                [GVAR(AI_LOCALITIES), (groupOwner _x), ([GVAR(AI_LOCALITIES), (groupOwner _x), []] call ALiVE_fnc_HashGet) + [_x]] call ALiVE_fnc_HashSet;
+            };
 
             sleep 0.5;
        } foreach allGroups;
@@ -119,6 +134,4 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
 
         sleep _delay;
     };
-
-    ["ALiVE AI Distributor stopped."] call ALiVE_fnc_Dump;
 };
