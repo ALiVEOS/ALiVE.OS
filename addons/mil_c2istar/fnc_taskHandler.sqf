@@ -102,9 +102,9 @@ switch(_operation) do {
             [_logic,"tasksBySide",_tasksBySide] call ALIVE_fnc_hashSet;
 
             _autoGenerateSides = [] call ALIVE_fnc_hashCreate;
-            [_autoGenerateSides, "EAST", ["None",""]] call ALIVE_fnc_hashSet;
-            [_autoGenerateSides, "WEST", ["None",""]] call ALIVE_fnc_hashSet;
-            [_autoGenerateSides, "GUER", ["None",""]] call ALIVE_fnc_hashSet;
+            [_autoGenerateSides, "EAST", [[ALiVE_mil_C2ISTAR, "autoGenerateOpfor"] call ALIVE_fnc_C2ISTAR,[ALiVE_mil_C2ISTAR, "autoGenerateOpforEnemyFaction"] call ALIVE_fnc_C2ISTAR]] call ALIVE_fnc_hashSet;
+            [_autoGenerateSides, "WEST", [[ALiVE_mil_C2ISTAR, "autoGenerateBlufor"] call ALIVE_fnc_C2ISTAR,[ALiVE_mil_C2ISTAR, "autoGenerateBluforEnemyFaction"] call ALIVE_fnc_C2ISTAR]] call ALIVE_fnc_hashSet;
+            [_autoGenerateSides, "GUER", [[ALiVE_mil_C2ISTAR, "autoGenerateIndfor"] call ALIVE_fnc_C2ISTAR,[ALiVE_mil_C2ISTAR, "autoGenerateIndforEnemyFaction"] call ALIVE_fnc_C2ISTAR]] call ALIVE_fnc_hashSet;
             [_autoGenerateSides, "CIV", ["None",""]] call ALIVE_fnc_hashSet;
             [_logic,"autoGenerateSides",_autoGenerateSides] call ALIVE_fnc_hashSet;
 
@@ -465,6 +465,8 @@ switch(_operation) do {
 
             _autoGenerateSides = [_logic,"autoGenerateSides"] call ALIVE_fnc_hashGet;
             [_autoGenerateSides,_taskSide,[_taskAutoGenerate,_taskEnemyFaction]] call ALIVE_fnc_hashSet;
+
+            if (_taskAutoGenerate == "None") exitWith {};
 
             _tasksBySide = [_logic, "tasksBySide"] call ALIVE_fnc_hashGet;
             _sideTasks = [_tasksBySide,_taskSide] call ALIVE_fnc_hashGet;
