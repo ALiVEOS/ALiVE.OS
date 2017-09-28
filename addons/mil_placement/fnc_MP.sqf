@@ -785,7 +785,7 @@ switch(_operation) do {
                     };
 
                     _pos = [_closestHQCluster,"center"] call ALiVE_fnc_HashGet;
-                    _size = [_closestHQCluster,"size",150] call ALiVE_fnc_HashGet;
+                    _size = [_closestHQCluster,"size",300] call ALiVE_fnc_HashGet;
 
                     _flatPos = [_pos,_size] call ALiVE_fnc_findFlatArea;
 
@@ -837,6 +837,8 @@ switch(_operation) do {
                 {
                     private ["_compType","_composition","_pos"];
                     _pos = [_x,"center"] call ALiVE_fnc_HashGet;
+
+                    _flatPos = [_pos,500] call ALiVE_fnc_findFlatArea;
 
                     if (isNil QMOD(COMPOSITIONS_LOADED)) then {
                         // Get a composition
