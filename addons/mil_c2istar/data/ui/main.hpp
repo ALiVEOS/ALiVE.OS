@@ -681,11 +681,26 @@ class C2Tablet
         class C2Tablet_taskingAutoGenerateTaskCreateButton : C2Tablet_RscButton
         {
             idc = 70051;
-            text = "Enable Auto Generated Tasks";
+            text = "Enable Tactical Tasks";
             style = 0x02;
             x = 0.519796 * safezoneW + safezoneX;
             y = 0.6650 * safezoneH + safezoneY;
-            w = 0.216525 * safezoneW;
+            w = 0.105 * safezoneW;
+            h = 0.028 * safezoneH;
+            sizeEx = 0.8 * GUI_GRID_H;
+            colorBackground[] = {0.384,0.439,0.341,1};
+            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
+            colorFocused[] = {0.706,0.706,0.706,1};
+        };
+
+        class C2Tablet_taskingAutoGenerateTaskStrategicCreateButton : C2Tablet_RscButton
+        {
+            idc = 70056;
+            text = "Enable Strategic Tasks";
+            style = 0x02;
+            x = 0.631321 * safezoneW + safezoneX;
+            y = 0.6650 * safezoneH + safezoneY;
+            w = 0.105 * safezoneW;
             h = 0.028 * safezoneH;
             sizeEx = 0.8 * GUI_GRID_H;
             colorBackground[] = {0.384,0.439,0.341,1};

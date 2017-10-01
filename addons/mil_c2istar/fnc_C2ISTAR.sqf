@@ -113,6 +113,7 @@ Peer Reviewed:
 #define C2Tablet_CTRL_TaskAutoGenerateFactionTitle 70049
 #define C2Tablet_CTRL_TaskAutoGenerateFactionEdit 70050
 #define C2Tablet_CTRL_TaskAutoGenerateCreateButton 70051
+#define C2Tablet_CTRL_TaskAutoGenerateStrategicCreateButton 70056
 #define C2Tablet_CTRL_TaskGenerateApplyTitle 70052
 #define C2Tablet_CTRL_TaskGenerateApplyEdit 70053
 #define C2Tablet_CTRL_TaskGenerateCurrentTitle 70054
@@ -2060,7 +2061,7 @@ switch(_operation) do {
 
                     [_logic,"taskingState",_taskingState] call MAINCLASS;
 
-                    _taskingState call ALIVE_fnc_inspectHash;
+                    // _taskingState call ALIVE_fnc_inspectHash;
                 };
 
                 case "TASK_AUTO_GENERATE_CREATE_BUTTON_CLICK": {
@@ -2072,11 +2073,22 @@ switch(_operation) do {
 
                     _autoGenerate = [_taskingState,"autoGenerateTasks"] call ALIVE_fnc_hashGet;
 
+                    ["CLICK: %1 - %2", _this, _autoGenerate] call ALIVE_fnc_dump;
+
                     if(_autoGenerate == "Constant" || _autoGenerate == "Strategic") then {
                         [_taskingState,"autoGenerateTasks","None"] call ALIVE_fnc_hashSet;
-                    }else{
-                        [_taskingState,"autoGenerateTasks","Constant"] call ALIVE_fnc_hashSet;
                     };
+
+                    if(_autoGenerate == "None") then {
+                        private _ctrl = _args select 0 select 0;
+                        if (ctrlIDC _ctrl == C2Tablet_CTRL_TaskAutoGenerateStrategicCreateButton) then {
+                            [_taskingState,"autoGenerateTasks","Strategic"] call ALIVE_fnc_hashSet;
+                        } else {
+                            [_taskingState,"autoGenerateTasks","Constant"] call ALIVE_fnc_hashSet;
+                        };
+                    };
+
+                    ["CLICK: %1 - %2", _this, _autoGenerate] call ALIVE_fnc_dump;
 
                     _autoGenerate = [_taskingState,"autoGenerateTasks"] call ALIVE_fnc_hashGet;
 
@@ -2429,23 +2441,43 @@ switch(_operation) do {
 
         _statusText ctrlSetText "";
 
-        private ["_createButton"];
+        if (_autoGenerate == "Constant" || _autoGenerate == "None") then {
+            // enable the disable constant tasks button
+            private _createButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAutoGenerateCreateButton);
 
-        _createButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAutoGenerateCreateButton);
+            if(_autoGenerate == "Constant") then {
+                _createButton ctrlSetText "Disable Tactical Tasks";
+                _statusText ctrlSetText "Auto generated tasks are enabled";
+                _statusText ctrlSetTextColor [0.384,0.439,0.341,1];
 
-        if(_autoGenerate == "Constant" || _autoGenerate == "Strategic") then {
-            _createButton ctrlSetText "Disable Auto Generated Tasks";
-            _statusText ctrlSetText "Auto generated tasks are enabled";
-            _statusText ctrlSetTextColor [0.384,0.439,0.341,1];
-
-        }else{
-            _createButton ctrlSetText "Enable Auto Generated Tasks";
-            _statusText ctrlSetText "Auto generated tasks are disabled";
-            _statusText ctrlSetTextColor [0.729,0.216,0.235,1];
+            }else{
+                _createButton ctrlSetText "Enable Tactical Tasks";
+                _statusText ctrlSetText "Auto generated tasks are disabled";
+                _statusText ctrlSetTextColor [0.729,0.216,0.235,1];
+            };
+            _createButton ctrlShow true;
+            _createButton ctrlSetEventHandler ["MouseButtonClick", "['TASK_AUTO_GENERATE_CREATE_BUTTON_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
         };
 
-        _createButton ctrlShow true;
-        _createButton ctrlSetEventHandler ["MouseButtonClick", "['TASK_AUTO_GENERATE_CREATE_BUTTON_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
+
+        if (_autoGenerate == "Strategic" || _autoGenerate == "None") then {
+            // enable the disable constant tasks button
+            private _createButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAutoGenerateStrategicCreateButton);
+
+            if(_autoGenerate == "Strategic") then {
+                _createButton ctrlSetText "Disable Strategic Tasks";
+                _statusText ctrlSetText "Auto generated tasks are enabled";
+                _statusText ctrlSetTextColor [0.384,0.439,0.341,1];
+
+            }else{
+                _createButton ctrlSetText "Enable Strategic Tasks";
+                _statusText ctrlSetText "Auto generated tasks are disabled";
+                _statusText ctrlSetTextColor [0.729,0.216,0.235,1];
+            };
+            _createButton ctrlShow true;
+            _createButton ctrlSetEventHandler ["MouseButtonClick", "['TASK_AUTO_GENERATE_CREATE_BUTTON_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
+        };
+
     };
 
     case "disableAutoGenerateTasks": {
@@ -2478,6 +2510,9 @@ switch(_operation) do {
         private ["_createButton"];
 
         _createButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAutoGenerateCreateButton);
+        _createButton ctrlShow false;
+
+        _createButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAutoGenerateStrategicCreateButton);
         _createButton ctrlShow false;
 
         private ["_statusText"];
