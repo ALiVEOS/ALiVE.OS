@@ -96,7 +96,7 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
             // Abandon loop if no HCs connected //
             if (GVAR(AI_DISTRIBUTOR_HCLIST) isEqualTo []) exitWith {["ALiVE AI Distributor detected no HCs, idling for %1 seconds.", _delay] call ALiVE_fnc_Dump};
 
-            if ((local _x) && {{(alive _x) && {!((vehicle _x) getVariable ["ALiVE_CombatSupport", false])}} count (units _x) > 0}) then {
+            if ( (local _x) && { { (alive _x) && { !((vehicle _x) getVariable ["ALiVE_CombatSupport", false])} && {!(_x getVariable ["ALiVE_ignore_HC", false])}} count (units _x) > 0}) then {
 
                 // Distribute to available HCs //
                 if (_HC_index > ((count GVAR(AI_DISTRIBUTOR_HCLIST)) -1)) then {_HC_index = 0};
