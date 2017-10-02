@@ -35,8 +35,7 @@ private _menu = "ALiVE_CS";
 // Condition code for CS menu items //
 private _csCond = {({([(toLower(str((assignedItems player) + (uniformItems player) + (backpackItems player) + (vestItems player)))), toLower(_x)] call CBA_fnc_find) > -1} count MOD(MIL_CS_Items)) > 0};
 
-private _action =
-[
+private _action = [
     _menu,
     "Combat Support",
     QMENUICON(cs),

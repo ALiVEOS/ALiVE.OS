@@ -7,7 +7,10 @@ class CfgPatches {
         versionDesc = "ALiVE";
         author = MODULE_AUTHOR;
         VERSION_CONFIG;
-        authors[] = {"Whigital"};
+        authors[] = {
+            "Whigital",
+            "Ligthert"
+        };
         authorUrl = "http://alivemod.com/";
     };
 };

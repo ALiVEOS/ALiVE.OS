@@ -38,8 +38,7 @@ private _c2Cond = {({([(toLower(str((assignedItems player) + (uniformItems playe
 
 
 // Add "ALiVE_C2ISTAR" parent //
-private _action =
-[
+private _action = [
     _menu,
     "C2ISTAR",
     QMENUICON(c2),
@@ -54,8 +53,7 @@ _menupath pushBack _menu;
 
 
 // Personnel item //
-private _action =
-[
+private _action = [
     "C2_Personnel",
     "Personnel",
     QMENUICON2(c2,pers),
@@ -66,8 +64,7 @@ private _action =
 [player, 1, _menupath, _action] call ace_interact_menu_fnc_addActionToObject;
 
 // Intel item //
-private _action =
-[
+private _action = [
     "C2_Intel",
     "Intel",
     QMENUICON2(c2,intel),
@@ -78,8 +75,7 @@ private _action =
 [player, 1, _menupath, _action] call ace_interact_menu_fnc_addActionToObject;
 
 // Tasks item //
-private _action =
-[
+private _action = [
     "C2_Tasks",
     "Tasks",
     QMENUICON2(c2,task),
@@ -90,8 +86,7 @@ private _action =
 [player, 1, _menupath, _action] call ace_interact_menu_fnc_addActionToObject;
 
 // Operations item //
-private _action =
-[
+private _action = [
     "C2_Operations",
     "Operations",
     QMENUICON2(c2,ops),
@@ -102,13 +97,12 @@ private _action =
 [player, 1, _menupath, _action] call ace_interact_menu_fnc_addActionToObject;
 
 
-// ##### Start of Reporting section ##### //
+// ##### Start of Reporting submenu section ##### //
 
 // Add "Reporting" menu under "C2" //
 private _menu = "ALiVE_C2ISTAR_REP";
 
-private _action =
-[
+private _action = [
     _menu,
     "Reporting",
     QMENUICON2(c2,rep),
@@ -122,8 +116,7 @@ private _action =
 _menupath pushBack _menu;
 
 // SITREP item //
-private _action =
-[
+private _action = [
     "C2_SITREP",
     "Send SITREP",
     QMENUICON2(c2,rep),
@@ -134,8 +127,7 @@ private _action =
 [player, 1, _menupath, _action] call ace_interact_menu_fnc_addActionToObject;
 
 // PATROLREP item //
-private _action =
-[
+private _action = [
     "C2_PATREP",
     "Send PATROLREP",
     QMENUICON2(c2,rep),
@@ -145,4 +137,4 @@ private _action =
 
 [player, 1, _menupath, _action] call ace_interact_menu_fnc_addActionToObject;
 
-// ##### End of Reporting section ##### //
+// ##### End of Reporting submenu section ##### //

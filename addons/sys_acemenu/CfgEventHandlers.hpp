@@ -1,6 +1,5 @@
-class Extended_PostInit_EventHandlers
-{
+class Extended_PostInit_EventHandlers {
     class ADDON {
-        init = "[] spawn ALiVE_fnc_aceMenu;";
+        clientInit = "[] spawn ALiVE_fnc_aceMenu;";
     };
 };

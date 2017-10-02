@@ -32,8 +32,7 @@ if (!(isClass(configFile >> "CfgPatches" >> "ace_interact_menu")) && {!hasInterf
 waitUntil {(!isNil "ace_interact_menu") && {ace_interact_menu && {!isNull player}}};
 
 // Add "ALIVE_Root" root item //
-private _action =
-[
+private _action = [
     "ALIVE_Menu",
     "ALiVE",
     QMENUICON(main),
