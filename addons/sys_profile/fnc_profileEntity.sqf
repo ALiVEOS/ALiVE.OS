@@ -448,6 +448,12 @@ switch(_operation) do {
                 };
                 _result = [_logic,"busy"] call ALIVE_fnc_hashGet;
         };
+        case "ignore_HC": {
+                if(typeName _args == "BOOL") then {
+                        [_logic,"ignore_HC",_args] call ALIVE_fnc_hashSet;
+                };
+                _result = [_logic,"ignore_HC"] call ALIVE_fnc_hashGet;
+        };
         case "unitCount": {
                 private ["_unitClasses","_unitCount"];
                 _unitClasses = _logic select 2 select 11; //[_logic,"unitClasses"] call ALIVE_fnc_hashGet;
@@ -865,7 +871,8 @@ switch(_operation) do {
                 _inactiveCommands = _logic select 2 select 27; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
                 _vehiclesInCommandOf = _logic select 2 select 8; //[_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashSet;
                 _vehiclesInCargoOf = _logic select 2 select 9; //[_profile,"vehiclesInCargoOf",[]] call ALIVE_fnc_hashSet;
-                _locked = [_logic, "locked",false] call ALIVE_fnc_HashGet;
+                _locked = [_logic, "locked",false] call ALIVE_fnc_hashGet;
+                _ignore_HC = [_logic, "ignore_HC",false] call ALIVE_fnc_hashGet;
 
                 _unitCount = 0;
                 _units = [];
@@ -959,6 +966,7 @@ switch(_operation) do {
                             _unit setRank _rank;
 
                             // set profile id on the unit
+                            _unit setVariable ["ALiVE_ignore_HC", _ignore_HC];
                             _unit setVariable ["profileID", _profileID];
                             _unit setVariable ["profileIndex", _unitCount];
 
