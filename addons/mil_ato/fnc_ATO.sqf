@@ -825,6 +825,7 @@ switch(_operation) do {
                                 [_profileEntity, "side", _side] call ALIVE_fnc_profileEntity;
                                 [_profileEntity, "faction", _faction] call ALIVE_fnc_profileEntity;
                                 [_profileEntity, "busy", true] call ALIVE_fnc_profileEntity;
+                                [_profileEntity, "ignore_HC", true] call ALIVE_fnc_profileEntity;
 
                                 [_profileEntity, "despawnPosition", _crewPos] call ALIVE_fnc_profileEntity;
 
