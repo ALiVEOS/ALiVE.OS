@@ -322,6 +322,12 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_CQB_BLACKLIST_COMMENT";
                                 defaultValue = "";
                         };
+                        class units_blacklist
+                        {
+                                displayName = "$STR_ALIVE_CQB_UNIT_BLACKLIST";
+                                description = "$STR_ALIVE_CQB_UNIT_BLACKLIST_COMMENT";
+                                defaultValue = "";
+                        };
                 };
                 class ModuleDescription
                 {
