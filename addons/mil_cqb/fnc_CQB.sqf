@@ -215,12 +215,21 @@ switch(_operation) do {
                     call compile preprocessFileLineNumbers _file;
                 };
 
-                private ["_strategicTypes","_UnitsBlackList","_data","_success"];
+                private ["_strategicTypes","_UnitsBlackList","_data","_success", "_units_blacklist_module"];
 
                 _strategicTypes = GVAR(STRATEGICHOUSES);
                 _UnitsBlackList = GVAR(UNITBLACKLIST);
-
-
+				
+                // CQB module blacklisted units
+                _units_blacklist_module = _logic getvariable ["units_blacklist",""];
+                _units_blacklist_module = [_units_blacklist_module, " ", ""] call CBA_fnc_replace;
+                _units_blacklist_module = [_units_blacklist_module, "[", ""] call CBA_fnc_replace;
+                _units_blacklist_module = [_units_blacklist_module, "]", ""] call CBA_fnc_replace;
+                _units_blacklist_module = [_units_blacklist_module, """", ""] call CBA_fnc_replace;
+                // + instead of append makes _UnitsBlackList local- so unique to each module
+				// this is desired behaviour
+                _UnitsBlackList = _UnitsBlackList + ([_units_blacklist_module, ","] call CBA_fnc_split);
+				
                 //Create Collection
 
                 TRACE_TIME(QUOTE(COMPONENT),[]); // 1
