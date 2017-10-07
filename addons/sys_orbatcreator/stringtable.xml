@@ -14,4 +14,10 @@
 <Key ID="STR_ALIVE_ORBATCREATOR_DEBUG_COMMENT">
     <Original>Enables Module Debug</Original>
 </Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_BACKGROUND">
+    <Original>Enable Background:</Original>
+</Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_DEBUG_COMMENT">
+    <Original>Creates a grey background for editing purposes. Alternatively, the editor will use the current map and position of the module.</Original>
+</Key>
 </Container></Package></Project>
