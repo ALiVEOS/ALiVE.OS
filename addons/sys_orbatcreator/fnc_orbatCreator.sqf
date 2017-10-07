@@ -95,6 +95,10 @@ switch(_operation) do {
 
         [_logic,"debug", _debug] call MAINCLASS;
 
+        private _background = call compile (_logic getVariable ["background", "true"]);
+
+        [_logic,"background", _background] call MAINCLASS;
+
         // data init
 
         // load static data
@@ -235,6 +239,17 @@ switch(_operation) do {
     };
 
     case "debug": {
+
+        if (_args isEqualType true) then {
+            _logic setVariable [_operation, _args];
+            _result = _args;
+        } else {
+            _result = _logic getVariable [_operation, false];
+        };
+
+    };
+
+    case "background": {
 
         if (_args isEqualType true) then {
             _logic setVariable [_operation, _args];
@@ -2082,7 +2097,7 @@ switch(_operation) do {
             };
 
             _activeUnit = (createGroup _sideObject) createUnit [_vehicle, [0,0,0], [], 0, "NONE"];
-            _activeUnit setPosASL _pos;
+            _activeUnit setPos _pos;
             _activeUnit enableSimulation false;
             _activeUnit setDir 0;
             _activeUnit switchMove (animationState player);
@@ -2101,7 +2116,7 @@ switch(_operation) do {
             [_activeUnit,_identityInsignia] call BIS_fnc_setUnitInsignia;
         } else {
             _activeUnit = _vehicle createVehicle [0,0,0];
-            _activeUnit setPosASL _pos;
+            _activeUnit setPos _pos;
             _activeUnit enableSimulation false;
             _activeUnit setDir 0;
 
@@ -3293,8 +3308,6 @@ switch(_operation) do {
 
     // unit editor
 
-
-
     case "enableUnitEditorBackground": {
 
         private _enable = _args;
@@ -3302,13 +3315,17 @@ switch(_operation) do {
         private _state = [_logic,"state"] call MAINCLASS;
 
         if (_enable) then {
-            private _pos = getPos player;
-            _pos set [2,500];
+            private _pos = getPos _logic;
+
+            0 fadeSound 0;
 
             // init background
-
-            private _background = createVehicle ["Sphere_3DEN",[0,0,0],[],0,"none"];
-            _background setPosATL _pos;
+            private _background = createVehicle ["HeliHEmpty",[0,0,0],[],0,"none"];
+            if ([_logic,"background"] call MAINCLASS) then {
+                _background = createVehicle ["Sphere_3DEN",[0,0,0],[],0,"none"];
+                _pos set [2,500];
+            };
+            _background setPos _pos;
             _background setDir 0;
 
             [_state,"unitEditor_interfaceBackground", _background] call ALiVE_fnc_hashSet;
@@ -3316,12 +3333,12 @@ switch(_operation) do {
             // init camera
 
             private _tempUnit = createVehicle [typeOf player,position player,[],0,"none"];
-            _tempUnit setPosATL _pos;
+            _tempUnit setPos _pos;
             _tempUnit setDir 0;
             _tempUnit switchAction "playerstand";
             _tempUnit enableSimulation false;
 
-            [_state,"unitEditor_activeUnitPosition", getPosASL _tempUnit] call ALiVE_fnc_hashSet;
+            [_state,"unitEditor_activeUnitPosition", getPos _tempUnit] call ALiVE_fnc_hashSet;
 
             private _target = _tempUnit modelToWorld [0,4,1.6];
             [_logic,"deleteUnit", _tempUnit] call MAINCLASS;

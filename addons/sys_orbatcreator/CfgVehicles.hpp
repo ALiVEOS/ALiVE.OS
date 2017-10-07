@@ -27,7 +27,22 @@ class CfgVehicles {
                                     };
                             };
                     };
+                    class background {
+                            displayName = "$STR_ALIVE_ORBATCREATOR_BACKGROUND";
+                            description = "$STR_ALIVE_ORBATCREATOR_BACKGROUND_COMMENT";
+                            class Values {
+                                    class Yes {
+                                            name = "Yes";
+                                            value = true;
+                                            default = 1;
+                                    };
+                                    class No {
+                                            name = "No";
+                                            value = false;
 
+                                    };
+                            };
+                    };
                 };
 
         };
