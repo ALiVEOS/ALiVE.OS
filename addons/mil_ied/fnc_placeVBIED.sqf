@@ -9,11 +9,12 @@ _location = _this select 0;
 _radius = _this select 1;
 
 _debug = ADDON getVariable ["debug", false];
+_num = ADDON getvariable ["VB_IED_Threat", 10];
 
 // Find all vehicles within radius
 _veh = nearestObjects [_location, ["Car"], _radius];
 
-_num = ADDON getvariable ["VB_IED_Threat", 10];
+_vblist = [];
 
 if (count _veh > 0) then {
 
