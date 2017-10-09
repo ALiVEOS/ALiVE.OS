@@ -234,6 +234,11 @@ ALiVE_fnc_INS_factory = {
                     };
                 } foreach _agents;
 
+                // If IED module is used add VBIEDs according to IED module settings
+                if (!isnil "ALiVE_MIL_IED") then {
+                    [_center,_size] call ALiVE_fnc_placeVBIED;
+                };
+
                 // Reset to center position
                 _pos = _center;
 
@@ -265,8 +270,8 @@ ALiVE_fnc_INS_ied = {
                 // Timeout
                 waituntil {time - _timeTaken > 120};
 
-                // Place ambient IED trigger
-                if (!isnil "ALiVE_mil_IED") then {
+                // If IED module is used add IEDs and VBIEDs according to IED module settings
+                if (!isnil "ALiVE_MIL_IED") then {
                     _trg = createTrigger ["EmptyDetector",_pos];
                     _trg setTriggerArea [_size + 250, _size + 250,0,false];
                     _trg setTriggerActivation ["ANY","PRESENT",true];
@@ -275,6 +280,8 @@ ALiVE_fnc_INS_ied = {
                             format["null = [getpos thisTrigger,%1,%2,%3] call ALIVE_fnc_createIED",_size,str(_id),ceil(_size/100)],
                             format["null = [getpos thisTrigger,%1] call ALIVE_fnc_removeIED",str(_id)]
                     ];
+
+                    [_pos,_size] call ALiVE_fnc_placeVBIED;
 
                     _placeholders = ((nearestobjects [_pos,["Static"],150]) + (_pos nearRoads 150));
                     if (!isnil "_placeholders" && {count _placeholders > 0}) then {_trg = _placeholders select 0};
