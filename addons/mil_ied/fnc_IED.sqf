@@ -236,23 +236,6 @@ switch(_operation) do {
                 _blacklist = [_logic, "blacklist"] call MAINCLASS;
                 _side = _logic getvariable ["VB_IED_Side", DEFAULT_VB_IED_SIDE];
 
-                if (count synchronizedObjects _logic > 0) then {
-                    for "_i" from 0 to ((count synchronizedObjects _logic) - 1) do {
-
-                        _mod = (synchronizedObjects _logic) select _i;
-
-                        if (typeof _mod == "ALiVE_mil_OPCOM") then {
-
-                            _logic setvariable ["IED_Threat", 0];
-                            _logic setvariable ["Bomber_Threat", 0];
-                            _logic setvariable ["VB_IED_Threat", 0];
-                            _logic setvariable ["VB_IED_Side", "CIV"];
-
-                            ["ALiVE MIL IED reset for usage with OPCOM Insurgency!"] call ALiVE_fnc_Dump;
-                        };
-                    };
-                };
-
                 if !(GVAR(Loaded)) then {
                     // Initialise Locations
                     _mapInfo = [] call ALIVE_fnc_getMapInfo;
@@ -275,6 +258,23 @@ switch(_operation) do {
                 } else {
                     _locations = [GVAR(STORE), "locations",[]] call ALiVE_fnc_hashGet;
 
+                };
+
+                if (count synchronizedObjects _logic > 0) then {
+                    for "_i" from 0 to ((count synchronizedObjects _logic) - 1) do {
+
+                        _mod = (synchronizedObjects _logic) select _i;
+
+                        // if the module is synced to OPCOM, let OPCOM handle the locations but leave other settings for better customization
+                        if (typeof _mod == "ALiVE_mil_OPCOM") then {
+
+                            _locations = [];
+
+                            [GVAR(STORE), "locations", _locations] call ALiVE_fnc_hashSet;
+
+                            ["ALiVE MIL IED reset for usage with OPCOM Insurgency!"] call ALiVE_fnc_Dump;
+                        };
+                    };
                 };
 
                 // Set up Bombers and IED triggers at each location (except any player starting location)
