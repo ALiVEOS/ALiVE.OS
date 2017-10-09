@@ -317,7 +317,7 @@ switch(_operation) do {
 
                 //set default values on main CQB instance
                 [MOD(CQB), "allHouses", (MOD(CQB) getvariable ["allHouses",[]]) + _result] call ALiVE_fnc_CQB;
-                [MOD(CQB), "factions", (MOD(CQB) getvariable ["factions",[]]) + _factions] call ALiVE_fnc_CQB;
+                [MOD(CQB), "allFactions", (MOD(CQB) getvariable ["allFactions",[]]) + _factions] call ALiVE_fnc_CQB;
 
                 TRACE_TIME(QUOTE(COMPONENT),[]); // 5
 
@@ -744,6 +744,34 @@ switch(_operation) do {
     };
 
     case "factions": {
+        if(isNil "_args") then {
+            // if no new faction list was provided return current setting
+            _args = _logic getVariable [_operation, []];
+        } else {
+            if(typeName _args == "STRING") then {
+                if !(_args == "") then {
+                    _args = [_args, " ", ""] call CBA_fnc_replace;
+                    _args = [_args, "[", ""] call CBA_fnc_replace;
+                    _args = [_args, "]", ""] call CBA_fnc_replace;
+                    _args = [_args, """", ""] call CBA_fnc_replace;
+                    _args = [_args, ","] call CBA_fnc_split;
+                    if(count _args > 0) then {
+                        _logic setVariable [_operation, _args];
+                    };
+                } else {
+                    _logic setVariable [_operation, []];
+                };
+            } else {
+                if(typeName _args == "ARRAY") then {
+                    _logic setVariable [_operation, _args];
+                };
+            };
+            _args = _logic getVariable [_operation, []];
+        };
+        _logic setVariable [_operation, _args, true];
+    };
+
+    case "allFactions": {
         if(isNil "_args") then {
             // if no new faction list was provided return current setting
             _args = _logic getVariable [_operation, []];
