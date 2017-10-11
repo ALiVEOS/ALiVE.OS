@@ -26,6 +26,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_acemenu\fnc_aceMenu_repDialog.sqf";
                 RECOMPILE;
             };
+            class aceMenu_readIntel {
+                description = "Adds ACE interaction to dropped intel";
+                file = "\x\alive\addons\sys_acemenu\fnc_aceMenu_readIntel.sqf";
+                RECOMPILE;
+            };
         };
     };
 };
