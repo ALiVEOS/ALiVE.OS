@@ -66,6 +66,9 @@ if (!isNull _object) then {
     ];
     [[_object, _args],"addAction",true,true] call BIS_fnc_MP;
 
+    // Add ACE Interaction "Read Intel" to intel object //
+    [_object, _position, _side] remoteExec ["ALiVE_fnc_aceMenu_readIntel", 0, true];
+
     //["ALiVE OPCOM DropIntel TRACE action placed on object %1! All good!",_object] call ALiVE_fnc_DumpR;
     //_marker = [format["OPCOM_INTEL_%1", getposATL _object], getposATL _object,"ICON", [0.2,0.2],"ColorRed","INTEL", "n_installation", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal;
 
