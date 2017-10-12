@@ -215,12 +215,21 @@ switch(_operation) do {
                     call compile preprocessFileLineNumbers _file;
                 };
 
-                private ["_strategicTypes","_UnitsBlackList","_data","_success"];
+                private ["_strategicTypes","_UnitsBlackList","_data","_success", "_units_blacklist_module"];
 
                 _strategicTypes = GVAR(STRATEGICHOUSES);
                 _UnitsBlackList = GVAR(UNITBLACKLIST);
-
-
+				
+                // CQB module blacklisted units
+                _units_blacklist_module = _logic getvariable ["units_blacklist",""];
+                _units_blacklist_module = [_units_blacklist_module, " ", ""] call CBA_fnc_replace;
+                _units_blacklist_module = [_units_blacklist_module, "[", ""] call CBA_fnc_replace;
+                _units_blacklist_module = [_units_blacklist_module, "]", ""] call CBA_fnc_replace;
+                _units_blacklist_module = [_units_blacklist_module, """", ""] call CBA_fnc_replace;
+                // + instead of append makes _UnitsBlackList local- so unique to each module
+				// this is desired behaviour
+                _UnitsBlackList = _UnitsBlackList + ([_units_blacklist_module, ","] call CBA_fnc_split);
+				
                 //Create Collection
 
                 TRACE_TIME(QUOTE(COMPONENT),[]); // 1
@@ -308,7 +317,7 @@ switch(_operation) do {
 
                 //set default values on main CQB instance
                 [MOD(CQB), "allHouses", (MOD(CQB) getvariable ["allHouses",[]]) + _result] call ALiVE_fnc_CQB;
-                [MOD(CQB), "factions", (MOD(CQB) getvariable ["factions",[]]) + _factions] call ALiVE_fnc_CQB;
+                [MOD(CQB), "allFactions", (MOD(CQB) getvariable ["allFactions",[]]) + _factions] call ALiVE_fnc_CQB;
 
                 TRACE_TIME(QUOTE(COMPONENT),[]); // 5
 
@@ -735,6 +744,34 @@ switch(_operation) do {
     };
 
     case "factions": {
+        if(isNil "_args") then {
+            // if no new faction list was provided return current setting
+            _args = _logic getVariable [_operation, []];
+        } else {
+            if(typeName _args == "STRING") then {
+                if !(_args == "") then {
+                    _args = [_args, " ", ""] call CBA_fnc_replace;
+                    _args = [_args, "[", ""] call CBA_fnc_replace;
+                    _args = [_args, "]", ""] call CBA_fnc_replace;
+                    _args = [_args, """", ""] call CBA_fnc_replace;
+                    _args = [_args, ","] call CBA_fnc_split;
+                    if(count _args > 0) then {
+                        _logic setVariable [_operation, _args];
+                    };
+                } else {
+                    _logic setVariable [_operation, []];
+                };
+            } else {
+                if(typeName _args == "ARRAY") then {
+                    _logic setVariable [_operation, _args];
+                };
+            };
+            _args = _logic getVariable [_operation, []];
+        };
+        _logic setVariable [_operation, _args, true];
+    };
+
+    case "allFactions": {
         if(isNil "_args") then {
             // if no new faction list was provided return current setting
             _args = _logic getVariable [_operation, []];

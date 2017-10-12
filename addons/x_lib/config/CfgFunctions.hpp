@@ -1721,6 +1721,27 @@ class landRemote
 	RECOMPILE;
 };
 
+class orderGetInRemote
+{
+	file = "\x\alive\addons\x_lib\functions\units\fnc_orderGetInRemote.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class moveInAnyRemote
+{
+	file = "\x\alive\addons\x_lib\functions\units\fnc_moveInAnyRemote.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class addVehicleRemote
+{
+	file = "\x\alive\addons\x_lib\functions\groups\fnc_addVehicleRemote.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class PlayersInRangeIncludeAir
 {
 	file = "\x\alive\addons\x_lib\functions\units\fnc_PlayersInRangeIncludeAir.sqf";
