@@ -665,10 +665,7 @@ switch(_operation) do {
             };
 
             // load static data
-            if(isNil "ALiVE_STATIC_DATA_LOADED") then {
-                _file = "\x\alive\addons\main\static\staticData.sqf";
-                call compile preprocessFileLineNumbers _file;
-            };
+            call ALiVE_fnc_staticDataHandler;
 
             // set the player side
 
