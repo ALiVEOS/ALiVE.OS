@@ -296,7 +296,7 @@ class ALiVE_orbatCreator_interface_editFaction : ALiVE_orbatCreator_interface_cr
 
         class header : orbatCreator_common_popup_header {
             idc = 8301;
-            text = "Create Faction";
+            text = "Edit Faction";
         };
 
         class background : orbatCreator_common_popup_background {
