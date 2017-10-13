@@ -66,6 +66,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_AI_Distributor.sqf";
                 RECOMPILE;
             };
+            class staticDataHandler {
+                description = "Serializes loading of staticData";
+                file = "\x\alive\addons\main\fnc_staticDataHandler.sqf";
+                RECOMPILE;
+            };
         };
     };
 };
