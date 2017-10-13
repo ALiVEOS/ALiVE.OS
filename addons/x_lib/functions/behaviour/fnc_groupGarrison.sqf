@@ -33,10 +33,7 @@ if (count _units < 2) exitwith {};
 private _leader = leader (group (_units select 0));
 private _units = _units - [_leader];
 
-if(isNil "ALiVE_STATIC_DATA_LOADED") then {
-    private _file = "\x\alive\addons\main\static\staticData.sqf";
-    call compile preprocessFileLineNumbers _file;
-};
+call ALiVE_fnc_staticDataHandler;
 
 if (!_moveInstantly) then {
     _group lockWP true;
