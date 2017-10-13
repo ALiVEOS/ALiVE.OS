@@ -322,6 +322,12 @@ switch(_operation) do {
 
             };
 
+            case "Copy_Faction": {
+
+                createDialog "ALiVE_orbatCreator_interface_createFaction";
+
+            };
+
             case "Unit_Editor": {
 
                 closeDialog 0;
@@ -534,7 +540,7 @@ switch(_operation) do {
             };
 
 			case "Copy_Faction": {
-			
+
 				private [
                     "_index","_marker","_markerClass","_markerName","_markerIcon",
                     "_factionConfig","_factionConfigSide","_factionConfigFlag",
@@ -547,11 +553,19 @@ switch(_operation) do {
                 private _buttonOk = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_BUTTON_OK );
                 _buttonOk ctrlSetEventHandler ["MouseButtonDown","['onCopyFactionOkClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
+                private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+                private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+                private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
+                private _factionFlag = [_factionData,"flag"] call ALiVE_fnc_hashGet;
+                private _factionDisplayName = [_factionData,"displayName"] call ALiVE_fnc_hashGet;
+
+                private _header = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_HEADER );
+                _header ctrlSetText format["Copy %1 Faction", _factionDisplayName];
+
                 private _inputSide = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_SIDE );
                 private _inputFlag = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_FLAG );
 
                 // populate side list
-
                 [_logic,"loadSidesToList", _inputSide] call MAINCLASS;
 
                 // populate flag list
@@ -600,10 +614,10 @@ switch(_operation) do {
                     _inputFlag lbSetPicture [_index,_path];
                 } foreach _allFlags;
 
-                _inputSide lbSetCurSel 0;
-                _inputFlag lbSetCurSel 0;			
+                [_inputSide,str _factionSide] call ALiVE_fnc_listSelectData;
+                [_inputFlag,_factionFlag] call ALiVE_fnc_listSelectData;
 			};
-			
+
             case "Unit_Editor": {
 
                 private _display = findDisplay OC_DISPLAY_UNITEDITOR;
@@ -3137,7 +3151,7 @@ switch(_operation) do {
     case "onFactionEditorCopyClicked": {
 
         [_logic,"openInterface", "Copy_Faction"] spawn MAINCLASS;
-        
+
     };
 
     case "onFactionEditorDeleteClicked": {
@@ -3320,7 +3334,7 @@ switch(_operation) do {
         _className = [_logic,"validateClassname", _className] call MAINCLASS;
 
        // -------
-        
+
         private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
         private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
 
@@ -3328,8 +3342,8 @@ switch(_operation) do {
         [_newFaction,"configName", _className] call ALiVE_fnc_hashSet;
         [_newFaction,"displayName", _displayName] call ALiVE_fnc_hashSet;
         [_newFaction,"side", _side] call ALiVE_fnc_hashSet;
-        [_newFaction,"flag", _flag] call ALiVE_fnc_hashSet;  
-        [_newFaction,"icon", _flag] call ALiVE_fnc_hashSet;                      
+        [_newFaction,"flag", _flag] call ALiVE_fnc_hashSet;
+        [_newFaction,"icon", _flag] call ALiVE_fnc_hashSet;
         [_newFaction,"assets", []] call ALiVE_fnc_hashSet;
 
         [_logic,"addFaction", _newFaction] call MAINCLASS;
@@ -3369,7 +3383,7 @@ switch(_operation) do {
             [_logic,"setCustomUnitClassname", [_importedUnitConfigName,_newClassname]] call MAINCLASS; // must be ran before the unit's classname is changed
 
             [_logic,"addCustomUnit", _importedUnit] call MAINCLASS;
-        } foreach _unitsToCopy;     
+        } foreach _unitsToCopy;
 
         closeDialog 0;
 
@@ -5946,7 +5960,7 @@ switch(_operation) do {
     };
 
     // CfgVehicles
-    
+
     case "exportCustomUnits": {
 
         private [
