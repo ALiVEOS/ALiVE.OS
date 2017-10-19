@@ -31,6 +31,16 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_acemenu\fnc_aceMenu_readIntel.sqf";
                 RECOMPILE;
             };
+            class aceMenu_addActionIED {
+                description = "Adds ACE interaction to IEDs";
+                file = "\x\alive\addons\sys_acemenu\fnc_aceMenu_addActionIED.sqf";
+                RECOMPILE;
+            };
+            class aceMenu_removeActionIED {
+                description = "Removes ACE interaction from IEDs";
+                file = "\x\alive\addons\sys_acemenu\fnc_aceMenu_removeActionIED.sqf";
+                RECOMPILE;
+            };
         };
     };
 };
