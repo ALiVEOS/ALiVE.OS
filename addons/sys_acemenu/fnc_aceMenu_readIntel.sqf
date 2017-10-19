@@ -66,7 +66,7 @@ private _action = [
     "Read Intel",
     QMENUICON2(c2,intel),
     _actCode,
-    {true}
+    {true},
     {},
     [
         _position,
