@@ -17,7 +17,7 @@ Examples:
 (end)
 
 See Also:
-<ALIVE_fnc_C2MenuDef>
+<ALiVE_fnc_C2MenuDef>
 
 Author:
 Whigital

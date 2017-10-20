@@ -17,7 +17,7 @@ Examples:
 (end)
 
 See Also:
-<ALIVE_fnc_combatSupportDef>
+<ALiVE_fnc_combatSupportDef>
 
 Author:
 Whigital
