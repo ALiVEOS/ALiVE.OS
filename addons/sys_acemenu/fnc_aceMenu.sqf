@@ -26,14 +26,19 @@ nil
 ---------------------------------------------------------------------------- */
 
 // Detect ACE and make sure instance has an interface //
-if (!(isClass(configFile >> "CfgPatches" >> "ace_interact_menu")) && {!hasInterface}) exitWith {["ACE interact_menu not present or hasInterface false, exiting"] call ALiVE_fnc_dump};
+if (!(isClass(configFile >> "CfgPatches" >> "ace_interact_menu")) || (!hasInterface)) exitWith {
+    ["ACE interact_menu not active or no interface found, exiting"] call ALiVE_fnc_dump;
+};
 
 // Delay until 'ace_interact_menu' has initialized //
-waitUntil {(!isNil "ace_interact_menu") && {ace_interact_menu && {!isNull player}}};
+waitUntil {(!isNil "ace_interact_menu") && {ace_interact_menu && {!isNull ace_player}}};
 
-// Add "ALIVE_Root" root item //
+// Set ALiVE_sys_acemenu_enable var for future checks //
+GVAR(enable) = true;
+
+// Add root menu item //
 private _action = [
-    "ALIVE_Menu",
+    "ALiVE_Menu",
     "ALiVE",
     QMENUICON(main),
     {},
@@ -42,7 +47,7 @@ private _action = [
 
 [player, 1, ["ACE_SelfActions"], _action] call ace_interact_menu_fnc_addActionToObject;
 
-GVAR(MenuRoot) = ["ACE_SelfActions", "ALIVE_Menu"];
+GVAR(MenuRoot) = ["ACE_SelfActions", "ALiVE_Menu"];
 
 
 // C2ISTAR //

@@ -18,7 +18,7 @@ _object call ALiVE_fnc_aceMenu_removeActionIED;
 (end)
 
 See Also:
-ALIVE_fnc_removeActionIED
+ALiVE_fnc_removeActionIED
 
 Author:
 Whigital
@@ -31,12 +31,10 @@ params [
     "_object"
 ];
 
-// Detect ACE and make sure instance has an interface //
-if (!(isClass(configFile >> "CfgPatches" >> "ace_interact_menu")) && {!hasInterface}) exitWith {["ACE interact_menu not present or hasInterface false, exiting"] call ALiVE_fnc_dump};
+// Sanity check for ALiVE_sys_acemenu_enable //
+if (isNil QGVAR(enable)) exitWith {["aceMenu_removeActionIED : ALiVE_sys_acemenu not enabled."] call ALiVE_fnc_dump};
 
-// Delay until 'ace_interact_menu' has initialized //
-waitUntil {(!isNil "ace_interact_menu") && {ace_interact_menu && {!isNull player}}};
-
+// Abandon if object unavailable //
 if (isNull _object) exitWith {};
 
-[_target, 0, ["ACE_MainActions", "ALiVE_DisarmIED"]] call ace_interact_menu_fnc_removeActionFromObject;
+[_object, 0, ["ACE_MainActions", "ALiVE_DisarmIED"]] call ace_interact_menu_fnc_removeActionFromObject;
