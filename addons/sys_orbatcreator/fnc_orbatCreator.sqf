@@ -98,6 +98,10 @@ switch(_operation) do {
 
         [_logic,"background", _background] call MAINCLASS;
 
+        private _prefix = (_logic getVariable ["prefix", ""]);
+
+        [_logic,"prefix", _prefix] call MAINCLASS;
+
         // data init
 
         // load static data
@@ -113,7 +117,6 @@ switch(_operation) do {
         [_logic,"state", _state] call MAINCLASS;
 
         // init factions by side
-
         _east = +_tmpHash;
         _west = +_tmpHash;
         _indep = +_tmpHash;
@@ -255,6 +258,17 @@ switch(_operation) do {
             _result = _args;
         } else {
             _result = _logic getVariable [_operation, false];
+        };
+
+    };
+
+    case "prefix": {
+
+        if (_args isEqualType "") then {
+            _logic setVariable [_operation, _args];
+            _result = _args;
+        } else {
+            _result = _logic getVariable [_operation, ""];
         };
 
     };
@@ -451,6 +465,9 @@ switch(_operation) do {
                 private _buttonOk = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_BUTTON_OK );
                 _buttonOk ctrlSetEventHandler ["MouseButtonDown","['onCreateFactionOkClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
+                private _buttonAutogen = OC_getControl( OC_DISPLAY_CREATEFACTION, OC_CREATEFACTION_BUTTON_AUTOGEN_CLASSNAME );
+                _buttonAutogen ctrlSetEventHandler ["MouseButtonDown","['onCreateFactionAutogenerateClassnameClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+
                 private _inputSide = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_SIDE );
                 private _inputFlag = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_FLAG );
 
@@ -519,12 +536,18 @@ switch(_operation) do {
                 private _buttonOk = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_BUTTON_OK );
                 _buttonOk ctrlSetEventHandler ["MouseButtonDown","['onEditFactionOkClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
+                private _buttonAutogen = OC_getControl( OC_DISPLAY_CREATEFACTION, OC_CREATEFACTION_BUTTON_AUTOGEN_CLASSNAME );
+                _buttonAutogen ctrlSetEventHandler ["MouseButtonDown","['onCreateFactionAutogenerateClassnameClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+
                 private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
                 private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
                 private _factionDisplayName = [_factionData,"displayName"] call ALiVE_fnc_hashGet;
                 private _factionClassname = [_factionData,"configName"] call ALiVE_fnc_hashGet;
                 private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
                 private _factionFlag = [_factionData,"flag"] call ALiVE_fnc_hashGet;
+
+                private _header = OC_getControl( OC_DISPLAY_CREATEFACTION , 8301 );
+                _header ctrlSetText format["Edit %1 Faction", _factionDisplayName];
 
                 private _inputDisplayName = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_DISPLAYNAME );
                 private _inputClassName = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_CLASSNAME );
@@ -552,6 +575,9 @@ switch(_operation) do {
 
                 private _buttonOk = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_BUTTON_OK );
                 _buttonOk ctrlSetEventHandler ["MouseButtonDown","['onCopyFactionOkClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+
+                private _buttonAutogen = OC_getControl( OC_DISPLAY_CREATEFACTION, OC_CREATEFACTION_BUTTON_AUTOGEN_CLASSNAME );
+                _buttonAutogen ctrlSetEventHandler ["MouseButtonDown","['onCreateFactionAutogenerateClassnameClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
                 private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
                 private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
@@ -616,6 +642,7 @@ switch(_operation) do {
 
                 [_inputSide,str _factionSide] call ALiVE_fnc_listSelectData;
                 [_inputFlag,_factionFlag] call ALiVE_fnc_listSelectData;
+
 			};
 
             case "Unit_Editor": {
@@ -1404,6 +1431,12 @@ switch(_operation) do {
 
             };
 
+            case "exportFullWrite": {
+
+                [_logic,"exportConfig", "FullWrite"] call MAINCLASS;
+
+            };
+
         };
 
     };
@@ -1732,6 +1765,40 @@ switch(_operation) do {
         [_factions,_classname,_factionData] call ALiVE_fnc_hashSet;
 
         [_factionData,"configName", _classname] call ALiVE_fnc_hashSet;
+
+    };
+
+    case "setFactionShortName": {
+
+        private ["_groupCategory","_groupsInCategory","_group","_customUnit"];
+
+        _args params ["_faction","_shortName"];
+
+        /* Potentially update classname of units and groups?
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+        */
+
+        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+        [_factionData,"shortName", _shortName] call ALiVE_fnc_hashSet;
+
+    };
+
+    case "setFactionCamo": {
+
+        private ["_groupCategory","_groupsInCategory","_group","_customUnit"];
+
+        _args params ["_faction","_camo"];
+
+        /* Potentially update classname of units and groups?
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+        */
+
+        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+        [_factionData,"camo", _camo] call ALiVE_fnc_hashSet;
 
     };
 
@@ -2083,8 +2150,7 @@ switch(_operation) do {
 
         // if unit exists in config and (doesn't exist in custom units or it's parent hasn't been modified)
         // exit
-
-        if (isClass (_cfgVehicles >> _unit) && {(isnil "_unitData" || {configname (inheritsFrom (_cfgVehicles >> _unit)) == ([_unitData,"inheritsFrom"] call ALiVE_fnc_hashGet)})}) exitWith {
+        if (isClass (_cfgVehicles >> _unit) && {(isnil "_unitData" || {isClass (configfile >> "CfgVehicles" >> _unit >> "EventHandlers" >> "ALiVE_orbatCreator")} || {configname (inheritsFrom (_cfgVehicles >> _unit)) == ([_unitData,"inheritsFrom"] call ALiVE_fnc_hashGet)})}) exitWith {
             _result = _unit;
         };
 
@@ -2122,7 +2188,7 @@ switch(_operation) do {
         private _texture = [];
 
         if (!isnil "_customUnit") then {
-            _vehicle = [_customUnit,"configName"] call ALiVE_fnc_hashGet;
+            private _veh = [_customUnit,"configName"] call ALiVE_fnc_hashGet;
             _loadout = [_customUnit,"loadout"] call ALiVE_fnc_hashGet;
             _crew = [_customUnit,"crew"] call ALiVE_fnc_hashGet;
             _texture = [_customUnit,"texture"] call ALiVE_fnc_hashGet;
@@ -2131,7 +2197,11 @@ switch(_operation) do {
             private _customSideText = [_customUnitSide] call ALiVE_fnc_sideNumberToText;
             _sideObject = [_customSideText] call ALiVE_fnc_sideTextToObject;
 
-            _vehicle = [_logic,"getRealUnitClass", _vehicle] call MAINCLASS;
+            _vehicle = [_logic,"getRealUnitClass", _veh] call MAINCLASS;
+
+            if !(isClass (configFile >> "CfgVehicles" >> _veh)) then {
+                _vehicle = [_customUnit,"copiedFrom",_vehicle] call ALiVE_fnc_hashGet;
+            };
         } else {
             private _configPath = configFile >> "CfgVehicles" >> _vehicle;
             private _side = getNumber (_configPath >> "side");
@@ -2180,7 +2250,10 @@ switch(_operation) do {
             _activeUnit switchMove (animationState player);
             _activeUnit switchAction "playerstand";
 
+            // _loadout call ALIVE_fnc_inspectArray;
+
             _activeUnit setUnitLoadout _loadout;
+
             _cam camSetRelPos [-0.05,1,0.15];
             _cam camSetFov 0.35;
 
@@ -3172,6 +3245,62 @@ switch(_operation) do {
 
     };
 
+    case "onCreateFactionAutogenerateClassnameClicked": {
+
+        private _side = call compile OC_getSelData( OC_CREATEFACTION_INPUT_SIDE );
+        private _faction = ctrlText OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_COUNTRY );
+        private _force = ctrlText OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_FORCE );
+        private _camo = ctrlText OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_CAMO );
+
+        private _suffix = "";
+
+        if (_force != "") then {
+            _faction = format["%1%2",_faction, _force];
+        };
+
+        if (_camo != "") then {
+            _suffix = _camo;
+        };
+
+        private _generatedClassname = [_logic,"generateFactionClassname", [_side,_faction,_suffix]] call MAINCLASS;
+
+        private _inputClassname = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_CLASSNAME );
+        _inputClassname ctrlSetText _generatedClassname;
+
+    };
+
+    case "generateFactionClassname": {
+
+        _args params ["_side","_faction","_camo"];
+
+        _side = [_logic,"convertSideToNum", _side] call MAINCLASS;
+
+        private _prefix = [_logic,"prefix"] call MAINCLASS;
+
+        private _sideText = [_side] call ALiVE_fnc_sideNumberToText;
+        private _sideTextLong = [_sideText] call ALiVE_fnc_sideTextToLong;
+        _sideTextLong = [_sideTextLong] call CBA_fnc_leftTrim;
+        private _sidePrefix = _sideTextLong select [0,1];
+
+        private _factionPrefix = [_faction," ",""] call CBA_fnc_replace;
+        _factionPrefix = [_factionPrefix,"_",""] call CBA_fnc_replace;
+
+        private _autogenClassname = format ["%1_%2", _sidePrefix, _factionPrefix];
+
+        if (_prefix != "") then {
+            _autogenClassname = format ["%1_%2", _prefix, _autogenClassname];
+        };
+
+        if (_camo != "") then {
+            _autogenClassname = format ["%1_%2", _autogenClassname, _camo];
+        };
+
+        // format result
+
+        _result = _autogenClassname
+
+    };
+
     // create faction
 
     case "onCreateFactionOkClicked": {
@@ -3187,12 +3316,20 @@ switch(_operation) do {
         private _side = call compile OC_getSelData( OC_CREATEFACTION_INPUT_SIDE );
         private _flag = OC_getSelData( OC_CREATEFACTION_INPUT_FLAG );
 
+        private _country = ctrlText OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_COUNTRY );
+        private _force = ctrlText OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_FORCE );
+        private _camo = ctrlText OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_CAMO );
+
         // validate input
 
         private _context = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_CONTEXT );
 
         if (_displayName == "") exitWith {
             _context ctrlSetText "Display name cannot be left blank";
+        };
+
+        if (_country == "") exitWith {
+            _context ctrlSetText "Country name cannot be left blank";
         };
 
         if (_className == "") exitWith {
@@ -3204,16 +3341,27 @@ switch(_operation) do {
         };
 
         // validation complete
-
         _className = [_logic,"validateClassname", _className] call MAINCLASS;
+
+        // Format shortname
+        private _shortName = _country;
+
+        if (_force != "") then {
+            _shortName = format["%1%2",_country,_force];
+        };
 
         private _newFaction = [nil,"create"] call ALiVE_fnc_orbatCreatorFaction;
         [_newFaction,"init"] call ALiVE_fnc_orbatCreatorFaction;
         [_newFaction,"displayName", _displayName] call ALiVE_fnc_orbatCreatorFaction;
         [_newFaction,"configName", _className] call ALiVE_fnc_orbatCreatorFaction;
+        [_newFaction,"shortName", _shortName] call ALiVE_fnc_hashSet;
         [_newFaction,"side", _side] call ALiVE_fnc_orbatCreatorFaction;
         [_newFaction,"flag", _flag] call ALiVE_fnc_hashSet;
         [_newFaction,"icon", _flag] call ALiVE_fnc_hashSet;
+
+        if (_camo != "") then {
+            [_newFaction,"camo", _camo] call ALiVE_fnc_hashSet;
+        };
 
         [_logic,"addFaction", _newFaction] call MAINCLASS;
 
@@ -3241,6 +3389,8 @@ switch(_operation) do {
         private _factionClassname = [_factionData,"configName"] call ALiVE_fnc_hashGet;
         private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
         private _factionFlag = [_factionData,"flag"] call ALiVE_fnc_hashGet;
+        private _factionShortName = [_factionData,"shortName",""] call ALiVE_fnc_hashGet;
+        private _factionCamo = [_factionData,"camo",""] call ALiVE_fnc_hashGet;
 
         private _inputDisplayName = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_DISPLAYNAME );
         private _inputClassname = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_CLASSNAME );
@@ -3249,6 +3399,10 @@ switch(_operation) do {
         private _newClassname = ctrlText _inputClassname;
         private _newSide = call compile OC_getSelData( OC_CREATEFACTION_INPUT_SIDE );
         private _newFlag = OC_getSelData( OC_CREATEFACTION_INPUT_FLAG );
+
+        private _country = ctrlText OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_COUNTRY );
+        private _force = ctrlText OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_FORCE );
+        private _camo = ctrlText OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_CAMO );
 
         // validate input
 
@@ -3268,6 +3422,20 @@ switch(_operation) do {
 
         // validation complete
 
+        // Format shortname
+        private _shortName = _country;
+        if (_country != "" && {_force != ""}) then {
+            _shortName = format["%1%2",_country,_force];
+        };
+
+        if (_shortName != _factionShortName) then {
+            [_logic,"setFactionShortName", [_faction,_shortName]] call MAINCLASS;
+        };
+
+        if (_camo != _factionCamo) then {
+            [_logic,"setFactionCamo", [_faction,_camo]] call MAINCLASS;
+        };
+
         if (_newSide != _factionSide) then {
             [_logic,"setFactionSide", [_faction,_newSide]] call MAINCLASS;
         };
@@ -3278,7 +3446,7 @@ switch(_operation) do {
 
         if (_newClassname != _factionClassname) then {
             _newClassname = [_logic,"validateClassname", _newClassname] call MAINCLASS;
-            [_logic,"setFactionClassname", [_faction,_newClassname]] call MAINCLASS;
+            [_logic,"setFactionClassname", [_factionClassname,_newClassname]] call MAINCLASS;
         };
 
         if (_newFlag != _factionFlag) then {
@@ -3313,12 +3481,20 @@ switch(_operation) do {
         private _side = call compile OC_getSelData( OC_CREATEFACTION_INPUT_SIDE );
         private _flag = OC_getSelData( OC_CREATEFACTION_INPUT_FLAG );
 
+        private _country = ctrlText OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_COUNTRY );
+        private _force = ctrlText OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_FORCE );
+        private _camo = ctrlText OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_CAMO );
+
         // validate input
 
         private _context = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_CONTEXT );
 
         if (_displayName == "") exitWith {
             _context ctrlSetText "Display name cannot be left blank";
+        };
+
+        if (_country == "") exitWith {
+            _context ctrlSetText "Country name cannot be left blank";
         };
 
         if (_className == "") exitWith {
@@ -3331,19 +3507,28 @@ switch(_operation) do {
 
         // validation complete
 
-        _className = [_logic,"validateClassname", _className] call MAINCLASS;
+        // Format shortname
+        private _shortName = _country;
 
-       // -------
+        if (_force != "") then {
+            _shortName = format["%1%2",_country,_force];
+        };
+
+        _className = [_logic,"validateClassname", _className] call MAINCLASS;
 
         private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
         private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
 
         private _newFaction = +_factionData;
-        [_newFaction,"configName", _className] call ALiVE_fnc_hashSet;
-        [_newFaction,"displayName", _displayName] call ALiVE_fnc_hashSet;
-        [_newFaction,"side", _side] call ALiVE_fnc_hashSet;
+        [_newFaction,"displayName", _displayName] call ALiVE_fnc_orbatCreatorFaction;
+        [_newFaction,"configName", _className] call ALiVE_fnc_orbatCreatorFaction;
+        [_newFaction,"shortName", _shortName] call ALiVE_fnc_hashSet;
+        [_newFaction,"side", _side] call ALiVE_fnc_orbatCreatorFaction;
         [_newFaction,"flag", _flag] call ALiVE_fnc_hashSet;
         [_newFaction,"icon", _flag] call ALiVE_fnc_hashSet;
+        if (_camo != "") then {
+            [_newFaction,"camo", _camo] call ALiVE_fnc_hashSet;
+        };
         [_newFaction,"assets", []] call ALiVE_fnc_hashSet;
 
         [_logic,"addFaction", _newFaction] call MAINCLASS;
@@ -3356,8 +3541,8 @@ switch(_operation) do {
             _factionUnits append ([_logic,"importFactionUnitsFromConfig", _faction] call MAINCLASS);
         };
 
+        // Update Units
         // rule out duplicates
-
         private _unitsToCopy = [];
         private _collectedClassnames = [];
 
@@ -3376,7 +3561,7 @@ switch(_operation) do {
             _importedUnitDisplayName = [_importedUnit,"displayName"] call ALiVE_fnc_hashGet;
             _importedUnitConfigName = [_importedUnit,"configName"] call ALiVE_fnc_hashGet;
 
-            _newClassname = [_logic,"generateClassname", [_side,_className,_importedUnitDisplayName]] call MAINCLASS;
+            _newClassname = [_logic,"generateClassname", [_side,_classname,_importedUnitDisplayName]] call MAINCLASS;
 
             [_importedUnit,"faction", _className] call ALiVE_fnc_hashSet; // must be set before changing classname
             [_importedUnit,"copiedFrom", _importedUnitConfigName] call ALiVE_fnc_hashSet;
@@ -3384,6 +3569,32 @@ switch(_operation) do {
 
             [_logic,"addCustomUnit", _importedUnit] call MAINCLASS;
         } foreach _unitsToCopy;
+
+        // Update Groups
+        private _factionGroupCategories = [_newFaction,"groupCategories"] call ALiVE_fnc_hashGet;
+
+        {
+            private _groupCategory = _x;
+            private _groupCategoryConfigName = [_groupCategory,"configName"] call ALiVE_fnc_hashGet;
+            private _groupsInCategory = [_groupCategory,"groups"] call ALiVE_fnc_hashGet;
+
+            {
+                private _group = _x;
+
+                [_group,"faction", _classname] call ALiVE_fnc_hashSet;
+                private _oldConfigName = [_group,"configName"] call ALiVE_fnc_hashGet;
+                private _groupName = [_group,"name"] call ALiVE_fnc_hashGet;
+
+                private _configName = [_logic,"generateGroupClassname", [_classname,_groupCategoryConfigName,_groupName]] call MAINCLASS;
+                [_group,"configName", _configName] call ALiVE_fnc_hashSet;
+
+                [_group,"side", _side] call ALiVE_fnc_hashSet;
+
+                [_groupsInCategory,_configName, _group] call ALiVE_fnc_hashSet;
+                [_groupsInCategory,_oldConfigName] call ALiVE_fnc_hashRem;
+
+            } foreach (_groupsInCategory select 2);
+        } foreach (_factionGroupCategories select 2);
 
         closeDialog 0;
 
@@ -4072,25 +4283,43 @@ switch(_operation) do {
 
         _args params ["_side","_faction","_displayName"];
 
+        private _prefix = [_logic,"prefix"] call MAINCLASS;
+
         _side = [_logic,"convertSideToNum", _side] call MAINCLASS;
         private _sideText = [_side] call ALiVE_fnc_sideNumberToText;
         private _sideTextLong = [_sideText] call ALiVE_fnc_sideTextToLong;
         _sideTextLong = [_sideTextLong] call CBA_fnc_leftTrim;
         private _sidePrefix = _sideTextLong select [0,1];
 
+        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+        private _shortName = [_factionData,"shortName", ""] call ALiVE_fnc_hashGet;
+        private _camo = [_factionData,"camo",""] call ALiVE_fnC_hashGet;
+
         private _factionPrefix = [_faction," ",""] call CBA_fnc_replace;
-        _factionPrefix = [_faction,"_",""] call CBA_fnc_replace;
+        _factionPrefix = [_factionPrefix,"_",""] call CBA_fnc_replace;
 
         private _autogenClassname = [_logic,"displayNameToClassname", _displayName] call MAINCLASS;
 
-        // get number postfix
+        if (_shortName != "") then {
+            _factionPrefix = _shortName;
+        };
 
+        // get number postfix
         private _state = [_logic,"state"] call MAINCLASS;
         private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
         private _customUnitClassnames = _customUnits select 1;
 
         private _postNum = 1;
         private _autogenClassnameNoNum = format ["%1_%2_%3", _sidePrefix, _factionPrefix, _autogenClassname];
+
+        if (_prefix != "") then {
+            _autogenClassnameNoNum = format ["%1_%2_%3_%4", _prefix, _sidePrefix, _factionPrefix, _autogenClassname];
+        };
+
+        if (_camo != "") then {
+            _autogenClassnameNoNum = format["%1_%2",_autogenClassnameNoNum,_camo];
+        };
+
 
         if (_postNum < 10) then {
             _autogenClassname = format ["%1_0%2", _autogenClassnameNoNum, _postNum];
@@ -5409,12 +5638,34 @@ switch(_operation) do {
 
         _args params ["_faction","_category","_groupName"];
 
-        private _faction = [_faction," ",""] call CBA_fnc_replace;
-        _faction = [_faction,"_",""] call CBA_fnc_replace;
+        private _prefix = [_logic,"prefix"] call MAINCLASS;
+        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+
+        private _side = [_factionData,"side"] call ALiVE_fnC_hashGet;
+        private _sideText = [_side] call ALiVE_fnc_sideNumberToText;
+        private _sideTextLong = [_sideText] call ALiVE_fnc_sideTextToLong;
+        _sideTextLong = [_sideTextLong] call CBA_fnc_leftTrim;
+        private _sidePrefix = _sideTextLong select [0,1];
+        private _shortName = [_factionData,"shortName",""] call ALiVE_fnC_hashGet;
+        private _camo = [_factionData,"camo",""] call ALiVE_fnC_hashGet;
 
         _groupName = [_logic,"displayNameToClassname", _groupName] call MAINCLASS;
 
-        _result = format ["%1_%2_%3", _faction, _category, _groupName];
+        if (_shortName == "") then {
+            private _factionPrefix = [_faction," ",""] call CBA_fnc_replace;
+            _shortName = [_factionPrefix,"_",""] call CBA_fnc_replace;
+        };
+
+        _result = format ["%1_%2_%3_%4", _sidePrefix, _shortName, _category, _groupName];
+
+        if (_prefix != "") then {
+            _result = format ["%1_%2_%3_%4_%5", _prefix, _sidePrefix, _shortName, _category, _groupName];
+        };
+
+        if (_camo != "") then {
+            _result = format ["%1_%2",_result,_camo];
+        };
+
         _result = toLower _result;
 
     };
@@ -5873,6 +6124,28 @@ switch(_operation) do {
 
             };
 
+            case "FullWrite": {
+
+                private _prefix = [_logic,"prefix"] call MAINCLASS;
+
+                private _patches = [_logic,"exportConfig", "CfgPatches"] call MAINCLASS;
+                private _classes = [_logic,"exportConfig", "Faction"] call MAINCLASS;
+                private _groups = [_logic,"exportConfig", "GroupsAll"] call MAINCLASS;
+                private _vehicles = [_logic,"exportConfig", "UnitsAll"] call MAINCLASS;
+
+                _faction = [toLower(_faction),"cfp_",""] call CBA_fnc_replace;
+
+                _outputString = "exportConfig~" +  _faction + "|" + _patches + "|" + _classes + "|" + _groups + "|" + _vehicles + "|" + _prefix;
+
+                _result = "ALiVEClient" callExtension _outputString;
+
+                if (_result == "DONE") then {
+                    systemchat "Config data copied written to file.";
+                } else {
+                    systemchat format["Config data file write failed due to %1",_result];
+                };
+            };
+
             case "CfgPatches": {
 
                 _result = "";
@@ -6262,13 +6535,19 @@ switch(_operation) do {
         _initEventHandler = _initEventHandler + "(_this select 0) addMPEventHandler ['MPRespawn', _onSpawn];";
         _initEventHandler = _initEventHandler + "};"; // if (local _unit) close
 
-        [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;\
+        [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
 
         // apply identity
 
         private _identityTypesString = [_logic,"arrayToConfigArrayString", [_identityFace,_identityVoice] + _identityMisc - [""]] call MAINCLASS;
 
         _result = _result + _indent + _indent + "identityTypes[] = " + _identityTypesString + ";" + _newLine;
+
+        // Add uniform to prevent any conflicting side uniform RPT spam
+
+        private _uniform = (_unitLoadout select 3) select 0;
+        _result = _result + _indent + _indent + "uniformClass = " + str _uniform + ";" + _newLine;
+        _result = _result + _newLine;
 
         // event handlers
 
@@ -6760,4 +7039,4 @@ switch(_operation) do {
 
 TRACE_1("Orbat Creator - output", _result);
 
-if (!isnil "_result") then {_result} else {nil};;
+if (!isnil "_result") then {_result} else {nil};
