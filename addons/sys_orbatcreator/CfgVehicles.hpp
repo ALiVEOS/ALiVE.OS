@@ -43,6 +43,12 @@ class CfgVehicles {
                                     };
                             };
                     };
+                    class prefix
+                    {
+                            displayName = "$STR_ALIVE_ORBATCREATOR_PREFIX";
+                            description = "$STR_ALIVE_ORBATCREATOR_PREFIX_COMMENT";
+                            defaultValue = "";
+                    };
                 };
 
         };
