@@ -20,4 +20,10 @@
 <Key ID="STR_ALIVE_ORBATCREATOR_BACKGROUND_COMMENT">
     <Original>Creates a grey background for editing purposes. Alternatively, the editor will use the current map and position of the module.</Original>
 </Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_PREFIX">
+    <Original>Addon Prefix:</Original>
+</Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_PREFIX_COMMENT">
+    <Original>Enter an addon prefix here if applicable i.e. CUP</Original>
+</Key>
 </Container></Package></Project>
