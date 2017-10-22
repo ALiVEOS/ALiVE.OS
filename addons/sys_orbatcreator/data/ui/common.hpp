@@ -611,7 +611,7 @@ class orbatCreator_common_header_menuStrip : orbatCreator_ctrlMenuStrip {
         class Export {
 
             text = "Export";
-            items[] = {"Export_Faction","Export_Units","Export_Groups","Export_Full","Export_CfgPatches"}; // Separator, Export_Settings
+            items[] = {"Export_Faction","Export_Units","Export_Groups","Export_Full","Export_FullWrite","Export_CfgPatches"}; // Separator, Export_Settings
 
         };
 
@@ -641,6 +641,13 @@ class orbatCreator_common_header_menuStrip : orbatCreator_ctrlMenuStrip {
 
             text = "Full Faction";
             data = "exportFull";
+
+        };
+
+        class Export_FullWrite : menuStrip_button_action {
+
+            text = "Full Faction (To File)";
+            data = "exportFullWrite";
 
         };
 
