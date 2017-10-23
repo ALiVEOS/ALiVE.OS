@@ -38,46 +38,59 @@ TRANS_RESPAWN_LIMIT = TRANS_RESPAWN_LIMIT - 1;
 
 //Remove from all side-lists
 {
-        private ["_sideArray","_sideIn"];
-        _sideIn = _x;
-        _sideArray = NEO_radioLogic getVariable [format["NEO_radioTrasportArray_%1", _sideIn],[]];
-        {
-            if (isnull (_x select 0) || {((_x select 0) == _veh)}) then {
-                _sideArray set [_foreachIndex, -1];
-                _sideArray = _sideArray - [-1];
-            };
-        } foreach _sideArray;
-        NEO_radioLogic setVariable [format["NEO_radioTrasportArray_%1", _sideIn], _sideArray, true];
+    private ["_sideArray","_sideIn"];
+    _sideIn = _x;
+    _sideArray = NEO_radioLogic getVariable [format["NEO_radioTrasportArray_%1", _sideIn],[]];
+    {
+        if (isnull (_x select 0) || {((_x select 0) == _veh)}) then {
+            _sideArray set [_foreachIndex, -1];
+            _sideArray = _sideArray - [-1];
+        };
+    } foreach _sideArray;
+    NEO_radioLogic setVariable [format["NEO_radioTrasportArray_%1", _sideIn], _sideArray, true];
 } foreach _sides;
 
+sleep (floor (random [3,6,9]));
+
 //Delete objects and groups
-deletevehicle _veh;
-{deletevehicle _x} foreach units _grp;
-_grp call ALiVE_fnc_DeleteGroupRemote;
+if (!isNull _veh) then {
+    deletevehicle _veh;
+};
 
-sleep 5;
+if (!isNull _grp) then {
+    {deletevehicle _x} foreach units _grp;
+    _grp call ALiVE_fnc_DeleteGroupRemote;
+};
 
-//Create new units and vehicles
+waitUntil {isNull _veh};
+
 private ["_veh","_grp"];
 
-_grp = createGroup _side;
-_veh = createVehicle [_type, _pos, [], 0, "CAN_COLLIDE"];
-_veh setPosATL _pos;
-_veh setDir _dir;
+_veh = nearestObjects [_pos, [_type], 5];
 
-[_veh, _grp] call BIS_fnc_spawnCrew;
-
-If(_height > 0) then {
-    _veh setposASL [getposASL _veh select 0, getposASL _veh select 1, _height];
-} else {
+if (count _veh == 0) then {
+    _grp = createGroup _side;
+    _veh = createVehicle [_type, _pos, [], 0, "CAN_COLLIDE"];
+    _veh setDir _dir;
     _veh setPosATL _pos;
-};
-_veh setVelocity [0,0,-1];
-_veh lockDriver true;
 
-// Exclude CS from VCOM
-// CS only runs serverside so no PV is needed
-(driver _veh) setvariable ["VCOM_NOAI", true];
+    If (_height > 0) then {
+        _veh setposasl [getposASL _veh select 0, getposASL _veh select 1, _height];
+        _veh setVelocity [0, 0, -1];
+    } else {
+        _veh setPosATL _pos
+    };
+
+    [_veh, _grp] call BIS_fnc_spawnCrew;
+
+    _veh lockDriver true;
+    _veh setVariable ["ALIVE_CombatSupport", true];
+    (driver _veh) setvariable ["VCOM_NOAI", true];
+} else {
+    _veh = _veh select 0;
+    waitUntil {(_veh getVariable ["ALIVE_CombatSupport", false])};
+    _grp = (group (driver _veh));
+};
 
 _ffvTurrets = [_type,true,true,false,true] call ALIVE_fnc_configGetVehicleTurretPositions;
 _gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
@@ -85,12 +98,11 @@ _ffvTurrets = _ffvTurrets - _gunnerTurrets;
 
 if(count _ffvTurrets > 0) then
 {
-    for "_i" from 0 to (count _ffvTurrets)-1 do
-        {
-              _turretPath = _ffvTurrets call BIS_fnc_arrayPop;
-             [_veh turretUnit _turretPath] join grpNull;
-             deleteVehicle (_veh turretUnit _turretPath);
-        };
+    for "_i" from 0 to (count _ffvTurrets)-1 do {
+        _turretPath = _ffvTurrets call BIS_fnc_arrayPop;
+        [_veh turretUnit _turretPath] join grpNull;
+        deleteVehicle (_veh turretUnit _turretPath);
+    };
 };
 
 _hdl = [[(units _grp select 0),_callsign], "fnc_setGroupID", false, false] spawn BIS_fnc_MP;
@@ -117,7 +129,6 @@ if (!_slingloading) then {
 };
 
 //Set variables and run FSM and optionally passed code
-_veh setVariable ["ALIVE_CombatSupport", true];
 _veh setVariable ["NEO_transportAvailableTasks", _tasks, true];
 
 //Register to all friendly side-lists
