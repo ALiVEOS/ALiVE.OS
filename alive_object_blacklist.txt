@@ -12,6 +12,7 @@
 70laermschutz
 80ende
 90ende
+a_buildingwip
 a_castle_bastion
 a_castle_bastion_ruins
 a_castle_bergfrit
@@ -53,7 +54,9 @@ a_castle_walls_5_d
 a_castle_walls_5_d_ruins
 a_castle_walls_end
 a_castle_walls_end_ruins
+a_cranecon
 a_statue01
+a_statue02
 a2_veg
 a661badhomburg
 acer2
@@ -63,8 +66,15 @@ addon_02_v1_ruins_f
 addon_03_v1_ruins_f
 addon_03mid_v1_ruins_f
 addon_04_v1_ruins_f
+afbarabizna_ruins
+afdum_mesto2_ruins
+afdum_mesto2l_ruins
+afdum_mesto3_ruins
+afhospoda_mesto_ruins
 afnewplot2
 airconcondenser_01_f
+aircond_big
+aircond_small
 airintakeplug_04_f
 airmske_01
 airport_left_f
@@ -83,7 +93,10 @@ ancient_wall_8m_f
 ancientpillar_damaged_f
 ancientpillar_f
 ankfussg
+antenna
 antibiotic_f
+army_hut2_int_ruins
+army_hut3_long_int_ruins
 arnoldheimschmittensellenberg
 arnoldshainoa
 arnoldsheim3kmdornholzhausen8km
@@ -259,6 +272,7 @@ bench_04_f
 bench_05_f
 bench_ep1
 bench_f
+benzina_schnell_ruins
 betacam
 beton_zement_3m
 beton_zement_3m_ecke
@@ -276,6 +290,7 @@ bilboard_cigara_chernomorky
 bilboard_escape
 bilboard_everon
 bilboard_hlinik
+bilboard_konstantin
 bilboard_likery_bardak
 bilboard_nogova
 bilboard_pizza_presto
@@ -288,9 +303,11 @@ bilboard_veterans_choice
 bilboard_vodka
 bilboard_volte_cernaruske_hnuti
 bilboard_vstup_do_cdf
+bilboard_work
 bilboard_zlute_zgrynda
 billboard_1_ep1
 billboard_f
+blankets_ep1
 bleacher
 blech_a_200x400_00_03
 blech_b_100x200_00_13
@@ -334,6 +351,7 @@ bottlesplastic
 bottlesplastic_co
 bottlesplastic_nohq
 bottlesplastic_smdi
+bouda1_ruins
 boulder
 bowl_ep1
 box_c
@@ -370,6 +388,7 @@ bridge_asphalt_pathlod_f
 bridge_highway_pathlod_f
 bridge_stone_asf2_25
 bridge_wood_25
+briefcase
 brombachhunoldstalneuanspachkm
 brombachlinksrechts
 brombachneuanspach
@@ -595,7 +614,9 @@ bucketnavy_co
 bucketnavy_f
 bucketnavy_nohq
 bucketnavy_smdi
+budova1_ruins
 budova2_ruins
+budova4_in_ruins
 buoybig_f
 burgfels_ca
 bus
@@ -603,6 +624,7 @@ bush1
 busstop
 butanecanister_f
 butanetorch_f
+bvp1t
 c_grass_tall_dead_inhouse
 cafe
 cages_ep1
@@ -703,7 +725,12 @@ cargobox_v1_f
 cargonet_01_ammo_f
 cargonet_01_barrels_f
 carousel_01_f
+carpet_2_ep1
+carpet_ep1
 carpet_rack_ep1
+carpet_wall_ep1
+carpet_wallv2_ep1
+carpetv2_ep1
 case_a
 case_cans_b
 case_d
@@ -732,13 +759,16 @@ ch_mod_c
 ch_mod_d
 ch_mod_e
 ch_office_b
+chair
 chair_2
+chair_cargo
 chair_ep1
 chairplastic_f
 chairwood_f
 chapel_small_v2_ruins_f
 chapel_v1_ruins_f
 chapel_v1_ruins_f.p3d
+chest_ep1
 church_tomb_1
 church_tomb_2
 church_tomb_3
@@ -778,6 +808,7 @@ clothesline_01_full_f
 clothesline_01_short_f
 clothshelter_01_f
 clothshelter_02_f
+clutter_d2_stonesmall
 cluttercutter_ep1
 cluttercutter_large_f
 cluttercutter_medium_f
@@ -843,6 +874,8 @@ cooling_1_b
 corylus
 counter_ep1
 cover_sharprock
+covering_hut_big_ep1
+covering_hut_ep1
 craet
 crash_barrier_f
 crates_ep1
@@ -1220,6 +1253,7 @@ d_house_small_01_v1_f
 d_stone_shed_v1_f
 d_vsilo_pec
 dam_conc_20
+danger_us
 datsun01t
 datsun02t
 dd_pletivo
@@ -1297,6 +1331,7 @@ deox_wall05_singleh_nba
 deox_wall05_small_nba
 deox_wall05nba
 deox_wall06
+desert_plant
 desk
 dhangar_brownskrin
 dhangar_knihovna
@@ -1394,6 +1429,15 @@ drevena_bedna
 drevo
 drillaku_f
 ducttape_f
+dulni_bs_ruins
+dum_istan2_01_ruins
+dum_istan3_hromada_ruins
+dum_istan4_big_inverse_ruins
+dum_istan4_ruins
+dum_mesto_in_ruins
+dum_mesto_ruins
+dum_mesto3_istan_ruins
+dum_olez_istan1_ruins
 dum_zboreny_total_ruins
 dustmask_f
 ecke_075_025_300_clean_cnc
@@ -1464,6 +1508,7 @@ filephotos_f
 files_co
 finsternthaloa
 finsterthalriedelbach
+fire
 firebarrel
 firebarrel_co
 firebarrel_empty
@@ -1482,6 +1527,11 @@ fischbachoa
 fishinggear_01_f
 fishinggear_02_f
 flag_stozar
+flasa_1
+flasa_1h
+flasa_2
+flasa_2h
+flasa_3
 floodlight_f
 floormop
 floorsportu
@@ -1542,6 +1592,7 @@ gardenpavement_01_f
 gardenpavement_02_f
 gascanister_f
 gascooker_f
+gasmeterext
 gaststaette
 gate_indvar2_5
 gate_wood1_5
@@ -1574,10 +1625,13 @@ glass_platte_500_500_0025
 gloves_body
 gloves_body_co
 gloves_f
+gnews3
 goal_f
 graffiti_01_f
+graffiti_02_f
 graffiti_03_f
 graffiti_04_f
+graffiti_05_f
 gras_alt
 grav_0 2000
 grav_1 1000
@@ -1638,6 +1692,7 @@ hammer_f
 handycam
 handycam_co
 handycam_f
+hangar_2_ruins
 hangar_door_1
 hangar_door_1_b
 hbarrier_1_f
@@ -1646,6 +1701,7 @@ hbarrier5_round15
 hbridge_a
 heatpack_f
 heatpump_f
+heli_h_civil
 heli_h_cross
 heli_h_rescue
 helicopterwheels_01_assembled_f
@@ -1664,6 +1720,7 @@ historicalplanewreck_02_wing_right_f
 hlidac_budka_ep1
 hlidac_budka_ruins
 hospital_bench
+hospoda_mesto_ruins
 hotel
 houpacka
 house_big_01_v1_ruins_f
@@ -1679,6 +1736,7 @@ house_c_5_addon02_ep1
 house_small_01_v1_ruins_f
 house_small_02_v1_ruins_f
 house_small_03_v1_ruins_f
+house_y_ruins
 houseblock_a1_1_ruins
 houseblock_a1_half_ruin
 houseblock_a2_1_ruins
@@ -1923,8 +1981,10 @@ kos12
 kos25
 kos6
 kos6konec
+kostel_mexico_ruins
 kostel_ruins
 kostel_trosky_ruins
+kostelik_ruins
 koz
 kr_t_asf1_asf2
 kr_t_asf1_asf3
@@ -2401,7 +2461,9 @@ lawn_borde_h1m
 lawn_borde_h5m
 leaflet_04_f
 lekarnicka
+lekarnika_proxy
 leseni_barvy
+letistni_hala_ruins
 library_a
 lifeguardtower_01_f
 lift
@@ -2444,9 +2506,11 @@ mair_handrailatrium
 majak_ruins
 maly_kolotoc
 map_altis_f
+map_blank_f
 map_f
 map_for_briefing_ep1
 map_stratis_co
+map_stratis_f
 map_unfolded_f
 mapboard_f
 market_shelter_ep1
@@ -2491,6 +2555,7 @@ metalcrate
 metalcrate_02
 metalwire_f
 meter3m_f
+mi8_crashed
 mikrofon_ws_logo_ep1
 mil_wallbig_4m_f
 mil_wallbig_corner_f
@@ -2533,8 +2598,17 @@ misc_chickencoop
 misc_coil_ep1
 misc_coltan_heap_ep1
 misc_concbox_ep1
+misc_concoutlet_ep1
 misc_concpipeline_ep1
 misc_concrete_high
+misc_crossing0st
+misc_crossing0st_a
+misc_crossing0st_b
+misc_crossing0st_c
+misc_crossing30st
+misc_crossing30st_a
+misc_crossing30st_b
+misc_crossing30st_c
 misc_deerstand
 misc_drainage
 misc_g_pipes
@@ -2567,6 +2641,7 @@ money_f
 mound01_8m_f
 mound02_8m_f
 mrtvola_army1
+mrtvola_army2
 mrtvola_army3
 mud_0 2000
 mud_1 1000
@@ -2668,6 +2743,7 @@ obstacle_bridge_f
 obstacle_climb_f
 obstacle_crawl_f
 obstacle_cross_f
+obstacle_get_over
 obstacle_pass_f
 obstacle_prone
 obstacle_ramp_f
@@ -2677,6 +2753,8 @@ obstacle_saddle_f
 odpadkovy_kos
 office_chair
 office_table_a
+ohniste
+ohniste_nehorici
 ohrada_popelnice
 ohrada_popelnice_roh
 oil_can_co
@@ -2803,6 +2881,20 @@ photos_v6_f
 picea
 picea1s
 picnictable_01_f
+picture_a
+picture_a_02
+picture_a_03
+picture_a_04
+picture_a_05
+picture_b
+picture_b_02
+picture_c
+picture_c_02
+picture_d
+picture_e
+picture_f
+picture_f_02
+picture_g
 pier_addon
 pier_box_f
 pier_wall_f
@@ -2822,9 +2914,11 @@ pillar_concrete_3
 pillar_concrete_3_b
 pillar_pier_f
 pillow_camouflage_f
+pillow_ep1
 pillow_f
 pillow_grey_f
 pillow_old_f
+pillowv2_ep1
 pinus
 pipe_60_10_h
 pipe_60_10_v
@@ -4256,7 +4350,12 @@ portablelight_double_f
 portablelight_single_f
 portablelongrangeradio_co
 portablelongrangeradio_f
+posed_ruins
 postel_manz_kov
+poster_01_f
+poster_02_f
+poster_03_f
+poster_04_f
 poster_05_f
 poster_06_f
 pot_01_f
@@ -4845,6 +4944,7 @@ rope_f
 rowboat
 rubble_bricks_01
 rubble_metal_plates_01
+rubble_metal_plates_02
 rubble_metal_plates_03
 rubble_metal_plates_04
 rubble_wood_01
@@ -5117,6 +5217,7 @@ saalburgsiedbadhomburgusingenkm
 saalburgsiedl4neuanspach2km
 saalburgsiedl4oberhain1km
 saalburgsiedlungoa
+sack_ep1
 sack_f
 sackgasse
 sackgasserad
@@ -5170,6 +5271,7 @@ shed_small_f
 shed_small_ruins_f
 shed_w02_ruins_pmc
 shed_w03_ruins_ep1
+shelf
 shelveswooden_blue_f
 shelveswooden_f
 shelveswooden_khaki_f
@@ -5212,6 +5314,7 @@ sidewalkcrossingt
 sidewalksclear
 sidewalksclearlong
 sidewalksclearmiddle
+sidewalkscorner
 sidewalkscrossing
 sidewalkscrossingt
 sidewalkshortend
@@ -5256,6 +5359,7 @@ sloup_vn_dratz
 sloup_vn_dratzl
 sloup_vn_dratzp
 sloupyela
+sloupyele
 slum_house01_ruins_f
 slum_house02_ruins_f
 slum_house03_ruins_f
@@ -5267,16 +5371,22 @@ slunecnik_a
 slunecnik_b
 slunecnik_c
 slunecnik_d
+smallobj_file_map
 smallobj_file_photos
+smallobj_moscow_docs
 smallobj_moscow_docs_co
+smallobj_spukayev_docs
 smalltable
+smalltv
 smd_roads
 smd_sahrani_veg
 smd_veg
+socha
 sorbus
 sos
 spielstr
 splitt
+spodok
 sportground_fence_f
 ss_hangar
 stallwater_f
@@ -5362,6 +5472,9 @@ t_schild_mil_a
 t_schild_mil_a_alt
 t_schild_mil_us_a_old
 t_schild_mlc_a
+t34
+t72_wrecked
+t72_wrecked_turret
 table_drawer
 table_ep1
 tabledesk_f
@@ -5372,6 +5485,8 @@ tacticalbacon_f
 tacticalbacon_nohq
 tacticalbacon_smdi
 tank_rust_f
+tanker_wreck_1
+tanker_wreck_2
 tankstelle
 tape_redwhite
 target_f
@@ -5422,6 +5537,7 @@ temp_nabrezi_ruins
 tent2_west
 tenta_f
 tentdome_f
+terc
 tiles
 timberpile_01_f
 tincontainer_f
@@ -5994,6 +6110,7 @@ tob_workbenchmetalgreenc
 tob_workbenchwoodheavydark
 tob_workbenchwoodheavylight
 tob_workbenchwoodheavylighttob_aircompressorblue
+toilet
 toilet_b
 toilet_b_02
 toiletbox_f
@@ -6036,8 +6153,35 @@ ueberholverbot
 uneben
 unfinished_building_01_ruins_f
 unfinished_building_02_ruins_f
+untrtd_batten_big_5m
+untrtd_batten_big_5m_90
+untrtd_batten_small_2m
+untrtd_beam_big_05m
+untrtd_beam_big_1m
+untrtd_beam_big_1m_45
+untrtd_beam_big_1m_90
+untrtd_beam_big_2m
+untrtd_beam_big_2m_15
+untrtd_beam_big_2m_75
+untrtd_beam_big_2m_90
+untrtd_beam_big_5m
+untrtd_beam_big_5m_30
+untrtd_beam_big_5m_75
+untrtd_beam_big_5m_90
+untrtd_beam_med_1m
+untrtd_beam_med_1m_90
+untrtd_beam_med_2m_45
+untrtd_beam_med_2m_90
+untrtd_beam_med_5m
+untrtd_beam_med_5m_90
+untrtd_board_1m_90
+untrtd_board_2m
+untrtd_board_2m_75
+untrtd_board_2m_90
+untrtd_plank_2m
 ural_wrecked
 uralt
+urn_ep1
 usingena661
 usingenbadhomburg
 usingensaalburgsiedneuanspachkm
@@ -6045,6 +6189,11 @@ usingenwehrheimobernhain
 uwreck_fishingboat_f
 uwreck_heli_attack_02_f
 uwreck_mv22_f
+uzaverka
+vase_ep1
+vase_loam_2_ep1
+vase_loam_3_ep1
+vase_loam_ep1
 vegetation
 vegetation_f_exp
 vending_machine
@@ -6253,6 +6402,7 @@ wasted_beamw_big_5m_5
 wasted_beamw_big_5m_60
 wasted_beamw_big_5m_75
 wasted_beamw_big_5m_90
+water_pipe_ep1
 water_source_f
 water_tank
 waterbarrel_f
@@ -6277,6 +6427,8 @@ wf_cargo_container_east
 wf_field_hospital_west_ep1
 wf_hesco_10x
 wf_hesco_5x
+wf_uav_terminal_west
+wf_vehicle_service_point_west
 wheat
 wheel_cart_ep1
 wheelcart_f
@@ -6877,6 +7029,7 @@ ytong
 zabradli_pruhovane_levykonec
 zabradli_pruhovane_pravykonec
 zabradli_pruhovane_stred
+zarivky
 zastavka_cedule
 zastavka_stojan
 zaun
@@ -6916,3 +7069,5 @@ ziegel_1_200x200_30_55
 ziegel_1_200x200_45_01
 ziegel_1_200x200_45_48
 ziegel_1_200x200_45_p103
+zr_dam_03_ep1
+zr_dam_04_ep1
