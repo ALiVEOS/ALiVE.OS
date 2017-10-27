@@ -36,7 +36,6 @@ class CfgFunctions {
             class copyFactionClasses {
                 description = "Copy faction classes from selected objects in 3DEN to clipboard";
                 file = "\x\alive\addons\ui\fnc_copyFactionClasses.sqf";
-                RECOMPILE;
             };
         };
     };
