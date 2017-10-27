@@ -99,9 +99,11 @@ switch(_operation) do {
                             private _entry = param [0, objNull];
                             private _code = param [1, ""];
 
-                            if (count (getPylonMagazines _entry) > 0) then {
+                            private _pylonMagazines = getPylonMagazines _entry;
+
+                            if (count _pylonMagazines > 0) then {
                                 private _codeArray = [_code, ";"] call CBA_fnc_split;
-                                _codeArray pushBack (format ["{ (_this select 0) setPylonLoadOut [_forEachIndex + 1, _x] } forEach %1", getPylonMagazines _entry]);
+                                _codeArray pushBack (format ["{ (_this select 0) setPylonLoadOut [_forEachIndex + 1, _x] } forEach %1", _pylonMagazines]);
                                 _code = [_codeArray, ";"] call CBA_fnc_join;
                             };
 
