@@ -4816,9 +4816,9 @@ switch(_operation) do {
 
                                     _vehicle = createVehicle [_vehicleClass, _position, [], 0, "NONE"];
 
-									clearItemCargoGlobal _vehicle;
-									clearMagazineCargoGlobal _vehicle;
-									clearWeaponCargoGlobal _vehicle;
+                                    clearItemCargoGlobal _vehicle;
+                                    clearMagazineCargoGlobal _vehicle;
+                                    clearWeaponCargoGlobal _vehicle;
 
                                     [ALiVE_SYS_LOGISTICS,"fillContainer",[_vehicle,_payload]] call ALiVE_fnc_Logistics;
 
