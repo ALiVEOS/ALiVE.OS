@@ -95,6 +95,19 @@ switch(_operation) do {
                         _artyArrays = [];
                         _sides = [WEST,EAST,RESISTANCE,CIVILIAN];
 
+                        private _appendPylonLoadOutCode = {
+                            private _entry = param [0, objNull];
+                            private _code = param [1, ""];
+
+                            if (count (getPylonMagazines _entry) > 0) then {
+                                private _codeArray = [_code, ";"] call CBA_fnc_split;
+                                _codeArray pushBack (format ["{ (_this select 0) setPylonLoadOut [_forEachIndex + 1, _x] } forEach %1", getPylonMagazines _entry]);
+                                _code = [_codeArray, ";"] call CBA_fnc_join;
+                            };
+
+                            _code;
+                        };
+
                         for "_i" from 0 to ((count synchronizedObjects _logic)-1) do {
 
                             _entry = vehicle ((synchronizedObjects _logic) select _i);
@@ -110,6 +123,7 @@ switch(_operation) do {
                                         _height = _entry getvariable ["CS_HEIGHT",0];
                                         _code = _entry getvariable ["CS_CODE",""];
                                         _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
+                                        _code = [_entry, _code] call _appendPylonLoadOutCode;
 
                                         _position = getposATL _entry;
                                         _id = [_position] call ALiVE_fnc_getNearestAirportID;
@@ -127,6 +141,7 @@ switch(_operation) do {
                                         _height = _entry getvariable ["CS_HEIGHT",0];
                                         _code = _entry getvariable ["CS_CODE",""];
                                         _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
+                                        _code = [_entry, _code] call _appendPylonLoadOutCode;
                                         _slingloading = _entry getvariable ["CS_SLINGLOADING",true];
                                         _containers = _entry getvariable ["CS_CONTAINERS",0];
 
@@ -153,6 +168,7 @@ switch(_operation) do {
                                         _height = _entry getvariable ["CS_HEIGHT",0];
                                         _code = _entry getvariable ["CS_CODE",""];
                                         _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
+                                        _code = [_entry, _code] call _appendPylonLoadOutCode;
                                         _slingloading = _entry getvariable ["CS_SLINGLOADING",true];
                                         _containers = _entry getvariable ["CS_CONTAINERS",0];
 
