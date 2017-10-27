@@ -103,7 +103,7 @@ switch(_operation) do {
 
                             if (count _pylonMagazines > 0) then {
                                 private _codeArray = [_code, ";"] call CBA_fnc_split;
-                                _codeArray pushBack (format ["{ (_this select 0) setPylonLoadOut [_forEachIndex + 1, _x] } forEach %1", _pylonMagazines]);
+                                _codeArray pushBack (format ["{(_this select 0) setPylonLoadOut [_forEachIndex + 1, _x]} forEach %1", _pylonMagazines]);
                                 _code = [_codeArray, ";"] call CBA_fnc_join;
                             };
 
