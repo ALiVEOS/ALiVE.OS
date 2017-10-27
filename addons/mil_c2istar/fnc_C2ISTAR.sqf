@@ -2438,6 +2438,10 @@ switch(_operation) do {
 
         _statusText ctrlSetText "";
 
+        if (typeName _autoGenerate == "BOOL") then {
+            _autoGenerate = "None";
+        };
+
         if (_autoGenerate == "Constant" || _autoGenerate == "None") then {
             // enable the disable constant tasks button
             private _createButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAutoGenerateCreateButton);
