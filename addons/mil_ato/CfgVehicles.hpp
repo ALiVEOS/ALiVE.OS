@@ -156,6 +156,25 @@ class CfgVehicles
                                 };
                         };
                 };
+                class Resupply
+                {
+                        displayName = "$STR_ALIVE_ATO_RESUPPLY";
+                        description = "$STR_ALIVE_ATO_RESUPPLY_COMMENT";
+                        class Values
+                        {
+                                class Yes
+                                {
+                                        name = "Yes";
+                                        value = true;
+                                };
+                                class No
+                                {
+                                        name = "No";
+                                        value = false;
+                                        default = 1;
+                                };
+                        };
+                };
         };
         class ModuleDescription
         {
