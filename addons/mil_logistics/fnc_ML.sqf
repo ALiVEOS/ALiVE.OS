@@ -4839,6 +4839,8 @@ switch(_operation) do {
                                             waituntil {isnull _parachute || isnull _vehicle};
                                             _vehicle setdir direction _vehicle;
                                             deletevehicle _parachute;
+
+                                            [_vehicle] call ALIVE_fnc_MLAttachSmokeOrStrobe;
                                         };
                                     };
 
