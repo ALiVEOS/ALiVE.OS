@@ -26,6 +26,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_logistics\fnc_MLSaveData.sqf";
                                 RECOMPILE;
                         };
+                        class MLAttachSmokeOrStrobe {
+                                description = "Attaches smoke or strobe to object depending on day time";
+                                file = "\x\alive\addons\mil_logistics\fnc_MLAttachSmokeOrStrobe.sqf";
+                                RECOMPILE;
+                        };
                 };
         };
 };
