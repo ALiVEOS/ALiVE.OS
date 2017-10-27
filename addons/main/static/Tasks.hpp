@@ -516,7 +516,7 @@
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
 	[_taskData,"title","Destroy Airfield near %1"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","We received intelligence about a strategically important airfield near %1! Deny the airfield by destroying critical infrastructure! Destroy hangars and other buildings around runway or helipad."] call ALIVE_fnc_hashSet;
+	[_taskData,"description","We received intelligence about a strategically important airfield near %1! Deny the airfield by destroying critical infrastructure! Destroy at least 3 buildings around the runway or helipad."] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_start",[["HQ","We received intelligence about an airfield near %1. Authorized to deny airfield with heavy ordanance!"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_success",[["PLAYERS","The objective has been crippled!"],["HQ","Roger that, well done!"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"reward",["forcePool",50]] call ALIVE_fnc_hashSet;
