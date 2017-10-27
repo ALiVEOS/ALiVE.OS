@@ -65,6 +65,12 @@
 <Key ID="STR_ALIVE_ATO_GENERATE_TASKS_COMMENT">
     <Original>Automatically generate player Air Tasking Orders (CSAR, CAS, Strike)</Original>
 </Key>
+<Key ID="STR_ALIVE_ATO_RESUPPLY">
+    <Original>Resupply:</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_RESUPPLY_COMMENT">
+    <Original>Enables resupply of air assets. If LOGCOM is available to AI OPCOM then air assets will be ordered from LOGCOM.</Original>
+</Key>
 <Key ID="STR_ALIVE_ATO_NOT_ESTABLISHED">
     <Original>All callsigns, this is %1, %2 forward airbase has not been established. No air assets available for tasking. Out.</Original>
 </Key>
