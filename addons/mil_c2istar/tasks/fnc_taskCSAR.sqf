@@ -419,7 +419,7 @@ switch (_taskState) do {
                             };
                             _x setformdir 0;
 
-                            [_x, format ["Rescue %1",name _x], "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","_this distance _target < 2", "_caller distance _target < 2", {}, {}, {_target setVariable ["rescued",true,true]; ["Rescue", format ["You have rescued %1!",name _target]] call BIS_fnc_showSubtitle;},{},[],8] remoteExec ["BIS_fnc_holdActionAdd",0];
+                            [_x, format ["Rescue %1",name _x], "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","_this distance _target < 2", "_caller distance _target < 2", {}, {}, {_target setVariable ["rescued",true,true]; ["Rescue", format ["You have rescued %1!",name _target]] call BIS_fnc_showSubtitle;},{},[],8] remoteExec ["BIS_fnc_holdActionAdd",0, true];
 
                         } foreach units _crewGroup;
 
