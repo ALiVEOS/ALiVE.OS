@@ -2865,7 +2865,9 @@ switch(_operation) do {
 
                                 private ["_active","_slingLoading","_slingload","_noCargo","_vehicle"];
 
-                                _vehicleProfile call ALIVE_fnc_inspectHash;
+                                if (_debug) then {
+                                    _vehicleProfile call ALIVE_fnc_inspectHash;
+                                };
 
                                 _active = _vehicleProfile select 2 select 1;
 
@@ -3587,7 +3589,9 @@ switch(_operation) do {
 
                             private ["_active","_noCargo","_vehicle"];
 
-                            _vehicleProfile call ALIVE_fnc_inspectHash;
+                            if (_debug) then {
+                                _vehicleProfile call ALIVE_fnc_inspectHash;
+                            };
 
                             _active = _vehicleProfile select 2 select 1;
 
