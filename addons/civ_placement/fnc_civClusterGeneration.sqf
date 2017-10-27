@@ -25,10 +25,7 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-if(isNil "ALIVE_civilianHQBuildingTypes") then {
-    private _file = "\x\alive\addons\main\static\staticData.sqf";
-    call compile preprocessFileLineNumbers _file;
-};
+call ALiVE_fnc_staticDataHandler;
 
 
 // Find HQ locations

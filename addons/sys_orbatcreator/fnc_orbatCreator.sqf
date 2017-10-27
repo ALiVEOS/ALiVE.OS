@@ -105,11 +105,7 @@ switch(_operation) do {
         // data init
 
         // load static data
-
-        if (isnil "ALiVE_STATIC_DATA_LOADED") then {
-            private _file = "\x\alive\addons\main\static\staticData.sqf";
-            call compile preprocessFileLineNumbers _file;
-        };
+        call ALiVE_fnc_staticDataHandler;
 
         private _tmpHash = [] call ALiVE_fnc_hashCreate;
 

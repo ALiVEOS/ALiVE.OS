@@ -418,10 +418,7 @@ switch(_operation) do {
         ALIVE_SUP_PLAYER_RESUPPLY = _logic;
 
         // load static data
-        if(isNil "ALiVE_STATIC_DATA_LOADED") then {
-            _file = "\x\alive\addons\main\static\staticData.sqf";
-            call compile preprocessFileLineNumbers _file;
-        };
+        call ALiVE_fnc_staticDataHandler;
 
         // Set faction whitelist
         ALIVE_PR_FACTIONLIST = [_logic, "factions", _logic getVariable ["pr_factionWhitelist", DEFAULT_FACTIONS]] call MAINCLASS;
@@ -613,10 +610,7 @@ switch(_operation) do {
             private ["_file"];
 
             // load static data
-            if(isNil "ALiVE_STATIC_DATA_LOADED") then {
-                _file = "\x\alive\addons\main\static\staticData.sqf";
-                call compile preprocessFileLineNumbers _file;
-            };
+            call ALiVE_fnc_staticDataHandler;
 
             private _sortedVehicles = [] call ALiVE_fnc_hashCreate;
             private _sortedGroups = [] call ALiVE_fnc_hashCreate;

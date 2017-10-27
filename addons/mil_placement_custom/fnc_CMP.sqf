@@ -342,10 +342,7 @@ switch(_operation) do {
             private _position = position _logic;
 
             // Load static data
-            if(isNil "ALiVE_STATIC_DATA_LOADED") then {
-                private _file = "\x\alive\addons\main\static\staticData.sqf";
-                call compile preprocessFileLineNumbers _file;
-            };
+            call ALiVE_fnc_staticDataHandler;
 
             // Spawn the composition
 
