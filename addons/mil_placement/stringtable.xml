@@ -50,6 +50,15 @@
 <Key ID="STR_ALIVE_MP_SIZE_FILTER_LARGE">
     <Original>Only huge objectives</Original>
 </Key>
+<Key ID="STR_ALIVE_MP_SIZE_FILTER_SMALL_INVERSE">
+    <Original>Only small objectives</Original>
+</Key>
+<Key ID="STR_ALIVE_MP_SIZE_FILTER_MEDIUM_INVERSE">
+    <Original>Only small + medium objectives</Original>
+</Key>
+<Key ID="STR_ALIVE_MP_SIZE_FILTER_LARGE_INVERSE">
+    <Original>Only huge and smaller objectives</Original>
+</Key>
 <Key ID="STR_ALIVE_MP_PRIORITY_FILTER">
     <Original>Objective Priority Filter:</Original>
 </Key>
