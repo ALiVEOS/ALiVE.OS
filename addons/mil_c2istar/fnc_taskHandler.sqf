@@ -1794,8 +1794,37 @@ switch(_operation) do {
 
                 }else{
 
-                    [_logic, "stopManagement"] call MAINCLASS;
+                    private _autoGenerateSides = [_logic,"autoGenerateSides",["",[],[],""]] call ALIVE_fnc_hashGet;
+                    private _generatedTasks = 0;
 
+                    {
+                        private _taskSide = _x;
+
+                        private _taskSideData = [_autoGenerateSides,_taskSide] call ALiVE_fnc_HashGet;
+
+                        if !(_taskSideData select 0 == "None") then {
+
+                            private _sidePlayers = [_taskSide] call ALiVE_fnc_getPlayersDataSource;
+                            private _sidePlayerIDs = _sidePlayers select 1;
+
+                            if (count _sidePlayerIDs > 0) then {
+
+                                private _taskEnemyFaction = _taskSideData select 1;
+                                private _requestPlayerID = selectRandom _sidePlayerIDs;
+                                private _taskFaction = faction ([_requestPlayerID] call ALIVE_fnc_getPlayerByUID);
+
+                                _generate = [format["%1_%2",_taskSide,time],_requestPlayerID,_taskSide,_taskFaction,_taskEnemyFaction,_taskSideData select 0];
+
+                                [_logic,"autoGenerateTasks",_generate] call MAINCLASS;
+
+                                _generatedTasks = _generatedTasks + 1;
+                            };
+                        };
+                    } foreach (_autoGenerateSides select 1);
+
+                    if (_generatedTasks == 0) then {
+                        [_logic, "stopManagement"] call MAINCLASS;
+                    };
                 };
 
                 sleep 10;
