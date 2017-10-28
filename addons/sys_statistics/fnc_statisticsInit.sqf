@@ -267,9 +267,9 @@ if(!isDedicated && !isHC && GVAR(ENABLED)) then {
                 -9500,
                 [
                         "call ALIVE_fnc_statisticsMenuDef",
-                        "main"
+                        ["main", "alive_flexiMenu_rscPopup"]
                 ]
-        ] call ALiVE_fnc_flexiMenu_Add;
+        ] call CBA_fnc_flexiMenu_Add;
 };
 
 GVAR(statsInitialized) = true;

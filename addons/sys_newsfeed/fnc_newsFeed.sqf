@@ -129,10 +129,9 @@ switch(_operation) do {
                         -9500,
                         [
                                 "call ALIVE_fnc_newsFeedMenuDef",
-                                "main"
+                                ["main", "alive_flexiMenu_rscPopup"]
                         ]
-
-                ] call ALIVE_fnc_flexiMenu_Add;
+                ] call CBA_fnc_flexiMenu_Add;
             };
 
 
@@ -171,9 +170,9 @@ switch(_operation) do {
                                 -9500,
                                 [
                                         "call ALIVE_fnc_newsFeedMenuDef",
-                                        "main"
+                                        ["main", "alive_flexiMenu_rscPopup"]
                                 ]
-                        ] call ALIVE_fnc_flexiMenu_Remove;
+                        ] call CBA_fnc_flexiMenu_Remove;
                 };
         };
         default {

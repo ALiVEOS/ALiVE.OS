@@ -39,6 +39,7 @@ class _flexiMenu_RscShortcutButton: RscShortcutButton
     };
 };
 //-----------------------------------------------------------------------------
+#include "\x\cba\addons\ui\flexiMenu\data\common.hpp"
 #include "flexiMenu\data\menu_popup.hpp"
 
 class RscStandardDisplay;
