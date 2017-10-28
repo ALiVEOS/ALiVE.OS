@@ -586,7 +586,7 @@ switch(_operation) do {
 
                         sleep 10;
 
-                        _generate = [format["%1_%2",_taskSide,(time+1)],_requestPlayerID,_taskSide,_taskFaction,_taskEnemyFaction,true];
+                        _generate = [format["%1_%2",_taskSide,(time+1)],_requestPlayerID,_taskSide,_taskFaction,_taskEnemyFaction,_sideAutoGeneration select 0];
 
                         [_logic,"autoGenerateTasks",_generate] call MAINCLASS;
                     };
@@ -603,7 +603,7 @@ switch(_operation) do {
 
                     sleep 10;
 
-                    _generate = [format["%1_%2",_taskSide,(time+1)],_requestPlayerID,_taskSide,_taskFaction,_taskEnemyFaction,true];
+                    _generate = [format["%1_%2",_taskSide,(time+1)],_requestPlayerID,_taskSide,_taskFaction,_taskEnemyFaction,_sideAutoGeneration select 0];
 
                     [_logic,"autoGenerateTasks",_generate] call MAINCLASS;
                 };
