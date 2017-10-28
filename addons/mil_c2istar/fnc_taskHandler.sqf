@@ -1234,7 +1234,7 @@ switch(_operation) do {
 
             // if the task was previously current and
             // is now not current remove from the active tasks array
-            if(_taskCurrent == "N" || _taskState == "Succeeded" || _taskState == "Failed" || _taskState == "Cancelled") then {
+            if(_taskCurrent == "N" || _taskState == "Succeeded" || _taskState == "Failed" || _taskState == "Canceled") then {
                 _activeTasks = [_logic,"activeTasks"] call ALIVE_fnc_hashGet;
                 if(_taskID in (_activeTasks select 1)) then {
 
