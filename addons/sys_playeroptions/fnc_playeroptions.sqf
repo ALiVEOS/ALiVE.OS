@@ -177,9 +177,9 @@ switch (_operation) do {
                         -9500,
                         [
                                 "call ALIVE_fnc_playeroptionsMenuDef",
-                                "main"
+                                ["main", "alive_flexiMenu_rscPopup"]
                         ]
-                ] call ALIVE_fnc_flexiMenu_Add;
+                ] call CBA_fnc_flexiMenu_Add;
             };
 
             ["%1 - Initialisation Completed...", _logic] call ALiVE_fnc_Dump;

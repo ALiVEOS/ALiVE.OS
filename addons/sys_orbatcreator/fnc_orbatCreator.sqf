@@ -213,9 +213,9 @@ switch(_operation) do {
             -9500,
             [
                 "call ALiVE_fnc_orbatCreatorMenuDef",
-                "main"
+                ["main", "alive_flexiMenu_rscPopup"]
             ]
-        ] call ALIVE_fnc_flexiMenu_Add;
+        ] call CBA_fnc_flexiMenu_Add;
 
         // set module as startup complete
 
