@@ -1237,6 +1237,8 @@ switch(_operation) do {
             if(_taskCurrent == "N" || _taskState == "Succeeded" || _taskState == "Failed" || _taskState == "Cancelled") then {
                 _activeTasks = [_logic,"activeTasks"] call ALIVE_fnc_hashGet;
                 if(_taskID in (_activeTasks select 1)) then {
+
+                    [_previousTaskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
                     [_activeTasks,_taskID] call ALIVE_fnc_hashRem;
                 };
             };
