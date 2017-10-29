@@ -34,7 +34,7 @@ switch (_taskState) do {
     case "init":{
 
         private["_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
-        "_taskApplyType","_taskEnemySide","_enemyClusters","_targetPosition","_taskPlayers"];
+        "_taskApplyType","_taskEnemySide","_enemyClusters","_targetPosition","_taskPlayers","_opcom"];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;
@@ -60,16 +60,33 @@ switch (_taskState) do {
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideObjectToNumber;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideNumberToText;
 
+        /////////////////////////
         // establish the location for the task
 
-        //Select OPCOM
-        private _opcom = OPCOM_instances select 0;
-        {if ({_x == _taskFaction} count ([_x,"factions",[]] call ALiVE_fnc_HashGet) > 0) exitwith {_opcom = _x}} foreach OPCOM_instances;
+        // Select OPCOM
+        {
+            if ({_x == _taskFaction} count ([_x,"factions",[]] call ALiVE_fnc_HashGet) > 0) exitwith {
+                _opcom = _x;
+            };
+        } foreach OPCOM_instances;
+
+        // Exit if no OPCOM for faction present    
+        if (isnil "_opcom") exitwith {
+            ["C2ISTAR - Task CaptureObjective - No OPCOM for faction %1 present! Exiting!",_taskFaction] call ALiVE_fnc_Dump;
+        };
 
         // Get the nearest objective that OPCOM is attacking
-        private _objectives = []; {_objectives pushback _x} foreach ([_opcom,"nearestObjectives",[_taskLocation,"attacking"]] call ALiVE_fnc_OPCOM);
-        private _objective = _objectives select 0;
+        private _objectives = +([_opcom,"nearestObjectives",[_taskLocation,"attacking"]] call ALiVE_fnc_OPCOM);
 
+        // Exit if no objectives are being attacked 
+        if (isNil "_objectives" || {count _objectives == 0}) exitwith {
+            ["C2ISTAR - Task CaptureObjective - No objectives are being attacked! Exiting!",_taskFaction] call ALiVE_fnc_Dump;
+        };
+
+        /////////////////////////
+        // Start mission
+        
+        private _objective = _objectives select 0;
         private _size = [_objective, "size", 200] call ALiVE_fnc_hashGet;
         _targetPosition = [_objective, "center", _taskLocation] call ALiVE_fnc_hashGet;
 
