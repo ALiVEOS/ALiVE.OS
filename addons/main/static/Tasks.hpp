@@ -299,7 +299,7 @@
 	_taskData = [] call ALIVE_fnc_hashCreate;
 	[_taskData,"title","Pick up the troops"] call ALIVE_fnc_hashSet;
 	[_taskData,"description","Move to the Pick Up Point near %1."] call ALIVE_fnc_hashSet;
-	[_taskData,"chat_start",[["HQ","Move to the Pick Up Point near %1"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","Move to the Pick Up Point near %1 in a vehicle with sufficient cargo capacity!"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_failed",[["HQ","Local commander reports insufficient load capacity, RTB and standby for further tasking"],["PLAYERS","Roger Out"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_cancelled",[["HQ","Contact lost with ground forces, assume location is compromised. RTB immediately, Over"],["PLAYERS","Roger Out"]]] call ALIVE_fnc_hashSet;
 	[_tasksData,"Pickup",_taskData] call ALIVE_fnc_hashSet;
