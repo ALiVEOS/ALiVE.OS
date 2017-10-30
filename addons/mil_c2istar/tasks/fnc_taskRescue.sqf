@@ -523,15 +523,12 @@ switch (_taskState) do {
                         private "_hostage";
 
                         _group = _profile select 2 select 13;
+                        
                         _hostage = leader _group;
-
                         _position = getPos _hostage;
 
-
                         // [position _hostage,_taskSide,_taskPlayers,_taskID,"hostage"] call ALIVE_fnc_taskCreateMarkersForPlayers;
-
                         // _distance = [_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerDistanceToDestination;
-
 
                         if (_hostage getVariable ["rescued",false]) then {
 
@@ -552,6 +549,7 @@ switch (_taskState) do {
 
                             // Join player group
                             [_hostage] joinSilent _saver;
+                            (group _saver) selectLeader _saver;
 
                             _taskIDs = [_params,"taskIDs"] call ALIVE_fnc_hashGet;
                             [_params,"nextTask",_taskIDs select 2] call ALIVE_fnc_hashSet;
