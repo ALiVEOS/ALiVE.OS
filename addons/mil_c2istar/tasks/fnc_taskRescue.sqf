@@ -491,11 +491,18 @@ switch (_taskState) do {
 
             if (_dead || time > _startTime + 3300) then {
 
+                // Next Task will be empty so a new one gets created
                 [_params,"nextTask",""] call ALIVE_fnc_hashSet;
 
-                _task set [8,"Failed"];
-                _task set [10, "N"];
-                _result = _task;
+                // Mission Over in first state - if dead or timeout update the parent-task instead of the child so all children get updated
+                _parent = _task select 11;
+                _parent = if (_parent == "None") then {_taskID} else {_parent};
+                _parentTask = [ALiVE_TaskHandler,"getTask",_parent] call ALiVE_fnc_TaskHandler;
+
+                _parentTask set [8,"Failed"];
+                _parentTask set [10,"N"];
+                
+                [ALiVE_TaskHandler,"TASK_UPDATE",_parentTask] call ALiVE_fnc_TaskHandler;
 
                 [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
 
