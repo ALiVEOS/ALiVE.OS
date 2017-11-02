@@ -63,6 +63,7 @@ _vehicleAssignments = _profile select 2 select 7; //[_profile,"vehicleAssignment
 _direction = random 360;
 
 switch(_type) do {
+
     case "entity": {
         _vehiclesInCommandOf = _profile select 2 select 8; //[_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashSet;
         _vehiclesInCargoOf = _profile select 2 select 9; //[_profile,"vehiclesInCargoOf",[]] call ALIVE_fnc_hashSet;
@@ -70,7 +71,7 @@ switch(_type) do {
         _despawnPosition = _profile select 2 select 23; //[_profile,"despawnPosition"] call ALIVE_fnc_hashGet;
         _hasSimulated = _profile select 2 select 24; //[_profile,"hasSimulated"] call ALIVE_fnc_hashGet;
 
-        _inCommand = false;
+        _inCommand = if (count _vehiclesInCommandOf > 0) then {true} else {false};
         _inCar = false;
         _inAir = false;
         _inShip = false;
@@ -78,21 +79,23 @@ switch(_type) do {
 
         //["GGSP [%1] - commanding vehicles: %2 cargo vehicles: %3 simulated: %4",_profileID,_vehiclesInCommandOf,_vehiclesInCargoOf,_hasSimulated] call ALIVE_fnc_dump;
 
-        // the profile has been moved via simulation
-        if(_hasSimulated || ((_despawnPosition select 0) + (_despawnPosition select 1)) == 0) then {
+        // the profile has been moved via simulation and is commanding a vehicle or has corrupt positions
+        if (_inCommand && {_hasSimulated || {_despawnPosition select 0 < 5 && {_despawnPosition select 1 < 5}}}) then {
 
             //["GGSP [%1] - entity has simulated",_profileID] call ALIVE_fnc_dump;
 
             // entity is not in the cargo of a vehicle
-            if(count _vehiclesInCargoOf == 0) then {
+            if (count _vehiclesInCargoOf == 0) then {
 
                 ////["GGSP [%1] - entity is not in cargo",_profileID] call ALIVE_fnc_dump;
 
+                _spawnPosition = _position;
+                //[_spawnPosition,"DEF",_profileID] call _createMarker;
+
                 // we are commanding vehicles
                 // need to take the vehicle types etc into account
-                if(count _vehiclesInCommandOf > 0) then {
+                if (count _vehiclesInCommandOf > 0) then {
                     _vehicles = [];
-                    _inCommand = true;
                     {
                         _vehicleProfile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
 
@@ -115,33 +118,13 @@ switch(_type) do {
                     } forEach _vehiclesInCommandOf;
                 };
 
-                _spawnPosition = _position;
-
-                //[_spawnPosition,"DEF",_profileID] call _createMarker;
-
                 //["GGSP [%1] - command: %2 car: %3 air: %4 ship: %5",_profileID,_inCommand,_inCar,_inAir,_inShip] call ALIVE_fnc_dump;
-
-                // if the entity is not commanding any vehicles
-                if!(_inCommand) then {
-
-                    // spawn position is in the water
-                    if(surfaceIsWater _position) then {
-
-                        //["GGSP [%1] - the position is water",_profileID] call ALIVE_fnc_dump;
-                        //_spawnPosition = [_position] call ALIVE_fnc_getClosestLand;
-                        _spawnPosition = [_position,0,500,1,0,0.5,0,[],[_position]] call BIS_fnc_findSafePos;
-
-                        //[_spawnPosition,"LAND",_profileID] call _createMarker;
-                    };
-
-
-                };
 
                 // if the entity is in a ship
                 if(_inShip) then {
 
                     // spawn position is not in the water
-                    if!(surfaceIsWater _position) then {
+                    if !(surfaceIsWater _position) then {
 
                         //["GGSP [%1] - ship - the position is land",_profileID] call ALIVE_fnc_dump;
                         //_spawnPosition = [_position] call ALIVE_fnc_getClosestSea;
@@ -152,7 +135,7 @@ switch(_type) do {
                 };
 
                 // if the entity is in a car
-                if(_inCar) then {
+                if (_inCar) then {
 
                     //["GGSP [%1] - entity is in car get road position",_profileID] call ALIVE_fnc_dump;
 
@@ -163,7 +146,7 @@ switch(_type) do {
                     ///*
                     _positionSeries = [_spawnPosition,100,10] call ALIVE_fnc_getSeriesRoadPositions;
 
-                    if(count _positionSeries > 0) then {
+                    if (count _positionSeries > 0) then {
                         _spawnPosition = selectRandom _positionSeries;
                     };
                     //*/
@@ -203,11 +186,11 @@ switch(_type) do {
                 [_profile,"mergePositions"] call ALIVE_fnc_profileEntity;
 
                 // update any vehicle profile positions
-                if(_inCommand) then {
+                if (_inCommand) then {
 
                     //["GGSP [%1] - IN COMMAND count vehicle: %2",_profileID,count _vehicles] call ALIVE_fnc_dump;
 
-                    if(count _vehicles > 1) then  {
+                    if (count _vehicles > 1) then  {
 
                         // lead vehicle
                         _vehicleProfile = _vehicles select 0;
@@ -217,7 +200,7 @@ switch(_type) do {
 
                         // vehicle is already spawned, move it..
 
-                        if(_vehicleProfile select 2 select 1) then {
+                        if (_vehicleProfile select 2 select 1) then {
                             _vehicle = _vehicleProfile select 2 select 10;
                             if!(isNil '_vehicle') then {
                                 _vehicle setPos _spawnPosition;
@@ -236,9 +219,9 @@ switch(_type) do {
                             
                             _vehicleClass = _vehicleProfile select 2 select 11; //[_vehicleProfile,"vehicleClass"] call ALIVE_fnc_hashGet;
 
-                            if(_inAir) then {
+                            if (_inAir) then {
                                 _position = _spawnPosition getPos [(100 * ((_forEachIndex)+1)), _direction];
-                            }else{
+                            } else {
                                 _position = _spawnPosition getPos [(20 * ((_forEachIndex)+1)), _direction];
                             };
 
@@ -271,9 +254,9 @@ switch(_type) do {
 
                             // vehicle is already spawned, move it..
 
-                            if(_vehicleProfile select 2 select 1) then {
+                            if (_vehicleProfile select 2 select 1) then {
                                 _vehicle = _vehicleProfile select 2 select 10;
-                                if!(isNil '_vehicle') then {
+                                if !(isNil '_vehicle') then {
                                     _vehicle setPos _position;
                                 };
                             };
@@ -295,9 +278,9 @@ switch(_type) do {
 
                             // vehicle is already spawned, move it..
 
-                            if(_vehicleProfile select 2 select 1) then {
+                            if (_vehicleProfile select 2 select 1) then {
                                 _vehicle = _vehicleProfile select 2 select 10;
-                                if!(isNil '_vehicle') then {
+                                if !(isNil '_vehicle') then {
                                     _vehicle setPos _spawnPosition;
                                 };
                             };
@@ -315,23 +298,27 @@ switch(_type) do {
         // set the position to the position it was despawned in
         } else {
 
-            if(count _vehiclesInCargoOf == 0) then {
+            //Not in command of a vehicle
+            if !(_inCommand) then {
 
-                if(((_despawnPosition select 0) + (_despawnPosition select 1)) == 0) then {
-                    _spawnPosition = _position;
-                }else{
-                    _spawnPosition = _despawnPosition;
+                // spawn position is in the water
+                if (surfaceIsWater _position) then {
 
-                    //[_spawnPosition,"DESP",_profileID] call _createMarker;
+                    //["GGSP [%1] - the position is water",_profileID] call ALIVE_fnc_dump;
+                    //_spawnPosition = [_position] call ALIVE_fnc_getClosestLand;
+                    _spawnPosition = [_position,0,500,1,0,0.5,0,[],[_position]] call BIS_fnc_findSafePos;
+
+                    [_profile,"position",_spawnPosition] call ALIVE_fnc_hashSet;
+                    [_profile,"mergePositions"] call ALIVE_fnc_profileEntity; 
+
+                    //[_spawnPosition,"LAND",_profileID] call _createMarker;
                 };
-
-                [_profile,"position",_spawnPosition] call ALIVE_fnc_hashSet;
-                [_profile,"mergePositions"] call ALIVE_fnc_profileEntity;
             };
 
             //["GGSP [%1] - not simulated - set pos as despawn position: %2",_profileID,_spawnPosition] call ALIVE_fnc_dump;
-        }
+        };
     };
+
     case "vehicle": {
         /*
         _entitiesInCommandOf = _profile select 2 select 8; //[_profile,"entitiesInCommandOf",[]] call ALIVE_fnc_hashSet;
