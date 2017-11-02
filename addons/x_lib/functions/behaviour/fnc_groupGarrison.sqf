@@ -86,6 +86,7 @@ if (count _buildings > 0) then {
         private _building = _x;
         private _class = typeOf _building;
         private _buildingPositions = [ALIVE_garrisonPositions,_class] call ALIVE_fnc_hashGet;
+        private _nearEntities =_building nearEntities ["CAManBase", 20];
         
         if !(isNil "_buildingPositions") then {
             {
@@ -96,48 +97,51 @@ if (count _buildings > 0) then {
                     private _unit = _units select 0;
                     private _origPos = position _unit;
                     private _position = _building buildingpos _x;
+
+                    if ({_position distance _x <= 0.5} count _nearEntities == 0) then {
                    
-                    if (!isNil "_unit") then {
-                        if (_moveInstantly) then {
-                            
-                            if (str(_position) find "[0,0" != -1) then {
-                                ["ALiVE Group Garrison - Warning! %1 building-pos in %2 detected! Unit %3 reset to %4!",_position,_building,_unit,_origPos] call ALiVE_fnc_Dump;
+                        if (!isNil "_unit") then {
+                            if (_moveInstantly) then {
                                 
-                                _unit setpos _origPos;
-                            } else {
-                                _unit setposATL _position;
-                            };
-                            
-                            _unit setdir ((_unit getRelDir _building)-180);
-                            dostop _unit;
-                            
-                            _unit disableAI "PATH";
-                            sleep 0.03;
-                            
-                        } else {
-                            
-                            [_unit,_origPos,_position,_building] spawn {
-                                                                
-                                private _unit = _this select 0;
-                                private _origPos = _this select 1;
-                                private _position = _this select 2;
-                                private _building = _this select 3;
-                                
-	                            if (str(_position) find "[0,0" != -1) then {
+                                if (str(_position) find "[0,0" != -1) then {
                                     ["ALiVE Group Garrison - Warning! %1 building-pos in %2 detected! Unit %3 reset to %4!",_position,_building,_unit,_origPos] call ALiVE_fnc_Dump;
                                     
-	                                [_unit, _origPos] call ALiVE_fnc_doMoveRemote;
-	                            } else {
-	                                [_unit, _position] call ALiVE_fnc_doMoveRemote;
-	                            };            
-
-                                waitUntil {sleep 1; _unit call ALiVE_fnc_unitReadyRemote};
+                                    _unit setpos _origPos;
+                                } else {
+                                    _unit setposATL _position;
+                                };
                                 
-                                doStop _unit;                                                 
+                                _unit setdir ((_unit getRelDir _building)-180);
+                                dostop _unit;
+                                
+                                _unit disableAI "PATH";
+                                sleep 0.03;
+                                
+                            } else {
+                                
+                                [_unit,_origPos,_position,_building] spawn {
+                                                                    
+                                    private _unit = _this select 0;
+                                    private _origPos = _this select 1;
+                                    private _position = _this select 2;
+                                    private _building = _this select 3;
+                                    
+                                    if (str(_position) find "[0,0" != -1) then {
+                                        ["ALiVE Group Garrison - Warning! %1 building-pos in %2 detected! Unit %3 reset to %4!",_position,_building,_unit,_origPos] call ALiVE_fnc_Dump;
+                                        
+                                        [_unit, _origPos] call ALiVE_fnc_doMoveRemote;
+                                    } else {
+                                        [_unit, _position] call ALiVE_fnc_doMoveRemote;
+                                    };            
+
+                                    waitUntil {sleep 1; _unit call ALiVE_fnc_unitReadyRemote};
+                                    
+                                    doStop _unit;                                                 
+                                };
                             };
+                            
+                            _units = _units - [_unit];
                         };
-                        
-                        _units = _units - [_unit];
                     };
                 };
             } foreach _buildingPositions;
