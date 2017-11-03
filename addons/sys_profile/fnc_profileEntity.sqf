@@ -874,8 +874,11 @@ switch(_operation) do {
                 _locked = [_logic, "locked",false] call ALIVE_fnc_hashGet;
                 _ignore_HC = [_logic, "ignore_HC",false] call ALIVE_fnc_hashGet;
 
+                _formation = selectRandom ["COLUMN","STAG COLUMN","WEDGE","ECH LEFT","ECH RIGHT","VEE","LINE"];
                 _unitCount = 0;
                 _units = [];
+                _paraDrop = false;
+                _spawnOnGround = false;
 
                 // not already active and spawning has not yet been triggered
                 if (!_active && {!_locked}) then {
@@ -889,24 +892,28 @@ switch(_operation) do {
                     //["Profile [%1] Spawn - Get good spawn position",_profileID] call ALIVE_fnc_dump;
                     //[true] call ALIVE_fnc_timer;
                     [_logic] call ALIVE_fnc_profileGetGoodSpawnPosition;
-                    _position = _logic select 2 select 2; //[_entityProfile,"position"] call ALIVE_fnc_hashGet;
                     //[] call ALIVE_fnc_timer;
 
-                    // Check to see if unit is on a ship
-                    private _isOnShip = [_position] call ALiVE_fnc_nearShip;
+                    _position = _logic select 2 select 2; //[_entityProfile,"position"] call ALIVE_fnc_hashGet;
 
-                    //["SPAWN ENTITY [%1] pos: %2 command: %3 cargo: %4 isOnShip: %5",_profileID,_position,_vehiclesInCommandOf,_vehiclesInCargoOf, _isOnShip] call ALIVE_fnc_dump;
-
-                    _paraDrop = false;
+                    //["SPAWN ENTITY [%1] pos: %2 command: %3 cargo: %4",_profileID,_position,_vehiclesInCommandOf,_vehiclesInCargoOf] call ALIVE_fnc_dump;
 
                     if (((count _vehiclesInCommandOf) == 0) && {(count _vehiclesInCargoOf) == 0}) then {
-	                    if ((_position select 2) > 300) then {
+	                    
+                        // If entity is not in a vehicle but in air give it a parachute
+                        if ((_position select 2) > 300) then {
 	                    	_paraDrop = true;
-	                    } else {
-                            if (((count _vehiclesInCommandOf) == 0) && {(count _vehiclesInCargoOf) == 0} && {!_isOnShip}) then {
-                                _position set [2,0];
-                            };
+	                    };
+                    } else {
+
+                        // If entity is in a vehicle spawn the unit on groundlevel to avoid falling to death with slowspawn, altering pos array directly
+                        if (surfaceIsWater _position) then {
+                            _position set [2,(ATLtoASL _position) select 2];
+                        } else {
+                            _position set [2,0];
                         };
+
+                        _spawnOnGround = true;
                     };
 
                     // ["Profile [%1] Spawn - Spawn Units",_profileID] call ALIVE_fnc_dump;
@@ -914,38 +921,35 @@ switch(_operation) do {
                     {
                         if !(isnil "_x") then {
 
-                            if (count _positions > 0 && {count _positions < _unitCount}) then {
+                            if (count _positions > 0 && {_unitCount < count _positions} && {!_spawnOnGround}) then {
                                 _unitPosition = _positions select _unitCount;
                             } else {
                                 _unitPosition = _position;
                             };
+                            if (count _unitPosition == 2) then {_unitPosition set [2,0]};
 
-                            if (count _damages > 0 && {count _damages < _unitCount}) then {
+                            if (count _damages > 0 && {_unitCount < count _damages}) then {
                                 _damage = _damages select _unitCount;
                             } else {
                                 _damage = 0;
                             };
 
-                            _rank = _ranks select _unitCount;
-
-                            //Creating unit on ground, or they will fall to death with slow-spawn
-                            if (_forEachIndex == 0) then {
-                                private _height = 0;
-                                if (_isOnShip) then {
-                                    _height = _unitPosition select 2;
-                                    // ["SPAWN ENTITY [%1] pos: %2 height: %3 cargo: %4 isOnShip: %5",_profileID,_unitPosition,_height,_vehiclesInCargoOf, _isOnShip] call ALIVE_fnc_dump;
-                                };
-                                _unit = _group createUnit [_x, [_unitPosition select 0, _unitPosition select 1, _height], [], 0 , "NONE"];
-
-                                // select a random formation
-                                // must be at least one unit in group for formation to stick
-			                    _formations = ["COLUMN","STAG COLUMN","WEDGE","ECH LEFT","ECH RIGHT","VEE","LINE"];
-			                    _formation = selectRandom _formations;
-			                    _group setFormation _formation;
-
-                                _group selectLeader _unit;
+                            if (count _ranks > 0 && {_unitCount < count _ranks}) then {
+                                _rank = _ranks select _unitCount;
                             } else {
-                                _unit = _group createUnit [_x, [_unitPosition select 0, _unitPosition select 1, 0], [], 0 , "FORM"];
+                                _rank = "PRIVATE";
+                            };
+
+                            if (_forEachIndex == 0) then {
+
+                                _unit = _group createUnit [_x, _unitPosition, [], 0 , "NONE"];
+
+                                // select a random formation, must be at least one unit in group for formation to stick
+                                _group setFormation _formation;
+                                _group selectLeader _unit;
+
+                            } else {
+                                _unit = _group createUnit [_x, _unitPosition, [], 0 , "FORM"];
 
                                 // sadly still needed, even though "FORM" is used above :(
                                 _unit setpos (formationPosition _unit);
@@ -956,12 +960,8 @@ switch(_operation) do {
                             //Set name
                             //_unit setVehicleVarName format["%1_%2",_profileID, _unitCount];
 
-                            // If on a ship, then setposATL
-                            if (_isOnShip) then {
-                               // ["SPAWN ENTITY FORMATION POS [%1] pos: %2 isOnShip: %3", _profileID, _unitPosition, _isOnShip] call ALIVE_fnc_dump;
-                               _unit setPosATL [position _unit select 0, position _unit select 1, _unitposition select 2];
-                            };
-
+                            // Set damages and rank on all units including leader and reset position
+                            _unit setposATL _unitPosition;
                             _unit setDamage _damage;
                             _unit setRank _rank;
 
@@ -974,7 +974,6 @@ switch(_operation) do {
                             _eventID = _unit addMPEventHandler["MPKilled", ALIVE_fnc_profileKilledEventHandler];
 
                             _units pushback _unit;
-
                             _unitCount = _unitCount + 1;
 
                             if(_paraDrop) then {

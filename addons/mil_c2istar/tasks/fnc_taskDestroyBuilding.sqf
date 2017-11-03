@@ -49,7 +49,11 @@ switch (_taskState) do {
         _taskEnemyFaction = [_task, 8, "", [""]] call BIS_fnc_param;
         _taskCurrent = [_taskData, 9, "", [""]] call BIS_fnc_param;
         _taskApplyType = [_taskData, 10, "", [""]] call BIS_fnc_param;
-        _targetBuilding = [_taskData, 11, objnull, [objnull]] call BIS_fnc_param;
+        _targetBuilding = [_taskData, 11, [], [objnull,[]]] call BIS_fnc_param;
+
+        switch (typeName _targetBuilding) do {
+            case ("ARRAY") : {_targetBuilding = if (count _targetBuilding > 0) then {_targetBuilding select 0} else {objNull}};
+        };
 
         _tasksCurrent = ([ALiVE_TaskHandler,"tasks",["",[],[],nil]] call ALiVE_fnc_HashGet) select 2;
 
@@ -77,7 +81,7 @@ switch (_taskState) do {
         if (count _taskPlayers == 0) exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _taskPlayers!"] call ALiVE_fnc_Dump};
         if (_taskEnemyFaction == "") exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _taskEnemyFaction!"] call ALiVE_fnc_Dump};
         if (_taskApplyType == "") exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _taskApplyType!"] call ALiVE_fnc_Dump};
-        if (count _targetBuilding == 0) exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _targetBuilding!"] call ALiVE_fnc_Dump};
+        if (!alive _targetBuilding) exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _targetBuilding!"] call ALiVE_fnc_Dump};
 
         _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideObjectToNumber;

@@ -239,9 +239,9 @@ switch (_operation) do {
                             -9500,
                             [
                                     "call ALIVE_fnc_logisticsMenuDef",
-                                    "main"
+                                    ["main", "alive_flexiMenu_rscPopup"]
                             ]
-                    ] call ALiVE_fnc_flexiMenu_Add;
+                    ] call CBA_fnc_flexiMenu_Add;
                 };
             };
 
@@ -943,9 +943,9 @@ switch (_operation) do {
                             -9500,
                             [
                                     "call ALIVE_fnc_logisticsMenuDef",
-                                    "main"
+                                    ["main", "alive_flexiMenu_rscPopup"]
                             ]
-                    ] call ALiVE_fnc_flexiMenu_Remove;
+                    ] call CBA_fnc_flexiMenu_Remove;
             };
 
             //delay

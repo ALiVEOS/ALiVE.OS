@@ -2865,7 +2865,9 @@ switch(_operation) do {
 
                                 private ["_active","_slingLoading","_slingload","_noCargo","_vehicle"];
 
-                                _vehicleProfile call ALIVE_fnc_inspectHash;
+                                if (_debug) then {
+                                    _vehicleProfile call ALIVE_fnc_inspectHash;
+                                };
 
                                 _active = _vehicleProfile select 2 select 1;
 
@@ -3587,7 +3589,9 @@ switch(_operation) do {
 
                             private ["_active","_noCargo","_vehicle"];
 
-                            _vehicleProfile call ALIVE_fnc_inspectHash;
+                            if (_debug) then {
+                                _vehicleProfile call ALIVE_fnc_inspectHash;
+                            };
 
                             _active = _vehicleProfile select 2 select 1;
 
@@ -4812,9 +4816,9 @@ switch(_operation) do {
 
                                     _vehicle = createVehicle [_vehicleClass, _position, [], 0, "NONE"];
 
-									clearItemCargoGlobal _vehicle;
-									clearMagazineCargoGlobal _vehicle;
-									clearWeaponCargoGlobal _vehicle;
+                                    clearItemCargoGlobal _vehicle;
+                                    clearMagazineCargoGlobal _vehicle;
+                                    clearWeaponCargoGlobal _vehicle;
 
                                     [ALiVE_SYS_LOGISTICS,"fillContainer",[_vehicle,_payload]] call ALiVE_fnc_Logistics;
 
@@ -5754,16 +5758,21 @@ switch(_operation) do {
                                         ] call bis_fnc_findSafePos;
                                     };
 
+                                    _vehicle setVariable ["alive_ml_slingload_object", _slingloadVehicle];
+
                                     _wp = group _vehicle addWaypoint [_position, 0];
                                     _wp setWaypointType "UNHOOK";
                                     _wp setWaypointStatements ["true",
                                         "_ID = (vehicle this) getVariable ['profileID',''];
                                         _profile = [ALIVE_profileHandler,'getProfile',_ID] call ALIVE_fnc_profileHandler;
-                                        _slungID = ([_profile, 'slingload'] call ALIVE_fnc_profileVehicle) select 0;
+                                        _slingload = [_profile, 'slingload'] call ALIVE_fnc_profileVehicle;
+                                        _slungID = _slingload select 0;
                                         if (typeName _slungID == 'ARRAY') then {
                                             _slungprofile = [ALIVE_profileHandler,'getProfile',_slungID select 0] call ALIVE_fnc_profileHandler;
                                             [_slungprofile, 'slung', []] call ALIVE_fnc_hashSet;
                                             [_slungProfile,'spawnType',[]] call ALIVE_fnc_profileVehicle;
+                                        } else {
+                                            [(vehicle this) getVariable [""alive_ml_slingload_object"", objNull]] spawn ALIVE_fnc_MLAttachSmokeOrStrobe;
                                         };
                                         [_profile, 'slingload', []] call ALIVE_fnc_profileVehicle;
                                         [_profile, 'slingloading', false] call ALIVE_fnc_hashSet;"

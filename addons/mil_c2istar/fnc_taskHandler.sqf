@@ -586,7 +586,7 @@ switch(_operation) do {
 
                         sleep 10;
 
-                        _generate = [format["%1_%2",_taskSide,(time+1)],_requestPlayerID,_taskSide,_taskFaction,_taskEnemyFaction,true];
+                        _generate = [format["%1_%2",_taskSide,(time+1)],_requestPlayerID,_taskSide,_taskFaction,_taskEnemyFaction,_sideAutoGeneration select 0];
 
                         [_logic,"autoGenerateTasks",_generate] call MAINCLASS;
                     };
@@ -603,7 +603,7 @@ switch(_operation) do {
 
                     sleep 10;
 
-                    _generate = [format["%1_%2",_taskSide,(time+1)],_requestPlayerID,_taskSide,_taskFaction,_taskEnemyFaction,true];
+                    _generate = [format["%1_%2",_taskSide,(time+1)],_requestPlayerID,_taskSide,_taskFaction,_taskEnemyFaction,_sideAutoGeneration select 0];
 
                     [_logic,"autoGenerateTasks",_generate] call MAINCLASS;
                 };
@@ -1234,9 +1234,11 @@ switch(_operation) do {
 
             // if the task was previously current and
             // is now not current remove from the active tasks array
-            if(_taskCurrent == "N" || _taskState == "Succeeded" || _taskState == "Failed" || _taskState == "Cancelled") then {
+            if(_taskCurrent == "N" || _taskState == "Succeeded" || _taskState == "Failed" || _taskState == "Canceled") then {
                 _activeTasks = [_logic,"activeTasks"] call ALIVE_fnc_hashGet;
                 if(_taskID in (_activeTasks select 1)) then {
+
+                    [_previousTaskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
                     [_activeTasks,_taskID] call ALIVE_fnc_hashRem;
                 };
             };
@@ -1792,8 +1794,37 @@ switch(_operation) do {
 
                 }else{
 
-                    [_logic, "stopManagement"] call MAINCLASS;
+                    private _autoGenerateSides = [_logic,"autoGenerateSides",["",[],[],""]] call ALIVE_fnc_hashGet;
+                    private _generatedTasks = 0;
 
+                    {
+                        private _taskSide = _x;
+
+                        private _taskSideData = [_autoGenerateSides,_taskSide] call ALiVE_fnc_HashGet;
+
+                        if !(_taskSideData select 0 == "None") then {
+
+                            private _sidePlayers = [_taskSide] call ALiVE_fnc_getPlayersDataSource;
+                            private _sidePlayerIDs = _sidePlayers select 1;
+
+                            if (count _sidePlayerIDs > 0) then {
+
+                                private _taskEnemyFaction = _taskSideData select 1;
+                                private _requestPlayerID = selectRandom _sidePlayerIDs;
+                                private _taskFaction = faction ([_requestPlayerID] call ALIVE_fnc_getPlayerByUID);
+
+                                _generate = [format["%1_%2",_taskSide,time],_requestPlayerID,_taskSide,_taskFaction,_taskEnemyFaction,_taskSideData select 0];
+
+                                [_logic,"autoGenerateTasks",_generate] call MAINCLASS;
+
+                                _generatedTasks = _generatedTasks + 1;
+                            };
+                        };
+                    } foreach (_autoGenerateSides select 1);
+
+                    if (_generatedTasks == 0) then {
+                        [_logic, "stopManagement"] call MAINCLASS;
+                    };
                 };
 
                 sleep 10;

@@ -709,7 +709,7 @@ switch(_operation) do {
                                 -9500,
                                 [
                                         "call ALIVE_fnc_multispawnMenuDef",
-                                        "main"
+                                        ["main", "alive_flexiMenu_rscPopup"]
                                 ]
                         ] call CBA_fnc_flexiMenu_Remove;
                 };
