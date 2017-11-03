@@ -926,6 +926,7 @@ switch(_operation) do {
                             } else {
                                 _unitPosition = _position;
                             };
+                            if (count _unitPosition == 2) then {_unitPosition set [2,0]};
 
                             if (count _damages > 0 && {_unitCount < count _damages}) then {
                                 _damage = _damages select _unitCount;
@@ -959,7 +960,7 @@ switch(_operation) do {
                             //Set name
                             //_unit setVehicleVarName format["%1_%2",_profileID, _unitCount];
 
-                            // Set damages and rank on all units including leader
+                            // Set damages and rank on all units including leader and reset position
                             _unit setposATL _unitPosition;
                             _unit setDamage _damage;
                             _unit setRank _rank;
