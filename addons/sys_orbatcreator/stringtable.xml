@@ -26,4 +26,10 @@
 <Key ID="STR_ALIVE_ORBATCREATOR_PREFIX_COMMENT">
     <Original>Enter an addon prefix here if applicable i.e. CUP</Original>
 </Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_COPY">
+    <Original>Copy Parent Classes:</Original>
+</Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_COPY_COMMENT">
+    <Original>Advanced usage - if you wish to copy the parent class of existing units, rather than existing class, select Yes. No by default.</Original>
+</Key>
 </Container></Package></Project>

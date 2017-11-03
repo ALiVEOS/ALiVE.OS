@@ -269,6 +269,16 @@ switch(_operation) do {
 
     };
 
+    case "copyParent": {
+
+        if (_args isEqualType true) then {
+            _logic setVariable [_operation, _args];
+            _result = _args;
+        } else {
+            _result = _logic getVariable [_operation, false];
+        };
+
+    };
     case "state": {
 
         if (_args isEqualType []) then {
@@ -2146,7 +2156,7 @@ switch(_operation) do {
 
         // if unit exists in config and (doesn't exist in custom units or it's parent hasn't been modified)
         // exit
-        if (isClass (_cfgVehicles >> _unit) && {(isnil "_unitData" || {isClass (configfile >> "CfgVehicles" >> _unit >> "EventHandlers" >> "ALiVE_orbatCreator")} || {configname (inheritsFrom (_cfgVehicles >> _unit)) == ([_unitData,"inheritsFrom"] call ALiVE_fnc_hashGet)})}) exitWith {
+        if (isClass (_cfgVehicles >> _unit) && {(isnil "_unitData" || {configname (inheritsFrom (_cfgVehicles >> _unit)) == ([_unitData,"inheritsFrom"] call ALiVE_fnc_hashGet)})}) exitWith {
             _result = _unit;
         };
 
@@ -3467,6 +3477,7 @@ switch(_operation) do {
     case "onCopyFactionOkClicked": {
 
         private _state = [_logic,"state"] call MAINCLASS;
+        private _copyParent = [_logic,"copyParent", false] call MAINCLASS;
         private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
 
         private _inputDisplayname = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_DISPLAYNAME );
@@ -3560,7 +3571,15 @@ switch(_operation) do {
             _newClassname = [_logic,"generateClassname", [_side,_classname,_importedUnitDisplayName]] call MAINCLASS;
 
             [_importedUnit,"faction", _className] call ALiVE_fnc_hashSet; // must be set before changing classname
+
+            // Store the original copied unit name in case we need it?
             [_importedUnit,"copiedFrom", _importedUnitConfigName] call ALiVE_fnc_hashSet;
+
+            if !(_copyParent) then {
+                // When copying a faction units, make sure imported unit is based on existing unit (not existing unit's parent)
+                [_importedUnit,"inheritsFrom", _importedUnitConfigName] call ALiVE_fnc_hashSet;
+            };
+
             [_logic,"setCustomUnitClassname", [_importedUnitConfigName,_newClassname]] call MAINCLASS; // must be ran before the unit's classname is changed
 
             [_logic,"addCustomUnit", _importedUnit] call MAINCLASS;
