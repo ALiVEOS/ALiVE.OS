@@ -1,9 +1,9 @@
 /*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, opcom">*/
 /*%FSM<HEAD>*/
 /*
-item0[] = {"INIT",0,4346,-717.630066,-1005.371277,-627.630066,-955.371338,0.000000,"INIT"};
+item0[] = {"INIT",0,250,-717.630066,-1005.371277,-627.630066,-955.371338,0.000000,"INIT"};
 item1[] = {"INIT_COMPLETE",4,218,-720.395935,-937.944458,-630.395935,-887.944458,0.000000,"INIT" \n "COMPLETE"};
-item2[] = {"ANALYZE",2,250,-915.210754,-306.293610,-417.475098,-258.428986,0.000000,"ANALYZE"};
+item2[] = {"ANALYZE",2,4346,-915.210754,-306.293610,-417.475098,-258.428986,0.000000,"ANALYZE"};
 item3[] = {"OPCOM_FEEDER",4,218,-711.187256,-222.682648,-621.187195,-172.682648,1.000000,"OPCOM" \n "FEEDER"};
 item4[] = {"ATTACK_Condition",4,218,-924.627625,-202.879486,-834.627502,-152.879486,5.000000,"ATTACK" \n "Conditions"};
 item5[] = {"",7,210,-341.155090,36.380066,-333.155060,44.380096,0.000000,""};
@@ -110,8 +110,8 @@ link51[] = {37,38};
 link52[] = {38,6};
 link53[] = {39,40};
 link54[] = {40,6};
-globals[] = {0.000000,0,0,0,0,640,480,1,94,6316128,1,-933.076355,-367.879578,-372.896179,-1127.885376,676,903,1};
-window[] = {2,-1,-1,-1,-1,1246,154,2086,154,3,693};
+globals[] = {0.000000,0,0,0,0,640,480,1,94,6316128,1,-832.910461,-346.808777,-83.045349,-749.555908,679,931,1};
+window[] = {2,-1,-1,-32000,-32000,1094,1912,3844,2,3,696};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -237,7 +237,7 @@ class FSM
                         init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""switch"";" \n
                          "_timestamp = time;" \n
                          "" \n
-                         "private [""_target"",""_obj"",""_attack"",""_defend"",""_reserve"",""_custom"",""_qrf"",""_operation"",""_priorities"",""_data_operation"",""_data_value"",""_targetsWithState"",""_OPCOM_ACTION"",""_targetOccupation"",""_analyze"",""_data""];" \n
+                         "private [""_target"",""_targetId"",""_obj"",""_attack"",""_defend"",""_reserve"",""_custom"",""_qrf"",""_operation"",""_priorities"",""_data_operation"",""_data_value"",""_targetsWithState"",""_OPCOM_ACTION"",""_targetOccupation"",""_analyze"",""_data""];" \n
                          "" \n
                          "_busy = true;" \n
                          "" \n
@@ -406,18 +406,29 @@ class FSM
                          "        case (""confirmed"") : {" \n
                          "            _confirmed = _DATA_VALUE select 0;" \n
                          "            _information = _DATA_VALUE select 1;" \n
+                         "" \n
                          "            _target = _information select 0;" \n
                          "            _return = _information select 1;" \n
+                         "" \n
+                         "				_faction = selectRandom _factions;" \n
+                         "				_enemySide = selectRandom _sidesEnemy;" \n
+                         "" \n
                          "            _operation = [_target,""opcom_orders""] call AliVE_fnc_HashGet;" \n
                          "            _pos = [_target,""center""] call AliVE_fnc_HashGet;" \n
+                         "				_targetId = [_target,""objectiveID""] call AliVE_fnc_HashGet;" \n
                          "" \n
                          "            if (_confirmed) then {" \n
                          "                switch (_operation) do {" \n
                          "                    case (""attack"") : {" \n
                          "                        [_target,""opcom_state"",""attacking""] call AliVE_fnc_HashSet;" \n
                          "" \n
+                         "								if ([_side,[""attacking""]] call ALIVE_fnc_OPCOMgetHighestPrioObjective == _targetId) then {" \n
+                         "									_targets = [_pos, 300, [_enemySide,""entity""],true] call ALIVE_fnc_getNearProfiles;" \n
+                         "									[_side,_faction,""CaptureObjective"",_targets,""OPCOM"",true] call ALiVE_fnc_taskRequest;" \n
+                         "								};" \n
+                         "" \n
                          "								//Assist TACOM by sending air recon after TACOMs attack confirmation" \n
-                         "							   _OPCOM_DATA = [""RECON"",[[_target,""objectiveID"",""""] call AliVE_fnc_HashGet]];" \n
+                         "								_OPCOM_DATA = [""RECON"",[[_target,""objectiveID"",""""] call AliVE_fnc_HashGet]];" \n
                          "                    };" \n
                          "                    case (""defend"") : {" \n
                          "                        [_target,""opcom_state"",""defending""] call AliVE_fnc_HashSet;" \n
