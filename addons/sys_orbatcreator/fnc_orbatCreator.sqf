@@ -6519,7 +6519,7 @@ switch(_operation) do {
         // insignia can only be added via SQF
 
         if (_identityInsignia != "") then {
-            _initEventHandler = _initEventHandler + (format ["[_this,'%1'] call BIS_fnc_setUnitInsignia;};", _identityInsignia]);
+            _initEventHandler = _initEventHandler + (format ["[_this,'%1'] call BIS_fnc_setUnitInsignia;", _identityInsignia]);
         };
 
         _initEventHandler = _initEventHandler + format ["_this setunitloadout %1;", _loadoutString];
