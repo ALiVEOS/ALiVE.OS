@@ -9,10 +9,11 @@ private ["_IEDskins","_IED","_trg","_vehicle","_debug","_threat","_side"];
 
 if (isNil QUOTE(ADDON)) exitWith {};
 
-_debug = ADDON getVariable ["debug", false];
-_threat = ADDON getvariable ["VB_IED_Threat", DEFAULT_VB_IED_THREAT];
-_side = ADDON getvariable ["VB_IED_Side", DEFAULT_VBIED_SIDE];
 _vehicle = _this select 0;
+_threat = if (count _this > 1) then {_this select 1} else {ADDON getvariable ["VB_IED_Threat", DEFAULT_VB_IED_THREAT]};
+
+_debug = ADDON getVariable ["debug", false];
+_side = ADDON getvariable ["VB_IED_Side", DEFAULT_VBIED_SIDE];
 
 if (_vehicle getVariable [QUOTE(ADDON(VBIED)),false]) exitWith {};
 
