@@ -2194,7 +2194,7 @@ switch(_operation) do {
         private _texture = [];
 
         if (!isnil "_customUnit") then {
-            private _veh = [_customUnit,"configName"] call ALiVE_fnc_hashGet;
+            _vehicle = [_customUnit,"configName"] call ALiVE_fnc_hashGet;
             _loadout = [_customUnit,"loadout"] call ALiVE_fnc_hashGet;
             _crew = [_customUnit,"crew"] call ALiVE_fnc_hashGet;
             _texture = [_customUnit,"texture"] call ALiVE_fnc_hashGet;
@@ -2203,12 +2203,9 @@ switch(_operation) do {
             private _customSideText = [_customUnitSide] call ALiVE_fnc_sideNumberToText;
             _sideObject = [_customSideText] call ALiVE_fnc_sideTextToObject;
 
-            _vehicle = [_logic,"getRealUnitClass", _veh] call MAINCLASS;
+            _vehicle = [_logic,"getRealUnitClass", _vehicle] call MAINCLASS;
 
-            if !(isClass (configFile >> "CfgVehicles" >> _veh)) then {
-                _vehicle = [_customUnit,"copiedFrom",_vehicle] call ALiVE_fnc_hashGet;
-            };
-        } else {
+        }  else {
             private _configPath = configFile >> "CfgVehicles" >> _vehicle;
             private _side = getNumber (_configPath >> "side");
             private _sideText = [_side] call ALiVE_fnc_sideNumberToText;
