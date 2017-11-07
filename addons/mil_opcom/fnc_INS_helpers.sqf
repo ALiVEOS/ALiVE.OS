@@ -234,11 +234,6 @@ ALiVE_fnc_INS_factory = {
                     };
                 } foreach _agents;
 
-                // If IED module is used add VBIEDs according to IED module settings
-                if (!isnil "ALiVE_MIL_IED") then {
-                    [_center,_size] call ALiVE_fnc_placeVBIED;
-                };
-
                 // Reset to center position
                 _pos = _center;
 
@@ -281,7 +276,7 @@ ALiVE_fnc_INS_ied = {
                             format["null = [getpos thisTrigger,%1] call ALIVE_fnc_removeIED",str(_id)]
                     ];
 
-                    [_pos,_size] call ALiVE_fnc_placeVBIED;
+                    [_pos,_size,1] call ALiVE_fnc_placeVBIED;
 
                     _placeholders = ((nearestobjects [_pos,["Static"],150]) + (_pos nearRoads 150));
                     if (!isnil "_placeholders" && {count _placeholders > 0}) then {_trg = _placeholders select 0};
