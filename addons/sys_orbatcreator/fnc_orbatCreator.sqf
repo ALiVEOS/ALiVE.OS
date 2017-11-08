@@ -6532,14 +6532,13 @@ switch(_operation) do {
         _initEventHandler = _initEventHandler + "_onSpawn = {_this = _this select 0;";
         _initEventHandler = _initEventHandler + "sleep 0.2; _backpack = gettext(configfile >> 'cfgvehicles' >> (typeof _this) >> 'backpack'); waituntil {sleep 0.2; backpack _this == _backpack};";
 
-        // insignia can only be added via SQF
+        _initEventHandler = _initEventHandler + format ["_this setunitloadout %1;", _loadoutString];
 
+        // insignia can only be added via SQF (after loadout has been applied)
         if (_identityInsignia != "") then {
             _initEventHandler = _initEventHandler + (format ["[_this,'%1'] call BIS_fnc_setUnitInsignia;", _identityInsignia]);
         };
-
-        _initEventHandler = _initEventHandler + format ["_this setunitloadout %1;", _loadoutString];
-
+        
         _initEventHandler = _initEventHandler + "reload _this";
 
         _initEventHandler = _initEventHandler + "};"; // _onSpawn close
