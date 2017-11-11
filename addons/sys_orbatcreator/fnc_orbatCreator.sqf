@@ -269,6 +269,16 @@ switch(_operation) do {
 
     };
 
+    case "copyParent": {
+
+        if (_args isEqualType true) then {
+            _logic setVariable [_operation, _args];
+            _result = _args;
+        } else {
+            _result = _logic getVariable [_operation, false];
+        };
+
+    };
     case "state": {
 
         if (_args isEqualType []) then {
@@ -1978,6 +1988,8 @@ switch(_operation) do {
             private _unitClassname = [_unit,"configName"] call ALiVE_fnc_hashGet;
 
             [_customUnits,_unitClassname, _unit] call ALiVE_fnc_hashSet;
+
+           //  ([_customUnits, _unitClassname] call ALiVE_fnc_hashGet) call ALiVE_fnc_inspectHash;
         };
 
     };
@@ -2146,7 +2158,9 @@ switch(_operation) do {
 
         // if unit exists in config and (doesn't exist in custom units or it's parent hasn't been modified)
         // exit
-        if (isClass (_cfgVehicles >> _unit) && {(isnil "_unitData" || {isClass (configfile >> "CfgVehicles" >> _unit >> "EventHandlers" >> "ALiVE_orbatCreator")} || {configname (inheritsFrom (_cfgVehicles >> _unit)) == ([_unitData,"inheritsFrom"] call ALiVE_fnc_hashGet)})}) exitWith {
+        //["CHECK %1, %2, %3", _unit, configname (inheritsFrom (_cfgVehicles >> _unit)), ([_unitData,"inheritsFrom"] call ALiVE_fnc_hashGet)] call ALiVE_fnc_dump;
+
+        if (isClass (_cfgVehicles >> _unit) && {(isnil "_unitData" || {getNumber(_cfgVehicles >> _unit >> "ALiVE_orbatCreator_owned") == 1} || {configname (inheritsFrom (_cfgVehicles >> _unit)) == ([_unitData,"inheritsFrom"] call ALiVE_fnc_hashGet)})}) exitWith {
             _result = _unit;
         };
 
@@ -2243,9 +2257,11 @@ switch(_operation) do {
             _activeUnit switchMove (animationState player);
             _activeUnit switchAction "playerstand";
 
-            // _loadout call ALIVE_fnc_inspectArray;
+             // _loadout call ALIVE_fnc_inspectArray;
 
-            _activeUnit setUnitLoadout _loadout;
+            if (count _loadout > 0) then {
+                _activeUnit setUnitLoadout _loadout;
+            };
 
             _cam camSetRelPos [-0.05,1,0.15];
             _cam camSetFov 0.35;
@@ -2256,6 +2272,7 @@ switch(_operation) do {
                 _unit setFace (selectRandom _faces);
             };
             _activeUnit setSpeaker _identityVoice;
+
             [_activeUnit,_identityInsignia] call BIS_fnc_setUnitInsignia;
         } else {
             _activeUnit = _vehicle createVehicle [0,0,0];
@@ -2381,13 +2398,28 @@ switch(_operation) do {
 
             if (_unit isKindOf "Man") then {
                 // spawn unit to get loadout
-                // give EH's chance to fire
+                // give EH's chance to fire?
 
                 private _unitSideText = [_unitSide] call ALiVE_fnc_sideNumberToText;
                 private _unitSideObject = [_unitSideText] call ALiVE_fnc_sideTextToObject;
+				private _loadout = [];
 
-                private _realUnit = (createGroup _unitSideObject) createUnit [_unit, [0,0,0], [], 0, "NONE"];
-                private _loadout = getUnitLoadout _realUnit;
+				// Check to see if this is an ORBATRON unit and get loadout
+				if (getNumber(_unitConfig >> "ALiVE_orbatCreator_owned") == 1) then {
+					_loadout = getArray(_unitConfig >> "ALiVE_orbatCreator_loadout");
+                    if (count _loadout == 0) then {
+                        // importing an old ORBATRON config
+                        private _init = getText (_unitConfig >> "Eventhandlers" >> "ALiVE_orbatCreator" >> "init");
+                        private _initArray = _init splitString ";";
+                        _init = _initArray select 5;
+                        _init = [_init,"_this setunitloadout ",""] call CBA_fnc_replace;
+                        _init = [_init,"_unit setunitloadout ",""] call CBA_fnc_replace;
+                        _loadout = call compile _init;
+                    };
+				} else {
+                	private _realUnit = (createGroup _unitSideObject) createUnit [_unit, [0,0,0], [], 0, "NONE"];
+                	_loadout = getUnitLoadout _realUnit;
+				};
 
                 [_newUnit,"loadout", _loadout] call ALiVE_fnc_hashSet;
 
@@ -2418,6 +2450,9 @@ switch(_operation) do {
 
                 [_logic,"deleteUnit", _realUnit] call MAINCLASS;
             };
+
+			// Check to see if unit was imported correctly.
+			// _newUnit call ALiVE_fnc_inspectHash;
 
             _result = _newUnit;
 
@@ -3464,6 +3499,7 @@ switch(_operation) do {
     case "onCopyFactionOkClicked": {
 
         private _state = [_logic,"state"] call MAINCLASS;
+        private _copyParent = [_logic,"copyParent", false] call MAINCLASS;
         private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
 
         private _inputDisplayname = OC_getControl( OC_DISPLAY_CREATEFACTION , OC_CREATEFACTION_INPUT_DISPLAYNAME );
@@ -3557,7 +3593,15 @@ switch(_operation) do {
             _newClassname = [_logic,"generateClassname", [_side,_classname,_importedUnitDisplayName]] call MAINCLASS;
 
             [_importedUnit,"faction", _className] call ALiVE_fnc_hashSet; // must be set before changing classname
+
+            // Store the original copied unit name in case we need it?
             [_importedUnit,"copiedFrom", _importedUnitConfigName] call ALiVE_fnc_hashSet;
+
+            if !(_copyParent) then {
+                // When copying a faction units, make sure imported unit is based on existing unit (not existing unit's parent)
+                [_importedUnit,"inheritsFrom", _importedUnitConfigName] call ALiVE_fnc_hashSet;
+            };
+
             [_logic,"setCustomUnitClassname", [_importedUnitConfigName,_newClassname]] call MAINCLASS; // must be ran before the unit's classname is changed
 
             [_logic,"addCustomUnit", _importedUnit] call MAINCLASS;
@@ -3600,6 +3644,7 @@ switch(_operation) do {
         [_listFactions,_className] call ALiVE_fnc_listSelectData;
 
     };
+
     // unit editor
 
     case "enableUnitEditorBackground": {
@@ -6506,20 +6551,21 @@ switch(_operation) do {
         // prepare string versions of data
 
         private _identityTypesString = [_logic,"arrayToConfigArrayString", [_identityFace,_identityVoice] + _identityMisc - [""]] call MAINCLASS;
+        private _loadoutStringArray = [_logic,"arrayToConfigArrayString", _unitLoadout] call MAINCLASS;
+
         private _loadoutString = [str _unitLoadout,"""","'"] call CBA_fnc_replace;
 
         private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
         _initEventHandler = _initEventHandler + "if (local (_this select 0)) then {";
         _initEventHandler = _initEventHandler + "_onSpawn = {_this = _this select 0;";
         _initEventHandler = _initEventHandler + "sleep 0.2; _backpack = gettext(configfile >> 'cfgvehicles' >> (typeof _this) >> 'backpack'); waituntil {sleep 0.2; backpack _this == _backpack};";
-
-        _initEventHandler = _initEventHandler + format ["_this setunitloadout %1;", _loadoutString];
+        _initEventHandler = _initEventHandler + "_loadout = getArray(configFile >> 'CfgVehicles' >> (typeOf _this) >> 'ALiVE_orbatCreator_loadout'); _this setunitloadout _loadout;";
 
         // insignia can only be added via SQF (after loadout has been applied)
         if (_identityInsignia != "") then {
-            _initEventHandler = _initEventHandler + (format ["[_this,'%1'] call BIS_fnc_setUnitInsignia;", _identityInsignia]);
+            _initEventHandler = _initEventHandler + format["[_this, '%1'] call BIS_fnc_setUnitInsignia;",_identityInsignia];
         };
-        
+
         _initEventHandler = _initEventHandler + "reload _this";
 
         _initEventHandler = _initEventHandler + "};"; // _onSpawn close
@@ -6530,19 +6576,18 @@ switch(_operation) do {
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
 
         // apply identity
-
-        private _identityTypesString = [_logic,"arrayToConfigArrayString", [_identityFace,_identityVoice] + _identityMisc - [""]] call MAINCLASS;
-
         _result = _result + _indent + _indent + "identityTypes[] = " + _identityTypesString + ";" + _newLine;
 
         // Add uniform to prevent any conflicting side uniform RPT spam
-
         private _uniform = (_unitLoadout select 3) select 0;
         _result = _result + _indent + _indent + "uniformClass = " + str _uniform + ";" + _newLine;
         _result = _result + _newLine;
 
-        // event handlers
+        // Store their loadout
+        _result = _result + _indent + _indent + "ALiVE_orbatCreator_loadout[] = " + _loadoutStringArray + ";" + _newLine;
+        _result = _result + _newLine;
 
+        // event handlers
         _result = _result + _newLine + _newLine + _indent + _indent + "class EventHandlers : EventHandlers {";
         _result = _result + _newLine + _indent + _indent + _indent + "class CBA_Extended_EventHandlers : CBA_Extended_EventHandlers_base {};" + _newLine;
         _result = _result + _newLine;
