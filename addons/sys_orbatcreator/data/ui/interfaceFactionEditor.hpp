@@ -282,20 +282,11 @@ class ALiVE_orbatCreator_interface_createFaction {
                     idc = 8325;
                     text = "Generate Classname";
                     tooltip = "Generate a classname based on the side, country and armed force.";
-                    x = 0.005 * safezoneW;
-                    y = 0.365 * safezoneH;
-                    w = 0.10 * safezoneW;
-                    h = 0.035 * safezoneH;
-                    colorBackground[] = COLOR_BLACK_HARD;
-                };
-
-                class classname_title : orbatCreator_common_popup_attribute_subtitle {
-                    idc = 8313;
-                    text = "Class Name";
                     x = 0.033 * safezoneW;
                     y = 0.365 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
+                    colorBackground[] = COLOR_BLACK_HARD;
                 };
 
                 class classname_input : orbatCreator_RscEdit {
