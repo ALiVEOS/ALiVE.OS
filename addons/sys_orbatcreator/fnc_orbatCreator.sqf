@@ -1515,7 +1515,6 @@ switch(_operation) do {
             };
 
         };
-
     };
 
     case "initFactionGroupCategories": {
@@ -2379,7 +2378,7 @@ switch(_operation) do {
             private _unitDisplayName = getText (_unitConfig >> "displayName");
             private _unitSide = getNumber (_unitConfig >> "side");
             private _unitFaction = getText (_unitConfig >> "faction");
-
+            private _import = true;
             private _identityTypes = [_logic,"getUnitIdentityTypes", _unit] call MAINCLASS;
 
             // hide importer classes from user
@@ -2411,10 +2410,14 @@ switch(_operation) do {
                         // importing an old ORBATRON config
                         private _init = getText (_unitConfig >> "Eventhandlers" >> "ALiVE_orbatCreator" >> "init");
                         private _initArray = _init splitString ";";
-                        _init = _initArray select 5;
-                        _init = [_init,"_this setunitloadout ",""] call CBA_fnc_replace;
-                        _init = [_init,"_unit setunitloadout ",""] call CBA_fnc_replace;
-                        _loadout = call compile _init;
+                        if ((_init find "setunitloadout") != -1) then {
+                            _init = _initArray select 5;
+                            _init = [_init,"_this setunitloadout ",""] call CBA_fnc_replace;
+                            _init = [_init,"_unit setunitloadout ",""] call CBA_fnc_replace;
+                            _loadout = call compile _init;
+                        } else {
+                            _import = false;
+                        };
                     };
 				} else {
                 	private _realUnit = (createGroup _unitSideObject) createUnit [_unit, [0,0,0], [], 0, "NONE"];
@@ -2454,7 +2457,9 @@ switch(_operation) do {
 			// Check to see if unit was imported correctly.
 			// _newUnit call ALiVE_fnc_inspectHash;
 
-            _result = _newUnit;
+            if (_import) then {
+                _result = _newUnit;
+            };
 
         };
 
@@ -6966,19 +6971,16 @@ switch(_operation) do {
         private _array = _args;
 
         if (_array isEqualType []) then {
-
-            _result = "{";
-
+             _result = "{";
             {
-                if (_forEachIndex > 0) then {
-                    _result = _result + ", " + str _x + " ";
+                if (_x isEqualType []) then {
+                    _result = _result + ([_logic,"arrayToConfigArrayString", _x] call MAINCLASS) + ",";
                 } else {
-                    _result = _result + " " + str _x + " ";
+                    _result = _result + str _x + ",";
                 };
             } foreach _array;
-
+            _result = [_result, 0, (count _result) - 1] call CBA_fnc_substr;
             _result = _result + "}";
-
         };
 
     };
