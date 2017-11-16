@@ -386,10 +386,10 @@ switch(_operation) do {
 
     case "stopManagement": {
 
-        private _debug = _logic select 2 select 0;
-        private _handle = _logic select 2 select 3;
+        private _debug = [_logic,"debug",false] call ALIVE_fnc_hashGet;
+        private _handle = [_logic,"managerHandle",objNull] call ALIVE_fnc_hashGet;
 
-        if!(scriptDone _handle) then {
+        if(!isNull _handle && {!scriptDone _handle}) then {
             terminate _handle;
         };
 
