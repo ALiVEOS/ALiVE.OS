@@ -1,42 +1,36 @@
 #include <\x\alive\addons\civ_placement\script_component.hpp>
 SCRIPT(createRoadBlock);
-/*
- =======================================================================================================================
-Script: fnc_createRoadBlock.sqf v1.0
-Author(s): Tupolov
-        Thanks to Evaider for roadblock layout
+/* ----------------------------------------------------------------------------
+Function: ALIVE_fnc_createRoadBlock
 
 Description:
-Group will setup a roadblock on the nearest road within 500m and man it
+Generates a RoadBlock
 
-Parameter(s):
-_this select 1: radius
-_this select 0: defense position (Array)
-_this select 2: number
+Parameters:
+Array - position
+Scalar - radius
+Scalar - roadblock count
+(Bool - Debugmode)
 
 Returns:
 Array of road positions where roadblocks have been created
 
-Example(s):
-_selectedRoadObjects = [group this,(getPos this)] call ALiVE_fnc_createRoadBlock
+Examples:
+(begin example)
+[getPos player, 100, 2] call ALiVE_fnc_createRoadblock;
+(end)
 
------------------------------------------------------------------------------------------------------------------------
-Notes:
+See Also:
 
-Type of roadblock will be based on faction.
-Roadblock will be deployed on nearest road to the position facing along the road
-Group will man static weaponary
-
-to do: Current issue if road ahead bends.
-     Change roadblock based on faction
-
-=======================================================================================================================
-*/
+Author:
+Tupolov
+shukari
+---------------------------------------------------------------------------- */
 
 private [
     "_grp","_roadpos","_vehicle","_vehtype","_blockers","_roads",
     "_roadConnectedTo", "_connectedRoad","_direction","_checkpoint",
-    "_checkpointComp","_roadpoints","_result"
+    "_checkpointComp","_roadpoints"
 ];
 
 params [
@@ -45,6 +39,8 @@ params [
     ["_num", 1, [-1]],
     ["_debug", false, [true]]
 ];
+
+private _result = [];
 
 if (isnil QGVAR(ROADBLOCKS)) then {GVAR(ROADBLOCKS) = []};
 
@@ -62,25 +58,22 @@ if (_num > 5) then {_num = 5};
 // Find all the roads
 _roads = _pos nearRoads (_radius + 20);
 
-private _result = [];
-
 // scan road positions, filter trails, filter runways and find those roads on outskirts
-{
-    if (_x distance _pos < (_radius - 10) || {!isOnRoad _x} || {str(_x) find "invisible" != -1}) then {
-        _roads set [_foreachIndex,objNull];
-    };
-} foreach _roads;
-_roads = _roads - [objNull];
+_roads = {_x distance _pos < (_radius - 10) || {!isOnRoad _x} || {(str _x) find "invisible" != -1}} select _roads;
 
-if (count _roads == 0) exitWith {["ALiVE No roads found for roadblock! Cannot create..."] call ALiVE_fnc_Dump; _result};
+if (_roads isEqualTo []) exitWith {
+    ["ALiVE No roads found for roadblock! Cannot create..."] call ALiVE_fnc_Dump;
+    
+    _result;
+};
 
 if (_num > count _roads) then {_num = count _roads};
 
-_roadpoints = [];
+private _roadpoints = [];
 for "_i" from 1 to _num do {
     private "_roadsel";
     while {
-        _roadsel = (selectRandom _roads);
+        _roadsel = selectRandom _roads;
         (count _roads > 1 && ({_roadsel distance _x < 60} count _roadpoints) != 0)
     } do {
         _roads = _roads - [_roadsel];
@@ -188,6 +181,4 @@ for "_j" from 1 to (count _roadpoints) do {
 
 };
 
-if !(isnil "_result") then {
-    _result;
-};
+_result;
