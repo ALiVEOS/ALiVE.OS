@@ -35,8 +35,8 @@ _deleteAssignment = if(count _this > 2) then {_this select 2} else {true};
 _entityID = [_profileEntity, "profileID"] call ALIVE_fnc_hashGet;
 _vehicleID = [_profileVehicle, "profileID"] call ALIVE_fnc_hashGet;
 
-_entityAssignments = [_profileEntity,"vehicleAssignments"] call ALIVE_fnc_hashGet;
-_vehicleAssignments = [_profileVehicle,"vehicleAssignments"] call ALIVE_fnc_hashGet;
+_entityAssignments = [_profileEntity,"vehicleAssignments",["",[],[],""]] call ALIVE_fnc_hashGet;
+_vehicleAssignments = [_profileVehicle,"vehicleAssignments",["",[],[],""]] call ALIVE_fnc_hashGet;
 
 if(_entityID in (_vehicleAssignments select 1)) then {
 

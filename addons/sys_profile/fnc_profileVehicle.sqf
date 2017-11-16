@@ -428,6 +428,19 @@ switch(_operation) do {
                 };
         };
         case "clearVehicleAssignments": {
+
+                // remove this vehicle from referenced entities
+                private _entitiesInCommandOf = [_logic,"entitiesInCommandOf",[]] call ALIVE_fnc_hashGet;
+                private _entitiesInCargoOf = [_logic,"entitiesInCargoOf",[]] call ALIVE_fnc_hashGet;
+                {
+                    private _entityProfile = [ALiVE_ProfileHandler,"getProfile",_x] call ALIVE_fnc_ProfileHandler;
+
+                    if (!isnil "_entityProfile") then {
+                        [_entityProfile,_logic] call ALIVE_fnc_removeProfileVehicleAssignment;
+                    };
+                } foreach (_entitiesInCommandOf + _entitiesInCargoOf);
+                
+                // reset data
                 [_logic,"vehicleAssignments",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
                 [_logic,"entitiesInCommandOf",[]] call ALIVE_fnc_hashSet;
                 [_logic,"entitiesInCargoOf",[]] call ALIVE_fnc_hashSet;
@@ -761,8 +774,6 @@ switch(_operation) do {
 
                         [_logic,"active",false] call ALIVE_fnc_hashSet;
 
-                        // update profile vehicle assignments before despawn
-                        [_logic,"clearVehicleAssignments"] call MAINCLASS;
                         [_logic] call ALIVE_fnc_vehicleAssignmentsToProfileVehicleAssignments;
 
                         // update profile before despawn
