@@ -62,7 +62,7 @@ switch(_operation) do {
             [_logic,"debug",false] call ALIVE_fnc_hashSet; // select 2 select 0
             [_logic,"commandState",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet; // select 2 select 1
             [_logic,"isManaging",false] call ALIVE_fnc_hashSet; // select 2 select 2
-            [_logic,"managerHandle",objNull] call ALIVE_fnc_hashSet; // select 2 select 3
+            [_logic,"managerHandle",scriptNull] call ALIVE_fnc_hashSet; // select 2 select 3
         };
 
     };
@@ -387,9 +387,9 @@ switch(_operation) do {
     case "stopManagement": {
 
         private _debug = [_logic,"debug",false] call ALIVE_fnc_hashGet;
-        private _handle = [_logic,"managerHandle",objNull] call ALIVE_fnc_hashGet;
+        private _handle = [_logic,"managerHandle",scriptNull] call ALIVE_fnc_hashGet;
 
-        if(!isNull _handle && {!scriptDone _handle}) then {
+        if(!isNull _handle) then {
             terminate _handle;
         };
 
