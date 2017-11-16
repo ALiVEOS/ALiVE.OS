@@ -503,6 +503,19 @@ switch(_operation) do {
                 };
         };
         case "clearVehicleAssignments": {
+
+                // remove this entity from referenced vehicles
+                private _vehiclesInCommandOf = [_logic,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashGet;
+                private _vehiclesInCargoOf = [_logic,"vehiclesInCargoOf",[]] call ALIVE_fnc_hashGet;
+                {
+                    private _vehicleProfile = [ALiVE_ProfileHandler,"getProfile",_x] call ALIVE_fnc_ProfileHandler;
+
+                    if (!isnil "_vehicleProfile") then {
+                        [_logic,_vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
+                    };
+                } foreach (_vehiclesInCommandOf + _vehiclesInCargoOf);
+                
+                // reset data
                 [_logic,"vehicleAssignments",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
                 [_logic,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashSet;
                 [_logic,"vehiclesInCargoOf",[]] call ALIVE_fnc_hashSet;
@@ -1118,8 +1131,6 @@ switch(_operation) do {
                         [_logic,"clearWaypoints"] call MAINCLASS;
                         [_logic,_group] call ALIVE_fnc_waypointsToProfileWaypoints;
 
-                        // update profile vehicle assignments before despawn
-                        [_logic,"clearVehicleAssignments"] call MAINCLASS;
                         [_logic] call ALIVE_fnc_vehicleAssignmentsToProfileVehicleAssignments;
 
                         _position = getPosATL _leader;
