@@ -3,7 +3,7 @@
 /*
 item0[] = {"INIT",0,250,-717.630066,-1005.371277,-627.630066,-955.371338,0.000000,"INIT"};
 item1[] = {"INIT_COMPLETE",4,218,-720.395935,-937.944458,-630.395935,-887.944458,0.000000,"INIT" \n "COMPLETE"};
-item2[] = {"ANALYZE",2,4346,-915.210754,-306.293610,-417.475098,-258.428986,0.000000,"ANALYZE"};
+item2[] = {"ANALYZE",2,250,-915.210754,-306.293610,-417.475098,-258.428986,0.000000,"ANALYZE"};
 item3[] = {"OPCOM_FEEDER",4,218,-711.187256,-222.682648,-621.187195,-172.682648,1.000000,"OPCOM" \n "FEEDER"};
 item4[] = {"ATTACK_Condition",4,218,-924.627625,-202.879486,-834.627502,-152.879486,5.000000,"ATTACK" \n "Conditions"};
 item5[] = {"",7,210,-341.155090,36.380066,-333.155060,44.380096,0.000000,""};
@@ -37,7 +37,7 @@ item32[] = {"",7,210,-1164.081909,36.036972,-1156.081909,44.036972,0.000000,""};
 item33[] = {"PERFORM_POSTANAL",2,250,-1209.788086,-683.964172,-1119.788086,-633.964172,0.000000,"PERFORM" \n "POSTANALYSIS"};
 item34[] = {"POST_ANALYSIS_DO",4,218,-1208.969116,-760.668579,-1118.969116,-710.668579,0.000000,"POST" \n "ANALYSIS" \n "DONE"};
 item35[] = {"QRF_Conditions",4,218,-133.845856,-306.268250,-43.845856,-256.268250,0.000000,"QRF" \n "Conditions"};
-item36[] = {"REQUEST_QRF",2,250,-133.738892,-834.303589,-43.738892,-784.303650,0.000000,"REQUEST" \n "QRF"};
+item36[] = {"REQUEST_QRF",2,4346,-133.738892,-834.303589,-43.738892,-784.303650,0.000000,"REQUEST" \n "QRF"};
 item37[] = {"RECON_Conditions",4,218,9.105785,-308.301544,99.105774,-258.301483,0.000000,"RECON" \n "Conditions"};
 item38[] = {"REQUEST_RECON",2,250,10.006296,-836.706787,100.006363,-786.706909,0.000000,"REQUEST" \n "RECON"};
 item39[] = {"OCA_Conditions",4,218,150.274902,-304.513031,240.274811,-254.513000,0.000000,"OCA" \n "Conditions"};
@@ -110,8 +110,8 @@ link51[] = {37,38};
 link52[] = {38,6};
 link53[] = {39,40};
 link54[] = {40,6};
-globals[] = {0.000000,0,0,0,0,640,480,1,94,6316128,1,-832.910461,-346.808777,-83.045349,-749.555908,679,931,1};
-window[] = {2,-1,-1,-32000,-32000,1094,1912,3844,2,3,696};
+globals[] = {0.000000,0,0,0,0,640,480,1,94,6316128,1,-923.593384,166.432739,338.718018,-1155.853882,680,935,1};
+window[] = {0,-1,-1,-32000,-32000,1111,1866,3798,19,1,697};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -237,7 +237,7 @@ class FSM
                         init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""switch"";" \n
                          "_timestamp = time;" \n
                          "" \n
-                         "private [""_target"",""_targetId"",""_obj"",""_attack"",""_defend"",""_reserve"",""_custom"",""_qrf"",""_operation"",""_priorities"",""_data_operation"",""_data_value"",""_targetsWithState"",""_OPCOM_ACTION"",""_targetOccupation"",""_analyze"",""_data""];" \n
+                         "private [""_target"",""_targetId"",""_obj"",""_attack"",""_defend"",""_reserve"",""_custom"",""_qrf"",""_recon"",""_oca"",""_operation"",""_priorities"",""_data_operation"",""_data_value"",""_targetsWithState"",""_OPCOM_ACTION"",""_targetOccupation"",""_analyze"",""_data""];" \n
                          "" \n
                          "_busy = true;" \n
                          "" \n
@@ -1300,20 +1300,24 @@ class FSM
                          "" \n
                          "	if (isnil ""_profile"") exitwith {};" \n
                          "" \n
-                         "   private _vehicleIDs = ([_profile,""vehicleAssignments"",[[],[]]] call ALIVE_fnc_hashGet) select 1;" \n
+                         "	private _vehicleIDs = ([_profile,""vehicleAssignments"",[[],[]]] call ALIVE_fnc_hashGet) select 1;" \n
                          "	" \n
                          "	if (count _vehicleIDs > 0) then {" \n
                          "" \n
                          "		private _vehicleID = _vehicleIDs select 0;" \n
                          "		private _profileVehicle = [ALiVE_ProfileHandler,""getProfile"",_vehicleID] call ALiVE_fnc_ProfileHandler;" \n
-                         "		private _objectType = [_profileVehicle,""objectType"",""""] call ALiVE_fnc_HashGet;" \n
                          "" \n
-                         "		switch (_objectType) do {" \n
-                         "			case ""Plane"" : {_QRFtype = ""air""};" \n
-                         "			case ""Helicopter"" : {_QRFtype = ""air""};" \n
-                         "			case ""Tank"" : {_QRFtype = ""air""};" \n
-                         "			case ""Car"" : {_QRFtype = ""armored""};" \n
-                         "			default {_QRFtype = ""infantry""};" \n
+                         "		if (!isnil ""_profileVehicle"") then {" \n
+                         "" \n
+                         "            private _objectType = [_profileVehicle,""objectType"",""""] call ALiVE_fnc_HashGet;" \n
+                         "" \n
+                         "            switch (_objectType) do {" \n
+                         "                case ""Plane"" : {_QRFtype = ""air""};" \n
+                         "                case ""Helicopter"" : {_QRFtype = ""air""};" \n
+                         "                case ""Tank"" : {_QRFtype = ""air""};" \n
+                         "                case ""Car"" : {_QRFtype = ""armored""};" \n
+                         "                default {_QRFtype = ""infantry""};" \n
+                         "            };" \n
                          "		};" \n
                          "	};" \n
                          "	" \n
