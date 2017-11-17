@@ -68,7 +68,17 @@ if(isServer) then {
     [ALIVE_civilianPopulationSystem, "activeLimiter", _activeLimiter] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "ambientCivilianRoles", _ambientCivilianRoles] call ALIVE_fnc_civilianPopulationSystem;
 
-    if (count _ambientCivilianRoles == 0) then {GVAR(ROLES_DISABLED) = true} else {GVAR(ROLES_DISABLED) = false};
+    if (count _ambientCivilianRoles == 0) then {
+        GVAR(ROLES_DISABLED) = true;
+    } else {
+        GVAR(ROLES_DISABLED) = false;
+
+        MOD(civInteractionHandler) = [nil,"create"] call ALiVE_fnc_civInteractionHandler;
+        [MOD(civInteractionHandler),"debug", _debug] call ALiVE_fnc_civInteractionHandler;
+        [MOD(civInteractionHandler),"civilianRoles", _ambientCivilianRoles] call ALiVE_fnc_civInteractionHandler;
+        [MOD(civInteractionHandler),"init"] call ALiVE_fnc_civInteractionHandler;
+    };
+
     PublicVariable QGVAR(ROLES_DISABLED);
 
     _logic setVariable ["handler",ALIVE_civilianPopulationSystem];
@@ -76,6 +86,22 @@ if(isServer) then {
     PublicVariable QMOD(amb_civ_population);
 
     [ALIVE_civilianPopulationSystem,"start"] call ALIVE_fnc_civilianPopulationSystem;
+
+};
+
+if (hasInterface) then {
+
+    private _debug = call compile (_logic getVariable ["debug","false"]);
+    private _ambientCivilianRoles = call compile (_logic getVariable ["ambientCivilianRoles","[]"]);
+
+    if (count _ambientCivilianRoles > 0) then {
+
+        MOD(sys_civ_interaction) = [nil,"create"] call ALiVE_fnc_civInteraction;
+        [MOD(sys_civ_interaction),"debug", _debug] call ALiVE_fnc_civInteraction;
+        [MOD(sys_civ_interaction),"civilianRoles", _ambientCivilianRoles] call ALiVE_fnc_civInteraction;
+        [MOD(sys_civ_interaction),"init"] call ALiVE_fnc_civInteraction;
+
+    };
 
 };
 

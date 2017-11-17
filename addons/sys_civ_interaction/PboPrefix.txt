@@ -1,0 +1,8 @@
+x\alive\addons\sys_civ_interaction
+=======HEADER=======
+prefix=x\alive\addons\sys_civ_interaction
+Mikero=DePbo.dll
+product=Arma 3
+version=1
+Pbo Type is: Arma Addon
+==================

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_CIVINTERACTION">
+    <Original>Civilian Interaction</Original>
+</Key>
+<Key ID="STR_ALIVE_CIVINTERACTION_DEBUG">
+    <Original>Enable Debug:</Original>
+</Key>
+<Key ID="STR_ALIVE_CIVINTERACTION_DEBUG_COMMENT">
+    <Original>Enables Module Debug</Original>
+</Key>
+</Container></Package></Project>
