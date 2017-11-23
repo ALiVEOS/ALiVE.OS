@@ -70,6 +70,21 @@ class CfgVehicles {
                                                 name = "$STR_ALIVE_MP_SIZE_FILTER_LARGE";
                                                 value = "300";
                                         };
+                                        class SMALL_INVERSE
+                                        {
+                                                name = "$STR_ALIVE_MP_SIZE_FILTER_SMALL_INVERSE";
+                                                value = "-100";
+                                        };
+                                        class MEDIUM_INVERSE
+                                        {
+                                                name = "$STR_ALIVE_MP_SIZE_FILTER_MEDIUM_INVERSE";
+                                                value = "-200";
+                                        };
+                                        class LARGE_INVERSE
+                                        {
+                                                name = "$STR_ALIVE_MP_SIZE_FILTER_LARGE_INVERSE";
+                                                value = "-300";
+                                        };
                                 };
                         };
                         class priorityFilter
