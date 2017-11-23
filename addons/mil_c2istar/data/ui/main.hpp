@@ -17,7 +17,7 @@ class C2Tablet
             y = 0.0632 * safezoneH + safezoneY;
             w = 0.73 * safezoneW;
             h = 0.84 * safezoneH;
-            text = "x\alive\addons\mil_c2istar\data\ui\ALIVE_toughbook_2.paa";
+            text = "x\alive\addons\main\data\ui\ALiVE_toughbook.paa";
             moving = 0;
         };
 

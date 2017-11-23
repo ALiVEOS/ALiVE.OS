@@ -14,7 +14,7 @@ switch (MOD(TABLET_MODEL)) do {
         createDialog "NEO_resourceRadio";
 
         private _ctrlBackground = ((findDisplay 655555) displayCtrl 655556);
-        _ctrlBackground ctrlsettext "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
+        _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
         _ctrlBackground ctrlSetPosition [
             0.15 * safezoneW + safezoneX,
             -0.242 * safezoneH + safezoneY,

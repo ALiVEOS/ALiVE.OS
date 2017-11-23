@@ -62,7 +62,7 @@ switch (MOD(TABLET_MODEL)) do {
         createDialog _dialog;
 
         private _ctrlBackground = call _ctrl;
-        _ctrlBackground ctrlsettext "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
+        _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
         _ctrlBackground ctrlSetPosition [
             0.15 * safezoneW + safezoneX,
             -0.242 * safezoneH + safezoneY,

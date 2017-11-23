@@ -24,7 +24,7 @@ class vdist_dialog {
 
     class controls {
         class vdistback: RscPicture {
-            idc = -1;text = "x\alive\addons\sys_viewdistance\ALiVE_Intface_1.paa";x = 0.394859 * safezoneW + safezoneX;y = 0.130369 * safezoneH + safezoneY;w = 0.204097 * safezoneW;h = 0.798068 * safezoneH;moving = 0;
+            idc = -1;text = "x\alive\addons\main\data\ui\ALiVE_pda.paa";x = 0.394859 * safezoneW + safezoneX;y = 0.130369 * safezoneH + safezoneY;w = 0.204097 * safezoneW;h = 0.798068 * safezoneH;moving = 0;
             colorBackground[] = { 0, 0, 0, 0 };
         };
         class vd_text: RscText {

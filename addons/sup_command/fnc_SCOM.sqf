@@ -615,7 +615,7 @@ switch (_operation) do {
                         case "Mapbag01": {
                             createDialog "SCOMTablet";
                             private _ctrlBackground = ((findDisplay 12001) displayCtrl 12002);
-                            _ctrlBackground ctrlsettext "x\alive\addons\mil_c2istar\data\ui\ALiVE_mapbag.paa";
+                            _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
                             _ctrlBackground ctrlSetPosition [
                                 0.15 * safezoneW + safezoneX,
                                 -0.242 * safezoneH + safezoneY,
@@ -650,7 +650,7 @@ switch (_operation) do {
                         case "Mapbag01": {
                             createDialog "SCOMTablet";
                             private _ctrlBackground = ((findDisplay 12001) displayCtrl 12002);
-                            _ctrlBackground ctrlsettext "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
+                            _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
                             _ctrlBackground ctrlSetPosition [
                                 0.15 * safezoneW + safezoneX,
                                 -0.242 * safezoneH + safezoneY,
