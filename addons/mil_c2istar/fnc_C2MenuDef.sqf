@@ -173,7 +173,7 @@ if (_menuName == "C2ISTAR") then {
                                 createDialog "RscDisplayALIVESITREP";
 
                                 private _ctrlBackground = ((findDisplay 90001) displayCtrl 90002);
-                                _ctrlBackground ctrlsettext "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
+                                _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
                                 _ctrlBackground ctrlSetPosition [
                                     0.15 * safezoneW + safezoneX,
                                     -0.242 * safezoneH + safezoneY,
@@ -206,7 +206,7 @@ if (_menuName == "C2ISTAR") then {
                                 createDialog "RscDisplayALIVEPATROLREP";
 
                                 private _ctrlBackground = ((findDisplay 90002) displayCtrl 90003);
-                                _ctrlBackground ctrlsettext "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
+                                _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
                                 _ctrlBackground ctrlSetPosition [
                                     0.15 * safezoneW + safezoneX,
                                     -0.242 * safezoneH + safezoneY,
