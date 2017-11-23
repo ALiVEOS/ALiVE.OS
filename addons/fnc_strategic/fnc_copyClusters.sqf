@@ -41,8 +41,8 @@ _clustersCopy = [];
 {
     _priority = [_x,"priority"] call ALIVE_fnc_hashGet;
     _size = [_x,"size"] call ALIVE_fnc_hashGet;
-
-    if((_size >= _sizeFilter) && (_priority >= _priorityFilter)) then {
+    // If (greater than size filter OR less than inverse size filter) AND greater than priority filter
+    if((((_sizeFilter>=0)&&(_size >= _sizeFilter))||((_sizeFilter<0)&&(_size <= -1*_sizeFilter))) && (_priority >= _priorityFilter)) then {
         _cluster = [nil, "create"] call ALIVE_fnc_cluster;
 
         _nodes = [_x,"nodes"] call ALIVE_fnc_hashGet;

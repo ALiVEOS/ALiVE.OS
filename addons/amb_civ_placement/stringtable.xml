@@ -35,6 +35,9 @@
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_NONE">
     <Original>Do not filter</Original>
 </Key>
+<Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_VERYSMALL">
+    <Original>Ignore tiny objectives</Original>
+</Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_SMALL">
     <Original>Ignore small objectives</Original>
 </Key>
@@ -43,6 +46,18 @@
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_LARGE">
     <Original>Only huge objectives</Original>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_VERYSMALL_INVERSE">
+    <Original>Only tiny objectives</Original>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_SMALL_INVERSE">
+    <Original>Only tiny + small objectives</Original>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_MEDIUM_INVERSE">
+    <Original>Only medium and smaller objectives</Original>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_LARGE_INVERSE">
+    <Original>Only huge and smaller objectives</Original>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER">
     <Original>Objective Priority Filter:</Original>

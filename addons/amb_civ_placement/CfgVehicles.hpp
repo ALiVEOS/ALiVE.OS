@@ -56,7 +56,7 @@ class CfgVehicles {
                                         };
                                         class VERYSMALL
                                         {
-                                                name = "$STR_ALIVE_CP_SIZE_FILTER_VERYSMALL";
+                                                name = "$STR_ALIVE_AMBCP_SIZE_FILTER_VERYSMALL";
                                                 value = "160";
                                         };
                                         class SMALL
@@ -74,6 +74,26 @@ class CfgVehicles {
                                         {
                                                 name = "$STR_ALIVE_AMBCP_SIZE_FILTER_LARGE";
                                                 value = "700";
+                                        };
+                                        class VERYSMALL_INVERSE
+                                        {
+                                                name = "$STR_ALIVE_AMBCP_SIZE_FILTER_VERYSMALL_INVERSE";
+                                                value = "-160";
+                                        };
+                                        class SMALL_INVERSE
+                                        {
+                                                name = "$STR_ALIVE_AMBCP_SIZE_FILTER_SMALL_INVERSE";
+                                                value = "-250";
+                                        };
+                                        class MEDIUM_INVERSE
+                                        {
+                                                name = "$STR_ALIVE_AMBCP_SIZE_FILTER_MEDIUM_INVERSE";
+                                                value = "-400";
+                                        };
+                                        class LARGE_INVERSE
+                                        {
+                                                name = "$STR_ALIVE_AMBCP_SIZE_FILTER_LARGE_INVERSE";
+                                                value = "-700";
                                         };
                                 };
                         };
