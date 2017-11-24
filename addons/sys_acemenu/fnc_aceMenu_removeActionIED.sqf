@@ -32,7 +32,10 @@ params [
 ];
 
 // Sanity check for ALiVE_sys_acemenu_enable //
-if (isNil QGVAR(enable)) exitWith {["aceMenu_removeActionIED : ALiVE_sys_acemenu not enabled."] call ALiVE_fnc_dump};
+if (isNil QGVAR(enable)) exitWith {
+    // ToDo: Debug
+    //["aceMenu_removeActionIED : ALiVE_sys_acemenu not enabled."] call ALiVE_fnc_dump;
+};
 
 // Abandon if object unavailable //
 if (isNull _object) exitWith {};
