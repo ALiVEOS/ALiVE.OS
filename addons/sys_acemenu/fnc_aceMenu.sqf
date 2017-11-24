@@ -27,7 +27,7 @@ nil
 
 // Detect ACE and make sure instance has an interface //
 if (!(isClass(configFile >> "CfgPatches" >> "ace_interact_menu")) || (!hasInterface)) exitWith {
-    ["ACE interact_menu not active or no interface found, exiting"] call ALiVE_fnc_dump;
+    ["ALiVE_sys_acemenu: ACE interact_menu not active or no interface found, exiting"] call ALiVE_fnc_dump;
 };
 
 // Delay until 'ace_interact_menu' has initialized //
