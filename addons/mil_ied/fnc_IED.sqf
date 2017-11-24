@@ -363,7 +363,7 @@ switch(_operation) do {
                             _trg setTriggerArea[(_size+250),(_size+250),0,false];
 
                             _trg setTriggerActivation["ANY","PRESENT",false];
-                            _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2'] call ALIVE_fnc_placeVBIED",_size, text _twn], ""];
+                            _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1] call ALIVE_fnc_placeVBIED",_size], ""];
 
                              if (_debug) then {
                                 diag_log format ["ALIVE-%1 VBIED Trigger: created at %2 (%3)", time, text _twn, mapgridposition  (getpos _twn)];
