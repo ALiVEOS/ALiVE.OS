@@ -44,8 +44,15 @@ private _strategic = _args select 5; // If this should integrate with C2ISTAR au
 ["ALIVE PLAYER TASK REQUEST %1", _this] call ALIVE_fnc_dump;
 
 // Check faction has strategic tasks turned on
-private _logic = ALIVE_MIL_C2ISTAR;
 private _autoGenerateStrategicTasks = false;
+
+if (isNil "ALIVE_MIL_C2ISTAR") exitwith {
+    ["ALIVE PLAYER TASK REQUEST FAILED! NO C2ISTAR MODULE AVAILABLE!"] call ALIVE_fnc_dump;
+
+    _autoGenerateStrategicTasks
+};
+
+private _logic = ALIVE_MIL_C2ISTAR;
 
 if (_strategic) then {
     // Check auto task generation is turned on for side and faction
