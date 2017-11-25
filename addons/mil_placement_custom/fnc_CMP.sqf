@@ -359,8 +359,13 @@ switch(_operation) do {
                     if (count _comp > 0) then {
                         [_comp, _position, direction _logic, _faction] call ALIVE_fnc_spawnComposition;
                     } else {
-                        _comp = selectRandom ([_compType, [_composition], [], _faction] call ALiVE_fnc_getCompositions);
-                        [_comp, _position, direction _logic, _faction] call ALIVE_fnc_spawnComposition;
+                        private _compDef = ([_compType, [_composition], [], _faction] call ALiVE_fnc_getCompositions);
+
+                        if (count _compDef > 0) then {
+                            [(selectRandom _compDef), _position, direction _logic, _faction] call ALIVE_fnc_spawnComposition;
+                        } else {
+                            ["ALIVE CMP: Custom composition '%1' not found!", _composition] call ALiVE_fnc_dump;
+                        };
                     };
                 };
             };
