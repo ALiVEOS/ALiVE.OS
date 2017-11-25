@@ -1116,24 +1116,50 @@ rhssaf_faction_army_mappings = [] call ALiVE_fnc_hashCreate;
 // UNSUNG A3
 // ---------------------------------------------------------------------------------------------------------------------
 
+// UNSUNG_E
+
 unsung_e_mappings = [] call ALIVE_fnc_hashCreate;
 [unsung_e_mappings, "Side", "EAST"] call ALIVE_fnc_hashSet;
 [unsung_e_mappings, "GroupSideName", "EAST"] call ALIVE_fnc_hashSet;
 [unsung_e_mappings, "FactionName", "UNSUNG_E"] call ALIVE_fnc_hashSet;
-[unsung_e_mappings, "GroupFactionName", "UNSUNG_E"] call ALIVE_fnc_hashSet;
+[unsung_e_mappings, "GroupFactionName", "UNSUNG_E_NVA"] call ALIVE_fnc_hashSet;
 
 unsung_e_typeMappings = [] call ALIVE_fnc_hashCreate;
-[unsung_e_typeMappings, "Air", "Air"] call ALIVE_fnc_hashSet;
-[unsung_e_typeMappings, "Armored", "Armored"] call ALIVE_fnc_hashSet;
-[unsung_e_typeMappings, "Infantry", "NVA65Infantry"] call ALIVE_fnc_hashSet;
+[unsung_e_typeMappings, "Air", "uns_eastairplanes"] call ALIVE_fnc_hashSet;
+[unsung_e_typeMappings, "Armored", "uns_nvatrackedvehicles"] call ALIVE_fnc_hashSet;
+[unsung_e_typeMappings, "Infantry", "NVA68Infantry"] call ALIVE_fnc_hashSet;
 [unsung_e_typeMappings, "Mechanized", "uns_nvapatrolvehicles"] call ALIVE_fnc_hashSet;
 [unsung_e_typeMappings, "Motorized", "uns_nvapatrolvehicles"] call ALIVE_fnc_hashSet;
 [unsung_e_typeMappings, "Motorized_MTP", "uns_nvapatrolvehicles"] call ALIVE_fnc_hashSet;
-[unsung_e_typeMappings, "SpecOps", "SpecOps"] call ALIVE_fnc_hashSet;
+[unsung_e_typeMappings, "SpecOps", "DacCongInfantry"] call ALIVE_fnc_hashSet;
 [unsung_e_typeMappings, "Support", "NVA65Infantry"] call ALIVE_fnc_hashSet;
 
 [unsung_e_mappings, "GroupFactionTypes", unsung_e_typeMappings] call ALIVE_fnc_hashSet;
 [ALIVE_factionCustomMappings, "UNSUNG_E", unsung_e_mappings] call ALIVE_fnc_hashSet;
 
 [ALIVE_factionDefaultSupplies, "UNSUNG_E", ["uns_medcrate","uns_82mmammobox_VC","uns_AmmoBoxNVA","uns_EQPT_NVA","uns_resupply_crate_NVA"]] call ALIVE_fnc_hashSet;
+
+// UNSUNG_W
+
+unsung_w_mappings = [] call ALIVE_fnc_hashCreate;
+[unsung_w_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
+[unsung_w_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
+[unsung_w_mappings, "FactionName", "UNSUNG_W"] call ALIVE_fnc_hashSet;
+[unsung_w_mappings, "GroupFactionName", "UNSUNG_W_US"] call ALIVE_fnc_hashSet;
+
+unsung_w_typeMappings = [] call ALIVE_fnc_hashCreate;
+[unsung_w_typeMappings, "Air", "uns_UShelis"] call ALIVE_fnc_hashSet;
+[unsung_w_typeMappings, "Armored", "UNS_ustrackedvehicles"] call ALIVE_fnc_hashSet;
+[unsung_w_typeMappings, "Infantry", "ussfInfantry68"] call ALIVE_fnc_hashSet;
+[unsung_w_typeMappings, "Mechanized", "UNS_ustrackedvehicles"] call ALIVE_fnc_hashSet;
+[unsung_w_typeMappings, "Motorized", "UNS_ustrackedvehicles"] call ALIVE_fnc_hashSet;
+[unsung_w_typeMappings, "Motorized_MTP", "UNS_ustrackedvehicles"] call ALIVE_fnc_hashSet;
+[unsung_w_typeMappings, "SpecOps", "LRRPS_1AC"] call ALIVE_fnc_hashSet;
+[unsung_w_typeMappings, "Support", "usarmyInfantry25ID"] call ALIVE_fnc_hashSet;
+
+[unsung_w_mappings, "GroupFactionTypes", unsung_w_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "UNSUNG_W", unsung_w_mappings] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupplies, "UNSUNG_W", ["uns_medcrate","uns_82mmammobox_US","uns_AmmoBoxUS_army","uns_EQPT_US","uns_resupply_crate_US"]] call ALIVE_fnc_hashSet;
+
 // ---------------------------------------------------------------------------------------------------------------------
