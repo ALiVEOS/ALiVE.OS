@@ -389,7 +389,7 @@ switch(_operation) do {
         private _debug = [_logic,"debug",false] call ALIVE_fnc_hashGet;
         private _handle = [_logic,"managerHandle",scriptNull] call ALIVE_fnc_hashGet;
 
-        if(!isNull _handle) then {
+        if (!isNull _handle) then {
             terminate _handle;
         };
 
@@ -397,7 +397,7 @@ switch(_operation) do {
         [_logic,"managerHandle",scriptNull] call ALIVE_fnc_hashSet;
 
         // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
+        if (_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             ["ALiVE Civ Command Router - Command Manager Stopped"] call ALIVE_fnc_dump;
         };
