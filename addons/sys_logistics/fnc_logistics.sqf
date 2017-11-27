@@ -276,7 +276,7 @@ switch (_operation) do {
                 private ["_args","_id","_cont"];
 
                 //Ensure object is existing and not profiled
-                if (!(isnil "_x") && {!(isNull _x)} && {isnil {_x getVariable "profileID"}}) then {
+                if (!(isnil "_x") && {!(isNull _x)} && {!(_x getVariable [QGVAR(DISABLE),false])} && {isnil {_x getVariable "profileID"}}) then {
                     _id = [_logic,"id",_x] call ALiVE_fnc_logistics;
                     _args = [GVAR(STORE),_id] call ALiVE_fnc_HashGet;
 
