@@ -394,7 +394,7 @@ switch(_operation) do {
         };
 
         [_logic,"isManaging",false] call ALIVE_fnc_hashSet;
-        [_logic,"managerHandle",objNull] call ALIVE_fnc_hashSet;
+        [_logic,"managerHandle",scriptNull] call ALIVE_fnc_hashSet;
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
