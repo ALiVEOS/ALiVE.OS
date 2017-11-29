@@ -3332,7 +3332,7 @@ switch(_operation) do {
             [_event,"data",_eventData] call ALiVE_fnc_hashSet;
         };
 
-        private _airspaceAssets = [_airspaceAssets, _eventAirspace] call ALiVE_fnc_hashGet;
+        private _airspaceAssets = [_airspaceAssets, _eventAirspace,[]] call ALiVE_fnc_hashGet;
         private _airports = [_logic,"runways"] call MAINCLASS;
 
         if(_playerRequested) then {
