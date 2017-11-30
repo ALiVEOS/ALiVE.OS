@@ -105,7 +105,7 @@ for "_j" from 1 to _numIEDs do {
                     //Seems to cause a crash lateley if _clutter is empty (trigger-related?)
                     //Fixme: @Tup: why is clutter clutterClasses empty?
                     if (count _clutter > 0) then {
-                        _clut = createVehicle [(selectRandom _clutter),_IEDpos, [], 40, ""];
+                        _clut = createVehicle [(selectRandom _clutter),_IEDpos, [], 40, "NONE"];
                         _clut setvariable [QUOTE(ADDON), true];
 
                         //Fixme: what happens if clut is nil or null
@@ -131,7 +131,7 @@ for "_j" from 1 to _numIEDs do {
             _IEDpos set [2, -0.1];
         };
         _IEDskin = (selectRandom _IEDskins);
-        _IED = createVehicle [_IEDskin, _IEDpos, [], 0, ""];
+        _IED = createVehicle [_IEDskin, _IEDpos, [], 0, "NONE"];
 
         _ID = format ["%1-%2", _town, _j];
 
@@ -145,7 +145,7 @@ for "_j" from 1 to _numIEDs do {
         private ["_data"];
         _ID = (_IEDs select 1) select (_j-1);
         _data = [_IEDs, _ID] call ALiVE_fnc_hashGet;
-        _IED = createVehicle [[_data, "IEDskin", "ALIVE_IEDUrbanSmall_Remote_Ammo"] call ALiVE_fnc_hashGet, [_data, "IEDpos",[0,0,0]] call ALiVE_fnc_hashGet, [], 0, ""];
+        _IED = createVehicle [[_data, "IEDskin", "ALIVE_IEDUrbanSmall_Remote_Ammo"] call ALiVE_fnc_hashGet, [_data, "IEDpos",[0,0,0]] call ALiVE_fnc_hashGet, [], 0, "NONE"];
         if (_thirdParty) then {
             _IED setpos [(position _IED) select 0, (position _IED) select 1, 0.15];
         };
