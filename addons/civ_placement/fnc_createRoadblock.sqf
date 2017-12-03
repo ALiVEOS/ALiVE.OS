@@ -46,6 +46,8 @@ params [
     ["_debug", false, [true]]
 ];
 
+private _result = [];
+
 if (isnil QGVAR(ROADBLOCKS)) then {GVAR(ROADBLOCKS) = []};
 
 private _fac = [_pos, _radius] call ALiVE_fnc_getDominantFaction;
@@ -61,8 +63,6 @@ if (_num > 5) then {_num = 5};
 
 // Find all the roads
 _roads = _pos nearRoads (_radius + 20);
-
-private _result = [];
 
 // scan road positions, filter trails, filter runways and find those roads on outskirts
 {
