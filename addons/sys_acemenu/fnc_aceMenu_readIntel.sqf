@@ -36,7 +36,10 @@ params [
 ];
 
 // Sanity check for ALiVE_sys_acemenu_enable //
-if (isNil QGVAR(enable)) exitWith {["aceMenu_readIntel : ALiVE_sys_acemenu not enabled."] call ALiVE_fnc_dump};
+if (isNil QGVAR(enable)) exitWith {
+    // ToDo: Debug
+    //["aceMenu_readIntel : ALiVE_sys_acemenu not enabled."] call ALiVE_fnc_dump;
+};
 
 // If object is nonexistant, exit //
 if (isNull _object) exitWith {};
