@@ -59,7 +59,7 @@ if (_num > 5) then {_num = 5};
 _roads = _pos nearRoads (_radius + 20);
 
 // scan road positions, filter trails, filter runways and find those roads on outskirts
-_roads = _roads select {_x distance _pos < (_radius - 10) || {!isOnRoad _x} || {(str _x) find "invisible" != -1}};
+_roads = _roads select {_x distance _pos >= (_radius - 10) || {isOnRoad _x} || {(str _x) find "invisible" == -1}};
 
 if (_roads isEqualTo []) exitWith {
     ["ALiVE No roads found for roadblock! Cannot create..."] call ALiVE_fnc_Dump;
