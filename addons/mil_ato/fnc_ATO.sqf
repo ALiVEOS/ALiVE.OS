@@ -4084,8 +4084,12 @@ switch(_operation) do {
                                     // Set position relative to TaxiOff (but 300m up)
                                     private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                                     private _taxiPositions = [_airportID, "ilsTaxiOff",4] call ALiVE_fnc_getAirportTaxiPos;
-                                    _taxiPosition = [_taxiPositions select 0, _taxiPositions select 1, 300];
-                                    _taxiDir = _taxiPosition getDir [_taxiPositions select 2, _taxiPositions select 3, _taxiPosition select 2];
+
+                                    if (!isnil {_taxiPositions select 0}) then {
+
+                                        _taxiPosition = [_taxiPositions select 0, _taxiPositions select 1, 300];
+                                        _taxiDir = _taxiPosition getDir [_taxiPositions select 2, _taxiPositions select 3, _taxiPosition select 2];
+                                    };
                                 };
 
                                 if (surfaceIsWater _taxiPosition) then {
