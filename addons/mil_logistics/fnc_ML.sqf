@@ -5356,7 +5356,7 @@ switch(_operation) do {
             {
                 _x disableAI "AUTOTARGET";
                 _x disableAI "TARGET";
-                _x disableAI "THREAT_PATH";
+                //_x disableAI "THREAT_PATH"; this does not exist and path would make the units not move at all
             } forEach (units _group);
 
         }else{
