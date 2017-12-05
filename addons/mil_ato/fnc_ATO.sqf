@@ -3524,8 +3524,8 @@ switch(_operation) do {
 
                                     // Check crew are alive if not UAV
 
-                                    if !(([_profile,"vehicleClass"] call ALiVE_fnc_hashGet) isKindOf "UAV") then {
-                                        private _crewID = [_aircraft,"crewID"] call ALiVE_fnc_hashGet;
+                                    if !(([_profile,"vehicleClass",""] call ALiVE_fnc_hashGet) isKindOf "UAV") then {
+                                        private _crewID = [_aircraft,"crewID",""] call ALiVE_fnc_hashGet;
                                         private _crewProfile = [ALIVE_profileHandler, "getProfile",_crewID] call ALIVE_fnc_profileHandler;
                                         if (isNil "_crewProfile") then {
                                             _crewAvailable = false;
