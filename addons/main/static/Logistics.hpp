@@ -91,3 +91,4 @@ ALIVE_factionDefaultContainers = [] call ALIVE_fnc_hashCreate;
 #include "logistics\RHS_SAF.hpp"
 #include "logistics\RHS_USAF.hpp"
 #include "logistics\IFA3.hpp"
+#include "logistics\CFP.hpp"
