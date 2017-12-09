@@ -101,17 +101,24 @@ if (_autoGenerateStrategicTasks) then {
         private _destination = [];
         private _enemyFaction = "OPF_F";
 
-        // Target could be profiled aircraft, profile AA, non-profiled AA, building, HQ
-        if (typeName _target == "STRING") then {
-            private _targetProfile = [ALiVE_profileHandler, "getProfile", _target] call ALiVE_fnc_ProfileHandler;
-            _targetProfile call ALiVE_fnc_inspecthash;
-            if !(isNil "_targetProfile") then {
-                _destination = [_targetProfile, "position"] call ALiVE_fnc_hashGet;
-                _enemyFaction = [_targetProfile, "faction"] call ALiVE_fnc_hashGet;
+        switch typeName _target do {
+            case "STRING" : {
+                private _targetProfile = [ALiVE_profileHandler, "getProfile", _target] call ALiVE_fnc_ProfileHandler;
+                //_targetProfile call ALiVE_fnc_inspecthash;
+                
+                if !(isNil "_targetProfile") then {
+                    _destination = [_targetProfile, "position"] call ALiVE_fnc_hashGet;
+                    _enemyFaction = [_targetProfile, "faction"] call ALiVE_fnc_hashGet;
+                };                
             };
-        } else {
-            _destination = position _target;
-            _enemyFaction = faction _target;
+            case "OBJECT" : {
+                _destination = position _target;
+                _enemyFaction = faction _target;                
+            };
+            case "ARRAY" : {
+                _destination = [_target, "position"] call ALiVE_fnc_hashGet;
+                _enemyFaction = [_target, "faction"] call ALiVE_fnc_hashGet;                
+            };
         };
 
         private _requestID = format["%1_%2",_faction,floor(time)];
