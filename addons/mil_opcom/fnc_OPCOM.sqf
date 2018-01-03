@@ -269,7 +269,7 @@ switch(_operation) do {
                         if (!isNil "ALIVE_sys_data" && {!ALIVE_sys_data_DISABLED}) then {
                             // Load starting forces
                             private _missionName = [missionName, "%20", "-"] call CBA_fnc_replace;
-                            private _key = format ["%1_%2-starting-forces", ALIVE_sys_data_GROUP_ID, _missionName];
+                            private _key = format ["%1_%2-OPCOM_%3-starting-forces", ALIVE_sys_data_GROUP_ID, _missionName, [_handler, "opcomID"] call CBA_fnc_hashGet];
                             private _result = [GVAR(DATAHANDLER), "read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
 
                             if (_result isEqualType []) then {
@@ -1693,7 +1693,7 @@ switch(_operation) do {
 
                 // Save starting forces (every session to allow users to modify the array and persist it)
                 if (!isnil {[_logic,"startForceStrength"] call ALiVE_fnc_HashGet}) then {
-                    private _key = format ["%1-starting-forces", _missionName];
+                    private _key = format ["%1-OPCOM_%2-starting-forces", _missionName, [_logic, "opcomID"] call CBA_fnc_hashGet];
                     private _prev = [GVAR(DATAHANDLER), "read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
 
                     private _startForceStrength = [_logic,"startForceStrength"] call ALiVE_fnc_HashGet;
