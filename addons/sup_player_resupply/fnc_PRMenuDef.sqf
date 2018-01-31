@@ -1,5 +1,5 @@
 #include <\x\alive\addons\sup_player_resupply\script_component.hpp>
-#include <\x\cba\addons\ui_helper\script_dikCodes.hpp>
+#include <\a3\editor_f\Data\Scripts\dikCodes.h>
 
 SCRIPT(PRMenuDef);
 
