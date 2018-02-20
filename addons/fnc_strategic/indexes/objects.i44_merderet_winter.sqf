@@ -2,10 +2,10 @@
 /*opening pbo ww2_terrainsi44_w_worlds_i44_merderet_winter_w.pbo
 ///////<HEADER>///////
 prefix=WW2\TerrainsI44_w\Worlds\I44_Merderet_Winter_w
-Mikero=DePbo.dll.6.41
+Mikero=DePbo.dll.6.61
 version=00000000
 Pbo Type is: Arma Addon
-Sha: 'F49181ACBFF5A6EF621436216F1C39EF173E4D37'
+Sha: '15E8AFF50095DB3B05E4A79C37EF598E56FFEF2C'
 //////</HEADER>//////
 wrp= ???????????p
 OPRW Version 25 (binarised)
@@ -21,20 +21,20 @@ Reading compressed bytes1 @134F2...
 Reading Elevations @19A92...
 Reading layers @41A5B...
 Reading Object p3d's @4CA4C...
-Reading Classed models @4E641...
-Reading ReadPackedGrid4 @54213...
-Reading ReadPackedGrid5 @61454...
-Reading Compressed Bytes2 @6E885...
-Reading Compressed Bytes3 @6ED9B...
-Reading Roads @6F20E...
-Reading Objects @B010B...
-Reading MapInfo @76D543...
+Reading Classed models @4EA60...
+Reading ReadPackedGrid4 @55AB8...
+Reading ReadPackedGrid5 @62CF9...
+Reading Compressed Bytes2 @7012A...
+Reading Compressed Bytes3 @70640...
+Reading Roads @70AB3...
+Reading Objects @B19B0...
+Reading MapInfo @76EDE8...
 */
 wrp_objects=
 [
 //	p3dname,[
 //		[ID,[X,Y]]]
-	["ca\buildings\hruzdum.p3d",
+	["ww2\objects_m\structures\cup_buildingswinter_m\cup_hruzdum_w.p3d",
 		[
 			[91338,[2098,980]],
 			[94779,[3022,1379]]
@@ -71,7 +71,7 @@ wrp_objects=
 			[27899,[3630,3703]]
 		]
 	],
-	["ca\buildings\sara_domek_kovarna.p3d",
+	["ww2\objects_m\structures\cup_buildingswinter_m\cup_sara_domek_kovarna_w.p3d",
 		[
 			[91170,[2110,1015]],
 			[91981,[2195,1132]],
@@ -84,7 +84,7 @@ wrp_objects=
 			[46259,[2631,3333]]
 		]
 	],
-	["ca\buildings\statek_hl_bud.p3d",
+	["ww2\objects_m\structures\cup_buildingswinter_m\cup_statek_hl_bud_w.p3d",
 		[
 			[91171,[2120,1034]],
 			[53905,[2776,2653]],
@@ -126,7 +126,7 @@ wrp_objects=
 			[46199,[2655,3365]]
 		]
 	],
-	["ca\buildings\statek_kulna.p3d",
+	["ww2\objects_m\structures\cup_buildingswinter_m\cup_statek_kulna_w.p3d",
 		[
 			[92712,[2193,1054]],
 			[91986,[2215,1127]],
@@ -150,7 +150,7 @@ wrp_objects=
 			[62209,[3389,2679]]
 		]
 	],
-	["ca\buildings\sara_domek_ruina.p3d",
+	["ww2\objects_m\structures\cup_buildingswinter_m\cup_sara_domek_ruina_w.p3d",
 		[
 			[91080,[2166,1087]]
 		]
@@ -226,7 +226,7 @@ wrp_objects=
 			[56251,[3128,3293]]
 		]
 	],
-	["ca\buildings\dum01.p3d",
+	["ww2\objects_m\structures\cup_buildingswinter_m\cup_dum01_w.p3d",
 		[
 			[91925,[2193,1187]],
 			[94916,[3019,1348]],
@@ -2641,7 +2641,7 @@ wrp_objects=
 			[27924,[3634,3706]]
 		]
 	],
-	["ca\buildings\deutshe.p3d",
+	["ww2\objects_m\structures\cup_buildingswinter_m\cup_deutshe_w.p3d",
 		[
 			[65104,[2060,2547]],
 			[53200,[2447,2700]],
@@ -2659,7 +2659,7 @@ wrp_objects=
 			[67336,[2570,2635]]
 		]
 	],
-	["ca\structures\nav_boathouse\nav_boathouse_piert.p3d",
+	["ww2\objects_m\structures\cup_structureswinter_m\nav_boathouse\cup_nav_boathouse_piert_w.p3d",
 		[
 			[97287,[2878,943]],
 			[97288,[2903,961]],
@@ -2673,7 +2673,7 @@ wrp_objects=
 			[53686,[2609,2714]]
 		]
 	],
-	["ca\structures\nav_boathouse\nav_boathouse_pierl.p3d",
+	["ww2\objects_m\structures\cup_structureswinter_m\nav_boathouse\cup_nav_boathouse_pierl_w.p3d",
 		[
 			[97368,[2861,929]],
 			[73315,[3263,2558]],
@@ -2743,7 +2743,7 @@ wrp_objects=
 			[27925,[3632,3716]]
 		]
 	],
-	["ca\structures\mil\mil_guardhouse.p3d",
+	["ww2\objects_m\structures\cup_structureswinter_m\mil\cup_mil_guardhouse_w.p3d",
 		[
 			[111549,[4195,2231]],
 			[111503,[4277,2286]]
@@ -2854,7 +2854,7 @@ wrp_objects=
 			[52948,[2204,2715]]
 		]
 	],
-	["ca\buildings\bouda1.p3d",
+	["ww2\objects_m\structures\cup_buildingswinter_m\cup_bouda1_w.p3d",
 		[
 			[66924,[2450,2628]],
 			[53309,[2503,2689]]
@@ -2892,7 +2892,7 @@ wrp_objects=
 			[56200,[3151,3258]]
 		]
 	],
-	["ca\buildings\dum_mesto2.p3d",
+	["ww2\objects_m\structures\cup_buildingswinter_m\cup_dum_mesto2_w.p3d",
 		[
 			[53226,[2489,2697]],
 			[53726,[2521,2682]],
@@ -2943,7 +2943,7 @@ wrp_objects=
 			[53767,[2733,2716]]
 		]
 	],
-	["ca\structures\nav_boathouse\nav_boathouse_pierr.p3d",
+	["ww2\objects_m\structures\cup_structureswinter_m\nav_boathouse\cup_nav_boathouse_pierr_w.p3d",
 		[
 			[45754,[2441,3386]]
 		]
@@ -3016,12 +3016,12 @@ wrp_objects=
 			[53906,[2781,2666]]
 		]
 	],
-	["ca\buildings\cihlovej_dum.p3d",
+	["ww2\objects_m\structures\cup_buildingswinter_m\cup_cihlovej_dum_w.p3d",
 		[
 			[53908,[2777,2677]]
 		]
 	],
-	["ca\buildings\cihlovej_dum_in.p3d",
+	["ww2\objects_m\structures\cup_buildingswinter_m\cup_cihlovej_dum_in_w.p3d",
 		[
 			[53782,[2748,2714]],
 			[53919,[2776,2683]]
@@ -3032,7 +3032,7 @@ wrp_objects=
 			[59660,[2849,2857]]
 		]
 	],
-	["ww2\objects_m\structures\i44_war_buildings_m\i44_ardennenhouse_3_ruin.p3d",
+	["ww2\objects_m\structures\i44_war_buildingswinter_m\i44_ardennenhouse_3_ruin_w.p3d",
 		[
 			[46182,[2615,3352]]
 		]
