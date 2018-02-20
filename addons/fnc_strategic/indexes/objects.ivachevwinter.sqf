@@ -1,0 +1,291 @@
+/*=================*/
+/*opening pbo ww2_terrainsif_w_worlds_if_ivachevwinter_w.pbo
+///////<HEADER>///////
+prefix=WW2\TerrainsIF_w\Worlds\IF_IvachevWinter_w
+Mikero=DePbo.dll.6.61
+version=00000000
+Pbo Type is: Arma Addon
+Sha: '740B3C2446D24E7F267B120AB10A0938ADB91E0C'
+//////</HEADER>//////
+wrp= ????????p
+OPRW Version 25 (binarised)
+LayerSize = 16 x 16
+MapSize = 128 x 128
+Gridsize 40.0
+Reading Cellflags @0020...
+Reading EnvSounds @0253...
+Reading Peaks @038E...
+Reading WRP_RvmatIndex @03B6...
+Reading randomclutter @05E9...
+Reading compressed bytes1 @0635...
+Reading Elevations @0C5F...
+Reading layers @F420...
+Reading Object p3d's @10894...
+Reading Classed models @1273E...
+Reading ReadPackedGrid4 @14C8E...
+Reading ReadPackedGrid5 @15077...
+Reading Compressed Bytes2 @15460...
+Reading Compressed Bytes3 @15560...
+Reading Roads @155B0...
+Reading Objects @1C135...
+Reading MapInfo @3ACED...
+*/
+wrp_objects=
+[
+//	p3dname,[
+//		[ID,[X,Y]]]
+	["ww2\objects_m\structures\if_buildingswinter_m\ww2_banya_w.p3d",
+		[
+			[1922,[479,79]],
+			[1749,[496,129]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingswinter_m\ww2_dom_pl_big2_w.p3d",
+		[
+			[1928,[478,91]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_wicker_fence3_w.p3d",
+		[
+			[1958,[476,98]],
+			[2024,[492,28]],
+			[2025,[486,5]],
+			[2028,[495,40]],
+			[2029,[489,15]],
+			[2027,[525,30]],
+			[1954,[507,78]],
+			[1955,[505,68]],
+			[1957,[501,59]],
+			[2023,[498,49]],
+			[2026,[535,51]],
+			[2093,[543,46]],
+			[1742,[511,112]],
+			[1956,[482,108]],
+			[1959,[512,103]],
+			[1740,[520,139]],
+			[1741,[521,147]],
+			[1131,[282,393]],
+			[1218,[297,364]]
+		]
+	],
+	["ww2\objects_m\structures\cup_buildingswinter_m\cup_bouda1_w.p3d",
+		[
+			[1774,[466,160]],
+			[1049,[293,499]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_wicker_fence_short_w.p3d",
+		[
+			[1984,[517,28]],
+			[1946,[514,62]],
+			[1947,[516,67]],
+			[1951,[517,57]],
+			[1985,[528,54]],
+			[1721,[488,113]],
+			[1945,[503,97]],
+			[1948,[499,104]],
+			[1949,[517,92]],
+			[1950,[518,81]],
+			[1952,[516,97]],
+			[1708,[496,124]],
+			[1710,[481,145]],
+			[1711,[507,160]],
+			[1712,[504,126]],
+			[1713,[509,130]],
+			[1714,[491,130]],
+			[1715,[481,141]],
+			[1716,[500,123]],
+			[1717,[493,159]],
+			[1718,[485,136]],
+			[1719,[484,149]],
+			[1707,[521,122]],
+			[1709,[497,162]],
+			[1720,[502,162]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_shed_m01_w.p3d",
+		[
+			[2011,[519,32]],
+			[1700,[537,127]],
+			[1198,[298,366]],
+			[339,[177,522]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_shed_w03_w.p3d",
+		[
+			[2012,[514,35]],
+			[1965,[499,99]],
+			[387,[128,467]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingswinter_m\ww2_banya_destroyed_w.p3d",
+		[
+			[1986,[533,29]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingswinter_m\ww2_dom_pl_big_damage_w.p3d",
+		[
+			[2091,[545,33]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingswinter_m\ww2_kladovka_1_w.p3d",
+		[
+			[2034,[495,51]],
+			[1771,[488,151]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingswinter_m\ww2_sarai_mid_w.p3d",
+		[
+			[1923,[524,59]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingswinter_m\ww2_dom_pol_w.p3d",
+		[
+			[1967,[521,73]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_gryada_w.p3d",
+		[
+			[1973,[532,72]],
+			[1975,[540,72]],
+			[2089,[550,71]],
+			[1972,[488,83]],
+			[1974,[493,81]],
+			[1701,[497,150]],
+			[1702,[504,136]],
+			[1703,[501,143]],
+			[1704,[498,139]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_shed_w02_w.p3d",
+		[
+			[2021,[521,53]],
+			[1780,[498,159]],
+			[438,[181,489]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_wicker_fence_short_dammage_w.p3d",
+		[
+			[1729,[491,112]],
+			[1727,[490,156]],
+			[1728,[511,157]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingswinter_m\ww2_chik_house_w.p3d",
+		[
+			[1964,[493,106]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingswinter_m\ww2_dom_pl_sml_w.p3d",
+		[
+			[1739,[520,116]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingswinter_m\ww2_well_w.p3d",
+		[
+			[1966,[524,103]],
+			[1650,[480,179]],
+			[1240,[313,364]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_shed_w01_w.p3d",
+		[
+			[2070,[543,113]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingswinter_m\ww2_dom_pl_big_w.p3d",
+		[
+			[1705,[517,130]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingswinter_m\ww2_chik_house2_w.p3d",
+		[
+			[1776,[490,135]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_posed_w.p3d",
+		[
+			[451,[150,435]],
+			[361,[198,494]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_zed_civil_down_w.p3d",
+		[
+			[411,[157,453]],
+			[360,[189,511]],
+			[412,[165,482]]
+		]
+	],
+	["ww2\objects_m\structures\cup_structureswinter_m\ind_sawmill\cup_ind_sawmillpen_w.p3d",
+		[
+			[415,[156,463]],
+			[365,[180,500]]
+		]
+	],
+	["ca\buildings\dulni_bs.p3d",
+		[
+			[1235,[315,349]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingswinter_m\ww2_sarai_big_w.p3d",
+		[
+			[1193,[289,378]],
+			[1279,[536,413]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_zed_civil_w.p3d",
+		[
+			[416,[171,465]],
+			[417,[175,469]],
+			[419,[162,457]],
+			[421,[166,461]],
+			[311,[118,509]],
+			[312,[106,497]],
+			[395,[102,492]],
+			[396,[103,488]],
+			[340,[134,522]],
+			[343,[200,498]],
+			[344,[185,515]],
+			[346,[196,502]],
+			[418,[199,493]],
+			[420,[195,489]],
+			[422,[191,485]],
+			[341,[169,536]],
+			[342,[178,524]],
+			[345,[165,540]],
+			[347,[174,529]]
+		]
+	],
+	["ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_small06.p3d",
+		[
+			[401,[208,454]]
+		]
+	],
+	["ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_small05.p3d",
+		[
+			[447,[209,447]],
+			[1110,[235,478]]
+		]
+	],
+	["ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_small07.p3d",
+		[
+			[1094,[245,448]]
+		]
+	],
+	["ww2\objects_m\structures\cup_buildingswinter_m\cup_bouda3_w.p3d",
+		[
+			[1261,[450,396]]
+		]
+	],
+	["ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_zed_dira_civi_w.p3d",
+		[
+			[359,[181,520]]
+		]
+	],
+	["ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_small04.p3d",
+		[
+			[1111,[228,492]]
+		]
+        ]
+];
+//closing wrp...done
