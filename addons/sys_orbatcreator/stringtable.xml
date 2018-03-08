@@ -3,7 +3,7 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_ORBATCREATOR">
-    <Original>ORBAT Creator</Original>
+    <Original>ALiVE ORBAT Creator</Original>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_COMMENT">
     <Original>Open the ORBAT Creator</Original>

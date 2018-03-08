@@ -1389,6 +1389,12 @@ switch(_operation) do {
 
             };
 
+            case "exportCrates": {
+
+                [_logic,"exportConfig", "Crates"] call MAINCLASS;
+
+            };
+
             case "exportUnitsSelected": {
 
                 [_logic,"exportConfig", "UnitsSelected"] call MAINCLASS;
@@ -5934,6 +5940,30 @@ switch(_operation) do {
 
             };
 
+            case "Crates" : {
+
+                private _state = [_logic,"state"] call MAINCLASS;
+                private _selectedFaction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+
+                private _factionUnits = [_logic,"getCustomUnitsByFaction", _selectedFaction] call MAINCLASS;
+                private _factionUnitClasses = [];
+
+                {
+                    _factionUnitClasses pushback ([_x,"configName"] call ALiVE_fnc_hashGet);
+                } foreach _factionUnits;
+
+                [_selectedFaction, _factionUnitCLasses, _logic] spawn {
+                    systemchat "Processing faction for crates, please wait....";
+
+                    _result = [_this select 2, "exportFactionCrates", [_this select 0, _this select 1]] call MAINCLASS;
+
+                    systemchat "Faction crates copied to clipboard";
+
+                    copyToClipboard _result;
+                };
+
+            };
+
             case "UnitsSelected": {
 
                 private _state = [_logic,"state"] call MAINCLASS;
@@ -6013,7 +6043,6 @@ switch(_operation) do {
 
                 systemchat "Unit classnames copied to clipboard";
                 copyToClipboard _result;
-
             };
 
             case "GroupsSelected": {
@@ -6705,6 +6734,404 @@ switch(_operation) do {
 
     };
 
+    // Export faction crates
+    case "exportFactionCrates": {
+        // Creates a number crates based on the weapons and ammo used in the faction
+
+        private _faction = _args select 0;
+        private _unitclasses = _args select 1;
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
+
+        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+        private _factionConfigName = [_factionData,"configName"] call ALiVE_fnc_hashGet;
+        private _factionDisplayName = [_factionData,"displayName"] call ALiVE_fnc_hashGet;
+        private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
+
+        _result = "";
+        private _indent = "    ";
+        private _newLine = toString [13,10];
+
+        private _weaponList = []; // rifles and handguns
+        private _weaponAmmoList = []; // rifles and handgun ammo
+        private _weaponItemsList = []; // attachments
+        private _ammoList = []; // all ammo
+        private _launcherList = []; // launchers
+        private _launcherAmmoList = []; // launchers ammo
+        private _launcherItemsList = []; // launcher items
+        private _itemList = []; // items, helmets, vests, backpacks, goggles etc
+        private _uniformList = []; // uniforms
+
+        private _factionCrates = [];
+
+        // Go through each unit in the faction and get items
+        {
+            private _unitclass = _x;
+            if (_unitclass iskindof "Man") then {
+
+                private _unit = group player createUnit [_unitclass, position player, [], 10, "NONE"];
+
+                sleep 1;
+
+                // diag_log format["%1 : %2", _unitclass, weapons _unit];
+
+                _weaponList pushBackUnique (primaryWeapon _unit);
+                {
+                    _weaponAmmoList pushBackUnique _x;
+                } foreach (primaryWeaponMagazine _unit);
+
+                _weaponList pushBackUnique (handgunweapon _unit);
+
+                {
+                    _weaponAmmoList pushBackUnique _x;
+                } foreach (handgunMagazine _unit);
+
+                {
+                    _weaponItemsList pushBackUnique _x;
+                } foreach (primaryWeaponItems _unit);
+
+                {
+                    _weaponItemsList pushBackUnique _x;
+                } foreach (handgunItems _unit);
+
+                _launcherList pushBackUnique (secondaryWeapon _unit);
+
+                {
+                    _launcherAmmoList pushBackUnique _x;
+                } foreach (secondaryWeaponMagazine _unit);
+
+                {
+                    _launcherItemsList pushBackUnique _x;
+                } foreach (secondaryWeaponItems _unit);
+
+                _itemList pushBackUnique (binocular _unit);
+                _itemList pushBackUnique (vest _unit);
+                _itemList pushBackUnique (headgear _unit);
+                _itemList pushBackUnique (goggles _unit);
+                _itemList pushBackUnique (backpack _unit);
+                _itemList pushBackUnique (hmd _unit);
+                _uniformList pushBackUnique (uniform _unit);
+
+                {
+                    _itemList pushBackUnique _x;
+                } foreach (assignedItems _unit);
+
+                {
+                    _ammoList pushBackUnique _x;
+                } foreach (magazines _unit);
+
+                deleteVehicle _unit;
+            };
+
+        } foreach _unitclasses;
+
+        // remove empties from arrays
+        _weaponList = _weaponList - [""];
+        _weaponAmmoList = _weaponAmmoList - [""];
+        _weaponItemsList = _weaponItemsList - [""];
+        _uniformList = _uniformList - [""];
+        _launcherList = _launcherList - [""];
+        _launcherAmmoList = _launcherAmmoList - [""];
+        _launcherItemsList = _launcherItemsList - [""];
+        _ammoList = _ammoList - [""];
+        _itemList = _itemList - [""];
+
+        // Start text
+        _result = _result + "// Copy this part to your config.cpp" + _newline;
+        _result = _result + "#define mag_xx(a,b) class _xx_##a {magazine = ##a; count = b;}" + _newline;
+        _result = _result + "#define weap_xx(a,b) class _xx_##a {weapon = ##a; count = b;}" + _newline;
+        _result = _result + "#define item_xx(a,b) class _xx_##a {name = a; count = b;}" + _newline;
+        _result = _result + _newline;
+        _result = _result + "// Copy this part to your CfgVehicles config. Switch the Arma 3 vanilla boxes for CUP ones if necessary (replace all instances)." + _newline;
+        _result = _result + _indent;
+
+        _result = _result + "class Box_East_Ammo_F; // CUP_RUBasicAmmunitionBox" + _newline;
+        _result = _result + _indent;
+        _result = _result + "class Box_NATO_Ammo_F; // CUP_USBasicAmmunitionBox" + _newline;
+        _result = _result + _indent;
+        _result = _result + "class Box_East_Wps_F; // CUP_RUBasicWeaponsBox" + _newline;
+        _result = _result + _indent;
+        _result = _result + "class Box_NATO_Wps_F; // CUP_USBasicWeaponsBox" + _newline;
+        _result = _result + _indent;
+        _result = _result + "class Box_East_Support_F; // CUP_RUSpecialWeaponsBox" + _newline;
+        _result = _result + _indent;
+        _result = _result + "class Box_NATO_Support_F; // CUP_USSpecialWeaponsBox" + _newline;
+        _result = _result + _indent;
+        _result = _result + "class Box_East_WpsLaunch_F; // CUP_RULaunchersBox" + _newline;
+        _result = _result + _indent;
+        _result = _result + "class Box_NATO_WpsLaunch_F; // CUP_USLaunchersBox" + _newline;
+        _result = _result + _indent;
+        _result = _result + "class Box_East_Uniforms_F; // CUP_RUBasicWeaponsBox" + _newline;
+        _result = _result + _indent;
+        _result = _result + "class Box_NATO_Uniforms_F; // CUP_USBasicWeaponsBox" + _newline;
+        _result = _result + _indent;
+        _result = _result + "class O_SupplyCrate_F; // CUP_RUVehicleBox" + _newline;
+        _result = _result + _indent;
+        _result = _result + "class B_SupplyCrate_F; // CUP_USVehicleBox" + _newline;
+        _result = _result + _newline;
+
+        // Create an ammo box
+            // ammo + grenades
+            private _boxName = format["%1_AmmoBox",_factionConfigName];
+            _factionCrates pushback _boxName;
+            private _boxParent = if (_factionSide == 0) then {"Box_East_Ammo_F"} else {"Box_NATO_Ammo_F"};
+            _result = _result + _indent;
+            _result = _result + "class " + _boxName + " : " + _boxParent + " {" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + "author = ALiVE ORBAT CREATOR;" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + format["displayName = %1 Ammo Box;", _factionDisplayName] + _newline;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "class TransportMagazines {" + _newline;
+            {
+                _result = _result + _indent + _indent + _indent;
+                _result = _result + format["mag_xx(%1,%2);",_x, 50] + _newline;
+            } foreach _ammoList;
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "class TransportWeapons {" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "class TransportItems {" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+
+            _result = _result + _indent;
+            _result = _result + "};" + _newline;
+
+        // Create a basic weapons box
+            // For each rifle and handgun and ammo
+            private _boxName = format["%1_WeaponsBox",_factionConfigName];
+            _factionCrates pushback _boxName;
+            private _boxParent = if (_factionSide == 0) then {"Box_East_Wps_F"} else {"Box_NATO_Wps_F"};
+            _result = _result + _indent;
+            _result = _result + "class " + _boxName + " : " + _boxParent + " {" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + "author = ALiVE ORBAT CREATOR;" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + format["displayName = %1 Weapons Box;", _factionDisplayName] + _newline;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "class TransportMagazines {" + _newline;
+            {
+                _result = _result + _indent + _indent + _indent;
+                _result = _result + format["mag_xx(%1,%2);",_x, 50] + _newline;
+            } foreach _weaponAmmoList;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+            _result = _result + _indent + _indent;
+
+            _result = _result + "class TransportWeapons {" + _newline;
+
+            {
+                _result = _result + _indent + _indent + _indent;
+                _result = _result + format["weap_xx(%1,%2);",_x, 10] + _newline;
+            } foreach _weaponList;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+            _result = _result + _indent + _indent;
+
+            _result = _result + "class TransportItems {" + _newline;
+
+            {
+                _result = _result + _indent + _indent + _indent;
+                _result = _result + format["item_xx(%1,%2);",_x, 10] + _newline;
+            } foreach _weaponItemsList;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+            _result = _result + _indent;
+
+            _result = _result + "};" + _newline;
+
+        // Create a launchers weapons box
+            // For each launcher, ammo
+            private _boxName = format["%1_LaunchersBox",_factionConfigName];
+            _factionCrates pushback _boxName;
+            private _boxParent = if (_factionSide == 0) then {"Box_East_WpsLaunch_F"} else {"Box_NATO_WpsLaunch_F"};
+            _result = _result + _indent;
+            _result = _result + "class " + _boxName + " : " + _boxParent + " {" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + "author = ALiVE ORBAT CREATOR;" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + format["displayName = %1 Launchers Box;", _factionDisplayName] + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + "class TransportMagazines {" + _newline;
+
+            {
+                _result = _result + _indent + _indent + _indent;
+                _result = _result + format["mag_xx(%1,%2);",_x, 5] + _newline;
+            } foreach _launcherAmmoList;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+            _result = _result + _indent + _indent;
+
+            _result = _result + "class TransportWeapons {" + _newline;
+
+            {
+                _result = _result + _indent + _indent + _indent;
+                _result = _result + format["weap_xx(%1,%2);",_x, 5] + _newline;
+            } foreach _launcherList;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+            _result = _result + _indent + _indent;
+
+            _result = _result + "class TransportItems {" + _newline;
+
+            {
+                _result = _result + _indent + _indent + _indent;
+                _result = _result + format["item_xx(%1,%2);",_x, 5] + _newline;
+            } foreach _launcherItemsList;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+            _result = _result + _indent;
+
+            _result = _result + "};" + _newline;
+
+        // Create a uniform box
+            // For each uniform
+            private _boxName = format["%1_UniformBox",_factionConfigName];
+            _factionCrates pushback _boxName;
+            private _boxParent = if (_factionSide == 0) then {"Box_East_Uniforms_F"} else {"Box_NATO_Uniforms_F"};
+            _result = _result + _indent;
+            _result = _result + "class " + _boxName + " : " + _boxParent + " {" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + "author = ALiVE ORBAT CREATOR;" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + format["displayName = %1 Uniform Box;", _factionDisplayName] + _newline;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "class TransportWeapons {" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "class TransportMagazines {" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "class TransportItems {" + _newline;
+            {
+                _result = _result + _indent + _indent + _indent;
+                _result = _result + format["item_xx(%1,%2);",_x, 15] + _newline;
+            } foreach _uniformList;
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+
+
+            _result = _result + _indent;
+            _result = _result + "};" + _newline;
+
+        // Create a support box
+            // For each item, backpack
+            private _boxName = format["%1_SupportBox",_factionConfigName];
+            _factionCrates pushback _boxName;
+            private _boxParent = if (_factionSide == 0) then {"Box_East_Support_F"} else {"Box_NATO_Support_F"};
+            _result = _result + _indent;
+            _result = _result + "class " + _boxName + " : " + _boxParent + " {" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + "author = ALiVE ORBAT CREATOR;" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + format["displayName = %1 Support Box;", _factionDisplayName] + _newline;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "class TransportWeapons {" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "class TransportMagazines {" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "class TransportItems {" + _newline;
+            {
+                _result = _result + _indent + _indent + _indent;
+                _result = _result + format["item_xx(%1,%2);",_x, 10] + _newline;
+            } foreach _itemList;
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+
+            _result = _result + _indent;
+            _result = _result + "};" + _newline;
+
+        // Supply Box
+            // Everything?
+            private _boxName = format["%1_SupplyBox",_factionConfigName];
+            _factionCrates pushback _boxName;
+            private _boxParent = if (_factionSide == 0) then {"O_SupplyCrate_F"} else {"B_SupplyCrate_F"};
+            _result = _result + _indent;
+            _result = _result + "class " + _boxName + " : " + _boxParent + " {" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + "author = ALiVE ORBAT CREATOR;" + _newline;
+            _result = _result + _indent + _indent;
+            _result = _result + format["displayName = %1 Supply Box;", _factionDisplayName] + _newline;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "class TransportMagazines {" + _newline;
+            {
+                _result = _result + _indent + _indent + _indent;
+                _result = _result + format["mag_xx(%1,%2);",_x, 50] + _newline;
+            } foreach _ammoList;
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "class TransportWeapons {" + _newline;
+            {
+                _result = _result + _indent + _indent + _indent;
+                _result = _result + format["weap_xx(%1,%2);",_x, 10] + _newline;
+            } foreach _weaponList;
+            {
+                _result = _result + _indent + _indent + _indent;
+                _result = _result + format["weap_xx(%1,%2);",_x, 10] + _newline;
+            } foreach _launcherList;
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "class TransportItems {" + _newline;
+            {
+                _result = _result + _indent + _indent + _indent;
+                _result = _result + format["item_xx(%1,%2);",_x, 10] + _newline;
+            } foreach _weaponItemsList;
+            {
+                _result = _result + _indent + _indent + _indent;
+                _result = _result + format["item_xx(%1,%2);",_x, 10] + _newline;
+            } foreach _itemList;
+            {
+                _result = _result + _indent + _indent + _indent;
+                _result = _result + format["item_xx(%1,%2);",_x, 10] + _newline;
+            } foreach _uniformList;
+            {
+                _result = _result + _indent + _indent + _indent;
+                _result = _result + format["item_xx(%1,%2);",_x, 5] + _newline;
+            } foreach _launcherItemsList;
+
+            _result = _result + _indent + _indent;
+            _result = _result + "};" + _newline;
+            _result = _result + _indent;
+            _result = _result + "};" + _newline;
+
+        // Create the ALiVE logistics data
+        _result = _result + _newline;
+        _result = _result + "// Copy this part to ALiVE logistics static data" + _newline;
+        _result = _result + format["[ALIVE_factionDefaultSupplies, %1, %2] call ALIVE_fnc_hashSet;", str(_factionConfigName), _factionCrates];
+
+    };
     // CfgGroups
 
     case "formatGroupCategoriesToFaction": {
