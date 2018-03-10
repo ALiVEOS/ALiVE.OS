@@ -1395,6 +1395,12 @@ switch(_operation) do {
 
             };
 
+            case "exportImages": {
+
+                [_logic,"exportConfig", "Images"] call MAINCLASS;
+
+            };
+
             case "exportUnitsSelected": {
 
                 [_logic,"exportConfig", "UnitsSelected"] call MAINCLASS;
@@ -5949,17 +5955,14 @@ switch(_operation) do {
 
             case "Crates" : {
 
-                private _state = [_logic,"state"] call MAINCLASS;
-                private _selectedFaction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
-
-                private _factionUnits = [_logic,"getCustomUnitsByFaction", _selectedFaction] call MAINCLASS;
+                private _factionUnits = [_logic,"getCustomUnitsByFaction", _faction] call MAINCLASS;
                 private _factionUnitClasses = [];
 
                 {
                     _factionUnitClasses pushback ([_x,"configName"] call ALiVE_fnc_hashGet);
                 } foreach _factionUnits;
 
-                [_selectedFaction, _factionUnitCLasses, _logic] spawn {
+                [_faction, _factionUnitCLasses, _logic] spawn {
                     systemchat "Processing faction for crates, please wait....";
 
                     _result = [_this select 2, "exportFactionCrates", [_this select 0, _this select 1]] call MAINCLASS;
@@ -5971,11 +5974,27 @@ switch(_operation) do {
 
             };
 
+            case "Images" : {
+
+                private _factionUnits = [_logic,"getCustomUnitsByFaction", _faction] call MAINCLASS;
+                private _factionUnitClasses = [];
+                {
+                    _factionUnitClasses pushback ([_x,"configName"] call ALiVE_fnc_hashGet);
+                } foreach _factionUnits;
+
+                _faction = [toLower(_faction),format["%1_",_prefix],""] call CBA_fnc_replace;
+
+                private _path = format["addons\%1\data\preview", _faction];
+                private _handle = [1,_factionUnitClasses,_path,_prefix,_faction,_logic] spawn ALiVE_fnc_exportORBATEditorPreviews;
+
+                systemchat "WARNING! Editor preview images saved to your profile under Screenshots. Resize images and convert to JPG. Copy to your mod addons folder.";
+
+            };
+
             case "UnitsSelected": {
 
-                private _state = [_logic,"state"] call MAINCLASS;
-                private _currentState = [_state,"activeInteface"] call ALiVE_fnc_hashGet;
-                [_state, "editorPreviews", false] call ALiVE_fnc_hashSet;
+                private _currentState = [_state, "activeInteface"] call ALiVE_fnc_hashGet;
+
                 if (_currentState == "Unit_Editor") then {
 
                     private _classList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
@@ -5999,10 +6018,7 @@ switch(_operation) do {
 
             case "UnitsAll": {
 
-                private _state = [_logic,"state"] call MAINCLASS;
-                private _selectedFaction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
-                [_state, "editorPreviews", false] call ALiVE_fnc_hashSet;
-                private _factionUnits = [_logic,"getCustomUnitsByFaction", _selectedFaction] call MAINCLASS;
+                private _factionUnits = [_logic,"getCustomUnitsByFaction", _faction] call MAINCLASS;
                 private _factionUnitClasses = [];
 
                 {
@@ -6020,10 +6036,7 @@ switch(_operation) do {
 
             case "UnitsClasses": {
 
-                private _state = [_logic,"state"] call MAINCLASS;
-                private _selectedFaction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
-
-                private _factionUnits = [_logic,"getCustomUnitsByFaction", _selectedFaction] call MAINCLASS;
+                private _factionUnits = [_logic,"getCustomUnitsByFaction", _faction] call MAINCLASS;
                 private _factionUnitClasses = [];
 
                 {
@@ -6054,7 +6067,6 @@ switch(_operation) do {
 
             case "GroupsSelected": {
 
-                private _state = [_logic,"state"] call MAINCLASS;
                 private _currentState = [_state,"activeInteface"] call ALiVE_fnc_hashGet;
 
                 if (_currentState == "Group_Editor") then {
@@ -6087,9 +6099,6 @@ switch(_operation) do {
             case "GroupsAll": {
 
                 private ["_category","_categoryGroups","_categoryGroupClasses"];
-
-                private _state = [_logic,"state"] call MAINCLASS;
-                private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
 
                 private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
                 private _groupCategories = [_factionData,"groupCategories"] call ALiVE_fnc_hashGet;
@@ -6126,9 +6135,6 @@ switch(_operation) do {
             };
 
             case "GroupsAllStaticData": {
-
-                private _state = [_logic,"state"] call MAINCLASS;
-                private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
 
                 private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
                 private _groupCategories = [_factionData,"groupCategories"] call ALiVE_fnc_hashGet;
@@ -6194,8 +6200,6 @@ switch(_operation) do {
 
             case "Full": {
 
-                [_state, "editorPreviews", false] call ALiVE_fnc_hashSet;
-
                 _result = [_logic,"exportFaction", _faction] call MAINCLASS;
 
                 _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
@@ -6208,9 +6212,6 @@ switch(_operation) do {
             case "FullWrite": {
 
                 private _prefix = [_logic,"prefix"] call MAINCLASS;
-
-                [_state, "editorPreviews", false] call ALiVE_fnc_hashSet;
-
                 private _patches = [_logic,"exportConfig", "CfgPatches"] call MAINCLASS;
                 private _classes = [_logic,"exportConfig", "Faction"] call MAINCLASS;
                 private _groups = [_logic,"exportConfig", "GroupsAll"] call MAINCLASS;
@@ -6239,6 +6240,9 @@ switch(_operation) do {
                 private _classes = [_logic,"exportConfig", "Faction"] call MAINCLASS;
                 private _groups = [_logic,"exportConfig", "GroupsAll"] call MAINCLASS;
                 private _vehicles = [_logic,"exportConfig", "UnitsAll"] call MAINCLASS;
+                private _factionUnits = [_logic,"getCustomUnitsByFaction", _faction] call MAINCLASS;
+
+                [_state, "editorPreviews", false] call ALiVE_fnc_hashSet;
 
                 _faction = [toLower(_faction),format["%1_",_prefix],""] call CBA_fnc_replace;
 
@@ -6246,22 +6250,15 @@ switch(_operation) do {
 
                 _result = "ALiVEClient" callExtension _outputString;
 
-                // Create Images
-                private _factionUnits = [_logic,"getCustomUnitsByFaction", _faction] call MAINCLASS;
-                private _factionUnitClasses = [];
-                {
-                    _factionUnitClasses pushback ([_x,"configName"] call ALiVE_fnc_hashGet);
-                } foreach _factionUnits;
-                private _path = format["addons\%1\data\preview\", _faction];
-                [1,"vehicles",[],[],[],_factionUnitClasses,_path] spawn ALiVE_fnc_exportORBATEditorPreviews;
-
-                systemchat "Editor preview images saved to your profile under Screenshots. Resize images and convert to JPG. Copy to your mod addons folder. ";
-
                 if (_result == "DONE") then {
-                    systemchat "Config data copied written to file.";
+                    systemchat "Config data copied written to file. Configs include references to Editor Preview images.";
                 } else {
                     systemchat format["Config data file write failed due to %1",_result];
                 };
+
+                // Create Images
+                private _images = [_logic, "exportConfig", "Images"] call MAINCLASS;
+
             };
 
             case "CfgPatches": {
@@ -6469,7 +6466,7 @@ switch(_operation) do {
         private ["_nextChar","_rangeEnd"];
 
         private _unit = _args;
-
+        private _prefix = [_logic,"prefix"] call MAINCLASS;
         private _state = [_logic,"state"] call MAINCLASS;
         private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
         private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
@@ -6524,7 +6521,8 @@ switch(_operation) do {
         _result = _result + _newLine;
 
         if (_editorPreviews) then {
-            private _previewFile = format["\x\%1\addons\%2\data\preview\%3.JPG",_prefix,_unitFaction,_unitConfigName];
+            private _mod = [toLower(_unitFaction),format["%1_",_prefix],""] call CBA_fnc_replace;
+            private _previewFile = format["\x\%1\addons\%2\data\preview\%3.JPG",_prefix,_mod,_unitConfigName];
             _result = _result + _indent + _indent + ("editorPreview = " + _previewFile + ";") + _newLine;
         };
 
