@@ -1364,6 +1364,14 @@ class exportMapWarRoom
 	RECOMPILE;
 };
 
+
+class exportORBATEditorPreviews
+{
+	file = "\x\alive\addons\x_lib\functions\misc\fnc_exportORBATEditorPreviews.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class factionSide
 {
 	file = "\x\alive\addons\x_lib\functions\misc\fnc_factionSide.sqf";
