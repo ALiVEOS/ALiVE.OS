@@ -6642,10 +6642,10 @@ switch(_operation) do {
         private _loadoutString = [str _unitLoadout,"""","'"] call CBA_fnc_replace;
 
         private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
-        _initEventHandler = _initEventHandler + "if (local (_this select 0) && !((_this select 0) getVariable ['ALiVE_OverrideLoadout',false])) then {";
+        _initEventHandler = _initEventHandler + "if (local (_this select 0)) then {";
         _initEventHandler = _initEventHandler + "_onSpawn = {_this = _this select 0;";
         _initEventHandler = _initEventHandler + "sleep 0.2; _backpack = gettext(configfile >> 'cfgvehicles' >> (typeof _this) >> 'backpack'); waituntil {sleep 0.2; backpack _this == _backpack};";
-        _initEventHandler = _initEventHandler + "_loadout = getArray(configFile >> 'CfgVehicles' >> (typeOf _this) >> 'ALiVE_orbatCreator_loadout'); _this setunitloadout _loadout;";
+        _initEventHandler = _initEventHandler + "if !(_this getVariable ['ALiVE_OverrideLoadout',false]) then {_loadout = getArray(configFile >> 'CfgVehicles' >> (typeOf _this) >> 'ALiVE_orbatCreator_loadout'); _this setunitloadout _loadout;";
 
         // insignia can only be added via SQF (after loadout has been applied)
         if (_identityInsignia != "") then {
@@ -6654,7 +6654,7 @@ switch(_operation) do {
 
         _initEventHandler = _initEventHandler + "reload _this";
 
-        _initEventHandler = _initEventHandler + "};"; // _onSpawn close
+        _initEventHandler = _initEventHandler + "};};"; // _onSpawn close
         _initEventHandler = _initEventHandler + "_this spawn _onSpawn;";
         _initEventHandler = _initEventHandler + "(_this select 0) addMPEventHandler ['MPRespawn', _onSpawn];";
         _initEventHandler = _initEventHandler + "};"; // if (local _unit) close
