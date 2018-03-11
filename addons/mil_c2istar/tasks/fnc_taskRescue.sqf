@@ -550,7 +550,7 @@ switch (_taskState) do {
                             // Join player group
 							private _prevLeader = leader _saverGroup;
                             [_hostage] joinSilent _saverGroup;
-                            _saverGroup selectLeader _prevLeader;
+							[_saverGroup, _prevLeader] remoteExecCall ["selectLeader", groupOwner _saverGroup];
 
                             _taskIDs = [_params,"taskIDs"] call ALIVE_fnc_hashGet;
                             [_params,"nextTask",_taskIDs select 2] call ALIVE_fnc_hashSet;
