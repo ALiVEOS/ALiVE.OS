@@ -6642,7 +6642,7 @@ switch(_operation) do {
         private _loadoutString = [str _unitLoadout,"""","'"] call CBA_fnc_replace;
 
         private _initEventHandler = [_eventHandlers,"init",""] call ALiVE_fnc_hashGet;
-        _initEventHandler = _initEventHandler + "if (local (_this select 0)) then {";
+        _initEventHandler = _initEventHandler + "if (local (_this select 0) && !((_this select 0) getVariable ['ALiVE_OverrideLoadout',false])) then {";
         _initEventHandler = _initEventHandler + "_onSpawn = {_this = _this select 0;";
         _initEventHandler = _initEventHandler + "sleep 0.2; _backpack = gettext(configfile >> 'cfgvehicles' >> (typeof _this) >> 'backpack'); waituntil {sleep 0.2; backpack _this == _backpack};";
         _initEventHandler = _initEventHandler + "_loadout = getArray(configFile >> 'CfgVehicles' >> (typeOf _this) >> 'ALiVE_orbatCreator_loadout'); _this setunitloadout _loadout;";
@@ -6663,18 +6663,57 @@ switch(_operation) do {
 
         // apply identity
         _result = _result + _indent + _indent + "identityTypes[] = " + _identityTypesString + ";" + _newLine;
+        _result = _result + _newLine;
 
         // Add uniform to prevent any conflicting side uniform RPT spam
         private _uniform = (_unitLoadout select 3) select 0;
         _result = _result + _indent + _indent + "uniformClass = " + str _uniform + ";" + _newLine;
         _result = _result + _newLine;
 
+        // Add helmet, vest and items
+        private _vest = if (count (_unitLoadout select 4) > 0) then {(_unitLoadout select 4) select 0} else {""};
+        private _linkedItems = [_vest, (_unitLoadout select 6)] + (_unitLoadout select 9) - [""];
+        private _linkedItemsStringArray = [_logic,"arrayToConfigArrayString", _linkedItems] call MAINCLASS;
+        _result = _result + _indent + _indent + "linkedItems[] = " + _linkedItemsStringArray + ";" + _newLine;
+        _result = _result + _indent + _indent + "respawnlinkedItems[] = " + _linkedItemsStringArray + ";" + _newLine;
+        _result = _result + _newLine;
+
+        // Add weapons
+        private _primary = if (count (_unitLoadout select 0) > 0) then {(_unitLoadout select 0) select 0} else {""};
+        private _secondary = if (count (_unitLoadout select 1) > 0) then {(_unitLoadout select 1) select 0} else {""};
+        private _handgun = if (count (_unitLoadout select 2) > 0) then {(_unitLoadout select 2) select 0} else {""};
+        private _bino = if (count (_unitLoadout select 8) > 0) then {(_unitLoadout select 8) select 0} else {""};
+        private _weapons = [_primary, _secondary, _Handgun, _bino] - [""];
+        private _weaponsItemsStringArray = [_logic,"arrayToConfigArrayString", _weapons] call MAINCLASS;
+        _result = _result + _indent + _indent + "weapons[] = " + _weaponsItemsStringArray + ";" + _newLine;
+        _result = _result + _indent + _indent + "respawnWeapons[] = " + _weaponsItemsStringArray + ";" + _newLine;
+        _result = _result + _newLine;
+
+        // Add magazines
+        private _primarymag = if (count (_unitLoadout select 0) > 0) then {(_unitLoadout select 0) select 4 select 0} else {""};
+        private _primarysecmag = if (count (_unitLoadout select 0) > 0) then {(_unitLoadout select 0) select 5 select 0} else {""};
+        private _secondarymag = if (count (_unitLoadout select 1) > 0) then {(_unitLoadout select 1) select 4 select 0} else {""};
+        private _handgunmag = if (count (_unitLoadout select 2) > 0) then {(_unitLoadout select 2) select 4 select 0} else {""};
+        private _binomag = if (count (_unitLoadout select 8) > 0) then {(_unitLoadout select 8) select 4 select 0} else {""};
+        private _mags = [_primarymag, _primarysecmag, _secondarymag, _Handgunmag, _binomag] - [""];
+        private _magsItemsStringArray = [_logic,"arrayToConfigArrayString", _mags] call MAINCLASS;
+        _result = _result + _indent + _indent + "magazines[] = " + _magsItemsStringArray + ";" + _newLine;
+        _result = _result + _indent + _indent + "respawnMagazines[] = " + _magsItemsStringArray + ";" + _newLine;
+        _result = _result + _newLine;
+
+        // Add backpack
+        private _backpack = if (count (_unitLoadout select 5) > 0) then {(_unitLoadout select 5) select 0} else {""};
+        if (_backpack != "") then {
+            _result = _result + _indent + _indent + "backpack = " + str _backpack + ";" + _newLine;
+            _result = _result + _newLine;
+        };
+
         // Store their loadout
         _result = _result + _indent + _indent + "ALiVE_orbatCreator_loadout[] = " + _loadoutStringArray + ";" + _newLine;
         _result = _result + _newLine;
 
         // event handlers
-        _result = _result + _newLine + _newLine + _indent + _indent + "class EventHandlers : EventHandlers {";
+        _result = _result + _newLine + _indent + _indent + "class EventHandlers : EventHandlers {";
         _result = _result + _newLine + _indent + _indent + _indent + "class CBA_Extended_EventHandlers : CBA_Extended_EventHandlers_base {};" + _newLine;
         _result = _result + _newLine;
         _result = _result + _indent + _indent + _indent + "class ALiVE_orbatCreator {";
