@@ -533,7 +533,7 @@ switch (_taskState) do {
                         if (_hostage getVariable ["rescued",false]) then {
 
 							// Get closest player
-							private _saver = group ([_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition);
+							private _saverGroup = group ([_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition);
 
                             // End Hostage Anim
                             _anims = ([_hostageAnims, "unboundAnims"] call ALIVE_fnc_hashGet) select ([_hostageAnims, "index"] call ALiVE_fnc_hashGet);
@@ -548,8 +548,9 @@ switch (_taskState) do {
                             sleep 1;
 
                             // Join player group
-                            [_hostage] joinSilent _saver;
-                            (group _saver) selectLeader _saver;
+							private _prevLeader = leader _saverGroup;
+                            [_hostage] joinSilent _saverGroup;
+							[_saverGroup, _prevLeader] remoteExecCall ["selectLeader", groupOwner _saverGroup];
 
                             _taskIDs = [_params,"taskIDs"] call ALIVE_fnc_hashGet;
                             [_params,"nextTask",_taskIDs select 2] call ALIVE_fnc_hashSet;
