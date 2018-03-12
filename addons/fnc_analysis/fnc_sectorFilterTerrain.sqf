@@ -32,7 +32,7 @@ if (!params [
 	]) exitWith {["ANALYSIS - ALIVE_fnc_sectorFilterTerrain - Wrong input - CALLER: %1 - INPUT: %2", _fnc_scriptNameParent, _this] call ALiVE_fnc_Dump};
 
 _sectors select {
-    private _sectorData = [_x, "data"] call ALIVE_fnc_sector;
+	private _sectorData = [_x, "data"] call ALIVE_fnc_sector;
 	
 	!isNil "_sectorData" && {([_sectorData, "terrain", ""] call ALIVE_fnc_hashGet) != _terrainType}
 };
