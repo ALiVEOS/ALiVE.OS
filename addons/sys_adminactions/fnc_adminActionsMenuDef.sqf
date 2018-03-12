@@ -185,7 +185,9 @@ if (_menuName == "adminActions") then {
                     localize "STR_ALIVE_ADMINACTIONS_CONSOLE_COMMENT",
                     "",
                     -1,
-                    !isMultiplayer || {(getMissionConfigValue ["enableDebugConsole",0]) > 0},
+                    !isMultiplayer || (call BIS_fnc_admin) > 0 ||
+                        {(getMissionConfigValue ["enableDebugConsole", 0]) isEqualType 0 && {(getMissionConfigValue ["enableDebugConsole", 0]) > 0}} ||
+                        {(getMissionConfigValue ["enableDebugConsole", []]) isEqualType [] && {getPlayerUID player in (getMissionConfigValue ["enableDebugConsole", []])}},
                     true
                 ]
             ]
