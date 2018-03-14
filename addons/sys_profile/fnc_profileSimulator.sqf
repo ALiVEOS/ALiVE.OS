@@ -943,26 +943,24 @@ private _damageModifier = _cycleTime * _combatRate;
 //[false, "ALiVE Profile Attack Simulation ending", format["profileClash_%1",_id]] call ALIVE_fnc_timer;
 
 {
-     _x params ["_commandingEntity","_subordinateVehicle"];
+    _x params ["_commandingEntity", "_subordinateVehicle"];
 
     // remove crew from commanding entity
+    private _vehAssignments = [_commandingEntity, "vehicleAssignments"] call ALiVE_fnc_hashGet;
+    private _vehicleID = (_subordinateVehicle select 2) select 4;
 
-    private _vehAssignments = [_commandingEntity,"vehicleAssignments"] call ALiVE_fnc_hashGet;
-    private _vehicleID = _subordinateVehicle select 2 select 4;
-
-    private _vehAssignment = [_vehAssignments,_vehicleID] call ALiVE_fnc_hashGet;
-    private _unitAssignments = + (_vehAssignment select 2);
+    private _vehAssignment = [_vehAssignments, _vehicleID, []] call ALiVE_fnc_hashGet;
+    private _unitAssignments = +(_vehAssignment param [2, [], [[]]]);
 
     reverse _unitAssignments; // must remove in reverse order
 
     {
         {
-            [_commandingEntity,"removeUnit", _x] call ALiVE_fnc_profileEntity
+            [_commandingEntity, "removeUnit", _x] call ALiVE_fnc_profileEntity;
         } foreach _x;
     } foreach _unitAssignments;
 
     // unassign vehicle from entity
-
     _x call ALIVE_fnc_removeProfileVehicleAssignment;
 } foreach _toBeUnassigned;
 
