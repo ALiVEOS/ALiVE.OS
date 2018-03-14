@@ -19,54 +19,35 @@ See Also:
 
 Author:
 ARJay
+shukari
 ---------------------------------------------------------------------------- */
+params [
+		"_taskState",
+		"_taskID",
+		"_task",
+		"_params",
+		"_debug"
+	];
 
-private ["_taskState","_taskID","_task","_params","_debug","_result","_nextState"];
-
-_taskState = _this select 0;
-_taskID = _this select 1;
-_task = _this select 2;
-_params = _this select 3;
-_debug = _this select 4;
-_result = [];
+private _result = [];
 
 switch (_taskState) do {
-    case "init":{
+    case "init": {
+		_task params [
+				"_taskID",
+				"_requestPlayerID",
+				"_taskSide",
+				"_taskFaction",
+				"",
+				"_taskLocationType",
+				"_taskLocation",
+				"_taskPlayers",
+				"_taskEnemyFaction",
+				"_taskCurrent",
+				"_taskApplyType"
+			];
 
-        private [
-            "_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
-            "_taskApplyType","_startTime","_taskEnemySide","_targetSector","_targetEntity","_taskPlayers","_targetBuilding","_targetBuildings",
-            "_targetTypes","_blacklist","_tasksCurrent"
-        ];
-
-        _taskID = [_task, 0, "", [""]] call BIS_fnc_param;
-        _requestPlayerID = [_task, 1, "", [""]] call BIS_fnc_param;
-        _taskSide = [_task, 2, "", [""]] call BIS_fnc_param;
-        _taskFaction = [_task, 3, "", [""]] call BIS_fnc_param;
-        _taskLocationType = [_task, 5, "", [""]] call BIS_fnc_param;
-        _taskLocation = [_task, 6, [], [[]]] call BIS_fnc_param;
-        _taskPlayers = [_task, 7, [], [[]]] call BIS_fnc_param;
-        _taskEnemyFaction = [_task, 8, "", [""]] call BIS_fnc_param;
-        _taskCurrent = [_taskData, 9, "", [""]] call BIS_fnc_param;
-        _taskApplyType = [_taskData, 10, "", [""]] call BIS_fnc_param;
-
-        _tasksCurrent = ([ALiVE_TaskHandler,"tasks",["",[],[],nil]] call ALiVE_fnc_HashGet) select 2;
-
-        /*
-        //Inputs
-        ["%1 | %2 | %3 | %4 | %5 | %6 | %7 | %8 | %9 | %10",
-            _taskID,
-            _requestPlayerID,
-            _taskSide,
-            _taskFaction,
-            _taskLocationType,
-            _taskLocation,
-            _taskPlayers,
-            _taskEnemyFaction,
-            _taskCurrent,
-            _taskApplyType
-        ] call ALiVE_fnc_Dump;
-        */
+        private _tasksCurrent = ([ALiVE_TaskHandler, "tasks", ["", [], [], nil]] call ALiVE_fnc_HashGet) select 2;
 
         if (_taskID == "") exitwith {["C2ISTAR - Task SabotageBuilding - Wrong input for _taskID!"] call ALiVE_fnc_Dump};
         if (_requestPlayerID == "") exitwith {["C2ISTAR - Task SabotageBuilding - Wrong input for _requestPlayerID!"] call ALiVE_fnc_Dump};
@@ -77,75 +58,99 @@ switch (_taskState) do {
         if (_taskEnemyFaction == "") exitwith {["C2ISTAR - Task SabotageBuilding - Wrong input for _taskEnemyFaction!"] call ALiVE_fnc_Dump};
         if (_taskApplyType == "") exitwith {["C2ISTAR - Task SabotageBuilding - Wrong input for _taskApplyType!"] call ALiVE_fnc_Dump};
 
-        _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
+        private _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideObjectToNumber;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideNumberToText;
-        _targetBuildings = [];
-        _blacklist = ["Land_dp_smallFactory_F"];
+        private _targetBuildings = [];
+        private _blacklist = ["Land_dp_smallFactory_F"];
 
         // establish the location for the task
         // get enemy location based on input
-
-        if (_taskLocationType in ["Short","Medium","Long"]) then {
-
-            if (!isnil "OPCOM_instances") then {
-
+        if (_taskLocationType in ["Short", "Medium", "Long"]) then {
+            if (!isNil "OPCOM_instances") then {
                 //["Selecting Task location from OPCOMs"] call ALiVE_fnc_DumpR;
-                private _triggerStates = ["defend","defending","reserve","reserving","idle","unassigned"];
+                private _triggerStates = ["defend", "defending", "reserve", "reserving", "idle", "unassigned"];
                 private _objectives = [];
                 {
                     private _OPCOM = _x;
-                    private _OPCOM_factions = [_OPCOM,"factions",""] call ALiVE_fnc_HashGet;
-                    private _OPCOM_side = [_OPCOM,"side",""] call ALiVE_fnc_HashGet;
+                    private _OPCOM_factions = [_OPCOM, "factions", ""] call ALiVE_fnc_HashGet;
+                    private _OPCOM_side = [_OPCOM, "side", ""] call ALiVE_fnc_HashGet;
 
                     //["Looking up correct OPCOM %1 for faction %2",_OPCOM_factions,_taskEnemyFaction] call ALiVE_fnc_DumpR;
                     if ({_x == _taskEnemyFaction} count _OPCOM_factions > 0) then {
-                        private _OPCOM_objectives = [_OPCOM,"objectives",[]] call ALiVE_fnc_HashGet;
+                        private _OPCOM_objectives = [_OPCOM, "objectives", []] call ALiVE_fnc_HashGet;
 
                         //["Looking up correct ones in %1 objectives for faction %2",count _OPCOM_objectives,_taskEnemyFaction] call ALiVE_fnc_DumpR;
                         {
                             private _OPCOM_objective = _x;
-                            private _OPCOM_objective_state = [_OPCOM_objective,"opcom_state",""] call ALiVE_fnc_HashGet;
-                            private _OPCOM_objective_center = [_OPCOM_objective,"center",[0,0,0]] call ALiVE_fnc_HashGet;
+                            private _OPCOM_objective_state = [_OPCOM_objective, "opcom_state", ""] call ALiVE_fnc_HashGet;
+                            private _OPCOM_objective_center = [_OPCOM_objective, "center", [0, 0, 0]] call ALiVE_fnc_HashGet;
 
                             //["Matching state %1 in triggerstates %2 tasks %3 faction %4!",_OPCOM_objective_state,_triggerStates,_tasksCurrent,_taskFaction] call ALiVE_fnc_DumpR;
-                                if (
-                                    _OPCOM_objective_state in _triggerStates &&
-                                    {(({(_x select 4) == _taskFaction && {(_x select 3) distance _OPCOM_objective_center < 500}} count _tasksCurrent) == 0)}
+                            if (_OPCOM_objective_state in _triggerStates &&
+                                {(({(_x select 4) == _taskFaction && {(_x select 3) distance _OPCOM_objective_center < 500}} count _tasksCurrent) == 0)}
                             ) then {
-                                    _objectives pushback _OPCOM_objective;
+                                _objectives pushback _OPCOM_objective;
                             };
-                        } foreach _OPCOM_objectives;
+                        } forEach _OPCOM_objectives;
                     };
-                } foreach OPCOM_instances;
+                } forEach OPCOM_instances;
 
                 if (count _objectives > 0) then {
-                    private _objectives = [_objectives,[getposATL _player],{_Input0 distance ([_x,"center"] call ALiVE_fnc_HashGet)},"ASCEND",{
+					private _player = [_requestPlayerID] call ALIVE_fnc_getPlayerByUID;
+					
+					if (isNull _player) then {
+						_player = selectRandom (_taskPlayers select 0);
+						_player = [_player] call ALIVE_fnc_getPlayerByUID;
+					};
+					
+                    private _objectives = [_objectives, [getPosATL _player], {_Input0 distance ([_x, "center"] call ALiVE_fnc_HashGet)}, "ASCEND", {
+							private _id = [_x, "opcomID", ""] call ALiVE_fnc_HashGet;
+							private _pos = [_x, "center"] call ALiVE_fnc_HashGet;
+							private _opcom = [objNull, "getOPCOMbyid", _id] call ALiVE_fnc_OPCOM;
+							private _side = [_opcom, "side", ""] call ALiVE_fnc_HashGet;
 
-                        private _id = [_x,"opcomID",""] call ALiVE_fnc_HashGet;
-                        private _pos = [_x,"center"] call ALiVE_fnc_HashGet;
-                        private _opcom = [objNull,"getOPCOMbyid",_id] call ALiVE_fnc_OPCOM;
-                        private _side = [_opcom,"side",""] call ALiVE_fnc_HashGet;
-
-                        !([_pos,_side,500,true] call ALiVE_fnc_isEnemyNear);
-                    }] call ALiVE_fnc_SortBy;
+							!([_pos, _side, 500, true] call ALiVE_fnc_isEnemyNear);
+						}] call ALiVE_fnc_SortBy;
 
                     private _totalIndexes = (count _objectives)-1;
                     private _index = 0;
 
                     if (count _objectives > 1) then {
-                        switch (_taskLocationType) do {
-                            case ("Short") : {_index = floor(_totalIndexes/ceil(_totalIndexes*0.8)); _index = floor(random _index)};
-                            case ("Medium") : {_index = floor(_totalIndexes/ceil(_totalIndexes*0.5))};
-                            case ("Long") : {_index = floor(_totalIndexes/ceil(_totalIndexes*0.1))};
+						_index = switch (_taskLocationType) do {
+                            case "Short": {floor (random floor (_totalIndexes/ceil (_totalIndexes*0.8)))};
+                            case "Medium": {floor (_totalIndexes/ceil (_totalIndexes*0.5))};
+                            case "Long": {floor (_totalIndexes/ceil (_totalIndexes*0.1))};
                         };
                     };
 
-                    private _taskLocation = [_objectives select _index,"center"] call ALiVE_fnc_HashGet;
-                    private _clusterID = [_objectives select _index,"clusterID",""] call ALiVE_fnc_HashGet;
-                    private _type = [_objectives select _index,"objectiveType",""] call ALiVE_fnc_HashGet;
+                    _taskLocation = [_objectives select _index, "center"] call ALiVE_fnc_HashGet;
+                    private _clusterID = [_objectives select _index, "clusterID", ""] call ALiVE_fnc_HashGet;
+                    private _type = [_objectives select _index, "objectiveType", ""] call ALiVE_fnc_HashGet;
 
-                    _targetTypes = [
+                    {
+                        private _clusters = _x;
+
+                        if (!isNil {call compile _clusters} && {_clusterID in ((call compile _clusters) select 1)}) then {
+                            private _cluster = [call compile _clusters, _clusterID] call ALiVE_fnc_HashGet;
+                            private _clusterLocation = [_cluster, "center"] call ALiVE_fnc_HashGet;
+
+                            _clusterLocation resize 2;
+                            _taskLocation resize 2;
+
+                            if (_clusterLocation distance _taskLocation < 15) exitwith {
+                                _targetBuildings = +([_cluster, "nodes", []] call ALiVE_fnc_HashGet);
+                                
+								{
+                                    if !(_x isKindOf "House_F") then {_targetBuildings set [_foreachIndex, objNull]};
+                                } forEach _targetBuildings;
+                                
+                                _targetBuildings = _targetBuildings - [objNull];
+                            };
+                        };
+
+                        if (!isNil "_targetBuildings" && {count _targetBuildings > 0}) exitwith {};
+                    } foreach [
                         "ALIVE_clustersMil",
                         "ALIVE_clustersMilAir",
                         "ALIVE_clustersMilHeli",
@@ -161,52 +166,28 @@ switch (_taskState) do {
                         "ALIVE_clustersCivComms"
                     ];
 
-                    {
-                        private _clusters = _x;
-
-                        if (!(isnil {call compile _clusters}) && {_clusterID in ((call compile _clusters) select 1)}) then {
-
-                            private _cluster = [call compile _clusters,_clusterID] call ALiVE_fnc_HashGet;
-                            private _clusterLocation = [_cluster,"center"] call ALiVE_fnc_HashGet;
-
-                            _clusterLocation resize 2;
-                            _taskLocation resize 2;
-
-                            if (_clusterLocation distance _taskLocation < 15) exitwith {
-
-                                _targetBuildings = +([_cluster,"nodes",[]] call ALiVE_fnc_HashGet);
-                                
-								{
-                                    if !(_x isKindOf "House_F") then {_targetBuildings set [_foreachIndex,objNull]};
-                                } foreach _targetBuildings;
-                                
-                                _targetBuildings = _targetBuildings - [objNull];
-                            };
-                        };
-
-                        if (!isnil "_targetBuildings" && {count _targetBuildings > 0}) exitwith {};
-                    } foreach _targetTypes;
-
                     ["C2ISTAR - Task SabotageBuilding - OPCOM index %2 selected as objective at position %1",_taskLocation,_index] call ALiVE_fnc_Dump;
                     ["C2ISTAR - Task SabotageBuilding - Buildings in %3 cluster %2: %1",_targetBuildings,_clusterID,_type] call ALiVE_fnc_Dump;
                 } else {
                     ["C2ISTAR - Task SabotageBuilding - Currently there are no OPCOM objectives available, using map locations!"] call ALiVE_fnc_Dump;
 
-                    _taskLocation = position (selectRandom (nearestLocations [getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition"), ["NameVillage","NameCity","NameCityCapital","NameLocal","CityCenter","Airport"], 30000]));
+                    _taskLocation = position (selectRandom (nearestLocations [
+							getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition"),
+							["NameVillage", "NameCity", "NameCityCapital", "NameLocal", "CityCenter", "Airport"],
+							30000
+						]));
                 };
             };
         };
 
-        if (isnil "_taskLocation") exitwith {["C2ISTAR - Task SabotageBuilding - No location selected!"] call ALiVE_fnc_Dump};
+        if (isNil "_taskLocation") exitwith {["C2ISTAR - Task SabotageBuilding - No location selected!"] call ALiVE_fnc_Dump};
 
         if (count _targetBuildings == 0) then {
             ["C2ISTAR - No buildings given for this sabotage location! Defaulting to houses within 500m"] call ALiVE_fnc_Dump;
-
             _targetBuildings = _taskLocation nearObjects ["House_F",500];
         };
 
-        _targetBuildings = [_targetBuildings,[],{
-
+        _targetBuildings = [_targetBuildings, [], {
 			//By indoor building positions
             count ([getPosATL _x, 20] call ALIVE_fnc_findIndoorHousePositions);
 
@@ -215,59 +196,48 @@ switch (_taskState) do {
             _p1 = _bbr select 0; _p2 = _bbr select 1;
             abs ((_p2 select 2) - (_p1 select 2));
 			*/
-
         },"DESCEND",{
             private _alive = alive _x;
-            private _lamp = _x iskindof "Lamps_Base_F";
-            private _invincible = getText(configfile >> "CfgVehicles" >> (typeOf _x) >> "destrType") == "DestructNo";
+            private _lamp = _x isKindOf "Lamps_Base_F";
+            private _invincible = getText (configfile >> "CfgVehicles" >> typeOf _x >> "destrType") == "DestructNo";
 
 			//Edit for blacklist (placeholder) in case it is still needed (case sensitive)
             private _excluded = (typeOf _x) in _blacklist;
 
-            _result = _alive && {!_excluded} && {!_lamp} && {!_invincible};
-            _result;
-
+            _alive && {!_excluded} && {!_lamp} && {!_invincible};
         }] call ALiVE_fnc_SortBy;
 
 		//still no suitable buildings? fuck off...
-        if (count _targetBuildings == 0) exitwith {["C2ISTAR - Task SabotageBuilding - There are no buildings to attack at the target area!"] call ALiVE_fnc_Dump};
+        if (_targetBuildings isEqualTo []) exitwith {["C2ISTAR - Task SabotageBuilding - There are no buildings to attack at the target area!"] call ALiVE_fnc_Dump};
 
 		//Move on
+		private _targetBuilding = objNull;
         if (count _targetBuildings >= 3) then {
-            _targetBuildings reSize 3;
-            _targetBuilding = _targetBuildings call BIS_fnc_SelectRandom;
+            _targetBuildings resize 3;
+            _targetBuilding = selectRandom _targetBuildings;
         } else {
             _targetBuilding = _targetBuildings select 0;
         };
 
-        private["_targetPosition","_targetID","_targetDisplayType"];
+        private _targetPosition = getPosATL _targetBuilding;
+        private _targetID = str (floor (_targetPosition select 0)) + str (floor (_targetPosition select 1));
+        private _targetDisplayType = getText (configfile >> "CfgVehicles" >> typeOf _targetBuilding >> "displayName");
 
-        _targetPosition = getposATL _targetBuilding;
-        _targetID = str(floor(_targetPosition select 0)) + str(floor(_targetPosition select 1));
-        _targetDisplayType = getText(configfile >> "CfgVehicles" >> (typeOf _targetBuilding) >> "displayName");
-
-        ["C2ISTAR - Task SabotageBuilding - Building: %1 | Type: %2 | Pos: %3!",_targetBuilding,_targetDisplayType,_targetPosition] call ALiVE_fnc_Dump;
-
-        private["_stagingPosition","_dialogOptions","_dialogOption","_buildingType","_reward"];
+        ["C2ISTAR - Task SabotageBuilding - Building: %1 | Type: %2 | Pos: %3!", _targetBuilding, _targetDisplayType, _targetPosition] call ALiVE_fnc_Dump;
 
         //["Sorting buildings by type and adding reward..."] call ALiVE_fnc_DumpR;
         private _points = 0;
         private _list = [];
+		private ["_buildingType", "_reward"];
         {
-            private ["_object","_model"];
+            private _object = _x;
+            private _model = getText(configfile >> "CfgVehicles" >> typeOf _object >> "model");
 
-            _object = _x;
-            _model = getText(configfile >> "CfgVehicles" >> typeOf _object >> "model");
-
-            if (!(isnil "_object") && {!isNull _object}) then {
-
+            if (!isNil "_object" && {!isNull _object}) then {
                 {
-                    private _type = _x select 0;
-                    private _typeText = _x select 1;
-                    private _points = _x select 2;
+                    _x params ["_type", "_typeText", "_points"];
 
-                    if (
-                        !(isnil {call compile _type}) &&
+                    if (!isNil {call compile _type} &&
                         {
                             {([toLower (_model), toLower _x] call CBA_fnc_find) > -1} count (call compile _type) > 0 ||
                             {{([toLower (typeOf _object), toLower _x] call CBA_fnc_find) > -1} count (call compile _type) > 0} //Remove when all indexes have been rebuilt with CLIT
@@ -279,7 +249,6 @@ switch (_taskState) do {
 
                     _buildingType = "location";
                     _reward = 10;
-
                 } foreach [
                     ["ALIVE_militaryHQBuildingTypes","HQ building",50],
                     ["ALIVE_militarySupplyBuildingTypes","military supply building",30],
@@ -304,146 +273,125 @@ switch (_taskState) do {
         } foreach [_targetBuilding];
 
         // select the random text
-        _dialogOptions = [ALIVE_generatedTasks,"SabotageBuilding"] call ALIVE_fnc_hashGet;
+        private _dialogOptions = [ALIVE_generatedTasks, "SabotageBuilding"] call ALIVE_fnc_hashGet;
         _dialogOptions = _dialogOptions select 1;
-        _dialogOption = +(selectRandom _dialogOptions);
+        private _dialogOption = +(selectRandom _dialogOptions);
 
         // format the dialog options
-        private["_nearestTown","_dialog","_formatDescription","_formatChat","_formatMessage","_formatMessageText"];
+        private _nearestTown = [_targetPosition] call ALIVE_fnc_taskGetNearestLocationName;
+        private _dialog = [_dialogOption, "Destroy"] call ALIVE_fnc_hashGet;
 
-        _nearestTown = [_targetPosition] call ALIVE_fnc_taskGetNearestLocationName;
-
-        _dialog = [_dialogOption,"Destroy"] call ALIVE_fnc_hashGet;
-
-        _formatChat = [_dialog,"chat_start"] call ALIVE_fnc_hashGet;
-        _formatMessage = _formatChat select 0;
-        _formatMessageText = _formatMessage select 1;
-        _formatMessageText = format[_formatMessageText,_nearestTown,_targetDisplayType,_buildingType];
-        _formatMessage set [1,_formatMessageText];
-        _formatChat set [0,_formatMessage];
-        [_dialog,"chat_start",_formatChat] call ALIVE_fnc_hashSet;
+        private _formatChat = [_dialog, "chat_start"] call ALIVE_fnc_hashGet;
+        private _formatMessage = _formatChat select 0;
+        private _formatMessageText = _formatMessage select 1;
+        _formatMessageText = format [_formatMessageText, _nearestTown, _targetDisplayType, _buildingType];
+        _formatMessage set [1, _formatMessageText];
+        _formatChat set [0, _formatMessage];
+        [_dialog, "chat_start", _formatChat] call ALIVE_fnc_hashSet;
 
         // create the tasks
-        private["_state","_tasks","_taskIDs","_dialog","_taskTitle","_taskDescription","_newTask","_newTaskID","_taskParams","_taskSource"];
-
-        if(_taskCurrent == 'Y')then {
+		private _state = "Created";
+        if (_taskCurrent == 'Y') then {
             _state = "Assigned";
-        }else{
-            _state = "Created";
         };
 
-        _tasks = [];
-        _taskIDs = [];
+        private _tasks = [];
+        private _taskIDs = [];
 
         // create the parent task
-        _dialog = [_dialogOption,"Parent"] call ALIVE_fnc_hashGet;
+        private _dialog = [_dialogOption, "Parent"] call ALIVE_fnc_hashGet;
 
-        _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
-        _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
-        _taskSource = format["%1-SabotageBuilding-Parent",_taskID];
+        private _taskTitle = [_dialog, "title"] call ALIVE_fnc_hashGet;
+        private _taskDescription = [_dialog, "description"] call ALIVE_fnc_hashGet;
+        private _taskSource = format ["%1-SabotageBuilding-Parent", _taskID];
 
-        _taskTitle = format[_taskTitle,_nearestTown];
-        _taskDescription = format[_taskDescription,_nearestTown,_buildingType];
-        _newTask = [_taskID,_requestPlayerID,_taskSide,_targetPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,"N","None",_taskSource,false];
+        _taskTitle = format [_taskTitle, _nearestTown];
+        _taskDescription = format [_taskDescription, _nearestTown, _buildingType];
+        private _newTask = [_taskID, _requestPlayerID, _taskSide, _targetPosition, _taskFaction, _taskTitle, _taskDescription, _taskPlayers, _state, _taskApplyType, "N", "None", _taskSource, false];
 
         _tasks pushback _newTask;
         _taskIDs pushback _taskID;
 
         // create the destroy task
-        _dialog = [_dialogOption,"Destroy"] call ALIVE_fnc_hashGet;
+        _dialog = [_dialogOption, "Destroy"] call ALIVE_fnc_hashGet;
 
-        _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
-        _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
-        _newTaskID = format["%1_c2",_taskID];
-        _taskSource = format["%1-SabotageBuilding-Destroy",_taskID];
+        _taskTitle = [_dialog, "title"] call ALIVE_fnc_hashGet;
+        _taskDescription = [_dialog, "description"] call ALIVE_fnc_hashGet;
+        private _newTaskID = format ["%1_c2", _taskID];
+        _taskSource = format ["%1-SabotageBuilding-Destroy", _taskID];
 
-        _taskTitle = format[_taskTitle,_buildingType];
-        _taskDescription = format[_taskDescription,_nearestTown,_targetDisplayType,_buildingType];
+        _taskTitle = format [_taskTitle, _buildingType];
+        _taskDescription = format [_taskDescription, _nearestTown, _targetDisplayType, _buildingType];
 
-        _newTask = [_newTaskID,_requestPlayerID,_taskSide,_targetPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,_taskCurrent,_taskID,_taskSource,true];
+        private _newTask = [_newTaskID, _requestPlayerID, _taskSide, _targetPosition, _taskFaction, _taskTitle, _taskDescription, _taskPlayers, _state, _taskApplyType, _taskCurrent, _taskID, _taskSource, true];
 
         _tasks pushback _newTask;
         _taskIDs pushback _newTaskID;
 
         // store task data in the params for this task set
-        _taskParams = [] call ALIVE_fnc_hashCreate;
-        [_taskParams,"nextTask",_taskIDs select 1] call ALIVE_fnc_hashSet;
-        [_taskParams,"taskIDs",_taskIDs] call ALIVE_fnc_hashSet;
-        [_taskParams,"dialog",_dialogOption] call ALIVE_fnc_hashSet;
-        [_taskParams,"enemyFaction",_taskEnemyFaction] call ALIVE_fnc_hashSet;
-        [_taskParams,"targets",[_targetBuilding]] call ALIVE_fnc_hashSet;
-        [_taskParams,"lastState",""] call ALIVE_fnc_hashSet;
+        private _taskParams = [] call ALIVE_fnc_hashCreate;
+        [_taskParams, "nextTask", _taskIDs select 1] call ALIVE_fnc_hashSet;
+        [_taskParams, "taskIDs", _taskIDs] call ALIVE_fnc_hashSet;
+        [_taskParams, "dialog", _dialogOption] call ALIVE_fnc_hashSet;
+        [_taskParams, "enemyFaction", _taskEnemyFaction] call ALIVE_fnc_hashSet;
+        [_taskParams, "targets", [_targetBuilding]] call ALIVE_fnc_hashSet;
+        [_taskParams, "lastState", ""] call ALIVE_fnc_hashSet;
 
         // return the created tasks and params
-        _result = [_tasks,_taskParams];
+        _result = [_tasks, _taskParams];
     };
-    case "Parent":{
+    case "Parent": {
 
     };
-    case "Destroy":{
+    case "Destroy": {
+		_task params [
+				"_taskID",
+				"_requestPlayerID",
+				"_taskSide",
+				"_taskPosition",
+				"_taskFaction",
+				"_taskTitle",
+				"_taskDescription",
+				"_taskPlayers"
+			];
 
-        private [
-            "_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
-            "_entityProfiles","_entitiesState","_allDestroyed","_lastState","_taskDialog","_vehicles","_currentTaskDialog","_targets",
-            "_taskEnemyFaction","_taskEnemySide","_targetsState"
-        ];
+        _taskPlayers = _taskPlayers select 0;
+        private _lastState = [_params, "lastState"] call ALIVE_fnc_hashGet;
+        private _taskDialog = [_params, "dialog"] call ALIVE_fnc_hashGet;
+        private _currentTaskDialog = [_taskDialog, _taskState] call ALIVE_fnc_hashGet;
+        private _targets = [_params, "targets"] call ALIVE_fnc_hashGet;
 
-        _taskID = _task select 0;
-        _requestPlayerID = _task select 1;
-        _taskSide = _task select 2;
-        _taskPosition = _task select 3;
-        _taskFaction = _task select 4;
-        _taskTitle = _task select 5;
-        _taskDescription = _task select 6;
-        _taskPlayers = _task select 7 select 0;
-
-        _lastState = [_params,"lastState"] call ALIVE_fnc_hashGet;
-        _taskDialog = [_params,"dialog"] call ALIVE_fnc_hashGet;
-        _currentTaskDialog = [_taskDialog,_taskState] call ALIVE_fnc_hashGet;
-        _targets = [_params,"targets"] call ALIVE_fnc_hashGet;
-
-        if(_lastState != "Destroy") then {
-
-            ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-
-            [_params,"lastState","Destroy"] call ALIVE_fnc_hashSet;
+        if (_lastState != "Destroy") then {
+            ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            [_params, "lastState", "Destroy"] call ALIVE_fnc_hashSet;
         };
 
-        _targetsState = [_targets] call ALIVE_fnc_taskGetStateOfObjects;
-        _allDestroyed = [_targetsState,"allDestroyed"] call ALIVE_fnc_hashGet;
+        private _targetsState = [_targets] call ALIVE_fnc_taskGetStateOfObjects;
+        private _allDestroyed = [_targetsState, "allDestroyed"] call ALIVE_fnc_hashGet;
 
-        if(_allDestroyed) then {
+        if (_allDestroyed) then {
+            [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
 
-            [_params,"nextTask",""] call ALIVE_fnc_hashSet;
-
-            _task set [8,"Succeeded"];
+            _task set [8, "Succeeded"];
             _task set [10, "N"];
             _result = _task;
 
-            [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+            [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
 
-            ["chat_success",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            ["chat_success", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-            [_currentTaskDialog,_taskSide,_taskFaction] call ALIVE_fnc_taskCreateReward;
-
+            [_currentTaskDialog, _taskSide, _taskFaction] call ALIVE_fnc_taskCreateReward;
         } else {
-
-            private["_taskEnemyFaction","_taskEnemySide","_profiles","_position","_objectType"];
-
-            _taskEnemyFaction = [_params,"enemyFaction"] call ALIVE_fnc_hashGet;
-            _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
-
-            _targets = [_targetsState,"targets"] call ALIVE_fnc_hashGet;
+            private _taskEnemyFaction = [_params, "enemyFaction"] call ALIVE_fnc_hashGet;
+            private _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
+            private _targets = [_targetsState, "targets"] call ALIVE_fnc_hashGet;
 
             {
-                _position = getposATL _x;
-                _objectType = getText(configfile >> "CfgVehicles" >> (typeOf _x) >> "displayName");
-                [_position,_taskEnemySide,_taskPlayers,_taskID,"building",_objectType] call ALIVE_fnc_taskCreateMarkersForPlayers;
-
+                private _objectType = getText (configfile >> "CfgVehicles" >> typeOf _x >> "displayName");
+                [getposATL _x, _taskEnemySide, _taskPlayers, _taskID, "building", _objectType] call ALIVE_fnc_taskCreateMarkersForPlayers;
             } forEach _targets;
         };
-
     };
 };
 
-_result
+_result;
