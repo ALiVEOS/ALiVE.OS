@@ -124,8 +124,6 @@ switch(_operation) do {
             // init has completed
             TRACE_1("After module init",_logic);
 
-            [_logic, "register"] call MAINCLASS;
-
             _logic setVariable ["init",true,true];
         };
          /*
@@ -166,19 +164,6 @@ switch(_operation) do {
             GVAR(cameraStarted) = false;
 
         };
-    };
-    case "register": {
-        private["_registration","_moduleType"];
-
-        _moduleType = _logic getVariable "moduleType";
-        _registration = [_logic, _moduleType, []];
-
-        if(isNil "ALIVE_registry") then {
-            ALIVE_registry = [nil, "create"] call ALIVE_fnc_registry;
-            [ALIVE_registry, "init"] call ALIVE_fnc_registry;
-        };
-
-        [ALIVE_registry, "register", _registration] call ALIVE_fnc_registry;
     };
     case "clientID": {
 
