@@ -151,6 +151,9 @@ waitUntil { scriptDone _handle };
 diag_log "Starting camera";
 [GVAR(Camera),true] call ALIVE_fnc_startCinematic;
 
+// Establishing Shot
+[GVAR(Camera),_logic] call ALiVE_fnc_establishShot;
+
 // Loop through series of scenes
 while { ((count subjects + count infantry) > 0) && GVAR(cameraStarted)} do {
 
@@ -206,21 +209,24 @@ while { ((count subjects + count infantry) > 0) && GVAR(cameraStarted)} do {
         // Make sure the subject is not dead or fatally wounded
         if (((alive _cameraTarget) && ((damage _cameraTarget) < 0.5)) || ((speed _cameraTarget > 0) || ((_timely > 0) && (_timely < 5))) ) then {
 
-            private _sceneChoice = ["ZOOM",0.1,"STATIC",0.2,"CHASE_SIDE",0.3,"CHASE_ANGLE",0.5,"CHASE",0.7];
-            private _dist = -4;
+
+            private _sceneChoice = ["ZOOM",0.1,"FLY_OVER",0.2,"CHASE_SIDE",0.3,"CHASE_ANGLE",0.3,"CHASE",0.3,"ANGLE",0.5,"SIDE",0.5];
+            private _dist = 0 - ((sizeOf _cameraTarget) / 2);
             private _height = 1;
 
+			// Target is a moving vehicle, then use chase shots or follow shot
             if (!(_cameraTarget isKindOf "MAN") && speed _cameraTarget > 1) then {
-                _sceneChoice = ["CHASE_SIDE",0.3,"CHASE_ANGLE",0.4,"CHASE",0.5,"CHASE_TARGET",0.3];
+                _sceneChoice = ["FLY_OVER",0.2,"CHASE",0.3,"CHASE_SIDE",0.3,"CHASE_ANGLE",0.4,"FOLLOW",0.5];
             };
 
-            if (_cameraTarget isKindOf "MAN") then {
-                _sceneChoice = _sceneChoice + ["FRONT",0.8,"DOLLYZOOM",0.5];
+			// If the target is a stationary man
+            if (_cameraTarget isKindOf "MAN" && speed _cameraTarget < 1) then {
+                _sceneChoice = _sceneChoice + ["SIDE",0.2,"DOLLYZOOM",0.2,"ANGLE",0.3,"FRONT",0.5];
             };
 
-            // CHeck for recent firing
+            // CHeck for recent firing, then set up over the shoulder shot or other close up side/front shot
             if (_timely > 0) then {
-                _sceneChoice = ["CHASE_TARGET",0.7,"CHASE_ANGLE",0.3,"CHASE",0.3,"FRONT",0.3];
+                _sceneChoice = ["SIDE",0.3,"FRONT",0.3,"CHASE_TARGET",0.7,"TARGET",0.8];
             };
 
             private _shot = selectRandomWeighted _sceneChoice;
@@ -228,9 +234,9 @@ while { ((count subjects + count infantry) > 0) && GVAR(cameraStarted)} do {
             private _target1 = _cameraTarget;
             private _target2 = assignedTarget _cameraTarget;
 
-            if !(_cameraTarget isKindOf "MAN") then {
-                _target2 = assignedTarget gunner _cameraTarget;
-                _height = (ASLtoATL (eyepos _target1)) select 2;
+            if !(_target1 isKindOf "MAN") then {
+                _target2 = assignedTarget gunner _target1;
+                _height = (ASLtoATL (eyepos gunner _target1)) select 2;
             };
 
             if (isNull _target2) then {
@@ -238,42 +244,56 @@ while { ((count subjects + count infantry) > 0) && GVAR(cameraStarted)} do {
                 diag_log str(_target2);
             };
 
-            if (_cameraTarget isKindOf "MAN") then {
+            if (_target1 isKindOf "MAN") then {
                 _dist = -2;
             };
 
-            diag_log format["%1 : Target: %2, Shot: %3 Dist: %5 Time: %4", time, typeof _cameraTarget, _shot, _shotTime, _dist];
+            diag_log format["%3 - %1 : Target: %2 - %6, Dist: %5 ShotTime: %4", time, typeof _target1, _shot, _shotTime, _dist, _target1];
 
-            if(ALIVE_cameraType == "CAMERA") then {
+            if (ALIVE_cameraType == "CAMERA") then {
 
                 switch(_shot) do {
                     case "CHASE_TARGET":{
                         _height = (ASLtoATL (eyepos _target1) select 2);
                         _dist = -0.15;
                         if !(_target1 isKindOf "MAN") then {
-                            _dist = 0.15 - (random 5);
+                            _dist = -0.2 - (random 5);
                         };
-                        diag_log format["Spawning %1 camera call with %2 distance and %3 height. Target %4", _shot, _dist, _height, _target2];
+                        diag_log format["Spawning %1 camera call with %2 distance and %3 height. Target2: %4", _shot, _dist, _height, _target2];
                         [GVAR(Camera),_target1, _target2, _duration, false, _dist, _height] spawn ALIVE_fnc_chaseTarget;
                     };
+                    case "TARGET":{
+                        _height = (ASLtoATL (eyepos _target1) select 2);
+                        _dist = -0.15;
+                        if !(_target1 isKindOf "MAN") then {
+                            _dist = -0.2 - (random 5);
+                        };
+                        diag_log format["Spawning %1 camera call with %2 distance and %3 height. Target %4", _shot, _dist, _height, _target2];
+                        [GVAR(Camera),_target1, _target2, _duration, false, _dist, _height] spawn ALIVE_fnc_targetShot;
+                    };                    
                     case "FLY_IN":{
-                        diag_log "Spawning camera call";
+                        diag_log format["Spawning %1 camera call with %2 distance and %3 height. Target %4", _shot, _dist, _height, _target2];
                         [GVAR(Camera),_target1,_duration] spawn ALIVE_fnc_flyInShot;
                     };
+                    case "FLY_OVER":{
+                    	_height = 30;
+                    	_dist = 60;
+                        diag_log format["Spawning %1 camera call with %2 distance and %3 height. Target %4", _shot, _dist, _height, _target2];
+                        [GVAR(Camera),_target1,_duration] spawn ALIVE_fnc_flyOverShot;
+                    };                    
                     case "ZOOM":{
-                        diag_log "Spawning camera call";
+                        diag_log format["Spawning %1 camera call with %2 distance and %3 height. Target %4", _shot, _dist, _height, _target2];
                         [GVAR(Camera),_target1,_duration] spawn ALIVE_fnc_zoomShot;
                     };
                     case "DOLLYZOOM":{
-                        diag_log "Spawning camera call";
+                        diag_log format["Spawning %1 camera call with %2 distance and %3 height. Target %4", _shot, _dist, _height, _target2];
                         [GVAR(Camera),_target1,_duration] spawn ALIVE_fnc_dollyZoomShot;
                     };
                     case "STATIC":{
-                        diag_log "Spawning camera call";
+                        diag_log format["Spawning %1 camera call with %2 distance and %3 height. Target %4", _shot, _dist, _height, _target2];
                         [GVAR(Camera),_target1,_duration] spawn ALIVE_fnc_staticShot;
                     };
                     case "CHASE":{
-                        _dist = _dist - 1;
                         diag_log format["Spawning %1 camera call with %2 distance and %3 height", _shot, _dist, _height];
                         [GVAR(Camera),_target1,_duration,false,_dist] spawn ALIVE_fnc_chaseShot;
                     };
@@ -285,10 +305,23 @@ while { ((count subjects + count infantry) > 0) && GVAR(cameraStarted)} do {
                         diag_log format["Spawning %1 camera call with %2 distance and %3 height", _shot, _dist, _height];
                         [GVAR(Camera),_target1,_duration,false,_dist,_height] spawn ALIVE_fnc_chaseAngleShot;
                     };
+                    case "SIDE":{
+                        diag_log format["Spawning %1 camera call with %2 distance and %3 height", _shot, _dist, _height];
+                        [GVAR(Camera),_target1,_duration,false,_dist,_height] spawn ALIVE_fnc_sideShot;
+                    };
+                    case "ANGLE":{
+                        diag_log format["Spawning %1 camera call with %2 distance and %3 height", _shot, _dist, _height];
+                        [GVAR(Camera),_target1,_duration,false,_dist,_height] spawn ALIVE_fnc_angleShot;
+                    };                    
                     case "FRONT":{
                         _dist = 0 - _dist;
                         diag_log format["Spawning %1 camera call with %2 distance and %3 height", _shot, _dist, (ASLtoATL (eyepos _target1)) select 2];
                         [GVAR(Camera),_target1,_duration, false, _dist, (ASLtoATL (eyepos _target1)) select 2, 0.3-(random 0.6)] spawn ALIVE_fnc_chaseShot;
+                    };
+                    case "FOLLOW":{
+                        _dist = sizeof _target1 * 5;
+                        diag_log format["Spawning %1 camera call with %2 distance and %3 height", _shot, _dist, (ASLtoATL (eyepos _target1)) select 2];
+                        [GVAR(Camera),_target1,_duration, false, _dist, (ASLtoATL (eyepos _target1)) select 2, 0.3-(random 0.6)] spawn ALIVE_fnc_followShot;
                     };
                 };
 

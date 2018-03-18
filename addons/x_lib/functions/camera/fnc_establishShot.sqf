@@ -1,16 +1,15 @@
 #include <\x\alive\addons\x_lib\script_component.hpp>
-SCRIPT(ChaseTarget);
+SCRIPT(establishShot);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_ChaseTarget
+Function: ALIVE_fnc_establishShot
 
 Description:
-ChaseTarget
+Establishing Shot, location is based on where the xStream Logic is placed
 
 Parameters:
 Object - camera
-Object - target1
-Object - target2
+Object - target
 Scalar - shot duration
 Boolean - hide target objects
 
@@ -19,7 +18,7 @@ Returns:
 
 Examples:
 (begin example)
-[_camera,_target1,_target2, 10, false] call ALIVE_fnc_ChaseTarget;
+[_camera,_target1, 10, false] call ALIVE_fnc_establishShot;
 (end)
 
 See Also:
@@ -30,37 +29,19 @@ Tupolov
 
 private _camera = _this select 0;
 private _target1 = _this select 1;
-private _target2 = _this select 2;
-private _duration = if(count _this > 3) then {_this select 3} else {5};
-private _hideTarget = if(count _this > 4) then {_this select 4} else {false};
-private _dist = if(count _this > 5) then {_this select 5} else {-10};
-private  _height = if(count _this > 6) then {_this select 6} else {2};
-
+private _duration = if(count _this > 2) then {_this select 2} else {6};
+private _hideTarget = if(count _this > 3) then {_this select 3} else {false};
+private _dist = if(count _this > 4) then {_this select 4} else {100};
+private  _height = if(count _this > 5) then {_this select 5} else {20};
 
 if(_hideTarget) then
 {
     hideObject _target;
 };
 
-private _startTime = time;
-private _currentTime = _startTime;
+private _cameraPosition = _target getpos [_dist,random 360];
+private _cameraPosition set [2, _height];
 
-CHASE_camera = _camera;
-CHASE_pos = _target1;
-CHASE_target = _target2;
-CHASE_distance = _dist;
-CHASE_height = _height;
-
-CHASE_shift = if (random 1 > 0.5) then {-0.2} else {0.2};
-
-private  _eventID = addMissionEventHandler ["Draw3D", {
-	    CHASE_camera camSetTarget CHASE_pos;
-	    CHASE_camera camSetRelPos [CHASE_shift,CHASE_distance,CHASE_height];
-	    CHASE_camera camSetDir (CHASE_pos vectorFromTo CHASE_target);
-	    CHASE_camera camCommit 0;
-}];
-
-
-waitUntil { sleep 1; _currentTime = time; ((_currentTime - _startTime) >= _duration)};
-
-removeMissionEventHandler ["Draw3D",_eventID];
+_camera camSetTarget _target;
+_camera camSetPos _cameraPosition;
+_camera camCommit 0;
