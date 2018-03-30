@@ -13,20 +13,7 @@
 /*
  * Mil placement random supply boxes per faction
  */
-[ALIVE_factionDefaultSupplies, "CFP_O_TBAN", [
-		"CUP_TKVehicleBox_EP1",
-		"CUP_TKSpecialWeapons_EP1",
-		"CUP_TKLaunchers_EP1",
-		"CUP_GuerillaCacheBox_EP1",
-		"CUP_TKOrdnanceBox_EP1",
-		"CUP_TKBasicWeapons_EP1",
-		"CUP_TKBasicAmmunitionBox_EP1",
-		"CUP_GuerillaCacheBox_EP1",
-		"CUP_TKOrdnanceBox_EP1",
-		"CUP_TKBasicWeapons_EP1",
-		"CUP_TKBasicAmmunitionBox_EP1"
-	]
-] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupplies, "CFP_O_TBAN", ["CFP_O_TBAN_AmmoBox","CFP_O_TBAN_WeaponsBox","CFP_O_TBAN_LaunchersBox","CFP_O_TBAN_UniformBox","CFP_O_TBAN_SupportBox","CFP_O_TBAN_SupplyBox"]] call ALIVE_fnc_hashSet;
 
 
 /*
