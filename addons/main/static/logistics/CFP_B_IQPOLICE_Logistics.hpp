@@ -19,7 +19,7 @@
  * Mil logistics convoy transport vehicles per faction
  */
 [ALIVE_factionDefaultTransport, "CFP_B_IQPOLICE", [
-		"cfp_b_iqpolice_Ural",
+		"cfp_b_iqpolice_Ural"
 	]
 ] call ALIVE_fnc_hashSet;
 

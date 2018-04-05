@@ -15,3 +15,4 @@
 #include "CFP_O_TBAN_Logistics.hpp"
 #include "CFP_B_USCIA_Logistics.hpp"
 #include "CFP_B_IQPOLICE_Logistics.hpp"
+#include "CFP_B_AFGPOLICE_Logistics.hpp"
