@@ -1,8 +1,8 @@
 #include <\x\alive\addons\x_lib\script_component.hpp>
-SCRIPT(chaseAngleShot);
+SCRIPT(angleShot);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_chaseAngleShot
+Function: ALIVE_fnc_angleShot
 
 Description:
 Chase angle shot
@@ -18,7 +18,7 @@ Returns:
 
 Examples:
 (begin example)
-[_camera,_target,10,false] call ALIVE_fnc_chaseAngleShot;
+[_camera,_target,10,false] call ALIVE_fnc_angleShot;
 (end)
 
 See Also:
@@ -43,25 +43,16 @@ if(_hideTarget) then
     hideObject _target;
 };
 
-_startTime = time;
-_currentTime = _startTime;
-
 if ((random 1) < 0.5) then {
 	_shift = 0 - _dist;
 };
 
-CHASE_camera = _camera;
-CHASE_target = _target;
-CHASE_dist = _dist;
-CHASE_height = _height max 0.4;
-CHASE_shift = _shift;
+if ((random 1) < 0.5) then {
+	_dist = 0 - _dist;
+};
 
-_eventID = addMissionEventHandler ["Draw3D", {
-    CHASE_camera camSetTarget CHASE_target;
-    CHASE_camera camSetRelPos [CHASE_shift, CHASE_dist, CHASE_height];
-    CHASE_camera camCommit 0;
-}];
+_camera camSetTarget _target;
+_camera camSetRelPos [_shift, _dist, _height];
+_camera camCommit 0;
 
-waitUntil { sleep 1; _currentTime = time; ((_currentTime - _startTime) >= _duration)};
 
-removeMissionEventHandler ["Draw3D",_eventID];

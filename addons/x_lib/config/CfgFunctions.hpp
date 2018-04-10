@@ -139,6 +139,33 @@ class addCamera
 	RECOMPILE;
 };
 
+class angleShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_angleShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class followShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_followShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class sideShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_sideShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class targetShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_targetShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
 class chaseAngleShot
 {
 	file = "\x\alive\addons\x_lib\functions\camera\fnc_chaseAngleShot.sqf";
@@ -160,6 +187,13 @@ class chaseSideShot
 	RECOMPILE;
 };
 
+class chaseTarget
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_chaseTarget.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class chaseWheelShot
 {
 	file = "\x\alive\addons\x_lib\functions\camera\fnc_chaseWheelShot.sqf";
@@ -167,6 +201,26 @@ class chaseWheelShot
 	RECOMPILE;
 };
 
+class closeUpShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_closeUpShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class dollyZoomShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_dollyZoomShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class establishShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_establishShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
 class createLiveFeedCamera
 {
 	file = "\x\alive\addons\x_lib\functions\camera\fnc_createLiveFeedCamera.sqf";

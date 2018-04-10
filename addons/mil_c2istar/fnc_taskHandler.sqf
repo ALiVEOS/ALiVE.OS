@@ -92,6 +92,7 @@ switch(_operation) do {
             [_logic,"managedTasks",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
             [_logic,"managedTaskParams",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
             [_logic,"isManaging",false] call ALIVE_fnc_hashSet;
+            [_logic,"managerHandle",scriptNull] call ALIVE_fnc_hashSet;
             [_logic,"listenerID",""] call ALIVE_fnc_hashSet;
 
             _tasksBySide = [] call ALIVE_fnc_hashCreate;
@@ -1839,20 +1840,18 @@ switch(_operation) do {
     };
     case "stopManagement": {
 
-        private ["_debug","_handle"];
+        private _debug = [_logic,"debug",false] call ALIVE_fnc_hashGet;
+        private _handle = [_logic,"managerHandle",scriptNull] call ALIVE_fnc_hashGet;
 
-        _debug = [_logic,"debug"] call ALIVE_fnc_hashGet;
-        _handle = [_logic,"managerHandle"] call ALIVE_fnc_hashGet;
-
-        if!(scriptDone _handle) then {
+        if (!isNull _handle) then {
             terminate _handle;
         };
 
         [_logic,"isManaging",false] call ALIVE_fnc_hashSet;
-        [_logic,"managerHandle",objNull] call ALIVE_fnc_hashSet;
+        [_logic,"managerHandle",scriptNull] call ALIVE_fnc_hashSet;
 
         // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
+        if (_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             ["ALiVE Task Handler - Task Manager Stopped"] call ALIVE_fnc_dump;
         };

@@ -1,11 +1,11 @@
 #include <\x\alive\addons\x_lib\script_component.hpp>
-SCRIPT(chaseSideShot);
+SCRIPT(followShot);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_chaseSideShot
+Function: ALIVE_fnc_followShot
 
 Description:
-Chase side shot
+Follow shot
 
 Parameters:
 Object - camera
@@ -18,7 +18,7 @@ Returns:
 
 Examples:
 (begin example)
-[_camera,_target,10,false] call ALIVE_fnc_chaseSideShot;
+[_camera,_target,10,false] call ALIVE_fnc_followShot;
 (end)
 
 See Also:
@@ -33,28 +33,19 @@ _camera = _this select 0;
 _target = _this select 1;
 _duration = if(count _this > 2) then {_this select 2} else {5};
 _hideTarget = if(count _this > 3) then {_this select 3} else {false};
-_dist = if(count _this > 4) then {_this select 4} else {-10};
-_height = if(count _this > 5) then {_this select 5} else {1.7};
+private _dist = if(count _this > 4) then {_this select 4} else {5 * sizeof _target};
+private _height = if(count _this > 5) then {_this select 5} else {1.7};
+private _shift = if(count _this > 6) then {_this select 6} else {0.5 * sizeof _target};
+
+_shift = if (random 1 < 0.5) then {0 - _shift};
 
 if(_hideTarget) then
 {
     hideObject _target;
 };
 
-_startTime = time;
-_currentTime = _startTime;
+_camera camSetTarget _target;
+_camera camSetRelPos [_shift, _dist, _height];
+_camera camCommit 0;
 
-CHASE_camera = _camera;
-CHASE_target = _target;
-CHASE_distance = _dist;
-CHASE_height = _height max 0.4;
 
-_eventID = addMissionEventHandler ["Draw3D", {
-    CHASE_camera camSetTarget CHASE_target;
-    CHASE_camera camSetRelPos [CHASE_distance,0,CHASE_height];
-    CHASE_camera camCommit 0;
-}];
-
-waitUntil { sleep 1; _currentTime = time; ((_currentTime - _startTime) >= _duration)};
-
-removeMissionEventHandler ["Draw3D",_eventID];

@@ -1,3 +1,4 @@
+#include "CFP_B_AFARMY_Logistics.hpp"
 #include "CFP_B_CZARMY_DES_Logistics.hpp"
 #include "CFP_B_DEARMY_WDL_Logistics.hpp"
 #include "CFP_B_GBARMY_WDL_Logistics.hpp"
@@ -13,3 +14,5 @@
 #include "CUP_O_RU_Logistics.hpp"
 #include "CFP_O_TBAN_Logistics.hpp"
 #include "CFP_B_USCIA_Logistics.hpp"
+#include "CFP_B_IQPOLICE_Logistics.hpp"
+#include "CFP_B_AFGPOLICE_Logistics.hpp"
