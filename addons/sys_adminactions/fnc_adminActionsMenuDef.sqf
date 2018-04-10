@@ -170,7 +170,9 @@ switch (_menuName) do {
                     localize "STR_ALIVE_ADMINACTIONS_CONSOLE_COMMENT",
                     "",
                     -1,
-                    1,
+                    !isMultiplayer || (call BIS_fnc_admin) > 0 ||
+                        {(getMissionConfigValue ["enableDebugConsole", 0]) isEqualType 0 && {(getMissionConfigValue ["enableDebugConsole", 0]) > 0}} ||
+                        {(getMissionConfigValue ["enableDebugConsole", []]) isEqualType [] && {getPlayerUID player in (getMissionConfigValue ["enableDebugConsole", []])}},
                     true
                 ]
             ]

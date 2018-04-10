@@ -949,6 +949,7 @@ switch(_operation) do {
 
                             if (count _ranks > 0 && {_unitCount < count _ranks}) then {
                                 _rank = _ranks select _unitCount;
+                                if (_rank isEqualTo "") then {_rank = "PRIVATE"};
                             } else {
                                 _rank = "PRIVATE";
                             };
