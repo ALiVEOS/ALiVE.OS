@@ -359,7 +359,7 @@ switch(_operation) do {
         case "stopManagement": {
 
             private _debug = [_logic,"debug",false] call ALIVE_fnc_hashGet;
-			private _handle = [_logic,"managerHandle",scriptNull] call ALIVE_fnc_hashGet;
+            private _handle = [_logic,"managerHandle",scriptNull] call ALIVE_fnc_hashGet;
 
             if (!isNull _handle) then {
                 terminate _handle;
