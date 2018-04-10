@@ -15,7 +15,7 @@ Array of terrain filtered sectors
 
 Examples:
 (begin example)
-	_landSectors = [_sectors, "SEA"] call ALIVE_fnc_sectorFilterTerrain;
+    _landSectors = [_sectors, "SEA"] call ALIVE_fnc_sectorFilterTerrain;
 (end)
 
 See Also:
@@ -27,12 +27,12 @@ shukari
 ---------------------------------------------------------------------------- */
 
 if (!params [
-		["_sectors", [], [[]]],
-		["_terrainType", "", [""]]
-	]) exitWith {["ANALYSIS - ALIVE_fnc_sectorFilterTerrain - Wrong input - CALLER: %1 - INPUT: %2", _fnc_scriptNameParent, _this] call ALiVE_fnc_Dump};
+        ["_sectors", [], [[]]],
+        ["_terrainType", "", [""]]
+    ]) exitWith {["ANALYSIS - ALIVE_fnc_sectorFilterTerrain - Wrong input - CALLER: %1 - INPUT: %2", _fnc_scriptNameParent, _this] call ALiVE_fnc_Dump};
 
 _sectors select {
-	private _sectorData = [_x, "data"] call ALIVE_fnc_sector;
-	
-	!isNil "_sectorData" && {([_sectorData, "terrain", ""] call ALIVE_fnc_hashGet) != _terrainType}
+    private _sectorData = [_x, "data"] call ALIVE_fnc_sector;
+    
+    !isNil "_sectorData" && {([_sectorData, "terrain", ""] call ALIVE_fnc_hashGet) != _terrainType}
 };
