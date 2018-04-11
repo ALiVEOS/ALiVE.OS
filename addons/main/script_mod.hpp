@@ -3,18 +3,18 @@
 
 // TODO: Consider Mod-wide or Component-narrow versions (or both, depending on wishes!)
 #define MAJOR 1
-#define MINOR 5
-#define PATCHLVL 4
+#define MINOR 6
+#define PATCHLVL 0
 // BUILD should be YYMMDDR eg 1311211
-#define BUILD 1804111
+#define BUILD 1804112
 
-#define CLUSTERBUILD "Arma 3","Arma3",180,143751,"Stable"
+#define CLUSTERBUILD "Arma 3","Arma3",182,144647,"Stable"
 
 #define VERSION MAJOR.MINOR.PATCHLVL.BUILD
 #define VERSION_AR MAJOR,MINOR,PATCHLVL,BUILD
 
 // MINIMAL required version for the Mod. Components can specify others..
-#define REQUIRED_VERSION 1.80
+#define REQUIRED_VERSION 1.82
 
 
 /*
