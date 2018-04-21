@@ -6695,7 +6695,7 @@ switch(_operation) do {
         private _secondarymag = if (count (_unitLoadout select 1) > 0) then {(_unitLoadout select 1) select 4 select 0} else {""};
         private _handgunmag = if (count (_unitLoadout select 2) > 0) then {(_unitLoadout select 2) select 4 select 0} else {""};
         private _binomag = if (count (_unitLoadout select 8) > 0) then {(_unitLoadout select 8) select 4 select 0} else {""};
-        private _mags = [_primarymag, _primarysecmag, _secondarymag, _Handgunmag, _binomag] - [""];
+        private _mags = [_primarymag, _primarysecmag, _secondarymag, _handgunmag, _binomag, _primarymag, _primarysecmag, _handgunmag, _binomag] - [""];
         private _magsItemsStringArray = [_logic,"arrayToConfigArrayString", _mags] call MAINCLASS;
         _result = _result + _indent + _indent + "magazines[] = " + _magsItemsStringArray + ";" + _newLine;
         _result = _result + _indent + _indent + "respawnMagazines[] = " + _magsItemsStringArray + ";" + _newLine;
