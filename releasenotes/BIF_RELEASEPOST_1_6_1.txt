@@ -1,0 +1,40 @@
+[center][url=https://github.com/ALiVEOS/ALiVE.OS.git][img=http://i.imgur.com/RFX0nkZ.jpg][/url][/center]
+[center][b][url=http://alivemod.com/]ALiVEmod.com[/url]
+[size=4]The next generation dynamic persistent mission addon for ArmA3[/size][/b][/center]
+[center][b]Release 1.6.1[/b][/center]
+ 
+[b]A New Chapter[/b]
+Firstly, we're very excited to announce that ArmaHosts have kindly offered to host the ALiVE War Room! This means cloud saving, AAR and stats are all back in action and War Room functionality has returned to normal! A massive thank you to Justin and the crew at ArmaHosts! With the server migration we removed game saves prior to April 6th, all stats and events/AAR remain.
+
+As the Arma 3 roadmap sees its final DLC ship, the ALiVE team are now very much moving into maintenance mode. Expect only minor updates to address any major bugs or issues as the Arma 3 platform is updated. Of course the ALiVE codebase is now completely open source so if anyone contributes fixes, new features, optimizations we will absolutely ensure these get released.
+
+For this release we have lots of bug fixes, new map indexes (for IFA thanks to HeroesandVillainsOS!) and we're announcing support for the Community Factions Project! We wanted to ensure that factions in CFP can operate in ALiVE and have access to supplies, logistics, civilian weapons etc. We have also updated Orbat Creator with additional functionality that makes it easier for the CFP team (and anyone else!) to create factions in Arma 3.
+
+[b]Release Highlights[/b]
+Civilian Population - Added support for CUP Takistani civilians and CFP civilian factions
+Military Logistics - Added support for CFP factions
+Orbat Creator - Ability to auto generate faction crate configs, auto generate faction preview images (use Virtual Reality map), support for disabling ORBAT loadouts in 3DEN. Minor fixes.
+Map Indexes - Added: 10 IFA winter maps, Chernarus Redux Updated: Isla Duala
+Various - Performance and crash fixes
+	
+See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
+    
+[center][b][url=http://alivemod.com/#Download]Download[/url][/b]
+Grab the latest version from [url=http://alivemod.com/#Download]ALiVEmod.com[/url]
+Also available from PlayWithSix, ArmAholic and Steam (Usually within 24 hours of this post)[/center]
+
+Please note that as with all updates, if you have an issue loading a mission made with a previous version of ALiVE, delete and replace the modules in that mission.
+
+[b]Known Issues & Support[/b]
+Existing bugs are listed on Github [url=https://github.com/ALiVEOS/ALiVE.OS/issues]here[/url]. Feel free to submit bugs (with vanilla repros please) or discuss any issues or ideas on our forum at [url=http://alivemod.com/forum/]http://alivemod.com/forum/[/url].
+
+[b]Manual[/b]
+Please refer to the [url=http://www.alivemod.com/wiki]ALiVE Wiki[/url]. All the info you need is there. If anything is missing or unclear, please let us know.
+
+[b]Are you using Linux?[/b]
+ALiVE is fully supported on a Linux Dedicated Server (as well as Windows). In fact the ALiVE Official Server for testing is running Ubuntu. Here are some tips on getting ALiVE running smoothly on Linux and integrated with War Room - [url=http://www.alivemod.com/forum/1916-setting-up-linux-dedi-server]http://www.alivemod.com/forum/1916-setting-up-linux- dedi-server[/url]
+
+[b]Acknowledgements and Thanks[/b]
+Particular thanks to all those on our support forum who have worked closely with us to identify bugs, provide logs and generally help us improve ALiVE. Your assistance is valuable and your dedication to ALiVE makes it all worth the effort!
+
+Have fun!
