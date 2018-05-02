@@ -27,4 +27,4 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-!isMultiplayer || (call BIS_fnc_admin) > 0;
+!isMultiplayer || (call BIS_fnc_admin) > 0 || serverCommandAvailable "#kick";
