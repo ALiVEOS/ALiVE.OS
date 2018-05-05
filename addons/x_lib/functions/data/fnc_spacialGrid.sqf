@@ -33,13 +33,15 @@ switch (_operation) do {
 
     case "create": {
 
-        _args params ["_origin","_size","_columnCount"];
+        _args params ["_origin","_gridSize","_sectorSize"];
 
-        private _sectorSize = _size / _columnCount;
+        private _gridSectorWidth = ceil ((_gridSize - (_origin select 0)) / _sectorSize);
+        private _gridSectorHeight = ceil ((_gridSize - (_origin select 1)) / _sectorSize);
 
         private _sectors = [];
-        for "_i" from 0 to _size step _sectorSize do {
-            for "_j" from 0 to _size step _sectorSize do {
+        for "_i" from 0 to _gridSectorHeight do {
+            for "_j" from 0 to _gridSectorWidth do {
+                // [j, i]
                 _sectors pushback [];
             };
         };
@@ -48,7 +50,9 @@ switch (_operation) do {
             [
                 ["origin", _origin],
                 ["sectorSize", _sectorSize],
-                ["columnCount", _columnCount],
+                ["gridSize", _gridSize],
+                ["gridSectorWidth", _gridSectorWidth],
+                ["gridSectorHeight", _gridSectorHeight],
                 ["sectors", _sectors]
             ]
         ] call ALiVE_fnc_hashCreate;
@@ -61,9 +65,7 @@ switch (_operation) do {
 
         private _gridOrigin = _logic select 2 select 0;
         private _sectorSize = _logic select 2 select 1;
-        private _columnCount = _logic select 2 select 2;
-
-        private _gridWidth = _sectorSize * _columnCount;
+        private _gridWidth = _logic select 2 select 2;
 
         if (
             (_pos select 0) >= (_gridOrigin select 0) &&
@@ -82,11 +84,11 @@ switch (_operation) do {
 
         private _coords = _args;
 
-        private _columnCount = _logic select 2 select 2;
+        private _columnCount = _logic select 2 select 3;
 
         if !(_coords isEqualTo [-1,-1]) then {
             private _index = (_coords select 0) + ((_coords select 1) * _columnCount);
-            _result = (_logic select 2 select 3) select _index;
+            _result = (_logic select 2 select 5) select _index;
         };
 
     };
