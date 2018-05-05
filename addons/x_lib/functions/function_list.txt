@@ -121,7 +121,7 @@ data
 	ALiVE_fnc_ProfileNameSpaceLoad
 	ALiVE_fnc_ProfileNameSpaceSave
 	ALiVE_fnc_ProfileNameSpaceWipe
-	ALiVE_fnc_quadtree
+	ALiVE_fnc_spacialGrid
 	ALiVE_fnc_unorderedMap
 
 diagnostics

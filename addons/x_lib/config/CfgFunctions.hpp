@@ -732,9 +732,9 @@ class ProfileNameSpaceWipe
 	RECOMPILE;
 };
 
-class quadtree
+class spacialGrid
 {
-	file = "\x\alive\addons\x_lib\functions\data\fnc_quadtree.sqf";
+	file = "\x\alive\addons\x_lib\functions\data\fnc_spacialGrid.sqf";
 	ext = ".sqf";
 	RECOMPILE;
 };
