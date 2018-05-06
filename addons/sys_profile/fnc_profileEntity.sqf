@@ -372,6 +372,11 @@ switch(_operation) do {
                         };
 
                         if!(((_args select 0) + (_args select 1)) == 0) then {
+                            private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
+
+                            private _currPos = _logic select 2 select 2;
+                            [_spacialGrid,"move", [_currPos, _args, _logic]] call ALiVE_fnc_spacialGrid;
+
                             [_logic,"position",_args] call ALIVE_fnc_hashSet;
 
                             if([_logic,"debug"] call ALIVE_fnc_hashGet) then {
@@ -514,7 +519,7 @@ switch(_operation) do {
                         [_logic,_vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
                     };
                 } foreach (_vehiclesInCommandOf + _vehiclesInCargoOf);
-                
+
                 // reset data
                 [_logic,"vehicleAssignments",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
                 [_logic,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashSet;
@@ -841,6 +846,11 @@ switch(_operation) do {
 
             if(typeName _args == "ARRAY") then {
 
+                private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
+
+                private _currPos = _logic select 2 select 2;
+                [_spacialGrid,"move", [_currPos, _args, _logic]] call ALiVE_fnc_spacialGrid;
+
                 [_logic,"position",_args] call ALIVE_fnc_hashSet;
 
                 //["ENTITY %1 setPosition: %2",_logic select 2 select 4,_args] call ALIVE_fnc_dump;
@@ -912,7 +922,7 @@ switch(_operation) do {
                     //["SPAWN ENTITY [%1] pos: %2 command: %3 cargo: %4",_profileID,_position,_vehiclesInCommandOf,_vehiclesInCargoOf] call ALIVE_fnc_dump;
 
                     if (((count _vehiclesInCommandOf) == 0) && {(count _vehiclesInCargoOf) == 0}) then {
-	                    
+
                         // If entity is not in a vehicle but in air give it a parachute
                         if ((_position select 2) > 300) then {
 	                    	_paraDrop = true;
@@ -1137,7 +1147,8 @@ switch(_operation) do {
                         _position = getPosATL _leader;
 
                         // update the profiles position
-                        [_logic,"position", _position] call ALIVE_fnc_hashSet;
+                        //[_logic,"position", _position] call ALIVE_fnc_hashSet;
+                        [_logic,"position", _position] call MAINCLASS;
                         [_logic,"despawnPosition", _position] call ALIVE_fnc_hashSet;
 
                         // delete units

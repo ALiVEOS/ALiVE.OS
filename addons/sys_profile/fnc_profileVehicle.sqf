@@ -305,6 +305,10 @@ switch(_operation) do {
                         };
 
                         if!(((_args select 0) + (_args select 1)) == 0) then {
+                            private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
+
+                            private _currPos = _logic select 2 select 2;
+                            [_spacialGrid,"move", [_currPos, _args, _logic]] call ALiVE_fnc_spacialGrid;
 
                             [_logic,"position",_args] call ALIVE_fnc_hashSet;
 
@@ -439,7 +443,7 @@ switch(_operation) do {
                         [_entityProfile,_logic] call ALIVE_fnc_removeProfileVehicleAssignment;
                     };
                 } foreach (_entitiesInCommandOf + _entitiesInCargoOf);
-                
+
                 // reset data
                 [_logic,"vehicleAssignments",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
                 [_logic,"entitiesInCommandOf",[]] call ALIVE_fnc_hashSet;
@@ -777,7 +781,8 @@ switch(_operation) do {
                         [_logic] call ALIVE_fnc_vehicleAssignmentsToProfileVehicleAssignments;
 
                         // update profile before despawn
-                        [_logic,"position", getposATL _vehicle] call ALIVE_fnc_hashSet;
+                        //[_logic,"position", getposATL _vehicle] call ALIVE_fnc_hashSet;
+                        [_logic,"position", getposATL _vehicle] call MAINCLASS;
                         [_logic,"despawnPosition", getposATL _vehicle] call ALIVE_fnc_hashSet;
                         [_logic,"direction", getDir _vehicle] call ALIVE_fnc_hashSet;
                         [_logic,"damage", _vehicle call ALIVE_fnc_vehicleGetDamage] call ALIVE_fnc_hashSet;
