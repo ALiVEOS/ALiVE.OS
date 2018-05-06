@@ -49,183 +49,187 @@ _result = true;
 #define MTEMPLATE "ALiVE_PROFILESYSTEM_%1"
 
 switch(_operation) do {
-        case "init": {
-                if (isServer) then {
-                        // if server, initialise module game logic
-                        [_logic,"super",SUPERCLASS] call ALIVE_fnc_hashSet;
-                        [_logic,"class",MAINCLASS] call ALIVE_fnc_hashSet;
-                        [_logic,"moduleType","ALIVE_profileHandler"] call ALIVE_fnc_hashSet;
-                        [_logic,"startupComplete",false] call ALIVE_fnc_hashSet;
-                        //TRACE_1("After module init",_logic);
+    case "init": {
+        if (isServer) then {
+            // if server, initialise module game logic
+            [_logic,"super",SUPERCLASS] call ALIVE_fnc_hashSet;
+            [_logic,"class",MAINCLASS] call ALIVE_fnc_hashSet;
+            [_logic,"moduleType","ALIVE_profileHandler"] call ALIVE_fnc_hashSet;
+            [_logic,"startupComplete",false] call ALIVE_fnc_hashSet;
+            //TRACE_1("After module init",_logic);
 
-                        [_logic,"debug",false] call ALIVE_fnc_hashSet;
-                        [_logic,"persistent",false] call ALIVE_fnc_hashSet;
-                        [_logic,"plotSectors",false] call ALIVE_fnc_hashSet;
-                        [_logic,"syncMode","ADD"] call ALIVE_fnc_hashSet;
-                        [_logic,"syncedUnits",[]] call ALIVE_fnc_hashSet;
-                        [_logic,"spawnRadius",1000] call ALIVE_fnc_hashSet;
-                        [_logic,"spawnTypeJetRadius",1000] call ALIVE_fnc_hashSet;
-                        [_logic,"spawnTypeHeliRadius",1000] call ALIVE_fnc_hashSet;
-                        [_logic,"activeLimiter",30] call ALIVE_fnc_hashSet;
-                        [_logic,"spawnCycleTime",1] call ALIVE_fnc_hashSet;
-                        [_logic,"despawnCycleTime",1] call ALIVE_fnc_hashSet;
-                        [_logic,"speedModifier",1] call ALIVE_fnc_hashSet;
+            [_logic,"debug",false] call ALIVE_fnc_hashSet;
+            [_logic,"persistent",false] call ALIVE_fnc_hashSet;
+            [_logic,"plotSectors",false] call ALIVE_fnc_hashSet;
+            [_logic,"syncMode","ADD"] call ALIVE_fnc_hashSet;
+            [_logic,"syncedUnits",[]] call ALIVE_fnc_hashSet;
+            [_logic,"spawnRadius",1000] call ALIVE_fnc_hashSet;
+            [_logic,"spawnTypeJetRadius",1000] call ALIVE_fnc_hashSet;
+            [_logic,"spawnTypeHeliRadius",1000] call ALIVE_fnc_hashSet;
+            [_logic,"activeLimiter",30] call ALIVE_fnc_hashSet;
+            [_logic,"spawnCycleTime",1] call ALIVE_fnc_hashSet;
+            [_logic,"despawnCycleTime",1] call ALIVE_fnc_hashSet;
+            [_logic,"speedModifier",1] call ALIVE_fnc_hashSet;
 
-                };
+            // create spacial grid
+            private _spacialGridProfiles = [nil,"create", [[-2000,-2000], worldsize + 4000, 1000]] call alive_fnc_spacialGrid;
+            [_logic,"spacialGridProfiles", _spacialGridProfiles] call ALiVE_fnc_hashSet;
         };
-        case "start": {
+    };
 
-                private["_debug","_persistent","_plotSectors","_syncMode","_syncedUnits","_spawnRadius","_spawnTypeJetRadius","_spawnTypeHeliRadius",
-                "_activeLimiter","_spawnCycleTime","_despawnCycleTime","_combatRate","_profileSimulatorFSM","_profileSpawnerFSMEast","_profileSpawnerFSMWest",
-                "_profileSpawnerFSMGuer","_profileSpawnerFSMCiv","_sectors","_persistent","_file"];
+    case "start": {
 
-                if (isServer) then {
+        private["_debug","_persistent","_plotSectors","_syncMode","_syncedUnits","_spawnRadius","_spawnTypeJetRadius","_spawnTypeHeliRadius",
+        "_activeLimiter","_spawnCycleTime","_despawnCycleTime","_combatRate","_profileSimulatorFSM","_profileSpawnerFSMEast","_profileSpawnerFSMWest",
+        "_profileSpawnerFSMGuer","_profileSpawnerFSMCiv","_sectors","_persistent","_file"];
 
-                        _debug = [_logic,"debug",false] call ALIVE_fnc_hashGet;
-                        _persistent = [_logic,"persistent",false] call ALIVE_fnc_hashGet;
-                        _plotSectors = [_logic,"plotSectors",false] call ALIVE_fnc_hashGet;
-                        _syncMode = [_logic,"syncMode","ADD"] call ALIVE_fnc_hashGet;
-                        _syncedUnits = [_logic,"syncedUnits",[]] call ALIVE_fnc_hashGet;
-                        _spawnRadius = [_logic,"spawnRadius"] call ALIVE_fnc_hashGet;
-                        _spawnTypeJetRadius = [_logic,"spawnTypeJetRadius"] call ALIVE_fnc_hashGet;
-                        _spawnTypeHeliRadius = [_logic,"spawnTypeHeliRadius"] call ALIVE_fnc_hashGet;
-                        _activeLimiter = [_logic,"activeLimiter"] call ALIVE_fnc_hashGet;
-                        _spawnCycleTime = [_logic,"spawnCycleTime"] call ALIVE_fnc_hashGet;
-                        _despawnCycleTime = [_logic,"despawnCycleTime"] call ALIVE_fnc_hashGet;
-                        _combatRate = [_logic,"combatRate"] call ALIVE_fnc_hashGet;
-                        _smoothSpawn = [_logic,"smoothSpawn"] call ALIVE_fnc_hashGet;
-                        
-                        // set smoothSpawn value
-                        ALiVE_smoothSpawn = _smoothSpawn;
+        if (isServer) then {
 
-                        // set global profiles persistent var
-                        ALIVE_loadProfilesPersistent = _persistent;
-                        ALIVE_saveProfilesPersistent = _persistent;
+            _debug = [_logic,"debug",false] call ALIVE_fnc_hashGet;
+            _persistent = [_logic,"persistent",false] call ALIVE_fnc_hashGet;
+            _plotSectors = [_logic,"plotSectors",false] call ALIVE_fnc_hashGet;
+            _syncMode = [_logic,"syncMode","ADD"] call ALIVE_fnc_hashGet;
+            _syncedUnits = [_logic,"syncedUnits",[]] call ALIVE_fnc_hashGet;
+            _spawnRadius = [_logic,"spawnRadius"] call ALIVE_fnc_hashGet;
+            _spawnTypeJetRadius = [_logic,"spawnTypeJetRadius"] call ALIVE_fnc_hashGet;
+            _spawnTypeHeliRadius = [_logic,"spawnTypeHeliRadius"] call ALIVE_fnc_hashGet;
+            _activeLimiter = [_logic,"activeLimiter"] call ALIVE_fnc_hashGet;
+            _spawnCycleTime = [_logic,"spawnCycleTime"] call ALIVE_fnc_hashGet;
+            _despawnCycleTime = [_logic,"despawnCycleTime"] call ALIVE_fnc_hashGet;
+            _combatRate = [_logic,"combatRate"] call ALIVE_fnc_hashGet;
+            _smoothSpawn = [_logic,"smoothSpawn"] call ALIVE_fnc_hashGet;
 
-                        // DEBUG -------------------------------------------------------------------------------------
-                        if(_debug) then {
-                            ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                            ["ALIVE ProfileSystem - Startup"] call ALIVE_fnc_dump;
-                        };
-                        // DEBUG -------------------------------------------------------------------------------------
+            // set smoothSpawn value
+            ALiVE_smoothSpawn = _smoothSpawn;
 
-                        // load static data
-                        call ALiVE_fnc_staticDataHandler;
+            // set global profiles persistent var
+            ALIVE_loadProfilesPersistent = _persistent;
+            ALIVE_saveProfilesPersistent = _persistent;
 
-                        // global server flag
-                        ALIVE_profileSystemDataLoaded = true;
+            // DEBUG -------------------------------------------------------------------------------------
+            if(_debug) then {
+                ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
+                ["ALIVE ProfileSystem - Startup"] call ALIVE_fnc_dump;
+            };
+            // DEBUG -------------------------------------------------------------------------------------
 
-                        // create the profile handler
-                        ALIVE_profileHandler = [nil, "create"] call ALIVE_fnc_profileHandler;
-                        [ALIVE_profileHandler, "init"] call ALIVE_fnc_profileHandler;
+            // load static data
+            call ALiVE_fnc_staticDataHandler;
 
-                        // create profile combat handler
-                        ALIVE_profileCombatHandler = [nil,"create"] call ALIVE_fnc_profileCombatHandler;
-                        [ALIVE_profileCombatHandler,"init"] call ALIVE_fnc_profileCombatHandler;
-                        [ALIVE_profileCombatHandler,"debug", _debug] call ALIVE_fnc_profileCombatHandler;
-                        [ALIVE_profileCombatHandler,"combatRate", _combatRate] call ALIVE_fnc_profileCombatHandler;
+            // global server flag
+            ALIVE_profileSystemDataLoaded = true;
 
-                        // create sector grid
-                        ALIVE_sectorGrid = [nil, "create"] call ALIVE_fnc_sectorGrid;
-                        [ALIVE_sectorGrid, "init"] call ALIVE_fnc_sectorGrid;
-                        [ALIVE_sectorGrid, "createGrid"] call ALIVE_fnc_sectorGrid;
+            // create the profile handler
+            ALIVE_profileHandler = [nil, "create"] call ALIVE_fnc_profileHandler;
+            [ALIVE_profileHandler, "init"] call ALIVE_fnc_profileHandler;
 
-                        // create sector plotter
-                        ALIVE_sectorPlotter = [nil, "create"] call ALIVE_fnc_plotSectors;
-                        [ALIVE_sectorPlotter, "init"] call ALIVE_fnc_plotSectors;
+            // create profile combat handler
+            ALIVE_profileCombatHandler = [nil,"create"] call ALIVE_fnc_profileCombatHandler;
+            [ALIVE_profileCombatHandler,"init"] call ALIVE_fnc_profileCombatHandler;
+            [ALIVE_profileCombatHandler,"debug", _debug] call ALIVE_fnc_profileCombatHandler;
+            [ALIVE_profileCombatHandler,"combatRate", _combatRate] call ALIVE_fnc_profileCombatHandler;
 
-                        // import static map analysis to the grid
-                        [ALIVE_sectorGrid] call ALIVE_fnc_gridImportStaticMapAnalysis;
+            // create sector grid
+            ALIVE_sectorGrid = [nil, "create"] call ALIVE_fnc_sectorGrid;
+            [ALIVE_sectorGrid, "init"] call ALIVE_fnc_sectorGrid;
+            [ALIVE_sectorGrid, "createGrid"] call ALIVE_fnc_sectorGrid;
 
-                        // create live analysis
-                        ALIVE_liveAnalysis = [nil, "create"] call ALIVE_fnc_liveAnalysis;
-                        [ALIVE_liveAnalysis, "init"] call ALIVE_fnc_liveAnalysis;
-                        [ALIVE_liveAnalysis, "debug", false] call ALIVE_fnc_liveAnalysis;
+            // create sector plotter
+            ALIVE_sectorPlotter = [nil, "create"] call ALIVE_fnc_plotSectors;
+            [ALIVE_sectorPlotter, "init"] call ALIVE_fnc_plotSectors;
 
-                        // create battlefield analysis
-                        ALIVE_battlefieldAnalysis = [nil, "create"] call ALIVE_fnc_battlefieldAnalysis;
-                        [ALIVE_battlefieldAnalysis, "init"] call ALIVE_fnc_battlefieldAnalysis;
-                        [ALIVE_battlefieldAnalysis, "debug", false] call ALIVE_fnc_battlefieldAnalysis;
+            // import static map analysis to the grid
+            [ALIVE_sectorGrid] call ALIVE_fnc_gridImportStaticMapAnalysis;
 
-                        // create profiles for all players that dont have profiles
-                        ["INIT"] call ALIVE_fnc_createProfilesFromPlayers;
+            // create live analysis
+            ALIVE_liveAnalysis = [nil, "create"] call ALIVE_fnc_liveAnalysis;
+            [ALIVE_liveAnalysis, "init"] call ALIVE_fnc_liveAnalysis;
+            [ALIVE_liveAnalysis, "debug", false] call ALIVE_fnc_liveAnalysis;
 
-                        // create profiles for all map units that dont have profiles
-                        [_syncMode, _syncedUnits, false] call ALIVE_fnc_createProfilesFromUnits;
+            // create battlefield analysis
+            ALIVE_battlefieldAnalysis = [nil, "create"] call ALIVE_fnc_battlefieldAnalysis;
+            [ALIVE_battlefieldAnalysis, "init"] call ALIVE_fnc_battlefieldAnalysis;
+            [ALIVE_battlefieldAnalysis, "debug", false] call ALIVE_fnc_battlefieldAnalysis;
 
-                        // turn on debug again to see the state of the profile handler, and set debug on all a profiles
-                        [ALIVE_profileHandler, "debug", _debug] call ALIVE_fnc_profileHandler;
+            // create profiles for all players that dont have profiles
+            ["INIT"] call ALIVE_fnc_createProfilesFromPlayers;
 
-                        // create array block stepper
-                        ALIVE_arrayBlockHandler = [nil, "create"] call ALIVE_fnc_arrayBlockHandler;
-                        [ALIVE_arrayBlockHandler, "init"] call ALIVE_fnc_arrayBlockHandler;
+            // create profiles for all map units that dont have profiles
+            [_syncMode, _syncedUnits, false] call ALIVE_fnc_createProfilesFromUnits;
 
-                        // create command router
-                        ALIVE_commandRouter = [nil, "create"] call ALIVE_fnc_commandRouter;
-                        [ALIVE_commandRouter, "init"] call ALIVE_fnc_commandRouter;
-                        [ALIVE_commandRouter, "debug", false] call ALIVE_fnc_commandRouter;
+            // turn on debug again to see the state of the profile handler, and set debug on all a profiles
+            [ALIVE_profileHandler, "debug", _debug] call ALIVE_fnc_profileHandler;
+
+            // create array block stepper
+            ALIVE_arrayBlockHandler = [nil, "create"] call ALIVE_fnc_arrayBlockHandler;
+            [ALIVE_arrayBlockHandler, "init"] call ALIVE_fnc_arrayBlockHandler;
+
+            // create command router
+            ALIVE_commandRouter = [nil, "create"] call ALIVE_fnc_commandRouter;
+            [ALIVE_commandRouter, "init"] call ALIVE_fnc_commandRouter;
+            [ALIVE_commandRouter, "debug", false] call ALIVE_fnc_commandRouter;
+
+            // DEBUG -------------------------------------------------------------------------------------
+            if(_debug) then {
+                ["ALIVE ProfileSystem - Startup completed"] call ALIVE_fnc_dump;
+                ["ALIVE Sector grid created"] call ALIVE_fnc_dump;
+                ["ALIVE Profile handler created"] call ALIVE_fnc_dump;
+                ["ALIVE Map units converted to profiles"] call ALIVE_fnc_dump;
+                ["ALIVE Simulation controller created"] call ALIVE_fnc_dump;
+                ["ALIVE Spawn controller created"] call ALIVE_fnc_dump;
+                ["ALIVE Active Limit: %1", _activeLimiter] call ALIVE_fnc_dump;
+                ["ALIVE Spawn Radius: %1", _spawnRadius] call ALIVE_fnc_dump;
+                ["ALIVE Spawn in Jet Radius: %1",_spawnTypeJetRadius] call ALIVE_fnc_dump;
+                ["ALIVE Spawn in Heli Radius: %1",_spawnTypeHeliRadius] call ALIVE_fnc_dump;
+                ["ALIVE Spawn Cycle Time: %1", _spawnCycleTime] call ALIVE_fnc_dump;
+                ["ALIVE Persistent: %1",_persistent] call ALIVE_fnc_dump;
+                ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
+            };
+            // DEBUG -------------------------------------------------------------------------------------
 
 
-                        // DEBUG -------------------------------------------------------------------------------------
-                        if(_debug) then {
-                            ["ALIVE ProfileSystem - Startup completed"] call ALIVE_fnc_dump;
-                            ["ALIVE Sector grid created"] call ALIVE_fnc_dump;
-                            ["ALIVE Profile handler created"] call ALIVE_fnc_dump;
-                            ["ALIVE Map units converted to profiles"] call ALIVE_fnc_dump;
-                            ["ALIVE Simulation controller created"] call ALIVE_fnc_dump;
-                            ["ALIVE Spawn controller created"] call ALIVE_fnc_dump;
-                            ["ALIVE Active Limit: %1", _activeLimiter] call ALIVE_fnc_dump;
-                            ["ALIVE Spawn Radius: %1", _spawnRadius] call ALIVE_fnc_dump;
-                            ["ALIVE Spawn in Jet Radius: %1",_spawnTypeJetRadius] call ALIVE_fnc_dump;
-                            ["ALIVE Spawn in Heli Radius: %1",_spawnTypeHeliRadius] call ALIVE_fnc_dump;
-                            ["ALIVE Spawn Cycle Time: %1", _spawnCycleTime] call ALIVE_fnc_dump;
-                            ["ALIVE Persistent: %1",_persistent] call ALIVE_fnc_dump;
-                            ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                        };
-                        // DEBUG -------------------------------------------------------------------------------------
+            // start the profile simulator
+            //_profileSimulatorFSM = [_logic] execFSM "\x\alive\addons\sys_profile\profileSimulator_v2.fsm";
+            _profileSimulatorFSM = [_logic] execFSM "\x\alive\addons\sys_profile\profileSimulator.fsm";
+            [_logic,"simulator_FSM",_profileSimulatorFSM] call ALIVE_fnc_hashSet;
 
+            // start the profile spawners
 
-                        // start the profile simulator
-                        //_profileSimulatorFSM = [_logic] execFSM "\x\alive\addons\sys_profile\profileSimulator_v2.fsm";
-                        _profileSimulatorFSM = [_logic] execFSM "\x\alive\addons\sys_profile\profileSimulator.fsm";
-                        [_logic,"simulator_FSM",_profileSimulatorFSM] call ALIVE_fnc_hashSet;
+            // version 2.1 spawner system
+            _profileSpawnerFSMEast = [_logic,"EAST",_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\sys_profile\profileSpawner_v2_1.fsm";
+            _profileSpawnerFSMWest = [_logic,"WEST",_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\sys_profile\profileSpawner_v2_1.fsm";
+            _profileSpawnerFSMGuer = [_logic,"GUER",_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\sys_profile\profileSpawner_v2_1.fsm";
+            _profileSpawnerFSMCiv = [_logic,"CIV",_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\sys_profile\profileSpawner_v2_1.fsm";
 
-                        // start the profile spawners
+            [_logic,"spawner_FSMEast",_profileSpawnerFSMEast] call ALIVE_fnc_hashSet;
+            [_logic,"spawner_FSMWest",_profileSpawnerFSMWest] call ALIVE_fnc_hashSet;
+            [_logic,"spawner_FSMGuer",_profileSpawnerFSMGuer] call ALIVE_fnc_hashSet;
+            [_logic,"spawner_FSMCiv",_profileSpawnerFSMCiv] call ALIVE_fnc_hashSet;
 
-                        // version 2.1 spawner system
-                        _profileSpawnerFSMEast = [_logic,"EAST",_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\sys_profile\profileSpawner_v2_1.fsm";
-                        _profileSpawnerFSMWest = [_logic,"WEST",_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\sys_profile\profileSpawner_v2_1.fsm";
-                        _profileSpawnerFSMGuer = [_logic,"GUER",_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\sys_profile\profileSpawner_v2_1.fsm";
-                        _profileSpawnerFSMCiv = [_logic,"CIV",_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\sys_profile\profileSpawner_v2_1.fsm";
+            // if persistent load data
+            if(ALIVE_loadProfilesPersistent) then {
+                call ALIVE_fnc_profilesLoadData;
+            };
 
-                        [_logic,"spawner_FSMEast",_profileSpawnerFSMEast] call ALIVE_fnc_hashSet;
-                        [_logic,"spawner_FSMWest",_profileSpawnerFSMWest] call ALIVE_fnc_hashSet;
-                        [_logic,"spawner_FSMGuer",_profileSpawnerFSMGuer] call ALIVE_fnc_hashSet;
-                        [_logic,"spawner_FSMCiv",_profileSpawnerFSMCiv] call ALIVE_fnc_hashSet;
+            // global server flag
+            ALIVE_profileSystemInit = true;
 
-                        // if persistent load data
-                        if(ALIVE_loadProfilesPersistent) then {
-                            call ALIVE_fnc_profilesLoadData;
-                        };
+            // set modules as started
+            [_logic,"startupComplete",true] call ALIVE_fnc_hashSet;
 
-                        // global server flag
-                        ALIVE_profileSystemInit = true;
+            // register profile entity analysis job on the live analysis
+            // analysis job will run every 90 seconds and has no run count limit
+            [ALIVE_liveAnalysis, "registerAnalysisJob", [90, 0, "gridProfileEntity", "gridProfileEntity", [_plotSectors]]] call ALIVE_fnc_liveAnalysis;
 
-                        // set modules as started
-                        [_logic,"startupComplete",true] call ALIVE_fnc_hashSet;
+            // register player analysis job on the live analysis
+            // analysis job will run every 10 seconds and has no run count limit
+            [ALIVE_liveAnalysis, "registerAnalysisJob", [15, 0, "activeSectors", "activeSectors", [_plotSectors]]] call ALIVE_fnc_liveAnalysis;
 
-                        // register profile entity analysis job on the live analysis
-                        // analysis job will run every 90 seconds and has no run count limit
-                        [ALIVE_liveAnalysis, "registerAnalysisJob", [90, 0, "gridProfileEntity", "gridProfileEntity", [_plotSectors]]] call ALIVE_fnc_liveAnalysis;
-
-                        // register player analysis job on the live analysis
-                        // analysis job will run every 10 seconds and has no run count limit
-                        [ALIVE_liveAnalysis, "registerAnalysisJob", [15, 0, "activeSectors", "activeSectors", [_plotSectors]]] call ALIVE_fnc_liveAnalysis;
-
-                        // start analysis jobs
-                        [ALIVE_liveAnalysis, "start"] call ALIVE_fnc_liveAnalysis;
-                };
+            // start analysis jobs
+            [ALIVE_liveAnalysis, "start"] call ALIVE_fnc_liveAnalysis;
         };
+    };
+
         case "destroy": {
 
                 private ["_profileSimulatorFSM","_profileSpawnerFSMEast","_profileSpawnerFSMWest","_profileSpawnerFSMGuer","_profileSpawnerFSMCiv"];
@@ -353,7 +357,7 @@ switch(_operation) do {
                 ASSERT_TRUE(typeName _args == "BOOL",str _args);
 
                 _result = _args;
-        };        
+        };
         case "plotSectors": {
                 if(typeName _args != "BOOL") then {
                         _args = [_logic,"plotSectors"] call ALIVE_fnc_hashGet;

@@ -26,76 +26,34 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_position","_radius","_categorySelector","_result","_profiles","_categorySide","_categoryType","_categoryObjectType","_side","_type","_objectType","_profilePosition"];
+private _position = _this select 0;
+private _radius = _this select 1;
+private _categorySelector = param [2, []];
 
-_position = _this select 0;
-_radius = _this select 1;
-_categorySelector = if(count _this > 2) then {_this select 2} else {[]};
-
-_result = [];
+private _result = [];
 
 //Exit if ALIVE_profileHandler is not existing for any reason (f.e. due to being called on a remote locality with fnc_isEnemyNear)
-if (isNil "ALIVE_profileHandler") exitwith {_result};
+if (isnil "ALiVE_profileHandler") exitwith {_result};
 
-_profiles = [ALIVE_profileHandler, "profiles"] call ALIVE_fnc_hashGet;
+private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
+private _categoryType = "entity";
 
-if(count _categorySelector > 0) then {
+if (_categorySelector isEqualTo []) then {
+    private _near = [_spacialGrid,"findInRange", [_position,_radius]] call ALiVE_fnc_spacialGrid;
+    _result = _near apply {_x select 1};
+    _result = _result select {(_x select 2 select 5) == _categoryType};
+}else{
     _categorySide = _categorySelector select 0;
     _categoryType = _categorySelector select 1;
-    _categoryObjectType = if(count _categorySelector > 2) then {_categorySelector select 2} else {"none"};
+    _categoryObjectType = _categorySelector param [2,"none"];
 
-    {
-        if !(isnil "_x") then {
-        _type = _x select 2 select 5;
-            if(_type == _categoryType) then {
+    private _near = [_spacialGrid,"findInRange", [_position,_radius]] call ALiVE_fnc_spacialGrid;
+    _result = _near apply {_x select 1};
+    _result = _result select {(_x select 2 select 5) == _categoryType && {(_x select 2 select 3) == _categorySide}};
 
-                _side = _x select 2 select 3;
-
-                if(_side == _categorySide) then {
-
-                    if(_categoryObjectType != "none") then {
-
-                        _objectType = _x select 2 select 6;
-
-                        if(_categoryObjectType == _objectType) then {
-
-                            _profilePosition = _x select 2 select 2;
-
-                            if(_position distance _profilePosition < _radius) then {
-                                _result pushback _x;
-                            };
-                        };
-                    }else{
-
-                        _profilePosition = _x select 2 select 2;
-
-                        if(_position distance _profilePosition < _radius) then {
-                            _result pushback _x;
-                        };
-                    };
-                };
-            };
-       };
-    }forEach (_profiles select 2);
-}else{
-    _categoryType = "entity";
-
-    {
-        if !(isnil "_x") then {
-            _type = _x select 2 select 5;
-
-            if(_type == _categoryType) then {
-
-                _profilePosition = _x select 2 select 2;
-
-                //diag_log format ["NearEntitiescheck: _profilePosition by select %1 | _pos by hash %2",_profilePosition,([_x,"position"] call ALIVE_fnc_hashGet)];
-
-                if(_position distance _profilePosition < _radius) then {
-                    _result pushback _x;
-                };
-            };
-        };
-    }forEach (_profiles select 2);
+    if (_categoryObjectType != "none") then {
+        _result = _result select {(_x select 2 select 6) == _categoryObjectType};
+    };
 };
 
 _result

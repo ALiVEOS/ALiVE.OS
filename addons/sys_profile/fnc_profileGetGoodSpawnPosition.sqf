@@ -104,7 +104,7 @@ switch(_type) do {
                             _vehicleObjectType = _vehicleProfile select 2 select 6; //[_profile,"objectType"] call ALIVE_fnc_hashGet;
 
                             _vehicles pushback _vehicleProfile;
-                            
+
                             switch tolower(_vehicleObjectType) do {
                                 case "car" : {_inCar = true};
                                 case "truck" : {_inCar = true};
@@ -142,7 +142,7 @@ switch(_type) do {
 					///*
 
                     _spawnPosition = [_position] call ALIVE_fnc_getClosestRoad;
-                    
+
                     ///*
                     _positionSeries = [_spawnPosition,100,10] call ALIVE_fnc_getSeriesRoadPositions;
 
@@ -173,7 +173,7 @@ switch(_type) do {
                         };
                     };
                     //*/
-                    
+
                     //_spawnPosition = [_position,0,100,10,0,0.5,0,[],[_position]] call BIS_fnc_findSafePos;
 
                     //["GGSP [%1] - road position: %2 road direction: %3",_profileID,_spawnPosition,_direction] call ALIVE_fnc_dump;
@@ -182,7 +182,7 @@ switch(_type) do {
 
                 // update the entities position
 
-                [_profile,"position",_spawnPosition] call ALIVE_fnc_hashSet;
+                [_profile,"position",_spawnPosition] call ALIVE_fnc_profileEntity;
                 [_profile,"mergePositions"] call ALIVE_fnc_profileEntity;
 
                 // update any vehicle profile positions
@@ -216,7 +216,7 @@ switch(_type) do {
                         {
 
                             _vehicleProfile = _x;
-                            
+
                             _vehicleClass = _vehicleProfile select 2 select 11; //[_vehicleProfile,"vehicleClass"] call ALIVE_fnc_hashGet;
 
                             if (_inAir) then {
@@ -227,7 +227,7 @@ switch(_type) do {
 
                             //["GROUP POS: %1",_position] call ALIVE_fnc_dump;
                             //[_position,"GROUP",_profileID] call _createMarker;
-                            
+
                             /*
 
                             _isFlat = _position isflatempty [
@@ -242,9 +242,9 @@ switch(_type) do {
                             if !(count _isFlat > 0) then {_position = [_position, 0, 50, 5, 0, 5 , 0, [], [_position]] call BIS_fnc_findSafePos};
 
 							*/
-                            
+
                             _position = [_position,0,20,10,0,0.5,0,[],[_position]] call BIS_fnc_findSafePos;
-                            
+
                             //["GROUP POS FINAL: %1",_position] call ALIVE_fnc_dump;
                             //[_position,"GROUP FINAL",_profileID] call _createMarker;
 
@@ -308,8 +308,8 @@ switch(_type) do {
                     //_spawnPosition = [_position] call ALIVE_fnc_getClosestLand;
                     _spawnPosition = [_position,0,500,1,0,0.5,0,[],[_position]] call BIS_fnc_findSafePos;
 
-                    [_profile,"position",_spawnPosition] call ALIVE_fnc_hashSet;
-                    [_profile,"mergePositions"] call ALIVE_fnc_profileEntity; 
+                    [_profile,"position",_spawnPosition] call ALIVE_fnc_profileEntity;
+                    [_profile,"mergePositions"] call ALIVE_fnc_profileEntity;
 
                     //[_spawnPosition,"LAND",_profileID] call _createMarker;
                 };
@@ -354,7 +354,7 @@ switch(_type) do {
                 //[_spawnPosition,"DESP",_profileID] call _createMarker;
             };
 
-            [_profile,"position",_spawnPosition] call ALIVE_fnc_hashSet;
+            [_profile,"position",_spawnPosition] call ALIVE_fnc_profileVehicle;
 
             //["GGSP [%1] - not simulated - set pos as despawn position: %2",_profileID,_result] call ALIVE_fnc_dump;
         };

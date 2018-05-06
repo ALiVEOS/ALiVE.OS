@@ -394,6 +394,10 @@ switch(_operation) do {
                         _profilePosition = [_profile, "position"] call ALIVE_fnc_hashGet;
                         _profileIsPlayer = [_profile, "isPlayer"] call ALIVE_fnc_hashGet;
 
+                        // insert into spacial grid
+                        private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
+                        [_spacialGrid,"insert", [[_profilePosition,_profile]]] call ALiVE_fnc_spacialGrid;
+
                         _profilesCatagorisedSide = [_profilesCatagorised, _profileSide] call ALIVE_fnc_hashGet;
 
                         if (isNil "_profilesCatagorisedSide") exitwith {["ALIVE Error on detecting correct side #hash for profile %1",_profileID] call ALiVE_fnc_Dump};
@@ -574,6 +578,11 @@ switch(_operation) do {
                         _profileType = [_profile, "type"] call ALIVE_fnc_hashGet;
                         _profileVehicleType = [_profile, "objectType"] call ALIVE_fnc_hashGet;
                         _profileIsPlayer = [_profile, "isPlayer"] call ALIVE_fnc_hashGet;
+                        _profilePosition = [_profile, "position"] call ALIVE_fnc_hashGet;
+
+                        // remove from spacial grid
+                        private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
+                        [_spacialGrid,"remove", [_profilePosition,_profile]] call ALiVE_fnc_spacialGrid;
 
                         _profilesCatagorisedSide = [_profilesCatagorised, _profileSide] call ALIVE_fnc_hashGet;
                         _profilesCatagorisedTypes = [_profilesCatagorisedSide, "type"] call ALIVE_fnc_hashGet;
@@ -1111,7 +1120,7 @@ switch(_operation) do {
             private ["_message","_messages","_saveResult","_datahandler","_exportProfiles","_async","_missionName","_message"];
 
             _result = [false,[]];
-            
+
             _exportProfiles = [_logic, "exportProfileData"] call MAINCLASS;
 
             if(isNil"ALIVE_profileDatahandler") then {
@@ -1128,13 +1137,13 @@ switch(_operation) do {
             _messages = _result select 1;
             _messages pushback _message;
 
-			
+
             _async = false; // Wait for response from server
             _missionName = [missionName, "%20", "-"] call CBA_fnc_replace;
             _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName]; // must include group_id to ensure mission reference is unique across groups
-            
+
             _saveResult = [ALIVE_profileDatahandler, "bulkSave", ["sys_profile", _exportProfiles, _missionName, _async]] call ALIVE_fnc_Data;
-           
+
             _result set [0,_saveResult];
 
             _message = format["ALiVE Profile System - Save Result: %1",_saveResult];
@@ -1159,7 +1168,7 @@ switch(_operation) do {
                 ALIVE_profileDatahandler = [nil, "create"] call ALIVE_fnc_Data;
                 [ALIVE_profileDatahandler,"storeType",true] call ALIVE_fnc_Data;
             };
-			
+
             _async = false; // Wait for response from server
             _missionName = [missionName, "%20", "-"] call CBA_fnc_replace;
             _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName]; // must include group_id to ensure mission reference is unique across groups
@@ -1486,11 +1495,11 @@ switch(_operation) do {
 
                         if("activeCommands" in (_profile select 1)) then {
                             [_profileEntity, "activeCommands", [_profile,"activeCommands"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-                        };                        
+                        };
 
                         if("boat" in (_profile select 1)) then {
                             [_profileEntity, "boat", [_profile,"boat"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-                        };                                                                                 
+                        };
 
                         if(ALiVE_SYS_DATA_DEBUG_ON) then {
                             ["ALiVE SYS PROFILE - RECREATED PROFILE ENTITY:"] call ALIVE_fnc_dump;
