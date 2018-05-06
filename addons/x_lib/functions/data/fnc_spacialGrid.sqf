@@ -25,7 +25,9 @@ SpyderBlack723
 
 #define MAINCLASS ALiVE_fnc_spacialGrid
 
-params ["_logic","_operation","_args"];
+private _logic = _this select 0;
+private _operation = _this select 1;
+private _args = _this select 2;
 
 private "_result";
 
@@ -112,11 +114,19 @@ switch (_operation) do {
 
         private _point = _args;
 
+        _result = false;
+
         private _coords = [_logic,"posToCoords", _point select 0] call MAINCLASS;
         private _sector = [_logic,"coordsToSector", _coords] call MAINCLASS;
 
         if (!isnil "_sector") then {
-            _sector deleteAt (_sector find _point);
+            private _index = (_sector find _point);
+
+            if (_index != -1) then {
+                _sector deleteAt (_sector find _point);
+                _result = true;
+            };
+
         };
 
     };
@@ -125,14 +135,25 @@ switch (_operation) do {
 
         _args params ["_oldPos","_newPos","_data"];
 
-        [_logic,"remove", [_oldPos,_data]] call MAINCLASS;
-        [_logic,"insert", [[_newPos,_data]]] call MAINCLASS;
+        if ([_logic,"remove", [_oldPos,_data]] call MAINCLASS) then {
+            [_logic,"insert", [[_newPos,_data]]] call MAINCLASS;
+        };
+
+    };
+
+    case "clear": {
+
+        private _sectors = _logic select 2 select 5;
+        {
+            _x = [];
+        } foreach _sectors;
 
     };
 
     case "findInRange": {
 
-        _args params ["_center","_radius"];
+        private _center = _args select 0;
+        private _radius = _args select 1;
 
         private _sectorSize = _logic select 2 select 1;
 
@@ -141,11 +162,14 @@ switch (_operation) do {
         private _maxX = floor (((_center select 0) + _radius) / _sectorSize);
         private _maxY = floor (((_center select 1) + _radius) / _sectorSize);
 
+        private _columnCount = _logic select 2 select 3;
+        private _sectors = _logic select 2 select 5;
+
         _result = [];
 
         for "_y" from _minY to _maxY do {
             for "_x" from _minX to _maxX do {
-                _result append ([_logic,"coordsToSector", [_x,_y]] call MAINCLASS);
+                _result append (_sectors select (_x + (_y * _columnCount)));
             };
         };
 
