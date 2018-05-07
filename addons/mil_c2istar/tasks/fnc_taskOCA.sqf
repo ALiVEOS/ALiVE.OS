@@ -124,7 +124,15 @@ switch (_taskState) do {
 
                 if (count _objectives > 0) then {
                     private _OCAClusters = [] call ALiVE_fnc_hashCreate;
-                    private _objectives = [_objectives,[getposATL _player],{_Input0 distance ([_x,"center"] call ALiVE_fnc_HashGet)},"ASCEND"] call ALiVE_fnc_SortBy;
+					
+					private _player = [_requestPlayerID] call ALIVE_fnc_getPlayerByUID;
+					
+					if (isNull _player) then {
+						_player = selectRandom (_taskPlayers select 0);
+						_player = [_player] call ALIVE_fnc_getPlayerByUID;
+					};
+					
+                    private _objectives = [_objectives, [getposATL _player], {_Input0 distance ([_x, "center"] call ALiVE_fnc_HashGet)}, "ASCEND"] call ALiVE_fnc_SortBy;
 
                     {
                         private _found = false;
