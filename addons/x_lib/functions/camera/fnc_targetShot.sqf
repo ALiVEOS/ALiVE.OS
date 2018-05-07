@@ -1,15 +1,16 @@
 #include <\x\alive\addons\x_lib\script_component.hpp>
-SCRIPT(closeUpShot);
+SCRIPT(targetShot);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_closeUpShot
+Function: ALIVE_fnc_targetShot
 
 Description:
-ChaseTarget
+Position camera behind a unit and point camera at the 2nd target
 
 Parameters:
 Object - camera
 Object - target1
+Object - target2
 Scalar - shot duration
 Boolean - hide target objects
 
@@ -18,7 +19,7 @@ Returns:
 
 Examples:
 (begin example)
-[_camera,_target1, 10, false] call ALIVE_fnc_closeUpShot;
+[_camera, _target1, _target2, 10, false] call ALIVE_fnc_targetShot;
 (end)
 
 See Also:
@@ -41,25 +42,16 @@ if(_hideTarget) then
     hideObject _target;
 };
 
-private _startTime = time;
-private _currentTime = _startTime;
+_camera = _camera;
+_pos = _target1;
+_target = _target2;
+_distance = _dist;
+_height = _height max 0.4;
 
-CHASE_camera = _camera;
-CHASE_pos = _target1;
-CHASE_target = _target2;
-CHASE_distance = _dist;
-CHASE_height = _height;
+_shift = if (random 1 > 0.5) then {-0.3} else {0.4};
 
-CHASE_shift = if (random 1 > 0.5) then {-0.2} else {0.2};
-
-private  _eventID = addMissionEventHandler ["Draw3D", {
-	    CHASE_camera camSetTarget CHASE_pos;
-	    CHASE_camera camSetRelPos [CHASE_shift,CHASE_distance,CHASE_height];
-	    CHASE_camera camSetDir (CHASE_pos vectorFromTo CHASE_target);
-	    CHASE_camera camCommit 0;
-}];
-
-
-waitUntil { sleep 1; _currentTime = time; ((_currentTime - _startTime) >= _duration)};
-
-removeMissionEventHandler ["Draw3D",_eventID];
+_camera camSetTarget _pos;
+_camera camSetRelPos [_shift,_distance,_height];
+_camera camCommit 0;
+_camera camSetTarget _target;
+_camera camCommit 0;

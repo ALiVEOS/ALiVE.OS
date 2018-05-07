@@ -139,13 +139,39 @@ class addCamera
 	RECOMPILE;
 };
 
+class angleShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_angleShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class followShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_followShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class sideShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_sideShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class targetShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_targetShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
 class chaseAngleShot
 {
 	file = "\x\alive\addons\x_lib\functions\camera\fnc_chaseAngleShot.sqf";
 	ext = ".sqf";
 	RECOMPILE;
 };
-
 
 class chaseShot
 {
@@ -706,9 +732,9 @@ class ProfileNameSpaceWipe
 	RECOMPILE;
 };
 
-class quadtree
+class spacialGrid
 {
-	file = "\x\alive\addons\x_lib\functions\data\fnc_quadtree.sqf";
+	file = "\x\alive\addons\x_lib\functions\data\fnc_spacialGrid.sqf";
 	ext = ".sqf";
 	RECOMPILE;
 };

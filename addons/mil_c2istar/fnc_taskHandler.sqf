@@ -89,6 +89,7 @@ switch (_operation) do {
             [_logic,"managedTasks",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
             [_logic,"managedTaskParams",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
             [_logic,"isManaging",false] call ALIVE_fnc_hashSet;
+            [_logic,"managerHandle",scriptNull] call ALIVE_fnc_hashSet;
             [_logic,"listenerID",""] call ALIVE_fnc_hashSet;
 
             _tasksBySide = [] call ALIVE_fnc_hashCreate;
