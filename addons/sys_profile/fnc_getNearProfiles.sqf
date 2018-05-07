@@ -30,30 +30,29 @@ private _position = _this select 0;
 private _radius = _this select 1;
 private _categorySelector = param [2, []];
 
-private _result = [];
-
 //Exit if ALIVE_profileHandler is not existing for any reason (f.e. due to being called on a remote locality with fnc_isEnemyNear)
-if (isnil "ALiVE_profileHandler") exitwith {_result};
+if (isnil "ALiVE_profileHandler") exitwith {[]};
 
 private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
-private _categoryType = "entity";
+private _near = ([_spacialGrid,"findInRange", [_position,_radius]] call ALiVE_fnc_spacialGrid) apply {_x select 1};
+private "_query";
 
 if (_categorySelector isEqualTo []) then {
-    private _near = [_spacialGrid,"findInRange", [_position,_radius]] call ALiVE_fnc_spacialGrid;
-    _result = _near apply {_x select 1};
-    _result = _result select {(_x select 2 select 5) == _categoryType};
-}else{
-    _categorySide = _categorySelector select 0;
-    _categoryType = _categorySelector select 1;
-    _categoryObjectType = _categorySelector param [2,"none"];
+    _query = "(_x select 2 select 5) == 'entity'";
+} else {
+    private _categorySide = _categorySelector select 0;
+    private _categoryType = _categorySelector param [1, "all"];
+    private _categoryObjectType = _categorySelector param [2, "none"];
 
-    private _near = [_spacialGrid,"findInRange", [_position,_radius]] call ALiVE_fnc_spacialGrid;
-    _result = _near apply {_x select 1};
-    _result = _result select {(_x select 2 select 5) == _categoryType && {(_x select 2 select 3) == _categorySide}};
+    _query = "(_x select 2 select 3) == _categorySide";
+
+    if (_categoryType != "all") then {
+        _query = _query + " && {(_x select 2 select 5) == _categoryType}";
+    };
 
     if (_categoryObjectType != "none") then {
-        _result = _result select {(_x select 2 select 6) == _categoryObjectType};
+        _query = _query + " && {(_x select 2 select 6) == _categoryObjectType}";
     };
 };
 
-_result
+_near select (compile _query);
