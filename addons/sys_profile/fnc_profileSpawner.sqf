@@ -23,6 +23,14 @@ SpyderBlack723
 
 _this = _this select 0;
 
+if ([ALiVE_profileSystem,"paused"] call ALiVE_fnc_hashGet) exitwith {
+	private _profilesToSpawnQueue = [ALiVE_profileSystem,"profilesToSpawn"] call ALiVE_fnc_hashGet;
+	private _profilesToDespawnQueue = [ALiVE_profileSystem,"profilesToDespawn"] call ALiVE_fnc_hashGet;
+
+	_profilesToSpawnQueue resize 0;
+	_profilesToDespawnQueue resize 0;
+};
+
 private _spawnRadius = _this select 0;
 private _spawnRadiusHeli = _this select 1;
 private _spawnRadiusPlane = _this select 2;
