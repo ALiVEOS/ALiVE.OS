@@ -71,6 +71,8 @@ switch(_operation) do {
             [_logic,"despawnCycleTime",1] call ALIVE_fnc_hashSet;
             [_logic,"speedModifier",1] call ALIVE_fnc_hashSet;
 
+			[_logic,"paused", false] call ALiVE_fnc_hashSet;
+
             [_logic,"profilesToSpawn", []] call ALiVE_fnc_hashSet;
             [_logic,"profilesToDespawn", []] call ALiVE_fnc_hashSet;
             [_logic,"profileSpawnSources", []] call ALiVE_fnc_hashSet;
@@ -86,8 +88,8 @@ switch(_operation) do {
     case "start": {
 
         private["_debug","_persistent","_plotSectors","_syncMode","_syncedUnits","_spawnRadius","_spawnTypeJetRadius","_spawnTypeHeliRadius",
-        "_activeLimiter","_spawnCycleTime","_despawnCycleTime","_combatRate","_profileSimulatorFSM","_profileSpawnerFSMEast","_profileSpawnerFSMWest",
-        "_profileSpawnerFSMGuer","_profileSpawnerFSMCiv","_sectors","_persistent","_file"];
+        "_activeLimiter","_spawnCycleTime","_despawnCycleTime","_combatRate","_profileSimulatorFSM",
+        "_sectors","_persistent","_file"];
 
         if (isServer) then {
 
@@ -205,19 +207,6 @@ switch(_operation) do {
             [ALiVE_fnc_profileSpawner, 0, [_spawnRadius,_spawnTypeHeliRadius,_spawnTypeJetRadius,_activeLimiter]] call CBA_fnc_addPerFrameHandler;
             ///////
 
-            /*
-            // version 2.1 spawner system
-            _profileSpawnerFSMEast = [_logic,"EAST",_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\sys_profile\profileSpawner_v2_1.fsm";
-            _profileSpawnerFSMWest = [_logic,"WEST",_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\sys_profile\profileSpawner_v2_1.fsm";
-            _profileSpawnerFSMGuer = [_logic,"GUER",_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\sys_profile\profileSpawner_v2_1.fsm";
-            _profileSpawnerFSMCiv = [_logic,"CIV",_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\sys_profile\profileSpawner_v2_1.fsm";
-
-            [_logic,"spawner_FSMEast",_profileSpawnerFSMEast] call ALIVE_fnc_hashSet;
-            [_logic,"spawner_FSMWest",_profileSpawnerFSMWest] call ALIVE_fnc_hashSet;
-            [_logic,"spawner_FSMGuer",_profileSpawnerFSMGuer] call ALIVE_fnc_hashSet;
-            [_logic,"spawner_FSMCiv",_profileSpawnerFSMCiv] call ALIVE_fnc_hashSet;
-            */
-
             // if persistent load data
             if(ALIVE_loadProfilesPersistent) then {
                 call ALIVE_fnc_profilesLoadData;
@@ -244,25 +233,13 @@ switch(_operation) do {
 
         case "destroy": {
 
-                private ["_profileSimulatorFSM","_profileSpawnerFSMEast","_profileSpawnerFSMWest","_profileSpawnerFSMGuer","_profileSpawnerFSMCiv"];
+                private ["_profileSimulatorFSM"];
 
                 [_logic, "debug", false] call MAINCLASS;
                 if (isServer) then {
 
                     _profileSimulatorFSM = [_logic, "simulator_FSM"] call ALiVE_fnc_HashGet;
                     _profileSimulatorFSM setFSMVariable ["_destroy",true];
-
-                    _profileSpawnerFSMEast = [_logic, "spawner_FSMEast"] call ALiVE_fnc_HashGet;
-                    _profileSpawnerFSMEast setFSMVariable ["_destroy",true];
-
-                    _profileSpawnerFSMWest = [_logic, "spawner_FSMWest"] call ALiVE_fnc_HashGet;
-                    _profileSpawnerFSMWest setFSMVariable ["_destroy",true];
-
-                    _profileSpawnerFSMGuer = [_logic, "spawner_FSMGuer"] call ALiVE_fnc_HashGet;
-                    _profileSpawnerFSMGuer setFSMVariable ["_destroy",true];
-
-                    _profileSpawnerFSMCiv = [_logic, "spawner_FSMCiv"] call ALiVE_fnc_HashGet;
-                    _profileSpawnerFSMCiv setFSMVariable ["_destroy",true];
 
                     [ALIVE_commandRouter, "pause", true] call ALIVE_fnc_commandRouter;
                     [ALIVE_liveAnalysis, "pause", true] call ALIVE_fnc_liveAnalysis;
@@ -301,17 +278,7 @@ switch(_operation) do {
                     _profileSimulatorFSM = [_logic, "simulator_FSM"] call ALiVE_fnc_HashGet;
                     _profileSimulatorFSM setFSMVariable ["_pause",true];
 
-                    _profileSpawnerFSMEast = [_logic, "spawner_FSMEast"] call ALiVE_fnc_HashGet;
-                    _profileSpawnerFSMEast setFSMVariable ["_pause",true];
-
-                    _profileSpawnerFSMWest = [_logic, "spawner_FSMWest"] call ALiVE_fnc_HashGet;
-                    _profileSpawnerFSMWest setFSMVariable ["_pause",true];
-
-                    _profileSpawnerFSMGuer = [_logic, "spawner_FSMGuer"] call ALiVE_fnc_HashGet;
-                    _profileSpawnerFSMGuer setFSMVariable ["_pause",true];
-
-                    _profileSpawnerFSMCiv = [_logic, "spawner_FSMCiv"] call ALiVE_fnc_HashGet;
-                    _profileSpawnerFSMCiv setFSMVariable ["_pause",true];
+					[_logic,"paused", true] call ALiVE_fnc_hashSet;
 
                     [ALIVE_commandRouter, "pause", true] call ALIVE_fnc_commandRouter;
                     [ALIVE_liveAnalysis, "pause", true] call ALIVE_fnc_liveAnalysis;
@@ -321,17 +288,7 @@ switch(_operation) do {
                     _profileSimulatorFSM = [_logic, "simulator_FSM"] call ALiVE_fnc_HashGet;
                     _profileSimulatorFSM setFSMVariable ["_pause",false];
 
-                    _profileSpawnerFSMEast = [_logic, "spawner_FSMEast"] call ALiVE_fnc_HashGet;
-                    _profileSpawnerFSMEast setFSMVariable ["_pause",false];
-
-                    _profileSpawnerFSMWest = [_logic, "spawner_FSMWest"] call ALiVE_fnc_HashGet;
-                    _profileSpawnerFSMWest setFSMVariable ["_pause",false];
-
-                    _profileSpawnerFSMGuer = [_logic, "spawner_FSMGuer"] call ALiVE_fnc_HashGet;
-                    _profileSpawnerFSMGuer setFSMVariable ["_pause",false];
-
-                    _profileSpawnerFSMCiv = [_logic, "spawner_FSMCiv"] call ALiVE_fnc_HashGet;
-                    _profileSpawnerFSMCiv setFSMVariable ["_pause",false];
+					[_logic,"paused", false] call ALiVE_fnc_hashSet;
 
                     [ALIVE_commandRouter, "pause", false] call ALIVE_fnc_commandRouter;
                     [ALIVE_liveAnalysis, "pause", false] call ALIVE_fnc_liveAnalysis;
