@@ -35,9 +35,9 @@ switch (_operation) do {
 
     case "create": {
 
-		private _origin = _args select 0;
-		private _gridSize = _args select 1;
-		private _sectorSize = _args select 2;
+        private _origin = _args select 0;
+        private _gridSize = _args select 1;
+        private _sectorSize = _args select 2;
 
         private _gridSectorLength = ceil (_gridSize / _sectorSize);
 
@@ -47,24 +47,24 @@ switch (_operation) do {
                 // [j, i]
                 _sectors pushback [];
 
-				/*
-				_markerstr = createMarker [str random 10000, [((_j * _sectorSize) + (_origin select 0)), ((_i * _sectorSize) + (_origin select 1))]];
-				_markerstr setMarkerShape "ICON";
-				_markerstr setMarkerType "hd_dot";
-				_markerstr setMarkerSize [2,2];
-				_markerstr setmarkercolor "colorred";
-				*/
+                /*
+                _markerstr = createMarker [str random 10000, [((_j * _sectorSize) + (_origin select 0)), ((_i * _sectorSize) + (_origin select 1))]];
+                _markerstr setMarkerShape "ICON";
+                _markerstr setMarkerType "hd_dot";
+                _markerstr setMarkerSize [2,2];
+                _markerstr setmarkercolor "colorred";
+                */
             };
         };
 
         _result = [
             [
-                ["origin", _origin],			// select 2 select 0
-                ["sectorSize", _sectorSize],	// select 2 select 1
-                ["gridSize", _gridSize],		// select 2 select 2
-                ["minSector", [0,0]],			// select 2 select 3
-                ["maxSector", [_gridSectorLength,_gridSectorLength]],	// select 2 select 4
-                ["sectors", _sectors]			// select 2 select 5
+                ["origin", _origin],            // select 2 select 0
+                ["sectorSize", _sectorSize],    // select 2 select 1
+                ["gridSize", _gridSize],        // select 2 select 2
+                ["minSector", [0,0]],           // select 2 select 3
+                ["maxSector", [_gridSectorLength,_gridSectorLength]],   // select 2 select 4
+                ["sectors", _sectors]           // select 2 select 5
             ]
         ] call ALiVE_fnc_hashCreate;
 
@@ -74,7 +74,7 @@ switch (_operation) do {
 
         private _gridOrigin = _logic select 2 select 0;
         private _sectorSize = _logic select 2 select 1;
-		private _maxSector = _logic select 2 select 4;
+        private _maxSector = _logic select 2 select 4;
 
         if (
             (_args select 0) >= (_gridOrigin select 0) &&
@@ -82,11 +82,11 @@ switch (_operation) do {
             {(_args select 0) < ((_gridOrigin select 0) + (_sectorSize * (_maxSector select 0)))} &&
             {(_args select 1) < ((_gridOrigin select 1) + (_sectorSize * (_maxSector select 1)))}
         ) then {
-			// offset position to accomodate negative values
-			_args = [
-				(_args select 0) + (abs (_gridOrigin select 0)),
-				(_args select 1) + (abs (_gridOrigin select 1))
-			];
+            // offset position to accomodate negative values
+            _args = [
+                (_args select 0) + (abs (_gridOrigin select 0)),
+                (_args select 1) + (abs (_gridOrigin select 1))
+            ];
 
             _result = [floor ((_args select 0) / _sectorSize), floor ((_args select 1) / _sectorSize)];
         } else {
@@ -98,12 +98,12 @@ switch (_operation) do {
     case "coordsToSector": {
 
         if !(_args isEqualTo [-1,-1]) then {
-			private _sectorsInColumn = (_logic select 2 select 4) select 0;
+            private _sectorsInColumn = (_logic select 2 select 4) select 0;
             private _index = (_args select 0) + ((_args select 1) * _sectorsInColumn);
             _result = (_logic select 2 select 5) select _index;
         } else {
-			_result = nil;
-		};
+            _result = nil;
+        };
 
     };
 
@@ -114,9 +114,9 @@ switch (_operation) do {
         {
             private _coords = [_logic,"posToCoords", _x select 0] call MAINCLASS;
 
-			if !(_coords isEqualTo [-1,-1]) then {
-				([_logic,"coordsToSector", _coords] call MAINCLASS) pushback _x;
-			};
+            if !(_coords isEqualTo [-1,-1]) then {
+                ([_logic,"coordsToSector", _coords] call MAINCLASS) pushback _x;
+            };
         } foreach _points;
 
     };
@@ -129,8 +129,8 @@ switch (_operation) do {
 
         private _coords = [_logic,"posToCoords", _point select 0] call MAINCLASS;
 
-		if !(_coords isEqualTo [-1,-1]) then {
-			private _sector = [_logic,"coordsToSector", _coords] call MAINCLASS;
+        if !(_coords isEqualTo [-1,-1]) then {
+            private _sector = [_logic,"coordsToSector", _coords] call MAINCLASS;
             private _index = (_sector find _point);
 
             if (_index != -1) then {
@@ -138,15 +138,15 @@ switch (_operation) do {
                 _result = true;
             };
 
-		};
+        };
 
     };
 
     case "move": {
 
-		private _oldPos = _args select 0;
-		private _newPos = _args select 1;
-		private _data = _args select 2;
+        private _oldPos = _args select 0;
+        private _newPos = _args select 1;
+        private _data = _args select 2;
 
         if ([_logic,"remove", [_oldPos,_data]] call MAINCLASS) then {
             [_logic,"insert", [[_newPos,_data]]] call MAINCLASS;
@@ -168,26 +168,26 @@ switch (_operation) do {
         private _center = _args select 0;
         private _radius = _args select 1;
 
-		private _minCoords = [_logic,"posToCoords", [(_center select 0) - _radius, (_center select 1) - _radius]] call MAINCLASS;
-		private _maxCoords = [_logic,"posToCoords", [(_center select 0) + _radius, (_center select 1) + _radius]] call MAINCLASS;
+        private _minCoords = [_logic,"posToCoords", [(_center select 0) - _radius, (_center select 1) - _radius]] call MAINCLASS;
+        private _maxCoords = [_logic,"posToCoords", [(_center select 0) + _radius, (_center select 1) + _radius]] call MAINCLASS;
 
         private _maxSector = _logic select 2 select 4;
         private _sectors = _logic select 2 select 5;
 
         _result = [];
 
-		// constrict sector indexes to grid bounds
-		_minCoords = _minCoords apply {_x max 0};
-		_maxCoords = _maxCoords apply {_x min ((_maxSector select 0) + 1)};
+        // constrict sector indexes to grid bounds
+        _minCoords = _minCoords apply {_x max 0};
+        _maxCoords = _maxCoords apply {_x min ((_maxSector select 0) + 1)};
 
-		for "_y" from (_minCoords select 1) to (_maxCoords select 1) do {
-			for "_x" from (_minCoords select 0) to (_maxCoords select 0) do {
-				private _sector = [_logic,"coordsToSector", [_x,_y]] calL MAINCLASS;
-				_result append _sector;
-			};
-		};
+        for "_y" from (_minCoords select 1) to (_maxCoords select 1) do {
+            for "_x" from (_minCoords select 0) to (_maxCoords select 0) do {
+                private _sector = [_logic,"coordsToSector", [_x,_y]] calL MAINCLASS;
+                _result append _sector;
+            };
+        };
 
-		_result = _result select {((_x select 0) distance _center) <= _radius};
+        _result = _result select {((_x select 0) distance _center) <= _radius};
 
     };
 

@@ -23,12 +23,12 @@ SpyderBlack723
 
 _this = _this select 0;
 
-if ([ALiVE_profileSystem,"paused"] call ALiVE_fnc_hashGet) exitwith {
-	private _profilesToSpawnQueue = [ALiVE_profileSystem,"profilesToSpawn"] call ALiVE_fnc_hashGet;
-	private _profilesToDespawnQueue = [ALiVE_profileSystem,"profilesToDespawn"] call ALiVE_fnc_hashGet;
+if ([MOD(profileSystem),"paused"] call ALiVE_fnc_hashGet) exitwith {
+    private _profilesToSpawnQueue = [MOD(profileSystem),"profilesToSpawn"] call ALiVE_fnc_hashGet;
+    private _profilesToDespawnQueue = [MOD(profileSystem),"profilesToDespawn"] call ALiVE_fnc_hashGet;
 
-	_profilesToSpawnQueue resize 0;
-	_profilesToDespawnQueue resize 0;
+    _profilesToSpawnQueue resize 0;
+    _profilesToDespawnQueue resize 0;
 };
 
 private _spawnRadius = _this select 0;
@@ -38,23 +38,23 @@ private _activeLimiter = _this select 3;
 
 private _uavSpawnRadius = _spawnRadius + 800;
 
-private _activeProfiles = [ALiVE_profileHandler,"profilesActive"] call ALiVE_fnc_hashGet;
-private _inactiveProfiles = [ALiVE_profileHandler,"profilesInActive"] call ALiVE_fnc_hashGet;
+private _activeProfiles = [MOD(profileHandler),"profilesActive"] call ALiVE_fnc_hashGet;
+private _inactiveProfiles = [MOD(profileHandler),"profilesInActive"] call ALiVE_fnc_hashGet;
 
-private _profilesToSpawnQueue = [ALiVE_profileSystem,"profilesToSpawn"] call ALiVE_fnc_hashGet;
-private _profilesToDespawnQueue = [ALiVE_profileSystem,"profilesToDespawn"] call ALiVE_fnc_hashGet;
-private _lastProfileSpawnedTime = [ALiVE_profileSystem,"profileLastSpawnTime"] call ALiVE_fnc_hashGet;
+private _profilesToSpawnQueue = [MOD(profileSystem),"profilesToSpawn"] call ALiVE_fnc_hashGet;
+private _profilesToDespawnQueue = [MOD(profileSystem),"profilesToDespawn"] call ALiVE_fnc_hashGet;
+private _lastProfileSpawnedTime = [MOD(profileSystem),"profileLastSpawnTime"] call ALiVE_fnc_hashGet;
 
 ///////////////////////////////////////
 //     Spawn/Despawn Profiles
 ///////////////////////////////////////
 
-private _activeEntityCount = count ([ALiVE_profileHandler,"getActiveEntities"] call ALiVE_fnc_profileHandler);
+private _activeEntityCount = count ([MOD(profileHandler),"getActiveEntities"] call ALiVE_fnc_profileHandler);
 
 if !(_profilesToSpawnQueue isEqualTo [] && {time - _lastProfileSpawnedTime > ALiVE_smoothSpawn}) then {
     private _profileID = _profilesToSpawnQueue select 0;
 
-    private _profile = [ALiVE_profileHandler,"getProfile", _profileID] call ALiVE_fnc_profileHandler;
+    private _profile = [MOD(profileHandler),"getProfile", _profileID] call ALiVE_fnc_profileHandler;
 
     if (isnil "_profile" || {_profile select 2 select 1} || {[_profile,"locked", false] call ALiVE_fnc_HashGet}) then {
         // profile no longer exists, is active, or is locked
@@ -69,7 +69,7 @@ if !(_profilesToSpawnQueue isEqualTo [] && {time - _lastProfileSpawnedTime > ALi
                 [_profile,"spawn"] spawn ALiVE_fnc_profileVehicle;
             };
 
-            [ALiVE_profileSystem,"profileLastSpawnTime", time] call ALiVE_fnc_hashSet;
+            [MOD(profileSystem),"profileLastSpawnTime", time] call ALiVE_fnc_hashSet;
 
             _activeProfiles pushback _profileID;
             _inactiveProfiles deleteat (_inactiveProfiles find _profileID);
@@ -79,14 +79,14 @@ if !(_profilesToSpawnQueue isEqualTo [] && {time - _lastProfileSpawnedTime > ALi
 
             if (!(_profile select 2 select 1) && {(_profile select 2 select 5) == "entity"}) then {
                 {
-                    private _vehicleProfile = [ALiVE_profileHandler,"getProfile", _x] call ALiVE_fnc_profileHandler;
+                    private _vehicleProfile = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_profileHandler;
 
                     if (!isnil "_vehicleProfile") then {
-                        [ALiVE_profileHandler,"unregisterProfile", _vehicleProfile] call ALiVE_fnc_profileHandler;
+                        [MOD(profileHandler),"unregisterProfile", _vehicleProfile] call ALiVE_fnc_profileHandler;
                     };
                 } foreach (_profile select 2 select 8); // "vehiclesInCommandOf"
 
-                [ALiVE_profileHandler,"unregisterProfile", _profile] call ALiVE_fnc_profileHandler;
+                [MOD(profileHandler),"unregisterProfile", _profile] call ALiVE_fnc_profileHandler;
             };
         };
     };
@@ -96,7 +96,7 @@ if !(_profilesToDespawnQueue isEqualTo []) then {
     private _profileID = _profilesToDespawnQueue select 0;
     _profilesToDespawnQueue deleteat 0;
 
-    private _profile = [ALiVE_profileHandler,"getProfile", _profileID] call ALiVE_fnc_profileHandler;
+    private _profile = [MOD(profileHandler),"getProfile", _profileID] call ALiVE_fnc_profileHandler;
 
     if (!isnil "_profile") then {
         private _leader = _profile select 2 select 10;
@@ -119,7 +119,7 @@ if !(_profilesToDespawnQueue isEqualTo []) then {
 // Sort Profiles Set To Spawn/Despawn
 ///////////////////////////////////////
 
-private _spawnSources = [ALiVE_profileSystem,"profileSpawnSources"] call ALiVE_fnc_hashGet;
+private _spawnSources = [MOD(profileSystem),"profileSpawnSources"] call ALiVE_fnc_hashGet;
 if (_spawnSources isEqualTo []) then {
     _spawnSources append allPlayers;
     _spawnSources append (allUnitsUAV select {isUavConnected _x});
