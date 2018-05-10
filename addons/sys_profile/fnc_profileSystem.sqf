@@ -71,8 +71,14 @@ switch(_operation) do {
             [_logic,"despawnCycleTime",1] call ALIVE_fnc_hashSet;
             [_logic,"speedModifier",1] call ALIVE_fnc_hashSet;
 
+            [_logic,"profilesToSpawn", []] call ALiVE_fnc_hashSet;
+            [_logic,"profilesToDespawn", []] call ALiVE_fnc_hashSet;
+            [_logic,"profileSpawnSources", []] call ALiVE_fnc_hashSet;
+            [_logic,"profileLastSpawnTime", 0] call ALiVE_fnc_hashSet;
+
             // create spacial grid
-            private _spacialGridProfiles = [nil,"create", [[-2000,-2000], worldsize + 4000, 1000]] call alive_fnc_spacialGrid;
+			private _worldSize = [ALiVE_mapBounds,worldname, worldsize] call ALiVE_fnc_hashGet;
+            private _spacialGridProfiles = [nil,"create", [[-3000,-3000], _worldSize + 6000, 1000]] call ALiVE_fnc_spacialGrid;
             [_logic,"spacialGridProfiles", _spacialGridProfiles] call ALiVE_fnc_hashSet;
         };
     };
@@ -195,6 +201,11 @@ switch(_operation) do {
 
             // start the profile spawners
 
+            ///////
+            [ALiVE_fnc_profileSpawner, 0, [_spawnRadius,_spawnTypeHeliRadius,_spawnTypeJetRadius,_activeLimiter]] call CBA_fnc_addPerFrameHandler;
+            ///////
+
+            /*
             // version 2.1 spawner system
             _profileSpawnerFSMEast = [_logic,"EAST",_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\sys_profile\profileSpawner_v2_1.fsm";
             _profileSpawnerFSMWest = [_logic,"WEST",_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\sys_profile\profileSpawner_v2_1.fsm";
@@ -205,6 +216,7 @@ switch(_operation) do {
             [_logic,"spawner_FSMWest",_profileSpawnerFSMWest] call ALIVE_fnc_hashSet;
             [_logic,"spawner_FSMGuer",_profileSpawnerFSMGuer] call ALIVE_fnc_hashSet;
             [_logic,"spawner_FSMCiv",_profileSpawnerFSMCiv] call ALIVE_fnc_hashSet;
+            */
 
             // if persistent load data
             if(ALIVE_loadProfilesPersistent) then {
