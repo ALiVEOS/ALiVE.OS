@@ -30,21 +30,21 @@ private _position = _this select 0;
 private _radius = _this select 1;
 private _categorySelector = param [2, []];
 
-//Exit if ALIVE_profileHandler is not existing for any reason (f.e. due to being called on a remote locality with fnc_isEnemyNear)
-if (isnil "ALiVE_profileHandler") exitwith {[]};
-
 private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
 private _near = ([_spacialGrid,"findInRange", [_position,_radius]] call ALiVE_fnc_spacialGrid) apply {_x select 1};
-private "_query";
 
 if (_categorySelector isEqualTo []) then {
-    _query = "(_x select 2 select 5) == 'entity'";
+   _near select {(_x select 2 select 5) == "entity"};
 } else {
-    private _categorySide = _categorySelector select 0;
+    private _categorySide = _categorySelector param [0, "all"];
     private _categoryType = _categorySelector param [1, "all"];
     private _categoryObjectType = _categorySelector param [2, "none"];
 
-    _query = "(_x select 2 select 3) == _categorySide";
+    private _query = "true";
+
+    if (_categorySide != "all") then {
+        _query = _query + " && ((_x select 2 select 3) == _categorySide)";
+    };
 
     if (_categoryType != "all") then {
         _query = _query + " && {(_x select 2 select 5) == _categoryType}";
@@ -53,6 +53,6 @@ if (_categorySelector isEqualTo []) then {
     if (_categoryObjectType != "none") then {
         _query = _query + " && {(_x select 2 select 6) == _categoryObjectType}";
     };
-};
 
-_near select (compile _query);
+    _near select (compile _query);
+};
