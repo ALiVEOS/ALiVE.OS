@@ -36,8 +36,6 @@ Wolffy.au
 Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
-private ["_result"];
-
 if(
     isNil "_this" ||
     {typeName _this != "ARRAY"} ||
@@ -55,20 +53,20 @@ params [
     ["_operation", "", [""]],
     ["_args", objNull, [objNull,[],"",0,true,false]]
 ];
-_result = true;
+
+private _result = true;
 
 switch(_operation) do {
-    default {
-        private["_err"];
-        _err = format["%1 does not support ""%2"" operation", _logic, _operation];
-        _err call ALiVE_fnc_logger;
-    };
+
     case "create": {
         // Create a module object for settings and persistence
-        _logic = [] call CBA_fnc_hashCreate;
-        [_logic, "class", ALIVE_fnc_baseClassHash] call ALIVE_fnc_hashSet;
-        _result = _logic;
+        _result = [
+            [
+                ["class", ALIVE_fnc_baseClassHash]
+            ]
+        ] call ALiVE_fnc_hashCreate;
     };
+
     case "destroy": {
         {
             [_logic, _x] call ALIVE_fnc_hashRem;
@@ -76,6 +74,14 @@ switch(_operation) do {
 
         _logic = nil;
     };
+
+    default {
+        private _err = format["%1 does not support ""%2"" operation", _logic, _operation];
+        _err call ALiVE_fnc_logger;
+    };
+
 };
+
 TRACE_1("baseClassHash - output",_result);
+
 _result;
