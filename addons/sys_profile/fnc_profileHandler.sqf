@@ -878,16 +878,13 @@ switch(_operation) do {
 
         };
         case "getProfile": {
-                private["_profileID","_profiles","_profileIndex"];
-
-                if(typeName _args == "STRING") then {
-                    _profileID = _args;
+                if (_args isEqualType "") then {
                     _profiles = [_logic, "profiles"] call ALIVE_fnc_hashGet;
-                    _profileIndex = _profiles select 1;
-                    if(_profileID in _profileIndex) then {
-                        _result = [_profiles, _profileID] call ALIVE_fnc_hashGet;
-                    }else{
-                        _result = nil;
+
+                    private _index = (_profiles select 1) find _args;
+
+                    if (_index != -1) then {
+                        _result = (_profiles select 2) select _index;
                     };
                 };
         };
