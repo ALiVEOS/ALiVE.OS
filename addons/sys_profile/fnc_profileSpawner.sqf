@@ -123,6 +123,25 @@ private _spawnSources = [MOD(profileSystem),"profileSpawnSources"] call ALiVE_fn
 if (_spawnSources isEqualTo []) then {
     _spawnSources append allPlayers;
     _spawnSources append (allUnitsUAV select {isUavConnected _x});
+
+    // avoid unnecessary work
+    // delete spawn sources that are in close proximity
+    // ie. treat squads/nearby units as a single spawn source
+
+    /*
+    if (count _spawnSources > 10) {
+        private _code = {_x distance _source < 30};
+        {
+            private _source = _x;
+
+            {
+                if (_x != _source && _code) then {
+                    _spawnSources deleteat (_spawnSources find _x);
+                };
+            } foreach _spawnSources;
+        } foreach _spawnSources;
+    };
+    */
 };
 
 private _inNonDespawnRange = [];
