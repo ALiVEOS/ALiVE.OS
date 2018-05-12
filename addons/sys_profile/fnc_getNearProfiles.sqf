@@ -29,9 +29,10 @@ ARJay
 private _position = _this select 0;
 private _radius = _this select 1;
 private _categorySelector = param [2, []];
+private _filter2D = param [3, false];
 
 private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
-private _near = ([_spacialGrid,"findInRange", [_position,_radius]] call ALiVE_fnc_spacialGrid) apply {_x select 1};
+private _near = ([_spacialGrid,"findInRange", [_position,_radius,_filter2D]] call ALiVE_fnc_spacialGrid) apply {_x select 1};
 
 if (_categorySelector isEqualTo []) then {
    _near select {(_x select 2 select 5) == "entity"};
@@ -42,8 +43,12 @@ if (_categorySelector isEqualTo []) then {
 
     private _query = "true";
 
-    if (_categorySide != "all") then {
-        _query = _query + " && ((_x select 2 select 3) == _categorySide)";
+    if !(_categorySide isEqualTo "all") then {
+        if (_categorySide isEqualType []) then {
+            _query = _query + " && ((_x select 2 select 3) in _categorySide)";
+        } else {
+            _query = _query + " && ((_x select 2 select 3) == _categorySide)";
+        };
     };
 
     if (_categoryType != "all") then {
