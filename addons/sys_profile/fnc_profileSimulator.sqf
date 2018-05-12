@@ -778,7 +778,8 @@ if (!_simAttacks) then {
                                                 private _randomIndex = floor random _hitPointCount;
                                                 private _randomHitPoint = _profileToAttackHealth select _randomIndex;
 
-                                                _randomHitPoint params ["_randomHitPointNme","_randomHitPointDmg"];
+                                                private _randomHitPointNme = _randomHitPoint select 0;
+                                                private _randomHitPointDmg = _randomHitPoint select 1;
 
                                                 // HitFuel can lead to rapid explosions on spawn
                                                 // if damaged at all
@@ -861,7 +862,8 @@ if (!_simAttacks) then {
 
 
         {
-             _x params ["_commandingEntity","_subordinateVehicle"];
+            private _commandingEntity = _x select 0;
+            private _subordinateVehicle = _x select 1;
 
             // remove crew from commanding entity
 
@@ -869,7 +871,7 @@ if (!_simAttacks) then {
             private _vehicleID = _subordinateVehicle select 2 select 4;
 
             private _vehAssignment = [_vehAssignments,_vehicleID] call ALiVE_fnc_hashGet;
-            private _unitAssignments = + (_vehAssignment select 2);
+            private _unitAssignments = +(_vehAssignment param [2, [], [[]]]);
 
             reverse _unitAssignments; // must remove in reverse order
 
@@ -885,7 +887,8 @@ if (!_simAttacks) then {
         } foreach _toBeUnassigned;
 
         {
-            _x params ["_killer","_victim"];
+            private _killer = _x select 0;
+            private _victim = _x select 1;
 
             private _victimType = _victim select 2 select 5;
 
