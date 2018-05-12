@@ -167,6 +167,7 @@ switch (_operation) do {
 
         private _center = _args select 0;
         private _radius = _args select 1;
+        private _filter2D = _args param [2, false];
 
         private _minCoords = [_logic,"posToCoords", [(_center select 0) - _radius, (_center select 1) - _radius]] call MAINCLASS;
         private _maxCoords = [_logic,"posToCoords", [(_center select 0) + _radius, (_center select 1) + _radius]] call MAINCLASS;
@@ -187,7 +188,11 @@ switch (_operation) do {
             };
         };
 
-        _result = _result select {((_x select 0) distance _center) <= _radius};
+        if (!_filter2D) then {
+            _result = _result select {((_x select 0) distance _center) <= _radius};
+        } else {
+            _result = _result select {((_x select 0) distance2D _center) <= _radius};
+        };
 
     };
 
