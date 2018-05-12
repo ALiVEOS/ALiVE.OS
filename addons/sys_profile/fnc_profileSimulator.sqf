@@ -860,7 +860,6 @@ if (!_simAttacks) then {
             };
         };
 
-
         {
             private _commandingEntity = _x select 0;
             private _subordinateVehicle = _x select 1;
@@ -872,7 +871,7 @@ if (!_simAttacks) then {
 
             private _vehAssignment = [_vehAssignments,_vehicleID] call ALiVE_fnc_hashGet;
             private _unitAssignments = +(_vehAssignment param [2, [], [[]]]);
-
+            
             reverse _unitAssignments; // must remove in reverse order
 
             {
@@ -882,7 +881,6 @@ if (!_simAttacks) then {
             } foreach _unitAssignments;
 
             // unassign vehicle from entity
-
             _x call ALiVE_fnc_removeProfileVehicleAssignment;
         } foreach _toBeUnassigned;
 
