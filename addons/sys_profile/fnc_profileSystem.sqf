@@ -71,7 +71,12 @@ switch(_operation) do {
             [_logic,"despawnCycleTime",1] call ALIVE_fnc_hashSet;
             [_logic,"speedModifier",1] call ALIVE_fnc_hashSet;
 
-			[_logic,"paused", false] call ALiVE_fnc_hashSet;
+            [_logic,"paused", false] call ALiVE_fnc_hashSet;
+
+            [_logic,"profilesToSim", []] call ALiVE_fnc_hashSet;
+
+            [_logic,"profileAttacksToSim", []] call ALiVE_fnc_hashSet;
+            [_logic,"simulatingAttacks", false] call ALiVE_fnc_hashSet;
 
             [_logic,"profilesToSpawn", []] call ALiVE_fnc_hashSet;
             [_logic,"profilesToDespawn", []] call ALiVE_fnc_hashSet;
@@ -79,7 +84,7 @@ switch(_operation) do {
             [_logic,"profileLastSpawnTime", 0] call ALiVE_fnc_hashSet;
 
             // create spacial grid
-			private _worldSize = [ALiVE_mapBounds,worldname, worldsize] call ALiVE_fnc_hashGet;
+            private _worldSize = [ALiVE_mapBounds,worldname, worldsize] call ALiVE_fnc_hashGet;
             private _spacialGridProfiles = [nil,"create", [[-3000,-3000], _worldSize + 6000, 1000]] call ALiVE_fnc_spacialGrid;
             [_logic,"spacialGridProfiles", _spacialGridProfiles] call ALiVE_fnc_hashSet;
         };
@@ -195,17 +200,11 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
-
             // start the profile simulator
-            //_profileSimulatorFSM = [_logic] execFSM "\x\alive\addons\sys_profile\profileSimulator_v2.fsm";
-            _profileSimulatorFSM = [_logic] execFSM "\x\alive\addons\sys_profile\profileSimulator.fsm";
-            [_logic,"simulator_FSM",_profileSimulatorFSM] call ALIVE_fnc_hashSet;
+            [ALiVE_fnc_profileSimulator, 0, []] call CBA_fnc_addPerFrameHandler;
 
             // start the profile spawners
-
-            ///////
             [ALiVE_fnc_profileSpawner, 0, [_spawnRadius,_spawnTypeHeliRadius,_spawnTypeJetRadius,_activeLimiter]] call CBA_fnc_addPerFrameHandler;
-            ///////
 
             // if persistent load data
             if(ALIVE_loadProfilesPersistent) then {
@@ -231,229 +230,235 @@ switch(_operation) do {
         };
     };
 
-        case "destroy": {
+    case "destroy": {
+        private ["_profileSimulatorFSM"];
 
-                private ["_profileSimulatorFSM"];
+        [_logic, "debug", false] call MAINCLASS;
+        if (isServer) then {
 
-                [_logic, "debug", false] call MAINCLASS;
-                if (isServer) then {
+            _profileSimulatorFSM = [_logic, "simulator_FSM"] call ALiVE_fnc_HashGet;
+            _profileSimulatorFSM setFSMVariable ["_destroy",true];
 
-                    _profileSimulatorFSM = [_logic, "simulator_FSM"] call ALiVE_fnc_HashGet;
-                    _profileSimulatorFSM setFSMVariable ["_destroy",true];
+            [ALIVE_commandRouter, "pause", true] call ALIVE_fnc_commandRouter;
+            [ALIVE_liveAnalysis, "pause", true] call ALIVE_fnc_liveAnalysis;
 
-                    [ALIVE_commandRouter, "pause", true] call ALIVE_fnc_commandRouter;
-                    [ALIVE_liveAnalysis, "pause", true] call ALIVE_fnc_liveAnalysis;
+            [ALIVE_commandRouter,"destroy"] call ALiVE_fnc_CommandRouter;
+            [ALIVE_arrayBlockHandler,"destroy"] call ALIVE_fnc_arrayBlockHandler;
+            [ALIVE_battlefieldAnalysis,"destroy"] call ALIVE_fnc_battlefieldAnalysis;
+            [ALIVE_liveAnalysis,"destroy"] call ALIVE_fnc_liveAnalysis;
+            [ALIVE_sectorPlotter,"destroy"] call ALIVE_fnc_plotSectors;
+            [ALIVE_sectorGrid,"destroy"] call ALIVE_fnc_sectorGrid;
+            [ALIVE_profileHandler,"destroy"] call ALIVE_fnc_profileHandler;
+            [ALIVE_profileCombatHandler,"destroy"] call ALIVE_fnc_profileCombatHandler;
 
-                    [ALIVE_commandRouter,"destroy"] call ALiVE_fnc_CommandRouter;
-                    [ALIVE_arrayBlockHandler,"destroy"] call ALIVE_fnc_arrayBlockHandler;
-                    [ALIVE_battlefieldAnalysis,"destroy"] call ALIVE_fnc_battlefieldAnalysis;
-                    [ALIVE_liveAnalysis,"destroy"] call ALIVE_fnc_liveAnalysis;
-                    [ALIVE_sectorPlotter,"destroy"] call ALIVE_fnc_plotSectors;
-                    [ALIVE_sectorGrid,"destroy"] call ALIVE_fnc_sectorGrid;
-                    [ALIVE_profileHandler,"destroy"] call ALIVE_fnc_profileHandler;
-                    [ALIVE_profileCombatHandler,"destroy"] call ALIVE_fnc_profileCombatHandler;
+            ALIVE_profileSystemInit = nil; PublicVariable "ALIVE_profileSystemInit";
 
-                    ALIVE_profileSystemInit = nil; PublicVariable "ALIVE_profileSystemInit";
+            _module = [_logic,"handler",objNull] call ALiVE_fnc_HashGet;
+            _module setVariable ["handler",nil];
 
-                    _module = [_logic,"handler",objNull] call ALiVE_fnc_HashGet;
-                    _module setVariable ["handler",nil];
+            MOD(SYS_PROFILE) = nil; PublicVariable QMOD(SYS_PROFILE);
 
-                    MOD(SYS_PROFILE) = nil; PublicVariable QMOD(SYS_PROFILE);
-
-                    [_logic, "destroy"] call SUPERCLASS;
-                };
+            [_logic, "destroy"] call SUPERCLASS;
         };
-        case "pause": {
-                if(typeName _args != "BOOL") then {
-                        _args = [_logic,"debug"] call ALIVE_fnc_hashGet;
-                } else {
-                        [_logic,"debug",_args] call ALIVE_fnc_hashSet;
-                };
-                ASSERT_TRUE(typeName _args == "BOOL",str _args);
+    };
 
-                ["ALiVE Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_DumpR;
-
-                if(_args) then {
-
-                    _profileSimulatorFSM = [_logic, "simulator_FSM"] call ALiVE_fnc_HashGet;
-                    _profileSimulatorFSM setFSMVariable ["_pause",true];
-
-					[_logic,"paused", true] call ALiVE_fnc_hashSet;
-
-                    [ALIVE_commandRouter, "pause", true] call ALIVE_fnc_commandRouter;
-                    [ALIVE_liveAnalysis, "pause", true] call ALIVE_fnc_liveAnalysis;
-
-                }else{
-
-                    _profileSimulatorFSM = [_logic, "simulator_FSM"] call ALiVE_fnc_HashGet;
-                    _profileSimulatorFSM setFSMVariable ["_pause",false];
-
-					[_logic,"paused", false] call ALiVE_fnc_hashSet;
-
-                    [ALIVE_commandRouter, "pause", false] call ALIVE_fnc_commandRouter;
-                    [ALIVE_liveAnalysis, "pause", false] call ALIVE_fnc_liveAnalysis;
-
-                };
-
-                _result = _args;
+    case "pause": {
+        if(typeName _args != "BOOL") then {
+                _args = [_logic,"debug"] call ALIVE_fnc_hashGet;
+        } else {
+                [_logic,"debug",_args] call ALIVE_fnc_hashSet;
         };
-        case "debug": {
-                if(typeName _args != "BOOL") then {
-                        _args = [_logic,"debug"] call ALIVE_fnc_hashGet;
-                } else {
-                        [_logic,"debug",_args] call ALIVE_fnc_hashSet;
-                };
-                ASSERT_TRUE(typeName _args == "BOOL",str _args);
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
 
-                _result = _args;
-        };
-        case "persistent": {
-                if(typeName _args != "BOOL") then {
-                        _args = [_logic,"persistent"] call ALIVE_fnc_hashGet;
-                } else {
-                        [_logic,"persistent",_args] call ALIVE_fnc_hashSet;
-                };
-                ASSERT_TRUE(typeName _args == "BOOL",str _args);
+        ["ALiVE Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_DumpR;
 
-                _result = _args;
-        };
-        case "seaTransport": {
-                if(typeName _args != "BOOL") then {
-                        _args = [_logic,"seaTransport"] call ALIVE_fnc_hashGet;
-                } else {
-                        [_logic,"seaTransport",_args] call ALIVE_fnc_hashSet;
-                };
-                ASSERT_TRUE(typeName _args == "BOOL",str _args);
+        if(_args) then {
 
-                _result = _args;
-        };
-        case "plotSectors": {
-                if(typeName _args != "BOOL") then {
-                        _args = [_logic,"plotSectors"] call ALIVE_fnc_hashGet;
-                } else {
-                        [_logic,"plotSectors",_args] call ALIVE_fnc_hashSet;
-                };
-                ASSERT_TRUE(typeName _args == "BOOL",str _args);
+            _profileSimulatorFSM = [_logic, "simulator_FSM"] call ALiVE_fnc_HashGet;
+            _profileSimulatorFSM setFSMVariable ["_pause",true];
 
-                _result = _args;
-        };
-        case "spawnRadius": {
-                if(typeName _args == "SCALAR") then {
-                        [_logic,"spawnRadius",_args] call ALIVE_fnc_hashSet;
-                        ALIVE_spawnRadius = _args;
-                };
-                _result = [_logic,"spawnRadius"] call ALIVE_fnc_hashGet;
-        };
-        case "spawnTypeJet": {
-                if(typeName _args != "BOOL") then {
-                        _args = [_logic,"spawnTypeJet"] call ALIVE_fnc_hashGet;
-                } else {
-                        [_logic,"spawnTypeJet",_args] call ALIVE_fnc_hashSet;
-                };
-                ASSERT_TRUE(typeName _args == "BOOL",str _args);
+            [_logic,"paused", true] call ALiVE_fnc_hashSet;
 
-                _result = _args;
-        };
-        case "spawnTypeJetRadius": {
-                if(typeName _args == "SCALAR") then {
-                        [_logic,"spawnTypeJetRadius",_args] call ALIVE_fnc_hashSet;
-                        ALIVE_spawnRadiusJet = _args;
-                };
-                _result = [_logic,"spawnTypeJetRadius"] call ALIVE_fnc_hashGet;
-        };
-        case "spawnTypeHeli": {
-                if(typeName _args != "BOOL") then {
-                        _args = [_logic,"spawnTypeHeli"] call ALIVE_fnc_hashGet;
-                } else {
-                        [_logic,"spawnTypeHeli",_args] call ALIVE_fnc_hashSet;
-                };
-                ASSERT_TRUE(typeName _args == "BOOL",str _args);
+            [ALIVE_commandRouter, "pause", true] call ALIVE_fnc_commandRouter;
+            [ALIVE_liveAnalysis, "pause", true] call ALIVE_fnc_liveAnalysis;
 
-                _result = _args;
-        };
-        case "spawnTypeHeliRadius": {
-                if(typeName _args == "SCALAR") then {
-                        [_logic,"spawnTypeHeliRadius",_args] call ALIVE_fnc_hashSet;
-                        ALIVE_spawnRadiusHeli = _args;
-                };
-                _result = [_logic,"spawnTypeHeliRadius"] call ALIVE_fnc_hashGet;
-        };
-        case "activeLimiter": {
-                if(typeName _args == "SCALAR") then {
-                        [_logic,"activeLimiter",_args] call ALIVE_fnc_hashSet;
-                };
-                _result = [_logic,"activeLimiter"] call ALIVE_fnc_hashGet;
-        };
-        case "syncMode": {
-                if(typeName _args == "STRING") then {
-                        [_logic,"syncMode",_args] call ALIVE_fnc_hashSet;
-                };
-                _result = [_logic,"syncMode"] call ALIVE_fnc_hashGet;
-        };
-        case "syncedUnits": {
-                if(typeName _args == "ARRAY") then {
-                        [_logic,"syncedUnits",_args] call ALIVE_fnc_hashSet;
-                };
-                _result = [_logic,"syncedUnits"] call ALIVE_fnc_hashGet;
-        };
-        case "speedModifier": {
-                if(typeName _args == "SCALAR") then {
-                        [_logic,"speedModifier",_args] call ALIVE_fnc_hashSet;
-                };
-                _result = [_logic,"speedModifier"] call ALIVE_fnc_hashGet;
-        };
-        case "combatRate": {
-            if (typename _args == "SCALAR") then {
-                if (!isnil "ALIVE_profileCombatHandler") then {
-                    [ALIVE_profileCombatHandler,_operation, _args] call ALIVE_fnc_profileCombatHandler;
-                };
+        }else{
 
-                [_logic,_operation, _args] call ALiVE_fnc_hashSet;
+            _profileSimulatorFSM = [_logic, "simulator_FSM"] call ALiVE_fnc_HashGet;
+            _profileSimulatorFSM setFSMVariable ["_pause",false];
+
+            [_logic,"paused", false] call ALiVE_fnc_hashSet;
+
+            [ALIVE_commandRouter, "pause", false] call ALIVE_fnc_commandRouter;
+            [ALIVE_liveAnalysis, "pause", false] call ALIVE_fnc_liveAnalysis;
+
+        };
+
+        _result = _args;
+    };
+
+    case "debug": {
+            if(typeName _args != "BOOL") then {
+                    _args = [_logic,"debug"] call ALIVE_fnc_hashGet;
             } else {
-                _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+                    [_logic,"debug",_args] call ALIVE_fnc_hashSet;
             };
+            ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+            _result = _args;
+    };
+    case "persistent": {
+            if(typeName _args != "BOOL") then {
+                    _args = [_logic,"persistent"] call ALIVE_fnc_hashGet;
+            } else {
+                    [_logic,"persistent",_args] call ALIVE_fnc_hashSet;
+            };
+            ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+            _result = _args;
+    };
+    case "seaTransport": {
+            if(typeName _args != "BOOL") then {
+                    _args = [_logic,"seaTransport"] call ALIVE_fnc_hashGet;
+            } else {
+                    [_logic,"seaTransport",_args] call ALIVE_fnc_hashSet;
+            };
+            ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+            _result = _args;
+    };
+    case "plotSectors": {
+            if(typeName _args != "BOOL") then {
+                    _args = [_logic,"plotSectors"] call ALIVE_fnc_hashGet;
+            } else {
+                    [_logic,"plotSectors",_args] call ALIVE_fnc_hashSet;
+            };
+            ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+            _result = _args;
+    };
+    case "spawnRadius": {
+            if(typeName _args == "SCALAR") then {
+                    [_logic,"spawnRadius",_args] call ALIVE_fnc_hashSet;
+                    ALIVE_spawnRadius = _args;
+            };
+            _result = [_logic,"spawnRadius"] call ALIVE_fnc_hashGet;
+    };
+    case "spawnTypeJet": {
+            if(typeName _args != "BOOL") then {
+                    _args = [_logic,"spawnTypeJet"] call ALIVE_fnc_hashGet;
+            } else {
+                    [_logic,"spawnTypeJet",_args] call ALIVE_fnc_hashSet;
+            };
+            ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+            _result = _args;
+    };
+    case "spawnTypeJetRadius": {
+            if(typeName _args == "SCALAR") then {
+                    [_logic,"spawnTypeJetRadius",_args] call ALIVE_fnc_hashSet;
+                    ALIVE_spawnRadiusJet = _args;
+            };
+            _result = [_logic,"spawnTypeJetRadius"] call ALIVE_fnc_hashGet;
+    };
+    case "spawnTypeHeli": {
+            if(typeName _args != "BOOL") then {
+                    _args = [_logic,"spawnTypeHeli"] call ALIVE_fnc_hashGet;
+            } else {
+                    [_logic,"spawnTypeHeli",_args] call ALIVE_fnc_hashSet;
+            };
+            ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+            _result = _args;
+    };
+    case "spawnTypeHeliRadius": {
+            if(typeName _args == "SCALAR") then {
+                    [_logic,"spawnTypeHeliRadius",_args] call ALIVE_fnc_hashSet;
+                    ALIVE_spawnRadiusHeli = _args;
+            };
+            _result = [_logic,"spawnTypeHeliRadius"] call ALIVE_fnc_hashGet;
+    };
+    case "activeLimiter": {
+            if(typeName _args == "SCALAR") then {
+                    [_logic,"activeLimiter",_args] call ALIVE_fnc_hashSet;
+            };
+            _result = [_logic,"activeLimiter"] call ALIVE_fnc_hashGet;
+    };
+    case "syncMode": {
+            if(typeName _args == "STRING") then {
+                    [_logic,"syncMode",_args] call ALIVE_fnc_hashSet;
+            };
+            _result = [_logic,"syncMode"] call ALIVE_fnc_hashGet;
+    };
+    case "syncedUnits": {
+            if(typeName _args == "ARRAY") then {
+                    [_logic,"syncedUnits",_args] call ALIVE_fnc_hashSet;
+            };
+            _result = [_logic,"syncedUnits"] call ALIVE_fnc_hashGet;
+    };
+    case "speedModifier": {
+            if(typeName _args == "SCALAR") then {
+                    [_logic,"speedModifier",_args] call ALIVE_fnc_hashSet;
+            };
+            _result = [_logic,"speedModifier"] call ALIVE_fnc_hashGet;
+    };
+    case "combatRate": {
+        if (typename _args == "SCALAR") then {
+            if (!isnil "ALIVE_profileCombatHandler") then {
+                [ALIVE_profileCombatHandler,_operation, _args] call ALIVE_fnc_profileCombatHandler;
+            };
+
+            [_logic,_operation, _args] call ALiVE_fnc_hashSet;
+        } else {
+            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
         };
-        case "smoothSpawn": {
-                if(typeName _args == "SCALAR") then {
-                        [_logic,"smoothSpawn",_args] call ALIVE_fnc_hashSet;
-                        ALIVE_spawnRadiusJet = _args;
+    };
+    case "smoothSpawn": {
+            if(typeName _args == "SCALAR") then {
+                    [_logic,"smoothSpawn",_args] call ALIVE_fnc_hashSet;
+                    ALIVE_spawnRadiusJet = _args;
+            };
+            _result = [_logic,"smoothSpawn"] call ALIVE_fnc_hashGet;
+    };
+
+    case "state": {
+        private["_state"];
+
+        if(typeName _args != "ARRAY") then {
+
+            // Save state
+
+            _state = [] call ALIVE_fnc_hashCreate;
+
+            // BaseClassHash CHANGE
+            // loop the class hash and set vars on the state hash
+            {
+                if(!(_x == "super") && !(_x == "class")) then {
+                    [_state,_x,[_logic,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
                 };
-                _result = [_logic,"smoothSpawn"] call ALIVE_fnc_hashGet;
+            } forEach (_logic select 1);
+
+            _result = _state;
+
+        } else {
+            ASSERT_TRUE(typeName _args == "ARRAY",str typeName _args);
+
+            // Restore state
+
+            // BaseClassHash CHANGE
+            // loop the passed hash and set vars on the class hash
+            {
+                [_logic,_x,[_args,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+            } forEach (_args select 1);
         };
-        case "state": {
-                private["_state"];
+    };
 
-                if(typeName _args != "ARRAY") then {
+    default {
+            _result = [_logic, _operation, _args] call SUPERCLASS;
+    };
 
-                        // Save state
-
-                        _state = [] call ALIVE_fnc_hashCreate;
-
-                        // BaseClassHash CHANGE
-                        // loop the class hash and set vars on the state hash
-                        {
-                            if(!(_x == "super") && !(_x == "class")) then {
-                                [_state,_x,[_logic,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-                            };
-                        } forEach (_logic select 1);
-
-                        _result = _state;
-
-                } else {
-                        ASSERT_TRUE(typeName _args == "ARRAY",str typeName _args);
-
-                        // Restore state
-
-                        // BaseClassHash CHANGE
-                        // loop the passed hash and set vars on the class hash
-                        {
-                            [_logic,_x,[_args,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-                        } forEach (_args select 1);
-                };
-        };
-        default {
-                _result = [_logic, _operation, _args] call SUPERCLASS;
-        };
 };
+
 TRACE_1("profileSystem - output",_result);
+
 _result;
