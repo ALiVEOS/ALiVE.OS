@@ -1008,11 +1008,19 @@ switch(_operation) do {
             [ALIVE_profileHandler,"setActive",[_profileID,_side,_logic]] call ALIVE_fnc_profileHandler;
             [ALIVE_profileHandler,"setEntityActive",_profileID] call ALIVE_fnc_profileHandler;
 
-            //Remove combat flag
-            //[_logic, "combat"] call ALIVE_fnc_HashRem; // combat flag must be kept for new combat system
+            // remove profiled attacks
+
+            private _attackID = [_logic,"attackID"] call ALiVE_fnc_hashGet;
+            if (!isnil "_attackID") then {
+                private _attack = [MOD(profileCombatHandler),"getAttack", _attackID] call ALiVE_fnc_profileCombatHandler;
+                [MOD(profileCombatHandler),"removeAttacks", [_attack]] call ALiVE_fnc_profileCombatHandler;
+            };
+
+            [_logic,"combat", false] call ALIVE_fnc_HashSet;
+
 
             // Indicate profile has been spawned and unlock for asynchronous waits
-            [_logic, "locked",false] call ALIVE_fnc_HashSet;
+            [_logic,"locked", false] call ALIVE_fnc_HashSet;
 
             // profile is fully spawned and cannot be corrupted
             // allow damage again
@@ -1072,7 +1080,7 @@ switch(_operation) do {
                 } forEach (_linked select 2);
             };
 
-            if!(_despawnPrevented) then {
+            if !(_despawnPrevented) then {
 
                 [_logic,"active", false] call ALIVE_fnc_hashSet;
 
