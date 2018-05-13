@@ -134,9 +134,9 @@ if (!_simAttacks) then {
                     if (_sideObj getfriend resistance < 0.6) then {_sidesEnemy pushback "GUER"};
 
                     // find and attack enemy profiles in-range
+                    // only attack non-player, inactive entities
 
-                    private _nearEnemies = [_profilePosition, _combatRange, [_sidesEnemy,"entity"], true] call ALiVE_fnc_getNearProfiles;
-                    _nearEnemies = _nearEnemies select {!(_x select 2 select 30)}; // filter out players
+                    private _nearEnemies = [_profilePosition, _combatRange, [_sidesEnemy,"entity", "none", {!(_x select 2 select 1) && !(_x select 2 select 30)}], true] call ALiVE_fnc_getNearProfiles;
                     _nearEnemies = _nearEnemies apply {_x select 2 select 4};
 
                     if !(_nearEnemies isEqualTo []) then {

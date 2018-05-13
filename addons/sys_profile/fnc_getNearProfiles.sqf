@@ -40,6 +40,7 @@ if (_categorySelector isEqualTo []) then {
     private _categorySide = _categorySelector param [0, "all"];
     private _categoryType = _categorySelector param [1, "all"];
     private _categoryObjectType = _categorySelector param [2, "none"];
+    private _customFilter = _categorySelector param [3, {}];
 
     private _query = "true";
 
@@ -55,8 +56,16 @@ if (_categorySelector isEqualTo []) then {
         _query = _query + " && {(_x select 2 select 5) == _categoryType}";
     };
 
-    if (_categoryObjectType != "none") then {
-        _query = _query + " && {(_x select 2 select 6) == _categoryObjectType}";
+    if !(_categoryObjectType isEqualTo "none") then {
+        if (_categoryObjectType isEqualType "") then {
+            _query = _query + " && {(_x select 2 select 6) == _categoryObjectType}";
+        } else {
+            _query = _query + " && {(_x select 2 select 6) in _categoryObjectType}";
+        };
+    };
+
+    if !(_customFilter isEqualTo {}) then {
+        _query = _query + (format [" && %1", _customFilter]);
     };
 
     _near select (compile _query);

@@ -128,20 +128,17 @@ if (_spawnSources isEqualTo []) then {
     // delete spawn sources that are in close proximity
     // ie. treat squads/nearby units as a single spawn source
 
-    /*
     if (count _spawnSources > 10) {
-        private _code = {_x distance _source < 30};
         {
             private _source = _x;
 
             {
-                if (_x != _source && _code) then {
+                if (_x != _source && {_x distance _source < 30}) then {
                     _spawnSources deleteat (_spawnSources find _x);
                 };
             } foreach _spawnSources;
         } foreach _spawnSources;
     };
-    */
 };
 
 private _inNonDespawnRange = [];
@@ -166,8 +163,7 @@ if !(_spawnSources isEqualTo []) then {
         };
     };
 
-    private _profilesInDeactivationRange = [_center,_radius * 1.2, ["all","all"]] call ALiVE_fnc_getNearProfiles;
-
+    private _profilesInDeactivationRange = [_center,_radius * 1.2] call ALiVE_fnc_getNearProfiles;
     {
         // don't spawn or despawn player profiles
         if (!([_x,"isPlayer", false] call ALiVE_fnc_hashGet)) then {
