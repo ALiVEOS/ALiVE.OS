@@ -136,28 +136,28 @@ class CfgVehicles {
 							class Regular
 							{
 								name = "Regular";
-								Value = 1;
+								Value = 0.75;
 								default = 1;
 							};
 							class Fastest
 							{
 								name = "Fastest";
-								Value = 2;
+								Value = 1.75;
 							};
 							class Faster
 							{
 								name = "Faster";
-								Value = 1.5;
+								Value = 1.25;
 							};
 							class Slower
 							{
 								name = "Slower";
-								Value = 0.5;
+								Value = 0.35;
 							};
 							class Slowest
 							{
 								name = "Slowest";
-								Value = 0.2;
+								Value = 0.1;
 							};
 						};
 					};
