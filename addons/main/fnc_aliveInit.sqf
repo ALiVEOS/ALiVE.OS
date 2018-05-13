@@ -96,6 +96,14 @@ TRACE_1("Launching Base ALiVE Systems",true);
 //Start ALiVE loading screen on all localities during init
 ["ALiVE_LOADINGSCREEN"] call BIS_fnc_startLoadingScreen;
 
+ALiVE_lastFrameCheckTime = time;
+ALiVE_gamePaused = false;
+
+[{
+    ALiVE_gamePaused = time == ALiVE_lastFrameCheckTime;
+    ALiVE_lastFrameCheckTime = time;
+}, 1, []] call CBA_fnc_addPerFrameHandler;
+
 // NewsFeed
 [] spawn ALiVE_fnc_newsFeedInit;
 
