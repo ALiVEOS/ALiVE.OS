@@ -274,18 +274,12 @@ switch(_operation) do {
 
         if(_args) then {
 
-            _profileSimulatorFSM = [_logic, "simulator_FSM"] call ALiVE_fnc_HashGet;
-            _profileSimulatorFSM setFSMVariable ["_pause",true];
-
             [_logic,"paused", true] call ALiVE_fnc_hashSet;
 
             [ALIVE_commandRouter, "pause", true] call ALIVE_fnc_commandRouter;
             [ALIVE_liveAnalysis, "pause", true] call ALIVE_fnc_liveAnalysis;
 
         }else{
-
-            _profileSimulatorFSM = [_logic, "simulator_FSM"] call ALiVE_fnc_HashGet;
-            _profileSimulatorFSM setFSMVariable ["_pause",false];
 
             [_logic,"paused", false] call ALiVE_fnc_hashSet;
 

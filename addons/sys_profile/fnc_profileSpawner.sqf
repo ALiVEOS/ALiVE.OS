@@ -21,6 +21,8 @@ Author:
 SpyderBlack723
 ---------------------------------------------------------------------------- */
 
+if (ALiVE_gamePaused) exitwith {};
+
 _this = _this select 0;
 
 if ([MOD(profileSystem),"paused"] call ALiVE_fnc_hashGet) exitwith {
@@ -127,8 +129,7 @@ if (_spawnSources isEqualTo []) then {
     // avoid unnecessary work
     // delete spawn sources that are in close proximity
     // ie. treat squads/nearby units as a single spawn source
-
-    if (count _spawnSources > 10) {
+    if (count _spawnSources > 10) then {
         {
             private _source = _x;
 
@@ -163,7 +164,7 @@ if !(_spawnSources isEqualTo []) then {
         };
     };
 
-    private _profilesInDeactivationRange = [_center,_radius * 1.2] call ALiVE_fnc_getNearProfiles;
+    private _profilesInDeactivationRange = [_center,_radius * 1.2, ["all","all"], true] call ALiVE_fnc_getNearProfiles;
     {
         // don't spawn or despawn player profiles
         if (!([_x,"isPlayer", false] call ALiVE_fnc_hashGet)) then {
