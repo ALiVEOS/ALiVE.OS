@@ -7,6 +7,12 @@ Function: ALiVE_fnc_profileSpawner
 Description:
 Spawns and despawns from profiles based on player distance
 
+Notes:
+    - Loops through spawn sources, one per frame
+    - Profiles are spawned as they are found, one per frame
+    - Profiles are despawned after all spawn sources have been looped through
+        - This prevents profiles that are outside of one spawn sources range, but inside another's from despawning
+
 Parameters:
 
 Returns:
@@ -25,96 +31,18 @@ if (ALiVE_gamePaused) exitwith {};
 
 _this = _this select 0;
 
-if ([MOD(profileSystem),"paused"] call ALiVE_fnc_hashGet) exitwith {
-    private _profilesToSpawnQueue = [MOD(profileSystem),"profilesToSpawn"] call ALiVE_fnc_hashGet;
-    private _profilesToDespawnQueue = [MOD(profileSystem),"profilesToDespawn"] call ALiVE_fnc_hashGet;
-
-    _profilesToSpawnQueue resize 0;
-    _profilesToDespawnQueue resize 0;
-};
-
 private _spawnRadius = _this select 0;
 private _spawnRadiusHeli = _this select 1;
 private _spawnRadiusPlane = _this select 2;
 private _activeLimiter = _this select 3;
-
 private _uavSpawnRadius = _spawnRadius + 800;
-
-private _activeProfiles = [MOD(profileHandler),"profilesActive"] call ALiVE_fnc_hashGet;
-private _inactiveProfiles = [MOD(profileHandler),"profilesInActive"] call ALiVE_fnc_hashGet;
 
 private _profilesToSpawnQueue = [MOD(profileSystem),"profilesToSpawn"] call ALiVE_fnc_hashGet;
 private _profilesToDespawnQueue = [MOD(profileSystem),"profilesToDespawn"] call ALiVE_fnc_hashGet;
-private _lastProfileSpawnedTime = [MOD(profileSystem),"profileLastSpawnTime"] call ALiVE_fnc_hashGet;
 
-///////////////////////////////////////
-//     Spawn/Despawn Profiles
-///////////////////////////////////////
-
-private _activeEntityCount = count ([MOD(profileHandler),"getActiveEntities"] call ALiVE_fnc_profileHandler);
-
-if !(_profilesToSpawnQueue isEqualTo [] && {time - _lastProfileSpawnedTime > ALiVE_smoothSpawn}) then {
-    private _profileID = _profilesToSpawnQueue select 0;
-
-    private _profile = [MOD(profileHandler),"getProfile", _profileID] call ALiVE_fnc_profileHandler;
-
-    if (isnil "_profile" || {_profile select 2 select 1} || {[_profile,"locked", false] call ALiVE_fnc_HashGet}) then {
-        // profile no longer exists, is active, or is locked
-        // remove from queue
-
-        _profilesToSpawnQueue deleteat 0;
-    } else {
-        if (_activeEntityCount < _activeLimiter) then {
-            if ((_profile select 2 select 5) == "entity") then {
-                [_profile,"spawn"] spawn ALiVE_fnc_profileEntity;
-            } else {
-                [_profile,"spawn"] spawn ALiVE_fnc_profileVehicle;
-            };
-
-            [MOD(profileSystem),"profileLastSpawnTime", time] call ALiVE_fnc_hashSet;
-
-            _activeProfiles pushback _profileID;
-            _inactiveProfiles deleteat (_inactiveProfiles find _profileID);
-        } else {
-            // we've breached the active limiter
-            // unregister profile if entity and inactive
-
-            if (!(_profile select 2 select 1) && {(_profile select 2 select 5) == "entity"}) then {
-                {
-                    private _vehicleProfile = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_profileHandler;
-
-                    if (!isnil "_vehicleProfile") then {
-                        [MOD(profileHandler),"unregisterProfile", _vehicleProfile] call ALiVE_fnc_profileHandler;
-                    };
-                } foreach (_profile select 2 select 8); // "vehiclesInCommandOf"
-
-                [MOD(profileHandler),"unregisterProfile", _profile] call ALiVE_fnc_profileHandler;
-            };
-        };
-    };
-};
-
-if !(_profilesToDespawnQueue isEqualTo []) then {
-    private _profileID = _profilesToDespawnQueue select 0;
-    _profilesToDespawnQueue deleteat 0;
-
-    private _profile = [MOD(profileHandler),"getProfile", _profileID] call ALiVE_fnc_profileHandler;
-
-    if (!isnil "_profile") then {
-        private _leader = _profile select 2 select 10;
-
-        // if unit is in the air, prevent despawn
-        if ((getpos _leader) select 2 < 3) then {
-            if ((_profile select 2 select 5) == "entity") then {
-                [_profile,"despawn"] call ALiVE_fnc_profileEntity;
-            } else {
-                [_profile,"despawn"] call ALiVE_fnc_profileVehicle;
-            };
-
-            _inactiveProfiles pushback _profileID;
-            _activeProfiles deleteat (_activeProfiles find _profileID);
-        };
-    };
+if ([MOD(profileSystem),"paused"] call ALiVE_fnc_hashGet) exitwith {
+    _profilesToSpawnQueue resize 0;
+    _profilesToDespawnQueue resize 0;
 };
 
 ///////////////////////////////////////
@@ -122,31 +50,58 @@ if !(_profilesToDespawnQueue isEqualTo []) then {
 ///////////////////////////////////////
 
 private _spawnSources = [MOD(profileSystem),"profileSpawnSources"] call ALiVE_fnc_hashGet;
+
 if (_spawnSources isEqualTo []) then {
-    _spawnSources append allPlayers;
-    _spawnSources append (allUnitsUAV select {isUavConnected _x});
 
-    // avoid unnecessary work
-    // delete spawn sources that are in close proximity
-    // ie. treat squads/nearby units as a single spawn source
-    if (count _spawnSources > 10) then {
-        {
-            private _source = _x;
+    // all spawn sources have been checked
+    // despawn all profiles outside of range
 
-            {
-                if (_x != _source && {_x distance _source < 30}) then {
-                    _spawnSources deleteat (_spawnSources find _x);
+    if !(_profilesToDespawnQueue isEqualTo []) then {
+        private _profileID = _profilesToDespawnQueue select 0;
+        _profilesToDespawnQueue deleteat 0;
+
+        private _profile = [MOD(profileHandler),"getProfile", _profileID] call ALiVE_fnc_profileHandler;
+
+        if (!isnil "_profile") then {
+            private _leader = _profile select 2 select 10;
+
+            // if unit is in the air, prevent despawn
+            if ((getpos _leader) select 2 < 3) then {
+                if ((_profile select 2 select 5) == "entity") then {
+                    [_profile,"despawn"] call ALiVE_fnc_profileEntity;
+                } else {
+                    [_profile,"despawn"] call ALiVE_fnc_profileVehicle;
                 };
+            };
+        };
+    } else {
+        // all profiles have been despawned
+        // repopulate spawn sources
+
+        [MOD(profileSystem),"profilesInSpawnRange", []] call ALiVE_fnc_hashSet;
+
+        _spawnSources append allPlayers;
+        _spawnSources append (allUnitsUAV select {isUavConnected _x});
+
+        // avoid unnecessary work
+        // delete spawn sources that are in close proximity
+        // ie. treat squads/nearby units as a single spawn source
+        if (count _spawnSources > 10) then {
+            {
+                private _source = _x;
+
+                {
+                    if (_x != _source && {_x distance _source < 30}) then {
+                        _spawnSources deleteat (_spawnSources find _x);
+                    };
+                } foreach _spawnSources;
             } foreach _spawnSources;
-        } foreach _spawnSources;
+        };
     };
-};
+} else {
 
-private _inNonDespawnRange = [];
+    // find entities to spawn
 
-// find entities to spawn
-
-if !(_spawnSources isEqualTo []) then {
     _spawnSource = _spawnSources select 0;
     _spawnSources deleteat 0;
 
@@ -156,15 +111,13 @@ if !(_spawnSources isEqualTo []) then {
     // figure out what radius to use
     // based on source unit type
 
-    switch ((typeof _spawnSource) call ALiVE_fnc_vehicleGetKindOf) do {
-        case "Helicopter": {_radius = _spawnRadiusHeli};
-        case "Plane": {_radius = _spawnRadiusPlane};
-        default {
-            if (unitIsUAV _spawnSource) then {_radius = _uavSpawnRadius};
-        };
-    };
+    if (vehicle _spawnSource iskindof "Helicopter") then {_radius = _spawnRadiusHeli};
+    if (vehicle _spawnSource iskindof "Plane") then {_radius = _spawnRadiusPlane};
+    if (unitIsUAV _spawnSource) then {_radius = _uavSpawnRadius};
 
     private _profilesInDeactivationRange = [_center,_radius * 1.2, ["all","all"], true] call ALiVE_fnc_getNearProfiles;
+    private _profilesInSpawnRange = [MOD(profileSystem),"profilesInSpawnRange"] call ALiVE_fnc_hashGet;
+
     {
         // don't spawn or despawn player profiles
         if (!([_x,"isPlayer", false] call ALiVE_fnc_hashGet)) then {
@@ -184,20 +137,72 @@ if !(_spawnSources isEqualTo []) then {
                 };
 
                 // mark profile as safe from despawn
-                _inNonDespawnRange pushbackunique (_x select 2 select 4);
+                _profilesInSpawnRange pushbackunique (_x select 2 select 4);
             };
         };
     } foreach _profilesInDeactivationRange;
+
+    // if all spawn sources have been checked
+    // populate despawn list with active profiles
+    // that are not in spawn range list
+
+    if (_spawnSources isEqualTo []) then {
+        // find entities to despawn
+        // select ID's from activeProfiles
+        // that are outside despawn range
+
+        private _activeProfiles = [MOD(profileHandler),"profilesActive"] call ALiVE_fnc_hashGet;
+
+        {
+            if !(_x in _profilesInSpawnRange) then {
+                _profilesToDespawnQueue pushback _x;
+            };
+        } foreach _activeProfiles;
+    };
 };
 
-// find entities to despawn
-// select ID's from activeProfiles
-// that are outside despawn range
 
-{
-    if !(_x in _inNonDespawnRange) then {
-        _profilesToDespawnQueue pushbackunique _x;
+///////////////////////////////////////
+//          Spawn Profiles
+///////////////////////////////////////
+
+private _lastProfileSpawnedTime = [MOD(profileSystem),"profileLastSpawnTime"] call ALiVE_fnc_hashGet;
+
+if (!(_profilesToSpawnQueue isEqualTo []) && {time - _lastProfileSpawnedTime > ALiVE_smoothSpawn}) then {
+    private _profileID = _profilesToSpawnQueue select 0;
+    private _profile = [MOD(profileHandler),"getProfile", _profileID] call ALiVE_fnc_profileHandler;
+
+    if (isnil "_profile" || {_profile select 2 select 1} || {[_profile,"locked", false] call ALiVE_fnc_HashGet}) then {
+        // profile no longer exists, is active, or is locked
+        // remove from queue
+
+        _profilesToSpawnQueue deleteat 0;
+    } else {
+        private _activeEntityCount = count ([MOD(profileHandler),"getActiveEntities"] call ALiVE_fnc_profileHandler);
+
+        if (_activeEntityCount < _activeLimiter) then {
+            if ((_profile select 2 select 5) == "entity") then {
+                [_profile,"spawn"] spawn ALiVE_fnc_profileEntity;
+            } else {
+                [_profile,"spawn"] spawn ALiVE_fnc_profileVehicle;
+            };
+
+            [MOD(profileSystem),"profileLastSpawnTime", time] call ALiVE_fnc_hashSet;
+        } else {
+            // we've breached the active limiter
+            // unregister profile if entity and inactive
+
+            if (!(_profile select 2 select 1) && {(_profile select 2 select 5) == "entity"}) then {
+                {
+                    private _vehicleProfile = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_profileHandler;
+
+                    if (!isnil "_vehicleProfile") then {
+                        [MOD(profileHandler),"unregisterProfile", _vehicleProfile] call ALiVE_fnc_profileHandler;
+                    };
+                } foreach (_profile select 2 select 8); // "vehiclesInCommandOf"
+
+                [MOD(profileHandler),"unregisterProfile", _profile] call ALiVE_fnc_profileHandler;
+            };
+        };
     };
-} foreach _activeProfiles;
-
-//hint format ["Spawning: %1 \n\nDespawning: %2\n\ninNonDespawnRange: %3", _profilesToSpawnQueue, _profilesToDespawnQueue, _inNonDespawnRange];
+};
