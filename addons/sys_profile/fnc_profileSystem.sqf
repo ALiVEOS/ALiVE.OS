@@ -80,6 +80,7 @@ switch(_operation) do {
 
             [_logic,"profilesToSpawn", []] call ALiVE_fnc_hashSet;
             [_logic,"profilesToDespawn", []] call ALiVE_fnc_hashSet;
+            [_logic,"profilesInSpawnRange", []] call ALiVE_fnc_hashSet;
             [_logic,"profileSpawnSources", []] call ALiVE_fnc_hashSet;
             [_logic,"profileLastSpawnTime", 0] call ALiVE_fnc_hashSet;
 
