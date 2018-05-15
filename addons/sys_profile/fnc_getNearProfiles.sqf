@@ -37,10 +37,12 @@ private _near = ([_spacialGrid,"findInRange", [_position,_radius,_filter2D]] cal
 if (_categorySelector isEqualTo []) then {
    _near select {(_x select 2 select 5) == "entity"};
 } else {
-    private _categorySide = _categorySelector param [0, "all"];
-    private _categoryType = _categorySelector param [1, "all"];
-    private _categoryObjectType = _categorySelector param [2, "none"];
-    private _customFilter = _categorySelector param [3, {}];
+    _categorySelector params [
+        ["_categorySide", "all"],
+        ["_categoryType", "all"],
+        ["_categoryObjectType", "none"],
+        ["_customFilter", {}]
+    ];
 
     private _query = "true";
 
