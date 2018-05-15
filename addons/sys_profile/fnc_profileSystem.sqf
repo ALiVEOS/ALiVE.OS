@@ -202,10 +202,13 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
 
             // start the profile simulator
-            [ALiVE_fnc_profileSimulator, 0, []] call CBA_fnc_addPerFrameHandler;
+            private _profileSimPerFrameID = [ALiVE_fnc_profileSimulator, 0, []] call CBA_fnc_addPerFrameHandler;
 
             // start the profile spawners
-            [ALiVE_fnc_profileSpawner, 0, [_spawnRadius,_spawnTypeHeliRadius,_spawnTypeJetRadius,_activeLimiter]] call CBA_fnc_addPerFrameHandler;
+            private _profileSpawnerPerFrameID = [ALiVE_fnc_profileSpawner, 0, [_spawnRadius,_spawnTypeHeliRadius,_spawnTypeJetRadius,_activeLimiter]] call CBA_fnc_addPerFrameHandler;
+
+            [_logic,"profileSimulatorPerFrameID", _profileSimPerFrameID] call ALiVE_fnc_hashSet;
+            [_logic,"profileSpawnerPerFrameID", _profileSpawnerPerFrameID] call ALiVE_fnc_hashSet;
 
             // if persistent load data
             if(ALIVE_loadProfilesPersistent) then {
@@ -236,6 +239,12 @@ switch(_operation) do {
 
         [_logic, "debug", false] call MAINCLASS;
         if (isServer) then {
+
+            private _profileSimulatorPerFrameID = [_logic,"profileSimulatorPerFrameID"] call ALiVE_fnc_hashGet;
+            private _profileSpawnerPerFrameID = [_logic,"profileSpawnerPerFrameID"] call ALiVE_fnc_hashGet;
+
+            _profileSimulatorPerFrameID call CBA_fnc_removePerFrameHandler;
+            _profileSpawnerPerFrameID call CBA_fnc_removePerFrameHandler;
 
             _profileSimulatorFSM = [_logic, "simulator_FSM"] call ALiVE_fnc_HashGet;
             _profileSimulatorFSM setFSMVariable ["_destroy",true];
