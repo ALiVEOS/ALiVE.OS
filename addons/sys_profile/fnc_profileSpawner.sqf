@@ -80,22 +80,17 @@ if (_spawnSources isEqualTo []) then {
 
         [MOD(profileSystem),"profilesInSpawnRange", []] call ALiVE_fnc_hashSet;
 
-        _spawnSources append allPlayers;
-        _spawnSources append (allUnitsUAV select {isUavConnected _x});
+        private _spawnSourcesUnfiltered = allPlayers + (allUnitsUAV select {isUavConnected _x});
 
         // avoid unnecessary work
         // delete spawn sources that are in close proximity
         // ie. treat squads/nearby units as a single spawn source
-        if (count _spawnSources > 10) then {
-            {
-                private _source = _x;
 
-                {
-                    if (_x != _source && {_x distance _source < 30}) then {
-                        _spawnSources deleteat (_spawnSources find _x);
-                    };
-                } foreach _spawnSources;
-            } foreach _spawnSources;
+        while {!(_spawnSourcesUnfiltered isEqualTo [])} do {
+            private _spawnSource = _spawnSourcesUnfiltered deleteat 0;
+            _spawnSources pushback _spawnSource;
+
+            _spawnSourcesUnfiltered = _spawnSourcesUnfiltered select {_x distance _spawnSource > 30};
         };
     };
 } else {
