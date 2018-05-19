@@ -43,6 +43,7 @@ Wolffy, Highhead
 #define MTEMPLATE "ALiVE_CQB_%1"
 #define GTEMPLATE "ALiVE_CQB_g_%1"
 #define STEMPLATE "ALiVE_CQB_s_%1"
+#define DEFAULT_FACTIONS ["OPF_F"]
 #define DEFAULT_BLACKLIST []
 #define DEFAULT_WHITELIST []
 #define DEFAULT_STATICWEAPONS ["B_HMG_01_high_F","O_Mortar_01_F","O_HMG_01_high_F"]
@@ -173,7 +174,7 @@ switch(_operation) do {
             _locality = _logic getvariable ["CQB_locality_setting","server"];
             _logic setVariable ["locality", _locality];
 
-            _factions = _logic getvariable ["CQB_FACTIONS","OPF_F"];
+            _factions = _logic getvariable ["CQB_FACTIONS",DEFAULT_FACTIONS];
             _factions = [_logic,"factions",_factions] call ALiVE_fnc_CQB;
 
             _useDominantFaction = _logic getvariable ["CQB_UseDominantFaction","true"];
@@ -743,8 +744,10 @@ switch(_operation) do {
     case "factions": {
         if(isNil "_args") then {
             // if no new faction list was provided return current setting
-            _args = _logic getVariable [_operation, []];
+            _args = _logic getVariable [_operation, DEFAULT_FACTIONS];
         } else {
+            private _factions = DEFAULT_FACTIONS;
+
             if(typeName _args == "STRING") then {
                 if !(_args == "") then {
                     _args = [_args, " ", ""] call CBA_fnc_replace;
@@ -753,19 +756,18 @@ switch(_operation) do {
                     _args = [_args, """", ""] call CBA_fnc_replace;
                     _args = [_args, ","] call CBA_fnc_split;
                     if(count _args > 0) then {
-                        _logic setVariable [_operation, _args];
+                        _factions = _args;
                     };
-                } else {
-                    _logic setVariable [_operation, []];
                 };
             } else {
-                if(typeName _args == "ARRAY") then {
-                    _logic setVariable [_operation, _args];
+                if(typeName _args == "ARRAY" && {count _args > 0}) then {
+                    _factions = _args;
                 };
             };
-            _args = _logic getVariable [_operation, []];
+
+            _logic setVariable [_operation, _factions, true];
+            _args = _factions;
         };
-        _logic setVariable [_operation, _args, true];
     };
 
     case "allFactions": {
@@ -1145,7 +1147,7 @@ switch(_operation) do {
 
             _house = _args select 0;
             _faction = _args select 1;
-            _factions = (_logic getvariable ["factions",["OPF_F"]]);
+            _factions = (_logic getvariable ["factions",DEFAULT_FACTIONS]);
             _blacklist = (_logic getvariable ["UnitsBlackList",GVAR(UNITBLACKLIST)]);
             _staticWeaponsIntensity = _logic getvariable ["StaticWeaponsIntensity",0];
             _debug = _logic getVariable ["debug",false];
@@ -1388,9 +1390,9 @@ switch(_operation) do {
                                                 if (_useDominantFaction) then {
                                                     _faction = [getposATL _house, 250,true] call ALiVE_fnc_getDominantFaction;
 
-                                                    if (isnil "_faction") then {_faction = (selectRandom (_logic getvariable ["factions",["OPF_F"]]))};
+                                                    if (isnil "_faction") then {_faction = (selectRandom (_logic getvariable ["factions",DEFAULT_FACTIONS]))};
                                                 } else {
-                                                    _faction = (selectRandom (_logic getvariable ["factions",["OPF_F"]]));
+                                                    _faction = (selectRandom (_logic getvariable ["factions",DEFAULT_FACTIONS]));
                                                 };
                                                 
                                                 
