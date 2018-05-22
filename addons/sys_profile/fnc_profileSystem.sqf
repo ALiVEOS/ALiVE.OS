@@ -205,6 +205,7 @@ switch(_operation) do {
             private _profileSimPerFrameID = [ALiVE_fnc_profileSimulator, 0, []] call CBA_fnc_addPerFrameHandler;
 
             // start the profile spawners
+            ALiVE_SpawnSources = [];
             private _profileSpawnerPerFrameID = [ALiVE_fnc_profileSpawner, 0, [_spawnRadius,_spawnTypeHeliRadius,_spawnTypeJetRadius,_activeLimiter]] call CBA_fnc_addPerFrameHandler;
 
             [_logic,"profileSimulatorPerFrameID", _profileSimPerFrameID] call ALiVE_fnc_hashSet;

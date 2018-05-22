@@ -80,7 +80,7 @@ if (_spawnSources isEqualTo []) then {
 
         [MOD(profileSystem),"profilesInSpawnRange", []] call ALiVE_fnc_hashSet;
 
-        private _spawnSourcesUnfiltered = allPlayers + (allUnitsUAV select {isUavConnected _x});
+        private _spawnSourcesUnfiltered = allPlayers + (allUnitsUAV select {isUavConnected _x}) + ALiVE_SpawnSources;
 
         // avoid unnecessary work
         // delete spawn sources that are in close proximity

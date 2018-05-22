@@ -72,23 +72,25 @@ switch (_operation) do {
 
     case "posToCoords": {
 
+        _args params ["_argX","_argY"];
+
         private _gridOrigin = _logic select 2 select 0;
         private _sectorSize = _logic select 2 select 1;
         private _maxSector = _logic select 2 select 4;
 
+        _gridOrigin params ["_originX","_originY"];
+
         if (
-            (_args select 0) >= (_gridOrigin select 0) &&
-            {(_args select 1) >= (_gridOrigin select 1)} &&
-            {(_args select 0) < ((_gridOrigin select 0) + (_sectorSize * (_maxSector select 0)))} &&
-            {(_args select 1) < ((_gridOrigin select 1) + (_sectorSize * (_maxSector select 1)))}
+            _argX >= _originX &&
+            {_argY >= _originY} &&
+            {_argX < (_originX + (_sectorSize * (_maxSector select 0)))} &&
+            {_argY < (_originY + (_sectorSize * (_maxSector select 1)))}
         ) then {
             // offset position to accomodate negative values
-            _args = [
-                (_args select 0) + (abs (_gridOrigin select 0)),
-                (_args select 1) + (abs (_gridOrigin select 1))
-            ];
+            _argX = _argX + (abs _originX);
+            _argY = _argY + (abs _originY);
 
-            _result = [floor ((_args select 0) / _sectorSize), floor ((_args select 1) / _sectorSize)];
+            _result = [floor (_argX / _sectorSize), floor (_argY / _sectorSize)];
         } else {
             _result = [-1,-1];
         };
@@ -101,8 +103,6 @@ switch (_operation) do {
             private _sectorsInColumn = (_logic select 2 select 4) select 0;
             private _index = (_args select 0) + ((_args select 1) * _sectorsInColumn);
             _result = (_logic select 2 select 5) select _index;
-        } else {
-            _result = nil;
         };
 
     };
@@ -131,7 +131,7 @@ switch (_operation) do {
 
         if !(_coords isEqualTo [-1,-1]) then {
             private _sector = [_logic,"coordsToSector", _coords] call MAINCLASS;
-            private _index = (_sector find _point);
+            private _index = _sector find _point;
 
             if (_index != -1) then {
                 _sector deleteAt (_sector find _point);
@@ -179,12 +179,12 @@ switch (_operation) do {
 
         // constrict sector indexes to grid bounds
         _minCoords = _minCoords apply {_x max 0};
-        _maxCoords = _maxCoords apply {_x min ((_maxSector select 0) + 1)};
+        _maxCoords = _maxCoords apply {_x min (_maxSector select 0)};
 
         for "_y" from (_minCoords select 1) to (_maxCoords select 1) do {
             for "_x" from (_minCoords select 0) to (_maxCoords select 0) do {
-                private _sector = [_logic,"coordsToSector", [_x,_y]] calL MAINCLASS;
-                _result append _sector;
+                private _index = _x + (_y * (_maxSector select 0));
+                _result append (_sectors select _index);
             };
         };
 
@@ -195,6 +195,84 @@ switch (_operation) do {
         };
 
     };
+
+    /*
+    case "findNearest": {
+
+        private _center = _args select 0;
+        private _maxRadius = _args param [1, 0];
+        private _filter2D = _args param [2, false];
+
+        private _centerCoords = [_logic,"posToCoords", _center] call MAINCLASS;
+
+        if !(_centerCoords isEqualTo [-1,-1]) then {
+            // phase one:
+            // search inwards-out till points are found
+            // or grid bounds are all covered
+
+            private _sectorsInColumn = (_logic select 2 select 4) select 0;
+            private _maxSector = _logic select 2 select 4;
+            private _sectors = _logic select 2 select 5;
+
+            private _points = [];
+            private _layer = 1;
+            private _sectorsLeft = true; // results in a lot of unnecessary indexchecking
+
+            while {_points isEqualTo [] && _sectorsLeft} do {
+                private _neighborCoords = [
+                    // top row
+                    [(_centerCoords select 0) - _layer, (_centerCoords select 1) - _layer],
+                    [(_centerCoords select 0), (_centerCoords select 1) - _layer],
+                    [(_centerCoords select 0) + _layer, (_centerCoords select 1) - _layer],
+
+                    // middle row
+                    [(_centerCoords select 0) - _layer, (_centerCoords select 1)],
+                    [(_centerCoords select 0) + _layer, (_centerCoords select 1)],
+
+                    // bottom row
+                    [(_centerCoords select 0) - _layer, (_centerCoords select 1) + _layer],
+                    [(_centerCoords select 0), (_centerCoords select 1) + _layer],
+                    [(_centerCoords select 0) + _layer, (_centerCoords select 1) + _layer]
+                ];
+
+                {
+                    if (
+                        (_x select 0) >= 0 && {(_x select 0) <= (_maxSector select 0)} &&
+                        {(_x select 1) >= 0} && {(_x select 1) <= (_maxSector select 1)}
+                    ) then {
+                        _sectors append (_sectors select ((_x select 0) + ((_x select 1) * _sectorsInColumn)));
+                        _sectorsLeft = true;
+                    };
+                } foreach _neighborCoords;
+
+                _layer = _layer + 1;
+            };
+
+            // phase two:
+            // sort points by distance
+            // select closest
+
+            if !(_points isEqualTo []) then {
+                private _min = [999999, -1];
+
+                if (!_filter2D) then {
+                    {
+                        private _dist = _x distance _center;
+                        if (_dist < (_min select 0)) then {_min = [_dist,_foreachindex]};
+                    } foreach _points;
+                } else {
+                    {
+                        private _dist = _x distance2D _center;
+                        if (_dist < (_min select 0)) then {_min = [_dist,_foreachindex]};
+                    } foreach _points;
+                };
+
+                _result = _points select (_min select 1);
+            };
+        };
+
+    };
+    */
 
 };
 
