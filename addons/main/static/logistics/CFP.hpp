@@ -22,6 +22,7 @@
 #include "CFP_O_SOREBEL_Logistics.hpp"
 #include "CFP_O_SYARMY_Logistics.hpp"
 #include "CFP_O_TBAN_Logistics.hpp"
+#include "CFP_I_WestUltra_Logistics.hpp"
 #include "CUP_B_CZ_Logistics.hpp"
 #include "CUP_B_GB_Logistics.hpp"
 #include "CUP_B_GER_Logistics.hpp"
