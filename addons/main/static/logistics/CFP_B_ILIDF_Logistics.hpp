@@ -4,7 +4,7 @@
  * Mil placement ambient vehicles per faction
  */
 [ALIVE_factionDefaultSupports, "CFP_B_ILIDF", [
-	"CFP_B_ILIDF_ATV_01"
+	"CFP_B_ILIDF_ATV_01",
 	"CFP_B_ILIDF_HEMTT_01",
 	"CFP_B_ILIDF_HEMTT_Ammo_01",
 	"CFP_B_ILIDF_HEMTT_Box_01",
