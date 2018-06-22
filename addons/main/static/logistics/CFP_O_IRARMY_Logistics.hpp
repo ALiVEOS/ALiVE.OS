@@ -37,7 +37,7 @@
 [ALIVE_factionDefaultAirTransport, "CFP_O_IRARMY", [
 		"CFP_O_IRARMY_Mi_8_01",
 		"CFP_O_IRARMY_CH47_VIV_01",
-		"CFP_O_IRARMY_CH47_01",
+		"CFP_O_IRARMY_CH47_01"
 	]
 ] call ALIVE_fnc_hashSet;
 
