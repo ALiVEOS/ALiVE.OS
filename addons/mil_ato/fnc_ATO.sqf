@@ -1703,7 +1703,7 @@ switch(_operation) do {
 
                     private _side = [_logic, "side"] call MAINCLASS;
                     private _faction = [_logic, "faction"] call MAINCLASS;
-                    private _profiles = [];
+                    private _aprofiles = [];
 
                     // Place Helis
                     private _heliClasses = [0,_faction,"Helicopter"] call ALiVE_fnc_findVehicleType;
@@ -1751,7 +1751,7 @@ switch(_operation) do {
                                     {
                                         // _x call ALIVE_fnc_inspectHash;
                                         if ([_x,"type"] call ALiVE_fnc_hashGet == "entity") then {
-                                            _profiles pushback ([_x,"profileID"] call ALiVE_fnc_hashGet);
+                                            _aprofiles pushback ([_x,"profileID"] call ALiVE_fnc_hashGet);
                                         };
                                     } foreach _tmp;
                                 };
@@ -1759,7 +1759,7 @@ switch(_operation) do {
                         } forEach _nodes;
 
                         // IF there are no helipads available, we want atleast 1 chopper. Spawn a composition
-                        if (count _profiles == 0) then {
+                        if (count _aprofiles == 0) then {
                             // Spawn a heliport
                             private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
                             private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
@@ -1814,7 +1814,7 @@ switch(_operation) do {
                                         {
                                             // _x call ALIVE_fnc_inspectHash;
                                             if ([_x,"type"] call ALiVE_fnc_hashGet == "entity") then {
-                                                _profiles pushback ([_x,"profileID"] call ALiVE_fnc_hashGet);
+                                                _aprofiles pushback ([_x,"profileID"] call ALiVE_fnc_hashGet);
                                             };
                                         } foreach _tmp;
                                     };
@@ -1823,7 +1823,7 @@ switch(_operation) do {
                         };
 
                         if(_debug) then {
-                            ["ALIVE ATO %1 - %3 Helicopters to be added: %2", _logic, _profiles, count _profiles] call ALIVE_fnc_dump;
+                            ["ALIVE ATO %1 - %3 Helicopters to be added: %2", _logic, _aprofiles, count _aprofiles] call ALIVE_fnc_dump;
                         };
                     };
 
@@ -1933,7 +1933,7 @@ switch(_operation) do {
                                         // Place Aircraft
                                         private _tmp = [_vehicleClass,_side,_faction,_posi,_dire,false,_faction] call ALIVE_fnc_createProfileVehicle;
                                         // _tmp call ALIVE_fnc_inspectHash;
-                                        _profiles pushback ([_tmp, "profileID"] call ALIVE_fnc_hashGet);
+                                        _aprofiles pushback ([_tmp, "profileID"] call ALIVE_fnc_hashGet);
                                     };
 
                                 };
@@ -1943,7 +1943,7 @@ switch(_operation) do {
                     };
 
                     if(_debug) then {
-                        ["ALIVE ATO %1 - %3 total aircraft to be added: %2", _logic, _profiles, count _profiles] call ALIVE_fnc_dump;
+                        ["ALIVE ATO %1 - %3 total aircraft to be added: %2", _logic, _aprofiles, count _aprofiles] call ALIVE_fnc_dump;
                     };
 
                     // Add new profiles to module
@@ -1954,7 +1954,7 @@ switch(_operation) do {
                         if !(isnil "_profile") then {
                             [_logic,"registerProfile",[_profileID,_baseAirspace]] call MAINCLASS;
                         };
-                    } foreach _profiles;
+                    } foreach _aprofiles;
                 };
 
                 // Register new assets
@@ -2818,186 +2818,211 @@ switch(_operation) do {
 
                 _logic setVariable ["analysisInProgress", true];
 
-                private _available = true;
-                private _loaded = false;
-                private _registryID = [_logic, "registryID"] call MAINCLASS;
-                private _airspaceAssets = [_logic, "airspaceAssets"] call MAINCLASS;
-                private _assets = [ALIVE_globalATO,_eventFaction] call ALIVE_fnc_hashGet;
+                // Check base is available
+                private _baseCluster = [_logic, "currentBase"] call MAINCLASS;
+                private _baseCaptured = false;
+                private _HQIsALive = true;
+                private _side = [_logic, "side"] call MAINCLASS;
+                private _faction = [_logic, "faction"] call MAINCLASS;
 
-                if(typeName _assets == "STRING") then {
-                    _assets = call compile _assets;
+                private _dominantFaction = [[_baseCluster,"center"] call ALiVE_fnc_hashGet] call ALiVE_fnc_getDominantFaction;
+
+                if (isNil "_dominantFaction") then {_dominantFaction = _faction;};
+
+                if !([(_dominantFaction call ALiVE_fnc_factionSide), [_side] call ALIVE_fnc_sideTextToObject] call BIS_fnc_sideIsFriendly) then {
+                    _baseCaptured = true;
                 };
 
-                // Handle additional 2 records (id,rev) when saved to ClownDB
-                if (count (_assets  select 1) > 0 && {_assets select 1 select 0 == "_id" }) then {
-                    _loaded = true;
-                };
+                if (!_baseCaptured && _HQIsALive) then {
+                    private _available = true;
+                    private _loaded = false;
+                    private _registryID = [_logic, "registryID"] call MAINCLASS;
+                    private _airspaceAssets = [_logic, "airspaceAssets"] call MAINCLASS;
+                    private _assets = [ALIVE_globalATO,_faction] call ALIVE_fnc_hashGet;
 
-                // DEBUG -------------------------------------------------------------------------------------
-                if(_debug) then {
-                    ["ALIVE ATO %1 - Air component analysis started", _logic] call ALIVE_fnc_dump;
-                };
-                // DEBUG -------------------------------------------------------------------------------------
-
-                // Check to see if we need to move base
-
-                // If so relocate
-
-                // Check to see if all existing assets are still available
-                if ( count (_assets select 1) == 0 || (_loaded && count (_assets select 1) == 2) ) then {
-                    _available = false;
-                };
-
-                // Check to see the current state of air assets, if less than 2 restrict ATOs
-                if ((_loaded && count (_assets select 1) <= 4) || (!_loaded && count (_assets select 1) <= 2) ) then {
-                    private _types = [_logic, "types"] call MAINCLASS;
-                    private _orig = [_logic,"origTypes"] call MAINCLASS;
-                    if (count _orig == 0) then {
-                       [_logic,"origTypes",+_types] call MAINCLASS;
+                    if(typeName _assets == "STRING") then {
+                        _assets = call compile _assets;
                     };
-                    private _tmpTypes = [];
-                    if (["CAP"] in _types) then {
-                        _tmpTypes pushback ["CAP"];
+
+                    // Handle additional 2 records (id,rev) when saved to ClownDB
+                    if (count (_assets  select 1) > 0 && {_assets select 1 select 0 == "_id" }) then {
+                        _loaded = true;
                     };
-                    if (["DCA"] in _types) then {
-                        _tmpTypes pushback ["DCA"];
+
+                    // DEBUG -------------------------------------------------------------------------------------
+                    if(_debug) then {
+                        ["ALIVE ATO %1 - Air component analysis started", _logic] call ALIVE_fnc_dump;
                     };
-                    _types = _tmpTypes;
-                    [_logic,"types",_types] call MAINCLASS;
+                    // DEBUG -------------------------------------------------------------------------------------
 
-                };
-
-                if ( (!_loaded && count (_assets select 1) > 2) || (_loaded && count (_assets select 1) > 4) ) then {
-                    private _types = [_logic, "types"] call MAINCLASS;
-                    private _orig = [_logic, "origTypes",[]] call MAINCLASS;
-                    if (count _orig == 0) then {
-                       [_logic,"origTypes",+_types] call MAINCLASS;
+                    // Check to see if all existing assets are still available
+                    if ( count (_assets select 1) == 0 || (_loaded && count (_assets select 1) == 2) ) then {
+                        _available = false;
                     };
-                    // Reset ATOs
-                    if (count _types < count _orig) then {
-                        [_logic,"types",+_orig] call MAINCLASS;
-                    };
-                };
 
-                // if not order new assets from LOGCOM
-                if ([_logic,"resupply"] call MAINCLASS && {count ([_logic,"resupplyList"] call MAINCLASS) > 0}) then {
-
-                    // Order 1 asset each go around, first in first out!
-                    private _resupplyList = [_logic,"resupplyList"] call MAINCLASS;
-                    private _asset = _resupplyList select 0;
-
-                    private _implemented = false; // remove once LOGCOM integration done
-
-                    if (["ALiVE_MIL_LOGISTICS"] call ALiVE_fnc_isModuleAvailable && _implemented) then {
-
-                        private _base = [_logic,"HQBuilding",nil] call MAINCLASS;
-
-                        if (isnil "_base") exitwith {
-                            if (_debug) then {["ALiVE ATO - Requesting reinforcments for side %1 not possible! No position secured!",_side] call ALiVE_fnc_DumpR};
+                    // Check to see the current state of air assets, if less than 2 restrict ATOs
+                    if ((_loaded && count (_assets select 1) <= 4) || (!_loaded && count (_assets select 1) <= 2) ) then {
+                        private _types = [_logic, "types"] call MAINCLASS;
+                        private _orig = [_logic,"origTypes"] call MAINCLASS;
+                        if (count _orig == 0) then {
+                           [_logic,"origTypes",+_types] call MAINCLASS;
                         };
+                        private _tmpTypes = [];
+                        if (["CAP"] in _types) then {
+                            _tmpTypes pushback ["CAP"];
+                        };
+                        if (["DCA"] in _types) then {
+                            _tmpTypes pushback ["DCA"];
+                        };
+                        _types = _tmpTypes;
+                        [_logic,"types",_types] call MAINCLASS;
 
-                        [_base,_resupplyAsset] spawn {
+                    };
 
-                            private _base = _this select 0;
-                            private _asset = _this select 1;
-                            private _side = [_logic,"side"] call MAINCLASS;
-                            private _factions = [_logic,"factions"] call MAINCLASS;
+                    if ( (!_loaded && count (_assets select 1) > 2) || (_loaded && count (_assets select 1) > 4) ) then {
+                        private _types = [_logic, "types"] call MAINCLASS;
+                        private _orig = [_logic, "origTypes",[]] call MAINCLASS;
+                        if (count _orig == 0) then {
+                           [_logic,"origTypes",+_types] call MAINCLASS;
+                        };
+                        // Reset ATOs
+                        if (count _types < count _orig) then {
+                            [_logic,"types",+_orig] call MAINCLASS;
+                        };
+                    };
+
+                    // if not order new assets from LOGCOM
+                    if ([_logic,"resupply"] call MAINCLASS && {count ([_logic,"resupplyList"] call MAINCLASS) > 0}) then {
+
+                        // Order 1 asset each go around, first in first out!
+                        private _resupplyList = [_logic,"resupplyList"] call MAINCLASS;
+                        private _asset = _resupplyList select 0;
+
+                        private _implemented = false; // remove once LOGCOM integration done
+
+                        if (["ALiVE_MIL_LOGISTICS"] call ALiVE_fnc_isModuleAvailable && _implemented) then {
+
+                            private _base = [_logic,"HQBuilding",nil] call MAINCLASS;
+
+                            if (isnil "_base") exitwith {
+                                if (_debug) then {["ALiVE ATO - Requesting reinforcments for side %1 not possible! No position secured!",_side] call ALiVE_fnc_DumpR};
+                            };
+
+                            [_base,_resupplyAsset] spawn {
+
+                                private _base = _this select 0;
+                                private _asset = _this select 1;
+                                private _side = [_logic,"side"] call MAINCLASS;
+                                private _factions = [_logic,"factions"] call MAINCLASS;
+                                private _debug = [_logic,"debug"] call MAINCLASS;
+
+                                private _position = position _base;
+                                private _vehicleClass = [_asset,"vehicleClass"] call ALiVE_fnc_hashGet;
+                                private _faction = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "faction");
+
+                                private _plane = if (_vehicleClass isKindOf "Plane") then {1} else {0};
+                                private _heli = if (_vehicleClass isKindOf "Helicopter") then {1} else {0};
+
+                                private _forceMakeup = [
+                                    0,              //infantry
+                                    0,              //motorized
+                                    0,              //mechanized
+                                    0,              //armoured
+                                    _plane,         //planes
+                                    _heli           //helicopters
+                                ];
+
+                                _event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,"STANDARD"],"ATO"] call ALIVE_fnc_event;
+                                _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+
+                                // Store the eventID so we can react once the airframe is delivered.
+                                [_asset, "eventID", _eventID] call ALiVE_fnc_hashSet;
+
+                                if (_debug) then {
+                                    ["ALiVE ATO - FORCEMAKEUP DATA %1 ", _forceMakeup] call ALiVE_fnc_DumpR;
+                                };
+                            };
+                        } else {
+
+                            // If not LOGCOM, create asset and add a maintenance timeBO
+
                             private _debug = [_logic,"debug"] call MAINCLASS;
 
-                            private _position = position _base;
                             private _vehicleClass = [_asset,"vehicleClass"] call ALiVE_fnc_hashGet;
                             private _faction = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "faction");
+                            private _position = [_asset,"startPos"] call ALiVE_fnc_hashGet;
+                            private _dir = [_asset,"startDir"] call ALiVE_fnc_hashGet;
+                            private _baseAirspace = [_asset,"airspace"] call ALiVE_fnc_hashGet;
 
                             private _plane = if (_vehicleClass isKindOf "Plane") then {1} else {0};
                             private _heli = if (_vehicleClass isKindOf "Helicopter") then {1} else {0};
 
-                            private _forceMakeup = [
-                                0,              //infantry
-                                0,              //motorized
-                                0,              //mechanized
-                                0,              //armoured
-                                _plane,         //planes
-                                _heli           //helicopters
-                            ];
+                            private _tmp = [];
 
-                            _event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,"STANDARD"],"ATO"] call ALIVE_fnc_event;
-                            _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+                            if (_heli == 1) then {
+                                _tmp = [_vehicleClass,_side,_faction,"CAPTAIN",_position,_dir,false,_faction,false] call ALIVE_fnc_createProfilesCrewedVehicle;
+                            };
 
-                            // Store the eventID so we can react once the airframe is delivered.
-                            [_asset, "eventID", _eventID] call ALiVE_fnc_hashSet;
+                            if (_plane == 1) then {
+                                _tmp = [_vehicleClass,_side,_faction,_position,_dir,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                            };
+
+                            private _profileID = [_tmp, "profileID"] call ALIVE_fnc_hashGet;
+
+                            private _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
+
+                            if !(isnil "_profile") then {
+                                [_logic,"registerProfile",[_profileID,_baseAirspace]] call MAINCLASS;
+                            };
+
+                            // Get asset by profile
+                            private _assets = [_logic,"assets"] call MAINCLASS;
+                            private _aircraft = [_assets, _profileID, ""] call ALiVE_fnc_hashGet;
+
+                            // Add aircraft to maintenance
+                            if !(typeName _aircraft == "STRING") then {
+                                [_aircraft,"maintenance",time] call ALiVE_fnc_hashSet;
+                            };
 
                             if (_debug) then {
-                                ["ALiVE ATO - FORCEMAKEUP DATA %1 ", _forceMakeup] call ALiVE_fnc_DumpR;
+                                _tmp call ALIVE_fnc_inspectHash;
+                                _aircraft call ALIVE_fnc_inspectHash;
                             };
                         };
-                    } else {
-                        // If not LOGCOM, create asset and add a maintenance timeBO
 
-                        private _debug = [_logic,"debug"] call MAINCLASS;
-
-                        private _vehicleClass = [_asset,"vehicleClass"] call ALiVE_fnc_hashGet;
-                        private _side = [_logic,"side"] call MAINCLASS;
-                        private _faction = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "faction");
-                        private _position = [_asset,"startPos"] call ALiVE_fnc_hashGet;
-                        private _dir = [_asset,"startDir"] call ALiVE_fnc_hashGet;
-                        private _baseAirspace = [_asset,"airspace"] call ALiVE_fnc_hashGet;
-
-                        private _plane = if (_vehicleClass isKindOf "Plane") then {1} else {0};
-                        private _heli = if (_vehicleClass isKindOf "Helicopter") then {1} else {0};
-
-                        private _tmp = [];
-
-                        if (_heli == 1) then {
-                            _tmp = [_vehicleClass,_side,_faction,"CAPTAIN",_position,_dir,false,_faction,false] call ALIVE_fnc_createProfilesCrewedVehicle;
-                        };
-
-                        if (_plane == 1) then {
-                            _tmp = [_vehicleClass,_side,_faction,_position,_dir,false,_faction] call ALIVE_fnc_createProfileVehicle;
-                        };
-
-                        private _profileID = [_tmp, "profileID"] call ALIVE_fnc_hashGet;
-
-                        private _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
-
-                        if !(isnil "_profile") then {
-                            [_logic,"registerProfile",[_profileID,_baseAirspace]] call MAINCLASS;
-                        };
-
-                        // Get asset by profile
-                        private _assets = [_logic,"assets"] call MAINCLASS;
-                        private _aircraft = [_assets, _profileID, ""] call ALiVE_fnc_hashGet;
-
-                        // Add aircraft to maintenance
-                        if !(typeName _aircraft == "STRING") then {
-                            [_aircraft,"maintenance",time] call ALiVE_fnc_hashSet;
-                        };
-
-                        if (_debug) then {
-                            _tmp call ALIVE_fnc_inspectHash;
-                            _aircraft call ALIVE_fnc_inspectHash;
-                        };
                     };
 
+                    // Check to see if there are new assets?
+
+                    // Update assets and airspaceAssets
+
+                    //[ALIVE_ATOGlobalRegistry,"updateGlobalATO",[_registryID,_assets]] call ALIVE_fnc_ATOGlobalRegistry;
+
+                    // store the analysis results
+                    _requestAnalysis = [] call ALIVE_fnc_hashCreate;
+                    [_requestAnalysis, "available", _available] call ALIVE_fnc_hashSet;
+
+                    [_logic, "requestAnalysis", _requestAnalysis] call MAINCLASS;
+
+                    // DEBUG -------------------------------------------------------------------------------------
+                    if(_debug) then {
+                        ["ALIVE ATO %1 - On demand analysis complete", _logic] call ALIVE_fnc_dump;
+                        ["ALIVE ATO %2 - Air assets still available: %1",_available, _logic] call ALIVE_fnc_dump;
+                    };
+                    // DEBUG -------------------------------------------------------------------------------------
+                } then {
+
+                    // Need to relocate base
+
+                        /// TODO
+
+                    // DEBUG -------------------------------------------------------------------------------------
+                    if(_debug) then {
+                        ["ALIVE ATO %1 - On demand analysis complete", _logic] call ALIVE_fnc_dump;
+                        ["ALIVE ATO %2 - Airbase is unavailable: %1", _logic] call ALIVE_fnc_dump;
+                    };
+                    // DEBUG -------------------------------------------------------------------------------------
                 };
-
-                // Check to see if there are new assets?
-
-                // Update assets and airspaceAssets
-
-                //[ALIVE_ATOGlobalRegistry,"updateGlobalATO",[_registryID,_assets]] call ALIVE_fnc_ATOGlobalRegistry;
-
-                // store the analysis results
-                _requestAnalysis = [] call ALIVE_fnc_hashCreate;
-                [_requestAnalysis, "available", _available] call ALIVE_fnc_hashSet;
-
-                [_logic, "requestAnalysis", _requestAnalysis] call MAINCLASS;
-
-                // DEBUG -------------------------------------------------------------------------------------
-                if(_debug) then {
-                    ["ALIVE ATO %1 - On demand analysis complete", _logic] call ALIVE_fnc_dump;
-                    ["ALIVE ATO %2 - Air assets still available: %1",_available, _logic] call ALIVE_fnc_dump;
-                };
-                // DEBUG -------------------------------------------------------------------------------------
 
                 _logic setVariable ["analysisInProgress", false];
             };
