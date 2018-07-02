@@ -472,7 +472,7 @@ switch(_operation) do {
 
                             if!(surfaceIsWater _position) then {
                                 _marker = [_profile, "createMarker", [_alpha]] call ALIVE_fnc_profileEntity;
-                                _markers = _markers + _marker;
+                                _markers pushback ([_profile,"debugMarkers"] call ALiVE_fnc_hashGet);
                                 _profiles pushback _profileID;
                             };
 
