@@ -26,6 +26,10 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
+if (!canSuspend) then {
+    ["WARNING: ALiVE staticData Handler called from unscheduled environment - %1", _fnc_scriptNameParent] call ALiVE_fnc_dump;
+};
+
 // Already loaded or loading, standby //
 if (!isNil QMOD(STATIC_DATA_LOADED)) exitWith {
     waitUntil {MOD(STATIC_DATA_LOADED)};
