@@ -84,6 +84,9 @@ switch(_operation) do {
             [_logic,"profileSpawnSources", []] call ALiVE_fnc_hashSet;
             [_logic,"profileLastSpawnTime", 0] call ALiVE_fnc_hashSet;
 
+            // load static data
+            call ALiVE_fnc_staticDataHandler;
+
             // create spacial grid
             private _worldSize = [ALiVE_mapBounds,worldname, worldsize] call ALiVE_fnc_hashGet;
             private _spacialGridProfiles = [nil,"create", [[-3000,-3000], _worldSize + 6000, 1000]] call ALiVE_fnc_spacialGrid;
