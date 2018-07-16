@@ -793,8 +793,7 @@ switch(_operation) do {
 
     case "getProfile": {
         if (_args isEqualType "") then {
-            _profiles = [_logic, "profiles"] call ALIVE_fnc_hashGet;
-
+            private _profiles = [_logic, "profiles"] call ALIVE_fnc_hashGet;
             private _index = (_profiles select 1) find _args;
 
             if (_index != -1) then {
