@@ -1274,6 +1274,8 @@ switch(_operation) do {
 
             [_logic,"debugMarkers", _markers] call ALIVE_fnc_hashSet;
         };
+
+        _result = _markers;
     };
 
     case "deleteMarkers": {

@@ -459,20 +459,20 @@ switch(_operation) do {
                 // on the first run create all the markers
                 if(_runCount == 0) then {
 
-                    _profiles = [];
-                    _markers = [];
-                    _alpha = 1;
+                    private _profiles = [];
+                    private _markers = [];
+                    private _alpha = 1;
 
                     // create the profile marker
                     {
-                        _profileID = _x;
-                        _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
+                        private _profileID = _x;
+                        private _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
                         if !(isnil "_profile") then {
-                            _position = _profile select 2 select 2;
+                            private _position = _profile select 2 select 2;
 
                             if!(surfaceIsWater _position) then {
-                                _marker = [_profile, "createMarker", [_alpha]] call ALIVE_fnc_profileEntity;
-                                _markers pushback ([_profile,"debugMarkers"] call ALiVE_fnc_hashGet);
+                                private _marker = [_profile, "createMarkers", [_alpha]] call ALIVE_fnc_profileEntity;
+                                _markers = _markers + _marker;
                                 _profiles pushback _profileID;
                             };
 
@@ -500,7 +500,7 @@ switch(_operation) do {
                     };
 
                     // create the objective area marker
-                    _m = createMarker [format[MTEMPLATE, _objectiveID], _center];
+                    private _m = createMarker [format[MTEMPLATE, _objectiveID], _center];
                     _m setMarkerShape "Ellipse";
                     _m setMarkerBrush "FDiagonal";
                     _m setMarkerSize [_size, _size];
@@ -1216,7 +1216,7 @@ switch(_operation) do {
                                         _position = _profile select 2 select 2;
 
                                         if!(surfaceIsWater _position) then {
-                                            _marker = [_profile, "createMarker", [1]] call ALIVE_fnc_profileEntity;
+                                            _marker = [_profile, "createMarkers", [1]] call ALIVE_fnc_profileEntity;
                                             _markers = _markers + _marker;
                                             _profiles pushback _profile;
                                         };
