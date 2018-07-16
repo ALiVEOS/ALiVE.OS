@@ -640,7 +640,7 @@ switch(_operation) do {
                     _profileID = _x;
                     _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
                     if !(isnil "_profile") then {
-                        [_profile, "deleteMarker"] call ALIVE_fnc_profileEntity;
+                        [_profile, "deleteMarkers"] call ALIVE_fnc_profileEntity;
                     };
                 } forEach _profiles;
 
@@ -1174,7 +1174,7 @@ switch(_operation) do {
                         {
                             _profile = _x;
                             if !(isnil "_profile") then {
-                                [_profile, "deleteMarker"] call ALIVE_fnc_profileEntity;
+                                [_profile, "deleteMarkers"] call ALIVE_fnc_profileEntity;
                             };
                         } forEach _profiles;
 
@@ -1268,7 +1268,7 @@ switch(_operation) do {
                     _profileID = _x;
                     _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
                     if !(isnil "_profile") then {
-                        [_profile, "deleteMarker"] call ALIVE_fnc_profileEntity;
+                        [_profile, "deleteMarkers"] call ALIVE_fnc_profileEntity;
                     };
                 } forEach _profiles;
 
