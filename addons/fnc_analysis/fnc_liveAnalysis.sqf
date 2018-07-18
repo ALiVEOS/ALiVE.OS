@@ -468,7 +468,7 @@ switch(_operation) do {
                         private _profileID = _x;
                         private _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
                         if !(isnil "_profile") then {
-                            private _position = _profile select 2 select 2;
+                            _position = _profile select 2 select 2;
 
                             if!(surfaceIsWater _position) then {
                                 private _marker = [_profile, "createMarkers", [_alpha]] call ALIVE_fnc_profileEntity;
