@@ -167,10 +167,10 @@ ALiVE_fnc_INS_retreat = {
 
                     [_objective,_x] call ALiVE_fnc_HashRem;
                 } foreach ["factory","hq","ambush","depot","sabotage","ied","suicide"];
-                
+
                 // Reset all actions done on that objective so they can be performed again
                 [_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashSet;
-                
+
                 // Reduce hostility level after retreat
                 [_pos,_sides, 20] call ALiVE_fnc_updateSectorHostility;
                 [_pos, _allSides - _sides, -20] call ALiVE_fnc_updateSectorHostility;
@@ -616,22 +616,22 @@ ALiVE_fnc_INS_recruit = {
                     _created = 0;
 
                     for "_i" from 1 to (count _agents) do {
-                        
-                        // Delay 30-60 mins before a recruitment takes place. 
+
+                        // Delay 30-60 mins before a recruitment takes place.
                         sleep (1800 + random 1800);
-                        
+
                         // Only recruit if there is an HQ existing and up to 5 groups at max to not spam the map
                         if (!alive _HQ || {_created >= 5}) exitwith {};
-                        
+
                         // 50/50 chance the agent turns into insurgents
                         if (random 1 < 0.5) then {
 	                        _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
 	                        _recruits = [_group, [_pos,10,_size,1,0,0,0,[],[_pos]] call BIS_fnc_findSafePos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
 	                        {[_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[_size + 200,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity} foreach _recruits;
-	
+
 	                        [_pos,_sides, 10] call ALiVE_fnc_updateSectorHostility;
 	                        [_pos,_allSides - _sides, -10] call ALiVE_fnc_updateSectorHostility;
-	
+
 	                        _created = _created + 1;
                          };
                     };
@@ -841,7 +841,7 @@ ALiVE_fnc_INS_spawnDepot = {
         {},
         [],
         10 + ((count (_building getvariable [QGVAR(furnitured),[]]))*4)
-    ] remoteExec ["BIS_fnc_holdActionAdd", 0,true];    
+    ] remoteExec ["BIS_fnc_holdActionAdd", 0,true];
 
     [_building,true,false,true] call ALiVE_fnc_spawnFurniture;
 };
@@ -864,29 +864,60 @@ ALIVE_fnc_INS_buildingKilledEH = {
     _killer = _this select 1;
     _pos = getposATL _building;
 
-    _factory = _building getvariable QGVAR(factory);
-    _depot = _building getvariable QGVAR(depot);
-    _HQ = _building getvariable QGVAR(HQ);
-    _furniture = _building getvariable [QGVAR(furnitured),[]];
+    private _factory = _building getvariable QGVAR(factory);
+    private _depot = _building getvariable QGVAR(depot);
+    private _HQ = _building getvariable QGVAR(HQ);
+    private _furniture = _building getvariable [QGVAR(furnitured),[]];
 
-    if !(isnil "_factory") then {_id = _factory};
-    if !(isnil "_depot") then {_id = _depot};
-    if !(isnil "_HQ") then {_id = _HQ};
+    private _installationType = "";
+    if !(isnil "_factory") then {
+        _id = _factory;
+        _installationType = "factory";
+    };
+    if !(isnil "_depot") then {
+        _id = _depot;
+        _installationType = "depot";
+    };
+    if !(isnil "_HQ") then {
+        _id = _HQ;
+        _installationType = "hq";
+    };
 
     if (isnil "_id") exitwith {};
 
-    _objective = [[],"getobjectivebyid",_id] call ALiVE_fnc_OPCOM;
-    _opcomID = [_objective,"opcomID",""] call ALiVE_fnc_HashGet;
+    // fire event
+    // TODO: cba events should be fired from core event loop, not here
+
+    ["ASYMM_INSTALLATION_DESTROYED", [_installationType,_building,_killer]] call CBA_fnc_globalEvent;
+
+    private _event = ['ASYMM_INSTALLATION_DESTROYED', [_installationType,_building,_killer],"OPCOM"] call ALIVE_fnc_event;
+    [ALiVE_eventLog, "addEvent", _event] call ALIVE_fnc_eventLog;
+
+    private _objective = [[],"getobjectivebyid",_id] call ALiVE_fnc_OPCOM;
+    private _opcomID = [_objective,"opcomID",""] call ALiVE_fnc_HashGet;
     _pos = [_objective,"center",_pos] call ALiVE_fnc_HashGet;
 
-    if !(isnil "_factory") then {[_objective,"factory"] call ALiVE_fnc_HashRem; [_objective,"actionsFulfilled",([_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashGet) - ["factory"]] call ALiVE_fnc_HashSet};
-    if !(isnil "_depot") then {[_objective,"depot"] call ALiVE_fnc_HashRem; [_objective,"actionsFulfilled",([_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashGet) - ["depot"]] call ALiVE_fnc_HashSet};
-    if !(isnil "_HQ") then {[_objective,"HQ"] call ALiVE_fnc_HashRem; [_objective,"actionsFulfilled",([_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashGet) - ["recruit"]] call ALiVE_fnc_HashSet};
-    
+    if !(isnil "_factory") then {
+        [_objective,"factory"] call ALiVE_fnc_HashRem;
+        [_objective,"actionsFulfilled",([_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashGet) - ["factory"]] call ALiVE_fnc_HashSet;
+    };
+    if !(isnil "_depot") then {
+        [_objective,"depot"] call ALiVE_fnc_HashRem;
+        [_objective,"actionsFulfilled",([_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashGet) - ["depot"]] call ALiVE_fnc_HashSet;
+    };
+    if !(isnil "_HQ") then {
+        [_objective,"HQ"] call ALiVE_fnc_HashRem;
+        [_objective,"actionsFulfilled",([_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashGet) - ["recruit"]] call ALiVE_fnc_HashSet;
+    };
+
     {deleteVehicle _x} foreach _furniture;
     _building setvariable [QGVAR(furnitured),[]];
 
-    {if (([_x,"opcomID"," "] call ALiVE_fnc_HashGet) == _opcomID) exitwith {_opcom = _x}} foreach OPCOM_instances;
+    {
+        if (([_x,"opcomID"," "] call ALiVE_fnc_HashGet) == _opcomID) exitwith {
+            _opcom = _x
+        }
+    } foreach OPCOM_instances;
 
     if !(isnil "_opcom") then {
         _enemy = [_opcom,"sidesenemy",[]] call ALiVE_fnc_HashGet;
