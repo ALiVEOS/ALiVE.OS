@@ -178,6 +178,7 @@ if (!_simAttacks) then {
 
                                 private _activeWaypoint = _waypoints select 0;
                                 private _destination = [_activeWaypoint,"position"] call ALiVE_fnc_hashGet;
+                                private _completionRadius = [_activeWaypoint,"completionRadius"] call ALiVE_fnc_hashGet;
                                 private _distanceToWaypoint = _profilePosition distance _destination;
 
                                 private _speedPerSecondArray = _profile select 2 select 22;
@@ -189,8 +190,13 @@ if (!_simAttacks) then {
                                     case "FULL":    {_speedPerSecond = _speedPerSecondArray select 2};
                                 };
 
-                                private _moveDistance = _speedPerSecond * _simModifier * _speedModifier * accTime;
                                 private _direction = 0;
+                                private _moveDistance = _speedPerSecond * _simModifier * _speedModifier * accTime;
+
+                                // don't overshoot waypoint
+                                if (_moveDistance > _distanceToWaypoint) then {
+                                    _moveDistance = _distanceToWaypoint - (random (_completionRadius * 0.7));
+                                };
 
                                 if (!isnil "_profilePosition" && {!(_profilePosition isEqualTo [])} && {!isnil "_destination"}) then {
 
