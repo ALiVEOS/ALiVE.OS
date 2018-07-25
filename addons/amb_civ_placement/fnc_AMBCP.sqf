@@ -700,7 +700,7 @@ switch(_operation) do {
                         //["NODES: %1",_nodes] call ALIVE_fnc_dump;
 
                         private _buildings = [_nodes, ALIVE_civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
-                        
+
                         //["BUILDINGS: %1",_buildings] call ALIVE_fnc_dump;
 
                         private _countBuildings = count _buildings;
@@ -765,7 +765,7 @@ switch(_operation) do {
                                 //["VEHICLE CLASS: %1",_vehicleClass] call ALIVE_fnc_dump;
 
                                 private _parkingPosition = [_vehicleClass,_building,false] call ALIVE_fnc_getParkingPosition;
-                                
+
                                 if (!isnil "_parkingPosition" && {count _parkingPosition == 2} && {{(_parkingPosition select 0) distance (_x select 0) < 10} count _usedPositions == 0}) then {
 
                                     [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction,_clusterID,_parkingPosition select 0] call ALIVE_fnc_createCivilianVehicle;
@@ -788,7 +788,12 @@ switch(_operation) do {
 
 
 
-            private _civClasses = [0,_faction,"Man"] call ALiVE_fnc_findVehicleType;
+            // avoid error that stems from BIS population module CIV_F unit classes
+            // https://github.com/ALiVEOS/ALiVE.OS/issues/522
+            private _minScope = 1;
+            if (_faction == "CIV_F") then {_minScope = 2};
+
+            private _civClasses = [0,_faction,"Man",false,_minScope] call ALiVE_fnc_findVehicleType;
 
             //["CIV Classes: %1",_civClasses] call ALIVE_fnc_dump;
 
