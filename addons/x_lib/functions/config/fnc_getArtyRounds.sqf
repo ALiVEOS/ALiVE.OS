@@ -6,12 +6,7 @@ if(_class isEqualTo "BUS_MotInf_MortTeam") then {
 _class    = "B_MBT_01_arty_F"
 };
 
-_weapon = [configfile >> "CfgVehicles" >> _class >> "Turrets" >> "MainTurret" >> "weapons"] call ALiVE_fnc_getConfigValue;
-
-_weaponClass = _weapon select 0;
-
-private _mags =[];
-_mags = _weaponClass call ALIVE_fnc_configGetWeaponMagazines;
+_mags = [configfile >> "CfgVehicles" >> _class >> "Turrets" >> "MainTurret" >> "magazines"] call ALiVE_fnc_getConfigValue;
 
 private _roundsAvail =[];
 
