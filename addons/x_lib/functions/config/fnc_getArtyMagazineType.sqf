@@ -35,12 +35,7 @@ _class    = "B_MBT_01_arty_F"
 _type = _this select 1;
 private _weaponType = typeof(vehicle _class);
 
-private _weapon = [configfile >> "CfgVehicles" >> _weaponType >> "Turrets" >> "MainTurret" >> "weapons"] call ALiVE_fnc_getConfigValue;
-
-_weaponClass = _weapon select 0;
-
-private _mags =[];
-_mags = _weaponClass call ALIVE_fnc_configGetWeaponMagazines;
+_mags = [configfile >> "CfgVehicles" >> _weaponType >> "Turrets" >> "MainTurret" >> "magazines"] call ALiVE_fnc_getConfigValue;
 
 private _ords=[];
 private _ord="";
