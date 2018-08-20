@@ -198,15 +198,6 @@ switch(_type) do {
                         [_vehicleProfile,"position",_spawnPosition] call ALIVE_fnc_profileVehicle;
                         [_vehicleProfile,"mergePositions"] call ALIVE_fnc_profileVehicle;
 
-                        // vehicle is already spawned, move it..
-
-                        if (_vehicleProfile select 2 select 1) then {
-                            _vehicle = _vehicleProfile select 2 select 10;
-                            if!(isNil '_vehicle') then {
-                                _vehicle setPos _spawnPosition;
-                            };
-                        };
-
                         //["LEAD POS: %1",_spawnPosition] call ALIVE_fnc_dump;
                         //[_spawnPosition,"LEAD",_profileID] call _createMarker;
 
@@ -252,21 +243,6 @@ switch(_type) do {
                             [_vehicleProfile,"position",_position] call ALIVE_fnc_profileVehicle;
                             [_vehicleProfile,"mergePositions"] call ALIVE_fnc_profileVehicle;
 
-                            // vehicle is already spawned, move it..
-
-                            if (_vehicleProfile select 2 select 1) then {
-                                _vehicle = _vehicleProfile select 2 select 10;
-                                if !(isNil '_vehicle') then {
-                                    _vehicle setPos _position;
-                                };
-                            };
-
-                            /*
-                            if(_inAir) then {
-                                [_vehicleProfile,"engineOn", true] call ALIVE_fnc_profileVehicle;
-                            };
-                            */
-
                         } forEach _vehicles;
 
                     } else {
@@ -275,21 +251,6 @@ switch(_type) do {
                             [_vehicleProfile,"position",_spawnPosition] call ALIVE_fnc_profileVehicle;
                             //[_vehicleProfile,"direction",_direction] call ALIVE_fnc_profileVehicle;
                             [_vehicleProfile,"mergePositions"] call ALIVE_fnc_profileVehicle;
-
-                            // vehicle is already spawned, move it..
-
-                            if (_vehicleProfile select 2 select 1) then {
-                                _vehicle = _vehicleProfile select 2 select 10;
-                                if !(isNil '_vehicle') then {
-                                    _vehicle setPos _spawnPosition;
-                                };
-                            };
-
-                            /*
-                            if(_inAir) then {
-                                [_vehicleProfile,"engineOn", true] call ALIVE_fnc_profileVehicle;
-                            };
-                            */
                         };
                     };
                 };

@@ -201,8 +201,13 @@ if (!_simAttacks) then {
                                 if (!isnil "_profilePosition" && {!(_profilePosition isEqualTo [])} && {!isnil "_destination"}) then {
 
                                     // add z-index since some profiles dont one defined
-                                    _profilePosition set [2,0];
-                                    _destination set [2,0];
+                                    if ((count _profilePosition) == 2) then {
+                                        _profilePosition pushBack 0;
+                                    };
+
+                                    if ((count _destination) == 2) then {
+                                        _destination pushBack 0;
+                                    };
 
                                     private _executeStatements = false;
 
@@ -223,6 +228,11 @@ if (!_simAttacks) then {
                                                 _waypointsCompleted = [];
                                             };
                                         };
+                                    };
+
+                                    // getPos above returns AGL
+                                    if (surfaceIsWater _newPosition) then {
+                                        _newPosition = ASLtoATL _newPosition;
                                     };
 
                                     // if distance to wp destination is within completion radius
