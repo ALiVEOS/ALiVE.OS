@@ -3,7 +3,14 @@ _transportConfirmButton = _display displayCtrl 655574;
 _transportUnitLb = _display displayCtrl 655568;
 _transportTaskLb = _display displayCtrl 655569;
 _transportArray = NEO_radioLogic getVariable format ["NEO_radioTrasportArray_%1", playerSide];
-_chopper = _transportArray select (lbCurSel _transportUnitLb) select 0; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" }) then { _chopper = vehicle player };
+
+if (!isNil {NEO_radioLogic getVariable "NEO_radioTalkWithPilot"}) then {
+    _chopper = NEO_radioLogic getVariable "NEO_radioTalkWithPilot";
+}
+
+else {
+    _chopper = _transportArray select (lbCurSel _transportUnitLb) select 0;
+};
 
 if
 (
