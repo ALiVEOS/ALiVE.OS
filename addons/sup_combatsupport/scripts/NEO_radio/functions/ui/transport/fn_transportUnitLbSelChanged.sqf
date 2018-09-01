@@ -4,7 +4,6 @@ private
     "_supportMarker", "_slider", "_sliderText", "_transportHeightCombo", "_transportSpeedCombo", "_transportRoeCombo", "_transportComboText", "_flyingProperties",
     "_height", "_speed", "_roeIndex", "_roe"
 ];
-
 _display = findDisplay 655555;
 _map = _display displayCtrl 655560;
 _transportBaseButton = _display displayCtrl 655575;
@@ -14,16 +13,6 @@ _index = _this select 1;
 _transportArray = NEO_radioLogic getVariable format ["NEO_radioTrasportArray_%1", playerSide];
 _transportUnitLb = _display displayCtrl 655568;
 _sitRepButton = _display displayCtrl 655625;
-_supportMarker = NEO_radioLogic getVariable "NEO_supportMarker";
-_slider = _display displayCtrl 655578;
-_sliderText = _display displayCtrl 655579;
-_transportHeightCombo = _display displayCtrl 655630;
-_transportSpeedCombo = _display displayCtrl 655631;
-_transportRoeCombo = _display displayCtrl 655632;
-_transportComboText = _display displayCtrl 655633;
-_height = _flyingProperties select 0;
-_speed = _flyingProperties select 1;
-_roe = _flyingProperties select 2;
 
 if (!isNil {NEO_radioLogic getVariable "NEO_radioTalkWithPilot"}) then {
     _chopper = NEO_radioLogic getVariable "NEO_radioTalkWithPilot";
@@ -33,9 +22,18 @@ else {
     _chopper = _transportArray select (lbCurSel _transportUnitLb) select 0;
 };
 
-_flyingProperties = _chopper getVariable "NEO_radioTrasportUnitFlyingProperties";
 _status = _chopper getVariable "NEO_radioTrasportUnitStatus";
-
+_supportMarker = NEO_radioLogic getVariable "NEO_supportMarker";
+_slider = _display displayCtrl 655578;
+_sliderText = _display displayCtrl 655579;
+_transportHeightCombo = _display displayCtrl 655630;
+_transportSpeedCombo = _display displayCtrl 655631;
+_transportRoeCombo = _display displayCtrl 655632;
+_transportComboText = _display displayCtrl 655633;
+_flyingProperties = _chopper getVariable "NEO_radioTrasportUnitFlyingProperties";
+_height = _flyingProperties select 0;
+_speed = _flyingProperties select 1;
+_roe = _flyingProperties select 2;
 uinamespace setVariable ["NEO_radioCbVehicle", _chopper];
 
 //Help Text
