@@ -1,4 +1,4 @@
-/*%FSM<COMPILE "scriptedFSM.cfg, transport">*/
+/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, transport">*/
 /*%FSM<HEAD>*/
 /*
 item0[] = {"react",0,250,-39.125454,36.278599,50.874546,86.278595,0.000000,"react"};
@@ -157,8 +157,8 @@ link87[] = {61,63};
 link88[] = {62,55};
 link89[] = {63,64};
 link90[] = {64,4};
-globals[] = {0.000000,0,0,0,0,640,480,1,41,6316128,1,-350.093658,1585.206665,1464.736328,-555.369141,890,929,1};
-window[] = {2,-1,-1,-32000,-32000,957,220,1480,220,3,907};
+globals[] = {0.000000,0,0,0,0,640,480,1,41,6316128,1,134.265305,1523.755005,1557.053345,106.675789,890,957,1};
+window[] = {2,-1,-1,-32000,-32000,977,2140,3400,240,3,907};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -2025,7 +2025,7 @@ class FSM
        "    leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Bombing_Accomplished"", ""GROUP""];    " \n
        "};" \n
        "" \n
-       "[[_chopper,format[""%1 is holding position and waiting for further orders. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       "[[_chopper,format[""%1 has delivered the payload. Holding position and waiting for further orders. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
