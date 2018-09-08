@@ -142,6 +142,7 @@ class FSM
        "{ _x disableAi ""TARGET""; _x disableAi ""AUTOTARGET""; } forEach units _grp;" \n
        "//Vehicle Status" \n
        "_veh setVariable [""NEO_radioCasUnitStatus"", ""NONE"", true];" \n
+       "_veh setVariable [""ALIVE_CombatSupport_Base"", _base];" \n
        "" \n
        "//for attack run short circuiting" \n
        "_restoreAmmo = false;" \n
@@ -1381,7 +1382,7 @@ class FSM
   initState="react";
   finalStates[] =
   {
-    "end1"
+    "end1",
   };
 };
 /*%FSM</COMPILE>*/
