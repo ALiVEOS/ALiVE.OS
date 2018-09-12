@@ -830,7 +830,7 @@ switch(_operation) do {
                                 private _vehicle_found = false;
 
                                 {
-                                    if (_x select 0 == cursorTarget && _this distance cursorTarget <= 50) exitWith {
+                                    if (_x select 0 == cursorTarget && {_this distance cursorTarget <= 50}) exitWith {
                                         _vehicle = _x select 0;
                                     };
 
@@ -840,7 +840,7 @@ switch(_operation) do {
 
                                 } forEach (NEO_radioLogic getVariable format [""NEO_radioTrasportArray_%1"", playerSide]);
 
-                                if (!isNil ""_vehicle"" && alive (driver _vehicle)) then {
+                                if (!isNil ""_vehicle"" && {alive (driver _vehicle)}) then {
                                     _vehicle_found = true;
                                 };
 
