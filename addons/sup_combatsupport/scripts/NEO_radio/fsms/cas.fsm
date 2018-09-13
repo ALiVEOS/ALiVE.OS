@@ -142,7 +142,7 @@ class FSM
        "{ _x disableAi ""TARGET""; _x disableAi ""AUTOTARGET""; } forEach units _grp;" \n
        "//Vehicle Status" \n
        "_veh setVariable [""NEO_radioCasUnitStatus"", ""NONE"", true];" \n
-       "_veh setVariable [""ALIVE_CombatSupport_Base"", _base];" \n
+       "_veh setVariable [""ALIVE_CombatSupport_Base"", _base, true];" \n
        "" \n
        "//for attack run short circuiting" \n
        "_restoreAmmo = false;" \n

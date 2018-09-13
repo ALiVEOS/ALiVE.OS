@@ -223,7 +223,7 @@ class FSM
        "//Vehicle Status" \n
        "_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""NONE"", true];" \n
        "_chopper setVariable [""NEO_radioTrasportUnitFlyingProperties"", [1, 1, 0], true];" \n
-       "_chopper setVariable [""ALIVE_CombatSupport_Base"", _base];" \n
+       "_chopper setVariable [""ALIVE_CombatSupport_Base"", _base, true];" \n
        "_chopper lockDriver true;" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
