@@ -148,7 +148,7 @@ link78[] = {55,14};
 link79[] = {55,56};
 link80[] = {56,58};
 link81[] = {57,15};
-link82[] = {58,35};
+link82[] = {58,15};
 link83[] = {59,60};
 link84[] = {59,63};
 link85[] = {60,52};
@@ -2024,47 +2024,46 @@ class FSM
       name = "__21";
       init = /*%FSM<STATEINIT""">*/"if (_audio) then {" \n
        "    leader _chopper kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Bombing_Accomplished"", ""GROUP""];    " \n
-       "} else {" \n
-       "    [[_chopper,format[""%1 has delivered the payload. They are RTB. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
        "};" \n
        "" \n
-       "_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""RTB"", true];" \n
-       "" \n
-       "[_chopper,_audio] spawn {  " \n
-       "private [""_chopper""];" \n
-       "_chopper = _this select 0;" \n
-       "_audio = _this select 1;" \n
-       "sleep 5;" \n
-       "if (_audio) then {" \n
-       "    [[_chopper,format[""Copy that %1. You are RTB. Out."",groupid group _chopper],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-       "};" \n
-       "while {" \n
-       "(_chopper getVariable ""NEO_radioTrasportUnitStatus"") == ""RTB"" } do" \n
-       "{  _chopper action [""CollisionLightOff"", _chopper];" \n
-       "sleep 0.01};" \n
-       "};  " \n
-       "_chopper flyinheight 100;" \n
-       "[_chopper, _base] call ALiVE_fnc_doMoveRemote;"/*%FSM</STATEINIT""">*/;
+       "[[_chopper,format[""%1 has delivered the payload. Holding position and waiting for further orders. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+       ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
       {
-        /*%FSM<LINK "at_base">*/
-        class at_base
+        /*%FSM<LINK "killed">*/
+        class killed
         {
-          priority = 0.000000;
-          to="__9";
+          priority = 50.000000;
+          to="end1";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"_chopper call ALiVE_fnc_unitReadyRemote" \n
+          condition=/*%FSM<CONDITION""">*/"!alive _chopper" \n
+           "||" \n
+           "!alive driver _chopper" \n
+           "||" \n
+           "!canMove _chopper" \n
            ""/*%FSM</CONDITION""">*/;
-          action=/*%FSM<ACTION""">*/"_h setPosATL _base;" \n
-           "[_chopper,""LAND""] call ALiVE_fnc_landRemote;" \n
+          action=/*%FSM<ACTION""">*/"_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""KILLED"", true];" \n
+           ""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "new_task">*/
+        class new_task
+        {
+          priority = 10.000000;
+          to="_";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!isNil { _chopper getVariable ""NEO_radioTransportNewTask"" }" \n
+           ""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/"_task = _chopper getVariable ""NEO_radioTransportNewTask"" select 0;" \n
+           "_pos = _chopper getVariable ""NEO_radioTransportNewTask"" select 1;" \n
+           "_player = _chopper getVariable ""NEO_radioTransportNewTask"" select 3;" \n
            "" \n
-           "_chopper setVariable [""NEO_radioCurrentTask"", nil, true];" \n
-           "_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""NONE"", true];" \n
+           "if (_task == ""CIRCLE"") then { _radiusCircle = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
+           "if (_task == ""INSERTION"") then { _alt = _chopper getVariable ""NEO_radioTransportNewTask"" select 2; };" \n
            "" \n
-           "_chopper setFuel 1;" \n
-           "_chopper setDamage 0;" \n
-           "_chopper setVehicleAmmo 1;" \n
+           "_chopper setVariable [""NEO_radioCurrentTask"",_chopper getVariable ""NEO_radioTransportNewTask"", true];" \n
+           "_chopper setVariable [""NEO_radioTransportNewTask"", nil, true];" \n
            ""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
