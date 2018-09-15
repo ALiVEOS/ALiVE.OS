@@ -8,11 +8,20 @@ _slider = _display displayCtrl 655578;
 _transportFlyHeightSlider = _display displayCtrl 655580;
 _audio = NEO_radioLogic getVariable format ["combatsupport_audio", true];
 
-private ["_transportArray", "_unit", "_grp", "_callsign", "_callSignPlayer", "_task", "_marker", "_pos","_amnt"];
+private ["_transportArray", "_chopper", "_grp", "_callsign", "_callSignPlayer", "_task", "_marker", "_pos","_amnt"];
 _transportArray = NEO_radioLogic getVariable format ["NEO_radioTrasportArray_%1", playerSide];
-_unit = _transportArray select (lbCurSel _transportUnitLb) select 0; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" }) then { _unit = vehicle player };
-_grp = _transportArray select (lbCurSel _transportUnitLb) select 1; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" }) then { _grp = group (driver _unit) };
-_callsign = _transportArray select (lbCurSel _transportUnitLb) select 2; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" }) then { _callsign = (format ["%1", _grp]) call NEO_fnc_callsignFix };
+
+if (!isNil {NEO_radioLogic getVariable "NEO_radioTalkWithPilot"}) then {
+    _chopper = NEO_radioLogic getVariable "NEO_radioTalkWithPilot";
+    _grp = group (driver _chopper);
+    _callsign = (format ["%1", _grp]) call NEO_fnc_callsignFix;
+}
+else {
+    _chopper = _transportArray select (lbCurSel _transportUnitLb) select 0;
+    _grp = _transportArray select (lbCurSel _transportUnitLb) select 1;
+    _callsign = _transportArray select (lbCurSel _transportUnitLb) select 2;
+};
+
 _callSignPlayer = (format ["%1", group player]) call NEO_fnc_callsignFix;
 _task = _transportTaskLb lbText (lbCurSel _transportTaskLb);
 _marker = NEO_radioLogic getVariable "NEO_supportMarker";
@@ -60,7 +69,7 @@ if (_audio) then {
     };
 };
 
-if (_task == "SLINGLOAD" && !isNull getSlingLoad _unit || _task == "UNHOOK" && isNull getSlingLoad _unit) then {
+if (_task == "SLINGLOAD" && !isNull getSlingLoad _chopper || _task == "UNHOOK" && isNull getSlingLoad _chopper) then {
     // probably not supported
 } else {
     // Let side know over the raadio
@@ -68,7 +77,7 @@ if (_task == "SLINGLOAD" && !isNull getSlingLoad _unit || _task == "UNHOOK" && i
 };
 
 //New Task
-_unit setVariable ["NEO_radioTransportNewTask", _arguments, true];
+_chopper setVariable ["NEO_radioTransportNewTask", _arguments, true];
 
 //Interface
 [lbCurSel 655565] call NEO_fnc_radioRefreshUi;

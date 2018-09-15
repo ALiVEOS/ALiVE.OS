@@ -70,8 +70,6 @@ switch (_action) do
 {
     case "talk" :
     {
-        NEO_radioLogic setVariable ["NEO_radioTalkWithPilot", vehicle _unit];
-
         if (count _casArray > 0) then {
             lbDelete [655565, 0];
         };
