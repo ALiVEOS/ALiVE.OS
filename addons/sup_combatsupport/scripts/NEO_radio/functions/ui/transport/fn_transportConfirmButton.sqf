@@ -16,7 +16,6 @@ if (!isNil {NEO_radioLogic getVariable "NEO_radioTalkWithPilot"}) then {
     _grp = group (driver _chopper);
     _callsign = (format ["%1", _grp]) call NEO_fnc_callsignFix;
 }
-
 else {
     _chopper = _transportArray select (lbCurSel _transportUnitLb) select 0;
     _grp = _transportArray select (lbCurSel _transportUnitLb) select 1;

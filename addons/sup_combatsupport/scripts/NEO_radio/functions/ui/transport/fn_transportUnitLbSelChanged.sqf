@@ -17,7 +17,6 @@ _sitRepButton = _display displayCtrl 655625;
 if (!isNil {NEO_radioLogic getVariable "NEO_radioTalkWithPilot"}) then {
     _chopper = NEO_radioLogic getVariable "NEO_radioTalkWithPilot";
 }
-
 else {
     _chopper = _transportArray select (lbCurSel _transportUnitLb) select 0;
 };

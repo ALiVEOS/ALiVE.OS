@@ -22,7 +22,6 @@ switch (toUpper _task) do
             _grp = group (driver _asset);
             _callsign = (format ["%1", _grp]) call NEO_fnc_callsignFix;
         }
-
         else {
             _asset = _transportArray select (lbCurSel _transportUnitLb) select 0;
             _grp = _transportArray select (lbCurSel _transportUnitLb) select 1;

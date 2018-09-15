@@ -812,7 +812,6 @@ switch(_operation) do {
                                 if (vehicle _caller != _caller) then {
                                     _vehicle = vehicle _caller;
                                 }
-
                                 else {
                                     _vehicle = cursorTarget;
                                 };
