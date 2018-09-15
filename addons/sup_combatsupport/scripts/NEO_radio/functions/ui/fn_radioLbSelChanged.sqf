@@ -107,9 +107,11 @@ switch (toUpper (_lb lbText _index)) do
 
             if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" }) then
             {
+                private _vehicle = NEO_radioLogic getVariable "NEO_radioTalkWithPilot";
+
                 _transportUnitLb ctrlEnable true;
                 {
-                    if (vehicle player == (_x select 0)) then
+                    if (_vehicle == (_x select 0)) then
                     {
                         _transportUnitLb lbAdd (_x select 2);
                         _transportUnitLb lbSetPicture [0, (getText (configFile >> "CfgVehicles" >> typeOf (_x select 0) >> "picture"))];

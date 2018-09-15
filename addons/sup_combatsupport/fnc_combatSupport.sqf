@@ -805,16 +805,45 @@ switch(_operation) do {
                     [
                         [
                             ("<t color=""#700000"">" + ("Talk To Pilot") + "</t>"),
-                            {["talk"] call ALIVE_fnc_radioAction},
+                            {
+                                private _caller = _this select 1;
+                                private _vehicle = nil;
+
+                                if (vehicle _caller != _caller) then {
+                                    _vehicle = vehicle _caller;
+                                }
+                                else {
+                                    _vehicle = cursorTarget;
+                                };
+
+                                ["talk"] call ALIVE_fnc_radioAction;
+                                NEO_radioLogic setVariable ["NEO_radioTalkWithPilot", _vehicle];
+                            },
                             "talk",
                             -1,
                             false,
                             true,
                             "",
                             "
-                                ({(_x select 0) == vehicle _this} count (NEO_radioLogic getVariable format ['NEO_radioTrasportArray_%1', playerSide]) > 0)
-                                &&
-                                {alive (driver (vehicle _this))}
+                                private _vehicle = nil;
+                                private _vehicle_found = false;
+
+                                {
+                                    if (_x select 0 == cursorTarget && {_this distance cursorTarget <= 50}) exitWith {
+                                        _vehicle = _x select 0;
+                                    };
+
+                                    if (_x select 0 == vehicle _this) exitWith {
+                                        _vehicle = _x select 0;
+                                    };
+
+                                } forEach (NEO_radioLogic getVariable format [""NEO_radioTrasportArray_%1"", playerSide]);
+
+                                if (!isNil ""_vehicle"" && {alive (driver _vehicle)}) then {
+                                    _vehicle_found = true;
+                                };
+
+                                _vehicle_found;
                             "
                         ]
                     ]

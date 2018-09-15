@@ -1,4 +1,4 @@
-private ["_display", "_text", "_lb", "_index", "_slider", "_sliderText", "_show"];
+private ["_display", "_text", "_lb", "_index", "_slider", "_sliderText", "_show", "_chopper"];
 _display = findDisplay 655555;
 _text = _display displayCtrl 655573;
 _lb = _this select 0;
@@ -9,7 +9,13 @@ _objectLb = _display displayCtrl 655580;
 
 _transportArray = NEO_radioLogic getVariable format ["NEO_radioTrasportArray_%1", playerSide];
 _transportUnitLb = _display displayCtrl 655568;
-_chopper = _transportArray select (lbCurSel _transportUnitLb) select 0; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" }) then { _chopper = vehicle player };
+
+if (!isNil {NEO_radioLogic getVariable "NEO_radioTalkWithPilot"}) then {
+    _chopper = NEO_radioLogic getVariable "NEO_radioTalkWithPilot";
+}
+else {
+    _chopper = _transportArray select (lbCurSel _transportUnitLb) select 0;
+};
 
 _show = switch (toUpper (_lb lbText _index)) do
 {
