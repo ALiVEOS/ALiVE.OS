@@ -101,4 +101,10 @@
 <Key ID="STR_ALIVE_CMP_READINESS_LEVEL_COMMENT">
     <Original>The amount of troops that will be on duty and patrolling</Original>
 </Key>
+<Key ID="STR_ALIVE_CMP_ALLOW_PLAYER_TASK">
+    <Original>Allow player tasking:</Original>
+</Key>
+<Key ID="STR_ALIVE_CMP_ALLOW_PLAYER_TASK_COMMENT">
+    <Original>MilAssault/MilDefend C2ISTAR tasks</Original>
+</Key>
 </Container></Package></Project>

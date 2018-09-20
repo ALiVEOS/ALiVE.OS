@@ -200,6 +200,25 @@ class CfgVehicles {
                                         };
                                 };
                         };
+                        class allowPlayerTasking
+                        {
+                            displayName = "$STR_ALIVE_CMP_ALLOW_PLAYER_TASK";
+                            description = "$STR_ALIVE_CMP_ALLOW_PLAYER_TASK_COMMENT";
+                            class Values
+                            {
+                                class Yes
+                                {
+                                    name = "Yes";
+                                    value = true;
+                                    default = 1;
+                                };
+                                class No
+                                {
+                                    name = "No";
+                                    value = false;
+                                };
+                            };
+                        };
                 };
                 class ModuleDescription
                 {
