@@ -544,9 +544,9 @@ switch (_operation) do {
     case "syncTasks": {
         if (_args isEqualType []) then {
             [_logic, _args] spawn {
-				private _debug = [_logic, "debug", false] call ALIVE_fnc_hashGet;
-      
 				params ["_logic", "_eventData"];
+
+				private _debug = [_logic, "debug", false] call ALIVE_fnc_hashGet;
 				_eventData params ["_playerID", "_groupID"];
 
                 private _player = [_playerID] call ALIVE_fnc_getPlayerByUID;
