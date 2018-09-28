@@ -85,14 +85,11 @@ switch(_operation) do {
                         CAS_RESPAWN_LIMIT = parsenumber(_CAS_SET_RESPAWN_LIMIT);
                         _TRANS_SET_RESPAWN_LIMIT = NEO_radioLogic getvariable ["combatsupport_transportrespawnlimit","3"];
                         TRANS_RESPAWN_LIMIT = parsenumber(_TRANS_SET_RESPAWN_LIMIT);
-                        _ARTY_SET_RESPAWN_LIMIT = NEO_radioLogic getvariable ["combatsupport_artyrespawnlimit","3"];
-                        ARTY_RESPAWN_LIMIT = parsenumber(_ARTY_SET_RESPAWN_LIMIT);
 
                         _audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
 
                         _transportArrays = [];
                         _casArrays = [];
-                        _artyArrays = [];
                         _sides = [WEST,EAST,RESISTANCE,CIVILIAN];
 
                         private _appendPylonLoadOutCode = {
@@ -194,34 +191,6 @@ switch(_operation) do {
                                         _casArrays pushback _casArray;
                                     };
                                 };
-                            } else {
-                                switch (tolower(_type)) do {
-                                   case ("arty") : {
-                                        private ["_position","_callsign","_type"];
-
-                                        _position = getposATL _entry;
-                                        _direction =  getDir _entry;
-                                        _class = typeOf _entry;
-
-                                           _callsign = _entry getvariable ["CS_CALLSIGN",groupID (group _entry)];
-
-                                        _he = ["HE",parsenumber(_entry getvariable ["CS_artillery_he","30"])];
-                                        _illum = ["ILLUM",parsenumber(_entry getvariable ["CS_artillery_illum","30"])];
-                                        _smoke = ["SMOKE",parsenumber(_entry getvariable ["CS_artillery_smoke","30"])];
-                                        _guided = ["SADARM",parsenumber(_entry getvariable ["CS_artillery_guided","30"])];
-                                        _cluster = ["CLUSTER",parsenumber(_entry getvariable ["CS_artillery_cluster","30"])];
-                                        _lg = ["LASER",parsenumber(_entry getvariable ["CS_artillery_lg","30"])];
-                                        _mine = ["MINE",parsenumber(_entry getvariable ["CS_artillery_atmine","30"])];
-                                        _atmine = ["AT MINE",parsenumber(_entry getvariable ["CS_artillery_atmine","30"])];
-                                        _rockets = ["ROCKETS",parsenumber(_entry getvariable ["CS_artillery_rockets","16"])];
-
-                                        _ordnance = [_he,_illum,_smoke,_guided,_cluster,_lg,_mine,_atmine, _rockets];
-                                        _code = _entry getvariable ["CS_CODE",""];
-                                        _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
-                                        _artyArray = [_position,_class, _callsign,3,_ordnance,_code];
-                                        _artyArrays pushback _artyArray;
-                                    };
-                                };
                             };
 
                             switch (typeOf ((synchronizedObjects _logic) select _i)) do {
@@ -269,57 +238,11 @@ switch(_operation) do {
                                     _transportArray = [_position,_direction,_type, _callsign,_tasks,_code,_height,_slingloading, _containers];
                                     _transportArrays pushback _transportArray;
                                 };
-                                case ("ALiVE_sup_artillery") : {
-                                    private ["_position","_callsign","_type"];
-
-                                    _position = getposATL ((synchronizedObjects _logic) select _i);
-                                    _callsign = ((synchronizedObjects _logic) select _i) getvariable ["artillery_callsign","FOX ONE"];
-                                    _class = ((synchronizedObjects _logic) select _i) getvariable ["artillery_type","B_Mortar_01_F"];
-                                    _setherounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_he","30"];
-                                    _setillumrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_illum","30"];
-                                    _setsmokerounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_smoke","30"];
-                                    _setguidedrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_guided","30"];
-                                    _setclusterrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_cluster","30"];
-                                    _setlgrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_lg","30"];
-                                    _setminerounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_mine","30"];
-                                    _setatminerounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_atmine","30"];
-                                    _setrocketrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_rockets","16"];
-
-                                    _direction =  getDir ((synchronizedObjects _logic) select _i);
-                                    _code = ((synchronizedObjects _logic) select _i) getvariable ["artillery_code",""];
-                                    _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
-
-                                    _herounds = parsenumber(_setherounds);
-                                    _illumrounds = parsenumber(_setillumrounds);
-                                    _smokerounds = parsenumber(_setsmokerounds);
-                                    _guidedrounds = parsenumber(_setguidedrounds);
-                                    _clusterrounds = parsenumber(_setclusterrounds);
-                                    _lgrounds = parsenumber(_setlgrounds);
-                                    _minerounds = parsenumber(_setminerounds);
-                                    _atminerounds = parsenumber(_setatminerounds);
-                                    _rocketrounds = parsenumber(_setrocketrounds);
-
-                                    _he = ["HE",_herounds];
-                                    _illum = ["ILLUM",_illumrounds];
-                                    _smoke = ["SMOKE",_smokerounds];
-                                    _guided = ["SADARM",_guidedrounds];
-                                    _cluster = ["CLUSTER",_clusterrounds];
-                                    _lg = ["LASER",_lgrounds];
-                                    _mine = ["MINE",_minerounds];
-                                    _atmine = ["AT MINE",_atminerounds];
-                                    _rockets = ["ROCKETS", _rocketrounds];
-
-                                   _ordnance = [_he,_illum,_smoke,_guided,_cluster,_lg,_mine,_atmine, _rockets];
-
-                                    _artyArray = [_position,_class, _callsign,3,_ordnance,_code];
-                                    _artyArrays pushback _artyArray;
-                                };
                             };
                         };
 
                         SUP_CASARRAYS  = _casArrays; PublicVariable "SUP_CASARRAYS";
                         SUP_TRANSPORTARRAYS  = _transportArrays; PublicVariable "SUP_TRANSPORTARRAYS";
-                        SUP_ARTYARRAYS = _artyArrays; PublicVariable "SUP_ARTYARRAYS";
 
                         {
                             NEO_radioLogic setVariable [format ["NEO_radioTrasportArray_%1", _x], [],true];
@@ -565,176 +488,6 @@ switch(_operation) do {
 
                         } forEach SUP_CASARRAYS;
 
-
-
-                        // ARTY
-
-                        {
-                            private ["_pos", "_class", "_callsign", "_unitCount", "_rounds", "_code", "_roundsUnit", "_roundsAvailable", "_canMove", "_units", "_grp", "_vehDir","_tempclass","_side","_artyBatteries"];
-                            _pos = _x select 0; _pos set [2, 0];
-                            _class = _x select 1;
-                            _callsign = toUpper (_x select 2);
-                            _unitCount = round (_x select 3); if (_unitCount > 4) then { _unitCount = 4 }; if (_unitCount < 1) then { _unitCount = 1 };
-                            _rounds = _x select 4;
-                            _code = _x select 5;
-
-                            if (_class in ["BUS_Support_Mort","BUS_MotInf_MortTeam","OIA_MotInf_MortTeam","OI_support_Mort","HAF_MotInf_MortTeam","HAF_Support_Mort"]) then {
-                                // Force _unitCount to 1 to prevent spawning 3x3 units when _class is from CfgGroups
-                                _unitCount = 1;
-                                private _letter = _class select [0,1];
-
-                                switch (_letter) do {
-                                    case "O" : {_tempclass = "O_Mortar_01_F"};
-                                    case "B" : {_tempclass = "B_Mortar_01_F"};
-                                    case "H" : {_tempclass = "I_Mortar_01_F"};
-                                    default {_tempclass = "B_Mortar_01_F"};
-                                };
-
-                                _side = getNumber(configfile >> "CfgVehicles" >> _tempclass >> "side");
-                            } else {
-                                _side = getNumber(configfile >> "CfgVehicles" >> _class >> "side");
-                            };
-
-                            switch (_side) do {
-                                case 0 : {_side = EAST};
-                                case 1 : {_side = WEST};
-                                case 2 : {_side = RESISTANCE};
-                                default {_side = EAST};
-                            };
-
-                            if (!isNil "_tempclass") then {
-                                _roundsUnit = _tempclass call ALiVE_fnc_GetArtyRounds;
-                            } else {
-                                _roundsUnit = _class call ALiVE_fnc_GetArtyRounds;
-                            };
-
-                            _roundsAvailable = [];
-                            _canMove = if (_class in ["B_MBT_01_arty_F", "O_MBT_02_arty_F", "B_MBT_01_mlrs_F","O_Mortar_01_F", "B_Mortar_01_F","I_Mortar_01_F","BUS_Support_Mort","BUS_MotInf_MortTeam","OIA_MotInf_MortTeam","OI_support_Mort","HAF_MotInf_MortTeam","HAF_Support_Mort"]) then { true } else { false };
-                            _units = [];
-                            _artyBatteries = [];
-                            _vehDir = 0;
-
-                            private ["_veh","_grp"];
-
-                            _veh = nearestObjects [_pos, [_class], 5];
-
-                            if (count _veh > 0) then {_veh = _veh select 0; _grp = group _veh} else {_veh = nil; _grp = createGroup _side};
-
-                            if (isnil "_veh") then {
-                                private ["_vehPos","_i"];
-                                for "_i" from 1 to _unitCount do
-                                {
-                                    private ["_veh","_sptarr"];
-                                    _vehPos = _pos getPos [15, _vehDir]; _vehPos set [2, 0];
-
-                                    if (isNil "_tempclass") then {
-                                        _veh = createVehicle [_class, _vehPos, [], 0, "CAN_COLLIDE"];
-                                        _artyBatteries pushback _veh;
-                                    } else {
-                                        _veh = createVehicle [_tempclass, _vehPos, [], 0, "CAN_COLLIDE"];
-                                        _artyBatteries pushback _veh;
-                                    };
-                                    _veh setDir _vehDir;
-                                    _veh setPosATL _vehPos;
-                                    _veh lock true;
-                                    _vehDir = _vehDir + 90;
-
-                                    [_veh, _grp] call BIS_fnc_spawnCrew;
-
-                                    // set ownership flag for other modules
-                                    _veh setVariable ["ALIVE_CombatSupport", true];
-
-                                    // Exclude CS from VCOM
-                                    // CS only runs serverside so no PV is needed
-                                    (driver _veh) setvariable ["VCOM_NOAI", true];
-
-                                    if (_i == 1) then {leader _grp setRank "CAPTAIN"};
-
-                                    // Add leader and assistant if a mortar weapon, in order to use BIS pack and unpack functions
-                                    if (_class in ["O_Mortar_01_F", "B_Mortar_01_F","I_Mortar_01_F","BUS_Support_Mort","BUS_MotInf_MortTeam","OIA_MotInf_MortTeam","OI_support_Mort","HAF_MotInf_MortTeam","HAF_Support_Mort"]) then {
-                                        private ["_tl","_sl","_newgrp","_cars"];
-                                        private _prefix = _class select [0,1];
-
-                                        if (_prefix == "H") then {
-                                            _prefix = "I";
-                                        };
-
-                                        _tl = format ["%1_soldier_TL_F", _prefix];
-                                        _sl = format ["%1_soldier_F", _prefix];
-                                        _newgrp = [_vehPos, _side, [_tl, _sl],[],[],[],[],[],_vehDir] call BIS_fnc_spawnGroup;
-                                        (units _newgrp) joinSilent _grp;
-
-                                        _sptarr = _grp getVariable ["supportWeaponArray",[]];
-                                        _sptarr pushback _veh;
-                                        _grp setvariable ["supportWeaponArray", _sptarr];
-                                    };
-
-                                    _units pushback _veh;
-                                };
-                                if (_class in ["BUS_MotInf_MortTeam","OIA_MotInf_MortTeam","HAF_MotInf_MortTeam"]) then {
-                                    _cars = [2, faction (leader _grp),"Car"] call ALiVE_fnc_findVehicleType;
-                                    if (count _cars > 0) then {
-                                        for "_i" from 1 to ceil((count (units _grp))/4) do {
-                                            private "_car";
-                                            _car = createVehicle [_cars select 0, [position (leader _grp),1,100,1,0,4,0] call bis_fnc_findSafePos, [], 0, "NONE"];
-                                            _grp addVehicle _car;
-                                            _artyBatteries pushback _car;
-                                        };
-                                    };
-                                };
-                            } else {
-                                _units pushback _veh;
-                                _veh lock true;
-
-                                // set ownership flag for other modules
-                                _veh setVariable ["ALIVE_CombatSupport", true];
-                            };
-
-                            { _x setVariable ["NEO_radioArtyModule", [leader _grp, _callsign], true] } forEach _units;
-
-                            [_grp,0] setWaypointPosition [_pos,0];
-                            [[(units _grp select 0),_callsign], "fnc_setGroupID", false, false] spawn BIS_fnc_MP;
-
-
-                            _codeArray = [_code, ";"] call CBA_fnc_split;
-                            {
-                                _vehicle = _x;
-                                {
-                                    if (_x != "") then {
-                                        [_vehicle, _x] spawn {
-                                            private ["_vehicle", "_spawn"];
-                                            _vehicle = _this select 0;
-                                            _spawn = compile(_this select 1);
-                                            [_vehicle] spawn _spawn;
-                                        };
-                                    };
-                                } forEach _codeArray;
-                            } forEach _artyBatteries;
-
-                            //Validate rounds
-                            {
-                                if ((_x select 0) in _roundsUnit) then
-                                {
-                                    _roundsAvailable pushback _x;
-                                };
-                            } forEach _rounds;
-
-
-                            leader _grp setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];
-
-                            //FSM
-                            [_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _class, leader _grp, _code, _audio] execFSM "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
-
-                            _a = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _side];
-                            _a pushback ([leader _grp, _grp, _callsign, _units, _roundsAvailable]);
-
-                            NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _side], _a, true];
-
-                        } forEach SUP_ARTYARRAYS;
-
-
-
-
                         for "_i" from 0 to ((count _sides)-1) do {
                             _sideIn = _sides select _i;
 
@@ -768,21 +521,6 @@ switch(_operation) do {
                                             };
                                         } foreach _xArray;
                                         NEO_radioLogic setVariable [format ["NEO_radioCasArray_%1", _sideIn], _sideInArray + _add,true];
-                                    };
-
-                                    private ["_sideInArray","_xArray"];
-                                    _sideInArray = NEO_radioLogic getVariable format["NEO_radioArtyArray_%1", _sideIn];
-                                    _xArray = NEO_radioLogic getVariable format["NEO_radioArtyArray_%1", _x];
-
-                                    if (count _xArray > 0) then {
-                                        _add = [];
-                                        {
-                                            _vehicle = _x select 0;
-                                            if (({_vehicle == _x select 0} count _sideInArray) == 0) then {
-                                                _add pushback _x;
-                                            };
-                                        } foreach _xArray;
-                                        NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _sideIn], _sideInArray + _add,true];
                                     };
                                 };
                             } foreach _sides;

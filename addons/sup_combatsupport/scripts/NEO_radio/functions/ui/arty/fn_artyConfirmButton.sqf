@@ -24,7 +24,8 @@ _type = "IMMEDIATE";
 _ordnanceType = _artyOrdnanceTypeLb lbText (lbCurSel _artyOrdnanceTypeLb);
 
 //_ord = [_battery, _ordnanceType] CALL ALIVE_fnc_GetMagazineType;
-_ord = [_battery, _ordnanceType] CALL ALIVE_fnc_getArtyMagazineType;
+private _gunner = ((units _unit) select {vehicle _x != _x && {gunner (vehicle _x) == _x}}) select 0;
+_ord = [_gunner, _ordnanceType] CALL ALIVE_fnc_getArtyMagazineType;
 
 _rate = switch (_artyRateOfFireLb lbText (lbCurSel _artyRateOfFireLb)) do
 {
@@ -57,6 +58,9 @@ if (_audio) then {
     player kbTell [_battery, "ALIVE_SUPP_protocol", "Artillery_Request", "GROUP"];
 };
 
+// TODO: Cleanup obsolete bits
+private _logic = _unit getVariable ["logic", objNull];
+[_logic, "setFireMission", [_pos, _ord, _count, _rate, _dispersion]] call ALIVE_fnc_artillery;
 
 //NEW TASK
 _battery setVariable ["NEO_radioArtyNewTask", [_type, _ordnanceType, _rate, _count, _dispersion, _pos, _unit, _ord, _callsignPlayer, player], true];

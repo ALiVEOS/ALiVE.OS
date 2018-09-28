@@ -12,6 +12,7 @@ _artyRateOfFireLb = _display displayCtrl 655603;
 _artyRoundCountLb = _display displayCtrl 655605;
 _battery = _artyArray select (lbCurSel _artyUnitLb) select 0; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" }) then { _battery = ((NEO_radioLogic getVariable "NEO_radioTalkWithArty") getVariable "NEO_radioArtyModule") select 0 };
 _status = _battery getVariable "NEO_radioArtyUnitStatus";
+_status = "NONE"; // TODO: Handle status properly
 
 if
 (
