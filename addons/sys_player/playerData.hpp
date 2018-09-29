@@ -514,7 +514,7 @@ GVAR(LOADOUT_DATA) = [
         private ["_currentweapon","_currentmode","_isFlash","_isIR","_weapLow","_data"];
         if (typeof (vehicle (_this select 0)) == typeof (_this select 0)) then {
             _currentweapon = (weaponState (_this select 0)) select 1;
-            _currentmode = currentWeaponMode (_this select 0);
+            _currentmode = (weaponState (_this select 0)) select 2;
             _isFlash = (_this select 0) isFlashlightOn _currentweapon;
             _isIR = (_this select 0) isIRLaserOn _currentweapon;
             _nvg = currentVisionMode (_this select 0);
