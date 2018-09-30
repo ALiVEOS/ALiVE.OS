@@ -498,11 +498,25 @@ switch (_operation) do {
             };
 
             _vehicle = createVehicle [_vehicleClass, _position, [], 0, _special];
-            //_vehicle setPos _position;
             _vehicle setDir _direction;
             _vehicle setFuel _fuel;
             _vehicle engineOn _engineOn;
-            //_vehicle setVehicleVarName _profileID;
+
+            // FLY ignores height on vehicle creation, reset position
+            if (_special isEqualTo "FLY")  then {
+                _vehicle setPosATL _position;
+
+                // give airplane a push. changing direction, position
+                // reset its velocity
+                if (_vehicleType isEqualTo "Plane") then {
+                    _speed = 200;
+                    _vehicle setVelocity [
+                        (sin _direction) * _speed,
+                        (cos _direction) * _speed,
+                        0.1
+                    ];
+                };
+            };
 
             if(count _cargo > 0) then {
                 _cargoItems = [];
@@ -657,12 +671,6 @@ switch (_operation) do {
                     deletevehicle _parachute;
                 };
             };
-
-            if(_engineOn && {_vehicleType == "Plane"}) then {
-                _speed = 200;
-                _vehicle setVelocity [(sin _direction*_speed), (cos _direction*_speed),0.1];
-            };
-
 
             if(count _damage > 0) then {
                 [_vehicle, _damage] call ALIVE_fnc_vehicleSetDamage;
