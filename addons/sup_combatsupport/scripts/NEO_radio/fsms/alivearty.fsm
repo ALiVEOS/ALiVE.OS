@@ -176,7 +176,7 @@ class FSM
       init = /*%FSM<STATEINIT""">*/"private " \n
        "[" \n
        "    ""_units"",""_grp"", ""_callsign"", ""_pos"", ""_availableRounds"", ""_canMove""," \n
-       "    ""_class"", ""_battery"", ""_leader"",""_unitCount""" \n
+       "    ""_class"", ""_battery"", ""_leader"",""_unitCount"", ""_side""" \n
        "];" \n
        "_units = _this select 0; _unitCount = count _units;" \n
        "_grp = _this select 1;" \n
@@ -189,6 +189,7 @@ class FSM
        "_code = _this select 8;" \n
        "_audio = _this select 9;" \n
        "_leader = leader _grp;" \n
+       "_side = _this select 10;" \n
        "" \n
        "diag_log format[""START ARTY FSM: %1"",_this];" \n
        "" \n
@@ -708,7 +709,7 @@ class FSM
     {
       name = "__6";
       init = /*%FSM<STATEINIT""">*/"_battery setVariable [""NEO_radioArtyUnitStatus"", ""KILLED"", true];" \n
-       "[_units, _grp, _callsign, _pos, _availableRounds,_canMove,_classCopy, _battery,CS_RESPAWN,_code] spawn ALIVE_fnc_RespawnArtyAsset;"/*%FSM</STATEINIT""">*/;
+       "[_units, _grp, _callsign, _pos, _availableRounds,_canMove,_classCopy, _battery, CS_RESPAWN, _code, _side] spawn ALIVE_fnc_RespawnArtyAsset;"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
       {

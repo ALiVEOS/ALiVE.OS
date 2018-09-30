@@ -723,7 +723,7 @@ switch(_operation) do {
                             leader _grp setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];
 
                             //FSM
-                            [_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _class, leader _grp, _code, _audio] execFSM "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
+                            [_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _class, leader _grp, _code, _audio, _side] execFSM "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
 
                             _a = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _side];
                             _a pushback ([leader _grp, _grp, _callsign, _units, _roundsAvailable]);
