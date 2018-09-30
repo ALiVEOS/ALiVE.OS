@@ -63,7 +63,8 @@ switch (_taskState) do {
         // establish the location for the task
         // get friendly occupied cluster position
 
-        _targetPosition = [_taskLocation,_taskLocationType,_taskSide,"MIL"] call ALIVE_fnc_taskGetSideCluster;
+        // true = ignore custom military objectives that do not allow player tasking
+        _targetPosition = [_taskLocation,_taskLocationType,_taskSide,"MIL",true] call ALIVE_fnc_taskGetSideCluster;
 
         if(count _targetPosition == 0 || {_taskLocationType == "Map" && {_targetPosition distance _taskLocation > 1000}}) then {
             private ["_category","_compType"];

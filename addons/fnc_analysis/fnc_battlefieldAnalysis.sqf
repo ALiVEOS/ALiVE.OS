@@ -453,9 +453,13 @@ switch(_operation) do {
         _result = [_logic, "casualtySectors"] call ALIVE_fnc_hashGet;
     };
     case "getClustersOwnedBySide": {
-        private["_side","_clustersOwnedBySide","_activeSectors","_clusters","_owner","_sectorData"];
+        private["_clustersOwnedBySide","_activeSectors","_clusters","_owner","_sectorData"];
 
-        _side = _args select 0;
+        _args params [
+            "_side",
+            ["_checkMilCustom", false]
+        ];
+
         _clustersOwnedBySide = [];
 
         _side = if (typeName _side == "SIDE") then {str(_side)} else {_side};
@@ -470,14 +474,26 @@ switch(_operation) do {
             if !(isnil "_sectorData") then {
                 _clusters = [_sectorData,"activeClusters"] call ALIVE_fnc_hashGet;
 
-                {
+                private _clusterID = _clusters select 1 select 0;
 
+                {
                     _owner = [_x,"owner"] call ALIVE_fnc_hashGet;
                     _owner = if (typeName _owner == "SIDE") then {str(_owner)} else {_owner};
                     if (_owner == "GUER") then {_owner = "INDEP"};
 
                     if (_owner == _side) then {
-                        _clustersOwnedBySide pushback _x;
+                        private _allowPlayerTasking = true;
+
+                        if (_checkMilCustom) then {
+                            if (!isNil "ALIVE_clustersMilCustom" && {[ALIVE_clustersMilCustom, _clusterID] call CBA_fnc_hashHasKey}) then {
+                                private _clusterData = [ALIVE_clustersMilCustom, _clusterID] call ALIVE_fnc_hashGet;
+                                _allowPlayerTasking = [_clusterData, "allowPlayerTasking", true] call ALIVE_fnc_hashGet;
+                            };
+                        };
+
+                        if (_allowPlayerTasking) then {
+                            _clustersOwnedBySide pushback _x;
+                        };
                     };
                 } forEach (_clusters select 2);
             };
@@ -486,10 +502,14 @@ switch(_operation) do {
         _result = _clustersOwnedBySide;
     };
     case "getClustersOwnedBySideAndType": {
-        private["_side","_type","_clustersOwnedBySide","_activeSectors","_clusters","_owner","_clusterType","_sectorData"];
+        private["_clustersOwnedBySide","_activeSectors","_clusters","_owner","_clusterType","_sectorData"];
 
-        _side = _args select 0;
-        _type = _args select 1;
+        _args params [
+            "_side",
+            "_type",
+            ["_checkMilCustom", false]
+        ];
+
         _clustersOwnedBySide = [];
 
         _side = if (typeName _side == "SIDE") then {str(_side)} else {_side};
@@ -503,6 +523,8 @@ switch(_operation) do {
 
             if !(isnil "_sectorData") then {
                 _clusters = [_sectorData,"activeClusters"] call ALIVE_fnc_hashGet;
+
+                private _clusterID = _clusters select 1 select 0;
 
                 {
                     _owner = [_x,"owner"] call ALIVE_fnc_hashGet;
@@ -512,7 +534,18 @@ switch(_operation) do {
                     if (_owner == "GUER") then {_owner = "INDEP"};
 
                     if (_owner == _side && {_type == _clusterType}) then {
-                        _clustersOwnedBySide pushback _x;
+                        private _allowPlayerTasking = true;
+
+                        if (_checkMilCustom) then {
+                            if (!isNil "ALIVE_clustersMilCustom" && {[ALIVE_clustersMilCustom, _clusterID] call CBA_fnc_hashHasKey}) then {
+                                private _clusterData = [ALIVE_clustersMilCustom, _clusterID] call ALIVE_fnc_hashGet;
+                                _allowPlayerTasking = [_clusterData, "allowPlayerTasking", true] call ALIVE_fnc_hashGet;
+                            };
+                        };
+
+                        if (_allowPlayerTasking) then {
+                            _clustersOwnedBySide pushback _x;
+                        };
                     };
                 } forEach (_clusters select 2);
 

@@ -233,6 +233,29 @@ switch(_operation) do {
         _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
     };
 
+    case "allowPlayerTasking": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["allowPlayerTasking", _args];
+        } else {
+            _args = _logic getVariable ["allowPlayerTasking", true];
+        };
+
+        if (typeName _args == "STRING") then {
+            if (_args == "true") then {
+                _args = true;
+            }
+            else {
+                _args = false;
+            };
+
+            _logic setVariable ["allowPlayerTasking", _args];
+        };
+
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
+
     // Main process
     case "init": {
 
@@ -270,6 +293,10 @@ switch(_operation) do {
                 [true] call ALIVE_fnc_timer;
             };
             // DEBUG -------------------------------------------------------------------------------------
+
+            if (isNil "ALIVE_clustersMilCustom") then {
+                ALIVE_clustersMilCustom = [] call ALIVE_fnc_hashCreate;
+            };
 
             // instantiate static vehicle position data
             if(isNil "ALIVE_groupConfig") then {
@@ -340,6 +367,7 @@ switch(_operation) do {
             private _side = _factionSideNumber call ALIVE_fnc_sideNumberToText;
             private _countProfiles = 0;
             private _position = position _logic;
+            private _allowPlayerTasking = [_logic, "allowPlayerTasking"] call MAINCLASS;
 
             // Load static data
             call ALiVE_fnc_staticDataHandler;
@@ -375,6 +403,7 @@ switch(_operation) do {
             if(_debug) then {
                 ["ALIVE CMP [%1] - Size: %1 Priority: %2",_size,_priority] call ALIVE_fnc_dump;
                 ["ALIVE CMP [%1] - SideNum: %1 Side: %2 Faction: %3 Composition: %4",_factionSideNumber,_side,_faction,_composition] call ALIVE_fnc_dump;
+                ["ALIVE CMP Allow player tasking: %1", _allowPlayerTasking] call ALIVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -404,10 +433,12 @@ switch(_operation) do {
             [_cluster,"size", _size] call ALIVE_fnc_hashSet;
             [_cluster,"type", "MIL"] call ALIVE_fnc_hashSet;
             [_cluster,"priority", _priority] call ALIVE_fnc_hashSet;
+            [_cluster,"allowPlayerTasking", _allowPlayerTasking] call ALIVE_fnc_hashSet;
             [_cluster,"debug", _debug] call ALIVE_fnc_cluster;
 
             [_logic, "objectives", [_cluster]] call MAINCLASS;
 
+            [ALIVE_clustersMilCustom, _objectiveName, _cluster] call ALIVE_fnc_hashSet;
 
             if(ALIVE_loadProfilesPersistent) exitWith {
 
