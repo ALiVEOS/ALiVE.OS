@@ -1522,7 +1522,7 @@ switch (_operation) do {
                                 if (_sideAutoGeneration select 0 == "Constant") then {
                                     uiSleep (10 + (random 50));
 
-									_task params ["", "_requestPlayerID", "", "_taskFaction"];
+                                    _task params ["", "_requestPlayerID", "", "", "_taskFaction"];
 
                                     private _taskEnemyFaction = [_taskParams, "enemyFaction"] call ALIVE_fnc_hashGet;
                                     private _generate = [format ["%1_%2", _taskSide, time], _requestPlayerID, _taskSide, _taskFaction, _taskEnemyFaction, _sideAutoGeneration select 0];
