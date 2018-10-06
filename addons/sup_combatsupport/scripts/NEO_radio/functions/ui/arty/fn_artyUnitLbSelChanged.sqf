@@ -43,7 +43,7 @@ _artyHelpUnitText ctrlSetStructuredText parseText (switch (toUpper _status) do
     case "MOVE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is on the move to get in range of target</t>" };
     case "RTB" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is RTB</t>" };
     case "RESPONSE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit waiting for response</t>" };
-    case "NOAMMO" : { "<t color='#603234' size='0.7' font='PuristaMedium>Unit is out of ammunition</t>" };
+    case "NOAMMO" : { "<t color='#603234' size='0.7' font='PuristaMedium'>Unit is out of ammunition</t>" };
 });
 
 if (_status == "RESPONSE") then
