@@ -902,7 +902,7 @@ if (!_simAttacks) then {
             private _vehAssignment = [_vehAssignments,_vehicleID] call ALiVE_fnc_hashGet;
             private _unitAssignments = +(_vehAssignment param [2, [], [[]]]);
 
-            if !(_unitAssignments isEqualTo []) then {
+            if !(_unitAssignments isEqualType []) then {
                 _unitAssignments = [];
             };
 
