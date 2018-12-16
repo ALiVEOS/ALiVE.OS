@@ -309,6 +309,12 @@ switch (_operation) do {
 
         };
 
+        // all nodes have been evaluated
+        // no path exists
+        if (_frontier isequalto []) then {
+            _jobComplete = true;
+        };
+
         if (_jobComplete) then {
             [_callbackArgs,_result] spawn _callback;
 
