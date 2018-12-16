@@ -161,6 +161,25 @@ class CfgVehicles {
 							};
 						};
 					};
+                    class pathfinding
+                    {
+                        displayName = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING";
+                        description = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_COMMENT";
+                        class Values
+                        {
+                            class No
+                            {
+                                name = "No";
+                                value = false;
+                                default = 1;
+                            };
+                            class Yes
+                            {
+                                name = "Yes";
+                                value = true;
+                            };
+                        };
+                    };
                     class seaTransport
                     {
                         displayName = "$STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT";

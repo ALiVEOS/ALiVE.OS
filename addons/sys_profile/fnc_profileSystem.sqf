@@ -98,7 +98,7 @@ switch(_operation) do {
 
         private["_debug","_persistent","_plotSectors","_syncMode","_syncedUnits","_spawnRadius","_spawnTypeJetRadius","_spawnTypeHeliRadius",
         "_activeLimiter","_spawnCycleTime","_despawnCycleTime","_combatRate","_profileSimulatorFSM",
-        "_sectors","_persistent","_file"];
+        "_sectors","_persistent","_file","_pathfinding"];
 
         if (isServer) then {
 
@@ -115,6 +115,7 @@ switch(_operation) do {
             _despawnCycleTime = [_logic,"despawnCycleTime"] call ALIVE_fnc_hashGet;
             _combatRate = [_logic,"combatRate"] call ALIVE_fnc_hashGet;
             _smoothSpawn = [_logic,"smoothSpawn"] call ALIVE_fnc_hashGet;
+            _pathfinding = [_logic,"pathfinding"] call ALiVE_fnc_hashGet;
 
             // set smoothSpawn value
             ALiVE_smoothSpawn = _smoothSpawn;
@@ -135,6 +136,14 @@ switch(_operation) do {
 
             // global server flag
             ALIVE_profileSystemDataLoaded = true;
+
+            // create pathfinder
+
+            if (_pathfinding) then {
+                [{
+                    alive_pathfinder = [nil,"create"] call ALiVE_fnc_pathfinder;
+                },[]] call CBA_fnc_directCall;
+            };
 
             // create the profile handler
             ALIVE_profileHandler = [nil, "create"] call ALIVE_fnc_profileHandler;
@@ -320,6 +329,16 @@ switch(_operation) do {
                     _args = [_logic,"persistent"] call ALIVE_fnc_hashGet;
             } else {
                     [_logic,"persistent",_args] call ALIVE_fnc_hashSet;
+            };
+            ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+            _result = _args;
+    };
+    case "pathfinding": {
+            if(typeName _args != "BOOL") then {
+                    _args = [_logic,"pathfinding"] call ALIVE_fnc_hashGet;
+            } else {
+                    [_logic,"pathfinding",_args] call ALIVE_fnc_hashSet;
             };
             ASSERT_TRUE(typeName _args == "BOOL",str _args);
 
