@@ -216,6 +216,8 @@ switch (_operation) do {
 
             _currentJobData = [false, _procedure, _cameFromMap, _costSoFarMap, _frontier];
             [_logic,"currentJobData", _currentJobData] call ALiVE_fnc_hashSet;
+        } else {
+            [_logic,"currentJobData", []] call ALiVE_fnc_hashSet;
         };
 
     };
@@ -242,8 +244,6 @@ switch (_operation) do {
 
         call {
 
-            systemchat format ["Executing Job: %1", _currentJobData];
-
             if (!_initComplete) then {
                 // detect impossible paths
 
@@ -261,17 +261,17 @@ switch (_operation) do {
             // only check 5 sectors per frame
             private _sectorIterations = 0;
 
-            while {!(_frontier isequalto []) && _sectorIterations < 5} do {
+            while {!(_frontier isequalto []) && _sectorIterations < 2} do {
                 _sectorIterations = _sectorIterations + 1;
                 private _currentSector = [nil,"priorityGet", _frontier] call MAINCLASS;
 
                 //////////////////////////////////////////////////
-                private _sectorCenter = _currentSector select 1;
-                _m = createMarker [str str str str _sectorCenter, _sectorCenter];
-                _m setMarkerShape "ICON";
-                _m setMarkerType "hd_dot";
-                _m setMarkerSize [0.3,0.3];
-                _m setMarkerColor "ColorBlue";
+                //private _sectorCenter = _currentSector select 1;
+                //_m = createMarker [str str str str _sectorCenter, _sectorCenter];
+                //_m setMarkerShape "ICON";
+                //_m setMarkerType "hd_dot";
+                //_m setMarkerSize [0.3,0.3];
+                //_m setMarkerColor "ColorBlue";
                 //////////////////////////////////////////////////
 
                 if (_currentSector isequalto _goalSector) exitwith {

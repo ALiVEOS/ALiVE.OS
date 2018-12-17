@@ -23,6 +23,7 @@ switch (_operation) do {
 
         // debug
 
+        /*
         _m = createMarker [str _pos, _pos];
         _m setMarkerShape "RECTANGLE";
         _m setMarkerSize [_size * 0.50,_size * 0.5];
@@ -36,6 +37,7 @@ switch (_operation) do {
                 _m setMarkerColor "ColorBlue";
             };
         };
+        */
 
         //_m = createMarker [str str _pos, _pos];
         //_m setMarkerShape "ICON";
