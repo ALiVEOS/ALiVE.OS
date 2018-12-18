@@ -118,31 +118,21 @@ switch (_operation) do {
 
         if (count _path <= 3) exitwith { _result = _path };
 
-        private _pathSize = count _path;
-
         private _shortPath = [_path select 0];
-        private _shortPathSize = 1;
         private _currDir = (_path select 0) getDir (_path select 1);
 
-        private _i = 2;
-        while {_i < _pathSize - 1} do {
+        for "_i" from 1 to (count _path - 1) do {
             private _currSector = _path select _i;
-            _currDir = (_shortPath select (_shortPathSize - 1)) getdir _currSector;
+            private _tempDir = (_path select (_i - 1)) getdir _currSector;
 
-            private _tempSector = _currSector;
-            private _tempDir = _currDir;
-            while {_tempDir == _currDir && {_i < _pathSize - 1}} do {
-                _i = _i + 1;
-                _tempSector = _path select _i;
-                _tempDir = _currSector getdir _tempSector;
+            if (_tempDir != _currDir && _i > 1) then {
+                _shortPath pushback (_path select (_i - 1));
+                _currDir = _tempDir;
             };
-
-            _shortPath pushback (_path select (_i - 1));
-            _shortPathSize = _shortPathSize + 1;
-            _i = _i + 1;
         };
 
-        _shortPath pushbackunique (_path select _i);
+        private _lastPositionIndex = count _path - 1;
+        _shortPath pushbackunique (_path select _lastPositionIndex);
 
         _result = _shortPath;
 
@@ -276,8 +266,10 @@ switch (_operation) do {
                 if (_currentSector isequalto _goalSector) exitwith {
                     _result = [nil,"reconstructPath", [_startSector,_goalSector,_cameFromMap]] call MAINCLASS;
 
-                    // no need to move to center of sector we're already in
-                    _result deleteat 0;
+                    if (count _result > 1) then {
+                        // no need to move to center of sector we're already in
+                        _result deleteat 0;
+                    };
 
                     // last path position should be ending pos instead of sector center
                     _result set [count _result - 1, _goalPosition];
