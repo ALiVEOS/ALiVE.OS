@@ -504,48 +504,131 @@ switch(_operation) do {
         [_logic,"vehiclesInCargoOf",[]] call ALIVE_fnc_hashSet;
     };
 
+    case "profileWaypointToWaypoint": {
+
+        private _waypoint = _args;
+
+        private _units = _logic select 2 select 21; //[_logic,"units"] call ALIVE_fnc_hashGet;
+        private _unit = _units select 0;
+
+        if !(isnil "_unit") then {
+            [_waypoint, group _unit] call ALIVE_fnc_profileWaypointToWaypoint;
+        };
+
+    };
+
     case "insertWaypoint": {
-        if (_args isEqualType []) then {
+        private _waypoint = _args;
+
+        private _pathfindingEnabled = [MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet;
+        if (!_pathfindingEnabled) then {
+
             private _waypoints = _logic select 2 select 16; //[_logic,"waypoints"] call ALIVE_fnc_hashGet;
-            _waypoints = [_waypoints, [_args], 0] call BIS_fnc_arrayInsert;
+            _waypoints = [_waypoints, [_waypoint], 0] call BIS_fnc_arrayInsert;
             [_logic,"waypoints",_waypoints] call ALIVE_fnc_hashSet;
 
             private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
             if (_active) then {
-                private _units = _logic select 2 select 21; //[_logic,"units"] call ALIVE_fnc_hashGet;
-                private _unit = _units select 0;
-
-                if !(isnil "_unit") then {
-                    [_args, group _unit, true] call ALIVE_fnc_profileWaypointToWaypoint;
-                };
+                [_logic,"profileWaypointToWaypoint", _waypoint] call MAINCLASS;
             };
-            _result = _args;
+
+        } else {
+
+            private _profileID = [_logic,"profileID"] call ALiVE_fnc_hashGet;
+            private _profilePosition = [_logic,"position"] call ALiVE_fnc_hashGet;
+            private _pathfindingProcedure = [_profile] call ALiVE_fnc_profileGetPathfindingProcedure;
+
+            private _waypointPosition = [_waypoint,"position"] call ALiVE_fnc_hashGet;
+
+            private _callback = {
+                params ["_args","_path"];
+
+                _args params ["_profileID"];
+
+                private _profile = [ALiVE_profileHandler,"getProfile", _profileID] call ALiVE_fnc_profileHandler;
+                private _profileWaypoints = _profile select 2 select 16;
+                private _profileActive = _profile select 2 select 1;
+
+                private _waypointsToAdd = _path apply { [_x] call ALiVE_fnc_createProfileWaypoint };
+
+                {
+                    private _waypointToAdd = _x;
+
+                    _profileWaypoints = [_profileWaypoints, [_waypointToAdd], 0] call BIS_fnc_arrayInsert;
+
+                    if (_profileActive) then {
+                        [_logic,"profileWaypointToWaypoint", _x] call MAINCLASS;
+                    };
+                } foreach _waypointsToAdd;
+
+                [_profile,"waypoints", _profileWaypoints] call ALIVE_fnc_hashSet;
+            };
+
+            [ALiVE_Pathfinder,"findPath",[_profilePosition,_waypointPosition,_pathfindingProcedure,true,[_profileID],_callback]] call ALiVE_fnc_pathfinder;
+
         };
+
+        _result = _waypoint;
     };
 
     case "addWaypoint": {
-        private ["_waypoints","_units","_unit","_group","_active"];
+        private _waypoint = _args;
 
-        if (_args isEqualType []) then {
-            _waypoints = _logic select 2 select 16; //[_logic,"waypoints"] call ALIVE_fnc_hashGet;
-            _waypoints pushback _args;
+        private _pathfindingEnabled = [MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet;
+        if (!_pathfindingEnabled) then {
 
-            if(([_args,"type"] call ALIVE_fnc_hashGet) == 'CYCLE') then {
+            private _waypoints = _logic select 2 select 16; //[_logic,"waypoints"] call ALIVE_fnc_hashGet;
+            _waypoints pushback _waypoint;
+
+            if (([_waypoint,"type"] call ALIVE_fnc_hashGet) == 'CYCLE') then {
                 [_logic,"isCycling",true] call ALIVE_fnc_hashSet;
             };
 
-            _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
+            private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
             if (_active) then {
-                _units = _logic select 2 select 21; //[_logic,"units"] call ALIVE_fnc_hashGet;
-                _unit = _units select 0;
-
-                if !(isnil "_unit") then {
-                    _group = group _unit;
-                    [_args, _group] call ALIVE_fnc_profileWaypointToWaypoint;
-                };
+                [_logic,"profileWaypointToWaypoint", _waypoint] call MAINCLASS;
             };
-            _result = _args;
+
+        } else {
+
+            private _profileID = [_logic,"profileID"] call ALiVE_fnc_hashGet;
+            private _profilePosition = [_logic,"position"] call ALiVE_fnc_hashGet;
+            private _pathfindingProcedure = [_profile] call ALiVE_fnc_profileGetPathfindingProcedure;
+
+            private _waypointPosition = [_waypoint,"position"] call ALiVE_fnc_hashGet;
+
+            private _callback = {
+                params ["_args","_path"];
+
+                _args params ["_profileID"];
+
+                private _profile = [ALiVE_profileHandler,"getProfile", _profileID] call ALiVE_fnc_profileHandler;
+                private _profileWaypoints = _profile select 2 select 16;
+                private _profileActive = _profile select 2 select 1;
+
+                private _waypointsToAdd = _path apply { [_x] call ALiVE_fnc_createProfileWaypoint };
+
+                {
+                    private _waypointToAdd = _x;
+                    private _waypointType = [_waypointToAdd,"type"] call ALIVE_fnc_hashGet;
+
+                    _profileWaypoints pushback _waypointToAdd;
+
+                    if (_waypointType == "CYCLE") then {
+                        [_profile,"isCycling", true] call ALIVE_fnc_hashSet;
+                    };
+
+                    if (_profileActive) then {
+                        [_logic,"profileWaypointToWaypoint", _x] call MAINCLASS;
+                    };
+                } foreach _waypointsToAdd;
+            };
+
+            [ALiVE_Pathfinder,"findPath",[_profilePosition,_waypointPosition,_pathfindingProcedure,true,[_profileID],_callback]] call ALiVE_fnc_pathfinder;
+
         };
+
+        _result = _waypoint;
     };
 
     case "clearWaypoints": {
