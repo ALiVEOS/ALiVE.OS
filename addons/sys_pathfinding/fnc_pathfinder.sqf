@@ -189,7 +189,7 @@ switch (_operation) do {
 
     case "findPath": {
 
-        _args params ["_startPos","_endPos","_procedureName","_shortenPath","_callbackArgs","_callback"];
+        _args params ["_startPos","_endPos","_procedureName","_shortenPath","_randomizeWaypointRadius","_callbackArgs","_callback"];
 
         private _terrainGrid = [_logic,"terrainGrid"] call ALiVE_fnc_hashGet;
         private _pathJobs = [_logic,"pathJobs"] call ALiVE_fnc_hashGet;
@@ -197,7 +197,7 @@ switch (_operation) do {
         private _startSector = [_terrainGrid,"positionToSector", _startPos] call ALiVE_fnc_pathfindingGrid;
         private _goalSector = [_terrainGrid,"positionToSector", _endPos] call ALiVE_fnc_pathfindingGrid;
 
-        private _newJob = [_startSector,_goalSector,_endPos,_procedureName,_shortenPath,_callbackArgs,_callback];
+        private _newJob = [_startSector,_goalSector,_endPos,_procedureName,_shortenPath,_randomizeWaypointRadius,_callbackArgs,_callback];
         _pathJobs pushback _newJob;
 
         if (count _pathJobs == 1) then {
@@ -213,7 +213,7 @@ switch (_operation) do {
         // load next job data
         if (count _pathJobs > 0) then {
             private _nextJob = _pathJobs select 0;
-            _nextJob params ["_startSector","_goalSector","_goalPosition","_procedureName","_shortenPath","_callbackArgs","_callback"];
+            _nextJob params ["_startSector","_goalSector","_goalPosition","_procedureName","_shortenPath","_randomizeWaypointRadius","_callbackArgs","_callback"];
 
             private _procedures = [_logic,"pathfindingProcedures"] call ALiVE_fnc_hashGet;
             private _procedure = [_procedures,_procedureName, "landVehicle"] call ALiVE_fnc_hashGet;
@@ -240,7 +240,7 @@ switch (_operation) do {
         private _currentJob = _pathJobs select 0;
         private _currentJobData = [_logic,"currentJobData"] call ALiVE_fnc_hashGet;
 
-        _currentJob params ["_startSector","_goalSector","_goalPosition","_procedureName","_shortenPath","_callbackArgs","_callback"];
+        _currentJob params ["_startSector","_goalSector","_goalPosition","_procedureName","_shortenPath","_randomizeWaypointRadius","_callbackArgs","_callback"];
         _currentJobData params ["_initComplete","_procedure", "_cameFromMap","_costSoFarMap","_frontier"];
 
         private _canUseLand = _procedure select 1;
@@ -286,7 +286,10 @@ switch (_operation) do {
 
                 if (_currentSector isequalto _goalSector) exitwith {
                     _result = [nil,"reconstructPath", [_startSector,_goalSector,_cameFromMap]] call MAINCLASS;
-                    _result = [nil,"randomizePathPositions", _result] call MAINCLASS;
+
+                    if (_randomizeWaypointRadius) then {
+                        _result = [nil,"randomizePathPositions", _result] call MAINCLASS;
+                    };
 
                     if (count _result > 1) then {
                         // no need to move to center of sector we're already in
