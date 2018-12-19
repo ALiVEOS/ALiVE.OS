@@ -564,7 +564,7 @@ switch(_operation) do {
                 [_profile,"waypoints", _profileWaypoints] call ALIVE_fnc_hashSet;
             };
 
-            [ALiVE_Pathfinder,"findPath",[_profilePosition,_waypointPosition,_pathfindingProcedure,true,[_profileID],_callback]] call ALiVE_fnc_pathfinder;
+            [ALiVE_Pathfinder,"findPath",[_profilePosition,_waypointPosition,_pathfindingProcedure,true,true,[_profileID],_callback]] call ALiVE_fnc_pathfinder;
 
         };
 
@@ -624,7 +624,7 @@ switch(_operation) do {
                 } foreach _waypointsToAdd;
             };
 
-            [ALiVE_Pathfinder,"findPath",[_profilePosition,_waypointPosition,_pathfindingProcedure,true,[_profileID],_callback]] call ALiVE_fnc_pathfinder;
+            [ALiVE_Pathfinder,"findPath",[_profilePosition,_waypointPosition,_pathfindingProcedure,true,true,[_profileID],_callback]] call ALiVE_fnc_pathfinder;
 
         };
 
