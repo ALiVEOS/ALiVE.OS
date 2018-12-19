@@ -543,13 +543,32 @@ switch(_operation) do {
             private _callback = {
                 params ["_args","_path"];
 
-                _args params ["_profileID"];
+                _args params ["_profileID","_waypoint"];
 
                 private _profile = [ALiVE_profileHandler,"getProfile", _profileID] call ALiVE_fnc_profileHandler;
                 private _profileWaypoints = _profile select 2 select 16;
                 private _profileActive = _profile select 2 select 1;
 
-                private _waypointsToAdd = _path apply { [_x] call ALiVE_fnc_createProfileWaypoint };
+                private _waypointTemplate = +_waypoint;
+                //[_waypointTemplate,"timeout", []] call ALiVE_fnc_hashSet;
+                [_waypointTemplate,"type", "MOVE"] call ALiVE_fnc_hashSet;
+                [_waypointTemplate,"description", ""] call ALiVE_fnc_hashSet;
+                [_waypointTemplate,"attachVehicle", ""] call ALiVE_fnc_hashSet;
+                [_waypointTemplate,"statements", ""] call ALiVE_fnc_hashSet;
+
+                // last waypoint should be the one the user passed
+                private _lastPositionIndex = count _path - 1;
+                _path deleteat _lastPositionIndex;
+
+                private _waypointsToAdd = _path apply {
+                    private _newWaypoint = +_waypointTemplate;
+                    [_newWaypoint,"position", _x] call ALiVE_fnc_hashSet;
+
+                    _newWaypoint
+                };
+
+                // last waypoint should be the one the user passed
+                _waypointsToAdd pushback _waypoint;
 
                 {
                     private _waypointToAdd = _x;
@@ -564,7 +583,7 @@ switch(_operation) do {
                 [_profile,"waypoints", _profileWaypoints] call ALIVE_fnc_hashSet;
             };
 
-            [ALiVE_Pathfinder,"findPath",[_profilePosition,_waypointPosition,_pathfindingProcedure,true,true,[_profileID],_callback]] call ALiVE_fnc_pathfinder;
+            [ALiVE_Pathfinder,"findPath",[_profilePosition,_waypointPosition,_pathfindingProcedure,true,true,[_profileID,_waypoint],_callback]] call ALiVE_fnc_pathfinder;
 
         };
 
@@ -600,13 +619,32 @@ switch(_operation) do {
             private _callback = {
                 params ["_args","_path"];
 
-                _args params ["_profileID"];
+                _args params ["_profileID","_waypoint"];
 
                 private _profile = [ALiVE_profileHandler,"getProfile", _profileID] call ALiVE_fnc_profileHandler;
                 private _profileWaypoints = _profile select 2 select 16;
                 private _profileActive = _profile select 2 select 1;
 
-                private _waypointsToAdd = _path apply { [_x] call ALiVE_fnc_createProfileWaypoint };
+                private _waypointTemplate = +_waypoint;
+                //[_waypointTemplate,"timeout", []] call ALiVE_fnc_hashSet;
+                [_waypointTemplate,"type", "MOVE"] call ALiVE_fnc_hashSet;
+                [_waypointTemplate,"description", ""] call ALiVE_fnc_hashSet;
+                [_waypointTemplate,"attachVehicle", ""] call ALiVE_fnc_hashSet;
+                [_waypointTemplate,"statements", ""] call ALiVE_fnc_hashSet;
+
+                // last waypoint should be the one the user passed
+                private _lastPositionIndex = count _path - 1;
+                _path deleteat _lastPositionIndex;
+
+                private _waypointsToAdd = _path apply {
+                    private _newWaypoint = +_waypointTemplate;
+                    [_newWaypoint,"position", _x] call ALiVE_fnc_hashSet;
+
+                    _newWaypoint
+                };
+
+                // last waypoint should be the one the user passed
+                _waypointsToAdd pushback _waypoint;
 
                 {
                     private _waypointToAdd = _x;
@@ -624,7 +662,7 @@ switch(_operation) do {
                 } foreach _waypointsToAdd;
             };
 
-            [ALiVE_Pathfinder,"findPath",[_profilePosition,_waypointPosition,_pathfindingProcedure,true,true,[_profileID],_callback]] call ALiVE_fnc_pathfinder;
+            [ALiVE_Pathfinder,"findPath",[_profilePosition,_waypointPosition,_pathfindingProcedure,true,true,[_profileID,_waypoint],_callback]] call ALiVE_fnc_pathfinder;
 
         };
 
