@@ -112,6 +112,27 @@ switch (_operation) do {
 
     };
 
+    case "randomizePathPositions": {
+
+        private _positions = _args;
+
+        private _pathfindingTerrainGrid = [ALiVE_pathfinder,"terrainGrid"] call ALiVE_fnc_hashGet;
+        private _pathfindingSectorSize = [_pathfindingTerrainGrid,"sectorSize"] call ALiVE_fnc_hashGet;
+
+        private _variance = _pathfindingSectorSize * 1.5;
+
+        // dont modify ending position
+        private _lastPosition = _positions deleteat (count _positions - 1);
+        _result = _positions apply {
+            [
+                ((_x select 0) - _pathfindingSectorSize) + (random _variance),
+                ((_x select 1) - _pathfindingSectorSize) + (random _variance)
+            ]
+        };
+        _result pushback _lastPosition;
+
+    };
+
     case "consolidatePath": {
 
         _path = _args;
@@ -265,6 +286,7 @@ switch (_operation) do {
 
                 if (_currentSector isequalto _goalSector) exitwith {
                     _result = [nil,"reconstructPath", [_startSector,_goalSector,_cameFromMap]] call MAINCLASS;
+                    _result = [nil,"randomizePathPositions", _result] call MAINCLASS;
 
                     if (count _result > 1) then {
                         // no need to move to center of sector we're already in
