@@ -103,7 +103,6 @@ switch (_operation) do {
             _currentSector = [_cameFromMap,_currentSector select 0] call ALiVE_fnc_hashGet;
         };
 
-        // visual testing only
         _path pushback (_startSector select 1);
 
         reverse _path;
@@ -119,14 +118,15 @@ switch (_operation) do {
         private _pathfindingTerrainGrid = [ALiVE_pathfinder,"terrainGrid"] call ALiVE_fnc_hashGet;
         private _pathfindingSectorSize = [_pathfindingTerrainGrid,"sectorSize"] call ALiVE_fnc_hashGet;
 
-        private _variance = _pathfindingSectorSize * 1.5;
+        private _varianceMin = _pathfindingSectorSize * 0.3;
+        private _varianceMax = _varianceMin * 2;
 
         // dont modify ending position
         private _lastPosition = _positions deleteat (count _positions - 1);
         _result = _positions apply {
             [
-                ((_x select 0) - _pathfindingSectorSize) + (random _variance),
-                ((_x select 1) - _pathfindingSectorSize) + (random _variance)
+                ((_x select 0) - _varianceMin) + (random _varianceMax),
+                ((_x select 1) - _varianceMin) + (random _varianceMax)
             ]
         };
         _result pushback _lastPosition;
@@ -146,7 +146,7 @@ switch (_operation) do {
             private _currSector = _path select _i;
             private _tempDir = (_path select (_i - 1)) getdir _currSector;
 
-            if (_tempDir != _currDir && _i > 1) then {
+            if ((abs (_tempDir - _currDir)) > 15 && _i > 1) then {
                 _shortPath pushback (_path select (_i - 1));
                 _currDir = _tempDir;
             };
@@ -243,7 +243,7 @@ switch (_operation) do {
         _currentJob params ["_startSector","_goalSector","_goalPosition","_procedureName","_shortenPath","_randomizeWaypointRadius","_callbackArgs","_callback"];
         _currentJobData params ["_initComplete","_procedure", "_cameFromMap","_costSoFarMap","_frontier"];
 
-        _procedure params ["_canUseLand","_canUseWater","_roadWeight","_waterWeight"];
+        _procedure params ["_procName","_canUseLand","_canUseWater","_roadWeight","_waterWeight"];
 
         private _terrainGrid = [_logic,"terrainGrid"] call ALiVE_fnc_hashGet;
         _result = [];
