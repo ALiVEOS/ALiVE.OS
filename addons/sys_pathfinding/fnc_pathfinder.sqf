@@ -24,6 +24,7 @@ switch (_operation) do {
 
         [_logic,"addPathfindingProcedure", ["infantry", true, false, -1.25, 0]] call MAINCLASS;
         [_logic,"addPathfindingProcedure", ["vehicleLand", true, false, -6, 0]] call MAINCLASS;
+        [_logic,"addPathfindingProcedure", ["vehicleWater", false, true, 0, 0]] call MAINCLASS;
         [_logic,"addPathfindingProcedure", ["vehicleAir", true, true, 0, 0]] call MAINCLASS;
 
         addMissionEventHandler ["EachFrame", {
