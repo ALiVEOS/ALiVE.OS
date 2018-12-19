@@ -523,14 +523,7 @@ switch(_operation) do {
         private _pathfindingEnabled = [MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet;
         if (!_pathfindingEnabled) then {
 
-            private _waypoints = _logic select 2 select 16; //[_logic,"waypoints"] call ALIVE_fnc_hashGet;
-            _waypoints = [_waypoints, [_waypoint], 0] call BIS_fnc_arrayInsert;
-            [_logic,"waypoints",_waypoints] call ALIVE_fnc_hashSet;
-
-            private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
-            if (_active) then {
-                [_logic,"profileWaypointToWaypoint", _waypoint] call MAINCLASS;
-            };
+            [_logic,"insertWaypointInternal", _waypoint] call MAINCLASS;
 
         } else {
 
@@ -555,6 +548,7 @@ switch(_operation) do {
                 [_waypointTemplate,"description", ""] call ALiVE_fnc_hashSet;
                 [_waypointTemplate,"attachVehicle", ""] call ALiVE_fnc_hashSet;
                 [_waypointTemplate,"statements", ""] call ALiVE_fnc_hashSet;
+                [_waypointTemplate,"name", "pathfound"] call ALiVE_fnc_hashSet;
 
                 // last waypoint should be the one the user passed
                 private _lastPositionIndex = count _path - 1;
@@ -568,6 +562,7 @@ switch(_operation) do {
                 };
 
                 // last waypoint should be the one the user passed
+                [_waypoint,"name","pathfound"] call ALiVE_fnc_hashSet;
                 _waypointsToAdd pushback _waypoint;
 
                 {
@@ -576,7 +571,7 @@ switch(_operation) do {
                     _profileWaypoints = [_profileWaypoints, [_waypointToAdd], 0] call BIS_fnc_arrayInsert;
 
                     if (_profileActive) then {
-                        [_logic,"profileWaypointToWaypoint", _x] call MAINCLASS;
+                        [_profile,"profileWaypointToWaypoint", _x] call MAINCLASS;
                     };
                 } foreach _waypointsToAdd;
 
@@ -593,20 +588,13 @@ switch(_operation) do {
     case "addWaypoint": {
         private _waypoint = _args;
 
+        //private _compRad = [_waypoint,"completionRadius"] call ALiVE_fnc_hashGet;
+        //systemchat format ["adding waypoint with radius: %1", _compRad];
+
         private _pathfindingEnabled = [MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet;
         if (!_pathfindingEnabled) then {
 
-            private _waypoints = _logic select 2 select 16; //[_logic,"waypoints"] call ALIVE_fnc_hashGet;
-            _waypoints pushback _waypoint;
-
-            if (([_waypoint,"type"] call ALIVE_fnc_hashGet) == 'CYCLE') then {
-                [_logic,"isCycling",true] call ALIVE_fnc_hashSet;
-            };
-
-            private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
-            if (_active) then {
-                [_logic,"profileWaypointToWaypoint", _waypoint] call MAINCLASS;
-            };
+            [_logic,"addWaypointInternal", _waypoint] call MAINCLASS;
 
         } else {
 
@@ -631,6 +619,7 @@ switch(_operation) do {
                 [_waypointTemplate,"description", ""] call ALiVE_fnc_hashSet;
                 [_waypointTemplate,"attachVehicle", ""] call ALiVE_fnc_hashSet;
                 [_waypointTemplate,"statements", ""] call ALiVE_fnc_hashSet;
+                [_waypointTemplate,"name", "pathfound"] call ALiVE_fnc_hashSet;
 
                 // last waypoint should be the one the user passed
                 private _lastPositionIndex = count _path - 1;
@@ -644,6 +633,7 @@ switch(_operation) do {
                 };
 
                 // last waypoint should be the one the user passed
+                [_waypoint,"name","pathfound"] call ALiVE_fnc_hashSet;
                 _waypointsToAdd pushback _waypoint;
 
                 {
@@ -657,7 +647,7 @@ switch(_operation) do {
                     };
 
                     if (_profileActive) then {
-                        [_logic,"profileWaypointToWaypoint", _x] call MAINCLASS;
+                        [_profile,"profileWaypointToWaypoint", _x] call MAINCLASS;
                     };
                 } foreach _waypointsToAdd;
             };
@@ -667,6 +657,35 @@ switch(_operation) do {
         };
 
         _result = _waypoint;
+    };
+
+    case "insertWaypointInternal": {
+        private _waypoint = _args;
+
+        private _waypoints = _logic select 2 select 16; //[_logic,"waypoints"] call ALIVE_fnc_hashGet;
+        _waypoints = [_waypoints, [_waypoint], 0] call BIS_fnc_arrayInsert;
+        [_logic,"waypoints",_waypoints] call ALIVE_fnc_hashSet;
+
+        private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
+        if (_active) then {
+            [_logic,"profileWaypointToWaypoint", _waypoint] call MAINCLASS;
+        };
+    };
+
+    case "addWaypointInternal": {
+        private _waypoint = _args;
+
+        private _waypoints = _logic select 2 select 16; //[_logic,"waypoints"] call ALIVE_fnc_hashGet;
+        _waypoints pushback _waypoint;
+
+        if (([_waypoint,"type"] call ALIVE_fnc_hashGet) == 'CYCLE') then {
+            [_logic,"isCycling",true] call ALIVE_fnc_hashSet;
+        };
+
+        private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
+        if (_active) then {
+            [_logic,"profileWaypointToWaypoint", _waypoint] call MAINCLASS;
+        };
     };
 
     case "clearWaypoints": {
