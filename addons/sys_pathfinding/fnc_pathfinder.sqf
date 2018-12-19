@@ -243,8 +243,7 @@ switch (_operation) do {
         _currentJob params ["_startSector","_goalSector","_goalPosition","_procedureName","_shortenPath","_randomizeWaypointRadius","_callbackArgs","_callback"];
         _currentJobData params ["_initComplete","_procedure", "_cameFromMap","_costSoFarMap","_frontier"];
 
-        private _canUseLand = _procedure select 1;
-        private _canUseWater = _procedure select 2;
+        _procedure params ["_canUseLand","_canUseWater","_roadWeight","_waterWeight"];
 
         private _terrainGrid = [_logic,"terrainGrid"] call ALiVE_fnc_hashGet;
         _result = [];
@@ -255,12 +254,18 @@ switch (_operation) do {
         call {
 
             if (!_initComplete) then {
-                // detect impossible paths
-
+                // check for impossible paths
                 private _goalSectorIsLand = _goalSector select 3;
                 private _pathIsPossible = if (_goalSectorIsLand) then { _canUseLand } else { _canUseWater };
-
                 if (!_pathIsPossible) then {
+                    _jobComplete = true;
+                    breakto "main";
+                };
+
+                // check for non-bias procedure
+                private _nonBiasProcedure = _canUseWater && { _canUseLand } && { _roadWeight == 0 } && { _waterWeight == 0 };
+                if (_nonBiasProcedure) then {
+                    _result = [_goalPosition];
                     _jobComplete = true;
                     breakto "main";
                 };
