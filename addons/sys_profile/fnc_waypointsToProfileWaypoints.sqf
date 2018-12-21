@@ -34,17 +34,16 @@ private _convertAndAddWaypoint = {
     params ["_profile","_waypoint"];
 
     private _profileWaypoint = [_waypoint] call ALIVE_fnc_waypointToProfileWaypoint;
-    private _waypointPosition = [_profileWaypoint,"position"] call ALIVE_fnc_hashGet;
     private _waypointName = [_profileWaypoint,"name"] call ALiVE_fnc_hashGet;
+
+    private _waypointWasPathfound = _waypointName == "pathfound";
+    private _waypointReady = _waypointWasPathfound;
+
+    private _waypointPosition = [_profileWaypoint,"position"] call ALIVE_fnc_hashGet;
     private _waypointStatements = [_profileWaypoint,"statements"] call ALIVE_fnc_hashGet;
 
-    // if a waypoint was created while profile was active (and thus not pathfound)
-    // find a path for the waypoint
-    private _insertionMethod = "addWaypoint";
-    if (_waypointName == "pathfound") then { _insertionMethod = "addWaypointInternal" };
-
     if(!((_waypointPosition select [0,2]) isequalto [0,0]) && {(_waypointStatements select 1 != "_disableSimulation = true;")}) then {
-        [_profile,_insertionMethod, _profileWaypoint] call ALIVE_fnc_profileEntity;
+        [_profile,"addPendingWaypoint", ["addWaypoint",_profileWaypoint,_waypointReady]] call ALIVE_fnc_profileEntity;
     };
 
     /*
@@ -57,12 +56,14 @@ private _convertAndAddWaypoint = {
     */
 };
 
+private _waypointCount = count _waypoints;
+
 private _isCycling = _profile select 2 select 25;
-if(_isCycling) then {
+if (_isCycling) then {
     // if the entity has a cycle waypoint need to get all completed waypoints and
     // stick them in the end of the waypoints array
 
-    for "_i" from (currentWaypoint _group) to (count _waypoints)-1 do {
+    for "_i" from (currentWaypoint _group) to (_waypointCount - 1) do {
         private _waypoint = _waypoints select _i;
         [_profile,_waypoint] call _convertAndAddWaypoint;
     };
@@ -75,8 +76,8 @@ if(_isCycling) then {
 } else {
 
     // convert any non completed waypoints to profile waypoints
-    if(currentWaypoint _group < count waypoints _group) then {
-        for "_i" from (currentWaypoint _group) to (count _waypoints)-1 do {
+    if (currentWaypoint _group < count waypoints _group) then {
+        for "_i" from (currentWaypoint _group) to (_waypointCount - 1) do {
             private _waypoint = _waypoints select _i;
             [_profile,_waypoint] call _convertAndAddWaypoint;
         };
