@@ -103,7 +103,7 @@ switch (_operation) do {
 
         while { !((_currentSector select 0) isequalto (_startSector select 0)) } do {
             _path pushback (_currentSector select 1);
-            _currentSector = [_cameFromMap,_currentSector select 0] call ALiVE_fnc_hashGet;
+            _currentSector = _cameFromMap getvariable (str(_currentSector select 0));
         };
 
         _path pushback (_startSector select 1);
@@ -221,11 +221,11 @@ switch (_operation) do {
             private _procedures = [_logic,"pathfindingProcedures"] call ALiVE_fnc_hashGet;
             private _procedure = [_procedures,_procedureName, "landVehicle"] call ALiVE_fnc_hashGet;
 
-            private _cameFromMap = [] call ALiVE_fnc_hashCreate;
-            private _costSoFarMap = [] call ALiVE_fnc_hashCreate;
+            private _cameFromMap = call CBA_fnc_createNamespace;
+            private _costSoFarMap = call CBA_fnc_createNamespace;
 
             private _frontier = [[0,_startSector]];
-            [_costSoFarMap,_startSector select 0, 0] call ALiVE_fnc_hashSet;
+            _costSoFarMap setvariable [str(_startSector select 0),0];
 
             _currentJobData = [false, _procedure, _cameFromMap, _costSoFarMap, _frontier];
             [_logic,"currentJobData", _currentJobData] call ALiVE_fnc_hashSet;
@@ -323,15 +323,15 @@ switch (_operation) do {
                     private _canTraverse = if (_neighborIsLand) then { _canUseLand } else { _canUseWater };
 
                     if (_canTraverse) then {
-                        private _newCost = ([_costSoFarMap,_currentSector select 0] call ALiVE_fnc_hashGet) + ([nil,"getMovementCost", [_currentSector,_currNeighbor,_procedure]] call MAINCLASS);
+                        private _newCost = (_costSoFarMap getvariable (str(_currentSector select 0))) + ([nil,"getMovementCost", [_currentSector,_currNeighbor,_procedure]] call MAINCLASS);
 
-                        private _currNeighborCostSoFar = [_costSoFarMap,_currNeighbor select 0] call ALiVE_fnc_hashGet;
+                        private _currNeighborCostSoFar = _costSoFarMap getvariable (str(_currNeighbor select 0));
                         //if (isnil "_currNeighborCostSoFar" || { _newCost < _currNeighborCostSoFar }) then {
                         if (isnil "_currNeighborCostSoFar") then {
-                            [_costSoFarMap,_currNeighbor select 0, _newCost] call ALiVE_fnc_hashSet;
+                            _costSoFarMap setvariable [str(_currNeighbor select 0), _newCost];
                             private _priority = _newCost + ([nil,"heuristic", [_currNeighbor,_goalSector,_procedure]] call MAINCLASS);
                             [nil,"priorityAdd", [_frontier,_priority,_currNeighbor]] call MAINCLASS;
-                            [_cameFromMap,_currNeighbor select 0,_currentSector] call ALiVE_fnc_hashSet;
+                            _cameFromMap setvariable [str(_currNeighbor select 0),_currentSector];
                         };
                     };
                 } foreach _neighbors;
