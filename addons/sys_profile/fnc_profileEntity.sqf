@@ -171,45 +171,6 @@ switch(_operation) do {
             // init the super class
             [_logic, "init"] call SUPERCLASS;
 
-/*
-            private _fields = [
-                ["vehiclesInCommandOf", []],
-                ["vehiclesInCargoOf", []],
-                ["leader", objnull],
-                ["unitClasses", []],
-                ["unitCount", 0],
-                ["group", grpnull],
-                ["companyID", ""],
-                ["groupID", ""],
-                ["waypoints", []],
-                ["waypointsCompleted", []],
-                ["positions", []],
-                ["damages", []],
-                ["ranks", []],
-                ["units", []],
-                ["speedPerSecond", "Man" call ALIVE_fnc_vehicleGetSpeedPerSecond],
-                ["despawnPosition", [0,0]],
-                ["hasSimulated", false],
-                ["isCycling", false],
-                ["activeCommands", []],
-                ["inactiveCommands", []],
-                ["spawnType", []],
-                ["faction", []],
-                ["isPlayer", false],
-                ["_rev", ""],
-                ["_id", ""],
-                ["busy", false]
-            ];
-
-            private _logicFields = _logic select 1;
-            private _logicFieldValues = _logic select 2;
-            {
-                _logicFields pushback (_x select 0);
-                _logicFieldValues pushback (_x select 1);
-            } foreach _fields;
-*/
-
-
             // set defaults
             [_logic,"type","entity"] call ALIVE_fnc_hashSet;            // select 2 select 5
             [_logic,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashSet;   // select 2 select 8
@@ -238,6 +199,7 @@ switch(_operation) do {
             [_logic,"_rev",""] call ALIVE_fnc_hashSet;                  // select 2 select 31
             [_logic,"_id",""] call ALIVE_fnc_hashSet;                   // select 2 select 32
             [_logic,"busy",false] call ALIVE_fnc_hashSet;               // select 2 select 33
+            [_logic,"pendingWaypointPaths", []] call ALiVE_fnc_hashSet;; // select 2 select 34;
         };
 
         /*
@@ -504,47 +466,177 @@ switch(_operation) do {
         [_logic,"vehiclesInCargoOf",[]] call ALIVE_fnc_hashSet;
     };
 
-    case "insertWaypoint": {
-        if (_args isEqualType []) then {
-            private _waypoints = _logic select 2 select 16; //[_logic,"waypoints"] call ALIVE_fnc_hashGet;
-            _waypoints = [_waypoints, [_args], 0] call BIS_fnc_arrayInsert;
-            [_logic,"waypoints",_waypoints] call ALIVE_fnc_hashSet;
+    case "profileWaypointToWaypoint": {
 
-            private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
-            if (_active) then {
-                private _units = _logic select 2 select 21; //[_logic,"units"] call ALIVE_fnc_hashGet;
-                private _unit = _units select 0;
+        private _waypoint = _args;
 
-                if !(isnil "_unit") then {
-                    [_args, group _unit, true] call ALIVE_fnc_profileWaypointToWaypoint;
-                };
-            };
-            _result = _args;
+        private _units = _logic select 2 select 21; //[_logic,"units"] call ALIVE_fnc_hashGet;
+        private _unit = _units select 0;
+
+        if !(isnil "_unit") then {
+            [_waypoint, group _unit] call ALIVE_fnc_profileWaypointToWaypoint;
         };
+
+    };
+
+    case "insertWaypoint": {
+        private _waypoint = _args;
+
+        private _pathfindingEnabled = [MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet;
+        if (!_pathfindingEnabled) then {
+            [{ [_logic,"insertWaypointInternal", _waypoint] call MAINCLASS }, []] call CBA_fnc_directCall;
+        } else {
+            [{ [_logic,"addPendingWaypoint", ["insertWaypoint",_waypoint]] call MAINCLASS }, []] call CBA_fnc_directCall;
+        };
+
+        _result = _waypoint;
     };
 
     case "addWaypoint": {
-        private ["_waypoints","_units","_unit","_group","_active"];
+        private _waypoint = _args;
 
-        if (_args isEqualType []) then {
-            _waypoints = _logic select 2 select 16; //[_logic,"waypoints"] call ALIVE_fnc_hashGet;
-            _waypoints pushback _args;
+        //private _compRad = [_waypoint,"completionRadius"] call ALiVE_fnc_hashGet;
+        //systemchat format ["adding waypoint with radius: %1 ||| From - %2", _compRad,_fnc_scriptnameparent];
 
-            if(([_args,"type"] call ALIVE_fnc_hashGet) == 'CYCLE') then {
-                [_logic,"isCycling",true] call ALIVE_fnc_hashSet;
+        private _pathfindingEnabled = [MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet;
+        if (!_pathfindingEnabled) then {
+            [{ [_logic,"addWaypointInternal", _waypoint] call MAINCLASS }, []] call CBA_fnc_directCall;
+        } else {
+            [{ [_logic,"addPendingWaypoint", ["addWaypoint",_waypoint]] call MAINCLASS }, []] call CBA_fnc_directCall;
+        };
+
+        _result = _waypoint;
+    };
+
+    case "addPendingWaypoint": {
+        _args params ["_insertionMethod","_waypoint", ["_ready", false]];
+
+        private _pendingWaypoints = [_logic,"pendingWaypointPaths"] call ALiVE_fnc_hashGet;
+
+        private _pendingPath = [_ready,_insertionMethod,[],_waypoint];
+        _pendingWaypoints pushback _pendingPath;
+
+        private _countPendingWaypoints = count _pendingWaypoints;
+
+        if (_ready) then {
+            private _waypointPosition = [_waypoint,"position"] call ALiVE_fnc_hashGet;
+            _pendingPath set [2, [_waypointPosition]];
+
+            if (_countPendingWaypoints == 1) then {
+                [_logic,"advancePendingWaypoints"] call MAINCLASS;
             };
+        } else {
+            private _previousWaypoint = if (_countPendingWaypoints == 1) then {nil} else {(_pendingWaypoints select (_countPendingWaypoints - 2)) select 3};
+            private _startPosition = if (isnil "_previousWaypoint" || _insertionMethod == "insertWaypoint") then { [_logic,"position"] call ALiVE_fnc_hashGet } else { [_previousWaypoint,"position"] call ALiVE_fnc_hashGet };
+            private _endPosition = [_waypoint,"position"] call ALiVE_fnc_hashGet;
+            private _pathfindingProcedure = [_logic] call ALiVE_fnc_profileGetPathfindingProcedure;
+            private _profileID = [_logic,"profileID"] call ALiVE_fnc_hashGet;
 
-            _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
-            if (_active) then {
-                _units = _logic select 2 select 21; //[_logic,"units"] call ALIVE_fnc_hashGet;
-                _unit = _units select 0;
+            [ALiVE_Pathfinder,"findPath",[_startPosition,_endPosition,_pathfindingProcedure,true,true,[_profileID,_pendingPath],{
+                params ["_callbackArgs","_path"];
 
-                if !(isnil "_unit") then {
-                    _group = group _unit;
-                    [_args, _group] call ALIVE_fnc_profileWaypointToWaypoint;
+                _callbackArgs params ["_profileID","_pendingPath"];
+
+                private _profile = [ALiVE_profileHandler,"getProfile", _profileID] call ALiVE_fnc_profileHandler;
+                if (!isnil "_profile") then {
+                    _pendingPath set [0,true];
+                    _pendingPath set [2,_path];
+                    [_profile,"advancePendingWaypoints"] call ALIVE_fnc_profileEntity;
                 };
+            }]] call ALiVE_fnc_pathfinder;
+
+            // if we're inserting into the front
+            // we need to generate new paths for the existing waypoints
+            if (_insertionMethod == "insertWaypoint") then {
+                private _newPendingWaypoins = [_pendingWaypoints select 0];
+
+                private _existingWaypoints = [_logic,"waypoints"] call ALiVE_fnc_hashGet;
+                private _existingWaypointJobs = _existingWaypoints apply { [false,"addWaypoint",[],_x] };
+
+                private _existingPendingWaypoints = _pendingWaypoints select [1, _countPendingWaypoints - 1];
+
+                _newPendingWaypoins append _existingWaypointJobs;
+                _newPendingWaypoins append _existingPendingWaypoints;
+
+                [_logic,"pendingWaypointPaths", _newPendingWaypoins] call ALiVE_fnc_hashSet;
             };
-            _result = _args;
+        };
+
+        _result = _pendingPath;
+    };
+
+    case "advancePendingWaypoints": {
+        private _pendingWaypoints = [_logic,"pendingWaypointPaths"] call ALiVE_fnc_hashGet;
+
+        private _firstPending = _pendingWaypoints select 0;
+        while {!isnil "_firstPending" && {_firstPending select 0}} do {
+            private _insertionMethod = if ((_firstPending select 1) == "addWaypoint") then {"addWaypointInternal"} else {"insertWaypointInternal"};
+            private _path = _firstPending select 2;
+            private _waypoint = _firstPending select 3;
+            [_waypoint,"name", "pathfound"] call ALiVE_fnc_hashSet;
+
+            private _waypointTemplate = +_waypoint;
+            //[_waypointTemplate,"timeout", []] call ALiVE_fnc_hashSet;
+            [_waypointTemplate,"type", "MOVE"] call ALiVE_fnc_hashSet;
+            [_waypointTemplate,"description", ""] call ALiVE_fnc_hashSet;
+            [_waypointTemplate,"attachVehicle", ""] call ALiVE_fnc_hashSet;
+            [_waypointTemplate,"statements", ""] call ALiVE_fnc_hashSet;
+
+            _path = _path apply {
+                private _tempWP = +_waypointTemplate;
+                [_tempWP,"position", _x] call ALiVE_fnc_hashSet;
+
+                _tempWP
+            };
+            _path set [count _path - 1, _waypoint];
+
+            // if we are inserting into the front
+            // need to reverse path so it's executed in the correct order
+            if (_insertionMethod == "insertWaypointInternal") then { reverse _path };
+
+            {
+                [_logic,_insertionMethod, _x] call MAINCLASS;
+            } foreach _path;
+
+            _pendingWaypoints deleteat 0;
+
+            // check next pending path
+
+            if (count _firstPending > 0) then {
+                _firstPending = _pendingWaypoints select 0;
+            } else {
+                _firstPending = nil;
+            };
+        };
+
+    };
+
+    case "insertWaypointInternal": {
+        private _waypoint = _args;
+
+        private _waypoints = _logic select 2 select 16; //[_logic,"waypoints"] call ALIVE_fnc_hashGet;
+        _waypoints = [_waypoints, [_waypoint], 0] call BIS_fnc_arrayInsert;
+        [_logic,"waypoints",_waypoints] call ALIVE_fnc_hashSet;
+
+        private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
+        if (_active) then {
+            [_logic,"profileWaypointToWaypoint", _waypoint] call MAINCLASS;
+        };
+    };
+
+    case "addWaypointInternal": {
+        private _waypoint = _args;
+
+        private _waypoints = _logic select 2 select 16; //[_logic,"waypoints"] call ALIVE_fnc_hashGet;
+        _waypoints pushback _waypoint;
+
+        if (([_waypoint,"type"] call ALIVE_fnc_hashGet) == 'CYCLE') then {
+            [_logic,"isCycling",true] call ALIVE_fnc_hashSet;
+        };
+
+        private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
+        if (_active) then {
+            [_logic,"profileWaypointToWaypoint", _waypoint] call MAINCLASS;
         };
     };
 

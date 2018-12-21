@@ -86,11 +86,17 @@
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER_COMMENT">
     <Original>Sets the pace of virtual combat. Fastest combat resolves twice as quickly as regular.</Original>
 </Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING">
+    <Original>Pathfinding:</Original>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_COMMENT">
+    <Original>Experimental!\nProfiles will use intelligent pathing to reach their destinations.\nThis feature is highly experimental and could break missions.</Original>
+</Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT">
     <Original>Infantry sea transport:</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT_COMMENT">
-    <Original>Experimental! Adds a boat to a virtual infantry entity that tries to cross water!</Original>
+    <Original>Experimental!\nAdds a boat to a virtual infantry entity that tries to cross water!</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN">
     <Original>Smooth Spawn:</Original>

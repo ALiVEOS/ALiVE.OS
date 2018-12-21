@@ -48,6 +48,7 @@ if(isServer) then {
     private _activeLimiter = parseNumber (_logic getVariable ["activeLimiter","30"]);
     private _speedModifier = _logic getVariable ["speedModifier",1];
     private _virtualCombatSpeedModifier = _logic getVariable ["virtualcombat_speedmodifier", "1"];
+    private _pathfinding = call compile (_logic getVariable ["pathfinding", "false"]);
     private _seaTransport = call compile (_logic getVariable ["seaTransport", "false"]);
     private _smoothSpawn = parseNumber (_logic getVariable ["smoothSpawn", "0.3"]);
 
@@ -70,6 +71,7 @@ if(isServer) then {
     [ALIVE_profileSystem, "activeLimiter", _activeLimiter] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "speedModifier", _speedModifier] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "combatRate", parseNumber _virtualCombatSpeedModifier] call ALIVE_fnc_profileSystem;
+    [ALIVE_profileSystem, "pathfinding", _pathfinding] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "seaTransport", _seaTransport] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "smoothSpawn", _smoothSpawn] call ALIVE_fnc_profileSystem;
 

@@ -23,85 +23,69 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_profile","_group","_isCycling","_waypoints","_statements","_profileWaypoint","_profilePosition"];
+params ["_profile","_group"];
 
-_profile = _this select 0;
-_group = _this select 1;
-if (isnil "_profile" || isnil "_group") exitwith {["ALiVE SYS PROFILE Warning: ALIVE_fnc_waypointsToProfileWaypoints has wrong inputs!"] call ALiVE_fnc_Dump};
+if (isnil "_profile" || isnil "_group") exitwith {["ALiVE SYS PROFILE Warning: ALIVE_fnc_waypointsToProfileWaypoints has wrong inputs! - %1", _this] call ALiVE_fnc_Dump};
 
-_isCycling = _profile select 2 select 25;
+private _waypoints = waypoints _group;
+if (count _waypoints == 0) exitwith {};
 
-_waypoints = waypoints _group;
-if !(count _waypoints > 0) exitwith {["ALiVE SYS PROFILE Warning: ALIVE_fnc_waypointsToProfileWaypoints has wrong inputs!"] call ALiVE_fnc_Dump};
+private _pathfindingEnabled = [MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet;
 
-if(_isCycling) then {
-    // if the entity has a cycle waypoint need to get all completed waypoints and
-    // stick them in the end of the waypoints array
+private _convertAndAddWaypoint = {
+    params ["_profile","_waypoint"];
 
-    for "_i" from (currentWaypoint _group) to (count _waypoints)-1 do
-    {
-        _profileWaypoint = [(_waypoints select _i)] call ALIVE_fnc_waypointToProfileWaypoint;
-        _profilePosition = [_profileWaypoint,"position"] call ALIVE_fnc_hashGet;
+    private _profileWaypoint = [_waypoint] call ALIVE_fnc_waypointToProfileWaypoint;
+    private _waypointPosition = [_profileWaypoint,"position"] call ALIVE_fnc_hashGet;
+    private _waypointStatements = [_profileWaypoint,"statements"] call ALIVE_fnc_hashGet;
 
-        _statements = [_profileWaypoint,"statements"] call ALIVE_fnc_hashGet;
+    if (_pathfindingEnabled) then {
+        private _waypointName = [_profileWaypoint,"name"] call ALiVE_fnc_hashGet;
+        private _waypointReady = _waypointName == "pathfound";
 
-        /*
-        ["STAMENTS :%1",_statements select 1] call ALIVE_fnc_dump;
-        if(_statements select 1 == "_disableSimulation = true;") then {
-            ["SIM DISABLED: TRUE"] call ALIVE_fnc_dump;
-        }else{
-            ["SIM DISABLED: FALSE"] call ALIVE_fnc_dump;
+        if (!((_waypointPosition select [0,2]) isequalto [0,0]) && {(_waypointStatements select 1 != "_disableSimulation = true;")}) then {
+            [_profile,"addPendingWaypoint", ["addWaypoint",_profileWaypoint,_waypointReady]] call ALIVE_fnc_profileEntity;
         };
-        */
-
-        if(_profilePosition select 0 > 0 && _profilePosition select 1 > 0 && {(_statements select 1 != "_disableSimulation = true;")}) then {
-            [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+    } else {
+        if (!((_waypointPosition select [0,2]) isequalto [0,0]) && {(_waypointStatements select 1 != "_disableSimulation = true;")}) then {
+            [_profile,"addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
         };
     };
 
+    /*
+    ["STAMENTS :%1",_waypointStatements select 1] call ALIVE_fnc_dump;
+    if(_waypointStatements select 1 == "_disableSimulation = true;") then {
+        ["SIM DISABLED: TRUE"] call ALIVE_fnc_dump;
+    }else{
+        ["SIM DISABLED: FALSE"] call ALIVE_fnc_dump;
+    };
+    */
+};
+
+private _waypointCount = count _waypoints;
+
+private _isCycling = _profile select 2 select 25;
+if (_isCycling) then {
+    // if the entity has a cycle waypoint need to get all completed waypoints and
+    // stick them in the end of the waypoints array
+
+    for "_i" from (currentWaypoint _group) to (_waypointCount - 1) do {
+        private _waypoint = _waypoints select _i;
+        [_profile,_waypoint] call _convertAndAddWaypoint;
+    };
+
     for "_i" from 1 to (currentWaypoint _group)-1 do {
-        _profileWaypoint = [(_waypoints select _i)] call ALIVE_fnc_waypointToProfileWaypoint;
-        _profilePosition = [_profileWaypoint,"position"] call ALIVE_fnc_hashGet;
-
-        _statements = [_profileWaypoint,"statements"] call ALIVE_fnc_hashGet;
-
-        /*
-        ["STAMENTS :%1",_statements select 1] call ALIVE_fnc_dump;
-        if(_statements select 1 == "_disableSimulation = true;") then {
-            ["SIM DISABLED: TRUE"] call ALIVE_fnc_dump;
-        }else{
-            ["SIM DISABLED: FALSE"] call ALIVE_fnc_dump;
-        };
-        */
-
-        if(_profilePosition select 0 > 0 && _profilePosition select 1 > 0 && {(_statements select 1 != "_disableSimulation = true;")}) then {
-            [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
-        };
+        private _waypoint = _waypoints select _i;
+        [_profile,_waypoint] call _convertAndAddWaypoint;
     };
 
 } else {
 
     // convert any non completed waypoints to profile waypoints
-    if(currentWaypoint _group < count waypoints _group) then {
-        for "_i" from (currentWaypoint _group) to (count _waypoints)-1 do
-        {
-            _profileWaypoint = [(_waypoints select _i)] call ALIVE_fnc_waypointToProfileWaypoint;
-            _profilePosition = [_profileWaypoint,"position"] call ALIVE_fnc_hashGet;
-
-            _statements = [_profileWaypoint,"statements"] call ALIVE_fnc_hashGet;
-
-            /*
-            ["STAMENTS :%1",_statements select 1] call ALIVE_fnc_dump;
-            if(_statements select 1 == "_disableSimulation = true;") then {
-                ["SIM DISABLED: TRUE"] call ALIVE_fnc_dump;
-            }else{
-                ["SIM DISABLED: FALSE"] call ALIVE_fnc_dump;
-            };
-            */
-
-            if(_profilePosition select 0 > 0 && _profilePosition select 1 > 0 && {(_statements select 1 != "_disableSimulation = true;")}) then {
-                [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
-            };
+    if (currentWaypoint _group < count waypoints _group) then {
+        for "_i" from (currentWaypoint _group) to (_waypointCount - 1) do {
+            private _waypoint = _waypoints select _i;
+            [_profile,_waypoint] call _convertAndAddWaypoint;
         };
     };
 };
