@@ -30,20 +30,26 @@ if (isnil "_profile" || isnil "_group") exitwith {["ALiVE SYS PROFILE Warning: A
 private _waypoints = waypoints _group;
 if (count _waypoints == 0) exitwith {};
 
+private _pathfindingEnabled = [MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet;
+
 private _convertAndAddWaypoint = {
     params ["_profile","_waypoint"];
 
     private _profileWaypoint = [_waypoint] call ALIVE_fnc_waypointToProfileWaypoint;
-    private _waypointName = [_profileWaypoint,"name"] call ALiVE_fnc_hashGet;
-
-    private _waypointWasPathfound = _waypointName == "pathfound";
-    private _waypointReady = _waypointWasPathfound;
-
     private _waypointPosition = [_profileWaypoint,"position"] call ALIVE_fnc_hashGet;
     private _waypointStatements = [_profileWaypoint,"statements"] call ALIVE_fnc_hashGet;
 
-    if(!((_waypointPosition select [0,2]) isequalto [0,0]) && {(_waypointStatements select 1 != "_disableSimulation = true;")}) then {
-        [_profile,"addPendingWaypoint", ["addWaypoint",_profileWaypoint,_waypointReady]] call ALIVE_fnc_profileEntity;
+    if (_pathfindingEnabled) then {
+        private _waypointName = [_profileWaypoint,"name"] call ALiVE_fnc_hashGet;
+        private _waypointReady = _waypointName == "pathfound";
+
+        if (!((_waypointPosition select [0,2]) isequalto [0,0]) && {(_waypointStatements select 1 != "_disableSimulation = true;")}) then {
+            [_profile,"addPendingWaypoint", ["addWaypoint",_profileWaypoint,_waypointReady]] call ALIVE_fnc_profileEntity;
+        };
+    } else {
+        if (!((_waypointPosition select [0,2]) isequalto [0,0]) && {(_waypointStatements select 1 != "_disableSimulation = true;")}) then {
+            [_profile,"addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+        };
     };
 
     /*
