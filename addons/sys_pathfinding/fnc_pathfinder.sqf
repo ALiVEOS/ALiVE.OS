@@ -12,18 +12,20 @@ switch (_operation) do {
 
     case "create": {
 
-        private _terrainGrid = [nil,"create", [300]] call ALiVE_fnc_pathfindingGrid;
+        private _worldSize = [ALiVE_mapBounds,worldname, worldsize] call ALiVE_fnc_hashGet;
+        private _sectorSize = ceil (_worldSize / 110);
+        private _terrainGrid = [nil,"create", [_sectorSize]] call ALiVE_fnc_pathfindingGrid;
 
         _logic = [[
             ["terrainGrid", _terrainGrid],
             ["pathfindingProcedures", [] call ALiVE_fnc_hashCreate],
-            ["pathDebugMarkers", []],
+            ["currentJobData", []],
             ["pathJobs", []],
-            ["currentJobData", []]
+            ["pathDebugMarkers", []]
         ]] call ALiVE_fnc_hashCreate;
 
-        [_logic,"addPathfindingProcedure", ["infantry", true, false, -1.25, 0]] call MAINCLASS;
-        [_logic,"addPathfindingProcedure", ["vehicleLand", true, false, -6, 0]] call MAINCLASS;
+        [_logic,"addPathfindingProcedure", ["infantry", true, false, 0, 0]] call MAINCLASS;
+        [_logic,"addPathfindingProcedure", ["vehicleLand", true, false, -25, 0]] call MAINCLASS;
         [_logic,"addPathfindingProcedure", ["vehicleWater", false, true, 0, 0]] call MAINCLASS;
         [_logic,"addPathfindingProcedure", ["vehicleAir", true, true, 0, 0]] call MAINCLASS;
 
@@ -281,14 +283,14 @@ switch (_operation) do {
                 _sectorIterations = _sectorIterations + 1;
                 private _currentSector = [nil,"priorityGet", _frontier] call MAINCLASS;
 
-                //////////////////////////////////////////////////
+                ////////////////////////////////////////////////////
                 //private _sectorCenter = _currentSector select 1;
                 //_m = createMarker [str str str str _sectorCenter, _sectorCenter];
                 //_m setMarkerShape "ICON";
                 //_m setMarkerType "hd_dot";
                 //_m setMarkerSize [0.3,0.3];
                 //_m setMarkerColor "ColorBlue";
-                //////////////////////////////////////////////////
+                ////////////////////////////////////////////////////
 
                 if (_currentSector isequalto _goalSector) exitwith {
                     _result = [nil,"reconstructPath", [_startSector,_goalSector,_cameFromMap]] call MAINCLASS;
@@ -354,6 +356,7 @@ switch (_operation) do {
         };
 
     };
+
 
     //case "findPath": {
     //
