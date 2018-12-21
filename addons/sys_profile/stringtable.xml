@@ -90,7 +90,7 @@
     <Original>Pathfinding:</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_COMMENT">
-    <Original>Experimental!\nProfiles will use intelligent pathing to reach their destinations.\nThis feature is highly experimental and could break misisons.</Original>
+    <Original>Experimental!\nProfiles will use intelligent pathing to reach their destinations.\nThis feature is highly experimental and could break missions.</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT">
     <Original>Infantry sea transport:</Original>
