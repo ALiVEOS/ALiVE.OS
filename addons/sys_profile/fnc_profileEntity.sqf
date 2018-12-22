@@ -582,21 +582,33 @@ switch(_operation) do {
             [_waypointTemplate,"attachVehicle", ""] call ALiVE_fnc_hashSet;
             [_waypointTemplate,"statements", ""] call ALiVE_fnc_hashSet;
 
-            _path = _path apply {
-                private _tempWP = +_waypointTemplate;
-                [_tempWP,"position", _x] call ALiVE_fnc_hashSet;
+            if (count _path > 0) then {
+                // path found
 
-                _tempWP
+                _path = _path apply {
+                    private _tempWP = +_waypointTemplate;
+                    [_tempWP,"position", _x] call ALiVE_fnc_hashSet;
+
+                    _tempWP
+                };
+                _path set [count _path - 1, _waypoint];
+
+                // if we are inserting into the front
+                // need to reverse path so it's executed in the correct order
+                if (_insertionMethod == "insertWaypointInternal") then { reverse _path };
+
+                {
+                    [_logic,_insertionMethod, _x] call MAINCLASS;
+                } foreach _path;
+            } else {
+                // path not found
+
+                private _profileID = [_logic,"profileID"] call ALiVE_fnc_hashGet;
+                private _profileSide = [_logic,"side"] call ALiVE_fnc_hashGet;
+
+                private _event = ["PROFILE_NO_VALID_PATH", [_profileID,_profileSide],"Profiles","Pathfinding"] call ALiVE_fnc_event;
+                [ALiVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
             };
-            _path set [count _path - 1, _waypoint];
-
-            // if we are inserting into the front
-            // need to reverse path so it's executed in the correct order
-            if (_insertionMethod == "insertWaypointInternal") then { reverse _path };
-
-            {
-                [_logic,_insertionMethod, _x] call MAINCLASS;
-            } foreach _path;
 
             _pendingWaypoints deleteat 0;
 

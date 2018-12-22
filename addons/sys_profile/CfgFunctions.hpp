@@ -271,11 +271,6 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_profileGetPathfindingProcedure.sqf";
                 RECOMPILE;
             };
-            class profileMoveToPosition {
-                description = "profileMoveToPosition";
-                file = "\x\alive\addons\sys_profile\fnc_profileMoveToPosition.sqf";
-                RECOMPILE;
-            };
         };
     };
 };

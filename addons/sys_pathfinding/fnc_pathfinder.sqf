@@ -13,21 +13,23 @@ switch (_operation) do {
     case "create": {
 
         private _worldSize = [ALiVE_mapBounds,worldname, worldsize] call ALiVE_fnc_hashGet;
-        private _sectorSize = ceil (_worldSize / 110);
+        private _sectorSize = 100 max (ceil (_worldSize / 110));
         private _terrainGrid = [nil,"create", [_sectorSize]] call ALiVE_fnc_pathfindingGrid;
 
         _logic = [[
             ["terrainGrid", _terrainGrid],
-            ["pathfindingProcedures", [] call ALiVE_fnc_hashCreate],
+            ["procedures", [] call ALiVE_fnc_hashCreate],
             ["currentJobData", []],
             ["pathJobs", []],
             ["pathDebugMarkers", []]
         ]] call ALiVE_fnc_hashCreate;
 
-        [_logic,"addPathfindingProcedure", ["infantry", true, false, 0, 0]] call MAINCLASS;
-        [_logic,"addPathfindingProcedure", ["vehicleLand", true, false, -25, 0]] call MAINCLASS;
-        [_logic,"addPathfindingProcedure", ["vehicleWater", false, true, 0, 0]] call MAINCLASS;
-        [_logic,"addPathfindingProcedure", ["vehicleAir", true, true, 0, 0]] call MAINCLASS;
+        // terrain types [land,road,water]
+
+        [_logic,"addProcedure", ["infantry", ["land","road"], [1,1,1]]] call MAINCLASS;
+        [_logic,"addProcedure", ["vehicleLand", ["land","road"], [15,1,1]]] call MAINCLASS;
+        [_logic,"addProcedure", ["vehicleWater", ["water"], [1,1,1]]] call MAINCLASS;
+        [_logic,"addProcedure", ["vehicleAir", ["land","road","water"], [0,0,0]]] call MAINCLASS;
 
         addMissionEventHandler ["EachFrame", {
             [ALiVE_pathfinder,"onFrame"] call ALiVE_fnc_pathfinder;
@@ -37,19 +39,13 @@ switch (_operation) do {
 
     };
 
-    case "addPathfindingProcedure": {
+    case "addProcedure": {
 
-        _args params [
-            "_name",
-            ["_canUseLand", true],
-            ["_canUseWater", true],
-            ["_roadWeight", 1],
-            ["_waterWeight", 0]
-        ];
+        _args params ["_name","_passableTerrains","_weightings"];
 
-        _procedures = [_logic,"pathfindingProcedures"] call ALiVE_fnc_hashGet;
+        private _procedures = [_logic,"procedures"] call ALiVE_fnc_hashGet;
 
-        [_procedures,_name, _args] call ALiVE_fnc_hashSet;
+        [_procedures,_name, [_passableTerrains,_weightings]] call ALiVE_fnc_hashSet;
 
     };
 
@@ -57,24 +53,19 @@ switch (_operation) do {
 
         _args params ["_currentSector","_goalSector","_procedure"];
 
-        private _dx = abs(((_currentSector select 0) select 0) - ((_goalSector select 0) select 0));
-        private _dy = abs(((_currentSector select 0) select 1) - ((_goalSector select 0) select 1));
+        private _currentSectorCoords = _currentSector select 0;
+        private _goalSectorCoords = _goalSector select 0;
 
-        _result = _dx + _dy;
+        private _dx = abs ((_currentSectorCoords select 0) - (_goalSectorCoords select 0));
+        private _dy = abs ((_currentSectorCoords select 1) - (_goalSectorCoords select 1));
 
-        // road weighting
+        // non diagonal path distance + distance saved if using diagonals
+        //_result = 1 * (_dx + _dy) + (1.414 - 2 * 1) * (_dx min _dy);
+        _result = (_dx + _dy) + ((-0.586) * (_dx min _dy));
 
-        private _sectorHasRoads = _currentSector select 2;
-        if (_sectorHasRoads) then {
-            _result = _result + (_procedure select 3);
-        };
-
-        // water weighting
-
-        private _sectorIsLand = _currentSector select 3;
-        if !(_sectorIsLand) then {
-            _result = _result + (_procedure select 4);
-        };
+        // tie breaker
+        // the higher we go the more we search nodes closer to the end position
+        _result = _result * 5;
 
     };
 
@@ -82,14 +73,25 @@ switch (_operation) do {
 
         _args params ["_currentSector","_goalSector","_procedure"];
 
-        if (
-            ((_currentSector select 0) select 0) != ((_goalSector select 0) select 0) &&
-            { ((_currentSector select 0) select 1) != ((_goalSector select 0) select 1) }
-        ) then {
-            //_result = 1.414;
-            _result = 1.3;
-        } else {
-            _result = 1;
+        _result = 1;
+
+        //if (
+        //    ((_currentSector select 0) select 0) != ((_goalSector select 0) select 0) &&
+        //    { ((_currentSector select 0) select 1) != ((_goalSector select 0) select 1) }
+        //) then {
+        //    _result = 1.414;
+        //    //_result = 1.3;
+        //} else {
+        //    _result = 1;
+        //};
+
+        if ((_procedure select 0) == "vehicleLand") then {
+            private _sectorHasRoads = _currentSector select 2;
+            if (_sectorHasRoads) then {
+                _result = _result + 1;
+            } else {
+                _result = _result + 15;
+            };
         };
 
     };
@@ -136,29 +138,60 @@ switch (_operation) do {
 
     };
 
+    // string pull
+    case "straightenPath": {
+
+        _args params ["_path","_procedure"];
+
+        private _terrainGrid = [_logic,"terrainGrid"] call ALiVE_fnc_hashGet;
+
+        private _i = 0;
+        while { count _path > _i + 2 } do {
+            private _pos1 = _path select _i;
+            private _pos2 = _path select (_i + 2);
+
+            private _sectorsBetween = [_logic,"raycast", [_pos1,_pos2]] call MAINCLASS;
+            private _directPath = [_logic,"pathIsPassible", [_sectorsBetween,_procedure]] call MAINCLASS;
+
+            if (count _path < 10) then { copyToClipboard str (_sectorsBetween) };
+
+            if (_directPath) then {
+                _path deleteat (_i + 1);
+            } else {
+                _i = _i + 1;
+            };
+        };
+
+        _result = _path;
+
+    };
+
+    // remove sectors directly next to eachother
+    // ignore diagonals
     case "consolidatePath": {
 
         _path = _args;
 
         if (count _path <= 3) exitwith { _result = _path };
 
-        private _shortPath = [_path select 0];
-        private _currDir = (_path select 0) getDir (_path select 1);
+        private _terrainGrid = [ALiVE_pathfinder,"terrainGrid"] call ALiVE_fnc_hashGet;
+        private _sectorSize = [_terrainGrid,"sectorSize"] call ALiVE_fnc_hashGet;
 
-        for "_i" from 1 to (count _path - 1) do {
-            private _currSector = _path select _i;
-            private _tempDir = (_path select (_i - 1)) getdir _currSector;
+        private _i = 0;
+        while {_i < count _path - 2} do {
+            private _currSectorPos = _path select _i;
+            private _nextSectorPos = _path select (_i + 1);
 
-            if ((abs (_tempDir - _currDir)) > 15 && _i > 1) then {
-                _shortPath pushback (_path select (_i - 1));
-                _currDir = _tempDir;
+            private _dist = _currSectorPos distance2D _nextSectorPos;
+
+            if ((_dist / _sectorSize) == 1) then {
+                _path deleteat (_i + 1);
+            } else {
+                _i = _i + 1;
             };
         };
 
-        private _lastPositionIndex = count _path - 1;
-        _shortPath pushbackunique (_path select _lastPositionIndex);
-
-        _result = _shortPath;
+        _result = _path;
 
     };
 
@@ -219,7 +252,7 @@ switch (_operation) do {
             _nextJob params ["_startSector","_goalSector","_goalPosition","_procedureName","_shortenPath","_randomizeWaypointRadius","_callbackArgs","_callback"];
 
             private _procedures = [_logic,"pathfindingProcedures"] call ALiVE_fnc_hashGet;
-            private _procedure = [_procedures,_procedureName, "landVehicle"] call ALiVE_fnc_hashGet;
+            private _procedure = [_procedures,_procedureName] call ALiVE_fnc_hashGet;
 
             private _cameFromMap = call CBA_fnc_createNamespace;
             private _costSoFarMap = call CBA_fnc_createNamespace;
@@ -276,21 +309,21 @@ switch (_operation) do {
                 _currentJobData set [0,true];
             };
 
-            // only check 5 sectors per frame
+            // only check 2 sectors per frame
             private _sectorIterations = 0;
 
             while {!(_frontier isequalto []) && _sectorIterations < 2} do {
                 _sectorIterations = _sectorIterations + 1;
                 private _currentSector = [nil,"priorityGet", _frontier] call MAINCLASS;
 
-                ////////////////////////////////////////////////////
-                //private _sectorCenter = _currentSector select 1;
-                //_m = createMarker [str str str str _sectorCenter, _sectorCenter];
-                //_m setMarkerShape "ICON";
-                //_m setMarkerType "hd_dot";
-                //_m setMarkerSize [0.3,0.3];
-                //_m setMarkerColor "ColorBlue";
-                ////////////////////////////////////////////////////
+                //////////////////////////////////////////////////
+                private _sectorCenter = _currentSector select 1;
+                _m = createMarker [str str str str _sectorCenter, _sectorCenter];
+                _m setMarkerShape "ICON";
+                _m setMarkerType "hd_dot";
+                _m setMarkerSize [0.3,0.3];
+                _m setMarkerColor "ColorBlue";
+                //////////////////////////////////////////////////
 
                 if (_currentSector isequalto _goalSector) exitwith {
                     _result = [nil,"reconstructPath", [_startSector,_goalSector,_cameFromMap]] call MAINCLASS;
@@ -308,7 +341,12 @@ switch (_operation) do {
                     _result set [count _result - 1, _goalPosition];
 
                     if (_shortenPath) then {
-                        _result = [nil,"consolidatePath", _result] call MAINCLASS;
+                        _result = [_logic,"straightenPath", [_result,_procedure]] call MAINCLASS;
+
+                        if ((_procedure select 1)) then {
+                            systemchat "consolidating";
+                            _result = [_logic,"consolidatePath", _result] call MAINCLASS;
+                        };
                     };
 
                     _jobComplete = true;
@@ -317,20 +355,25 @@ switch (_operation) do {
 
                 // determine which neighbor is the best path
                 private _neighbors = [_terrainGrid, "getNeighbors", [_currentSector select 0]] call alive_fnc_pathfindingGrid;
+                private _currentSectorMovementCost = _costSoFarMap getvariable (str(_currentSector select 0));
                 {
                     private _currNeighbor = _x;
                     private _neighborIsLand = _currNeighbor select 3;
                     private _canTraverse = if (_neighborIsLand) then { _canUseLand } else { _canUseWater };
 
                     if (_canTraverse) then {
-                        private _newCost = (_costSoFarMap getvariable (str(_currentSector select 0))) + ([nil,"getMovementCost", [_currentSector,_currNeighbor,_procedure]] call MAINCLASS);
+                        private _neighborCost = [nil,"getMovementCost", [_currentSector,_currNeighbor,_procedure]] call MAINCLASS;
+                        private _newCost = _currentSectorMovementCost + _neighborCost;
 
                         private _currNeighborCostSoFar = _costSoFarMap getvariable (str(_currNeighbor select 0));
-                        //if (isnil "_currNeighborCostSoFar" || { _newCost < _currNeighborCostSoFar }) then {
-                        if (isnil "_currNeighborCostSoFar") then {
+                        if (isnil "_currNeighborCostSoFar" || { _newCost < _currNeighborCostSoFar }) then {
+                        //if (isnil "_currNeighborCostSoFar") then {
                             _costSoFarMap setvariable [str(_currNeighbor select 0), _newCost];
-                            private _priority = _newCost + ([nil,"heuristic", [_currNeighbor,_goalSector,_procedure]] call MAINCLASS);
+
+                            private _neighborHeuristic = [nil,"heuristic", [_currNeighbor,_goalSector,_procedure]] call MAINCLASS;
+                            private _priority = _newCost + _neighborHeuristic;
                             [nil,"priorityAdd", [_frontier,_priority,_currNeighbor]] call MAINCLASS;
+
                             _cameFromMap setvariable [str(_currNeighbor select 0),_currentSector];
                         };
                     };
@@ -348,6 +391,8 @@ switch (_operation) do {
         if (_jobComplete) then {
             [_callbackArgs,_result] spawn _callback;
 
+            systemchat (format ["Nodes Evaluated: %1", count (allvariables _cameFromMap)]);
+
             // remove job from queue
             _pathJobs deleteat 0;
 
@@ -357,68 +402,119 @@ switch (_operation) do {
 
     };
 
+    case "plotLineLow": {
 
-    //case "findPath": {
-    //
-    //    _args params ["_startSector","_goalSector", ["_procedureName", "infantry"], ["_shortenPath", true]];
-    //
-    //    _result = [];
-    //
-    //    // detect impossible paths
-    //
-    //    private _goalSectorIsLand = _goalSector select 3;
-    //    private _pathIsPossible = if (_goalSectorIsLand) then { _canUseLand } else { _canUseWater };
-    //
-    //    if (!_pathIsPossible) exitwith { _result };
-    //
-    //    private _cameFromMap = [] call ALiVE_fnc_hashCreate;
-    //    private _costSoFar = [] call ALiVE_fnc_hashCreate;
-    //
-    //    private _frontier = [[0,_startSector]];
-    //    [_costSoFar,_startSector select 0, 0] call ALiVE_fnc_hashSet;
-    //
-    //    while {!(_frontier isequalto [])} do {
-    //        private _currentSector = [nil,"priorityGet", _frontier] call MAINCLASS;
-    //
-    //        //////////////////////////////////////////////////
-    //        private _sectorCenter = _currentSector select 1;
-    //        _m = createMarker [str str str str _sectorCenter, _sectorCenter];
-    //        _m setMarkerShape "ICON";
-    //        _m setMarkerType "hd_dot";
-    //        _m setMarkerSize [0.3,0.3];
-    //        _m setMarkerColor "ColorBlue";
-    //        //////////////////////////////////////////////////
-    //
-    //        if (_currentSector isequalto _goalSector) exitwith { _result = [nil,"reconstructPath", [_startSector,_goalSector,_cameFromMap]] call MAINCLASS };
-    //
-    //        // determine which neighbor is the best path
-    //        private _neighbors = [_terrainGrid, "getNeighbors", [_currentSector select 0]] call alive_fnc_pathfindingGrid;
-    //        {
-    //            private _currNeighbor = _x;
-    //            private _neighborIsLand = _currNeighbor select 3;
-    //            private _canTraverse = if (_neighborIsLand) then { _canUseLand } else { _canUseWater };
-    //
-    //            if (_canTraverse) then {
-    //                private _newCost = ([_costSoFar,_currentSector select 0] call ALiVE_fnc_hashGet) + ([nil,"getMovementCost", [_currentSector,_currNeighbor,_procedure]] call MAINCLASS);
-    //
-    //                private _currNeighborCostSoFar = [_costSoFar,_currNeighbor select 0] call ALiVE_fnc_hashGet;
-    //                //if (isnil "_currNeighborCostSoFar" || { _newCost < _currNeighborCostSoFar }) then {
-    //                if (isnil "_currNeighborCostSoFar") then {
-    //                    [_costSoFar,_currNeighbor select 0, _newCost] call ALiVE_fnc_hashSet;
-    //                    //private _priority = _newCost + ([nil,"heuristic", [_currNeighbor,_goalSector,_procedure]] call s_fnc_pathfinder);
-    //                    private _priority = _newCost + ([nil,"heuristic", [_currNeighbor,_goalSector,_procedure]] call MAINCLASS);
-    //                    [nil,"priorityAdd", [_frontier,_priority,_currNeighbor]] call MAINCLASS;
-    //                    [_cameFromMap,_currNeighbor select 0,_currentSector] call ALiVE_fnc_hashSet;
-    //                };
-    //            };
-    //        } foreach _neighbors;
-    //    };
-    //
-    //    if (_shortenPath) then {
-    //        _result = [nil,"consolidatePath", _result] call MAINCLASS;
-    //    };
-    //
-    //};
+        _args params ["_x1","_y1","_x2","_y2"];
+
+        private _dx = _x2 - _x1;
+        private _dy = _y2 - _y1;
+
+        private _yi = 1;
+        if (_dy < 0) then {
+            _yi = -1;
+            _dy = -_dy;
+        };
+
+        private _intersected = [];
+
+        private _d = (2 * _dy) - _dx;
+        private _y = _y1;
+        for "_x" from _x1 to _x2 do {
+            _intersected pushback [_x,_y];
+
+            if (_d > 0) then {
+                _y = _y + _yi;
+                _d = _d - (2 * _dx);
+            };
+
+            _d = _d + (2 * _dy);
+        };
+
+        _result = _intersected;
+
+    };
+
+    case "plotLineHigh": {
+
+        _args params ["_x1","_y1","_x2","_y2"];
+
+        private _dx = _x2 - _x1;
+        private _dy = _y2 - _y1;
+
+        private _xi = 1;
+        if (_dx < 0) then {
+            _xi = -1;
+            _dx = -_dx;
+        };
+
+        private _intersected = [];
+
+        private _d = (2 * _dx) - _dy;
+        private _x = _x1;
+        for "_y" from _y1 to _y2 do {
+            _intersected pushback [_x,_y];
+
+            if (_d > 0) then {
+                _x = _x + _xi;
+                _d = _d - (2 * _dy);
+            };
+
+            _d = _d + (2 * _dx);
+        };
+
+        _result = _intersected;
+
+    };
+
+    // https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+    case "raycast": {
+
+        _args params ["_startPos","_endPos"];
+
+        private _terrainGrid = [_logic,"terrainGrid"] call ALiVE_fnc_hashGet;
+        private _startCoord = [_terrainGrid,"positionToIndex", _startPos] call ALiVE_fnc_pathfindingGrid;
+        private _endCoord = [_terrainGrid,"positionToIndex", _endPos] call ALiVE_fnc_pathfindingGrid;
+
+        _startCoord params ["_x1","_y1"];
+        _endCoord params ["_x2","_y2"];
+
+        if (abs (_y2 - _y1) < abs (_x2 - _x1)) then {
+            if (_x1 > _x2) then {
+                _result = [nil,"plotLineLow", [_x2,_y2,_x1,_y1]] call MAINCLASS;
+            } else {
+                _result = [nil,"plotLineLow", [_x1,_y1,_x2,_y2]] call MAINCLASS;
+            };
+        } else {
+            if (_y1 > _y2) then {
+                _result = [nil,"plotLineHigh", [_x2,_y2,_x1,_y1]] call MAINCLASS;
+            } else {
+                _result = [nil,"plotLineHigh", [_x1,_y1,_x2,_y2]] call MAINCLASS;
+            };
+        };
+
+        _result = _result apply { [_terrainGrid,"getSector", _x] call ALiVE_fnc_pathfindingGrid };
+
+    };
+
+    case "pathIsPassible": {
+
+        _args params ["_sectors","_procedure"];
+
+        private _canUseLand = _procedure select 1;
+        private _canUseWater = _procedure select 2;
+
+        _result = true;
+
+        private _lastSectorTerrain = [(_sectors select 0) select 2, (_sectors select 0) select 3];
+        {
+            private _isLand = _x select 3;
+            private _terrain = [_x select 2, _x select 3];
+            private _canTraverse = if (_isLand) then { _canUseLand && { _terrain isequalto _lastSectorTerrain }} else { _canUseWater };
+
+            if (!_canTraverse) exitwith { _result = false };
+        } foreach _sectors;
+
+    };
 
     case "debugPath": {
 
