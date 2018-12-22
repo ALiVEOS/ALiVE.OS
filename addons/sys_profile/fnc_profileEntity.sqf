@@ -427,18 +427,24 @@ switch(_operation) do {
 
     case "addVehicleAssignment": {
         if (_args isEqualType []) then {
-            private _assignments = [_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
-            private _key = _args select 0;
-            [_assignments, _key, _args] call ALIVE_fnc_hashSet;
+            private _assignment = _args;
+
+            _assignment params ["_vehicleID","_entityID","_assignmentData"];
+
+            private _assignments = [_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
+            [_assignments, _vehicleID, _args] call ALIVE_fnc_hashSet;
 
             // take assignments and determine if this entity is in command of any of them
-            [_logic,"vehiclesInCommandOf",[_assignments,_logic] call ALIVE_fnc_profileVehicleAssignmentsGetInCommand] call ALIVE_fnc_hashSet;
+            private _vehiclesInCommandOf = [_assignments,_logic] call ALIVE_fnc_profileVehicleAssignmentsGetInCommand;
+            [_logic,"vehiclesInCommandOf", _vehiclesInCommandOf] call ALIVE_fnc_hashSet;
 
             // take assignments and determine if this entity is in cargo of any of them
-            [_logic,"vehiclesInCargoOf",[_assignments,_logic] call ALIVE_fnc_profileVehicleAssignmentsGetInCargo] call ALIVE_fnc_hashSet;
+            private _vehiclesInCargoOf = [_assignments,_logic] call ALIVE_fnc_profileVehicleAssignmentsGetInCargo;
+            [_logic,"vehiclesInCargoOf", _vehiclesInCargoOf] call ALIVE_fnc_hashSet;
 
             // take assignments and determine the max speed per second for the entire group
-            [_logic,"speedPerSecond",[_assignments,_logic] call ALIVE_fnc_profileVehicleAssignmentsGetSpeedPerSecond] call ALIVE_fnc_hashSet;
+            private _newSpeedPerSecond = [_assignments,_logic] call ALIVE_fnc_profileVehicleAssignmentsGetSpeedPerSecond;
+            [_logic,"speedPerSecond", _newSpeedPerSecond] call ALIVE_fnc_hashSet;
 
             // if spawned make the unit get in
             private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet

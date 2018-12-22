@@ -27,42 +27,33 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_profile","_profileType","_vehicleAssignments","_keys","_vehicleID","_profileVehicle","_entityID","_profileEntity"];
+params ["_profile"];
 
-_profile = _this select 0;
-_profileType = [_profile,"type"] call ALIVE_fnc_hashGet;
-_vehicleAssignments = [_profile,"vehicleAssignments"] call ALIVE_fnc_hashGet;
-_keys = [];
+private _profileType = [_profile,"type"] call ALIVE_fnc_hashGet;
+private _vehicleAssignments = [_profile,"vehicleAssignments"] call ALIVE_fnc_hashGet;
 
-if(_profileType == "vehicle") then {
+private _assignedIDs = _vehicleAssignments select 1;
 
-    {
-        _entityID = _x select 1;
-        _keys pushback _entityID;
-    } forEach (_vehicleAssignments select 2);
+if (_profileType == "vehicle") then {
 
     {
-        _entityID = _x;
-        _profileEntity = [ALIVE_profileHandler, "getProfile", _entityID] call ALIVE_fnc_profileHandler;
+        private _entityID = _x;
+        private _profileEntity = [ALIVE_profileHandler, "getProfile", _entityID] call ALIVE_fnc_profileHandler;
 
         if !(isnil "_profileEntity") then {
             [_profileEntity,_profile,true] call ALIVE_fnc_removeProfileVehicleAssignment;
         };
-    } forEach _keys;
+    } forEach _assignedIDs;
 
-}else{
-
-    {
-        _vehicleID = _x select 1;
-        _keys pushback _vehicleID;
-    } forEach (_vehicleAssignments select 2);
+} else {
 
     {
-        _vehicleID = _x;
-        _profileVehicle = [ALIVE_profileHandler, "getProfile", _vehicleID] call ALIVE_fnc_profileHandler;
+        private _vehicleID = _x;
+        private _profileVehicle = [ALIVE_profileHandler, "getProfile", _vehicleID] call ALIVE_fnc_profileHandler;
+
         if !(isnil "_profileVehicle") then {
             [_profile,_profileVehicle,true] call ALIVE_fnc_removeProfileVehicleAssignment;
         };
-    } forEach _keys;
+    } forEach _assignedIDs;
 
 };
