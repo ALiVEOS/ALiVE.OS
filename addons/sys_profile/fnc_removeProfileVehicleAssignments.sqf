@@ -54,7 +54,7 @@ if(_profileType == "vehicle") then {
 
     {
         _vehicleID = _x select 1;
-        _keys pushback _entityID;
+        _keys pushback _vehicleID;
     } forEach (_vehicleAssignments select 2);
 
     {
