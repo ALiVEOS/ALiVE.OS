@@ -372,18 +372,21 @@ switch (_operation) do {
     };
 
     case "addVehicleAssignment": {
-        private ["_assignments","_key","_units","_unit","_group"];
+        if (_args isEqualType []) then {
+            private _assignment = _args;
 
-        if ((typeName _args == "ARRAY") && {!(isnil {_args select 1})}) then {
-                _assignments = _logic select 2 select 7; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
-                _key = _args select 1;
-                [_assignments, _key, _args] call ALIVE_fnc_hashSet;
+            _assignment params ["_vehicleID","_entityID","_assignmentData"];
 
-                // take assignments and determine if this entity is in command of any of them
-                [_logic,"entitiesInCommandOf",[_assignments,_logic] call ALIVE_fnc_profileVehicleAssignmentsGetInCommand] call ALIVE_fnc_hashSet;
+            private _assignments = _logic select 2 select 7; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
+            [_assignments, _entityID, _assignment] call ALIVE_fnc_hashSet;
 
-                // take assignments and determine if this entity is in cargo of any of them
-                [_logic,"entitiesInCargoOf",[_assignments,_logic] call ALIVE_fnc_profileVehicleAssignmentsGetInCargo] call ALIVE_fnc_hashSet;
+            // take assignments and determine if this entity is in command of any of them
+            private _entitiesInCommandOf = [_assignments,_logic] call ALIVE_fnc_profileVehicleAssignmentsGetInCommand;
+            [_logic,"entitiesInCommandOf", _entitiesInCommandOf] call ALIVE_fnc_hashSet;
+
+            // take assignments and determine if this entity is in cargo of any of them
+            private _entitiesInCargoOf = [_assignments,_logic] call ALIVE_fnc_profileVehicleAssignmentsGetInCargo;
+            [_logic,"entitiesInCargoOf", _entitiesInCargoOf] call ALIVE_fnc_hashSet;
         };
     };
 
