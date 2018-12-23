@@ -179,6 +179,7 @@ if (!_simAttacks) then {
                                 private _activeWaypoint = _waypoints select 0;
                                 private _destination = [_activeWaypoint,"position"] call ALiVE_fnc_hashGet;
                                 private _completionRadius = [_activeWaypoint,"completionRadius"] call ALiVE_fnc_hashGet;
+                                private _statements = [_activeWaypoint,"statements"] call ALiVE_fnc_hashGet;
                                 private _distanceToWaypoint = _profilePosition distance _destination;
 
                                 private _speedPerSecondArray = _profile select 2 select 22;
@@ -209,9 +210,8 @@ if (!_simAttacks) then {
                                         _destination pushBack 0;
                                     };
 
-                                    private _executeStatements = false;
-
                                     private _newPosition = _profilePosition;
+                                    private _executeStatements = false;
                                     private _handleWPcomplete = {};
 
                                     switch ([_activeWaypoint,"type"] call ALiVE_fnc_hashGet) do {
@@ -238,17 +238,26 @@ if (!_simAttacks) then {
                                     // if distance to wp destination is within completion radius
                                     // mark waypoint as complete
                                     if (_distanceToWaypoint <= (_moveDistance * 2)) then {
-                                        private _isCycling = _profile select 2 select 25;
-                                        private _waypointsCompleted = _profile select 2 select 17;
+                                        private _waypointComplete = true;
+                                        if (count _statements > 0) then {
+                                            private _waypointCondition = _statements select 0;
+                                            private _waypointConditionSatisfied = call compile _waypointCondition;
 
-                                        if (_isCycling) then {
-                                            _waypointsCompleted pushback _activeWaypoint;
+                                            if (!_waypointConditionSatisfied) then { _waypointComplete = false };
                                         };
 
-                                        _waypoints deleteat 0;
+                                        if (_waypointComplete) then {
+                                            private _isCycling = _profile select 2 select 25;
+                                            if (_isCycling) then {
+                                                private _waypointsCompleted = _profile select 2 select 17;
+                                                _waypointsCompleted pushback _activeWaypoint;
+                                            };
 
-                                        call _handleWPcomplete;
-                                        _executeStatements = true;
+                                            _waypoints deleteat 0;
+
+                                            call _handleWPcomplete;
+                                            _executeStatements = true;
+                                        };
                                     };
 
                                     if (_vehicleCommander) then {
@@ -358,11 +367,8 @@ if (!_simAttacks) then {
 
                                     // Execute statements at the end, needs review of any variables in hashes
                                     if (_executeStatements) then {
-                                        private _statements = [_activeWaypoint,"statements"] call ALiVE_fnc_hashGet;
-
-                                        if ((_statements isEqualType []) && {call compile (_statements select 0)}) then {
-                                            call compile (_statements select 1);
-                                        };
+                                        private _onCompletion = _statements select 1;
+                                        call compile _onCompletion;
                                     };
                                 } else {
                                     if (_debug) then {["ALiVE Profile-Simulator profile movement stopped for profile %1: currentPosition: %2 destination: %3", [_profile,"profileID","no-ID"] call ALiVE_fnc_hashGet, _profilePosition, _destination] call ALiVE_fnc_dump};
