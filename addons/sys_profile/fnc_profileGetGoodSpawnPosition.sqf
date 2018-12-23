@@ -28,7 +28,6 @@ params ["_profile"];
 
 private _profilePosition = _profile select 2 select 2;  //[_profile,"position"] call ALIVE_fnc_hashGet;
 private _profileType = _profile select 2 select 5;      //[_profile,"type"] call ALIVE_fnc_hashGet;
-private _profileID = _profile select 2 select 4;        //[_profile,"profileID"] call ALIVE_fnc_hashGet;
 
 if (_profileType == "vehicle") then {
 

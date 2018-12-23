@@ -242,7 +242,7 @@ switch (_operation) do {
                 //["VEHICLE %1 position: %2",_logic select 2 select 4,_args] call ALIVE_fnc_dump;
 
                 // store position on handler position index
-                _profileID = _logic select 2 select 4; //[_logic,"profileID"] call ALIVE_fnc_hashGet;
+                private _profileID = _logic select 2 select 4; //[_logic,"profileID"] call ALIVE_fnc_hashGet;
                 [ALIVE_profileHandler, "setPosition", [_profileID, _args]] call ALIVE_fnc_profileHandler;
 
             };
@@ -422,30 +422,28 @@ switch (_operation) do {
     };
 
     case "spawn": {
-        private ["_debug","_side","_vehicleClass","_vehicleType","_position","_side","_direction","_damage",
-        "_fuel","_ammo","_engineOn","_profileID","_active","_vehicleAssignments","_cargo","_cargoItems","_special","_vehicle","_eventID",
-        "_speed","_velocity","_paraDrop","_parachute","_soundFlyover","_locked","_slingload","_slinging"];
+        private ["_cargoItems","_special","_vehicle","_eventID","_speed","_velocity","_parachute","_soundFlyover","_slinging"];
 
-        _debug = _logic select 2 select 0; //[_logic,"debug"] call ALIVE_fnc_hashGet;
-        _vehicleClass = _logic select 2 select 11; //[_logic,"vehicleClass"] call ALIVE_fnc_hashGet;
-        _vehicleType = _logic select 2 select 6; //[_logic,"objectType"] call ALIVE_fnc_hashGet;
-        _position = _logic select 2 select 2; //[_logic,"position"] call ALIVE_fnc_hashGet;
-        _side = _logic select 2 select 3; //[_logic,"side"] call ALIVE_fnc_hashGet;
-        _direction = _logic select 2 select 12; //[_logic,"direction"] call ALIVE_fnc_hashGet;
-        _damage = _logic select 2 select 16; //[_logic,"damage"] call ALIVE_fnc_hashGet;
-        _fuel = _logic select 2 select 13; //[_logic,"fuel"] call ALIVE_fnc_hashGet;
-        _ammo = _logic select 2 select 14; //[_logic,"ammo"] call ALIVE_fnc_hashGet;
-        _engineOn = _logic select 2 select 15; //[_logic,"engineOn"] call ALIVE_fnc_hashGet;
-        _profileID = _logic select 2 select 4; //[_logic,"profileID"] call ALIVE_fnc_hashGet;
-        _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet;
-        _vehicleAssignments = _logic select 2 select 7; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
-        _cargo = _logic select 2 select 27; //[_logic,"cargo"] call ALIVE_fnc_hashGet;
+        private _debug = _logic select 2 select 0; //[_logic,"debug"] call ALIVE_fnc_hashGet;
+        private _vehicleClass = _logic select 2 select 11; //[_logic,"vehicleClass"] call ALIVE_fnc_hashGet;
+        private _vehicleType = _logic select 2 select 6; //[_logic,"objectType"] call ALIVE_fnc_hashGet;
+        private _position = _logic select 2 select 2; //[_logic,"position"] call ALIVE_fnc_hashGet;
+        private _side = _logic select 2 select 3; //[_logic,"side"] call ALIVE_fnc_hashGet;
+        private _direction = _logic select 2 select 12; //[_logic,"direction"] call ALIVE_fnc_hashGet;
+        private _damage = _logic select 2 select 16; //[_logic,"damage"] call ALIVE_fnc_hashGet;
+        private _fuel = _logic select 2 select 13; //[_logic,"fuel"] call ALIVE_fnc_hashGet;
+        private _ammo = _logic select 2 select 14; //[_logic,"ammo"] call ALIVE_fnc_hashGet;
+        private _engineOn = _logic select 2 select 15; //[_logic,"engineOn"] call ALIVE_fnc_hashGet;
+        private _profileID = _logic select 2 select 4; //[_logic,"profileID"] call ALIVE_fnc_hashGet;
+        private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet;
+        private _vehicleAssignments = _logic select 2 select 7; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
+        private _cargo = _logic select 2 select 27; //[_logic,"cargo"] call ALIVE_fnc_hashGet;
 
-        _slingload = [_logic, "slingload", []] call ALIVE_fnc_HashGet; //unindexed: _slingload = _logic select 2 select 28;
-        _slung = [_logic, "slung", []] call ALIVE_fnc_HashGet; //unindexed: _slung = _logic select 2 select 29;
-        _paraDrop = false;
+        private _slingload = [_logic, "slingload", []] call ALIVE_fnc_HashGet; //unindexed: _slingload = _logic select 2 select 28;
+        private _slung = [_logic, "slung", []] call ALIVE_fnc_HashGet; //unindexed: _slung = _logic select 2 select 29;
+        private _paraDrop = false;
 
-        _locked = [_logic, "locked",false] call ALIVE_fnc_HashGet;
+        private _locked = [_logic, "locked",false] call ALIVE_fnc_HashGet;
 
         // not already active and spawning has not yet been triggered
         if (!_active && {!_locked}) then {
