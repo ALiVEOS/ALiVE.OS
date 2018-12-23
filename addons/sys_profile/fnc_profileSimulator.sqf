@@ -165,7 +165,7 @@ if (!_simAttacks) then {
                     };
 
 
-                    private _waypoints = _profile select 2 select 16;
+                    private _waypoints = _profile select 2 select 16;systemchat format ["Waypoint Count: %1", count _waypoints];
 
                     if (!_isPlayer && !_vehicleCargo && !_combat) then {
                         if (!(_waypoints isEqualTo [])) then {
@@ -175,6 +175,8 @@ if (!_simAttacks) then {
                             if (!_active) then {
 
                                 // profile is not spawned, simulate movement
+
+                                private _waypointsCompleted = _profile select 2 select 17;
 
                                 private _activeWaypoint = _waypoints select 0;
                                 private _destination = [_activeWaypoint,"position"] call ALiVE_fnc_hashGet;
@@ -212,7 +214,8 @@ if (!_simAttacks) then {
 
                                     private _newPosition = _profilePosition;
                                     private _executeStatements = false;
-                                    private _handleWPcomplete = {};
+
+                                    private "_handleWPcomplete";
 
                                     switch ([_activeWaypoint,"type"] call ALiVE_fnc_hashGet) do {
                                         case "MOVE" : {
@@ -225,7 +228,7 @@ if (!_simAttacks) then {
                                             _newPosition = _profilePosition getPos [_moveDistance, _direction];
                                             _handleWPcomplete = {
                                                 _waypoints append _waypointsCompleted;
-                                                _waypointsCompleted = [];
+                                                _waypointsCompleted resize 0;
                                             };
                                         };
                                     };
@@ -249,7 +252,6 @@ if (!_simAttacks) then {
                                         if (_waypointComplete) then {
                                             private _isCycling = _profile select 2 select 25;
                                             if (_isCycling) then {
-                                                private _waypointsCompleted = _profile select 2 select 17;
                                                 _waypointsCompleted pushback _activeWaypoint;
                                             };
 

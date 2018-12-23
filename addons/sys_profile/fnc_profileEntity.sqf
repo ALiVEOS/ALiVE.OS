@@ -624,6 +624,10 @@ switch(_operation) do {
         _waypoints = [_waypoints, [_waypoint], 0] call BIS_fnc_arrayInsert;
         [_logic,"waypoints",_waypoints] call ALIVE_fnc_hashSet;
 
+        if (([_waypoint,"type"] call ALIVE_fnc_hashGet) == 'CYCLE') then {
+            [_logic,"isCycling",true] call ALIVE_fnc_hashSet;
+        };
+
         private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
         if (_active) then {
             [_logic,"profileWaypointToWaypoint", _waypoint] call MAINCLASS;
