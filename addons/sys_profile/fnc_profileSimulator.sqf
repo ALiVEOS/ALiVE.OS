@@ -165,7 +165,7 @@ if (!_simAttacks) then {
                     };
 
 
-                    private _waypoints = _profile select 2 select 16;systemchat format ["Waypoint Count: %1", count _waypoints];
+                    private _waypoints = _profile select 2 select 16;
 
                     if (!_isPlayer && !_vehicleCargo && !_combat) then {
                         if (!(_waypoints isEqualTo [])) then {
