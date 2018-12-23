@@ -26,9 +26,9 @@ ARJay
 
 params ["_profile"];
 
-private _profilePosition = _profile select 2 select 2;              //[_profile,"position"] call ALIVE_fnc_hashGet;
-private _profileType = _profile select 2 select 5;                  //[_profile,"type"] call ALIVE_fnc_hashGet;
-private _despawnPosition = _profile select 2 select 23;             //[_profile,"despawnPosition"] call ALIVE_fnc_hashGet;
+private _profilePosition = _profile select 2 select 2;  //[_profile,"position"] call ALIVE_fnc_hashGet;
+private _profileType = _profile select 2 select 5;      //[_profile,"type"] call ALIVE_fnc_hashGet;
+private _profileID = _profile select 2 select 4;        //[_profile,"profileID"] call ALIVE_fnc_hashGet;
 
 if (_profileType == "vehicle") then {
 
@@ -38,6 +38,7 @@ if (_profileType == "vehicle") then {
         // let the entity profile in command of the vehicle
         // deal with positioning
 
+        private _despawnPosition = _profile select 2 select 20; //[_profile,"despawnPosition"] call ALIVE_fnc_hashGet;
         private _despawnPositionCorrupted = (_despawnPosition select [0,2]) isequalto [0,0];
         private _spawnPosition = if (_despawnPositionCorrupted) then { _profilePosition } else { _despawnPosition };
 
