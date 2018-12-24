@@ -502,9 +502,6 @@ switch(_operation) do {
     case "addWaypoint": {
         private _waypoint = _args;
 
-        //private _compRad = [_waypoint,"completionRadius"] call ALiVE_fnc_hashGet;
-        //systemchat format ["adding waypoint with radius: %1 ||| From - %2", _compRad,_fnc_scriptnameparent];
-
         private _pathfindingEnabled = [MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet;
         if (!_pathfindingEnabled) then {
             [{ [_logic,"addWaypointInternal", _waypoint] call MAINCLASS }, []] call CBA_fnc_directCall;

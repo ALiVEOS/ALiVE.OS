@@ -1,10 +1,36 @@
 _origin = getpos player;
-_start = [_origin select 0, (_origin select 1) + 2000];
-_end = [_origin select 0, (_origin select 1) - 2000];
-[alive_pathfinder,"findPath",[_start,_end,"infantry",false,[],{
-    _this params ["_args","_path"];
-
-    systemchat format ["Path Found: %1", _path];
+_start = [(_origin select 0), (_origin select 1)];
+_end = [(_origin select 0) + 8500, (_origin select 1)];
+[alive_pathfinder,"findPath",[_start,_end,"infantry",false,false,[],{
+    params ["_args","_path"];
 
     [alive_pathfinder,"debugPath", _path] call ALiVE_fnc_pathfinder;
 }]] call alive_fnc_pathfinder;
+
+
+
+_origin = getpos player;
+_start = [(_origin select 0), (_origin select 1)];
+_end = [(_origin select 0) + 30, (_origin select 1) + 30];
+[alive_pathfinder,"findPath",[_start,_end,"infantry",false,false,[],{
+    params ["_args","_path"];
+
+    [alive_pathfinder,"debugPath", _path] call ALiVE_fnc_pathfinder;
+}]] call alive_fnc_pathfinder;
+
+
+
+_origin = getpos player;
+_start = [(_origin select 0), (_origin select 1)];
+_end = getpos player;
+[alive_pathfinder,"findPath",[_start,_end,"vehicleAir",false,false,[],{
+    params ["_args","_path"];
+
+    systemchat str [_path];
+    [alive_pathfinder,"debugPath", _path] call ALiVE_fnc_pathfinder;
+}]] call alive_fnc_pathfinder;
+
+
+
+private _jobs = [ALiVE_pathfinder,"pathJobs"] call ALiVE_fnc_hashGet;
+systemchat format ["Current Path Jobs: %1", count _jobs];

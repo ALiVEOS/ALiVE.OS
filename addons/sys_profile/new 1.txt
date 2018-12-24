@@ -1,0 +1,26 @@
+private _startPos = getmarkerpos "start";
+private _m1 = getmarkerpos "m1";
+private _m2 = getmarkerpos "m2";
+private _m3 = getmarkerpos "m3";
+private _endPos = getmarkerpos "end";
+
+private _profiles = ([ALiVE_profileHandler,"profiles"] call ALiVE_fnc_hashGet) select 2;
+private _profile = _profiles select 1;
+
+//private _group = ["Infantry","BLU_F"] call ALIVE_fnc_configGetRandomGroup;
+//private _profile = [[_group],"WEST","BLU_F", _startPos] call ALIVE_fnc_createProfileEntity;
+//private _profileWaypoints = [_profile,"waypoints"] call ALiVE_fnc_hashGet;
+
+private _wp1 = [_m1] call ALiVE_fnc_createProfileWaypoint;
+private _wp2 = [_m2] call ALiVE_fnc_createProfileWaypoint;
+private _wp3 = [_m3] call ALiVE_fnc_createProfileWaypoint;
+private _wpEnd = [_endPos] call ALiVE_fnc_createProfileWaypoint;
+
+[_profile,"addWaypoint", _wp1] call ALiVE_fnc_profileEntity;
+[_profile,"addWaypoint", _wp2] call ALiVE_fnc_profileEntity;
+[_profile,"insertWaypoint", _wp3] call ALiVE_fnc_profileEntity;
+[_profile,"addWaypoint", _wpEnd] call ALiVE_fnc_profileEntity;
+
+//
+private _group = cursortarget;
+_group addWaypoint [_endPos,0];
