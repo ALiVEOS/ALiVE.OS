@@ -103,7 +103,13 @@ if (!_simAttacks) then {
                     private _profilePosition = _profile select 2 select 2;
                     private _isPlayer = _profile select 2 select 30;
 
+                    // add z-index since some profiles dont one defined
+                    if (count _profilePosition == 2) then {
+                        _profilePosition pushBack 0;
+                    };
+
                     // determine if entity occupies a vehicle
+
                     private _vehiclesInCommandOf = _profile select 2 select 8;
                     private _vehiclesInCargoOf = _profile select 2 select 9;
 
@@ -179,57 +185,46 @@ if (!_simAttacks) then {
                                 private _waypointsCompleted = _profile select 2 select 17;
 
                                 private _activeWaypoint = _waypoints select 0;
-                                private _destination = [_activeWaypoint,"position"] call ALiVE_fnc_hashGet;
-                                private _completionRadius = [_activeWaypoint,"completionRadius"] call ALiVE_fnc_hashGet;
+                                private _waypointType = [_activeWaypoint,"type"] call ALiVE_fnc_hashGet;
                                 private _statements = [_activeWaypoint,"statements"] call ALiVE_fnc_hashGet;
-                                private _distanceToWaypoint = _profilePosition distance _destination;
 
-                                private _speedPerSecondArray = _profile select 2 select 22;
-                                private _speedPerSecond = _speedPerSecondArray select 1;
+                                private _waypointComplete = false;
+                                private _handleWPcomplete = {};
 
-                                switch ([_activeWaypoint,"speed"] call ALiVE_fnc_hashGet) do {
-                                    case "LIMITED": {_speedPerSecond = _speedPerSecondArray select 0};
-                                    case "NORMAL":  {_speedPerSecond = _speedPerSecondArray select 1};
-                                    case "FULL":    {_speedPerSecond = _speedPerSecondArray select 2};
-                                };
+                                private _newPosition = _profilePosition;
 
-                                private _direction = 0;
-                                private _moveDistance = _speedPerSecond * _simModifier * _speedModifier * accTime;
+                                if (_waypointType != "CYCLE") then {
+                                    private _destination = [_activeWaypoint,"position"] call ALiVE_fnc_hashGet;
+                                    private _completionRadius = [_activeWaypoint,"completionRadius"] call ALiVE_fnc_hashGet;
 
-                                // don't overshoot waypoint
-                                if (_moveDistance > _distanceToWaypoint) then {
-                                    _moveDistance = _distanceToWaypoint - (random (_completionRadius * 0.7));
-                                };
+                                    if ((count _destination) == 2) then { _destination pushBack 0 };
+                                    private _distanceToWaypoint = _profilePosition distance _destination;
 
-                                if (!isnil "_profilePosition" && {!(_profilePosition isEqualTo [])} && {!isnil "_destination"}) then {
+                                    private _speedPerSecondArray = _profile select 2 select 22;
+                                    private _waypointSpeed = [_activeWaypoint,"speed"] call ALiVE_fnc_hashGet;
 
-                                    // add z-index since some profiles dont one defined
-                                    if ((count _profilePosition) == 2) then {
-                                        _profilePosition pushBack 0;
+                                    private _speedPerSecond = switch (_waypointSpeed) do {
+                                        case "LIMITED": {_speedPerSecondArray select 0};
+                                        case "NORMAL":  {_speedPerSecondArray select 1};
+                                        case "FULL":    {_speedPerSecondArray select 2};
+                                        default {
+                                            _speedPerSecondArray select 1
+                                        };
                                     };
 
-                                    if ((count _destination) == 2) then {
-                                        _destination pushBack 0;
+                                    private _direction = 0;
+                                    private _moveDistance = _speedPerSecond * _simModifier * _speedModifier * accTime;
+
+                                    // don't overshoot waypoint
+                                    if (_moveDistance > _distanceToWaypoint) then {
+                                        _moveDistance = _distanceToWaypoint - (random (_completionRadius * 0.7));
                                     };
 
-                                    private _newPosition = _profilePosition;
-                                    private _executeStatements = false;
-
-                                    private "_handleWPcomplete";
-
-                                    switch ([_activeWaypoint,"type"] call ALiVE_fnc_hashGet) do {
+                                    switch (_waypointType) do {
                                         case "MOVE" : {
                                             _direction = _profilePosition getDir _destination;
                                             _newPosition = _profilePosition getPos [_moveDistance, _direction];
                                             _handleWPcomplete = {};
-                                        };
-                                        case "CYCLE" : {
-                                            _direction = _profilePosition getDir _destination;
-                                            _newPosition = _profilePosition getPos [_moveDistance, _direction];
-                                            _handleWPcomplete = {
-                                                _waypoints append _waypointsCompleted;
-                                                _waypointsCompleted resize 0;
-                                            };
                                         };
                                     };
 
@@ -241,115 +236,80 @@ if (!_simAttacks) then {
                                     // if distance to wp destination is within completion radius
                                     // mark waypoint as complete
                                     if (_distanceToWaypoint <= (_moveDistance * 2)) then {
-                                        private _waypointComplete = true;
-                                        if (count _statements > 0) then {
-                                            private _waypointCondition = _statements select 0;
-                                            private _waypointConditionSatisfied = call compile _waypointCondition;
+                                        _waypointComplete = true;
+                                    };
+                                } else {
+                                    // cycle waypoints should instantly complete
+                                    // placing the contents of the completedWaypoints at the front of waypoints
 
-                                            if (!_waypointConditionSatisfied) then { _waypointComplete = false };
-                                        };
+                                    _waypointComplete = true;
 
-                                        if (_waypointComplete) then {
-                                            private _isCycling = _profile select 2 select 25;
-                                            if (_isCycling) then {
-                                                _waypointsCompleted pushback _activeWaypoint;
-                                            };
+                                    _handleWPcomplete = {
+                                        _waypoints = _waypointsCompleted + _waypoints;
+                                        _waypointsCompleted resize 0;
 
-                                            _waypoints deleteat 0;
+                                        [_profile,"waypoints", _waypoints] call ALiVE_fnc_hashSet;
+                                    };
+                                };
 
-                                            call _handleWPcomplete;
-                                            _executeStatements = true;
-                                        };
+                                if (_waypointComplete) then {
+                                    // don't evaluate condition for cycle waypoints
+                                    // to match arma 3 waypoint behavior
+                                    if (count _statements > 0 && { _waypointType != "CYCLE" }) then {
+                                        private _waypointCondition = _statements select 0;
+                                        private _waypointConditionSatisfied = call compile _waypointCondition;
+
+                                        if (!_waypointConditionSatisfied) then { _waypointComplete = false };
                                     };
 
-                                    if (_vehicleCommander) then {
-                                        // move vehicles that profile is in
-                                        [_profile,"hasSimulated", true] call ALiVE_fnc_hashSet;
+                                    if (_waypointComplete) then {
+                                        private _isCycling = _profile select 2 select 25;
+                                        if (_isCycling) then {
+                                            _waypointsCompleted pushback _activeWaypoint;
+                                        };
 
-                                        {
-                                            private _vehicleProfile = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_ProfileHandler;
+                                        _waypoints deleteat 0;
 
-                                            if (!isnil "_vehicleProfile") then {
-                                                // turn engineOn virtually
-                                                // move all entities within the vehicle
-                                                // set the vehicle position and merge all assigned entities positions
+                                        call _handleWPcomplete;
+                                    };
+                                };
 
-                                                //["PROFILE SIM SIMMED ENTITY %1 IN COMMAND OF %2 SET VEHICLE POS: %3",_profile select 2 select 4,_vehicleProfile select 2 select 4,_newPosition] call ALiVE_fnc_dump;
+                                // move any vehicles this profile commands
 
-                                                [_vehicleProfile,"hasSimulated", true] call ALiVE_fnc_hashSet;
-                                                [_vehicleProfile,"engineOn", true] call ALiVE_fnc_profileVehicle;
-                                                [_vehicleProfile,"position", _newPosition] call ALiVE_fnc_profileVehicle;
-                                                [_vehicleProfile,"direction", _direction] call ALiVE_fnc_profileVehicle;
-                                                [_vehicleProfile,"mergePositions"] call ALiVE_fnc_profileVehicle;
+                                if (_vehicleCommander) then {
+                                    [_profile,"hasSimulated", true] call ALiVE_fnc_hashSet;
 
-                                                // if profile is in boat, and is no longer on water
-                                                // remove boat
+                                    {
+                                        private _vehicleProfile = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_ProfileHandler;
 
-                                                private _boat = [_profile,"boat"] call ALiVE_fnc_hashGet;
-                                                if (_boatsEnabled && {!isnil "_boat"} && {!surfaceIsWater _profilePosition}) then {
-                                                    private _boatProfileID = _boat select 0;
-                                                    private _boatProfile = [MOD(profileHandler),"getProfile", _boatProfileID] call ALiVE_fnc_ProfileHandler;
+                                        if (!isnil "_vehicleProfile") then {
+                                            // turn engineOn virtually
+                                            // move all entities within the vehicle
+                                            // set the vehicle position and merge all assigned entities positions
 
-                                                    if (isnil "_boatProfile") then {
-                                                        if (_debug) then {["ALiVE Profile Simulator _boatProfile is nil _profile is %1",_profile] call ALiVE_fnc_DumpR};
-                                                    } else {
-                                                        private _profileID = [_profile,"profileID", "no-ID"] call ALiVE_fnc_hashGet;
-                                                        private _boatID = [_boatProfile,"profileID", "no-ID"] call ALiVE_fnc_hashGet;
+                                            //["PROFILE SIM SIMMED ENTITY %1 IN COMMAND OF %2 SET VEHICLE POS: %3",_profile select 2 select 4,_vehicleProfile select 2 select 4,_newPosition] call ALiVE_fnc_dump;
 
-                                                        if (_debug) then {["ALiVE Profile Simulator is removing boat %1 from entity profile %2", _boatID, _profileID] call ALiVE_fnc_Dump};
+                                            [_vehicleProfile,"hasSimulated", true] call ALiVE_fnc_hashSet;
+                                            [_vehicleProfile,"engineOn", true] call ALiVE_fnc_profileVehicle;
+                                            [_vehicleProfile,"position", _newPosition] call ALiVE_fnc_profileVehicle;
+                                            [_vehicleProfile,"direction", _direction] call ALiVE_fnc_profileVehicle;
+                                            [_vehicleProfile,"mergePositions"] call ALiVE_fnc_profileVehicle;
 
-                                                        if (count _waypoints > 1) then {_waypoints deleteAt 0};
-
-                                                        [_profile,_boatProfile] call ALiVE_fnc_removeProfileVehicleAssignment;
-                                                        [MOD(profileHandler),"unregisterProfile", _boatProfile] call ALiVE_fnc_profileHandler;
-                                                    };
-
-                                                    [_profile,"boat"] call ALiVE_fnc_hashRem;
-                                                };
-                                            };
-                                        } forEach _vehiclesInCommandOf;
-                                    } else {
-                                        // assign a boat to entities if on water
-
-                                        if (_boatsEnabled && {surfaceIsWater _profilePosition} && {surfaceIsWater _newPosition}) then {
-                                            if (isnil {[_profile,"boat"] call ALiVE_fnc_hashGet}) then {
-                                                if (_debug) then {["ALiVE Profile Simulator is adding a boat to entity profile %1",_profileID] call ALiVE_fnc_Dump};
-
-                                                private _unitPositions = _profile select 2 select 18;
-                                                private _faction = [_profile, "faction"] call ALiVE_fnc_hashGet;
-                                                private _side = _profile select 2 select 3;
-
-                                                private _boatTypes = [(count _unitPositions) - 1, [_faction],"SHIP"] call ALiVE_fnc_findVehicleType;
-                                                private _boatType = if (count _boatTypes > 0) then {selectRandom _boatTypes} else {"C_Boat_Transport_02_F"};
-
-                                                private _boatProfile = [_boatType,_side,_faction,_newPosition,0,false,_faction,[]] call ALiVE_fnc_createProfileVehicle;
-                                                [_profile,_boatProfile] call ALiVE_fnc_createProfileVehicleAssignment;
-
-                                                // create waypoint to nearest shore point
-                                                private _shore = [_newPosition,_destination] call ALiVE_fnc_findNearestShore;
-                                                if !(_shore isEqualTo [0,0,0]) then {
-                                                    private _shoreWaypoint = [_shore, 10] call ALiVE_fnc_createProfileWaypoint;
-                                                    [_profile,"insertWaypoint", _shoreWaypoint] call ALiVE_fnc_profileEntity;
-                                                };
-
-                                                [_profile, "boat", [[_boatProfile,"profileID"] call ALiVE_fnc_HashGet, _newPosition]] call ALiVE_fnc_hashSet;
-                                            };
-                                        } else {
-                                            // Remove boat if not on water anymore
-                                            // failsafe, will be handled by _vehicleCommander case above
+                                            // if profile is in boat, and is no longer on water
+                                            // remove boat
 
                                             private _boat = [_profile,"boat"] call ALiVE_fnc_hashGet;
-                                            if (_boatsEnabled && {!isnil "_boat"}) then {
+                                            if (_boatsEnabled && {!isnil "_boat"} && {!surfaceIsWater _profilePosition}) then {
                                                 private _boatProfileID = _boat select 0;
                                                 private _boatProfile = [MOD(profileHandler),"getProfile", _boatProfileID] call ALiVE_fnc_ProfileHandler;
 
                                                 if (isnil "_boatProfile") then {
                                                     if (_debug) then {["ALiVE Profile Simulator _boatProfile is nil _profile is %1",_profile] call ALiVE_fnc_DumpR};
                                                 } else {
-                                                    private _profileID = [_profile,"profileID","no-ID"] call ALiVE_fnc_hashGet;
-                                                    private _boatID = [_boatProfile,"profileID","no-ID"] call ALiVE_fnc_hashGet;
+                                                    private _profileID = [_profile,"profileID", "no-ID"] call ALiVE_fnc_hashGet;
+                                                    private _boatID = [_boatProfile,"profileID", "no-ID"] call ALiVE_fnc_hashGet;
 
-                                                    if (_debug) then {["ALiVE Profile Simulator is removing boat %1 from entity profile %2",_boatID,_profileID] call ALiVE_fnc_Dump};
+                                                    if (_debug) then {["ALiVE Profile Simulator is removing boat %1 from entity profile %2", _boatID, _profileID] call ALiVE_fnc_Dump};
 
                                                     if (count _waypoints > 1) then {_waypoints deleteAt 0};
 
@@ -360,20 +320,70 @@ if (!_simAttacks) then {
                                                 [_profile,"boat"] call ALiVE_fnc_hashRem;
                                             };
                                         };
-
-                                        // set the profile position and merge all unit positions to group position
-                                        [_profile,"hasSimulated", true] call ALiVE_fnc_hashSet;
-                                        [_profile,"position", _newPosition] call ALiVE_fnc_profileEntity;
-                                        [_profile,"mergePositions"] call ALiVE_fnc_profileEntity;
-                                    };
-
-                                    // Execute statements at the end, needs review of any variables in hashes
-                                    if (_executeStatements) then {
-                                        private _onCompletion = _statements select 1;
-                                        call compile _onCompletion;
-                                    };
+                                    } forEach _vehiclesInCommandOf;
                                 } else {
-                                    if (_debug) then {["ALiVE Profile-Simulator profile movement stopped for profile %1: currentPosition: %2 destination: %3", [_profile,"profileID","no-ID"] call ALiVE_fnc_hashGet, _profilePosition, _destination] call ALiVE_fnc_dump};
+                                    // assign a boat to entities if on water
+
+                                    if (_boatsEnabled && {surfaceIsWater _profilePosition} && {surfaceIsWater _newPosition}) then {
+                                        if (isnil {[_profile,"boat"] call ALiVE_fnc_hashGet}) then {
+                                            if (_debug) then {["ALiVE Profile Simulator is adding a boat to entity profile %1",_profileID] call ALiVE_fnc_Dump};
+
+                                            private _unitPositions = _profile select 2 select 18;
+                                            private _faction = [_profile, "faction"] call ALiVE_fnc_hashGet;
+                                            private _side = _profile select 2 select 3;
+
+                                            private _boatTypes = [(count _unitPositions) - 1, [_faction],"SHIP"] call ALiVE_fnc_findVehicleType;
+                                            private _boatType = if (count _boatTypes > 0) then {selectRandom _boatTypes} else {"C_Boat_Transport_02_F"};
+
+                                            private _boatProfile = [_boatType,_side,_faction,_newPosition,0,false,_faction,[]] call ALiVE_fnc_createProfileVehicle;
+                                            [_profile,_boatProfile] call ALiVE_fnc_createProfileVehicleAssignment;
+
+                                            // create waypoint to nearest shore point
+                                            private _shore = [_newPosition,_destination] call ALiVE_fnc_findNearestShore;
+                                            if !(_shore isEqualTo [0,0,0]) then {
+                                                private _shoreWaypoint = [_shore, 10] call ALiVE_fnc_createProfileWaypoint;
+                                                [_profile,"insertWaypoint", _shoreWaypoint] call ALiVE_fnc_profileEntity;
+                                            };
+
+                                            [_profile, "boat", [[_boatProfile,"profileID"] call ALiVE_fnc_HashGet, _newPosition]] call ALiVE_fnc_hashSet;
+                                        };
+                                    } else {
+                                        // Remove boat if not on water anymore
+                                        // failsafe, will be handled by _vehicleCommander case above
+
+                                        private _boat = [_profile,"boat"] call ALiVE_fnc_hashGet;
+                                        if (_boatsEnabled && {!isnil "_boat"}) then {
+                                            private _boatProfileID = _boat select 0;
+                                            private _boatProfile = [MOD(profileHandler),"getProfile", _boatProfileID] call ALiVE_fnc_ProfileHandler;
+
+                                            if (isnil "_boatProfile") then {
+                                                if (_debug) then {["ALiVE Profile Simulator _boatProfile is nil _profile is %1",_profile] call ALiVE_fnc_DumpR};
+                                            } else {
+                                                private _profileID = [_profile,"profileID","no-ID"] call ALiVE_fnc_hashGet;
+                                                private _boatID = [_boatProfile,"profileID","no-ID"] call ALiVE_fnc_hashGet;
+
+                                                if (_debug) then {["ALiVE Profile Simulator is removing boat %1 from entity profile %2",_boatID,_profileID] call ALiVE_fnc_Dump};
+
+                                                if (count _waypoints > 1) then {_waypoints deleteAt 0};
+
+                                                [_profile,_boatProfile] call ALiVE_fnc_removeProfileVehicleAssignment;
+                                                [MOD(profileHandler),"unregisterProfile", _boatProfile] call ALiVE_fnc_profileHandler;
+                                            };
+
+                                            [_profile,"boat"] call ALiVE_fnc_hashRem;
+                                        };
+                                    };
+
+                                    // set the profile position and merge all unit positions to group position
+                                    [_profile,"hasSimulated", true] call ALiVE_fnc_hashSet;
+                                    [_profile,"position", _newPosition] call ALiVE_fnc_profileEntity;
+                                    [_profile,"mergePositions"] call ALiVE_fnc_profileEntity;
+                                };
+
+                                // execute statements at the end, needs review of any variables in hashes
+                                if (_waypointComplete) then {
+                                    private _onCompletion = _statements select 1;
+                                    call compile _onCompletion;
                                 };
 
                             } else {
@@ -436,7 +446,7 @@ if (!_simAttacks) then {
 
                                                         if (count _waypoints > 1) then {
                                                             _waypoints deleteAt 0;
-                                                            [_waypoints, _group] call ALiVE_fnc_profileWaypointsToWaypoints;
+                                                            [_logic,_waypoints, _group] call ALiVE_fnc_profileWaypointsToWaypoints; // #todo: this doesn't seem right...
                                                         };
                                                     };
                                                 };
