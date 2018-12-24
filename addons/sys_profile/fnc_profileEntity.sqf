@@ -200,6 +200,7 @@ switch(_operation) do {
             [_logic,"_id",""] call ALIVE_fnc_hashSet;                   // select 2 select 32
             [_logic,"busy",false] call ALIVE_fnc_hashSet;               // select 2 select 33
             [_logic,"pendingWaypointPaths", []] call ALiVE_fnc_hashSet;; // select 2 select 34;
+            [_logic,"unitVariables", []] call ALiVE_fnc_hashSet;        // select 2 select 35
         };
 
         /*
@@ -773,12 +774,14 @@ switch(_operation) do {
             private _positions = _logic select 2 select 18;     //[_logic,"positions"] call ALIVE_fnc_hashGet;
             private _damages = _logic select 2 select 19;       //[_logic,"damages"] call ALIVE_fnc_hashGet;
             private _ranks = _logic select 2 select 20;         //[_logic,"ranks"] call ALIVE_fnc_hashGet;
+            private _unitVariables = _logic select 2 select 35;
             private _unitCount = _logic select 2 select 12;
 
             _unitClasses deleteAt _unitIndex;
             _positions deleteAt _unitIndex;
             _damages deleteAt _unitIndex;
             _ranks deleteAt _unitIndex;
+            _unitVariables deleteAt _unitIndex;
 
             //[_logic,"unitClasses",_unitClasses] call ALIVE_fnc_hashSet;
             //[_logic,"positions",_positions] call ALIVE_fnc_hashSet;
@@ -941,6 +944,9 @@ switch(_operation) do {
         private _locked = [_logic, "locked",false] call ALIVE_fnc_hashGet;
         private _ignore_HC = [_logic, "ignore_HC",false] call ALIVE_fnc_hashGet;
 
+        private _unitVariables = _logic select 2 select 35;
+        private _persistUnitVars = [MOD(profileSystem),"persistUnitVars"] call ALiVE_fnc_hashGet;
+
         private _formation = selectRandom ["COLUMN","STAG COLUMN","WEDGE","ECH LEFT","ECH RIGHT","VEE","LINE"];
         private _unitCount = 0;
         private _units = [];
@@ -1005,6 +1011,11 @@ switch(_operation) do {
                         if (_rank isEqualTo "") then {_rank = "PRIVATE"};
                     };
 
+                    private _unitVars = [];
+                    if (_persistUnitVars && { count _unitVariables > 0 && {_unitCount < count _unitVariables}}) then {
+                        _unitVars = _unitVariables select _unitCount;
+                    };
+
                     private "_unit";
                     if (_forEachIndex == 0) then {
 
@@ -1030,6 +1041,7 @@ switch(_operation) do {
                     _unit setposATL _unitPosition;
                     _unit setDamage _damage;
                     _unit setRank _rank;
+                    {_unit setvariable [_x select 0, _x select 1]} foreach _unitVars;
 
                     // set profile id on the unit
                     _unit setVariable ["ALiVE_ignore_HC", _ignore_HC];
@@ -1160,6 +1172,9 @@ switch(_operation) do {
         private _activeCommands = _logic select 2 select 26;    //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
         private _inactiveCommands = _logic select 2 select 27;  //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
 
+        private _unitVariables = _logic select 2 select 35;
+        private _persistUnitVars = [MOD(profileSystem),"persistUnitVars"] call ALiVE_fnc_hashGet;
+
         //Don't despawn player profiles
         if ([_logic, "isPlayer",false] call ALIVE_fnc_HashGet) exitwith {};
 
@@ -1200,12 +1215,17 @@ switch(_operation) do {
                 [_logic,"position", _position] call MAINCLASS;
                 [_logic,"despawnPosition", _position] call ALIVE_fnc_hashSet;
 
+                private _unitVariableBlacklist = ["profileid","profileindex","alive_ignore_hc","cba_xeh_incomingmissile","cba_xeh_isprocessed","cba_xeh_init","randomValue","cba_xeh_killed","cba_xeh_isinitialized","morale","saved3deninventory"];
+
                 // delete units
                 {
                     private _unit = _x;
                     _positions set [_unitCount, getPosATL _unit];
                     _damages set [_unitCount, damage _unit];
                     _ranks set [_unitCount, rank _unit];
+                    if (_persistUnitVars) then {
+                        _unitVariables set [_unitCount, ((allvariables _unit) - _unitVariableBlacklist) apply {[_x, _unit getvariable _x]}];
+                    };
                     deleteVehicle _unit;
                     _unitCount = _unitCount + 1;
                 } forEach _units;

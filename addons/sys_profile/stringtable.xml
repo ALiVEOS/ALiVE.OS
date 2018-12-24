@@ -104,4 +104,10 @@
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN_COMMENT">
     <Original>Sleep values between spawning units to not overload engine</Original>
 </Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PERSISTUNITVARS">
+    <Original>Persist Unit Variables:</Original>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PERSISTUNITVARS_COMMENT">
+    <Original>Variables set on units will be persisted through despawn</Original>
+</Key>
 </Container></Package></Project>

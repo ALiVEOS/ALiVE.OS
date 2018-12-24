@@ -205,6 +205,25 @@ class CfgVehicles {
                         description = "$STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN_COMMENT";
                         defaultvalue = "0.3";
                     };
+                    class persistUnitVariables
+                    {
+                        displayName = "$STR_ALIVE_PROFILE_SYSTEM_PERSISTUNITVARS";
+                        description = "$STR_ALIVE_PROFILE_SYSTEM_PERSISTUNITVARS_COMMENT";
+                        class Values
+                        {
+                            class No
+                            {
+                                name = "No";
+                                value = false;
+                                default = 1;
+                            };
+                            class Yes
+                            {
+                                name = "Yes";
+                                value = true;
+                            };
+                        };
+                    };
                 };
         };
 };

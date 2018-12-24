@@ -51,6 +51,7 @@ if(isServer) then {
     private _pathfinding = call compile (_logic getVariable ["pathfinding", "false"]);
     private _seaTransport = call compile (_logic getVariable ["seaTransport", "false"]);
     private _smoothSpawn = parseNumber (_logic getVariable ["smoothSpawn", "0.3"]);
+    private _persistUnitVars = call compile (_logic getVariable ["persistUnitVariables", "false"]);
 
     //Ensure Event Log is loaded
     if (isnil "ALIVE_eventLog") then {
@@ -74,6 +75,7 @@ if(isServer) then {
     [ALIVE_profileSystem, "pathfinding", _pathfinding] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "seaTransport", _seaTransport] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "smoothSpawn", _smoothSpawn] call ALIVE_fnc_profileSystem;
+    [ALIVE_profileSystem, "persistUnitVars", _persistUnitVars] call ALIVE_fnc_profileSystem;
 
     _logic setVariable ["handler",ALIVE_profileSystem];
     [ALIVE_profileSystem,"handler",_logic] call ALiVE_fnc_HashSet;

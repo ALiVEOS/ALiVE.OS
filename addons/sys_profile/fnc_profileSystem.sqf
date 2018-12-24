@@ -354,6 +354,16 @@ switch(_operation) do {
 
             _result = _args;
     };
+    case "persistUnitVars": {
+            if(typeName _args != "BOOL") then {
+                    _args = [_logic,"persistUnitVars"] call ALIVE_fnc_hashGet;
+            } else {
+                    [_logic,"persistUnitVars",_args] call ALIVE_fnc_hashSet;
+            };
+            ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+            _result = _args;
+    };
     case "plotSectors": {
             if(typeName _args != "BOOL") then {
                     _args = [_logic,"plotSectors"] call ALIVE_fnc_hashGet;
