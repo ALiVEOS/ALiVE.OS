@@ -5,7 +5,7 @@ SCRIPT(profileGetGoodSpawnPosition);
 Function: ALIVE_fnc_profileGetGoodSpawnPosition
 
 Description:
-Finds an appropriate spawn position for the profile
+Finds and sets an appropriate spawn position for a profile
 and any vehicles it may command
 
 Parameters:
@@ -160,6 +160,8 @@ if (_profileType == "vehicle") then {
                 [_vehicleProfile,_spawnPosition] call _moveSpawnedVehicle;
 
                 _vehicles deleteat 0;
+
+                // handle remaining vehicles
 
                 if (isnil "_direction") then { _direction = random 360 };
 

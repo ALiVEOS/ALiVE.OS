@@ -1083,8 +1083,9 @@ switch(_operation) do {
             //["Profile [%1] Spawn - Create Waypoints",_profileID] call ALIVE_fnc_dump;
             //[true] call ALIVE_fnc_timer;
             // create waypoints from profile waypoints
-            _waypoints append _waypointsCompleted;
-            [_waypoints, _group] call ALIVE_fnc_profileWaypointsToWaypoints;
+
+            //_waypoints append _waypointsCompleted;
+            [_logic,_waypoints, _group] call ALIVE_fnc_profileWaypointsToWaypoints;
             //[] call ALIVE_fnc_timer;
 
             //["Profile [%1] Spawn - Create Vehicle Assignments",_profileID] call ALIVE_fnc_dump;

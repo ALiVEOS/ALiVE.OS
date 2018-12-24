@@ -25,35 +25,15 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-params ["_waypoints","_group"];
+params ["_profile","_waypoints","_group"];
 
-private _cycleWaypoints = [];
+private _waypointsCompleted = _profile select 2 select 17;
+private _currentWaypointIndex = count _waypointsCompleted;
 
-// add all waypoints but cycle first
 {
     private _waypoint = _x;
-    private _waypointType = [_waypoint,"type",""] call ALiVE_fnc_HashGet;
+    private _current = _forEachIndex == _currentWaypointIndex;
+    [_waypoint, _group, _current] call ALIVE_fnc_profileWaypointToWaypoint;
+} forEach (_waypointsCompleted + _waypoints);
 
-    if (_waypointType != "CYCLE") then {
-        if (_forEachIndex == 0) then {
-            // set first waypoint as current
-            [_waypoint, _group, true] call ALIVE_fnc_profileWaypointToWaypoint;
-        } else {
-            [_waypoint, _group] call ALIVE_fnc_profileWaypointToWaypoint;
-        };
-    } else {
-        _cycleWaypoints pushback _waypoint;
-    };
-} forEach _waypoints;
-
-// add cycle waypoints at the end to avoid stuck groups
-{
-    private _cycleWaypoint = _x;
-
-    if (_forEachIndex == 0) then {
-        // set first waypoint as current
-        [_cycleWaypoint, _group, true] call ALIVE_fnc_profileWaypointToWaypoint;
-    } else {
-        [_cycleWaypoint, _group] call ALIVE_fnc_profileWaypointToWaypoint;
-    };
-} forEach _cycleWaypoints;
+_waypointsCompleted resize 0;

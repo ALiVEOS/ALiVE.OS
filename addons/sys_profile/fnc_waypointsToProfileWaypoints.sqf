@@ -74,9 +74,12 @@ if (_isCycling) then {
         [_profile,_waypoint] call _convertAndAddWaypoint;
     };
 
-    for "_i" from 1 to (currentWaypoint _group)-1 do {
+    private _waypointsCompleted = _profile select 2 select 17;
+    for "_i" from 1 to (currentWaypoint _group - 1) do {
         private _waypoint = _waypoints select _i;
-        [_profile,_waypoint] call _convertAndAddWaypoint;
+        private _profileWaypoint = [_waypoint] call ALIVE_fnc_waypointToProfileWaypoint;
+        //[_profile,_waypoint] call _convertAndAddWaypoint;
+        _waypointsCompleted pushback _profileWaypoint;
     };
 
 } else {
