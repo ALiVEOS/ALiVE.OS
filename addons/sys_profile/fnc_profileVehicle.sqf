@@ -143,7 +143,8 @@ switch (_operation) do {
             [_logic,"busy",false] call ALIVE_fnc_hashSet;               // select 2 select 26
             [_logic,"cargo",[]] call ALIVE_fnc_hashSet;                 // select 2 select 27
             [_logic,"slingload",[]] call ALIVE_fnc_hashSet;             // select 2 select 28
-            [_logic,"slung",[]] call ALIVE_fnc_hashSet;                 // select 2 select 28
+            [_logic,"slung",[]] call ALIVE_fnc_hashSet;                 // select 2 select 29
+            [_logic,"vehicleVariables", []] call ALiVE_fnc_hashSet;     // select 2 select 30
         };
 
         /*
@@ -323,6 +324,14 @@ switch (_operation) do {
         };
     };
 
+    case "vehicleVariables": {
+        if (_args isEqualType []) then {
+            [_logic,"vehicleVariables", _args] call ALIVE_fnc_hashSet;
+        } else {
+            _result = [_logic,"vehicleVariables"] call ALIVE_fnc_hashGet;
+        };
+    };
+
     case "vehicle": {
         if (_args isEqualType objnull) then {
             [_logic,"vehicle", _args] call ALIVE_fnc_hashSet;
@@ -438,6 +447,9 @@ switch (_operation) do {
         private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet;
         private _vehicleAssignments = _logic select 2 select 7; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
         private _cargo = _logic select 2 select 27; //[_logic,"cargo"] call ALIVE_fnc_hashGet;
+
+        private _vehVars = _logic select 2 select 30;
+        private _persistUnitVars = [MOD(profileSystem),"persistUnitVars"] call ALiVE_fnc_hashGet;
 
         private _slingload = [_logic, "slingload", []] call ALIVE_fnc_HashGet; //unindexed: _slingload = _logic select 2 select 28;
         private _slung = [_logic, "slung", []] call ALIVE_fnc_HashGet; //unindexed: _slung = _logic select 2 select 29;
@@ -681,6 +693,12 @@ switch (_operation) do {
                 [_vehicle, _ammo] call ALIVE_fnc_vehicleSetAmmo;
             };
 
+            if (_persistUnitVars) then {
+                {
+                    _vehicle setvariable [_x select 0, _x select 1];
+                } foreach _vehVars;
+            };
+
             // set profile id on the unit
             _vehicle setVariable ["profileID", _profileID];
 
@@ -752,6 +770,15 @@ switch (_operation) do {
                 [_logic,"canMove", canMove _vehicle] call ALIVE_fnc_hashSet;
                 [_logic,"needReload", needReload _vehicle] call ALIVE_fnc_hashSet;
                 [_logic,"vehicle",objNull] call ALIVE_fnc_hashSet;
+
+                private _persistUnitVars = [MOD(profileSystem),"persistUnitVars"] call ALiVE_fnc_hashGet;
+                if (_persistUnitVars) then {
+                    private _vehVars = _logic select 2 select 30;
+                    private _variableBlacklist = ["alive_sys_logistics_eh_killed","alive_sys_logistics_eh_getout","cba_xeh_incomingmissile","cba_xeh_getin","cba_xeh_hit","cba_xeh_isprocessed","cba_xeh_fired","cba_xeh_init","cba_xeh_initpost","alive_sys_logistics_eh_inventoryclosed","cba_xeh_killed","vehicleid","cba_xeh_getout","cba_xeh_isinitialized"]; // // if list changes, update same list in createProfilesFromUnits/Runtime
+
+                    _vehVars resize 0;
+                    _vehVars append (((allvariables _vehicle) - _variableBlacklist) apply {[_x, _vehicle getvariable _x]});
+                };
 
                 private _cargo = _logic select 2 select 27;
                 if (count _cargo > 0) then {

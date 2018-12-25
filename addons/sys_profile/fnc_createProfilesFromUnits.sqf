@@ -112,6 +112,10 @@ if(_debug) then {
 };
 // DEBUG -------------------------------------------------------------------------------------
 
+private _persistUnitVars = [MOD(profileSystem),"persistUnitVars"] call ALiVE_fnc_hashGet;
+private _unitVariableBlacklist = ["profileid","profileindex","alive_ignore_hc","cba_xeh_incomingmissile","cba_xeh_isprocessed","cba_xeh_init","randomValue","cba_xeh_killed","cba_xeh_isinitialized","morale","saved3deninventory"];
+private _vehicleVariableBlacklist = ["alive_sys_logistics_eh_killed","alive_sys_logistics_eh_getout","cba_xeh_incomingmissile","cba_xeh_getin","cba_xeh_hit","cba_xeh_isprocessed","cba_xeh_fired","cba_xeh_init","cba_xeh_initpost","alive_sys_logistics_eh_inventoryclosed","cba_xeh_killed","vehicleid","cba_xeh_getout","cba_xeh_isinitialized"];
+
 {
     _group = _x;
     _leader = leader _group;
@@ -123,16 +127,22 @@ if(_debug) then {
         _positions = [];
         _ranks = [];
         _damages = [];
+        private _unitVars = [];
 
         _unitBlacklisted = false;
         {
-            if((typeOf _x) in _unitBlackist) then {
+            private _unit = _x;
+
+            if((typeOf _unit) in _unitBlackist) then {
                 _unitBlacklisted = true;
             };
-            _unitClasses pushback (typeOf _x);
-            _positions pushback (getPosATL _x);
-            _ranks pushback (rank _x);
-            _damages pushback (getDammage _x);
+            _unitClasses pushback (typeOf _unit);
+            _positions pushback (getPosATL _unit);
+            _ranks pushback (rank _unit);
+            _damages pushback (getDammage _unit);
+            if (_persistUnitVars) then {
+                _unitVars pushback (((allvariables _unit) - _unitVariableBlacklist) apply {[_x, _unit getvariable _x]});
+            };
         } foreach (_units);
 
         if (!(vehicle _leader == _leader)) then {
@@ -161,6 +171,7 @@ if(_debug) then {
             [_profileEntity, "side", str(side _leader)] call ALIVE_fnc_profileEntity;
             [_profileEntity, "faction", faction _leader] call ALIVE_fnc_profileEntity;
             [_profileEntity, "isPlayer", false] call ALIVE_fnc_profileEntity;
+            [_profileEntity, "unitVariables", _unitVars] call ALIVE_fnc_profileEntity;
 
             _initCommand = _leader getVariable ["addCommand",[]];
             if(count _initCommand > 0) then {
@@ -212,6 +223,11 @@ if(_debug) then {
                         [_profileVehicle, "needReload", needReload _vehicle] call ALIVE_fnc_profileVehicle;
                         [_profileVehicle, "side", str(side _vehicle)] call ALIVE_fnc_profileVehicle;
                         [_profileVehicle, "faction", faction _vehicle] call ALIVE_fnc_profileVehicle;
+
+                        if (_persistUnitVars) then {
+                            private _vehVars = ((allvariables _vehicle) - _vehicleVariableBlacklist) apply {[_x, _vehicle getvariable _x]};
+                            [_profileVehicle, "vehicleVariables", _vehVars] call ALIVE_fnc_profileVehicle;
+                        };
 
                         if(_vehicleKind == "Plane" || _vehicleKind == "Helicopter") then {
                             // [_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
@@ -352,6 +368,11 @@ if(_debug) then {
             [_profileVehicle, "needReload", needReload _vehicle] call ALIVE_fnc_profileVehicle;
             [_profileVehicle, "side", str(side _vehicle)] call ALIVE_fnc_profileVehicle;
             [_profileVehicle, "faction", faction _vehicle] call ALIVE_fnc_profileVehicle;
+
+            if (_persistUnitVars) then {
+                private _vehVars = ((allvariables _vehicle) - _vehicleVariableBlacklist) apply {[_x, _vehicle getvariable _x]};
+                [_profileVehicle, "vehicleVariables", _vehVars] call ALIVE_fnc_profileVehicle;
+            };
 
             if(_vehicleKind == "Plane" || _vehicleKind == "Helicopter") then {
                 // [_profileVehicle, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;

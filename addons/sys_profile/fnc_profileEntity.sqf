@@ -343,6 +343,14 @@ switch(_operation) do {
         };
     };
 
+    case "unitVariables": {
+        if (_args isEqualType []) then {
+            [_logic,"unitVariables", _args] call ALIVE_fnc_hashSet;
+        } else {
+            _result = [_logic,"unitVariables"] call ALIVE_fnc_hashGet;
+        };
+    };
+
     case "leader": {
         if (_args isEqualType objnull) then {
             [_logic,"leader", _args] call ALIVE_fnc_hashSet;
@@ -1212,6 +1220,7 @@ switch(_operation) do {
                 [_logic,"position", _position] call MAINCLASS;
                 [_logic,"despawnPosition", _position] call ALIVE_fnc_hashSet;
 
+                // if list changes, update same list in createProfilesFromUnits/Runtime
                 private _unitVariableBlacklist = ["profileid","profileindex","alive_ignore_hc","cba_xeh_incomingmissile","cba_xeh_isprocessed","cba_xeh_init","randomValue","cba_xeh_killed","cba_xeh_isinitialized","morale","saved3deninventory"];
 
                 // delete units
