@@ -458,10 +458,10 @@ switch(_operation) do {
                             _veh setVariable ["ALIVE_CombatSupport", true];
                             _veh setVariable ["NEO_transportAvailableTasks", _tasks, true];
 
-                            [_veh, _grp, _callsign, _pos, _dir, _height, _type, CS_RESPAWN,_code, _audio, _slingloading] execFSM _transportfsm;
+                            private _fsmHandle = [_veh, _grp, _callsign, _pos, _dir, _height, _type, CS_RESPAWN,_code, _audio, _slingloading] execFSM _transportfsm;
 
                             _t = NEO_radioLogic getVariable format ["NEO_radioTrasportArray_%1", _side];
-                            _t pushback ([_veh, _grp, _callsign]);
+                            _t pushback ([_veh, _grp, _callsign, _fsmHandle]);
 
                             NEO_radioLogic setVariable [format ["NEO_radioTrasportArray_%1", _side], _t,true];
 
@@ -556,10 +556,10 @@ switch(_operation) do {
                             _veh setVariable ["ALIVE_CombatSupport", true];
 
                             //FSM
-                            [_veh, _grp, _callsign, _pos, _airport, _dir, _height, _type, CS_RESPAWN, _code, _audio] execFSM _casfsm;
+                            private _fsmHandle = [_veh, _grp, _callsign, _pos, _airport, _dir, _height, _type, CS_RESPAWN, _code, _audio] execFSM _casfsm;
 
                             _c = NEO_radioLogic getVariable format ["NEO_radioCasArray_%1", _side];
-                            _c pushback ([_veh, _grp, _callsign]);
+                            _c pushback ([_veh, _grp, _callsign, _fsmHandle]);
 
                             NEO_radioLogic setVariable [format ["NEO_radioCasArray_%1", _side], _c,true];
 
@@ -723,10 +723,10 @@ switch(_operation) do {
                             leader _grp setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];
 
                             //FSM
-                            [_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _class, leader _grp, _code, _audio, _side] execFSM "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
+                            private _fsmHandle = [_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _class, leader _grp, _code, _audio, _side] execFSM "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
 
                             _a = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _side];
-                            _a pushback ([leader _grp, _grp, _callsign, _units, _roundsAvailable]);
+                            _a pushback ([leader _grp, _grp, _callsign, _units, _roundsAvailable, _fsmHandle]);
 
                             NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _side], _a, true];
 
