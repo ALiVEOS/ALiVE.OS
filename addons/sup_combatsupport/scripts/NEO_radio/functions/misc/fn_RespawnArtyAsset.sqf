@@ -123,15 +123,16 @@ _codeArray = [_code, ";"] Call CBA_fnc_split;
     } forEach _codeArray;
 } forEach _artyBatteries;
 
-_audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
+private _audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
 
 //FSM
-[_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _type, leader _grp, _code, _audio, _side] execFSM "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
+private _artyfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
+private _fsmHandle = [_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _type, leader _grp, _code, _audio, _side] execFSM _artyfsm;
 
-_a = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _side];
-_a pushback ([leader _grp, _grp, _callsign, _units, _roundsAvailable]);
+private _artyAsset = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _side];
+_artyAsset pushback ([leader _grp, _grp, _callsign, _units, _roundsAvailable, _fsmHandle]);
 
-NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _side], _a, true];
+NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _side], _artyAsset, true];
 
 _replen = format["All units this is %1! We are back on station and are ready for tasking", _callsign] ;
 [[player,_replen,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;

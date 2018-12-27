@@ -1,3 +1,4 @@
+
 #define DEFAULT_TRANSPORT_TASKS ["Pickup", "Land", "Land (Eng off)", "Move", "Circle", "Insertion", "Slingload", "Unhook"]
 
 private ["_veh", "_grp", "_callsign", "_pos", "_dir","_height","_type", "_respawn","_code","_tasks","_faction","_side","_sides","_slingloading"];
@@ -131,24 +132,23 @@ if (!_slingloading) then {
 //Set variables and run FSM and optionally passed code
 _veh setVariable ["NEO_transportAvailableTasks", _tasks, true];
 
+private _audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
+
+//Start FSM
+private _transportfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\transport.fsm";
+private _fsmHandle = [_veh, _grp, _callsign, _pos, _dir,_height,_type, _respawn,_code,_audio,_slingloading] execFSM _transportfsm;
+
 //Register to all friendly side-lists
 {
     if (_side getfriend _x >= 0.6) then {
         private ["_array"];
 
         _array = NEO_radioLogic getVariable format["NEO_radioTrasportArray_%1", _x];
-        _array pushback ([_veh, _grp, _callsign]);
+        _array pushback ([_veh, _grp, _callsign, _fsmHandle]);
 
         NEO_radioLogic setVariable [format["NEO_radioTrasportArray_%1", _x], _array,true];
     };
 } foreach _sides;
-
-_audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
-
-//Start FSM
-_transportfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\transport.fsm";
-[_veh, _grp, _callsign, _pos, _dir,_height,_type, _respawn,_code,_audio,_slingloading] execFSM _transportfsm;
-
 
 _replen = format["All units this is %1! We are back on station and are ready for tasking", _callsign] ;
 [[player,_replen,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;

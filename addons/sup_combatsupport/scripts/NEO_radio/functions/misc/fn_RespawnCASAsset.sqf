@@ -123,11 +123,11 @@ _codeArray = [_code, ";"] Call CBA_fnc_split;
     };
 } forEach _codeArray;
 
-_audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
+private _audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
 
 //FSM
-_casfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\cas.fsm";
-[_veh, _grp, _callsign, _pos, _airport, _dir, _height, _type, _respawn, _code,_audio] execFSM _casfsm;
+private _casfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\cas.fsm";
+private _fsmHandle = [_veh, _grp, _callsign, _pos, _airport, _dir, _height, _type, _respawn, _code,_audio] execFSM _casfsm;
 
 
 //Register to all friendly side-lists
@@ -136,7 +136,7 @@ _casfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\cas.fsm";
         private ["_array"];
 
         _array = NEO_radioLogic getVariable format["NEO_radioCasArray_%1", _x];
-        _array pushback ([_veh, _grp, _callsign]);
+        _array pushback ([_veh, _grp, _callsign, _fsmHandle]);
 
         NEO_radioLogic setVariable [format["NEO_radioCasArray_%1", _x], _array,true];
     };
