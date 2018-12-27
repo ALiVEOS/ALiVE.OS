@@ -13,7 +13,7 @@ switch (_operation) do {
     case "create": {
 
         private _worldSize = [ALiVE_mapBounds,worldname, worldsize] call ALiVE_fnc_hashGet;
-        private _sectorSize = 100 max (ceil (_worldSize / 110));
+        private _sectorSize = 100 max (ceil (_worldSize / 100));
         private _terrainGrid = [nil,"create", [_sectorSize]] call ALiVE_fnc_pathfindingGrid;
 
         _logic = [[
@@ -26,10 +26,10 @@ switch (_operation) do {
 
         // terrain types [land,road,water]
 
-        [_logic,"addProcedure", ["infantry", ["land","road"], [1,1,1]]] call MAINCLASS;
-        [_logic,"addProcedure", ["vehicleLand", ["land","road"], [15,1,1]]] call MAINCLASS;
-        [_logic,"addProcedure", ["vehicleWater", ["water"], [1,1,1]]] call MAINCLASS;
-        [_logic,"addProcedure", ["vehicleAir", ["land","road","water"], [0,0,0]]] call MAINCLASS;
+        [_logic,"addProcedure", ["infantry", ["LAND","ROAD"], [1,1,1]]] call MAINCLASS;
+        [_logic,"addProcedure", ["vehicleLand", ["LAND","ROAD"], [15,1,1]]] call MAINCLASS;
+        [_logic,"addProcedure", ["vehicleWater", ["WATER"], [1,1,1]]] call MAINCLASS;
+        [_logic,"addProcedure", ["vehicleAir", ["LAND","ROAD","WATER"], [0,0,0]]] call MAINCLASS;
 
         addMissionEventHandler ["EachFrame", {
             [ALiVE_pathfinder,"onFrame"] call ALiVE_fnc_pathfinder;
@@ -51,7 +51,7 @@ switch (_operation) do {
 
     case "heuristic": {
 
-        _args params ["_currentSector","_goalSector","_procedure"];
+        _args params ["_currentSector","_goalSector"];
 
         private _currentSectorCoords = _currentSector select 0;
         private _goalSectorCoords = _goalSector select 0;
@@ -61,10 +61,10 @@ switch (_operation) do {
 
         // non diagonal path distance + distance saved if using diagonals
         //_result = 1 * (_dx + _dy) + (1.414 - 2 * 1) * (_dx min _dy);
-        _result = (_dx + _dy) + ((-0.586) * (_dx min _dy));
+        //_result = (_dx + _dy) + ((-0.586) * (_dx min _dy));
+        _result = (_dx max _dy) + 0.41 * (_dx min _dy);
 
-        // tie breaker
-        // the higher we go the more we search nodes closer to the end position
+        // the higher we scale the more we search nodes closer to the end position
         _result = _result * 5;
 
     };
@@ -73,26 +73,30 @@ switch (_operation) do {
 
         _args params ["_currentSector","_goalSector","_procedure"];
 
-        _result = 1;
+        private _currentSectorCoords = _currentSector select 0;
+        private _goalSectorCoords = _goalSector select 0;
 
-        //if (
-        //    ((_currentSector select 0) select 0) != ((_goalSector select 0) select 0) &&
-        //    { ((_currentSector select 0) select 1) != ((_goalSector select 0) select 1) }
-        //) then {
-        //    _result = 1.414;
-        //    //_result = 1.3;
-        //} else {
-        //    _result = 1;
-        //};
-
-        if ((_procedure select 0) == "vehicleLand") then {
-            private _sectorHasRoads = _currentSector select 2;
-            if (_sectorHasRoads) then {
-                _result = _result + 1;
-            } else {
-                _result = _result + 15;
-            };
+        if (
+            (_currentSectorCoords select 0) != (_goalSectorCoords select 0) &&
+            { (_currentSectorCoords select 1) != (_goalSectorCoords select 1) }
+        ) then {
+            _result = 1.414;
+        } else {
+            _result = 1;
         };
+
+        private _weightings = _procedure select 1;
+        _weightings params ["_weightingLand","_weightingRoads","_weightingWater"];
+
+        private _sectorTerrainType = _currentSector select 2;
+        private _weighting = switch (_sectorTerrainType) do {
+            case "LAND": { _weightingLand };
+            case "ROAD": { _weightingRoads };
+            case "WATER": { _weightingWater };
+            default { 1 };
+        };
+
+        _result = _result + _weighting;
 
     };
 
@@ -152,8 +156,6 @@ switch (_operation) do {
 
             private _sectorsBetween = [_logic,"raycast", [_pos1,_pos2]] call MAINCLASS;
             private _directPath = [_logic,"pathIsPassible", [_sectorsBetween,_procedure]] call MAINCLASS;
-
-            if (count _path < 10) then { copyToClipboard str (_sectorsBetween) };
 
             if (_directPath) then {
                 _path deleteat (_i + 1);
@@ -251,7 +253,7 @@ switch (_operation) do {
             private _nextJob = _pathJobs select 0;
             _nextJob params ["_startSector","_goalSector","_goalPosition","_procedureName","_shortenPath","_randomizeWaypointRadius","_callbackArgs","_callback"];
 
-            private _procedures = [_logic,"pathfindingProcedures"] call ALiVE_fnc_hashGet;
+            private _procedures = [_logic,"procedures"] call ALiVE_fnc_hashGet;
             private _procedure = [_procedures,_procedureName] call ALiVE_fnc_hashGet;
 
             private _cameFromMap = call CBA_fnc_createNamespace;
@@ -269,6 +271,20 @@ switch (_operation) do {
     };
 
     case "onFrame": {
+
+        private _terrainGrid = [_logic,"terrainGrid"] call ALiVE_fnc_hashGet;
+        private _gridInitialized = [_terrainGrid,"initialized"] call ALiVE_fnc_hashGet;
+
+        if (!_gridInitialized) then {
+            [_terrainGrid,"onFrameDetermineRegions"] call ALiVE_fnc_pathfindingGrid;
+        } else {
+            [_logic,"onFrameFindPath"] call MAINCLASS;
+        };
+
+    };
+
+    case "onFrameFindPath": {
+
         private _pathJobs = [_logic,"pathJobs"] call ALiVE_fnc_hashGet;
 
         if (count _pathJobs == 0) exitwith {};
@@ -279,9 +295,10 @@ switch (_operation) do {
         _currentJob params ["_startSector","_goalSector","_goalPosition","_procedureName","_shortenPath","_randomizeWaypointRadius","_callbackArgs","_callback"];
         _currentJobData params ["_initComplete","_procedure", "_cameFromMap","_costSoFarMap","_frontier"];
 
-        _procedure params ["_procName","_canUseLand","_canUseWater","_roadWeight","_waterWeight"];
+        _procedure params ["_procPassableTerrains","_procWeightings"];
 
         private _terrainGrid = [_logic,"terrainGrid"] call ALiVE_fnc_hashGet;
+
         _result = [];
         private _jobComplete = false;
 
@@ -289,22 +306,32 @@ switch (_operation) do {
 
         call {
 
-            if (!_initComplete) then {
+            if (!_initComplete) exitwith {
+                /*
                 // check for impossible paths
-                private _goalSectorIsLand = _goalSector select 3;
-                private _pathIsPossible = if (_goalSectorIsLand) then { _canUseLand } else { _canUseWater };
+                // this can be superseded by the island method
+                private _startSectorTerrainType = _startSector select 2;
+                private _goalSectorTerrainType = _goalSector select 2;
+                private _pathIsPossible = (_startSectorTerrainType in _procPassableTerrains) && (_goalSectorTerrainType in _procPassableTerrains);
+
                 if (!_pathIsPossible) then {
+                    _result = [];
                     _jobComplete = true;
                     breakto "main";
                 };
+                */
 
                 // check for non-bias procedure
-                private _nonBiasProcedure = _canUseWater && { _canUseLand } && { _roadWeight == 0 } && { _waterWeight == 0 };
+                private _nonBiasProcedure = "WATER" in _procPassableTerrains && { "LAND" in _procPassableTerrains } && { "ROAD" in _procPassableTerrains };
                 if (_nonBiasProcedure) then {
                     _result = [_goalPosition];
                     _jobComplete = true;
                     breakto "main";
                 };
+
+                // at this point we can guarentee that at least one terrain type is impassible
+                //
+
 
                 _currentJobData set [0,true];
             };
@@ -342,11 +369,7 @@ switch (_operation) do {
 
                     if (_shortenPath) then {
                         _result = [_logic,"straightenPath", [_result,_procedure]] call MAINCLASS;
-
-                        if ((_procedure select 1)) then {
-                            systemchat "consolidating";
-                            _result = [_logic,"consolidatePath", _result] call MAINCLASS;
-                        };
+                        _result = [_logic,"consolidatePath", _result] call MAINCLASS;
                     };
 
                     _jobComplete = true;
@@ -358,8 +381,8 @@ switch (_operation) do {
                 private _currentSectorMovementCost = _costSoFarMap getvariable (str(_currentSector select 0));
                 {
                     private _currNeighbor = _x;
-                    private _neighborIsLand = _currNeighbor select 3;
-                    private _canTraverse = if (_neighborIsLand) then { _canUseLand } else { _canUseWater };
+                    private _neighborTerrainType = _currNeighbor select 2;
+                    private _canTraverse = _neighborTerrainType in _procPassableTerrains;
 
                     if (_canTraverse) then {
                         private _neighborCost = [nil,"getMovementCost", [_currentSector,_currNeighbor,_procedure]] call MAINCLASS;
@@ -367,10 +390,9 @@ switch (_operation) do {
 
                         private _currNeighborCostSoFar = _costSoFarMap getvariable (str(_currNeighbor select 0));
                         if (isnil "_currNeighborCostSoFar" || { _newCost < _currNeighborCostSoFar }) then {
-                        //if (isnil "_currNeighborCostSoFar") then {
                             _costSoFarMap setvariable [str(_currNeighbor select 0), _newCost];
 
-                            private _neighborHeuristic = [nil,"heuristic", [_currNeighbor,_goalSector,_procedure]] call MAINCLASS;
+                            private _neighborHeuristic = [nil,"heuristic", [_currNeighbor,_goalSector]] call MAINCLASS;
                             private _priority = _newCost + _neighborHeuristic;
                             [nil,"priorityAdd", [_frontier,_priority,_currNeighbor]] call MAINCLASS;
 
@@ -380,18 +402,18 @@ switch (_operation) do {
                 } foreach _neighbors;
             };
 
-        };
+            // all nodes have been evaluated
+            // no path exists
+            if (_frontier isequalto []) then {
+                _jobComplete = true;
+            };
 
-        // all nodes have been evaluated
-        // no path exists
-        if (_frontier isequalto []) then {
-            _jobComplete = true;
         };
 
         if (_jobComplete) then {
             [_callbackArgs,_result] spawn _callback;
 
-            systemchat (format ["Nodes Evaluated: %1", count (allvariables _cameFromMap)]);
+            //systemchat (format ["Nodes Evaluated: %1", count (allvariables _cameFromMap)]);
 
             // remove job from queue
             _pathJobs deleteat 0;
@@ -500,16 +522,14 @@ switch (_operation) do {
 
         _args params ["_sectors","_procedure"];
 
-        private _canUseLand = _procedure select 1;
-        private _canUseWater = _procedure select 2;
+        private _passableTerrains = _procedure select 0;
 
         _result = true;
 
         private _lastSectorTerrain = [(_sectors select 0) select 2, (_sectors select 0) select 3];
         {
-            private _isLand = _x select 3;
-            private _terrain = [_x select 2, _x select 3];
-            private _canTraverse = if (_isLand) then { _canUseLand && { _terrain isequalto _lastSectorTerrain }} else { _canUseWater };
+            private _terrainType = _x select 2;
+            private _canTraverse = _terrainType in _passableTerrains;
 
             if (!_canTraverse) exitwith { _result = false };
         } foreach _sectors;

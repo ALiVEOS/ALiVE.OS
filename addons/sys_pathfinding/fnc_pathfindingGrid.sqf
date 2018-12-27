@@ -16,13 +16,18 @@ switch (_operation) do {
 
         // create sector grid
 
-        private _sectors = [];
+        private _sectors = call CBA_fnc_createNamespace;
         private _gridWidth = ceil(worldsize / _sectorSize) + 1;
+
+        private _sectorArr = [];
 
         for "_i" from 0 to _gridWidth - 1 do {
             for "_j" from 0 to _gridWidth - 1 do {
+                private _index = [_j,_i];
                 private _newSector = [nil,"create", [[_j,_i],[_sectorSize * _j, _sectorSize * _i], _sectorSize]] call alive_fnc_pathfindingSector;
-                _sectors pushback _newSector;
+
+                _sectors setvariable [str _index,_newSector];
+                _sectorArr pushback _newSector;
             };
         };
 
@@ -31,8 +36,15 @@ switch (_operation) do {
         _logic = [[
             ["sectors", _sectors],
             ["sectorSize", _sectorSize],
-            ["gridWidth", _gridWidth]
+            ["gridWidth", _gridWidth],
+            ["initialized", false],
+            ["initData", [-1,[],[],_sectorArr]]
         ]] call ALiVE_fnc_hashCreate;
+
+        private _timer = diag_tickTime;
+        //[_logic,"determineRegions"] call MAINCLASS;
+        private _timeTaken = diag_tickTime - _timer;
+        copyToClipboard format ["Time Taken: %1", _timeTaken];
 
         _result = _logic;
 
@@ -40,14 +52,9 @@ switch (_operation) do {
 
     case "getSector": {
 
-        _args params ["_x","_y"];
+        private _sectors = _logic select 2 select 0;
 
-        private _sectors = [_logic,"sectors"] call ALiVE_fnc_hashGet;
-        private _gridWidth = [_logic,"gridWidth"] call ALiVE_fnc_hashGet;
-
-        private _index = (_y * _gridWidth) + _x;
-
-        _result = _sectors select _index;
+        _result = _sectors getvariable (str _args);
 
     };
 
@@ -55,7 +62,7 @@ switch (_operation) do {
 
         private _pos = _args;
 
-        private _sectorSize = [_logic,"sectorSize"] call ALiVE_fnc_hashGet;
+        private _sectorSize = _logic select 2 select 1;
 
         private _x = floor ((_pos select 0) / _sectorSize);
         private _y = floor ((_pos select 1) / _sectorSize);
@@ -84,52 +91,86 @@ switch (_operation) do {
             _sector = _sector select 0;
         };
 
-        private _gridWidth = [_logic,"gridWidth"] call ALiVE_fnc_hashGet;
-        private _gridHeight = _gridWidth;
-
         _sector params ["_sectorX","_sectorY"];
 
-        private _indices = [];
-
-        if (_sectorX > 0) then {
-            _indices pushback [_sectorX - 1, _sectorY]; // left
-
-            if (_sectorY > 0) then {
-                _indices pushback [_sectorX - 1, _sectorY - 1]; // bot left corner
-            };
-
-            if (_sectorY < _gridHeight - 1) then {
-                _indices pushback [_sectorX - 1, _sectorY + 1]; // top left corner
-            };
-        };
-
-        if (_sectorX < _gridWidth - 1) then {
-            _indices pushback [_sectorX + 1, _sector select 1]; // right
-
-            if (_sectorY > 0) then {
-                _indices pushback [_sectorX + 1, _sectorY - 1]; // bot right corner
-            };
-
-            if (_sectorY < _gridHeight - 1) then {
-                _indices pushback [_sectorX + 1, _sectorY + 1]; // top right corner
-            };
-        };
-
-        if (_sectorY > 0) then {
-            _indices pushback [_sectorX, _sectorY - 1]; // bot
-        };
-
-        if (_sectorY < _gridHeight - 1) then {
-            _indices pushback [_sectorX, _sectorY + 1]; // top
-        };
+        _result = [
+            [_sectorX - 1, _sectorY + 1],   [_sectorX, _sectorY + 1],   [_sectorX + 1, _sectorY + 1],
+            [_sectorX - 1, _sectorY],                                   [_sectorX + 1, _sectorY],
+            [_sectorX - 1, _sectorY - 1],   [_sectorX, _sectorY - 1],   [_sectorX + 1, _sectorY - 1]
+        ];
 
         if (!_returnIndices) then {
-            _indices = _indices apply {
-                [_logic,"getSector", _x] call MAINCLASS;
+            private _sectors = _logic select 2 select 0;
+            _result = _result apply {
+                _sectors getvariable (str _x)
             };
+
+            _result = _result select {!isnil "_x"};
         };
 
-        _result = _indices;
+    };
+
+    case "onFrameDetermineRegions": {
+
+        private _sectors = _logic select 2 select 0;
+        private _initData = _logic select 2 select 4;
+
+        _initData params ["_regionNum","_sectorsToCheck","_validTerrainTypes","_open"];
+
+        for "_i" from 0 to 3 do {
+            if (_sectorsToCheck isequalto []) then {
+                _regionNum = _regionNum + 1;
+
+                private _sectorIndex = _open findif { (_x select 3) == -1 };
+                if (_sectorIndex == -1) exitwith {
+                    [_logic,"initialized", true] call ALiVE_fnc_hashSet;
+                    [_logic,"initData", nil] call ALiVE_fnc_hashSet;
+                };
+
+                private _sector = _open select _sectorIndex;
+                private _sectorTerrainType = _sector select 2;
+                private _validTerrainTypes = switch (_sectorTerrainType) do {
+                    case "ROAD": { ["LAND","ROAD"] };
+                    case "LAND": { ["LAND","ROAD"] };
+                    case "WATER": { ["WATER"] };
+                };
+
+                _sector set [3,_regionNum];
+
+                _initData set [0, _regionNum];
+                _initData set [1, [_sector]];
+                _initData set [2, _validTerrainTypes];
+            } else {
+                private _sector = _sectorsToCheck deleteat 0;
+
+                //
+                private _pos = _sector select 1;
+                private _size = _logic select 2 select 1;
+                private _markerCenter = _pos apply {_x + _size * 0.5};
+                private _m = createMarker [str str str _markerCenter, _markerCenter];
+                _m setMarkerShape "ICON";
+                _m setMarkerType "hd_dot";
+                _m setMarkerSize [0.1,0.1];
+                _m setMarkerColor "ColorBlack";
+                _m setMarkerText (format ["(%1)", _regionNum]);
+                //
+
+                private _sectorCoords = _sector select 0; systemchat format ["Checking %1", _sectorCoords];
+                private _neighbors = [_logic,"getNeighbors", [_sectorCoords]] call MAINCLASS;
+                {
+                    private _neighborIslandNum = _x select 3;
+
+                    if (_neighborIslandNum == -1) then {
+                        private _neighborTerrainType = _x select 2;
+
+                        if (_neighborTerrainType in _validTerrainTypes) then {
+                            _sectorsToCheck pushback _x;
+                            _x set [3, _regionNum];
+                        };
+                    };
+                } foreach _neighbors;
+            };
+        };
 
     };
 
