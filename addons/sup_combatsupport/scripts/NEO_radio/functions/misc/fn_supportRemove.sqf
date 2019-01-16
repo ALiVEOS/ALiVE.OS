@@ -13,6 +13,8 @@ switch (_support) do
             private _transportToRemove = _transportArray select _index;
             _transportToRemove params ["_vehicle","_group","_callsign","_fsm"];
 
+            _fsm setFSMVariable ["_removeFSM", true];
+
             {
                 if (!isPlayer _x) then {
                     deletevehicle _x;
@@ -21,8 +23,6 @@ switch (_support) do
 
             deleteVehicle _vehicle;
             _group call ALiVE_fnc_DeleteGroupRemote;
-
-            _fsm setFSMVariable ["_removeFSM", true];
 
             _transportArray deleteat _index;
             NEO_radioLogic setVariable [_transportArrayString, _transportArray, true];
@@ -44,6 +44,8 @@ switch (_support) do
             private _casToRemove = _casArray select _index;
             _casToRemove params ["_vehicle","_group","_callsign","_fsm"];
 
+            _fsm setFSMVariable ["_removeFSM", true];
+
             {
                 if (!isPlayer _x) then {
                     deletevehicle _x;
@@ -52,8 +54,6 @@ switch (_support) do
 
             deleteVehicle _vehicle;
             _group call ALiVE_fnc_DeleteGroupRemote;
-
-            _fsm setFSMVariable ["_removeFSM", true];
 
             _casArray deleteat _index;
             NEO_radioLogic setVariable [_casArrayString, _casArray, true];
@@ -75,14 +75,14 @@ switch (_support) do
             private _artyToRemove = _artyArray select _index;
             _artyToRemove params ["_leader","_group","_callsign","_units","_roundAvailable","_fsm"];
 
+            _fsm setFSMVariable ["_removeFSM", true];
+
             deleteVehicle _leader;
 
             { deletevehicle _x } forEach (units _group);
             _group call ALiVE_fnc_DeleteGroupRemote;
 
             { deleteVehicle _x } forEach _units;
-
-            _fsm setFSMVariable ["_removeFSM", true];
 
             _artyArray deleteat _index;
             NEO_radioLogic setVariable [_artyArrayString, _artyArray, true];
