@@ -34,7 +34,8 @@ _categories = [
 if (_custom) then {
     [">>>>>>>>>>>>>>>>>> Starting static data creation"] call ALiVE_fnc_dump;
     {
-        call compile format["%1 = []", _x select 0];
+        _update = [];
+        _update = missionNameSpace setVariable (_x select 0);
     } foreach _categories;
 
     {
@@ -320,7 +321,7 @@ if (_mapBounds != 0) then {
 {
     private ["_array","_arrayActual","_result"];
     _array = _x select 0;
-    _arrayActual = call compile _array;
+    _arrayActual = missionNamespace getVariable _array;
     // Window length set based on an example of cut off, 100 objects is probably accurate, 60 is conservative
     _windowLength = 60;
     if (count _arrayActual >0) then {

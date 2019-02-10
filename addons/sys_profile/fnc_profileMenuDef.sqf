@@ -92,7 +92,7 @@ if (_menuName == "profile") then {
                     "",
                     -1,
                     [QUOTE(ADDON)] call ALiVE_fnc_isModuleAvailable,
-                    !isnil QUOTE(ADDON) && {!(call compile (ADDON getVariable ["debug","false"]))}
+                    !isnil QUOTE(ADDON) && {!((ADDON getVariable ["debug","false"]) == "true")}
                 ],
                 [localize "STR_ALIVE_PROFILE_SYSTEM_DEBUG_DISABLE",
                     {ADDON setVariable ["debug","false", true]; [] call ALIVE_fnc_profileSystemDebug; },
@@ -101,7 +101,7 @@ if (_menuName == "profile") then {
                     "",
                     -1,
                     [QUOTE(ADDON)] call ALiVE_fnc_isModuleAvailable,
-                    !isnil QUOTE(ADDON) && {(call compile (ADDON getVariable ["debug","false"]))}
+                    !isnil QUOTE(ADDON) && {((ADDON getVariable ["debug","false"]) == "true")}
                 ]
             ]
         ]

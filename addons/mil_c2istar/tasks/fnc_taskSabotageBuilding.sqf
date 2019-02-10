@@ -130,7 +130,7 @@ switch (_taskState) do {
 
                     {
                         private _clusters = _x;
-                        private _clustercontent = missionNameSpace getVariable _x;
+                        private _clustercontent = missionNamespace getVariable _x;
 
                         if (!isNil _clustercontent && {_clusterID in (_clustercontent select 1)}) then {
                             private _cluster = [_clustercontent, _clusterID] call ALiVE_fnc_HashGet;

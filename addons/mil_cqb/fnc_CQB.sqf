@@ -134,7 +134,7 @@ switch(_operation) do {
 
             //Init further mandatory params on all localities
             _debug = _logic getvariable ["CQB_debug_setting","false"];
-            if (typename (_debug) == "STRING") then {_debug = call compile _debug};
+            if (typename (_debug) == "STRING") then {_debug = (_debug == "true");};
             _logic setVariable ["debug", _debug];
 
             _CQB_spawn = _logic getvariable ["CQB_spawn_setting", "0.01"];
@@ -178,7 +178,7 @@ switch(_operation) do {
             _factions = [_logic,"factions",_factions] call ALiVE_fnc_CQB;
 
             _useDominantFaction = _logic getvariable ["CQB_UseDominantFaction","true"];
-            if (typename (_useDominantFaction) == "STRING") then {_useDominantFaction = call compile _useDominantFaction};
+            if (typename (_useDominantFaction) == "STRING") then {_useDominantFaction = (_useDominantFaction == "true");};
             _logic setVariable ["CQB_UseDominantFaction", _useDominantFaction];
 
             _CQB_Locations = _logic getvariable ["CQB_LOCATIONTYPE","towns"];

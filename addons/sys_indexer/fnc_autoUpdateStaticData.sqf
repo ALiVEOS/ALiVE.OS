@@ -33,14 +33,11 @@ _categories = [
     "ALIVE_civilianConstructionBuildingTypes"
 ];
 
-_update = missionNameSpace getVariable (_categories select _choice);
+_update = missionNamespace getVariable (_categories select _choice);
 
 if (_enabled == 1) then {
-    //call compile format["%1 pushback ALiVE_wrp_model",(_categories select _choice)];
-    _update pushback ALiVE_wrp_model;
-    missionNameSpace setVariable [(_categories select _choice),_update];
+    _update pushback ALiVE_wrp_model; // Edits array in missionNameSpace. No need to send back.
 } else {
-    //call compile format["%1 = %1 - [ALiVE_wrp_model]",(_categories select _choice)];
-    _update = _update - [ALiVE_wrp_model];
+    _update = _update - [ALiVE_wrp_model]; // Creates copy of the array. Needs sending back to missionNameSpace
     missionNameSpace setVariable [(_categories select _choice),_update];
 };

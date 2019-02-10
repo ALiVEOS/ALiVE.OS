@@ -403,7 +403,7 @@ class FSM
        "                            _waypoints = _waypoints - [objNull];" \n
        "                                        " \n
        "                            //Needs review of any variables in hashes" \n
-       "                            if ((typeName _statements == ""ARRAY"") && {call compile (_statements select 0)}) then {call compile (_statements select 1)};" \n
+       "                            if ((isEqualType _statements == ""ARRAY"") && {(_statements select 0) == "true"}) then {call compile (_statements select 1)};" \n
        "                                        " \n
        "                            [] call _handleWPcomplete;            " \n
        "                            " \n

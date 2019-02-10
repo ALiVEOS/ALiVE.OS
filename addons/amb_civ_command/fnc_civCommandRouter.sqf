@@ -154,6 +154,7 @@ switch(_operation) do {
             private _activeCommand = _commands select 0;
 
             _activeCommand params ["_commandName","_commandType","_commandArgs"];
+            _actcommandName = missionNamespace getVariable _commandName;
 
             private _debug = _logic select 2 select 0; //[logic,"debug"] call ALIVE_fnc_hashGet;
             private _commandState = _logic select 2 select 1; //[logic,"commandState"] call ALIVE_fnc_hashGet;
@@ -174,7 +175,7 @@ switch(_operation) do {
                 };
                 case "spawn": {
                     // spawn the command script and store the handle on the internal command states hash
-                    private _handle = [_agent, _commandArgs, true] spawn (call compile _commandName);
+                    private _handle = [_agent, _commandArgs, true] spawn (call compile _commandName); // TODO; find proper replacement for call compile
                     [_commandState, _agentID, [_handle, _activeCommand]] call ALIVE_fnc_hashSet;
                 };
                 case "managed": {

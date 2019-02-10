@@ -117,12 +117,13 @@ switch (_taskState) do {
                     private _type = _x select 0;
                     private _typeText = _x select 1;
                     private _points = _x select 2;
+                    private _actType = missionNamespace getVariable _type;
 
                     if (
-                        !(isnil {call compile _type}) &&
+                        !(isnil "_actType") &&
                         {
-                            {([toLower (_model), toLower _x] call CBA_fnc_find) > -1} count (call compile _type) > 0 ||
-                            {{([toLower (typeOf _object), toLower _x] call CBA_fnc_find) > -1} count (call compile _type) > 0} //Remove when all indexes have been rebuilt with CLIT
+                            {([toLower (_model), toLower _x] call CBA_fnc_find) > -1} count _actType > 0 ||
+                            {{([toLower (typeOf _object), toLower _x] call CBA_fnc_find) > -1} count _actType > 0} //Remove when all indexes have been rebuilt with CLIT
                         }
                     ) exitwith {
                         _buildingType = _typeText;
