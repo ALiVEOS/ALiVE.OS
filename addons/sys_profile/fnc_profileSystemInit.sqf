@@ -38,8 +38,8 @@ if(isServer) then {
 
     MOD(SYS_PROFILE) = _logic;
 
-    private _debug = call compile (_logic getVariable ["debug","false"]);
-    private _persistent = call compile (_logic getVariable ["persistent","false"]);
+    private _debug = (_logic getVariable ["debug","false"]) == "true";
+    private _persistent = (_logic getVariable ["persistent","false"]) == "true";
     private _syncMode = _logic getVariable ["syncronised","ADD"];
     private _syncedUnits = synchronizedObjects _logic;
     private _spawnRadius = parseNumber (_logic getVariable ["spawnRadius","1500"]);
@@ -48,8 +48,8 @@ if(isServer) then {
     private _activeLimiter = parseNumber (_logic getVariable ["activeLimiter","30"]);
     private _speedModifier = _logic getVariable ["speedModifier",1];
     private _virtualCombatSpeedModifier = _logic getVariable ["virtualcombat_speedmodifier", "1"];
-    private _pathfinding = call compile (_logic getVariable ["pathfinding", "false"]);
-    private _seaTransport = call compile (_logic getVariable ["seaTransport", "false"]);
+    private _pathfinding = (_logic getVariable ["pathfinding", "false"]) == "true";
+    private _seaTransport = (_logic getVariable ["seaTransport", "false"]) == "true";
     private _smoothSpawn = parseNumber (_logic getVariable ["smoothSpawn", "0.3"]);
 
     //Ensure Event Log is loaded
