@@ -33,10 +33,14 @@ _categories = [
     "ALIVE_civilianConstructionBuildingTypes"
 ];
 
-_update = _categories select _choice;
+_update = missionNameSpace getVariable (_categories select _choice);
 
 if (_enabled == 1) then {
-    call {_update pushback ALiVE_wrp_model};
+    //call compile format["%1 pushback ALiVE_wrp_model",(_categories select _choice)];
+    _update pushback ALiVE_wrp_model;
+    missionNameSpace setVariable [(_categories select _choice),_update];
 } else {
-    call {_update = _update - ALiVE_wrp_model};
+    //call compile format["%1 = %1 - [ALiVE_wrp_model]",(_categories select _choice)];
+    _update = _update - [ALiVE_wrp_model];
+    missionNameSpace setVariable [(_categories select _choice),_update];
 };

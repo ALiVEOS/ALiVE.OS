@@ -130,9 +130,10 @@ switch (_taskState) do {
 
                     {
                         private _clusters = _x;
+                        private _clustercontent = missionNameSpace getVariable _x;
 
-                        if (!isNil {call compile _clusters} && {_clusterID in ((call compile _clusters) select 1)}) then {
-                            private _cluster = [call compile _clusters, _clusterID] call ALiVE_fnc_HashGet;
+                        if (!isNil _clustercontent && {_clusterID in (_clustercontent select 1)}) then {
+                            private _cluster = [_clustercontent, _clusterID] call ALiVE_fnc_HashGet;
                             private _clusterLocation = [_cluster, "center"] call ALiVE_fnc_HashGet;
 
                             _clusterLocation resize 2;
