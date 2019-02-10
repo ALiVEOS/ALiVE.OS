@@ -43,14 +43,14 @@ _blacklist = _logic getvariable ["BLACKLIST",""];
 
 waituntil {!isnil QMOD(SYS_LOGISTICS)};
 
-MOD(SYS_LOGISTICS) setvariable ["DEBUG", call compile _debug, true];
-MOD(SYS_LOGISTICS) setvariable ["DISABLELOG",call compile _exit, true];
-MOD(SYS_LOGISTICS) setvariable ["DISABLECARRY",call compile _disableCarry, true];
-MOD(SYS_LOGISTICS) setvariable ["DISABLEPERSISTENCE",call compile _disablePersistence, true];
-MOD(SYS_LOGISTICS) setvariable ["DISABLETOW",call compile _disableTow, true];
-MOD(SYS_LOGISTICS) setvariable ["DISABLELIFT",call compile _disableLift, true];
-MOD(SYS_LOGISTICS) setvariable ["DISABLELOAD",call compile _disableLoad, true];
-MOD(SYS_LOGISTICS) setvariable ["DISABLE3D",call compile _disable3D, true];
+MOD(SYS_LOGISTICS) setvariable ["DEBUG", _debug == "true", true];
+MOD(SYS_LOGISTICS) setvariable ["DISABLELOG", _exit == "true", true];
+MOD(SYS_LOGISTICS) setvariable ["DISABLECARRY", _disableCarry == "true", true];
+MOD(SYS_LOGISTICS) setvariable ["DISABLEPERSISTENCE", _disablePersistence == "true", true];
+MOD(SYS_LOGISTICS) setvariable ["DISABLETOW", _disableTow == "true", true];
+MOD(SYS_LOGISTICS) setvariable ["DISABLELIFT", _disableLift == "true", true];
+MOD(SYS_LOGISTICS) setvariable ["DISABLELOAD", _disableLoad == "true", true];
+MOD(SYS_LOGISTICS) setvariable ["DISABLE3D", _disable3D == "true", true];
 MOD(SYS_LOGISTICS) setvariable ["BLACKLIST",[_logic, "blacklist", _blacklist] call ALiVE_fnc_Logistics, true];
 
 _logic
