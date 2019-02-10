@@ -55,13 +55,10 @@ _cargoI = [_cargoWMI, 2, [], [[]]] call BIS_fnc_param;
 if (isMultiplayer && {isServer}) then {_global = "Global"} else {_global = ""};
 
 // Reset Magazines state
-call (compile format["
-            {_input removeMagazine%1 _x} forEach (magazines _input);
-            {_input addMagazine [_x select 0,_x select 1]} foreach _ammo;
-        ",
-        _global
-    ]
-);
+_reset = [[{_input removeMagazine _x} forEach (magazines _input);{_input addMagazine [_x select 0,_x select 1]} foreach _ammo;],
+            [{_input removeMagazineGlobal _x} forEach (magazines _input);{_input addMagazine [_x select 0,_x select 1]} foreach _ammo;]];
+_resetloc = _action select (_global == "Global");
+call _resetloc;
 
 // Reset weapons and items state
 _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"ItemCargo"]];
@@ -70,12 +67,20 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
 
     _content = _x select 0;
     _operation = _x select 1;
-    // TODO; rewrite call (compile ...); but it's 5AM.
-    _current = call (compile format["get%1 _input",_operation]);
+
+    _currenttemp = [{getWeaponCargo _input}, {getMagazineCargo _input},{getItemCargo _input}];
+    _current = _currenttemp select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation));
 
     if !(str(_content) == str(_current)) then {
 
-        if (count (_current select 0) > 0) then {call (compile format["clear%1%2 _input",_operation,_global])};
+        if (count (_current select 0) > 0) then {
+
+            _clear = [[{clearWeaponCargo _input}, {clearMagazineCargo _input},{clearItemCargo _input}],
+                [{clearWeaponCargoGlobal _input}, {clearMagazineCargoGlobal _input},{clearItemCargoGlobal _input}]];   
+            _clearloc = _clear select (_global = "Global");
+            _clearcommand = _clearloc select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation));
+            call _clearcommand;
+            };
 
         for "_i" from 0 to (count (_content select 0))-1 do {
             private ["_type","_count"];
@@ -83,7 +88,11 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
             _type = _content select 0 select _i;
             _count = _content select 1 select _i;
 
-            call (compile format["_input add%1%2 %3",_operation,_global,[_type,_count]]);
+            _addition = [[{addWeaponCargo _input}, {addMagazineCargo _input},{addItemCargo _input}],
+                [{addWeaponCargoGlobal _input}, {addMagazineCargoGlobal _input},{addItemCargoGlobal _input}]];   
+            _addloc = _addition select (_global = "Global");
+            _addcommand = _addloc select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation));
+            call _addcommand;
         };
     };
 } foreach _typesWeapons;
