@@ -1,6 +1,6 @@
 // ALiVE_fnc_autoUpdateStaticData
 private ["_categories","_choice","_enabled","_ctrl","_arr"];
-// diag_log (_this);
+
 _ctrl = _this select 0;
 _choice = _this select 1;
 _enabled = _this select 2;
@@ -36,11 +36,7 @@ _categories = [
 _update = _categories select _choice;
 
 if (_enabled == 1) then {
-    //call compile format["%1 pushback ALiVE_wrp_model",(_categories select _choice)];
     call {_update pushback ALiVE_wrp_model};
 } else {
-    //call compile format["%1 = %1 - [ALiVE_wrp_model]",(_categories select _choice)];
     call {_update = _update - ALiVE_wrp_model};
 };
-
-// systemchat format["%1 = %2",(_categories select _choice), call compile(_categories select _choice)];
