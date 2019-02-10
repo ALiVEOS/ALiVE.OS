@@ -70,6 +70,7 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
 
     _content = _x select 0;
     _operation = _x select 1;
+    // TODO; rewrite call (compile ...); but it's 5AM.
     _current = call (compile format["get%1 _input",_operation]);
 
     if !(str(_content) == str(_current)) then {
