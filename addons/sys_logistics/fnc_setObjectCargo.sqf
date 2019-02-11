@@ -74,7 +74,7 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
     _operation = _x select 1;
 
     _currenttemp = [{getWeaponCargo _input}, {getMagazineCargo _input},{getItemCargo _input}];
-    _current = _currenttemp select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation));
+    _current = call (_currenttemp select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation)));
     call _current;
 
     if !(_content isEqualTo _current) then {
