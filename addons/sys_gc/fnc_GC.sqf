@@ -121,12 +121,12 @@ switch(_operation) do {
                     _interval = _logic getvariable ["ALiVE_GC_INTERVAL","300"];
 
                     switch (typeName _debug) do {
-                        case ("STRING") : {_debug = call compile _debug};
+                        case ("STRING") : {_debug = (_debug == "true")};
                         case ("BOOL") : {};
                     };
 
                     switch (typeName _interval) do {
-                        case ("STRING") : {_interval = call compile _interval};
+                        case ("STRING") : {_interval = parseNumber _interval};
                         case ("BOOL") : {};
                     };
 

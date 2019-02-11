@@ -59,7 +59,7 @@ _instances = (ALiVE_CQB getVariable ["instances",[]]);
     private ["_state","_logic"];
     _logic  = _x;
 
-    if (call compile (_logic getvariable ["CQB_persistent","false"])) then {
+    if ((_logic getvariable ["CQB_persistent","false"]) == "true") then {
         _state = [_logic,"state"] call ALiVE_fnc_CQB;
 
         ["ALiVE LOAD CQB DATA APPLYING STATE!"] call ALIVE_fnc_dumpMPH;
