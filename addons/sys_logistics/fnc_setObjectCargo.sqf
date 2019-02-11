@@ -55,10 +55,9 @@ _cargoI = [_cargoWMI, 2, [], [[]]] call BIS_fnc_param;
 if (isMultiplayer && {isServer}) then {_global = "Global"} else {_global = ""};
 
 // Reset Magazines state
-_reset = [[{_input removeMagazine _x} forEach (magazines _input);{_input addMagazine [_x select 0,_x select 1]} foreach _ammo;],
-            [{_input removeMagazineGlobal _x} forEach (magazines _input);{_input addMagazine [_x select 0,_x select 1]} foreach _ammo;]];
-_resetloc = _reset select (_global == "Global");
-call _resetloc;
+_reset = [[{_input removeMagazine _x} forEach (magazines _input); {_input addMagazine [_x select 0,_x select 1]} foreach _ammo;],
+            [{_input removeMagazineGlobal _x} forEach (magazines _input); {_input addMagazine [_x select 0,_x select 1]} foreach _ammo;]];
+call (_reset select (_global == "Global"));
 
 // Reset weapons and items state
 _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"ItemCargo"]];
