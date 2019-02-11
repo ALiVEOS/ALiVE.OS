@@ -55,9 +55,15 @@ _cargoI = [_cargoWMI, 2, [], [[]]] call BIS_fnc_param;
 if (isMultiplayer && {isServer}) then {_global = "Global"} else {_global = ""};
 
 // Reset Magazines state
-_reset = [[{_input removeMagazine _x} forEach (magazines _input); {_input addMagazine [_x select 0,_x select 1]} foreach _ammo;],
-            [{_input removeMagazineGlobal _x} forEach (magazines _input); {_input addMagazine [_x select 0,_x select 1]} foreach _ammo;]];
-call (_reset select (_global == "Global"));
+{
+    if (_global == "Global") then {
+        _input removeMagazineGlobal _x;
+    } else {
+        _input removeMagazine _x;
+    };
+} forEach (magazines _input);
+
+ {_input addMagazine [_x select 0,_x select 1]} forEach _ammo;
 
 // Reset weapons and items state
 _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"ItemCargo"]];
@@ -74,13 +80,15 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
     if !(_content isEqualTo _current) then {
 
         if (count (_current select 0) > 0) then {
-
-            _clear = [[{clearWeaponCargo _input}, {clearMagazineCargo _input},{clearItemCargo _input}],
-                [{clearWeaponCargoGlobal _input}, {clearMagazineCargoGlobal _input},{clearItemCargoGlobal _input}]];   
-            _clearloc = _clear select (_global == "Global");
-            _clearcommand = (_clear select _clearloc) select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation));
-            call _clearcommand;
+            
+            if (_global == "Global") then {
+                _actions = [{clearWeaponCargoGlobal _input}, {clearMagazineCargoGlobal _input},{clearItemCargoGlobal _input}];
+            } else {
+                _actions = [{clearWeaponCargo _input}, {clearMagazineCargo _input},{clearItemCargo _input}];
+                };
+            call ( _actions select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation)) );    
         };
+        
 
         for "_i" from 0 to (count (_content select 0))-1 do {
             private ["_type","_count"];
@@ -88,11 +96,12 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
             _type = _content select 0 select _i;
             _count = _content select 1 select _i;
 
-            _addition = [[{addWeaponCargo [_type,_count]}, {addMagazineCargo [_type,_count]},{addItemCargo [_type,_count]}],
-                [{addWeaponCargoGlobal [_type,_count]}, {addMagazineCargoGlobal [_type,_count]},{addItemCargoGlobal [_type,_count]}]];   
-            _addloc = _addition select (_global == "Global");
-            _addcommand = (_addition select _addloc) select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation));
-            call _addcommand;
+            if (_global == "Global") then {
+                _actions2 = [{_input addWeaponCargoGlobal [_type,_count]}, {_input addMagazineCargoGlobal [_type,_count]},{_input addItemCargoGlobal [_type,_count]}]; 
+            } else {
+                _actions2 = [{_input addWeaponCargo [_type,_count]}, {_input addMagazineCargo [_type,_count]},{_input addItemCargo [_type,_count]}];
+            };
+            call ( _actions2 select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation)) );
         };
     };
 } foreach _typesWeapons;
