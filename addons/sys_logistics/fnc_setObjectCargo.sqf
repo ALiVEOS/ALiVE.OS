@@ -57,7 +57,7 @@ if (isMultiplayer && {isServer}) then {_global = "Global"} else {_global = ""};
 // Reset Magazines state
 _reset = [[{_input removeMagazine _x} forEach (magazines _input);{_input addMagazine [_x select 0,_x select 1]} foreach _ammo;],
             [{_input removeMagazineGlobal _x} forEach (magazines _input);{_input addMagazine [_x select 0,_x select 1]} foreach _ammo;]];
-_resetloc = _action select (_global == "Global");
+_resetloc = _reset select (_global == "Global");
 call _resetloc;
 
 // Reset weapons and items state
