@@ -34,7 +34,6 @@ _categories = [
 if (_custom) then {
     [">>>>>>>>>>>>>>>>>> Starting static data creation"] call ALiVE_fnc_dump;
     {
-        _update = [];
         _update = missionNameSpace setVariable [_x select 0, []];
     } foreach _categories;
 
