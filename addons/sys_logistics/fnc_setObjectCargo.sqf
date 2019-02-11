@@ -91,7 +91,7 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
             _addition = [[{addWeaponCargo [_type,_count]}, {addMagazineCargo [_type,_count]},{addItemCargo [_type,_count]}],
                 [{addWeaponCargoGlobal [_type,_count]}, {addMagazineCargoGlobal [_type,_count]},{addItemCargoGlobal [_type,_count]}]];   
             _addloc = _addition select (_global == "Global");
-            _addcommand = _addloc select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation));
+            _addcommand = (_addition select _addloc) select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation));
             call _addcommand;
         };
     };
