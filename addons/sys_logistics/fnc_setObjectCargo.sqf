@@ -78,7 +78,7 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
             _clear = [[{clearWeaponCargo _input}, {clearMagazineCargo _input},{clearItemCargo _input}],
                 [{clearWeaponCargoGlobal _input}, {clearMagazineCargoGlobal _input},{clearItemCargoGlobal _input}]];   
             _clearloc = _clear select (_global == "Global");
-            _clearcommand = _clearloc select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation));
+            _clearcommand = (_clear select _clearloc) select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation));
             call _clearcommand;
         };
 
