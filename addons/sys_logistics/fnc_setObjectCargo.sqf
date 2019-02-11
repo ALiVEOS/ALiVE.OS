@@ -86,7 +86,7 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
             } else {
                 _actions = [{clearWeaponCargo _input}, {clearMagazineCargo _input},{clearItemCargo _input}];
                 };
-            call ( _actions select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation)) );    
+            call (_actions select _forEachIndex); 
         };
         
 
@@ -101,7 +101,7 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
             } else {
                 _actions2 = [{_input addWeaponCargo [_type,_count]}, {_input addMagazineCargo [_type,_count]},{_input addItemCargo [_type,_count]}];
             };
-            call ( _actions2 select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation)) );
+            call (_actions2 select _forEachIndex);
         };
     };
 } foreach _typesWeapons;
