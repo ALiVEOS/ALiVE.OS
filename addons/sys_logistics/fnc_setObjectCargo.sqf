@@ -70,8 +70,9 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
 
     _currenttemp = [{getWeaponCargo _input}, {getMagazineCargo _input},{getItemCargo _input}];
     _current = _currenttemp select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation));
+    call _current;
 
-    if !(str(_content) == str(_current)) then {
+    if !(_content isEqualTo _current) then {
 
         if (count (_current select 0) > 0) then {
 
@@ -80,7 +81,7 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
             _clearloc = _clear select (_global = "Global");
             _clearcommand = _clearloc select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation));
             call _clearcommand;
-            };
+        };
 
         for "_i" from 0 to (count (_content select 0))-1 do {
             private ["_type","_count"];
@@ -88,8 +89,8 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
             _type = _content select 0 select _i;
             _count = _content select 1 select _i;
 
-            _addition = [[{addWeaponCargo _input}, {addMagazineCargo _input},{addItemCargo _input}],
-                [{addWeaponCargoGlobal _input}, {addMagazineCargoGlobal _input},{addItemCargoGlobal _input}]];   
+            _addition = [[{addWeaponCargo [_type,_count]}, {addMagazineCargo [_type,_count]},{addItemCargo [_type,_count]}],
+                [{addWeaponCargoGlobal [_type,_count]}, {addMagazineCargoGlobal [_type,_count]},{addItemCargoGlobal [_type,_count]}]];   
             _addloc = _addition select (_global = "Global");
             _addcommand = _addloc select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation));
             call _addcommand;
