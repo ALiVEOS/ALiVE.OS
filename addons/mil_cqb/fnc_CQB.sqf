@@ -134,7 +134,7 @@ switch(_operation) do {
 
             //Init further mandatory params on all localities
             _debug = _logic getvariable ["CQB_debug_setting","false"];
-            if (typename (_debug) == "STRING") then {_debug = (_debug == "true");};
+            if (_debug isEqualType "") then {_debug = (_debug == "true");};
             _logic setVariable ["debug", _debug];
 
             _CQB_spawn = _logic getvariable ["CQB_spawn_setting", "0.01"];
