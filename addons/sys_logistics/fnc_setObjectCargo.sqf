@@ -69,6 +69,8 @@ private _global = isMultiplayer && isServer;
 _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"ItemCargo"]];
 {
     private ["_content","_current","_operation"];
+    private _actions = [];
+    private _actions2 = [];
 
     _content = _x select 0;
     _operation = _x select 1;
