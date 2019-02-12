@@ -115,7 +115,7 @@ switch(_operation) do {
 
                         GVAR(DEBUG) = (_logic getvariable ["debug","false"]) =="true";
                         GVAR(MULTISPAWN_TYPE) = _logic getvariable ["spawntype","forwardspawn"];
-                        GVAR(RESPAWN_WITH_GEAR) = (_logic getvariable ["respawnWithGear","true"]) =="true";
+                        GVAR(RESPAWN_WITH_GEAR) = (_logic getvariable ["respawnWithGear","true"]) == "true";
 
                         // Create Store
                         GVAR(STORE) = [] call ALIVE_fnc_hashCreate;
