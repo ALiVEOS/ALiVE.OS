@@ -55,13 +55,11 @@ _cargoI = [_cargoWMI, 2, [], [[]]] call BIS_fnc_param;
 private _global = isMultiplayer && isServer;
 
 // Reset Magazines state
-{
-    if (_global == "Global") then {
-        _input removeMagazineGlobal _x;
-    } else {
-        _input removeMagazine _x;
-    };
-} forEach (magazines _input);
+if (_global == "Global") then {
+    {_input removeMagazineGlobal _x} forEach (magazines _input);
+} else {
+    {_input removeMagazine _x} forEach (magazines _input);
+};
 
  {_input addMagazine [_x select 0,_x select 1]} forEach _ammo;
 
@@ -69,8 +67,17 @@ private _global = isMultiplayer && isServer;
 _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"ItemCargo"]];
 {
     private ["_content","_current","_operation"];
-    private _actions = [];
-    private _actions2 = [];
+    private _actions = if (_global == "Global") then {
+                [{clearWeaponCargoGlobal _input}, {clearMagazineCargoGlobal _input},{clearItemCargoGlobal _input}];
+            } else {
+                [{clearWeaponCargo _input}, {clearMagazineCargo _input},{clearItemCargo _input}];
+                };
+    
+    private _actions2 = if (_global == "Global") then {
+                [{_input addWeaponCargoGlobal [_type,_count]}, {_input addMagazineCargoGlobal [_type,_count]},{_input addItemCargoGlobal [_type,_count]}]; 
+            } else {
+                [{_input addWeaponCargo [_type,_count]}, {_input addMagazineCargo [_type,_count]},{_input addItemCargo [_type,_count]}];
+            };
 
     _content = _x select 0;
     _operation = _x select 1;
@@ -81,12 +88,7 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
     if !(_content isEqualTo _current) then {
 
         if (count (_current select 0) > 0) then {
-            
-            if (_global == "Global") then {
-                _actions = [{clearWeaponCargoGlobal _input}, {clearMagazineCargoGlobal _input},{clearItemCargoGlobal _input}];
-            } else {
-                _actions = [{clearWeaponCargo _input}, {clearMagazineCargo _input},{clearItemCargo _input}];
-                };
+        
             call (_actions select _forEachIndex); 
         };
         
@@ -97,11 +99,6 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
             _type = _content select 0 select _i;
             _count = _content select 1 select _i;
 
-            if (_global == "Global") then {
-                _actions2 = [{_input addWeaponCargoGlobal [_type,_count]}, {_input addMagazineCargoGlobal [_type,_count]},{_input addItemCargoGlobal [_type,_count]}]; 
-            } else {
-                _actions2 = [{_input addWeaponCargo [_type,_count]}, {_input addMagazineCargo [_type,_count]},{_input addItemCargo [_type,_count]}];
-            };
             call (_actions2 select _forEachIndex);
         };
     };
