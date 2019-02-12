@@ -35,7 +35,6 @@ _onlyProfiles = false;
 if (_args isEqualType []) then {
     _radius = [_args, 0, 200, [-1]] call BIS_fnc_param;
     _onlyProfiles = (_args param [1, "false", [""]]) == "true";
-    // BIS_fnc_param's 3rd parameter is the default; boolean
 };
 
 _id = [_profile,"profileID","error"] call ALiVE_fnc_HashGet;
