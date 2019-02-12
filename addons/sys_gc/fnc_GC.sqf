@@ -122,7 +122,7 @@ switch(_operation) do {
 
                     switch (typeName _debug) do {
                         case ("STRING") : {_debug = (_debug == "true")};
-                        case ("BOOL") : {};
+                        //case ("BOOL") : {};
                     };
 
                     switch (typeName _interval) do {
