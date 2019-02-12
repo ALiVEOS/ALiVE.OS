@@ -33,11 +33,11 @@ _categories = [
     "ALIVE_civilianConstructionBuildingTypes"
 ];
 
-_update = missionNamespace getVariable (_categories select _choice);
+private _update = missionNamespace getVariable (_categories select _choice);
 
 if (_enabled == 1) then {
     _update pushback ALiVE_wrp_model; // Edits array in missionNamespace. No need to send back.
 } else {
-    _update = _update - [ALiVE_wrp_model]; // Creates copy of the array. Needs sending back to missionNameSpace
-    missionNameSpace setVariable [(_categories select _choice),_update];
+    _update = _update - [ALiVE_wrp_model]; // Creates copy of the array. Needs sending back to missionNamespace
+    missionNamespace setVariable [(_categories select _choice),_update];
 };

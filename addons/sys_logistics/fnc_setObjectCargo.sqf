@@ -52,7 +52,7 @@ _cargoM = [_cargoWMI, 1, [], [[]]] call BIS_fnc_param;
 _cargoI = [_cargoWMI, 2, [], [[]]] call BIS_fnc_param;
 
 // Detect local/global commands
-if (isMultiplayer && {isServer}) then {_global = "Global"} else {_global = ""};
+private _global = isMultiplayer && isServer;
 
 // Reset Magazines state
 {
