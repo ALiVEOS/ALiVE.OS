@@ -178,7 +178,7 @@ switch(_operation) do {
             _factions = [_logic,"factions",_factions] call ALiVE_fnc_CQB;
 
             _useDominantFaction = _logic getvariable ["CQB_UseDominantFaction","true"];
-            if (typename (_useDominantFaction) == "STRING") then {_useDominantFaction = (_useDominantFaction == "true");};
+            if (_useDominantFaction isEqualType "") then {_useDominantFaction = (_useDominantFaction == "true")};
             _logic setVariable ["CQB_UseDominantFaction", _useDominantFaction];
 
             _CQB_Locations = _logic getvariable ["CQB_LOCATIONTYPE","towns"];
