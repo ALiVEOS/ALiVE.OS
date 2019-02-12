@@ -134,7 +134,7 @@ switch(_operation) do {
                                 //Set Defaults
                                 [_factionData,QGVAR(RESPAWNPOSITION), getmarkerPos ("Respawn_" + str(_id call ALiVE_fnc_factionSide))] call ALiVE_fnc_HashSet;
                                 [_factionData,QGVAR(MULTISPAWN_TYPE),_logic getvariable ["spawntype","forwardspawn"]] call ALiVE_fnc_HashSet;
-                                [_factionData,QGVAR(RESPAWN_WITH_GEAR), (_logic getvariable ["respawnWithGear","false"]) =="true"] call ALiVE_fnc_HashSet;
+                                [_factionData,QGVAR(RESPAWN_WITH_GEAR), (_logic getvariable ["respawnWithGear","false"]) == "true"] call ALiVE_fnc_HashSet;
                                 [_factionData,QGVAR(TIMEOUT),call compile (_logic getvariable ["timeout","60"])] call ALiVE_fnc_HashSet;
                                 [_factionData,QGVAR(VEHICLETYPE), [MOD(SUP_MULTISPAWN),"selectDefaultVehicle",_id call ALiVE_fnc_factionSide] call ALiVE_fnc_Multispawn] call ALiVE_fnc_HashSet;
 
