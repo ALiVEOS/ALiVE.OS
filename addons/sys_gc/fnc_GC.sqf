@@ -127,7 +127,7 @@ switch(_operation) do {
 
                     switch (typeName _interval) do {
                         case ("STRING") : {_interval = parseNumber _interval};
-                        case ("BOOL") : {};
+                        //case ("BOOL") : {};
                     };
 
                     _logic setvariable ["debug",_debug,true];
