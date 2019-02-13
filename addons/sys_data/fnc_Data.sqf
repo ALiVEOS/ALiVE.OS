@@ -59,7 +59,7 @@ if (_operation in _ops) then {
                     _source = _sourceOverride;
                 };
                 _script = format ["ALIVE_fnc_%1Data_%2", _operation, _source];
-                _function = call compile _script; // TODO; find viable replacement
+                _function = missionNamespace getVariable [_script,{}];
                 //TRACE_2("SYS_DATA: Operation Request - ",_source, _script);
                 _result = [_logic, _args] call _function;
             } else {

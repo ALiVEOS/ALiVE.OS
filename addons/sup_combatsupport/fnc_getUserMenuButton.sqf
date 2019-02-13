@@ -18,7 +18,7 @@ diag_log format["MenuButton: %1", _return];
     {
     _return = getNumber(configfile >> "ALiVE_UserConfig" >> _var)
     };
-    missionNamespace setVariable [_var,_return,true];
+    missionNamespace setVariable [_var,_return];
     //call compile format ["%1 = %2", _var,_return];
 _return
 }

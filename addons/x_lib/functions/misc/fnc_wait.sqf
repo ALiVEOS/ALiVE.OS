@@ -28,7 +28,7 @@ Author:
 ---------------------------------------------------------------------------- */
 
 private ["_condCode", "_maxDuration", "_traceComp", "_params", "_startTime", "_endTime", "_val"];
-_condCode = if ((_this select 0) isEqualTo {}) then {_this select 0} else {compile(_this select 0)}; // TODO; remove compile
+_condCode = if ((_this select 0) isEqualTo {}) then {_this select 0} else {compile(_this select 0)};
 _maxDuration = [_this, 1, ["SCALAR"], -1] call ALiVE_fnc_param;
 _traceComp = [_this, 2, ["STRING"], "component"] call ALiVE_fnc_param;
 _params = [_this, 3, [], []] call ALiVE_fnc_param;

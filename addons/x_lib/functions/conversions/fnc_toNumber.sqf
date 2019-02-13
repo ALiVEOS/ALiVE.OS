@@ -32,7 +32,7 @@ _val = _this select 0;
 
 if (_val isEqualType "") then
 {
-    _val = missionNamespace getVariable [_val,""]; // TODO; find viable replacement of compile
+    _val = parseNumber _val;
 };
 
 if (_val isEqualType {}) then

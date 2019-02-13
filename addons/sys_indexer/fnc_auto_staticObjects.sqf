@@ -320,10 +320,10 @@ if (_mapBounds != 0) then {
 {
     private ["_array","_arrayActual","_result"];
     _array = _x select 0;
-    _category = missionNamespace getVariable _array;
+    private _category = missionNamespace getVariable _array;
     // Window length set based on an example of cut off, 100 objects is probably accurate, 60 is conservative
     _windowLength = 60;
-    if (count _category >0) then {
+    if !(_category isEqualTo []) then {
         _windowStart=0;
         // Split into chunks that won't be too large to pass to the extension
         while {_windowStart < (count _category - 1)} do {
