@@ -60,12 +60,8 @@ switch (_state) do {
 
         private _targetSide = selectRandom (_args select 0);
 
-        //Thank you, BIS...
-        if (_targetSide in ["GUER","INDEP"]) then {_targetSide = RESISTANCE} else {
-            if (_targetSide in ["CIV","CIVILIAN"]) then {_targetSide = CIVILIAN} else {
-                _targetSide = missionNamespace getVariable [_targetSide,WEST];
-            };
-        };
+        //Thank you, Marcel!
+        _targetSide = [_targetSide] call ALIVE_fnc_sideTextToObject;
 
         private _target = [getPosASL _agent, 600, _targetSide] call ALIVE_fnc_getSideManOrPlayerNear;
 
