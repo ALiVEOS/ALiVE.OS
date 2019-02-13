@@ -139,8 +139,8 @@ switch(_operation) do {
                     _simultanObjectives = _logic getvariable ["simultanObjectives",10];
                     _minAgents = _logic getvariable ["minAgents",2];
 
-                    _debug = call compile (_logic getvariable ["debug","false"]);
-                    _persistent = call compile (_logic getvariable ["persistent","false"]);
+                    _debug = ((_logic getvariable ["debug","false"]) == "true");
+                    _persistent = ((_logic getvariable ["persistent","false"]) == "true");
                     _reinforcements = call compile (_logic getvariable ["reinforcements","0.9"]);
                     _roadblocks = _logic getvariable ["roadblocks",true];
 

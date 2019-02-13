@@ -79,7 +79,7 @@ case "init": {
     VIEW - purely visual
     - initialise
     */
-    WEATHER_DEBUG = call compile (_logic getvariable ["weather_debug_setting","false"]);
+    WEATHER_DEBUG = ((_logic getvariable ["weather_debug_setting","false"]) == "true");
     WEATHER_DEBUG_CYCLE = _logic getvariable ["weather_debug_cycle_setting",60];
     WEATHER_CYCLE_DELAY = _logic getvariable ["weather_cycle_delay_setting",1800];
     WEATHER_CYCLE_VARIANCE = _logic getvariable ["weather_cycle_variance_setting",0.2];

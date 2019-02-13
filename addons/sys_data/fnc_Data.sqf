@@ -52,14 +52,14 @@ _result = true;
 if (_operation in _ops) then {
         if !(GVAR(DISABLED)) then {
             ASSERT_TRUE(typeName _args == "ARRAY", _args);
-            if(typeName _args == "ARRAY") then {
+            if(_args isEqualType []) then {
                 private ["_function","_script"];
                 private _source = [_logic, "source"] call ALIVE_fnc_hashGet;
                 if (_sourceOverride != "") then {
                     _source = _sourceOverride;
                 };
                 _script = format ["ALIVE_fnc_%1Data_%2", _operation, _source];
-                _function = call compile _script;
+                _function = call compile _script; // TODO; find viable replacement
                 //TRACE_2("SYS_DATA: Operation Request - ",_source, _script);
                 _result = [_logic, _args] call _function;
             } else {

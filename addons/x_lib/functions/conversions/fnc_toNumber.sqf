@@ -30,22 +30,22 @@ Author:
 private ["_val"];
 _val = _this select 0;
 
-if (typeName(_val) == "STRING") then
+if (_val isEqualType "") then
 {
-    _val = compile _val;
+    _val = missionNamespace getVariable [_val,""]; // TODO; find viable replacement of compile
 };
 
-if (typeName(_val) == "CODE") then
+if (_val isEqualType {}) then
 {
     _val = call _val;
 };
 
-if (typeName(_val) == "BOOL") then
+if (_val isEqualType true) then
 {
     _val = if (_val) then {1} else {0};
 };
 
-if (typeName(_val) != "SCALAR") then
+if (!(_val isEqualType 0)) then
 {
     _val = -1;
 };

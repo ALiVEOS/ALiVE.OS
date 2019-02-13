@@ -63,7 +63,7 @@ switch (_state) do {
         //Thank you, BIS...
         if (_targetSide in ["GUER","INDEP"]) then {_targetSide = RESISTANCE} else {
             if (_targetSide in ["CIV","CIVILIAN"]) then {_targetSide = CIVILIAN} else {
-                _targetSide = call compile _targetSide;
+                _targetSide = missionNamespace getVariable [_targetSide,WEST];
             };
         };
 

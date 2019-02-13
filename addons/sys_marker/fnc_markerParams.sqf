@@ -32,6 +32,6 @@ _debug = _logic getvariable ["DEBUG","false"];
 
 waituntil {!isnil QMOD(SYS_marker)};
 
-MOD(SYS_marker) setvariable ["DEBUG", call compile _debug, true];
+MOD(SYS_marker) setvariable ["DEBUG", (_debug == "true"), true];
 
 _logic
