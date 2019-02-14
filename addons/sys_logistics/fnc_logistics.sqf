@@ -743,8 +743,8 @@ switch (_operation) do {
 
             _id = _object addAction [
                 _text,
-                {[MOD(SYS_LOGISTICS),(_this select 3 select 0),(_this select 3 select 1), 
-                    (_this select 3 select 2)] call ALiVE_fnc_logistics},
+                {[MOD(SYS_LOGISTICS), (_this select 3 select 0), _this call (_this select 3 select 1), 
+                    _this call (_this select 3 select 2)] call ALiVE_fnc_logistics},
                 [_operation,_input,_container],
                 1,
                 false,
