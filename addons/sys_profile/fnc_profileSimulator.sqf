@@ -368,9 +368,9 @@ if (!_simAttacks) then {
                                     // Execute statements at the end, needs review of any variables in hashes
                                     if (_executeStatements) then {
                                         private _onCompletion = _statements select 1;
-                                        if(!(_onCompletion isEqualTo "")) then {
+                                        if(!(_statements isEqualTo [])) then {
                                         call compile _onCompletion;
-                                        } else {diag_log format["HALP FIX MEH: Possible empty string. Content: %1",_onCompletion];};
+                                        } else {diag_log format["HALP FIX MEH: Possible empty string. Content: %1",_statements];};
                                     };
                                 } else {
                                     if (_debug) then {["ALiVE Profile-Simulator profile movement stopped for profile %1: currentPosition: %2 destination: %3", [_profile,"profileID","no-ID"] call ALiVE_fnc_hashGet, _profilePosition, _destination] call ALiVE_fnc_dump};
