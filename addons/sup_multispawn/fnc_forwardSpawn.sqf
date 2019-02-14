@@ -99,7 +99,7 @@ if (!(isnil "_hdl") && {!(scriptDone _hdl)}) then {titleText ["Gear is still bee
 
 _playerUnit = (aliveUnits select actualUnits);
 _enemyunits = {((side _x) getfriend (side _playerUnit)) < 0.6} count ((getposATL _playerUnit) nearEntities [["CAmanBase"],__NMEDISTANCE]);
-_spawningNearEnemiesAllowed = call compile (ALIVE_SUP_MULTISPAWN getvariable ["spawningnearenemiesallowed","false"]);
+_spawningNearEnemiesAllowed = ((ALIVE_SUP_MULTISPAWN getvariable ["spawningnearenemiesallowed","false"]) == "true");
 
 if ((_enemyunits > 0) && {!(_spawningNearEnemiesAllowed)}) then {
     TitleText[format["That unit is too close to enemies for a safe spawn."],"PLAIN DOWN"];

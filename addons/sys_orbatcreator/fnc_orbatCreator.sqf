@@ -90,11 +90,11 @@ switch(_operation) do {
 
         // get module settings
 
-        private _debug = call compile (_logic getVariable "debug");
+        private _debug = ((_logic getVariable ["debug","false"]) == "true");
 
         [_logic,"debug", _debug] call MAINCLASS;
 
-        private _background = call compile (_logic getVariable ["background", "true"]);
+        private _background = ((_logic getVariable ["background", "true"]) == "true");
 
         [_logic,"background", _background] call MAINCLASS;
 

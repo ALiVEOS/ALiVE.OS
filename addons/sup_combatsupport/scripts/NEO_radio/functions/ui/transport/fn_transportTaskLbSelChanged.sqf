@@ -100,7 +100,7 @@ _task = switch (_lb lbText _index) do
 
         _pos = getMarkerPos (uinamespace getVariable ["NEO_transportMarkerCreated","unknown"]);
 
-        if (isNil "_pos" || {str(_pos) == "[0,0,0]"}) then {_pos = getpos player;};
+        if (isNil "_pos" || {str(_pos) isEqualTo "[0,0,0]"}) then {_pos = getpos player;};
 
         _objectLb ctrlEnable true;
         lbClear _objectLb;
@@ -122,7 +122,7 @@ _task = switch (_lb lbText _index) do
         "
             private [""_lb"", ""_pos"", ""_sliderText""];
             _lb = _this select 0;
-            _pos = call compile (_lb lbData (_this select 1));
+            _pos = parseSimpleArray (_lb lbData (_this select 1));
             _marker = NEO_radioLogic getVariable ""NEO_supportMarker"";
             _marker setMarkerPosLocal _pos;
             uinamespace setVariable [""NEO_transportMarkerCreated"", _marker];
