@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\fnc_analysis\script_component.hpp>
+#include "\x\alive\addons\fnc_analysis\script_component.hpp"
 SCRIPT(auto_runMapAnalysis);
 
 //execVM "\x\alive\addons\fnc_analysis\tests\auto_runMapAnalysis.sqf"

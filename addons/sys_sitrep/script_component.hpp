@@ -1,5 +1,5 @@
 #define COMPONENT SYS_sitrep
-#include <\x\alive\addons\main\script_mod.hpp>
+#include "\x\alive\addons\main\script_mod.hpp"
 
 #ifdef DEBUG_ENABLED_SYS_sitrep
     #define DEBUG_MODE_FULL
@@ -9,7 +9,7 @@
     #define DEBUG_SETTINGS DEBUG_SETTINGS_SYS_sitrep
 #endif
 
-#include <\x\cba\addons\main\script_macros.hpp>
+#include "\x\cba\addons\main\script_macros.hpp"
 
 #define NAME_VALUE 7
 #define DTG_VALUE 5

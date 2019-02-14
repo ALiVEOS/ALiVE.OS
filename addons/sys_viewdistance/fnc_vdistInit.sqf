@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_viewdistance\script_component.hpp>
+#include "\x\alive\addons\sys_viewdistance\script_component.hpp"
 SCRIPT(vdistInit);
 
 /* ----------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\fnc_analysis\script_component.hpp>
+#include "\x\alive\addons\fnc_analysis\script_component.hpp"
 SCRIPT(test_sectorDataSort);
 
 //execVM "\x\alive\addons\fnc_analysis\tests\test_sectorDataSort.sqf"

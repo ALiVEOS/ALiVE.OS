@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_ato\script_component.hpp>
+#include "\x\alive\addons\mil_ato\script_component.hpp"
 SCRIPT(ATOInit);
 /* ----------------------------------------------------------------------------
 Function: ALIVE_fnc_ATOInit

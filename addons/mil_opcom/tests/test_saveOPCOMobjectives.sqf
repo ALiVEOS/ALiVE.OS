@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\mil_OPCOM\script_component.hpp>
+#include "\x\alive\addons\mil_OPCOM\script_component.hpp"
 SCRIPT(test_saveOPCOMobjectives);
 
 //execVM "\x\alive\addons\mil_OPCOM\tests\test_saveOPCOMobjectives.sqf"

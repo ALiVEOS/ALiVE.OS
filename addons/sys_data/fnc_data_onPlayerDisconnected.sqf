@@ -13,7 +13,7 @@
 // ====================================================================================
 // MAIN
 
-#include <\x\alive\addons\sys_data\script_component.hpp>
+#include "\x\alive\addons\sys_data\script_component.hpp"
 SCRIPT(data_onPlayerDisconnected);
 
 private ["_result","_name"];

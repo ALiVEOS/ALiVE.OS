@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sup_player_resupply\script_component.hpp>
+#include "\x\alive\addons\sup_player_resupply\script_component.hpp"
 SCRIPT(PRInit);
 /* ----------------------------------------------------------------------------
 Function: ALIVE_fnc_PRInit

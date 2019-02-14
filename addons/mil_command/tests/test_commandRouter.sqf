@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\fnc_analysis\script_component.hpp>
+#include "\x\alive\addons\fnc_analysis\script_component.hpp"
 SCRIPT(test_command);
 
 //execVM "\x\alive\addons\mil_command\tests\test_commandRouter.sqf"

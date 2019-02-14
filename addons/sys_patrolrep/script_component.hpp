@@ -1,5 +1,5 @@
 #define COMPONENT SYS_patrolrep
-#include <\x\alive\addons\main\script_mod.hpp>
+#include "\x\alive\addons\main\script_mod.hpp"
 
 #ifdef DEBUG_ENABLED_SYS_patrolrep
     #define DEBUG_MODE_FULL
@@ -9,7 +9,7 @@
     #define DEBUG_SETTINGS DEBUG_SETTINGS_SYS_patrolrep
 #endif
 
-#include <\x\cba\addons\main\script_macros.hpp>
+#include "\x\cba\addons\main\script_macros.hpp"
 
 #define PATROLREP_MAP 1
 #define NAME_VALUE 7

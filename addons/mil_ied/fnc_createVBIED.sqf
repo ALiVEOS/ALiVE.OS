@@ -2,7 +2,7 @@
 #define MAINCLASS ALIVE_fnc_ied
 #define DEFAULT_VB_IED_THREAT 5
 #define DEFAULT_VBIED_SIDE "CIV"
-#include <\x\alive\addons\mil_IED\script_component.hpp>
+#include "\x\alive\addons\mil_IED\script_component.hpp"
 SCRIPT(createVBIED);
 
 private ["_IEDskins","_IED","_trg","_vehicle","_debug","_threat","_side"];

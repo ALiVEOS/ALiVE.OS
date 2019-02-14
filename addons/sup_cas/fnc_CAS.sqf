@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sup_cas\script_component.hpp>
+#include "\x\alive\addons\sup_cas\script_component.hpp"
 SCRIPT(CAS);
 
 /* ----------------------------------------------------------------------------

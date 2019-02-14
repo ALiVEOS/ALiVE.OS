@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sup_multispawn\script_component.hpp>
+#include "\x\alive\addons\sup_multispawn\script_component.hpp"
 
 #define __NMEDISTANCE 50
 

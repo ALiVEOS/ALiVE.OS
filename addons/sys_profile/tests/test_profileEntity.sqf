@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\sys_profile\script_component.hpp>
+#include "\x\alive\addons\sys_profile\script_component.hpp"
 SCRIPT(test_profileEntity);
 
 //execVM "\x\alive\addons\sys_profile\tests\test_profileEntity.sqf"

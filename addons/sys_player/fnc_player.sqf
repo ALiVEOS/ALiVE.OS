@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_player\script_component.hpp>
+#include "\x\alive\addons\sys_player\script_component.hpp"
 SCRIPT(player);
 
 /* ----------------------------------------------------------------------------
@@ -139,7 +139,7 @@ switch(_operation) do {
             };
 
             // DEFINE PLAYER DATA
-            #include <playerData.hpp>
+            #include "playerData.hpp"
 
             // Create Player and Gear Store in memory on client and server
             GVAR(player_data) = [] call ALIVE_fnc_hashCreate;

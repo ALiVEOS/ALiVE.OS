@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\sys_player\script_component.hpp>
+#include "\x\alive\addons\sys_player\script_component.hpp"
 SCRIPT(test_player);
 
 // ----------------------------------------------------------------------------

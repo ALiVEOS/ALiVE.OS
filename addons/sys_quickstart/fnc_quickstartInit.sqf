@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_quickstart\script_component.hpp>
+#include "\x\alive\addons\sys_quickstart\script_component.hpp"
 SCRIPT(quickstartInit);
 
 /* ----------------------------------------------------------------------------

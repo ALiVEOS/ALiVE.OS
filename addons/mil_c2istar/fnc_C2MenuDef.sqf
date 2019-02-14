@@ -1,5 +1,5 @@
-#include <\x\alive\addons\mil_C2ISTAR\script_component.hpp>
-#include <\a3\editor_f\Data\Scripts\dikCodes.h>
+#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
+#include "\a3\editor_f\Data\Scripts\dikCodes.h"
 
 SCRIPT(C2MenuDef);
 

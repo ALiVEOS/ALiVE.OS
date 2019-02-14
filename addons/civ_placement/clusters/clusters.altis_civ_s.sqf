@@ -1,4 +1,4 @@
-#include <\x\alive\addons\civ_placement\script_component.hpp>
+#include "\x\alive\addons\civ_placement\script_component.hpp"
 
 ALIVE_clusterBuild = [CLUSTERBUILD];
 

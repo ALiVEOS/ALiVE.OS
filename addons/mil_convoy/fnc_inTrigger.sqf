@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_convoy\script_component.hpp>
+#include "\x\alive\addons\mil_convoy\script_component.hpp"
 private ["_posCheck","_quit","_exitcheck"];
 
 _posCheck = _this select 0;

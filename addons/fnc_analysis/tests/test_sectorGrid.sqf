@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\fnc_analysis\script_component.hpp>
+#include "\x\alive\addons\fnc_analysis\script_component.hpp"
 SCRIPT(test_sectorGrid);
 
 //execVM "\x\alive\addons\fnc_analysis\tests\test_sectorGrid.sqf"

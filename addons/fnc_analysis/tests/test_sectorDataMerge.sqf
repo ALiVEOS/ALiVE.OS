@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\fnc_analysis\script_component.hpp>
+#include "\x\alive\addons\fnc_analysis\script_component.hpp"
 SCRIPT(test_sectorDataMerge);
 
 //execVM "\x\alive\addons\fnc_analysis\tests\test_sectorDataMerge.sqf"

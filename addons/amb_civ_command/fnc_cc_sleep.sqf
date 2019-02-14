@@ -1,4 +1,4 @@
-#include <\x\alive\addons\amb_civ_command\script_component.hpp>
+#include "\x\alive\addons\amb_civ_command\script_component.hpp"
 SCRIPT(cc_sleep);
 
 /* ----------------------------------------------------------------------------

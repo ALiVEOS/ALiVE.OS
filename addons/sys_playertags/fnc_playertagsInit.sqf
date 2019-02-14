@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_playertags\script_component.hpp>
+#include "\x\alive\addons\sys_playertags\script_component.hpp"
 SCRIPT(playertagsInit);
 
 /* ----------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_sitrep\script_component.hpp>
+#include "\x\alive\addons\sys_sitrep\script_component.hpp"
 
 SCRIPT(sitrepButtonAction);
 

@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_indexer\script_component.hpp>
+#include "\x\alive\addons\sys_indexer\script_component.hpp"
 SCRIPT(indexerInit);
 
 /* ----------------------------------------------------------------------------

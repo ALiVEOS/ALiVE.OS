@@ -1,5 +1,5 @@
 #define COMPONENT mil_placement_custom
-#include <\x\alive\addons\main\script_mod.hpp>
+#include "\x\alive\addons\main\script_mod.hpp"
 
 #ifdef DEBUG_ENABLED_MIL_PLACEMENT_CUSTOM
     #define DEBUG_MODE_FULL
@@ -9,4 +9,4 @@
     #define DEBUG_SETTINGS DEBUG_ENABLED_MIL_PLACEMENT_CUSTOM
 #endif
 
-#include <\x\cba\addons\main\script_macros.hpp>
+#include "\x\cba\addons\main\script_macros.hpp"

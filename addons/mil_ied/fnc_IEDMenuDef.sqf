@@ -1,5 +1,5 @@
-#include <\x\alive\addons\mil_ied\script_component.hpp>
-#include <\a3\editor_f\Data\Scripts\dikCodes.h>
+#include "\x\alive\addons\mil_ied\script_component.hpp"
+#include "\a3\editor_f\Data\Scripts\dikCodes.h"
 
 SCRIPT(IEDMenuDef);
 

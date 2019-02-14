@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_viewdistance\script_component.hpp>
+#include "\x\alive\addons\sys_viewdistance\script_component.hpp"
 #define SLIDER_VIEWDISTANCE ((vdist_dialog select 0) displayCtrl 1912)
 #define TEXT_VIEWDISTANCE ((vdist_dialog select 0) displayCtrl 10091)
 #define SLIDER_TERRAINGRID ((vdist_dialog select 0) displayCtrl 1913)

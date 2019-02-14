@@ -1,6 +1,6 @@
 
 #define COMPONENT x_lib
-#include <\x\alive\addons\main\script_mod.hpp>
+#include "\x\alive\addons\main\script_mod.hpp"
 
 #define LOG_LEVELS ["info", "notice", "warning", "error", "critical"]
 
@@ -12,5 +12,5 @@
     #define DEBUG_SETTINGS DEBUG_ENABLED_X_LIB
 #endif
 
-#include <\x\cba\addons\main\script_macros.hpp>
-#include <script_macros.hpp>
+#include "\x\cba\addons\main\script_macros.hpp"
+#include "script_macros.hpp"

@@ -1,5 +1,5 @@
-#include <script_component.hpp>
+#include "script_component.hpp"
 
-#include <CfgFunctions.hpp>
-#include <CfgPatches.hpp>
-#include <CfgEventHandlers.hpp>
+#include "CfgFunctions.hpp"
+#include "CfgPatches.hpp"
+#include "CfgEventHandlers.hpp"

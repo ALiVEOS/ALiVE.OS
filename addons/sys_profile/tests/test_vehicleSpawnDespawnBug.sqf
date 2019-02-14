@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\sys_profile\script_component.hpp>
+#include "\x\alive\addons\sys_profile\script_component.hpp"
 SCRIPT(test_vehicleSpawnDespawnBug);
 
 //execVM "\x\alive\addons\sys_profile\tests\test_vehicleSpawnDespawnBug.sqf"

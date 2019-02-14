@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_cqb\script_component.hpp>
+#include "\x\alive\addons\mil_cqb\script_component.hpp"
 SCRIPT(removeCQBpositions);
 
 /* ----------------------------------------------------------------------------

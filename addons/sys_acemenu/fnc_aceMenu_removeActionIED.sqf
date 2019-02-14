@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_acemenu\script_component.hpp>
+#include "\x\alive\addons\sys_acemenu\script_component.hpp"
 
 SCRIPT(aceMenu_removeActionIED);
 

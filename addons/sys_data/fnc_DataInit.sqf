@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_data\script_component.hpp>
+#include "\x\alive\addons\sys_data\script_component.hpp"
 SCRIPT(DataInit);
 
 #define AAR_DEFAULT_SAMPLE_RATE 5

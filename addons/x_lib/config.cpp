@@ -1,11 +1,11 @@
 
-#include <script_component.hpp>
-#include <config\CfgPatches.hpp>
+#include "script_component.hpp"
+#include "config\CfgPatches.hpp"
 
 class cfgFunctions {
     class PREFIX {
         class COMPONENT {
-            #include <config\CfgFunctions.hpp>
+            #include "config\CfgFunctions.hpp"
             
             class x_lib_preinit {
                 preinit = 1;
