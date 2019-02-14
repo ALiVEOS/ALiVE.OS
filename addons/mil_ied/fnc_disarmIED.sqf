@@ -1,5 +1,5 @@
 // Disarm IED - ran on client only
-#include <\x\alive\addons\mil_IED\script_component.hpp>
+#include "\x\alive\addons\mil_IED\script_component.hpp"
 SCRIPT(disarmIED);
 
 private ["_debug","_IED","_caller","_wire","_success","_selectedWire","_id","_IEDCharge"];

@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_logistics\script_component.hpp>
+#include "\x\alive\addons\mil_logistics\script_component.hpp"
 
 #define TESTS ["ML"]
 

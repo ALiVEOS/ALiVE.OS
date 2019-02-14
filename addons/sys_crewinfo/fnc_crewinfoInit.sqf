@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_crewinfo\script_component.hpp>
+#include "\x\alive\addons\sys_crewinfo\script_component.hpp"
 SCRIPT(crewinfoInit);
 
 /* ----------------------------------------------------------------------------

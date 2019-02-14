@@ -12,7 +12,7 @@ class CfgGroups
         class Civilian_Desert
         {
             name = "$STR_ZEC_CivilianDesert";
-            #include <civilian\desert.hpp>
+            #include "civilian\desert.hpp"
         };
         class Civilian_Pacific
         {

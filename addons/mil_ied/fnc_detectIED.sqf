@@ -1,5 +1,5 @@
 // Detect - ran on client only
-#include <\x\alive\addons\mil_IED\script_component.hpp>
+#include "\x\alive\addons\mil_IED\script_component.hpp"
 SCRIPT(detectIED);
 private ["_IED", "_radius","_players","_detection","_device"];
 

@@ -1,5 +1,5 @@
 //#define DEBUG_MODE_FULL
-#include <\x\alive\addons\sys_xstream\script_component.hpp>
+#include "\x\alive\addons\sys_xstream\script_component.hpp"
 SCRIPT(camera);
 
 private ["_relpos","_cam","_cameraTarget","_fov","_sceneChoice","_subChoice","_loopHandle","_logic"];

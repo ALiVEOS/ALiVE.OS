@@ -4,7 +4,7 @@
 //#squint filter Unknown variable ALIVE_fnc_getEnterableHouses
 // ----------------------------------------------------------------------------
 
-#include <script_macros_core.hpp>
+#include "script_macros_core.hpp"
 SCRIPT(test_data);
 
 // ----------------------------------------------------------------------------

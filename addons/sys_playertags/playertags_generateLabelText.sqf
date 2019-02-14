@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_playertags\script_component.hpp>
+#include "\x\alive\addons\sys_playertags\script_component.hpp"
 private ['_lineCount', '_tmpText', '_type', '_vehicle', '_playerVehicle'];
 
 _obj = _this select 0;

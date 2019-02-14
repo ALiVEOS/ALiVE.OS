@@ -13,8 +13,8 @@ class CfgPatches {
         authorUrl = "http://alivemod.com/";
     };
 };
-    #include <\x\alive\addons\sys_crewinfo\crewinfo.hpp>
+    #include "\x\alive\addons\sys_crewinfo\crewinfo.hpp"
 class RscTitles {
-    #include <\x\alive\addons\sys_crewinfo\namesright.hpp>
-    #include <\x\alive\addons\sys_crewinfo\namesleft.hpp>
+    #include "\x\alive\addons\sys_crewinfo\namesright.hpp"
+    #include "\x\alive\addons\sys_crewinfo\namesleft.hpp"
 };

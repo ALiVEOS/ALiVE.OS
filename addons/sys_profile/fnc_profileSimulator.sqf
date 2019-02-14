@@ -1,4 +1,4 @@
-#include <\x\ALiVE\addons\sys_profile\script_component.hpp>
+#include "\x\ALiVE\addons\sys_profile\script_component.hpp"
 SCRIPT(profileSimulator);
 
 /* ----------------------------------------------------------------------------

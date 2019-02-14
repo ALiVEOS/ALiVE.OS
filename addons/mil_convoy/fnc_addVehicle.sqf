@@ -1,4 +1,4 @@
-    #include <\x\alive\addons\mil_convoy\script_component.hpp>
+    #include "\x\alive\addons\mil_convoy\script_component.hpp"
 
     private ["_logic","_type","_startposi","_startroads","_dire","_grop","_veh","_pos","_facs","_type","_debug"];
 

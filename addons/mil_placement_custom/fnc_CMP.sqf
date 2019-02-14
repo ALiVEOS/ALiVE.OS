@@ -1,5 +1,5 @@
 //#define DEBUG_MPDE_FULL
-#include <\x\alive\addons\mil_placement_custom\script_component.hpp>
+#include "\x\alive\addons\mil_placement_custom\script_component.hpp"
 SCRIPT(CMP);
 
 /* ----------------------------------------------------------------------------

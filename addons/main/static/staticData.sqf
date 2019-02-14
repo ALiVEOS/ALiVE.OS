@@ -1,24 +1,24 @@
 
 // Include the relevant static data
 
-#include <CQB.hpp>
+#include "CQB.hpp"
 
-#include <Placement.hpp>
+#include "Placement.hpp"
 
-#include <Logistics.hpp>
+#include "Logistics.hpp"
 
-#include <PlayerResupply.hpp>
+#include "PlayerResupply.hpp"
 
-#include <Tasks.hpp>
+#include "Tasks.hpp"
 
-#include <CivPop.hpp>
+#include "CivPop.hpp"
 
-#include <GarrisonPositions.hpp>
+#include "GarrisonPositions.hpp"
 
-#include <Compositions.hpp>
+#include "Compositions.hpp"
 
-#include <CustomFactions.hpp>
+#include "CustomFactions.hpp"
 
-#include <Maps.hpp>
+#include "Maps.hpp"
 
 ALiVE_STATIC_DATA_LOADED = true;

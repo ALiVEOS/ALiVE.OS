@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\mil_logistics\script_component.hpp>
+#include "\x\alive\addons\mil_logistics\script_component.hpp"
 SCRIPT(test_ML_HELI_INSERT);
 
 //execVM "\x\alive\addons\mil_logistics\tests\test_ML_HELI_INSERT.sqf"

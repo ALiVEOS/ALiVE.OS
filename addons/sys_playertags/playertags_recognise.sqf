@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_playertags\script_component.hpp>
+#include "\x\alive\addons\sys_playertags\script_component.hpp"
 
 if (!enable_playertags || visibleMap) exitWith {foundUnitsCount = 0;};
 

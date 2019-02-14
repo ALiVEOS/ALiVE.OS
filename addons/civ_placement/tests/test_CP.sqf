@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\civ_placement\script_component.hpp>
+#include "\x\alive\addons\civ_placement\script_component.hpp"
 SCRIPT(test_CO);
 
 // ----------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-#include <\x\ALiVE\addons\fnc_analysis\script_component.hpp>
+#include "\x\ALiVE\addons\fnc_analysis\script_component.hpp"
 SCRIPT(sectorGrid);
 
 /* ----------------------------------------------------------------------------

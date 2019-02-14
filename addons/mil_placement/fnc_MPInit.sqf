@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_placement\script_component.hpp>
+#include "\x\alive\addons\mil_placement\script_component.hpp"
 SCRIPT(MPInit);
 /* ----------------------------------------------------------------------------
 Function: ALIVE_fnc_MPInit

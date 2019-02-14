@@ -1,4 +1,4 @@
-#include <\x\alive\addons\civ_placement\script_component.hpp>
+#include "\x\alive\addons\civ_placement\script_component.hpp"
 ALIVE_clusterBuild = [CLUSTERBUILD];
 ALIVE_clustersCiv = [] call ALIVE_fnc_hashCreate;
 _cluster = [nil, "create"] call ALIVE_fnc_cluster;
@@ -7390,7 +7390,7 @@ _nodes pushback ["90269",[10403.7,16863.5,-0.576769]];
 [_cluster,"priority",0] call ALIVE_fnc_hashSet;
 [_cluster,"debugColor","ColorGreen"] call ALIVE_fnc_hashSet;
 [ALIVE_clustersCivSettlement,"c_300",_cluster] call ALIVE_fnc_hashSet;
-#include <\x\alive\addons\civ_placement\script_component.hpp>
+#include "\x\alive\addons\civ_placement\script_component.hpp"
 ALIVE_clusterBuild = [CLUSTERBUILD];
 ALIVE_clustersCiv = [] call ALIVE_fnc_hashCreate;
 _cluster = [nil, "create"] call ALIVE_fnc_cluster;

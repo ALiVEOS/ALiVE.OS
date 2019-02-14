@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\amb_civ_command\script_component.hpp>
+#include "\x\alive\addons\amb_civ_command\script_component.hpp"
 SCRIPT(test_command);
 
 //execVM "\x\alive\addons\amb_civ_command\tests\test_civCommandRouter.sqf"

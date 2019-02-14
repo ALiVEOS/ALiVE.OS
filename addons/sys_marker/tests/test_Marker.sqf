@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-#include <\x\alive\addons\sys_marker\script_component.hpp>
+#include "\x\alive\addons\sys_marker\script_component.hpp"
 SCRIPT(test_Marker);
 // ----------------------------------------------------------------------------
 

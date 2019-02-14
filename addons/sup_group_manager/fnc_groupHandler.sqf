@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sup_group_manager\script_component.hpp>
+#include "\x\alive\addons\sup_group_manager\script_component.hpp"
 SCRIPT(taskHandler);
 
 /* ----------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-#include <script_component.hpp>
+#include "script_component.hpp"
 
 //Action Variable
 uinamespace setVariable ["NEO_radioCurrentAction", (_this select 0)];

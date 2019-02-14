@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_convoy\script_component.hpp>
+#include "\x\alive\addons\mil_convoy\script_component.hpp"
 
 private _logic = _this select 0;
 private _intensity = _logic getvariable ["conv_intensity_setting",1];

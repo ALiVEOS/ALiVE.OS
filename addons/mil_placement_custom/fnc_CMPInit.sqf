@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_placement_custom\script_component.hpp>
+#include "\x\alive\addons\mil_placement_custom\script_component.hpp"
 SCRIPT(CMPInit);
 /* ----------------------------------------------------------------------------
 Function: ALIVE_fnc_CMPInit

@@ -1,5 +1,5 @@
 //#define DEBUG_MODE_FULL
-#include <\x\alive\addons\sys_orbatcreator\script_component.hpp>
+#include "\x\alive\addons\sys_orbatcreator\script_component.hpp"
 SCRIPT(orbatCreator);
 
 /* ----------------------------------------------------------------------------
@@ -37,7 +37,7 @@ nil
 
 // UI components
 
-#include <\x\alive\addons\sys_orbatcreator\data\ui\include.hpp>
+#include "\x\alive\addons\sys_orbatcreator\data\ui\include.hpp"
 
 // control Macros
 

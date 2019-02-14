@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_ied\script_component.hpp>
+#include "\x\alive\addons\mil_ied\script_component.hpp"
 SCRIPT(placeVBIED);
 
 // Find or create vehicles in town to use as a VB-IED

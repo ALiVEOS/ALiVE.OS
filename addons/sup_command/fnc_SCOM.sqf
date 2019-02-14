@@ -1,5 +1,5 @@
 //#define DEBUG_MODE_FULL
-#include <\x\alive\addons\sup_command\script_component.hpp>
+#include "\x\alive\addons\sup_command\script_component.hpp"
 SCRIPT(SCOM);
 
 /* ----------------------------------------------------------------------------

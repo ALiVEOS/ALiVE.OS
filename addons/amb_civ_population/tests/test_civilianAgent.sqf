@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\amb_civ_population\script_component.hpp>
+#include "\x\alive\addons\amb_civ_population\script_component.hpp"
 SCRIPT(test_civilianAgent);
 
 //execVM "\x\alive\addons\amb_civ_population\tests\test_civilianAgent.sqf"

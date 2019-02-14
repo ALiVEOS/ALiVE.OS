@@ -1,5 +1,5 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
-#include <\x\cba\addons\hashes\script_hashes.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
+#include "\x\cba\addons\hashes\script_hashes.hpp"
 SCRIPT(hashRem);
 
 /* ----------------------------------------------------------------------------

@@ -1,6 +1,6 @@
-#include <script_component.hpp>
+#include "script_component.hpp"
 
-#include <CfgPatches.hpp>
+#include "CfgPatches.hpp"
 
 class RscStandardDisplay;
 class RscControlsGroup;
