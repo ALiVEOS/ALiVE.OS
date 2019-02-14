@@ -163,7 +163,7 @@ switch(_operation) do {
         _debug = [_logic, "debug"] call MAINCLASS;
 
         if(_state isEqualType "") then {
-            _state = missionNamespace getVariable [_state,""];
+            _state = parseSimpleArray _state;
         };
 
         _modules = [_logic, "modules"] call ALIVE_fnc_hashGet;
