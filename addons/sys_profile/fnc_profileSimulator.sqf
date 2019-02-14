@@ -367,7 +367,7 @@ if (!_simAttacks) then {
 
                                     // Execute statements at the end, needs review of any variables in hashes
                                     if (_executeStatements) then {
-                                        if(!(_statements isEqualTo []) && (_statements isEqualType [])) then {
+                                        if((_statements isEqualType []) && !(_statements isEqualTo [])) then {
                                         private _onCompletion = _statements select 1;
                                         call compile _onCompletion;
                                         } else {diag_log format["HALP FIX MEH: Possible empty string. Content: %1",_statements];};
