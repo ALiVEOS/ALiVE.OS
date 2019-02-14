@@ -212,7 +212,7 @@ switch(_operation) do {
 
         if (isnil "_args") exitwith {_result = DEFAULT_WITH_PLACEMENT};
 
-        if (_args isEqualType "") then {_args = (missionNamespace getVariable [_args,[]])};
+        if (_args isEqualType "") then {_args = (_args == "true")};
         if (_args isEqualType true) then {_args = _args};
 
         _result = [_logic,_operation,_args,DEFAULT_WITH_PLACEMENT] call ALIVE_fnc_OOsimpleOperation;

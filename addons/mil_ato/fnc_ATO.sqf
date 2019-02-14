@@ -1127,11 +1127,11 @@ switch(_operation) do {
 
             // Define enemy factions by getting enemy sides
             private _enemyFactions = [];
-            private _sides = ["EAST","WEST","RESISTANCE"];
+            private _sides = ["EAST","WEST","GUER"];
             private _sidesEnemy = [];
 
             {
-                if ((_side getfriend (missionNamespace getVariable [_x, "WEST"])) < 0.6) then {
+                if ((_side getfriend ([_x] call ALIVE_fnc_sideTextToObject)) < 0.6) then {
                     _sidesEnemy pushBack _x
                 };
             } foreach (_sides - [_side]);

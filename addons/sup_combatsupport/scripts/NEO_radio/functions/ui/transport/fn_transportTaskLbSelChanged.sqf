@@ -100,7 +100,7 @@ _task = switch (_lb lbText _index) do
 
         _pos = getMarkerPos (uinamespace getVariable ["NEO_transportMarkerCreated","unknown"]);
 
-        if (isNil "_pos" || {str(_pos) isEqualTo "[0,0,0]"}) then {_pos = getpos player;};
+        if (_pos isEqualTo [0,0,0]) then {_pos = getpos player;};
 
         _objectLb ctrlEnable true;
         lbClear _objectLb;

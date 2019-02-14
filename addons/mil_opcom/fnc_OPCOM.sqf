@@ -165,7 +165,12 @@ switch(_operation) do {
                     if (_side == "GUER") then {_side = "RESISTANCE"};
 
                     _sides = ["EAST","WEST","RESISTANCE"];
-                    _sidesEnemy = []; {if (((call compile _side) getfriend (call compile _x)) < 0.6) then {_sidesEnemy pushBack _x}} foreach (_sides - [_side]);
+                    _sidesEnemy = []; 
+                    {
+                        if ((([_side] call ALIVE_fnc_sideTextToObject) getfriend ([_x] call ALIVE_fnc_sideTextToObject)) < 0.6) then {
+                            _sidesEnemy pushBack _x
+                            }
+                    } foreach (_sides - [_side]);
                     _sidesFriendly = (_sides - _sidesEnemy);
 
                     //Thank you again, BIS...
