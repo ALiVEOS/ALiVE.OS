@@ -690,50 +690,50 @@ switch (_operation) do {
             switch (_operation) do {
                 case ("carryObject") : {
                     _text = "Carry object";
-                    _input = "(nearestObjects [_this select 1, ALiVE_SYS_LOGISTICS_CARRYABLE select 1, 5]) select 0";
-                    _container = "_this select 1";
+                    _input = {(nearestObjects [_this select 1, ALiVE_SYS_LOGISTICS_CARRYABLE select 1, 5]) select 0};
+                    _container = {_this select 1};
                     _condition = "private _nearestObject = (nearestObjects [_target, ALiVE_SYS_LOGISTICS_CARRYABLE select 1, 10]) select 0; alive _target && {_nearestObject distance _target < 5} && {isnil {_nearestObject getvariable 'ALiVE_SYS_LOGISTICS_CONTAINER'}} && {[_nearestObject,_target] call ALiVE_fnc_canCarry}";
                 };
                 case ("dropObject") : {
                     _text = "Drop object";
-                    _input = "call {private ['_objs','_player','_result']; _player = _this select 1; _objs = attachedObjects _player; {if (!isnull _x) exitwith {_result = _x}} foreach _objs; if (isnil '_result') then {_result = (_player getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) select 0}; if !(isnil '_result') then {_result}}";
-                    _container = "_this select 1";
+                    _input = {"call {private ['_objs','_player','_result']; _player = _this select 1; _objs = attachedObjects _player; {if (!isnull _x) exitwith {_result = _x}} foreach _objs; if (isnil '_result') then {_result = (_player getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) select 0}; if !(isnil '_result') then {_result}}};
+                    _container = {_this select 1};
                     _condition = "alive _target && {vehicle _target == _target} && {{!isnull _x} count (attachedObjects _target) > 0 || {count (_target getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) > 0}}";
                 };
                 case ("unloadObjects") : {
                     _text = "Load out cargo";
-                    _input = "cursortarget";
-                    _container = "((nearestObjects [_this select 1, ALiVE_SYS_LOGISTICS_STOWABLE select 0, 8]) select 0)";
+                    _input = {cursortarget};
+                    _container = {((nearestObjects [_this select 1, ALiVE_SYS_LOGISTICS_STOWABLE select 0, 8]) select 0)};
                     _condition = "alive _target && {cursortarget distance _target < 5} && {count (cursortarget getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) > 0}";
                 };
                 case ("stowObjects") : {
                     _text  = "Stow in cargo";
-                    _input = "objNull";
-                    _container = "cursortarget";
+                    _input = {objNull};
+                    _container = {cursortarget};
                     _condition = "alive _target && {cursortarget distance _target < 5} && {[((nearestObjects [cursortarget, ALiVE_SYS_LOGISTICS_STOWABLE select 1, 8]) select 0),cursortarget] call ALiVE_fnc_canStow}";
                 };
                 case ("towObject") : {
                     _text  = "Tow object";
-                    _input = "cursortarget";
-                    _container = "((nearestObjects [_this select 1, ALiVE_SYS_LOGISTICS_TOWABLE select 0, 15]) select 0)";
+                    _input = {cursortarget};
+                    _container = {((nearestObjects [_this select 1, ALiVE_SYS_LOGISTICS_TOWABLE select 0, 15]) select 0)};
                     _condition = "alive _target && {cursortarget distance player < 5} && {[cursortarget,(nearestObjects [cursortarget, ALiVE_SYS_LOGISTICS_TOWABLE select 0, 15]) select 0] call ALiVE_fnc_canTow}";
                 };
                 case ("untowObject") : {
                     _text  = "Untow object";
-                    _input = "cursortarget";
-                    _container = "attachedTo cursortarget";
+                    _input = {cursortarget};
+                    _container = {attachedTo cursortarget};
                     _condition = "alive _target && {cursortarget distance _target < 5} && {{_x == cursortarget} count ((attachedTo cursortarget) getvariable ['ALiVE_SYS_LOGISTICS_CARGO_TOW',[]]) > 0}";
                 };
                 case ("liftObject") : {
                     _text  = "Lift object";
-                    _input = "((nearestObjects [vehicle (_this select 1), ALiVE_SYS_LOGISTICS_LIFTABLE select 1, 15]) select 0)";
-                    _container = "vehicle (_this select 1)";
+                    _input = {((nearestObjects [vehicle (_this select 1), ALiVE_SYS_LOGISTICS_LIFTABLE select 1, 15]) select 0)};
+                    _container = {vehicle (_this select 1)};
                     _condition = "alive _target && {(getposATL (vehicle _target) select 2) > 10} && {(getposATL (vehicle _target) select 2) < 20} && {[(nearestObjects [vehicle (_target), ALiVE_SYS_LOGISTICS_LIFTABLE select 1, 20]) select 0, vehicle _target] call ALiVE_fnc_canLift}";
                 };
                 case ("releaseObject") : {
                     _text  = "Release object";
-                    _input = "attachedObjects (vehicle (_this select 1)) select 0";
-                    _container = "vehicle (_this select 1)";
+                    _input = {attachedObjects (vehicle (_this select 1)) select 0};
+                    _container = {vehicle (_this select 1)};
                     _condition = "alive _target && {(getposATL (vehicle _target) select 2) > 10} && {(getposATL (vehicle _target) select 2) < 20} && {count ((vehicle _target) getvariable ['ALiVE_SYS_LOGISTICS_CARGO_LIFT',[]]) > 0}";
                 };
                 default {_die = true};
@@ -743,8 +743,8 @@ switch (_operation) do {
 
             _id = _object addAction [
                 _text,
-                {[MOD(SYS_LOGISTICS),(_this select 3 select 0),[missionNamespace getVariable [(_this select 3 select 1),nil], 
-                    missionNamespace getVariable [(_this select 3 select 2),nil]]] call ALiVE_fnc_logistics},
+                {[MOD(SYS_LOGISTICS),(_this select 3 select 0),(_this select 3 select 1), 
+                    (_this select 3 select 2)] call ALiVE_fnc_logistics},
                 [_operation,_input,_container],
                 1,
                 false,
