@@ -43,9 +43,11 @@ if(isNil "ALIVE_firstModuleInit") then {
 
 if(_start) then {
     _moduleID = format["m_%1", ALIVE_moduleCount];
+    diag_log format ["DEBUGTHINGY: %1", _fnc_scriptNameParent];
+    diag_log format ["DEBUGTHINGY: %1 | %2 | %3", _logic, _start, _moduleID];
     _message = format["ALiVE [%3|%1] Module %2 INIT",(getNumber(configfile >> "CfgVehicles" >>  typeOf _logic >> "functionPriority")), typeof _logic, _moduleID];
     [true, _message, _moduleID] call ALIVE_fnc_timer;
-    ALIVE_moduleCount = ALIVE_moduleCount + 1;
+    ALIVE_moduleCount = ALIVE_moduleCount + 1;    
 }else{
     _message = format["ALiVE [%3|%1] Module %2 INIT COMPLETE TIME: ",(getNumber(configfile >> "CfgVehicles" >>  typeOf _logic >> "functionPriority")), typeof _logic, _moduleID];
     [false, _message, _moduleID] call ALIVE_fnc_timer;
