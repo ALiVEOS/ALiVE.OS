@@ -696,7 +696,7 @@ switch (_operation) do {
                 };
                 case ("dropObject") : {
                     _text = "Drop object";
-                    _input = {"call {private ['_objs','_player','_result']; _player = _this select 1; _objs = attachedObjects _player; {if (!isnull _x) exitwith {_result = _x}} foreach _objs; if (isnil '_result') then {_result = (_player getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) select 0}; if !(isnil '_result') then {_result}}};
+                    _input = {call {private ['_objs','_player','_result']; _player = _this select 1; _objs = attachedObjects _player; {if (!isnull _x) exitwith {_result = _x}} foreach _objs; if (isnil '_result') then {_result = (_player getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) select 0}; if !(isnil '_result') then {_result}}};
                     _container = {_this select 1};
                     _condition = "alive _target && {vehicle _target == _target} && {{!isnull _x} count (attachedObjects _target) > 0 || {count (_target getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) > 0}}";
                 };
