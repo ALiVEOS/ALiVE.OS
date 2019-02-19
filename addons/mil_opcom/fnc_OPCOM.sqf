@@ -169,7 +169,7 @@ switch(_operation) do {
                     {
                         if ((([_side] call ALIVE_fnc_sideTextToObject) getfriend ([_x] call ALIVE_fnc_sideTextToObject)) < 0.6) then {
                             _sidesEnemy pushBack _x
-                            }
+                        }
                     } foreach (_sides - [_side]);
                     _sidesFriendly = (_sides - _sidesEnemy);
 

@@ -59,8 +59,6 @@ switch (_state) do {
         private _agentCluster = [ALIVE_clusterHandler,"getCluster",_agentClusterID] call ALIVE_fnc_clusterHandler;
 
         private _targetSide = selectRandom (_args select 0);
-
-        //Thank you, Marcel!
         _targetSide = [_targetSide] call ALIVE_fnc_sideTextToObject;
 
         private _target = [getPosASL _agent, 600, _targetSide] call ALIVE_fnc_getSideManOrPlayerNear;

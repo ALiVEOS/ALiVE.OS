@@ -27,7 +27,7 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_input","_id","_cargo","_cargoR","_cargoT","_cargoL","_cargoWMI","_cargoW","_cargoM","_cargoI","_typesLogistics","_typesWeapons","_global"];
+private ["_input","_id","_cargo","_cargoR","_cargoT","_cargoL","_cargoWMI","_cargoW","_cargoM","_cargoI","_typesLogistics","_typesWeapons"];
 
 _input = [_this, 0, objNull, [objNull]] call BIS_fnc_param;
 _id = [MOD(SYS_LOGISTICS),"id",_input] call ALiVE_fnc_Logistics;
@@ -55,7 +55,7 @@ _cargoI = [_cargoWMI, 2, [], [[]]] call BIS_fnc_param;
 private _global = isMultiplayer && isServer;
 
 // Reset Magazines state
-if (_global == "Global") then {
+if (_global) then {
     {_input removeMagazineGlobal _x} forEach (magazines _input);
 } else {
     {_input removeMagazine _x} forEach (magazines _input);
@@ -67,17 +67,17 @@ if (_global == "Global") then {
 _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"ItemCargo"]];
 {
     private ["_content","_current","_operation"];
-    private _actions = if (_global == "Global") then {
-                [{clearWeaponCargoGlobal _input}, {clearMagazineCargoGlobal _input},{clearItemCargoGlobal _input}];
-            } else {
-                [{clearWeaponCargo _input}, {clearMagazineCargo _input},{clearItemCargo _input}];
-                };
-    
-    private _actions2 = if (_global == "Global") then {
-                [{_input addWeaponCargoGlobal [_type,_count]}, {_input addMagazineCargoGlobal [_type,_count]},{_input addItemCargoGlobal [_type,_count]}]; 
-            } else {
-                [{_input addWeaponCargo [_type,_count]}, {_input addMagazineCargo [_type,_count]},{_input addItemCargo [_type,_count]}];
-            };
+    private _actions = if (_global) then {
+        [{clearWeaponCargoGlobal _input}, {clearMagazineCargoGlobal _input},{clearItemCargoGlobal _input}];
+    } else {
+        [{clearWeaponCargo _input}, {clearMagazineCargo _input},{clearItemCargo _input}];
+    };
+
+    private _actions2 = if (_global) then {
+        [{_input addWeaponCargoGlobal [_type,_count]}, {_input addMagazineCargoGlobal [_type,_count]},{_input addItemCargoGlobal [_type,_count]}]; 
+    } else {
+        [{_input addWeaponCargo [_type,_count]}, {_input addMagazineCargo [_type,_count]},{_input addItemCargo [_type,_count]}];
+    };
 
     _content = _x select 0;
     _operation = _x select 1;
@@ -86,12 +86,9 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
     _current = call (_currenttemp select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation)));
 
     if !(_content isEqualTo _current) then {
-
         if (count (_current select 0) > 0) then {
-        
             call (_actions select _forEachIndex); 
         };
-        
 
         for "_i" from 0 to (count (_content select 0))-1 do {
             private ["_type","_count"];

@@ -36,7 +36,7 @@ if (isNil "_bomber") then {
             _class = ([[_faction], 1, ALiVE_MIL_CQB_UNITBLACKLIST, true] call ALiVE_fnc_chooseRandomUnits) select 0;
         };
     } else {
-        _class = (selectRandom (missionNamespace getVariable (ADDON getVariable "Bomber_Type")));
+        _class = (selectRandom (parseSimpleArray (ADDON getVariable "Bomber_Type")));
     };
     if (isNil "_class") exitWith {diag_log "No bomber class defined."};
     _bomber = _grp createUnit [_class, _pos, [], _size, "NONE"];
