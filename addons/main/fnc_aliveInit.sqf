@@ -148,7 +148,7 @@ if (isServer) then {
     Publicvariable QMOD(DISABLESAVE);
 
     //Activates dynamic AI distribution to all available headless clients
-    MOD(AI_DISTRIBUTION) = call compile (_logic getvariable [QMOD(AI_DISTRIBUTION),"false"]);
+    MOD(AI_DISTRIBUTION) = ((_logic getvariable [QMOD(AI_DISTRIBUTION),"false"]) == "true");
     MOD(AI_DISTRIBUTION) spawn ALiVE_fnc_AI_Distributor;
 
     MOD(TABLET_MODEL) = _logic getvariable [QMOD(TABLET_MODEL), "Tablet01"];
@@ -182,7 +182,7 @@ if (isServer) then {
 if (hasInterface) then {
     waituntil {!isnil QMOD(DISABLESAVE)}; // Wait for global var to be set on Server
 
-    if (call compile MOD(DISABLESAVE)) then {enableSaving [false, false]};
+    if (MOD(DISABLESAVE) == "true") then {enableSaving [false, false]};
 
     if (isMultiplayer) then {
 

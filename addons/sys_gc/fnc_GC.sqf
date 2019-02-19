@@ -120,14 +120,12 @@ switch(_operation) do {
                     _debug = _logic getvariable ["debug","false"];
                     _interval = _logic getvariable ["ALiVE_GC_INTERVAL","300"];
 
-                    switch (typeName _debug) do {
-                        case ("STRING") : {_debug = call compile _debug};
-                        case ("BOOL") : {};
+                    if (_debug isEqualType "") then {
+                        _debug = (_debug == "true");
                     };
 
-                    switch (typeName _interval) do {
-                        case ("STRING") : {_interval = call compile _interval};
-                        case ("BOOL") : {};
+                    if (_interval isEqualType "") then {
+                        _interval = parseNumber _interval;
                     };
 
                     _logic setvariable ["debug",_debug,true];

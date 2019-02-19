@@ -44,7 +44,7 @@ if (isServer && !isHC) then {
 
         _vehicle setVariable ["vehicleID", _vehicleID, true];
         _vehicle setVehicleVarName _vehicleID;
-        _vehicle call compile format ["%1 = _this; publicVariable ""%1""", _vehicleID];
+        missionNamespace setVariable [_vehicleID,_vehicle,true];
 
         GVAR(VEHICLEID) = GVAR(VEHICLEID) + 1;
     };

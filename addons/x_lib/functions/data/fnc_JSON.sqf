@@ -128,7 +128,7 @@ switch (_func) do
             };
         } forEach _jsonStr;
 
-        call compile toString(_jsonStr) // Return JSON object-array
+        parseSimpleArray toString(_jsonStr) // Return JSON object-array
     };
 
     case "get": // _args = ["json", "object", "path"]

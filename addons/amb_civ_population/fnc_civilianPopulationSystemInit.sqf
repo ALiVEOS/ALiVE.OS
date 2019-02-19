@@ -31,7 +31,7 @@ if(isServer) then {
 
     MOD(amb_civ_population) = _logic;
 
-    private _debug = call compile (_logic getVariable ["debug","false"]);
+    private _debug = (_logic getVariable ["debug","false"]) == "true";
     private _spawnRadius = parseNumber (_logic getVariable ["spawnRadius","1500"]);
     private _spawnTypeHeliRadius = parseNumber (_logic getVariable ["spawnTypeHeliRadius","1500"]);
     private _spawnTypeJetRadius = parseNumber (_logic getVariable ["spawnTypeJetRadius","0"]);

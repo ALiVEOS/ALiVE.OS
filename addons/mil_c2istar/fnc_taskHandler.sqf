@@ -515,7 +515,7 @@ switch (_operation) do {
                 _taskData set [6, position _player];
             };
 
-            private _taskSet = ["init", _taskID, _taskData, [], _debug] call (call compile format["ALIVE_fnc_task%1", _taskType]);
+            private _taskSet = ["init", _taskID, _taskData, [], _debug] call (missionNamespace getVariable [format["ALIVE_fnc_task%1", _taskType],{}]);
 
             if (!isNil "_taskSet" && {_taskSet isEqualType [] && !(_taskSet isEqualTo [])}) then {
 				private _managedTaskParams = [_logic, "managedTaskParams"] call ALIVE_fnc_hashSet;
@@ -1489,7 +1489,7 @@ switch (_operation) do {
                         };
                         // DEBUG -------------------------------------------------------------------------------------
 
-                        private _task = [_taskSource select 2, _taskID, _mainTask, _taskParams, _debug] call (call compile format ["ALIVE_fnc_task%1", _taskSource select 1]);
+                        private _task = [_taskSource select 2, _taskID, _mainTask, _taskParams, _debug] call (missionNamespace getVariable [format ["ALIVE_fnc_task%1", _taskSource select 1],{}]);
 
                         if (!isNil "_task" && {_task isEqualType [] && !(_task isEqualTo [])}) then {
                             [_logic, "updateTask", _task] call MAINCLASS;

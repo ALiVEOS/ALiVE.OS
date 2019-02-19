@@ -241,7 +241,7 @@ if (!_simAttacks) then {
                                         private _waypointComplete = true;
                                         if (count _statements > 0) then {
                                             private _waypointCondition = _statements select 0;
-                                            private _waypointConditionSatisfied = call compile _waypointCondition;
+                                            private _waypointConditionSatisfied = call compile _waypointCondition; // TODO; Fix after https://github.com/ALiVEOS/ALiVE.OS/issues/582
 
                                             if (!_waypointConditionSatisfied) then { _waypointComplete = false };
                                         };
@@ -367,8 +367,12 @@ if (!_simAttacks) then {
 
                                     // Execute statements at the end, needs review of any variables in hashes
                                     if (_executeStatements) then {
-                                        private _onCompletion = _statements select 1;
-                                        call compile _onCompletion;
+                                        if((_statements isEqualType []) && !(_statements isEqualTo [])) then {
+                                            private _onCompletion = _statements select 1;
+                                            call compile _onCompletion;
+                                        } else {
+                                            diag_log format["FIXME: Possible empty string. Content: %1",_statements];
+                                        };
                                     };
                                 } else {
                                     if (_debug) then {["ALiVE Profile-Simulator profile movement stopped for profile %1: currentPosition: %2 destination: %3", [_profile,"profileID","no-ID"] call ALiVE_fnc_hashGet, _profilePosition, _destination] call ALiVE_fnc_dump};

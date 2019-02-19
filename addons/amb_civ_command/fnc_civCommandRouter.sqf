@@ -174,7 +174,7 @@ switch(_operation) do {
                 };
                 case "spawn": {
                     // spawn the command script and store the handle on the internal command states hash
-                    private _handle = [_agent, _commandArgs, true] spawn (call compile _commandName);
+                    private _handle = [_agent, _commandArgs, true] spawn (missionNamespace getVariable _commandName);
                     [_commandState, _agentID, [_handle, _activeCommand]] call ALIVE_fnc_hashSet;
                 };
                 case "managed": {

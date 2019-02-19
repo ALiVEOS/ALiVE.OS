@@ -43,7 +43,7 @@ private _keys = [];
 private _values = [];
 _data = [] call ALiVE_fnc_HashCreate;
 {
-    if (call compile (_x getvariable ["CQB_persistent","false"])) then {
+    if ((_x getvariable ["CQB_persistent","false"]) == "true") then {
         private _state = [_x,"state"] call ALiVE_fnc_CQB;
         private _type = [_state,"instancetype"] call AliVE_fnc_HashGet;
         private _id = format["CQB_%1_%2",_type,_foreachIndex];

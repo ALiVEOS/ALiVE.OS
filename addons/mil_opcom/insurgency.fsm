@@ -1408,7 +1408,7 @@ class FSM
        "_codeActions = _actions select 3 select 1;" \n
        "" \n
        "if (isnil ""_code"") then {" \n
-       "    _code = _paramsActions spawn (call compile _codeActions);" \n
+       "    _code = _paramsActions spawn (missionNamespace getVariable [_codeActions,{}]);" \n
        "    [_objective,""code"",_code] call ALiVE_fnc_HashSet;" \n
        "};" \n
        "" \n

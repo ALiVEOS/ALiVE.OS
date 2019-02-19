@@ -239,7 +239,7 @@ ALiVE_fnc_isVTOL = {
     params [
         ["_class", "", ["",objNull]]
     ];
-    if (typeName _class == "OBJECT") then {_class = typeof _class};
+    if (_class isEqualType objNull) then {_class = typeof _class};
 
     // vtol 0 = none, 1 = VTOL, 2 = STOVL, 3 = Semi VTOL, 4 = STOSL?
     private _result = getNumber(configFile >> "CfgVehicles" >> _class >> "vtol");
@@ -251,7 +251,7 @@ ALiVE_fnc_getAircraftRoles = {
         ["_class", "", ["",objNull]]
     ];
 
-    if (typeName _class == "OBJECT") then {_class = typeof _class};
+    if (_class isEqualType objNull) then {_class = typeof _class};
 
     // Attack aircraft have air to surface capability
     // Fighter aircraft have air to air capability
@@ -383,68 +383,68 @@ switch(_operation) do {
         };
     };
     case "debug": {
-        if (typeName _args == "BOOL") then {
+        if (_args isEqualType true) then {
             _logic setVariable ["debug", _args];
         } else {
             _args = _logic getVariable ["debug", false];
         };
-        if (typeName _args == "STRING") then {
+        if (_args isEqualType "") then {
                 if(_args == "true") then {_args = true;} else {_args = false;};
                 _logic setVariable ["debug", _args];
         };
-        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+        ASSERT_TRUE(_args isEqualType true,str _args);
 
         _result = _args;
     };
     case "createHQ": {
-        if (typeName _args == "BOOL") then {
+        if (_args isEqualType true) then {
             _logic setVariable ["createHQ", _args];
         } else {
             _args = _logic getVariable ["createHQ", false];
         };
-        if (typeName _args == "STRING") then {
+        if (_args isEqualType "") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
             _logic setVariable ["createHQ", _args];
         };
-        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+        ASSERT_TRUE(_args isEqualType true,str _args);
 
         _result = _args;
     };
     case "placeAA": {
-        if (typeName _args == "BOOL") then {
+        if (_args isEqualType true) then {
             _logic setVariable ["placeAA", _args];
         } else {
             _args = _logic getVariable ["placeAA", false];
         };
-        if (typeName _args == "STRING") then {
+        if (_args isEqualType "") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
             _logic setVariable ["placeAA", _args];
         };
-        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+        ASSERT_TRUE(_args isEqualType true,str _args);
 
         _result = _args;
     };
     case "placeAir": {
-        if (typeName _args == "BOOL") then {
+        if (_args isEqualType true) then {
             _logic setVariable ["placeAir", _args];
         } else {
             _args = _logic getVariable ["placeAir", false];
         };
-        if (typeName _args == "STRING") then {
+        if (_args isEqualType "") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
             _logic setVariable ["placeAir", _args];
         };
-        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+        ASSERT_TRUE(_args isEqualType true,str _args);
 
         _result = _args;
     };
     case "generateTasks": {
-        if (typeName _args == "BOOL") then {
+        if (_args isEqualType true) then {
             _logic setVariable ["generateTasks", _args];
         } else {
             _args = _logic getVariable ["generateTasks", false];
         };
-        if (typeName _args == "STRING") then {
+        if (_args isEqualType "") then {
             if (_args == "true") then {
                 _args = true;
             } else {
@@ -452,17 +452,17 @@ switch(_operation) do {
             };
             _logic setVariable ["generateTasks", _args];
         };
-        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+        ASSERT_TRUE(_args isEqualType true,str _args);
 
         _result = _args;
     };
     case "resupply": {
-        if (typeName _args == "BOOL") then {
+        if (_args isEqualType true) then {
             _logic setVariable [_operation, _args];
         } else {
             _args = _logic getVariable [_operation, false];
         };
-        if (typeName _args == "STRING") then {
+        if (_args isEqualType "") then {
             if (_args == "true") then {
                 _args = true;
             } else {
@@ -470,31 +470,31 @@ switch(_operation) do {
             };
             _logic setVariable [_operation, _args];
         };
-        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+        ASSERT_TRUE(_args isEqualType true,str _args);
 
         _result = _args;
     };
     case "persistent": {
-        if (typeName _args == "BOOL") then {
+        if (_args isEqualType true) then {
             _logic setVariable ["persistent", _args];
         } else {
             _args = _logic getVariable ["persistent", false];
         };
-        if (typeName _args == "STRING") then {
+        if (_args isEqualType "") then {
                 if(_args == "true") then {_args = true;} else {_args = false;};
                 _logic setVariable ["persistent", _args];
         };
-        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+        ASSERT_TRUE(_args isEqualType true,str _args);
 
         _result = _args;
     };
     case "pause": {
-        if(typeName _args != "BOOL") then {
+        if(!(_args isEqualTo true)) then {
             // if no new value was provided return current setting
             _args = [_logic,"pause",objNull,false] call ALIVE_fnc_OOsimpleOperation;
         } else {
                 // if a new value was provided set groups list
-                ASSERT_TRUE(typeName _args == "BOOL",str typeName _args);
+                ASSERT_TRUE(_args isEqualType true,str typeName _args);
 
                 private ["_state"];
                 _state = [_logic,"pause",objNull,false] call ALIVE_fnc_OOsimpleOperation;
@@ -507,33 +507,33 @@ switch(_operation) do {
         _result = _args;
     };
     case "airspace": {
-        if(typeName _args == "STRING") then {
+        if(_args isEqualType "") then {
             _args = [_args, " ", ""] call CBA_fnc_replace;
             _args = [_args, ","] call CBA_fnc_split;
             if(count _args > 0) then {
                 _logic setVariable [_operation, _args];
             };
         };
-        if(typeName _args == "ARRAY") then {
+        if(_args isEqualType []) then {
             _logic setVariable [_operation, _args];
         };
         _result = _logic getVariable [_operation, DEFAULT_AIRSPACE];
     };
     case "types": {
-        if(typeName _args == "STRING") then {
+        if(_args isEqualType "") then {
             _logic setVariable [_operation, call compile _args];
         };
-        if(typeName _args == "ARRAY") then {
+        if(_args isEqualType []) then {
             _logic setVariable [_operation, _args];
         };
 
         _result = _logic getVariable [_operation, DEFAULT_ATO_TYPES];
     };
     case "origTypes": {
-        if (typeName _args == "STRING") then {
+        if (_args isEqualType "") then {
             _logic setVariable [_operation, call compile _args];
         };
-        if (typeName _args == "ARRAY") then {
+        if (_args isEqualType []) then {
             _logic setVariable [_operation, _args];
         };
 
@@ -564,16 +564,16 @@ switch(_operation) do {
         _result = [_logic,_operation,_args,DEFAULT_REGISTRY_ID] call ALIVE_fnc_OOsimpleOperation;
     };
     case "isCarrier": {
-        if (typeName _args == "BOOL") then {
+        if (_args isEqualType true) then {
             _logic setVariable ["isCarrier", _args];
         } else {
             _args = _logic getVariable ["isCarrier", false];
         };
-        if (typeName _args == "STRING") then {
+        if (_args isEqualType "") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
             _logic setVariable ["isCarrier", _args];
         };
-        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+        ASSERT_TRUE(_args isEqualType true,str _args);
 
         _result = _args;
     };
@@ -588,7 +588,7 @@ switch(_operation) do {
     };
     case "airspaceOps": {
         _result = [];
-        if (typeName _args == "STRING") then {
+        if (_args isEqualType "") then {
             // Get ops for the airspace
             private _eventQueue = [_logic, "eventQueue"] call MAINCLASS;
             {
@@ -604,17 +604,17 @@ switch(_operation) do {
         if (isNil QGVAR(lastCAP)) then {
             GVAR(lastCAP) = [] call ALiVE_fnc_hashCreate;
         };
-        if (typeName _args == "STRING") then {
+        if (_args isEqualType "") then {
             _result = [GVAR(lastCAP), _args, 0] call ALiVE_fnc_hashGet;
         };
-        if (typename _args == "ARRAY") then {
+        if (_args isEqualType []) then {
             _result = [GVAR(lastCAP), _args select 0, _args select 1] call ALiVE_fnc_hashSet;
         };
     };
     case "resupplyList": {
         // Get the current resupplyList
         _result = _logic getVariable ["resupplyList",[]];
-        if (typename _args == "ARRAY") then {
+        if (_args isEqualType []) then {
             _result pushback _args;
             _logic setVariable ["resupplyList",_result];
         };
@@ -1026,7 +1026,7 @@ switch(_operation) do {
             private _enemyFaction = "BLU_F";
 
             // Target could be profiled aircraft, profile AA, non-profiled AA, building, HQ
-            if (typeName _target == "STRING") then {
+            if (_target isEqualType "") then {
                 private _targetProfile = [ALiVE_profileHandler, "getProfile", (_targets select 1)] call ALiVE_fnc_ProfileHandler;
                 if !(isNil "_targetProfile") then {
                     _destination = [_targetProfile,"position"] call ALiVE_fnc_hashGet;
@@ -1127,11 +1127,11 @@ switch(_operation) do {
 
             // Define enemy factions by getting enemy sides
             private _enemyFactions = [];
-            private _sides = ["EAST","WEST","RESISTANCE"];
+            private _sides = ["EAST","WEST","GUER"];
             private _sidesEnemy = [];
 
             {
-                if ((_side getfriend (call compile _x)) < 0.6) then {
+                if ((_side getfriend ([_x] call ALIVE_fnc_sideTextToObject)) < 0.6) then {
                     _sidesEnemy pushBack _x
                 };
             } foreach (_sides - [_side]);
@@ -1996,7 +1996,7 @@ switch(_operation) do {
                                 // TODO If aircraft are in mid air, get them to RTB?
 
                                 private _runway = [_vehicle, "airportID",""] call ALiVE_fnc_hashGet;
-                                if (typeName _runway == "SCALAR") then {
+                                if (_runway isEqualType 0) then {
                                     [_logic, "addRunway", _runway] call ALIVE_fnc_ATO;
                                 };
 
@@ -2105,7 +2105,7 @@ switch(_operation) do {
 
         private["_event","_type","_eventData"];
 
-        if(typeName _args == "ARRAY") then {
+        if(_args isEqualType []) then {
 
             _event = _args;
             _type = [_event, "type"] call ALIVE_fnc_hashGet;
@@ -2121,7 +2121,7 @@ switch(_operation) do {
         private["_debug","_event","_eventData","_eventQueue","_side","_factions","_eventFaction","_eventSide","_factionFound",
         "_moduleFactions","_eventPlayerID","_eventRequestID"];
 
-        if(typeName _args == "ARRAY") then {
+        if(_args isEqualType []) then {
 
             _event = _args;
             _eventData = [_event, "data"] call ALIVE_fnc_hashGet;
@@ -2282,7 +2282,7 @@ switch(_operation) do {
         private["_debug","_event","_eventData","_eventQueue","_side","_factions","_eventFaction","_eventSide","_factionFound",
         "_moduleFactions","_eventPlayerID","_eventRequestID","_eventCancelRequestID"];
 
-        if(typeName _args == "ARRAY") then {
+        if(_args isEqualType []) then {
 
             _event = _args;
             _eventData = [_event, "data"] call ALIVE_fnc_hashGet;
@@ -2578,7 +2578,7 @@ switch(_operation) do {
     // Handle ATO request
     case "ATO_REQUEST": {
 
-        if(typeName _args == "ARRAY") then {
+        if(_args isEqualType []) then {
 
             // EVENT DATA STRUCTURE is hash
             // type : 'ATO_REQUEST'
@@ -2636,7 +2636,7 @@ switch(_operation) do {
                 private _HQID = getText(configFile >> "CfgHQIdentities" >> _hqClass >> "name");
 
                 // Validate airspace
-                if (typeName _airspace == "STRING" && {_airspace == ""}) then {
+                if (_airspace isEqualType "" && {_airspace == ""}) then {
                     _airpsace = ([_logic, "airspace"] call MAINCLASS) select 0;
                 };
 
@@ -2733,7 +2733,7 @@ switch(_operation) do {
                             // DEBUG -------------------------------------------------------------------------------------
 
                             private _airspacePos = [];
-                            if (typeName _airspace == "STRING") then {
+                            if (_airspace isEqualType "") then {
                                 _airspacePos = getMarkerPos _airspace;
                             } else {
                                 _airspacePos = +_airspace;
@@ -2840,7 +2840,7 @@ switch(_operation) do {
                     private _airspaceAssets = [_logic, "airspaceAssets"] call MAINCLASS;
                     private _assets = [ALIVE_globalATO,_faction] call ALIVE_fnc_hashGet;
 
-                    if(typeName _assets == "STRING") then {
+                    if(_assets isEqualType "") then {
                         _assets = call compile _assets;
                     };
 
@@ -2980,7 +2980,7 @@ switch(_operation) do {
                             private _aircraft = [_assets, _profileID, ""] call ALiVE_fnc_hashGet;
 
                             // Add aircraft to maintenance
-                            if !(typeName _aircraft == "STRING") then {
+                            if !(_aircraft isEqualType "") then {
                                 [_aircraft,"maintenance",time] call ALiVE_fnc_hashSet;
                             };
 
@@ -3338,7 +3338,7 @@ switch(_operation) do {
         private _airspaceAssets = [_logic,"airspaceAssets"] call MAINCLASS;
 
         // Check to see if airspace name or position has been provided
-        if (typename _eventAirspace == "ARRAY") then {
+        if (_eventAirspace isEqualType []) then {
             private _tmpAirspace = "";
             {
                 if (_eventAirspace inArea _x) exitWith {
@@ -3612,7 +3612,7 @@ switch(_operation) do {
 
                                 // Spawn any event targets
                                 {
-                                    if (typeName _x == "STRING") then {
+                                    if (_x isEqualType "") then {
                                          private _targetProfile = [ALiVE_profileHandler, "getProfile", _x] call ALiVE_fnc_ProfileHandler;
                                          if !(isNil "_targetProfile") then {
                                             [_targetProfile,"spawnType",["preventDespawn"]] call ALiVE_fnc_hashSet;
@@ -3632,7 +3632,7 @@ switch(_operation) do {
                                 } foreach _eventTargets;
 
                                 // Work out distance to first target
-                                if (typeName (_eventTargets select 0) == "OBJECT") then {
+                                if ((_eventTargets select 0) isEqualType objNull) then {
                                     _eventPosition = position (_eventTargets select 0);
                                 } else {
                                     private _targetProfile = [ALiVE_profileHandler, "getProfile", (_eventTargets select 0)] call ALiVE_fnc_ProfileHandler;
@@ -3745,7 +3745,7 @@ switch(_operation) do {
                         // get the profile IDs for eventTargets (and convert any profiles to real targets)
                         _eventEnemyProfiles = [];
                         {
-                            if (typeName _x == "OBJECT") then {
+                            if (_x isEqualType objNull) then {
                                 if (_x getVariable ["profileID",""] != "") then {
                                     _eventEnemyProfiles pushback (_x getVariable "profileID");
                                 };

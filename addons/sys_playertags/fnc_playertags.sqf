@@ -123,10 +123,10 @@ switch(_operation) do {
                 waitUntil {!isNil QUOTE(ADDON) && {ADDON getVariable ["init", false]}};
 
                 // Defaults
-                playertags_debug = call compile (_logic getvariable ["debug","false"]);
-                playertags_group = call compile (_logic getvariable ["playertags_displaygroup_setting","true"]);
-                playertags_rank = call compile (_logic getvariable ["playertags_displayrank_setting","true"]);
-                playertags_invehicle = call compile (_logic getvariable ["playertags_invehicle_setting","false"]);
+                playertags_debug = (_logic getvariable ["debug","false"]) == "true";
+                playertags_group = (_logic getvariable ["playertags_displaygroup_setting","true"]) == "true";
+                playertags_rank = (_logic getvariable ["playertags_displayrank_setting","true"]) == "true";
+                playertags_invehicle = (_logic getvariable ["playertags_invehicle_setting","false"]) == "true";
                 playertags_distance = _logic getvariable ["playertags_distance_setting",20];
                 playertags_tolerance = _logic getvariable ["playertags_tolerance_setting",0.75];
                 playertags_scale = _logic getvariable ["playertags_scale_setting",0.65];
@@ -139,8 +139,8 @@ switch(_operation) do {
 
                 GVAR(RADIUS) = _logic getvariable ["playertags_distance_setting",20];
                 GVAR(STYLE) = _logic getvariable ["playertags_style_setting","default"];
-                GVAR(DEBUG) = call compile (_logic getvariable ["debug","false"]);
-                GVAR(ONVIEW) = call compile (_logic getvariable ["playertags_onview_setting","false"]);
+                GVAR(DEBUG) = (_logic getvariable ["debug","false"]) == "true";
+                GVAR(ONVIEW) = (_logic getvariable ["playertags_onview_setting","false"]) == "true";
 
                 // select method
                 switch (GVAR(STYLE)) do {

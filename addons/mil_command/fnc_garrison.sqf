@@ -32,9 +32,9 @@ _args = [_this, 1, 200, [-1,[]]] call BIS_fnc_param;
 _radius = _args;
 _onlyProfiles = false;
 
-if (typeName _args == "ARRAY") then {
+if (_args isEqualType []) then {
     _radius = [_args, 0, 200, [-1]] call BIS_fnc_param;
-    _onlyProfiles = call compile ([_args, 1, "false", [""]] call BIS_fnc_param);
+    _onlyProfiles = (_args param [1, "false", [""]]) == "true";
 };
 
 _id = [_profile,"profileID","error"] call ALiVE_fnc_HashGet;

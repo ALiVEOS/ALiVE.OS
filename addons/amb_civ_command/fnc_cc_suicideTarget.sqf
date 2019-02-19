@@ -58,13 +58,7 @@ switch (_state) do {
         private _agentCluster = [ALIVE_clusterHandler,"getCluster",_agentClusterID] call ALIVE_fnc_clusterHandler;
 
         private _targetSide = selectRandom (_args select 0);
-
-        //Thank you, BIS...
-        if (_targetSide in ["GUER","INDEP"]) then {_targetSide = RESISTANCE} else {
-            if (_targetSide in ["CIV","CIVILIAN"]) then {_targetSide = CIVILIAN} else {
-                _targetSide = call compile _targetSide;
-            };
-        };
+        _targetSide = [_targetSide] call ALIVE_fnc_sideTextToObject;
 
         private _target = [getPosASL _agent, 600, _targetSide] call ALIVE_fnc_getSideManOrPlayerNear;
 
