@@ -42,7 +42,7 @@ private _keys = [];
 private _values = [];
 private _data = [] call ALiVE_fnc_HashCreate;
 {
-    if (call compile (_x getvariable ["CQB_persistent","false"])) then {
+    if ((_x getvariable ["CQB_persistent","false"]) == "true") then {
         private _state = [_x,"state"] call ALiVE_fnc_CQB;
         private _houses = [_state,"houses"] call ALiVE_fnc_HashGet;
 

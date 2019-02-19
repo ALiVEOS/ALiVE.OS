@@ -95,7 +95,7 @@ class FSM
                                          "" \n
                                          "            _customValue = _activeScriptsSpawn + _activeScriptsExecVM + _activeScriptsExec + _activeScriptsExecFSM;" \n
                                          "        };" \n
-                                         "        default {_customValue = call compile format [""count %1"",_customCounter];};" \n
+                                         "        default {_customValue = count (missionNamespace getVariable _customCounter);};" \n
                                          "    };" \n
                                          "    _data = _data + [[_customCounter,_customValue]];" \n
                                          "" \n

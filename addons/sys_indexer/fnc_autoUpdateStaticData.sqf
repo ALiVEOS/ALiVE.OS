@@ -1,6 +1,6 @@
 // ALiVE_fnc_autoUpdateStaticData
 private ["_categories","_choice","_enabled","_ctrl","_arr"];
-// diag_log (_this);
+
 _ctrl = _this select 0;
 _choice = _this select 1;
 _enabled = _this select 2;
@@ -33,10 +33,11 @@ _categories = [
     "ALIVE_civilianConstructionBuildingTypes"
 ];
 
-if (_enabled == 1) then {
-    call compile format["%1 pushback ALiVE_wrp_model",(_categories select _choice)];
-} else {
-    call compile format["%1 = %1 - [ALiVE_wrp_model]",(_categories select _choice)];
-};
+private _update = missionNamespace getVariable (_categories select _choice);
 
-// systemchat format["%1 = %2",(_categories select _choice), call compile(_categories select _choice)];
+if (_enabled == 1) then {
+    _update pushback ALiVE_wrp_model; // Edits array in missionNamespace. No need to send back.
+} else {
+    _update = _update - [ALiVE_wrp_model]; // Creates copy of the array. Needs sending back to missionNamespace
+    missionNamespace setVariable [(_categories select _choice),_update];
+};

@@ -265,14 +265,14 @@ switch(_operation) do {
                         _listeners = [_filteredListeners,_type] call ALIVE_fnc_hashGet;
                         {
                             _listener = _x select 0;
-                            if(typeName _listener == "OBJECT") then {
+                            if(_listener isEqualType objNull) then {
                                 _class = _listener getVariable "class";
                             }else{
                                 _class = [_listener,"class"] call ALIVE_fnc_hashGet;
                             };
 
-                            if (typename _class == "STRING") then {
-                                _class = call compile _class;
+                            if (_class isEqualType "") then {
+                                _class = call compile _class; // TODO; find viable replacement for call compile
                             };
 
                             [_listener,"handleEvent",_event] call _class;
@@ -287,14 +287,14 @@ switch(_operation) do {
                         {
                             _listener = _x select 0;
 
-                            if(typeName _listener == "OBJECT") then {
+                            if(_listener isEqualType objNull) then {
                                 _class = _listener getVariable "class";
                             }else{
                                 _class = [_listener,"class"] call ALIVE_fnc_hashGet;
                             };
 
-                            if (typename _class == "STRING") then {
-                                _class = call compile _class;
+                            if (_class isEqualType "") then {
+                                _class = call compile _class; // TODO; find viable replacement for call compile
                             };
 
                             [_listener,"handleEvent",_event] call _class;

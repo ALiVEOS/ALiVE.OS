@@ -44,13 +44,13 @@ _selectSortValue = {_this};
 
 if ((count _this) > 1) then
 {
-   if ((typeName (_this select 1)) == "CODE") then
+   if (((_this select 1)) isEqualType {}) then
    {
       _selectSortValue = _this select 1;
    }
    else
    {
-      _selectSortValue = compile (_this select 1);
+      _selectSortValue = compile (_this select 1); // TODO; check viability of replacement
    };
 };
 

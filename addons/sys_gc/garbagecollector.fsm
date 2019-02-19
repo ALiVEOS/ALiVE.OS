@@ -42,8 +42,8 @@ class FSM
        "_collector = _this;" \n
        "_lastAnalyze = 0;" \n
        "_path = ""\x\alive\addons\sys_GC\"";" \n
-       "_interval = call compile (_collector getvariable ([""ALiVE_GC_INTERVAL"",""300""]));" \n
-       "_threshold = call compile (_collector getvariable ([""ALiVE_GC_THRESHHOLD"",""50""]));" \n
+       "_interval = parseNumber (_collector getvariable ([""ALiVE_GC_INTERVAL"",""300""]));" \n
+       "_threshold = parseNumber (_collector getvariable ([""ALiVE_GC_THRESHHOLD"",""50""]));" \n
        "_exitFSM = false;" \n
        "" \n
        "//Initialize the queue." \n

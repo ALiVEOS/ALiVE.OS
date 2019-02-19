@@ -34,7 +34,7 @@ params [
 // Set Data
 _unit = _data select 0;
 _side = (faction _unit) call ALiVE_fnc_FactionSide;
-_globalChance = call compile (format["ALiVE_MIL_OPCOM_INTELCHANCE_%1",_side]);
+_globalChance = missionnamespace getvariable (format["ALiVE_MIL_OPCOM_INTELCHANCE_%1",_side]);
 
 //Override from OPCOM module else use provided value (default off)
 _chance = if (!isnil "_globalChance") then {_globalChance} else {_chance};

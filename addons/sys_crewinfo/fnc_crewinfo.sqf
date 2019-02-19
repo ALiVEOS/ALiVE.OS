@@ -123,8 +123,8 @@ switch(_operation) do {
                 // Only on player clients
                 if (hasInterface) then {
 
-                    CREWINFO_DEBUG = call compile (_logic getvariable ["debug","false"]);
-                      CREWINFO_UILOC = call compile (_logic getvariable ["crewinfo_ui_setting","1"]);
+                    CREWINFO_DEBUG = (_logic getvariable ["debug","false"]) == "true";
+                    CREWINFO_UILOC = parseNumber (_logic getvariable ["crewinfo_ui_setting","1"]);
 
                     Waituntil {!isnil "CREWINFO_DEBUG" && {!isnil "CREWINFO_UILOC"}};
 
