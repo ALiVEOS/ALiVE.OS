@@ -7071,3 +7071,13 @@ ziegel_1_200x200_45_48
 ziegel_1_200x200_45_p103
 zr_dam_03_ep1
 zr_dam_04_ep1
+hag_grass
+hag_tree
+hag_bush
+hag_wheat
+hag_signs
+hag_sugar
+hag_corn
+hag_pond
+hag_rail
+hag_bridges
