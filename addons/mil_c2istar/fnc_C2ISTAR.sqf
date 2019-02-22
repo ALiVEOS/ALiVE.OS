@@ -353,6 +353,20 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "displayDiarySpotrep": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["displayDiarySpotrep", _args];
+        } else {
+            _args = _logic getVariable ["displayDiarySpotrep", false];
+        };
+        if (typeName _args == "STRING") then {
+                if(_args == "true") then {_args = true;} else {_args = false;};
+                _logic setVariable ["displayDiarySpotrep", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
     case "intelChance": {
         _result = [_logic,_operation,_args,DEFAULT_INTEL_CHANCE] call ALIVE_fnc_OOsimpleOperation;
     };

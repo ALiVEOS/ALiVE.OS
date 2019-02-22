@@ -146,6 +146,12 @@
 <Key ID="STR_ALIVE_C2ISTAR_DISPLAY_INTEL_COMMENT">
     <Original>Displays current events on the battlefield on the map</Original>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_SPOTREP_DIARY_ENTRIES">
+    <Original>Spotrep Diary Entries:</Original>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SPOTREP_DIARY_ENTRIES_COMMENT">
+    <Original>Allow diary entries when creating Spotreps</Original>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_INTEL_CHANCE">
     <Original>Intel Coverage:</Original>
 </Key>

@@ -294,12 +294,13 @@ switch (_operation) do {
         case "createspotrep": {
             // Handles creating a spotrep on the map
             // Accepts a hash as input (either from loading or from UI)
-            private ["_spotrepName","_spotrepHash","_check"];
+            private ["_spotrepName","_spotrepHash","_check","_logic"];
             _spotrepName = _args select 0;
             _spotrepHash = _args select 1;
             _check = false;
             _result = false;
-
+ 						_logic = ALIVE_MIL_C2ISTAR;
+ 						
             LOG(str QGVAR(callsign));
 
             if (hasInterface) then {
@@ -310,7 +311,7 @@ switch (_operation) do {
                     _check = true;
                 };
 
-                if (_check) then {
+                if (_check && (_logic getvariable ["displayDiarySpotrep",false] == "true")) then {
                     [
                         _spotrepName,
                         [_spotrepHash, QGVAR(callsign)] call ALIVE_fnc_hashGet,

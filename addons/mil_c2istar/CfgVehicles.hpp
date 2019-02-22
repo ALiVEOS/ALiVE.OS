@@ -360,6 +360,26 @@ class CfgVehicles {
                                     };
                             };
                     };
+                    class displayDiarySpotrep : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_displayDiarySpotrep";
+                            displayName = "$STR_ALIVE_C2ISTAR_SPOTREP_DIARY_ENTRIES";
+                            tooltip = "$STR_ALIVE_C2ISTAR_SPOTREP_DIARY_ENTRIES_COMMENT";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class Yes
+                                    {
+                                            name = "Yes";
+                                            value = "true";
+                                    };
+                                    class No
+                                    {
+                                            name = "No";
+                                            value = "false";
+                                    };
+                            };
+                    };
                     class intelChance : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_intelChance";
