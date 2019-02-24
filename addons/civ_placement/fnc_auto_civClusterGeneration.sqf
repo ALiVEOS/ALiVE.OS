@@ -196,7 +196,7 @@ _clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
 private _worldName = toLower(worldName);
 private _clusterCount = 0;
 
-"ALiVEClient" callExtension format["clusterData~%1|%2|#include "\x\alive\addons\civ_placement\script_component.hpp"",worldName, "civ"];
+"ALiVEClient" callExtension format["clusterData~%1|%2|#include ""\x\alive\addons\civ_placement\script_component.hpp""",worldName, "civ"];
 
 "ALiVEClient" callExtension format["clusterData~%1|%2|ALIVE_clusterBuild = [CLUSTERBUILD];",worldName, "civ"];
 
