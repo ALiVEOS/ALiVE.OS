@@ -367,7 +367,7 @@ if (!_simAttacks) then {
 
                                     // Execute statements at the end, needs review of any variables in hashes
                                     if (_executeStatements) then {
-                                        if((_statements isEqualType []) && !(_statements isEqualTo [])) then {
+                                        if((_statements isEqualType []) && {count _statements >= 2}) then {
                                             private _onCompletion = _statements select 1;
                                             call compile _onCompletion;
                                         } else {
