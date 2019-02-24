@@ -131,7 +131,7 @@ _worldName = toLower(worldName);
 
 _clusterCount = 0;
 
-"ALiVEClient" callExtension format["clusterData~%1|%2|#include "\x\alive\addons\civ_placement\script_component.hpp"",worldName, "mil"];
+"ALiVEClient" callExtension format["clusterData~%1|%2|#include ""\x\alive\addons\civ_placement\script_component.hpp""",worldName, "mil"];
 
 "ALiVEClient" callExtension format["clusterData~%1|%2|ALIVE_clusterBuild = [CLUSTERBUILD];",worldName, "mil"];
 
