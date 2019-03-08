@@ -292,6 +292,12 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_CQB_SPAWNDISTANCE_COMMENT";
                                 defaultValue = 700;
                         };
+                        class CQB_spawndistanceStatic
+                        {
+                                displayName = "$STR_ALIVE_CQB_SPAWNDISTANCESTATIC";
+                                description = "$STR_ALIVE_CQB_SPAWNDISTANCESTATIC_COMMENT";
+                                defaultValue = 1200;
+                        };
                         class CQB_spawndistanceHeli
                         {
                                 displayName = "$STR_ALIVE_CQB_SPAWNDISTANCEHELI";

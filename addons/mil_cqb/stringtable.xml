@@ -104,6 +104,12 @@
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCE_COMMENT">
     <Original>Spawn distance for ground units.  Note that spawn distance for strategic placements is a factor 1.4 of this value</Original>
 </Key>
+<Key ID="STR_ALIVE_CQB_SPAWNDISTANCESTATIC">
+    <Original>Spawn Static Weapon:</Original>
+</Key>
+<Key ID="STR_ALIVE_CQB_SPAWNDISTANCESTATIC_COMMENT">
+    <Original>Spawn distance for static weapons.  Note that spawn distance for strategic placements is a factor 1.4 of this value</Original>
+</Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEHELI">
     <Original>Spawn Heli:</Original>
 </Key>
