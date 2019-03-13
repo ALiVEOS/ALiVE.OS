@@ -2815,7 +2815,7 @@ switch(_operation) do {
                         // send a message to all side players from HQ
                         private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
                         [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
-                    }
+                    };
                 };
             };
 
