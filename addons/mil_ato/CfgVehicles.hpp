@@ -175,6 +175,25 @@ class CfgVehicles
                                 };
                         };
                 };
+                class broadcastOnRadio
+                {
+                        displayName = "$STR_ALIVE_ATO_BROADCASTONRADIO";
+                        description = "$STR_ALIVE_ATO_BROADCASTONRADIO_COMMENT";
+                        class Values
+                        {
+                                class Yes
+                                {
+                                        name = "Yes";
+                                        value = true;
+                                        default = 1;
+                                };
+                                class No
+                                {
+                                        name = "No";
+                                        value = false;
+                                };
+                        };
+                };
         };
         class ModuleDescription
         {

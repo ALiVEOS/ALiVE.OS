@@ -396,6 +396,20 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "broadcastOnRadio": {
+        if (_args isEqualType true) then {
+            _logic setVariable ["broadcastOnRadio", _args];
+        } else {
+            _args = _logic getVariable ["broadcastOnRadio", false];
+        };
+        if (_args isEqualType "") then {
+                if(_args == "true") then {_args = true;} else {_args = false;};
+                _logic setVariable ["broadcastOnRadio", _args];
+        };
+        ASSERT_TRUE(_args isEqualType true,str _args);
+
+        _result = _args;
+    };
     case "createHQ": {
         if (_args isEqualType true) then {
             _logic setVariable ["createHQ", _args];
@@ -2590,6 +2604,7 @@ switch(_operation) do {
 
             private _debug = [_logic, "debug"] call MAINCLASS;
             private _types = [_logic, "types"] call MAINCLASS;
+            private _broadcastOnRadio = [_logic, "broadcastOnRadio"] call MAINCLASS;
 
             private _event = _args;
             private _eventData = [_event, "data"] call ALIVE_fnc_hashGet;
@@ -2740,10 +2755,12 @@ switch(_operation) do {
                             };
 
                             //Radio Broadcast
-                            private _message = format[localize "STR_ALIVE_ATO_REQUEST_ACKNOWLEDGED", _HQID, _factionName, _eventType, mapGridPosition _airspacePos];
-                            // send a message to all side players from HQ
-                            private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
-                            [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                            if (_broadcastOnRadio) then {
+                                private _message = format[localize "STR_ALIVE_ATO_REQUEST_ACKNOWLEDGED", _HQID, _factionName, _eventType, mapGridPosition _airspacePos];
+                                // send a message to all side players from HQ
+                                private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                                [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                            };
 
                             // trigger analysis
                             [_logic,"onDemandAnalysis"] call MAINCLASS;
@@ -2771,12 +2788,13 @@ switch(_operation) do {
                             private _requestID = _eventData select 5;
                             private _playerID = _eventData select 6;
 
-
                             //Radio Broadcast
-                            private _message = format[localize "STR_ALIVE_ATO_UNAVAILABLE", _HQID];
-                            // send a message to all side players from HQ
-                            private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
-                            [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                            if (_broadcastOnRadio) then {
+                                private _message = format[localize "STR_ALIVE_ATO_UNAVAILABLE", _HQID];
+                                // send a message to all side players from HQ
+                                private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                                [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                            };
 
                             // respond to player request
                             private _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Military Air Component Commander","DENIED_ATO_UNAVAILABLE"] call ALIVE_fnc_event;
@@ -2792,11 +2810,12 @@ switch(_operation) do {
                     // DEBUG -------------------------------------------------------------------------------------
 
                     //Radio Broadcast
-                    private _message = format[localize "STR_ALIVE_ATO_OVERRUN", _HQID, _factionName, mapGridPosition _HQ];
-                    // send a message to all side players from HQ
-                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
-                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
-
+                    if (_broadcastOnRadio) then {
+                        private _message = format[localize "STR_ALIVE_ATO_OVERRUN", _HQID, _factionName, mapGridPosition _HQ];
+                        // send a message to all side players from HQ
+                        private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                        [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    }
                 };
             };
 
@@ -3276,6 +3295,7 @@ switch(_operation) do {
     case "monitorEvent": {
 
         private _debug = [_logic, "debug"] call MAINCLASS;
+        private _broadcastOnRadio = [_logic, "broadcastOnRadio"] call MAINCLASS;
         private _registryID = [_logic, "registryID"] call MAINCLASS;
         private _event = _args select 0;
         private _requestAnalysis = _args select 1;
@@ -3811,14 +3831,15 @@ switch(_operation) do {
                             // DEBUG -------------------------------------------------------------------------------------
 
                             //Radio Broadcast
-                            private _message = format[localize "STR_ALIVE_ATO_REQUEST_DENIED", _HQ, _eventType, mapGridPosition _eventPosition];
-                            // send a message to all side players from HQ
-                            private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
-                            [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                            if (_broadcastOnRadio) then {
+                                private _message = format[localize "STR_ALIVE_ATO_REQUEST_DENIED", _HQ, _eventType, mapGridPosition _eventPosition];
+                                // send a message to all side players from HQ
+                                private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                                [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                            };
 
                             // nothing to do so cancel..
                             [_logic, "removeEvent", _eventID] call MAINCLASS;
-
                         };
 
                     };
@@ -3846,11 +3867,13 @@ switch(_operation) do {
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
 
                 if(_count == 0) exitWith {
-                    private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
-                    private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
-                    // send a message to all side players from HQ
-                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
-                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    if (_broadcastOnRadio) then {
+                        private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
+                        private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
+                        // send a message to all side players from HQ
+                        private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                        [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    };
 
                     if(_playerRequested) then {
                         private _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Logistics","REQUEST_LOST"] call ALIVE_fnc_event;
@@ -4172,13 +4195,15 @@ switch(_operation) do {
                     private _grp = group _vehicle;
 
                     //Radio Broadcast
-                    private _callsign = groupID _grp;
+                    if (_broadcastOnRadio) then {
+                        private _callsign = groupID _grp;
 
-                    if (_callsign != "") then {
-                        private _message = format[localize "STR_ALIVE_ATO_START", _HQ, _callsign, _eventType, mapGridPosition _eventPosition];
-                        // send a message to all side players from HQ
-                        private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
-                        [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                        if (_callsign != "") then {
+                            private _message = format[localize "STR_ALIVE_ATO_START", _HQ, _callsign, _eventType, mapGridPosition _eventPosition];
+                            // send a message to all side players from HQ
+                            private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                            [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                        };
                     };
 
                     // Wait for driver or time expiration
@@ -4459,12 +4484,13 @@ switch(_operation) do {
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
 
                 if(_count == 0) exitWith {
-
-                    private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
-                    private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
-                    // send a message to all side players from HQ
-                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
-                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    if (_broadcastOnRadio) then {
+                        private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
+                        private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
+                        // send a message to all side players from HQ
+                        private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                        [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    };
 
                     // Unlock runway
                     private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
@@ -4528,11 +4554,13 @@ switch(_operation) do {
                     // DEBUG -------------------------------------------------------------------------------------
 
                     // Radio Broadcast
-                    private _callsign = groupID (group _vehicle);
-                    private _message = format[localize "STR_ALIVE_ATO_ON_STATION", _HQ, _callsign, mapGridPosition _vehicle, _eventType];
-                    // send a message to all side players from HQ
-                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
-                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    if (_broadcastOnRadio) then {
+                        private _callsign = groupID (group _vehicle);
+                        private _message = format[localize "STR_ALIVE_ATO_ON_STATION", _HQ, _callsign, mapGridPosition _vehicle, _eventType];
+                        // send a message to all side players from HQ
+                        private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                        [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    };
 
                     // respond to player request
                     if(_playerRequested) then {
@@ -4556,11 +4584,13 @@ switch(_operation) do {
                 if(_count == 0) exitWith {
 
                     //Radio Broadcast
-                    private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
-                    private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
-                    // send a message to all side players from HQ
-                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
-                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    if (_broadcastOnRadio) then {
+                        private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
+                        private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
+                        // send a message to all side players from HQ
+                        private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                        [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    };
 
                     if(_playerRequested) then {
                         private _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"ATO","REQUEST_LOST"] call ALIVE_fnc_event;
@@ -4632,14 +4662,16 @@ switch(_operation) do {
                     [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
 
                     // Radio broadcast
-                    if !("ItemRadio" in (assignedItems driver _vehicle)) then {
-                        driver _vehicle addItem "ItemRadio";
+                    if (_broadcastOnRadio) then {
+                        if !("ItemRadio" in (assignedItems driver _vehicle)) then {
+                            driver _vehicle addItem "ItemRadio";
+                        };
+                        private _callsign = groupID (group _vehicle);
+                        private _message = format[localize _radioChoice, _eventType];
+                        // send a message to all side players from HQ
+                        private _radioBroadcast = [driver _vehicle,_message,"side",_sideObject,true];
+                        [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
                     };
-                    private _callsign = groupID (group _vehicle);
-                    private _message = format[localize _radioChoice, _eventType];
-                    // send a message to all side players from HQ
-                    private _radioBroadcast = [driver _vehicle,_message,"side",_sideObject,true];
-                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
 
                     [_event, "state", "aircraftReturn"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
@@ -4655,11 +4687,13 @@ switch(_operation) do {
                 if(_count == 0) exitWith {
 
                     // Radio Broadcast
-                    private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
-                    private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
-                    // send a message to all side players from HQ
-                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
-                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    if (_broadcastOnRadio) then {
+                        private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
+                        private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
+                        // send a message to all side players from HQ
+                        private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                        [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    };
 
                     // set state to event complete
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
@@ -4727,11 +4761,13 @@ switch(_operation) do {
                 if(_count == 0) exitWith {
 
                     // Radio Broadcast
-                    private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
-                    private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
-                    // send a message to all side players from HQ
-                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
-                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    if (_broadcastOnRadio) then {
+                        private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
+                        private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
+                        // send a message to all side players from HQ
+                        private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                        [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    };
 
                     // Unlock runway
                     if (_isPlane ) then {
@@ -4863,11 +4899,13 @@ switch(_operation) do {
                 if(_count == 0) exitWith {
 
                     // Radio Broadcast
-                    private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
-                    private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
-                    // send a message to all side players from HQ
-                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
-                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    if (_broadcastOnRadio) then {
+                        private _className = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
+                        private _message = format[localize "STR_ALIVE_ATO_AIRCRAFT_LOST", _HQ, _className, _eventType];
+                        // send a message to all side players from HQ
+                        private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                        [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    };
 
                     // Unlock runway
                     private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
@@ -4916,11 +4954,13 @@ switch(_operation) do {
                     // DEBUG -------------------------------------------------------------------------------------
 
                     // Radio Broadcast
-                    private _callsign = groupID _grp;
-                    private _message = format[localize "STR_ALIVE_ATO_MISSION_COMPLETE", _HQ, _callsign, _eventType];
-                    // send a message to all side players from HQ
-                    private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
-                    [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    if (_broadcastOnRadio) then {
+                        private _callsign = groupID _grp;
+                        private _message = format[localize "STR_ALIVE_ATO_MISSION_COMPLETE", _HQ, _callsign, _eventType];
+                        // send a message to all side players from HQ
+                        private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
+                        [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+                    };
 
                     _vehicle setVariable [QGVAR(LANDED),false];
 

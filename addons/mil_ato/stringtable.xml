@@ -20,6 +20,12 @@
 <Key ID="STR_ALIVE_ATO_PERSISTENT_COMMENT">
     <Original>Enables external Database persistence</Original>
 </Key>
+<Key ID="STR_ALIVE_ATO_BROADCASTONRADIO">
+    <Original>Radio Messages:</Original>
+</Key>
+<Key ID="STR_ALIVE_ATO_BROADCASTONRADIO_COMMENT">
+    <Original>Broadcast radio messages on ATO activity</Original>
+</Key>
 <Key ID="STR_ALIVE_ATO_FACTION">
     <Original>Faction:</Original>
 </Key>
