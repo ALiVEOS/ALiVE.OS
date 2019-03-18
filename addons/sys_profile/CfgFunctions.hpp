@@ -191,11 +191,6 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_profileSpawner.sqf";
                 RECOMPILE;
             };
-            class profileDespawner {
-                description = "profileDespawner";
-                file = "\x\alive\addons\sys_profile\fnc_profileDespawner.sqf";
-                RECOMPILE;
-            };
             class getNearProfiles {
                 description = "getNearProfiles";
                 file = "\x\alive\addons\sys_profile\fnc_getNearProfiles.sqf";

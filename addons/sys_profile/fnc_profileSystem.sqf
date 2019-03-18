@@ -248,8 +248,6 @@ switch(_operation) do {
     };
 
     case "destroy": {
-        private ["_profileSimulatorFSM"];
-
         [_logic, "debug", false] call MAINCLASS;
         if (isServer) then {
 
@@ -258,9 +256,6 @@ switch(_operation) do {
 
             _profileSimulatorPerFrameID call CBA_fnc_removePerFrameHandler;
             _profileSpawnerPerFrameID call CBA_fnc_removePerFrameHandler;
-
-            _profileSimulatorFSM = [_logic, "simulator_FSM"] call ALiVE_fnc_HashGet;
-            _profileSimulatorFSM setFSMVariable ["_destroy",true];
 
             [ALIVE_commandRouter, "pause", true] call ALIVE_fnc_commandRouter;
             [ALIVE_liveAnalysis, "pause", true] call ALIVE_fnc_liveAnalysis;
