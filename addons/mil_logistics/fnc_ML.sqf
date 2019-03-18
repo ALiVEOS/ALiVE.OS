@@ -5296,6 +5296,9 @@ switch(_operation) do {
             _currentPosition = position _leader;
             _currentWaypoint = currentWaypoint _group;
             _waypoints = waypoints _group;
+
+            if (count _waypoints == 0) exitWith {_waypointCompleted = true};
+
             _currentWaypoint = _waypoints select ((count _waypoints)-1);
 
             if!(isNil "_currentWaypoint") then {
