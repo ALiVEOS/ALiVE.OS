@@ -907,22 +907,23 @@ if (!_simAttacks) then {
             // remove crew from commanding entity
 
             private _vehAssignments = _commandingEntity select 2 select 7;
-            private _vehicleID = _subordinateVehicle select 2 select 4;
 
-            private _vehAssignment = [_vehAssignments,_vehicleID] call ALiVE_fnc_hashGet;
-            private _unitAssignments = +(_vehAssignment param [2, [], [[]]]);
+            if (count (_vehAssignments select 1) > 0) then {
+                private _vehicleID = _subordinateVehicle select 2 select 4;
 
-            if !(_unitAssignments isEqualType []) then {
-                _unitAssignments = [];
-            };
+                private _vehAssignment = [_vehAssignments,_vehicleID] call ALiVE_fnc_hashGet;
+                private _unitAssignments = +(_vehAssignment param [2, [], [[]]]);
 
-            reverse _unitAssignments; // must remove in reverse order
+                reverse _unitAssignments; // must remove in reverse order
 
-            {
                 {
-                    [_commandingEntity,"removeUnit", _x] call ALiVE_fnc_profileEntity
-                } foreach _x;
-            } foreach _unitAssignments;
+                    {
+                        [_commandingEntity,"removeUnit", _x] call ALiVE_fnc_profileEntity
+                    } foreach _x;
+                } foreach _unitAssignments;
+            } else {
+                diag_log "FIXME: _vehAssignments is empty while we expect it not to be?!";
+            };
 
             // unassign vehicle from entity
 
