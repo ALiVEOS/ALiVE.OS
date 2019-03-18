@@ -97,7 +97,7 @@ switch(_operation) do {
     case "start": {
 
         private["_debug","_persistent","_plotSectors","_syncMode","_syncedUnits","_spawnRadius","_spawnTypeJetRadius","_spawnTypeHeliRadius",
-        "_activeLimiter","_spawnCycleTime","_despawnCycleTime","_combatRate","_profileSimulatorFSM",
+        "_activeLimiter","_spawnCycleTime","_despawnCycleTime","_combatRate",
         "_sectors","_persistent","_file","_pathfinding"];
 
         if (isServer) then {

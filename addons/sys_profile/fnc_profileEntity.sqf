@@ -1183,7 +1183,6 @@ switch(_operation) do {
                 [_logic,"active", false] call ALIVE_fnc_hashSet;
 
                 // update profile waypoints before despawn
-                [_logic,"clearWaypoints"] call MAINCLASS;
                 [_logic,_group] call ALIVE_fnc_waypointsToProfileWaypoints;
 
                 [_logic] call ALIVE_fnc_vehicleAssignmentsToProfileVehicleAssignments;
