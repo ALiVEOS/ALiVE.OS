@@ -51,6 +51,7 @@ ARJay
 #define DEFAULT_SIZE_FILTER "0"
 #define DEFAULT_PRIORITY_FILTER "0"
 #define DEFAULT_AMBIENT_VEHICLE_AMOUNT "0.2"
+#define DEFAULT_AMBIENT_GUARD_AMOUNT "1"
 #define DEFAULT_HQ_BUILDING objNull
 #define DEFAULT_HQ_CLUSTER []
 #define DEFAULT_NO_TEXT ""
@@ -154,6 +155,9 @@ switch(_operation) do {
     // Return the Ambient Vehicle Amount
     case "ambientVehicleAmount": {
         _result = [_logic,_operation,_args,DEFAULT_AMBIENT_VEHICLE_AMOUNT] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "guardProbability": {
+        _result = [_logic,_operation,_args,DEFAULT_AMBIENT_GUARD_AMOUNT] call ALIVE_fnc_OOsimpleOperation;
     };
     case "createHQ": {
             if (typeName _args == "BOOL") then {
@@ -629,6 +633,8 @@ switch(_operation) do {
             _airClusters = [_logic, "objectivesAir"] call MAINCLASS;
             _heliClusters = [_logic, "objectivesHeli"] call MAINCLASS;
             _vehicleClusters = [_logic, "objectivesVehicle"] call MAINCLASS;
+
+            private _guardProbability = parseNumber([_logic, "guardProbability"] call MAINCLASS);
 
             _customInfantryCount = [_logic, "customInfantryCount"] call MAINCLASS;
 
@@ -1452,10 +1458,11 @@ switch(_operation) do {
                     _size = [_x, "size"] call ALIVE_fnc_hashGet;
 
                     //Default guards (place always)
-                    if(count _infantryGroups > 0) then {
+                    if(count _infantryGroups > 0 && random(1) < _guardProbability) then {
+
                         _guardGroup = (selectRandom _infantryGroups);
                         _guards = [_guardGroup, _center, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
-
+                        // ["ALIVE MP [%2] - Placing Guards - %1",_guardGroup, _guardProbability] call ALIVE_fnc_dump;
                         //ARJay, here we could place the default patrols/garrisons instead of the static garrisson if you like to (same is in CIV MP)
                         {
                             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
@@ -1542,13 +1549,16 @@ switch(_operation) do {
                         };
                     };
                 } forEach _clusters;
+
             }else{
                 ["ALIVE MP - Warning no usable groups found to use, the faction (%1) may be faulty.", _faction] call ALIVE_fnc_dumpR;
             };
 
+            ["ALIVE MP %2 - Total profiles created: %1",_countProfiles, _faction] call ALIVE_fnc_dump;
+
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE MP - Total profiles created: %1",_countProfiles] call ALIVE_fnc_dump;
+                //["ALIVE MP - Total profiles created: %1",_countProfiles] call ALIVE_fnc_dump;
                 ["ALIVE MP - Placement completed"] call ALIVE_fnc_dump;
                 [] call ALIVE_fnc_timer;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;

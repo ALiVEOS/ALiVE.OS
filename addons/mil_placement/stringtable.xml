@@ -213,19 +213,25 @@
     <Original>Place ambient vehicles</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_COMMENT">
-    <Original>Place ambeint vehicles in locations</Original>
+    <Original>Place ambient vehicles in locations</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_NONE">
-    <Original>No ambient vehicles</Original>
+    <Original>None</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_LOW">
-    <Original>Low ambient vehicles</Original>
+    <Original>Low</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_MEDIUM">
-    <Original>Medium ambient vehicles</Original>
+    <Original>Medium</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_HIGH">
-    <Original>High ambient vehicles</Original>
+    <Original>High</Original>
+</Key>
+<Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT">
+    <Original>Place ambient guards</Original>
+</Key>
+<Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_COMMENT">
+    <Original>Place ambient guards in locations (default is high)</Original>
 </Key>
 <Key ID="STR_ALIVE_MP_USAGE">
     <Original>Place the Military Placement module in the editor, select the desired Size, Weighting and Faction from the drop down. Custom factions can be entered in the text box (separated by a comma). These will overwrite the default factions in the drop down.</Original>
