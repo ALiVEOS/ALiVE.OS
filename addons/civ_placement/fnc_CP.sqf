@@ -51,6 +51,7 @@ ARJay
 #define DEFAULT_READINESS_LEVEL "1"
 #define DEFAULT_RB "10"
 #define DEFAULT_SEAPATROL_CHANCE 0
+#define DEFAULT_AMBIENT_GUARD_AMOUNT "1"
 
 private ["_logic","_operation","_args","_result"];
 
@@ -139,6 +140,9 @@ switch(_operation) do {
         ASSERT_TRUE(typeName _args == "SCALAR",str _args);
 
         _result = _args;
+    };
+    case "guardProbability": {
+        _result = [_logic,_operation,_args,DEFAULT_AMBIENT_GUARD_AMOUNT] call ALIVE_fnc_OOsimpleOperation;
     };
     case "customInfantryCount": {
         _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
@@ -688,6 +692,8 @@ switch(_operation) do {
 
             _clusters = [_logic, "objectives"] call MAINCLASS;
 
+            private _guardProbability = parseNumber([_logic, "guardProbability"] call MAINCLASS);
+
             _customInfantryCount = [_logic, "customInfantryCount"] call MAINCLASS;
 
             if(_customInfantryCount == "") then {
@@ -1004,10 +1010,10 @@ switch(_operation) do {
                 _center = [_x, "center"] call ALIVE_fnc_hashGet;
                 _size = [_x, "size"] call ALIVE_fnc_hashGet;
 
-                if(count _infantryGroups > 0) then {
+                if(count _infantryGroups > 0 && random(1) < _guardProbability) then {
                     _guardGroup = (selectRandom _infantryGroups);
                     _guards = [_guardGroup, _center, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
-
+                    // ["ALIVE MP [%2] - Placing Guards - %1",_guardGroup, _guardProbability] call ALIVE_fnc_dump;
                     //ARJay, here we could place the default patrols/garrisons instead of the static garrisson if you like to (same is in CIV MP)
                     {
                         if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
@@ -1101,10 +1107,10 @@ switch(_operation) do {
 
             } forEach _clusters;
 
+            ["ALIVE CP %2 - Total profiles created: %1",_countProfiles, _faction] call ALIVE_fnc_dump;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE CP - Total profiles created: %1",_countProfiles] call ALIVE_fnc_dump;
                 ["ALIVE CP - Placement completed"] call ALIVE_fnc_dump;
                 [] call ALIVE_fnc_timer;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;

@@ -230,4 +230,10 @@
 <Key ID="STR_ALIVE_CP_PLACE_SEAPATROLS_COMMENT">
     <Original>The chance of naval units patrolling near marine objectives</Original>
 </Key>
+<Key ID="STR_ALIVE_CP_AMBIENT_GUARD_AMOUNT">
+    <Original>Place ambient guards</Original>
+</Key>
+<Key ID="STR_ALIVE_CP_AMBIENT_GUARD_AMOUNT_COMMENT">
+    <Original>Place ambient guards at objectives (default is high)</Original>
+</Key>
 </Container></Package></Project>
