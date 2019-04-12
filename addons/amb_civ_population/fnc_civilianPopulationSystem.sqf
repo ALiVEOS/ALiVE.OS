@@ -131,7 +131,7 @@ switch(_operation) do {
             [_logic,"startupComplete",true] call ALIVE_fnc_hashSet;
 
             // start the cluster activator
-            private _clusterActivatorFSM = [_logic,_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\amb_civ_population\clusterActivator_v2.fsm";
+            private _clusterActivatorFSM = [_logic,_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\amb_civ_population\clusterActivator.fsm";
             [_logic,"activator_FSM",_clusterActivatorFSM] call ALIVE_fnc_hashSet;
 
             // start listening for events
