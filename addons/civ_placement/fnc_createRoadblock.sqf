@@ -134,7 +134,10 @@ for "_j" from 1 to (count _roadpoints) do {
     _result pushback _roadpos;
 
     // Place a vehicle
-    _vehtype = (selectRandom ([1, _fac, "Car"] call ALiVE_fnc_findVehicleType));
+    private _vehicleTypes = [1, _fac, "Car"] call ALiVE_fnc_findVehicleType;
+    _vehicleTypes = _vehicleTypes - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
+
+    _vehtype = selectRandom _vehicleTypes;
     if (!isNil "_vehtype") then {
         if !(isnil "ALiVE_ProfileHandler") then {
             _vehicle = [_vehtype, [_fac call ALiVE_fnc_factionSide] call ALiVE_fnc_sideToSideText, _fac, [position _roadpos, 10,30,2,0,5,0] call BIS_fnc_findsafepos, _direction, true, _fac] call ALiVE_fnc_createProfileVehicle;
