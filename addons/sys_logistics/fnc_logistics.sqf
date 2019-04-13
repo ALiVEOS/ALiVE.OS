@@ -505,6 +505,8 @@ switch (_operation) do {
             _object = [_args, 0, objNull, [objNull]] call BIS_fnc_param;
             _container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
 
+            // if (isNull _container) then {_container = _object};
+
             _objectID = [_logic,"id",_object] call ALiVE_fnc_logistics;
             _containerID = [_logic,"id",_container] call ALiVE_fnc_logistics;
 
@@ -759,8 +761,8 @@ switch (_operation) do {
 
             _id = _object addAction [
                 _text,
-                {[MOD(SYS_LOGISTICS), (_this select 3 select 0), _this call (_this select 3 select 1), 
-                    _this call (_this select 3 select 2)] call ALiVE_fnc_logistics},
+                {[MOD(SYS_LOGISTICS), (_this select 3 select 0), [_this call (_this select 3 select 1),
+                    _this call (_this select 3 select 2)]] call ALiVE_fnc_logistics},
                 [_operation,_input,_container],
                 1,
                 false,
