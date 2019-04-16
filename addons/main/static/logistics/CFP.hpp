@@ -1,4 +1,5 @@
 #include "CFP_B_AFARMY_Logistics.hpp"
+#include "CFP_B_AFGPOLICE_Logistics.hpp"
 #include "CFP_B_CAF_Logistics.hpp"
 #include "CFP_B_CDF_SNW_Logistics.hpp"
 #include "CFP_B_CZARMY_DES_Logistics.hpp"
