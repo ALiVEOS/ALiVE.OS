@@ -660,7 +660,7 @@ switch(_operation) do {
             // Load static data
             call ALiVE_fnc_staticDataHandler;
 
-            // Spawn ambient vehicles
+            // Place ambient vehicles
 
             private ["_vehicleClass"];
 
@@ -710,7 +710,7 @@ switch(_operation) do {
                         //["COUNT BUILDINGS: %1",_countBuildings] call ALIVE_fnc_dump;
                         //["CHANCE: %1",_parkingChance] call ALIVE_fnc_dump;
 
-/*                        if(_countBuildings > 50) then {
+                        /*if(_countBuildings > 50) then {
                             _supportMax = 3;
                             _parkingChance = 0.1 * _ambientVehicleAmount;
                         };
@@ -739,7 +739,7 @@ switch(_operation) do {
                             _supportMax = 0;
                             _parkingChance = 0.6 * _ambientVehicleAmount;
                         };
-*/
+                        */
                         //["SUPPORT MAX: %1",_supportMax] call ALIVE_fnc_dump;
                         //["CHANCE: %1",_parkingChance] call ALIVE_fnc_dump;
 
@@ -786,7 +786,7 @@ switch(_operation) do {
                 };
             };
 
-
+            // Place ambient civilians
 
             // avoid error that stems from BIS population module CIV_F unit classes
             // https://github.com/ALiVEOS/ALiVE.OS/issues/522
@@ -794,6 +794,8 @@ switch(_operation) do {
             if (_faction == "CIV_F") then {_minScope = 2};
 
             private _civClasses = [0,_faction,"Man",false,_minScope] call ALiVE_fnc_findVehicleType;
+
+            private _countCivilianUnits = 0;
 
             //["CIV Classes: %1",_civClasses] call ALIVE_fnc_dump;
 
@@ -818,8 +820,8 @@ switch(_operation) do {
 
                     private _spawnChance = 0.25 * _placementMultiplier;
 
-/*
-From: https://github.com/ALiVEOS/ALiVE.OS/issues/205
+                    /*
+                    From: https://github.com/ALiVEOS/ALiVE.OS/issues/205
                     if(_countBuildings > 50) then {
                         _spawnChance = 0.1 * _placementMultiplier;
                     };
@@ -843,7 +845,7 @@ From: https://github.com/ALiVEOS/ALiVE.OS/issues/205
                     if(_countBuildings > 0 && _countBuildings < 11) then {
                         _spawnChance = 0.8 * _placementMultiplier;
                     };
-*/
+                    */
                     {
 
                         if(random 1 < _spawnChance) then {
@@ -876,6 +878,8 @@ From: https://github.com/ALiVEOS/ALiVE.OS/issues/205
                             [_agent] call ALIVE_fnc_selectCivilianCommand;
 
                             [ALIVE_agentHandler, "registerAgent", _agent] call ALIVE_fnc_agentHandler;
+
+                            _countCivilianUnits = _countCivilianUnits + 1;
                         };
 
                     } forEach _buildings;
@@ -883,15 +887,8 @@ From: https://github.com/ALiVEOS/ALiVE.OS/issues/205
                 } forEach _clusters;
             };
 
-
-            //[ALIVE_agentHandler, "debug", true] call ALIVE_fnc_agentHandler;
-
-
-            // DEBUG -------------------------------------------------------------------------------------
-            if(_debug) then {
-                ["ALIVE AMBCP [%1] - Ambient land units placed: %2",_faction,_countLandUnits] call ALIVE_fnc_dump;
-            };
-            // DEBUG -------------------------------------------------------------------------------------
+            ["ALIVE AMBCP [%1] - Ambient land vehicles placed: %2",_faction,_countLandUnits] call ALIVE_fnc_dump;
+            ["ALIVE AMBCP [%1] - Ambient civilian units placed: %2",_faction,_countCivilianUnits] call ALIVE_fnc_dump;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
