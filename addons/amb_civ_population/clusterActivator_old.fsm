@@ -1,0 +1,1165 @@
+/*%FSM<COMPILE "scriptedFSM.cfg, cluster activator">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"INIT",0,4346,-191.791229,-248.493942,-101.791237,-198.494003,0.000000,"INIT"};
+item1[] = {"INIT_COMPLETE",4,218,-191.814072,-169.241699,-101.814072,-119.241699,0.000000,"INIT" \n "COMPLETE"};
+item2[] = {"_",-1,250,-440.685394,-235.585892,-437.600311,-235.585892,0.000000,""};
+item3[] = {"DESTROY",4,218,-71.954308,-91.562195,18.045681,-41.562176,0.000000,"DESTROY"};
+item4[] = {"END",1,250,43.372803,-89.655373,133.372833,-39.655460,0.000000,"END"};
+item5[] = {"TIMER",2,250,-191.784912,-93.250328,-101.784897,-43.250317,0.000000,"TIMER"};
+item6[] = {"COMPLETE",4,218,207.314255,358.391388,297.314575,408.391418,0.000000,"COMPLETE"};
+item7[] = {"START",4,218,-192.425964,-19.086315,-102.425903,30.913666,2.000000,"START"};
+item8[] = {"ANALYSE",2,250,-30.795383,198.355576,59.204765,248.355774,0.000000,"ANALYSE"};
+item9[] = {"DO_ACTIVATE",4,218,-32.234409,277.393127,57.765675,327.393188,0.000000,"DO" \n "ACTIVATE"};
+item10[] = {"DONE",2,250,-24.777973,806.307678,61.881523,852.967346,0.000000,"DONE"};
+item11[] = {"ACTIVATE_LOOP",2,250,-31.291431,358.900635,58.708664,408.900696,0.000000,"ACTIVATE" \n "LOOP"};
+item12[] = {"ITERATE",4,218,95.820595,358.710358,185.820602,408.710419,1.000000,"ITERATE"};
+item13[] = {"END__LOOP",4,218,-31.355610,433.665924,58.644455,483.665924,0.000000,"END " \n "LOOP"};
+item14[] = {"WAIT",4,218,-318.101746,-18.262732,-228.101776,31.737242,4.000000,"WAIT"};
+item15[] = {"COMPLETE",4,218,-419.532806,358.389832,-329.532654,408.389679,0.000000,"COMPLETE"};
+item16[] = {"CHECK",2,250,-192.264313,52.674805,-102.264297,102.674797,0.000000,"CHECK"};
+item17[] = {"HAS__INACTIVE",4,218,-30.842457,123.296127,59.157623,173.296127,1.000000,"HAS " \n "INACTIVE"};
+item18[] = {"HAS__INACTIVE_CL",4,218,-190.356888,592.674255,-100.357147,642.674255,1.000000,"HAS " \n "INACTIVE" \n "CLUSTERS"};
+item19[] = {"WAIT",4,218,-317.030487,-94.616402,-227.030457,-44.616344,1.000000,"WAIT"};
+item20[] = {"NO__ACTIVATE",4,218,69.500504,278.651886,159.500504,328.652008,0.000000,"NO " \n "ACTIVATE"};
+item21[] = {"ITERATE",4,218,93.003258,198.069321,183.003433,248.069336,2.000000,"ITERATE"};
+item22[] = {"ANALYSE_INACTIVE",2,250,-30.795383,198.355576,59.204765,248.355774,0.000000,"ANALYSE" \n "INACTIVE" \n "CLUSTERS"};
+item23[] = {"ANALYSE_AGENTS",2,250,-29.551029,510.704590,60.449181,560.704712,0.000000,"ANALYSE" \n "AGENTS"};
+item24[] = {"DO__SPAWN",4,218,-27.457310,584.677979,62.542732,634.677979,0.000000,"DO " \n "SPAWN"};
+item25[] = {"ITERATE",4,218,95.492104,512.907166,185.492233,562.907166,2.000000,"ITERATE"};
+item26[] = {"NO__SPAWN",4,218,77.947395,582.377930,167.947418,632.378052,0.000000,"NO " \n "SPAWN"};
+item27[] = {"SPAWN_LOOP",2,250,-26.313786,655.072144,63.686340,705.072205,0.000000,"SPAWN" \n "LOOP"};
+item28[] = {"ITERATE",4,218,98.309441,654.881897,188.309525,704.881958,1.000000,"ITERATE"};
+item29[] = {"END_LOOP",4,218,-25.952183,727.873047,64.047829,777.873047,0.000000,"END" \n "LOOP"};
+item30[] = {"ANALYSE_ACTIVE_A",2,250,-528.949524,199.181198,-438.949554,249.181137,0.000000,"ANALYSE" \n "ACTIVE" \n "AGENTS"};
+item31[] = {"DO__DESPAWN",4,218,-528.647400,278.651703,-438.647552,328.651764,1.000000,"DO " \n "DESPAWN"};
+item32[] = {"DESPAWN_LOOP",2,250,-529.648376,362.539001,-439.648132,412.539185,0.000000,"DESPAWN" \n "LOOP"};
+item33[] = {"ITERATE",4,218,-651.285339,360.649811,-561.285339,410.649872,1.000000,"ITERATE"};
+item34[] = {"HAS__ACTIVE_AGEN",4,218,-528.312683,128.329666,-438.313019,178.329681,3.000000,"HAS " \n "ACTIVE" \n "AGENTS"};
+item35[] = {"NO__DESPAWN",4,218,-632.339172,279.530487,-542.339172,329.530548,0.000000,"NO " \n "DESPAWN"};
+item36[] = {"ITERATE",4,218,-648.691528,199.518494,-558.691406,249.518555,2.000000,"ITERATE"};
+item37[] = {"END__LOOP",4,218,-530.811829,435.487701,-440.812073,485.488007,0.000000,"END " \n "LOOP"};
+item38[] = {"HAS__ACTIVE_CLUS",4,218,-190.988678,123.786392,-100.988853,173.786316,2.000000,"HAS " \n "ACTIVE" \n "CLUSTERS"};
+item39[] = {"CHECK_1",2,250,-531.010193,520.926147,-441.010284,570.926147,0.000000,"CHECK"};
+item40[] = {"COMPLETE",4,218,-770.458679,362.123077,-680.458557,412.123016,0.000000,"COMPLETE"};
+item41[] = {"ANALYSE_ACTIVE_C",2,250,-190.467896,195.447922,-100.467796,245.447922,0.000000,"ANALYSE" \n "ACTIVE" \n "CLUSTERS"};
+item42[] = {"DO__DEACTIVATE",4,218,-190.165771,274.918640,-100.165741,324.918701,1.000000,"DO " \n "DEACTIVATE"};
+item43[] = {"DESPAWN_LOOP_1",2,250,-190.008804,356.490845,-100.008759,406.490967,0.000000,"DESPAWN" \n "LOOP"};
+item44[] = {"ITERATE",4,218,-312.804138,356.916748,-222.803604,406.916748,1.000000,"ITERATE"};
+item45[] = {"END__LOOP",4,218,-189.841446,431.754578,-99.841461,481.754761,0.000000,"END " \n "LOOP"};
+item46[] = {"NO__DEACTIVATE",4,218,-293.857727,275.797424,-203.857559,325.797485,0.000000,"NO " \n "DEACTIVATE"};
+item47[] = {"ITERATE",4,218,-306.737793,196.942764,-216.737137,246.942703,2.000000,"ITERATE"};
+item48[] = {"HAS__ACTIVE_CLUS",4,218,-529.561584,597.043701,-439.562073,647.043701,2.000000,"HAS " \n "ACTIVE" \n "CLUSTERS"};
+item49[] = {"CHECK_2",2,250,-190.560959,514.241638,-100.560959,564.241638,0.000000,"CHECK"};
+version=1;
+class LayoutItems
+{
+	class Item2
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
+};
+link0[] = {0,1};
+link1[] = {1,5};
+link2[] = {3,4};
+link3[] = {5,3};
+link4[] = {5,7};
+link5[] = {5,19};
+link6[] = {6,5};
+link7[] = {7,16};
+link8[] = {8,9};
+link9[] = {8,20};
+link10[] = {8,21};
+link11[] = {9,11};
+link12[] = {10,6};
+link13[] = {11,12};
+link14[] = {11,13};
+link15[] = {12,11};
+link16[] = {13,23};
+link17[] = {14,5};
+link18[] = {15,5};
+link19[] = {16,14};
+link20[] = {16,17};
+link21[] = {16,34};
+link22[] = {16,38};
+link23[] = {17,8};
+link24[] = {18,8};
+link25[] = {19,5};
+link26[] = {20,10};
+link27[] = {21,8};
+link28[] = {23,24};
+link29[] = {23,25};
+link30[] = {23,26};
+link31[] = {24,27};
+link32[] = {25,23};
+link33[] = {26,10};
+link34[] = {27,28};
+link35[] = {27,29};
+link36[] = {28,27};
+link37[] = {29,10};
+link38[] = {30,31};
+link39[] = {30,35};
+link40[] = {30,36};
+link41[] = {31,32};
+link42[] = {32,33};
+link43[] = {32,37};
+link44[] = {33,32};
+link45[] = {34,30};
+link46[] = {35,39};
+link47[] = {36,30};
+link48[] = {37,39};
+link49[] = {38,41};
+link50[] = {39,18};
+link51[] = {39,40};
+link52[] = {39,48};
+link53[] = {40,5};
+link54[] = {41,42};
+link55[] = {41,46};
+link56[] = {41,47};
+link57[] = {42,43};
+link58[] = {43,44};
+link59[] = {43,45};
+link60[] = {44,43};
+link61[] = {45,49};
+link62[] = {46,49};
+link63[] = {47,41};
+link64[] = {48,41};
+link65[] = {49,15};
+link66[] = {49,18};
+globals[] = {0.000000,0,0,0,16777215,640,480,1,160,6316128,1,-849.937683,327.282013,834.587341,-681.791931,1017,1310,1};
+window[] = {2,-1,-1,-1,-1,1054,156,1779,156,3,1035};
+*//*%FSM</HEAD>*/
+class FSM
+{
+  fsmName = "cluster activator";
+  class States
+  {
+    /*%FSM<STATE "INIT">*/
+    class INIT
+    {
+      name = "INIT";
+      init = /*%FSM<STATEINIT""">*/"private [""_civPopSystem"",""_spawnDistance"",""_spawnTypeJetRadius"",""_spawnTypeHeliRadius"",""_spawnCycleTime"",""_activeLimiter"",""_lastSpawnTime"",""_doSpawn"",""_destroy"",""_pause"",""_debug""];" \n
+       "" \n
+       "_civPopSystem = _this select 0;" \n
+       "_spawnDistance = _this select 1;" \n
+       "_spawnTypeJetRadius = _this select 2;" \n
+       "_spawnTypeHeliRadius = _this select 3;" \n
+       "_spawnCycleTime = if(count _this > 4) then {_this select 4} else {1};" \n
+       "_activeLimiter = if(count _this > 5) then {_this select 5} else {25};" \n
+       "" \n
+       "_lastSpawnTime = time -_spawnCycleTime; // to prevent delay at mission start" \n
+       "" \n
+       "_destroy = false;" \n
+       "_pause = false;" \n
+       "_debug = [_civPopSystem,""debug"",false] call ALiVE_fnc_HashGet;" \n
+       "" \n
+       "// debug ---------------------------------------" \n
+       "//if(_debug) then { [""ALIVE Cluster activator FSM init""] call ALIVE_fnc_dumpR; };" \n
+       "// debug ---------------------------------------"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "INIT_COMPLETE">*/
+        class INIT_COMPLETE
+        {
+          priority = 0.000000;
+          to="TIMER";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "END">*/
+    class END
+    {
+      name = "END";
+      init = /*%FSM<STATEINIT""">*/"// debug ---------------------------------------" \n
+       "//if(_debug) then { [""SIMULATION CONTROLLER destroyed""] call ALIVE_fnc_dumpR; };" \n
+       "// debug ---------------------------------------"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "TIMER">*/
+    class TIMER
+    {
+      name = "TIMER";
+      init = /*%FSM<STATEINIT""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
+       "/*" \n
+       "if(_debug) then {" \n
+       "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    [""ALIVE Cluster activator - timer last run:%1 cycle time: %2"",time - _lastSpawnTime,_spawnCycleTime] call ALIVE_fnc_dump;" \n
+       "};" \n
+       "*/" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "" \n
+       "/*" \n
+       "if(_pause) then {" \n
+       "    [""ALIVE CIV SPAWNER PAUSED""] call ALIVE_fnc_dump;" \n
+       "};" \n
+       "*/"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "START">*/
+        class START
+        {
+          priority = 2.000000;
+          to="CHECK";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"((time - _lastSpawnTime) > _spawnCycleTime) && !(_pause)"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "WAIT">*/
+        class WAIT
+        {
+          priority = 1.000000;
+          to="TIMER";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"((time - _lastSpawnTime) < _spawnCycleTime) && (_pause)"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "DESTROY">*/
+        class DESTROY
+        {
+          priority = 0.000000;
+          to="END";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_destroy"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "ANALYSE">*/
+    class ANALYSE
+    {
+      name = "ANALYSE";
+      init = /*%FSM<STATEINIT""">*/"private [""_cluster"",""_position"",""_countToSpawn""];" \n
+       "" \n
+       "_block = [ALIVE_arrayBlockHandler,""getNextBlock"",[""inactiveClusters"",_inactiveClusters,30]] call ALIVE_fnc_arrayBlockHandler;" \n
+       "" \n
+       "{" \n
+       "" \n
+       "    _cluster = _x;" \n
+       "" \n
+       "    if!(isnil ""_cluster"") then {" \n
+       "" \n
+       "        _position = _cluster select 2 select 2;" \n
+       "" \n
+       "        if ([_position, _spawnDistance, _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
+       "            _toSpawn set [count _toSpawn, _cluster];" \n
+       "        }else{" \n
+       "            if ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange > 0) then {" \n
+       "                 _toSpawn set [count _toSpawn, _cluster];" \n
+       "            };" \n
+       "        };" \n
+       "    };" \n
+       "" \n
+       "} forEach _block;" \n
+       "" \n
+       "_analysisCount = _analysisCount + 30;" \n
+       "" \n
+       "" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "if(_debug) then {" \n
+       "    //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    //[""ALIVE Cluster activator - spawner analysis: %1 of %2"",_analysisCount,_countInactive] call ALIVE_fnc_dump;" \n
+       "};" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "" \n
+       "" \n
+       "if(_analysisCount >= _countInactive) then {" \n
+       "    _analysisComplete = true;" \n
+       "    _countToSpawn = count _toSpawn;" \n
+       "" \n
+       "" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "    if(_debug) then {" \n
+       "        //[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "        //[""ALIVE Cluster activator - spawner analysis count to spawn: %1"",_countToSpawn] call ALIVE_fnc_dump;" \n
+       "    };" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "" \n
+       "};"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "ITERATE">*/
+        class ITERATE
+        {
+          priority = 2.000000;
+          to="ANALYSE";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_analysisCount < _countInactive"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "NO__ACTIVATE">*/
+        class NO__ACTIVATE
+        {
+          priority = 0.000000;
+          to="DONE";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"((_countToSpawn == 0) && (_analysisComplete))"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "DO_ACTIVATE">*/
+        class DO_ACTIVATE
+        {
+          priority = 0.000000;
+          to="ACTIVATE_LOOP";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"((_countToSpawn > 0) && (_analysisComplete))"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "DONE">*/
+    class DONE
+    {
+      name = "DONE";
+      init = /*%FSM<STATEINIT""">*/"_lastSpawnTime = time;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "COMPLETE">*/
+        class COMPLETE
+        {
+          priority = 0.000000;
+          to="TIMER";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "ACTIVATE_LOOP">*/
+    class ACTIVATE_LOOP
+    {
+      name = "ACTIVATE_LOOP";
+      init = /*%FSM<STATEINIT""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
+       "/*" \n
+       "if(_debug) then {" \n
+       "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    [""ALIVE Cluster activator - spawn inactive cluster loop %2 of %1"",_countToSpawn,_spawnCount] call ALIVE_fnc_dump;" \n
+       "};" \n
+       "*/" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "" \n
+       "private [""_cluster"",""_clusterID"",""_clusterAgents""];" \n
+       "" \n
+       "_cluster = _toSpawn select _spawnCount;" \n
+       "_timeout = 0;" \n
+       "" \n
+       "if!(isnil ""_cluster"") then {" \n
+       "    _clusterID = _cluster select 2 select 1;" \n
+       "" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "    /*" \n
+       "    if(_debug) then {" \n
+       "        [""ALIVE Cluster activator - spawn [%1]"",_clusterID] call ALIVE_fnc_dump;            " \n
+       "    };" \n
+       "    */" \n
+       "    // DEBUG -------------------------------------------------------------------------------------                    " \n
+       "      " \n
+       "    if(_debug) then {" \n
+       "        [_cluster, ""debug"", true] call ALIVE_fnc_cluster;" \n
+       "    };" \n
+       "" \n
+       "    [ALIVE_clusterHandler, ""setActive"", [_clusterID, _cluster]] call ALIVE_fnc_clusterHandler;" \n
+       "" \n
+       "    _clusterAgents = [ALIVE_agentHandler, ""getAgentsByCluster"", _clusterID] call ALIVE_fnc_agentHandler;" \n
+       "" \n
+       "    if!(isNil ""_clusterAgents"") then {" \n
+       "        if(count _clusterAgents > 0) then {" \n
+       "            _inactiveAgents = _inactiveAgents + (_clusterAgents select 2);" \n
+       "        };" \n
+       "    };" \n
+       "" \n
+       "    _timeout = time;" \n
+       "};" \n
+       "" \n
+       "_spawnCount = _spawnCount + 1;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "ITERATE">*/
+        class ITERATE
+        {
+          priority = 1.000000;
+          to="ACTIVATE_LOOP";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_spawnCount < _countToSpawn && time - _timeout > ALiVE_smoothSpawn"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "END__LOOP">*/
+        class END__LOOP
+        {
+          priority = 0.000000;
+          to="ANALYSE_AGENTS";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_spawnCount >= _countToSpawn"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "CHECK">*/
+    class CHECK
+    {
+      name = "CHECK";
+      init = /*%FSM<STATEINIT""">*/"private [""_agentsActive"",""_activeClusters"",""_inactiveClusters"",""_countActive"",""_countClustersActive"",""_countInactive"",""_despawnCount"",""_toDespawn"",""_spawnCount"",""_toSpawn""," \n
+       """_analysisCount"",""_analysisComplete"",""_activeAgents"",""_agentsToDespawn"",""_agentsDespawned"",""_inactiveAgents"",""_agentsToSpawn"",""_countAgentsActive""," \n
+       """_agentsSpawned"",""_agentAnalysisCount"",""_agentAnalysisComplete""];" \n
+       "" \n
+       "_agentsActive = [ALIVE_agentHandler, ""getActiveAgents""] call ALIVE_fnc_agentHandler;" \n
+       "_activeAgents = [ALIVE_agentHandler, ""getActive""] call ALIVE_fnc_agentHandler;" \n
+       "_activeClusters = [ALIVE_clusterHandler, ""getActive""] call ALIVE_fnc_clusterHandler;" \n
+       "_inactiveClusters = [ALIVE_clusterHandler, ""getInActive""] call ALIVE_fnc_clusterHandler;" \n
+       "_countActive = count (_activeAgents select 1);" \n
+       "_countClustersActive = count (_activeClusters select 1);" \n
+       "_countInactive = count (_inactiveClusters select 1);" \n
+       "" \n
+       "_activeAgents = _activeAgents select 2;" \n
+       "_activeClusters = _activeClusters select 2;" \n
+       "_inactiveClusters = _inactiveClusters select 2;" \n
+       "" \n
+       "_countAgentsActive = count _agentsActive;" \n
+       "" \n
+       "//_activeAgents = [];" \n
+       "_agentsToDespawn = [];" \n
+       "_agentsDespawned = 0;" \n
+       "" \n
+       "_inactiveAgents = [];" \n
+       "_agentsToSpawn = [];" \n
+       "_agentsSpawned = 0;" \n
+       "" \n
+       "_agentAnalysisCount = 0;" \n
+       "_agentAnalysisComplete = false;" \n
+       "" \n
+       "_despawnCount = 0;" \n
+       "_toDespawn = [];" \n
+       "" \n
+       "_spawnCount = 0;" \n
+       "_toSpawn = [];" \n
+       "" \n
+       "_analysisCount = 0;" \n
+       "_analysisComplete = false;" \n
+       "" \n
+       "if((_countActive == 0) && (_countInactive == 0) && (_countClustersActive == 0)) then {" \n
+       "    _lastSpawnTime = time;" \n
+       "};" \n
+       "" \n
+       "//[""ALIVE CLUSTER ACTIVATOR RUNNING""] call ALIVE_fnc_dump;" \n
+       "" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "/*" \n
+       "if(_debug) then {" \n
+       "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    [""ALIVE Cluster activator - main check - agents active: %1 clusters active: %2 clusters inactive: %3"",_countActive,_countClustersActive,_countInactive] call ALIVE_fnc_dump;" \n
+       "};" \n
+       "*/" \n
+       "// DEBUG -------------------------------------------------------------------------------------"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "WAIT">*/
+        class WAIT
+        {
+          priority = 4.000000;
+          to="TIMER";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"((_countActive == 0) && (_countInactive == 0) && (_countClustersActive == 0))"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "HAS__ACTIVE_AGEN">*/
+        class HAS__ACTIVE_AGEN
+        {
+          priority = 3.000000;
+          to="ANALYSE_ACTIVE_A";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_countActive > 0"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "HAS__ACTIVE_CLUS">*/
+        class HAS__ACTIVE_CLUS
+        {
+          priority = 2.000000;
+          to="ANALYSE_ACTIVE_C";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_countClustersActive > 0"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "HAS__INACTIVE">*/
+        class HAS__INACTIVE
+        {
+          priority = 1.000000;
+          to="ANALYSE";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_countInactive > 0"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "ANALYSE_INACTIVE">*/
+    class ANALYSE_INACTIVE
+    {
+      name = "ANALYSE_INACTIVE";
+      init = /*%FSM<STATEINIT""">*/"private [""_cluster"",""_position"",""_size"",""_countToSpawn""];" \n
+       "" \n
+       "_block = [ALIVE_arrayBlockHandler,""getNextBlock"",[""inactiveClusters"",_inactiveClusters,1]] call ALIVE_fnc_arrayBlockHandler;" \n
+       "" \n
+       "{" \n
+       "" \n
+       "    _cluster = _x;" \n
+       "" \n
+       "    if!(isnil ""_cluster"") then {" \n
+       "" \n
+       "        _position = _cluster select 2 select 2;" \n
+       "        _size = _cluster select 2 select 3;" \n
+       "" \n
+       "        if ([_position, (_spawnDistance + _size), _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
+       "            _toSpawn set [count _toSpawn, _cluster];" \n
+       "        }else{" \n
+       "            if ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange > 0) then {" \n
+       "                 _toSpawn set [count _toSpawn, _cluster];" \n
+       "            };" \n
+       "        };" \n
+       "    };" \n
+       "" \n
+       "} forEach _block;" \n
+       "" \n
+       "_analysisCount = _analysisCount + 1;" \n
+       "" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "/*" \n
+       "if(_debug) then {" \n
+       "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    [""ALIVE Cluster activator - analyse inactive clusters: %1 of %2"",_analysisCount,_countInactive] call ALIVE_fnc_dump;" \n
+       "};" \n
+       "*/" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "" \n
+       "" \n
+       "if(_analysisCount >= _countInactive) then {" \n
+       "    _analysisComplete = true;" \n
+       "    _countToSpawn = count _toSpawn;" \n
+       "" \n
+       "" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "    /*" \n
+       "    if(_debug) then {" \n
+       "        [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "        [""ALIVE Cluster activator - inactive clusters to activate: %1"",_countToSpawn] call ALIVE_fnc_dump;" \n
+       "    };" \n
+       "    */" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "" \n
+       "};"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "ANALYSE_AGENTS">*/
+    class ANALYSE_AGENTS
+    {
+      name = "ANALYSE_AGENTS";
+      init = /*%FSM<STATEINIT""">*/"private [""_agent"",""_agentActive"",""_spawnDelay""];" \n
+       "" \n
+       "_block = [ALIVE_arrayBlockHandler,""getNextBlock"",[""inactiveAgents"",_inactiveAgents,1]] call ALIVE_fnc_arrayBlockHandler;" \n
+       "_spawnDelay = 0;" \n
+       "" \n
+       "{" \n
+       "" \n
+       "    _agent = _x;" \n
+       "    _spawnDelay = 0;" \n
+       "" \n
+       "    if!(isnil ""_agent"") then {" \n
+       "" \n
+       "        _agentActive = _agent select 2 select 1;" \n
+       "        _type = _agent select 2 select 4;" \n
+       "" \n
+       "        if!(_agentActive) then {" \n
+       "" \n
+       "            if(_type == ""agent"") then {" \n
+       "            " \n
+       "                _countAgentsActive = count _agentsActive;" \n
+       "" \n
+       "                //[""COUNT ACTIVE AGENTS: %1 LIMITER: %2"",_countAgentsActive, _activeLimiter] call ALIVE_fnc_dump;" \n
+       "" \n
+       "                if(_countAgentsActive >= _activeLimiter) then {" \n
+       "                    //[""ACTIVE AGENT LIMIT HIT NO MORE!!!!!""] call ALIVE_fnc_dump;" \n
+       "                }else{" \n
+       "                    [_agent, ""spawn""] spawn ALIVE_fnc_civilianAgent;" \n
+       "" \n
+       "                    _spawnDelay = time;" \n
+       "                };" \n
+       "            }else{" \n
+       "                _agentsToSpawn set [count _agentsToSpawn, _agent];" \n
+       "            };        " \n
+       "        };" \n
+       "    };" \n
+       "" \n
+       "} forEach _block;" \n
+       "" \n
+       "_agentAnalysisCount = _agentAnalysisCount + 1;" \n
+       "" \n
+       "" \n
+       "if(_agentAnalysisCount >= count _inactiveAgents) then {" \n
+       "    _agentAnalysisComplete = true;" \n
+       "    _countToSpawn = count _agentsToSpawn;" \n
+       "    _spawnCount = 0;" \n
+       "" \n
+       "" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "    /*" \n
+       "    if(_debug) then {" \n
+       "        [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "        [""ALIVE Cluster activator - agent spawn analysis count to spawn: %1"",_countToSpawn] call ALIVE_fnc_dump;" \n
+       "    };" \n
+       "    */" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "" \n
+       "};"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "ITERATE">*/
+        class ITERATE
+        {
+          priority = 2.000000;
+          to="ANALYSE_AGENTS";
+          precondition = /*%FSM<CONDPRECONDITION""">*/"time - _spawnDelay > ALiVE_smoothSpawn"/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_agentAnalysisCount < count _inactiveAgents"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "NO__SPAWN">*/
+        class NO__SPAWN
+        {
+          priority = 0.000000;
+          to="DONE";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"((_countToSpawn == 0) && (_agentAnalysisComplete))"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "DO__SPAWN">*/
+        class DO__SPAWN
+        {
+          priority = 0.000000;
+          to="SPAWN_LOOP";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"((_countToSpawn > 0) && (_agentAnalysisComplete))"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "SPAWN_LOOP">*/
+    class SPAWN_LOOP
+    {
+      name = "SPAWN_LOOP";
+      init = /*%FSM<STATEINIT""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
+       "/*" \n
+       "if(_debug) then {" \n
+       "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    [""ALIVE Cluster activator - spawner loop %1 of %2"",_countToSpawn,_spawnCount] call ALIVE_fnc_dump;" \n
+       "};" \n
+       "*/" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "" \n
+       "private [""_agent"",""_agentID"",""_clusterAgents"",""_type"",""_spawnDelay""];" \n
+       "" \n
+       "_agent = _agentsToSpawn select _spawnCount;" \n
+       "_spawnDelay = 0;" \n
+       "" \n
+       "if!(isnil ""_agent"") then {" \n
+       "    _agentID = _agent select 2 select 3;" \n
+       "    _type = _agent select 2 select 4;" \n
+       "" \n
+       "    if(_type == ""agent"") then {" \n
+       "        [_agent, ""spawn""] spawn ALIVE_fnc_civilianAgent;    " \n
+       "    }else{" \n
+       "        [_agent, ""spawn""] spawn ALIVE_fnc_civilianVehicle;    " \n
+       "    };" \n
+       "" \n
+       "    _spawnDelay = time;" \n
+       "};" \n
+       "" \n
+       "_spawnCount = _spawnCount + 1;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "ITERATE">*/
+        class ITERATE
+        {
+          priority = 1.000000;
+          to="SPAWN_LOOP";
+          precondition = /*%FSM<CONDPRECONDITION""">*/"time - _spawnDelay > ALiVE_smoothSpawn"/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_spawnCount < _countToSpawn"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "END_LOOP">*/
+        class END_LOOP
+        {
+          priority = 0.000000;
+          to="DONE";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_spawnCount >= _countToSpawn"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "ANALYSE_ACTIVE_A">*/
+    class ANALYSE_ACTIVE_A
+    {
+      name = "ANALYSE_ACTIVE_A";
+      init = /*%FSM<STATEINIT""">*/"private [""_agent"",""_position"",""_size"",""_countToDespawn"",""_stopDespawn""];" \n
+       "" \n
+       "_block = [ALIVE_arrayBlockHandler,""getNextBlock"",[""activeAgents"",_activeAgents,30]] call ALIVE_fnc_arrayBlockHandler;" \n
+       "" \n
+       "{" \n
+       "    _agent = _x;" \n
+       "" \n
+       "    if!(isnil ""_agent"") then {" \n
+       "        " \n
+       "        _unit = _agent select 2 select 5;" \n
+       "        _position = getposATL _unit;" \n
+       "" \n
+       "        if !([_position, (_spawnDistance), _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
+       "            if ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange == 0) then {" \n
+       "                       _toDespawn set [count _toDespawn, _agent];" \n
+       "            };" \n
+       "        };" \n
+       "    };" \n
+       "} forEach _block;" \n
+       "" \n
+       "_analysisCount = _analysisCount + 30;" \n
+       "" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "/*" \n
+       "if(_debug) then {" \n
+       "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    [""ALIVE Cluster activator - analyse active agents: %1 of %2"",_analysisCount,_countActive] call ALIVE_fnc_dump;" \n
+       "};" \n
+       "*/" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "" \n
+       "" \n
+       "if(_analysisCount >= _countActive) then {" \n
+       "    _analysisComplete = true;" \n
+       "    _countToDespawn = count _toDespawn;" \n
+       "" \n
+       "" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "    /*" \n
+       "    if(_debug) then {" \n
+       "        [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "        [""ALIVE Cluster activator - active agents to despawn: %1"",_countToDespawn] call ALIVE_fnc_dump;" \n
+       "    };" \n
+       "    */" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "" \n
+       "};"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "ITERATE">*/
+        class ITERATE
+        {
+          priority = 2.000000;
+          to="ANALYSE_ACTIVE_A";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_analysisCount < _countActive"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "DO__DESPAWN">*/
+        class DO__DESPAWN
+        {
+          priority = 1.000000;
+          to="DESPAWN_LOOP";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"((_countToDespawn > 0) && (_analysisComplete))"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "NO__DESPAWN">*/
+        class NO__DESPAWN
+        {
+          priority = 0.000000;
+          to="CHECK_1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"((_countToDespawn == 0) && (_analysisComplete))"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "DESPAWN_LOOP">*/
+    class DESPAWN_LOOP
+    {
+      name = "DESPAWN_LOOP";
+      init = /*%FSM<STATEINIT""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
+       "/*" \n
+       "if(_debug) then {" \n
+       "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    [""ALIVE Cluster activator - despawn active agents loop %2 of %1"",_countToDespawn,_despawnCount] call ALIVE_fnc_dump;" \n
+       "};" \n
+       "*/" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "" \n
+       "private [""_agent"",""_agentID"",""_clusterAgents"",""_type""];" \n
+       "" \n
+       "_agent = _toDespawn select _despawnCount;" \n
+       "" \n
+       "if!(isnil ""_agent"") then {" \n
+       "    _agentID = _agent select 2 select 3;" \n
+       "    _type = _agent select 2 select 4;" \n
+       "" \n
+       "    if(_type == ""agent"") then {" \n
+       "        [_agent, ""despawn""] call ALIVE_fnc_civilianAgent;    " \n
+       "    }else{" \n
+       "        [_agent, ""despawn""] call ALIVE_fnc_civilianVehicle;    " \n
+       "    };" \n
+       "};" \n
+       "" \n
+       "_despawnCount = _despawnCount + 1;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "ITERATE">*/
+        class ITERATE
+        {
+          priority = 1.000000;
+          to="DESPAWN_LOOP";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_despawnCount < _countToDespawn"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "END__LOOP">*/
+        class END__LOOP
+        {
+          priority = 0.000000;
+          to="CHECK_1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_despawnCount >= _countToDespawn"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "CHECK_1">*/
+    class CHECK_1
+    {
+      name = "CHECK_1";
+      init = /*%FSM<STATEINIT""">*/"_activeClusters = [ALIVE_clusterHandler, ""getActive""] call ALIVE_fnc_clusterHandler;" \n
+       "_countClustersActive = count (_activeClusters select 1);" \n
+       "_activeClusters = _activeClusters select 2;" \n
+       "" \n
+       "_inactiveClusters = [ALIVE_clusterHandler, ""getInActive""] call ALIVE_fnc_clusterHandler;" \n
+       "_countInactive = count (_inactiveClusters select 1);" \n
+       "_inactiveClusters = _inactiveClusters select 2;" \n
+       "" \n
+       "_analysisCount = 0;" \n
+       "_analysisComplete = false;" \n
+       "" \n
+       "_agentAnalysisCount = 0;" \n
+       "_agentAnalysisComplete = false;" \n
+       "" \n
+       "_despawnCount = 0;" \n
+       "_toDespawn = [];" \n
+       "" \n
+       "if((_countClustersActive == 0) && (_countInactive == 0)) then {" \n
+       "    _lastSpawnTime = time;" \n
+       "};" \n
+       "" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "/*" \n
+       "if(_debug) then {" \n
+       "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    [""ALIVE Cluster activator - checking profiles to spawn: %1"",_countInactive] call ALIVE_fnc_dump;" \n
+       "};" \n
+       "*/" \n
+       "// DEBUG -------------------------------------------------------------------------------------"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "HAS__ACTIVE_CLUS">*/
+        class HAS__ACTIVE_CLUS
+        {
+          priority = 2.000000;
+          to="ANALYSE_ACTIVE_C";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_countClustersActive > 0"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "HAS__INACTIVE_CL">*/
+        class HAS__INACTIVE_CL
+        {
+          priority = 1.000000;
+          to="ANALYSE";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_countInactive > 0"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "COMPLETE">*/
+        class COMPLETE
+        {
+          priority = 0.000000;
+          to="TIMER";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"(_countClustersActive == 0) && (_countInactive == 0)"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "ANALYSE_ACTIVE_C">*/
+    class ANALYSE_ACTIVE_C
+    {
+      name = "ANALYSE_ACTIVE_C";
+      init = /*%FSM<STATEINIT""">*/"private [""_cluster"",""_position"",""_size"",""_countToDespawn"",""_stopDespawn""];" \n
+       "" \n
+       "_block = [ALIVE_arrayBlockHandler,""getNextBlock"",[""activeClusters"",_activeClusters,30]] call ALIVE_fnc_arrayBlockHandler;" \n
+       "" \n
+       "{" \n
+       "    _cluster = _x;" \n
+       "" \n
+       "    if!(isnil ""_cluster"") then {" \n
+       "        " \n
+       "        _position = _cluster select 2 select 2;" \n
+       "        _size = _cluster select 2 select 3;" \n
+       "" \n
+       "        if !([_position, (_spawnDistance + (_size)/2), _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
+       "            if ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange == 0) then {" \n
+       "                       _toDespawn set [count _toDespawn, _cluster];" \n
+       "            };" \n
+       "        };" \n
+       "    };" \n
+       "} forEach _block;" \n
+       "" \n
+       "_analysisCount = _analysisCount + 30;" \n
+       "" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "/*" \n
+       "if(_debug) then {" \n
+       "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    [""ALIVE Cluster activator - analyse active clusters: %1 of %2"",_analysisCount,_countClustersActive] call ALIVE_fnc_dump;" \n
+       "};" \n
+       "*/" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "" \n
+       "" \n
+       "if(_analysisCount >= _countClustersActive) then {" \n
+       "    _analysisComplete = true;" \n
+       "    _countToDespawn = count _toDespawn;" \n
+       "" \n
+       "" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "    /*" \n
+       "    if(_debug) then {" \n
+       "        [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "        [""ALIVE Cluster activator - active clusters to deactivate: %1"",_countToDespawn] call ALIVE_fnc_dump;" \n
+       "    };" \n
+       "    */" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "" \n
+       "};"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "ITERATE">*/
+        class ITERATE
+        {
+          priority = 2.000000;
+          to="ANALYSE_ACTIVE_C";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_analysisCount < _countClustersActive"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "DO__DEACTIVATE">*/
+        class DO__DEACTIVATE
+        {
+          priority = 1.000000;
+          to="DESPAWN_LOOP_1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"((_countToDespawn > 0) && (_analysisComplete))"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "NO__DEACTIVATE">*/
+        class NO__DEACTIVATE
+        {
+          priority = 0.000000;
+          to="CHECK_2";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"((_countToDespawn == 0) && (_analysisComplete))"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "DESPAWN_LOOP_1">*/
+    class DESPAWN_LOOP_1
+    {
+      name = "DESPAWN_LOOP_1";
+      init = /*%FSM<STATEINIT""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
+       "/*" \n
+       "if(_debug) then {" \n
+       "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    [""ALIVE Cluster activator - despawn active clusters loop %2 of %1"",_countToDespawn,_despawnCount] call ALIVE_fnc_dump;" \n
+       "};" \n
+       "*/" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "" \n
+       "private [""_cluster"",""_clusterID"",""_clusterAgents""];" \n
+       "" \n
+       "_cluster = _toDespawn select _despawnCount;" \n
+       "" \n
+       "if!(isnil ""_cluster"") then {" \n
+       "    _clusterID = _cluster select 2 select 1;" \n
+       "" \n
+       "    // DEBUG -------------------------------------------------------------------------------------" \n
+       "    /*" \n
+       "    if(_debug) then {" \n
+       "        [""ALIVE Cluster activator - despawn [%1]"",_clusterID] call ALIVE_fnc_dump;            " \n
+       "    };" \n
+       "    */" \n
+       "    // DEBUG -------------------------------------------------------------------------------------                " \n
+       "" \n
+       "    if(_debug) then {" \n
+       "        [_cluster, ""debug"", false] call ALIVE_fnc_cluster;" \n
+       "    };" \n
+       "" \n
+       "    [ALIVE_clusterHandler, ""setInActive"", [_clusterID, _cluster]] call ALIVE_fnc_clusterHandler;" \n
+       "};" \n
+       "" \n
+       "_despawnCount = _despawnCount + 1;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "ITERATE">*/
+        class ITERATE
+        {
+          priority = 1.000000;
+          to="DESPAWN_LOOP_1";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_despawnCount < _countToDespawn"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "END__LOOP">*/
+        class END__LOOP
+        {
+          priority = 0.000000;
+          to="CHECK_2";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_despawnCount >= _countToDespawn"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "CHECK_2">*/
+    class CHECK_2
+    {
+      name = "CHECK_2";
+      init = /*%FSM<STATEINIT""">*/"_inactiveClusters = [ALIVE_clusterHandler, ""getInActive""] call ALIVE_fnc_clusterHandler;" \n
+       "_countInactive = count (_inactiveClusters select 1);" \n
+       "_inactiveClusters = _inactiveClusters select 2;" \n
+       "" \n
+       "_analysisCount = 0;" \n
+       "_analysisComplete = false;" \n
+       "" \n
+       "_agentAnalysisCount = 0;" \n
+       "_agentAnalysisComplete = false;" \n
+       "" \n
+       "if(_countInactive == 0) then {" \n
+       "    _lastSpawnTime = time;" \n
+       "};" \n
+       "" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "/*" \n
+       "if(_debug) then {" \n
+       "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    [""ALIVE Cluster activator - checking profiles to spawn: %1"",_countInactive] call ALIVE_fnc_dump;" \n
+       "};" \n
+       "*/" \n
+       "// DEBUG -------------------------------------------------------------------------------------"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "HAS__INACTIVE_CL">*/
+        class HAS__INACTIVE_CL
+        {
+          priority = 1.000000;
+          to="ANALYSE";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_countInactive > 0"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "COMPLETE">*/
+        class COMPLETE
+        {
+          priority = 0.000000;
+          to="TIMER";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_countInactive == 0"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+  };
+  initState="INIT";
+  finalStates[] =
+  {
+    "END"
+  };
+};
+/*%FSM</COMPILE>*/
