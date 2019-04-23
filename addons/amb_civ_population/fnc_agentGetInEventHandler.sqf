@@ -5,7 +5,7 @@ SCRIPT(agentGetInEventHandler);
 Function: ALIVE_fnc_agentGetInEventHandler
 
 Description:
-Killed event handler for agent units
+Get In event handler for agent units
 
 Parameters:
 
