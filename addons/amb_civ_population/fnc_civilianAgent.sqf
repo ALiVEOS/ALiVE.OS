@@ -364,6 +364,7 @@ switch(_operation) do {
 
             // killed event handler
             private _eventID = _unit addMPEventHandler["MPKilled", ALIVE_fnc_agentKilledEventHandler];
+            _eventID = _unit addEventHandler["FiredNear", ALIVE_fnc_agentFiredNearEventHandler];
 
             // set agent as active and store a reference to the unit on the agent
             [_logic,"unit",_unit] call ALIVE_fnc_hashSet;
