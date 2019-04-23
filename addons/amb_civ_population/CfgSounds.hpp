@@ -76,13 +76,13 @@ class CfgSounds
     class Track13
     {
         name = "Track13";
-        sound[] = {"x\alive\addons\amb_civ_population\audio\snoring.ogg", 1, 1, 15};
+        sound[] = {"x\alive\addons\amb_civ_population\audio\snoring.ogg", 0.7, 1, 15};
         titles[] = {};
     };
     class Track14
     {
         name = "Track14";
-        sound[] = {"x\alive\addons\amb_civ_population\audio\sex.ogg", 1, 1, 20};
+        sound[] = {"x\alive\addons\amb_civ_population\audio\sex.ogg", 0.7, 1, 20};
         titles[] = {};
     };
     class Track15
