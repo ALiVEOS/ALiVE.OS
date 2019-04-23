@@ -9,7 +9,7 @@ Add ambient room msuic
 
 Parameters:
 
-Object - building to add light to
+Object - building to add music to.
 
 Returns:
 
@@ -37,7 +37,7 @@ hideObject _musicSource;
 
     while { (alive _musicSource) } do {
         while { _tracksPlayed < _totalTracks } do {
-            private _trackName = format["Track%1", floor (1 + (random _totalTracks))];
+            private _trackName = selectRandom (ALIVE_civilianHouseTracks select 1);
             private _trackDuration = [ALIVE_civilianHouseTracks, _trackName] call ALIVE_fnc_hashGet;
 
             if(isMultiplayer) then {
@@ -54,7 +54,7 @@ hideObject _musicSource;
             if not (alive _musicSource) exitWith {};
         };
 
-        sleep 1;
+        sleep (random 10);
     };
 };
 
