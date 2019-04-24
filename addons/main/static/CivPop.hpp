@@ -70,12 +70,25 @@ ALIVE_civilianHouseTracks = [] call ALIVE_fnc_hashCreate;
 [ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_17", 19] call ALIVE_fnc_hashSet;
 [ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_18", 4] call ALIVE_fnc_hashSet;
 [ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_19", 22] call ALIVE_fnc_hashSet;
-[ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_20", 2] call ALIVE_fnc_hashSet;
+[ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_20", 7] call ALIVE_fnc_hashSet;
+[ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_21", 7] call ALIVE_fnc_hashSet;
+[ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_22", 7] call ALIVE_fnc_hashSet;
+[ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_23", 7] call ALIVE_fnc_hashSet;
+[ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_24", 7] call ALIVE_fnc_hashSet;
+[ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_25", 7] call ALIVE_fnc_hashSet;
+[ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_26", 7] call ALIVE_fnc_hashSet;
+[ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_27", 7] call ALIVE_fnc_hashSet;
+[ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_28", 8] call ALIVE_fnc_hashSet;
+[ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_29", 7] call ALIVE_fnc_hashSet;
+[ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_30", 7] call ALIVE_fnc_hashSet;
+[ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_40", 2] call ALIVE_fnc_hashSet;
 
 // Civ Pop Env sounds by faction
 ALIVE_civilianFactionHouseTracks = [] call ALIVE_fnc_hashCreate;
 
 CUP_C_TK_ALIVE_civilianHouseTracks = +ALIVE_civilianHouseTracks;
+
+[CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_16"] call ALIVE_fnc_hashRem; // Car Alarm
 [CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_1", 135] call ALIVE_fnc_hashSet;
 [CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_2", 85] call ALIVE_fnc_hashSet;
 [CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_3", 35] call ALIVE_fnc_hashSet;
@@ -91,6 +104,17 @@ CUP_C_TK_ALIVE_civilianHouseTracks = +ALIVE_civilianHouseTracks;
 [CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_13", 21] call ALIVE_fnc_hashSet;
 [CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_14", 280] call ALIVE_fnc_hashSet;
 [CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_15", 335] call ALIVE_fnc_hashSet;
+[CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_16", 8] call ALIVE_fnc_hashSet;
+[CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_17", 8] call ALIVE_fnc_hashSet;
+[CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_18", 8] call ALIVE_fnc_hashSet;
+[CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_19", 8] call ALIVE_fnc_hashSet;
+[CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_20", 8] call ALIVE_fnc_hashSet;
+[CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_21", 8] call ALIVE_fnc_hashSet;
+[CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_22", 8] call ALIVE_fnc_hashSet;
+[CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_23", 8] call ALIVE_fnc_hashSet;
+[CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_24", 8] call ALIVE_fnc_hashSet;
+[CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_25", 8] call ALIVE_fnc_hashSet;
+[CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_26", 8] call ALIVE_fnc_hashSet;
 
 [ALIVE_civilianFactionHouseTracks, "CUP_C_TK", CUP_C_TK_ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;
 

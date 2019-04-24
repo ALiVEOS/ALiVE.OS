@@ -102,3 +102,80 @@
         sound[] = {"x\alive\addons\amb_civ_population\audio\MiddleEast\arabicsong2.ogg", 1, 1, 30};
         titles[] = {};
     };
+
+    class ALiVE_Civpop_Audio_ME_16
+    {
+        name = "cluck1";
+        sound[] = {"x\alive\addons\amb_civ_population\audio\MiddleEast\cluck1.ogg", 1, 1, 30};
+        titles[] = {};
+    };
+
+    class ALiVE_Civpop_Audio_ME_17
+    {
+        name = "cluck2";
+        sound[] = {"x\alive\addons\amb_civ_population\audio\MiddleEast\cluck2.ogg", 1, 1, 30};
+        titles[] = {};
+    };
+
+    class ALiVE_Civpop_Audio_ME_18
+    {
+        name = "cluck3";
+        sound[] = {"x\alive\addons\amb_civ_population\audio\MiddleEast\cluck3.ogg", 1, 1, 30};
+        titles[] = {};
+    };
+        
+    class ALiVE_Civpop_Audio_ME_19
+    {
+        name = "cluck4";
+        sound[] = {"x\alive\addons\amb_civ_population\audio\MiddleEast\cluck4.ogg", 1, 1, 30};
+        titles[] = {};
+    };
+
+    class ALiVE_Civpop_Audio_ME_20
+    {
+        name = "cluck5";
+        sound[] = {"x\alive\addons\amb_civ_population\audio\MiddleEast\cluck5.ogg", 1, 1, 30};
+        titles[] = {};
+    };
+
+    class ALiVE_Civpop_Audio_ME_21
+    {
+        name = "cluck6";
+        sound[] = {"x\alive\addons\amb_civ_population\audio\MiddleEast\cluck6.ogg", 1, 1, 30};
+        titles[] = {};
+    };
+
+    class ALiVE_Civpop_Audio_ME_22
+    {
+        name = "goat1";
+        sound[] = {"x\alive\addons\amb_civ_population\audio\MiddleEast\goat1.ogg", 1, 1, 30};
+        titles[] = {};
+    };
+
+    class ALiVE_Civpop_Audio_ME_23
+    {
+        name = "goat2";
+        sound[] = {"x\alive\addons\amb_civ_population\audio\MiddleEast\goat2.ogg", 1, 1, 30};
+        titles[] = {};
+    };
+
+    class ALiVE_Civpop_Audio_ME_24
+    {
+        name = "goat3";
+        sound[] = {"x\alive\addons\amb_civ_population\audio\MiddleEast\goat3.ogg", 1, 1, 30};
+        titles[] = {};
+    };
+        
+    class ALiVE_Civpop_Audio_ME_25
+    {
+        name = "goat4";
+        sound[] = {"x\alive\addons\amb_civ_population\audio\MiddleEast\goat4.ogg", 1, 1, 30};
+        titles[] = {};
+    };
+
+    class ALiVE_Civpop_Audio_ME_26
+    {
+        name = "goat5";
+        sound[] = {"x\alive\addons\amb_civ_population\audio\MiddleEast\goat5.ogg", 1, 1, 30};
+        titles[] = {};
+    };
