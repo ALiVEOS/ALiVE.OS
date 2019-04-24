@@ -32,6 +32,23 @@ ALIVE_civilianWeapons = [] call ALIVE_fnc_hashCreate;
 
 [ALIVE_civilianWeapons, "CFP_C_AFG", [["CUP_arifle_ak47","CUP_30Rnd_762x39_AK47_M"],["CUP_arifle_ak74","CUP_30Rnd_762x39_AK47_M"],["CUP_arifle_AKM","CUP_30Rnd_762x39_AK47_M"],["CUP_arifle_AKS","CUP_30Rnd_762x39_AK47_M"],["CUP_srifle_LeeEnfield","CUP_10x_303_M"],["CUP_hgun_Makarov","CUP_8Rnd_9x18_Makarov_M"]]] call ALIVE_fnc_hashSet;
 
+// Civ Pop Panic Noises
+ALiVE_CivPop_PanicNoises = [
+	"ALiVE_Civpop_Audio_Fear1",
+    "ALiVE_Civpop_Audio_Fear2",
+    "ALiVE_Civpop_Audio_Fear3",
+    "ALiVE_Civpop_Audio_Fear4",
+    "ALiVE_Civpop_Audio_Fear5",
+    "ALiVE_Civpop_Audio_Fear6",
+    "ALiVE_Civpop_Audio_Fear7",
+    "ALiVE_Civpop_Audio_Fear8",
+    "ALiVE_Civpop_Audio_Fear9",
+    "ALiVE_Civpop_Audio_Fear10",
+    "ALiVE_Civpop_Audio_Fear11",
+    "ALiVE_Civpop_Audio_Fear12",
+	"ALiVE_Civpop_Audio_Fear13"
+];
+
 // Civ Pop Env sounds default
 ALIVE_civilianHouseTracks = [] call ALIVE_fnc_hashCreate;
 [ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_1", 180] call ALIVE_fnc_hashSet;
