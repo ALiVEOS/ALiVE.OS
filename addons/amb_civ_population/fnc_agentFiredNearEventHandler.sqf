@@ -32,21 +32,37 @@ if (_distance < 50) then {
 	// Play panic animation
 	private _anim = "ApanPercMstpSnonWnonDnon_ApanPknlMstpSnonWnonDnon";
 
-	[_unit, _anim] call ALIVE_fnc_switchMove;
+	if (random 1 > 0.4 && !(_unit getVariable ["isFleeing", false])) then {
+		[_unit, _anim] call ALIVE_fnc_switchMove;
+	};
 
+	// Play panic noise
+	if (random 1 > 0.3) then {
+		private _panicNoise = selectRandom ALiVE_CivPop_PanicNoises;
+		if (isMultiplayer) then {
+			[_unit, _panicNoise] remoteExec ["say3D"];
+		} else {
+			_unit say3D _panicNoise;
+		};
+	};
+
+	// Get them to run
+	_unit setSpeedMode "FULL";
 };
 
 if (_distance < 25) then {
 
 	// Hostility will increase towards firer faction
-
 	[position _unit,[str(side _firer)], -1] call ALiVE_fnc_updateSectorHostility;
 
 };
 
 if (isnil "_agent" || {!isServer}) exitwith {};
 
-if (_distance < 50) then {
+if (_distance < 50 && !(_unit getVariable ["isFleeing", false])) then {
 	// Stop current command & set them to flee
-	[_agent, "setActiveCommand", ["ALIVE_fnc_cc_flee", "managed", [120,360]]] call ALIVE_fnc_civilianAgent;
+
+	[_agent, "setActiveCommand", ["ALIVE_fnc_cc_flee", "managed", [10,20]]] call ALIVE_fnc_civilianAgent;
+
+	_unit setVariable ["isFleeing", true, false];
 };

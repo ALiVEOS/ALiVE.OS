@@ -22,7 +22,7 @@ _result = [_agent, []] call ALIVE_fnc_cc_flee;
 See Also:
 
 Author:
-ARJay
+Tupolov
 ---------------------------------------------------------------------------- */
 
 params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
@@ -56,20 +56,21 @@ switch (_state) do {
 
         private _homePosition = _agentData select 2 select 10;
 
-        _agent setSpeedMode "FULL";
         [_agent, _homePosition] call ALiVE_fnc_doMoveRemote;
+
+        _agent setSpeedMode "FULL";
 
         private _timeout = _minTimeout + floor(random _maxTimeout);
         private _timer = 0;
 
-        _nextState = "travel";
+        _nextState = "fleeing";
         _nextStateArgs = [_timeout, _timer];
 
         [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
 
     };
 
-    case "travel":{
+    case "fleeing":{
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -103,7 +104,7 @@ switch (_state) do {
 
             _agent playMove "ApanPknlMstpSnonWnonDnon_G01";
 
-            _nextState = "sleep";
+            _nextState = "cooldown";
             _nextStateArgs = _args;
 
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
@@ -111,7 +112,7 @@ switch (_state) do {
 
     };
 
-    case "sleep":{
+    case "cooldown":{
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
@@ -123,7 +124,8 @@ switch (_state) do {
 
         if(_timer > _timeout) then
         {
-            _agent playMove "";
+            [_agent, ""] call ALIVE_fnc_switchMove;
+            _agent setVariable ["isFleeing", false, false];
             _nextState = "done";
             [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
         }else{

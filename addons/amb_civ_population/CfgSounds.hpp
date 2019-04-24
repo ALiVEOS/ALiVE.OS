@@ -127,4 +127,5 @@ class CfgSounds
     //#include "audio\WW2\CfgSounds.cpp"
     //#include "audio\Pacfic\CfgSounds.cpp"
 
+    #include "audio\fear\CfgSounds.hpp"
 };
