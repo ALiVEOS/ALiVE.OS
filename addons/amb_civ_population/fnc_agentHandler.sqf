@@ -295,7 +295,13 @@ switch(_operation) do {
             _activeAgents pushback _agentID;
         };
 
+
+        // Update agentsActive
         [_agentsActive, _agentID, _agent] call ALIVE_fnc_hashSet;
+
+        // Update main hash too
+        _agents = [_logic, "agents"] call ALIVE_fnc_hashGet;
+        [_agents, _agentID, _agent] call ALIVE_fnc_hashSet;
 
     };
 
@@ -319,6 +325,10 @@ switch(_operation) do {
         };
 
         [_agentsInActive, _agentID, _agent] call ALIVE_fnc_hashSet;
+
+        // Update main hash too
+        _agents = [_logic, "agents"] call ALIVE_fnc_hashGet;
+        [_agents, _agentID, _agent] call ALIVE_fnc_hashSet;
 
     };
 
