@@ -50,11 +50,13 @@ if (_distance < 50) then {
 	_unit setSpeedMode "FULL";
 };
 
-if (_distance < 25) then {
+if (_distance < 25 && !(_unit getVariable ["alreadyPissedOff", false])) then {
 
 	// Hostility will increase towards firer faction
-	[position _unit,[str(side _firer)], -1] call ALiVE_fnc_updateSectorHostility;
+	[position _unit,[str(side _firer)], +2] call ALiVE_fnc_updateSectorHostility;
 
+	// They can only be angry once
+	_unit setVariable ["alreadyPissedOff", true, false];
 };
 
 if (isnil "_agent" || {!isServer}) exitwith {};
