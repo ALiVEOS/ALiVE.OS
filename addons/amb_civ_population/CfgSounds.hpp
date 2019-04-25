@@ -244,7 +244,7 @@ class CfgSounds
         titles[] = {};
     };
 
-    //#include "audio\African\CfgSounds.cpp"
+    #include "audio\African\CfgSounds.cpp"
     #include "audio\MiddleEast\CfgSounds.cpp"
     //#include "audio\WW2\CfgSounds.cpp"
     //#include "audio\Pacfic\CfgSounds.cpp"
