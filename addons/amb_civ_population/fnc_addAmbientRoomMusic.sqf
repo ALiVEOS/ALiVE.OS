@@ -42,6 +42,12 @@ hideObject _musicSource;
     while { (alive _musicSource) } do {
         while { _tracksPlayed < _totalTracks } do {
             private _trackName = selectRandom (_source select 1);
+
+            // Don't play pron during the day
+            if (_trackName == "ALiVE_Civpop_Audio_14" && daytime < 21 && dayTime > 3) then {
+                _trackName = "ALiVE_Civpop_Audio_19";
+            };
+
             private _trackDuration = [_source, _trackName] call ALIVE_fnc_hashGet;
 
             if(isMultiplayer) then {
