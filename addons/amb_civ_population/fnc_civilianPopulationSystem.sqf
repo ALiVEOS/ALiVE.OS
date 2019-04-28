@@ -76,7 +76,7 @@ switch(_operation) do {
         if (isServer) then {
 
             waituntil {!(isnil "ALIVE_profileSystemInit")};
-            
+
             private _debug = [_logic,"debug",false] call ALIVE_fnc_hashGet;
             private _spawnRadius = [_logic,"spawnRadius"] call ALIVE_fnc_hashGet;
             private _spawnTypeJetRadius = [_logic,"spawnTypeJetRadius"] call ALIVE_fnc_hashGet;
@@ -133,6 +133,8 @@ switch(_operation) do {
             // start the cluster activator
             private _clusterActivatorFSM = [_logic,_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\amb_civ_population\clusterActivator.fsm";
             [_logic,"activator_FSM",_clusterActivatorFSM] call ALIVE_fnc_hashSet;
+
+            // private _crowdActivatorFSM = [_logic,50,5,_spawnCycleTime,100] execFSM "\x\alive\addons\amb_civ_population\crowdActivator.fsm";
 
             // start listening for events
             [_logic,"listen"] call MAINCLASS;
