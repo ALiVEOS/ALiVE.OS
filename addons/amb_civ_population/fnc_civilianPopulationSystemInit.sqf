@@ -40,6 +40,10 @@ if(isServer) then {
     private _hostilityEast = parseNumber (_logic getVariable ["hostilityEast","0"]);
     private _hostilityIndep = parseNumber (_logic getVariable ["hostilityIndep","0"]);
     private _ambientCivilianRoles = call compile (_logic getVariable ["ambientCivilianRoles","[]"]);
+    private _ambientCrowdSpawn = parseNumber (_logic getVariable ["ambientCrowdSpawn","50"]);
+    private _ambientCrowdDensity = parseNumber (_logic getVariable ["ambientCrowdDensity","4"]);
+    private _ambientCrowdLimit = parseNumber (_logic getVariable ["ambientCrowdLimit","50"]);
+    private _ambientCrowdFaction = (_logic getVariable ["ambientCrowdFaction",""]);
 
 //Check if a SYS Profile Module is available
     private _errorMessage = "No Virtual AI system module was found! Please use this module in your mission! %1 %2";
@@ -67,6 +71,10 @@ if(isServer) then {
     [ALIVE_civilianPopulationSystem, "spawnTypeHeliRadius", _spawnTypeHeliRadius] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "activeLimiter", _activeLimiter] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "ambientCivilianRoles", _ambientCivilianRoles] call ALIVE_fnc_civilianPopulationSystem;
+    [ALIVE_civilianPopulationSystem, "ambientCrowdSpawn", _ambientCrowdSpawn] call ALIVE_fnc_civilianPopulationSystem;
+    [ALIVE_civilianPopulationSystem, "ambientCrowdDensity", _ambientCrowdDensity] call ALIVE_fnc_civilianPopulationSystem;
+    [ALIVE_civilianPopulationSystem, "ambientCrowdLimit", _ambientCrowdLimit] call ALIVE_fnc_civilianPopulationSystem;
+    [ALIVE_civilianPopulationSystem, "ambientCrowdFaction", _ambientCrowdFaction] call ALIVE_fnc_civilianPopulationSystem;
 
     if (count _ambientCivilianRoles == 0) then {GVAR(ROLES_DISABLED) = true} else {GVAR(ROLES_DISABLED) = false};
     PublicVariable QGVAR(ROLES_DISABLED);
