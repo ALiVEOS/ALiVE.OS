@@ -4,73 +4,73 @@ class CfgSounds
     class ALiVE_Civpop_Audio_1
     {
         name = "track1";
-        sound[] = {"x\alive\addons\amb_civ_population\audio\track1.ogg", 1, 1, 30};
+        sound[] = {"x\alive\addons\amb_civ_population\audio\track1.ogg", 0.7, 1, 20};
         titles[] = {};
     };
     class ALiVE_Civpop_Audio_2
     {
         name = "track2";
-        sound[] = {"x\alive\addons\amb_civ_population\audio\track2.ogg", 1, 1, 30};
+        sound[] = {"x\alive\addons\amb_civ_population\audio\track2.ogg", 0.7, 1, 20};
         titles[] = {};
     };
     class ALiVE_Civpop_Audio_3
     {
         name = "track3";
-        sound[] = {"x\alive\addons\amb_civ_population\audio\track3.ogg", 1, 1, 30};
+        sound[] = {"x\alive\addons\amb_civ_population\audio\track3.ogg", 0.7, 1, 20};
         titles[] = {};
     };
     class ALiVE_Civpop_Audio_4
     {
         name = "track4";
-        sound[] = {"x\alive\addons\amb_civ_population\audio\track4.ogg", 1, 1, 30};
+        sound[] = {"x\alive\addons\amb_civ_population\audio\track4.ogg", 0.7, 1, 20};
         titles[] = {};
     };
     class ALiVE_Civpop_Audio_5
     {
         name = "track5";
-        sound[] = {"x\alive\addons\amb_civ_population\audio\track5.ogg", 1, 1, 30};
+        sound[] = {"x\alive\addons\amb_civ_population\audio\track5.ogg", 0.7, 1, 20};
         titles[] = {};
     };
     class ALiVE_Civpop_Audio_6
     {
         name = "track6";
-        sound[] = {"x\alive\addons\amb_civ_population\audio\track6.ogg", 1, 1, 30};
+        sound[] = {"x\alive\addons\amb_civ_population\audio\track6.ogg", 0.7, 1, 20};
         titles[] = {};
     };
     class ALiVE_Civpop_Audio_7
     {
         name = "radio1";
-        sound[] = {"x\alive\addons\amb_civ_population\audio\radio1.ogg", 1, 1, 30};
+        sound[] = {"x\alive\addons\amb_civ_population\audio\radio1.ogg", 0.7, 1, 20};
         titles[] = {};
     };
     class ALiVE_Civpop_Audio_8
     {
         name = "radio2";
-        sound[] = {"x\alive\addons\amb_civ_population\audio\radio2.ogg", 1, 1, 30};
+        sound[] = {"x\alive\addons\amb_civ_population\audio\radio2.ogg", 0.7, 1, 20};
         titles[] = {};
     };
     class ALiVE_Civpop_Audio_9
     {
         name = "radio3";
-        sound[] = {"x\alive\addons\amb_civ_population\audio\radio3.ogg", 1, 1, 30};
+        sound[] = {"x\alive\addons\amb_civ_population\audio\radio3.ogg", 0.7, 1, 20};
         titles[] = {};
     };
     class ALiVE_Civpop_Audio_10
     {
         name = "radio4";
-        sound[] = {"x\alive\addons\amb_civ_population\audio\radio4.ogg", 1, 1, 30};
+        sound[] = {"x\alive\addons\amb_civ_population\audio\radio4.ogg", 0.7, 1, 20};
         titles[] = {};
     };
     class ALiVE_Civpop_Audio_11
     {
         name = "radio5";
-        sound[] = {"x\alive\addons\amb_civ_population\audio\radio5.ogg", 1, 1, 30};
+        sound[] = {"x\alive\addons\amb_civ_population\audio\radio5.ogg", 0.7, 1, 20};
         titles[] = {};
     };
     class ALiVE_Civpop_Audio_12
     {
         name = "radio6";
-        sound[] = {"x\alive\addons\amb_civ_population\audio\radio6.ogg", 1, 1, 30};
+        sound[] = {"x\alive\addons\amb_civ_population\audio\radio6.ogg", 0.7, 1, 20};
         titles[] = {};
     };
     class ALiVE_Civpop_Audio_13
