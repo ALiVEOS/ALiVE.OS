@@ -32,6 +32,21 @@ ALIVE_civilianWeapons = [] call ALIVE_fnc_hashCreate;
 
 [ALIVE_civilianWeapons, "CFP_C_AFG", [["CUP_arifle_ak47","CUP_30Rnd_762x39_AK47_M"],["CUP_arifle_ak74","CUP_30Rnd_762x39_AK47_M"],["CUP_arifle_AKM","CUP_30Rnd_762x39_AK47_M"],["CUP_arifle_AKS","CUP_30Rnd_762x39_AK47_M"],["CUP_srifle_LeeEnfield","CUP_10x_303_M"],["CUP_hgun_Makarov","CUP_8Rnd_9x18_Makarov_M"]]] call ALIVE_fnc_hashSet;
 
+// Civ Pop Crowds
+
+ALIVE_CivPop_Crowd_Objects = [
+  "shop",
+  "church",
+  "mosque",
+  "stall",
+  "chapel",
+  "store",
+  "garage",
+  "campfire",
+  "market",
+  "kiosk"
+];
+
 // Civ Pop Panic Noises
 ALiVE_CivPop_PanicNoises = [
 	"ALiVE_Civpop_Audio_Fear1",
@@ -47,6 +62,12 @@ ALiVE_CivPop_PanicNoises = [
     "ALiVE_Civpop_Audio_Fear11",
     "ALiVE_Civpop_Audio_Fear12",
 	"ALiVE_Civpop_Audio_Fear13"
+];
+
+// Sounds to play at night onlys
+ALiVE_CivPop_NightSounds = [
+    "ALiVE_Civpop_Audio_13",
+    "ALiVE_Civpop_Audio_14"
 ];
 
 // Civ Pop Env sounds default
