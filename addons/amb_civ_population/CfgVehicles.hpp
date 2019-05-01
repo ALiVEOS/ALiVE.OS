@@ -166,6 +166,30 @@ class CfgVehicles {
                                         };
                                 };
                         };
+                        class ambientCrowdSpawn
+                        {
+                                displayName = "$STR_ALIVE_CIV_POP_CROWD_SPAWN_RADIUS";
+                                description = "$STR_ALIVE_CIV_POP_CROWD_SPAWN_RADIUS_COMMENT";
+                                defaultvalue = "50";
+                        };
+                        class ambientCrowdDensity
+                        {
+                                displayName = "$STR_ALIVE_CIV_POP_CROWD_DENSITY";
+                                description = "$STR_ALIVE_CIV_POP_CROWD_DENSITY_COMMENT";
+                                defaultvalue = "5";
+                        };
+                        class ambientCrowdLimit
+                        {
+                                displayName = "$STR_ALIVE_CIV_POP_CROWD_ACTIVE_LIMITER";
+                                description = "$STR_ALIVE_CIV_POP_CROWD_ACTIVE_LIMITER_COMMENT";
+                                defaultvalue = "50";
+                        };
+                        class ambientCrowdFaction
+                        {
+                                displayName = "$STR_ALIVE_CIV_POP_CROWD_FACTION";
+                                description = "$STR_ALIVE_CIV_POP_CROWD_FACTION_COMMENT";
+                                defaultvalue = "";
+                        };
                 };
 
         };

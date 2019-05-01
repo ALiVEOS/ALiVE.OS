@@ -120,4 +120,28 @@
 <Key ID="STR_ALIVE_CIV_POP_DEBUG1_COMMENT">
     <Original>Toggle debug mode on the civilian system</Original>
 </Key>
+<Key ID="STR_ALIVE_CIV_POP_CROWD_SPAWN_RADIUS">
+    <Original>Crowd Spawn Radius</Original>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_CROWD_SPAWN_RADIUS_COMMENT">
+    <Original>The radius at which houses are activated to spawn civilians for crowds. Set to 0 to disable crowds.</Original>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_CROWD_DENSITY">
+    <Original>Crowd Civs per House</Original>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_CROWD_DENSITY_COMMENT">
+    <Original>The number of civilians spawned per house for crowds</Original>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_CROWD_ACTIVE_LIMITER">
+    <Original>Crowd Limit</Original>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_CROWD_ACTIVE_LIMITER_COMMENT">
+    <Original>Maximum number of civilians that can be active for all crowds</Original>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_CROWD_FACTION">
+    <Original>Crowd Faction</Original>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_CROWD_FACTION_COMMENT">
+    <Original>Optional: Will improve performance if single default faction is specified. Otherwise faction will be chosen based on civilian clusster faction.</Original>
+</Key>
 </Container></Package></Project>
