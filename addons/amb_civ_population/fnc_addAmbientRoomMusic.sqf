@@ -43,8 +43,8 @@ hideObject _musicSource;
         while { _tracksPlayed < _totalTracks } do {
             private _trackName = selectRandom (_source select 1);
 
-            // Don't play pron during the day
-            if (_trackName == "ALiVE_Civpop_Audio_14" && daytime < 21 && dayTime > 3) then {
+            // Don't play night sounds during the day
+            if (_trackName in ALiVE_CivPop_NightSounds && daytime < 21 && dayTime > 3) then {
                 _trackName = "ALiVE_Civpop_Audio_19";
             };
 
