@@ -40,7 +40,7 @@ if(isServer) then {
     private _hostilityEast = parseNumber (_logic getVariable ["hostilityEast","0"]);
     private _hostilityIndep = parseNumber (_logic getVariable ["hostilityIndep","0"]);
     private _ambientCivilianRoles = call compile (_logic getVariable ["ambientCivilianRoles","[]"]);
-    private _ambientCrowdSpawn = parseNumber (_logic getVariable ["ambientCrowdSpawn","50"]);
+    private _ambientCrowdSpawn = parseNumber (_logic getVariable ["ambientCrowdSpawn","0"]);
     private _ambientCrowdDensity = parseNumber (_logic getVariable ["ambientCrowdDensity","4"]);
     private _ambientCrowdLimit = parseNumber (_logic getVariable ["ambientCrowdLimit","50"]);
     private _ambientCrowdFaction = (_logic getVariable ["ambientCrowdFaction",""]);
