@@ -2,7 +2,7 @@
 /*%FSM<HEAD>*/
 /*
 item0[] = {"MOVE",2,250,-835.013550,511.870850,-745.013550,561.870850,0.000000,"MOVE"};
-item1[] = {"INIT",0,4346,-277.342499,-271.307617,-187.342514,-221.307678,0.000000,"INIT"};
+item1[] = {"INIT",0,250,-277.342499,-271.307617,-187.342514,-221.307678,0.000000,"INIT"};
 item2[] = {"INIT_COMPLETE",4,218,-277.365326,-192.055389,-187.365341,-142.055359,0.000000,"INIT" \n "COMPLETE"};
 item3[] = {"_",-1,250,-440.685394,-235.585892,-437.600311,-235.585892,0.000000,""};
 item4[] = {"DESTROY",4,218,-157.505569,-114.375870,-67.505569,-64.375847,0.000000,"DESTROY"};
@@ -21,7 +21,7 @@ item16[] = {"CHECK_ACTIVE_CLU",2,250,-272.305481,32.477703,-182.305450,82.477707
 item17[] = {"HAS_NEW__BUILDIN",4,218,-94.943115,202.020569,-4.943207,252.020691,1.000000,"HAS" \n "NEW " \n "BUILDINGS"};
 item18[] = {"WAIT",4,218,-402.581726,-117.430069,-312.581726,-67.430016,1.000000,"WAIT"};
 item19[] = {"NO__ACTIVATE",4,218,201.312622,276.080139,291.312500,326.080261,0.000000,"NO " \n "ACTIVATE"};
-item20[] = {"ANALYSE_NEW_HOUS",2,250,13.272003,273.792206,103.272133,323.792389,0.000000,"ANALYSE" \n "NEW" \n "HOUSES"};
+item20[] = {"ANALYSE_NEW_HOUS",2,4346,13.272003,273.792206,103.272133,323.792389,0.000000,"ANALYSE" \n "NEW" \n "HOUSES"};
 item21[] = {"SPAWN_LOOP",2,250,12.918488,595.304810,102.918610,645.305054,0.000000,"SPAWN" \n "LOOP"};
 item22[] = {"ITERATE",4,218,144.952240,594.056030,234.952271,644.056152,1.000000,"ITERATE"};
 item23[] = {"END_LOOP",4,218,13.280243,665.988647,103.280182,715.988647,0.000000,"END" \n "LOOP"};
@@ -133,8 +133,8 @@ link64[] = {47,46};
 link65[] = {48,6};
 link66[] = {49,0};
 link67[] = {50,33};
-globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-834.945374,525.295105,959.158447,-304.408234,999,928,1};
-window[] = {2,-1,-1,-32000,-32000,1123,-9,2055,-9,3,1021};
+globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-429.072723,350.279327,826.940063,102.977440,999,928,1};
+window[] = {2,-1,-1,-32000,-32000,1356,224,2288,224,3,1021};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -389,7 +389,7 @@ class FSM
                          "" \n
                          "private _destroy = false;" \n
                          "private _pause = false;" \n
-                         "private _debug = [_civPopSystem,""debug"",false] call ALiVE_fnc_HashGet;" \n
+                         "private _debug = true;  [_civPopSystem,""debug"",false] call ALiVE_fnc_HashGet;" \n
                          "" \n
                          "private _noCombat = time;" \n
                          "private _activeAgents = [];" \n
@@ -769,7 +769,7 @@ class FSM
                                         priority = 2.000000;
                                         to="CHECK_AGENTS___B";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_countClustersActive > 0 && dayTime < 21 && dayTime > 7"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_countClustersActive > 0 && sunOrMoon > 0.5"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -782,7 +782,7 @@ class FSM
                         name = "ANALYSE_NEW_HOUS";
                         itemno = 20;
                         init = /*%FSM<STATEINIT""">*/"private _civSpawnCount = 0;" \n
-                         "" \n
+                         "private _lightAdjustedCrowdDensity = _ambientCrowdDensity;" \n
                          "{" \n
                          "" \n
                          "    private _building = _x;" \n
@@ -841,7 +841,13 @@ class FSM
                          "  _toSpawn = [_toSpawn, _sortCode] call ALiVE_fnc_shellSort;" \n
                          "  _countToSpawn = count _toSpawn;" \n
                          "" \n
-                         "  _civSpawnCount = (count _toSpawn) * _ambientCrowdDensity;" \n
+                         "	_lightAdjustedCrowdDensity = if (sunOrMoon == 1) then {" \n
+                         "		_ambientCrowdDensity" \n
+                         "	} else {" \n
+                         "		round(_ambientCrowdDensity * (sunOrMoon / 2))" \n
+                         "	};" \n
+                         "  " \n
+                         "	_civSpawnCount = (count _toSpawn) * _lightAdjustedCrowdDensity;" \n
                          "  _agentSpawnCount = 0;" \n
                          "" \n
                          "    // DEBUG -------------------------------------------------------------------------------------" \n
@@ -902,7 +908,7 @@ class FSM
                          "// DEBUG -------------------------------------------------------------------------------------" \n
                          "" \n
                          "" \n
-                         "private _index = round (_agentSpawnCount / _ambientCrowdDensity);" \n
+                         "private _index = round (_agentSpawnCount / _lightAdjustedCrowdDensity);" \n
                          "" \n
                          "private _building = _toSpawn select _index select 0;" \n
                          "" \n
@@ -1472,7 +1478,7 @@ class FSM
                          "	{" \n
                          " 	 private _buildings = [position _x, 50] call ALiVE_fnc_getEnterableHouses;" \n
                          " 	 {" \n
-                         "      if !(_x in _activeBuildings) then {" \n
+                         "      if ( !(_x in _activeBuildings) && (random 1) <= sunOrMoon) then {" \n
                          "          _newBuildings pushBackUnique _x;" \n
                          "      };" \n
                          "	  } foreach _buildings;" \n
