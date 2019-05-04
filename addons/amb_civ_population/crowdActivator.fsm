@@ -2,7 +2,7 @@
 /*%FSM<HEAD>*/
 /*
 item0[] = {"MOVE",2,250,-835.013550,511.870850,-745.013550,561.870850,0.000000,"MOVE"};
-item1[] = {"INIT",0,4346,-277.342499,-271.307617,-187.342514,-221.307678,0.000000,"INIT"};
+item1[] = {"INIT",0,250,-277.342499,-271.307617,-187.342514,-221.307678,0.000000,"INIT"};
 item2[] = {"INIT_COMPLETE",4,218,-277.365326,-192.055389,-187.365341,-142.055359,0.000000,"INIT" \n "COMPLETE"};
 item3[] = {"_",-1,250,-440.685394,-235.585892,-437.600311,-235.585892,0.000000,""};
 item4[] = {"DESTROY",4,218,-157.505569,-114.375870,-67.505569,-64.375847,0.000000,"DESTROY"};
@@ -22,7 +22,7 @@ item17[] = {"HAS_NEW__BUILDIN",4,218,-94.943115,202.020569,-4.943207,252.020691,
 item18[] = {"WAIT",4,218,-402.581726,-117.430069,-312.581726,-67.430016,1.000000,"WAIT"};
 item19[] = {"NO__ACTIVATE",4,218,201.312622,276.080139,291.312500,326.080261,0.000000,"NO " \n "ACTIVATE"};
 item20[] = {"ANALYSE_NEW_HOUS",2,250,13.272003,273.792206,103.272133,323.792389,0.000000,"ANALYSE" \n "NEW" \n "HOUSES"};
-item21[] = {"SPAWN_LOOP",2,250,12.918488,595.304810,102.918610,645.305054,0.000000,"SPAWN" \n "LOOP"};
+item21[] = {"SPAWN_LOOP",2,4346,12.918488,595.304810,102.918610,645.305054,0.000000,"SPAWN" \n "LOOP"};
 item22[] = {"ITERATE",4,218,144.952240,594.056030,234.952271,644.056152,1.000000,"ITERATE"};
 item23[] = {"END_LOOP",4,218,13.280243,665.988647,103.280182,715.988647,0.000000,"END" \n "LOOP"};
 item24[] = {"ANALYSE_ACTIVE_A",2,250,-565.516724,302.894653,-475.516846,352.894592,0.000000,"ANALYSE" \n "ACTIVE" \n "AGENTS"};
@@ -133,8 +133,8 @@ link64[] = {47,46};
 link65[] = {48,6};
 link66[] = {49,0};
 link67[] = {50,33};
-globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-429.072723,350.279327,102.977417,-620.985229,999,928,1};
-window[] = {2,-1,-1,-32000,-32000,1356,224,2288,224,3,1021};
+globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-477.906494,379.380798,749.701660,-301.239624,757,928,1};
+window[] = {2,-1,-1,-32000,-32000,1324,192,2256,192,3,779};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -152,18 +152,59 @@ class FSM
                          "" \n
                          "	private _timedout = _agent getVariable [""ALiVE_Crowd_Busy"",time];" \n
                          "	private _busy = time < _timedout;" \n
+                         "	private _fleeing = _agent getVariable [""ALiVE_Crowd_Fleeing"", false];" \n
+                         "" \n
+                         "	if (unitReady _agent && _busy && alive _agent && !_fleeing) then {" \n
+                         "		private _action = _agent getVariable [""ALIVE_CIV_ACTION"", ""None""];" \n
+                         "		switch (_action) do {" \n
+                         "			case ""Crowd"": {" \n
+                         "				if (_protesting) then {" \n
+                         "					// Play angry anim" \n
+                         "				} else {" \n
+                         "					// Play chill anim" \n
+                         "				};" \n
+                         "			};" \n
+                         "			case ""Observe"": {" \n
+                         "				if (_protesting) then {" \n
+                         "					// Play angry anim" \n
+                         "				} else {" \n
+                         "					// play arms behind back" \n
+                         "					[_agent,""InBaseMoves_HandsBehindBack1""] call ALIVE_fnc_switchMove;" \n
+                         "				};" \n
+                         "			};" \n
+                         "			case ""Stones"": {" \n
+                         "				if (_protesting) then {" \n
+                         "					// THrow stones" \n
+                         "				} else {" \n
+                         "					// Play angry anim" \n
+                         "				};" \n
+                         "			};" \n
+                         "		};" \n
+                         "	};" \n
                          "" \n
                          "  if (unitReady _agent && !_busy && alive _agent) then {" \n
                          "" \n
                          "		private _position = position _agent;" \n
                          "" \n
-                         "		// Reset" \n
-                         "		[_agent, """"] call ALIVE_fnc_switchMove;" \n
+                         "		// Reset Fleeing" \n
+                         "		if (_fleeing) then {" \n
+                         "			[_agent, """"] call ALIVE_fnc_switchMove;" \n
+                         "			_agent setVariable [""ALiVE_Crowd_Fleeing"", false, false];" \n
+                         "		};" \n
+                         "" \n
+                         "		// Reset crowd" \n
+                         "		if ((_agent getVariable [""ALIVE_CIV_ACTION"", ""None""]) == ""Crowd"") then {" \n
+                         "			_notCrowding = true;" \n
+                         "			_crowdChoice = false;" \n
+                         "			_crowdTarget = objNull;" \n
+                         "			_crowdPos = [];" \n
+                         "		};" \n
+                         "" \n
                          "		_agent doWatch objNull;" \n
                          "		_agent setSpeedMode ""NORMAL"";" \n
-                         "		_agent setVariable [""ALiVE_Crowd_Fleeing"", false, false];" \n
                          "		group _agent setCombatMode ""GREEN"";" \n
                          "  	   group _agent setBehaviour ""CARELESS"";" \n
+                         "		_agent removeMagazine [""Handgrenade_Stone"",3];" \n
                          "" \n
                          "      // Check hostility" \n
                          "      private _player = [_position, 60] call ALIVE_fnc_getRandomPlayerNear;		" \n
@@ -206,42 +247,98 @@ class FSM
                          "" \n
                          "    	if(_clusterHostilityLevel >= 10 && {_clusterHostilityLevel < 40}) then {" \n
                          "			_chances = _movementChances select 1; " \n
-                         "			_agent removeMagazine [""Handgrenade_Stone"",3];" \n
-                         "" \n
+                         "			_protesting = false;" \n
                          "    	};" \n
                          "" \n
                          "    	if(_clusterHostilityLevel >= 40 && {_clusterHostilityLevel < 70}) then {" \n
                          "          _chances = _movementChances select 2;" \n
-                         "			_agent removeMagazine [""Handgrenade_Stone"",3];" \n
+                         "			_protesting = false;" \n
                          "					group _agent setCombatMode ""GREEN"";" \n
                          "  	            group _agent setBehaviour ""SAFE"";" \n
                          "    	};" \n
                          "" \n
                          "    	if(_clusterHostilityLevel >= 70 && {_clusterHostilityLevel < 100}) then {" \n
                          "          _chances = _movementChances select 3;" \n
-                         "					_agent removeMagazine [""Handgrenade_Stone"",3];" \n
+                         "			_protesting = true;" \n
                          "					group _agent setCombatMode ""YELLOW"";" \n
                          "  	            group _agent setBehaviour ""AWARE"";" \n
                          "   	};" \n
                          "" \n
                          "    	if(_clusterHostilityLevel >= 100) then {" \n
                          "          _chances = _movementChances select 4;" \n
-                         "					_agent removeMagazine [""Handgrenade_Stone"",3];" \n
+                         "			_protesting = true;" \n
                          "					group _agent setCombatMode ""RED"";" \n
                          "  	            group _agent setBehaviour ""COMBAT"";" \n
                          "    	};" \n
                          "      " \n
+                         "		// Choose an action" \n
                          "		private _action = selectRandomWeighted _chances;" \n
                          "" \n
-                         "		if (_countActiveBuildings < 2) then {" \n
-                         "			_action = ""Player"";" \n
-                         "		};" \n
+                         "		If (_crowdChoice || (!_notCrowding && {_agent distance _crowdPos < 60}) ) then {" \n
                          "" \n
-                         "		if (_action == ""Chill"" && isOnRoad _position) then {" \n
-                         "			_action = ""Move"";" \n
-                         "		};" \n
+                         "			_action = ""Crowd"";" \n
                          "" \n
+                         "		} else {" \n
+                         "" \n
+                         "			if (_countActiveBuildings < 2) then {" \n
+                         "				_action = ""Player"";" \n
+                         "			};" \n
+                         "" \n
+                         "			if (_action == ""Chill"" && isOnRoad _position) then {" \n
+                         "				_action = ""Move"";" \n
+                         "			};" \n
+                         "		};" \n
+                         "	" \n
                          "		switch (_action) do {" \n
+                         "" \n
+                         "			case ""Crowd"" : {" \n
+                         "				if (_crowdChoice) then {" \n
+                         "" \n
+                         "					// This is the first " \n
+                         "					// SET CROWDING Location BASED ON HOSTILITY" \n
+                         "					if ((_clusterHostilityLevel > 50 || random 1 > 0.7) && count _player > 0) then {" \n
+                         "						// Crowd player" \n
+                         "						_crowdtarget = selectRandom _player;" \n
+                         "            		_crowdPos = _crowdTarget getpos [2 + random 5, random 360];" \n
+                         "          		} else {" \n
+                         "						private _nearHouses = _position nearObjects [""House"",50];" \n
+                         "          			private _nearSpecialPlaces = [];" \n
+                         "          			{" \n
+                         "              			private _house = _x;" \n
+                         "              			{" \n
+                         "                  		if (toLower(typeOf _house) find _x != -1) then {" \n
+                         "                      		_nearSpecialPlaces pushback _house;" \n
+                         "                  		};" \n
+                         "              			} foreach (ALIVE_CivPop_Crowd_Objects - [""shop"", ""store"", ""garage""]);" \n
+                         "          			} foreach _nearHouses;" \n
+                         "" \n
+                         "          			if (count _nearSpecialPlaces > 0) then {" \n
+                         "							_crowdTarget = (selectRandom _nearSpecialPlaces);" \n
+                         "              			_crowdPos = _crowdTarget getpos [random 5, random 180];" \n
+                         "          			} else {" \n
+                         "							if(count _player > 0) then {" \n
+                         "								_crowdtarget = selectRandom _player;" \n
+                         "            				_crowdPos = _crowdTarget getpos [2 + random 5, random 360];" \n
+                         "							} else {" \n
+                         "								_crowdtarget = _agent;" \n
+                         "								_crowdPos = position _agent;" \n
+                         "							};" \n
+                         "          			};" \n
+                         "					};" \n
+                         "					// Play crowd noise based on protesting or not" \n
+                         "					_notCrowding = false;" \n
+                         "					_agent setVariable [""ALiVE_Crowd_Leader"", true, false];" \n
+                         "					_agent setVariable [""ALiVE_Crowd_Busy"", (time + 110), false];" \n
+                         "					_crowdChoice = false;" \n
+                         "					_position = _crowdPos;" \n
+                         "				} else {" \n
+                         "					_position = _crowdPos getpos [random 5, random 180];" \n
+                         "					_agent setVariable [""ALiVE_Crowd_Busy"", (time + 120), false];" \n
+                         "				};" \n
+                         "				_agent lookAt _crowdTarget;" \n
+                         "				// _agent doWatch _crowdTarget;" \n
+                         "				// [_agent, _position, _clusterHostilityLevel] call ALiVE_fnc_crowdGatheringEventHandler;" \n
+                         "			};" \n
                          "" \n
                          "			case ""Move"" : {" \n
                          "				private _building = selectRandom _activeBuildings;" \n
@@ -300,8 +397,8 @@ class FSM
                          "         	if (count _player > 0) then {" \n
                          "						_agent setVariable [""ALiVE_Crowd_Busy"",(time + 15), false];" \n
                          "                  _position = (_player select 0) getpos [10 + random 10, random 360];" \n
-                         "						[_agent,""InBaseMoves_HandsBehindBack1""] call ALIVE_fnc_switchMove;" \n
                          "						_agent doWatch (_player select 0);" \n
+                         "						_agent lookAt (_player select 0);" \n
                          "          	} else {" \n
                          "					private _building = selectRandom _activeBuildings;" \n
                          "" \n
@@ -331,13 +428,15 @@ class FSM
                          "				};" \n
                          "			};" \n
                          "		};" \n
-                         "" \n
                          "		_agent setVariable [""ALIVE_CIV_ACTION"", _action, false];" \n
                          "      _agent moveTo _position;" \n
+                         "" \n
                          "  };" \n
                          "};" \n
                          "" \n
-                         "_count = _count + 1;"/*%FSM</STATEINIT""">*/;
+                         "_count = _count + 1;" \n
+                         "" \n
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -374,6 +473,7 @@ class FSM
                         init = /*%FSM<STATEINIT""">*/"params [""_civPopSystem"",""_spawnDistance"",""_ambientCrowdDensity"",""_spawnCycleTime"",""_activeLimiter"",""_faction""];" \n
                          "" \n
                          "/* TODO:" \n
+                         "	moveTo to RemoveMoveTo" \n
                          "  TAOR / BLACKLIST" \n
                          "  Ambient Crowd noises" \n
                          "  Crowd actions:" \n
@@ -392,6 +492,11 @@ class FSM
                          "private _debug = [_civPopSystem,""debug"",false] call ALiVE_fnc_HashGet;" \n
                          "" \n
                          "private _noCombat = time;" \n
+                         "private _protesting = true;" \n
+                         "private _crowdPos = [];" \n
+                         "private _crowdTarget = objNull;" \n
+                         "private _notCrowding = true;" \n
+                         "" \n
                          "private _activeAgents = [];" \n
                          "private _activeBuildings = [];" \n
                          "private _civClasses = [];" \n
@@ -1108,7 +1213,7 @@ class FSM
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"((_countToDespawn == 0) && (_analysisComplete))"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"private _count = 0;" \n
-                                         "private _crowding = random 1 > 0.7;"/*%FSM</ACTION""">*/;
+                                         "private _crowdChoice = (random 1 > 0.9) && _notCrowding;"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };
@@ -1140,6 +1245,13 @@ class FSM
                          "  		if(_debug) then {" \n
                          "          deleteMarker (_agent getVariable [""CP_Marker"",""""]);" \n
                          "  		};" \n
+                         "" \n
+                         "		// End crowding if leader despawns" \n
+                         "		if (_agent getVariable [""ALiVE_Crowd_Leader"",false]) then {" \n
+                         "			_notCrowding = true;" \n
+                         "			_crowdTarget = objNull;" \n
+                         "			_crowdPos = [];" \n
+                         "		};" \n
                          "" \n
                          "  		deleteVehicle _agent;" \n
                          "   };" \n
