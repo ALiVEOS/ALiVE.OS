@@ -196,7 +196,7 @@ switch (_operation) do {
 
                 //Push to clients
                 PublicVariable QGVAR(STORE);
-                
+
                 _logic setVariable ["init", true, true];
             };
 
@@ -244,7 +244,7 @@ switch (_operation) do {
                 };
 
                 TRACE_1("Initial STORE", GVAR(STORE));
-
+                GVAR(HINT) = false;
                 GVAR(arrowList) = [];
                 GVAR(colorChoice) = 0;
                 GVAR(colorList) = [
@@ -296,11 +296,12 @@ switch (_operation) do {
 
                         if (str ((findDisplay _display) displayCtrl MAP_CONTROL) != "No control" ) then {
                             // diag_log _display;
+
                             disableSerialization;
                             _display = findDisplay _display;
                             _control = _display displayCtrl MAP_CONTROL;
                             _control ctrlAddEventHandler ["MouseButtonClick", "[ALiVE_SYS_marker,'mouseButton',[player, _this]] call ALiVE_fnc_marker;"];
-                            _control ctrlAddEventHandler ["MouseButtonDblClick", "hintSilent 'Only ALIVE Advanced Markers will be stored. Default BIS markers are not supported by ALIVE. CTRL-MOUSE BUTTON to create an Advanced Marker.'"];
+                            _control ctrlAddEventHandler ["MouseButtonDblClick", "if !(ALIVE_SYS_MARKER_HINT) then { hintSilent 'Only ALIVE Advanced Markers will be stored. Default BIS markers are not supported by ALIVE. CTRL-MOUSE BUTTON to create an Advanced Marker.'; ALIVE_SYS_MARKER_HINT = true;};"];
                             _control ctrlAddEventHandler ["draw", "[ALiVE_SYS_marker,'draw',[player, _this]] call ALiVE_fnc_marker;"];
                             _control ctrlAddEventHandler ["MouseMoving", {[ALiVE_SYS_marker,"mouseMoving",[player, _this]] call ALiVE_fnc_marker;}];
 
@@ -341,7 +342,7 @@ switch (_operation) do {
 
                     _control = _display displayCtrl MAP_CONTROL;
                     _control ctrlAddEventHandler ["MouseButtonClick", "[ALiVE_SYS_marker,'mouseButton',[player, _this]] call ALiVE_fnc_marker;"];
-                    _control ctrlAddEventHandler ["MouseButtonDblClick", "hint 'Only ALIVE Advanced Markers will be stored. Default BIS markers are not supported by ALIVE. CTRL+ALT+MOUSE BUTTON to create an Advanced Marker.'"];
+                    _control ctrlAddEventHandler ["MouseButtonDblClick", "if !(ALIVE_SYS_MARKER_HINT) then { hintSilent 'Only ALIVE Advanced Markers will be stored. Default BIS markers are not supported by ALIVE. CTRL-MOUSE BUTTON to create an Advanced Marker.'; ALIVE_SYS_MARKER_HINT = true;};"];
                        _control ctrlAddEventHandler ["draw", "[ALiVE_SYS_marker,'draw',[player, _this]] call ALiVE_fnc_marker;"];
                     _control ctrlAddEventHandler ["MouseMoving", {[ALiVE_SYS_marker,"mouseMoving",[player, _this]] call ALiVE_fnc_marker;}];
 
