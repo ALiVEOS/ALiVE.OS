@@ -67,8 +67,14 @@ ALiVE_CivPop_PanicNoises = [
 // Sounds to play at night onlys
 ALiVE_CivPop_NightSounds = [
     "ALiVE_Civpop_Audio_13",
-    "ALiVE_Civpop_Audio_14"
+    "ALiVE_Civpop_Audio_14",
+    "ALiVE_Civpop_Audio_AFR_29",
+    "ALiVE_Civpop_Audio_AFR_30",
+    "ALiVE_Civpop_Audio_AFR_31"
 ];
+
+// Civ Pop Env sounds by faction
+ALIVE_civilianFactionHouseTracks = [] call ALIVE_fnc_hashCreate;
 
 // Civ Pop Env sounds default
 ALIVE_civilianHouseTracks = [] call ALIVE_fnc_hashCreate;
@@ -104,13 +110,10 @@ ALIVE_civilianHouseTracks = [] call ALIVE_fnc_hashCreate;
 [ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_30", 7] call ALIVE_fnc_hashSet;
 [ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_40", 2] call ALIVE_fnc_hashSet;
 
-// Civ Pop Env sounds by faction
-ALIVE_civilianFactionHouseTracks = [] call ALIVE_fnc_hashCreate;
-
 // Middle East factions
 
 // CUP TAKI
-CUP_C_TK_ALIVE_civilianHouseTracks = +ALIVE_civilianHouseTracks;
+CUP_C_TK_ALIVE_civilianHouseTracks =+ALIVE_civilianHouseTracks;
 
 [CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_16"] call ALIVE_fnc_hashRem; // Car Alarm
 [CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_1", 135] call ALIVE_fnc_hashSet;
@@ -143,31 +146,63 @@ CUP_C_TK_ALIVE_civilianHouseTracks = +ALIVE_civilianHouseTracks;
 [ALIVE_civilianFactionHouseTracks, "CUP_C_TK", CUP_C_TK_ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;
 
 // CFP Afghan
-CFP_C_AFG_ALIVE_civilianHouseTracks = +CUP_C_TK_ALIVE_civilianHouseTracks;
+CFP_C_AFG_ALIVE_civilianHouseTracks =+CUP_C_TK_ALIVE_civilianHouseTracks;
 [ALIVE_civilianFactionHouseTracks, "CFP_C_AFG", CFP_C_AFG_ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;
 
 // CFP Middle East
-CFP_C_ME_ALIVE_civilianHouseTracks = +CUP_C_TK_ALIVE_civilianHouseTracks;
+CFP_C_ME_ALIVE_civilianHouseTracks =+CUP_C_TK_ALIVE_civilianHouseTracks;
 [ALIVE_civilianFactionHouseTracks, "CFP_C_ME", CFP_C_ME_ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;
 
 // African factions
 
 // CFP African Christian
-CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks = +ALIVE_civilianHouseTracks;
+CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks =+ALIVE_civilianHouseTracks;
 
 [CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_16"] call ALIVE_fnc_hashRem; // Car Alarm
-[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_1", 135] call ALIVE_fnc_hashSet;
-[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_2", 85] call ALIVE_fnc_hashSet;
-[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_3", 35] call ALIVE_fnc_hashSet;
-[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_4", 55] call ALIVE_fnc_hashSet;
-[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_5", 45] call ALIVE_fnc_hashSet;
-[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_6", 50] call ALIVE_fnc_hashSet;
-[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_7", 50] call ALIVE_fnc_hashSet;
-[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_8", 85] call ALIVE_fnc_hashSet;
-[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_9", 140] call ALIVE_fnc_hashSet;
-[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_10", 125] call ALIVE_fnc_hashSet;
-[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_11", 95] call ALIVE_fnc_hashSet;
-[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_12", 70] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_1", 145] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_2", 154] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_3", 104] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_4", 37] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_5", 35] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_6", 28] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_7", 23] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_8", 21] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_9", 116] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_10", 208] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_11", 342] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_12", 430] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_13", 92] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_14", 83] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_15", 85] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_16", 85] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_17", 145] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_18", 154] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_19", 104] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_20", 37] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_21", 36] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_22", 28] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_23", 23] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_24", 208] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_25", 342] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_26", 430] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_27", 54] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_28", 88] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_29", 100] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_30", 109] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_31", 106] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_32", 59] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_33", 59] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_34", 63] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_35", 114] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_36", 102] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_37", 85] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_38", 21] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_39", 116] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_40", 64] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_41", 93] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_42", 51] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_43", 53] call ALIVE_fnc_hashSet;
+[CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_AFR_44", 83] call ALIVE_fnc_hashSet;
 
 [CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_16", 8] call ALIVE_fnc_hashSet;
 [CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_17", 8] call ALIVE_fnc_hashSet;
@@ -181,10 +216,10 @@ CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks = +ALIVE_civilianHouseTracks;
 [CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_25", 8] call ALIVE_fnc_hashSet;
 [CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_26", 8] call ALIVE_fnc_hashSet;
 
-[ALIVE_civilianFactionHouseTracks, "CFP_C_AFRCHRISTIAN", CFP_C_AFG_ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;
+[ALIVE_civilianFactionHouseTracks, "CFP_C_AFRCHRISTIAN", CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;
 
 // CFP African Islamic
-CFP_C_AFRISLAMIC_ALIVE_civilianHouseTracks = +CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks;
+CFP_C_AFRISLAMIC_ALIVE_civilianHouseTracks =+CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks;
 
 [CFP_C_AFRISLAMIC_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_1", 135] call ALIVE_fnc_hashSet;
 [CFP_C_AFRISLAMIC_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_2", 85] call ALIVE_fnc_hashSet;
