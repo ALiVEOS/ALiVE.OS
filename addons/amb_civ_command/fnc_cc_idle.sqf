@@ -82,7 +82,7 @@ switch (_state) do {
 
             private _homePosition = _agentData select 2 select 10;
 
-            if([_homePosition, 30] call ALiVE_fnc_anyPlayersInRange > 0) then {
+            if([_homePosition, 30] call ALiVE_fnc_anyPlayersInRange > 0 && random 1 > 0.4) then {
                 if!(_agent getVariable ["ALIVE_agentHouseMusicOn",false]) then {
                     private _building = _homePosition nearestObject "House";
                     private _music = [_building, faction _agent] call ALIVE_fnc_addAmbientRoomMusic;
