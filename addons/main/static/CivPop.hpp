@@ -47,6 +47,36 @@ ALIVE_CivPop_Crowd_Objects = [
   "kiosk"
 ];
 
+ALiVE_CivPop_Crowd_Anims = [
+  "c7a_bravotleskani_idle5",
+  "ctspercmstpsnonwnondnon_idle31rejpanivnose",
+  "aidlpercsnonwnondnon_talkbs",
+  "armstrong_c0start",
+  "c5calming_zevl3",
+  "c5calming_zevl4",
+  "c5calming_zevl5",
+  "c5calming_zevl6",
+  "c5calming_zevl7",
+  "c7a_bravotoerc_idle8"
+];
+
+ALiVE_CivPop_Crowd_Anims_Protest = [
+  "c7a_bravotleskani_idle5",
+  "c5calming_zevl1",
+  "c5calming_zevl2",
+  "c5calming_zevl3",
+  "c5calming_zevl4",
+  "c5calming_zevl5",
+  "c5calming_zevl6",
+  "c7a_bravo_dovadeni1",
+  "c7a_bravo_dovadeni3",
+  "c7a_bravotoerc_idle8"
+];
+
+ALiVE_CivPop_Crowd_Noises = [
+
+];
+
 // Civ Pop Panic Noises
 ALiVE_CivPop_PanicNoises = [
 	"ALiVE_Civpop_Audio_Fear1",
