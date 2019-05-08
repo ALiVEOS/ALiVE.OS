@@ -5,3 +5,4 @@
 #include "CfgFunctions.hpp"
 #include "CfgSounds.hpp"
 #include "eventhandlers.hpp"
+#include "animations.hpp"
