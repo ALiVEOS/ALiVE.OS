@@ -24,6 +24,8 @@ Tupolov
 
 params ["_unit", "_firer", "_distance"];
 
+if (side _firer == civilian) exitWith {};
+
 // Set the crowd system to stop spawning due to combat in the area
 private _crowdActivatorFSM = [ALIVE_civilianPopulationSystem, "crowd_FSM"] call ALiVE_fnc_HashGet;
 _crowdActivatorFSM setFSMVariable ["_noCombat",(time + 60)];
@@ -34,8 +36,10 @@ _unit forceWalk false;
 // Play panic animation
 private _anim = "ApanPercMstpSnonWnonDnon_ApanPknlMstpSnonWnonDnon";
 
-if (random 1 > 0.4 && !(_unit getVariable ["ALiVE_Crowd_Fleeing", false])) then {
+if (random 1 > 0.4 && !(_unit getVariable ["ALiVE_Crowd_Fleeing", false]) && alive _unit) then {
 	[_unit, _anim] call ALIVE_fnc_switchMove;
+} else {
+	if (!(_unit getVariable ["ALiVE_Crowd_Fleeing", false]) && alive _unit) then {[_unit, ""] call ALIVE_fnc_switchMove;};
 };
 
 // Play panic noise
