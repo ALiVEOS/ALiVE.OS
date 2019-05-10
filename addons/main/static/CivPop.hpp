@@ -74,7 +74,25 @@ ALiVE_CivPop_Crowd_Anims_Protest = [
 ];
 
 ALiVE_CivPop_Crowd_Noises = [
+  ["ALiVE_Civpop_Audio_Crowds_Generic_Angry_Large",100],
+  ["ALiVE_Civpop_Audio_Crowds_Generic_Angry_Large2",100],
+  ["ALiVE_Civpop_Audio_Crowds_Generic_Angry_Med",100],
+  ["ALiVE_Civpop_Audio_Crowds_Generic_Chill_Large",100],
+  ["ALiVE_Civpop_Audio_Crowds_Generic_Chill_Med",100],
+  ["ALiVE_Civpop_Audio_Crowds_Generic_Happy_Large",100],
+  ["ALiVE_Civpop_Audio_Crowds_ME_Angry_Med",100],
+  ["ALiVE_Civpop_Audio_Crowds_ME_Angry_Med2",100],
+  ["ALiVE_Civpop_Audio_Crowds_ME_Angry_Small",100],
+  ["ALiVE_Civpop_Audio_Crowds_ME_Chill_Large",100],
+  ["ALiVE_Civpop_Audio_Crowds_ME_Chill_Med",100],
+  ["ALiVE_Civpop_Audio_Crowds_ME_Chill_Med2",100],
+  ["ALiVE_Civpop_Audio_Crowds_ME_Chill_Med3",100]
+];
 
+ALiVE_CivPop_Crowd_Weapons = [
+  ["ALiVE_Handgrenade_stone","ALiVE_Handgrenade_stoneMuzzle"],
+  ["ALiVE_Handgrenade_can","ALiVE_Handgrenade_canMuzzle"],
+  ["ALiVE_Handgrenade_bottle","ALiVE_Handgrenade_bottleMuzzle"]
 ];
 
 // Civ Pop Panic Noises

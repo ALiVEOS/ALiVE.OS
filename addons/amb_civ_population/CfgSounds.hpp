@@ -250,4 +250,5 @@ class CfgSounds
     //#include "audio\Pacfic\CfgSounds.cpp"
 
     #include "audio\fear\CfgSounds.hpp"
+    #include "audio\crowds\CfgSounds.hpp"
 };
