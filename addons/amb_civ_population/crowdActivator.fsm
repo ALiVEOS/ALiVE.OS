@@ -1,8 +1,8 @@
 /*%FSM<COMPILE "scriptedFSM.cfg, Crowd Activator">*/
 /*%FSM<HEAD>*/
 /*
-item0[] = {"MOVE",2,250,-835.013550,511.870850,-745.013550,561.870850,0.000000,"MOVE"};
-item1[] = {"INIT",0,4346,-277.342499,-271.307617,-187.342514,-221.307678,0.000000,"INIT"};
+item0[] = {"MOVE",2,4346,-835.013550,511.870850,-745.013550,561.870850,0.000000,"MOVE"};
+item1[] = {"INIT",0,250,-277.342499,-271.307617,-187.342514,-221.307678,0.000000,"INIT"};
 item2[] = {"INIT_COMPLETE",4,218,-277.365326,-192.055389,-187.365341,-142.055359,0.000000,"INIT" \n "COMPLETE"};
 item3[] = {"_",-1,250,-440.685394,-235.585892,-437.600311,-235.585892,0.000000,""};
 item4[] = {"DESTROY",4,218,-157.505569,-114.375870,-67.505569,-64.375847,0.000000,"DESTROY"};
@@ -133,8 +133,8 @@ link64[] = {47,46};
 link65[] = {48,6};
 link66[] = {49,0};
 link67[] = {50,33};
-globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-1486.985352,415.516602,981.969666,-299.406982,1145,986,1};
-window[] = {2,-1,-1,-32000,-32000,1392,260,2324,260,1,1163};
+globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-1486.985352,415.516602,981.969666,-299.406982,933,986,1};
+window[] = {2,-1,-1,-32000,-32000,1392,260,2790,260,1,951};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -379,11 +379,11 @@ class FSM
        "                 } else {" \n
        "                      _position = _crowdPos getpos [random 5, random 180];" \n
        "                      _agent setVariable [""ALiVE_Crowd_Busy"", (time + 120), false];" \n
-       "			    _agent setVariable  [""ALiVE_Crowd_Pos"",_position, false];" \n
        "                 };" \n
        "			_agent setVariable [""ALiVE_Crowd_Crowding"", true, false];" \n
+       "			_agent setVariable  [""ALiVE_Crowd_Pos"",_position, false];" \n
        "			_agent doTarget _crowdTarget;" \n
-       "                 //_agent lookAt _crowdTarget;" \n
+       "                 _agent lookAt _crowdTarget;" \n
        "            };" \n
        "" \n
        "            case ""Move"" : {" \n
@@ -520,10 +520,7 @@ class FSM
        "" \n
        "/* TODO:" \n
        "  moveTo to RemoteMoveTo" \n
-       "  get civs to face players" \n
-       "  get civs to aim" \n
        "  TAOR / BLACKLIST - needs to sync with Civ Placement" \n
-       "  Ambient Crowd noises" \n
        "  Asian sounds" \n
        "  Pray" \n
        "  Optimise - remove/cache checks" \n
