@@ -62,7 +62,10 @@ _findRecurse = {
                 _positions set [1, 1];
             };
 
-            if(getNumber(_turret >> "primaryObserver") == 1) then {
+            // some vehicles have both primaryGunner and primaryObserver set on
+            // the same turret prevent adding a duplicate slot to the vehicle
+            // positions array
+            if(getNumber(_turret >> "primaryObserver") == 1 && (!_primaryGunner)) then {
                 _primaryObserver = true;
                 _positions set [2, 1];
             };
