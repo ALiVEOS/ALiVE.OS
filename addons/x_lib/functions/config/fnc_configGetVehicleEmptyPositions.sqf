@@ -53,9 +53,9 @@ _findRecurse = {
             };
         } else {
             _playerTurretEmptyCount = _playerTurretEmptyCount + 1;
-        }
+        };
 
-        if (isClass (_x >> "Turrets")) {
+        if (isClass (_x >> "Turrets")) then {
             _x call _findRecurse;
         };
     } forEach ("true" configClasses (_this >> "Turrets")); // mimic BIS_fnc_crewCount (this skips over the inherited MainTurret which is good :))
