@@ -24,6 +24,8 @@ Tupolov
 
 params ["_unit", "_firer", "_distance"];
 
+if (side _firer == civilian) exitWith {};
+
 private _agentID = _unit getVariable "agentID";
 private _agent = [ALIVE_agentHandler, "getAgent", _agentID] call ALIVE_fnc_agentHandler;
 
