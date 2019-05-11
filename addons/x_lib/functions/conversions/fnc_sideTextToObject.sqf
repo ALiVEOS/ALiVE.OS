@@ -39,6 +39,9 @@ switch(_side) do {
     case "GUER": {
         _result = resistance;
     };
+    case "RESISTANCE": {
+        _result = resistance;
+    };
     case "CIV": {
         _result = civilian;
     };
