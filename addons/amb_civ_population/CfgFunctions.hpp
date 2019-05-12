@@ -96,6 +96,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\amb_civ_population\fnc_getAgentEnemyNear.sqf";
                 RECOMPILE;
             };
+            class getNearestActiveAgent {
+                description = "getNearestActiveAgent";
+                file = "\x\alive\addons\amb_civ_population\fnc_getNearestActiveAgent.sqf";
+                RECOMPILE;
+            };
             class getGlobalPosture {
                 description = "getGlobalPosture";
                 file = "\x\alive\addons\amb_civ_population\fnc_getGlobalPosture.sqf";

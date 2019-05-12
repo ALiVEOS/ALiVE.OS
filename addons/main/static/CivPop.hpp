@@ -44,7 +44,8 @@ ALIVE_CivPop_Crowd_Objects = [
   "garage",
   "campfire",
   "market",
-  "kiosk"
+  "kiosk",
+  "minaret"
 ];
 
 ALiVE_CivPop_Crowd_Anims = [
