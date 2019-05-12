@@ -1,8 +1,8 @@
 /*%FSM<COMPILE "scriptedFSM.cfg, Crowd Activator">*/
 /*%FSM<HEAD>*/
 /*
-item0[] = {"MOVE",2,4346,-835.013550,511.870850,-745.013550,561.870850,0.000000,"MOVE"};
-item1[] = {"INIT",0,250,-277.342499,-271.307617,-187.342514,-221.307678,0.000000,"INIT"};
+item0[] = {"MOVE",2,250,-835.013550,511.870850,-745.013550,561.870850,0.000000,"MOVE"};
+item1[] = {"INIT",0,4346,-277.342499,-271.307617,-187.342514,-221.307678,0.000000,"INIT"};
 item2[] = {"INIT_COMPLETE",4,218,-277.365326,-192.055389,-187.365341,-142.055359,0.000000,"INIT" \n "COMPLETE"};
 item3[] = {"_",-1,250,-440.685394,-235.585892,-437.600311,-235.585892,0.000000,""};
 item4[] = {"DESTROY",4,218,-157.505569,-114.375870,-67.505569,-64.375847,0.000000,"DESTROY"};
@@ -133,8 +133,8 @@ link64[] = {47,46};
 link65[] = {48,6};
 link66[] = {49,0};
 link67[] = {50,33};
-globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-1486.985352,415.516602,981.969666,-299.406982,933,986,1};
-window[] = {2,-1,-1,-32000,-32000,1392,260,2790,260,1,951};
+globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-1249.482910,740.702942,1155.264404,-273.958557,1373,986,1};
+window[] = {0,-1,-1,-1,-1,1284,310,2840,152,1,1391};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -520,9 +520,8 @@ class FSM
        "" \n
        "/* TODO:" \n
        "  moveTo to RemoteMoveTo" \n
-       "  TAOR / BLACKLIST - needs to sync with Civ Placement" \n
-       "  Asian sounds" \n
-       "  Pray" \n
+       "  Asian / WW2 sounds" \n
+       "  Pray / Call To Prayer" \n
        "  Optimise - remove/cache checks" \n
        "*/" \n
        "" \n
@@ -542,6 +541,10 @@ class FSM
        "private _activeBuildings = [];" \n
        "private _civClasses = [];" \n
        "private _civilianClasses = [] call ALive_fnc_hashCreate;" \n
+       "" \n
+       "private _taorCheck = false;" \n
+       "private _taorMarkers = [];" \n
+       "private _blacklistMarkers = [];" \n
        "" \n
        "// Get default faction civ" \n
        "if (_faction != """") then {" \n
@@ -574,7 +577,6 @@ class FSM
        "  if(_debug) then {" \n
        "       ALIVE_CIV_POP_CROWD = _activeAgents;" \n
        "       [""ALIVE crowd activator FSM init""] call ALIVE_fnc_dump; " \n
-       "       " \n
        "       addMissionEventHandler [""Draw3D"", {" \n
        "            {" \n
        "                 if !(_x isEqualType 0) then {" \n
@@ -592,26 +594,31 @@ class FSM
        "  };" \n
        "// debug ---------------------------------------" \n
        "" \n
-       "       ALiVE_fnc_getNearestActiveAgent = {" \n
-       "            params [""_pos""];" \n
-       "            private _result = [];" \n
-       "            private _nearAgents = [];" \n
-       "            {" \n
-       "                 private _agentProfile = [ALIVE_agentHandler, ""getAgent"", _x] call ALIVE_fnc_agentHandler;" \n
-       "                 private _position = _agentProfile select 2 select 2;" \n
-       "                 _nearAgents pushback [_agentProfile, _position distance _pos];" \n
-       "            } foreach (_agentsActive select 1);" \n
-       "            " \n
-       "            private _sortCode = {" \n
-       "            private _dist = _this select 1;" \n
-       "                 _dist" \n
-       "                 };" \n
-       "            if (count (_agentsActive select 1) > 0) then {" \n
-       "                      _nearAgents = [_nearAgents, _sortCode] call ALiVE_fnc_shellSort;" \n
-       "                 _result = (_nearAgents select 0) select 0;" \n
-       "            };" \n
-       "            _result" \n
-       "       };" \n
+       "ALiVE_fnc_isPositionAllowed = {" \n
+       "	params [""_pos""];" \n
+       "	if !(_taorCheck) then {" \n
+       "		// Get TAOR & Blacklist areas" \n
+       "		{" \n
+       "			if (_x getVariable [""moduleType"",""""] == ""ALIVE_AMBCP"") then {" \n
+       "				_taorMarkers = _taorMarkers + ([_x, ""taor""] call ALiVE_fnc_AMBCP);" \n
+       "				_blacklistMarkers= _blacklistMarkers + ([_x, ""blacklist""] call ALiVE_fnc_AMBCP);" \n
+       "			};" \n
+       "		} foreach (entities ""Module_F"");" \n
+       "      	[""ALIVE Crowd activator - MARKERS: %1 %2"",_taorMarkers,_blacklistMarkers] call ALIVE_fnc_dump;" \n
+       "		_taorCheck = true;" \n
+       "	};" \n
+       "	private _result = true;" \n
+       "	if (count _taorMarkers > 0) then {_result = false;};" \n
+       "	{" \n
+       "		if (_pos inArea _x) then {_result = true;};" \n
+       "		[""ALIVE Crowd activator - position allowed: %1 %2 %3"",_pos,_result,_x ] call ALIVE_fnc_dump;" \n
+       "	} foreach _taorMarkers;" \n
+       "	{" \n
+       "		if (_pos inArea _x) then {_result = false;};" \n
+       "		[""ALIVE Crowd activator - position allowed: %1 %2 %3"",_pos,_result,_x ] call ALIVE_fnc_dump;" \n
+       "	} foreach _blacklistMarkers;" \n
+       "	_result" \n
+       "};" \n
        "" \n
        "ALiVE_fnc_isInHouse = {" \n
        "  // need to fix stuttering" \n
@@ -636,7 +643,6 @@ class FSM
        "      }else{" \n
        "          false" \n
        "  };" \n
-       "" \n
        "  [""ALIVE Crowd activator - analyse agent: %1 is in house %3: %2"",_pos,_result,_building] call ALIVE_fnc_dump;" \n
        "  _result" \n
        "};"/*%FSM</STATEINIT""">*/;
@@ -895,7 +901,7 @@ class FSM
           priority = 4.000000;
           to="TIMER";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"(_countClustersActive == 0)"/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"(_countClustersActive == 0  && _countActiveBuildings == 0)"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
@@ -905,7 +911,7 @@ class FSM
           priority = 2.000000;
           to="CHECK_AGENTS___B";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"_countClustersActive > 0 && sunOrMoon > 0.5"/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"(_countClustersActive > 0 && sunOrMoon > 0.5) || _countActiveBuildings > 0"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
@@ -1587,16 +1593,18 @@ class FSM
        "private _countNewBuildings = 0;" \n
        "private _newBuildings = [];" \n
        "" \n
-       "if (_noCombatTimeout) then {" \n
+       "if (_noCombatTimeout && _countClustersActive > 0) then {" \n
        "  // Check to see if there are new houses near players" \n
        "  {" \n
+       "	private _positionIsAllowed = [position _x] call ALiVE_fnc_isPositionAllowed;" \n
+       "	if (_positionIsAllowed) then {" \n
        "             private _buildings = [position _x, 50] call ALiVE_fnc_getEnterableHouses;" \n
        "            {" \n
        "                       if ( !(_x in _activeBuildings) && (random 1) <= sunOrMoon) then {" \n
        "                           _newBuildings pushBackUnique _x;" \n
        "                       };" \n
        "              } foreach _buildings;" \n
-       "" \n
+       "	};" \n
        "  } foreach (allPlayers + allCurators);" \n
        "" \n
        "  _countNewBuildings = count _newBuildings;" \n
@@ -1657,7 +1665,7 @@ class FSM
           priority = 1.000000;
           to="ANALYSE_NEW_HOUS";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"_countNewBuildings > 0 && _houseCheckComplete && _noCombatTimeOut"/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_countNewBuildings > 0 && _houseCheckComplete && _noCombatTimeOut && _countClustersActive > 0"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
