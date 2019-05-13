@@ -165,6 +165,9 @@ ALIVE_civilianHouseTracks = [] call ALIVE_fnc_hashCreate;
 CUP_C_TK_ALIVE_civilianHouseTracks =+ALIVE_civilianHouseTracks;
 
 [CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_16"] call ALIVE_fnc_hashRem; // Car Alarm
+[CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_7"] call ALIVE_fnc_hashRem; // Greek Radio
+[CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_11"] call ALIVE_fnc_hashRem; // Greek Radio
+[CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_12"] call ALIVE_fnc_hashRem; // Greek Radio
 [CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_1", 135] call ALIVE_fnc_hashSet;
 [CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_2", 85] call ALIVE_fnc_hashSet;
 [CUP_C_TK_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_ME_3", 35] call ALIVE_fnc_hashSet;
