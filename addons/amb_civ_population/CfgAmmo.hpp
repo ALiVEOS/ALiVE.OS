@@ -21,7 +21,7 @@ class CfgAmmo {
         effectsSmoke = EmptyEffect;
         grenadeFireSound[] = {};
         grenadeBurningSound[] = {};
-        aiAmmoUsageFlags = 64;
+        aiAmmoUsageFlags = "64 + 128 + 512";
         explosionEffectsRadius = 0;
         explosionTime = 0;
         timeToLive = 10;

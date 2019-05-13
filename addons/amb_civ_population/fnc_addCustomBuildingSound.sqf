@@ -1,0 +1,76 @@
+#include "\x\alive\addons\amb_civ_population\script_component.hpp"
+SCRIPT(addCustomBuildingSound);
+
+/* ----------------------------------------------------------------------------
+Function: ALIVE_fnc_addCustomBuildingSound
+
+Description:
+Add ambient room msuic
+
+Parameters:
+
+Object - building to add music to.
+
+Returns:
+
+Examples:
+(begin example)
+_light = [_buildingType, _building] call ALIVE_fnc_addCustomBuildingSound
+(end)
+
+See Also:
+
+Author:
+Tupolov
+---------------------------------------------------------------------------- */
+
+params ["_buildingType","_building"];
+private _source = objNull;
+private _customBuildingData = [ALiVE_CivPop_customBuildings,_buildingType, []] call ALiVE_fnc_hashGet;
+if (count _customBuildingData > 0) then {
+
+    private _source = "RoadCone_L_F" createVehicle position _building;
+    _source attachTo [_building,[1,1,1]];
+    hideObject _source;
+
+    [_building, _source,_customBuildingData] spawn {
+        params ["_building","_source","_customBuildingData"];
+        private _sounds =  [_customBuildingData,"sounds"] call ALiVE_fnc_hashGet;
+        private _times =  [_customBuildingData,"times"] call ALiVE_fnc_hashGet;
+        private _tracksPlayed = 1;
+
+        private _totalTracks = count _sounds;
+
+        while { (alive _source) } do {
+            while { _tracksPlayed < _totalTracks } do {
+                private _trackName = selectRandom _sounds;
+
+                {
+                    private _start = _x select 0;
+                    private _stop = _x select 1;
+                    if (daytime >= _start AND daytime < _stop) then {
+                        if(isMultiplayer) then {
+                            [_building, _source, _trackName] remoteExec ["ALIVE_fnc_clientAddAmbientRoomMusic"];
+
+                        }else{
+                            _source say3d _trackName;
+                        };
+
+                        sleep 420;
+
+                        _tracksPlayed = _tracksPlayed + 1;
+
+                    };
+                } foreach _times;
+
+                if not (alive _source) exitWith {};
+            };
+
+            sleep (random 10);
+        };
+    };
+};
+_source
+
+
+
