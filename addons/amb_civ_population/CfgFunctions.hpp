@@ -66,6 +66,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\amb_civ_population\fnc_agentHandler.sqf";
                 RECOMPILE;
             };
+            class addCustomBuildingSound {
+                description = "addCustomBuildingSound";
+                file = "\x\alive\addons\amb_civ_population\fnc_addCustomBuildingSound.sqf";
+                RECOMPILE;
+            };
             class addAmbientRoomMusic {
                 description = "addAmbientRoomMusic";
                 file = "\x\alive\addons\amb_civ_population\fnc_addAmbientRoomMusic.sqf";
