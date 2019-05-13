@@ -2,7 +2,7 @@
 /*%FSM<HEAD>*/
 /*
 item0[] = {"MOVE",2,250,-835.013550,511.870850,-745.013550,561.870850,0.000000,"MOVE"};
-item1[] = {"INIT",0,4346,-277.342499,-271.307617,-187.342514,-221.307678,0.000000,"INIT"};
+item1[] = {"INIT",0,250,-277.342499,-271.307617,-187.342514,-221.307678,0.000000,"INIT"};
 item2[] = {"INIT_COMPLETE",4,218,-277.365326,-192.055389,-187.365341,-142.055359,0.000000,"INIT" \n "COMPLETE"};
 item3[] = {"_",-1,250,-440.685394,-235.585892,-437.600311,-235.585892,0.000000,""};
 item4[] = {"DESTROY",4,218,-157.505569,-114.375870,-67.505569,-64.375847,0.000000,"DESTROY"};
@@ -22,7 +22,7 @@ item17[] = {"HAS_NEW__BUILDIN",4,218,-94.943115,202.020569,-4.943207,252.020691,
 item18[] = {"WAIT",4,218,-402.581726,-117.430069,-312.581726,-67.430016,1.000000,"WAIT"};
 item19[] = {"NO__ACTIVATE",4,218,201.312622,276.080139,291.312500,326.080261,0.000000,"NO " \n "ACTIVATE"};
 item20[] = {"ANALYSE_NEW_HOUS",2,250,13.272003,273.792206,103.272133,323.792389,0.000000,"ANALYSE" \n "NEW" \n "HOUSES"};
-item21[] = {"SPAWN_LOOP",2,250,12.918488,595.304810,102.918610,645.305054,0.000000,"SPAWN" \n "LOOP"};
+item21[] = {"SPAWN_LOOP",2,4346,12.918488,595.304810,102.918610,645.305054,0.000000,"SPAWN" \n "LOOP"};
 item22[] = {"ITERATE",4,218,144.952240,594.056030,234.952271,644.056152,1.000000,"ITERATE"};
 item23[] = {"END_LOOP",4,218,13.280243,665.988647,103.280182,715.988647,0.000000,"END" \n "LOOP"};
 item24[] = {"ANALYSE_ACTIVE_A",2,250,-565.516724,302.894653,-475.516846,352.894592,0.000000,"ANALYSE" \n "ACTIVE" \n "AGENTS"};
@@ -133,8 +133,8 @@ link64[] = {47,46};
 link65[] = {48,6};
 link66[] = {49,0};
 link67[] = {50,33};
-globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-1249.482910,740.702942,1155.264404,-273.958557,1373,986,1};
-window[] = {0,-1,-1,-1,-1,1284,310,2840,152,1,1391};
+globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-841.982422,333.202362,1032.245361,188.303467,1373,986,1};
+window[] = {0,-1,-1,-1,-1,1470,338,2868,338,1,1391};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -478,6 +478,7 @@ class FSM
        "            };" \n
        "       };" \n
        "       _agent setVariable [""ALIVE_CIV_ACTION"", _action, false];" \n
+       "	if (isNil ""_position"") then {_position = position _agent;};" \n
        "       _agent moveTo _position;" \n
        "" \n
        "  };" \n
@@ -604,19 +605,30 @@ class FSM
        "				_blacklistMarkers= _blacklistMarkers + ([_x, ""blacklist""] call ALiVE_fnc_AMBCP);" \n
        "			};" \n
        "		} foreach (entities ""Module_F"");" \n
-       "      	[""ALIVE Crowd activator - MARKERS: %1 %2"",_taorMarkers,_blacklistMarkers] call ALIVE_fnc_dump;" \n
+       "      	// [""ALIVE Crowd activator - MARKERS: %1 %2"",_taorMarkers,_blacklistMarkers] call ALIVE_fnc_dump;" \n
        "		_taorCheck = true;" \n
        "	};" \n
        "	private _result = true;" \n
        "	if (count _taorMarkers > 0) then {_result = false;};" \n
        "	{" \n
        "		if (_pos inArea _x) then {_result = true;};" \n
-       "		[""ALIVE Crowd activator - position allowed: %1 %2 %3"",_pos,_result,_x ] call ALIVE_fnc_dump;" \n
+       "		// [""ALIVE Crowd activator - position allowed: %1 %2 %3"",_pos,_result,_x ] call ALIVE_fnc_dump;" \n
        "	} foreach _taorMarkers;" \n
        "	{" \n
        "		if (_pos inArea _x) then {_result = false;};" \n
-       "		[""ALIVE Crowd activator - position allowed: %1 %2 %3"",_pos,_result,_x ] call ALIVE_fnc_dump;" \n
+       "		// [""ALIVE Crowd activator - position allowed: %1 %2 %3"",_pos,_result,_x ] call ALIVE_fnc_dump;" \n
        "	} foreach _blacklistMarkers;" \n
+       "	_result" \n
+       "};" \n
+       "" \n
+       "ALiVE_fnc_isSpecialCivBuilding = {" \n
+       "	params [""_building""];" \n
+       "	private _result = [false, """"];" \n
+       "	{" \n
+       "		if (toLower(typeOf _building) find _x != -1) then {" \n
+       "			_result = [true, _x];" \n
+       "		};" \n
+       "	} foreach (ALiVE_CivPop_customBuildings select 1);" \n
        "	_result" \n
        "};" \n
        "" \n
@@ -786,18 +798,22 @@ class FSM
        "    " \n
        "    // DEBUG -------------------------------------------------------------------------------------                    " \n
        "    " \n
-       "  " \n
+       "  private _isSpecialCivBuilding  = [_building] call ALiVE_fnc_isSpecialCivBuilding;" \n
        "  _activeBuildings pushBack _building;" \n
        "" \n
-       "  if (count _activeBuildings < 6) then {" \n
+       "  if (count _activeBuildings < 6 || _isSpecialCivBuilding select 0) then {" \n
        "       // Add Sound" \n
        "       private _soundFaction = _faction;" \n
+       "	private _soundSource = objNull;" \n
        "       if (_soundFaction == """") then {" \n
        "            _soundFaction = _building getVariable [""ALiVE_CivPop_Faction"",""CIV_F""];" \n
        "       };" \n
-       "  " \n
-       "       private _soundSource = [_building, _soundFaction] call ALIVE_fnc_addAmbientRoomMusic;" \n
-       "            _building setVariable [""ALIVE_CivPop_Crowd_SoundSource"",_soundSource, false];" \n
+       "  	if (_isSpecialCivBuilding select 0) then {" \n
+       "		_soundSource = [_isSpecialCivBuilding select 1, _building] call ALIVE_fnc_addCustomBuildingSound;" \n
+       "	} else {" \n
+       "       	_soundSource = [_building, _soundFaction] call ALIVE_fnc_addAmbientRoomMusic;" \n
+       "	};" \n
+       "       _building setVariable [""ALIVE_CivPop_Crowd_SoundSource"",_soundSource, false];" \n
        "  } else {" \n
        "	if(_debug) then {" \n
        "    		[""ALIVE Crowd activator - sound limit reached for buildings:6 out of  %1"",count _activeBuildings] call ALIVE_fnc_dump;" \n
@@ -931,32 +947,33 @@ class FSM
        "    if!(isnil ""_building"") then {" \n
        "         private _exit = false;" \n
        "        private _position = position _building;" \n
-       "        private _indoorPositions = [_position,2] call ALIVE_fnc_findIndoorHousePositions;" \n
+       "        private _indoorPositions = [_position,4] call ALIVE_fnc_findIndoorHousePositions;" \n
+       "	 private _isSpecialCivBuilding = ([_building] call ALiVE_fnc_isSpecialCivBuilding) select 0;" \n
        "" \n
-       "        if (count _indoorPositions > 0) then {" \n
+       "        if (count _indoorPositions > 0 || _isSpecialCivBuilding) then {" \n
        "" \n
        "                 // Get faction for building if no default && not cached" \n
        "                 if (_faction == """") then {" \n
        "                      private _houseCivClasses = _building getVariable [""ALiVE_CivPop_CivClasses"", []];" \n
        "                      if (count _houseCivClasses == 0) then {" \n
-       "                      private _nearCivs = [_position, 500, civilian] call ALIVE_fnc_getSideManNear;" \n
-       "                      if (count _nearCivs > 0) then {" \n
-       "                      private _fac = faction (_nearCivs select 0);" \n
-       "                           private _minScope = 1;" \n
-       "                      if (_fac == ""CIV_F"") then {_minScope = 2};" \n
-       "                      _houseCivClasses = [_civilianClasses, _fac] call ALiVE_fnc_hashGet;" \n
-       "                                _building setVariable [""ALiVE_CivPop_CivClasses"", _houseCivClasses, false];" \n
-       "                                _building setVariable [""ALiVE_CivPop_Faction"", _fac, false];" \n
-       "                                _civClasses = _houseCivClasses;" \n
-       "                      } else {" \n
-       "                                // if no amb civs, then give up like a c***" \n
-       "                                _exit = true;" \n
-       "                           };" \n
-       "                      } else {" \n
+       "                     	 private _nearCivs = [_position, 500, civilian] call ALIVE_fnc_getSideManNear;" \n
+       "                     	 if (count _nearCivs > 0) then {" \n
+       "                      		private _fac = faction (_nearCivs select 0);" \n
+       "                          	 private _minScope = 1;" \n
+       "                     		 if (_fac == ""CIV_F"") then {_minScope = 2};" \n
+       "                     			 _houseCivClasses = [_civilianClasses, _fac] call ALiVE_fnc_hashGet;" \n
+       "                                	_building setVariable [""ALiVE_CivPop_CivClasses"", _houseCivClasses, false];" \n
+       "                                	_building setVariable [""ALiVE_CivPop_Faction"", _fac, false];" \n
+       "                                	_civClasses = _houseCivClasses;" \n
+       "                     		 } else {" \n
+       "                                	// if no amb civs, then give up like a c***" \n
+       "                                	_exit = true;" \n
+       "                          	 };" \n
+       "                     	 } else {" \n
        "                           _civClasses = _houseCivClasses;" \n
        "                      };" \n
        "                 };" \n
-       "" \n
+       "		if (count _indoorPositions == 0) then {_indoorPositions = [_position];};" \n
        "            if !(_exit) then {_toSpawn pushback [_building, _indoorPositions, _civClasses]};" \n
        "              " \n
        "            if(_debug) then {" \n
@@ -1083,18 +1100,20 @@ class FSM
        "" \n
        "       // Move unit" \n
        "      private _building = selectRandom _activeBuildings;" \n
-       "" \n
-       "      if!(isnil ""_building"") then {" \n
-       "" \n
-       "          private _position = selectRandom ([position _building, 3] call ALIVE_fnc_findIndoorHousePositions);" \n
-       "             _m setVariable [""ALIVE_CIV_ACTION"", ""Init Move"", false];" \n
-       "          if (random 1 > 0.5 || _countActiveBuildings == 1) then {" \n
-       "              private _player = [position _m, 100] call ALIVE_fnc_getRandomPlayerNear;" \n
-       "              if (count _player > 0) then {" \n
-       "                  _position = (_player select 0) getpos [5 + random 10, random 360];" \n
-       "                           _m setVariable [""ALIVE_CIV_ACTION"", ""Init Player"", false];" \n
-       "              };" \n
-       "          };" \n
+       "	private _position = position _building;" \n
+       "      " \n
+       "	if!(isnil ""_building"") then {" \n
+       "		private _position = position _building;" \n
+       "	 	 private _positions = [position _building, 3] call ALIVE_fnc_findIndoorHousePositions;" \n
+       "	  	if (count _positions > 0) then {_position = selectRandom _positions;};" \n
+       "       	_m setVariable [""ALIVE_CIV_ACTION"", ""Init Move"", false];" \n
+       "          	if (random 1 > 0.5 || _countActiveBuildings == 1) then {" \n
+       "             	private _player = [position _m, 100] call ALIVE_fnc_getRandomPlayerNear;" \n
+       "              	if (count _player > 0) then {" \n
+       "                  	_position = (_player select 0) getpos [5 + random 10, random 360];" \n
+       "                   	_m setVariable [""ALIVE_CIV_ACTION"", ""Init Player"", false];" \n
+       "              	};" \n
+       "         	};" \n
        "          _m moveTo _position;" \n
        "      };" \n
        "" \n
@@ -1598,7 +1617,7 @@ class FSM
        "  {" \n
        "	private _positionIsAllowed = [position _x] call ALiVE_fnc_isPositionAllowed;" \n
        "	if (_positionIsAllowed) then {" \n
-       "             private _buildings = [position _x, 50] call ALiVE_fnc_getEnterableHouses;" \n
+       "             private _buildings = [position _x, _spawnDistance] call ALiVE_fnc_getEnterableHouses;" \n
        "            {" \n
        "                       if ( !(_x in _activeBuildings) && (random 1) <= sunOrMoon) then {" \n
        "                           _newBuildings pushBackUnique _x;" \n
