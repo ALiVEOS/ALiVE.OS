@@ -2,6 +2,11 @@ class CfgAmmo {
     class GrenadeHand;
     class ALiVE_Stone : GrenadeHand {
         author = Tupolov;
+        ace_frag_enabled = 0;
+        ace_frag_skip = 1;
+        ace_frag_force = 0;
+        ace_grenades_flashbang = 0;
+        ace_grenades_flashbangBangs = 0;
         simulation = "shotShell";
         hit = 1;
         indirectHit = 0.1;
