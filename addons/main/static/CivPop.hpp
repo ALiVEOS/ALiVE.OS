@@ -34,6 +34,36 @@ ALIVE_civilianWeapons = [] call ALIVE_fnc_hashCreate;
 
 // Civ Pop Crowds
 
+ALiVE_CivPop_customBuildings = [] call ALiVE_fnc_hashCreate;
+ALiVE_CivPop_customBuildings_Mosque = [] call ALiVE_fnc_hashCreate;
+[ALiVE_CivPop_customBuildings_Mosque, "sounds", [
+    "ALiVE_Civpop_Audio_Buildings_Azan1",
+    "ALiVE_Civpop_Audio_Buildings_Azan2",
+    "ALiVE_Civpop_Audio_Buildings_Azan3",
+    "ALiVE_Civpop_Audio_Buildings_Azan4",
+    "ALiVE_Civpop_Audio_Buildings_Azan5",
+    "ALiVE_Civpop_Audio_Buildings_Azan6",
+    "ALiVE_Civpop_Audio_Buildings_Azan7",
+    "ALiVE_Civpop_Audio_Buildings_Azan8",
+    "ALiVE_Civpop_Audio_Buildings_Azan9",
+    "ALiVE_Civpop_Audio_Buildings_Azan10"
+  ]
+] call ALiVE_fnc_hashSet;
+[ALiVE_CivPop_customBuildings_Mosque, "times", [
+    [4.25,4.5],
+    [5.25,5.75],
+    [11.75,12],
+    [15.25,15.5],
+    [17.75,18.25],
+    [19,19.25]
+  ]
+] call ALiVE_fnc_hashSet;
+
+[ALiVE_CivPop_customBuildings, "mosque", ALiVE_CivPop_customBuildings_Mosque] call ALiVE_fnc_hashSet;
+
+[ALiVE_CivPop_customBuildings, "minaret", ALiVE_CivPop_customBuildings_Mosque] call ALiVE_fnc_hashSet;
+
+
 ALIVE_CivPop_Crowd_Objects = [
   "shop",
   "church",
@@ -46,6 +76,12 @@ ALIVE_CivPop_Crowd_Objects = [
   "market",
   "kiosk",
   "minaret"
+];
+
+ALiVE_CivPop_Crowd_Weapons = [
+  ["ALiVE_Handgrenade_stone","ALiVE_Handgrenade_stoneMuzzle"],
+  ["ALiVE_Handgrenade_can","ALiVE_Handgrenade_canMuzzle"],
+  ["ALiVE_Handgrenade_bottle","ALiVE_Handgrenade_bottleMuzzle"]
 ];
 
 ALiVE_CivPop_Crowd_Anims = [
@@ -88,12 +124,6 @@ ALiVE_CivPop_Crowd_Noises = [
   ["ALiVE_Civpop_Audio_Crowds_ME_Chill_Med",100],
   ["ALiVE_Civpop_Audio_Crowds_ME_Chill_Med2",100],
   ["ALiVE_Civpop_Audio_Crowds_ME_Chill_Med3",100]
-];
-
-ALiVE_CivPop_Crowd_Weapons = [
-  ["ALiVE_Handgrenade_stone","ALiVE_Handgrenade_stoneMuzzle"],
-  ["ALiVE_Handgrenade_can","ALiVE_Handgrenade_canMuzzle"],
-  ["ALiVE_Handgrenade_bottle","ALiVE_Handgrenade_bottleMuzzle"]
 ];
 
 // Civ Pop Panic Noises

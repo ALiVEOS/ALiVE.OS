@@ -251,4 +251,5 @@ class CfgSounds
 
     #include "audio\fear\CfgSounds.hpp"
     #include "audio\crowds\CfgSounds.hpp"
+    #include "audio\buildings\CfgSounds.hpp"
 };
