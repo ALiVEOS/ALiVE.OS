@@ -31,7 +31,7 @@ ALiVE_PLACEMENT_UNITBLACKLIST = ALiVE_PLACEMENT_CUSTOM_UNITBLACKLIST +
     "I_Protagonist_VR_F",
     "C_Marshal_F",
     "C_man_pilot_F",
-
+    "C_Protagonist_VR_F",
     // JETS
     "B_Deck_Crew_F"
 ];

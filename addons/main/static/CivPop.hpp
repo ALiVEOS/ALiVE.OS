@@ -189,6 +189,30 @@ ALIVE_civilianHouseTracks = [] call ALIVE_fnc_hashCreate;
 [ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_30", 7] call ALIVE_fnc_hashSet;
 [ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_40", 2] call ALIVE_fnc_hashSet;
 
+// Pacific Factions
+
+// CUP TAKI
+CIV_F_TANOA_ALIVE_civilianHouseTracks =+ALIVE_civilianHouseTracks;
+
+[CIV_F_TANOA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_7"] call ALIVE_fnc_hashRem; // Greek Radio
+[CIV_F_TANOA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_11"] call ALIVE_fnc_hashRem; // Greek Radio
+[CIV_F_TANOA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_12"] call ALIVE_fnc_hashRem; // Greek Radio
+[CIV_F_TANOA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_1", 30] call ALIVE_fnc_hashSet;
+[CIV_F_TANOA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_2", 44] call ALIVE_fnc_hashSet;
+[CIV_F_TANOA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_3", 54] call ALIVE_fnc_hashSet;
+[CIV_F_TANOA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_4", 45] call ALIVE_fnc_hashSet;
+[CIV_F_TANOA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_5", 62] call ALIVE_fnc_hashSet;
+[CIV_F_TANOA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_6", 134] call ALIVE_fnc_hashSet;
+[CIV_F_TANOA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_7", 97] call ALIVE_fnc_hashSet;
+[CIV_F_TANOA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_8", 35] call ALIVE_fnc_hashSet;
+[CIV_F_TANOA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_9", 24] call ALIVE_fnc_hashSet;
+[CIV_F_TANOA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_10", 33] call ALIVE_fnc_hashSet;
+[CIV_F_TANOA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_11", 24] call ALIVE_fnc_hashSet;
+[CIV_F_TANOA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_12", 109] call ALIVE_fnc_hashSet;
+[CIV_F_TANOA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_13", 105] call ALIVE_fnc_hashSet;
+
+[ALIVE_civilianFactionHouseTracks, "CIV_F_TANOA", CIV_F_TANOA_ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;
+
 // Middle East factions
 
 // CUP TAKI
