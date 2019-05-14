@@ -2,7 +2,7 @@
 /*%FSM<HEAD>*/
 /*
 item0[] = {"MOVE",2,250,-835.013550,511.870850,-745.013550,561.870850,0.000000,"MOVE"};
-item1[] = {"INIT",0,4346,-277.342499,-271.307617,-187.342514,-221.307678,0.000000,"INIT"};
+item1[] = {"INIT",0,250,-277.342499,-271.307617,-187.342514,-221.307678,0.000000,"INIT"};
 item2[] = {"INIT_COMPLETE",4,218,-277.365326,-192.055389,-187.365341,-142.055359,0.000000,"INIT" \n "COMPLETE"};
 item3[] = {"_",-1,250,-440.685394,-235.585892,-437.600311,-235.585892,0.000000,""};
 item4[] = {"DESTROY",4,218,-157.505569,-114.375870,-67.505569,-64.375847,0.000000,"DESTROY"};
@@ -12,7 +12,7 @@ item7[] = {"COMPLETE",4,218,347.567993,276.133881,437.568237,326.133942,0.000000
 item8[] = {"START",4,218,-277.977234,-41.899986,-187.977158,8.099995,2.000000,"START"};
 item9[] = {"DO_ACTIVATE",4,218,14.122589,355.190216,104.122711,405.190277,1.000000,"DO" \n "ACTIVATE"};
 item10[] = {"DONE",2,250,202.889771,668.202148,289.549194,714.861816,0.000000,"DONE"};
-item11[] = {"ACTIVATE_LOOP",2,250,10.058136,435.696259,100.058258,485.696381,0.000000,"ACTIVATE" \n "LOOP"};
+item11[] = {"ACTIVATE_LOOP",2,4346,10.058136,435.696259,100.058258,485.696381,0.000000,"ACTIVATE" \n "LOOP"};
 item12[] = {"ITERATE",4,218,137.170258,435.505951,227.170288,485.506073,1.000000,"ITERATE"};
 item13[] = {"END__LOOP",4,218,9.993988,510.461639,99.994049,560.461670,0.000000,"END " \n "LOOP"};
 item14[] = {"WAIT",4,218,-132.312729,-7.478668,-42.312721,42.521286,4.000000,"WAIT"};
@@ -133,7 +133,7 @@ link64[] = {47,46};
 link65[] = {48,6};
 link66[] = {49,0};
 link67[] = {50,33};
-globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-844.843323,336.062897,441.143646,-406.906982,1373,986,1};
+globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-933.823364,425.042908,830.363281,-145.486786,1373,986,1};
 window[] = {0,-1,-1,-1,-1,1333,287,2817,201,1,1391};
 *//*%FSM</HEAD>*/
 class FSM
@@ -521,7 +521,7 @@ class FSM
        "" \n
        "/* TODO:" \n
        "  moveTo to doMoveRemote?" \n
-       "  Asian / WW2 sounds" \n
+       "  WW2 sounds" \n
        "  Pray" \n
        "  Optimise - remove/cache checks" \n
        "*/" \n
@@ -803,7 +803,7 @@ class FSM
        "" \n
        "  if (count _activeBuildings < 6 || _isSpecialCivBuilding select 0) then {" \n
        "       // Add Sound" \n
-       "       private _soundFaction = _faction;" \n
+       "      private _soundFaction = _faction;" \n
        "	private _soundSource = objNull;" \n
        "       if (_soundFaction == """") then {" \n
        "            _soundFaction = _building getVariable [""ALiVE_CivPop_Faction"",""CIV_F""];" \n
@@ -813,7 +813,9 @@ class FSM
        "	} else {" \n
        "       	_soundSource = [_building, _soundFaction] call ALIVE_fnc_addAmbientRoomMusic;" \n
        "	};" \n
-       "       _building setVariable [""ALIVE_CivPop_Crowd_SoundSource"",_soundSource, false];" \n
+       "	if !(isNull _soundSource) then {" \n
+       "      	_building setVariable [""ALIVE_CivPop_Crowd_SoundSource"",_soundSource, false];" \n
+       "	};" \n
        "  } else {" \n
        "	if(_debug) then {" \n
        "    		[""ALIVE Crowd activator - sound limit reached for buildings:6 out of  %1"",count _activeBuildings] call ALIVE_fnc_dump;" \n
