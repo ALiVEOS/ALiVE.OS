@@ -2,7 +2,7 @@
 /*%FSM<HEAD>*/
 /*
 item0[] = {"MOVE",2,250,-835.013550,511.870850,-745.013550,561.870850,0.000000,"MOVE"};
-item1[] = {"INIT",0,250,-277.342499,-271.307617,-187.342514,-221.307678,0.000000,"INIT"};
+item1[] = {"INIT",0,4346,-277.342499,-271.307617,-187.342514,-221.307678,0.000000,"INIT"};
 item2[] = {"INIT_COMPLETE",4,218,-277.365326,-192.055389,-187.365341,-142.055359,0.000000,"INIT" \n "COMPLETE"};
 item3[] = {"_",-1,250,-440.685394,-235.585892,-437.600311,-235.585892,0.000000,""};
 item4[] = {"DESTROY",4,218,-157.505569,-114.375870,-67.505569,-64.375847,0.000000,"DESTROY"};
@@ -12,7 +12,7 @@ item7[] = {"COMPLETE",4,218,347.567993,276.133881,437.568237,326.133942,0.000000
 item8[] = {"START",4,218,-277.977234,-41.899986,-187.977158,8.099995,2.000000,"START"};
 item9[] = {"DO_ACTIVATE",4,218,14.122589,355.190216,104.122711,405.190277,1.000000,"DO" \n "ACTIVATE"};
 item10[] = {"DONE",2,250,202.889771,668.202148,289.549194,714.861816,0.000000,"DONE"};
-item11[] = {"ACTIVATE_LOOP",2,4346,10.058136,435.696259,100.058258,485.696381,0.000000,"ACTIVATE" \n "LOOP"};
+item11[] = {"ACTIVATE_LOOP",2,250,10.058136,435.696259,100.058258,485.696381,0.000000,"ACTIVATE" \n "LOOP"};
 item12[] = {"ITERATE",4,218,137.170258,435.505951,227.170288,485.506073,1.000000,"ITERATE"};
 item13[] = {"END__LOOP",4,218,9.993988,510.461639,99.994049,560.461670,0.000000,"END " \n "LOOP"};
 item14[] = {"WAIT",4,218,-132.312729,-7.478668,-42.312721,42.521286,4.000000,"WAIT"};
@@ -133,8 +133,8 @@ link64[] = {47,46};
 link65[] = {48,6};
 link66[] = {49,0};
 link67[] = {50,33};
-globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-933.823364,425.042908,830.363281,-145.486786,1373,986,1};
-window[] = {0,-1,-1,-1,-1,1333,287,2817,201,1,1391};
+globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-1158.715698,649.934814,991.866150,-306.989960,1373,986,1};
+window[] = {0,-1,-1,-1,-1,1418,286,2816,286,1,1391};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -154,9 +154,11 @@ class FSM
        " 	private _fleeing = _agent getVariable [""ALiVE_Crowd_Fleeing"", false];" \n
        "  	private _crowding = _agent getVariable [""ALiVE_Crowd_Crowding"", false];" \n
        "	private _inPosition = if (position _agent distance (_agent getVariable [""ALiVE_Crowd_Pos"", [0,0,0]]) < 2 ) then {true} else {false};" \n
+       "      private _action = _agent getVariable [""ALIVE_CIV_ACTION"", ""None""];" \n
+       "      private _position = position _agent;" \n
        "" \n
        "  if (unitReady _agent && _busy && alive _agent && !_fleeing && _inPosition) then {" \n
-       "       private _action = _agent getVariable [""ALIVE_CIV_ACTION"", ""None""];" \n
+       "" \n
        "       switch (_action) do {" \n
        "            case ""Crowd"": {" \n
        "			// If Leader play crowd noise" \n
@@ -220,8 +222,6 @@ class FSM
        "" \n
        "  if (unitReady _agent && !_busy && alive _agent) then {" \n
        "" \n
-       "       private _position = position _agent;" \n
-       "" \n
        "       // Reset Fleeing" \n
        "       if (_fleeing) then {" \n
        "            [_agent, """"] call ALIVE_fnc_switchMove;" \n
@@ -252,9 +252,9 @@ class FSM
        "       // Check hostility" \n
        "" \n
        "       private _player = [_position, 60] call ALIVE_fnc_getRandomPlayerNear;       " \n
-       "       private _clusterHostilityLevel = _agent getVariable [""ALiVE_CivPop_Hostility"",""""];" \n
+       "       private _clusterHostilityLevel = _agent getVariable [""ALiVE_CivPop_Hostility"",-99];" \n
        "" \n
-       "       if (_clusterHostilityLevel isEqualType """") then {" \n
+       "       if (_clusterHostilityLevel == -99) then {" \n
        "            private _nearestAgent = [position _agent] call ALiVE_fnc_getNearestActiveAgent;" \n
        "            if (count _nearestAgent > 0) then {" \n
        "                 " \n
@@ -267,6 +267,7 @@ class FSM
        "            } else {" \n
        "                 _clusterHostilityLevel = [ALIVE_civilianHostility, str(side (_player select 0)), 0] call ALIVE_fnc_hashGet;" \n
        "            };" \n
+       "		if (isNil ""_clusterHostilityLevel"") then {_clusterHostilityLevel = 0;};" \n
        "            _agent setVariable [""ALiVE_CivPop_Hostility"",_clusterHostilityLevel,false];" \n
        "       };" \n
        "" \n
@@ -316,7 +317,7 @@ class FSM
        "       };" \n
        "      " \n
        "       // Choose an action" \n
-       "       private _action = selectRandomWeighted _chances;" \n
+       "       _action = selectRandomWeighted _chances;" \n
        "" \n
        "       If (_crowdChoice || (!_notCrowding && {_agent distance _crowdPos < 60}) ) then {" \n
        "" \n
@@ -482,6 +483,17 @@ class FSM
        "       _agent moveTo _position;" \n
        "" \n
        "  };" \n
+       "" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "" \n
+       "if(_debug) then {" \n
+       "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+       "    [""ALIVE Crowd activator - Moving agent %1 (%2) to %3 who is busy %4, fleeing %5, crowding %6 and in position %7"",_agent,_action,_position, _busy, _fleeing, _crowding, _inposition] call ALIVE_fnc_dump;" \n
+       "    [""ALIVE Crowd activator - perf check - Frame: %3-  FPS MIN: %1 AVE: %2"",diag_fpsmin ,diag_fps, diag_frameno] call ALIVE_fnc_dump;" \n
+       "};" \n
+       "" \n
+       "// DEBUG -------------------------------------------------------------------------------------" \n
+       "" \n
        "};" \n
        "" \n
        "_count = _count + 1;" \n
@@ -1388,7 +1400,7 @@ class FSM
           priority = 0.000000;
           to="ANALYSE_NEW_HOUS";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"_countNewBuildings > 0"/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"_countNewBuildings > 0 && _countActiveBuildings == 0"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
