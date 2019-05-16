@@ -35,8 +35,8 @@ ALIVE_civilianWeapons = [] call ALIVE_fnc_hashCreate;
 // Civ Pop Crowds
 
 ALiVE_CivPop_customBuildings = [] call ALiVE_fnc_hashCreate;
-ALiVE_CivPop_customBuildings_Mosque = [] call ALiVE_fnc_hashCreate;
-[ALiVE_CivPop_customBuildings_Mosque, "sounds", [
+ALiVE_CivPop_customBuildings_Minaret = [] call ALiVE_fnc_hashCreate;
+[ALiVE_CivPop_customBuildings_Minaret, "sounds", [
     "ALiVE_Civpop_Audio_Buildings_Azan1",
     "ALiVE_Civpop_Audio_Buildings_Azan2",
     "ALiVE_Civpop_Audio_Buildings_Azan3",
@@ -49,7 +49,7 @@ ALiVE_CivPop_customBuildings_Mosque = [] call ALiVE_fnc_hashCreate;
     "ALiVE_Civpop_Audio_Buildings_Azan10"
   ]
 ] call ALiVE_fnc_hashSet;
-[ALiVE_CivPop_customBuildings_Mosque, "times", [
+[ALiVE_CivPop_customBuildings_Minaret, "times", [
     [4.25,4.5],
     [5.25,5.75],
     [11.75,12],
@@ -59,9 +59,28 @@ ALiVE_CivPop_customBuildings_Mosque = [] call ALiVE_fnc_hashCreate;
   ]
 ] call ALiVE_fnc_hashSet;
 
-[ALiVE_CivPop_customBuildings, "mosque", ALiVE_CivPop_customBuildings_Mosque] call ALiVE_fnc_hashSet;
+[ALiVE_CivPop_customBuildings, "minaret", ALiVE_CivPop_customBuildings_Minaret] call ALiVE_fnc_hashSet;
 
-[ALiVE_CivPop_customBuildings, "minaret", ALiVE_CivPop_customBuildings_Mosque] call ALiVE_fnc_hashSet;
+ALiVE_CivPop_customBuildings_Mosque = [] call ALiVE_fnc_hashCreate;
+[ALiVE_CivPop_customBuildings_Mosque, "sounds", [
+    "ALiVE_Civpop_Audio_Buildings_Prayer1",
+    "ALiVE_Civpop_Audio_Buildings_Prayer2",
+    "ALiVE_Civpop_Audio_Buildings_Prayer3",
+    "ALiVE_Civpop_Audio_Buildings_Prayer4",
+    "ALiVE_Civpop_Audio_Buildings_Prayer5"
+  ]
+] call ALiVE_fnc_hashSet;
+[ALiVE_CivPop_customBuildings_Mosque, "times", [
+    [4.5,4.75],
+    [5.75,6],
+    [12,12.25],
+    [15.5,15.75],
+    [18.25,18.5],
+    [19.25,19.5]
+  ]
+] call ALiVE_fnc_hashSet;
+
+[ALiVE_CivPop_customBuildings, "mosque", ALiVE_CivPop_customBuildings_Mosque] call ALiVE_fnc_hashSet;
 
 
 ALIVE_CivPop_Crowd_Objects = [
