@@ -176,7 +176,7 @@ class CfgVehicles {
                         {
                                 displayName = "$STR_ALIVE_CIV_POP_CROWD_DENSITY";
                                 description = "$STR_ALIVE_CIV_POP_CROWD_DENSITY_COMMENT";
-                                defaultvalue = "5";
+                                defaultvalue = "3";
                         };
                         class ambientCrowdLimit
                         {
