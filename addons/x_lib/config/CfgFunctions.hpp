@@ -1580,6 +1580,13 @@ class selBinStr
 	RECOMPILE;
 };
 
+class stringListToArray
+{
+	file = "\x\alive\addons\x_lib\functions\strings\fnc_stringListToArray.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class timeToRead
 {
 	file = "\x\alive\addons\x_lib\functions\strings\fnc_timeToRead.sqf";
