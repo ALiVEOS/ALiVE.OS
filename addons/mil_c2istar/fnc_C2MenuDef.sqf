@@ -36,29 +36,36 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_menuDef","_target","_params","_menuName","_menuRsc","_menus","_backpacks","_userItems","_items","_result","_prUserItems","_otherResult","_csUserItems","_csResult"];
+private ["_menuDef","_target","_params","_menuName","_menuRsc","_menus","_userItems","_items","_result","_prUserItems","_otherResult","_csUserItems","_csResult"];
 // _this==[_target, _menuNameOrParams]
 
 PARAMS_2(_target,_params);
 
 _menuName = "";
 _menuRsc = "popup";
-_items = assignedItems player + items player;
-_backpacks = Backpack player;
-_userItems = [[MOD(MIL_C2ISTAR),"c2_item"] call ALIVE_fnc_C2ISTAR,"ALIVE_Tablet"];
+_items = (assignedItems player) + (items player) + ([backpack player]);
+_items = _items apply {tolower _x};
+_userItems = ([MOD(MIL_C2ISTAR),"c2_item"] call ALIVE_fnc_C2ISTAR) call ALiVE_fnc_stringListToArray;
+_userItems pushback "ALIVE_Tablet";
+_userItems = _userItems apply {tolower _x};
 //Finds selected userItem-string(s) in assignedItems
-_result = (({([toLower(str(_items + [_backpacks])), toLower(_x)] call CBA_fnc_find) > -1} count _userItems) > 0);
+
+_result = count (_items arrayIntersect _userItems) > 0;
 _otherResult = false;
 _csResult = false;
 
 if ([QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable) then {
-    _prUserItems = [[MOD(SUP_PLAYER_RESUPPLY),"pr_item"] call ALIVE_fnc_PR];
-    _otherResult = (({([toLower(str(_items + [_backpacks])), toLower(_x)] call CBA_fnc_find) > -1} count _prUserItems) > 0);
+    _prUserItems = [MOD(SUP_PLAYER_RESUPPLY),"pr_item"] call ALIVE_fnc_PR;
+	_prUserItems = _prUserItems call ALiVE_fnc_stringListToArray;
+	_prUserItems = _prUserItems apply {tolower _x};
+	_otherResult = count (_items arrayIntersect _prUserItems) > 0;
 };
 
 if ([QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable) then {
-    _csUserItems = [NEO_radioLogic getVariable ["combatsupport_item","LaserDesignator"]];
-    _csResult = (({([toLower(str(_items + [_backpacks])), toLower(_x)] call CBA_fnc_find) > -1} count _csUserItems) > 0);
+    _csUserItems = NEO_radioLogic getVariable ["combatsupport_item","LaserDesignator"];
+	_csUserItems = _csUserItems call ALiVE_fnc_stringListToArray;
+	_csUserItems = _csUserItems apply {tolower _x};
+	_csResult = count (_items arrayIntersect _csUserItems) > 0;
 };
 
 if (typeName _params == typeName []) then {
