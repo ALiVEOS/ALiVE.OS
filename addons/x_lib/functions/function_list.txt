@@ -277,6 +277,7 @@ strings
 	ALiVE_fnc_formatNumber
 	ALiVE_fnc_realTimeToDTG
 	ALiVE_fnc_selBinStr
+	ALiVE_fnc_stringListToArray
 	ALiVE_fnc_timeToRead
 
 ui
