@@ -126,6 +126,27 @@ class cfgFunctions {
                 file = "\x\alive\addons\amb_civ_population\fnc_selectRoleAction.sqf";
                 RECOMPILE;
             };
+            class addCivilianInteraction {
+                description = "Adds interact option to civilians";
+                file = "\x\alive\addons\amb_civ_population\fnc_addCivilianInteraction.sqf";
+                RECOMPILE;
+            };
+            class civInteract {
+                description = "Main handler for civilian interraction";
+                file = "\x\alive\addons\amb_civ_population\fnc_civInteract.sqf";
+                RECOMPILE;
+            };
+            class civInteractInit {
+                description = "Initializes civilian interaction";
+                file = "\x\alive\addons\amb_civ_population\fnc_civInteractInit.sqf";
+                RECOMPILE;
+            };
+            class questionHandler {
+                description = "Main handler for questions";
+                file = "\x\alive\addons\amb_civ_population\fnc_questionHandler.sqf";
+                RECOMPILE;
+            };
+
         };
     };
 };
