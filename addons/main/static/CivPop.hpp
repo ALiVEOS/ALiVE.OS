@@ -37,16 +37,16 @@ ALIVE_civilianWeapons = [] call ALIVE_fnc_hashCreate;
 ALiVE_CivPop_customBuildings = [] call ALiVE_fnc_hashCreate;
 ALiVE_CivPop_customBuildings_Minaret = [] call ALiVE_fnc_hashCreate;
 [ALiVE_CivPop_customBuildings_Minaret, "sounds", [
-    "ALiVE_Civpop_Audio_Buildings_Azan1",
-    "ALiVE_Civpop_Audio_Buildings_Azan2",
-    "ALiVE_Civpop_Audio_Buildings_Azan3",
-    "ALiVE_Civpop_Audio_Buildings_Azan4",
-    "ALiVE_Civpop_Audio_Buildings_Azan5",
-    "ALiVE_Civpop_Audio_Buildings_Azan6",
-    "ALiVE_Civpop_Audio_Buildings_Azan7",
-    "ALiVE_Civpop_Audio_Buildings_Azan8",
-    "ALiVE_Civpop_Audio_Buildings_Azan9",
-    "ALiVE_Civpop_Audio_Buildings_Azan10"
+    ["ALiVE_Civpop_Audio_Buildings_Azan1",223],
+    ["ALiVE_Civpop_Audio_Buildings_Azan2",150],
+    ["ALiVE_Civpop_Audio_Buildings_Azan3",128],
+    ["ALiVE_Civpop_Audio_Buildings_Azan4",184],
+    ["ALiVE_Civpop_Audio_Buildings_Azan5",173],
+    ["ALiVE_Civpop_Audio_Buildings_Azan6",220],
+    ["ALiVE_Civpop_Audio_Buildings_Azan7",120],
+    ["ALiVE_Civpop_Audio_Buildings_Azan8",134],
+    ["ALiVE_Civpop_Audio_Buildings_Azan9",121],
+    ["ALiVE_Civpop_Audio_Buildings_Azan10",113]
   ]
 ] call ALiVE_fnc_hashSet;
 [ALiVE_CivPop_customBuildings_Minaret, "times", [
@@ -63,11 +63,11 @@ ALiVE_CivPop_customBuildings_Minaret = [] call ALiVE_fnc_hashCreate;
 
 ALiVE_CivPop_customBuildings_Mosque = [] call ALiVE_fnc_hashCreate;
 [ALiVE_CivPop_customBuildings_Mosque, "sounds", [
-    "ALiVE_Civpop_Audio_Buildings_Prayer1",
-    "ALiVE_Civpop_Audio_Buildings_Prayer2",
-    "ALiVE_Civpop_Audio_Buildings_Prayer3",
-    "ALiVE_Civpop_Audio_Buildings_Prayer4",
-    "ALiVE_Civpop_Audio_Buildings_Prayer5"
+    ["ALiVE_Civpop_Audio_Buildings_Prayer1",82],
+    ["ALiVE_Civpop_Audio_Buildings_Prayer2",52],
+    ["ALiVE_Civpop_Audio_Buildings_Prayer3",40],
+    ["ALiVE_Civpop_Audio_Buildings_Prayer4",136],
+    ["ALiVE_Civpop_Audio_Buildings_Prayer5",380]
   ]
 ] call ALiVE_fnc_hashSet;
 [ALiVE_CivPop_customBuildings_Mosque, "times", [

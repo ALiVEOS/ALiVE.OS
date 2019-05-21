@@ -55,7 +55,9 @@ if (count _customBuildingData > 0) then {
 
             while { (alive _source) } do {
                 while { _tracksPlayed < _totalTracks } do {
-                    private _trackName = selectRandom _sounds;
+                    private _track = (selectRandom _sounds);
+                    private _trackName =  _track select 0;
+                    private _trackDuration = _track select 1;
 
                     {
                         private _start = _x select 0;
@@ -68,7 +70,7 @@ if (count _customBuildingData > 0) then {
                                 _source say3d _trackName;
                             };
 
-                            sleep 420;
+                            sleep _trackDuration;
 
                             _tracksPlayed = _tracksPlayed + 1;
 
