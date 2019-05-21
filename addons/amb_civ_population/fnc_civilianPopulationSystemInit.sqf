@@ -85,6 +85,8 @@ if(isServer) then {
 
     [ALIVE_civilianPopulationSystem,"start"] call ALIVE_fnc_civilianPopulationSystem;
 
+    [_logic] call ALiVE_fnc_civInteractInit;
+
 };
 
 [_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;

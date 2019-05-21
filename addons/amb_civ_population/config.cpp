@@ -9,3 +9,4 @@
 #include "CfgWeapons.hpp"
 #include "eventhandlers.hpp"
 #include "animations.hpp"
+#include <data\ui\main.hpp>
