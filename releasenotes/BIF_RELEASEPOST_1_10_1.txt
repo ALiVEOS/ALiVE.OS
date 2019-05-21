@@ -14,6 +14,8 @@ Thanks to community feedback and testing we noticed that Ambient Civilians and t
 * Civilians can now throw objects when they are upset or hostile.
 * Civilian crowds will cheer and boo with appropriate animations.  Thanks to IndeedPete for Arma 2 animations.
 * Civilians will now flee for cover if armed factions start shooting. Ambient civilians may scream in terror during combat.
+* Civilians will be more active during the day and less so at night.
+* More civilians will take journeys, turn on lights, play music and be more active.
 * BUT WAIT! There's more... thanks to AUTigerGrad and TPW we've added faction specific environment sounds too. When you enter villages and towns you will hear faction appropriate sounds of daily life.
 * Ambient civilian sounds are currently available for CUP and CFP African and Middle-East civilains factions as well as vanilla Arma 3 civilian factions.
 * A custom building sound system has been implemented, initially supporting call to prayer from minarets and mosques. This system can be extended to support any building type.
@@ -28,6 +30,7 @@ Other highlights for this release include:
 * We have also fixed an issue where additional units were spawned in certain vehicles with gunners.
 * Fixed an issue where Independent sides were not treated equally
 * Removed blacklisted vehicles from roadblocks
+* Notification about ALiVE persistent markers only shows once now.
 
 See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
 
