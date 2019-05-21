@@ -6,48 +6,62 @@
 [b]Civilian Overhaul and more![/b]
 This release sees a massive overhaul of the Ambient Civilian functionality, making the streets, towns and battlefields of Arma even more ALiVE than before... If you haven't tried ALiVE Ambient Civilians, now is the time to try it out! Check out the 2 minute set up video here - https://www.youtube.com/watch?v=1eApOtnpcOo
 
+
+
 Thanks to community feedback and testing we noticed that Ambient Civilians and to some extent civilian insurgencies were not working as intended. Not only have we fixed those issues but we've massively improved the ambient civilian population functionality. This includes:
 
-* Ambient Civilians now dynamically spawn and despawn around players in small or large urban areas to create a true feeling that villages and towns are ALiVE.
-* An additional layer of ambient civilians (crowds) now spawn and despawn from buildings around players, creating large numbers of civilians in built up areas.
-* Ambient Civilians and crowds will carry on with daily life, moving between buildings, visiting mosques, churches, shops, observing local forces and starting noisy crowds.
-* Civilians can now throw objects when they are upset or hostile.
-* Civilian crowds will cheer and boo with appropriate animations.  Thanks to IndeedPete for Arma 2 animations.
-* Civilians will now flee for cover if armed factions start shooting. Ambient civilians may scream in terror during combat.
-* Civilians will be more active during the day and less so at night.
-* More civilians will take journeys, turn on lights, play music and be more active.
-* BUT WAIT! There's more... thanks to AUTigerGrad and TPW we've added faction specific environment sounds too. When you enter villages and towns you will hear faction appropriate sounds of daily life.
-* Ambient civilian sounds are currently available for CUP and CFP African and Middle-East civilains factions as well as vanilla Arma 3 civilian factions.
-* A custom building sound system has been implemented, initially supporting call to prayer from minarets and mosques. This system can be extended to support any building type.
-* Number of civilians spawned from buildings, spawn radius and spawn limiter can be configured from the Ambient Civilian Population module.
-* Finally, rumour has it that Spyder's Civilian Interaction functionality is being ported into ALiVE to work with the updated Ambient Civilians...
+Ambient Civilians now dynamically spawn and despawn around players in small or large urban areas to create a true feeling that villages and towns are ALiVE.
+An additional layer of ambient civilians (crowds) now spawn and despawn from buildings around players, creating large numbers of civilians in built up areas.
+Ambient Civilians and crowds will carry on with daily life, moving between buildings, visiting mosques, churches, shops, observing local forces and starting noisy crowds.
+Civilians can now throw objects when they are upset or hostile.
+Civilian crowds will cheer and boo with appropriate animations.  Thanks to IndeedPete for Arma 2 animations.
+Civilians will now flee for cover if armed factions start shooting. Ambient civilians may scream in terror during combat.
+Civilians will be more active during the day and less so at night.
+More civilians will take journeys, turn on lights, play music and be more active.
+BUT WAIT! There's more... thanks to AUTigerGrad and TPW we've added faction specific environment sounds too. When you enter villages and towns you will hear faction appropriate sounds of daily life.
+Ambient civilian sounds are currently available for CUP and CFP African and Middle-East civilains factions as well as vanilla Arma 3 civilian factions.
+A custom building sound system has been implemented, initially supporting call to prayer from minarets and mosques. This system can be extended to support any building type.
+Number of civilians spawned from buildings, spawn radius and spawn limiter can be configured from the Ambient Civilian Population module.
+Finally, rumour has it that Spyder's Civilian Interaction functionality is being ported into ALiVE to work with the updated Ambient Civilians...
 
 Other highlights for this release include:
-* Added support for the Global Mobilization terrain! Thanks to the GM team for their support!
-* Added support for the Kujari terrain.
-* Added the ability to define multiple items for access to Combat Support.
-* We have fixed an issue where ammo crates could not be unloaded from vehicles when called in via Player Resupply.
-* We have also fixed an issue where additional units were spawned in certain vehicles with gunners.
-* Fixed an issue where Independent sides were not treated equally
-* Removed blacklisted vehicles from roadblocks
-* Notification about ALiVE persistent markers only shows once now.
 
+Added support for the Global Mobilization terrain! Thanks to the GM team for their support!
+Added support for the Kujari terrain.
+Added the ability to define multiple items for access to Combat Support.
+We have fixed an issue where ammo crates could not be unloaded from vehicles when called in via Player Resupply.
+We have also fixed an issue where additional units were spawned in certain vehicles with gunners.
+Fixed an issue where Independent sides were not treated equally
+Removed blacklisted vehicles from roadblocks
+Notification about ALiVE persistent markers only shows once now.
 See full [url=https://github.com/ALiVEOS/ALiVE.OS/commits/master]commit history on Github[/url]
+
+
 
 [center][b][url=http://alivemod.com/#Download]Download[/url][/b]
 Grab the latest version from [url=http://alivemod.com/#Download]ALiVEmod.com[/url]
 Also available from PlayWithSix, ArmAholic and Steam (Usually within 24 hours of this post)[/center]
 
+
+
 Please note that as with all updates, if you have an issue loading a mission made with a previous version of ALiVE, delete and replace the modules in that mission.
+
+
 
 [b]Known Issues & Support[/b]
 Existing bugs are listed on Github [url=https://github.com/ALiVEOS/ALiVE.OS/issues]here[/url]. Feel free to submit bugs (with vanilla repros please) or discuss any issues or ideas on our forum at [url=http://alivemod.com/forum/]http://alivemod.com/forum/[/url].
 
+
+
 [b]Manual[/b]
 Please refer to the [url=http://www.alivemod.com/wiki]ALiVE Wiki[/url]. All the info you need is there. If anything is missing or unclear, please let us know.
 
+
+
 [b]Are you using Linux?[/b]
 ALiVE is fully supported on a Linux Dedicated Server (as well as Windows). In fact the ALiVE Official Server for testing is running Ubuntu. Here are some tips on getting ALiVE running smoothly on Linux and integrated with War Room - [url=http://www.alivemod.com/forum/1916-setting-up-linux-dedi-server]http://www.alivemod.com/forum/1916-setting-up-linux- dedi-server[/url]
+
+
 
 [b]Acknowledgements and Thanks[/b]
 Particular thanks to all those on our support forum who have worked closely with us to identify bugs, provide logs and generally help us improve ALiVE. Your assistance is valuable and your dedication to ALiVE makes it all worth the effort!
