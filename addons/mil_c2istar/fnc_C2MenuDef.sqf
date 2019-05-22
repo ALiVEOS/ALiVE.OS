@@ -50,7 +50,18 @@ _userItems pushback "ALIVE_Tablet";
 _userItems = _userItems apply {tolower _x};
 //Finds selected userItem-string(s) in assignedItems
 
-_result = count (_items arrayIntersect _userItems) > 0;
+private _itemsString = _items joinstring ",";
+
+_result = false;
+{
+	private _requiredItem = _x;
+	if (_itemsString find _requiredItem != -1) exitwith {
+		_result = true;
+	};
+} foreach _userItems;
+
+// for backwards compat use 'find' to support partial matches
+//_result = count (_items arrayIntersect _userItems) > 0;
 _otherResult = false;
 _csResult = false;
 
@@ -58,14 +69,30 @@ if ([QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable) then {
     _prUserItems = [MOD(SUP_PLAYER_RESUPPLY),"pr_item"] call ALIVE_fnc_PR;
 	_prUserItems = _prUserItems call ALiVE_fnc_stringListToArray;
 	_prUserItems = _prUserItems apply {tolower _x};
-	_otherResult = count (_items arrayIntersect _prUserItems) > 0;
+
+	//_otherResult = count (_items arrayIntersect _prUserItems) > 0;
+	_otherResult = true;
+	{
+		private _requiredItem = _x;
+		if (_itemsString find _requiredItem != -1) exitwith {
+			_otherResult = true;
+		};
+	} foreach _prUserItems;
 };
 
 if ([QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable) then {
     _csUserItems = NEO_radioLogic getVariable ["combatsupport_item","LaserDesignator"];
 	_csUserItems = _csUserItems call ALiVE_fnc_stringListToArray;
 	_csUserItems = _csUserItems apply {tolower _x};
-	_csResult = count (_items arrayIntersect _csUserItems) > 0;
+
+	//_csResult = count (_items arrayIntersect _csUserItems) > 0;
+	_csResult = true;
+	{
+		private _requiredItem = _x;
+		if (_itemsString find _requiredItem != -1) exitwith {
+			_csResult = true;
+		};
+	} foreach _csUserItems;
 };
 
 if (typeName _params == typeName []) then {
