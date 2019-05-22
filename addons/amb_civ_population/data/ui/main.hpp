@@ -1,4 +1,5 @@
 #include "common.hpp"
+class RscPicture;
 
 class ALiVE_CivilianInteraction {
 	idd = 923;
@@ -57,13 +58,20 @@ class ALiVE_CivilianInteraction {
 		class CivInteract_CivName: CivInteract_RscText {
 			idc = 9236;
 
-            x = 0.415417 * safezoneW + safezoneX;
-            y = 0.248 * safezoneH + safezoneY;
-            w = 0.233333 * safezoneW;
-            h = 0.056 * safezoneH;
-			sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)";
+			x = 0.29375 * safezoneW + safezoneX;
+			y = 0.258 * safezoneH + safezoneY;
+			w = 0.233333 * safezoneW;
+			h = 0.0559999 * safezoneH;
+			sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 2)";
 		};
-
+		class CivInteract_Pic: RscPicture
+		{
+			idc = 1200;
+			x = 0.247344 * safezoneW + safezoneX;
+			y = 0.258 * safezoneH + safezoneY;
+			w = 0.04125 * safezoneW;
+			h = 0.055 * safezoneH;
+		};
 		class CivInteract_ResponseTitle: CivInteract_RscText {
 			idc = 9238;
 

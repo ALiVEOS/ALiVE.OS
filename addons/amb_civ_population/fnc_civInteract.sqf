@@ -47,7 +47,7 @@ private ["_result"];
 #define CIVINTERACT_DETAIN 		(CIVINTERACT_DISPLAY displayCtrl 92311)
 #define CIVINTERACT_QUESTIONLIST 		(CIVINTERACT_DISPLAY displayCtrl 9234)
 #define CIVINTERACT_RESPONSELIST 		(CIVINTERACT_DISPLAY displayCtrl 9239)
-
+#define CIVINTERACT_PIC					(CIVINTERACT_DISPLAY displayCtrl 1200)
 #define CIVINTERACT_INVENTORYCONTROLS 	[9240,9241,9243,9244]
 #define CIVINTERACT_SEARCHBUTTON 	(CIVINTERACT_DISPLAY displayCtrl 9242)
 #define CIVINTERACT_GEARLIST 		(CIVINTERACT_DISPLAY displayCtrl 9244)
@@ -118,7 +118,7 @@ switch (_operation) do {
 
 		//-- Display loading
 		CIVINTERACT_QUESTIONLIST lbAdd "Loading . . .";
-
+		CIVINTERACT_PIC ctrlsetText "a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa";
 		//-- Retrieve data
 		[nil,"getData", [player,_civ]] remoteExecCall [QUOTE(MAINCLASS),2];
 	};
@@ -150,7 +150,7 @@ switch (_operation) do {
 		_name = _civInfo select 3;
 		_role = [nil,"getRole", _civ] call MAINCLASS;
 		if (_role == "None") then {
-			CIVINTERACT_CIVNAME ctrlSetText _name;
+			CIVINTERACT_CIVNAME ctrlSetText (format ["%1 (%2)", _name, [configFile >> "CfgVehicles" >> typeOf vehicle _civ] call BIS_fnc_displayName]);
 		} else {
 			CIVINTERACT_CIVNAME ctrlSetText (format ["%1 (%2)", _name, _role]);
 		};
