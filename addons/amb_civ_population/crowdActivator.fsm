@@ -133,8 +133,8 @@ link64[] = {47,46};
 link65[] = {48,6};
 link66[] = {49,0};
 link67[] = {50,33};
-globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-1020.075378,31.757080,1076.853271,147.237320,1093,966,1};
-window[] = {2,-1,-1,-1,-1,1212,62,2132,80,3,1115};
+globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-1102.836304,-51.003784,797.776001,-131.839951,1093,966,1};
+window[] = {2,-1,-1,-1,-1,1292,160,2230,160,3,1115};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -261,9 +261,9 @@ class FSM
                          "                 " \n
                          "                 private _clusterID = [_nearestAgent, ""homeCluster""] call ALiVE_fnc_hashGet;" \n
                          "					  _agent setVariable [""ALiVE_clusterID"", _clusterID, false];" \n
-                         "                 private _cluster = [_activeClusters, _clusterID] call ALIVE_fnc_hashGet;" \n
+                         "                 private _cluster = [_activeClusters, _clusterID,[]] call ALIVE_fnc_hashGet;" \n
                          "					" \n
-                         "                 private _clusterHostility = [_cluster, ""hostility""] call ALiVE_fnc_hashGet;" \n
+                         "                 private _clusterHostility = [_cluster, ""hostility"",[]] call ALiVE_fnc_hashGet;" \n
                          "" \n
                          "                 _clusterHostilityLevel = [_clusterHostility, str(side (_player select 0)),0] call ALIVE_fnc_hashGet;" \n
                          "            } else {" \n
