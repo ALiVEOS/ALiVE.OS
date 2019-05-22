@@ -50,7 +50,16 @@ _userItems = _userItems apply {tolower _x};
 _items = (assignedItems player) + (items player) + ([backpack player]);
 _items = _items apply {tolower _x};
 
-_result = count (_items arrayIntersect _userItems) > 0;
+//_result = count (_items arrayIntersect _userItems) > 0;
+// for backwards compat use 'find' to support partial matches
+private _itemsString = _items joinstring ",";
+_result = false;
+{
+	private _requiredItem = _x;
+	if (_itemsString find _requiredItem != -1) exitwith {
+		_result = true;
+	};
+} foreach _userItems;
 
 if (typeName _params == typeName []) then {
     if (count _params < 1) exitWith {diag_log format["Error: Invalid params: %1, %2", _this, __FILE__];};
