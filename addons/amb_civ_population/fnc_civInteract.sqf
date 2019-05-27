@@ -88,7 +88,7 @@ switch (_operation) do {
 		if ((primaryWeapon _civ != "") or {handgunWeapon _civ != ""}) exitWith {};
 
 		// Exit if not authorized
-		if (count _authorized > 0 && !((getPlayerUID player in _authorized) || (typeOf player in _authorized) || (name player in _authorized) || (faction player in _authorized))) exitWith {["The civilian can't understand what you are saying."] call ALiVE_fnc_dumpR;};
+		if (count _authorized > 0 && !((getPlayerUID player in _authorized) || (typeOf player in _authorized) || (name player in _authorized) || (faction player in _authorized) || (rank player in _authorized))) exitWith {["The civilian can't understand what you are saying."] call ALiVE_fnc_dumpR;};
 
 		//-- Close dialog if it happened to open twice
 		if (!isNull findDisplay 923) exitWith {};
