@@ -71,7 +71,7 @@ if ([QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable) then {
 	_prUserItems = _prUserItems apply {tolower _x};
 
 	//_otherResult = count (_items arrayIntersect _prUserItems) > 0;
-	_otherResult = true;
+	_otherResult = false;
 	{
 		private _requiredItem = _x;
 		if (_itemsString find _requiredItem != -1) exitwith {
@@ -86,7 +86,7 @@ if ([QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable) then {
 	_csUserItems = _csUserItems apply {tolower _x};
 
 	//_csResult = count (_items arrayIntersect _csUserItems) > 0;
-	_csResult = true;
+	_csResult = false;
 	{
 		private _requiredItem = _x;
 		if (_itemsString find _requiredItem != -1) exitwith {
