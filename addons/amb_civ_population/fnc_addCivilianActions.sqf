@@ -42,7 +42,8 @@ private _id = _object addAction [
     false,
     true,
     "",
-    _condition
+    _condition,
+    5
 ];
 
 _role = "major";
@@ -59,7 +60,8 @@ _id = _object addAction [
     false,
     true,
     "",
-    _condition
+    _condition,
+    5
 ];
 
 _role = "priest";
@@ -76,7 +78,8 @@ _id = _object addAction [
     false,
     true,
     "",
-    _condition
+    _condition,
+    5
 ];
 
 _role = "muezzin";
@@ -93,7 +96,8 @@ _id = _object addAction [
     false,
     true,
     "",
-    _condition
+    _condition,
+    5
 ];
 
 _role = "politician";
@@ -110,7 +114,8 @@ _id = _object addAction [
     false,
     true,
     "",
-    _condition
+    _condition,
+    5
 ];
 
 _text = "Detain";
@@ -126,7 +131,8 @@ _id = _object addAction [
     false,
     true,
     "",
-    _condition
+    _condition,
+    5
 ];
 
 _text = "Arrest";
@@ -142,7 +148,8 @@ _id = _object addAction [
     false,
     true,
     "",
-    _condition
+    _condition,
+    5
 ];
 
 _text = "Release";
@@ -162,7 +169,8 @@ _id = _object addAction [
     false,
     true,
     "",
-    _condition
+    _condition,
+    5
 ];
 
 _text = "Search";
@@ -178,7 +186,8 @@ _id = _object addAction [
     false,
     true,
     "",
-    _condition
+    _condition,
+    5
 ];
 
 if (random 1 > 0.9) then {
@@ -195,7 +204,8 @@ if (random 1 > 0.9) then {
         false,
         true,
         "",
-        _condition
+        _condition,
+        5
     ];
 };
 
