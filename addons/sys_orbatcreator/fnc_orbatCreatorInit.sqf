@@ -30,11 +30,11 @@ params ["_logic","_syncedObjects"];
 
 ASSERT_DEFINED("ALIVE_fnc_orbatCreator","Main function missing");
 
-if (isnil "_logic") then {_logic = [nil, "create"] call ALIVE_fnc_orbatCreator};
+if (isnil "_logic") then { _logic = [nil, "create"] call ALIVE_fnc_orbatCreator };
 
 _moduleID = [_logic, true] call ALIVE_fnc_dumpModuleInit;
 
-[_logic, "init", _syncedObjects] call ALIVE_fnc_orbatCreator;
+[_logic,"init"] call ALIVE_fnc_orbatCreator;
 
 [_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;
 

@@ -1,3 +1,15 @@
+#define COLOR_SIDE_EAST [profilenamespace getvariable ["Map_OPFOR_R",0],profilenamespace getvariable ["Map_OPFOR_G",1],profilenamespace getvariable ["Map_OPFOR_B",1],profilenamespace getvariable ["Map_OPFOR_A",0.8]]
+#define COLOR_SIDE_WEST [profilenamespace getvariable ["Map_BLUFOR_R",0],profilenamespace getvariable ["Map_BLUFOR_G",1],profilenamespace getvariable ["Map_BLUFOR_B",1],profilenamespace getvariable ["Map_BLUFOR_A",0.8]]
+#define COLOR_SIDE_GUER [profilenamespace getvariable ["Map_Independent_R",0],profilenamespace getvariable ["Map_Independent_G",1],profilenamespace getvariable ["Map_Independent_B",1],profilenamespace getvariable ["Map_Independent_A",0.8]]
+
+#define OC_getControl(disp,ctrl)    (disp displayCtrl ctrl)
+#define OC_getSelData(ctrl)         (lbData [ctrl,(lbCurSel ctrl)])
+#define OC_ctrlGetSelData(ctrl)     (ctrl lbData (lbCurSel ctrl))
+
+#define ALIVE_COMPATIBLE_GROUP_CATEGORIES   ["Infantry","SpecOps","Motorized","Motorized_MTP","Mechanized","Armored","Artillery","Naval","Air","Support"]
+#define FACTION_BLACKLIST ["Virtual_F","Interactive_F"]
+
+
 // display components
 
 #define OC_DISPLAY_FACTIONEDITOR                    8000
@@ -12,15 +24,15 @@
 
 #define OC_COMMON_MENUSTRIP                         7005
 
+#define OC_FACTIONEDITOR_FACTIONS_FLAG              8003
 #define OC_FACTIONEDITOR_FACTIONS_LIST              8004
+#define OC_FACTIONEDITOR_TREE_GROUPS                8005
 #define OC_FACTIONEDITOR_FACTIONS_BUTTON_ONE        8006
 #define OC_FACTIONEDITOR_FACTIONS_BUTTON_TWO        8007
 #define OC_FACTIONEDITOR_FACTIONS_BUTTON_THREE      8008
 #define OC_FACTIONEDITOR_FACTIONS_BUTTON_FOUR       8009
-#define OC_FACTIONEDITOR_FACTIONS_FLAG              8003
-#define OC_FACTIONEDITOR_TREE_GROUPS                8005
 
-#define OC_CREATEFACTION_HEADER						8302
+#define OC_CREATEFACTION_HEADER                     8302
 #define OC_CREATEFACTION_INPUT_DISPLAYNAME          8312
 #define OC_CREATEFACTION_INPUT_CLASSNAME            8314
 #define OC_CREATEFACTION_INPUT_SIDE                 8316

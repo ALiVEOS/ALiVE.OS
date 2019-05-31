@@ -52,21 +52,7 @@ if (typeName _params == typeName []) then {
 } else {
     _menuName = _params;
 };
-//-----------------------------------------------------------------------------
-/*
-        ["Menu Caption", "flexiMenu resource dialog", "optional icon folder", menuStayOpenUponSelect],
-        [
-            ["caption",
-                "action",
-                "icon",
-                "tooltip",
-                {"submenu"|["menuName", "", {0|1} (optional - use embedded list menu)]},
-                -1 (shortcut DIK code),
-                {0|1/"0"|"1"/false|true} (enabled),
-                {-1|0|1/"-1"|"0"|"1"/false|true} (visible)
-            ],
-             ...
-*/
+
 _menus =
 [
     [

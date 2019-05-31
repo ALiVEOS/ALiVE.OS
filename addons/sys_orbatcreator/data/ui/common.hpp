@@ -233,7 +233,8 @@ class orbatCreator_ctrlButtonCancel : ctrlButtonCancel {
 
 };
 
-class orbatCreator_RscTree {
+class RscTree;
+class orbatCreator_RscTree : RscTree {
 	access = 0;
 	idc = 12;
 	type = 12;
@@ -517,7 +518,7 @@ class orbatCreator_common_header_banner : orbatCreator_RscPicture {
 
 class menuStrip_button_action {
 
-    action = "['onMenuStripButtonClicked', _this] call ALiVE_fnc_orbatCreatorOnAction";
+    action = "[ALiVE_orbatCreator,'onMenuStripButtonClicked', _this] call ALiVE_fnc_orbatCreatorGUI";
 
 };
 

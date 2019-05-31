@@ -1,6 +1,8 @@
 class ALiVE_orbatCreator_interface_factionEditor {
     idd = 8000;
 
+	onLoad = "private _factionEditorController = [ALiVE_orbatCreator,'factionEditorController'] call ALiVE_fnc_orbatCreator; private _view = [_factionEditorController,'view'] call ALiVE_fnc_factionEditor; [_view,'onLoad', _this] call ALiVE_fnc_factionEditorGUI;";
+
     class controlsBackground {
 
         // common header controls
@@ -117,6 +119,8 @@ class ALiVE_orbatCreator_interface_factionEditor {
 
 class ALiVE_orbatCreator_interface_createFaction {
     idd = 8300;
+
+	onLoad = "private _factionEditorController = [ALiVE_orbatCreator,'factionEditorController'] call ALiVE_fnc_orbatCreator; private _view = [_factionEditorController,'view'] call ALiVE_fnc_factionEditor; [_view,'onLoadCreateFaction', _this] call ALiVE_fnc_factionEditorGUI;";
 
     class controlsBackground {
 
