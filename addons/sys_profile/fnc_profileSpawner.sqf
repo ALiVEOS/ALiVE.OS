@@ -100,9 +100,9 @@ if (_spawnSources isEqualTo []) then {
     // figure out what radius to use
     // based on source unit type
 
-    if (vehicle _spawnSource iskindof "Helicopter") then {_radius = ALIVE_spawnRadiusHeli};
-    if (vehicle _spawnSource iskindof "Plane") then {_radius = ALIVE_spawnRadiusJet};
-    if (unitIsUAV _spawnSource) then {_radius = ALIVE_spawnRadiusUAV};
+    if (vehicle _spawnSource iskindof "Helicopter") then { _radius = ALIVE_spawnRadiusHeli };
+    if (vehicle _spawnSource iskindof "Plane") then { _radius = ALIVE_spawnRadiusJet };
+    if (unitIsUAV _spawnSource) then { _radius = [ALIVE_spawnRadiusUAV,ALIVE_spawnRadius + 800] select (ALIVE_spawnRadiusUAV == -1) };
 
     private _profilesInDeactivationRange = [_center,_radius * 1.2, ["all","all"], true] call ALiVE_fnc_getNearProfiles;
     private _profilesInSpawnRange = [MOD(profileSystem),"profilesInSpawnRange"] call ALiVE_fnc_hashGet;
