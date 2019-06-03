@@ -66,6 +66,7 @@ switch(_operation) do {
             [_logic,"spawnRadius",1000] call ALIVE_fnc_hashSet;
             [_logic,"spawnTypeJetRadius",1000] call ALIVE_fnc_hashSet;
             [_logic,"spawnTypeHeliRadius",1000] call ALIVE_fnc_hashSet;
+			[_logic,"spawnRadiusUAV", 1000] call ALiVE_fnc_hashSet;
             [_logic,"activeLimiter",30] call ALIVE_fnc_hashSet;
             [_logic,"spawnCycleTime",1] call ALIVE_fnc_hashSet;
             [_logic,"despawnCycleTime",1] call ALIVE_fnc_hashSet;
@@ -110,6 +111,7 @@ switch(_operation) do {
             _spawnRadius = [_logic,"spawnRadius"] call ALIVE_fnc_hashGet;
             _spawnTypeJetRadius = [_logic,"spawnTypeJetRadius"] call ALIVE_fnc_hashGet;
             _spawnTypeHeliRadius = [_logic,"spawnTypeHeliRadius"] call ALIVE_fnc_hashGet;
+			_spawnTypeUAVRadius = [_logic,"spawnRadiusUAV"] call ALiVE_fnc_hashGet;
             _activeLimiter = [_logic,"activeLimiter"] call ALIVE_fnc_hashGet;
             _spawnCycleTime = [_logic,"spawnCycleTime"] call ALIVE_fnc_hashGet;
             _despawnCycleTime = [_logic,"despawnCycleTime"] call ALIVE_fnc_hashGet;
@@ -207,6 +209,7 @@ switch(_operation) do {
                 ["ALIVE Spawn Radius: %1", _spawnRadius] call ALIVE_fnc_dump;
                 ["ALIVE Spawn in Jet Radius: %1",_spawnTypeJetRadius] call ALIVE_fnc_dump;
                 ["ALIVE Spawn in Heli Radius: %1",_spawnTypeHeliRadius] call ALIVE_fnc_dump;
+				["ALIVE Spawn in UAV Radius: %1",_spawnTypeUAVRadius] call ALIVE_fnc_dump;
                 ["ALIVE Spawn Cycle Time: %1", _spawnCycleTime] call ALIVE_fnc_dump;
                 ["ALIVE Persistent: %1",_persistent] call ALIVE_fnc_dump;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
@@ -218,7 +221,7 @@ switch(_operation) do {
 
             // start the profile spawners
             ALiVE_SpawnSources = [];
-            private _profileSpawnerPerFrameID = [ALiVE_fnc_profileSpawner, 0, [_spawnRadius,_spawnTypeHeliRadius,_spawnTypeJetRadius,_activeLimiter]] call CBA_fnc_addPerFrameHandler;
+            private _profileSpawnerPerFrameID = [ALiVE_fnc_profileSpawner, 0, []] call CBA_fnc_addPerFrameHandler;
 
             [_logic,"profileSimulatorPerFrameID", _profileSimPerFrameID] call ALiVE_fnc_hashSet;
             [_logic,"profileSpawnerPerFrameID", _profileSpawnerPerFrameID] call ALiVE_fnc_hashSet;
@@ -399,6 +402,13 @@ switch(_operation) do {
                     ALIVE_spawnRadiusHeli = _args;
             };
             _result = [_logic,"spawnTypeHeliRadius"] call ALIVE_fnc_hashGet;
+    };
+    case "spawnRadiusUAV": {
+            if(typeName _args == "SCALAR") then {
+                    [_logic,"spawnRadiusUAV",_args] call ALIVE_fnc_hashSet;
+                    ALIVE_spawnRadiusUAV = _args;
+            };
+            _result = [_logic,"spawnRadiusUAV"] call ALIVE_fnc_hashGet;
     };
     case "activeLimiter": {
             if(typeName _args == "SCALAR") then {
