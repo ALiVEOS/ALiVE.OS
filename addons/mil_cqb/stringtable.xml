@@ -140,6 +140,12 @@
 <Key ID="STR_ALIVE_CQB_STATICWEAPONS_COMMENT">
     <Original>Density of static weapon emplacements in CQB areas, such as mortars and machine guns</Original>
 </Key>
+<Key ID="STR_ALIVE_CQB_STATICWEAPONS_CLASSNAMES">
+    <Original>Static weapon Classnames:</Original>
+</Key>
+<Key ID="STR_ALIVE_CQB_STATICWEAPONS_CLASSNAMES_COMMENT">
+    <Original>Static weapons that can spawn</Original>
+</Key>
 <Key ID="STR_ALIVE_CQB_UNIT_BLACKLIST">
     <Original>Blacklist Units:</Original>
 </Key>

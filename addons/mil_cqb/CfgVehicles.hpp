@@ -267,6 +267,12 @@ class CfgVehicles {
                                         };
                                 };
                         };
+                        class CQB_staticWeaponsClassnames
+                        {
+								displayName = "$STR_ALIVE_CQB_STATICWEAPONS_CLASSNAMES";
+								description = "$STR_ALIVE_CQB_STATICWEAPONS_CLASSNAMES_COMMENT";
+								defaultValue = "B_HMG_01_high_F,O_Mortar_01_F,O_HMG_01_high_F";
+                        };
                         class CQB_UseDominantFaction
                         {
                                 displayName = "$STR_ALIVE_CQB_USEDOMINANTFACTION";
