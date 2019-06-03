@@ -31,12 +31,6 @@ if (ALiVE_gamePaused) exitwith {};
 
 _this = _this select 0;
 
-private _spawnRadius = _this select 0;
-private _spawnRadiusHeli = _this select 1;
-private _spawnRadiusPlane = _this select 2;
-private _activeLimiter = _this select 3;
-private _uavSpawnRadius = _spawnRadius + 800;
-
 private _profilesToSpawnQueue = [MOD(profileSystem),"profilesToSpawn"] call ALiVE_fnc_hashGet;
 private _profilesToDespawnQueue = [MOD(profileSystem),"profilesToDespawn"] call ALiVE_fnc_hashGet;
 
@@ -101,14 +95,14 @@ if (_spawnSources isEqualTo []) then {
     _spawnSources deleteat 0;
 
     private _center = getpos _spawnSource;
-    private _radius = _spawnRadius;
+    private _radius = ALIVE_spawnRadius;
 
     // figure out what radius to use
     // based on source unit type
 
-    if (vehicle _spawnSource iskindof "Helicopter") then {_radius = _spawnRadiusHeli};
-    if (vehicle _spawnSource iskindof "Plane") then {_radius = _spawnRadiusPlane};
-    if (unitIsUAV _spawnSource) then {_radius = _uavSpawnRadius};
+    if (vehicle _spawnSource iskindof "Helicopter") then {_radius = ALIVE_spawnRadiusHeli};
+    if (vehicle _spawnSource iskindof "Plane") then {_radius = ALIVE_spawnRadiusJet};
+    if (unitIsUAV _spawnSource) then {_radius = ALIVE_spawnRadiusUAV};
 
     private _profilesInDeactivationRange = [_center,_radius * 1.2, ["all","all"], true] call ALiVE_fnc_getNearProfiles;
     private _profilesInSpawnRange = [MOD(profileSystem),"profilesInSpawnRange"] call ALiVE_fnc_hashGet;
@@ -173,6 +167,7 @@ if (!(_profilesToSpawnQueue isEqualTo []) && {time - _lastProfileSpawnedTime > A
 
         _profilesToSpawnQueue deleteat 0;
     } else {
+		private _activeLimiter = [MOD(profileSystem),"activeLimiter"] call ALiVE_fnc_profileSystem;
         private _activeEntityCount = count ([MOD(profileHandler),"getActiveEntities"] call ALiVE_fnc_profileHandler);
 
         if (_activeEntityCount < _activeLimiter) then {

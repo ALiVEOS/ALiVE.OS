@@ -62,6 +62,12 @@
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS_COMMENT">
     <Original>The radius around player in helicopters to spawn AI. Set to 0 to disable spawning while in helicopters</Original>
 </Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS">
+    <Original>Spawn UAV radius:</Original>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS_COMMENT">
+    <Original>The radius around player controlled UAV to spawn AI. Set to 0 to disable spawning while controlling UAVs. Set to -1 to default to (Infantry) Spawn Radius + 800.</Original>
+</Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER">
     <Original>Virtual Unit Speed:</Original>
 </Key>

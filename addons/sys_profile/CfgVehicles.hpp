@@ -87,6 +87,12 @@ class CfgVehicles {
                         description = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS_COMMENT";
                         defaultvalue = "0";
                     };
+                    class spawnRadiusUAV
+                    {
+                        displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS";
+                        description = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS_COMMENT";
+                        defaultvalue = "-1";
+                    };
                     class activeLimiter
                     {
                         displayName = "$STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER";
