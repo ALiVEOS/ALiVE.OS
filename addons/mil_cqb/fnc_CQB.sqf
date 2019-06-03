@@ -133,60 +133,67 @@ switch(_operation) do {
             TRACE_1("After module init",_logic);
 
             //Init further mandatory params on all localities
-            _debug = _logic getvariable ["CQB_debug_setting","false"];
-            if (_debug isEqualType "") then {_debug = (_debug == "true");};
+            private _debug = _logic getvariable ["CQB_debug_setting","false"];
+            if (_debug isequaltype "") then {_debug = (_debug == "true")};
             _logic setVariable ["debug", _debug];
 
-            _CQB_spawn = _logic getvariable ["CQB_spawn_setting", "0.01"];
-            if (typename (_CQB_spawn) == "STRING") then {_CQB_spawn = call compile _CQB_spawn};
+            private _CQB_spawn = _logic getvariable ["CQB_spawn_setting", "0.01"];
+            if (_CQB_spawn isequaltype "") then {_CQB_spawn = call compile _CQB_spawn};
             //// For backward compatibility, remove after some months ////
+			//// Please update the list when this code is read, but not changed
+			////	- 6/2/2019
             if (_CQB_spawn >= 1) then {_CQB_spawn = _CQB_spawn / 100};
             /////////////////////////////////////////////////////////////
             _logic setVariable ["CQB_spawn", _CQB_spawn];
 
-            _CQB_density = _logic getvariable ["CQB_DENSITY","1000"];
-            if (typename (_CQB_density) == "STRING") then {_CQB_density = call compile _CQB_density};
+            private _CQB_density = _logic getvariable ["CQB_DENSITY","1000"];
+            if (_CQB_density isequaltype "") then {_CQB_density = call compile _CQB_density};
             _logic setVariable ["CQB_DENSITY", _CQB_density];
 
-            _spawn = _logic getvariable ["CQB_spawndistance","700"];
-            if (typename (_spawn) == "STRING") then {_spawn = call compile _spawn};
+            private _spawn = _logic getvariable ["CQB_spawndistance","700"];
+            if (_spawn isequaltype "") then {_spawn = call compile _spawn};
             _logic setVariable ["spawnDistance", _spawn];
 
-            _spawnStatic = _logic getvariable ["CQB_spawndistanceStatic","1200"];
-            if (typename (_spawnStatic) == "STRING") then {_spawnStatic = call compile _spawnStatic};
+            private _spawnStatic = _logic getvariable ["CQB_spawndistanceStatic","1200"];
+            if (_spawnStatic isequaltype "") then {_spawnStatic = call compile _spawnStatic};
             _logic setVariable ["spawnDistanceStatic", _spawnStatic];
 
-            _spawnHeli = _logic getvariable ["CQB_spawndistanceHeli","0"];
-            if (typename (_spawnHeli) == "STRING") then {_spawnHeli = call compile _spawnHeli};
+            private _spawnHeli = _logic getvariable ["CQB_spawndistanceHeli","0"];
+            if (_spawnHeli isequaltype "") then {_spawnHeli = call compile _spawnHeli};
             _logic setVariable ["spawnDistanceHeli", _spawnHeli];
 
-            _spawnJet = _logic getvariable ["CQB_spawndistanceJet","0"];
-            if (typename (_spawnJet) == "STRING") then {_spawnJet = call compile _spawnJet};
+            private _spawnJet = _logic getvariable ["CQB_spawndistanceJet","0"];
+            if (_spawnJet isequaltype "") then {_spawnJet = call compile _spawnJet};
             _logic setVariable ["spawnDistanceJet", _spawnJet];
 
-            _amount = _logic getvariable ["CQB_amount","2"];
-            if (typename (_amount) == "STRING") then {_amount = call compile _amount};
+            private _amount = _logic getvariable ["CQB_amount","2"];
+            if (_amount isequaltype "") then {_amount = call compile _amount};
             _logic setVariable ["CQB_amount", _amount];
 
-            _staticWeaponsIntensity = _logic getvariable ["CQB_staticWeapons","0"];
-            if (typename (_staticWeaponsIntensity) == "STRING") then {_staticWeaponsIntensity = call compile _staticWeaponsIntensity};
+            private _staticWeaponsIntensity = _logic getvariable ["CQB_staticWeapons","0"];
+            if (_staticWeaponsIntensity isequaltype "") then {_staticWeaponsIntensity = call compile _staticWeaponsIntensity};
             _logic setVariable ["CQB_staticWeapons", _staticWeaponsIntensity];
 
-            _type = _logic getvariable ["CQB_TYPE","regular"];
+            private _staticWeaponsClassnames = _logic getvariable ["CQB_staticWeaponsClassnames","B_HMG_01_high_F,O_Mortar_01_F,O_HMG_01_high_F"];
+			_staticWeaponsClassnames = _staticWeaponsClassnames call ALiVE_fnc_stringListToArray;
+			if (count _staticWeaponsClassnames == 0) then { _staticWeaponsClassnames = DEFAULT_STATICWEAPONS };
+            _logic setVariable ["CQB_staticWeaponsClassnames", _staticWeaponsClassnames];
+
+            private _type = _logic getvariable ["CQB_TYPE","regular"];
             _logic setVariable ["type", _type];
 
-            _locality = _logic getvariable ["CQB_locality_setting","server"];
+            private _locality = _logic getvariable ["CQB_locality_setting","server"];
             _logic setVariable ["locality", _locality];
 
-            _factions = _logic getvariable ["CQB_FACTIONS",DEFAULT_FACTIONS];
+            private _factions = _logic getvariable ["CQB_FACTIONS",DEFAULT_FACTIONS];
             _factions = [_logic,"factions",_factions] call ALiVE_fnc_CQB;
 
-            _useDominantFaction = _logic getvariable ["CQB_UseDominantFaction","true"];
+            private _useDominantFaction = _logic getvariable ["CQB_UseDominantFaction","true"];
             if (_useDominantFaction isEqualType "") then {_useDominantFaction = (_useDominantFaction == "true")};
             _logic setVariable ["CQB_UseDominantFaction", _useDominantFaction];
 
-            _CQB_Locations = _logic getvariable ["CQB_LOCATIONTYPE","towns"];
-            
+            private _CQB_Locations = _logic getvariable ["CQB_LOCATIONTYPE","towns"];
+
             if (isnil QMOD(smoothSpawn)) then {MOD(smoothSpawn) = 0.3};
 
             [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_BLACKLIST]] call ALiVE_fnc_CQB;
@@ -231,7 +238,7 @@ switch(_operation) do {
                 // + instead of append makes _UnitsBlackList local- so unique to each module
                 // this is desired behaviour
                 _UnitsBlackList = _UnitsBlackList + ([_units_blacklist_module, ","] call CBA_fnc_split);
-                
+
                 //Create Collection
 
                 TRACE_TIME(QUOTE(COMPONENT),[]); // 1
@@ -333,6 +340,7 @@ switch(_operation) do {
                 _logic setVariable ["debugColor",_debugColor,true];
                 _logic setVariable ["debugPrefix",_type,true];
                 _logic setVariable ["staticWeaponsIntensity",_staticWeaponsIntensity,true];
+				_logic setVariable ["staticWeaponsClassnames",_staticWeaponsClassnames,true];
                 _logic setVariable ["cleared", []];
                 [_logic, "houses",_result] call ALiVE_fnc_CQB;
                 [_logic, "factions",_factions] call ALiVE_fnc_CQB;
@@ -1233,7 +1241,7 @@ switch(_operation) do {
 
             // position AI
             _positions = [_house] call ALiVE_fnc_getBuildingPositions;
-            
+
             if (count _positions == 0) exitwith {_args = _grp};
 
             [_logic, "addGroup", [_house, _grp]] call ALiVE_fnc_CQB;
@@ -1241,13 +1249,13 @@ switch(_operation) do {
 
             {
                 private _unit = _x;
-                
+
                 {
                     private _pos = _x;
-                    
+
                     _unit setPosATL [_pos select 0, _pos select 1, (_pos select 2 + 0.4)];
                 } foreach _positions;
-                
+
             } forEach (units _grp);
 
             // TODO Notify controller to start directing
@@ -1259,54 +1267,54 @@ switch(_operation) do {
         };
         _args;
     };
-    
+
     case "addStaticWeapons": {
-        
+
 	    if (isNil "_args" || {count _args < 2} || {isNull (_args select 0)} || {_args select 1 <= 0}) exitWith {
-            
+
             //["ALiVE CQB Input does not allow for creation of static weapons: %1!",_args] call ALiVE_fnc_Dump;
-            
+
 	    	_args = [];
-            
+
             _args;
 	    };
-        
+
 		private _building = _args select 0;
         private _count = _args select 1;
-        
+
         private _buildingPosition = getposATL _building;
-        
+
         private _staticWeapons = _building getvariable ["staticWeapons",[]];
-        
+
         if ({alive _x} count _staticWeapons > 0) exitwith {
-            
+
             //["ALiVE CQB Static weapons exisiting: %1! Not creating new ones...",_staticWeapons] call ALiVE_fnc_DumpR;
-            
+
         	_args = _staticWeapons;
-        
+
         	_args;
         };
-		
+
 		private _positions = _building call ALiVE_fnc_getBuildingPositions;
 		private _onTop = [];
 
-		
+
 		scopeName "#Main";
-		
+
 		_positions = [_positions,[],
 			{
 		    	_x select 2;
-		    		},"DESCENDING",{
-		    	
+			},"DESCENDING",{
+
 			}
 		] call ALiVE_fnc_SortBy;
-        
+
         //["ALiVE CQB Found building positions: %1",_positions] call ALiVE_fnc_DumpR;
-		
+
 		{
 		    private _position = AGLtoASL _x;
 		    private _checkPos = +_position; _checkPos set [2,(_checkpos select 2) + 10];
-		
+
 		    if (count lineIntersectsSurfaces [_position,_checkPos] == 0) then {
 		        _onTop pushBack (ASLtoAGL _position)
 		    };
@@ -1316,39 +1324,41 @@ switch(_operation) do {
 
 		if (random 1 < _count && {count _onTop > 0}) then {
 
-        	_count = ceil _count;   
-            
+        	_count = ceil _count;
+
             [_onTop] call CBA_fnc_Shuffle;
-                		
+
+			private _staticWeaponClassnames = _logic getvariable ["staticWeaponsClassnames", []];
+
 			{
 			    if (count _staticWeapons < _count) then {
 
-                    private _class = selectRandom DEFAULT_STATICWEAPONS;	                
+                    private _class = selectRandom _staticWeaponClassnames;
 	                private _placement = _x;
-	                
+
 	                _placement set [2,(_placement select 2) + 0.3];
                     _placement = [_placement,0.75,_placement getdir _buildingPosition] call BIS_fnc_relPos;
 
 			    	private _staticWeapon = createVehicle [_class, _placement, [], 0, "CAN_COLLIDE"];
-                    
+
                     _staticWeapon setpos _placement;
                     _staticWeapon setdir (_buildingPosition getDir _placement);
-                    
+
 			        _staticWeapons pushback _staticWeapon;
 			    } else {
 			        breakTo "#Main"
 			    };
 			} foreach _onTop;
         };
-        
+
         if (count _staticWeapons > 0) then {
             _building setvariable ["staticWeapons",_staticWeapons,true];
-            
+
             //["ALiVE CQB Static weapons created: %1",_staticWeapons] call ALiVE_fnc_DumpR;
         };
-		
+
 		_args = _staticWeapons;
-        
+
         _args;
     };
 
@@ -1373,7 +1383,7 @@ switch(_operation) do {
             // spawn loop
             _process = _logic spawn {
                 private ["_logic","_units","_grp","_positions","_house","_debug","_spawn","_spawnStatic","_spawnHeli","_spawnJet","_maxgrps","_leader","_despawnGroup","_host","_players","_hosts","_faction","_useDominantFaction","_inRange","_locality","_pause","_spawnPool"];
-                
+
                 _logic = _this;
 
                 // default functions - can be overridden
@@ -1387,7 +1397,7 @@ switch(_operation) do {
                         _spawnJet = _logic getVariable ["spawnDistanceJet", 0];
                         _locality = _logic getVariable ["locality", "server"];
                         _useDominantFaction = _logic getvariable ["CQB_UseDominantFaction",false];
-                        
+
                         //[true,"cqb_performance","cqb_performance"] call ALiVE_fnc_Timer;
 
                         if (!isnil QMOD(CQB) && {!(MOD(CQB) getVariable ["pause", false])}) then {
@@ -1429,11 +1439,11 @@ switch(_operation) do {
                                                 } else {
                                                     _faction = (selectRandom (_logic getvariable ["factions",DEFAULT_FACTIONS]));
                                                 };
-                                                
-                                                
+
+
                                                 /////////////////////////////////////////////////////////////
                                                 _spawnPool pushback [_house,_faction,_host];
-                                                
+
                                                 //["CQB Population: Group creation triggered on client %1 for house %2 and dominantfaction %3...",_host,_house,_faction] call ALiVE_fnc_Dump;
                                                 //sleep 0.2;
                                             } else {
@@ -1444,7 +1454,7 @@ switch(_operation) do {
                                         };
                                 };
                             },_logic getVariable ["houses", []],10] call ALiVE_fnc_arrayFrameSplitter;
-                            
+
                             {[[_logic, "spawnGroup", [_x select 0,_x select 1]],"ALiVE_fnc_CQB",_x select 2,false,false] call BIS_fnc_MP; sleep MOD(smoothSpawn)} foreach _spawnPool;
 
                             [{
@@ -1494,18 +1504,18 @@ switch(_operation) do {
                             },_logic getVariable ["groups",[]],4] call ALiVE_fnc_arrayFrameSplitter;
 
                             if (_debug) then {
-                                
+
                                 {
 		                            _remaincount = count (_logic getVariable ["houses", []]);
 		                            _housesempty = {(isNil {_x getVariable "group"})} count (_logic getVariable ["houses", []]);
 		                            _activecount = count (_logic getVariable ["groups", []]);
 		                            _groupsempty = {(isNil {(leader _x) getVariable "house"})} count (_logic getVariable ["groups", []]);
-		
+
 		                           ["CQB Population: %1 remaing positions | %2 active positions | inactive houses %3 | groups with no house %4...", _remaincount, _activecount,_housesempty,_groupsempty] call ALiVE_fnc_Dump;
                                } call CBA_fnc_DirectCall;
                             };
                         };
-                        
+
                         //[false,"cqb_performance","cqb_performance"] call ALiVE_fnc_Timer;
 
                         !([_logic,"active"] call ALiVE_fnc_CQB);
