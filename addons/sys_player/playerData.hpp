@@ -345,9 +345,15 @@ GVAR(LOADOUT_DATA) = [
         _uniformItems;
      }, {
         PLACEHOLDERCOUNT = 0;
+        with_acre = isClass(configFile >> "CfgPatches" >> "ace_main");
         {
             //[(_this select 0), _x] call addItemToUniformOrVest;
-            (_this select 0) addItemToUniform _x;
+            if (with_acre && acre_api_fnc_isRadio(_x)) then {
+            (_this select 0) addItemToUniform acre_api_fnc_getBaseRadio(_x);
+            } else {
+            (_this select 0) addItemToUniform _x
+            };
+           // (_this select 0) addItemToUniform _x;
 //            ["server",QMOD(sys_player),[[(_this select 0), _x],{(_this select 0) addItemToUniform (_this select 1);}]] call ALIVE_fnc_BUS; // addItemToUniform is not global
         } foreach (_this select 1);
         //[0, {diag_log format['uniformItems: %1', uniformItems _this];},  (_this select 0)] call CBA_fnc_globalExecute;
