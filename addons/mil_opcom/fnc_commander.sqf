@@ -112,7 +112,7 @@ switch (_operation) do {
             // wait until commander has been registered with commander handler
             waituntil { ([_logic,"id"] call ALiVE_fnc_hashGet) != "" };
 
-            [_logic,"start"] spawn MAINCLASS;
+            [_logic,"start"] call MAINCLASS;
         };
 
     };
