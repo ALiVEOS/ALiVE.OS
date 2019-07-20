@@ -7,7 +7,7 @@ We don't know shit yet
 ---------------------------------------------------------------------------- */
 
 #define SUPERCLASS  ALIVE_fnc_baseClassHash
-#define MAINCLASS   ALIVE_fnc_OPCOM
+#define MAINCLASS   ALIVE_fnc_TACOM
 
 TRACE_1("OPCOM - input",_this);
 
@@ -23,7 +23,7 @@ switch (_operation) do {
 
     case "init": {
 
-        systemchat "OPCOM Init";
+        systemchat "TACOM Init";
 
     };
 

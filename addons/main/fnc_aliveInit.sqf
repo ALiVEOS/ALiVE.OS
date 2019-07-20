@@ -167,7 +167,7 @@ if (isServer) then {
             QMOD(civ_placement),
             QMOD(mil_placement_custom),
             QMOD(mil_cqb),
-            QMOD(mil_OPCOM),
+            //QMOD(mil_OPCOM),
             QMOD(SYS_playeroptions)
         ] call ALiVE_fnc_isModuleInitialised;
     };

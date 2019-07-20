@@ -39,7 +39,7 @@ class CfgVehicles {
         {
                 scope = 2;
                 displayName = "$STR_ALIVE_OPCOM";
-                function = "ALIVE_fnc_OPCOMInit";
+                function = "ALIVE_fnc_CommanderInit";
                 author = MODULE_AUTHOR;
                 functionPriority = 180;
                 isGlobal = 1;

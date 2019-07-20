@@ -196,6 +196,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_getNearProfiles.sqf";
                 RECOMPILE;
             };
+            class getProfileTypeSpecific {
+                description = "getProfileTypeSpecific";
+                file = "\x\alive\addons\sys_profile\fnc_getProfileTypeSpecific.sqf";
+                RECOMPILE;
+            };
             class vehicleAssignmentsGetLinkedProfiles {
                 description = "vehicleAssignmentsGetLinkedProfiles";
                 file = "\x\alive\addons\sys_profile\fnc_vehicleAssignmentsGetLinkedProfiles.sqf";

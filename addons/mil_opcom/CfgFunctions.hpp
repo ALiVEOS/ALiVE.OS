@@ -1,14 +1,29 @@
 class cfgFunctions {
         class PREFIX {
                 class COMPONENT {
+                        class commander {
+                                description = "commander";
+                                file = "\x\alive\addons\mil_opcom\fnc_commander.sqf";
+                                RECOMPILE;
+                        };
+                        class commanderHandler {
+                                description = "commanderHandler";
+                                file = "\x\alive\addons\mil_opcom\fnc_commanderHandler.sqf";
+                                RECOMPILE;
+                        };
                         class OPCOM {
-                                description = "The main class";
+                                description = "OPCOM";
                                 file = "\x\alive\addons\mil_opcom\fnc_OPCOM.sqf";
                                 RECOMPILE;
                         };
-                        class OPCOMInit {
-                                description = "The module initialisation function";
-                                file = "\x\alive\addons\mil_opcom\fnc_OPCOMInit.sqf";
+                        class TACOM {
+                                description = "TACOM";
+                                file = "\x\alive\addons\mil_opcom\fnc_TACOM.sqf";
+                                RECOMPILE;
+                        };
+                        class commanderInit {
+                                description = "commanderInit";
+                                file = "\x\alive\addons\mil_opcom\fnc_commanderInit.sqf";
                                 RECOMPILE;
                         };
                         class OPCOMpositions {
