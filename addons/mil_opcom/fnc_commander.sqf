@@ -232,7 +232,7 @@ switch (_operation) do {
                         } foreach _assignments;
                         if (_playerInAssignments) exitwith {};
 
-                        private _profileTypeSpecific = _profile call ALiVE_fnc_getProfileType;
+                        private _profileTypeSpecific = _profile call ALiVE_fnc_getProfileTypeSpecific;
                         switch (_profileTypeSpecific) do {
                             case "Car";
                             case "Truck": {
