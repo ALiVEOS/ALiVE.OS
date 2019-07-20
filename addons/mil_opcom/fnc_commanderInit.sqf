@@ -1,9 +1,5 @@
 private _logic = _this select 0;
 
-if (isnil "ALiVE_COMMANDERS") then {
-    ALiVE_COMMANDERS = [];
-};
-
 private _moduleID = [_logic, true] call ALiVE_fnc_dumpModuleInit;
 glogic = _logic;
 private _commander = [_logic,"init"] call ALiVE_fnc_commander;
