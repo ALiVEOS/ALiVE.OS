@@ -6,7 +6,7 @@ SCRIPT(commander);
 We don't know shit yet
 ---------------------------------------------------------------------------- */
 
-#define SUPERCLASS  ALiVE_fnc_baseClassHash
+#define SUPERCLASS  ALiVE_fnc_baseClass
 #define MAINCLASS   ALiVE_fnc_commander
 
 private "_result";
@@ -18,6 +18,7 @@ params [
 ];
 
 switch (_operation) do {
+
     case "init": {
 
         if (!isserver) exitwith {};
@@ -40,6 +41,9 @@ switch (_operation) do {
         private _roadblocks = _logic getvariable ["roadblocks",true];
 
         private _modulePosition = getpos _logic;
+
+        // wipe pre-set properties
+        { _logic setvariable [_x, nil] } foreach (allvariables _logic);
 
         // if any factions were set in the dropdown fields
         // add them to the player-set faction array for single-source access
@@ -67,21 +71,20 @@ switch (_operation) do {
         };
         private _sidesFriendly = _allSides - _sidesEnemy;
 
-        // create commander object
+        // init logic object
 
-        private _commander = [nil,"create"] call SUPERCLASS;
-        [_commander,"moduleObject", _logic] call ALiVE_fnc_hashSet;
-        [_commander,"id", ""] call ALiVE_fnc_hashSet;
-        [_commander,"debug", _debug] call ALiVE_fnc_hashSet;
-        [_commander,"position", _modulePosition] call ALiVE_fnc_hashSet;
-        [_commander,"persistent", _persistent] call ALiVE_fnc_hashSet;
-        [_commander,"controlType", _controlType] call ALiVE_fnc_hashSet;
-        [_commander,"reinforcementsLevel", _reinforcements] call ALiVE_fnc_hashSet;
-        [_commander,"side", _commandingSide] call ALiVE_fnc_hashSet;
-        [_commander,"sidesFriendly", _sidesFriendly] call ALiVE_fnc_hashSet;
-        [_commander,"sidesEnemy", _sidesEnemy] call ALiVE_fnc_hashSet;
-        [_commander,"factions", _factions] call ALiVE_fnc_hashSet;
-        [_commander,"objectives", []] call ALiVE_fnc_hashSet;
+        SET_PROPERTY(_logic,"id", "");
+        SET_PROPERTY(_logic,"debug", _debug);
+        SET_PROPERTY(_logic,"startupComplete", false);
+        SET_PROPERTY(_logic,"position", _modulePosition);
+        SET_PROPERTY(_logic,"persistent", _persistent);
+        SET_PROPERTY(_logic,"controlType", _controlType);
+        SET_PROPERTY(_logic,"reinforcementsLevel", _reinforcements);
+        SET_PROPERTY(_logic,"side", _commandingSide);
+        SET_PROPERTY(_logic,"sidesFriendly", _sidesFriendly);
+        SET_PROPERTY(_logic,"sidesEnemy", _sidesEnemy);
+        SET_PROPERTY(_logic,"factions", _factions);
+        SET_PROPERTY(_logic,"objectives", []);
 
         private _personality = [
             [
@@ -89,57 +92,84 @@ switch (_operation) do {
                 ["aggressive", 0.5]
             ]
         ] call ALiVE_fnc_hashCreate;
-        [_commander,"personality", _personality] call ALiVE_fnc_hashSet;
+        SET_PROPERTY(_logic,"personality", _personality);
 
-        private _opcom = [nil,"create"] call ALiVE_fnc_OPCOM;
+        private _opcom = [nil,"create", _logic] call ALiVE_fnc_OPCOM;
         [_opcom,"init"] call ALiVE_fnc_OPCOM;
 
-        private _tacom = [nil,"create"] call ALiVE_fnc_TACOM;
+        private _tacom = [nil,"create", _logic] call ALiVE_fnc_TACOM;
         [_tacom,"init"] call ALiVE_fnc_TACOM;
 
-        [_commander,"opcom", _opcom] call ALiVE_fnc_hashSet;
-        [_commander,"tacom", _tacom] call ALiVE_fnc_hashSet;
+        SET_PROPERTY(_logic,"opcom", _opcom);
+        SET_PROPERTY(_logic,"tacom", _tacom);
 
-        [_commander,"startupComplete", false] call ALiVE_fnc_hashSet;
-
-        _logic = _commander;
-
-        _result = _logic;
 
         [_logic] spawn {
             params ["_logic"];
 
             // wait until commander has been registered with commander handler
-            waituntil { ([_logic,"id"] call ALiVE_fnc_hashGet) != "" };
+            waituntil { GET_PROPERTY(_logic,"id") != "" };
 
             [_logic,"start"] call MAINCLASS;
         };
 
     };
 
+
+
+    // getters/setters
+
+    ADD_SIMPLE_ACCESSOR("id", "");
+    ADD_SIMPLE_ACCESSOR("debug", true);
+    ADD_SIMPLE_ACCESSOR("position", []);
+    ADD_SIMPLE_ACCESSOR("persistent", true);
+    ADD_SIMPLE_ACCESSOR("startupComplete", true);
+    ADD_SIMPLE_ACCESSOR("controltype", "");
+    ADD_SIMPLE_ACCESSOR("reinforcementsLevel", 0);
+    ADD_SIMPLE_ACCESSOR("side", "");
+    ADD_SIMPLE_ACCESSOR("sidesFriendly", []);
+    ADD_SIMPLE_ACCESSOR("sidesEnemy", []);
+    ADD_SIMPLE_ACCESSOR("factions", []);
+    ADD_SIMPLE_ACCESSOR("objectives", []);
+    ADD_SIMPLE_ACCESSOR("personality", []);
+    ADD_SIMPLE_ACCESSOR("opcom", []);
+    ADD_SIMPLE_ACCESSOR("tacom", []);
+
+    // getters/setters
+
+
+
     case "start": {
 
         waituntil { !(isnil "ALiVE_ProfileHandler") && { [ALiVE_ProfileSystem,"startupComplete", false] call ALiVE_fnc_hashGet }};
+
+        // load objectives from synced modules
 
         private _startingObjectives = [_logic,"initObjectives"] call MAINCLASS;
 
         private _objectiveCount = count _startingObjectives;
         if (_objectiveCount == 0) then {
-            private _factions = [_logic,"factions"] call ALiVE_fnc_hashGet;
+            private _factions = GET_PROPERTY(_logic,"factions");
             ["OPCOM that controls factions %1 has no objectives", _factions] call ALiVE_fnc_DumpR;
         } else {
             if (_objectiveCount > 120) then {
                 ["PERFORMANCE WARNING: OPCOM that controls factions %1 has %2 objectives. Recommended maximum objective count is 120", _factions, _objectiveCount] call ALiVE_fnc_DumpR;
             };
 
-            private _debug = [_logic,"debug"] call ALiVE_fnc_hashGet;
+            private _debug = GET_PROPERTY(_logic,"debug");
             if (_debug) then {
-                private _factions = [_logic,"factions"] call ALiVE_fnc_hashGet;
+                private _factions = GET_PROPERTY(_logic,"factions");
                 ["Commander controlling factions %1 starts with %2 objectives", _factions, _objectiveCount] call ALiVE_fnc_DumpR;
             };
         };
 
-        [_logic,"startupComplete", true] call ALiVE_fnc_hashSet;
+        private _opcom = GET_PROPERTY(_logic,"opcom");
+        private _tacom = GET_PROPERTY(_logic,"tacom");
+
+        [_opcom,"start"] call ALiVE_fnc_opcom;
+        [_tacom,"start"] call ALiVE_fnc_tacom;
+
+        SET_PROPERTY(_logic,"startupComplete", true);
 
     };
 
@@ -150,7 +180,7 @@ switch (_operation) do {
         private _objectives = [_logic,"objectives"] call MAINCLASS;
 
         if (_filter == "") then {
-            private _controlType = [_logic,"controlType"] call ALiVE_fnc_hashGet;
+            private _controlType = GET_PROPERTY(_logic,"controlType");
 
             _filter = switch (_controlType) do {
                 case "occupation"   : { "strategic" };
@@ -177,7 +207,7 @@ switch (_operation) do {
 
         private _result = [];
 
-        private _controlledFactions = [_logic,"factions"] call ALiVE_fnc_hashGet;
+        private _controlledFactions = GET_PROPERTY(_logic,"factions");
         {
             private _faction = _x;
             private _profilesForFaction = [ALiVE_profileHandler,"getProfilesByFaction", _faction] call ALiVE_fnc_profileHandler;
@@ -276,8 +306,6 @@ switch (_operation) do {
 
     case "initObjectives": {
 
-        private _moduleObject = [_logic,"moduleObject"] call ALiVE_fnc_hashGet;
-
         private _newObjectives = [];
 
         private _placementModules = ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_mil_placement_custom"];
@@ -292,12 +320,13 @@ switch (_operation) do {
                 _newObjectives append _moduleObjectives;
             } else {
                 if (_syncedObject iskindof "LocationBase_F") then {
+                    private _center = getpos _syncedObject;
                     private _type = getText( configfile >> "CfgVehicles" >> (typeof _syncedObject) >> "displayName");
                     private _size = _syncedObject getvariable ["size", 150];
                     private _priority = _syncedObject getvariable ["priority", 200];
 
                     private _obj = [[
-                        ["center", getpos _syncedObject],
+                        ["center", _center],
                         ["size", _size],
                         ["objectiveType", _type],
                         ["priority", _priority],
@@ -307,9 +336,9 @@ switch (_operation) do {
                     _newObjectives pushback _obj;
                 };
             };
-        } foreach (synchronizedObjects _moduleObject);
+        } foreach (synchronizedObjects _logic);
 
-        private _objectives = [_logic,"objectives"] call ALiVE_fnc_hashGet;
+        private _objectives = GET_PROPERTY(_logic,"objectives");
         _objectives append _newObjectives;
 
         _result = _objectives;

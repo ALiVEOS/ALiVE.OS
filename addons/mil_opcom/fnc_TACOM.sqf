@@ -6,8 +6,8 @@ SCRIPT(OPCOM);
 We don't know shit yet
 ---------------------------------------------------------------------------- */
 
-#define SUPERCLASS  ALIVE_fnc_baseClassHash
-#define MAINCLASS   ALIVE_fnc_TACOM
+#define SUPERCLASS  ALIVE_fnc_baseClass
+#define MAINCLASS   ALIVE_fnc_tacom
 
 TRACE_1("OPCOM - input",_this);
 
@@ -20,6 +20,17 @@ params [
 ];
 
 switch (_operation) do {
+
+    case "create": {
+
+        private _commander = _args;
+
+        _logic = [nil,"create"] call SUPERCLASS;
+        SET_PROPERTY(_logic,"commander", _commander);
+
+        _result = _logic;
+
+    };
 
     case "init": {
 

@@ -70,7 +70,7 @@ switch (_operation) do {
         private _commander = _args;
 
         private _commanderID = [_logic,"getNextCommanderID"] call MAINCLASS;
-        [_commander,"id", _commanderID] call ALiVE_fnc_hashSet;
+        [_commander,"id", _commanderID] call ALiVE_fnc_commander;
 
         private _commanders = [_logic,"commanders"] call ALiVE_fnc_hashGet;
         [_commanders,_commanderID, _commander] call ALiVE_fnc_hashSet;
