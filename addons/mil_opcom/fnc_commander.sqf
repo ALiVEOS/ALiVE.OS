@@ -86,12 +86,10 @@ switch (_operation) do {
         SET_PROPERTY(_logic,"factions", _factions);
         SET_PROPERTY(_logic,"objectives", []);
 
-        private _personality = [
-            [
-                ["cautious", 0.5],
-                ["aggressive", 0.5]
-            ]
-        ] call ALiVE_fnc_hashCreate;
+        private _personality = [[
+            ["cautious", 0.5],
+            ["aggressive", 0.5]
+        ]] call ALiVE_fnc_hashCreate;
         SET_PROPERTY(_logic,"personality", _personality);
 
         private _opcom = [nil,"create", _logic] call ALiVE_fnc_OPCOM;
@@ -173,32 +171,16 @@ switch (_operation) do {
 
     };
 
-    case "sortObjectives": {
+    case "addObjectives": {
 
-        _args params [["_filter",""]];
+        _args params ["_newObjectives", ["_moreObjectivesComing", false]];
 
-        private _objectives = [_logic,"objectives"] call MAINCLASS;
+        private _objectives = GET_PROPERTY(_logic,"objectives");
 
-        if (_filter == "") then {
-            private _controlType = GET_PROPERTY(_logic,"controlType");
+        _objectives append _newObjectives;
 
-            _filter = switch (_controlType) do {
-                case "occupation"   : { "strategic" };
-                case "invasion"     : { "distance" };
-                case "asymmetric"   : { "asymmetric" };
-            };
-        };
-
-        switch (_filter) do {
-            case "distance": {
-
-            };
-            case "strategic": {
-
-            };
-            case "asymmetric": {
-
-            };
+        if (!_moreObjectivesComing) then {
+            [_logic,"sortObjectives"] call MAINCLASS;
         };
 
     };
@@ -306,42 +288,73 @@ switch (_operation) do {
 
     case "initObjectives": {
 
-        private _newObjectives = [];
-
         private _placementModules = ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_mil_placement_custom"];
+        private _syncedModules = (synchronizedObjects _logic) select { (typeof _x) in _placementModules || { _syncedObject iskindof "LocationBase_F" }};
+        private _syncedModulesCount = count _syncedModules;
 
         {
             private _syncedObject = _x;
+            private _isLastObjectiveToAdd = _forEachIndex == _syncedModulesCount - 1;
 
             if ((typeof _syncedObject) in _placementModules) then {
                 waituntil { _syncedObject getVariable ["startupComplete", false] };
 
                 private _moduleObjectives = [_syncedObject,"objectives",objNull,[]] call ALiVE_fnc_OOsimpleOperation;
-                _newObjectives append _moduleObjectives;
+
+                [_logic,"addObjectives", [_moduleObjectives, !_isLastObjectiveToAdd]] call MAINCLASS;
             } else {
-                if (_syncedObject iskindof "LocationBase_F") then {
-                    private _center = getpos _syncedObject;
-                    private _type = getText( configfile >> "CfgVehicles" >> (typeof _syncedObject) >> "displayName");
-                    private _size = _syncedObject getvariable ["size", 150];
-                    private _priority = _syncedObject getvariable ["priority", 200];
+                // we can assume module is of type LocationBase_F
 
-                    private _obj = [[
-                        ["center", _center],
-                        ["size", _size],
-                        ["objectiveType", _type],
-                        ["priority", _priority],
-                        ["clusterID", ""]
-                    ]] call ALiVE_fnc_hashCreate;
+                private _center = getpos _syncedObject;
+                private _type = getText( configfile >> "CfgVehicles" >> (typeof _syncedObject) >> "displayName");
+                private _size = _syncedObject getvariable ["size", 150];
+                private _priority = _syncedObject getvariable ["priority", 200];
 
-                    _newObjectives pushback _obj;
-                };
+                private _obj = [[
+                    ["center", _center],
+                    ["size", _size],
+                    ["objectiveType", _type],
+                    ["priority", _priority],
+                    ["clusterID", ""]
+                ]] call ALiVE_fnc_hashCreate;
+
+                [_logic,"addObjectives", [[_obj], !_isLastObjectiveToAdd]] call MAINCLASS;
             };
-        } foreach (synchronizedObjects _logic);
+        } foreach _syncedModules;
+
+        _result = GET_PROPERTY(_logic,"objectives");
+
+    };
+
+    case "sortObjectives": {
+
+        private _filter = _args;
+
+        if !(_filter isequaltype "") then { _filter = "" };
 
         private _objectives = GET_PROPERTY(_logic,"objectives");
-        _objectives append _newObjectives;
 
-        _result = _objectives;
+        if (_filter == "") then {
+            private _controlType = GET_PROPERTY(_logic,"controlType");
+
+            _filter = switch (_controlType) do {
+                case "occupation"   : { "strategic" };
+                case "invasion"     : { "distance" };
+                case "asymmetric"   : { "asymmetric" };
+            };
+        };
+
+        switch (_filter) do {
+            case "distance": {
+
+            };
+            case "strategic": {
+
+            };
+            case "asymmetric": {
+
+            };
+        };
 
     };
 
