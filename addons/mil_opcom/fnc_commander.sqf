@@ -92,10 +92,10 @@ switch (_operation) do {
         ]] call ALiVE_fnc_hashCreate;
         SET_PROPERTY(_logic,"personality", _personality);
 
-        private _opcom = [nil,"create", _logic] call ALiVE_fnc_OPCOM;
+        private _opcom = [nil,"create", _logic] call ALiVE_fnc_opcom;
         [_opcom,"init"] call ALiVE_fnc_OPCOM;
 
-        private _tacom = [nil,"create", _logic] call ALiVE_fnc_TACOM;
+        private _tacom = [nil,"create", _logic] call ALiVE_fnc_tacom;
         [_tacom,"init"] call ALiVE_fnc_TACOM;
 
         SET_PROPERTY(_logic,"opcom", _opcom);

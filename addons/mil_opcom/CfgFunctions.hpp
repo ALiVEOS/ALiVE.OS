@@ -11,14 +11,14 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_opcom\fnc_commanderHandler.sqf";
                                 RECOMPILE;
                         };
-                        class OPCOM {
-                                description = "OPCOM";
-                                file = "\x\alive\addons\mil_opcom\fnc_OPCOM.sqf";
+                        class opcom {
+                                description = "opcom";
+                                file = "\x\alive\addons\mil_opcom\fnc_opcom.sqf";
                                 RECOMPILE;
                         };
-                        class TACOM {
-                                description = "TACOM";
-                                file = "\x\alive\addons\mil_opcom\fnc_TACOM.sqf";
+                        class tacom {
+                                description = "tacom";
+                                file = "\x\alive\addons\mil_opcom\fnc_tacom.sqf";
                                 RECOMPILE;
                         };
                         class commanderInit {
