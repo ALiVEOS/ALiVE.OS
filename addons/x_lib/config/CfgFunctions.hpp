@@ -578,6 +578,13 @@ class sideObjectToNumber
 	RECOMPILE;
 };
 
+class sideTextToColor
+{
+	file = "\x\alive\addons\x_lib\functions\conversions\fnc_sideTextToColor.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class sideTextToLong
 {
 	file = "\x\alive\addons\x_lib\functions\conversions\fnc_sideTextToLong.sqf";

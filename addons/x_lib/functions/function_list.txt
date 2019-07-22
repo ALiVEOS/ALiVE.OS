@@ -96,6 +96,7 @@ conversions
 	ALiVE_fnc_dirToText
 	ALiVE_fnc_sideNumberToText
 	ALiVE_fnc_sideObjectToNumber
+	ALiVE_fnc_sideTextToColor
 	ALiVE_fnc_sideTextToLong
 	ALiVE_fnc_sideTextToNumber
 	ALiVE_fnc_sideTextToObject
