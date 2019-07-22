@@ -332,8 +332,6 @@ switch (_operation) do {
 
         if !(_filter isequaltype "") then { _filter = "" };
 
-        private _objectives = GET_PROPERTY(_logic,"objectives");
-
         if (_filter == "") then {
             private _controlType = GET_PROPERTY(_logic,"controlType");
 
@@ -344,17 +342,57 @@ switch (_operation) do {
             };
         };
 
+        private _objectives = GET_PROPERTY(_logic,"objectives");
+        private _modulePosition = GET_PROPERTY(_logic,"position");
+
         switch (_filter) do {
             case "distance": {
+                _objectives = [_objectives, [_logic], {
+                    private _objectivePosition = _x select 2 select 2;
+                    private _objectivePriority = _x select 2 select 5;
 
+                    private _score = (_objectivePosition distance _modulePosition) - (_objectivePriority * 2.5);
+
+                    _score * (1 - (random 0.25))
+                }, "ASCEND"] call ALiVE_fnc_SortBy;
             };
             case "strategic": {
+                _objectives = [_objectives, [_logic], {
+                    private _objectivePosition = _x select 2 select 2;
+                    private _objectivePriority = _x select 2 select 5;
+                    private _objectiveSize = _x select 2 select 3;
 
+                    private _score = (_objectivePosition distance _modulePosition) - (_objectivePriority * 6) - _objectiveSize;
+
+                    _score * (1 - (random 0.25))
+                }, "ASCEND"] call ALiVE_fnc_SortBy;
             };
             case "asymmetric": {
 
             };
         };
+
+        private _debug = GET_PROPERTY(_logic,"debug");
+        if (_debug) then {
+            private _side = GET_PROPERTY(_logic,"side");
+            private _sideColor = _side call ALiVE_fnc_sideTextToColor;
+
+            {
+                private _objectiveID = [_x,"clusterID"] call ALiVE_fnc_HashGet;
+                private _objectiveCenter = [_x,"center"] call ALiVE_fnc_HashGet;
+                private _objectiveType = [_x,"type"] call ALiVE_fnc_hashGet;
+
+                // #TODO: Store marker
+
+                private _marker = createMarker [format ["alive_commander_objective_%1", _objectiveID], _objectiveCenter];
+                _marker setmarkersize [0.7,0.7];
+                _marker setmarkertext (format ["%1: #%2 - %3", _side, _forEachIndex, _objectiveType]);
+                _marker setmarkercolor _sideColor;
+                _marker setmarkertype "mil_dot";
+            } foreach _objectives;
+        };
+
+        SET_PROPERTY(_logic,"objectives", _objectives);
 
     };
 
