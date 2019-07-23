@@ -40,12 +40,10 @@ switch (_operation) do {
 
     case "initObjectiveState": {
 
-        private _objective = _x;
+        private _objective = _args;
 
         [_objective,"debugMarkers", []] call ALiVE_fnc_hashSet;
         [_objective,"intelConfidence", 0] call ALiVE_fnc_hashSet;
-
-        _result = _state;
 
     };
 
