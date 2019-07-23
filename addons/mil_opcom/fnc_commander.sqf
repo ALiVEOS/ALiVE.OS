@@ -84,7 +84,8 @@ switch (_operation) do {
         SET_PROPERTY(_logic,"sidesFriendly", _sidesFriendly);
         SET_PROPERTY(_logic,"sidesEnemy", _sidesEnemy);
         SET_PROPERTY(_logic,"factions", _factions);
-        SET_PROPERTY(_logic,"objectives", []);
+        SET_PROPERTY(_logic,"objectivesByID", [] call CBA_fnc_createNamespace);
+        SET_PROPERTY(_logic,"objectivesByPriorityOrder", []);
 
         private _personality = [[
             ["cautious", 0.5],
@@ -128,7 +129,8 @@ switch (_operation) do {
     ADD_SIMPLE_ACCESSOR("sidesFriendly", []);
     ADD_SIMPLE_ACCESSOR("sidesEnemy", []);
     ADD_SIMPLE_ACCESSOR("factions", []);
-    ADD_SIMPLE_ACCESSOR("objectives", []);
+    ADD_SIMPLE_ACCESSOR("objectivesByID", objNull);
+    ADD_SIMPLE_ACCESSOR("objectivesByPriorityOrder", []);
     ADD_SIMPLE_ACCESSOR("personality", []);
     ADD_SIMPLE_ACCESSOR("opcom", []);
     ADD_SIMPLE_ACCESSOR("tacom", []);
@@ -171,13 +173,44 @@ switch (_operation) do {
 
     };
 
+    case "getAllObjectives": {
+
+        private _objectiveIDMap = GET_PROPERTY(_logic,"objectivesByID");
+
+        _result = (allvariables _objectiveIDMap) apply { _objectiveIDMap getvariable _x };
+
+    };
+
     case "addObjectives": {
 
         _args params ["_newObjectives", ["_moreObjectivesComing", false]];
 
-        private _objectives = GET_PROPERTY(_logic,"objectives");
+        private _opcom = GET_PROPERTY(_logic,"opcom");
+        private _objectiveIDMap = GET_PROPERTY(_logic,"objectivesByID");
 
-        _objectives append _newObjectives;
+        {
+            private _objectiveID = [_x,"clusterID"] call ALiVE_fnc_hashGet;
+            _objectiveIDMap setvariable [_objectiveID, _x];
+
+            [_opcom,"initObjectiveState", _x] call ALiVE_fnc_opcom;
+        } foreach _newObjectives;
+
+        if (!_moreObjectivesComing) then {
+            [_logic,"sortObjectives"] call MAINCLASS;
+        };
+
+    };
+
+    case "removeObjectives": {
+
+        _args params ["_objectives", ["_moreObjectivesComing", false]];
+
+        private _objectiveIDMap = GET_PROPERTY(_logic,"objectivesByID");
+
+        {
+            private _objectiveID = [_x,"clusterID"] call ALiVE_fnc_hashGet;
+            _objectiveIDMap setvariable [_objectiveID, nil];
+        } foreach _newObjectives;
 
         if (!_moreObjectivesComing) then {
             [_logic,"sortObjectives"] call MAINCLASS;
@@ -322,7 +355,7 @@ switch (_operation) do {
             };
         } foreach _syncedModules;
 
-        _result = GET_PROPERTY(_logic,"objectives");
+        _result = [_logic,"getAllObjectives"] call MAINCLASS;
 
     };
 
@@ -342,7 +375,7 @@ switch (_operation) do {
             };
         };
 
-        private _objectives = GET_PROPERTY(_logic,"objectives");
+        private _objectives = [_logic,"getAllObjectives"] call MAINCLASS;
         private _modulePosition = GET_PROPERTY(_logic,"position");
 
         switch (_filter) do {
@@ -374,25 +407,37 @@ switch (_operation) do {
 
         private _debug = GET_PROPERTY(_logic,"debug");
         if (_debug) then {
-            private _side = GET_PROPERTY(_logic,"side");
-            private _sideColor = _side call ALiVE_fnc_sideTextToColor;
-
-            {
-                private _objectiveID = [_x,"clusterID"] call ALiVE_fnc_HashGet;
-                private _objectiveCenter = [_x,"center"] call ALiVE_fnc_HashGet;
-                private _objectiveType = [_x,"type"] call ALiVE_fnc_hashGet;
-
-                // #TODO: Store marker
-
-                private _marker = createMarker [format ["alive_commander_objective_%1", _objectiveID], _objectiveCenter];
-                _marker setmarkersize [0.7,0.7];
-                _marker setmarkertext (format ["%1: #%2 - %3", _side, _forEachIndex, _objectiveType]);
-                _marker setmarkercolor _sideColor;
-                _marker setmarkertype "mil_dot";
-            } foreach _objectives;
+            [_logic,"drawObjectiveDebugMarkers"] call MAINCLASS;
         };
 
-        SET_PROPERTY(_logic,"objectives", _objectives);
+        { [_x,"clusterID"] call ALiVE_fnc_hashGet } foreach _objectives;
+
+        SET_PROPERTY(_logic,"objectivesByPriorityOrder", _objectives);
+
+    };
+
+    case "drawObjectiveDebugMarkers": {
+
+        private _objectives = [_logic,"getAllObjectives"] call MAINCLASS;
+        private _side = GET_PROPERTY(_logic,"side");
+        private _sideColor = _side call ALiVE_fnc_sideTextToColor;
+
+        {
+            private _objectiveDebugMarkers = [_x,"debugMarkers"] call ALiVE_fnc_hashGet;
+            { deleteMarker _x } foreach _objectiveDebugMarkers;
+
+            private _objectiveID = [_x,"clusterID"] call ALiVE_fnc_HashGet;
+            private _objectiveCenter = [_x,"center"] call ALiVE_fnc_HashGet;
+            private _objectiveType = [_x,"type"] call ALiVE_fnc_hashGet;
+
+            private _marker = createMarker [format ["alive_commander_objective_%1", _objectiveID], _objectiveCenter];
+            _marker setmarkersize [0.7,0.7];
+            _marker setmarkertext (format ["%1: #%2 - %3", _side, _forEachIndex, _objectiveType]);
+            _marker setmarkercolor _sideColor;
+            _marker setmarkertype "mil_dot";
+
+            _objectiveDebugMarkers pushback _marker;
+        } foreach _objectives;
 
     };
 

@@ -38,6 +38,17 @@ switch (_operation) do {
 
     };
 
+    case "initObjectiveState": {
+
+        private _objective = _x;
+
+        [_objective,"debugMarkers", []] call ALiVE_fnc_hashSet;
+        [_objective,"intelConfidence", 0] call ALiVE_fnc_hashSet;
+
+        _result = _state;
+
+    };
+
     default {
         _result = [_logic, _operation, _args] call SUPERCLASS;
     };
