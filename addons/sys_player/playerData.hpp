@@ -345,9 +345,18 @@ GVAR(LOADOUT_DATA) = [
         _uniformItems;
      }, {
         PLACEHOLDERCOUNT = 0;
+        with_acre = isClass(configFile >> "CfgPatches" >> "acre_main");
         {
             //[(_this select 0), _x] call addItemToUniformOrVest;
-            (_this select 0) addItemToUniform _x;
+            if ((with_acre) && {_x call acre_api_fnc_isRadio}) then 
+            {
+                (_this select 0) addItemToUniform (_x call acre_api_fnc_getBaseRadio);
+            } 
+            else 
+            {
+                (_this select 0) addItemToUniform _x;
+            };
+           // (_this select 0) addItemToUniform _x;
 //            ["server",QMOD(sys_player),[[(_this select 0), _x],{(_this select 0) addItemToUniform (_this select 1);}]] call ALIVE_fnc_BUS; // addItemToUniform is not global
         } foreach (_this select 1);
         //[0, {diag_log format['uniformItems: %1', uniformItems _this];},  (_this select 0)] call CBA_fnc_globalExecute;
@@ -388,8 +397,17 @@ GVAR(LOADOUT_DATA) = [
         } foreach vestItems (_this select 0);
         _vestItems;
     }, {
+        with_acre = isClass(configFile >> "CfgPatches" >> "acre_main");
         {
-            (_this select 0) addItemToVest _x;
+            if ((with_acre) && {_x call acre_api_fnc_isRadio}) then 
+            {
+                (_this select 0) addItemToVest (_x call acre_api_fnc_getBaseRadio);
+            } 
+            else 
+            {
+                (_this select 0) addItemToVest _x;
+            };
+            //(_this select 0) addItemToVest _x;
 //            ["server",QMOD(sys_player),[[(_this select 0), _x],{(_this select 0) addItemToVest (_this select 1);}]] call ALIVE_fnc_BUS; // addItemToVest is not global
         } foreach (_this select 1);
         //[0, {diag_log format['vestItems: %1', vestItems _this];},  (_this select 0)] call CBA_fnc_globalExecute;
@@ -426,6 +444,7 @@ GVAR(LOADOUT_DATA) = [
         _backpacks;
     },{
         clearAllItemsFromBackpack (_this select 0);
+        with_acre = isClass(configFile >> "CfgPatches" >> "acre_main");
         private ["_target"];
         _target = _this select 0;
         {
@@ -434,7 +453,15 @@ GVAR(LOADOUT_DATA) = [
             if(_item != "") then {
                 if(getNumber(configFile>>"CfgVehicles">>_item>>"isbackpack")==1) then {
                     TRACE_2("adding item to backpack", _target, _item);
-                    (unitBackpack _target) addBackpackCargoGlobal [_item,1];
+                    if ((with_acre) && {_x call acre_api_fnc_isRadio}) then 
+                    {
+                        (unitBackpack _target) addBackpackCargoGlobal [(_item call acre_api_fnc_getBaseRadio),1];
+                    } 
+                    else 
+                    {
+                        (unitBackpack _target) addBackpackCargoGlobal [_item,1];
+                    };
+                    //(unitBackpack _target) addBackpackCargoGlobal [_item,1];
                 };
             };
         } foreach (_this select 1);
@@ -461,6 +488,7 @@ GVAR(LOADOUT_DATA) = [
     }, {
         private ["_target"];
         _target = _this select 0;
+        with_acre = isClass(configFile >> "CfgPatches" >> "acre_main");
         {
             private "_item";
             _item = _x;
@@ -469,8 +497,16 @@ GVAR(LOADOUT_DATA) = [
                     if(isClass(configFile>>"CfgWeapons">>_item>>"WeaponSlotsInfo") && getNumber(configFile>>"CfgWeapons">>_item>>"showempty")==1) then {
                         (unitBackpack _target) addWeaponCargoGlobal [_item,1];
                     } else {
-                        _target addItem _item;
-                    };
+                        if ((with_acre) && {_x call acre_api_fnc_isRadio}) then 
+                        {
+                            _target addItem (_item call acre_api_fnc_getBaseRadio);
+                        } 
+                        else 
+                        {
+                            _target addItem _item;
+                        };
+                            //_target addItem _item;
+                        };
             };
         } foreach (_this select 1);
         // remove item placeholders from vest and uniform
