@@ -26,6 +26,10 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
+// Wait for NEO_radioLogic to initialize //
+waitUntil {!isNil "NEO_radioLogic"};
+waitUntil {NEO_radioLogic getVariable ["init", false]};
+
 // Define a global var with c2 items once instead of calling the function each time the menu condition is evaluated //
 MOD(MIL_CS_Items) = [NEO_radioLogic getVariable ["combatsupport_item", "LaserDesignator"]];
 
