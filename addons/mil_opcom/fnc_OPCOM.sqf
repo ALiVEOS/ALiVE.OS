@@ -165,7 +165,7 @@ switch(_operation) do {
                     if (_side == "GUER") then {_side = "RESISTANCE"};
 
                     _sides = ["EAST","WEST","RESISTANCE"];
-                    _sidesEnemy = []; 
+                    _sidesEnemy = [];
                     {
                         if ((([_side] call ALIVE_fnc_sideTextToObject) getfriend ([_x] call ALIVE_fnc_sideTextToObject)) < 0.6) then {
                             _sidesEnemy pushBack _x
@@ -590,49 +590,41 @@ switch(_operation) do {
             //[false, "ALiVE OPCOM composing section!", format["OPCOM_nearestSection_%1",_id]] call ALIVE_fnc_timer;
         };
 
-        case "entitiesnearsector": {
-                ASSERT_TRUE(typeName _args == "ARRAY",str _args);
+        ///////////////////////////////////////////////////
+        // Scan position for nearby profiles belonging to
+        // the passed sides.
+        // Returns array of all found profiles
+        ///////////////////////////////////////////////////
 
-                private ["_ent","_entArr","_side","_pos","_posTmp","_posP","_id","_profiles"];
+        case "findProfilesNearPosition": {
+            _args params ["_pos","_sides","_requireVisibility"];
+            _pos = [_pos select 0, _pos select 1, 0];
 
-                _pos = _args select 0; _pos = +_pos; _pos set [2,0];
-                _side = _args select 1;
-                _canSee = _args select 2;
+            if (_requireVisibility) then {
+                _pos = ATLtoASL _pos;
+                _pos set [2,(_pos select 2) + 2];
+            };
 
-                _ent = [];
-                _entArr = [];
-                _seeArr = [];
+            private _nearEnemies = [];
 
-                if (isnil "_pos") exitwith {_result = []; _result};
+            private _nearProfiles = [_pos, 800, [_sides,"entity"]] call ALIVE_fnc_getNearProfiles;
+            {
+                if (_requireVisibility) then {
+                    private _profileID = _x select 2 select 4;
+                    private _profilePosition = _x select 2 select 2;
 
-                _profiles = [_pos, 800, [_side,"entity"]] call ALIVE_fnc_getNearProfiles;
-                {
-                    if (count _profiles > 0) then {
-                        _entArr pushback [(_x select 2 select 4),(_x select 2 select 2)];
+                    private _profilePosASL = ATLtoASL [_profilePosition select 0, _profilePosition select 1, 0];
+                    _profilePosASL set [2,(_profilePosASL select 2) + 2];
+
+                    if (_profilePosition distance _pos < 500 && { !(terrainIntersectASL [_profilePosASL, _pos]) }) then {
+                        _nearEnemies pushbackunique [_x select 2 select 4, _x select 2 select 2]; // [id,pos]
                     };
-                } foreach _profiles;
-                _result = _entArr;
-
-                if (_canSee) then {
-
-                    _pos = ATLtoASL _pos;
-                    _pos set [2,(_pos select 2) + 2];
-
-                    if ({(_x select 1) distance _pos < 600} count _entArr > 0) then {
-                        {
-                            _id = _x select 0;
-
-                            _posTmp = +(_x select 1); _posTmp set [2,0];
-                            _posP = ATLtoASL _posTmp;
-                            _posP set [2,(_posP select 2) + 2];
-
-                            if (((_x select 1) distance _pos < 500) && {!(terrainIntersectASL [_pos, _posP])}) then {
-                                _seeArr pushback _x;
-                            };
-                        } foreach _entArr;
-                    };
-                    _result = _seeArr;
+                } else {
+                    _nearEnemies pushbackunique [_x select 2 select 4, _x select 2 select 2]; // [id,pos]
                 };
+            } foreach _nearProfiles;
+
+            _result = _nearEnemies;
         };
 
         case "attackentity": {
@@ -1137,7 +1129,7 @@ switch(_operation) do {
 	                                                    _type = selectRandom ["HQ","depot","factory"];
 	                                                    _target = selectRandom _buildings;
 	                                                };
-	                                                
+
 	                                                if (count _roads > 0 && {(random 1) < 0.45 || count _buildings == 0}) then {
 	                                                        _type = selectRandom ["ied","roadblocks"];
 	                                                        if !(_roadblocks) then {
@@ -1369,7 +1361,7 @@ switch(_operation) do {
                                         {},
                                         [_charge],
                                         15
-                                    ] remoteExec ["BIS_fnc_holdActionAdd", 0,true];                                
+                                    ] remoteExec ["BIS_fnc_holdActionAdd", 0,true];
                                 };
                             } foreach ALiVE_CIV_PLACEMENT_ROADBLOCKS;
                         };
@@ -2395,72 +2387,56 @@ switch(_operation) do {
             //player sidechat format ["%5: Taken %1 | Attacked %2 // %6: Taken %3 | Attacked %4",_targetsTaken, _targetsAttackedEnemy, _targetsTakenEnemy, _targetsAttackedEnemy,_sidesF,_sidesE];
         };
 
-        case "scanenemies": {
-            ASSERT_TRUE(typeName _args == "ARRAY",str _args);
+        ///////////////////////////////////////////////////
+        // Scan position for nearby, visible enemy profiles.
+        // Returns array of all found enemies
+        ///////////////////////////////////////////////////
 
-            private ["_pos","_posP","_sidesEnemy","_visibleEnemies","_id","_knownEntities"];
+        case "scanForNearEnemies": {
+            _args params ["_position",["_requireVisibility", true]];
 
-            _pos = _args;
-            _sidesEnemy = [_logic,"sidesenemy",["EAST"]] call ALiVE_fnc_HashGet;
-            _knownEntities = [_logic,"knownentities",[]] call ALiVE_fnc_HashGet;
-            _knownEntities = _knownEntities - ["x"];
+            private _sidesEnemy = [_logic,"sidesenemy", ["EAST"]] call ALiVE_fnc_HashGet;
 
-            _visibleEnemies = [];
-           {
-               private ["_vis"];
-               _vis = [_logic,"entitiesnearsector",[_pos,_x,true]] call ALiVE_fnc_OPCOM;
-               _visibleEnemies = _visibleEnemies + _vis;
-           } foreach _sidesEnemy;
-
-            if (count _visibleEnemies > 0) then {
-                {
-                    _id = _x select 0;
-                    _posP = _x select 1;
-
-                   if ({!(isnil "_x") && {(_x select 0) == _id}} count _knownEntities == 0) then {
-                        _knownEntities pushback _x;
-                    };
-                } foreach _visibleEnemies;
-                [_logic,"knownentities",_knownEntities] call ALiVE_fnc_HashSet;
-            };
-
-            _result = _knownEntities;
+            _result = [_logic,"findProfilesNearPosition", [_pos,_sidesEnemy,_requireVisibility]] call MAINCLASS;
         };
 
-        case "scanallenemies": {
+        ///////////////////////////////////////////////////
+        // Scan all controlled profiles for nearby enemy profiles.
+        // Wipes existing knownentities data.
+        // Returns array of all found enemies
+        ///////////////////////////////////////////////////
+
+        case "scanFriendliesForNearEnemies": {
 
             private _factions = [_logic,"factions",[]] call ALiVE_fnc_HashGet;
-            
+
             // private _duration = time; ["TACOM Trigger enemyscan for %1 at %2",_factions,_duration] call ALiVE_fnc_DumpR;
 
-			private _profiles = [];
+			private _controlledProfileIDs = [];
 			{
-				_profiles = _profiles + ([ALiVE_ProfileHandler,"getProfilesByFaction",_x] call ALiVE_fnc_ProfileHandler);
+				_controlledProfileIDs = _controlledProfileIDs + ([ALiVE_ProfileHandler,"getProfilesByFaction",_x] call ALiVE_fnc_ProfileHandler);
 			} foreach _factions;
-            
+
+            private _knownEntities = [];
 			{
-				private _profile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
-				
+				private _profile = [ALiVE_ProfileHandler,"getProfile", _x] call ALiVE_fnc_ProfileHandler;
+
 				if (!isnil "_profile") then {
-				
 					private _pos = [_profile,"position"] call ALiVE_fnc_HashGet;
-					
-                	if !(isnil "_pos") then {
-                		[_logic,"scanenemies",_pos] call ALiVE_fnc_OPCOM;
-                	};
+                    private _nearEnemies = [_logic,"scanForNearEnemies", [_pos,true]] call MAINCLASS;
+
+                    {
+                        _knownEntities pushbackunique _x;
+                    } foreach _nearEnemies;
                 };
-			} foreach _profiles;
-			
-			// Cleanup
-			private _knownEntities = [_logic,"knownentities",[]] call ALiVE_fnc_HashGet;
-			private _alive = ([AliVE_profileHandler,"profiles",[[],[]]] call Alive_fnc_hashGet) select 1;
-			
-			{if !((_x select 0) in _alive) then {_knownEntities set [_foreachIndex,"x"]}} foreach _knownEntities;
-			_knownEntities = _knownEntities - ["x"];
-			
-			_knownEntities = [_logic,"knownentities",_knownEntities] call ALiVE_fnc_HashSet;
-			
+			} foreach _controlledProfileIDs;
+
+			[_logic,"knownentities", _knownEntities] call ALiVE_fnc_HashSet;
+
             // ["TACOM enemyscan for %1 finished in %2 seconds",_factions, time - _duration] call ALiVE_fnc_DumpR;
+
+            _result = _knownEntities;
+
         };
 
         case "scantroops" : {
@@ -2780,9 +2756,9 @@ switch(_operation) do {
                             if (isnil "_cycleTime") exitwith {["Exiting OPCOM Monitor"] call ALiVE_fnc_Dump};
 
                             _maxLimit = _cycleTime + ((count allunits)*2);
-                            
+
                             if (GVAR(MONITOR_FULL)) then {
-                                
+
                                 private _currentForceStrength = [_this,"currentForceStrength",[]] call ALiVE_fnc_HashGet;
 
                                 private _states = [] call ALiVE_fnc_HashCreate;
@@ -2791,7 +2767,7 @@ switch(_operation) do {
                                     private _objective = _x;
                                     private _state = [_objective,"opcom_state","none"] call ALiVE_fnc_Hashget;
 
-                                    [_states,_state,([_states, _state, 0] call ALiVE_fnc_HashGet) + 1] call ALiVE_fnc_HashSet; 
+                                    [_states,_state,([_states, _state, 0] call ALiVE_fnc_HashGet) + 1] call ALiVE_fnc_HashSet;
                                 } foreach _OPCOM_OBJECTIVES;
 
                                 _message = parsetext format[
