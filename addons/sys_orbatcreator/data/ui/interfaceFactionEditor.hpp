@@ -1,5 +1,6 @@
 class ALiVE_orbatCreator_interface_factionEditor {
     idd = 8000;
+    onLoad = "['onLoad', ['Faction_Editor', _this select 0]] call ALiVE_fnc_orbatCreatorOnAction";
 
 	onLoad = "private _factionEditorController = [ALiVE_orbatCreator,'factionEditorController'] call ALiVE_fnc_orbatCreator; private _view = [_factionEditorController,'view'] call ALiVE_fnc_factionEditor; [_view,'onLoad', _this] call ALiVE_fnc_factionEditorGUI;";
 
@@ -119,6 +120,7 @@ class ALiVE_orbatCreator_interface_factionEditor {
 
 class ALiVE_orbatCreator_interface_createFaction {
     idd = 8300;
+    onLoad = "['onLoad', ['Create_Faction', _this select 0]] call ALiVE_fnc_orbatCreatorOnAction";
 
 	onLoad = "private _factionEditorController = [ALiVE_orbatCreator,'factionEditorController'] call ALiVE_fnc_orbatCreator; private _view = [_factionEditorController,'view'] call ALiVE_fnc_factionEditor; [_view,'onLoadCreateFaction', _this] call ALiVE_fnc_factionEditorGUI;";
 
@@ -348,6 +350,7 @@ class ALiVE_orbatCreator_interface_createFaction {
 
 
 class ALiVE_orbatCreator_interface_editFaction : ALiVE_orbatCreator_interface_createFaction {
+    onLoad = "['onLoad', ['Edit_Faction', _this select 0]] call ALiVE_fnc_orbatCreatorOnAction";
 
     class controlsBackground {
 
@@ -371,10 +374,42 @@ class ALiVE_orbatCreator_interface_editFaction : ALiVE_orbatCreator_interface_cr
         };
 
         class context : orbatCreator_common_popup_context {
-            idc = 8303;
+            idc = 8387;
         };
 
         // standard controls
+
+    };
+
+};
+
+
+
+class ALiVE_orbatCreator_interface_copyFaction : ALiVE_orbatCreator_interface_createFaction {
+    onLoad = "['onLoad', ['Copy_Faction', _this select 0]] call ALiVE_fnc_orbatCreatorOnAction";
+
+    class controlsBackground {
+
+        // common controls
+
+        class header : orbatCreator_common_popup_header {
+            idc = 8301;
+            text = "Copy Faction";
+        };
+
+        // standard controls
+
+        class background : orbatCreator_common_popup_background {
+            idc = 8302;
+        };
+
+        class footer : orbatCreator_common_popup_footer {
+            idc = 8304;
+        };
+
+        class context : orbatCreator_common_popup_context {
+            idc = 8388;
+        };
 
     };
 

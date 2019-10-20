@@ -1,5 +1,6 @@
 class ALiVE_orbatCreator_interface_unitEditor {
     idd = 9000;
+    onLoad = "['onLoad', ['Unit_Editor', _this select 0]] call ALiVE_fnc_orbatCreatorOnAction";
 
     class controlsBackground {
 
@@ -129,6 +130,7 @@ class ALiVE_orbatCreator_interface_unitEditor {
 
 class ALiVE_orbatCreator_interface_createUnit {
     idd = 10000;
+    onLoad = "['onLoad', ['Create_Unit', _this select 0]] call ALiVE_fnc_orbatCreatorOnAction";
 
     class controlsBackground {
 
@@ -411,6 +413,7 @@ class ALiVE_orbatCreator_interface_createUnit {
 };
 
 class ALiVE_orbatCreator_interface_editUnit : ALiVE_orbatCreator_interface_createUnit {
+    onLoad = "['onLoad', ['Unit_Editor_Edit_Properties', _this select 0]] call ALiVE_fnc_orbatCreatorOnAction";
 
     class controlsBackground {
 
@@ -449,6 +452,7 @@ class ALiVE_orbatCreator_interface_editUnit : ALiVE_orbatCreator_interface_creat
 
 class ALiVE_orbatCreator_interface_editVehicle {
     idd = 13000;
+    onLoad = "['onLoad', ['Edit_Vehicle', _this select 0]] call ALiVE_fnc_orbatCreatorOnAction";
 
     class controlsBackground {
 

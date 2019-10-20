@@ -1,5 +1,6 @@
 class ALiVE_orbatCreator_interface_groupEditor {
     idd = 11000;
+    onLoad = "['onLoad', ['Group_Editor', _this select 0]] call ALiVE_fnc_orbatCreatorOnAction";
 
     class controlsBackground {
 
@@ -233,6 +234,7 @@ class ALiVE_orbatCreator_interface_groupEditor {
 
 class ALiVE_orbatCreator_interface_createGroup {
     idd = 12000;
+    onLoad = "['onLoad', ['Create_Group', _this select 0]] call ALiVE_fnc_orbatCreatorOnAction";
 
     class controlsBackground {
 
@@ -584,6 +586,7 @@ class ALiVE_orbatCreator_interface_createGroup {
 
 
 class ALiVE_orbatCreator_interface_editGroup : ALiVE_orbatCreator_interface_createGroup {
+    onLoad = "['onLoad', ['Edit_Group', _this select 0]] call ALiVE_fnc_orbatCreatorOnAction";
 
     class controlsBackground {
 
