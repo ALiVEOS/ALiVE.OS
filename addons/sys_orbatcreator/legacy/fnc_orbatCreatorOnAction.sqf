@@ -1,8 +1,8 @@
 #include "\x\alive\addons\sys_orbatcreator\script_component.hpp"
-SCRIPT(orbatCreatorOnUnload);
+SCRIPT(orbatCreatorOnAction);
 
 /* ----------------------------------------------------------------------------
-Function: ALiVE_fnc_orbatCreatorOnUnload
+Function: ALiVE_fnc_orbatCreatorOnAction
 Description:
 Handles orbat creator interface events
 
