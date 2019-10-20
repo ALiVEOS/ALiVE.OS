@@ -571,6 +571,15 @@ class sideNumberToText
 	RECOMPILE;
 };
 
+class sideTextToColor
+{
+	file = "\x\alive\addons\x_lib\functions\conversions\fnc_sideTextToColor.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+<<<<<<< Updated upstream
+=======
 class sideObjectToNumber
 {
 	file = "\x\alive\addons\x_lib\functions\conversions\fnc_sideObjectToNumber.sqf";
@@ -578,6 +587,7 @@ class sideObjectToNumber
 	RECOMPILE;
 };
 
+>>>>>>> Stashed changes
 class sideTextToLong
 {
 	file = "\x\alive\addons\x_lib\functions\conversions\fnc_sideTextToLong.sqf";
@@ -1604,6 +1614,21 @@ class hint
 class hintS
 {
 	file = "\x\alive\addons\x_lib\functions\ui\fnc_hintS.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class listDelete
+{
+	file = "\x\alive\addons\x_lib\functions\ui\fnc_listDelete.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+
+class listFindData
+{
+	file = "\x\alive\addons\x_lib\functions\ui\fnc_listFindData.sqf";
 	ext = ".sqf";
 	RECOMPILE;
 };

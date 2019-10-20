@@ -95,6 +95,7 @@ conversions
 
 	ALiVE_fnc_dirToText
 	ALiVE_fnc_sideNumberToText
+	ALiVE_fnc_sideTextToColor
 	ALiVE_fnc_sideObjectToNumber
 	ALiVE_fnc_sideTextToLong
 	ALiVE_fnc_sideTextToNumber
@@ -284,6 +285,8 @@ ui
 
 	ALiVE_fnc_hint
 	ALiVE_fnc_hintS
+	ALiVE_fnc_listDelete
+	ALiVE_fnc_listFindData
 	ALiVE_fnc_listSelectData
 	ALiVE_fnc_radioBroadcast
 	ALiVE_fnc_radioBroadcastToSide
