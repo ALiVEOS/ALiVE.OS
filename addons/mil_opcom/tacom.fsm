@@ -1,4 +1,4 @@
-/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, tacom">*/
+/*%FSM<COMPILE "scriptedFSM.cfg, tacom">*/
 /*%FSM<HEAD>*/
 /*
 item0[] = {"INIT",0,250,-191.791229,-248.493942,-101.791237,-198.494003,0.000000,"INIT"};
@@ -83,8 +83,8 @@ link36[] = {24,25};
 link37[] = {25,26};
 link38[] = {26,10};
 link39[] = {27,28};
-globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-666.800781,293.326508,1822.189453,-310.159912,421,935,1};
-window[] = {0,-1,-1,-1,-1,1097,310,1477,5,1,438};
+globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-413.835663,1.199860,638.361816,-25.066154,528,844,1};
+window[] = {2,-1,-1,-32000,-32000,1121,201,1368,29,3,550};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -232,7 +232,6 @@ class FSM
                          "		    //[""Analyze internal | %1 | %2"",time,_lastEnemyScan] call ALiVE_fnc_DumpR;" \n
                          "" \n
                          "            if (time - _lastEnemyScan > 60) then {" \n
-                         "" \n
                          "                [_OPCOM_HANDLER,""scanallenemies""] spawn ALIVE_fnc_OPCOM;" \n
                          "" \n
                          "                _targets = [_OPCOM_HANDLER,""knownentities"",[]] call ALiVE_fnc_HashGet;" \n
@@ -305,7 +304,7 @@ class FSM
                          "                case (""defend"") : {" \n
                          "                    //Define defense conditions" \n
                          "                    //Detect near enemies" \n
-                         "                    _nearEnemies = []; {private [""_nE""]; _nE = [_objective,""entitiesnearsector"",[_pos,_x,false]] call AliVE_fnc_OPCOM; _nearEnemies = _nearEnemies + _nE} foreach _sidesEnemy;" \n
+                         "                    _nearEnemies = [_objective,""findProfilesNearPosition"",[_pos,_sidesEnemy,false]] call AliVE_fnc_OPCOM;" \n
                          "                    " \n
                          "                    //Defend until no enemies are near" \n
                          "                    if (count _nearEnemies > 0) then {" \n
@@ -362,7 +361,7 @@ class FSM
                          "                    };" \n
                          "				//All groups are in position" \n
                          "                        //Scan for visible enemies (done only once on recon for performance sake - regulary scan every 2 minutes done by OPCOM)" \n
-                         "                        _danger = count ([_OPCOM_HANDLER,""scanenemies"",_posP] call ALiVE_fnc_OPCOM);" \n
+                         "                        _danger = count ([_OPCOM_HANDLER,""scanForNearEnemies"", [_posP, true]] call ALiVE_fnc_OPCOM);" \n
                          "" \n
                          "                        // TBD: Calculate danger level depending on recon outcome (sector analysis)" \n
                          "                        [_objective,""danger"",_danger] call AliVE_fnc_HashSet;" \n
@@ -403,9 +402,9 @@ class FSM
                          "                };" \n
                          "                case (""defend"") : {" \n
                          "                    if !([_OPCOM_HANDLER,""synchronizeorders"",_ProfileID] call ALiVE_fnc_OPCOM) exitwith {" \n
-                         "                        // debug ---------------------------------------" \n
-                         "                        if(_debug) then { [""TACOM %1 regrouping! Waiting for %2 groups!"",_ProfileID,({_objectiveID == (_x select 2)} count ([_OPCOM_HANDLER,""pendingorders"",[]] call ALiVE_fnc_HashGet))] call ALIVE_fnc_dumpR; };" \n
-                         "                        // debug ---------------------------------------" \n
+                         "                        if (_debug) then {" \n
+                         "									[""TACOM %1 regrouping! Waiting for %2 groups!"",_ProfileID,({_objectiveID == (_x select 2)} count ([_OPCOM_HANDLER,""pendingorders"",[]] call ALiVE_fnc_HashGet))] call ALIVE_fnc_dumpR;" \n
+                         "								};" \n
                          "                    };" \n
                          "                " \n
                          "                        //analyse" \n
