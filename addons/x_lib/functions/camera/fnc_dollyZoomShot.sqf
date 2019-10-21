@@ -37,7 +37,7 @@ _hideTarget = if(count _this > 4) then {_this select 4} else {false};
 
 if(_hideTarget) then
 {
-    hideObject _target;
+    hideObjectGlobal _target;
 };
 
 // Set up position in front of target

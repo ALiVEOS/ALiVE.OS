@@ -28,7 +28,7 @@ params ["_building",["_faction","CIV"]];
 
 private _musicSource = "RoadCone_L_F" createVehicle position _building;
 _musicSource attachTo [_building,[1,1,1]];
-hideObject _musicSource;
+hideObjectGlobal _musicSource;
 
 [_building, _musicSource,_faction] spawn {
     params ["_building","_musicSource","_faction"];

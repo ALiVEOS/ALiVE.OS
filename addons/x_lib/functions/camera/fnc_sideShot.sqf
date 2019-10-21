@@ -38,7 +38,7 @@ _height = if(count _this > 5) then {_this select 5} else {1.7};
 
 if(_hideTarget) then
 {
-    hideObject _target;
+    hideObjectGlobal _target;
 };
 
 _camera = _camera;

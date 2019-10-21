@@ -71,7 +71,7 @@ _types = +_types;
 private _allTypes = count _types == 0;
 
 player enablesimulation false;
-player hideobject true;
+player hideObjectGlobal true;
 
 switch tolower _mode do {
     case "json";
@@ -271,6 +271,6 @@ switch tolower _mode do {
 };
 
 player enablesimulation true;
-player hideobject false;
+player hideObjectGlobal false;
 
 true

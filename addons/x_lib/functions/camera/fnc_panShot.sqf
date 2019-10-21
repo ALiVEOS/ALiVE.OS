@@ -45,8 +45,8 @@ if(isNil "_target2") then {
 
 if(_hideTargets) then
 {
-    hideObject _target1;
-    hideObject _target2;
+    hideObjectGlobal _target1;
+    hideObjectGlobal _target2;
 };
 
 _camera camPrepareTarget _target1;

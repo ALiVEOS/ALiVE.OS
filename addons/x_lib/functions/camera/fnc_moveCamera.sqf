@@ -38,7 +38,7 @@ _hideTargets = if(count _this > 4) then {_this select 4} else {false};
 
 if(_hideTargets) then
 {
-    hideObject _target;
+    hideObjectGlobal _target;
 };
 
 _position = getPosATL _target;

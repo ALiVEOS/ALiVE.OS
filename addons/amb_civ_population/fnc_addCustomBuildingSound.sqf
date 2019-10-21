@@ -41,7 +41,7 @@ if (count _customBuildingData > 0) then {
     if !(_nearCheck) then {
         private _source = "RoadCone_L_F" createVehicle position _building;
         _source attachTo [_building,[1,1,1]];
-        hideObject _source;
+        hideObjectGlobal _source;
         _source setVariable ["ALiVE_CivPop_customBuildings_type", _buildingType, false];
 
         [_building, _source,_customBuildingData] spawn {

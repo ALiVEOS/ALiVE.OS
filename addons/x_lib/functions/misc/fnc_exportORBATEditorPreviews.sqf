@@ -54,7 +54,7 @@ _sphereNoGround = createvehicle ["SphereNoGround_3DEN",_pos,[],0,"none"];
 	_x setdir 0;
 	_x setobjecttexture [0,_sphereColor];
 	_x setobjecttexture [1,_sphereColor];
-	_x hideobject true;
+	_x hideObjectGlobal true;
 } foreach [_sphereGround,_sphereNoGround];
 
 setaperture 45;//35;
@@ -150,7 +150,7 @@ _screenRight = safezoneX + safezoneW;
 		if (_xZ < _pointLowest) then {_pointLowest = _xZ;};
 	} foreach _worldPositions;
 	_sphere = if (abs(_pointLowest) > abs(_pointHighest * 2/3)) then {_sphereNoGround} else {_sphereGround};
-	_sphere hideobject false;
+	_sphere hideObjectGlobal false;
 	_sphere setpos _pos;
 
 	//--- Set camera
@@ -214,7 +214,7 @@ _screenRight = safezoneX + safezoneW;
 	//--- Delete the object
 	_object setpos [10,10,10];
 	deletevehicle _object;
-	_sphere hideobject true;
+	_sphere hideObjectGlobal true;
 
 } foreach _classes;
 

@@ -41,7 +41,7 @@ _shift = if (random 1 < 0.5) then {0 - _shift};
 
 if(_hideTarget) then
 {
-    hideObject _target;
+    hideObjectGlobal _target;
 };
 
 _camera camSetTarget _target;

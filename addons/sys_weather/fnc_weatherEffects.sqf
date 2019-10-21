@@ -89,7 +89,7 @@ switch (_type) do {
                 // Initialise effect
                 GVAR(snowHost) = "Land_Bucket_F" createVehicleLocal (position vehicle player);
                 GVAR(snowHost) attachTo [player,[0,0,0]];
-                GVAR(snowHost) hideObject true;
+                GVAR(snowHost) hideObjectGlobal true;
                 GVAR(snowHost) allowDamage false;
                 GVAR(snowHost) enableSimulation false;
                 GVAR(snowHost) setDir (windDir);

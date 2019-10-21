@@ -38,7 +38,7 @@ private  _height = if(count _this > 6) then {_this select 6} else {2};
 
 if(_hideTarget) then
 {
-    hideObject _target;
+    hideObjectGlobal _target;
 };
 
 private _startTime = time;

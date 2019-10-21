@@ -38,7 +38,7 @@ params [
 ];
 
 player enablesimulation false;
-player hideobject true;
+player hideObjectGlobal true;
 
 _mode = tolower _mode;
 private _screenshots = _mode in ["screenshots","screenshotstest"];
@@ -377,6 +377,6 @@ if (_screenshots) then {
 };
 
 player enablesimulation true;
-player hideobject false;
+player hideObjectGlobal false;
 
 true

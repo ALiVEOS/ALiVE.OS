@@ -472,7 +472,7 @@ switch(_operation) do {
 
             if !(player == _player) exitwith {};
 
-            _player enableSimulation true; _player hideObject false;
+            _player enableSimulation true; _player hideObjectGlobal false;
             _player setcaptive false; 1 fadesound 1; // disableUserinput false;
 
             _player setvariable [QGVAR(LOADER),false,true];
@@ -490,7 +490,7 @@ switch(_operation) do {
             _player setvariable [QGVAR(LOADER),true,true];
 
             _player setcaptive true; 1 fadesound 0; // disableUserinput true;
-            _player enableSimulation false; _player hideObject true;
+            _player enableSimulation false; _player hideObjectGlobal true;
 
             _tgts = []; {if (({isPlayer _x} count (units _x)) == 0) then {_tgts pushback (leader _x)}} foreach allGroups;
 

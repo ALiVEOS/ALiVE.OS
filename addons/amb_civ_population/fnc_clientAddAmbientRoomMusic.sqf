@@ -27,6 +27,6 @@ ARJay
 params ["_building","_source","_track"];
 
 _source attachTo [_building,[1,1,1]];
-hideObject _source;
+hideObjectGlobal _source;
 
 _source say3d _track;
