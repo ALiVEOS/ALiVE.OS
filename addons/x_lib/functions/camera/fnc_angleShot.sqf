@@ -40,7 +40,7 @@ private _shift = _dist;
 
 if(_hideTarget) then
 {
-    hideObject _target;
+    hideObjectGlobal _target;
 };
 
 if ((random 1) < 0.5) then {

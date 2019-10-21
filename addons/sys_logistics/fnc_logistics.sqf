@@ -430,7 +430,7 @@ switch (_operation) do {
             _object setvariable [QGVAR(CONTAINER),_container,true];
             _container setvariable [QGVAR(CARGO),(_container getvariable [QGVAR(CARGO),[]]) + [_object],true];
 
-            if (isMultiplayer && isServer) then {_object hideObjectGlobal true; _object enableSimulationGlobal false} else {_object hideObject true; _object enableSimulation false};
+            if (isMultiplayer && isServer) then {_object hideObjectGlobal true; _object enableSimulationGlobal false} else {_object hideObjectGlobal true; _object enableSimulation false};
 
             [_logic,"updateObject",[_container,_object]] call ALIVE_fnc_logistics;
 
@@ -474,7 +474,7 @@ switch (_operation) do {
             _object setvariable [QGVAR(CONTAINER),nil,true];
             _container setvariable [QGVAR(CARGO),(_container getvariable [QGVAR(CARGO),[]]) - [_object],true];
 
-            if (isMultiplayer && isServer) then {_object hideObjectGlobal false; _object enableSimulationGlobal true} else {_object hideObject false; _object enableSimulation true};
+            if (isMultiplayer && isServer) then {_object hideObjectGlobal false; _object enableSimulationGlobal true} else {_object hideObjectGlobal false; _object enableSimulation true};
 
             _object setpos (
             [
@@ -642,7 +642,7 @@ switch (_operation) do {
                 _object setvariable [QGVAR(CONTAINER),_container,true];
                 _container setvariable [QGVAR(CARGO),(_container getvariable [QGVAR(CARGO),[]]) + [_object],true];
 
-                if (isMultiplayer && isServer) then {_object hideObjectGlobal true; _object enableSimulationGlobal false} else {_object hideObject true; _object enableSimulation false};
+                if (isMultiplayer && isServer) then {_object hideObjectGlobal true; _object enableSimulationGlobal false} else {_object hideObjectGlobal true; _object enableSimulation false};
 
                 _list set [_foreachIndex,_object];
             } foreach _list;

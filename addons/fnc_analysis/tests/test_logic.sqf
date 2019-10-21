@@ -137,7 +137,7 @@ TIMERSTART
 for "_i" from 0 to _testIterations do {
     _pos = [0, 0, 0];
     _logic = createAgent ["LOGIC", [0,0], [], 0, "NONE"];
-    hideObject _logic;
+    hideObjectGlobal _logic;
     _logics pushback _logic;
 };
 TIMEREND

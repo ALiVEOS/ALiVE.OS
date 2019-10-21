@@ -38,7 +38,7 @@ _angle = if(count _this > 3) then {_this select 3} else {"DEFAULT"};
 
 if(_hideSource) then
 {
-    hideObject _source;
+    hideObjectGlobal _source;
 };
 
 _position = position _source;

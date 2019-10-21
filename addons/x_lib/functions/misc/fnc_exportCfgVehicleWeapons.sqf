@@ -64,7 +64,7 @@ _sides = +_sides;
 if (count _sides == 0) then {_sides = [0,1,2,3,4];};
 
 player enablesimulation false;
-player hideobject true;
+player hideObjectGlobal true;
 
 
 private _funcGetTurretsWeapons = {
@@ -215,6 +215,6 @@ switch tolower _mode do {
 };
 
 player enablesimulation true;
-player hideobject false;
+player hideObjectGlobal false;
 
 true

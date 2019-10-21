@@ -155,7 +155,7 @@ if !(_position in (_comp select 0)) then {
 _charge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo",_position, [], 0, "CAN_COLLIDE"];
 _charge setvariable [QGVAR(COMPOSITION_OBJECTS),_created];
 _charge enableSimulation false;
-_charge hideObject true;
+_charge hideObjectGlobal true;
 
 
 

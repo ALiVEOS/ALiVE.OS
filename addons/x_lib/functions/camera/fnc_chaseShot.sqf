@@ -39,7 +39,7 @@ private _xshift = if(count _this > 6) then {_this select 6} else {0};
 
 if(_hideTarget) then
 {
-    hideObject _target;
+    hideObjectGlobal _target;
 };
 
 _startTime = time;

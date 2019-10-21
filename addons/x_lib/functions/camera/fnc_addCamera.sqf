@@ -39,7 +39,7 @@ _angle = if(count _this > 2) then {_this select 2} else {"DEFAULT"};
 
 if(_hideSource) then
 {
-    hideObject _source;
+    hideObjectGlobal _source;
 };
 
 _position = getPosATL _source;

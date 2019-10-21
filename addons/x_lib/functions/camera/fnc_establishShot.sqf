@@ -36,7 +36,7 @@ private  _height = if(count _this > 5) then {_this select 5} else {20};
 
 if(_hideTarget) then
 {
-    hideObject _target;
+    hideObjectGlobal _target;
 };
 
 private _cameraPosition = _target getpos [_dist,random 360];
