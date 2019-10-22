@@ -637,7 +637,7 @@ if (!_simAttacks) then {
 
                     private _cyclesLeft = [_attack,"cyclesLeft"] call ALiVE_fnc_hashGet;
                     private _timeLastSim = [_attack,"timeLastSim", diag_tickTime - 0.001] call ALiVE_fnc_hashGet;
-                    private _simModifier = diag_tickTime - _timeLastSim * accTime;
+                    private _simModifier = (diag_tickTime - _timeLastSim) * accTime;
 
                     private _active = false;
 
