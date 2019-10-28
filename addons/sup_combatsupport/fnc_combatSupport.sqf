@@ -371,6 +371,7 @@ switch(_operation) do {
                                 If(_height > 0) then {_veh setposasl [getposASL _veh select 0, getposASL _veh select 1, _height]; _veh setVelocity [0,0,-1]} else {_veh setPosATL _pos};
 
                                 [_veh, _grp] call BIS_fnc_spawnCrew;
+                                [_veh, _grp] call ALIVE_fnc_vehicleRemoveExtraCrew;
                              } else {
                                 _veh = _veh select 0;
                                 _grp = group (driver _veh);
@@ -508,6 +509,7 @@ switch(_operation) do {
                                     createVehicleCrew _veh;
                                 } else {
                                     [_veh, _grp] call BIS_fnc_spawnCrew;
+                                    [_veh, _grp] call ALIVE_fnc_vehicleRemoveExtraCrew;
                                 };
                              } else {
                                 _veh = _veh select 0;
@@ -640,6 +642,7 @@ switch(_operation) do {
                                     _vehDir = _vehDir + 90;
 
                                     [_veh, _grp] call BIS_fnc_spawnCrew;
+                                    [_veh, _grp] call ALIVE_fnc_vehicleRemoveExtraCrew;
 
                                     // set ownership flag for other modules
                                     _veh setVariable ["ALIVE_CombatSupport", true];

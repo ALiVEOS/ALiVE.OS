@@ -32,6 +32,7 @@ switch (_support) do
 
         private _grp = createGroup _side;
         [_veh, _grp] call BIS_fnc_spawnCrew;
+        [_veh, _grp] call ALIVE_fnc_vehicleRemoveExtraCrew;
 
         // Exclude CS from VCOM
         // CS only runs serverside so no PV is needed
@@ -145,6 +146,7 @@ switch (_support) do
             createVehicleCrew _veh;
         } else {
             [_veh, _grp] call BIS_fnc_spawnCrew;
+            [_veh, _grp] call ALIVE_fnc_vehicleRemoveExtraCrew;
         };
 
         // Exclude CS from VCOM
@@ -249,6 +251,7 @@ switch (_support) do
             _vehDir = _vehDir + 90;
 
             [_veh, _grp] call BIS_fnc_spawnCrew;
+            [_veh, _grp] call ALIVE_fnc_vehicleRemoveExtraCrew;
 
             // set ownership flag for other modules
             _veh setVariable ["ALIVE_CombatSupport", true];

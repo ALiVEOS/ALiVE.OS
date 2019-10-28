@@ -1979,6 +1979,13 @@ class vehicleMoveIn
 	RECOMPILE;
 };
 
+class vehicleRemoveExtraCrew
+{
+	file = "\x\alive\addons\x_lib\functions\vehicles\fnc_vehicleRemoveExtraCrew.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};	
+	
 class vehicleSetAmmo
 {
 	file = "\x\alive\addons\x_lib\functions\vehicles\fnc_vehicleSetAmmo.sqf";

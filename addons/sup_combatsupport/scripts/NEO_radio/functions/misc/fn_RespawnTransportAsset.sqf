@@ -83,6 +83,7 @@ if (count _veh == 0) then {
     };
 
     [_veh, _grp] call BIS_fnc_spawnCrew;
+    [_veh, _grp] call ALIVE_fnc_vehicleRemoveExtraCrew;
 
     _veh lockDriver true;
     _veh setVariable ["ALIVE_CombatSupport", true];

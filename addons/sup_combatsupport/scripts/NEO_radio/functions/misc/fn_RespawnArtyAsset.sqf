@@ -87,6 +87,7 @@ if (_side == WEST && _type == "BUS_MotInf_MortTeam") then {
         _veh setDir _vehDir;
         _veh setPosATL _vehPos;
         [_veh, _grp] call BIS_fnc_spawnCrew;
+        [_veh, _grp] call ALIVE_fnc_vehicleRemoveExtraCrew;
         _veh lock true;
         _vehDir = _vehDir + 90;
 

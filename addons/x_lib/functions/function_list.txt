@@ -340,5 +340,6 @@ vehicles
 	ALiVE_fnc_vehicleIsGroupIn
 	ALiVE_fnc_vehicleMount
 	ALiVE_fnc_vehicleMoveIn
+	ALiVE_fnc_vehicleRemoveExtraCrew
 	ALiVE_fnc_vehicleSetAmmo
 	ALiVE_fnc_vehicleSetDamage
