@@ -132,3 +132,16 @@ if(count _turret > 0) then {
         };
     };
 };
+
+
+// Band-Aid: When a mod reports more crew slots than are actually in a vehicle,
+// delete the extra crew
+
+{
+    _selection = _x;
+    {
+        if (vehicle _x == _x) then {
+           deleteVehicle _x;
+        };
+    } forEach (_assignments select _selection);
+} forEach [0,1,2,3,4,5];
