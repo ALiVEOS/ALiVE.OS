@@ -5,7 +5,7 @@ SCRIPT(isHouseEnterable);
 Function: ALIVE_fnc_isHouseEnterable
 
 Description:
-Returns true if the house is enterable
+Returns true if the house is enterable and not blacklisted
 
 Parameters:
 Object - House
@@ -29,11 +29,19 @@ Author:
 Wolffy.au
 ---------------------------------------------------------------------------- */
 
-private ["_house","_err"];
+private ["_house","_err","_enterable"];
 
 PARAMS_1(_house);
 _err = "house not valid";
 ASSERT_DEFINED("_house",_err);
 ASSERT_TRUE(typeName _house == "OBJECT",_err);
 
-!((_house buildingPos 0) isEqualTo [0,0,0]);
+_enterable = !((_house buildingPos 0) isEqualTo [0,0,0]);
+// Check if the house is blacklisted
+// Set blacklist sometime near mission launch (eg in init.sqf)
+if (_enterable && !(isNil "ALIVE_Building_Blacklist")) then {
+    if ((typeOf _house) in ALIVE_Building_Blacklist) then {
+        _enterable = false;
+    };
+};
+_enterable
