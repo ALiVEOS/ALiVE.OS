@@ -37,7 +37,7 @@ TRACE_1("OPCOM - input",_this);
 
 private ["_result"];
 params [
-    ["_logic", objNull, [objNull,[],""]],
+    ["_logic", objNull, [objNull,[]]],
     ["_operation", "", [""]],
     ["_args", objNull, [objNull,[],"",0,true,false]]
 ];
@@ -65,8 +65,40 @@ switch (_operation) do {
         _logic setVariable ["moduleType", "ALiVE_OPCOM"];
 
         [_logic,"start"] call MAINCLASS;
+        //[_logic,"listen"] call MAINCLASS;
+    };
+/*
+    case "listen": {
+        private _handler = _logic getvariable "handler";
+        private _listenerID = [ALiVE_eventLog,"addListener", [_handler, ["PROFILE_UNREGISTER"]]] call ALiVE_fnc_eventLog;
+        _logic setVariable ["listenerID", _listenerID];
     };
 
+    case "handleEvent": {
+        private _event = _args; // a private event? how exclusive...
+
+        private _eventData = [_event,"data"] call ALIVE_fnc_hashGet;
+
+        private _profile = _eventData select 0;
+        private _profileID = _profile select 2 select 4;
+
+        private _allSections = [_logic,"allSections"] call ALiVE_fnc_hashGet;
+        private _index = _allSections find { (_x select 2 select 4) == _profileID };
+
+        if (_index != -1) then {
+            private _sortType = (_allSections select _index) select 0;
+            private _sectionsByType = [_logic,"sectionsByType"] call ALiVE_fnc_hashGet;
+
+
+            _allSections deleteat _index;
+            if (true) then {
+                private _opcomFSM = [_logic,"OPCOM_FSM"] call ALiVE_fnc_hashGet;
+                private _toDeleteQueue = _opcomFSM getFsmVariable ["_profilesUnregisteredWhileSorting", []];
+                _toDeleteQueue pushback _profileID;
+            };
+        };
+    };
+*/
     case "start": {
 
         if (!isserver) exitwith {};
@@ -123,35 +155,67 @@ switch (_operation) do {
 
         // init data handler
 
-        private _handler = [nil, "create"] call ALIVE_fnc_BaseClass;
-        _handler setvariable ["class", nil];
+        if (isnil "OPCOM_instances") then {
+            OPCOM_instances = [];
+        };
+
+        private _opcomID = format ["OPCOM_%1", count OPCOM_instances];
+
+        private _handler = [
+            [
+                ["side", _side],
+                ["factions", _factions],
+                ["sidesEnemy", _sidesEnemy],
+                ["sidesFriendly", _sidesFriendly],
+                ["position", _position],
+                ["simultanobjectives", _simultaneousObjectives],
+                ["minAgents", _minAgents],
+                ["opcomID", _opcomID],
+                ["debug", _debug],
+                ["persistent", _persistent],
+                ["module", _logic],
+                ["reinforcements", _reinforcementRatio],
+                ["asym_occupation", _occupation],
+                ["controltype", _type],
+                ["intelchance", _intelChance],
+                ["roadblocks", _roadblocks],
+
+                ["objectives", []],
+                ["orders", [] call ALiVE_fnc_hashCreate],
+                ["pendingorders", [] call ALiVE_fnc_hashCreate],
+                ["allSections", []],
+                ["sectionsByType", [] call ALiVE_fnc_hashCreate],
+                ["nextObjectiveID", 1],
+                ["objectivesToAdd", []],
+
+                ["objectives", []],
+                ["objectivesByID", [] call CBA_fnc_createNamespace],
+                ["heldObjectives", []],
+                ["orders", []],
+                ["missions", [] call ALiVE_fnc_hashCreate],
+                ["allSections", []],
+                ["sectionsByType", [] call ALiVE_fnc_hashCreate],
+                ["taskedSections", []],
+                ["nextObjectiveID", 1],
+                ["nextOrderID", 1],
+                ["objectivesToAdd", []],
+                ["missionOptions", []],
+
+                ["sectionsamount_attack", 1],
+                ["sectionsamount_reserve", 1],
+                ["sectionsamount_defend", 1],
+
+                ["CQB", []]
+            ]
+        ] call ALiVE_fnc_hashCreate;
+
+        private _missionOptionReserve = call compile preprocessFileLineNumbers "x\alive\addons\mil_opcom\mission_options\reserve.sqf";
+        [_handler,"addMissionOption", _missionOptionReserve] call MAINCLASS;
 
         _logic setVariable ["handler", _handler];
 
         // add to global OPCOM_instances array for easier access
-        if (isnil "OPCOM_instances") then {
-            OPCOM_instances = [];
-        };
         OPCOM_instances pushback _handler;
-
-        private _opcomID = format ["OPCOM_%1", count OPCOM_instances];
-
-        _handler setvariable ["side", _side];
-        _handler setvariable ["factions", _factions];
-        _handler setvariable ["sidesEnemy", _sidesEnemy];
-        _handler setvariable ["sidesFriendly", _sidesFriendly];
-        _handler setvariable ["position", _position];
-        _handler setvariable ["simultaneousobjectives", _simultaneousObjectives];
-        _handler setvariable ["minAgents", _minAgents];
-        _handler setvariable ["opcomID", _opcomID];
-        _handler setvariable ["debug", _debug];
-        _handler setvariable ["persistent", _persistent];
-        _handler setvariable ["moduleObject", _logic];
-        _handler setvariable ["reinforcementRatio", _reinforcementRatio];
-        _handler setvariable ["asym_occupation", _occupation];
-        _handler setvariable ["controltype", _type];
-        _handler setvariable ["intelchance", _intelChance];
-        _handler setvariable ["roadblocks", _roadblocks];
 
         // spread Intel Information for this OPCOMs side
 
@@ -169,25 +233,25 @@ switch (_operation) do {
             waituntil { _x getVariable ["startupComplete",false] };
         } foreach _syncedCQBModules;
 
-        _handler setvariable ["CQB", _syncedCQBModules];
+        [_handler,"CQB", _syncedCQBModules] call ALiVE_fnc_hashSet;
 
         // set dynamic data depending on type
 
         switch (_type) do {
             case ("invasion") : {
-                _handler setvariable ["sectionsamount_attack", 4];
-                _handler setvariable ["sectionsamount_reserve", 1];
-                _handler setvariable ["sectionsamount_defend", 2];
+                [_handler,"sectionsamount_attack", 4] call ALiVE_fnc_hashSet;
+                [_handler,"sectionsamount_reserve", 1] call ALiVE_fnc_hashSet;
+                [_handler,"sectionsamount_defend", 2] call ALiVE_fnc_hashSet;
             };
             case ("occupation") : {
-                _handler setvariable ["sectionsamount_attack", 4];
-                _handler setvariable ["sectionsamount_reserve", 1];
-                _handler setvariable ["sectionsamount_defend", 5];
+                [_handler,"sectionsamount_attack", 4] call ALiVE_fnc_hashSet;
+                [_handler,"sectionsamount_reserve", 1] call ALiVE_fnc_hashSet;
+                [_handler,"sectionsamount_defend", 5] call ALiVE_fnc_hashSet;
             };
             case ("asymmetric") : {
-                _handler setvariable ["sectionsamount_attack", 1];
-                _handler setvariable ["sectionsamount_reserve", 1];
-                _handler setvariable ["sectionsamount_defend", 1];
+                [_handler,"sectionsamount_attack", 1] call ALiVE_fnc_hashSet;
+                [_handler,"sectionsamount_reserve", 1] call ALiVE_fnc_hashSet;
+                [_handler,"sectionsamount_defend", 1] call ALiVE_fnc_hashSet;
 
                 // init INS helpers
                 call ALiVE_fnc_INS_helpers;
@@ -266,22 +330,13 @@ switch (_operation) do {
                 };
             } foreach _syncedObjects;
 
-            switch (_type) do {
-                case ("occupation") : {
-                    _objectives = [_handler,"sortObjectives", [_objectives,"strategic"]] call MAINCLASS;
-                };
-                case ("invasion") : {
-                    _objectives = [_handler,"sortObjectives", [_objectives,"distance"]] call MAINCLASS;
-                };
-                case ("asymmetric") : {
-                    _objectives = [_handler,"sortObjectives", [_objectives,"asymmetric"]] call MAINCLASS;
-                };
+            _objectives = [_handler,"createObjectives", _objectives] call MAINCLASS;
 
-                _handler setvariable ["objectives", _objectives];
-            };
+            // bypass buffer time so we can pass validation (below)
+            [_handler,"addBufferedObjectives"] call MAINCLASS;
 
             if (_debug) then {
-                ["ALiVE OPCOM created %1 new objectives!",count _objectives] call ALiVE_fnc_Dump;
+                ["ALiVE OPCOM created %1 new objectives!", count _objectives] call ALiVE_fnc_Dump;
             };
         };
 
@@ -383,52 +438,455 @@ switch (_operation) do {
         switch _type do {
             case ("occupation") : {
                 private _opcomFSM = [_handler] execFSM "\x\alive\addons\mil_opcom\opcom.fsm";
-                //private _tacomFSM = [_handler] execFSM "\x\alive\addons\mil_opcom\tacom.fsm";
-                private _tacomFSM = 723;
+                private _tacomFSM = [_handler] execFSM "\x\alive\addons\mil_opcom\tacom.fsm";
 
-                _handler setvariable ["opcomFSM", _opcomFSM];
-                _handler setvariable ["tacomFSM", _tacomFSM];
+                [_handler,"OPCOM_FSM", _opcomFSM] call ALiVE_fnc_hashSet;
+                [_handler,"TACOM_FSM", _tacomFSM] call ALiVE_fnc_hashSet;
             };
             case ("invasion") : {
                 private _opcomFSM = [_handler] execFSM "\x\alive\addons\mil_opcom\opcom.fsm";
-                //private _tacomFSM = [_handler] execFSM "\x\alive\addons\mil_opcom\tacom.fsm";
-                private _tacomFSM = 723;
+                private _tacomFSM = [_handler] execFSM "\x\alive\addons\mil_opcom\tacom.fsm";
 
-                _handler setvariable ["opcomFSM", _opcomFSM];
-                _handler setvariable ["tacomFSM", _tacomFSM];
+                [_handler,"OPCOM_FSM", _opcomFSM] call ALiVE_fnc_hashSet;
+                [_handler,"TACOM_FSM", _tacomFSM] call ALiVE_fnc_hashSet;
             };
             case ("asymmetric") : {
                 private _opcomFSM = [_handler] execFSM "\x\alive\addons\mil_opcom\insurgency.fsm";
 
-                _handler setvariable ["opcomFSM", _opcomFSM];
+                [_handler,"OPCOM_FSM", _opcomFSM] call ALiVE_fnc_hashSet;
             };
         };
 
         // set startup complete and end loading screen if init has passed or an error occurred
         _logic setVariable ["startupComplete",true,true];
-
-        _handler setvariable ["startupComplete", true];
+        [_handler,"startupComplete", true] call ALiVE_fnc_hashSet;
     };
 
-    case "sortObjectives": {
-        _args params ["_objectives","_sortType"];
+    case "addObjective": {
+        _args params [
+            ["_id", "", [""]],
+            ["_pos", [0,0,0], [[]]],
+            ["_size", 50, [1]],
+            ["_type", "CIV", [""]],
+            ["_priority", 100, [1]],
+            ["_opcomState", "unassigned", [""]],
+            ["_clusterID", "", [""]],
+            ["_danger", -1]
+        ];
+
+        private _opcomID = [_logic,"opcomID"] call ALIVE_fnc_HashGet;
+
+        if (_id == "") then {
+            private _objectiveIDNumber = [_logic,"nextObjectiveID"] call ALIVE_fnc_HashGet;
+            _id = format ["%1_OBJ_%2", _opcomID, _objectiveIDNumber];
+
+            [_logic,"nextObjectiveID", _objectiveIDNumber + 1] call ALIVE_fnc_HashSet;
+        };
+
+        private _objective = [
+            [
+                ["objectiveID", _id],
+                ["center", _pos],
+                ["size", _size],
+                ["objectiveType", _type],
+                ["priority", _priority],
+                ["opcom_state", _opcomState],
+                ["clusterID", _clusterID],
+                ["opcomID", _opcomID],
+                ["_rev", ""]
+            ]
+        ] call ALiVE_fnc_hashCreate;
+
+        // objectives are qeued for addition
+        // which is done once opcom cycle is completed
+        private _objectivesToAdd = [_logic,"objectivesToAdd"] call ALiVE_fnc_HashGet;
+        _objectivesToAdd pushback _objective;
+
+        // #TODO: assign orders based on passed state
+        // backwards compatibility
+
+        switch (_opcomState) do {
+
+        };
+
+        _result = _objective;
+    };
+
+    case "createObjectives": {
+        private _objectives = _args;
+
+        private _startpos = [_logic,"position"] call ALiVE_fnc_HashGet;
+        private _side = [_logic,"side"] call ALiVE_fnc_HashGet;
+        private _factions = [_logic,"factions"] call ALiVE_fnc_HashGet;
+        private _debug = [_logic,"debug"] call ALiVE_fnc_HashGet;
+
+        private _objectives = _objectives apply {
+            private _clusterID = [_x,"clusterID"] call ALiVE_fnc_hashGet;
+            private _pos = [_x,"center"] call ALiVE_fnc_hashGet;
+            private _size = [_x,"size"] call ALiVE_fnc_hashGet;
+            private _type = [_x,"type"] call ALiVE_fnc_hashGet;
+            private _priority = [_x,"priority"] call ALiVE_fnc_hashGet;
+            private _height = (ATLtoASL [_pos select 0, _pos select 1,0]) select 2;
+
+            [_logic,"addObjective", ["", _pos, round _size, _type, _priority, "unassigned", _clusterID]] call ALiVE_fnc_OPCOM;
+        };
 
         _result = _objectives;
     };
 
+    case "sortObjectives": {
+        _args params ["_objectives",["_sortType",""]];
+
+        if (_sortType == "") then {
+            private _controlType = [_logic,"controltype"] call ALiVE_fnc_hashGet;
+
+            _sortType = switch (_controlType) do {
+                case "occupation":  { "strategic" };
+                case "invasion":    { "distance" };
+                case "asymmetric":  { "asymmetric" };
+                default             { "distance" };
+            };
+        };
+
+        _result = _objectives;
+
+        private _modulePosition = [_logic,"position"] call ALiVE_fnc_hashGet;
+
+        switch (_sortType) do {
+            case "distance": {
+                _result = [_objectives,[_logic],{
+                    private _distToOpcom = (_x select 2 select 1) distance _modulePosition;
+                    private _score = _distToOpcom * (1 - (random 0.33));
+
+                    _score
+                },"ASCEND"] call ALiVE_fnc_SortBy;
+            };
+            case "strategic": {
+                _result = [_objectives,[_logic],{
+                    private _height = (ATLtoASL [(_x select 2 select 1) select 0,(_x select 2 select 1) select 1,0]) select 2;
+                    private _size = _x select 2 select 2;
+                    private _priority = _x select 2 select 4;
+
+                    private _heightScore = _height / 2;
+                    private _distScore = ((_x select 2 select 1) distance _modulePosition) / 10;
+
+                    private _score = (_size + _priority + _heightScore) - _distScore;
+                    _score = _score * (1 - (random 0.33));
+
+                    _score
+                },"DESCEND"] call ALiVE_fnc_SortBy;
+            };
+            case ("asymmetric") : {
+                _result = [+_objectives,[_logic],{
+                    ((_x select 2 select 1) distance _modulePosition) * (1 - (random 0.20))
+                },"ASCEND"] call ALiVE_fnc_SortBy;
+            };
+        };
+    };
+
+    case "createObjectiveDebugMarker": {
+        private _objective = _args;
+
+        private _id = [_objective,"objectiveID"] call ALiVE_fnc_HashGet;
+        private _debugTextMarker = format [MTEMPLATE, _id];
+        if !(_debugTextMarker call ALiVE_fnc_markerExists) then {
+            private _side = [_logic,"side"] call ALiVE_fnc_HashGet;
+            private _color = switch (_side) do {
+                case "EAST" : {"COLORRED"};
+                case "WEST" : {"COLORBLUE"};
+                case "GUER" : {"COLORGREEN"};
+                default {"COLORYELLOW"};
+            };
+
+            private _center = [_objective,"center"] call ALiVE_fnc_HashGet;
+            private _size = [_objective,"size"] call ALiVE_fnc_hashGet;
+            private _priority = [_objective,"priority"] call ALiVE_fnc_hashGet;
+
+            // text marker
+            [_debugTextMarker, _center,"ICON", [0.5,0.5], _color, format ["%1-size:%2-prio:%3",_id,_size,_priority], "mil_dot", "FDiagonal", 0, 0.5] call ALIVE_fnc_createMarkerGlobal;
+
+            // circle marker
+            private _debugMarker = format [MTEMPLATE, _id] + "_background";
+            [_debugMarker, _center,"ELLIPSE", [_size / 2, _size / 2], _color, "", "", "FDiagonal", 0, 0.6] call ALIVE_fnc_createMarkerGlobal;
+        };
+    };
+
+    case "deleteObjectiveDebugMarker": {
+        private _objective = _args;
+        private _debugTextMarker = format [MTEMPLATE, _id];
+        private _debugMarker = format [MTEMPLATE, _id] + "_background";
+
+        deletemarker _debugTextMarker;
+        deletemarker _debugMarker;
+    };
+
+    case "addBufferedObjectives": {
+        private _newObjectives = [_logic,"objectivesToAdd"] call ALiVE_fnc_hashGet;
+        if !(_newObjectives isequalto []) then {
+            private _objectives = [_logic,"objectives"] call ALiVE_fnc_hashGet;
+            private _objectivesByID = [_logic,"objectivesByID"] call ALiVE_fnc_hashGet;
+
+            _objectives append _newObjectives;
+            _objectives = [_logic,"sortObjectives", [_objectives]] call MAINCLASS;
+
+            [_logic,"objectives", _objectives] call ALiVE_fnc_hashSet;
+
+            {
+                private _id = [_x,"objectiveID"] call ALiVE_fnc_hashGet;
+                _objectivesByID setvariable [_id,_x];
+            } foreach _newObjectives;
+
+            private _debug = [_logic,"debug"] call ALiVE_fnc_hashGet;
+            {
+                [_logic,"createObjectiveDebugMarker", _x] call MAINCLASS;
+            } foreach _newObjectives;
+
+            [_logic,"objectivesToAdd", []] call ALiVE_fnc_hashSet;
+        };
+    };
+
+    case "analyzeObjectiveOccupation": {
+        private _objective = _args;
+
+        private _opcomFactions = [_logic,"factions"] call ALiVE_fnc_hashGet;
+
+        private _position = [_objective,"center"] call ALiVE_fnc_hashGet;
+        private _size = [_objective,"size"] call ALiVE_fnc_hashGet;
+
+        private _nearFriendlies = []; // just our units, not allies
+        private _nearEnemies = [];
+
+        private _nearProfiles = [_position, _size * 1.1, ["all","entity","none"]] call ALIVE_fnc_getNearProfiles;
+        {
+            private _profile = _x;
+            private _profileFaction = [_profile,"faction"] call ALiVE_fnc_hashGet;
+            private _vehiclesInCommandOf = (_profile select 2 select 8) apply { [ALiVE_profileHandler,"getProfile", _x] call ALiVE_fnc_profileHandler };
+
+            if (_profileFaction in _opcomFactions) then {
+                _nearFriendlies pushback _profile;
+        } else {
+                _nearEnemies pushback _profile;
+            };
+        } foreach _nearProfiles;
+
+        _result = [_objective, count _nearFriendlies, count _nearEnemies, _nearFriendlies, _nearEnemies];
+    };
+
+    case "sortProfilesByType": {
+        private _profileIDs = _args;
+
+        private _infantry = [];
+        private _motorized = [];
+        private _mechanized = [];
+        private _armored = [];
+        private _antiAir = [];
+        private _artillery = [];
+        private _naval = [];
+
+        {
+            private _profileID = _x;
+            private _profile = [ALiVE_profileHandler,"getProfile", _profileID] call ALiVE_fnc_profileHandler;
+            private _type = _profile select 2 select 5;
+
+            if (_type == "entity") then {
+                private _vehicleAssignments = (_profile select 2 select 7) select 1; // hash
+
+                if (_vehicleAssignments isequalto []) then {
+                    private _isPlayer = [_profile,"isPlayer",false] call ALiVE_fnc_hashGet;
+
+                    if (!_isPlayer) then {
+                        _infantry pushback _profileID;
+                    };
+                };
+            } else {
+                private _objectType = _profile select 2 select 6;
+                private _assignments = _profile select 2 select 8;
+
+                switch (tolower _objectType) do {
+                    case "car": {
+                        _motorized append _assignments;
+                    };
+                    case "truck": {
+                        _motorized append _assignments;
+                    };
+                    case "tank": {
+                        private _vehicleClass = _profile select 2 select 11;
+                        private _isAntiAir = [_vehicleClass] call ALiVE_fnc_isAA;
+                        private _isArtillery = [_vehicleClass] call ALiVE_fnc_isArtillery;
+
+                        if (_isAntiAir) then {
+                            _antiAir append _assignments;
+                        } else {
+                            if (_isArtillery) then {
+                                _artillery append _assignments;
+                            } else {
+                                _armored append _assignments;
+                            };
+                        };
+                    };
+                    case "armored": {
+                        _mechanized append _assignments;
+                    };
+                    case "ship": {
+                        _naval append _assignments;
+                    };
+                };
+            };
+        } foreach _profileIDs;
+
+        _result = [_infantry,_motorized,_mechanized,_armored,_antiAir,_artillery,_naval];
+    };
+
+    case "sortSectionsByDistance": {
+        _args params ["_position",["_sections", []]];
+
+        if (_sections isequalto []) then {
+            _sections = [_logic,"allSections"] call ALiVE_fnc_hashGet;
+        };
+
+        private _profilesWithDistance = [];
+        {
+            private _profile = ALiVE_profileMap getvariable _x;
+
+            if (!isnil "_profile") then {
+                private _profilePos = _profile select 2 select 2;
+                private _distance = _profilePos distance _position;
+                _profilesWithDistance pushback [_distance,_profile];
+            };
+        } foreach _sections;
+
+        _profilesWithDistance sort true;
+
+        _result = _profilesWithDistance apply { _x select 1 };
+    };
+
+    case "findNearestSection": {
+        _args params ["_position",["_sections", []]];
+
+        private _sectionsByDistance = [_logic,"sortSectionsByDistance", [_position, _sections]] call MAINCLASS;
+
+        if !(_sectionsByDistance isequalto []) then {
+            _result = _sectionsByDistance select 0;
+        };
+    };
+
+    case "getObjectiveByID": {
+        private _id = _args;
+
+        private _objectivesByID = [_logic,"objectivesByID"] call ALiVE_fnc_hashGet;
+
+        _result = _objectivesByID getvariable _id;
+    };
+
+    case "getNextOrderID": {
+        private _nextOrderID = [_logic,"nextOrderID"] call ALiVE_fnc_hashGet;
+        [_logic,"nextOrderID", _nextOrderID + 1] call ALiVE_fnc_hashSet;
+
+        _result = format ["order_%1", _nextOrderID];
+    };
+
+    case "addMissionOption": {
+        private _newOptionData = _args;
+
+        private _missionOptions = [_logic,"missionOptions"] call ALiVE_fnc_hashGet;
+
+        private _newOption = [_newOptionData] call ALiVE_fnc_hashCreate;
+        private _newOptionName = [_newOption,"name"] call ALiVE_fnc_hashGet;
+
+        [_logic,"removeMissionOption", _newOptionName] call MAINCLASS;
+
+        if (_missionOptions isequalto []) then {
+            _missionOptions pushback _newOption;
+        } else {
+            private _newMissionPriority = [_newOption,"priority"] call ALiVE_fnc_hashGet;
+
+            private _missionOptionCount = count _missionOptions;
+            private _i = 0;
+            while {
+                private _curr = _missionOptions select _i;
+                _i < _missionOptionCount && { _newMissionPriority <= [_curr,"priority"] call ALiVE_fnc_hashGet }
+            } do {
+                _i = _i + 1;
+            };
+
+            private _head = _missionOptions select [0, _i];
+            private _tail = _missionOptions select [_i, _missionOptionCount - _i];
+
+            _missionOptions = _head + [_newOption] + _tail;
+            [_logic,"missionOptions", _missionOptions] call ALiVE_fnc_hashSet;
+        };
+    };
+
+    case "removeMissionOption": {
+        private _optionToRemoveName = _args;
+
+        private _missionOptions = [_logic,"missionOptions"] call ALiVE_fnc_hashGet;
+
+        {
+            private _name = [_x,"name"] call ALiVE_fnc_hashGet;
+
+            if (_name == _optionToRemoveName) exitwith {
+                _missionOptions deleteat _foreachindex;
+            };
+        } foreach _missionOptions;
+    };
+
+    case "getMissionOption": {
+        private _optionToRemoveName = _args;
+
+        {
+            private _name = [_x,"name"] call ALiVE_fnc_hashGet;
+
+            if (_name == _optionToRemoveName) exitwith {
+                _result = _x;
+            };
+        } foreach _missionOptions;
+    };
+
+    case "hasMissionOption": {
+        private _optionName = _args;
+
+        private _missionOptions = [_logic,"missionOptions"] call ALiVE_fnc_hashGet;
+
+        _result = false;
+
+        {
+            private _name = [_x,"name"] call ALiVE_fnc_hashGet;
+
+            if (_name == _optionName) exitwith {
+                _result = true;
+            };
+        } foreach _missionOptions;
+    };
+
+    case "toggleObjectiveDebugMarkers": {
+        private _enable = _args;
+
+        if (_enable) then {
+            {
+                [_logic,"createObjectiveDebugMarker", _x] call MAINCLASS;
+            } foreach _objectives;
+        } else {
+            {
+                [_logic,"deleteObjectiveDebugMarker", _x] call MAINCLASS;
+            } foreach _objectives;
+        };
+    };
+
     case "debug": {
         if (_args isequaltype true) then {
-            _logic setvariable ["debug", _args];
+            [_logic,"debug", _args] call ALiVE_fnc_hashSet;
+            [_logic,"toggleObjectiveDebugMarkers", _args] call MAINCLASS;
         } else {
-            _result = _logic getvariable "debug";
+            _result = [_logic,"debug"] call ALiVE_fnc_hashGet;
         };
     };
 
     case "objectives": {
         if (_args isequaltype []) then {
-            _logic setvariable ["objectives", _args];
+            [_logic,"objectives", _args] call ALiVE_fnc_hashSet;
         } else {
-            _args = _logic getvariable "objectives";
+            _result = [_logic,"objectives"] call ALiVE_fnc_hashGet;
         };
 
         _result = _args;
@@ -439,7 +897,7 @@ switch (_operation) do {
 
         OPCOM_instances deleteat (OPCOM_instances find _logic);
 
-        private _module = _logic getvariable "moduleObject";
+        private _module = [_logic,"module"] call ALiVE_fnc_hashGet;
 
         private _group = group _module;
         deleteVehicle _module;
@@ -448,26 +906,26 @@ switch (_operation) do {
 
     case "pause": {
         if (_args isequaltype true) then {
-            private _opcomFSM = _logic getvariable "opcomFSM";
-            private _tacomFSM = _logic getvariable "tacomFSM";
+            private _opcomFSM = [_logic,"OPCOM_FSM"] call ALiVE_fnc_hashGet;
+            private _tacomFSM = [_logic,"TACOM_FSM"] call ALiVE_fnc_hashGet;
 
             _opcomFSM setFSMVariable ["pause", _args];
             _tacomFSM setFSMVariable ["pause", _args];
 
-            _logic setvariable ["pause", _args];
+            [_logic,"pause", _args] call ALiVE_fnc_hashSet;
         } else {
-            _result = _logic getvariable "pause";
+            _result = [_logic,"pause"] call ALiVE_fnc_hashGet;
         };
     };
 
     case "stop": {
-        private _opcomFSM = _logic getvariable "OPCOM_FSM";
-        private _tacomFSM = _logic getvariable "TACOM_FSM";
+        private _opcomFSM = [_logic,"OPCOM_FSM"] call ALiVE_fnc_hashGet;
+        private _tacomFSM = [_logic,"TACOM_FSM"] call ALiVE_fnc_hashGet;
 
         _opcomFSM setFSMvariable ["_exitFSM",true];
         _tacomFSM setFSMvariable ["_exitFSM",true];
 
-        private _debug = _logic getvariable "debug";
+        private _debug = [_logic,"debug"] call ALiVE_fnc_hashGet;
         if (_debug) then {
             ["ALiVE OPCOM stopped..."] call ALiVE_fnc_Dump;
         };

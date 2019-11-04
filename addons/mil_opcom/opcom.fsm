@@ -1,97 +1,80 @@
 /*%FSM<COMPILE "scriptedFSM.cfg, opcom">*/
 /*%FSM<HEAD>*/
 /*
-item0[] = {"INIT_COMPLETE_1",4,218,-720.395935,-937.944458,-630.395935,-887.944458,0.000000,"INIT" \n "COMPLETE"};
-item1[] = {"ANALYZE",2,250,-915.210754,-306.293610,-417.475098,-258.428986,0.000000,"ANALYZE"};
-item2[] = {"OPCOM_FEEDER",4,218,-711.187256,-222.682648,-621.187195,-172.682648,1.000000,"OPCOM" \n "FEEDER"};
-item3[] = {"ATTACK_Condition",4,218,-924.627625,-202.879486,-834.627502,-152.879486,5.000000,"ATTACK" \n "Conditions"};
-item4[] = {"",7,210,-341.155090,36.380066,-333.155060,44.380096,0.000000,""};
-item5[] = {"",7,210,-347.610199,-817.749023,-339.610168,-809.749023,0.000000,""};
-item6[] = {"DEFEND_condition",4,218,-787.492737,-203.595917,-697.492737,-153.595917,4.000000,"DEFEND" \n "conditions"};
-item7[] = {"RESERVE_conditio",4,218,-642.570801,-201.616302,-552.570740,-151.616302,3.000000,"RESERVE" \n "conditions"};
-item8[] = {"OPCOM_RECEIVER",4,218,-717.074463,-838.579346,-627.074646,-788.579346,1.000000,"OPCOM" \n "RECEIVER"};
-item9[] = {"CUSTOM_condition",4,218,-502.155029,-201.889679,-412.155121,-151.889679,2.000000,"CUSTOM" \n "conditions"};
-item10[] = {"ORDER_TACOM",2,250,-924.860840,-94.510040,-425.593536,-50.306946,0.000000,"ORDER" \n "TACOM"};
-item11[] = {"TACOM_CONFIRM",4,218,-651.682068,14.823029,-561.682068,64.823029,0.000000,"TACOM" \n "CONFIRM"};
-item12[] = {"TACOM_NOT_CONFIR",4,218,-767.965027,13.736359,-677.965149,63.736359,0.000000,"TACOM" \n "NOT CONFIRM"};
-item13[] = {"",7,210,-1031.257935,34.909210,-1023.257385,42.909210,0.000000,""};
-item14[] = {"_",-1,250,-433.177032,51.216019,-430.091949,51.216019,0.000000,""};
-item15[] = {"",7,210,-1032.922607,-816.473755,-1024.922607,-808.473755,0.000000,""};
-item16[] = {"INITIALIZE",2,250,-721.197266,-875.105042,-625.643738,-851.020447,0.000000,"INITIALIZE"};
-item17[] = {"NOT_BUSY",2,250,-926.275818,15.184509,-836.275818,65.184509,0.000000,"NOT BUSY"};
-item18[] = {"NOT_BUSY_1",2,250,-520.941284,16.271149,-430.941254,66.271149,0.000000,"NOT BUSY"};
-item19[] = {"COLLECT_TO_QUEUE",2,250,-599.758545,-647.769531,-509.758667,-597.769531,0.000000,"COLLECT" \n "TO QUEUE"};
-item20[] = {"ENTRIES_IN_QUEUE",4,218,-598.921387,-529.275208,-508.921387,-479.275299,2.000000,"ENTRIES" \n "IN QUEUE"};
-item21[] = {"ANALYZE_Conditio",4,218,-1203.018188,-310.200287,-1113.017944,-260.200104,0.000000,"ANALYZE" \n "Conditions"};
-item22[] = {"PERFORM_ANALYSIS",2,250,-1205.917603,-535.859314,-1115.917603,-485.859314,0.000000,"PERFORM" \n "ANALYSIS"};
-item23[] = {"ANALYSIS_DONE",4,218,-1209.427368,-599.538696,-1119.427368,-549.538696,0.000000,"ANALYSIS" \n "DONE"};
-item24[] = {"RESET",2,250,-1210.631958,-838.320801,-1120.631958,-788.320801,0.000000,"RESET"};
-item25[] = {"PERFORM_CLEANUP",2,250,-1201.964966,-382.972961,-1111.964966,-332.972961,0.000000,"PERFORM" \n "CLEANUP"};
-item26[] = {"CLEANUP_DONE",4,218,-1201.899536,-463.712677,-1111.899536,-413.712738,0.000000,"CLEANUP" \n "DONE"};
-item27[] = {"EXIT",4,218,-712.073486,100.377136,-622.073486,150.377090,99.000000,"EXIT"};
-item28[] = {"END",1,250,-712.089600,226.488464,-622.089539,276.488434,0.000000,"END"};
-item29[] = {"REEINFORCE_Condi",4,218,-269.226440,-306.737396,-179.226395,-256.737396,0.000000,"REEINFORCE" \n "Conditions"};
-item30[] = {"REQUEST_REEINFOR",2,250,-269.835327,-838.042908,-179.835312,-788.042908,0.000000,"REQUEST" \n "REEINFORCEMENTS"};
-item31[] = {"",7,210,-1164.081909,36.036972,-1156.081909,44.036972,0.000000,""};
-item32[] = {"PERFORM_POSTANAL",2,250,-1209.788086,-683.964172,-1119.788086,-633.964172,0.000000,"PERFORM" \n "POSTANALYSIS"};
-item33[] = {"POST_ANALYSIS_DO",4,218,-1208.969116,-760.668579,-1118.969116,-710.668579,0.000000,"POST" \n "ANALYSIS" \n "DONE"};
-item34[] = {"QRF_Conditions",4,218,-133.845856,-306.268250,-43.845856,-256.268250,0.000000,"QRF" \n "Conditions"};
-item35[] = {"REQUEST_QRF",2,250,-133.738892,-834.303589,-43.738892,-784.303650,0.000000,"REQUEST" \n "QRF"};
-item36[] = {"RECON_Conditions",4,218,9.105785,-308.301544,99.105774,-258.301483,0.000000,"RECON" \n "Conditions"};
-item37[] = {"REQUEST_RECON",2,250,10.006296,-836.706787,100.006363,-786.706909,0.000000,"REQUEST" \n "RECON"};
-item38[] = {"OCA_Conditions",4,218,150.274902,-304.513031,240.274811,-254.513000,0.000000,"OCA" \n "Conditions"};
-item39[] = {"REQUEST_OCA",2,250,150.634949,-836.432495,240.634949,-786.432495,0.000000,"REQUEST" \n "OCA"};
-item40[] = {"INIT_COMPLETE",4,218,-2261.251465,-1153.835449,-2161.251465,-1103.835449,0.000000,"INIT" \n "COMPLETE"};
-item41[] = {"Start",2,250,-2261.251465,-1078.835449,-2161.251465,-1028.835449,0.000000,"Start"};
-item42[] = {"Started",4,218,-2261.251465,-1003.835388,-2161.251465,-953.835449,0.000000,"Started"};
-item43[] = {"Wait_for_Data",2,250,-2261.251465,-928.835449,-2161.251465,-878.835388,0.000000,"Wait" \n "for" \n "Data"};
-item44[] = {"Data_Received",4,218,-2461.251465,-728.835388,-2361.251465,-678.835388,0.000000,"Data" \n "Received"};
-item45[] = {"Timeout",4,218,-2061.251465,-728.835388,-1961.251343,-678.835388,1.000000,"Timeout"};
-item46[] = {"Process_Data",2,250,-2461.251465,-653.835388,-2361.251465,-603.835388,0.000000,"Process" \n "Data"};
-item47[] = {"Order_Completed",4,218,-2536.251465,-578.835388,-2436.251465,-528.835388,5.000000,"Order" \n "Completed"};
-item48[] = {"Order_Received",4,218,-2386.251465,-578.835388,-2286.251465,-528.835388,5.000000,"Order" \n "Received"};
-item49[] = {"",7,210,-2790.251465,-907.835388,-2782.251465,-899.835388,0.000000,""};
-item50[] = {"",7,210,-2790.251465,-557.835388,-2782.251465,-549.835388,0.000000,""};
-item51[] = {"SELECT_SECTION",2,250,-2386.251465,-503.835388,-2286.251465,-453.835388,0.000000,"SELECT" \n "SECTION"};
-item52[] = {"SECTION_SELECTED",4,218,-2386.251465,-428.835388,-2286.251465,-378.835388,0.000000,"SECTION" \n "SELECTED"};
-item53[] = {"PREPARE_ORDERS",2,250,-2386.251465,-353.835388,-2286.251465,-303.835388,0.000000,"PREPARE" \n "ORDERS"};
-item54[] = {"PREPARED",4,218,-2386.251465,-278.835419,-2286.251465,-228.835419,0.000000,"PREPARED"};
-item55[] = {"ISSUE_ORDERS",2,250,-2386.251465,-203.835419,-2286.251465,-153.835419,0.000000,"ISSUE ORDERS"};
-item56[] = {"GROUP_CONFIRM",4,218,-2461.251465,-128.835419,-2361.251465,-78.835419,0.000000,"GROUP" \n "CONFIRM"};
-item57[] = {"GROUP_NOT_CONFIR",4,218,-2311.251465,-128.835419,-2211.251465,-78.835419,0.000000,"GROUP" \n "NOT" \n "CONFIRM"};
-item58[] = {"TRANSMIT_TO_OPCO",2,250,-2386.251465,-53.835388,-2286.251465,-3.835388,0.000000,"TRANSMIT" \n "TO" \n "OPCOM"};
-item59[] = {"Transmitted",4,218,-2386.251465,21.164612,-2286.251465,71.164612,5.000000,"Transmitted"};
-item60[] = {"",7,210,-2790.251465,117.164612,-2782.251465,125.164612,0.000000,""};
-item61[] = {"EXIT",4,218,-1786.251343,-928.835449,-1686.251343,-878.835388,99.000000,"EXIT"};
-item62[] = {"END_1",1,250,-1661.251343,-928.835449,-1561.251343,-878.835388,0.000000,"END"};
-item63[] = {"Internal_Analysi",2,250,-2061.251465,-653.835388,-1961.251343,-603.835388,0.000000,"Internal" \n "Analysis"};
-item64[] = {"",7,210,-2340.251465,117.164612,-2332.251465,125.164612,0.000000,""};
-item65[] = {"",7,210,-2015.251343,117.164612,-2007.251343,125.164612,0.000000,""};
-item66[] = {"Analysis_Complet",4,218,-2061.251465,-578.835388,-1961.251343,-528.835388,1.000000,"Analysis" \n "Complete"};
-item67[] = {"INIT",0,250,-1825.000000,300.000000,-1725.000000,350.000000,0.000000,"INIT"};
-item68[] = {"INIT_COMPLETE",4,218,-1825.000000,375.000000,-1725.000000,425.000000,0.000000,"INIT" \n "COMPLETE"};
-item69[] = {"Start_1",2,250,-1825.000000,450.000000,-1725.000000,500.000000,0.000000,"Start"};
-item70[] = {"Started",4,218,-1825.000000,525.000000,-1725.000000,575.000000,0.000000,"Started"};
-item71[] = {"Wait_for_Data_1",2,250,-1825.000000,600.000000,-1725.000000,650.000000,0.000000,"Wait" \n "for" \n "Data"};
-item72[] = {"Data_Received",4,218,-2000.000000,800.000000,-1900.000000,850.000000,1.000000,"Data" \n "Received"};
-item73[] = {"Timeout",4,218,-1650.000000,800.000000,-1550.000000,850.000000,0.000000,"Timeout"};
-item74[] = {"Process_Data_1",2,4346,-2000.000000,875.000000,-1900.000000,925.000000,0.000000,"Process" \n "Data"};
-item75[] = {"Processed",4,218,-2000.000000,950.000000,-1900.000000,1000.000000,0.000000,"Processed"};
-item76[] = {"Order_TACOM_1",2,250,-2000.000000,1025.000000,-1900.000000,1075.000000,0.000000,"Order" \n "TACOM"};
-item77[] = {"TACOM_CONFIRM",4,218,-2075.000000,1100.000000,-1975.000000,1150.000000,0.000000,"TACOM" \n "CONFIRM"};
-item78[] = {"TACOM_NOT_CONFIR",4,218,-1925.000000,1100.000000,-1825.000000,1150.000000,0.000000,"TACOM" \n "NOT" \n "CONFIRM"};
-item79[] = {"Handle_Response",2,250,-2000.000000,1175.000000,-1900.000000,1225.000000,0.000000,"Handle" \n "Response"};
-item80[] = {"Internal_Analysi_1",2,250,-1650.000000,875.000000,-1550.000000,925.000000,0.000000,"Internal" \n "Analysis"};
-item81[] = {"Analysis_Complet",4,218,-1650.000000,950.000000,-1550.000000,1000.000000,1.000000,"Analysis" \n "Complete"};
-item82[] = {"",7,210,-2279.000000,1346.000000,-2271.000000,1354.000000,0.000000,""};
-item83[] = {"",7,210,-1954.000000,1346.000000,-1946.000000,1354.000000,0.000000,""};
-item84[] = {"",7,210,-1604.000000,1346.000000,-1596.000000,1354.000000,0.000000,""};
-item85[] = {"",7,210,-2279.000000,621.000000,-2271.000000,629.000000,0.000000,""};
-item86[] = {"EXIT",4,218,-1375.000000,600.000000,-1275.000000,650.000000,100.000000,"EXIT"};
-item87[] = {"END_2",1,250,-1250.000000,600.000000,-1150.000000,650.000000,0.000000,"END"};
-item88[] = {"Handled",4,218,-2000.000000,1250.000000,-1900.000000,1300.000000,0.000000,"Handled"};
-item89[] = {"Paused",4,218,-1600.000000,500.000000,-1500.000000,550.000000,90.000000,"Paused"};
-item90[] = {"____FAKE____",9,0,0.000000,0.000000,0.000000,0.000000,0.000000,"____FAKE____"};
+item0[] = {"INIT_COMPLETE",4,218,75.000000,250.000000,175.000000,300.000000,0.000000,"INIT" \n "COMPLETE"};
+item1[] = {"ANALYZE",2,250,-125.000000,875.000000,375.000000,925.000000,0.000000,"ANALYZE"};
+item2[] = {"OPCOM_FEEDER",4,218,75.000000,975.000000,175.000000,1025.000000,1.000000,"OPCOM" \n "FEEDER"};
+item3[] = {"ATTACK_Condition",4,218,-125.000000,975.000000,-25.000000,1025.000000,5.000000,"ATTACK" \n "Conditions"};
+item4[] = {"",7,210,453.500000,1220.999878,471.500031,1229.000000,0.000000,""};
+item5[] = {"",7,210,453.499969,371.000000,471.500000,379.000000,0.000000,""};
+item6[] = {"DEFEND_condition",4,218,0.000000,975.000000,100.000000,1025.000000,4.000000,"DEFEND" \n "conditions"};
+item7[] = {"RESERVE_conditio",4,218,150.000000,975.000000,250.000000,1025.000000,3.000000,"RESERVE" \n "conditions"};
+item8[] = {"OPCOM_RECEIVER",4,218,75.000000,350.000000,175.000000,400.000000,1.000000,"OPCOM" \n "RECEIVER"};
+item9[] = {"CUSTOM_condition",4,218,300.000000,975.000000,400.000000,1025.000000,2.000000,"CUSTOM" \n "conditions"};
+item10[] = {"ORDER_TACOM",2,250,-125.000000,1100.000000,375.000000,1150.000000,0.000000,"ORDER" \n "TACOM"};
+item11[] = {"TACOM_CONFIRM",4,218,150.000000,1200.000000,250.000000,1250.000000,0.000000,"TACOM" \n "CONFIRM"};
+item12[] = {"TACOM_NOT_CONFIR",4,218,25.000000,1200.000000,125.000000,1250.000000,0.000000,"TACOM" \n "NOT CONFIRM"};
+item13[] = {"",7,210,-234.000275,1221.000000,-215.999725,1229.000000,0.000000,""};
+item14[] = {"_",-1,250,350.000000,1225.000000,375.000000,1250.000000,0.000000,""};
+item15[] = {"",7,210,-234.000000,371.000000,-216.000000,379.000000,0.000000,""};
+item16[] = {"INITIALIZE",2,250,75.000000,325.000000,175.000000,350.000000,0.000000,"INITIALIZE"};
+item17[] = {"NOT_BUSY",2,250,-125.000000,1200.000000,-25.000000,1250.000000,0.000000,"NOT BUSY"};
+item18[] = {"NOT_BUSY_1",2,250,275.000000,1200.000000,375.000000,1250.000000,0.000000,"NOT BUSY"};
+item19[] = {"COLLECT_TO_QUEUE",2,250,200.000000,550.000000,300.000000,600.000000,0.000000,"COLLECT" \n "TO QUEUE"};
+item20[] = {"ENTRIES_IN_QUEUE",4,218,200.000000,650.000000,300.000000,700.000000,2.000000,"ENTRIES" \n "IN QUEUE"};
+item21[] = {"ANALYZE_Conditio",4,218,-400.000000,875.000000,-300.000000,925.000000,0.000000,"ANALYZE" \n "Conditions"};
+item22[] = {"PERFORM_ANALYSIS",2,250,-400.000000,650.000000,-300.000000,700.000000,0.000000,"PERFORM" \n "ANALYSIS"};
+item23[] = {"ANALYSIS_DONE",4,218,-425.000000,600.000000,-325.000000,650.000000,0.000000,"ANALYSIS" \n "DONE"};
+item24[] = {"RESET",2,250,-425.000000,350.000000,-325.000000,400.000000,0.000000,"RESET"};
+item25[] = {"PERFORM_CLEANUP",2,250,-400.000000,800.000000,-300.000000,850.000000,0.000000,"PERFORM" \n "CLEANUP"};
+item26[] = {"CLEANUP_DONE",4,218,-400.000000,725.000000,-300.000000,775.000000,0.000000,"CLEANUP" \n "DONE"};
+item27[] = {"EXIT",4,218,75.000000,1300.000000,175.000000,1350.000000,99.000000,"EXIT"};
+item28[] = {"END",1,250,75.000000,1425.000000,175.000000,1475.000000,0.000000,"END"};
+item29[] = {"REEINFORCE_Condi",4,218,525.000000,875.000000,625.000000,925.000000,0.000000,"REEINFORCE" \n "Conditions"};
+item30[] = {"REQUEST_REEINFOR",2,250,525.000000,350.000000,625.000000,400.000000,0.000000,"REQUEST" \n "REEINFORCEMENTS"};
+item31[] = {"",7,210,-371.500000,1221.000000,-353.500000,1229.000000,0.000000,""};
+item32[] = {"PERFORM_POSTANAL",2,250,-425.000000,500.000000,-325.000000,550.000000,0.000000,"PERFORM" \n "POSTANALYSIS"};
+item33[] = {"POST_ANALYSIS_DO",4,218,-425.000000,425.000000,-325.000000,475.000000,0.000000,"POST" \n "ANALYSIS" \n "DONE"};
+item34[] = {"QRF_Conditions",4,218,650.000000,875.000000,750.000000,925.000000,0.000000,"QRF" \n "Conditions"};
+item35[] = {"REQUEST_QRF",2,250,650.000000,350.000000,750.000000,400.000000,0.000000,"REQUEST" \n "QRF"};
+item36[] = {"RECON_Conditions",4,218,800.000000,875.000000,900.000000,925.000000,0.000000,"RECON" \n "Conditions"};
+item37[] = {"REQUEST_RECON",2,250,800.000000,350.000000,900.000000,400.000000,0.000000,"REQUEST" \n "RECON"};
+item38[] = {"OCA_Conditions",4,218,950.000000,875.000000,1050.000000,925.000000,0.000000,"OCA" \n "Conditions"};
+item39[] = {"REQUEST_OCA",2,250,950.000000,350.000000,1050.000000,400.000000,0.000000,"REQUEST" \n "OCA"};
+item40[] = {"INIT",0,4346,-1825.000000,300.000000,-1725.000000,350.000000,0.000000,"INIT"};
+item41[] = {"INIT_COMPLETE",4,218,-1825.000000,375.000000,-1725.000000,425.000000,0.000000,"INIT" \n "COMPLETE"};
+item42[] = {"Start",2,250,-1825.000000,450.000000,-1725.000000,500.000000,0.000000,"Start"};
+item43[] = {"Started",4,218,-1825.000000,525.000000,-1725.000000,575.000000,0.000000,"Started"};
+item44[] = {"Wait_for_Data",2,250,-1825.000000,600.000000,-1725.000000,650.000000,0.000000,"Wait" \n "for" \n "Data"};
+item45[] = {"Data_Received",4,218,-2000.000000,800.000000,-1900.000000,850.000000,0.000000,"Data" \n "Received"};
+item46[] = {"Timeout",4,218,-1750.000000,800.000000,-1650.000000,850.000000,1.000000,"Timeout"};
+item47[] = {"Process_Data",2,250,-2000.000000,875.000000,-1900.000000,925.000000,0.000000,"Process" \n "Data"};
+item48[] = {"Processed",4,218,-2000.000000,950.000000,-1900.000000,1000.000000,0.000000,"Processed"};
+item49[] = {"Order_TACOM_1",2,250,-2000.000000,1025.000000,-1900.000000,1075.000000,0.000000,"Order" \n "TACOM"};
+item50[] = {"Analyze_Objective",2,250,-1750.000000,1175.000000,-1650.000000,1225.000000,0.000000,"Analyze" \n "Objective" \n "Occupation"};
+item51[] = {"Objectives_Analy",4,218,-1750.000000,1250.000000,-1650.000000,1300.000000,1.000000,"Objectives" \n "Analyzed"};
+item52[] = {"",7,210,-2279.000000,1496.000000,-2271.000000,1504.000000,0.000000,""};
+item53[] = {"",7,210,-1954.000000,1496.000000,-1946.000000,1504.000000,0.000000,""};
+item54[] = {"",7,210,-1704.000000,1496.000000,-1696.000000,1504.000000,0.000000,""};
+item55[] = {"",7,210,-2279.000000,621.000000,-2271.000000,629.000000,0.000000,""};
+item56[] = {"EXIT",4,218,-1375.000000,600.000000,-1275.000000,650.000000,100.000000,"EXIT"};
+item57[] = {"END_1",1,250,-1250.000000,600.000000,-1150.000000,650.000000,0.000000,"END"};
+item58[] = {"Handled",4,218,-2000.000000,1100.000000,-1900.000000,1150.000000,0.000000,"Handled"};
+item59[] = {"Paused",4,218,-1600.000000,500.000000,-1500.000000,550.000000,90.000000,"Paused"};
+item60[] = {"Check_For_Data_C",4,218,-1425.000000,800.000000,-1325.000000,850.000000,2.000000,"Check For" \n "Data Changes"};
+item61[] = {"Handle_Changes",2,250,-1425.000000,875.000000,-1325.000000,925.000000,0.000000,"Handle" \n "Changes"};
+item62[] = {"Changes_Handled",4,218,-1425.000000,950.000000,-1325.000000,1000.000000,2.000000,"Changes" \n "Handled"};
+item63[] = {"",7,210,-1379.000000,1496.000000,-1371.000000,1504.000000,0.000000,""};
+item64[] = {"Objectives_Left",4,218,-1600.000000,1175.000000,-1500.000000,1225.000000,10.000000,"Objectives" \n "Left"};
+item65[] = {"Prepare_Internal",2,250,-1750.000000,875.000000,-1650.000000,925.000000,0.000000,"Prepare" \n "Internal" \n "Analysis"};
+item66[] = {"Prepared",4,218,-1750.000000,950.000000,-1650.000000,1000.000000,1.000000,"Prepared"};
+item67[] = {"Analyze_Available",2,250,-1750.000000,1025.000000,-1650.000000,1075.000000,0.000000,"Analyze" \n "Available" \n "Troops"};
+item68[] = {"Prepared",4,218,-1750.000000,1100.000000,-1650.000000,1150.000000,1.000000,"Prepared"};
+item69[] = {"Troops_Left",4,218,-1600.000000,1025.000000,-1500.000000,1075.000000,10.000000,"Troops" \n "Left"};
+item70[] = {"Generate_Orders",2,250,-1750.000000,1325.000000,-1650.000000,1375.000000,0.000000,"Generate" \n "Orders for" \n "Evaluation"};
+item71[] = {"Orders_Sent_To_T",4,218,-1750.000000,1400.000000,-1650.000000,1450.000000,1.000000,"Orders Sent" \n "To TACOM"};
+item72[] = {"Reports_Left",4,218,-1600.000000,1325.000000,-1500.000000,1375.000000,10.000000,"Reports" \n "Left"};
+item73[] = {"____FAKE____",9,2009390102,0.000000,0.000000,0.000000,0.000000,0.000000,"____FAKE____"};
 version=1;
 class LayoutItems
 {
@@ -163,62 +146,44 @@ link54[] = {40,41};
 link55[] = {41,42};
 link56[] = {42,43};
 link57[] = {43,44};
-link58[] = {43,45};
-link59[] = {43,61};
-link60[] = {44,46};
-link61[] = {45,63};
-link62[] = {46,47};
-link63[] = {46,48};
-link64[] = {47,50};
-link65[] = {48,51};
-link66[] = {49,43};
-link67[] = {50,49};
-link68[] = {51,52};
-link69[] = {52,53};
-link70[] = {53,54};
-link71[] = {54,55};
-link72[] = {55,56};
-link73[] = {55,57};
-link74[] = {56,58};
-link75[] = {57,58};
-link76[] = {58,59};
-link77[] = {59,64};
-link78[] = {60,50};
+link58[] = {44,45};
+link59[] = {44,46};
+link60[] = {44,56};
+link61[] = {44,59};
+link62[] = {44,60};
+link63[] = {45,47};
+link64[] = {46,65};
+link65[] = {47,48};
+link66[] = {48,49};
+link67[] = {49,58};
+link68[] = {50,51};
+link69[] = {50,64};
+link70[] = {51,70};
+link71[] = {52,55};
+link72[] = {53,52};
+link73[] = {54,53};
+link74[] = {55,44};
+link75[] = {56,57};
+link76[] = {58,53};
+link77[] = {59,44};
+link78[] = {60,61};
 link79[] = {61,62};
-link80[] = {63,66};
-link81[] = {64,60};
-link82[] = {65,64};
-link83[] = {66,65};
-link84[] = {67,68};
-link85[] = {68,69};
-link86[] = {69,70};
-link87[] = {70,71};
-link88[] = {71,72};
-link89[] = {71,73};
-link90[] = {71,86};
-link91[] = {71,89};
-link92[] = {72,74};
-link93[] = {73,80};
-link94[] = {74,75};
-link95[] = {75,76};
-link96[] = {76,77};
-link97[] = {76,78};
-link98[] = {77,79};
-link99[] = {78,79};
-link100[] = {79,88};
-link101[] = {80,81};
-link102[] = {81,84};
-link103[] = {82,85};
-link104[] = {83,82};
-link105[] = {84,83};
-link106[] = {85,71};
-link107[] = {86,87};
-link108[] = {88,83};
-link109[] = {89,71};
-link110[] = {90,0};
-link111[] = {90,40};
-globals[] = {0.000000,0,0,0,0,640,480,1,147,6316128,1,-2194.267090,-1641.839233,1247.520264,558.821838,677,844,1};
-window[] = {2,-1,-1,-1,-1,1252,160,2092,160,3,699};
+link80[] = {62,63};
+link81[] = {63,54};
+link82[] = {64,50};
+link83[] = {65,66};
+link84[] = {66,67};
+link85[] = {67,68};
+link86[] = {67,69};
+link87[] = {68,50};
+link88[] = {69,67};
+link89[] = {70,71};
+link90[] = {70,72};
+link91[] = {71,54};
+link92[] = {72,70};
+link93[] = {73,0};
+globals[] = {0.000000,0,0,0,0,640,480,1,161,6316128,1,-2055.700195,-1351.489136,728.405457,42.085144,866,844,1};
+window[] = {2,-1,-1,-1,-1,1316,224,2156,224,3,888};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -1611,26 +1576,110 @@ class FSM
                         };
                 };
                 /*%FSM</STATE>*/
+                /*%FSM<STATE "INIT">*/
+                class INIT
+                {
+                        name = "INIT";
+                        itemno = 40;
+                        init = /*%FSM<STATEINIT""">*/"private _exitFSM = false;" \n
+                         "private _pause = false;" \n
+                         "" \n
+                         "private _opcomInstance = _this select 0;" \n
+                         "private _objectives = [_opcomInstance,""objectives""] call ALiVE_fnc_hashGet;" \n
+                         "private _opcomFSM = [_opcomInstance,""OPCOM_FSM""] call ALiVE_fnc_hashGet;" \n
+                         "private _tacomFSM = [_opcomInstance,""TACOM_FSM""] call ALiVE_fnc_hashGet;" \n
+                         "" \n
+                         "private _debug = [_opcomInstance,""debug""] call ALiVE_fnc_hashGet;" \n
+                         "private _side = [_opcomInstance,""side""] call ALiVE_fnc_hashGet;" \n
+                         "private _factions = [_opcomInstance,""factions""] call ALiVE_fnc_hashGet;" \n
+                         "private _sidesEnemy = [_opcomInstance,""sidesenemy""] call ALiVE_fnc_hashGet;" \n
+                         "private _sidesFriendly = [_opcomInstance,""sidesfriendly""] call ALiVE_fnc_hashGet;" \n
+                         "private _controltype = [_opcomInstance,""controltype""] call ALiVE_fnc_hashGet;" \n
+                         "private _maxActiveAttacks = [_opcomInstance,""simultanobjectives""] call ALiVE_fnc_hashGet;" \n
+                         "private _reinforcementRatio = [_opcomInstance,""reinforcements""] call ALiVE_fnc_hashGet;" \n
+                         "" \n
+                         "private _objectives = [_opcomInstance,""objectives""] call ALiVE_fnc_hashGet;" \n
+                         "private _objectivesByID = [_opcomInstance,""objectivesByID""] call ALiVE_fnc_hashGet;" \n
+                         "private _heldObjectives = [_opcomInstance,""heldObjectives""] call ALiVE_fnc_hashGet;" \n
+                         "private _allSections = [_opcomInstance,""allSections""] call ALiVE_fnc_hashGet;" \n
+                         "private _sectionsByType = [_opcomInstance,""sectionsByType""] call ALiVE_fnc_hashget;" \n
+                         "private _orders = [_opcomInstance,""orders""] call ALiVE_fnc_hashGet;" \n
+                         "private _pendingOrders = [_opcomInstance,""pendingorders""] call ALiVE_fnc_hashGet;" \n
+                         "private _missions = [_opcomInstance,""missions""] call ALiVE_fnc_hashGet;" \n
+                         "private _missionOptions = [_opcomInstance,""missionOptions""] call ALiVE_fnc_hashGet;" \n
+                         "private _objectivesToAdd = [_opcomInstance,""objectivesToAdd""] call ALiVE_fnc_hashGet;" \n
+                         "" \n
+                         "private _lastDataProcessTime = time;" \n
+                         "private _dataQueue = [];" \n
+                         "" \n
+                         "private _lastInternalAnalysisTime = -723; // make sure internal analysis is our first cycle" \n
+                         "private _objectivesToAnalyze = [];" \n
+                         "private _profilesLeftToSort = [];" \n
+                         "private _sortedProfiles = [];" \n
+                         "private _objectiveOccupationReports = [];" \n
+                         "private _ordersToSend = [];" \n
+                         "" \n
+                         "private _profilesUnregisteredWhileSorting = [];" \n
+                         "" \n
+                         "private _lastDataSyncTime = time;" \n
+                         "" \n
+                         "private _colorside = switch (_side) do {" \n
+                         "    case (""WEST"") : { ""ColorBlue""   };" \n
+                         "    case (""EAST"") : { ""ColorRed""    };" \n
+                         "    case (""GUER"") : { ""ColorGreen""  };" \n
+                         "    default         { ""ColorRed""    };" \n
+                         "};" \n
+                         "" \n
+                         "_initComplete = true;" \n
+                         "" \n
+                         "if (_debug) then {" \n
+                         "    [ ""OPCOM FSM INIT COMPLETE ""] call ALIVE_fnc_dumpR;" \n
+                         "};" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "INIT_COMPLETE">*/
+                                class INIT_COMPLETE
+                                {
+                                        itemno = 41;
+                                        priority = 0.000000;
+                                        to="Start";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/"_opcomFSM =  [_opcomInstance,""OPCOM_FSM"", -1] call ALiVE_fnc_hashGet;" \n
+                                         "_tacomFSM =  [_opcomInstance,""TACOM_FSM"", -1] call ALiVE_fnc_hashGet;" \n
+                                         "" \n
+                                         "private _tacomInitComplete = _tacomFSM getFsmVariable [""_initComplete"", false];" \n
+                                         ""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_opcomFSM > 0 && _tacomFSM > 0" \n
+                                         "&&" \n
+                                         "{ _initComplete && _tacomInitComplete }" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
                 /*%FSM<STATE "Start">*/
                 class Start
                 {
                         name = "Start";
-                        itemno = 41;
-                        init = /*%FSM<STATEINIT""">*/"if (_debug) then {" \n
-                         "    [""TACOM Started!""] call ALiVE_fnc_dumpR;" \n
-                         "};" \n
-                         ""/*%FSM</STATEINIT""">*/;
+                        itemno = 42;
+                        init = /*%FSM<STATEINIT""">*/"_dataQueue pushback [""internalAnalysis"", []];" \n
+                         "" \n
+                         "private _tacomDataQueue = _tacomFSM getFsmVariable ""_dataQueue"";"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
                                 /*%FSM<LINK "Started">*/
                                 class Started
                                 {
-                                        itemno = 42;
+                                        itemno = 43;
                                         priority = 0.000000;
                                         to="Wait_for_Data";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true" \n
+                                         ""/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -1641,50 +1690,73 @@ class FSM
                 class Wait_for_Data
                 {
                         name = "Wait_for_Data";
-                        itemno = 43;
-                        init = /*%FSM<STATEINIT""">*/"[""-----------------TACOM----- WAIT FOR DATA - %1"", count _TACOM_QUEUE] call ALiVE_fnc_Dump;" \n
-                         "[""-----------------TACOM----- TOTALS - Reserve=%1, Recon=%2, Attack=%3, Defend=%4"", _totalReserve, _totalRecon, _totalAttack, _totalDefend] call ALiVE_fnc_Dump;" \n
-                         "" \n
-                         "_TACOM_status = ""waiting for data"";"/*%FSM</STATEINIT""">*/;
+                        itemno = 44;
+                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
                                 /*%FSM<LINK "EXIT">*/
                                 class EXIT
                                 {
-                                        itemno = 61;
-                                        priority = 99.000000;
+                                        itemno = 56;
+                                        priority = 100.000000;
                                         to="END_1";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"_exitFSM"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
+                                /*%FSM<LINK "Paused">*/
+                                class Paused
+                                {
+                                        itemno = 59;
+                                        priority = 90.000000;
+                                        to="Wait_for_Data";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_pause" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Check_For_Data_C">*/
+                                class Check_For_Data_C
+                                {
+                                        itemno = 60;
+                                        priority = 2.000000;
+                                        to="Handle_Changes";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(_objectivesToAdd isequalto [])" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "Timeout">*/
                                 class Timeout
                                 {
-                                        itemno = 45;
+                                        itemno = 46;
                                         priority = 1.000000;
-                                        to="Internal_Analysi";
+                                        to="Prepare_Internal";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"// if queue is empty run analysis every 15s" \n
                                          "// if 25s have elapsed without analysis, ignore queue and start analysis" \n
                                          "" \n
-                                         "((_TACOM_QUEUE isequalto []) && (time - _lastanalyze) >= 15)" \n
+                                         "((_dataQueue isequalto []) && time - _lastInternalAnalysisTime >= 20)" \n
                                          "||" \n
-                                         "{ (time - _lastanalyze) >= 25 }"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"[""-----------------TACOM----- Timeout""] call ALiVE_fnc_Dump;"/*%FSM</ACTION""">*/;
+                                         "{ time - _lastInternalAnalysisTime >= 40 }" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                                 /*%FSM<LINK "Data_Received">*/
                                 class Data_Received
                                 {
-                                        itemno = 44;
+                                        itemno = 45;
                                         priority = 0.000000;
                                         to="Process_Data";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"!(_TACOM_QUEUE isequalto []) && { time - _lastDataProcessTime > 0.5 }"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"[""-----------------TACOM----- Data Received""] call ALiVE_fnc_Dump;"/*%FSM</ACTION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(_dataQueue isequalto []) && { time - _lastDataProcessTime > 0.25 }" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };
@@ -1694,899 +1766,35 @@ class FSM
                 class Process_Data
                 {
                         name = "Process_Data";
-                        itemno = 46;
-                        init = /*%FSM<STATEINIT""">*/"private [""_pos"",""_objective"",""_size"",""_operation"",""_data_operation"",""_data_value"",""_dataset"",""_transmit"",""_TACOM_ACTION"",""_timeout"",""_section"",""_sectionSupport"",""_event"",""_eventID""];" \n
-                         "[""-----------------TACOM----- Process Data""] call ALiVE_fnc_Dump;" \n
-                         "_busy = true;" \n
-                         "_TACOM_status = ""Analysis"";" \n
-                         "_timestamp = time;" \n
-                         "" \n
-                         "_tacomAction = ["""", []];" \n
-                         "" \n
-                         "_section = [];" \n
-                         "_sections = [];" \n
-                         "" \n
-                         "" \n
-                         "_TACOM_ACTION = _TACOM_QUEUE deleteat 0;" \n
-                         "_TACOM_ACTION params [""_DATA_OPERATION"",""_DATA_VALUE""];" \n
-                         "" \n
-                         "[""-----------------_DATA_OPERATION = %1 |||| _DATA_VALUE = %2"", _DATA_OPERATION, _DATA_VALUE] call ALiVE_fnc_Dump;" \n
-                         "_TACOM_ACTION = nil;" \n
-                         "_thefuckingorderes = ""ahhh"";" \n
-                         "" \n
-                         "//select data operation" \n
-                         "switch (_DATA_OPERATION) do {" \n
-                         "" \n
-                         "    case (""analyze"") : {" \n
-                         "        private [""_targets"",""_targetID"",""_target"",""_vehicle""];" \n
-                         "" \n
-                         "        _objective = _DATA_VALUE;" \n
-                         "        _pos = [_objective,""center""] call AliVE_fnc_HashGet;" \n
-                         "        _opcom_orders = [_objective,""opcom_orders""] call AliVE_fnc_HashGet;" \n
-                         "        _state = [_objective,""opcom_state""] call AliVE_fnc_HashGet;" \n
-                         "        _playertasks = [_OPCOM_HANDLER,""playertasks"",[]] call ALiVE_fnc_HashGet;" \n
-                         "" \n
-                         "[""-----------------OPCOM_ORDERS FOR OBJ %1 ARE %2"", [_objective,""objectiveID""] call ALiVE_fnc_hashGet, _opcom_orders] call ALiVE_fnc_Dump;" \n
-                         "_thefuckingorderes = _opcom_orders;" \n
-                         "        //select internal TACOM orders by global OPCOM order and set appropriate conditions for execution" \n
-                         "        switch (_opcom_orders) do {" \n
-                         "" \n
-                         "            case (""attack"") : {" \n
-                         "                _danger = [_objective,""danger"",-1] call AliVE_fnc_HashGet;" \n
-                         "                _size = _sectionsamount_attack;" \n
-                         "" \n
-                         "                if (_danger < 0) then {" \n
-                         "                    _totalRecon = _totalRecon + 1;" \n
-                         "                    _tacomAction = [""recon"", [_objective,_size]];" \n
-                         "                } else {" \n
-                         "                    _totalAttack = _totalAttack + 1;" \n
-                         "                    _tacomAction = [""capture"", [_objective,_size]];" \n
-                         "                };" \n
-                         "" \n
-                         "                if (_danger > 0) then {" \n
-                         "                    // Request OPCOM check objective for airfield and send OCA if necessary" \n
-                         "                    _OPCOM_FSM setFSMVariable [""_OPCOM_DATA"",[""OCA"",[_objectiveID]]];" \n
-                         "                };" \n
-                         "            };" \n
-                         "" \n
-                         "            case (""defend"") : {" \n
-                         "                _totalDefend = _totalDefend + 1;" \n
-                         "" \n
-                         "                //Define defense conditions" \n
-                         "                //Detect near enemies" \n
-                         "                _nearEnemies = [_objective,""findProfilesNearPosition"",[_pos,_sidesEnemy,false]] call AliVE_fnc_OPCOM;" \n
-                         "" \n
-                         "                //Defend until no enemies are near" \n
-                         "                if (count _nearEnemies > 0) then {" \n
-                         "" \n
-                         "                    //Request CAS on ""defend"" order" \n
-                         "                    if !(_state == ""defending"") then {" \n
-                         "                        _attackers = [_OPCOM_HANDLER, ""attackentity"",[_nearEnemies select 0 select 0,1,""air""]] call ALIVE_fnc_OPCOM;" \n
-                         "                    };" \n
-                         "" \n
-                         "                    _size = _sectionsamount_defend;" \n
-                         "                    _tacomAction = [""defend"", [_objective,_size]];" \n
-                         "                } else {" \n
-                         "                    _size = _sectionsamount_reserve;" \n
-                         "                    _tacomAction = [""reserve"", [_objective,_size]];" \n
-                         "                };" \n
-                         "            };" \n
-                         "" \n
-                         "            case (""reserve"") : {" \n
-                         "                _totalReserve = _totalReserve + 1;" \n
-                         "                _size = _sectionsamount_reserve;" \n
-                         "" \n
-                         "                _tacomAction = [""reserve"", [_objective,_size]];" \n
-                         "            };" \n
-                         "" \n
-                         "            default {" \n
-                         "" \n
-                         "            };" \n
-                         "" \n
-                         "        };" \n
-                         "    };" \n
-                         "" \n
-                         "    case (""completed"") : {" \n
-                         "        _DATA_VALUE params [""_profileID"",""_objectiveID"",""_orders""];" \n
-                         "" \n
-                         "        _objective = [_OPCOM_HANDLER,""getobjectivebyid"", _objectiveID] call ALiVE_fnc_OPCOM;" \n
-                         "        _profile = [ALiVE_ProfileHandler,""getProfile"", _profileID] call ALiVE_fnc_ProfileHandler;" \n
-                         "" \n
-                         "        if (isnil ""_profile"") exitwith {" \n
-                         "            _TACOM_QUEUE pushback [""analyze"",_objective];" \n
-                         "            _busy = false;" \n
-                         "        };" \n
-                         "" \n
-                         "        _posP = [_profile,""position""] call ALiVE_fnc_HashGet;" \n
-                         "        _section = [_objective,""section""] call AliVE_fnc_HashGet;" \n
-                         "        _state = [_objective,""tacom_state""] call AliVE_fnc_HashGet;" \n
-                         "        _transmit = ([_objective,""opcom_state""] call AliVE_fnc_HashGet) != ""internal"";" \n
-                         "        _dataset = nil;" \n
-                         "" \n
-                         "        private _nextAnalysisJob = [];" \n
-                         "" \n
-                         "        switch (_state) do {" \n
-                         "" \n
-                         "            case (""recon"") : {" \n
-                         "                if !([_OPCOM_HANDLER,""synchronizeorders"",_profileID] call ALiVE_fnc_OPCOM) exitwith {" \n
-                         "                    if (_debug) then {" \n
-                         "                        private _pendingOrders = [_OPCOM_HANDLER,""pendingorders"",[]] call ALiVE_fnc_HashGet;" \n
-                         "                        [" \n
-                         "                            ""TACOM %1 regrouping! Waiting for %2 groups!""," \n
-                         "                            _profileID," \n
-                         "                            {" \n
-                         "                                _objectiveID == (_x select 2)" \n
-                         "                            } count _pendingOrders" \n
-                         "                        ] call ALIVE_fnc_dumpR;" \n
-                         "                    };" \n
-                         "                };" \n
-                         "" \n
-                         "                //All groups are in position" \n
-                         "                //Scan for visible enemies (done only once on recon for performance sake - regulary scan every 2 minutes done by OPCOM)" \n
-                         "                private _nearVisibleEnemies = [_OPCOM_HANDLER,""scanForNearEnemies"", [_posP, true]] call ALiVE_fnc_OPCOM;" \n
-                         "                _danger = count _nearVisibleEnemies;" \n
-                         "" \n
-                         "                // TBD: Calculate danger level depending on recon outcome (sector analysis)" \n
-                         "                [_objective,""danger"", _danger] call AliVE_fnc_HashSet;" \n
-                         "" \n
-                         "                if (_danger > 0) then {" \n
-                         "                    if (_debug) then {" \n
-                         "                        [""TACOM %2 spotted %3 enemies at %1!"",_objectiveID,_side,_danger] call ALiVE_fnc_DumpR;" \n
-                         "                    };" \n
-                         "" \n
-                         "                    _OPCOM_FSM setFSMVariable [""_OPCOM_DATA"",[""QRF"",[_objectiveID]]];" \n
-                         "                } else {" \n
-                         "                    if (_debug) then {" \n
-                         "                        [""TACOM %2 didn't spot any enemies at %1!"",_objectiveID,_side] call ALiVE_fnc_DumpR;" \n
-                         "                    };" \n
-                         "                };" \n
-                         "" \n
-                         "                _nextAnalysisJob = [""analyze"",_objective];" \n
-                         "" \n
-                         "                _event = ['OPCOM_RECON', [_side,_objective],""OPCOM""] call ALIVE_fnc_event;" \n
-                         "                _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
-                         "            };" \n
-                         "" \n
-                         "            case (""capture"") : {" \n
-                         "                if !([_OPCOM_HANDLER,""synchronizeorders"",_profileID] call ALiVE_fnc_OPCOM) exitwith {" \n
-                         "                    if (_debug) then {" \n
-                         "                        private _pendingOrders = [_OPCOM_HANDLER,""pendingorders"",[]] call ALiVE_fnc_HashGet;" \n
-                         "                        [" \n
-                         "                            ""TACOM %1 regrouping! Waiting for %2 groups!""," \n
-                         "                            _profileID," \n
-                         "                            {" \n
-                         "                                _objectiveID == (_x select 2)" \n
-                         "                            } count _pendingOrders" \n
-                         "                        ] call ALIVE_fnc_dumpR;" \n
-                         "                    };" \n
-                         "                };" \n
-                         "" \n
-                         "                //set objective state and re-analyse after objective state change" \n
-                         "                [_objective,""opcom_state"",""reserve""] call AliVE_fnc_HashSet;" \n
-                         "                [_objective,""opcom_orders"",""reserve""] call AliVE_fnc_HashSet;" \n
-                         "" \n
-                         "                _nextAnalysisJob = [""analyze"",_objective];" \n
-                         "" \n
-                         "                _event = ['OPCOM_CAPTURE', [_side,_objective],""OPCOM""] call ALIVE_fnc_event;" \n
-                         "               _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
-                         "            };" \n
-                         "" \n
-                         "            case (""defend"") : {" \n
-                         "                if !([_OPCOM_HANDLER,""synchronizeorders"",_profileID] call ALiVE_fnc_OPCOM) exitwith {" \n
-                         "                    if (_debug) then {" \n
-                         "                        private _pendingOrders = [_OPCOM_HANDLER,""pendingorders"",[]] call ALiVE_fnc_HashGet;" \n
-                         "                        [" \n
-                         "                            ""TACOM %1 regrouping! Waiting for %2 groups!""," \n
-                         "                            _profileID," \n
-                         "                            {" \n
-                         "                                _objectiveID == (_x select 2)" \n
-                         "                            } count _pendingOrders" \n
-                         "                        ] call ALIVE_fnc_dumpR;" \n
-                         "                    };" \n
-                         "                };" \n
-                         "" \n
-                         "                _nextAnalysisJob = [""analyze"",_objective];" \n
-                         "" \n
-                         "                _event = ['OPCOM_DEFEND', [_side,_objective],""OPCOM""] call ALIVE_fnc_event;" \n
-                         "                _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
-                         "            };" \n
-                         "" \n
-                         "            case (""reserve"") : {" \n
-                         "                _ProfilesReserve = [_OPCOM_HANDLER,""ProfileIDsReserve"",[]] call ALiVE_fnc_HashGet;" \n
-                         "                if !(_profileID in _ProfilesReserve) then {" \n
-                         "                    _ProfilesReserve pushback _profileID;" \n
-                         "                };" \n
-                         "" \n
-                         "                if !([_OPCOM_HANDLER,""synchronizeorders"",_profileID] call ALiVE_fnc_OPCOM) exitwith {" \n
-                         "                    if(_debug) then { [""TACOM %1regrouping! Waiting for %2 groups!"",_profileID,({_objectiveID == (_x select 2)} count ([_OPCOM_HANDLER,""pendingorders"",[]] call ALiVE_fnc_HashGet))] call ALIVE_fnc_dumpR; };" \n
-                         "                };" \n
-                         "" \n
-                         "                [_objective,""danger"",-1] call AliVE_fnc_HashSet;" \n
-                         "                [_profile, ""clearWaypoints""] call ALIVE_fnc_profileEntity;" \n
-                         "" \n
-                         "                //Command to garrison" \n
-                         "                [_profile, ""clearActiveCommands""] call ALIVE_fnc_profileEntity;" \n
-                         "                [_profile, ""setActiveCommand"", [""ALIVE_fnc_garrison"",""spawn"",[200,""true"",[0,0,0]]]] call ALIVE_fnc_profileEntity;" \n
-                         "" \n
-                         "                //transmit to OPCOM as objective was completed" \n
-                         "                [_objective,""opcom_state"",""idle""] call AliVE_fnc_HashSet;" \n
-                         "                [_objective,""opcom_orders"",""none""] call AliVE_fnc_HashSet;" \n
-                         "                if (_debug) then {" \n
-                         "                    private _objectiveID = [_objective,""objectiveID""] call AliVE_fnc_HashGet;" \n
-                         "                    _objectiveID setMarkerColorLocal _colorside;" \n
-                         "                };" \n
-                         "" \n
-                         "                _event = ['OPCOM_RESERVE', [_side,_objective],""OPCOM""] call ALIVE_fnc_event;" \n
-                         "                _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
-                         "            };" \n
-                         "" \n
-                         "        };" \n
-                         "" \n
-                         "        if (_transmit) then {" \n
-                         "            _TACOM_QUEUE pushback _nextAnalysisJob;" \n
-                         "        };" \n
-                         "" \n
-                         "        _tacomAction = [""order_completed"", [_orders,_profileID,_objectiveID]];" \n
-                         "" \n
-                         "    };" \n
-                         "" \n
-                         "    default {" \n
-                         "" \n
-                         "    };" \n
-                         "" \n
-                         "};" \n
-                         "" \n
-                         "if (_tacomAction isequalto ["""", []]) then {" \n
-                         "    [""-----------------_DATA_OPERATION = NO RET VALUE - %1 == OPCOM-ORDERS=%2"", _DATA_OPERATION, _thefuckingorderes] call ALiVE_fnc_Dump;" \n
-                         "};" \n
-                         "" \n
-                         "_busy = false;" \n
-                         "_lastDataProcessTime = time;" \n
-                         ""/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                                /*%FSM<LINK "Order_Received">*/
-                                class Order_Received
-                                {
-                                        itemno = 48;
-                                        priority = 5.000000;
-                                        to="SELECT_SECTION";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"(_tacomAction select 0) != ""order_completed"""/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"[""-----------------TACOM----- Order not complete - %1"", _tacomAction] call ALiVE_fnc_Dump;"/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                                /*%FSM<LINK "Order_Completed">*/
-                                class Order_Completed
-                                {
-                                        itemno = 47;
-                                        priority = 5.000000;
-                                        to="Wait_for_Data";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"(_tacomAction select 0) == ""order_completed"""/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"[""-----------------TACOM----- Order Completed - %1"", _tacomAction] call ALiVE_fnc_Dump;"/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                        };
-                };
-                /*%FSM</STATE>*/
-                /*%FSM<STATE "SELECT_SECTION">*/
-                class SELECT_SECTION
-                {
-                        name = "SELECT_SECTION";
-                        itemno = 51;
-                        init = /*%FSM<STATEINIT""">*/"private [""_section"",""_sectionAssist"",""_hdl""];" \n
-                         "[""-----------------TACOM----- SELECT SECTION""] call ALiVE_fnc_Dump;" \n
-                         "_TACOM_status = ""Select section"";" \n
-                         "_timestamp = time;" \n
-                         "" \n
-                         "//prepare data" \n
-                         "" \n
-                         "_tacomAction params [""_operation"",""_operationData""];" \n
-                         "_operation = _tacomAction select 0;" \n
-                         "if (_operation == """") then {" \n
-                         "    [""-----------------TACOM----- EMPTY OPERATION: %1"", _tacomAction] call ALiVE_fnc_Dump;" \n
-                         "};" \n
-                         "private [""_objective"",""_size""];" \n
-                         "switch (_operation) do {" \n
-                         "    case ""recon"": {" \n
-                         "        systemchat ""recon"";" \n
-                         "        _objective = _operationData select 0;" \n
-                         "        _size = _operationData select 1;" \n
-                         "    };" \n
-                         "    case ""capture"": {" \n
-                         "        systemchat ""capture"";" \n
-                         "        _objective = _operationData select 0;" \n
-                         "        _size = _operationData select 1;" \n
-                         "    };" \n
-                         "    case ""defend"": {" \n
-                         "        systemchat ""defend"";" \n
-                         "        _objective = _operationData select 0;" \n
-                         "        _size = _operationData select 1;" \n
-                         "    };" \n
-                         "    case ""reserve"": {" \n
-                         "        systemchat ""reserve"";" \n
-                         "        _objective = _operationData select 0;" \n
-                         "        _size = _operationData select 1;" \n
-                         "    };" \n
-                         "};" \n
-                         "" \n
-                         "_section = [_objective, ""section"",[]] call ALiVE_fnc_HashGet;" \n
-                         "{" \n
-                         "    private _profile = [ALiVE_ProfileHandler,""getProfile"",_x] call ALiVE_fnc_ProfileHandler;" \n
-                         "" \n
-                         "    if (isnil ""_profile"") then {" \n
-                         "        [_OPCOM_HANDLER,""resetorders"",_x] call ALiVE_fnc_OPCOM;" \n
-                         "    };" \n
-                         "} foreach _section;" \n
-                         "" \n
-                         "_section = [_objective, ""section"",[]] call ALiVE_fnc_HashGet;" \n
-                         "if (count _section < _size) then {" \n
-                         "    _hdl = [_OPCOM_HANDLER,[_objective,_size]] spawn {" \n
-                         "        private [""_objective"",""_pos""];" \n
-                         "" \n
-                         "        _objective = _this select 1 select 0;" \n
-                         "        _size = _this select 1 select 1;" \n
-                         "        _pos = [_objective,""center""] call ALiVE_fnc_HashGet;" \n
-                         "" \n
-                         "        _sectionAssist = [_this select 0,""NearestAvailableSection"",[_pos,_size,[""infantry"",""motorized"",""mechanized"",""armored""]]] call ALiVE_fnc_OPCOM;" \n
-                         "        [_objective, ""sectionAssist"",_sectionAssist] call ALiVE_fnc_HashSet;" \n
-                         "    };" \n
-                         "} else {" \n
-                         "    _hdl = [] spawn {true};" \n
-                         "};"/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                                /*%FSM<LINK "SECTION_SELECTED">*/
-                                class SECTION_SELECTED
-                                {
-                                        itemno = 52;
-                                        priority = 0.000000;
-                                        to="PREPARE_ORDERS";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"scriptdone _hdl;"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"[""-----------------TACOM----- SECTION SELECTED""] call ALiVE_fnc_Dump;"/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                        };
-                };
-                /*%FSM</STATE>*/
-                /*%FSM<STATE "PREPARE_ORDERS">*/
-                class PREPARE_ORDERS
-                {
-                        name = "PREPARE_ORDERS";
-                        itemno = 53;
-                        init = /*%FSM<STATEINIT""">*/"terminate _hdl;" \n
-                         "[""-----------------TACOM----- PREPARE ORDERS""] call ALiVE_fnc_Dump;" \n
-                         "private [""_sectionAssist""];" \n
-                         "_sectionAssist = [_objective,""sectionAssist"",[]] call AliVE_fnc_HashGet;" \n
-                         "" \n
-                         "//Add groups" \n
-                         "if (count _section < _size) then {" \n
-                         "" \n
-                         "    for ""_i"" from 0 to ((_size - (count _section)) - 1) do {" \n
-                         "        if (_i > ((count _sectionAssist) - 1)) exitwith {};" \n
-                         "" \n
-                         "        _section pushback (_sectionAssist select _i);" \n
-                         "    };" \n
-                         "    [_objective,""section"",_section] call AliVE_fnc_HashSet;" \n
-                         "};" \n
-                         "" \n
-                         "//Remove groups" \n
-                         "if ((count _section) > _size) then {" \n
-                         "    {" \n
-                         "        _section = [_objective,""section"",[]] call AliVE_fnc_HashGet;" \n
-                         "" \n
-                         "        if (count _section == _size) exitwith {};" \n
-                         "        [_OPCOM_HANDLER,""resetorders"",_x] call ALiVE_fnc_OPCOM;" \n
-                         "    } foreach _section;" \n
-                         "};" \n
-                         "" \n
-                         "_section = [_objective,""section"",[]] call AliVE_fnc_HashGet;"/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                                /*%FSM<LINK "PREPARED">*/
-                                class PREPARED
-                                {
-                                        itemno = 54;
-                                        priority = 0.000000;
-                                        to="ISSUE_ORDERS";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"[""-----------------TACOM----- PREPARED""] call ALiVE_fnc_Dump;"/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                        };
-                };
-                /*%FSM</STATE>*/
-                /*%FSM<STATE "ISSUE_ORDERS">*/
-                class ISSUE_ORDERS
-                {
-                        name = "ISSUE_ORDERS";
-                        itemno = 55;
-                        init = /*%FSM<STATEINIT""">*/"[""-----------------TACOM----- ISSUE ORDERS""] call ALiVE_fnc_Dump;" \n
-                         "_TACOM_status = ""Order"";" \n
-                         "_timestamp = time;" \n
-                         "" \n
-                         "//Get all profileIDs and objectives" \n
-                         "private _profiles = ([ALIVE_profileHandler, ""getProfiles"", ""entity""] call ALIVE_fnc_profileHandler) select 1;" \n
-                         "_objectives = [_OPCOM_HANDLER,""objectives""] call ALiVE_fnc_HashGet;" \n
-                         "private _section = [_objective,""section"",[]] call AliVE_fnc_HashGet;" \n
-                         "private _state = [_objective,""opcom_state"",""unassigned""] call ALiVE_fnc_HashGet;" \n
-                         "private _pos = [_objective,""center""] call AliVE_fnc_HashGet;" \n
-                         "private _objectiveID = [_objective,""objectiveID""] call AliVE_fnc_HashGet;" \n
-                         "" \n
-                         "_tacomAction params [""_tacomOperation"",""_tacomOperationData""];" \n
-                         "_tacomOperationData params [""_objective"",""_objectiveSize""];" \n
-                         "" \n
-                         "_tacomResponse = [""NO RESPONSE"",""NO RESPONSE""];" \n
-                         "" \n
-                         "//set orders by type" \n
-                         "switch (_operation) do {" \n
-                         "" \n
-                         "    case ( ""recon"") : {" \n
-                         "        if (count _section >= _sectionsamount_attack) then {" \n
-                         "            [_objective,""tacom_state"",""recon""] call AliVE_fnc_HashSet;" \n
-                         "" \n
-                         "            private _turn = true;" \n
-                         "" \n
-                         "            {" \n
-                         "                private _profileID = _x;" \n
-                         "" \n
-                         "                if (_profileID in _profiles) then {" \n
-                         "                    private _profile = [ALIVE_profileHandler, ""getProfile"", _profileID] call ALIVE_fnc_profileHandler;" \n
-                         "" \n
-                         "                    //Select recon postion in angle to objectve" \n
-                         "                    _posP = [_profile, ""position""] call ALiVE_fnc_profileEntity;" \n
-                         "                    _direction = (_pos getDir _posP);" \n
-                         "                    _newPosition = _pos getPos [500, _direction];" \n
-                         "" \n
-                         "                    if (_turn) then {" \n
-                         "                        _direction = _direction - 90;" \n
-                         "                        _turn = false;" \n
-                         "                    } else {" \n
-                         "                        _direction = _direction + 90;" \n
-                         "                        _turn = true;" \n
-                         "                    };" \n
-                         "" \n
-                         "                    _newPosition = (_newPosition getPos [150, _direction]);" \n
-                         "" \n
-                         "                    if (surfaceIsWater _newPosition) then {" \n
-                         "                        _newPosition = [" \n
-                         "                            _newPosition," \n
-                         "                            0," \n
-                         "                            500," \n
-                         "                            1," \n
-                         "                            0," \n
-                         "                            100," \n
-                         "                            1," \n
-                         "                            []," \n
-                         "                            [_newPosition]" \n
-                         "                        ] call BIS_fnc_findSafePos;" \n
-                         "                    };" \n
-                         "" \n
-                         "                    private _waypointPos = [_newPosition,50] call CBA_fnc_Randpos;" \n
-                         "" \n
-                         "                    [_OPCOM_HANDLER,""setorders"",[_waypointPos,_profileID,_objectiveID,_operation]] call ALiVE_fnc_OPCOM;" \n
-                         "                };" \n
-                         "            } foreach _section;" \n
-                         "" \n
-                         "            _tacomResponse = [_objective, _section];" \n
-                         "            _TAC_confirmed = true;" \n
-                         "        } else {" \n
-                         "            if (count _section == 0) then {" \n
-                         "                _tacomResponse = [_objective, [""no groups available""]];" \n
-                         "                _TAC_confirmed = false;" \n
-                         "            } else {" \n
-                         "                {" \n
-                         "                    private _profileID = _x;" \n
-                         "" \n
-                         "                    if (_profileID in _profiles) then {" \n
-                         "                        _profile = [ALIVE_profileHandler, ""getProfile"", _profileID] call ALIVE_fnc_profileHandler;" \n
-                         "" \n
-                         "                        //Select nearest taken objective to regroup" \n
-                         "                        _posP = [_profile, ""position""] call ALIVE_fnc_profileEntity;" \n
-                         "                        private _objectivesX = [_objectives,[],{_posP distance (_x select 2 select 1)},""ASCEND""] call ALiVE_fnc_SortBy;" \n
-                         "" \n
-                         "                        {" \n
-                         "                            private _state = [_x,""opcom_state""] call ALivE_fnc_HashGet;" \n
-                         "" \n
-                         "                            if (_state == ""idle"") exitwith {" \n
-                         "                                private _waypointPos = [_x,""center""] call ALiVE_fnc_HashGet;" \n
-                         "                                [_profile, ""clearWaypoints""] call ALIVE_fnc_profileEntity;" \n
-                         "                                _profileWaypoint = [_waypointPos, 50] call ALIVE_fnc_createProfileWaypoint;" \n
-                         "                                [_profile, ""addWaypoint"", _profileWaypoint] call ALIVE_fnc_profileEntity;" \n
-                         "                            };" \n
-                         "                        } foreach _objectivesX;" \n
-                         "                    };" \n
-                         "                } foreach _section;" \n
-                         "" \n
-                         "                _tacomResponse = [_objective, [""not enough groups to build a section, regrouping...""]];" \n
-                         "                _TAC_confirmed = false;" \n
-                         "            };" \n
-                         "        };" \n
-                         "" \n
-                         "    };" \n
-                         "" \n
-                         "    case ( ""capture"") : {" \n
-                         "" \n
-                         "        if (count _section > 0) then {" \n
-                         "            [_objective,""tacom_state"",""capture""] call AliVE_fnc_HashSet;" \n
-                         "" \n
-                         "            {" \n
-                         "                private _profileID = _x;" \n
-                         "" \n
-                         "                if (_profileID in _profiles) then {" \n
-                         "                    [_OPCOM_HANDLER,""setorders"",[([_pos,50] call CBA_fnc_RandPos),_profileID,_objectiveID,_operation]] call ALiVE_fnc_OPCOM;" \n
-                         "                };" \n
-                         "            } foreach _section;" \n
-                         "" \n
-                         "            _TAC_confirmed = false;" \n
-                         "            _tacomResponse = [_objective, [""operation attack not finished""]];" \n
-                         "        } else {" \n
-                         "            _TAC_confirmed = false;" \n
-                         "            _tacomResponse = [_objective, [""no groups available""]];" \n
-                         "        };" \n
-                         "" \n
-                         "    };" \n
-                         "" \n
-                         "    case (""defend"") : {" \n
-                         "" \n
-                         "        if (count _section > 0) then {" \n
-                         "            [_objective,""tacom_state"",""defend""] call AliVE_fnc_HashSet;" \n
-                         "" \n
-                         "            {" \n
-                         "                private _profileID = _x;" \n
-                         "" \n
-                         "                    if (_profileID in _profiles) then {" \n
-                         "                        [_OPCOM_HANDLER,""setorders"",[([_pos,50] call CBA_fnc_RandPos),_profileID,_objectiveID,_operation]] call ALiVE_fnc_OPCOM;" \n
-                         "                    };" \n
-                         "            } foreach _section;" \n
-                         "" \n
-                         "            _TAC_confirmed = true;" \n
-                         "            _tacomResponse = [_objective, _section];" \n
-                         "        } else {" \n
-                         "            _TAC_confirmed = false;" \n
-                         "            _tacomResponse = [_objective, [""no groups available""]];" \n
-                         "        };" \n
-                         "" \n
-                         "    };" \n
-                         "" \n
-                         "    case ( ""reserve"") : {" \n
-                         "        if (count _section > 0) then {" \n
-                         "            [_objective,""tacom_state"",""reserve""] call AliVE_fnc_HashSet;" \n
-                         "" \n
-                         "            {" \n
-                         "                    private _profileID = _x;" \n
-                         "" \n
-                         "                    if (_profileID in _profiles) then {" \n
-                         "                        [_OPCOM_HANDLER,""setorders"",[([_pos,15] call CBA_fnc_RandPos),_profileID,_objectiveID,_operation]] call ALiVE_fnc_OPCOM;" \n
-                         "                    };" \n
-                         "            } foreach _section;" \n
-                         "" \n
-                         "            _tacomResponse = [_objective, _section];" \n
-                         "            _TAC_confirmed = true;" \n
-                         "        } else {" \n
-                         "            _tacomResponse = [_objective, [""no groups available""]];" \n
-                         "            _TAC_confirmed = false;" \n
-                         "        };" \n
-                         "" \n
-                         "    };" \n
-                         "" \n
-                         "    default {" \n
-                         "        [""-----------------TACOM----- BAD OPERATION! = %1"", _operation] call ALiVE_fnc_Dump;" \n
-                         "    };" \n
-                         "" \n
-                         "};" \n
-                         "" \n
-                         "if (""NO RESPONSE"" in _tacomResponse) then {" \n
-                         "    [""-----------------TACOM----- OPERATION BAD RETURN! = %1"", _operation] call ALiVE_fnc_Dump;" \n
-                         "};" \n
-                         ""/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                                /*%FSM<LINK "GROUP_NOT_CONFIR">*/
-                                class GROUP_NOT_CONFIR
-                                {
-                                        itemno = 57;
-                                        priority = 0.000000;
-                                        to="TRANSMIT_TO_OPCO";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"!(_TAC_confirmed) || {time - _timestamp > 30};"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"[""-----------------TACOM----- GROUP NOT CONFIRM""] call ALiVE_fnc_Dump;" \n
-                                         "_TAC_confirmed = false;"/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                                /*%FSM<LINK "GROUP_CONFIRM">*/
-                                class GROUP_CONFIRM
-                                {
-                                        itemno = 56;
-                                        priority = 0.000000;
-                                        to="TRANSMIT_TO_OPCO";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_TAC_confirmed"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"[""-----------------TACOM----- GROUP CONFIRM""] call ALiVE_fnc_Dump;"/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                        };
-                };
-                /*%FSM</STATE>*/
-                /*%FSM<STATE "TRANSMIT_TO_OPCO">*/
-                class TRANSMIT_TO_OPCO
-                {
-                        name = "TRANSMIT_TO_OPCO";
-                        itemno = 58;
-                        init = /*%FSM<STATEINIT""">*/"[""-----------------TACOM----- TRANSMIT TO OPCOM = confirmed-%1  for  %2"", _TAC_confirmed, _tacomResponse] call ALiVE_fnc_Dump;" \n
-                         "_OPCOM_FSM setFSMVariable [""_OPCOM_DATA"",[""confirmed"",[_TAC_confirmed,_tacomResponse]]];"/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                                /*%FSM<LINK "Transmitted">*/
-                                class Transmitted
-                                {
-                                        itemno = 59;
-                                        priority = 5.000000;
-                                        to="Wait_for_Data";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"[""-----------------TACOM----- TRANSMITTED""] call ALiVE_fnc_Dump;"/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                        };
-                };
-                /*%FSM</STATE>*/
-                /*%FSM<STATE "END_1">*/
-                class END_1
-                {
-                        name = "END_1";
-                        itemno = 62;
-                        init = /*%FSM<STATEINIT""">*/"[_OPCOM_HANDLER,""TACOM_FSM""] call ALiVE_fnc_HashRem;"/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                        };
-                };
-                /*%FSM</STATE>*/
-                /*%FSM<STATE "Internal_Analysi">*/
-                class Internal_Analysi
-                {
-                        name = "Internal_Analysi";
-                        itemno = 63;
-                        init = /*%FSM<STATEINIT""">*/"// Scan for enemies when inactive more than 60 seconds" \n
-                         "//[""Analyze internal | %1 | %2"",time,_lastEnemyScan] call ALiVE_fnc_DumpR;" \n
-                         "" \n
-                         "[""-----------------TACOM----- Internal Analysis""] call ALiVE_fnc_Dump;" \n
-                         "" \n
-                         "if (time - _lastEnemyScan > 60) then {" \n
-                         "    [_OPCOM_HANDLER,""scanallenemies""] spawn ALIVE_fnc_OPCOM;" \n
-                         "" \n
-                         "    _targets = [_OPCOM_HANDLER,""knownentities"",[]] call ALiVE_fnc_HashGet;" \n
-                         "" \n
-                         "    if (_debug) then {" \n
-                         "        [""TACOM %2 found enemies when scanning for enemies: %1"",_targets,_side] call ALiVE_fnc_DumpR;" \n
-                         "    };" \n
-                         "" \n
-                         "    //Attack reported enemy directly" \n
-                         "    if (count _targets > 0) then {" \n
-                         "        private _targetID = _targets select 0 select 0;" \n
-                         "        private _target = [ALiVE_profileHandler, ""getProfile"", _targetID] call ALiVE_fnc_profileHandler;" \n
-                         "" \n
-                         "        if (isnil ""_target"") exitwith {};" \n
-                         "" \n
-                         "        private _vehicle = ([_target,""vehicleAssignments"",[[],[]]] call ALIVE_fnc_hashGet) select 1;" \n
-                         "" \n
-                         "        if (count _vehicle > 0) then {" \n
-                         "            // Attack with 1 air vehicle if target is in a vehicle" \n
-                         "            if (_debug) then {" \n
-                         "                [""TACOM %2 sends QRF request to OPCOM (%1)"", _targetID, _side] call ALiVE_fnc_DumpR;" \n
-                         "            };" \n
-                         "" \n
-                         "            _OPCOM_FSM setFSMVariable [""_OPCOM_DATA"",[""QRF"",[_targetID]]];" \n
-                         "        } else {" \n
-                         "            // Send 2 infantry groups if target is not in a vehicle" \n
-                         "            if (_debug) then {" \n
-                         "                [""TACOM %2 sends QRF of type infantry on %1"", _targetID, _side] call ALiVE_fnc_DumpR;" \n
-                         "            };" \n
-                         "" \n
-                         "            _attackers = [_OPCOM_HANDLER, ""attackentity"",[_targetID,2,""infantry""]] call ALIVE_fnc_OPCOM;" \n
-                         "        };" \n
-                         "    };" \n
-                         "" \n
-                         "    _lastEnemyScan = time;" \n
-                         "};" \n
-                         "" \n
-                         "_lastanalyze = time;" \n
-                         "" \n
-                         ""/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                                /*%FSM<LINK "Analysis_Complet">*/
-                                class Analysis_Complet
-                                {
-                                        itemno = 66;
-                                        priority = 1.000000;
-                                        to="Wait_for_Data";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"[""-----------------TACOM----- Analysis Complete""] call ALiVE_fnc_Dump;"/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                        };
-                };
-                /*%FSM</STATE>*/
-                /*%FSM<STATE "INIT">*/
-                class INIT
-                {
-                        name = "INIT";
-                        itemno = 67;
-                        init = /*%FSM<STATEINIT""">*/"private _exitFSM = false;" \n
-                         "private _pause = false;" \n
-                         "" \n
-                         "private _opcomInstance = _this select 0;" \n
-                         "private _objectives = _opcomInstance getvariable ""objectives"";" \n
-                         "private _opcomFSM = _opcomInstance getvariable ""opcomFSM"";" \n
-                         "private _tacomFSM = _opcomInstance getvariable ""tacomFSM"";" \n
-                         "" \n
-                         "private _debug = _opcomInstance getvariable ""debug"";" \n
-                         "private _side = _opcomInstance getvariable ""side"";" \n
-                         "private _factions = _opcomInstance getvariable ""factions"";" \n
-                         "private _sidesEnemy = _opcomInstance getvariable ""sidesenemy"";" \n
-                         "private _sidesFriendly = _opcomInstance getvariable ""sidesfriendly"";" \n
-                         "private _controltype = _opcomInstance getvariable ""controltype"",""invasion"";" \n
-                         "private _maxActiveObjectives = _opcomInstance getvariable ""simultanobjectives"";" \n
-                         "private _reinforcementRatio = _opcomInstance getvariable ""reinforcements"";" \n
-                         "" \n
-                         "private _dataQueue = [];" \n
-                         "private _lastDataProcessTime = time;" \n
-                         "private _lastInternalAnalysisTime = time;" \n
-                         "" \n
-                         "private _colorside = switch (_side) do {" \n
-                         "    case (""WEST"") : { ""ColorBlue""   };" \n
-                         "    case (""EAST"") : { ""ColorRed""    };" \n
-                         "    case (""GUER"") : { ""ColorGreen""  };" \n
-                         "    default         { ""ColorRed""    };" \n
-                         "};" \n
-                         "" \n
-                         "if (_debug) then {" \n
-                         "    [ ""OPCOM FSM INIT COMPLETE ""] call ALIVE_fnc_dumpR;" \n
-                         "    [ ""OPCOM Objectives: %1"", _objectives] call ALIVE_fnc_dump;" \n
-                         "};" \n
-                         ""/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                                /*%FSM<LINK "INIT_COMPLETE">*/
-                                class INIT_COMPLETE
-                                {
-                                        itemno = 68;
-                                        priority = 0.000000;
-                                        to="Start_1";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/"_opcomFSM =  _opcomInstance getvariable ""opcomFSM"";" \n
-                                         "_tacomFSM =  _opcomInstance getvariable ""tacomFSM"";" \n
-                                         ""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"(!isnil ""_opcomFSM"") && (!isnil ""_tacomFSM"")" \n
-                                         "&&" \n
-                                         "{_opcomFSM > 0 && _tacomFSM > 0}" \n
-                                         ""/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                        };
-                };
-                /*%FSM</STATE>*/
-                /*%FSM<STATE "Start_1">*/
-                class Start_1
-                {
-                        name = "Start_1";
-                        itemno = 69;
-                        init = /*%FSM<STATEINIT""">*/"_dataQueue pushback [""internalAnalysis"", []];" \n
-                         ""/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                                /*%FSM<LINK "Started">*/
-                                class Started
-                                {
-                                        itemno = 70;
-                                        priority = 0.000000;
-                                        to="Wait_for_Data_1";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"true" \n
-                                         ""/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                        };
-                };
-                /*%FSM</STATE>*/
-                /*%FSM<STATE "Wait_for_Data_1">*/
-                class Wait_for_Data_1
-                {
-                        name = "Wait_for_Data_1";
-                        itemno = 71;
-                        init = /*%FSM<STATEINIT""">*/"systemchat ""Waiting for Data"";"/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                                /*%FSM<LINK "EXIT">*/
-                                class EXIT
-                                {
-                                        itemno = 86;
-                                        priority = 100.000000;
-                                        to="END_2";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_exitFSM"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                                /*%FSM<LINK "Paused">*/
-                                class Paused
-                                {
-                                        itemno = 89;
-                                        priority = 90.000000;
-                                        to="Wait_for_Data_1";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_pause" \n
-                                         ""/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                                /*%FSM<LINK "Data_Received">*/
-                                class Data_Received
-                                {
-                                        itemno = 72;
-                                        priority = 1.000000;
-                                        to="Process_Data_1";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"!(_dataQueue isequalto []) && { time - _lastDataProcessTime > 0.25 }"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"[""-----------------TACOM----- Data Received""] call ALiVE_fnc_Dump;"/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                                /*%FSM<LINK "Timeout">*/
-                                class Timeout
-                                {
-                                        itemno = 73;
-                                        priority = 0.000000;
-                                        to="Internal_Analysi_1";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"// if queue is empty run analysis every 15s" \n
-                                         "// if 25s have elapsed without analysis, ignore queue and start analysis" \n
-                                         "" \n
-                                         "((_dataQueue isequalto []) && time - _lastInternalAnalysisTime >= 15)" \n
-                                         "||" \n
-                                         "{ time - _lastInternalAnalysisTime >= 30 }"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                        };
-                };
-                /*%FSM</STATE>*/
-                /*%FSM<STATE "Process_Data_1">*/
-                class Process_Data_1
-                {
-                        name = "Process_Data_1";
-                        itemno = 74;
+                        itemno = 47;
                         init = /*%FSM<STATEINIT""">*/"private _data = _dataQueue deleteat 0;" \n
                          "" \n
-                         "_data params [""_dataOperation"",""_dataArgs""];" \n
+                         "_data params [""_dataMessage"",""_dataArgs"",""_dataSender""];" \n
                          "" \n
-                         "_lastDataProcessTime = time;"/*%FSM</STATEINIT""">*/;
+                         "" \n
+                         "switch (_dataMessage) do {" \n
+                         "" \n
+                         "	case ""evaluation_complete"": {" \n
+                         "		// create order object" \n
+                         "	};" \n
+                         "" \n
+                         "};" \n
+                         "" \n
+                         "" \n
+                         "_lastDataProcessTime = time;" \n
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
                                 /*%FSM<LINK "Processed">*/
                                 class Processed
                                 {
-                                        itemno = 75;
+                                        itemno = 48;
                                         priority = 0.000000;
                                         to="Order_TACOM_1";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true" \n
+                                         ""/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -2597,41 +1805,7 @@ class FSM
                 class Order_TACOM_1
                 {
                         name = "Order_TACOM_1";
-                        itemno = 76;
-                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                                /*%FSM<LINK "TACOM_NOT_CONFIR">*/
-                                class TACOM_NOT_CONFIR
-                                {
-                                        itemno = 78;
-                                        priority = 0.000000;
-                                        to="Handle_Response";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                                /*%FSM<LINK "TACOM_CONFIRM">*/
-                                class TACOM_CONFIRM
-                                {
-                                        itemno = 77;
-                                        priority = 0.000000;
-                                        to="Handle_Response";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                        };
-                };
-                /*%FSM</STATE>*/
-                /*%FSM<STATE "Handle_Response">*/
-                class Handle_Response
-                {
-                        name = "Handle_Response";
-                        itemno = 79;
+                        itemno = 49;
                         init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
@@ -2639,10 +1813,11 @@ class FSM
                                 /*%FSM<LINK "Handled">*/
                                 class Handled
                                 {
-                                        itemno = 88;
+                                        itemno = 58;
                                         priority = 0.000000;
-                                        to="Wait_for_Data_1";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        to="Wait_for_Data";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/"true" \n
+                                         ""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
@@ -2650,34 +1825,55 @@ class FSM
                         };
                 };
                 /*%FSM</STATE>*/
-                /*%FSM<STATE "Internal_Analysi_1">*/
-                class Internal_Analysi_1
+                /*%FSM<STATE "Analyze_Objective">*/
+                class Analyze_Objective
                 {
-                        name = "Internal_Analysi_1";
-                        itemno = 80;
-                        init = /*%FSM<STATEINIT""">*/"_lastInternalAnalysisTime = time;"/*%FSM</STATEINIT""">*/;
+                        name = "Analyze_Objective";
+                        itemno = 50;
+                        init = /*%FSM<STATEINIT""">*/"// failsafe for no objectives" \n
+                         "if (_objectivesToAnalyze isequalto []) exitwith {};" \n
+                         "" \n
+                         "private _objectiveToAnalyze = _objectivesToAnalyze deleteat 0;" \n
+                         "" \n
+                         "private _clusterOccupation = [_opcomInstance,""analyzeObjectiveOccupation"", _objectiveToAnalyze] call ALiVE_fnc_OPCOM;" \n
+                         "" \n
+                         "_objectiveOccupationReports pushback _clusterOccupation;" \n
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
-                                /*%FSM<LINK "Analysis_Complet">*/
-                                class Analysis_Complet
+                                /*%FSM<LINK "Objectives_Left">*/
+                                class Objectives_Left
                                 {
-                                        itemno = 81;
-                                        priority = 1.000000;
-                                        to="Wait_for_Data_1";
+                                        itemno = 64;
+                                        priority = 10.000000;
+                                        to="Analyze_Objective";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(_objectivesToAnalyze isequalto [])" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Objectives_Analy">*/
+                                class Objectives_Analy
+                                {
+                                        itemno = 51;
+                                        priority = 1.000000;
+                                        to="Generate_Orders";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true" \n
+                                         ""/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };
                 };
                 /*%FSM</STATE>*/
-                /*%FSM<STATE "END_2">*/
-                class END_2
+                /*%FSM<STATE "END_1">*/
+                class END_1
                 {
-                        name = "END_2";
-                        itemno = 87;
+                        name = "END_1";
+                        itemno = 57;
                         init = /*%FSM<STATEINIT""">*/"[_OPCOM_HANDLER,""OPCOM_FSM""] call ALiVE_fnc_HashRem;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
@@ -2685,31 +1881,253 @@ class FSM
                         };
                 };
                 /*%FSM</STATE>*/
+                /*%FSM<STATE "Handle_Changes">*/
+                class Handle_Changes
+                {
+                        name = "Handle_Changes";
+                        itemno = 61;
+                        init = /*%FSM<STATEINIT""">*/"[_opcomInstance,""addBufferedObjectives""] call ALiVE_fnc_OPCOM;" \n
+                         "" \n
+                         "_lastDataSyncTime = time;" \n
+                         "" \n
+                         "// sync variables between opcom and opcom fsm"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Changes_Handled">*/
+                                class Changes_Handled
+                                {
+                                        itemno = 62;
+                                        priority = 2.000000;
+                                        to="Wait_for_Data";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Prepare_Internal">*/
+                class Prepare_Internal
+                {
+                        name = "Prepare_Internal";
+                        itemno = 65;
+                        init = /*%FSM<STATEINIT""">*/"// lets see how many further attacks we are allowed" \n
+                         "" \n
+                         "private _activeOffensiveOrders = 0;" \n
+                         "private _objectivesWithOrders = [];" \n
+                         "" \n
+                         "private _countOffensiveOrders = {" \n
+                         "    private _isOffensiveOrder = [_x,""isOffensiveOrder""] call ALiVE_fnc_hashGet;" \n
+                         "    private _objectiveID = [_x,""objective""] call ALiVE_fnc_hashGet;" \n
+                         "" \n
+                         "    if (_isOffensiveOrder) then {" \n
+                         "        _activeOffensiveOrders = _activeOffensiveOrders + 1;" \n
+                         "    };" \n
+                         "" \n
+                         "    _objectivesWithOrders pushback _objectiveID;" \n
+                         "};" \n
+                         "" \n
+                         "_countOffensiveOrders foreach (_pendingOrders select 2);" \n
+                         "_countOffensiveOrders foreach (_orders select 2);" \n
+                         "" \n
+                         "// lets find which objectives to attack" \n
+                         "" \n
+                         "private _nextObjectivesToTake = [];" \n
+                         "{" \n
+                         "    if (count _nextObjectivesToTake > _maxActiveAttacks) exitwith {};" \n
+                         "" \n
+                         "    private _objectiveID = [_x,""objectiveID""] call ALiVE_fnc_hashGet;" \n
+                         "    if !(_objectiveID in _objectivesWithOrders) then {" \n
+                         "        _nextObjectivesToTake pushback _x;" \n
+                         "    };" \n
+                         "} foreach _objectives;" \n
+                         "" \n
+                         "" \n
+                         "" \n
+                         "// analyze held objectives first so we" \n
+                         "// can quickly find any necessary defend situations" \n
+                         "_objectivesToAnalyze = _heldObjectives + _nextObjectivesToTake;" \n
+                         "" \n
+                         "_objectiveOccupationReports = [];" \n
+                         "_sortedProfiles = [[],[],[],[],[],[],[]];" \n
+                         "" \n
+                         "{" \n
+                         "    private _factionProfileIDs = [ALiVE_profileHandler,""getProfilesByFaction"", _x] call ALiVE_fnc_profileHandler;" \n
+                         "    _profilesLeftToSort append _factionProfileIDs;" \n
+                         "} foreach _factions;" \n
+                         "" \n
+                         "_allSections = +_profilesLeftToSort;" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Prepared">*/
+                                class Prepared
+                                {
+                                        itemno = 66;
+                                        priority = 1.000000;
+                                        to="Analyze_Available";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Analyze_Available">*/
+                class Analyze_Available
+                {
+                        name = "Analyze_Available";
+                        itemno = 67;
+                        init = /*%FSM<STATEINIT""">*/"// failsafe for no profiles" \n
+                         "if (_profilesLeftToSort isequalto []) exitwith {};" \n
+                         "" \n
+                         "// sort 50 per frame" \n
+                         "private _profilesToSort = _profilesLeftToSort select [0, 25];" \n
+                         "_profilesLeftToSort deleteRange [0,25];" \n
+                         "" \n
+                         "private _sortedProfileBlock = [_opcomInstance,""sortProfilesByType"", _profilesToSort] call ALiVE_fnc_OPCOM;" \n
+                         "" \n
+                         "{" \n
+                         "	(_sortedProfiles select _foreachindex) append (_sortedProfileBlock select _foreachindex);" \n
+                         "} foreach _sortedProfiles;" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Troops_Left">*/
+                                class Troops_Left
+                                {
+                                        itemno = 69;
+                                        priority = 10.000000;
+                                        to="Analyze_Available";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(_profilesLeftToSort isequalto [])" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Prepared">*/
+                                class Prepared
+                                {
+                                        itemno = 68;
+                                        priority = 1.000000;
+                                        to="Analyze_Objective";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"[_sectionsByType,""infantry"", _sortedProfiles select 0] call ALiVE_fnc_hashSet;" \n
+                                         "[_sectionsByType,""motorized"", _sortedProfiles select 1] call ALiVE_fnc_hashSet;" \n
+                                         "[_sectionsByType,""mechanized"", _sortedProfiles select 2] call ALiVE_fnc_hashSet;" \n
+                                         "[_sectionsByType,""armored"", _sortedProfiles select 3] call ALiVE_fnc_hashSet;" \n
+                                         "[_sectionsByType,""anti_air"", _sortedProfiles select 4] call ALiVE_fnc_hashSet;" \n
+                                         "[_sectionsByType,""artillery"", _sortedProfiles select 5] call ALiVE_fnc_hashSet;" \n
+                                         "[_sectionsByType,""naval"", _sortedProfiles select 6] call ALiVE_fnc_hashSet;" \n
+                                         "" \n
+                                         "[_opcomInstance,""allSections"", _allSections] call ALiVE_fnc_hashSet;" \n
+                                         ""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Generate_Orders">*/
+                class Generate_Orders
+                {
+                        name = "Generate_Orders";
+                        itemno = 70;
+                        init = /*%FSM<STATEINIT""">*/"// failsafe for no reports" \n
+                         "if (_objectiveOccupationReports isequalto []) exitwith {};" \n
+                         "" \n
+                         "private _reportToAnalyze = _objectiveOccupationReports deleteat 0;" \n
+                         "" \n
+                         "_reportToAnalyze params [""_objective"",""_nearFriendlyCount"",""_nearEnemyCount"",""_nearFriendlies"",""_nearEnemies""];" \n
+                         "" \n
+                         "{" \n
+                         "    private _condition = [_x,""condition""] call ALiVE_fnc_hashGet;" \n
+                         "" \n
+                         "    if (_x call _condition) then {" \n
+                         "        private _name = [_x,""name""] call ALiVE_fnc_hashGet;" \n
+                         "        private _objectiveID = [_objective,""objectiveID""] call ALiVE_fnc_hashGet;" \n
+                         "" \n
+                         "        private _chosenOption = +_x;" \n
+                         "        [_chosenOption,""id"", [_opcomInstance,""getNextOrderID""] call ALiVE_fnc_OPCOM] call ALiVE_fnc_hashSet;" \n
+                         "        [_chosenOption,""objective"", _objectiveID] call ALiVE_fnc_hashSet;" \n
+                         "        [_chosenOption,""timeStarted"", time] call ALiVE_fnc_hashSet;" \n
+                         "" \n
+                         "        _ordersToSend pushback _chosenOption;" \n
+                         "    };" \n
+                         "} foreach _missionOptions;" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Reports_Left">*/
+                                class Reports_Left
+                                {
+                                        itemno = 72;
+                                        priority = 10.000000;
+                                        to="Generate_Orders";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(_objectiveOccupationReports isequalto [])" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Orders_Sent_To_T">*/
+                                class Orders_Sent_To_T
+                                {
+                                        itemno = 71;
+                                        priority = 1.000000;
+                                        to="Wait_for_Data";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"{" \n
+                                         "    private _orderedMission = _x;" \n
+                                         "    private _orderID = [_orderedMission,""id""] call ALiVE_fnc_hashGet;" \n
+                                         "    private _orderName = [_orderedMission,""name""] call ALiVE_fnc_hashGet;" \n
+                                         "    private _objectiveID = [_orderedMission,""objective""] call ALiVE_fnc_hashGet;" \n
+                                         "" \n
+                                         "    [_pendingOrders,_orderID, _orderedMission] call ALiVE_fnc_hashSet;" \n
+                                         "" \n
+                                         "    if (_debug) then {" \n
+                                         "        [" \n
+                                         "            ""OPCOM sending order to TACOM for evaluation: %1 for %2""," \n
+                                         "            _orderName," \n
+                                         "            _objectiveID" \n
+                                         "        ] call ALiVE_fnc_DumpR;" \n
+                                         "    };" \n
+                                         "} foreach _ordersToSend;" \n
+                                         "" \n
+                                         "// send order to tacom for evaluation" \n
+                                         "_tacomDataQueue append (_ordersToSend apply { [""evaluate"", _x] });" \n
+                                         "" \n
+                                         "_ordersToSend = [];" \n
+                                         "" \n
+                                         "_lastInternalAnalysisTime = time;" \n
+                                         ""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
                 /*%FSM<STATE "____FAKE____">*/
                 class ____FAKE____
                 {
                         name = "____FAKE____";
-                        itemno = 90;
+                        itemno = 73;
                         init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
                                 /*%FSM<LINK "INIT_COMPLETE">*/
                                 class INIT_COMPLETE
-                                {
-                                        itemno = 40;
-                                        priority = 0.000000;
-                                        to="Start";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_OPCOM_FSM =  [_OPCOM_HANDLER,""OPCOM_FSM""] call ALiVE_fnc_HashGet;" \n
-                                         "_TACOM_FSM =  [_OPCOM_HANDLER,""TACOM_FSM""] call ALiVE_fnc_HashGet;" \n
-                                         "" \n
-                                         "!(isnil ""_OPCOM_FSM"") && !(isnil ""_TACOM_FSM"") && {_OPCOM_FSM > 0 && _TACOM_FSM > 0};"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                                /*%FSM<LINK "INIT_COMPLETE_1">*/
-                                class INIT_COMPLETE_1
                                 {
                                         itemno = 0;
                                         priority = 0.000000;
@@ -2729,7 +2147,6 @@ class FSM
         {
                 "END",
                 "END_1",
-                "END_2",
         };
 };
 /*%FSM</COMPILE>*/
