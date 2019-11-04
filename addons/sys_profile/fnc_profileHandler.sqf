@@ -104,9 +104,12 @@ switch(_operation) do {
 
             private _blankHash = [] call ALiVE_fnc_hashCreate;
 
+            ALiVE_profileMap = [nil,"create"] call ALiVE_fnc_baseClass;
+
             // set defaults
             [_logic,"debug", false] call ALIVE_fnc_hashSet;
             [_logic,"profiles", +_blankHash] call ALIVE_fnc_hashSet;
+            [_logic,"profilesMapObject", ALiVE_profileMap] call ALiVE_fnc_hashSet;
             [_logic,"profilesByCompany", +_blankHash] call ALIVE_fnc_hashSet;
             [_logic,"profilesActive", []] call ALIVE_fnc_hashSet;
             [_logic,"profilesInActive", []] call ALIVE_fnc_hashSet;
@@ -321,6 +324,7 @@ switch(_operation) do {
             private _profile = _args;
 
             private _profiles = [_logic,"profiles"] call ALIVE_fnc_hashGet;
+            private _profilesMapObject = [_logic,"profilesMapObject"] call ALiVE_fnc_hashGet;
             private _profilesByType = [_logic,"profilesByType"] call ALIVE_fnc_hashGet;
             private _profilesCatagorised = [_logic,"profilesCatagorised"] call ALIVE_fnc_hashGet;
             private _profilePositions = [_logic,"profilePositions"] call ALIVE_fnc_hashGet;
@@ -340,6 +344,7 @@ switch(_operation) do {
 
             // store on main profiles hash
             [_profiles, _profileID, _profile] call ALIVE_fnc_hashSet;
+            _profilesMapObject setvariable [_profileID, _profile];
 
             // store the position in the position index
             [_profilePositions, _profileID, _profilePosition] call ALIVE_fnc_hashSet;
@@ -503,7 +508,11 @@ switch(_operation) do {
         if (_args isEqualType []) then {
             private _profile = _args;
 
+            private _event = ['PROFILE_UNREGISTER', [_profile], "ProfileHandler"] call ALiVE_fnc_event;
+            _eventID = [ALiVE_eventLog,"addEvent", _event] call ALiVE_fnc_eventLog;
+
             private _profiles = [_logic,"profiles"] call ALIVE_fnc_hashGet;
+            private _profilesMapObject = [_logic,"profilesMapObject"] call ALiVE_fnc_hashGet;
             private _profilesByType = [_logic,"profilesByType"] call ALIVE_fnc_hashGet;
             private _profilesCatagorised = [_logic,"profilesCatagorised"] call ALIVE_fnc_hashGet;
             private _profilePositions = [_logic,"profilePositions"] call ALIVE_fnc_hashGet;
@@ -523,6 +532,7 @@ switch(_operation) do {
 
             // remove on main profiles hash
             [_profiles, _profileID] call ALIVE_fnc_hashRem;
+            _profilesMapObject setvariable [_profileID,nil];
 
             // remove from position index
             [_profilePositions, _profileID] call ALIVE_fnc_hashRem;
@@ -792,14 +802,22 @@ switch(_operation) do {
     };
 
     case "getProfile": {
-        if (_args isEqualType "") then {
-            private _profiles = [_logic, "profiles"] call ALIVE_fnc_hashGet;
-            private _index = (_profiles select 1) find _args;
+        private _profilesMapObject = [_logic,"profilesMapObject"] call ALIVE_fnc_hashGet;
+        _result = _profilesMapObject getvariable _args;
+    };
 
-            if (_index != -1) then {
-                _result = (_profiles select 2) select _index;
+    case "profileIDsToProfiles": {
+        private _profileIDs = _args;
+
+        _result = [];
+
+        {
+            private _profile = ALiVE_profileMap getvariable _x;
+
+            if (!isnil "_profile") then {
+                _result pushback _profile;
             };
-        };
+        } foreach _profileIDs;
     };
 
     case "getProfiles": {
