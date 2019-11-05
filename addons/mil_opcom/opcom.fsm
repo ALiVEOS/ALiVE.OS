@@ -50,7 +50,7 @@ item45[] = {"Data_Received",4,218,-2000.000000,800.000000,-1900.000000,850.00000
 item46[] = {"Timeout",4,218,-1750.000000,800.000000,-1650.000000,850.000000,1.000000,"Timeout"};
 item47[] = {"Process_Data",2,250,-2000.000000,875.000000,-1900.000000,925.000000,0.000000,"Process" \n "Data"};
 item48[] = {"Processed",4,218,-2000.000000,950.000000,-1900.000000,1000.000000,0.000000,"Processed"};
-item49[] = {"Analyze_Objective",2,250,-1750.000000,1175.000000,-1650.000000,1225.000000,0.000000,"Analyze" \n "Objective" \n "Occupation"};
+item49[] = {"Analyze_Objective",2,4346,-1750.000000,1175.000000,-1650.000000,1225.000000,0.000000,"Analyze" \n "Objective" \n "Occupation"};
 item50[] = {"Objectives_Analy",4,218,-1750.000000,1250.000000,-1650.000000,1300.000000,1.000000,"Objectives" \n "Analyzed"};
 item51[] = {"",7,210,-2279.000000,1496.000000,-2271.000000,1504.000000,0.000000,""};
 item52[] = {"",7,210,-1954.000000,1496.000000,-1946.000000,1504.000000,0.000000,""};
@@ -72,7 +72,7 @@ item67[] = {"Troops_Left",4,218,-1600.000000,1025.000000,-1500.000000,1075.00000
 item68[] = {"Generate_Orders",2,250,-1750.000000,1325.000000,-1650.000000,1375.000000,0.000000,"Generate" \n "Orders for" \n "Evaluation"};
 item69[] = {"Orders_Sent_To_T",4,218,-1750.000000,1400.000000,-1650.000000,1450.000000,1.000000,"Orders Sent" \n "To TACOM"};
 item70[] = {"Reports_Left",4,218,-1600.000000,1325.000000,-1500.000000,1375.000000,10.000000,"Reports" \n "Left"};
-item71[] = {"____FAKE____",9,0,0.000000,0.000000,0.000000,0.000000,0.000000,"____FAKE____"};
+item71[] = {"____FAKE____",9,2008865814,0.000000,0.000000,0.000000,0.000000,0.000000,"____FAKE____"};
 version=1;
 class LayoutItems
 {
@@ -178,7 +178,7 @@ link88[] = {68,70};
 link89[] = {69,53};
 link90[] = {70,68};
 link91[] = {71,0};
-globals[] = {0.000000,0,0,0,0,640,480,1,161,6316128,1,-1835.874756,-1257.287354,1544.076172,980.187012,866,844,1};
+globals[] = {0.000000,0,0,0,0,640,480,1,161,6316128,1,-1936.093018,-1357.505615,1439.849121,875.959961,866,844,1};
 window[] = {2,-1,-1,-32000,-32000,1188,96,2028,96,3,888};
 *//*%FSM</HEAD>*/
 class FSM
@@ -1820,6 +1820,17 @@ class FSM
                          "private _objectiveToAnalyze = _objectivesToAnalyze deleteat 0;" \n
                          "" \n
                          "private _clusterOccupation = [_opcomInstance,""analyzeObjectiveOccupation"", _objectiveToAnalyze] call ALiVE_fnc_OPCOM;" \n
+                         "" \n
+                         "private _nearFriendlies = _clusterOccupation select 1;" \n
+                         "private _nearEnemies = _clusterOccupation select 2;" \n
+                         "" \n
+                         "private _dangerValue = if (_nearFriendlies > 0 || _nearEnemies > 0) then {" \n
+                         "    (_nearEnemies - _nearFriendlies) min 0" \n
+                         "} else {" \n
+                         "    -1" \n
+                         "};" \n
+                         "" \n
+                         "[_objectiveToAnalyze,""danger"", _dangerValue] call ALiVE_fnc_hashSet;" \n
                          "" \n
                          "_objectiveOccupationReports pushback _clusterOccupation;" \n
                          ""/*%FSM</STATEINIT""">*/;
