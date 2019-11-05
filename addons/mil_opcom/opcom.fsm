@@ -51,7 +51,7 @@ item46[] = {"Timeout",4,218,-1750.000000,800.000000,-1650.000000,850.000000,1.00
 item47[] = {"Process_Data",2,250,-2000.000000,875.000000,-1900.000000,925.000000,0.000000,"Process" \n "Data"};
 item48[] = {"Processed",4,218,-2000.000000,950.000000,-1900.000000,1000.000000,0.000000,"Processed"};
 item49[] = {"Analyze_Objective",2,250,-1750.000000,1175.000000,-1650.000000,1225.000000,0.000000,"Analyze" \n "Objective" \n "Occupation"};
-item50[] = {"Objectives_Analy",4,218,-1750.000000,1250.000000,-1650.000000,1300.000000,1.000000,"Objectives" \n "Analyzed"};
+item50[] = {"Objectives_Analy",4,4314,-1750.000000,1250.000000,-1650.000000,1300.000000,1.000000,"Objectives" \n "Analyzed"};
 item51[] = {"",7,210,-2279.000000,1496.000000,-2271.000000,1504.000000,0.000000,""};
 item52[] = {"",7,210,-1954.000000,1496.000000,-1946.000000,1504.000000,0.000000,""};
 item53[] = {"",7,210,-1704.000000,1496.000000,-1696.000000,1504.000000,0.000000,""};
@@ -178,7 +178,7 @@ link88[] = {68,70};
 link89[] = {69,53};
 link90[] = {70,68};
 link91[] = {71,0};
-globals[] = {0.000000,0,0,0,0,640,480,1,161,6316128,1,-1929.412842,-1350.825439,1357.001953,793.113037,866,844,1};
+globals[] = {0.000000,0,0,0,0,640,480,1,161,6316128,1,-1959.309204,-1335.526489,1593.755493,985.820435,866,844,1};
 window[] = {2,-1,-1,-1,-1,1252,160,2092,160,3,888};
 *//*%FSM</HEAD>*/
 class FSM
@@ -1824,8 +1824,17 @@ class FSM
                          "private _nearFriendlies = _clusterOccupation select 1;" \n
                          "private _nearEnemies = _clusterOccupation select 2;" \n
                          "" \n
+                         "if (_nearFriendlies > _nearEnemies) then {" \n
+                         "    _newHeldObjectives pushback _objectiveToAnalyze;" \n
+                         "};" \n
+                         "" \n
                          "private _dangerValue = if (_nearFriendlies > 0) {" \n
-                         "    (_nearEnemies - _nearFriendlies) min 0" \n
+                         "    if (_nearFriendlies > _nearEnemies) then {" \n
+                         "        _nearEnemies * (1 / (_nearFriendlies - _nearEnemies))" \n
+                         "    } else {" \n
+                         "        private _nearFriendliesEffecivness = _nearFriendlies * (1 / (_nearEnemies - _nearFriendlies));" \n
+                         "        (floor (_nearEnemies - _nearFriendliesEffecivness)) min 0" \n
+                         "    };" \n
                          "} else {" \n
                          "    private _intelConfidence = [_objectiveToAnalyze,""intelConfidence""] call ALiVE_fnc_hashGet;" \n
                          "    if (_intelConfidence > 0) then {" \n
@@ -1882,7 +1891,9 @@ class FSM
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"true" \n
                                          ""/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                        action=/*%FSM<ACTION""">*/"// reassign array without changing pointer" \n
+                                         "_heldObjectives resize 0;" \n
+                                         "_heldObjectives append _newHeldObjectives;"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };
@@ -1967,6 +1978,8 @@ class FSM
                          "    };" \n
                          "} foreach _objectives;" \n
                          "" \n
+                         "// buffer so we can update all objectives at once" \n
+                         "private _newHeldObjectives = [];" \n
                          "" \n
                          "" \n
                          "// analyze held objectives first so we" \n
