@@ -178,8 +178,8 @@ link88[] = {68,70};
 link89[] = {69,53};
 link90[] = {70,68};
 link91[] = {71,0};
-globals[] = {0.000000,0,0,0,0,640,480,1,161,6316128,1,-1936.093018,-1357.505615,1439.849121,875.959961,866,844,1};
-window[] = {2,-1,-1,-32000,-32000,1188,96,2028,96,3,888};
+globals[] = {0.000000,0,0,0,0,640,480,1,161,6316128,1,-1929.412842,-1350.825439,1357.001953,793.113037,866,844,1};
+window[] = {2,-1,-1,-1,-1,1252,160,2092,160,3,888};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -1949,12 +1949,15 @@ class FSM
                          "// lets find which objectives to attack" \n
                          "" \n
                          "private _nextObjectivesToTake = [];" \n
+                         "private _objectivesNotEligibleForAttack = [];" \n
                          "{" \n
                          "    if (count _nextObjectivesToTake > _maxActiveAttacks) exitwith {};" \n
                          "" \n
                          "    private _objectiveID = [_x,""objectiveID""] call ALiVE_fnc_hashGet;" \n
                          "    if !(_objectiveID in _objectivesWithOrders) then {" \n
                          "        _nextObjectivesToTake pushback _x;" \n
+                         "    } else {" \n
+                         "        _objectivesNotEligibleForAttack pushback _x;" \n
                          "    };" \n
                          "} foreach _objectives;" \n
                          "" \n
@@ -1962,7 +1965,7 @@ class FSM
                          "" \n
                          "// analyze held objectives first so we" \n
                          "// can quickly find any necessary defend situations" \n
-                         "_objectivesToAnalyze = _heldObjectives + _nextObjectivesToTake;" \n
+                         "_objectivesToAnalyze = _nextObjectivesToTake + _objectivesNotEligibleForAttack;" \n
                          "" \n
                          "_objectiveOccupationReports = [];" \n
                          "_sortedProfiles = [[],[],[],[],[],[],[]];" \n
