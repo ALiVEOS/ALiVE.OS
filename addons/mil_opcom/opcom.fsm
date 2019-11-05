@@ -41,7 +41,7 @@ item36[] = {"RECON_Conditions",4,218,800.000000,875.000000,900.000000,925.000000
 item37[] = {"REQUEST_RECON",2,250,800.000000,350.000000,900.000000,400.000000,0.000000,"REQUEST" \n "RECON"};
 item38[] = {"OCA_Conditions",4,218,950.000000,875.000000,1050.000000,925.000000,0.000000,"OCA" \n "Conditions"};
 item39[] = {"REQUEST_OCA",2,250,950.000000,350.000000,1050.000000,400.000000,0.000000,"REQUEST" \n "OCA"};
-item40[] = {"INIT",0,4346,-1825.000000,300.000000,-1725.000000,350.000000,0.000000,"INIT"};
+item40[] = {"INIT",0,250,-1825.000000,300.000000,-1725.000000,350.000000,0.000000,"INIT"};
 item41[] = {"INIT_COMPLETE",4,218,-1825.000000,375.000000,-1725.000000,425.000000,0.000000,"INIT" \n "COMPLETE"};
 item42[] = {"Start",2,250,-1825.000000,450.000000,-1725.000000,500.000000,0.000000,"Start"};
 item43[] = {"Started",4,218,-1825.000000,525.000000,-1725.000000,575.000000,0.000000,"Started"};
@@ -50,31 +50,29 @@ item45[] = {"Data_Received",4,218,-2000.000000,800.000000,-1900.000000,850.00000
 item46[] = {"Timeout",4,218,-1750.000000,800.000000,-1650.000000,850.000000,1.000000,"Timeout"};
 item47[] = {"Process_Data",2,250,-2000.000000,875.000000,-1900.000000,925.000000,0.000000,"Process" \n "Data"};
 item48[] = {"Processed",4,218,-2000.000000,950.000000,-1900.000000,1000.000000,0.000000,"Processed"};
-item49[] = {"Order_TACOM_1",2,250,-2000.000000,1025.000000,-1900.000000,1075.000000,0.000000,"Order" \n "TACOM"};
-item50[] = {"Analyze_Objective",2,250,-1750.000000,1175.000000,-1650.000000,1225.000000,0.000000,"Analyze" \n "Objective" \n "Occupation"};
-item51[] = {"Objectives_Analy",4,218,-1750.000000,1250.000000,-1650.000000,1300.000000,1.000000,"Objectives" \n "Analyzed"};
-item52[] = {"",7,210,-2279.000000,1496.000000,-2271.000000,1504.000000,0.000000,""};
-item53[] = {"",7,210,-1954.000000,1496.000000,-1946.000000,1504.000000,0.000000,""};
-item54[] = {"",7,210,-1704.000000,1496.000000,-1696.000000,1504.000000,0.000000,""};
-item55[] = {"",7,210,-2279.000000,621.000000,-2271.000000,629.000000,0.000000,""};
-item56[] = {"EXIT",4,218,-1375.000000,600.000000,-1275.000000,650.000000,100.000000,"EXIT"};
-item57[] = {"END_1",1,250,-1250.000000,600.000000,-1150.000000,650.000000,0.000000,"END"};
-item58[] = {"Handled",4,218,-2000.000000,1100.000000,-1900.000000,1150.000000,0.000000,"Handled"};
-item59[] = {"Paused",4,218,-1600.000000,500.000000,-1500.000000,550.000000,90.000000,"Paused"};
-item60[] = {"Check_For_Data_C",4,218,-1425.000000,800.000000,-1325.000000,850.000000,2.000000,"Check For" \n "Data Changes"};
-item61[] = {"Handle_Changes",2,250,-1425.000000,875.000000,-1325.000000,925.000000,0.000000,"Handle" \n "Changes"};
-item62[] = {"Changes_Handled",4,218,-1425.000000,950.000000,-1325.000000,1000.000000,2.000000,"Changes" \n "Handled"};
-item63[] = {"",7,210,-1379.000000,1496.000000,-1371.000000,1504.000000,0.000000,""};
-item64[] = {"Objectives_Left",4,218,-1600.000000,1175.000000,-1500.000000,1225.000000,10.000000,"Objectives" \n "Left"};
-item65[] = {"Prepare_Internal",2,250,-1750.000000,875.000000,-1650.000000,925.000000,0.000000,"Prepare" \n "Internal" \n "Analysis"};
-item66[] = {"Prepared",4,218,-1750.000000,950.000000,-1650.000000,1000.000000,1.000000,"Prepared"};
-item67[] = {"Analyze_Available",2,250,-1750.000000,1025.000000,-1650.000000,1075.000000,0.000000,"Analyze" \n "Available" \n "Troops"};
-item68[] = {"Prepared",4,218,-1750.000000,1100.000000,-1650.000000,1150.000000,1.000000,"Prepared"};
-item69[] = {"Troops_Left",4,218,-1600.000000,1025.000000,-1500.000000,1075.000000,10.000000,"Troops" \n "Left"};
-item70[] = {"Generate_Orders",2,250,-1750.000000,1325.000000,-1650.000000,1375.000000,0.000000,"Generate" \n "Orders for" \n "Evaluation"};
-item71[] = {"Orders_Sent_To_T",4,218,-1750.000000,1400.000000,-1650.000000,1450.000000,1.000000,"Orders Sent" \n "To TACOM"};
-item72[] = {"Reports_Left",4,218,-1600.000000,1325.000000,-1500.000000,1375.000000,10.000000,"Reports" \n "Left"};
-item73[] = {"____FAKE____",9,2009390102,0.000000,0.000000,0.000000,0.000000,0.000000,"____FAKE____"};
+item49[] = {"Analyze_Objective",2,250,-1750.000000,1175.000000,-1650.000000,1225.000000,0.000000,"Analyze" \n "Objective" \n "Occupation"};
+item50[] = {"Objectives_Analy",4,218,-1750.000000,1250.000000,-1650.000000,1300.000000,1.000000,"Objectives" \n "Analyzed"};
+item51[] = {"",7,210,-2279.000000,1496.000000,-2271.000000,1504.000000,0.000000,""};
+item52[] = {"",7,210,-1954.000000,1496.000000,-1946.000000,1504.000000,0.000000,""};
+item53[] = {"",7,210,-1704.000000,1496.000000,-1696.000000,1504.000000,0.000000,""};
+item54[] = {"",7,210,-2279.000000,621.000000,-2271.000000,629.000000,0.000000,""};
+item55[] = {"EXIT",4,218,-1375.000000,600.000000,-1275.000000,650.000000,100.000000,"EXIT"};
+item56[] = {"END_1",1,250,-1250.000000,600.000000,-1150.000000,650.000000,0.000000,"END"};
+item57[] = {"Paused",4,218,-1600.000000,500.000000,-1500.000000,550.000000,90.000000,"Paused"};
+item58[] = {"Check_For_Data_C",4,218,-1425.000000,800.000000,-1325.000000,850.000000,2.000000,"Check For" \n "Data Changes"};
+item59[] = {"Handle_Changes",2,250,-1425.000000,875.000000,-1325.000000,925.000000,0.000000,"Handle" \n "Changes"};
+item60[] = {"Changes_Handled",4,218,-1425.000000,950.000000,-1325.000000,1000.000000,2.000000,"Changes" \n "Handled"};
+item61[] = {"",7,210,-1379.000000,1496.000000,-1371.000000,1504.000000,0.000000,""};
+item62[] = {"Objectives_Left",4,218,-1600.000000,1175.000000,-1500.000000,1225.000000,10.000000,"Objectives" \n "Left"};
+item63[] = {"Prepare_Internal",2,250,-1750.000000,875.000000,-1650.000000,925.000000,0.000000,"Prepare" \n "Internal" \n "Analysis"};
+item64[] = {"Prepared",4,218,-1750.000000,950.000000,-1650.000000,1000.000000,1.000000,"Prepared"};
+item65[] = {"Analyze_Available",2,250,-1750.000000,1025.000000,-1650.000000,1075.000000,0.000000,"Analyze" \n "Available" \n "Troops"};
+item66[] = {"Prepared",4,218,-1750.000000,1100.000000,-1650.000000,1150.000000,1.000000,"Prepared"};
+item67[] = {"Troops_Left",4,218,-1600.000000,1025.000000,-1500.000000,1075.000000,10.000000,"Troops" \n "Left"};
+item68[] = {"Generate_Orders",2,250,-1750.000000,1325.000000,-1650.000000,1375.000000,0.000000,"Generate" \n "Orders for" \n "Evaluation"};
+item69[] = {"Orders_Sent_To_T",4,218,-1750.000000,1400.000000,-1650.000000,1450.000000,1.000000,"Orders Sent" \n "To TACOM"};
+item70[] = {"Reports_Left",4,218,-1600.000000,1325.000000,-1500.000000,1375.000000,10.000000,"Reports" \n "Left"};
+item71[] = {"____FAKE____",9,0,0.000000,0.000000,0.000000,0.000000,0.000000,"____FAKE____"};
 version=1;
 class LayoutItems
 {
@@ -148,42 +146,40 @@ link56[] = {42,43};
 link57[] = {43,44};
 link58[] = {44,45};
 link59[] = {44,46};
-link60[] = {44,56};
-link61[] = {44,59};
-link62[] = {44,60};
+link60[] = {44,55};
+link61[] = {44,57};
+link62[] = {44,58};
 link63[] = {45,47};
-link64[] = {46,65};
+link64[] = {46,63};
 link65[] = {47,48};
-link66[] = {48,49};
-link67[] = {49,58};
-link68[] = {50,51};
-link69[] = {50,64};
-link70[] = {51,70};
-link71[] = {52,55};
+link66[] = {48,52};
+link67[] = {49,50};
+link68[] = {49,62};
+link69[] = {50,68};
+link70[] = {51,54};
+link71[] = {52,51};
 link72[] = {53,52};
-link73[] = {54,53};
-link74[] = {55,44};
-link75[] = {56,57};
-link76[] = {58,53};
-link77[] = {59,44};
+link73[] = {54,44};
+link74[] = {55,56};
+link75[] = {57,44};
+link76[] = {58,59};
+link77[] = {59,60};
 link78[] = {60,61};
-link79[] = {61,62};
-link80[] = {62,63};
-link81[] = {63,54};
-link82[] = {64,50};
+link79[] = {61,53};
+link80[] = {62,49};
+link81[] = {63,64};
+link82[] = {64,65};
 link83[] = {65,66};
-link84[] = {66,67};
-link85[] = {67,68};
-link86[] = {67,69};
-link87[] = {68,50};
-link88[] = {69,67};
-link89[] = {70,71};
-link90[] = {70,72};
-link91[] = {71,54};
-link92[] = {72,70};
-link93[] = {73,0};
-globals[] = {0.000000,0,0,0,0,640,480,1,161,6316128,1,-2055.700195,-1351.489136,728.405457,42.085144,866,844,1};
-window[] = {2,-1,-1,-1,-1,1316,224,2156,224,3,888};
+link84[] = {65,67};
+link85[] = {66,49};
+link86[] = {67,65};
+link87[] = {68,69};
+link88[] = {68,70};
+link89[] = {69,53};
+link90[] = {70,68};
+link91[] = {71,0};
+globals[] = {0.000000,0,0,0,0,640,480,1,161,6316128,1,-1835.874756,-1257.287354,1544.076172,980.187012,866,844,1};
+window[] = {2,-1,-1,-32000,-32000,1188,96,2028,96,3,888};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -1698,7 +1694,7 @@ class FSM
                                 /*%FSM<LINK "EXIT">*/
                                 class EXIT
                                 {
-                                        itemno = 56;
+                                        itemno = 55;
                                         priority = 100.000000;
                                         to="END_1";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
@@ -1709,7 +1705,7 @@ class FSM
                                 /*%FSM<LINK "Paused">*/
                                 class Paused
                                 {
-                                        itemno = 59;
+                                        itemno = 57;
                                         priority = 90.000000;
                                         to="Wait_for_Data";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
@@ -1721,7 +1717,7 @@ class FSM
                                 /*%FSM<LINK "Check_For_Data_C">*/
                                 class Check_For_Data_C
                                 {
-                                        itemno = 60;
+                                        itemno = 58;
                                         priority = 2.000000;
                                         to="Handle_Changes";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
@@ -1775,7 +1771,19 @@ class FSM
                          "switch (_dataMessage) do {" \n
                          "" \n
                          "	case ""evaluation_complete"": {" \n
-                         "		// create order object" \n
+                         "        _dataArgs params [""_missionID"",""_evaluationSuccess"",""_taskedSections""];" \n
+                         "" \n
+                         "        if (_evaluationSuccess) then {" \n
+                         "            private _mission = [_pendingOrders,_missionID] call ALiVE_fnc_hashGet;" \n
+                         "            [_orders,_missionID,_mission] call ALiVE_fnc_hashSet;" \n
+                         "" \n
+                         "            [_mission,""sections"", _taskedSections] call ALiVE_fnc_hashSet;" \n
+                         "" \n
+                         "            private _missionOnInit = [_mission,""onInit""] call ALiVE_fnc_hashGet;" \n
+                         "            _mission call _missionOnInit;" \n
+                         "        };" \n
+                         "" \n
+                         "        [_pendingOrders,_missionID,nil] call ALiVE_fnc_hashSet;" \n
                          "	};" \n
                          "" \n
                          "};" \n
@@ -1791,34 +1799,10 @@ class FSM
                                 {
                                         itemno = 48;
                                         priority = 0.000000;
-                                        to="Order_TACOM_1";
+                                        to="Wait_for_Data";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"true" \n
                                          ""/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                        };
-                };
-                /*%FSM</STATE>*/
-                /*%FSM<STATE "Order_TACOM_1">*/
-                class Order_TACOM_1
-                {
-                        name = "Order_TACOM_1";
-                        itemno = 49;
-                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                                /*%FSM<LINK "Handled">*/
-                                class Handled
-                                {
-                                        itemno = 58;
-                                        priority = 0.000000;
-                                        to="Wait_for_Data";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/"true" \n
-                                         ""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -1829,7 +1813,7 @@ class FSM
                 class Analyze_Objective
                 {
                         name = "Analyze_Objective";
-                        itemno = 50;
+                        itemno = 49;
                         init = /*%FSM<STATEINIT""">*/"// failsafe for no objectives" \n
                          "if (_objectivesToAnalyze isequalto []) exitwith {};" \n
                          "" \n
@@ -1845,7 +1829,7 @@ class FSM
                                 /*%FSM<LINK "Objectives_Left">*/
                                 class Objectives_Left
                                 {
-                                        itemno = 64;
+                                        itemno = 62;
                                         priority = 10.000000;
                                         to="Analyze_Objective";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
@@ -1857,7 +1841,7 @@ class FSM
                                 /*%FSM<LINK "Objectives_Analy">*/
                                 class Objectives_Analy
                                 {
-                                        itemno = 51;
+                                        itemno = 50;
                                         priority = 1.000000;
                                         to="Generate_Orders";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
@@ -1873,7 +1857,7 @@ class FSM
                 class END_1
                 {
                         name = "END_1";
-                        itemno = 57;
+                        itemno = 56;
                         init = /*%FSM<STATEINIT""">*/"[_OPCOM_HANDLER,""OPCOM_FSM""] call ALiVE_fnc_HashRem;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
@@ -1885,7 +1869,7 @@ class FSM
                 class Handle_Changes
                 {
                         name = "Handle_Changes";
-                        itemno = 61;
+                        itemno = 59;
                         init = /*%FSM<STATEINIT""">*/"[_opcomInstance,""addBufferedObjectives""] call ALiVE_fnc_OPCOM;" \n
                          "" \n
                          "_lastDataSyncTime = time;" \n
@@ -1897,7 +1881,7 @@ class FSM
                                 /*%FSM<LINK "Changes_Handled">*/
                                 class Changes_Handled
                                 {
-                                        itemno = 62;
+                                        itemno = 60;
                                         priority = 2.000000;
                                         to="Wait_for_Data";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
@@ -1913,7 +1897,7 @@ class FSM
                 class Prepare_Internal
                 {
                         name = "Prepare_Internal";
-                        itemno = 65;
+                        itemno = 63;
                         init = /*%FSM<STATEINIT""">*/"// lets see how many further attacks we are allowed" \n
                          "" \n
                          "private _activeOffensiveOrders = 0;" \n
@@ -1967,7 +1951,7 @@ class FSM
                                 /*%FSM<LINK "Prepared">*/
                                 class Prepared
                                 {
-                                        itemno = 66;
+                                        itemno = 64;
                                         priority = 1.000000;
                                         to="Analyze_Available";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
@@ -1983,7 +1967,7 @@ class FSM
                 class Analyze_Available
                 {
                         name = "Analyze_Available";
-                        itemno = 67;
+                        itemno = 65;
                         init = /*%FSM<STATEINIT""">*/"// failsafe for no profiles" \n
                          "if (_profilesLeftToSort isequalto []) exitwith {};" \n
                          "" \n
@@ -2003,7 +1987,7 @@ class FSM
                                 /*%FSM<LINK "Troops_Left">*/
                                 class Troops_Left
                                 {
-                                        itemno = 69;
+                                        itemno = 67;
                                         priority = 10.000000;
                                         to="Analyze_Available";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
@@ -2015,7 +1999,7 @@ class FSM
                                 /*%FSM<LINK "Prepared">*/
                                 class Prepared
                                 {
-                                        itemno = 68;
+                                        itemno = 66;
                                         priority = 1.000000;
                                         to="Analyze_Objective";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
@@ -2040,7 +2024,7 @@ class FSM
                 class Generate_Orders
                 {
                         name = "Generate_Orders";
-                        itemno = 70;
+                        itemno = 68;
                         init = /*%FSM<STATEINIT""">*/"// failsafe for no reports" \n
                          "if (_objectiveOccupationReports isequalto []) exitwith {};" \n
                          "" \n
@@ -2058,7 +2042,10 @@ class FSM
                          "        private _chosenOption = +_x;" \n
                          "        [_chosenOption,""id"", [_opcomInstance,""getNextOrderID""] call ALiVE_fnc_OPCOM] call ALiVE_fnc_hashSet;" \n
                          "        [_chosenOption,""objective"", _objectiveID] call ALiVE_fnc_hashSet;" \n
+                         "        [_chosenOption,""state"", """"] call ALiVE_fnc_hashSet;" \n
+                         "        [_chosenOption,""sections"", []] call ALiVE_fnc_hashSet;" \n
                          "        [_chosenOption,""timeStarted"", time] call ALiVE_fnc_hashSet;" \n
+                         "        [_chosenOption,""casualties"", 0] call ALiVE_fnc_hashSet;" \n
                          "" \n
                          "        _ordersToSend pushback _chosenOption;" \n
                          "    };" \n
@@ -2070,7 +2057,7 @@ class FSM
                                 /*%FSM<LINK "Reports_Left">*/
                                 class Reports_Left
                                 {
-                                        itemno = 72;
+                                        itemno = 70;
                                         priority = 10.000000;
                                         to="Generate_Orders";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
@@ -2082,7 +2069,7 @@ class FSM
                                 /*%FSM<LINK "Orders_Sent_To_T">*/
                                 class Orders_Sent_To_T
                                 {
-                                        itemno = 71;
+                                        itemno = 69;
                                         priority = 1.000000;
                                         to="Wait_for_Data";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
@@ -2121,7 +2108,7 @@ class FSM
                 class ____FAKE____
                 {
                         name = "____FAKE____";
-                        itemno = 73;
+                        itemno = 71;
                         init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links

@@ -181,17 +181,10 @@ switch (_operation) do {
                 ["roadblocks", _roadblocks],
 
                 ["objectives", []],
-                ["orders", [] call ALiVE_fnc_hashCreate],
-                ["pendingorders", [] call ALiVE_fnc_hashCreate],
-                ["allSections", []],
-                ["sectionsByType", [] call ALiVE_fnc_hashCreate],
-                ["nextObjectiveID", 1],
-                ["objectivesToAdd", []],
-
-                ["objectives", []],
                 ["objectivesByID", [] call CBA_fnc_createNamespace],
                 ["heldObjectives", []],
-                ["orders", []],
+                ["orders", [] call ALiVE_fnc_hashCreate],
+                ["pendingorders", [] call ALiVE_fnc_hashCreate],
                 ["missions", [] call ALiVE_fnc_hashCreate],
                 ["allSections", []],
                 ["sectionsByType", [] call ALiVE_fnc_hashCreate],
@@ -737,8 +730,12 @@ switch (_operation) do {
         _result = [_infantry,_motorized,_mechanized,_armored,_antiAir,_artillery,_naval];
     };
 
+    case "getUntaskedSections": {
+
+    };
+
     case "sortSectionsByDistance": {
-        _args params ["_position",["_sections", []]];
+        _args params ["_position",["_sections", []], ["_excludeBusy", false]];
 
         if (_sections isequalto []) then {
             _sections = [_logic,"allSections"] call ALiVE_fnc_hashGet;
@@ -749,9 +746,13 @@ switch (_operation) do {
             private _profile = ALiVE_profileMap getvariable _x;
 
             if (!isnil "_profile") then {
-                private _profilePos = _profile select 2 select 2;
-                private _distance = _profilePos distance _position;
-                _profilesWithDistance pushback [_distance,_profile];
+                private _busy = [_profile,"busy", false] call ALiVE_fnc_hashGet;
+
+                if (!_busy && _excludeBusy) then {
+                    private _profilePos = _profile select 2 select 2;
+                    private _distance = _profilePos distance _position;
+                    _profilesWithDistance pushback [_distance,_profile];
+                };
             };
         } foreach _sections;
 
@@ -768,6 +769,27 @@ switch (_operation) do {
         if !(_sectionsByDistance isequalto []) then {
             _result = _sectionsByDistance select 0;
         };
+    };
+
+    case "profileListRemoveDead": {
+        private _profileIDs = _args;
+
+        private _deadProfiles = [];
+
+        private _profileIDCount = count _profileIDs;
+        private _i = 0;
+        while { _i < _profileIDCount && { _profileIDCount > 0 }} do {
+            private _profile = ALiVE_profileMap getvariable (_profileIDs select _i);
+
+            if (isnil "_profile") then {
+                _deadProfiles pushback (_profileIDs deleteat _i);
+                _profileIDCount = _profileIDCount - 1;
+            } else {
+                _i = _i + 1;
+            };
+        };
+
+        _result = _deadProfiles;
     };
 
     case "getObjectiveByID": {
