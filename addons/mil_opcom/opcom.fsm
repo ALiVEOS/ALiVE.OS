@@ -50,7 +50,7 @@ item45[] = {"Data_Received",4,218,-2000.000000,800.000000,-1900.000000,850.00000
 item46[] = {"Timeout",4,218,-1750.000000,800.000000,-1650.000000,850.000000,1.000000,"Timeout"};
 item47[] = {"Process_Data",2,250,-2000.000000,875.000000,-1900.000000,925.000000,0.000000,"Process" \n "Data"};
 item48[] = {"Processed",4,218,-2000.000000,950.000000,-1900.000000,1000.000000,0.000000,"Processed"};
-item49[] = {"Analyze_Objective",2,4346,-1750.000000,1175.000000,-1650.000000,1225.000000,0.000000,"Analyze" \n "Objective" \n "Occupation"};
+item49[] = {"Analyze_Objective",2,250,-1750.000000,1175.000000,-1650.000000,1225.000000,0.000000,"Analyze" \n "Objective" \n "Occupation"};
 item50[] = {"Objectives_Analy",4,218,-1750.000000,1250.000000,-1650.000000,1300.000000,1.000000,"Objectives" \n "Analyzed"};
 item51[] = {"",7,210,-2279.000000,1496.000000,-2271.000000,1504.000000,0.000000,""};
 item52[] = {"",7,210,-1954.000000,1496.000000,-1946.000000,1504.000000,0.000000,""};
@@ -1824,13 +1824,31 @@ class FSM
                          "private _nearFriendlies = _clusterOccupation select 1;" \n
                          "private _nearEnemies = _clusterOccupation select 2;" \n
                          "" \n
-                         "private _dangerValue = if (_nearFriendlies > 0 || _nearEnemies > 0) then {" \n
+                         "private _dangerValue = if (_nearFriendlies > 0) {" \n
                          "    (_nearEnemies - _nearFriendlies) min 0" \n
                          "} else {" \n
-                         "    -1" \n
+                         "    private _timeLastAnalyzed = [_objectiveToAnalyze,""timeLastAnalyzed""] call ALiVE_fnc_hashGet;" \n
+                         "    private _intelConfidence = [_objectiveToAnalyze,""intelConfidence""] call ALiVE_fnc_hashGet;" \n
+                         "    private _timeSinceLastAnalysis = time - _timeLastAnalyzed;" \n
+                         "" \n
+                         "    // if 25 min have elapsed since knowledge of this objective was obtained" \n
+                         "    // reset danger state to trigger recon on next attack order" \n
+                         "" \n
+                         "    private _minToResetConfidence = 25;" \n
+                         "    _intelConfidence = _intelConfidence - ((1 / _minToResetConfidence) * (_timeSinceLastAnalysis / 60));" \n
+                         "" \n
+                         "    [_objectiveToAnalyze,""intelConfidence"", _intelConfidence] call ALiVE_fnc_hashSet;" \n
+                         "" \n
+                         "    private _existingDangerValue = [_objectiveToAnalyze,""danger""] call ALiVE_fnc_hashGet;" \n
+                         "    if (_intelConfidence > 0) then {" \n
+                         "        _existingDangerValue" \n
+                         "    } else {" \n
+                         "        -1" \n
+                         "    };" \n
                          "};" \n
                          "" \n
                          "[_objectiveToAnalyze,""danger"", _dangerValue] call ALiVE_fnc_hashSet;" \n
+                         "[_objectiveToAnalyze,""timeLastAnalyzed"", time] call ALiVE_fnc_hashSet;" \n
                          "" \n
                          "_objectiveOccupationReports pushback _clusterOccupation;" \n
                          ""/*%FSM</STATEINIT""">*/;
