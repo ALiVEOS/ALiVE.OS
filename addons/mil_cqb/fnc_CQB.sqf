@@ -142,6 +142,7 @@ switch(_operation) do {
             //// For backward compatibility, remove after some months ////
 			//// Please update the list when this code is read, but not changed
 			////	- 6/2/2019
+            ////    - 11/7/2019
             if (_CQB_spawn >= 1) then {_CQB_spawn = _CQB_spawn / 100};
             /////////////////////////////////////////////////////////////
             _logic setVariable ["CQB_spawn", _CQB_spawn];
