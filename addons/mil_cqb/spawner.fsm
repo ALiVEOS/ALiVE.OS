@@ -4,65 +4,66 @@
 item0[] = {"INIT",0,250,-725.000000,-1075.000000,-625.000000,-1025.000000,0.000000,"INIT"};
 item1[] = {"INIT_COMPLETE",4,218,-725.000000,-975.000000,-625.000000,-925.000000,10.000000,"INIT" \n "COMPLETE"};
 item2[] = {"Wait_For_Active",2,250,-725.000000,-850.000000,-625.000000,-800.000000,0.000000,"Wait For Active"};
-item3[] = {"EXIT",4,218,-550.000000,-850.000000,-450.000000,-800.000000,99.000000,"EXIT"};
-item4[] = {"END",1,250,-400.000000,-850.000000,-300.000000,-800.000000,0.000000,"END"};
-item5[] = {"Spawn_Sources_To",4,4314,-500.000000,-750.000000,-400.000000,-700.000000,30.000000,"Spawn" \n "Sources" \n "To Check"};
-item6[] = {"",7,210,-454.000000,71.000000,-446.000000,79.000000,0.000000,""};
-item7[] = {"Check_Spawn_Sour",2,250,-500.000000,-450.000000,-400.000000,-400.000000,0.000000,"Check" \n "Spawn" \n "Source"};
-item8[] = {"Sources_Left",4,218,-350.000000,-450.000000,-250.000000,-400.000000,20.000000,"Sources" \n "Left"};
-item9[] = {"All_Sources_Chec",4,218,-500.000000,-350.000000,-400.000000,-300.000000,10.000000,"All" \n "Sources" \n "Checked"};
-item10[] = {"",7,210,-1004.000000,71.000000,-996.000000,79.000000,0.000000,""};
-item11[] = {"",7,210,-1004.000000,-829.000000,-996.000000,-821.000000,0.000000,""};
-item12[] = {"Paused",4,218,-550.000000,-975.000000,-450.000000,-925.000000,90.000000,"Paused"};
-item13[] = {"Spawn_Group",2,250,-875.000000,-650.000000,-775.000000,-600.000000,0.000000,"Spawn" \n "Group"};
-item14[] = {"Done",4,218,-875.000000,-450.000000,-775.000000,-400.000000,10.000000,"Done"};
-item15[] = {"Init_Spawned_Gro",2,250,-500.000000,-650.000000,-400.000000,-600.000000,0.000000,"Init" \n "Spawned" \n "Groups"};
-item16[] = {"All_Groups_Initi",4,218,-500.000000,-550.000000,-400.000000,-500.000000,10.000000,"All" \n "Groups" \n "Initialized"};
-item17[] = {"Groups_Left",4,218,-350.000000,-650.000000,-250.000000,-600.000000,20.000000,"Groups" \n "Left"};
-item18[] = {"Pop_Spawn_Queue",4,218,-875.000000,-750.000000,-775.000000,-700.000000,10.000000,"Pop" \n "Spawn" \n "Queue"};
-item19[] = {"",7,210,-1004.000000,-429.000031,-996.000000,-421.000000,0.000000,""};
-item20[] = {"",7,210,-1004.000000,-429.000031,-996.000000,-421.000000,0.000000,""};
-item21[] = {"Populate_Despawn",2,250,-500.000000,-250.000000,-400.000000,-200.000000,0.000000,"Populate" \n "Despawn" \n "Queue"};
-item22[] = {"Queue_Updated",4,218,-500.000000,-150.000000,-400.000000,-100.000000,10.000000,"Queue" \n "Updated"};
-item23[] = {"Spawn_Sources_Em",4,218,-725.000000,-750.000000,-625.000000,-700.000000,20.000000,"Spawn" \n "Sources" \n "Empty"};
-item24[] = {"Despawn_Group",2,250,-725.000000,-650.000000,-625.000000,-600.000000,0.000000,"Despawn" \n "Group"};
-item25[] = {"Group_Despawned",4,218,-725.000000,-550.000000,-625.000000,-500.000000,10.000000,"Group" \n "Despawned"};
-item26[] = {"Populate_Spawn_S",2,250,-725.000000,-450.000000,-625.000000,-400.000000,0.000000,"Populate" \n "Spawn" \n "Sources"};
-item27[] = {"____FAKE____",9,0,0.000000,0.000000,0.000000,0.000000,0.000000,"____FAKE____"};
+item3[] = {"EXIT",4,218,-475.000000,-850.000000,-375.000000,-800.000000,99.000000,"EXIT"};
+item4[] = {"END",1,250,-325.000000,-850.000000,-225.000000,-800.000000,0.000000,"END"};
+item5[] = {"Spawn_Sources_To",4,218,-625.000000,-750.000000,-525.000000,-700.000000,20.000000,"Spawn" \n "Sources" \n "To Check"};
+item6[] = {"",7,210,-579.000000,-29.000000,-571.000000,-21.000000,0.000000,""};
+item7[] = {"Check_Spawn_Sour",2,250,-625.000000,-450.000000,-525.000000,-400.000000,0.000000,"Check" \n "Spawn" \n "Source"};
+item8[] = {"Sources_Left",4,218,-475.000000,-450.000000,-375.000000,-400.000000,20.000000,"Sources" \n "Left"};
+item9[] = {"All_Sources_Chec",4,218,-625.000000,-350.000000,-525.000000,-300.000000,10.000000,"All" \n "Sources" \n "Checked"};
+item10[] = {"",7,210,-1079.000000,-29.000000,-1071.000000,-21.000000,0.000000,""};
+item11[] = {"",7,210,-1079.000000,-829.000000,-1071.000000,-821.000000,0.000000,""};
+item12[] = {"Paused",4,218,-475.000000,-975.000000,-375.000000,-925.000000,90.000000,"Paused"};
+item13[] = {"",7,210,-779.000000,-29.000000,-771.000000,-21.000000,0.000000,""};
+item14[] = {"Done",4,218,-825.000000,-350.000000,-725.000000,-300.000000,10.000000,"Done"};
+item15[] = {"Init_Spawned_Gro",2,250,-625.000000,-650.000000,-525.000000,-600.000000,0.000000,"Init" \n "Spawned" \n "Groups"};
+item16[] = {"All_Groups_Initi",4,218,-625.000000,-550.000000,-525.000000,-500.000000,10.000000,"All" \n "Groups" \n "Initialized"};
+item17[] = {"Groups_Left",4,218,-475.000000,-650.000000,-375.000000,-600.000000,20.000000,"Groups" \n "Left"};
+item18[] = {"Groups_Left_to_D",4,218,-975.000000,-550.000000,-875.000000,-500.000000,20.000000,"Groups" \n "Left to" \n "Despawn"};
+item19[] = {"Populate_Despawn",2,250,-625.000000,-250.000000,-525.000000,-200.000000,0.000000,"Populate" \n "Despawn" \n "Queue"};
+item20[] = {"Queue_Updated",4,4314,-625.000000,-150.000000,-525.000000,-100.000000,10.000000,"Queue" \n "Updated"};
+item21[] = {"Spawn_Sources_Em",4,218,-825.000000,-750.000000,-725.000000,-700.000000,30.000000,"Spawn" \n "Sources" \n "Empty"};
+item22[] = {"Despawn_Group",2,250,-825.000000,-650.000000,-725.000000,-600.000000,0.000000,"Despawn" \n "Group"};
+item23[] = {"All_Groups_Despa",4,218,-825.000000,-550.000000,-725.000000,-500.000000,10.000000,"All" \n "Groups" \n "Despawned"};
+item24[] = {"Populate_Spawn_S",2,250,-825.000000,-450.000000,-725.000000,-400.000000,0.000000,"Populate" \n "Spawn" \n "Sources"};
+item25[] = {"Spawn_Group",2,250,-1125.000000,-650.000000,-1025.000000,-600.000000,0.000000,"Spawn" \n "Group"};
+item26[] = {"Done",4,218,-1125.000000,-750.000000,-1025.000000,-700.000000,10.000000,"Done"};
+item27[] = {"",7,210,-1079.000000,-529.000000,-1071.000000,-521.000000,0.000000,""};
 link0[] = {0,1};
 link1[] = {1,2};
 link2[] = {2,3};
 link3[] = {2,5};
 link4[] = {2,12};
-link5[] = {2,18};
-link6[] = {2,23};
-link7[] = {3,4};
-link8[] = {5,15};
-link9[] = {6,10};
-link10[] = {7,8};
-link11[] = {7,9};
-link12[] = {8,7};
-link13[] = {9,21};
-link14[] = {10,20};
-link15[] = {11,2};
-link16[] = {12,2};
-link17[] = {13,14};
-link18[] = {14,19};
-link19[] = {15,16};
-link20[] = {15,17};
-link21[] = {16,7};
-link22[] = {17,15};
-link23[] = {18,13};
-link24[] = {20,11};
+link5[] = {2,21};
+link6[] = {3,4};
+link7[] = {5,15};
+link8[] = {6,13};
+link9[] = {7,8};
+link10[] = {7,9};
+link11[] = {8,7};
+link12[] = {9,19};
+link13[] = {10,27};
+link14[] = {11,2};
+link15[] = {12,2};
+link16[] = {13,10};
+link17[] = {14,13};
+link18[] = {15,16};
+link19[] = {15,17};
+link20[] = {16,7};
+link21[] = {17,15};
+link22[] = {18,27};
+link23[] = {19,20};
+link24[] = {20,6};
 link25[] = {21,22};
-link26[] = {22,6};
-link27[] = {23,24};
-link28[] = {24,25};
-link29[] = {25,26};
-link30[] = {26,14};
-link31[] = {14,27};
-globals[] = {0.000000,0,0,0,0,640,480,1,121,6316128,1,-964.203430,-410.587585,-382.637573,-1074.862427,675,844,1};
-window[] = {2,-1,-1,-1,-1,1220,128,2060,128,3,697};
+link26[] = {22,18};
+link27[] = {22,23};
+link28[] = {23,24};
+link29[] = {24,14};
+link30[] = {25,26};
+link31[] = {26,11};
+link32[] = {27,25};
+globals[] = {0.000000,0,0,0,0,640,480,1,126,6316128,1,-967.208984,-237.961761,119.463623,-792.357300,675,844,1};
+window[] = {2,-1,-1,-32000,-32000,1124,32,1964,32,3,697};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -78,12 +79,17 @@ class FSM
                          "" \n
                          "private _spacialGridHouses = _logic getvariable ""spacialGridHouses"";" \n
                          "private _groups = _logic getvariable ""groups"";" \n
+                         "" \n
+                         "private _hosts = [];" \n
+                         "" \n
                          "private _spawnSources = [];" \n
                          "private _houseSpawnQueue = [];" \n
                          "private _groupDespawnQueue = [];" \n
+                         "private _activeHousesInRange = [];" \n
                          "" \n
                          "private _DEFAULT_FACTIONS = [""OPF_F""];" \n
-                         "private _timeLastSpawnLoop = -723;" \n
+                         "private _lastGroupSpawnTime = -723;" \n
+                         "private _lastSpawnQueueUpdateTime = -723;" \n
                          "" \n
                          "private _exitFSM = false;" \n
                          ""/*%FSM</STATEINIT""">*/;
@@ -119,6 +125,7 @@ class FSM
                          "private _spawnJet = _logic getVariable [""spawnDistanceJet"", 0];" \n
                          "private _locality = _logic getVariable [""locality"", ""server""];" \n
                          "private _useDominantFaction = _logic getvariable [""CQB_UseDominantFaction"",false];" \n
+                         "private _moduleFactions = _logic getvariable [""factions"",_DEFAULT_FACTIONS];" \n
                          "" \n
                          "_spawn = _spawn max _spawnStatic;" \n
                          "" \n
@@ -164,24 +171,11 @@ class FSM
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
-                                /*%FSM<LINK "Spawn_Sources_To">*/
-                                class Spawn_Sources_To
-                                {
-                                        itemno = 5;
-                                        priority = 30.000000;
-                                        to="Init_Spawned_Gro";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"!(_spawnSources isequalto [])"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"private _groupsToCheck = +_groups;" \n
-                                         "" \n
-                                         "systemchat ""yeah they no nil lol"";"/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "Spawn_Sources_Em">*/
                                 class Spawn_Sources_Em
                                 {
-                                        itemno = 23;
-                                        priority = 20.000000;
+                                        itemno = 21;
+                                        priority = 30.000000;
                                         to="Despawn_Group";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"_spawnSources isequalto []" \n
@@ -189,16 +183,18 @@ class FSM
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
-                                /*%FSM<LINK "Pop_Spawn_Queue">*/
-                                class Pop_Spawn_Queue
+                                /*%FSM<LINK "Spawn_Sources_To">*/
+                                class Spawn_Sources_To
                                 {
-                                        itemno = 18;
-                                        priority = 10.000000;
-                                        to="Spawn_Group";
+                                        itemno = 5;
+                                        priority = 20.000000;
+                                        to="Init_Spawned_Gro";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"!(_houseSpawnQueue isequalto []) && { time - _lastGroupSpawnTime > ALiVE_smoothSpawn }" \n
-                                         ""/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(_spawnSources isequalto []) && { time - _lastSpawnQueueUpdateTime > 1.5 }"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"private _groupsToCheck = +_groups;" \n
+                                         "_houseSpawnQueue = [];" \n
+                                         "_activeHousesInRange = [];" \n
+                                         ""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };
@@ -236,7 +232,6 @@ class FSM
                          "    private _group = _x getVariable ""group"";" \n
                          "" \n
                          "    if (isnil ""_group"") then {" \n
-                         "        _x setvariable [""group"",""preinit"",true];" \n
                          "        _houseSpawnQueue pushbackunique _x;" \n
                          "    } else {" \n
                          "        _activeHousesInRange pushbackunique _x;" \n
@@ -276,49 +271,6 @@ class FSM
                                          "if (_hosts isequalto []) then {" \n
                                          "    _housesToSpawnAt = [];" \n
                                          "};"/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                        };
-                };
-                /*%FSM</STATE>*/
-                /*%FSM<STATE "Spawn_Group">*/
-                class Spawn_Group
-                {
-                        name = "Spawn_Group";
-                        itemno = 13;
-                        init = /*%FSM<STATEINIT""">*/"// failsafe for no houses" \n
-                         "if (_houseSpawnQueue isequalto []) exitwith {};" \n
-                         "" \n
-                         "private _house = _houseSpawnQueue deleteat 0;" \n
-                         "systemchat format [""spawn %1 at %2"", time, getposatl _house];" \n
-                         "private ""_faction"";" \n
-                         "if (_useDominantFaction) then {" \n
-                         "    _faction = [getposATL _house, 250,true] call ALiVE_fnc_getDominantFaction;" \n
-                         "" \n
-                         "    if (isnil ""_faction"") then {" \n
-                         "        _faction = selectRandom (_logic getvariable [""factions"",_DEFAULT_FACTIONS]);" \n
-                         "    };" \n
-                         "} else {" \n
-                         "    _faction = selectRandom (_logic getvariable [""factions"",_DEFAULT_FACTIONS]);" \n
-                         "};" \n
-                         "" \n
-                         "private _host = (selectRandom _hosts);" \n
-                         "[_logic,""spawnGroup"", [_house,_faction]] remoteExec [""ALiVE_fnc_CQB"", _host];" \n
-                         "" \n
-                         "_lastGroupSpawnTime = time;"/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                                /*%FSM<LINK "Done">*/
-                                class Done
-                                {
-                                        itemno = 14;
-                                        priority = 10.000000;
-                                        to="____FAKE____";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"true" \n
-                                         ""/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };
@@ -384,7 +336,8 @@ class FSM
                          "    [""CQB ERROR: No Group was defined! Cleaning up...""] call ALiVE_fnc_Dump;" \n
                          "" \n
                          "    _logic setvariable [""groups"", (_logic getVariable [""groups"",[]]) - [grpNull]];" \n
-                         "};"/*%FSM</STATEINIT""">*/;
+                         "};" \n
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -395,7 +348,7 @@ class FSM
                                         priority = 20.000000;
                                         to="Init_Spawned_Gro";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"!(_groups isequalto [])" \n
+                                        condition=/*%FSM<CONDITION""">*/"!(_groupsToCheck isequalto [])" \n
                                          ""/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
@@ -407,7 +360,7 @@ class FSM
                                         priority = 10.000000;
                                         to="Check_Spawn_Sour";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_groups isequalto []" \n
+                                        condition=/*%FSM<CONDITION""">*/"_groupsToCheck isequalto []" \n
                                          ""/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
@@ -419,7 +372,7 @@ class FSM
                 class Populate_Despawn
                 {
                         name = "Populate_Despawn";
-                        itemno = 21;
+                        itemno = 19;
                         init = /*%FSM<STATEINIT""">*/"{" \n
                          "    private _leader = leader _x;" \n
                          "" \n
@@ -430,28 +383,32 @@ class FSM
                          "            _groupDespawnQueue pushback _x;" \n
                          "        };" \n
                          "    };" \n
-                         "} foreach _groups;"/*%FSM</STATEINIT""">*/;
+                         "} foreach _groups;" \n
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
                                 /*%FSM<LINK "Queue_Updated">*/
                                 class Queue_Updated
                                 {
-                                        itemno = 22;
+                                        itemno = 20;
                                         priority = 10.000000;
-                                        to="Wait_For_Active";
+                                        to="Spawn_Group";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_spawnSources isequalto []" \n
+                                        condition=/*%FSM<CONDITION""">*/"true" \n
                                          ""/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"private _hosts = switch (_locality) do {" \n
+                                        action=/*%FSM<ACTION""">*/"_hosts = switch (_locality) do {" \n
                                          "    default {" \n
                                          "        [2]; // server only" \n
                                          "    };" \n
                                          "};" \n
                                          "" \n
                                          "if (_hosts isequalto []) then {" \n
-                                         "    _housesToSpawnAt = [];" \n
-                                         "};"/*%FSM</ACTION""">*/;
+                                         "    _houseSpawnQueue resize 0;" \n
+                                         "};" \n
+                                         "" \n
+                                         "_lastSpawnQueueUpdateTime = time;" \n
+                                         ""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };
@@ -461,7 +418,7 @@ class FSM
                 class Despawn_Group
                 {
                         name = "Despawn_Group";
-                        itemno = 24;
+                        itemno = 22;
                         init = /*%FSM<STATEINIT""">*/"// failsafe for no groups" \n
                          "if (_groupDespawnQueue isequalto []) exitwith {};" \n
                          "" \n
@@ -472,14 +429,26 @@ class FSM
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
-                                /*%FSM<LINK "Group_Despawned">*/
-                                class Group_Despawned
+                                /*%FSM<LINK "Groups_Left_to_D">*/
+                                class Groups_Left_to_D
                                 {
-                                        itemno = 25;
+                                        itemno = 18;
+                                        priority = 20.000000;
+                                        to="Spawn_Group";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(_groupDespawnQueue isequalto [])" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "All_Groups_Despa">*/
+                                class All_Groups_Despa
+                                {
+                                        itemno = 23;
                                         priority = 10.000000;
                                         to="Populate_Spawn_S";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"true" \n
+                                        condition=/*%FSM<CONDITION""">*/"_groupDespawnQueue isequalto []" \n
                                          ""/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
@@ -491,7 +460,7 @@ class FSM
                 class Populate_Spawn_S
                 {
                         name = "Populate_Spawn_S";
-                        itemno = 26;
+                        itemno = 24;
                         init = /*%FSM<STATEINIT""">*/"private _spawnSourcesUnfiltered = allPlayers + (allUnitsUAV select {isUavConnected _x}) + allCurators + ALiVE_SpawnSources;" \n
                          "" \n
                          "// avoid unnecessary work" \n
@@ -504,8 +473,7 @@ class FSM
                          "" \n
                          "    _spawnSourcesUnfiltered = _spawnSourcesUnfiltered select {_x distance _spawnSource > 30};" \n
                          "};" \n
-                         "" \n
-                         "systemchat ""populated spawn sources"";"/*%FSM</STATEINIT""">*/;
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -514,7 +482,7 @@ class FSM
                                 {
                                         itemno = 14;
                                         priority = 10.000000;
-                                        to="____FAKE____";
+                                        to="Spawn_Group";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"true" \n
                                          ""/*%FSM</CONDITION""">*/;
@@ -524,15 +492,46 @@ class FSM
                         };
                 };
                 /*%FSM</STATE>*/
-                /*%FSM<STATE "____FAKE____">*/
-                class ____FAKE____
+                /*%FSM<STATE "Spawn_Group">*/
+                class Spawn_Group
                 {
-                        name = "____FAKE____";
-                        itemno = 27;
-                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        name = "Spawn_Group";
+                        itemno = 25;
+                        init = /*%FSM<STATEINIT""">*/"// failsafe for no houses" \n
+                         "if (_houseSpawnQueue isequalto [] || { time - _lastGroupSpawnTime < ALiVE_smoothSpawn }) exitwith {};" \n
+                         "" \n
+                         "private _house = _houseSpawnQueue deleteat 0;" \n
+                         "" \n
+                         "private ""_faction"";" \n
+                         "if (_useDominantFaction) then {" \n
+                         "    _faction = [getposATL _house, 250,true] call ALiVE_fnc_getDominantFaction;" \n
+                         "" \n
+                         "    if (isnil ""_faction"") then {" \n
+                         "        _faction = selectRandom _moduleFactions;" \n
+                         "    };" \n
+                         "} else {" \n
+                         "    _faction = selectRandom _moduleFactions;" \n
+                         "};" \n
+                         "" \n
+                         "private _host = (selectRandom _hosts);" \n
+                         "[_logic,""spawnGroup"", [_house,_faction]] remoteExec [""ALiVE_fnc_CQB"", _host];" \n
+                         "" \n
+                         "_lastGroupSpawnTime = time;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+                                /*%FSM<LINK "Done">*/
+                                class Done
+                                {
+                                        itemno = 26;
+                                        priority = 10.000000;
+                                        to="Wait_For_Active";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                         };
                 };
                 /*%FSM</STATE>*/
