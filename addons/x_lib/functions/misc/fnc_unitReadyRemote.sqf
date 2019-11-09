@@ -24,9 +24,7 @@ Author:
 Highhead
 ---------------------------------------------------------------------------- */
 
-private ["_input","_radius"];
-
-_input = _this;
+private _input = _this;
 
 private _currentPos = getposATL _input;
 private _destination = _input getvariable [QGVAR(MOVEDESTINATION),_currentPos];
@@ -46,7 +44,7 @@ if (isnil "_lastCheck") then {
     };
 };
 
-_radius = 10;
+private _radius = 10;
 if (_input isKindOf "Man") then {_radius = 2} else {
     if (_input isKindOf "LandVehicle") then {_radius = 20} else {
         if (_input isKindOf "Air") then {_radius = 100};

@@ -23,12 +23,14 @@ Author:
 Highhead
 ---------------------------------------------------------------------------- */
 
-private ["_group"];
-
-_group = _this;
+private _group = _this;
 
 if (local _group) then {
     deleteGroup _group;
 } else {
-    _group remoteExec ["deleteGroup",0];
+    if (isserver) then {
+        _group remoteExecCall ["deleteGroup", groupOwner _group];
+    } else {
+        _group remoteExecCall ["ALiVE_fnc_DeleteGroupRemote", 2]; // groupOwner only works on server
+    };
 };
