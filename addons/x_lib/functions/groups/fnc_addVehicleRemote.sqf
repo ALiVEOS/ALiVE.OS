@@ -37,5 +37,5 @@ if (local (leader _group)) exitwith {
 if !(isServer) then {
     _this remoteExecCall ["ALiVE_fnc_addVehicleRemote",2];
 } else {
-    _this remoteExecCall ["ALiVE_fnc_addVehicleRemote",0];
+    _this remoteExecCall ["ALiVE_fnc_addVehicleRemote", leader _group];
 };
