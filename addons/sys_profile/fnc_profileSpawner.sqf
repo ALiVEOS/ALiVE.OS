@@ -51,9 +51,7 @@ if (_spawnSources isEqualTo []) then {
     // despawn all profiles outside of range
 
     if !(_profilesToDespawnQueue isEqualTo []) then {
-        private _profileID = _profilesToDespawnQueue select 0;
-        _profilesToDespawnQueue deleteat 0;
-
+        private _profileID = _profilesToDespawnQueue deleteat 0;
         private _profile = [MOD(profileHandler),"getProfile", _profileID] call ALiVE_fnc_profileHandler;
 
         if (!isnil "_profile") then {
@@ -91,8 +89,7 @@ if (_spawnSources isEqualTo []) then {
 
     // find entities to spawn
 
-    _spawnSource = _spawnSources select 0;
-    _spawnSources deleteat 0;
+    _spawnSource = _spawnSources deleteat 0;
 
     private _center = getpos _spawnSource;
     private _radius = ALIVE_spawnRadius;
