@@ -31,13 +31,39 @@ private _args = _this select 2;
 
 private _result = nil;
 
+private _pos2cord = {
+    private _logic = _this select 0;
+    private _argX = _this select 1;
+    private _argY = _this select 2;
+
+    private _gridOrigin = _logic select 2 select 0;
+    private _sectorSize = _logic select 2 select 1;
+    private _maxSector = _logic select 2 select 4;
+
+    private _originX = _gridOrigin select 0;
+    private _originY = _gridOrigin select 1;
+
+    if (
+        _argX >= _originX &&
+        {_argY >= _originY} &&
+        {_argX < (_originX + (_sectorSize * (_maxSector select 0)))} &&
+        {_argY < (_originY + (_sectorSize * (_maxSector select 1)))}
+    ) then {
+        // offset position to accomodate negative values
+        _argX = _argX + (abs _originX);
+        _argY = _argY + (abs _originY);
+
+        [floor (_argX / _sectorSize), floor (_argY / _sectorSize)];
+    } else {
+        [-1,-1];
+    };
+};
+
 switch (_operation) do {
 
     case "create": {
 
-        private _origin = _args select 0;
-        private _gridSize = _args select 1;
-        private _sectorSize = _args select 2;
+        _args params ["_origin","_gridSize","_sectorSize"];
 
         private _gridSectorLength = ceil (_gridSize / _sectorSize);
 
@@ -72,13 +98,15 @@ switch (_operation) do {
 
     case "posToCoords": {
 
-        _args params ["_argX","_argY"];
+        private _argX = _args select 0;
+        private _argY = _args select 1;
 
         private _gridOrigin = _logic select 2 select 0;
         private _sectorSize = _logic select 2 select 1;
         private _maxSector = _logic select 2 select 4;
 
-        _gridOrigin params ["_originX","_originY"];
+        private _originX = _gridOrigin select 0;
+        private _originY = _gridOrigin select 1;
 
         if (
             _argX >= _originX &&
@@ -168,9 +196,10 @@ switch (_operation) do {
         private _center = _args select 0;
         private _radius = _args select 1;
         private _filter2D = _args param [2, false];
+        private _returnItem = _args param [3, false];
 
-        private _minCoords = [_logic,"posToCoords", [(_center select 0) - _radius, (_center select 1) - _radius]] call MAINCLASS;
-        private _maxCoords = [_logic,"posToCoords", [(_center select 0) + _radius, (_center select 1) + _radius]] call MAINCLASS;
+        private _minCoords = [_logic, (_center select 0) - _radius, (_center select 1) - _radius] call _pos2cord;
+        private _maxCoords = [_logic, (_center select 0) + _radius, (_center select 1) + _radius] call _pos2cord;
 
         private _maxSector = _logic select 2 select 4;
         private _sectors = _logic select 2 select 5;
@@ -192,6 +221,10 @@ switch (_operation) do {
             _result = _result select {((_x select 0) distance _center) <= _radius};
         } else {
             _result = _result select {((_x select 0) distance2D _center) <= _radius};
+        };
+
+        if (_returnItem) then {
+            _result = _result apply {_x select 1};
         };
 
     };
