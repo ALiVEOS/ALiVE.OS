@@ -22,12 +22,11 @@ Examples:
 Author:
 Highhead
 ---------------------------------------------------------------------------- */
-params [
-    "_pos",
-    ["_radius",500],
-    ["_noCiv",false],
-    ["_includePlayers", false]
-];
+private ["_pos","_radius","_fac","_facs","_profiles","_result","_noCiv"];
+
+PARAMS_1(_pos);
+DEFAULT_PARAM(1,_radius,500);
+DEFAULT_PARAM(2,_noCiv,false);
 
 //Virtual Profiles activated?
 if !(isnil "ALIVE_profileHandler") then {
@@ -36,61 +35,35 @@ if !(isnil "ALIVE_profileHandler") then {
     _profiles = [[],[],[]];
 };
 
-private _facs = [];
-
-// count near inactive profiles
-
-private _nearEntities = [_pos,_radius,["all","entity"]] call ALiVE_fnc_getNearProfiles;
+_facs = [];
 {
-    private _active = _x select 2 select 1;
-    private _isPlayer = _x select 2 select 30;
-
-    if (!_active && { !_includePlayers && !_isPlayer }) then {
-        private _faction = _x select 2 select 29;
-        _facs pushback _factions;
+    if (((_x select 2 select 5) == "entity") && {!(_x select 2 select 1)} && {!(_x select 2 select 30)} && {(_x select 2 select 2) distance _pos < _radius}) then {
+        _facs pushback (_x select 2 select 29);
     };
-} foreach _nearEntities;
-
-// count near spawned units
+} foreach (_profiles select 2);
 
 {
-    private _leader = leader _x;
-    private _groupPos = getposatl _leader;
-
-    if (
-        _groupPos distance _pos < _radius &&
-        { !_includePlayers && { ({!isPlayer _x} count (units _x)) < 1 } }
-    ) then {
-        private _faction = faction _leader;
-        if (!_noCiv) then {
-            _facs pushback _faction;
-        } else {
-            if !((_faction call ALiVE_fnc_factionSide) != CIVILIAN) then {
-                _facs pushback _faction;
-            };
-        };
+    if ((_pos distance (getposATL (leader _x)) < _radius) && {{isPlayer _x} count (units _x) < 1}) then {
+        _facs pushback (faction(leader _x));
     };
 } foreach allgroups;
 
-// condense factions
-
-private _result = [];
+_result = [];
 {
-    if (_facs isequalto[]) exitwith {};
+    private ["_fac","_cnt"];
+    if (count _facs == 0) exitwith {};
 
-    private _fac = _x;
-    private _count = {_fac == _x} count _facs;
+    _fac = _x;
+    _cnt = {_fac == _x} count _facs;
 
-    _result pushback [_fac,_count];
-    _facs = _facs - [_fac];
+    if (_cnt > 0) then {
+        _result pushback [_fac,_cnt];
+        _facs = _facs - [_fac];
+    };
 } foreach _facs;
 
-// determine which faction occurred the most
+_result = [_result,[],{_x select 1},"DESCEND",{if (_noCiv) then {!(((_x select 0) call ALiVE_fnc_factionSide) == CIVILIAN)} else {true}}] call ALiVE_fnc_SortBy;
 
-_result sort true;
-
-if !(_result isequalto []) then {
-    (_result select 0) select 0
-} else {
-    nil
-};
+if ((count _result > 0) && {(_result select 0 select 1) > 0}) then {
+    (_result select 0) select 0;
+} else {nil};
