@@ -31,7 +31,10 @@ switch (_support) do
         };
 
         private _grp = createGroup _side;
-        [_veh, _grp] call BIS_fnc_spawnCrew;
+        createVehicleCrew _veh;
+        _crew = crew _veh;
+        _crew joinSilent _grp;
+        _grp addVehicle _veh;
 
         // Exclude CS from VCOM
         // CS only runs serverside so no PV is needed
@@ -144,7 +147,10 @@ switch (_support) do
         if (getNumber(configFile >> "CfgVehicles" >> _type >> "isUav") == 1) then {
             createVehicleCrew _veh;
         } else {
-            [_veh, _grp] call BIS_fnc_spawnCrew;
+            createVehicleCrew _veh;
+            _crew = crew _veh;
+            _crew joinSilent _grp;
+            _grp addVehicle _veh;
         };
 
         // Exclude CS from VCOM
@@ -248,7 +254,10 @@ switch (_support) do
             _veh lock true;
             _vehDir = _vehDir + 90;
 
-            [_veh, _grp] call BIS_fnc_spawnCrew;
+            createVehicleCrew _veh;
+            _crew = crew _veh;
+            _crew joinSilent _grp;
+            _grp addVehicle _veh;
 
             // set ownership flag for other modules
             _veh setVariable ["ALIVE_CombatSupport", true];

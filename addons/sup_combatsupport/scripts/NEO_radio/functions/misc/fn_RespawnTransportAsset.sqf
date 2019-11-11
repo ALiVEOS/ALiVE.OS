@@ -82,7 +82,10 @@ if (count _veh == 0) then {
         _veh setPosATL _pos
     };
 
-    [_veh, _grp] call BIS_fnc_spawnCrew;
+    createVehicleCrew _veh;
+    _crew = crew _veh;
+    _crew joinSilent _grp;
+    _grp addVehicle _veh;
 
     _veh lockDriver true;
     _veh setVariable ["ALIVE_CombatSupport", true];

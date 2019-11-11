@@ -86,7 +86,10 @@ if (_side == WEST && _type == "BUS_MotInf_MortTeam") then {
         _veh = createVehicle [_type, _vehPos, [], 0, "CAN_COLLIDE"];
         _veh setDir _vehDir;
         _veh setPosATL _vehPos;
-        [_veh, _grp] call BIS_fnc_spawnCrew;
+        createVehicleCrew _veh;
+        _crew = crew _veh;
+        _crew joinSilent _grp;
+        _grp addVehicle _veh;
         _veh lock true;
         _vehDir = _vehDir + 90;
 
