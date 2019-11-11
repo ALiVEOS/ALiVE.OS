@@ -358,7 +358,7 @@ switch(_operation) do {
                                 default {_side = EAST};
                             };
 
-                            private ["_veh","_grp"];
+                            private ["_veh","_grp","_crew"];
 
                             _veh = nearestObjects [_pos, [_type], 5];
 
@@ -496,7 +496,7 @@ switch(_operation) do {
                                 default {_side = EAST};
                             };
 
-                            private ["_veh","_grp"];
+                            private ["_veh","_grp","_crew"];
 
                             _veh = nearestObjects [_pos, [_type], 5];
 
@@ -621,7 +621,7 @@ switch(_operation) do {
                             _artyBatteries = [];
                             _vehDir = 0;
 
-                            private ["_veh","_grp"];
+                            private ["_veh","_grp","_crew"];
 
                             _veh = nearestObjects [_pos, [_class], 5];
 
