@@ -358,7 +358,7 @@ switch(_operation) do {
                                 default {_side = EAST};
                             };
 
-                            private ["_veh","_grp"];
+                            private ["_veh","_grp","_crew"];
 
                             _veh = nearestObjects [_pos, [_type], 5];
 
@@ -370,7 +370,11 @@ switch(_operation) do {
 
                                 If(_height > 0) then {_veh setposasl [getposASL _veh select 0, getposASL _veh select 1, _height]; _veh setVelocity [0,0,-1]} else {_veh setPosATL _pos};
 
-                                [_veh, _grp] call BIS_fnc_spawnCrew;
+                                createVehicleCrew _veh;
+                                _crew = crew _veh;
+                                _crew joinSilent _grp;
+                                _grp addVehicle _veh;
+                                
                              } else {
                                 _veh = _veh select 0;
                                 _grp = group (driver _veh);
@@ -492,7 +496,7 @@ switch(_operation) do {
                                 default {_side = EAST};
                             };
 
-                            private ["_veh","_grp"];
+                            private ["_veh","_grp","_crew"];
 
                             _veh = nearestObjects [_pos, [_type], 5];
 
@@ -507,7 +511,10 @@ switch(_operation) do {
                                 if (getNumber(configFile >> "CfgVehicles" >> _type >> "isUav") == 1) then {
                                     createVehicleCrew _veh;
                                 } else {
-                                    [_veh, _grp] call BIS_fnc_spawnCrew;
+                                    createVehicleCrew _veh;
+                                    _crew = crew _veh;
+                                    _crew joinSilent _grp;
+                                    _grp addVehicle _veh;
                                 };
                              } else {
                                 _veh = _veh select 0;
@@ -614,7 +621,7 @@ switch(_operation) do {
                             _artyBatteries = [];
                             _vehDir = 0;
 
-                            private ["_veh","_grp"];
+                            private ["_veh","_grp","_crew"];
 
                             _veh = nearestObjects [_pos, [_class], 5];
 
@@ -639,7 +646,10 @@ switch(_operation) do {
                                     _veh lock true;
                                     _vehDir = _vehDir + 90;
 
-                                    [_veh, _grp] call BIS_fnc_spawnCrew;
+                                    createVehicleCrew _veh;
+                                    _crew = crew _veh;
+                                    _crew joinSilent _grp;
+                                    _grp addVehicle _veh;
 
                                     // set ownership flag for other modules
                                     _veh setVariable ["ALIVE_CombatSupport", true];

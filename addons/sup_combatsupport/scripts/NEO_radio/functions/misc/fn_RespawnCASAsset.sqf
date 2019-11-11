@@ -82,7 +82,10 @@ if (count _veh == 0) then {
     if (getNumber(configFile >> "CfgVehicles" >> _type >> "isUav") == 1) then {
         createVehicleCrew _veh;
     } else {
-        [_veh, _grp] call BIS_fnc_spawnCrew;
+        createVehicleCrew _veh;
+        _crew = crew _veh;
+        _crew joinSilent _grp;
+        _grp addVehicle _veh;
     };
 
     _veh lockDriver true;
