@@ -1555,7 +1555,8 @@ switch(_operation) do {
 
             if (isClass _groupCategory) then {
 
-                _groupCategoryDisplayName = getText (_groupCategory >> "name");
+                //_groupCategoryDisplayName = getText (_groupCategory >> "name");
+                _groupCategoryDisplayName = configname _groupCategory;
                 _groupCategoryConfigName = configName _groupCategory;
 
                 if (_groupCategoryConfigName == "Motorized_MTP") then {
