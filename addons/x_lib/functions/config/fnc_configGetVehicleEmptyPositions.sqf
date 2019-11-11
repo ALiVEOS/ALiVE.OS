@@ -41,22 +41,24 @@ _playerTurretEmptyCount = 0;
 
 _findRecurse = {
     {
-        if (getNumber (_x >> "showAsCargo") == 0) then {
-            if(getNumber(_x >> "primaryGunner") == 1) then {
-                _positions set [1, 1];
-            } else {
-                if(getNumber(_x >> "primaryObserver") == 1) then {
-                    _positions set [2, 1];
+        if (getNumber (_x >> "dontCreateAi") != 1) then {
+            if (getNumber (_x >> "showAsCargo") == 0) then {
+                if(getNumber(_x >> "primaryGunner") == 1) then {
+                    _positions set [1, 1];
                 } else {
-                    _turretEmptyCount = _turretEmptyCount + 1;
+                    if(getNumber(_x >> "primaryObserver") == 1) then {
+                        _positions set [2, 1];
+                    } else {
+                        _turretEmptyCount = _turretEmptyCount + 1;
+                    };
                 };
+            } else {
+                _playerTurretEmptyCount = _playerTurretEmptyCount + 1;
             };
-        } else {
-            _playerTurretEmptyCount = _playerTurretEmptyCount + 1;
-        };
 
-        if (isClass (_x >> "Turrets")) then {
-            _x call _findRecurse;
+            if (isClass (_x >> "Turrets")) then {
+                _x call _findRecurse;
+            };
         };
     } forEach ("true" configClasses (_this >> "Turrets")); // mimic BIS_fnc_crewCount (this skips over the inherited MainTurret which is good :))
 };
