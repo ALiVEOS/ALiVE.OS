@@ -103,15 +103,18 @@ private ["_m","_markers","_delay"];
     waitUntil {
         sleep .75;
         _i = _i - .025;
-        if (_i > 0) then {
-            {
-                _x setMarkerAlphaLocal _i;
-            } forEach _markers;
-        } else {
+        
+        if (_i <= 0) exitWith { 
             {
                 deleteMarkerLocal _x;
             } forEach _markers;
-            true;
+            true       
         };
+        
+        {
+            _x setMarkerAlphaLocal _i;
+        } forEach _markers;
+        
+        false
     };
 };
