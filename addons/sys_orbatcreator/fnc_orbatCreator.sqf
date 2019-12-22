@@ -4323,26 +4323,22 @@ switch(_operation) do {
         private _state = [_logic,"state"] call MAINCLASS;
         private _faction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
 
-        [_logic,_faction] spawn {
-            params ["_logic","_faction"];
+        private _importedUnits = [_logic,"importFactionUnitsFromConfig", _faction] call MAINCLASS;
 
-            private _importedUnits = [_logic,"importFactionUnitsFromConfig", _faction] call MAINCLASS;
+        private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
+        [_factionData,"assetsImportedConfig", true] call ALiVE_fnc_hashSet;
 
-            private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
-            [_factionData,"assetsImportedConfig", true] call ALiVE_fnc_hashSet;
+        // update lists
 
-            // update lists
+        private _unitListButton6 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_SIX );
+        _unitListButton6 ctrlShow false;
 
-            private _unitListButton6 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_SIX );
-            _unitListButton6 ctrlShow false;
+        private _unitList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
+        private _currData = OC_getSelData( OC_UNITEDITOR_CLASSLIST_LIST );
 
-            private _unitList = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_LIST );
-            private _currData = OC_getSelData( OC_UNITEDITOR_CLASSLIST_LIST );
+        [_logic,"unitEditorDisplayFactionUnits", _faction] call MAINCLASS;
 
-            [_logic,"unitEditorDisplayFactionUnits", _faction] call MAINCLASS;
-
-            [_unitList,[_currData],true] call ALiVE_fnc_listSelectData;
-        };
+        [_unitList,[_currData],true] call ALiVE_fnc_listSelectData;
 
     };
 
