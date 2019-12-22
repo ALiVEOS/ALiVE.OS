@@ -6222,7 +6222,6 @@ switch(_operation) do {
             case "Full": {
 
                 _result = [_logic,"exportFaction", _faction] call MAINCLASS;
-
                 _result = [_logic,"formatFullExportToComment", _result] call MAINCLASS;
 
                 systemchat "Config data copied to clipboard";
@@ -6495,8 +6494,6 @@ switch(_operation) do {
 
     case "exportCustomUnit": {
 
-        private ["_nextChar","_rangeEnd"];
-
         private _unit = _args;
         private _prefix = [_logic,"prefix"] call MAINCLASS;
         private _state = [_logic,"state"] call MAINCLASS;
@@ -6645,8 +6642,6 @@ switch(_operation) do {
 
     case "exportCustomUnitMan": {
 
-        private ["_item","_count"];
-
         private _unit = _args;
 
         private _state = [_logic,"state"] call MAINCLASS;
@@ -6709,6 +6704,7 @@ switch(_operation) do {
 
         // Add uniform to prevent any conflicting side uniform RPT spam
         private _uniform = (_unitLoadout select 3) select 0;
+        if (isnil "_uniform") then { _uniform = "" };
         _result = _result + _indent + _indent + "uniformClass = " + str _uniform + ";" + _newLine;
         _result = _result + _newLine;
 
