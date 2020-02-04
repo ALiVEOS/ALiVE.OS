@@ -1,47 +1,47 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(agentKilledEventHandler);
+#iNcLudE "\X\ALIVe\AddoNs\amb_cIV_pOpulATiON\SCRIpT_cOMPoNEnT.hPP"
+ScRipT(agenTkilLedeVeNThaNdLer);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_agentKilledEventHandler
+fUNCtioN: aLivE_FNc_aGEnTKILLEdEvENthAnDLer
 
-Description:
-Killed event handler for agent units
+desCriPtiOn:
+killEd EVent HANDler fOr aGENt uniTS
 
-Parameters:
+paraMeteRs:
 
-Returns:
+rETURNS:
 
-Examples:
-(begin example)
-_eventID = _agent addEventHandler["Killed", ALIVE_fnc_agentKilledEventHandler];
+ExAMPLEs:
+(Begin exaMple)
+_eveNTID = _ageNt AdDevEnTHaNDlEr["KIlLEd", ALivE_FNC_aGEnTKiLledEVenthAndlER];
 (end)
 
-See Also:
+sEe AlSO:
 
-Author:
-ARJay
+AUThor:
+arJAy
 ---------------------------------------------------------------------------- */
 
-params ["_unit","_killer"];
+PARams ["_uNIT","_kILleR"];
 
-private _agentID = _unit getVariable "agentID";
-private _agent = [ALIVE_agentHandler, "getAgent", _agentID] call ALIVE_fnc_agentHandler;
+PRIvAte _AGEnTID = _UniT GetVarIABLE "aGEnTID";
+privAtE _AgenT = [ALiVE_AGEntHandleR, "gETageNT", _agenTID] calL Alive_FNC_AGENthAndlER;
 
-[_unit,""] call ALIVE_fnc_switchMove;
+[_UNiT,""] caLL ALivE_fNC_swItchmOve;
 
-private _killerSide = str(side (group _killer));
+PRIVaTe _KIlleRSiDe = STR(sIDe (GROup _KilleR));
 
-if (isnil "_agent" || {!isServer}) exitwith {};
+IF (IsnIl "_AgENt" || {!isSERvEr}) eXiTWith {};
 
-[_agent, "handleDeath"] call ALIVE_fnc_civilianAgent;
+[_agEnT, "haNDleDEAtH"] cAll ALIVE_FNc_CIViLIAnAGEnT;
 
-[ALIVE_agentHandler, "unregisterAgent", _agent] call ALIVE_fnc_agentHandler;
+[AliVE_agENTHAnDLer, "uNRegiStEraGeNT", _agent] CALl aliVe_fnc_AgeNTHanDLEr;
 
-// log event
+// LOg EVeNt
 
-private _position = getPosASL _unit;
-private _faction = _agent select 2 select 7;
-private _side = _agent select 2 select 8;
+priVatE _pOSItIoN = GEtPOSaSl _UnIt;
+PrIvATE _FACtiON = _aGent seleCT 2 sElecT 7;
+PrIvAtE _SIDE = _AGEnt sElecT 2 select 8;
 
-private _event = ['AGENT_KILLED', [_position,_faction,_side,_killerSide],"Agent"] call ALIVE_fnc_event;
-private _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+priVATE _eVeNT = ['aGeNt_KiLLed', [_PosiTion,_fAcTIon,_sIde,_kIllERsIdE],"AgEnT"] CAlL ALIve_FNC_EvEnt;
+PrIVaTE _EveNtID = [AlIvE_EventlOG, "ADDevENT",_evEnT] CALl AlIve_FNc_evEnTlOG;

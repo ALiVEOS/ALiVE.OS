@@ -1,91 +1,91 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(addCustomBuildingSound);
+#incLUDE "\X\alIvE\addOns\aMb_CiV_PopulATIoN\SCRIPT_CoMpoNeNT.Hpp"
+ScRIpT(aDdcUsTOmbuilDInGsOUnD);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_addCustomBuildingSound
+FuNCTION: alIVe_FnC_ADDCustombUilDinGSOunD
 
-Description:
-Add ambient room msuic
+DescRiPtIOn:
+aDD aMbIENt roOM mSuic
 
-Parameters:
+pARAmEtErS:
 
-Object - building to add music to.
+ObJEct - buiLdiNg to ADD mUsIc To.
 
-Returns:
+rETUrns:
 
-Examples:
-(begin example)
-_light = [_buildingType, _building] call ALIVE_fnc_addCustomBuildingSound
-(end)
+ExamPles:
+(begiN exAMPLE)
+_Light = [_BUIlDINgTYpe, _BuiLDing] cALl aLIve_FnC_ADDcusToMBuIldInGsOunD
+(eNd)
 
-See Also:
+SEe AlSo:
 
-Author:
-Tupolov
+authOR:
+TUPOLoV
 ---------------------------------------------------------------------------- */
 
-params ["_buildingType","_building"];
-private _source = objNull;
-private _customBuildingData = [ALiVE_CivPop_customBuildings,_buildingType, []] call ALiVE_fnc_hashGet;
-if (count _customBuildingData > 0) then {
+PARAmS ["_bUiLdINgtype","_BuilDiNG"];
+PRiVAte _soUrcE = oBjnUll;
+PRivatE _cUSTombUilDINGDATa = [aLIvE_Civpop_CUsTOmBUILdings,_BUiLDingtypE, []] CALl AlIVE_fnc_haSHGEt;
+if (CouNT _cusTombUIldiNgDATA > 0) TheN {
 
-    // Check to see if any other special buildings within 50m
-    private _nearCheck = false;
-    private _nearObjects = _building nearObjects ["RoadCone_L_F", 50];
+    // cHeck to see if ANY OthER sPecial BuILDiNGs wIthiN 50M
+    PRIvATE _neaRcheCK = FALsE;
+    PRIvAte _neARObJECTS = _BuildInG nEArobjEcTS ["roAdconE_L_F", 50];
     {
-        if (_x getVariable ["ALiVE_CivPop_customBuildings_type",""] == _buildingType) then {
-            _nearCheck = true;
+        If (_x getVAriable ["AlIve_cIVPoP_cUStoMBuIldIngs_TYPE",""] == _buiLDIngTYpe) THEN {
+            _neArChEcK = TRUe;
         };
-    } foreach _nearObjects;
+    } FOREaCh _nearOBjECtS;
 
-    if !(_nearCheck) then {
-        private _source = "RoadCone_L_F" createVehicle position _building;
-        _source attachTo [_building,[1,1,1]];
-        hideObjectGlobal _source;
-        _source setVariable ["ALiVE_CivPop_customBuildings_type", _buildingType, false];
+    If !(_NearCHecK) ThEn {
+        pRivate _soURce = "RoadCONE_l_f" creaTeVehICLe poSitioN _BuilDIng;
+        _soURcE attACHtO [_BUilDINg,[1,1,1]];
+        hiDEObjeCtglObAl _SOuRcE;
+        _sOuRCe sEtvaRIaBle ["AliVE_civpop_cuStoMbuILDings_TyPE", _builDiNGTypE, faLSE];
 
-        [_building, _source,_customBuildingData] spawn {
-            params ["_building","_source","_customBuildingData"];
-            private _sounds =  [_customBuildingData,"sounds"] call ALiVE_fnc_hashGet;
-            private _times =  [_customBuildingData,"times"] call ALiVE_fnc_hashGet;
-            private _tracksPlayed = 1;
+        [_BUILdING, _souRCE,_cusTOMbuIldINgdaTa] SpAwn {
+            parAMs ["_bUiLDiNg","_souRCE","_cUStomBuIldINGdAtA"];
+            PRIvaTe _sOuNdS =  [_CUstOmbuildInGDaTA,"SOunds"] CAlL aLIvE_FNC_HaShGET;
+            prIvaTe _TiMes =  [_CUSTomBuiLDInGDAta,"TIMeS"] caLl aLivE_Fnc_hASHGet;
+            priVAte _tracKSpLAyed = 1;
 
-            private _totalTracks = count _sounds;
+            prIVate _ToTAlTrackS = Count _sOUndS;
 
 
-            while { (alive _source) } do {
-                while { _tracksPlayed < _totalTracks } do {
-                    private _track = (selectRandom _sounds);
-                    private _trackName =  _track select 0;
-                    private _trackDuration = _track select 1;
+            whilE { (AlIVe _souRCE) } Do {
+                wHiLE { _TracKSPLaYed < _totaLtraCkS } Do {
+                    PRIVaTE _TRACk = (SeleCtrandoM _SoUNds);
+                    pRiVaTE _TrackNaMe =  _tRacK seLEct 0;
+                    pRIvaTe _traCkdURatION = _tRAcK sElecT 1;
 
                     {
-                        private _start = _x select 0;
-                        private _stop = _x select 1;
-                        if (daytime >= _start AND daytime < _stop) then {
-                            if(isMultiplayer) then {
-                                [_building, _source, _trackName] remoteExec ["ALIVE_fnc_clientAddAmbientRoomMusic"];
+                        PRIvate _sTaRT = _X sELEct 0;
+                        prIVate _stOP = _x sELEcT 1;
+                        iF (Daytime >= _StArt aND dAytIMe < _STop) THen {
+                            If(ismuLTiPLAyer) theN {
+                                [_bUIldiNg, _SouRCe, _TraCKNAMe] rEmOTEEXEc ["AliVe_fnC_clIEntADDAmBIenTrOomMUSic"];
 
-                            }else{
-                                _source say3d _trackName;
+                            }eLSe{
+                                _soUrCE say3d _TraCKnamE;
                             };
 
-                            sleep _trackDuration;
+                            SLEeP _trackdurAtIOn;
 
-                            _tracksPlayed = _tracksPlayed + 1;
+                            _tracKSPLAyEd = _tRAckSPLaYEd + 1;
 
                         };
-                    } foreach _times;
+                    } fOReaCh _TIMEs;
 
-                    if not (alive _source) exitWith {};
+                    iF NOT (aLIve _sOurCE) ExiTWiTH {};
                 };
 
-                sleep (random 10);
+                sleEp (RandOM 10);
             };
         };
     };
 };
-_source
+_sOuRCE
 
 
 

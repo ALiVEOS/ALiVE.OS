@@ -1,90 +1,90 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(crowdFiredNearEventHandler);
+#iNCluDE "\X\Alive\addONS\aMb_CIV_POpULation\ScRiPT_CompONeNt.HpP"
+ScrIPt(CrOwDFIREDNeArEvEnThaNdlEr);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_crowdFiredNearEventHandler
+fuNCTIon: ALiVe_fNC_cRoWDFiredNEaREvEnThaNDLeR
 
-Description:
-FiredNear event handler for crowd units
+DEsCRipTIoN:
+FIRednEAr eVENt HAnDleR FOR CrOWd unitS
 
-Parameters:
+PAraMEtERS:
 
-Returns:
+REtuRNs:
 
-Examples:
-(begin example)
-_eventID = _agent addEventHandler["FiredNear", ALIVE_fnc_crowdFiredNearEventHandler];
-(end)
+exaMpLEs:
+(bEGin EXamPle)
+_EVEntID = _aGEnT AddEvENTHANDleR["fireDNEar", AlIve_FNC_CrOwdFiRedNeaREVeNthAnDLEr];
+(END)
 
-See Also:
+sEE aLSO:
 
-Author:
-Tupolov
+aUThor:
+TUPoLov
 ---------------------------------------------------------------------------- */
 
-params ["_unit", "_firer", "_distance"];
+ParAmS ["_UnIt", "_firER", "_DIStAnCe"];
 
-if (side _firer == civilian) exitWith {};
+iF (siDe _fIrER == CIViLian) exItWiTh {};
 
-// Set the crowd system to stop spawning due to combat in the area
-private _crowdActivatorFSM = [ALIVE_civilianPopulationSystem, "crowd_FSM"] call ALiVE_fnc_HashGet;
-_crowdActivatorFSM setFSMVariable ["_noCombat",(time + 60)];
+// SeT the CrOwD sySTEm To sTop sPAwninG DUe to COMbat IN the aREA
+PrIvate _CrOWDactivatoRfSm = [aLIve_cIvilIanpOPUlaTiOnsYstem, "CrOwD_FSM"] caLL AlIVE_fNC_HAshgET;
+_CRowdACTivATorfsM sETfsmvariAbLE ["_nOComBaT",(TIME + 60)];
 
-// Let them run
-_unit forceWalk false;
+// lEt them RUn
+_unit forCEwaLK FAlsE;
 
-// Play panic animation
-private _anim = "ApanPercMstpSnonWnonDnon_ApanPknlMstpSnonWnonDnon";
+// PLAY PAniC AnimaTiON
+priVate _aNIm = "APanpErcmstPsNOnwnONDNon_ApAnPKNlmSTPSnONwNonDnon";
 
-if (random 1 > 0.4 && !(_unit getVariable ["ALiVE_Crowd_Fleeing", false]) && alive _unit) then {
-	[_unit, _anim] call ALIVE_fnc_switchMove;
-} else {
-	if (!(_unit getVariable ["ALiVE_Crowd_Fleeing", false]) && alive _unit) then {[_unit, ""] call ALIVE_fnc_switchMove;};
+IF (RANdOM 1 > 0.4 && !(_UniT GeTVArIABLE ["aLivE_CRoWd_FlEeINg", FaLSE]) && ALiVE _uNIT) THen {
+	[_unIT, _anIM] CaLL ALIVE_FNC_SWITcHmOvE;
+} eLSE {
+	If (!(_uNIT GETvARiABLe ["ALiVe_crOwD_fLeeinG", falSE]) && alIVe _unIT) Then {[_UnIt, ""] CalL alIVe_FNc_SwItCHMoVe;};
 };
 
-// Play panic noise
-if (random 1 > 0.85 && !(_unit getVariable ["ALiVE_Crowd_Fleeing", false])) then {
-	private _panicNoise = selectRandom ALiVE_CivPop_PanicNoises;
-	if (isMultiplayer) then {
-		[_unit, _panicNoise] remoteExec ["say3D"];
+// PLay PANIc noISe
+If (raNdom 1 > 0.85 && !(_UNIt getVaRIAble ["ALiVe_crOwD_fLEEIng", FAlSe])) thEN {
+	pRIVate _PanIcnOiSE = selEctrANdOm AlIvE_civpOp_PANICnOIsEs;
+	If (iSMUltiPlayeR) thEN {
+		[_UnIT, _PANIcnoISE] reMOTeEXeC ["Say3d"];
 	} else {
-		_unit say3D _panicNoise;
+		_uniT saY3d _pAnIcnOISE;
 	};
 };
 
-if (_distance < 15 && !(_unit getVariable ["alreadyPissedOff", false])) then {
+if (_DiSTance < 15 && !(_uNit gEtvaRiable ["aLreADypIsSEDOFF", falSE])) thEn {
 
-	// Hostility will increase towards firer faction
-	[position _unit,[str(side _firer)], +0.5] call ALiVE_fnc_updateSectorHostility;
+	// HoStiLity WiLL INcrEAsE TOWArdS FiReR FACtIon
+	[POsitIoN _UNiT,[stR(sIde _fIrER)], +0.5] CALL AlIve_Fnc_uPdATesEctorhOstility;
 
-	// They can only be angry once
-	_unit setVariable ["alreadyPissedOff", true, false];
+	// thEy can oNly be ANgRy onCE
+	_unIT SetVariaBlE ["AlrEAdYPiSsedOFF", tRUe, faLse];
 };
 
-if (isnil "_unit" || {!isServer}) exitwith {};
+IF (isnil "_UnIT" || {!isSErVeR}) ExitwiTH {};
 
-if !(_unit getVariable ["ALiVE_Crowd_Fleeing", false]) then {
+iF !(_unIT GetVArIAbLe ["ALIve_CRowD_flEEInG", fAlse]) tHen {
 
-	// Stop current command
-	doStop _unit;
+	// STOP CURReNT COmMand
+	dOSTop _UNiT;
 
-	// Get them to run
-	_unit setSpeedMode "FULL";
+	// GET tHEM To run
+	_UNit SetSpEedMoDe "FUll";
 
-	// Choose somewhere to run to
-	private _pos = _unit getPos [100, random 360];
-	private _nearestPos = [position _unit, 50] call ALIVE_fnc_findIndoorHousePositions;
+	// ChOOsE SOmEwHeRe To rUN tO
+	prIvAte _Pos = _uNIt GETPos [100, rANdoM 360];
+	pRIVatE _NEArESTpOs = [posITiOn _UnIT, 50] CAll AlIVE_Fnc_fINdinDOorhOuSePoSITIons;
 
-	if (count _nearestPos > 0) then {
-		_pos =  selectRandom _nearestPos;
-	} else {
-		_pos = [position _unit,60,"House"] call ALIVE_fnc_findNearHousePositions;
+	if (CoUnT _neAResTPoS > 0) thEn {
+		_pos =  SeLeCtrAnDoM _nearestpos;
+	} ELSe {
+		_pOs = [PoSiTIOn _UNIt,60,"HOusE"] caLl aLIve_FNc_finDNEaRHoUSEPOSItionS;
 	};
 
-	[_unit,_pos] call ALiVE_fnc_doMoveRemote;
-	_unit moveTo _pos;
+	[_uNIT,_poS] CALL aliVE_fnc_DOMoveRemoTE;
+	_UNIt mOVetO _pOS;
 
-	_unit setVariable ["ALiVE_Crowd_Fleeing", true, false];
-	_unit setVariable ["ALiVE_Crowd_Busy", (time + 60), false];
-	_unit setVariable ["ALIVE_CIV_ACTION", "Fleeing", false];
+	_UNit SEtVariabLE ["ALivE_croWD_fLeEInG", TruE, faLsE];
+	_UnIt SEtvArIAbLe ["aLive_Crowd_bUsY", (tIMe + 60), FALSe];
+	_uniT SetvARiAbLe ["alIve_civ_aCTION", "flEeIng", FAlSE];
 };

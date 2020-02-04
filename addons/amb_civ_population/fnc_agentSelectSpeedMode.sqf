@@ -1,72 +1,72 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(agentSelectSpeedMode);
+#inCLude "\x\AlIVE\ADdOns\amb_Civ_POPUlaTion\ScriPt_cOmPoNENT.hpP"
+Script(agENtselECtsPEEDmODe);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_agentSelectSpeedMode
+FUNcTiOn: aLivE_FNc_AGenTselECTSPEeDMODE
 
-Description:
-Set a randomish speed mode on an agent
+dEscriPTIOn:
+seT a RanDOmISH speeD MOde ON AN AGeNT
 
-Parameters:
+PARAMeTers:
 
-Object - agent to adjust speed mode of
+OBjEct - AgEnT to aDjUst sPeeD mOdE of
 
-Returns:
+ReturnS:
 
-Examples:
-(begin example)
-_light = [_agent] call ALIVE_fnc_agentSelectSpeedMode
-(end)
+eXampLeS:
+(begIn exaMPLE)
+_LIgHT = [_AgeNT] CaLl AlIve_FNc_AGEntseLECTSpEEdmODE
+(ENd)
 
-See Also:
+seE ALSo:
 
-Author:
-ARJay
+aUThOR:
+aRJay
 ---------------------------------------------------------------------------- */
 
-private _agent = _this select 0;
+PriVAte _AgeNt = _this seleCt 0;
 
-private _probabilityNormal = 0.1;
-private _probabilityFull = 0.05;
+pRIvATE _prOBAbIlItYNorMaL = 0.1;
+pRIvAtE _ProBABILiTYFuLl = 0.05;
 
-private _posture = _agent getVariable ["posture", 0];
+pRIVatE _POStURE = _agEnT GeTVAriablE ["PostUrE", 0];
 
-if(_posture < 10) then {_probabilityNormal = 0.1; _probabilityFull = 0.05};
-if(_posture >= 10 && {_posture < 40}) then {_probabilityNormal = 0.2; _probabilityFull = 0.1};
-if(_posture >= 40 && {_posture < 70}) then {_probabilityNormal = 0.3; _probabilityFull = 0.1};
-if(_posture >= 70 && {_posture < 100}) then {_probabilityNormal = 0.4; _probabilityFull = 0.2};
-if(_posture >= 100) then {_probabilityNormal = 0.4; _probabilityFull = 0.2};
+if(_poSture < 10) tHen {_PRoBabIlITynorMAL = 0.1; _PrOBAbILitYfUll = 0.05};
+iF(_PosTURe >= 10 && {_pOsTUre < 40}) tHen {_prObABiLITYNoRmAL = 0.2; _pRoBAbIlITYfulL = 0.1};
+If(_pOstURE >= 40 && {_pOsTUre < 70}) THen {_PrOBaBILitYnOrmaL = 0.3; _pRoBaBiLItyFUll = 0.1};
+If(_PostUrE >= 70 && {_PosTuRe < 100}) THen {_prOBAbilITynOrMAl = 0.4; _PROBaBILityfUlL = 0.2};
+if(_pOsture >= 100) thEN {_pROBabiLItYNorMAL = 0.4; _probABILitYFull = 0.2};
 
 /*
-switch(_posture) do {
-    case 4: {
-        _probabilityNormal = 0.4;
-        _probabilityFull = 0.2;
+SWItCH(_PosTURE) do {
+    CasE 4: {
+        _pRObaBiLItynoRmAl = 0.4;
+        _proBabiLiTYFull = 0.2;
     };
-    case 3: {
-        _probabilityNormal = 0.3;
-        _probabilityFull = 0.1;
+    CAse 3: {
+        _pRObaBiLITYNormaL = 0.3;
+        _PRoBABIlitYfulL = 0.1;
     };
-    case 2: {
-        _probabilityNormal = 0.2;
-        _probabilityFull = 0.1;
+    CaSe 2: {
+        _PRObabiLItYnoRmAL = 0.2;
+        _PRObAbiLiTYfUll = 0.1;
     };
-    case 1: {
-        _probabilityNormal = 0.1;
-        _probabilityFull = 0.05;
+    CASE 1: {
+        _pRobaBiLITYNOrMAl = 0.1;
+        _ProBABILitYfuLL = 0.05;
     };
 };
 */
 
-private _diceRoll = random 1;
+PrIvATe _diceROLL = RanDOm 1;
 
-_agent setSpeedMode "LIMITED";
+_AgEnT sEtSPeeDMoDE "lIMiTed";
 
-if(_diceRoll < _probabilityNormal) then {
-    _agent setSpeedMode "NORMAL";
+IF(_DIceROLl < _probabILITYNOrMaL) THeN {
+    _AgenT SeTSPEEDmode "nOrmaL";
 };
 
-if(_diceRoll < _probabilityFull) then {
-    _agent setSpeedMode "FULL";
+if(_DICeRoLl < _prOBAbilITYfUlL) THeN {
+    _ageNT SetsPEEDmode "fUlL";
 };
 

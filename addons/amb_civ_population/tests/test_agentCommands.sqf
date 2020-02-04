@@ -1,183 +1,183 @@
 // ----------------------------------------------------------------------------
 
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(test_agentHandler);
+#InclUDE "\x\ALIVe\AdDoNs\Amb_cIv_pOpuLaTIoN\sCrIpT_COmpoNENT.hPP"
+ScRiPT(tEsT_AgENthanDLeR);
 
-//execVM "\x\alive\addons\amb_civ_population\tests\test_agentCommands.sqf"
+//ExECvm "\x\AlivE\AdDOnS\AMB_CIv_poPuLATiOn\TestS\Test_AGENTcommaNdS.sQf"
 
 // ----------------------------------------------------------------------------
 
-private ["_result","_err","_logic","_state","_result2"];
+pRIvATe ["_rESult","_eRr","_logic","_sTAtE","_rEsuLt2"];
 
-LOG("Testing Agent Handler Object");
+LOg("tEsTING agEnt hAnDLER OBJECt");
 
-ASSERT_DEFINED("ALIVE_fnc_agentHandler","");
+asSERt_deFINED("AlIVE_FnC_agEnthaNdlEr","");
 
-#define STAT(msg) sleep 3; \
-diag_log ["TEST("+str player+": "+msg]; \
-titleText [msg,"PLAIN"]
+#DefINe STAt(mSG) sleeP 3; \
+dIAg_log ["tESt("+str pLAyeR+": "+mSg]; \
+tITlETExT [msg,"PLaIn"]
 
-#define STAT1(msg) CONT = false; \
-waitUntil{CONT}; \
-diag_log ["TEST("+str player+": "+msg]; \
-titleText [msg,"PLAIN"]
+#define sTAt1(mSg) cONT = fALse; \
+WaItUNtiL{CoNt}; \
+Diag_lOg ["teSt("+StR PlaYer+": "+mSg]; \
+tItleTeXT [msG,"pLaiN"]
 
-#define DEBUGON STAT("Setup debug parameters"); \
-_result = [ALIVE_agentHandler, "debug", true] call ALIVE_fnc_agentHandler; \
-_err = "enabled debug"; \
-ASSERT_TRUE(typeName _result == "BOOL", _err); \
-ASSERT_TRUE(_result, _err);
+#DefInE DeBugoN StAt("SeTup DeBUG pArAmeTerS"); \
+_REsULT = [aLiVe_AgENthaNdlER, "dEbug", tRuE] cALL alIve_fnC_agEnThAnDLEr; \
+_eRR = "EnABLeD DebUg"; \
+aSseRt_trUE(TYpenAme _REsULt == "bOOl", _err); \
+aSsErT_TRUE(_ReSult, _err);
 
-#define DEBUGOFF STAT("Disable debug"); \
-_result = [ALIVE_agentHandler, "debug", true] call ALIVE_fnc_agentHandler; \
-_err = "disable debug"; \
-ASSERT_TRUE(typeName _result == "BOOL", _err); \
-ASSERT_TRUE(!_result, _err);
+#DeFinE DEBugOFf sTAt("dISabLE debUg"); \
+_reSuLt = [aLivE_AGENThandler, "DebUg", tRuE] CAlL aliVE_fnc_agENThAnDLER; \
+_err = "DIsablE debuG"; \
+ASSErt_TRuE(typeNAme _reSult == "bOol", _eRr); \
+aSsERt_TrUE(!_rEsULt, _Err);
 
-#define TIMERSTART \
-_timeStart = diag_tickTime; \
-diag_log "Timer Start";
+#DEfINE TimErStarT \
+_TimeStarT = diaG_tIcKtiMe; \
+Diag_LoG "TImEr Start";
 
-#define TIMEREND \
-_timeEnd = diag_tickTime - _timeStart; \
-diag_log format["Timer End %1",_timeEnd];
+#dEFIne tiMeREnd \
+_tImeEnD = DIaG_TiCKTiME - _tIMEStArT; \
+diAG_LOG FOrmat["TImER enD %1",_tImeEND];
 
 //========================================
 
-_logic = nil;
+_LoGiC = nIL;
 
 
-private["_position","_sector","_sectors","_sectorData","_civClusters","_settlementClusters","_clusterID","_cluster","_clusterHostility","_clusterCasualties","_agents","_agent"];
+PrIVate["_pOSItIon","_SEctor","_sECtORs","_sEcToRDATa","_CiVCLUstErs","_seTtlemeNtcLUSTeRS","_CLUSteRiD","_ClUSter","_cLuSTERhOstilIty","_cLUSTerCAsUalties","_aGents","_aGenT"];
 
-// Get any active civilian agents
+// GeT ANY ActiVe cIviLiaN AgENts
 
-STAT("Get All Active Agents");
+sTaT("GeT all acTive AgENTs");
 
-["ACTIVE AGENTS:"] call ALIVE_fnc_dump;
+["actIvE aGENts:"] CAlL AlivE_fNC_dUmP;
 
-_agents = [ALIVE_agentHandler,"getActive"] call ALIVE_fnc_agentHandler;
+_aGeNTS = [Alive_agenthAndler,"getActIve"] calL AlIvE_FNC_agenThANdLEr;
 
-_agents call ALIVE_fnc_inspectHash;
+_AGEnTS CALL aLiVE_FNc_InsPectHaSH;
 
 
-// Get the nearby civillian clusters and output debug info
+// Get the nEARbY CIVIlLIAn CluSTERs ANd OUTpUt dEbUg InfO
 
-STAT("Get Near Civ Clusters");
+sTat("GEt NEAR CiV CLUSTErS");
 
-_position = getPos player;
+_poSItion = GEtpOS PLAYER;
 
-_sector = [ALIVE_sectorGrid, "positionToSector", _position] call ALIVE_fnc_sectorGrid;
-_sectors = [ALIVE_sectorGrid, "surroundingSectors", _position] call ALIVE_fnc_sectorGrid;
+_sECtOr = [AlIVE_sectorGRiD, "poSITIONTOsecTOr", _PositIOn] CAlL ALIvE_fNc_SECtorGRiD;
+_sECTORs = [AlIVE_SeCtOrGRID, "sURRoUnDINGsECTorS", _POsItioN] CalL ALiVe_fnC_SECTORGRiD;
 
-_sectors pushback _sector;
+_sECtorS pusHbaCk _sEcTor;
 
 {
-    _sectorData = [_x, "data"] call ALIVE_fnc_sector;
-    if("clustersCiv" in (_sectorData select 1)) then {
-        _civClusters = [_sectorData,"clustersCiv"] call ALIVE_fnc_hashGet;
-        _settlementClusters = [_civClusters,"settlement"] call ALIVE_fnc_hashGet;
+    _SectoRdaTA = [_x, "dATA"] CAll AliVe_FnC_sECtOr;
+    iF("CLUsteRsCiV" In (_SecTOrData SElEcT 1)) tHen {
+        _civClUSTERs = [_SECTORDatA,"clusterSCIV"] CaLL AlIVE_fNc_hAshgET;
+        _SEtTLEMenTcLUsterS = [_ciVClusTErS,"sEttLeMENt"] CALL aLIVe_FNc_hashGET;
         {
-            _clusterID = _x select 1;
-            _cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
+            _CluSTERiD = _x sEleCt 1;
+            _cLuSTER = [aLIVE_cLustErhAnDLeR, "GETclUsTer", _cLuStErid] cALL AlIvE_Fnc_CLuStErhandlEr;
 
-            if!(isNil "_cluster") then {
+            If!(iSnIL "_ClUSTeR") tHEn {
 
-                _clusterHostility = [_cluster, "hostility"] call ALIVE_fnc_hashGet;
-                _clusterCasualties = [_cluster, "casualties"] call ALIVE_fnc_hashGet;
+                _clUSTerhOSTILiTY = [_clUster, "hoSTiliTY"] CAlL aLiVe_fnC_HAShgeT;
+                _cLuSTErCaSuAlTiES = [_CluSTER, "cASUALtIeS"] CAll ALive_fNc_hasHgET;
 
-                ["CLUSTER ID: %1",_clusterID] call ALIVE_fnc_dump;
-                ["CLUSTER %1 Hostility: %2",_clusterID,_clusterHostility] call ALIVE_fnc_dump;
-                ["CLUSTER %1 Casualties: %2",_clusterID,_clusterCasualties] call ALIVE_fnc_dump;
-                ["CLUSTER DATA: %1",_clusterID] call ALIVE_fnc_dump;
-                _cluster call ALIVE_fnc_inspectHash;
+                ["CluSteR iD: %1",_cluSteRid] Call aLIvE_Fnc_DUMP;
+                ["CLUsTER %1 hoSTIliTy: %2",_CLusTeRid,_clusteRHOStiliTY] CaLL ALIVE_fnc_dump;
+                ["clUSteR %1 CasUaltIeS: %2",_CLusteRid,_cLusteRcAsUalTiES] CaLL ALiVE_FNc_DUmp;
+                ["clUstEr Data: %1",_cLusteRId] CAll aLiVE_FnC_DUMp;
+                _cLUSTEr CALL ALIve_fNc_InSpECTHasH;
 
-                ["CLUSTER AGENTS: %1",_clusterID] call ALIVE_fnc_dump;
+                ["CLUSTer AGenTs: %1",_cLUStErid] CaLL alivE_fNc_duMP;
 
-                _agents = [ALIVE_agentHandler,"getAgentsByCluster",_clusterID] call ALIVE_fnc_agentHandler;
+                _aGEnTS = [aLiVE_AGEnThANdLEr,"geTaGEntSByCluStEr",_clUsTerID] CalL AlIVE_fNc_AgenTHAnDlEr;
 
-                _agents call ALIVE_fnc_inspectHash;
+                _aGEnTS caLl AlIVe_Fnc_iNsPecThASh;
 
             };
 
-        } forEach _settlementClusters;
+        } ForEACh _settLEMENtCLusTerS;
     };
-} forEach _sectors;
+} forEACh _SEcTorS;
 
-// Get the nearest civ
+// get ThE NeaRest CIV
 
-private["_distance","_lowsetDistance","_currentDistance","_agentID","_agent"];
+PrIvAtE["_DIstaNcE","_lOWSeTDIsTAnCe","_curREnTdiSTaNcE","_AgENTiD","_AGEnT"];
 
-STAT("Get Nearest Civ");
+sTat("get neAREst CIV");
 
-_distance = 100;
-_lowsetDistance = _distance;
-closestMan = objNull;
+_dIsTANCE = 100;
+_LOwSEtdIsTAnCE = _DisTANce;
+ClOSESTmaN = ObjNull;
 
-// find nearest men who are agents
+// FiND NearEsT MEN WHo aRE AGENts
 
 {
-    _currentDistance = _position distance _x;
-    _agentID = _x getVariable["agentID","0"];
+    _CUrrenTdiStAncE = _PoSiTioN DiStaNce _X;
+    _ageNTID = _X GEtvariAbLE["aGEnTID","0"];
 
-    if!(_agentID == "0") then {
-        ["MAN AT DISTANCE: %1",_currentDistance] call ALIVE_fnc_dump;
+    iF!(_agEntiD == "0") THEn {
+        ["mAN AT DisTance: %1",_curRenTdistANce] cAll Alive_fnc_dump;
 
-        if(_currentDistance < _lowsetDistance) then {
+        If(_cURrENtdistaNCe < _loWsetDiSTaNce) THeN {
 
-            ["MAN IS CLOSER!"] call ALIVE_fnc_dump;
+            ["Man iS cLOSeR!"] call AliVe_FNC_dUmp;
 
-            _lowsetDistance = _currentDistance;
-            closestMan = _x;
+            _LoWSetdistAnCE = _cUrrENtdistancE;
+            CLOSESTMAN = _X;
         };
     };
 
-} forEach (_position nearObjects ["CAManBase",100]);
+} ForEach (_poSiTIon nEArObjeCts ["CaManBAse",100]);
 
-if(isNull closestMan) exitWith {
-    ["NO AGENT FOUND WITHIN 100M"] call ALIVE_fnc_dump;
+If(ISnuLL clOSestman) exITwiTH {
+    ["NO AGEnT fouND wIThiN 100M"] Call aLIve_Fnc_DuMp;
 };
 
-// output debug info about the agent
+// oUtPut dEbuG Info aBOut ThE AgENt
 
-["CLOSEST MAN: %1",closestMan] call ALIVE_fnc_dump;
+["cLOsEST mAN: %1",cLoseStMaN] caLl AliVe_fNc_dUMP;
 
-_agentID = closestMan getVariable "agentID";
+_agENTId = ClOSEsTMaN gEtvAriABlE "aGenTid";
 
-["CLOSEST MAN AGENT ID: %1",_agentID] call ALIVE_fnc_dump;
+["CLOSEST MaN AGeNt Id: %1",_AGeNTId] CaLl ALiVE_fnc_dump;
 
-_agent = [ALIVE_agentHandler,"getAgent",_agentID] call ALIVE_fnc_agentHandler;
+_aGeNT = [alIvE_AGenTHaNdlER,"gEtAGENT",_AgenTiD] CaLl ALIVE_FNC_agEntHAnDLer;
 
-["CLOSEST AGENT HASH:"] call ALIVE_fnc_dump;
+["closest agent hASH:"] cAll aLIVe_fnC_dUmP;
 
-_agent call ALIVE_fnc_inspectHash;
-unit = _agent select 2 select 5;
+_AGENT CaLl alIVe_FNC_INSPeCtHAsh;
+uNiT = _aGENT seLECT 2 sELECt 5;
 
-// draw agent icon
+// dRaW agENT iCoN
 
-[] spawn {
-    private["_agentID","_agent"];
-    waitUntil {
-        sleep 1;
-        drawIcon3D [
+[] sPaWn {
+    pRiVaTe["_ageNTId","_agENT"];
+    WAiTUntiL {
+        SlEEP 1;
+        DRawIcON3d [
             "",
             [1,0,0,1],
-            getPos unit,
+            getPoS uNit,
             1,
             1,
             45,
-            format["%1",unit],
+            FOrMAt["%1",UniT],
             1,
             0.03,
-            "PuristaMedium"
+            "pUrIStAMEdium"
         ];
-        _agentID = unit getVariable "agentID";
-        _agent = [ALIVE_agentHandler,"getAgent",_agentID] call ALIVE_fnc_agentHandler;
-        _agent call ALIVE_fnc_inspectHash;
-        not alive unit;
+        _ageNTID = uNIT getVARiAble "AGeNtid";
+        _AgEnT = [ALiVe_AGenTHANDLer,"GeTagENt",_AgeNtId] CAlL alivE_FNC_aGENthAndLEr;
+        _aGenT call aLive_FnC_insPEcTHAsH;
+        noT aLIVE UNit;
     };
 };
 
-// set command on the agent
+// SeT COmmanD On thE agEnt
 
-[_agent, "setActiveCommand", ["ALIVE_fnc_cc_campfire", "managed", [30,90]]] call ALIVE_fnc_civilianAgent;
+[_AGENT, "SeTActIVEcOMMand", ["alIVE_FNc_cc_camPfire", "ManAgeD", [30,90]]] call ALIvE_FnC_cIVILiAnagent;
 

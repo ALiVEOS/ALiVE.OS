@@ -1,67 +1,67 @@
-#include "\x\alive\addons\sys_profile\script_component.hpp"
-SCRIPT(createCivilianVehicle);
+#iNcLUDe "\X\AliVe\ADdONs\SYs_profile\ScrIPT_COMPOnENt.hpP"
+scRIPt(crEAtECIviLIaNvEhIcle);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_createCivilianVehicle
+funCTION: AlivE_fNC_creATecivILianvEHiCLE
 
-Description:
-Create profiles based on vehicle type including vehicle crew
+DeSCription:
+CrEate profileS baSED ON VehiclE TYPe inClUdinG VEHicle CReW
 
-Parameters:
-String - Vehicle class name
-String - Side name
-String - Rank
-Array - position
-Scalar - direction
+PARAMeTErS:
+StriNG - VeHIcLE CLaSs NamE
+strING - sidE naME
+strIng - rAnK
+ARRAY - POsiTIoN
+sCaLAr - dIREcTIOn
 
-Returns:
-Array of created profiles
+RETURNS:
+ARRay Of CreateD proFIleS
 
-Examples:
-(begin example)
-// create profiles for vehicle class
-_result = ["B_Heli_Light_01_F","WEST",getPosATL player] call ALIVE_fnc_createCivilianVehicle;
-(end)
+EXAmPlEs:
+(Begin exaMPLE)
+// CrEAte PrOfIlES foR veHICle ClASs
+_REsUlt = ["B_heLi_LIGHT_01_f","west",GetPOSaTL pLAYEr] caLL alIve_Fnc_crEaTECiviLiaNveHicLE;
+(EnD)
 
-See Also:
+seE alSo:
 
-Author:
-ARJay
+aUtHor:
+arJAY
 ---------------------------------------------------------------------------- */
 
-params [
-    "_vehicleClass",
-    "_side",
-    "_faction",
-    "_position",
-    ["_direction", 0],
-    ["_spawnGoodPosition", true],
-    ["_prefix", ""],
-    ["_clusterID", ""],
-    ["_buildingPosition", [0,0,0]]
+PaRamS [
+    "_VeHICLEClaSs",
+    "_sIde",
+    "_fACTIon",
+    "_PosITIOn",
+    ["_dIRECtion", 0],
+    ["_SpAwngOoDpoSItion", trUE],
+    ["_pREFIx", ""],
+    ["_clusTERid", ""],
+    ["_BuildINGPOsitIon", [0,0,0]]
 ];
 
-// get counts of current profiles
+// gEt cOunTS OF currEnt prOfiles
 
-private _vehicleID = format["agent_%1",[ALIVE_agentHandler, "getNextInsertID"] call ALIVE_fnc_agentHandler];
+PriVATe _vEHiclEId = FORmaT["Agent_%1",[AliVe_aGeNTHAndlEr, "GETNextinsErTId"] CalL AliVE_fnC_AgentHaNdler];
 
-private _vehicleKind = _vehicleClass call ALIVE_fnc_vehicleGetKindOf;
+PRiVAte _VeHiCLEkInd = _vehICleclaSS CaLL ALivE_Fnc_veHicLEgEtKiNdOF;
 
-// create the profile for the vehicle
+// CREAtE THE pRoFIlE foR ThE vEhiClE
 
-private _civilianVehicle = [nil, "create"] call ALIVE_fnc_civilianVehicle;
-[_civilianVehicle, "init"] call ALIVE_fnc_civilianVehicle;
-[_civilianVehicle, "agentID", _vehicleID] call ALIVE_fnc_civilianVehicle;
-[_civilianVehicle, "agentClass", _vehicleClass] call ALIVE_fnc_civilianVehicle;
-[_civilianVehicle, "position", _position] call ALIVE_fnc_civilianVehicle;
-[_civilianVehicle, "direction", _direction] call ALIVE_fnc_civilianVehicle;
-[_civilianVehicle, "side", _side] call ALIVE_fnc_civilianVehicle;
-[_civilianVehicle, "faction", _faction] call ALIVE_fnc_civilianVehicle;
-[_civilianVehicle, "damage", 0] call ALIVE_fnc_civilianVehicle;
-[_civilianVehicle, "fuel", 1] call ALIVE_fnc_civilianVehicle;
-[_civilianVehicle, "homeCluster", _clusterID] call ALIVE_fnc_civilianVehicle;
-[_civilianVehicle, "homePosition", _buildingPosition] call ALIVE_fnc_civilianVehicle;
+PRivaTe _CiVIliaNVEHIcLE = [Nil, "CREaTe"] Call alIVe_Fnc_CiviliAnvehICle;
+[_ciViLIaNvEhIcLE, "inIT"] CaLl ALIve_fnC_civIlIAnVEhiclE;
+[_ciVILIaNVehicle, "aGentid", _vEHIClEiD] Call AliVE_FnC_civiliANvEhicle;
+[_cIvILiAnVeHICle, "AgentcLass", _vEHicleclaSS] cAll Alive_fnC_civIlIANVEHIclE;
+[_cIviLIANveHIcLE, "PosITion", _pOSITIoN] caLl AlIVE_fnC_CIViLIAnveHIclE;
+[_cIVIliaNveHicle, "direCTIon", _dIReCTiON] calL ALiVe_FnC_CIvIliANveHiCLE;
+[_CIVilianVehIcle, "Side", _sidE] caLl alIVe_Fnc_CivILIanveHiclE;
+[_cIViLiaNvEHIClE, "fActioN", _FACTioN] CaLl alIve_FNC_ciVILIaNvEhiCle;
+[_ciVIlIAnVEHICLE, "damAGE", 0] CAll alIVE_Fnc_CIvILIANVeHIClE;
+[_civiLiAnveHIclE, "fuel", 1] CalL Alive_FNc_cIVilIaNVeHIClE;
+[_ciViLIANVeHIcLE, "hoMeClUster", _CluSteriD] caLl ALiVe_fnc_CiVilIaNVeHIcLe;
+[_ciVIlIANvehicLe, "homEPosition", _bUIlDIngPositIoN] Call aLivE_FNC_CIVilIANVehiCle;
 
-[ALIVE_agentHandler, "registerAgent", _civilianVehicle] call ALIVE_fnc_agentHandler;
+[ALiVe_aGENtHaNDlEr, "rEGISTeraGeNT", _cIViLIAnVEHiCle] CALl aliVE_fNC_AgEnTHanDlEr;
 
-_civilianVehicle
+_civilIAnVEHiCLe

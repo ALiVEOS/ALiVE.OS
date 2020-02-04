@@ -1,70 +1,70 @@
 // ----------------------------------------------------------------------------
 
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(test_agentHandler);
+#INcluDe "\x\alIVe\AdDOnS\amb_CIV_POPuLaTiON\sCRIpt_coMpOnenT.HPp"
+scriPt(test_AgEnThaNDLer);
 
-//execVM "\x\alive\addons\amb_civ_population\tests\test_assignAgentCommands.sqf"
+//Execvm "\x\AliVE\AddOnS\amB_cIv_PoPuLaTion\teStS\teSt_ASSigNaGentcOmmAndS.SQf"
 
 // ----------------------------------------------------------------------------
 
-private ["_result","_err","_logic","_state","_result2"];
+pRIVAtE ["_ReSuLt","_ERr","_LoGIC","_STATE","_RESUlT2"];
 
-LOG("Testing Agent Handler Object");
+log("teSTINg agENt hAnDLer obJect");
 
-ASSERT_DEFINED("ALIVE_fnc_agentHandler","");
+AssErT_DEfiNEd("ALiVe_FNc_aGENThANDLeR","");
 
-#define STAT(msg) sleep 3; \
-diag_log ["TEST("+str player+": "+msg]; \
-titleText [msg,"PLAIN"]
+#DeFiNE stAt(Msg) sLEeP 3; \
+diaG_Log ["TEsT("+StR PlAyEr+": "+msG]; \
+tITleTEXt [Msg,"PlAIN"]
 
-#define STAT1(msg) CONT = false; \
-waitUntil{CONT}; \
-diag_log ["TEST("+str player+": "+msg]; \
-titleText [msg,"PLAIN"]
+#DEfINE STAT1(MsG) CoNT = FaLsE; \
+waiTUntil{COnt}; \
+DiAG_Log ["TEST("+sTR pLaYER+": "+msg]; \
+TitLEText [MSG,"PlaIN"]
 
-#define DEBUGON STAT("Setup debug parameters"); \
-_result = [ALIVE_agentHandler, "debug", true] call ALIVE_fnc_agentHandler; \
-_err = "enabled debug"; \
-ASSERT_TRUE(typeName _result == "BOOL", _err); \
-ASSERT_TRUE(_result, _err);
+#DefiNe deBugOn StaT("SETUP dEBUg PaRaMetERS"); \
+_ReSulT = [alive_AgEnTHAnDLEr, "deBuG", tRUE] cALL aLiVe_fNC_agENthandLEr; \
+_ERR = "eNabled DEbuG"; \
+aSSERt_trUe(TYPENamE _REsULt == "BooL", _ErR); \
+ASSeRT_True(_resUlt, _ErR);
 
-#define DEBUGOFF STAT("Disable debug"); \
-_result = [ALIVE_agentHandler, "debug", true] call ALIVE_fnc_agentHandler; \
-_err = "disable debug"; \
-ASSERT_TRUE(typeName _result == "BOOL", _err); \
-ASSERT_TRUE(!_result, _err);
+#deFine DEbuGOfF stAt("dISable dEbug"); \
+_rEsUlT = [aLIVE_aGenThAnDLer, "deBug", TrUe] cAll ALiVe_fnC_agENTHAndlER; \
+_eRr = "dISABLe DEbuG"; \
+asSErT_true(tyPeNAMe _rEsulT == "bOOL", _erR); \
+ASsErT_TRUe(!_resuLT, _Err);
 
-#define TIMERSTART \
-_timeStart = diag_tickTime; \
-diag_log "Timer Start";
+#dEFIne TImErstArt \
+_TIMEStarT = DIAG_TICKTiMe; \
+DIag_log "TImER sTarT";
 
-#define TIMEREND \
-_timeEnd = diag_tickTime - _timeStart; \
-diag_log format["Timer End %1",_timeEnd];
+#dEFinE TIMEReNd \
+_timEEnD = DIaG_TiCktImE - _tIMeSTaRt; \
+dIag_LoG ForMAT["TimEr eND %1",_TIMEeND];
 
 //========================================
 
-private["_agents","_agent","_type"];
+PrIvAte["_AgeNts","_agEnT","_tYpe"];
 
-// Get any active civilian agents
+// gEt anY aCTIvE CivIlIAn ageNtS
 
-STAT("Get All Agents");
+sTaT("gEt ALL AGenTS");
 
-["ACTIVE AGENTS:"] call ALIVE_fnc_dump;
+["ActIve AGENts:"] caLl ALIve_fnc_Dump;
 
-_agents = [ALIVE_agentHandler,"getAgents"] call ALIVE_fnc_agentHandler;
+_AGentS = [ALIVe_AgeNTHAndleR,"getageNtS"] Call aLive_FNc_agentHaNdLer;
 
 
-STAT("Assign Command To All Agents");
+STaT("AsSIGn ComMaND To aLL Agents");
 
 {
-    _type = _x select 2 select 4;
+    _TyPE = _X sElEcT 2 SelEct 4;
 
-    if(_type == "agent") then {
-        _x call ALIVE_fnc_inspectHash;
-        //[_x, "setActiveCommand", ["ALIVE_fnc_cc_suicideTarget", "managed", [WEST]]] call ALIVE_fnc_civilianAgent;
-        [_x, "setActiveCommand", ["ALIVE_fnc_cc_rogueTarget", "managed", [WEST]]] call ALIVE_fnc_civilianAgent;
+    iF(_tyPE == "aGeNT") THEn {
+        _x cAll Alive_FnC_iNspEcthAsH;
+        //[_x, "SetaCtiVEComMAnD", ["AliVE_fNc_CC_sUicIdeTARGET", "MANagED", [wEST]]] CaLl ALivE_FnC_civIlIanAGEnT;
+        [_X, "SeTactIVecOMMaND", ["alIve_FnC_cC_ROGuEtarGEt", "MaNAGed", [wESt]]] CALL ALiVe_FNC_CiViliaNaGEnT;
     };
-} foreach (_agents select 2);
+} foREaCH (_agENts SELECt 2);
 
 

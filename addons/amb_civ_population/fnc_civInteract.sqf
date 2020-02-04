@@ -1,784 +1,784 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(civInteract);
+#incLuDE "\X\alIvE\aDDONS\aMb_Civ_PopulaTiON\sCrIPT_cOmpOneNt.hpP"
+scRipt(civInTeRAcT);
 
 /* ----------------------------------------------------------------------------
-Function: MAINCLASS
+FuncTIOn: mAinCLasS
 
-Description:
-Main handler for civilian interraction
+desCripTioN:
+mAIN HAnDlEr FoR civIlIAN iNTErRACtioN
 
-Parameters:
-String - Operation
-Array - Arguments
+parAMeTeRs:
+StrInG - oPeRatIon
+ARRAy - arGuMEnts
 
-Returns:
-Any - Result of the operation
+rEturNs:
+AnY - rESUlT OF THE opeRATION
 
-Examples:
-(begin example)
-[_logic,_operation, _arguments] call MAINCLASS;
-_civData = [_logic,"getData", [player,_civ]] call MAINCLASS; //-- Get data of civilian
-(end)
+exAMpLEs:
+(beGIn EXaMple)
+[_loGIc,_OPERatIon, _aRgUMents] CALL mAinClaSS;
+_CIvdaTA = [_logIC,"gEtDaTa", [PlAyER,_civ]] cAlL MAIncLasS; //-- get DATA Of civiLIAN
+(enD)
 
-See Also:
-- nil
+sEE AlsO:
+- NIL
 
-Author: SpyderBlack723
+AUtHOR: SPYdeRblack723
 
-Peer Reviewed:
-nil
+peER reviEWeD:
+NiL
 ---------------------------------------------------------------------------- */
 
-params [
-	["_logic", objNull],
-	["_operation", ""],
-	["_arguments", []]
+paRams [
+	["_LoGic", OBJnuLL],
+	["_OPERaTION", ""],
+	["_aRguments", []]
 ];
 
-private ["_result"];
+PRivATe ["_REsuLt"];
 
-//-- Define function shortcuts
-#define MAINCLASS ALiVE_fnc_civInteract
-#define QUESTIONHANDLER ALiVE_fnc_questionHandler
+//-- dEFInE functIon sHOrtcuTs
+#DEfiNE MAiNcLAsS AliVE_fNC_ciVINTeraCT
+#defINE qUEStIoNhANdleR ALIVE_fNC_quEStIOnHandler
 
-//-- Define control ID's
-#define CIVINTERACT_DISPLAY 		(findDisplay 923)
-#define CIVINTERACT_CIVNAME 		(CIVINTERACT_DISPLAY displayCtrl 9236)
-#define CIVINTERACT_DETAIN 		(CIVINTERACT_DISPLAY displayCtrl 92311)
-#define CIVINTERACT_QUESTIONLIST 		(CIVINTERACT_DISPLAY displayCtrl 9234)
-#define CIVINTERACT_RESPONSELIST 		(CIVINTERACT_DISPLAY displayCtrl 9239)
-#define CIVINTERACT_PIC					(CIVINTERACT_DISPLAY displayCtrl 1200)
-#define CIVINTERACT_INVENTORYCONTROLS 	[9240,9241,9243,9244]
-#define CIVINTERACT_SEARCHBUTTON 	(CIVINTERACT_DISPLAY displayCtrl 9242)
-#define CIVINTERACT_GEARLIST 		(CIVINTERACT_DISPLAY displayCtrl 9244)
-#define CIVINTERACT_GEARLISTCONTROL 	(CIVINTERACT_DISPLAY displayCtrl 9244)
-#define CIVINTERACT_CONFISCATEBUTTON 	(CIVINTERACT_DISPLAY displayCtrl 9245)
-#define CIVINTERACT_OPENGEARCONTAINER	(CIVINTERACT_DISPLAY displayCtrl 9246)
+//-- deFINe conTROl ID's
+#dEfine CiVintERAcT_DiSplAy 		(fiNdDiSPlaY 923)
+#DeFINe ciViNTeRACT_civnAme 		(cIVInTEraCt_diSplAy dispLaYCTrl 9236)
+#dEFINE cIVINTEraCt_DETaIn 		(ciVIntERACt_dispLAy dIspLAycTRL 92311)
+#DeFINe CIvintErACt_questIONList 		(cIVInTErAct_dIsPLaY dISplaYCTrl 9234)
+#DefiNe CIvIntErAcT_reSPONSElist 		(civiNTeRACt_diSPlaY DISPlAYCtrL 9239)
+#DEFine cIvintERACt_PIc					(CIvinTerACt_DisplaY DISpLAyCtRL 1200)
+#Define CiViNTErAcT_inVeNTOrycONtRoLS 	[9240,9241,9243,9244]
+#DEFINe cIVInTEraCT_SEarcHbUTTON 	(cIvinterAct_dISPLaY dISplayCTrl 9242)
+#DEfine cIViNteRaCT_geARLiSt 		(CivINtERAct_DISPLAY dIsPlAYCtRl 9244)
+#DeFIne cIVInterACT_GEarLISTcoNTrol 	(CIvINTErACt_DisplAy DIsplAyCTrl 9244)
+#deFINe CIVinTERaCt_CONFIScaTEbUTTON 	(CiVInteract_DISplay disPlayctrl 9245)
+#dEfiNE ciVInterACT_OPenGeARCoNtaiNer	(ciViNTERacT_dIsPLAY dISpLAYcTRL 9246)
 
-switch (_operation) do {
+sWitch (_OPeRaTIoN) Do {
 
-	case "create": {
-		_result = [] call ALiVE_fnc_hashCreate;
+	cAse "CREaTE": {
+		_ReSUlt = [] CALl alive_Fnc_hASHCrEAtE;
 	};
 
-	//-- Create logic on all localities
-	case "init": {
+	//-- CrEATe lOgIC on All lOCalitiES
+	CAse "inIt": {
 
-		if (isNil QMOD(civInteractHandler)) then {
-			//-- Get settings
-			_debug = _logic getVariable "debug";
-			_factionEnemy = _logic getVariable "insurgentFaction";
-			private _authorized = (_logic getVariable "limitInteraction") call ALiVE_fnc_stringListToArray;
+		iF (isNIL qmod(cIvIntEractHAndler)) ThEn {
+			//-- get SetTinGs
+			_DEBug = _Logic GEtVaRIABLE "DEBug";
+			_fACtioNEnemY = _LOgic Getvariable "iNSUrgeNtFaCtION";
+			pRivaTe _aUThoRizeD = (_LogiC GetVARIabLE "liMiTIntErActIoN") cAll alIVE_fnC_StRiNGliSTtOaRRay;
 
-			//-- Create interact handler object
-			MOD(civInteractHandler) = [nil,"create"] call MAINCLASS;
-			[MOD(civInteractHandler), "Debug", _debug] call ALiVE_fnc_hashSet;
-			[MOD(civInteractHandler), "InsurgentFaction", _factionEnemy] call ALiVE_fnc_hashSet;
-			[MOD(civInteractHandler), "authorized", _authorized] call ALiVE_fnc_hashSet;
+			//-- cReATe interACT haNDler OBject
+			MOd(cIvInterACThandlEr) = [Nil,"creATe"] CALl MaiNclAsS;
+			[MOD(CIvintEraCtHaNdlER), "DeBUG", _DEbUg] CalL AlIvE_fnC_hAsHsEt;
+			[MoD(CIviNTErACthaNDLEr), "iNsuRgenTfAcTiON", _FacTiOneNemY] call AlIve_fnC_HaSHsET;
+			[mOD(civiNtERActHaNDleR), "aUthoRIZed", _aUThorIZeD] cALL aLIvE_fnc_haSHsEt;
 		};
 	};
 
-	//-- On load
-	case "openMenu": {
-		_civ = _arguments;
+	//-- on lOaD
+	CASE "oPEnMeNu": {
+		_Civ = _aRGumENTs;
 
- 		private _authorized = [MOD(civInteractHandler), "authorized", []] call ALiVE_fnc_hashGet;
+ 		priVAte _AuThORiZed = [MoD(CIvIntErAcTHanDLEr), "AUThOrIzed", []] CALl ALIve_fnc_HaShGET;
 
-		//-- Exit if civ is armed
-		if ((primaryWeapon _civ != "") or {handgunWeapon _civ != ""}) exitWith {};
+		//-- eXiT if cIV IS aRmed
+		If ((PRIMaRyWeaPON _CiV != "") Or {HaNdGUnweaPon _CIV != ""}) EXitWITh {};
 
-		// Exit if not authorized
-		if (count _authorized > 0 && !((getPlayerUID player in _authorized) || (typeOf player in _authorized) || (name player in _authorized) || (faction player in _authorized) || (rank player in _authorized))) exitWith {["The civilian can't understand what you are saying."] call ALiVE_fnc_dumpR;};
+		// EXiT if nOt aUThOrIZEd
+		If (coUNT _AuThORIZeD > 0 && !((GetplAyErUId plAYER iN _AutHoRiZED) || (tYpEOF PlAyer IN _aUthORiZED) || (nAME PLayer iN _aUTHoRIZEd) || (facTioN PLayEr iN _AutHORIzeD) || (rANk PlAyER in _authORIZed))) EXitWITH {["THe cIvIlIan CAn't UNDErsTaNd what yOu aRE sayiNG."] cALl ALiVE_FNc_DUMpR;};
 
-		//-- Close dialog if it happened to open twice
-		if (!isNull findDisplay 923) exitWith {};
+		//-- cLoSe DialOg IF IT HAPpEned TO OPeN Twice
+		iF (!ISnull fINDDISPLAY 923) EXItwiTH {};
 
-		//-- Stop civilian
-		[[[_civ],{(_this select 0) disableAI "MOVE"}],"BIS_fnc_spawn",_civ,false,true] call BIS_fnc_MP;
-		//_civ disableAI "MOVE"; //-- Needs further testing but wasn't reliable in MP (Arguments must be local -- unit is local to server (or hc))
+		//-- stOp cIvIlIAN
+		[[[_CiV],{(_THiS SEleCT 0) DiSableai "moVe"}],"bIS_fNC_sPAWN",_CIv,fALSE,TRUE] CaLl bis_FNC_mP;
+		//_ciV diSabLeaI "moVE"; //-- neeDS FurThEr tESting But wASn't rElIaBLE IN MP (argUmeNTS must bE lOCal -- uNIt is lOcal tO sERVEr (OR Hc))
 
-		//-- Remove data from handler -- Just in case something doesn't delete upon closing
-		[_logic, "CivData", nil] call ALiVE_fnc_hashSet;
-		[_logic, "Civ", nil] call ALiVE_fnc_hashSet;
-		[_logic, "Items", nil] call ALiVE_fnc_hashSet;
+		//-- rEmOvE DATa frOm haNDleR -- JUsT In cAsE SOMethInG DOeSn'T deLETE Upon CLOSING
+		[_lOGIC, "cIVDaTA", nIl] CalL aLIVE_FNC_HaSHSET;
+		[_LOGic, "cIv", Nil] cALL ALiVe_FNc_HAshset;
+		[_LOGiC, "itEmS", NIl] cAlL ALIvE_fNc_hAShsET;
 
-		//-- Hash civilian to logic (must be done early so commandHandler has an object to use)
-		[_logic, "Civ", _civ] call ALiVE_fnc_hashSet;	//-- Unit object
+		//-- HaSh civILIaN tO LOGic (MuSt bE doNe eARly sO cOmmAndhAndleR hAs An obJEct TO use)
+		[_LoGiC, "civ", _CiV] calL alivE_FnC_HaSHSet;	//-- UNIt ObjecT
 
-		//-- Open dialog
-		CreateDialog "ALiVE_CivilianInteraction";
+		//-- open DialOg
+		creATedIALoG "ALIVE_cIvIlianInTeractiOn";
 
-		if (_civ getVariable "detained") then {
-			CIVINTERACT_DETAIN ctrlSetText "Release";
+		IF (_CiV GeTVArIABLe "DeTaiNEd") THEN {
+			ciVINtERacT_DEtAiN CtrlsETtExT "rELEase";
 		};
 
-		[nil,"toggleSearchMenu"] call MAINCLASS;
-		CIVINTERACT_CONFISCATEBUTTON ctrlShow false;
-		CIVINTERACT_OPENGEARCONTAINER ctrlShow false;
+		[Nil,"togGLeSEaRchmeNu"] calL mAINcLASS;
+		civIntEraCt_cOnFIScateButtOn CtRLSHOw fAlse;
+		cIviNTEracT_OPENgeARContAINer ctRlshow FAlSe;
 
-		//-- Display loading
-		CIVINTERACT_QUESTIONLIST lbAdd "Loading . . .";
-		CIVINTERACT_PIC ctrlsetText "a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa";
-		//-- Retrieve data
-		[nil,"getData", [player,_civ]] remoteExecCall [QUOTE(MAINCLASS),2];
+		//-- DisPlAY LOaDInG
+		CIvIntEract_QUEStiOnliST lBaDd "LOADIng . . .";
+		CIvinTEraCT_pIc ctrLSETTEXT "A3\uI_f\dATa\GUi\RsC\RSCDIsPLAyMAIN\PrOFilE_plaYeR_Ca.pAa";
+		//-- REtrievE dATa
+		[NiL,"gEtdATa", [pLaYEr,_civ]] remOtEeXEcCaLL [QuOtE(MainCLASS),2];
 	};
 
-	//-- Load data
-	case "loadData": {
-		//-- Exit if the menu has been closed
-		if (isNull findDisplay 923) exitWith {};
+	//-- LoAd DAtA
+	cAse "LoaddATA": {
+		//-- Exit IF the MeNU Has been cLoSed
+		iF (IsnuLL FInDDispLay 923) EXItWIth {};
 
-		_arguments params ["_objectiveInstallations","_objectiveActions","_civInfo","_hostileCivInfo"];
+		_arGUmEntS pAraMs ["_ObjectIveinsTallAtIOns","_oBjECTiVEaCtions","_CiviNFO","_HOstIleciVInFo"];
 
-		_logic = MOD(civInteractHandler);
+		_LogIc = mod(civIntEracthANDler);
 
-		//-- Create hash
-		_civData = [] call ALIVE_fnc_hashCreate;
-		_civ = [_logic,"Civ"] call ALiVE_fnc_hashGet;
-		_answersGiven = _civ getVariable ["AnswersGiven", []];
+		//-- CrEAte HAsH
+		_civDAta = [] Call ALIVe_FnC_HaSHcrEaTE;
+		_cIV = [_lOgIc,"Civ"] CAlL aLive_fnc_HAshGet;
+		_ANSWeRsGIvEn = _CiV gETVArIabLE ["aNsWerSGIVEN", []];
 
-		//-- Hash data to logic
-		[_civData, "Installations", _objectiveInstallations] call ALiVE_fnc_hashSet;		//-- [_factory,_HQ,_depot,_roadblocks]
-		[_civData, "Actions", _objectiveActions] call ALiVE_fnc_hashSet;			//-- [_ambush,_sabotage,_ied,_suicide]
-		[_civData, "CivInfo", _civInfo] call ALiVE_fnc_hashSet;				//-- [_homePos, _individualHostility, _townHostility]
-		[_civData, "HostileCivInfo", _hostileCivInfo] call ALiVE_fnc_hashSet;			//-- [_civ,_homePos,_activeCommands]
-		[_civData, "AnswersGiven", _answersGiven] call ALiVE_fnc_hashSet;			//-- Default []
-		[_civData, "Asked", 0] call ALiVE_fnc_hashSet;					//-- Default - 0
-		[_logic, "CivData", _civData] call ALiVE_fnc_hashSet;
+		//-- Hash DAtA to lOGiC
+		[_cIvdatA, "instaLlatIoNS", _OBjEctIvEINSTallatiOnS] CALL ALivE_fnc_hAshset;		//-- [_fACtory,_Hq,_DepOT,_RoadBlocKs]
+		[_CIvdATa, "aCtionS", _ObjECtiVEACTions] CaLl ALIve_FNc_hasHSET;			//-- [_AMBuSh,_SaBotaGE,_IEd,_sUicidE]
+		[_ciVData, "CIVInfO", _ciVinFO] calL Alive_FNC_hAshsEt;				//-- [_hOMEpos, _indIVIdUALhOstIlitY, _towNHostilIty]
+		[_cIvdATA, "HosTIlecivinFo", _hostIleCIviNfO] CaLl alivE_fnC_HASHset;			//-- [_Civ,_HOmePoS,_aCTIVECOMmAnDs]
+		[_CiVDaTA, "aNswERsgiVen", _ANSwERsgiveN] CalL ALIVe_FNC_hAshSeT;			//-- deFaUlT []
+		[_CIVDAtA, "Asked", 0] CalL ALIVe_fNc_HAshseT;					//-- dEFAULT - 0
+		[_lOGIC, "CIvDAtA", _cIVdATa] caLL AliVe_FNc_hAsHset;
 
-		//-- Display persistent civ name
-		_name = _civInfo select 3;
-		_role = [nil,"getRole", _civ] call MAINCLASS;
-		if (_role == "None") then {
-			CIVINTERACT_CIVNAME ctrlSetText (format ["%1 (%2)", _name, [configFile >> "CfgVehicles" >> typeOf vehicle _civ] call BIS_fnc_displayName]);
-		} else {
-			CIVINTERACT_CIVNAME ctrlSetText (format ["%1 (%2)", _name, _role]);
+		//-- diSplAY PErSistEnt CIv nAME
+		_namE = _CIVinfo SELEcT 3;
+		_RoLe = [nil,"gETroLe", _Civ] CALl MainclAsS;
+		IF (_ROle == "none") theN {
+			cIviNteRAcT_cIvname cTrlSeTtexT (FoRMaT ["%1 (%2)", _nAme, [CoNfiGfILE >> "CFGveHicles" >> tyPeoF vEhiCLE _CIv] calL BIS_fNc_DIsPLAynAME]);
+		} Else {
+			CiViNterACT_CivNAMe CtrlSeTTExT (formAt ["%1 (%2)", _nAmE, _rolE]);
 		};
 
-		[_logic,"enableMain"] call MAINCLASS;
+		[_LoGIC,"EnablEMaIn"] call maiNCLasS;
 	};
 
-	case "enableMain": {
-		//-- Remove EH's
-		(COMMANDBOARD_DISPLAY displayCtrl COMMANDBOARD_MAINMENU) ctrlRemoveAllEventHandlers "LBSelChanged";
+	CAse "ENAblemaIn": {
+		//-- REMOVE eH'S
+		(cOmMAndBoArd_DisPLay DISpLAyCtrL CoMMaNDBoArD_MAiNmEnu) CTrLReMoVealLEVeNTHANdLeRs "LbSElcHANgeD";
 
-		//-- Clear list
-		lbClear CIVINTERACT_QUESTIONLIST;
+		//-- cLEAR lIST
+		lBCleAr cIVInTerACT_QuEStIONLIst;
 
-		//-- Build question list
-		CIVINTERACT_QUESTIONLIST lbAdd "Where do you live?";
-		CIVINTERACT_QUESTIONLIST lbSetData [0, "Home"];
+		//-- BUIlD QUEstIon LISt
+		CIVInTERACT_QUEstiONliST lbaDD "WhErE do you Live?";
+		CiViNTeRaCT_QuEsTIOnliST LBsetdAtA [0, "HoME"];
 
-		CIVINTERACT_QUESTIONLIST lbAdd "What town you do live in";
-		CIVINTERACT_QUESTIONLIST lbSetData [1, "Town"];
+		cIVinTeRACt_QueSTioNlist lbADd "What TOwN YoU Do lIVe In";
+		CiviNtEract_QUEsTiOnLisT LbseTdaTa [1, "tOwN"];
 
-		CIVINTERACT_QUESTIONLIST lbAdd "Have you seen any IED's lately?";
-		CIVINTERACT_QUESTIONLIST lbSetData [2, "IEDs"];
+		CIvinterAct_QuesTioNlISt lBAdd "HaVe yOu sEEN aNy ied's LATEly?";
+		CIVINterAcT_quesTIonliST LbsEtdata [2, "iedS"];
 
-		CIVINTERACT_QUESTIONLIST lbAdd "Have you seen any insurgent activity lately?";
-		CIVINTERACT_QUESTIONLIST lbSetData [3, "Insurgents"];
+		CiVINTeRACT_queSTiONlisT LbADD "HAve YOU SeEn AnY INSUrgeNT aCtivIty LATeLY?";
+		civintEracT_quesTIonlIST lbSetdatA [3, "iNsurgEnTS"];
 
-		CIVINTERACT_QUESTIONLIST lbAdd "Do you know the location of any insurgent hideouts?";
-		CIVINTERACT_QUESTIONLIST lbSetData [4, "Hideouts"];
+		cIViNTerACT_QUESTIONLIST lbaDd "dO you knOW tHe locATion Of any iNsuRGENt HiDEoUTs?";
+		ciVINTEraCt_QUesTIonLIsT lbseTDatA [4, "hideoUTS"];
 
-		CIVINTERACT_QUESTIONLIST lbAdd "Have you seen any strange behavior lately?";
-		CIVINTERACT_QUESTIONLIST lbSetData [5, "StrangeBehavior"];
+		CIvINteRaCT_QueStIOnLISt lBAdd "haVe YoU SEEN aNY StrangE beHAviOr lATElY?";
+		CiViNtErACT_QUEStIoNlIST LBSEtdATa [5, "stranGebeHAvIoR"];
 
-		CIVINTERACT_QUESTIONLIST lbAdd "Do you support us?";
-		CIVINTERACT_QUESTIONLIST lbSetData [6, "Opinion"];
+		CIviNteRAct_QUeStIONLIST LBADd "do YOU sUPPOrt us?";
+		civinterAct_qUeSTiONLIst lbSeTdaTA [6, "OpInION"];
 
-		CIVINTERACT_QUESTIONLIST lbAdd "What is the opinion of our forces in this area?";
-		CIVINTERACT_QUESTIONLIST lbSetData [7, "TownOpinion"];
+		CIVINTeRACt_QuEsTIONlIST lBaDD "wHat Is ThE oPINion OF Our FORCeS In This area?";
+		ciVInTeRAcT_quesTIONlIst lbSetDAtA [7, "tOWnOPINiON"];
 
-		CIVINTERACT_QUESTIONLIST ctrlAddEventHandler ["LBSelChanged","
-			params ['_control','_index'];
-			_question = _control lbData _index;
-			[ALiVE_civInteractHandler,_question] call ALiVE_fnc_questionHandler;
+		CivINtErACt_QuEStiOnlisT cTRLadDEvEnthANDLEr ["LBSElChangED","
+			PAramS ['_COntrol','_INdeX'];
+			_queSTioN = _cOnTrol LbdaTA _IndEx;
+			[ALIvE_CIVinteraCtHANDLER,_qUesTIon] cAll alIVe_FNc_qUeSTioNhAnDLEr;
 		"];
 	};
 
-	//-- Unload
-	case "closeMenu": {
-		//-- Close menu
-		closeDialog 0;
+	//-- UNloAD
+	CAse "ClosEmEnu": {
+		//-- CLose MEnu
+		CLoSeDialOG 0;
 
-		//-- Un-stop civilian
-		_civ = [_logic, "Civ"] call ALiVE_fnc_hashGet;
-		[[[_civ],{(_this select 0) enableAI "MOVE"}],"BIS_fnc_spawn",_civ,false,true] call BIS_fnc_MP;
-		//_civ enableAI "MOVE"; //-- Needs further testing but wasn't reliable in MP (Arguments must be local -- unit is local to server (or hc))
+		//-- Un-StOp CIVilIAn
+		_cIV = [_loGic, "CiV"] CaLl aLivE_FNC_hASHGET;
+		[[[_cIV],{(_this sELect 0) EnAbLeAI "mOve"}],"bIs_fnC_SPaWN",_cIV,fAlse,tRUe] CaLl bIs_fnC_MP;
+		//_civ EnABlEAi "move"; //-- nEeDS FURThEr TEstInG but wASn't reLiablE IN MP (ArgumEnTs MuSt bE LOcal -- UNIT is loCAL TO sErVeR (or HC))
 
-		//-- Remove data from handler
-		[_logic, "CivData", nil] call ALiVE_fnc_hashSet;
-		[_logic, "Civ", nil] call ALiVE_fnc_hashSet;
-		//[_logic, "Items", nil] call ALiVE_fnc_hashSet; 	//-- REMOVE AFTER FIX
+		//-- REMOVe data from HAndLEr
+		[_LOGIc, "CivDatA", NiL] cAll aLIvE_FNC_hAShSEt;
+		[_loGIC, "CiV", nil] cAlL AlIVE_FNc_hAShSET;
+		//[_LOgic, "ItEMS", Nil] CaLL alIve_FNC_hAShSeT; 	//-- REmOvE aftER fiX
 	};
 
-	case "getObjectiveInstallations": {
-		_arguments params ["_opcom","_objective"];
+	cAse "GEtobjEctIvEInstaLlAtiOns": {
+		_ARGUmENtS PArAmS ["_oPcoM","_ObJeCtIvE"];
 
-		_factory = [_opcom,"convertObject",[_objective,"factory",objNull] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-		_HQ = [_opcom,"convertObject",[_objective,"HQ",objNull] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-		_depot = [_opcom,"convertObject",[_objective,"depot",objNull] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-		_roadblocks = [_opcom,"convertObject",[_objective,"roadblocks",objNull] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+		_fACtORY = [_OPcom,"cOnveRtOBJeCT",[_ObJECTIVE,"FaCtORy",oBJnULl] CALL ALive_fNc_hashget] caLL aLIVe_Fnc_oPcom;
+		_Hq = [_opCoM,"cONvErToBjeCT",[_OBJecTIVE,"hq",objnuLl] Call aliVe_Fnc_HAsHgET] cAlL alivE_FnC_opCoM;
+		_DepoT = [_oPCOM,"conVErtObJECT",[_objectIve,"DePOT",oBJnUlL] CALl alIVe_FnC_HashgeT] calL ALiVE_FNc_OPCOm;
+		_rOaDBLOCks = [_oPcom,"cOnVertobJeCT",[_ObjEctIVe,"roaDBLOCkS",OBjnUll] CaLL aLive_FnC_hAsHGET] cAlL AlivE_FNc_OpCoM;
 
-		_result = [_factory,_HQ,_depot,_roadblocks];
+		_reSUlt = [_FActoRY,_hq,_dEPOT,_ROAdBLoCKS];
 
 	};
 
-	case "getObjectiveActions": {
-		_arguments params ["_opcom","_objective"];
+	cASE "GeTObjeCTIveaCtIOns": {
+		_aRgUMeNts pARams ["_OpcOM","_obJecTive"];
 
-		_ambush = [_opcom,"convertObject",[_objective,"ambush",objNull] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-		_sabotage = [_opcom,"convertObject",[_objective,"sabotage",objNull] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-		_ied = [_opcom,"convertObject",[_objective,"ied",objNull] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-		_suicide = [_opcom,"convertObject",[_objective,"suicide",objNull] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+		_AMBUsh = [_OpCoM,"convERTobjeCT",[_OBjEcTiVe,"AmBUSh",Objnull] cALl alive_Fnc_hAsHGet] CalL ALIVe_FNC_opcOm;
+		_sAbOTAGE = [_OPCOM,"ConvErToBJect",[_ObJECtIve,"sAbotAGe",ObjnulL] cAll aLivE_fnc_hashGEt] caLL ALiVE_FnC_OPcoM;
+		_IED = [_OPcOM,"coNvErtOBject",[_ObjECTiVE,"IeD",ObjNuLL] cAlL aLiVe_fNC_HAshgEt] cALl ALIve_FNC_oPcom;
+		_suIcidE = [_oPCoM,"cONVertOBJECt",[_oBjectiVe,"sUiCIDE",OBJNULL] cALl aLIVE_fNc_hAShGEt] cALL alIvE_Fnc_OpCOm;
 
-		_result = [_ambush,_sabotage,_ied,_suicide];
+		_rEsUlT = [_aMbUsH,_SaBOTAGe,_ieD,_SUICidE];
 	};
 
-	case "getData": {
-		private ["_opcom","_nearestObjective","_civInfo","_clusterID","_agentProfile","_hostileCivInfo","_name","_objectiveInstallations","_objectiveActions"];
-		_arguments params ["_player","_civ"];
+	caSE "GetdAta": {
+		PrIvate ["_opcom","_neAREsTOBJEcTIvE","_CiviNfo","_clusTErID","_AgenTpROFIle","_HostILeCIvinfO","_Name","_oBJECTivEiNStALlATIONS","_obJECtivEaCtIOnS"];
+		_ARGUmEntS pArAMS ["_plaYEr","_CIv"];
 
-		_civPos = getPos _civ;
-		_insurgentFaction = [MOD(civInteractHandler), "InsurgentFaction"] call ALiVE_fnc_hashGet;
-		_objectives = [];
+		_CiVpoS = gETpOS _CiV;
+		_inSURgeNTFactioN = [mod(CivINTERactHanDlEr), "InsUrGENTfAcTIOn"] CaLL AlIVe_fnc_hAsHGet;
+		_obJEcTiVEs = [];
 
-		//-- Get nearest objective properties
-		for "_i" from 0 to (count OPCOM_instances - 1) step 1 do {
-			_opcom = OPCOM_instances select _i;
+		//-- GET nEArEst ObJEctIve pROpertIEs
+		FOr "_i" frOM 0 To (cOuNt OPCOm_InSTAnces - 1) sTEp 1 do {
+			_OpcoM = OPCoM_iNStAnCES SelECT _i;
 
-			if (_insurgentFaction in ([_opcom, "factions"] call ALiVE_fnc_hashGet)) exitWith {
-				_objectives = ([_opcom, "objectives",[]] call ALiVE_fnc_hashGet);
-				_objectives = [_objectives,[_civPos],{_Input0 distance2D ([_x, "center"] call CBA_fnc_HashGet)},"ASCEND"] call BIS_fnc_sortBy;
-				_nearestObjective = [_opcom, _objectives select 0];
+			iF (_INSUrgenTfaCtION iN ([_oPcOm, "FACtIONs"] calL alIVE_FNC_hAShGeT)) exitwiTH {
+				_ObjEcTIves = ([_OPCOm, "ObJeCtiVes",[]] cAll AlIvE_Fnc_HaShgeT);
+				_OBJecTives = [_oBJECtivES,[_civpoS],{_inPut0 DISTance2D ([_x, "CEnter"] CaLL cBA_fNc_HashgET)},"AScend"] CAll bIS_fnC_SoRTBy;
+				_nEareStobjeCtive = [_OPcOM, _oBJEcTiVes selecT 0];
 			};
 		};
 
 
-		if (count _objectives > 0) then {
-			_objectiveInstallations = [MOD(civInteractHandler), "getObjectiveInstallations", _nearestObjective] call MAINCLASS;
-			_objectiveActions = [MOD(civInteractHandler), "getObjectiveActions", _nearestObjective] call MAINCLASS;
-		} else {
-			_objectiveInstallations = [[],[],[],[]];
-			_objectiveActions = [[],[],[],[]];
+		If (cOUnt _oBJECtiVES > 0) then {
+			_oBjECtIvEinStALLatiOnS = [MOD(cIVInTerACthandler), "GEToBjECtIVEinsTAllatiONS", _neAREstoBJeCTivE] CAll MaiNcLAsS;
+			_oBjeCtIvEaCtIOns = [mOd(CIVintErACThANdLer), "GetOBJeCtivEActIOns", _nEAREStobjeCtive] cAlL MaInCLaSS;
+		} eLsE {
+			_objeCtIvEINStaLLATIonS = [[],[],[],[]];
+			_ObjECTIVeacTioNs = [[],[],[],[]];
 		};
 
-		//-- Get civilian info
-		_civID = _civ getVariable ["agentID", ""];
+		//-- gEt CivILiAn iNfo
+		_Civid = _CIV GEtVaRIABLE ["AGeNtId", ""];
 
-		if (_civID != "") then {
-			_civProfile = [ALIVE_agentHandler, "getAgent", _civID] call ALIVE_fnc_agentHandler;
-			_clusterID = (_civProfile select 2) select 9;
-			_cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
-			_homePos = (_civProfile select 2) select 10;
-			_individualHostility = (_civProfile select 2) select 12;
-			_townHostility = [_cluster, "posture"] call ALIVE_fnc_hashGet;	//_townHostility = (_cluster select 2) select 9; (Different)
+		If (_CIvID != "") TheN {
+			_CIvPrOfile = [aLIVE_aGeNTHaNDlEr, "geTAgenT", _civId] CalL ALIVE_fnC_aGENTHanDLEr;
+			_CLuSTErId = (_CIVproFIlE SElecT 2) seLECT 9;
+			_cLUSter = [ALiVe_CLusTeRHaNDLEr, "GeTclUSTER", _clusteRID] Call ALivE_fnc_cLUsteRhanDlEr;
+			_homepOs = (_cIvPROFilE seleCt 2) Select 10;
+			_IndIVIduAlhoSTILitY = (_CivProFILe SeLECt 2) SeLecT 12;
+			_tOwNhoSTiLItY = [_clUsTEr, "pOstURe"] CAlL aLive_fnc_HaShGet;	//_tOwNhosTilITY = (_ClUsTeR selEcT 2) SeLECt 9; (DIffErenT)
 
-			if (!isNil {[_civProfile,"ALiVE_PersistentName"] call ALiVE_fnc_hashGet}) then {
-				_name = [_civProfile,"ALiVE_PersistentName"] call ALiVE_fnc_hashGet;
+			IF (!isNil {[_ciVpROFIle,"aLIVE_PeRSisTeNTNAmE"] caLl aLIvE_fnC_HasHgET}) ThEN {
+				_NamE = [_CIVPRoFiLe,"alIvE_perSiSTEntnAMe"] Call aLivE_Fnc_HaSHGET;
 			} else {
-				[_civProfile,"ALiVE_PersistentName", name _civ] call ALiVE_fnc_hashSet;
-				_name = name _civ;
+				[_cIVpRoFILE,"alive_PersISteNtname", NaMe _CIv] cAlL AlivE_fnC_haShsEt;
+				_nAME = NAme _cIv;
 			};
 
-			_civInfo = [_homePos, _individualHostility, _townHostility, _name];
+			_cIVinfO = [_hOMEpos, _INdIviDuaLhosTILIty, _toWNhostIlItY, _NaMe];
 
-		} else {
-			_clusterID = _civ getVariable ["ALiVE_clusterID",""];
-			if (_clusterID == "") then {
-				private _nearestAgent = [position _civ] call ALiVE_fnc_getNearestActiveAgent;
-            	if (count _nearestAgent > 0) then {
-                 	_clusterID = [_nearestAgent, "homeCluster"] call ALiVE_fnc_hashGet;
-				} else {
-					_clusterID = ([ALIVE_clusterHandler, "clusters"] call ALiVE_fnc_hashGet) select 1 select 0;
+		} eLSE {
+			_CLuStErid = _CiV GEtvARIaBLE ["ALIVE_cLuSTERiD",""];
+			If (_clusterId == "") tHen {
+				PRIvATe _neaREStaGENT = [POsItiOn _cIV] CAlL aLiVe_FNC_gEtNEarestACTiVeAgEnT;
+            	IF (coUNt _NeARestageNT > 0) Then {
+                 	_CLuStERid = [_NEArEStagenT, "homeClusTeR"] caLl aliVe_fnC_hashGET;
+				} ElsE {
+					_clUSTERID = ([alIVe_cLustErhAnDLeR, "ClUStERs"] CaLl ALIve_FnC_HAshGet) sELEcT 1 SELeCt 0;
 				};
 			};
-			_cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
-			_homePos = _civ getVariable ["ALiVE_homePos",position _civ];
-			_individualHostility = _civ getVariable ["ALiVE_CivPop_Hostility",30];
-			_townHostility = [_cluster, "posture"] call ALIVE_fnc_hashGet;
-			_name = name _civ;
-			_civInfo = [_homePos, _individualHostility, _townHostility,_name];
+			_cLusTER = [aLIvE_clustErHAnDlEr, "GETCLuSter", _cluSTERid] cALl AliVE_fNc_CLUstERHanDlER;
+			_hoMepos = _cIV GeTVArIAble ["ALIvE_hOmePOS",poSiTion _CIV];
+			_iNdIVIdUALhostILiTY = _CIv GetVarIABLE ["Alive_CiVpOP_HOsTIliTY",30];
+			_townHOsTILITY = [_CLustER, "POsTUre"] caLL AlIve_fnc_HAShgET;
+			_naME = nAmE _cIV;
+			_CiViNfo = [_homEpos, _individUAlhoStILItY, _ToWNhostiLItY,_NAmE];
 		};
 
-		//-- Get nearby hostile civilian
-		_hostileCivInfo = [];
-		_insurgentCommands = ["alive_fnc_cc_suicide","alive_fnc_cc_suicidetarget","alive_fnc_cc_rogue","alive_fnc_cc_roguetarget","alive_fnc_cc_sabotage","alive_fnc_cc_getweapons"];
-		_agentsByCluster = [ALIVE_agentHandler, "agentsByCluster"] call ALIVE_fnc_hashGet;
-		_nearCivs = [_agentsByCluster, _clusterID] call ALIVE_fnc_hashGet;
+		//-- Get nEArbY hOSTiLe ciViliaN
+		_hostILecIVinfO = [];
+		_INsurgEntcOMmAndS = ["AlivE_FNC_cC_SuIcidE","AlIVE_fnC_CC_SUiCidetaRGeT","ALive_fnc_CC_ROGUE","alive_fnC_cC_ROGUetARget","aLive_fNc_cC_sABoTAgE","AlIvE_fNC_Cc_getWeaPoNs"];
+		_AGeNTSBYCLuStEr = [aliVE_AgENTHAndleR, "AgEnTsbyCLUstER"] CAll ALiVE_fNc_HashGeT;
+		_NeArCIvS = [_AGeNTSbYclUSTeR, _cLUsterId] CaLL alIVE_FNC_hAshGeT;
 
-		for "_i" from 0 to ((count (_nearCivs select 1)) - 1) do {
-			_agentID = (_nearCivs select 1) select _i;
-			_agentProfile = [_nearCivs, _agentID] call ALiVE_fnc_hashGet;
+		fOr "_I" fRom 0 TO ((COunt (_NeArCivs seLEct 1)) - 1) do {
+			_AGEntId = (_NeArCIVs sELECt 1) sELECt _I;
+			_AGentPrOFIle = [_neaRCivs, _AgeNtID] caLL alive_FnC_hASHGeT;
 
-			if ([_agentProfile,"active"] call ALIVE_fnc_hashGet) then {
-				if ([_agentProfile, "type"] call ALiVE_fnc_hashGet == "agent") then {
-					_activeCommands = [_agentProfile,"activeCommands",[]] call ALIVE_fnc_hashGet;
+			IF ([_aGEntProFiLE,"ACTive"] CAll aLIvE_fNc_hAShgET) Then {
+				If ([_aGENTPROfIle, "TYpe"] caLl alIVe_Fnc_hAShgET == "agENt") tHEN {
+					_ACtIVeCOmmanDS = [_aGEntprOFilE,"acTIvECOmmAnDs",[]] CAll aLIve_FnC_HaShGET;
 
-					if ({toLower (_x select 0) in _insurgentCommands} count _activeCommands > 0) then {
-						_unit = [_agentProfile,"unit"] call ALIVE_fnc_hashGet;
+					If ({ToLOWER (_X SeLect 0) In _INSurgEnTcommANds} couNt _ACTiVEcoMMaNDs > 0) then {
+						_Unit = [_agEnTprOfiLE,"UNiT"] CaLl AlivE_FnC_HAShGET;
 
-						if (name _civ != name _unit) then {
-							_homePos = (_agentProfile select 2) select 10;
-							_hostileCivInfo pushBack [_unit,_homePos,_activeCommands];
+						IF (nAme _CIv != NamE _uNIt) tHEn {
+							_hoMepos = (_agentPROfiLe selEct 2) SElect 10;
+							_HOStilECIVINfO PUsHBacK [_UNiT,_hOMEPoS,_acTiVECoMMANds];
 						};
 					};
 				};
 			};
 		};
 
-		if (count _hostileCivInfo > 0) then {_hostileCivInfo = _hostileCivInfo call BIS_fnc_selectRandom};	//-- Ensure random hostile civ is picked if there are multiple
+		if (CoUnt _HoSTileCiVINfo > 0) TheN {_HOSTilECIViNfO = _HOsTILecIViNFo CALl bIS_Fnc_sELeCtrAndoM};	//-- eNsUrE randOM hosTiLE CIV Is PiCKeD if TheRe Are MUlTIplE
 
-		_civData = [_objectiveInstallations, _objectiveActions, _civInfo,_hostileCivInfo];
+		_CivData = [_OBJectIveinstAlLATIoNs, _obJECTIVEaCtIons, _CIVinfO,_HostIlECIvinfO];
 
-		// _civData call ALiVE_fnc_inspectArray;
+		// _CiVDAta cALl aliVe_FnC_INSPeCtarRAy;
 
-		//-- Send data to client
-		[nil,"loadData", _civData] remoteExecCall [QUOTE(MAINCLASS),_player];
+		//-- SeNd DatA to clienT
+		[NIL,"loaddAtA", _civDAta] ReMoteEXECcAll [quoTe(MaiNclass),_pLAYer];
 	};
 
-	case "getRole": {
-		private ["_role"];
-		_civ = _arguments;
-		_role = "none";
-		{if (_civ getvariable [_x,false]) exitwith {_role = _x}} foreach ["townelder","major","priest","muezzin","politician"];
+	casE "GeTROLe": {
+		PRIVATe ["_RolE"];
+		_CiV = _ArguMEnTs;
+		_RolE = "NONE";
+		{IF (_cIv getVARIaBlE [_X,falsE]) EXitWiTh {_rOLe = _x}} FOreACH ["toWnelDeR","MAjoR","pRiESt","MUeZZIn","pOLitiCIan"];
 
-		_result = ([_role] call CBA_fnc_capitalize);
+		_ReSult = ([_Role] cAlL cbA_Fnc_CaPITAlIze);
 	};
 
-	case "isIrritated": {
-		_arguments params ["_hostile","_asked","_civ"];
+	CaSE "ISIRRItATed": {
+		_ARgUmENTs pArAMS ["_hoStILe","_Asked","_ciV"];
 
-		//-- Raise hostility if civilian is irritated
-		if !(_hostile) then {
-			if (floor random 100 < (3 * _asked)) then {
-				[MOD(civInteractHandler),"UpdateHostility", [_civ, 10]] call MAINCLASS;
-				if (floor random 70 < (_asked * 5)) then {
-					_response1 = format [" *%1 grows visibly annoyed*", name _civ];
-					_response2 = format [" *%1 appears uninterested in the conversation*", name _civ];
-					_response3 = " Please leave me alone now.";
-					_response4 = " I do not want to talk to you anymore.";
-					_response5 = " Can I go now?";
-					_response = [_response1, _response2, _response3, _response4, _response5] call BIS_fnc_selectRandom;
-					CIVINTERACT_RESPONSELIST ctrlSetText ((ctrlText CIVINTERACT_RESPONSELIST) + _response);
+		//-- rAISe HoStILITy if cIvilIAn is iRritAted
+		iF !(_hOStILe) ThEn {
+			iF (flOor rAnDOM 100 < (3 * _asked)) TheN {
+				[Mod(CiVinTeRACThaNDLEr),"UpDAteHoStIlitY", [_CiV, 10]] Call MainClASS;
+				if (FLOoR raNdOM 70 < (_asked * 5)) then {
+					_ResPONSE1 = forMat [" *%1 GRoWS VISibLy AnnOyeD*", naMe _Civ];
+					_ResPONSe2 = FORMAt [" *%1 apPEaRS UniNTerEsted in the CoNVeRsAtiOn*", NAME _CIV];
+					_ReSPonSe3 = " pLeasE LeAvE mE aloNE NoW.";
+					_ReSpoNSE4 = " i do noT Want tO tALK to yOU aNymORE.";
+					_rESpONSe5 = " Can I Go NoW?";
+					_RespoNSe = [_respoNSE1, _rEsPoNSE2, _ResponsE3, _RESPOnsE4, _RESpONse5] calL bIS_Fnc_SeLEctRandoM;
+					ciVINTeRaCT_rEsPOnseLiSt CtrlSettExT ((CtrLtEXT CIVINTerAct_rESPOnseliST) + _REsponSe);
 				};
 			};
-		} else {
-			if (floor random 100 < (8 * _asked)) then {
-				[MOD(civInteractHandler),"UpdateHostility", [_civ, 10]] call MAINCLASS;
-				if (floor random 70 < (_asked * 5)) then {
-					_response1 = format [" *%1 looks anxious*", name _civ];
-					_response2 = format [" *%1 looks distracted*", name _civ];
-					_response3 = " Are you done yet?";
-					_response4 = " You ask too many questions.";
-					_response5 = " You need to leave now.";
-					_response = [_response1, _response2, _response3,_response4, _response5] call BIS_fnc_selectRandom;
-					CIVINTERACT_RESPONSELIST ctrlSetText ((ctrlText CIVINTERACT_RESPONSELIST) + _response);
+		} eLSE {
+			If (FLooR raNDom 100 < (8 * _askED)) tHen {
+				[mOd(CivinterAcTHaNdler),"updAtEHostILitY", [_cIv, 10]] Call mAiNClass;
+				iF (FLooR RanDOm 70 < (_askeD * 5)) tHen {
+					_reSPoNse1 = FormaT [" *%1 looks aNxiOuS*", NAme _civ];
+					_respONsE2 = FORMAT [" *%1 LOoks DIStRaCtEd*", NaME _civ];
+					_RESpoNSE3 = " ARe you doNE yet?";
+					_Response4 = " YoU asK ToO MaNy quesTiOnS.";
+					_responSE5 = " YoU nEED To leAVE NOw.";
+					_respONSe = [_ReSponsE1, _rESponSe2, _ReSponse3,_respONse4, _REspoNse5] CALl BiS_FnC_seleCTraNdom;
+					CiVInTerAct_ResponSelISt CtRLseTTexT ((ctrltexT CivintERAcT_ReSponSEliSt) + _rESpONSE);
 				};
 			};
 		};
 	};
 
-	case "UpdateHostility": {
-		//-- Change local civilian hostility
-		private ["_townHostilityValue"];
-		_arguments params ["_civ","_value"];
-		if (count _arguments > 2) then {_townHostilityValue = _arguments select 2};
+	cAsE "UPdatEhOStilitY": {
+		//-- chanGe LOCal CIViLIan hOstilITY
+		PrivaTE ["_tOwnHOStiliTYvALue"];
+		_arguMents pArAmS ["_ciV","_value"];
+		If (couNT _argumENTS > 2) tHEN {_TOWNHOSTIlITyvalUe = _argUmenTs SeLecT 2};
 
-		if (isNil "_townHostilityValue") then {
-			if (isNil {[MOD(civInteractHandler), "CivData"] call ALiVE_fnc_hashGet}) exitWith {};
+		if (isNil "_townhOStiLitYvALuE") then {
+			iF (iSniL {[mOd(CIviNtERacthANDLER), "civdaTA"] cALl Alive_fNC_hAShgEt}) EXitwITh {};
 
-			_civData = [MOD(civInteractHandler), "CivData"] call ALiVE_fnc_hashGet;
-			_civInfo = [_civData, "CivInfo"] call ALiVE_fnc_hashGet;
-			_civInfo params ["_homePos","_individualHostility","_townHostility","_name"];
+			_CiVDAtA = [Mod(ciVinTeRAcThaNdleR), "cIvData"] CaLl ALivE_fNc_hAsHgEt;
+			_cIVINfO = [_CiVDATA, "ciVInfo"] cAlL aLIvE_FNC_HASHgeT;
+			_CIVInFO ParAms ["_HoMEPos","_InDIvIDuALHoStIlity","_towNHoSTILITy","_nAmE"];
 
-			_individualHostility = _individualHostility + _value;
-			_townHostilityValue = floor random 4;
-			_townHostility = _townHostility + _townHostilityValue;
-			[_civData, "CivInfo", [_homePos, _individualHostility, _townHostility, _name]] call ALiVE_fnc_hashSet;
+			_inDiVIDuAlhOsTiliTY = _inDIviDuALhoSTIliTy + _Value;
+			_ToWNHostiLItyVaLUe = FLOor RandOM 4;
+			_towNHOStilitY = _TOWNhOstILiTY + _tOWnHoStIlITyVaLue;
+			[_CiVdATA, "civiNfO", [_HoMEpoS, _iNdiviDUaLHoSTIlIty, _tOWnHoStilITy, _name]] calL alivE_FNC_haSHsEt;
 
-			[MOD(civInteractHandler), "CivData", _civData] call ALiVE_fnc_hashSet;
+			[moD(ciVInteRACthAndler), "Civdata", _ciVDATa] cAlL AlivE_fNC_hAshSET;
 		};
 
-		//-- Change civilian posture globally
-		if (isNil "_townHostilityValue") exitWith {[_logic, "UpdateHostility", [_civ,_value,_townHostilityValue]] remoteExecCall [QUOTE(MAINCLASS),2]};
+		//-- chanGE cIViLIaN posturE gLobALly
+		iF (isnIL "_ToWNhOsTiliTyvalue") EXItWIth {[_lOgiC, "updaTehostILItY", [_CIv,_vaLuE,_tOwNhostIlItYvalUE]] rEMOtEEXECCAll [QuoTe(mAiNClAsS),2]};
 
-		_civID = _civ getVariable ["agentID", ""];
-		if (_civID != "") then {
-			_civProfile = [ALIVE_agentHandler, "getAgent", _civID] call ALIVE_fnc_agentHandler;
-			_clusterID = _civProfile select 2 select 9;
+		_CIVID = _ciV GetvaRIABLe ["agEntId", ""];
+		If (_CiVID != "") ThEN {
+			_CiVProFILe = [aliVe_aGEnThAndLER, "geTaGENt", _ciVId] cAll ALIve_fNC_AGeNtHaNDler;
+			_CLUsTeriD = _cIVPROFIle SelECt 2 seLect 9;
 
-			//-- Set town hostility
-			_cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
-			_clusterHostility = [_cluster, "posture"] call ALIVE_fnc_hashGet;
-			[_cluster, "posture", (_clusterHostility + _townHostilityValue)] call ALIVE_fnc_hashSet;
+			//-- SeT tOwN HostiLiTY
+			_cLuSter = [aliVE_cLUSTERhANdLeR, "GETcLUStER", _cLusTERId] CaLL aliVe_FNC_clUSTerhanDLER;
+			_CLustErhostilITY = [_clusTer, "PosTurE"] cALL aLivE_Fnc_haSHget;
+			[_cLUSteR, "pOsTuRE", (_CLusterHoSTIlitY + _ToWnhOStiLItYValUe)] cAll ALiVE_FNC_HAsHsET;
 
-			//-- Set individual hostility
-			_hostility = (_civProfile select 2) select 12;
-			_hostility = _hostility + _value;
-			[_civProfile, "posture", _hostility] call ALiVE_fnc_hashSet;
-		};
-	};
-
-	case "getActivePlan": {
-		_activeCommand = _arguments;
-
-		switch (toLower _activeCommand) do {
-			case "alive_fnc_cc_suicide": {
-				_activePlan1 = "carrying out a suicide bombing";
-				_activePlan2 = "strapping himself with explosives";
-				_activePlan3 = "planning a bombing";
-				_activePlan4 = "getting ready to bomb your forces";
-				_activePlan5 = "about to bomb your forces";
-				_result = [_activePlan1,_activePlan2,_activePlan3,_activePlan4,_activePlan5] call BIS_fnc_selectRandom;
-			};
-			case "alive_fnc_cc_suicidetarget": {
-				_activePlan1 = "planning on carrying out a suicide bombing";
-				_activePlan2 = "strapping himself with explosives";
-				_activePlan3 = "planning a bombing";
-				_activePlan4 = "getting ready to bomb your forces";
-				_activePlan5 = "about to bomb your forces";
-				_result = [_activePlan1,_activePlan2,_activePlan3,_activePlan4,_activePlan5] call BIS_fnc_selectRandom;
-			};
-			case "alive_fnc_cc_rogue": {
-				_activePlan1 = "storing a weapon in his house";
-				_activePlan2 = "stockpiling weapons";
-				_activePlan3 = "planning on shooting a patrol";
-				_activePlan4 = "looking for patrols to shoot at";
-				_activePlan5 = "paid to shoot at your forces";
-				_result = [_activePlan1,_activePlan2,_activePlan3,_activePlan4,_activePlan5] call BIS_fnc_selectRandom;
-			};
-			case "alive_fnc_cc_roguetarget": {
-				_activePlan1 = "storing a weapon in his house";
-				_activePlan2 = "stockpiling weapons";
-				_activePlan3 = "planning on shooting a patrol";
-				_activePlan4 = "looking for somebody to shoot at";
-				_activePlan5 = "paid to shoot at your forces";
-				_result = [_activePlan1,_activePlan2,_activePlan3,_activePlan4,_activePlan5] call BIS_fnc_selectRandom;
-			};
-			case "alive_fnc_cc_sabotage": {
-				_activePlan1 = "planning on sabotaging a building";
-				_activePlan2 = "blowing up a building";
-				_activePlan3 = "planting explosives nearby";
-				_activePlan4 = "getting ready to plant explosives";
-				_activePlan5 = "paid to shoot at your forces";
-				_result = [_activePlan1,_activePlan2,_activePlan3,_activePlan4,_activePlan5] call BIS_fnc_selectRandom;
-			};
-			case "alive_fnc_cc_getweapons": {
-				_activePlan1 = "retrieving weapons from a nearby weapons depot";
-				_activePlan2 = "planning on joining the insurgents";
-				_activePlan3 = "getting ready to go to a nearby insurgent recruitment center";
-				_activePlan4 = "getting ready to retrieve weapons from a cache";
-				_activePlan5 = "paid to attack your forces";
-				_activePlan6 = "forced to join the insurgents";
-				_activePlan7 = "preparing to attack your forces";
-				_result = [_activePlan1,_activePlan2,_activePlan3,_activePlan4,_activePlan5] call BIS_fnc_selectRandom;
-			};
+			//-- SET InDIVIduaL hoSTIliTY
+			_HOStIlitY = (_civPROFIle SeLECt 2) SeLeCt 12;
+			_HOStILitY = _HosTiliTy + _ValUE;
+			[_CIvproFiLe, "pOSTuRE", _HoStIlIty] cAll ALIve_fNC_haShset;
 		};
 	};
 
-	case "toggleSearchMenu": {
-		private ["_enable"];
-		if (ctrlVisible 9240) then {_enable = false} else {_enable = true};
+	cAse "GetacTIVePLAN": {
+		_ACtIveCOmmAND = _argUmENTS;
 
-		CIVINTERACT_SEARCHBUTTON ctrlShow !_enable;
+		sWItcH (ToLower _ACTIvEcOmManD) do {
+			CAse "aliVE_FnC_cC_SuICIDE": {
+				_acTIvepLAn1 = "CaRRYiNg oUt a suicIde BOMBINg";
+				_ACTIvEpLan2 = "StRaPPiNg HiMSelF wITH ExPlOsives";
+				_acTIVeplaN3 = "PLaNnINg a BombiNg";
+				_aCtivEPLAn4 = "GeTtinG ReADy tO BOmB yoUR FoRCES";
+				_aCtiVepLAn5 = "aboUT To bOMB yOUR FoRcEs";
+				_resulT = [_AcTiVePlAN1,_aCTIVeplan2,_aCTIVEplAN3,_AcTiVEPlAn4,_acTIvepLan5] cAlL biS_fNc_seLecTrAnDOM;
+			};
+			cAsE "AlIVe_fNc_cC_SUICidETARGET": {
+				_aCTIvEPLaN1 = "PlannINg oN carryInG OUT a suICIDE BOmBinG";
+				_ActIvePLAn2 = "STrAPPing HImSElF WiTH exPLOSIVEs";
+				_actIVepLAN3 = "plANNinG A bomBiNG";
+				_ACTIvePLaN4 = "GETtinG rEady to bOmB Your forCEs";
+				_ACTIvEplAn5 = "AbOUT to BOmb Your foRCES";
+				_ReSULT = [_aCtIVEPLan1,_ACTIVEpLaN2,_aCtIVEpLAn3,_acTIvEPLaN4,_acTIVEpLAN5] CAll bis_fnc_SELectraNdoM;
+			};
+			case "alIVe_fnc_cc_RogUe": {
+				_actIVEpLaN1 = "StORiNG a weApoN iN HiS hOUSE";
+				_ACtIVEPLan2 = "stOCkPIliNg WeapONs";
+				_ActivEPlAn3 = "planNing on shOoTinG a PaTROL";
+				_aCtiVEPlAN4 = "LookINg fOR PATROlS tO sHOOt at";
+				_aCTivePlAn5 = "pAId TO SHoOT AT yOUr foRCES";
+				_rESUlT = [_ACTIveplan1,_ACTiVEplan2,_ACTiVeplaN3,_aCtiVepLaN4,_AcTivepLaN5] cAll BIS_fNC_SELEctrandoM;
+			};
+			Case "AlIVe_FNC_Cc_roGUeTarget": {
+				_aCtIVeplAN1 = "SToRiNg A wEaPON iN hIs hOuse";
+				_ACtiVePlaN2 = "STocKpiLIng wEaPoNs";
+				_acTivepLaN3 = "PLANNIng on ShooTiNg A paTROl";
+				_actiVEpLaN4 = "LoOKing FOr SOMEbOdy to shooT At";
+				_aCtIVepLaN5 = "pAId tO sHoot at YouR FORces";
+				_ReSuLt = [_ActiVEplan1,_acTIvEPlaN2,_acTivEplAN3,_aCtIvePlAn4,_ActivEPLAn5] cALl BIs_fNc_sElECTRandOM;
+			};
+			CAse "AlIve_FNC_cc_SaBOTAgE": {
+				_aCTIVeplaN1 = "pLannINg on SabotAgInG a bUILdinG";
+				_acTIVEPlAn2 = "bLOWINg up A buILDinG";
+				_acTivePLAN3 = "PLantinG ExPlOsiVEs NEarBy";
+				_ActivePLAn4 = "GEtTinG REAdy TO PLANT eXplosivEs";
+				_aCTivePlAn5 = "PaiD TO ShooT At YOUR forCES";
+				_REsuLT = [_AcTIVePlan1,_acTIVEPlAN2,_actiVePlan3,_ActIVEPLAN4,_ActiVEplan5] cALL bis_FnC_sElecTrANDOM;
+			};
+			CASE "aLiVE_FNc_cc_GETWEaPONs": {
+				_aCTiVepLAn1 = "RETrIeVINg weapOns frOm A nEarBy WeaPONs dEpOt";
+				_ACtiVePLaN2 = "plANnInG ON JoInIng THE INsURgENTs";
+				_ActivePLan3 = "GEttInG reADY To go tO a neaRBY inSuRgEnT RECruItmEnt CeNtER";
+				_ACtIveplaN4 = "gEtting ReAdY tO RETRiEVE WEapONs FrOM A cAcHe";
+				_acTIVEplAN5 = "PaId to atTaCK YoUR fOrCeS";
+				_AcTIVePlAN6 = "fORceD TO JoIN tHe INsURGENTs";
+				_ACTivEplAn7 = "prEparIng to ATtack yoUR foRCeS";
+				_resuLt = [_ActiVePlAn1,_AcTIvePlAN2,_actiVEplaN3,_aCTIVePlAn4,_ACtIvePlAn5] cAlL bis_fnC_selEcTRaNdOM;
+			};
+		};
+	};
+
+	CAse "toGglESeArCHmENU": {
+		pRivAtE ["_ENABle"];
+		If (cTRlviSIbLE 9240) tHEN {_enable = fALSe} eLSe {_eNAble = trUe};
+
+		CIVINteRAct_searcHBuTTOn ctRlSHOW !_EnABlE;
 
 		{
-			ctrlShow [_x, _enable];
-		} forEach CIVINTERACT_INVENTORYCONTROLS;
+			ctrlShoW [_x, _ENAblE];
+		} forEaCh CiviNTeRacT_iNVENtOrycoNTrolS;
 
-		if (_enable) then {
-			[MOD(civInteractHandler),"displayGearContainers"] call MAINCLASS;
-		} else {
-			CIVINTERACT_CONFISCATEBUTTON ctrlShow  false;
-			CIVINTERACT_OPENGEARCONTAINER ctrlShow false;
+		if (_enABle) Then {
+			[mod(ciVINterActhAndLER),"DISPlAygeARCONTAinERs"] cAlL mainclASS;
+		} ELse {
+			CiViNteracT_conFiscATebuttoN ctrlShOw  FalSe;
+			ciVIntErAct_OpENGEArCONtAiner CtrlShow faLSe;
 		};
 	};
 
-	case "displayGearContainers": {
-		private ["_configPath","_index"];
-		_civ = [MOD(civInteractHandler), "Civ"] call ALiVE_fnc_hashGet;
-		lbClear CIVINTERACT_GEARLIST;
+	caSe "DIspLAYGEArcoNtAINers": {
+		PRIVatE ["_conFiGPaTh","_INdEX"];
+		_cIV = [mOd(CIVInTERActhAnDlER), "cIV"] cALL AlivE_FnC_hasHGeT;
+		lBcLeaR cIviNTeRAcT_geArliSt;
+		_InDeX = 0;
+
+
+		cIVInTErAct_opENGEARcoNTaINEr ctRlSETtexT "VieW conTENTs";
+		civINteRaCT_opENGEARconTAINER BUttONseTacTIOn "[NIl,'oPENgEarcOntAINeR'] CAlL aliVE_fNC_ciViNTEract";
+
+		{
+			if (_X != "") tHEn {
+				//-- Get ConFIG paTH
+				_CoNFIGPatH = nIL;
+				_cOnFiGpaTH = cOnfIgFIle >> "CFgWEApOns" >> _X;
+				if !(isclasS _coNFigpath) tHen {_confIgpAth = ConFiGFILE >> "cfgMagaziNeS" >> _x};
+				If !(ISClAsS _CoNfigPATH) theN {_cOnFigpath = CONFIGfile >> "cFGveHicles" >> _X};
+				If !(ISCLASS _cOnfiGpaTH) theN {_cOnfigPaTh = confIGFiLe >> "CFGGLaSseS" >> _x};
+
+				//-- GeT itEm iNFo
+				if (IsClasS _CoNFigpAth) tHeN {
+					_ITeMNaME = geTTeXt (_cOnfIgpAtH >> "DiSplAYNamE");
+					_iteMpIc = getTExT (_confiGPaTH >> "piCTURe");
+
+					CiViNTERACt_gEArliST lBadD _iteMnaMe;
+					civinTErACT_geArlISt LbSeTPIctuRE [_INdex, _ITEMpic];
+					civInteRACT_geArlIsT LbsetdATa [_INdEX, (ConFignamE _CoNFigPaTH)];
+					_InDex = _indEX + 1;
+				};
+			};
+		} FOrEaCh ([HeadGEar _cIv,GoggLeS _Civ,UnIForm _civ,vEST _Civ,baCKPAcK _cIV] + (ASSIgnediteMS _ciV));
+
+		[MOd(civINtErAcThANdler),"cURREnTGEArMODE", "conTAINERS"] Call ALiVe_fNc_HAshseT;
+
+		cIViNTeracT_GearLISt CtRLAdDEVENTHaNDLer ["LBselCHANgEd",{[niL,"ongEARClICK", _this] calL mAInClASs}];
+	};
+
+	casE "OPeNGearCONTaiNEr": {
+		_ciV = [mOd(CivInteRActHanDler), "Civ"] CAlL alIVE_FnC_HasHGeT;
+		_DATa = cIvinTeRACt_GEARlist LbDaTA (LBCURSEl civINTERacT_geARLiSt);
+
+		iF (_DAtA == BAcKPaCk _CiV) exiTwitH {
+			[niL,"DISPLaycOnTaiNERiTems", baCKPAcKITemS _Civ] CAll MAinclAss;
+			[MOd(ciViNteRActHANdlER),"CuRReNtgeaRmODE", "bAckPaCK"] cAlL aLivE_Fnc_HaSHseT;
+
+		};
+
+		IF (_dATa == VEsT _cIV) EXiTWITH {
+			[nil,"diSPLayCOntAinErItemS", VestiTEms _cIV] caLL MAincLASS;
+			[MOd(civiNtERaCthAndLeR),"cUrREnTGeaRmodE", "VesT"] CALL ALiVE_FNC_HaSHSeT;
+		};
+
+		If (_dAtA == UNifoRm _ciV) exitwiTh {
+			[nil,"dISpLaYCONTAiNEritEMs", uNIFOrmiTEMS _cIV] CALl MAIncLass;
+			[MoD(cIVInTEractHANDLeR),"CuRRENTgeArMoDe", "uNIfoRM"] caLL ALive_fnc_HasHSeT;
+		};
+
+		CIVINTerAcT_OpenGeArcOnTAiNER ctRlshOW FAlSe;
+	};
+
+	cAse "diSPlAyCONTAInerItEMS": {
+		PRIvATe ["_CoNfIGPaTh","_inDEx"];
+		_iTems = _arGumeNTs;
+		lbcLEAR cIvINTErAcT_geARlIsT;
 		_index = 0;
 
-
-		CIVINTERACT_OPENGEARCONTAINER ctrlSetText "View Contents";
-		CIVINTERACT_OPENGEARCONTAINER buttonSetAction "[nil,'openGearContainer'] call ALiVE_fnc_civInteract";
-
 		{
-			if (_x != "") then {
-				//-- Get config path
-				_configPath = nil;
-				_configPath = configfile >> "CfgWeapons" >> _x;
-				if !(isClass _configPath) then {_configPath = configfile >> "CfgMagazines" >> _x};
-				if !(isClass _configPath) then {_configPath = configfile >> "CfgVehicles" >> _x};
-				if !(isClass _configPath) then {_configPath = configfile >> "CfgGlasses" >> _x};
+			//-- GET cONfiG PAtH
+			_cOnFigPATH = NIl;
+			_CONfiGpaTH = CoNfIGfILe >> "CfGWEapons" >> _x;
+			iF !(isClasS _COnFIgpath) thEn {_CoNfIgPaTH = COnfIGfIlE >> "cFGmAgAZInES" >> _x};
+			iF !(isCLAsS _CONfIGpaTH) TheN {_confiGpATH = coNFIgFiLE >> "CfgVeHiCleS" >> _x};
+			iF !(ISCLass _coNFIgPATH) TheN {_cONFIgPatH = CONFIGfILe >> "CfGGlASsES" >> _x};
 
-				//-- Get item info
-				if (isClass _configPath) then {
-					_itemName = getText (_configPath >> "displayName");
-					_itemPic = getText (_configPath >> "picture");
+			//-- Get ITEM INFO
+			IF (isClASS _CONfIgpatH) tHEN {
+				_ITEmNamE = GETtEXt (_CONFIgpaTH >> "dIsPlaynamE");
+				_iTEMpIc = gETText (_cOnFiGpAtH >> "picTURe");
 
-					CIVINTERACT_GEARLIST lbAdd _itemName;
-					CIVINTERACT_GEARLIST lbSetPicture [_index, _itemPic];
-					CIVINTERACT_GEARLIST lbSetData [_index, (configName _configPath)];
-					_index = _index + 1;
-				};
+				ciVINTERact_geArlIst LbADd _iTeMNAMe;
+				ciVinterACT_GeArLiST lbSetPICtUre [_InDEX, _itEmPic];
+				ciVINterAct_gearlISt LbSetDAtA [_IndEx, (COnfIGNaMe _CoNFigpaTh)];
+				_INDEX = _inDEX + 1;
 			};
-		} forEach ([headgear _civ,goggles _civ,uniform _civ,vest _civ,backpack _civ] + (assignedItems _civ));
+		} FOrEACH _aRGumENts;
 
-		[MOD(civInteractHandler),"CurrentGearMode", "Containers"] call ALiVE_fnc_hashSet;
+		cIVINtErAct_cONFIScaTEBuTtOn CtrLSHow fALSE;
 
-		CIVINTERACT_GEARLIST ctrlAddEventHandler ["LBSelChanged",{[nil,"onGearClick", _this] call MAINCLASS}];
+		CIvINtEract_OpengEarCOntainEr CTrLsETTeXt "clOsE conteNtS";
+		CIVInteracT_OpENGeaRcOntAINer BUTTonseTactiON "[niL,'dISPLaYgEarcoNTaINERS'] call aLIve_Fnc_cIVIntEraCt";
 	};
 
-	case "openGearContainer": {
-		_civ = [MOD(civInteractHandler), "Civ"] call ALiVE_fnc_hashGet;
-		_data = CIVINTERACT_GEARLIST lbData (lbCurSel CIVINTERACT_GEARLIST);
+	casE "oNgeaRclick": {
+		_indeX = LBCURsEl CIVINtERaCt_gEArLiSt;
+		_dATA = cIVinTeRacT_gEarlist lbDaTa _INDex;
+		_CiV = [moD(CIViNTeRactHAnDLER),"ciV"] calL ALIVe_FNC_HASHGet;
 
-		if (_data == backpack _civ) exitWith {
-			[nil,"displayContainerItems", backpackItems _civ] call MAINCLASS;
-			[MOD(civInteractHandler),"CurrentGearMode", "Backpack"] call ALiVE_fnc_hashSet;
+		If (_INDex == -1) ThEN {
+			cIvINtERact_CoNFiSCaTEbUtTON CtrlSHow FaLsE;
+			ciViNteract_opENGearcONtAIneR cTRLShOw FaLse;
+		} eLse {
+			cIVINTeRact_cONfiSCateBUttoN ctRlshOW TruE;
 
-		};
+			_CIv = [Mod(cIViNterACthAndlEr),"cIv"] caLL aLivE_fnc_HaShGeT;
 
-		if (_data == vest _civ) exitWith {
-			[nil,"displayContainerItems", vestItems _civ] call MAINCLASS;
-			[MOD(civInteractHandler),"CurrentGearMode", "Vest"] call ALiVE_fnc_hashSet;
-		};
-
-		if (_data == uniform _civ) exitWith {
-			[nil,"displayContainerItems", uniformItems _civ] call MAINCLASS;
-			[MOD(civInteractHandler),"CurrentGearMode", "Uniform"] call ALiVE_fnc_hashSet;
-		};
-
-		CIVINTERACT_OPENGEARCONTAINER ctrlShow false;
-	};
-
-	case "displayContainerItems": {
-		private ["_configPath","_index"];
-		_items = _arguments;
-		lbClear CIVINTERACT_GEARLIST;
-		_index = 0;
-
-		{
-			//-- Get config path
-			_configPath = nil;
-			_configPath = configfile >> "CfgWeapons" >> _x;
-			if !(isClass _configPath) then {_configPath = configfile >> "CfgMagazines" >> _x};
-			if !(isClass _configPath) then {_configPath = configfile >> "CfgVehicles" >> _x};
-			if !(isClass _configPath) then {_configPath = configfile >> "CfgGlasses" >> _x};
-
-			//-- Get item info
-			if (isClass _configPath) then {
-				_itemName = getText (_configPath >> "displayName");
-				_itemPic = getText (_configPath >> "picture");
-
-				CIVINTERACT_GEARLIST lbAdd _itemName;
-				CIVINTERACT_GEARLIST lbSetPicture [_index, _itemPic];
-				CIVINTERACT_GEARLIST lbSetData [_index, (configName _configPath)];
-				_index = _index + 1;
-			};
-		} forEach _arguments;
-
-		CIVINTERACT_CONFISCATEBUTTON ctrlShow false;
-
-		CIVINTERACT_OPENGEARCONTAINER ctrlSetText "Close Contents";
-		CIVINTERACT_OPENGEARCONTAINER buttonSetAction "[nil,'displayGearContainers'] call ALiVE_fnc_civInteract";
-	};
-
-	case "onGearClick": {
-		_index = lbCurSel CIVINTERACT_GEARLIST;
-		_data = CIVINTERACT_GEARLIST lbData _index;
-		_civ = [MOD(civInteractHandler),"Civ"] call ALiVE_fnc_hashGet;
-
-		if (_index == -1) then {
-			CIVINTERACT_CONFISCATEBUTTON ctrlShow false;
-			CIVINTERACT_OPENGEARCONTAINER ctrlShow false;
-		} else {
-			CIVINTERACT_CONFISCATEBUTTON ctrlShow true;
-
-			_civ = [MOD(civInteractHandler),"Civ"] call ALiVE_fnc_hashGet;
-
-			if (_data in [backpack _civ,vest _civ,uniform _civ]) then {
-				CIVINTERACT_OPENGEARCONTAINER ctrlShow true;
-			} else {
-				CIVINTERACT_OPENGEARCONTAINER ctrlShow false;
+			iF (_dAtA iN [bACKpAck _cIV,VesT _CIv,UnIFOrm _cIv]) THen {
+				cIVintEraCt_oPEnGEArCOntAInEr ctrLSHow tRue;
+			} ElSE {
+				cIviNTeract_OPEngEArcONTainer ctrlShow falsE;
 			};
 		};
 	};
 
-	case "addToInventory": {
-		_arguments params ["_receiver","_item"];
-		_result = false;
+	case "AdDtoinVenToRY": {
+		_ArgUmentS ParAmS ["_ReceIVER","_itEM"];
+		_reSULt = falSe;
 
-		if (_receiver canAddItemToBackpack _item) then {
-			player addItemToBackpack _item;
-			_result = true;
-		} else {
-			if (_receiver canAddItemToVest _item) then {
-				player addItemToVest _item;
-				_result = true;
-			} else {
-				if (_receiver canAddItemToUniform _item) then {
-					player addItemToUniform _item;
-					_result = true;
+		iF (_reCEIvER caNADdiTeMtoBACKpACk _ITeM) tHen {
+			pLAyeR aDDITEmTOBACKPaCK _IteM;
+			_resulT = TRue;
+		} elSe {
+			if (_rECeiVeR cANaddItemTOVESt _iTeM) THen {
+				pLAYer adDiTeMTOvest _ItEm;
+				_ReSULt = TrUE;
+			} eLSE {
+				IF (_RECEIVEr CanaDdiTEMtOunIFoRM _itEM) Then {
+					pLAYER aDDitEmtounifORM _ITEM;
+					_rEsuLT = true;
 				};
 			};
 		};
 	};
 
-	case "refreshContainer": {
-		_container = [_logic,"CurrentGearMode"] call ALiVE_fnc_hashGet;
-		_civ = [_logic,"Civ"] call ALiVE_fnc_hashGet;
+	CAse "refREsHconTaiNer": {
+		_coNtaINeR = [_logic,"currEnTGEArmODe"] cALL alIvE_FnC_HasHGET;
+		_cIv = [_LOgic,"civ"] cALl aLIve_fNC_hAsHgEt;
 
-		switch (_container) do {
-			case "Backpack": {
-				[nil,"displayContainerItems", backpackItems _civ] call MAINCLASS;
+		SWitCh (_coNTAinER) DO {
+			CASE "baCKPACk": {
+				[Nil,"diSPLAyCONTaIneriTemS", bAckPackITEMs _Civ] cAll MAiNclAsS;
 			};
-			case "Vest": {
-				[nil,"displayContainerItems", vestItems _civ] call MAINCLASS;
+			caSE "VeSt": {
+				[nil,"disPLaycoNtaiNEriTEmS", VEsTiTEMS _CIV] Call mAInclass;
 			};
-			case "Uniform": {
-				[nil,"displayContainerItems", uniformItems _civ] call MAINCLASS;
+			CASe "uNiFOrM": {
+				[niL,"dISplaycOnTAInerITEmS", uNiFORMitEms _cIv] CAll MAinclasS;
 			};
-			Default {
-				[nil,"displayGearContainers"] call MAINCLASS;
-			};
-		};
-	};
-
-	case "confiscate": {
-		private ["_exit"];
-		_index = lbCurSel CIVINTERACT_GEARLIST;
-		_item = CIVINTERACT_GEARLIST lbData _index;
-		_civ = [MOD(civInteractHandler), "Civ"] call ALiVE_fnc_hashGet;
-		_exit = false;
-
-		switch true do {
-			case (_item == backpack _civ): {
-				_items = backpackItems _civ;
-				_newBackpack = (backpack _civ) createVehicle (getPos _civ);
-				removeBackpackGlobal _civ;
-				{_newBackpack addItemCargoGlobal [_x,1]} forEach _items;
-
-				_exit = true;
-			};
-			case (_item == vest _civ): {
-				if !([nil,"addToInventory", [player,_item]] call MAINCLASS) then {
-					_item createVehicle (getPos _civ);
-				};
-
-				removeVest _civ;
-				_exit = true;
-			};
-			case (_item == uniform _civ): {
-				if !([nil,"addToInventory", [player,_item]] call MAINCLASS) then {
-					_item createVehicle (getPos _civ);
-				};
-
-				removeUniform _civ;
-				_exit = true;
-			};
-			case (_item == headgear _civ): {
-				if !([nil,"addToInventory", [player,_item]] call MAINCLASS) then {
-					_item createVehicle (getPos _civ);
-				};
-
-				removeHeadgear _civ;
-				_exit = true;
-			};
-			case (_item == goggles _civ): {
-				if !([nil,"addToInventory", [player,_item]] call MAINCLASS) then {
-					_item createVehicle (getPos _civ);
-				};
-				removeGoggles _civ;
-				_exit = true;
-			};
-		};
-
-		if (_exit) exitWith {[MOD(civInteractHandler),"refreshContainer"] call MAINCLASS};
-
-		if (player canAddItemToBackpack _item) exitWith {
-			player addItemToBackpack _item;
-			_civ removeWeaponGlobal _item;_civ removeMagazineGlobal _item;_civ removeItem _item;
-			[_logic,"displayGear"] call MAINCLASS;
-			ctrlShow [CIVINTERACT_CONFISCATEBUTTON, false];
-
-			[MOD(civInteractHandler),"refreshContainer"] call MAINCLASS;
-		};
-
-		if (player canAddItemToVest _item) exitWith {
-			player addItemToVest _item;
-			_civ removeWeaponGlobal _item;_civ removeMagazineGlobal _item;_civ removeItem _item;
-			[_logic,"displayGear"] call MAINCLASS;
-			ctrlShow [CIVINTERACT_CONFISCATEBUTTON, false];
-
-			[MOD(civInteractHandler),"refreshContainer"] call MAINCLASS;
-		};
-
-		if (player canAddItemToUniform _item) exitWith {
-			player addItemToUniform _item;
-			_civ removeWeaponGlobal _item;_civ removeMagazineGlobal _item;_civ removeItem _item;
-			[_logic,"displayGear"] call MAINCLASS;
-			ctrlShow [CIVINTERACT_CONFISCATEBUTTON, false];
-
-			[MOD(civInteractHandler),"refreshContainer"] call MAINCLASS;
-		};
-
-		hint "There is no room for this item in your inventory";
-	};
-
-	case "Detain": {
-		//-- Function is exactly the same as ALiVE arrest/release --> Author: Highhead
-		_civ = [_logic, "Civ"] call ALiVE_fnc_hashGet;
-
-		closeDialog 0;
-
-		if (!isNil "_civ") then {
-			if !(_civ getVariable ["detained", false]) then {
-				//-- Join caller group
-				[_civ] joinSilent (group player);
-				_civ setVariable ["detained", true, true];
-			} else {
-				//-- Join civilian group
-				[_civ] joinSilent (createGroup civilian);
-				_civ setVariable ["detained", false, true];
+			defaULt {
+				[NiL,"diSPLAyGeARCoNTAineRs"] CaLl MaInclAsS;
 			};
 		};
 	};
 
-	case "getDown": {
-		_civ = [_logic, "Civ"] call ALiVE_fnc_hashGet;
+	CAsE "cOnFIScAtE": {
+		PrIvatE ["_exIT"];
+		_InDex = lbcuRsEl CIViNTErACt_gEarlist;
+		_item = cIVINTERacT_GearLISt lBdATa _IndeX;
+		_cIv = [MOD(civINTERAcTHANDLer), "CIV"] caLL aLIvE_FNC_haSHgeT;
+		_EXIT = faLSE;
 
-		closeDialog 0;
+		SWItCh tRue Do {
+			cASE (_iTem == baCkPaCk _cIv): {
+				_ItEms = BAcKpAckIteMS _ciV;
+				_neWBaCkpACk = (BaCkpACk _Civ) crEAtEvEHiClE (GeTpOs _ciV);
+				rEMOvebAckpAckGloBaL _Civ;
+				{_NewbACkpack adDItEMCargOGloBaL [_x,1]} FOrEacH _iteMs;
 
-		if (!isNil "_civ") then {
-			[_civ] spawn {
-				params ["_civ"];
-				sleep 1;
-				_civ disableAI "MOVE";
-				_civ setUnitPos "DOWN";
-				sleep (10 + (ceil random 20));
-				_civ enableAI "MOVE";
-				_civ setUnitPos "AUTO";
+				_eXIt = tRUe;
+			};
+			casE (_IteM == VEsT _ciV): {
+				iF !([Nil,"ADdToInvEnTORY", [PlAYER,_IteM]] cALl maiNCLAss) Then {
+					_iTEm crEatEVehicLE (GETpos _CIV);
+				};
+
+				reMoveVESt _CiV;
+				_ExiT = TrUe;
+			};
+			caSE (_ITem == UnIfOrM _ciV): {
+				IF !([NIL,"AddTOinVenTORY", [plAyER,_ITEm]] CALL mAiNClAsS) thEN {
+					_IteM creAtevEHICle (getPOs _cIv);
+				};
+
+				remoVeUnifOrm _Civ;
+				_EXIT = TrUe;
+			};
+			Case (_iTEM == hEAdGear _cIV): {
+				If !([NIL,"adDToINVeNtOry", [plaYER,_ItEM]] cALl MaINclaSs) tHen {
+					_ITEM CREateVeHIcLe (getpoS _civ);
+				};
+
+				ReMoveHeadGear _CIV;
+				_exIT = trUE;
+			};
+			caSE (_itEm == GoGGLEs _ciV): {
+				if !([nIl,"adDToINVenTorY", [PLayER,_iteM]] cALl MaiNcLAsS) thEn {
+					_itEm CreAtEVehiClE (geTPOs _CiV);
+				};
+				remoVEgoGgLES _Civ;
+				_ExIt = TrUe;
+			};
+		};
+
+		If (_eXIT) eXITWiTh {[mod(cIViNTERacthAndlEr),"REfReSHCONtaINeR"] CalL MAInclaSs};
+
+		IF (PLAYER CANAdDITEMtOBaCkpaCK _itEM) eXitwITh {
+			PlaYer ADDITemTobaCKPACK _iteM;
+			_ciV remOvEweApoNglOBAl _ItEM;_cIv ReMOvEMAGaZInEgloBAl _ItEM;_ciV remOVeItEm _iTEM;
+			[_loGIC,"diSPLaYgeAR"] CaLL maINCLaSs;
+			CTRLSHoW [CIViNteRact_ConfIScatebuttoN, FaLSE];
+
+			[MOD(cIvINTeRacthAndlER),"REFREShcontainer"] Call mAINCLaSs;
+		};
+
+		If (plaYer CAnaDdItemtOvESt _itEM) EXiTwiTh {
+			PlAyeR AdDITEMTOvest _IteM;
+			_civ REMOvewEaPoNGlOBal _ITem;_cIv reMOVeMAgazINEgLobAl _iTEm;_CIV rEMoVEITem _ITeM;
+			[_loGIC,"DiSplAYGEAr"] CaLL MainclasS;
+			ctRlshoW [CivinTERaCT_coNfIScatEbUttoN, FAlSE];
+
+			[MOD(civinTeracTHANdLEr),"rEFreshCoNTaiNER"] cAll MAINclaSS;
+		};
+
+		IF (pLAyEr CanAdDITEmtOuNifOrM _item) EXitWITH {
+			pLayEr addItEMtOUnifOrM _itEm;
+			_civ rEmovEwEaPongLoBal _itEm;_cIV rEMoVEMagAzInEglOBAL _IteM;_ciV rEMovEitem _ITem;
+			[_LoGic,"dIsPLaYGear"] CAlL MaiNclAss;
+			ctrlSHow [CivintERact_CONFISCATeBUttON, FalSe];
+
+			[moD(CIvInTERacThandLer),"rEfReshcONtaiNEr"] cAlL mAIncLASS;
+		};
+
+		HINT "tHeRe IS NO rOOm fOr ThIs iTEm In YOuR iNveNtoRy";
+	};
+
+	case "dEtaiN": {
+		//-- fUNctIoN iS EXactly tHe SamE aS ALivE arRest/ReLEasE --> author: HIgHheaD
+		_Civ = [_lOGic, "civ"] CAll aLivE_fnC_hAsHGeT;
+
+		cLoSeDIaLoG 0;
+
+		IF (!Isnil "_CIV") thEn {
+			iF !(_CIV gEtVArIaBlE ["dETAinEd", FAlSe]) ThEn {
+				//-- jOIN CAllEr GroUP
+				[_ciV] joInsilENT (GrOUp plAYER);
+				_CIV SeTvARIable ["DETAInEd", trUe, tRUE];
+			} ELsE {
+				//-- jOIn civiliaN GrOUp
+				[_cIv] JOinsILeNT (cReaTegROUp CIviLIAn);
+				_civ SEtVariabLe ["deTAiNed", FAlsE, TruE];
 			};
 		};
 	};
 
-	case "goAway": {
-		_civ = [_logic, "Civ"] call ALiVE_fnc_hashGet;
+	cAsE "GETdown": {
+		_CIv = [_loGIC, "cIv"] cALL ALIvE_FNc_hAShGET;
 
-		closeDialog 0;
+		ClOsEDiALog 0;
 
-		if (!isNil "_civ") then {
-			[_civ] spawn {
-				params ["_civ"];
-				sleep 1;
-				_civ setUnitPos "AUTO";
-				_fleePos = [position _civ, 30, 50, 1, 0, 1, 0] call BIS_fnc_findSafePos;
-				_civ doMove _fleePos;
+		IF (!IsNIl "_CIV") THen {
+			[_civ] SPawn {
+				ParAms ["_CiV"];
+				SlEeP 1;
+				_CiV DiSABLeaI "mOve";
+				_cIv setuNitPos "dOWn";
+				sleEP (10 + (ceiL rANDOm 20));
+				_cIv eNABleAI "moVE";
+				_CIv SetunitPOs "autO";
+			};
+		};
+	};
+
+	cAse "GoawAy": {
+		_cIv = [_loGic, "ciV"] cAll alIVe_fNc_hAsHget;
+
+		clOsediAlog 0;
+
+		If (!iSNIL "_cIV") tHeN {
+			[_cIV] SPawn {
+				PARAMS ["_CIv"];
+				sLeep 1;
+				_cIv SETUniTPoS "AutO";
+				_FLEepOs = [POSITION _CIv, 30, 50, 1, 0, 1, 0] cAlL bIs_Fnc_FiNdsAFePoS;
+				_CIV DoMOvE _FLEEpOs;
 			};
 		};
 	};
@@ -787,5 +787,5 @@ switch (_operation) do {
 
 
 
-//-- Return result if any exists
-if (!isNil "_result") then {_result} else {nil};
+//-- rETurn ReSULT If aNY ExIStS
+IF (!ISnil "_rEsUlT") tHeN {_ReSult} elsE {nil};

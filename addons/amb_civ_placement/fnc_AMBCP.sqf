@@ -1,905 +1,905 @@
-//#define DEBUG_MODE_FULL
-#include "\x\alive\addons\amb_civ_placement\script_component.hpp"
-SCRIPT(AMBCP);
+//#DeFINe DEBug_mODe_FuLl
+#INCLuDe "\x\AliVe\addoNs\amb_cIv_pLACeMent\Script_comPonenT.HPp"
+sCrIPT(AmbCp);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_AMBCP
-Description:
-Civitary objectives
+funCTioN: AliVe_FNc_AMBcp
+dEsCRiption:
+CIVitARY oBJEcTiVes
 
-Parameters:
-Nil or Object - If Nil, return a new instance. If Object, reference an existing instance.
-String - The selected function
-Array - The selected parameters
+paraMETErS:
+nIl Or object - if NIL, retURn a neW InSTanCE. IF objECT, REferENce AN exiSting instAncE.
+strIng - The SELecTeD FuNCTiOn
+ArRAY - tHe SElected ParaMeTERs
 
-Returns:
-Any - The new instance or the result of the selected function and parameters
+ReTurns:
+aNY - tHE NeW iNstAnce oR ThE reSUlt Of thE sELectED fUNctION And PARAMeTERs
 
-Attributes:
-Nil - init - Intiate instance
-Nil - destroy - Destroy instance
-Boolean - debug - Debug enabled
-Array - state - Save and restore module state
-Array - faction - Faction associated with module
+AttrIBUTEs:
+Nil - iNit - intIAte InstaNCe
+nIL - DESTRoY - destrOY iNsTanCE
+bOoLEAN - dEbUg - dEBug eNABLeD
+arRAy - sTaTE - SAVe And REsToRE moDule state
+aRray - faCtiON - FACTioN AsSoCiAtED WiTh ModuLe
 
-Examples:
+eXAmpleS:
 
-See Also:
-- <ALIVE_fnc_CPInit>
+SEE Also:
+- <aLivE_FNc_cPInit>
 
-Author:
-Wolffy
-ARJay
+authoR:
+wolFFY
+ARjAY
 ---------------------------------------------------------------------------- */
 
-#define SUPERCLASS ALIVE_fnc_baseClass
-#define MAINCLASS ALIVE_fnc_AMBCP
-#define MTEMPLATE "ALiVE_AMBCP_%1"
-#define DEFAULT_SIZE "100"
-#define DEFAULT_OBJECTIVES []
-#define DEFAULT_TAOR []
-#define DEFAULT_BLACKLIST []
-#define DEFAULT_SIZE_FILTER "160"
-#define DEFAULT_PRIORITY_FILTER "0"
-#define DEFAULT_FACTION QUOTE(CIV_F)
-#define DEFAULT_AMBIENT_VEHICLE_AMOUNT "0.1"
-#define DEFAULT_PLACEMENT_MULTIPLIER "0.5"
+#dEFIne SUperClasS AlivE_fnc_BasEClass
+#dEfInE mAiNClAss alive_fnc_aMbcP
+#defIne mTEmpLaTe "alIVe_AmBCP_%1"
+#DEfINE dEfauLt_sIZE "100"
+#dEFINE DEfAuLT_ObjEctiVes []
+#dEFiNe dEfauLT_taOr []
+#dEFInE DefauLT_BlaCKList []
+#DEfINE DEfAulT_SizE_fILTer "160"
+#DEfiNE dEFAult_PrioRiTY_FilteR "0"
+#DEfinE DefaUlT_FaCtIOn QUoTe(ciV_f)
+#deFInE DeFAULt_AMbiENt_VehICLe_amOUnT "0.1"
+#defINe defAuLT_PLacement_MulTIpLIER "0.5"
 
-private ["_result"];
+pRIVATE ["_REsULt"];
 
-TRACE_1("AMBCP - input",_this);
+Trace_1("AMBcP - InPUT",_tHIs);
 
-params [
-    ["_logic", objNull, [objNull]],
-    ["_operation", "", [""]],
-    ["_args", objNull, [objNull,[],"",0,true,false]]
+paraMS [
+    ["_LOgIC", oBjnuLl, [objNuLl]],
+    ["_OPERAtIOn", "", [""]],
+    ["_ARgs", OBjnuLL, [obJNull,[],"",0,True,faLSe]]
 ];
-_result = true;
+_RESuLT = tRuE;
 
-switch(_operation) do {
+SWitch(_opERAtIOn) Do {
 
-    default {
-        _result = [_logic, _operation, _args] call SUPERCLASS;
+    deFAuLT {
+        _ReSULT = [_logiC, _operATion, _aRgs] call SUpeRClASS;
     };
 
-    case "destroy": {
+    cAsE "DeSTroy": {
 
-        [_logic, "debug", false] call MAINCLASS;
-        if (isServer) then {
-            // if server
-            _logic setVariable ["super", nil];
-            _logic setVariable ["class", nil];
+        [_lOGIC, "dEBUg", fAlSE] calL MaiNCLAss;
+        if (isSerVeR) tHEn {
+            // If sErvER
+            _LOGIC sETVARIABle ["SUpEr", NIl];
+            _LogIC SetvARIable ["ClASS", nil];
 
-            [_logic, "destroy"] call SUPERCLASS;
+            [_lOGiC, "deSTROY"] Call sUpeRCLaSs;
         };
 
     };
-    case "debug": {
+    cASe "dEBUG": {
 
-        if (_args isEqualType true) then {
-            _logic setVariable ["debug", _args];
+        if (_Args ISEQUaltYpe TrUe) THEN {
+            _LOgic SETVariabLe ["DeBuG", _ArgS];
         } else {
-            _args = _logic getVariable ["debug", false];
+            _args = _logIc geTVArIABLe ["deBUG", falSE];
         };
-        if (_args isEqualType "") then {
-                if(_args == "true") then {_args = true;} else {_args = false;};
-                _logic setVariable ["debug", _args];
+        iF (_ARGS IsEQUAlTyPe "") thEN {
+                If(_ARGS == "TRuE") tHEn {_ArgS = trUE;} ELSe {_ARgs = fAlSe;};
+                _lOGIC seTVARIaBLE ["dEBuG", _ARgS];
         };
-        ASSERT_TRUE(_args isEqualType true,str _args);
+        ASSERt_TrUe(_argS isEqualTYPe trUE,STR _arGs);
 
-        _result = _args;
+        _ResuLT = _argS;
 
     };
-    case "state": {
+    casE "stATe": {
 
-        private _simple_operations = ["targets", "size","type","faction"];
+        privAte _siMple_OpEratIONs = ["tArGetS", "sizE","TYPE","factIOn"];
 
-        if !(_args isEqualType []) then {
-            private _state = [] call CBA_fnc_hashCreate;
+        If !(_argS iSeqUAlTYpe []) tHeN {
+            PrIvaTE _StATE = [] call CBA_FNc_hasHcReaTE;
 
-            // Save state
+            // saVE StAtE
             {
-                [_state, _x, _logic getVariable _x] call ALIVE_fnc_hashSet;
-            } forEach _simple_operations;
+                [_StATe, _X, _loGic gEtvARIAbLE _x] CAll alIvE_Fnc_HAsHSeT;
+            } fOREACh _sImpLe_opeRATIoNs;
 
-            if ([_logic, "debug"] call MAINCLASS) then {
-                diag_log PFORMAT_2(QUOTE(MAINCLASS), _operation,_state);
+            if ([_loGic, "dEBug"] cALL mAiNCLASS) ThEN {
+                Diag_LoG pFOrMaT_2(QuOTe(MaInclaSs), _OpERAtION,_sTAte);
             };
 
-            _result = _state;
-        } else {
-            ASSERT_TRUE([_args] call ALIVE_fnc_isHash,str _args);
+            _rESulT = _STate;
+        } ELse {
+            asserT_TrUe([_aRgs] CALL alivE_FNC_ISHasH,sTR _ARgS);
 
-            // Restore state
+            // rEStOre StAtE
             {
-                [_logic, _x, [_args, _x] call ALIVE_fnc_hashGet] call MAINCLASS;
-            } forEach _simple_operations;
+                [_LogIC, _x, [_ARGs, _X] calL aLIVe_fNc_hashGET] call maiNcLASs;
+            } fOREAcH _sImplE_oPERatIONS;
         };
 
     };
 
-    // Determine force faction
-    case "faction": {
+    // DETErMIne FORCE factIOn
+    case "FactION": {
 
-        _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
+        _ReSULT = [_LogIC,_OperatiON,_ARGS,DEfaUlT_fActiOn,[] cAlL AlivE_FNC_coNfIGgetfactioNS] caLL ALivE_fNc_oOSIMPLeOperatioN;
 
     };
 
-    // Return TAOR marker
-    case "taor": {
+    // reTURN TAor mARKeR
+    CAse "TAoR": {
 
-        if(_args isEqualType "") then {
-            _args = [_args, " ", ""] call CBA_fnc_replace;
-            _args = [_args, ","] call CBA_fnc_split;
+        if(_aRGs ISEQUALTYpe "") THEn {
+            _ARgS = [_aRGS, " ", ""] caLl cBa_fNc_rEPlacE;
+            _aRGs = [_aRGS, ","] caLL Cba_fNC_sPLit;
 
-            if(count _args > 0) then {
-                _logic setVariable [_operation, _args];
+            IF(cOuNt _args > 0) tHEN {
+                _LOGIC sETvARIABlE [_OPEraTiON, _argS];
             };
         };
 
-        if (_args isEqualType []) then {
-            _logic setVariable [_operation, _args];
+        if (_ArgS ISEQuAltYPe []) tHen {
+            _logic setVArIaBle [_oPerATiOn, _args];
         };
 
-        _result = _logic getVariable [_operation, DEFAULT_TAOR];
+        _rESUlT = _lOgIc gEtVarIAble [_opeRAtIOn, DefAUlT_tAor];
 
     };
 
-    // Return the Blacklist marker
-    case "blacklist": {
+    // reTurN the bLaCkliST markeR
+    case "BlACKLIsT": {
 
-        if(_args isEqualType "") then {
-            _args = [_args, " ", ""] call CBA_fnc_replace;
-            _args = [_args, ","] call CBA_fnc_split;
+        If(_ARgS isEqualtYPe "") tHEn {
+            _aRGs = [_ArGS, " ", ""] cAll cBa_FnC_Replace;
+            _aRgs = [_ARgS, ","] CAll CbA_fNc_SpliT;
 
-            if(count _args > 0) then {
-                _logic setVariable [_operation, _args];
+            iF(Count _ARgs > 0) ThEn {
+                _LogIC seTVArIABle [_OpeRATiOn, _ArgS];
             };
         };
 
-        if (_args isEqualType []) then {
-            _logic setVariable [_operation, _args];
+        IF (_aRgS iSEqUaltYpe []) tHEn {
+            _lOGIC SeTvaRIaBlE [_opERatION, _aRgs];
         };
 
-        _result = _logic getVariable [_operation, DEFAULT_BLACKLIST];
+        _ResUlT = _LOgic getvArIabLe [_OPErAtiOn, DEfAuLt_BlacKlist];
 
     };
 
-    // Return the Size filter
-    case "sizeFilter": {
-        _result = [_logic,_operation,_args,DEFAULT_SIZE_FILTER] call ALIVE_fnc_OOsimpleOperation;
+    // retURN tHe size FILTER
+    CaSe "siZEfILTer": {
+        _rESUlT = [_lOGiC,_oPErAtioN,_ArGs,deFAuLT_siZe_fiLTeR] cAll Alive_fNc_OOSiMPLeoPERatiOn;
     };
 
-    // Return the Priority filter
-    case "priorityFilter": {
-        _result = [_logic,_operation,_args,DEFAULT_PRIORITY_FILTER] call ALIVE_fnc_OOsimpleOperation;
+    // REturn ThE prioRITY filtEr
+    cAsE "PrIOritYFilTer": {
+        _RESuLt = [_LOGIC,_OPErAtiON,_ARgs,dEfauLT_PrIORiTY_fIlTer] cAll aLIVe_FNc_ooSIMPlEoPEratION;
     };
 
-    // Return the Placement Multiplier
-    case "placementMultiplier": {
-        _result = [_logic,_operation,_args,DEFAULT_PLACEMENT_MULTIPLIER] call ALIVE_fnc_OOsimpleOperation;
+    // retUrN tHE PlaCEMENt mulTipliER
+    caSE "plAcEMeNTmuLtIpLIeR": {
+        _resuLT = [_Logic,_operATion,_ArGs,DeFaULT_PLACeMEnt_MuLtIplIeR] cAll ALIve_fnc_OosimPlEopEraTioN;
     };
 
-    // Return the Ambient Vehicle Amount
-    case "ambientVehicleAmount": {
-        _result = [_logic,_operation,_args,DEFAULT_AMBIENT_VEHICLE_AMOUNT] call ALIVE_fnc_OOsimpleOperation;
+    // ReTuRN tHE AMBIent veHicLe AmOuNt
+    CASe "aMBIentvEHIcLeAMOuNt": {
+        _reSulT = [_LOgiC,_OperAtion,_aRGs,dEFAult_AmBiENT_VehIcLE_amOUnT] CAlL ALIVe_fnc_oOsImpLEoPeraTion;
     };
 
-    // Ambient vehicle faction
-    case "ambientVehicleFaction": {
-        _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
+    // AMBieNt VEHicle FaCTIOn
+    CAsE "aMBiEntvEHiclEFaCTioN": {
+        _rEsULT = [_lOGIc,_OperaTION,_ARgs,DefaULT_faCtIon,[] Call AlIVE_FNC_CONfIGGETfactionS] cAll aliVe_Fnc_oOsImPLeOpEratIon;
     };
 
-    // Return the objectives as an array of clusters
-    case "objectives": {
-        _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
+    // rETUrn The oBJECTIvES As an aRRay oF cluSTerS
+    caSe "ObjEcTIVES": {
+        _reSulT = [_logIc,_opeRATioN,_args,defAULt_objeCTIvES] CaLl aLIve_Fnc_oOSIMPlEoPerAtioN;
     };
 
-    // Return the HQ objectives as an array of clusters
-    case "objectivesHQ": {
-        _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
+    // REtUrn tHE hq oBjECtIVEs as aN ArrAy OF ClusteRs
+    CaSE "objectIVEsHQ": {
+        _ResUlt = [_logic,_OpERATiOn,_args,dEFaUlt_oBJectivES] CaLl AlIve_FnC_oosiMpleOPEraTIoN;
     };
 
-    // Return the Power objectives as an array of clusters
-    case "objectivesPower": {
-        _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
+    // rEturN The POWER OBJEcTIVeS as AN arRAy Of cLusTERs
+    CAse "objectiVeSPOwEr": {
+        _ReSULT = [_Logic,_opeRatION,_arGS,deFAUlt_OBjEcTIVes] CALL ALIVe_Fnc_OOSImPleOPeRATion;
     };
 
-    // Return the Comms objectives as an array of clusters
-    case "objectivesComms": {
-        _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
+    // reTUrN tHE commS ObJEctIVes aS AN arrAY oF clusteRs
+    caSE "oBjeCTIVEsCOMMs": {
+        _RESULT = [_Logic,_oPERAtiON,_aRgS,DEFaULT_ObJecTIves] caLl ALIVE_fNC_oosImPLeOpERATiON;
     };
 
-    // Return the MARINE objectives as an array of clusters
-    case "objectivesMarine": {
-        _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
+    // RetUrN the MaRine oBjECtiVeS As An ArRay OF cluSTErs
+    CASE "oBJECTiVEsMARInE": {
+        _ResULt = [_LOgIc,_OpEraTion,_ARgs,defauLt_objectIvES] caLL aliVe_Fnc_OOsimPLeopERatIoN;
     };
 
-    // Return the RAIL objectives as an array of clusters
-    case "objectivesRail": {
-        _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
+    // reTUrN the RAiL ObJectivEs AS aN ARRAy OF clUSTeRS
+    CaSE "ObJectIvEsraIL": {
+        _reSULt = [_LOGIC,_OPeratION,_ArgS,DEFAuLt_OBJectivEs] cALl AlIVe_fnc_OoSimpLeOPEraTION;
     };
 
-    // Return the FUEL objectives as an array of clusters
-    case "objectivesFuel": {
-        _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
+    // RetURn the fueL OBjeCTiveS As AN ARrAy OF ClUstErS
+    Case "OBjecTivESfUEL": {
+        _RESult = [_logiC,_OpERatIon,_ARgS,DEFAulT_OBjECtIVes] CALl aLIve_fNc_OosiMpLeOPeRAtiON;
     };
 
-    // Return the CONSTRUCTION objectives as an array of clusters
-    case "objectivesConstruction": {
-        _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
+    // RETuRn THe ConstRuctiON ObjecTIvES as an arrAy of CLusTErs
+    caSE "objeCtiveSCOnSTRuctIon": {
+        _REsuLT = [_lOgIc,_opERAtiOn,_arGs,DEfaulT_oBJecTIveS] caLl AlIVe_FnC_ooSiMplEOPeraTiON;
     };
 
-    // Return the SETTLEMENT objectives as an array of clusters
-    case "objectivesSettlement": {
-        _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
+    // RETUrN tHe setTlEMenT ObjEctIVES as An arRay Of ClUSTErs
+    cAse "OBjECtiVEssetTlEmEnT": {
+        _ReSULT = [_LOGIC,_oPEraTiON,_ArgS,dEFauLT_ObjEctIveS] calL alive_FNC_oOSimPlEOpERATioN;
     };
 
-    // Main process
-    case "init": {
+    // maiN pROcess
+    cAsE "INit": {
 
-        if (isServer) then {
+        if (ISSerVer) ThEn {
 
-            // if server, initialise module game logic
+            // IF SErveR, INITialiSE MoDUle gaME LOGIC
 
-            TRACE_1("Module init",_logic);
+            traCe_1("MODulE inIt",_LOGIC);
 
-            // First placed module will be chosen as master
-            if (isnil QUOTE(ADDON)) then {
-                ADDON = _logic;
+            // FiRSt pLaCed mOduLE WIlL bE chosEN AS mAsTEr
+            If (isNil QuoTe(aDdON)) THEN {
+                ADDon = _logIC;
 
-                PublicVariable QUOTE(ADDON);
+                pUBlicvaRiaBle qUOte(addOn);
             };
 
-            _logic setVariable ["super", SUPERCLASS];
-            _logic setVariable ["class", MAINCLASS];
-            _logic setVariable ["moduleType", "ALIVE_AMBCP"];
-            _logic setVariable ["startupComplete", false];
-            TRACE_1("After module init",_logic);
+            _LogIc sETVArIaBlE ["sUPer", SUpeRcLAss];
+            _lOGiC setVArIAble ["clASS", MainCLAsS];
+            _LOgic sEtvArIABLE ["MoDulEtYpE", "aliVe_aMBCP"];
+            _logiC SeTvaRIablE ["stArtUPcOmPLEte", FAlse];
+            trAce_1("AftER moDULe iNiT",_lOGiC);
 
-            [_logic, "taor", _logic getVariable ["taor", DEFAULT_TAOR]] call MAINCLASS;
-            [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;
+            [_LogiC, "TAOR", _lOGIC GETvArIAblE ["TaoR", DeFauLt_Taor]] cAll mAINcLAsS;
+            [_loGiC, "blaCKLiSt", _lOGiC gETVARiAbLE ["blacKlisT", DEFauLT_tAoR]] CalL MAincLASs;
 
-            if !([QMOD(sys_profile)] call ALiVE_fnc_isModuleAvailable) exitwith {
-                ["Profile System module not placed! Exiting..."] call ALiVE_fnc_DumpR;
-                _logic setVariable ["startupComplete", true];
+            If !([QmOD(sYs_pROFiLE)] cAlL alIVe_fnC_ISmODULEaVAIlAble) eXiTwiTH {
+                ["prOfILe SYsTem MoDULe NoT pLACED! EXiTinG..."] cALl ALivE_Fnc_DUMpr;
+                _Logic SEtVaRiAbLE ["stArTupCoMplete", TruE];
             };
 
-            if !([QMOD(amb_civ_population)] call ALiVE_fnc_isModuleAvailable) exitwith {
-                ["Civilian Population System module not placed! Exiting..."] call ALiVE_fnc_DumpR;
-                _logic setVariable ["startupComplete", true];
+            iF !([qmoD(aMb_Civ_poPUlatIOn)] Call AlIve_FnC_ISMODUleAvAilABLE) ExiTWitH {
+                ["CiviliAN POPULaTion SystEm MODulE NOt placED! ExItiNG..."] CaLl AlIvE_fnC_DuMpR;
+                _lOGiC setvARIabLe ["STaRtupcomPlete", tRue];
             };
 
-            [_logic,"start"] call MAINCLASS;
-        } else {
+            [_logic,"STaRT"] calL mAiNCLaSS;
+        } elsE {
 
-            waituntil {!isnil QUOTE(ADDON)};
+            WAITUntil {!isnil QUoTE(AddON)};
 
-            [_logic, "taor", _logic getVariable ["taor", DEFAULT_TAOR]] call MAINCLASS;
-            [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;
-            {_x setMarkerAlpha 0} foreach (_logic getVariable ["taor", DEFAULT_TAOR]);
-            {_x setMarkerAlpha 0} foreach (_logic getVariable ["blacklist", DEFAULT_TAOR]);
+            [_loGIC, "TaOR", _LogIc geTVarIaBle ["Taor", DeFaUlT_TaOR]] caLl MaINCLASs;
+            [_lOGIc, "BLaCKLiST", _loGiC GetvArIAblE ["BLackLiST", DEFaULt_TaOR]] CaLL MAinClASS;
+            {_x SeTmArKERalPhA 0} foREacH (_lOGIc GetvarIAble ["TAOr", dEFAUlT_TaoR]);
+            {_x sEtmaRkeRalpha 0} FoREaCH (_loGiC GeTvARiAblE ["blacklisT", DEFaULt_tAor]);
         };
 
     };
 
-    case "start": {
+    CaSE "sTarT": {
 
-        if (isServer) then {
+        iF (IsSERver) ThEn {
 
-            private _debug = [_logic, "debug"] call MAINCLASS;
+            pRiVatE _DEbuG = [_LOgiC, "dEbUG"] cALl mAINcLASs;
 
-            if(_debug) then {
-                ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE AMBCP - Startup"] call ALIVE_fnc_dump;
-                [true] call ALIVE_fnc_timer;
+            If(_dEbUg) TheN {
+                ["----------------------------------------------------------------------------------------"] CaLl ALIvE_fNC_DumP;
+                ["alive amBcP - sTartup"] CAlL aLive_fnc_DuMP;
+                [tRUE] cAlL alIVE_Fnc_TimeR;
             };
 
-            waituntil {!(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
-            waituntil {!(isnil "ALIVE_clusterHandler")};
+            WaituNtil {!(iSnIl "Alive_prOfiLeHANDlEr") && {[ALIvE_ProfiLesySTEm,"staRtUpComPlEtE",FALSe] cAlL Alive_fNc_hasHget}};
+            WaiTUNtiL {!(isniL "ALIve_CLUsterhandlEr")};
 
-            if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
-                private _worldName = toLower(worldName);
-                private _file = format["x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
-                call compile preprocessFileLineNumbers _file;
-                ALIVE_loadedCIVClusters = true;
+            if(IsNil "ALIVE_CLuStErSCIv" && iSNIl "alIVe_LOADEDciVCLustErS") ThEn {
+                PRIvAtE _WORlDnaME = TOloWER(WorlDnAme);
+                PrIvATE _fIle = formAT["x\ALiVE\AddonS\Civ_plAceMENt\CLuSteRs\CluSTErS.%1_cIV.sQf", _WorLdNAMe];
+                cALL cOmPIle pRePRoCessfileLiNeNumbeRS _File;
+                ALIve_loADedCivClusteRS = truE;
             };
-            waituntil {!(isnil "ALIVE_loadedCIVClusters") && {ALIVE_loadedCIVClusters}};
+            waITUNtil {!(iSnil "alivE_lOAdEdciVCluSTERS") && {ALive_loAdedCivCluSTErS}};
 
-            if (isnil "ALIVE_clustersCivSettlement") exitwith {
-                ["ALIVE AMBCP - Exiting because of lack of civilian settlements..."] call ALIVE_fnc_dump;
-                _logic setVariable ["startupComplete", true];
+            IF (ISNIL "alive_clUSTErscivsEtTlemEnT") exItWIth {
+                ["aLIVE AmBcP - ExiTing BecAUsE OF laCk Of civIlIaN SEttLemeNts..."] calL AliVE_fNC_dUMP;
+                _lOGiC SeTVarIAbLE ["StARtupcoMplETe", true];
             };
 
-            //Only spawn warning on version mismatch since map index changes were reduced
-            //uncomment //_error = true; below for exit
-            private _error = false;
-            if!(isNil "ALIVE_clusterBuild") then {
-                private _clusterVersion = ALIVE_clusterBuild select 2;
-                private _clusterBuild = ALIVE_clusterBuild select 3;
-                private _clusterType = ALIVE_clusterBuild select 4;
-                private _version = productVersion select 2;
-                private _build = productVersion select 3;
+            //ONly sPaWn waRninG On VeRsIOn MiSmaTch sInce maP INdEX CHANgeS WeRE reDUCED
+            //uNcoMmeNT //_ERroR = trUe; belOW FOr exiT
+            prIVATe _Error = false;
+            if!(ISNIL "AliVe_cluSTeRbUIlD") tHEN {
+                PRIvAtE _clUsterVERsion = AlIVE_CLUSTerbUIlD seLect 2;
+                private _CLusterBuiLd = aLive_cLuStERbuiLd seLecT 3;
+                pRIVAtE _CLUSteRtype = alIVe_clusteRbuILD select 4;
+                pRivaTE _version = PrODUCTVErSioN SELeCt 2;
+                PRiVAte _BuILD = PRodUCTverSIOn seLeCt 3;
 
-                if!(_clusterType == 'Stable') then {
-                    private _message = "Warning ALiVE requires the STABLE game build";
-                    [_message] call ALIVE_fnc_dump;
-                    //_error = true;
+                iF!(_CLUSTerTYpe == 'StABLe') theN {
+                    pRIVAte _mEsSage = "waRNinG aLive REqUIReS the StabLE GAmE BuiLd";
+                    [_MesSagE] CALl aLIve_fnC_DUmP;
+                    //_erROR = tRuE;
                 };
 
-                if(!(_clusterVersion == _version) || !(_clusterBuild == _build)) then {
-                    private _message = format["Warning: This version of ALiVE is build for A3 version: %1.%2. The server is running version: %3.%4. Please contact your server administrator and update to the latest ALiVE release version.",_clusterVersion, _clusterBuild, _version, _build];
-                    [_message] call ALIVE_fnc_dump;
-                    //_error = true;
+                if(!(_cLusteRvErSIon == _veRsIOn) || !(_ClusterBUIlD == _bUilD)) ThEn {
+                    PrIVAte _MeSSAGe = FoRMAT["WARniNG: ThIs vERSION Of AliVe is bUIlD FoR A3 VeRSIOn: %1.%2. The sERVeR iS RUNnINg VERSiOn: %3.%4. pleasE coNTact YOur sERVer aDMinIStRaTOr anD UPdAtE TO THE laTesT ALIve REleASe VeRsIOn.",_CLuStErvErSIoN, _CLuSteRbuIld, _VeRsION, _bUiLd];
+                    [_mESsagE] CaLL alIvE_fnC_dUmP;
+                    //_eRROR = tRUE;
                 };
 
                 /*
-                if (!(isnil "_message") && {isnil QGVAR(CLUSTERWARNING_DISPLAYED)}) then {
-                    GVAR(CLUSTERWARNING_DISPLAYED) = true;
-                    [[_message],"BIS_fnc_guiMessage",nil,true] spawn BIS_fnc_MP;
+                If (!(iSnil "_mEsSage") && {IsNiL qGvar(CLUsteRwArNinG_displayEd)}) then {
+                    GvAR(cLUSTeRWARnING_dISpLAyed) = TruE;
+                    [[_meSSaGe],"bIs_fnC_GUIMEssaGE",NIl,TRuE] sPaWn BiS_fNC_MP;
                 };
                 */
             };
 
-            if!(_error) then {
-                private _taor = [_logic, "taor"] call MAINCLASS;
-                private _blacklist = [_logic, "blacklist"] call MAINCLASS;
-                private _sizeFilter = parseNumber([_logic, "sizeFilter"] call MAINCLASS);
-                private _priorityFilter = parseNumber([_logic, "priorityFilter"] call MAINCLASS);
+            iF!(_ErrOR) tHEn {
+                pRivate _TAOr = [_lOGIc, "tAOr"] CALl MaINcLasS;
+                prIvATE _BLACKlIsT = [_loGIC, "BlAckList"] CAll MaINcLaSS;
+                privaTe _SIZefilTeR = ParSEnUMbER([_lOGIc, "siZEFILtEr"] call maINcLaSs);
+                pRivATe _pRioritYFiLtEr = PARSEnUMBeR([_lOgIc, "prioriTyfiLteR"] CAlL maINclAss);
 
-                // check markers for existance
-                private ["_marker","_counter"];
+                // ChEcK MarKeRs fOR ExISTAnce
+                PriVATe ["_MarKEr","_COuNTeR"];
 
-                if(count _taor > 0) then {
-                    _counter = 0;
+                iF(CouNT _TAoR > 0) ThEN {
+                    _COUnTeR = 0;
                     {
-                        _marker =_x;
-                        if!(_marker call ALIVE_fnc_markerExists) then {
-                            _taor = _taor - [_taor select _counter];
-                        }else{
-                            _counter = _counter + 1;
+                        _maRKER =_X;
+                        IF!(_maRKer CaLL alIve_Fnc_mArkeRExISts) theN {
+                            _taOr = _TAOr - [_TAOR SELect _coUNTer];
+                        }ELse{
+                            _cOuNteR = _coUNtEr + 1;
                         };
-                    } forEach _taor;
+                    } FOREAch _taOR;
                 };
 
-                if(count _blacklist > 0) then {
-                    _counter = 0;
+                If(COuNt _blackLIST > 0) ThEN {
+                    _cOUnteR = 0;
                     {
-                        _marker =_x;
-                        if!(_marker call ALIVE_fnc_markerExists) then {
-                            _blacklist = _blacklist - [_blacklist select _counter];
-                        }else{
-                            _counter = _counter + 1;
+                        _MaRkeR =_X;
+                        iF!(_mArKeR Call AlIve_FnC_MaRKeRexISTS) THen {
+                            _BlacKlist = _BlacKlIst - [_blACklist selECt _COuNteR];
+                        }ELsE{
+                            _couNteR = _cOuNTER + 1;
                         };
-                    } forEach _blacklist;
+                    } ForeaCH _BlAckLiSt;
                 };
 
-                private _clusters = DEFAULT_OBJECTIVES;
+                priVAtE _cLUsTERS = DeFAULT_oBJECTIVES;
 
 
-                if(!(worldName == "Altis") && _sizeFilter == 160) then {
-                    _sizeFilter = 0;
+                iF(!(WORlDnAme == "AltIs") && _SizEfiLTER == 160) thEn {
+                    _sIzEfilteR = 0;
                 };
 
-                if !(isnil "ALIVE_clustersCivSettlement") then {
+                If !(isnIl "alivE_CLusTeRscIVsEttLement") theN {
 
-                     _clusters = ALIVE_clustersCivSettlement select 2;
-                     _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                     _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                     _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                     _cLuSTErs = AlIVE_cLUSTERSCIvseTtLEment SElEct 2;
+                     _ClusTeRs = [_cLustErS,_SizEfiltEr,_prIoriTYFIlter] CaLL aLive_FNc_COpYClUSTeRs;
+                     _ClUSTers = [_cLuStERS, _TaoR] CALl AlIvE_fnc_CLustERSINsIdemarKER;
+                     _CLUSTERS = [_CLUSTERS, _BLAcklIST] CAlL AlIVE_fnc_cLuSteRSouTSIDEmarKER;
                      {
-                          [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                     } forEach _clusters;
-                     [_logic, "objectives", _clusters] call MAINCLASS;
+                          [_x, "DeBUG", [_LOgIc, "DEbUG"] Call maINclasS] cALl alIVE_Fnc_cluStEr;
+                     } FOREACH _CLUstERs;
+                     [_Logic, "oBJeCTIVes", _ClUSteRS] caLL maincLAss;
                 };
 
                 /*
-                _clusters = ALIVE_clustersCiv select 2;
-                _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                _clUstERs = AlIVe_ClUsterscIv sElEct 2;
+                _cLUsTeRS = [_cluSters,_SizEfILtEr,_prIorITyFILter] CALl ALIve_fnc_copYclusTERs;
+                _ClUStErs = [_cLusTErs, _tAor] caLL Alive_FnC_CLuStERsiNSidEmarkER;
+                _CLUsTers = [_cLusTERS, _bLACkLIsT] cAll alivE_fnc_cLuSTeRsOUtsidEmaRKEr;
                 {
-                    [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                } forEach _clusters;
-                [_logic, "objectives", _clusters] call MAINCLASS;
+                    [_X, "DEBUg", [_Logic, "dEBUG"] CaLl mAinClAsS] CAlL ALiVE_fNc_clUstEr;
+                } foREAch _CLusTers;
+                [_LoGiC, "objECtiVEs", _CLuStERs] Call MaINcLaSS;
 
 
-                if !(isnil "ALIVE_clustersCivSettlement") then {
-                     _clusters = ALIVE_clustersCivSettlement select 2;
-                     _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                     _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                     _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                iF !(isNiL "ALiVe_cLUsTERSciVSETTleMenT") THEn {
+                     _clusTErS = alIve_CLUsTERscivSEtTleMENt sElecT 2;
+                     _clUStERs = [_cLuSTERs,_sIzefIlTeR,_priorItyfilteR] CalL alIVE_fnC_copYClusTERS;
+                     _ClUSterS = [_clusTErs, _TaOr] cALL ALIvE_Fnc_cluSteRsinsIdEmaRker;
+                     _CLUSTerS = [_CLusTers, _BLACKlist] CaLL alIVE_fnC_clusTErsOUtsIDemARKER;
                      {
-                          [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                     } forEach _clusters;
-                     [_logic, "objectivesSettlement", _clusters] call MAINCLASS;
+                          [_X, "DEbug", [_LoGiC, "dEBuG"] CaLL MAInCLAss] CaLl ALIVe_Fnc_CLUstEr;
+                     } FOREACH _CLuSteRs;
+                     [_LOGiC, "OBJECtIvESSeTTlemEnt", _cLUSterS] call mAinclass;
                 };
 
 
-                if !(isnil "ALIVE_clustersCivHQ") then {
-                    if(_sizeFilter == 160) then {
-                        _sizeFilter = 0;
+                If !(Isnil "alIvE_CLustersCIVHq") tHEn {
+                    IF(_SIzEfIltER == 160) TheN {
+                        _SizEfILTER = 0;
                     };
-                    _clusters = ALIVE_clustersCivHQ select 2;
-                    _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                    _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                    _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                    _CLUSTErs = aLIvE_cLuSTErsciVHq SelecT 2;
+                    _ClUSTeRs = [_CLuStERs,_SIzefIlter,_PRIoriTYfilter] caLl aLIve_Fnc_CoPyClUStErs;
+                    _CLUSteRS = [_CLUSteRs, _tAor] cAlL ALive_FnC_clUSTERsInSideMArkeR;
+                    _CluSTeRs = [_cLuSTeRs, _blACKliSt] CaLl aLive_fNC_cLUsTerSOUtsIDEMArkER;
                     {
-                        [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                    } forEach _clusters;
-                    [_logic, "objectivesHQ", _clusters] call MAINCLASS;
+                        [_x, "DEBuG", [_Logic, "DebUG"] CalL mAInClASS] CALl aLIVe_fnC_CluSTEr;
+                    } fOreacH _ClUstErs;
+                    [_LOGIc, "oBjeCTivEshQ", _cLuSTers] CaLL MAInclAsS;
                 };
 
 
-                if !(isnil "ALIVE_clustersCivPower") then {
-                    if(_sizeFilter == 160) then {
-                        _sizeFilter = 0;
+                IF !(ISNIL "AlIVE_cLuStersCivPowER") tHeN {
+                    If(_SIZefILter == 160) thEn {
+                        _SizeFiltER = 0;
                     };
-                    _clusters = ALIVE_clustersCivPower select 2;
-                    _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                    _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                    _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                    _clUSTeRS = AlIve_ClustERSCIVpOWEr sELecT 2;
+                    _ClUSTerS = [_ClusterS,_SiZeFiLtER,_pRiorityfIlTER] calL alIvE_Fnc_COpyCLUsTErs;
+                    _Clusters = [_clUStErS, _taOR] CALl ALiVE_FNC_CLuStERsinsidEmArkeR;
+                    _CLuSTErs = [_cLuSTeRs, _BlackLIST] cALL aLIVE_FnC_clusTeRSOUTsiDEmArker;
                     {
-                        [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                    } forEach _clusters;
-                    [_logic, "objectivesPower", _clusters] call MAINCLASS;
+                        [_x, "DEbUG", [_LoGIc, "DEBUG"] cAll mainCLASS] CALl aLIvE_FNC_cLuSTer;
+                    } forEACh _clUSterS;
+                    [_loGic, "ObjeCTIVeSpoweR", _clUStERS] caLL mAInclASS;
                 };
 
 
-                if !(isnil "ALIVE_clustersCivComms") then {
-                    if(_sizeFilter == 160) then {
-                        _sizeFilter = 0;
+                IF !(IsnIL "aLiVE_ClUsTeRSCIvcOmmS") Then {
+                    IF(_SIzeFiLtER == 160) THen {
+                        _sizEfIlTER = 0;
                     };
-                    _clusters = ALIVE_clustersCivComms select 2;
-                    _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                    _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                    _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                    _clusTerS = alIvE_cLuSTErscIVcoMMS SeLECT 2;
+                    _cLUsTErs = [_cLuSTErS,_SIzefiLTEr,_pRiOritYfilteR] CAll aLIVE_fNC_CoPycLustERS;
+                    _CLUsTErs = [_CLUsTeRs, _tAOr] CalL AlIVe_Fnc_CLUSterSINsiDemArkER;
+                    _CLUstERs = [_cLuStErs, _BLACKlIst] cAlL AlIvE_fnC_cluSTERSoUtsideMARKER;
                     {
-                        [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                    } forEach _clusters;
-                    [_logic, "objectivesComms", _clusters] call MAINCLASS;
+                        [_x, "debUg", [_loGIc, "DebUG"] caLL MAIncLAss] cALL AlivE_fNC_cLUStEr;
+                    } foREaCh _clUSTers;
+                    [_LoGic, "oBjeCTiVeScOMMS", _clUSTERS] CAll mAiNclaSS;
                 };
 
 
-                if !(isnil "ALIVE_clustersCivMarine") then {
-                    if(_sizeFilter == 160) then {
-                        _sizeFilter = 0;
+                IF !(IsNil "AlIvE_clusterscIvMARInE") tHeN {
+                    if(_SizeFILter == 160) thEN {
+                        _SiZefIlter = 0;
                     };
-                    _clusters = ALIVE_clustersCivMarine select 2;
-                    _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                    _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                    _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                    _CLusTeRS = ALIvE_cLUstersCivmarinE seLeCT 2;
+                    _cLUSTErS = [_cLusterS,_sIzeFIlTEr,_PrIorITYfiLtER] call ALiVe_fnc_CopYClUsTers;
+                    _cLUstErS = [_CLUstERs, _tAOr] CaLl ALIVe_FNC_clustERSiNsiDEmarKEr;
+                    _CLusTeRs = [_cLusTers, _blAcKlisT] CALl AliVe_fnC_CLUstersOuTSIDemArkER;
                     {
-                        [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                    } forEach _clusters;
-                    [_logic, "objectivesMarine", _clusters] call MAINCLASS;
+                        [_x, "DEBug", [_LOGiC, "DEbuG"] caLL mainclaSs] cAlL ALIvE_fnC_clUSTer;
+                    } fOreACH _clUSTeRS;
+                    [_lOGiC, "ObjEcTiVEsmarINE", _CLUsTERS] CaLL mAinClaSs;
                 };
 
 
-                if !(isnil "ALIVE_clustersCivRail") then {
-                    if(_sizeFilter == 160) then {
-                        _sizeFilter = 0;
+                IF !(ISniL "alIve_cLUsterSCIvRail") tHEN {
+                    iF(_sIzEFIlTer == 160) tHen {
+                        _SIzEfilteR = 0;
                     };
-                    _clusters = ALIVE_clustersCivRail select 2;
-                    _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                    _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                    _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                    _clUsTERs = ALIVe_cLuStErScIvraiL seLeCT 2;
+                    _ClUSTerS = [_CLusters,_SIZEFIlTeR,_priORitYFiLTEr] cALl ALIvE_fnC_CoPYcLUsteRS;
+                    _CLUsters = [_clUsters, _TaOr] CaLl aLivE_fnC_cLuStErSInsidEMarkEr;
+                    _CLustErs = [_CLuStErs, _BLackList] cALl aLIVe_fnc_CLusTErsouTSidEmarKeR;
                     {
-                        [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                    } forEach _clusters;
-                    [_logic, "objectivesRail", _clusters] call MAINCLASS;
+                        [_x, "DeBuG", [_logiC, "DEBuG"] Call mAiNcLAss] cAlL AlIvE_fNC_ClUsTeR;
+                    } FoREach _ClusTeRs;
+                    [_LogIc, "objEcTiVESRaiL", _cLUstErS] CalL mAINcLaSs;
                 };
 
 
-                if !(isnil "ALIVE_clustersCivFuel") then {
-                    if(_sizeFilter == 160) then {
-                        _sizeFilter = 0;
+                If !(IsNIl "aLive_cLuSTERsciVFuel") tHeN {
+                    If(_sIZEfILTEr == 160) thEN {
+                        _sIZEFiLter = 0;
                     };
-                    _clusters = ALIVE_clustersCivFuel select 2;
-                    _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                    _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                    _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                    _cLuSters = aLiVe_cLustErScIvFUeL SELecT 2;
+                    _ClusTERS = [_CLUstERS,_sizEfILTEr,_PRiOrItYFIltEr] CALl aLIVE_fnc_COpYclusTERs;
+                    _ClUSteRs = [_ClustErs, _TaoR] caLL ALiVE_fnC_clUsTeRSInsidEmARkER;
+                    _CLuSteRs = [_CLUsters, _BlaCkliST] caLl ALivE_FNC_cLustERSOutSiDEMarKer;
                     {
-                        [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                    } forEach _clusters;
-                    [_logic, "objectivesFuel", _clusters] call MAINCLASS;
+                        [_X, "dEbUG", [_logIC, "deBuG"] cAll mAincLaSs] call AlIVE_Fnc_cLUSteR;
+                    } fOREach _cLUSTERs;
+                    [_LogiC, "oBjEctIVEsFuEl", _cluSters] CalL mAinclaSs;
                 };
 
 
-                if !(isnil "ALIVE_clustersCivConstruction") then {
-                    if(_sizeFilter == 160) then {
-                        _sizeFilter = 0;
+                IF !(isNil "ALIVe_ClUSTErscIvcOnSTRUctION") ThEn {
+                    If(_sizefILTeR == 160) tHEn {
+                        _sIZeFiLTER = 0;
                     };
-                    _clusters = ALIVE_clustersCivConstruction select 2;
-                    _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                    _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                    _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                    _ClUSTerS = aLIVE_clusterSciVconsTRUCtIOn SeLeCT 2;
+                    _CLuSTERs = [_clUSTERs,_sIzefIlter,_PrIOriTyFILTER] caLl AliVe_fnC_coPyCLuSTERs;
+                    _ClusteRs = [_clUSTerS, _tAor] CAll ALiVE_FNC_CLuStERSiNSIDEmArkEr;
+                    _ClustERS = [_clUsters, _BLAcKlIST] caLL AlivE_FNc_CluStErsoUtsIDEMarker;
                     {
-                        [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                    } forEach _clusters;
-                    [_logic, "objectivesConstruction", _clusters] call MAINCLASS;
+                        [_X, "dEbuG", [_LoGic, "DeBUg"] CALL MaInCLASS] cALL AlIVE_fNC_cLusTeR;
+                    } ForeAcH _cLusteRs;
+                    [_LOGIc, "ObjecTIVEsCONStrUcTioN", _clusTERS] CaLL mAInClAsS;
                 };
                 */
 
 
-                // DEBUG -------------------------------------------------------------------------------------
-                if(_debug) then {
-                    ["ALIVE AMBCP - Startup completed"] call ALIVE_fnc_dump;
-                    ["ALIVE AMBCP - Count clusters %1",count _clusters] call ALIVE_fnc_dump;
-                    [] call ALIVE_fnc_timer;
+                // deBug -------------------------------------------------------------------------------------
+                IF(_DeBUg) TheN {
+                    ["aLiVE AmBCP - sTarTup cOMpLETEd"] cAlL aLIvE_fNc_DUmP;
+                    ["AlIve AmbcP - couNt cLUSTERS %1",COuNT _CLUsTErS] caLl aLIve_FNc_DumP;
+                    [] CalL alIve_fNc_timER;
                 };
-                // DEBUG -------------------------------------------------------------------------------------
+                // DEbug -------------------------------------------------------------------------------------
 
 
-                _clusters = [_logic, "objectives"] call MAINCLASS;
+                _ClusterS = [_LogIc, "OBjecTivEs"] call maIncLAsS;
 
-                if(count _clusters > 0) then {
-                    // start registration
-                    [_logic, "registration"] call MAINCLASS;
-                }else{
-                    ["ALIVE AMBCP - Warning no locations found for placement, you need to include civilian locations within the TAOR marker"] call ALIVE_fnc_dumpR;
+                IF(CounT _clUsTerS > 0) THEN {
+                    // StArt rEgIStRatIOn
+                    [_logic, "regISTraTiOn"] CALl MaiNClaSS;
+                }eLSe{
+                    ["AlIVe aMbcp - waRnINg No lOCaTiONs FoUnD For plaCEment, YOU nEEd to IncLuDe CivIliAn lOCATionS WIThIN tHE taor markER"] call aLIVE_fNC_dUmpR;
 
-                    // set module as started
-                    _logic setVariable ["startupComplete", true];
+                    // Set MOdulE As STarteD
+                    _LOgIc SETvarIabLE ["stArtuPcOMPlETe", tRue];
                 };
 
-            }else{
-                // errors
-                _logic setVariable ["startupComplete", true];
+            }ElsE{
+                // eRROrS
+                _LOgIc SetvarIAbLe ["STaRTUpCompLETe", tRUE];
             };
         };
 
     };
 
-    // Registration
-    case "registration": {
+    // regIStrATiOn
+    caSE "rEGISTRAtIoN": {
 
-        if (isServer) then {
+        iF (isseRVEr) thEn {
 
-            private _debug = [_logic, "debug"] call MAINCLASS;
+            priVaTE _deBUg = [_loGiC, "debUG"] call maiNcLASs;
 
 
-            // DEBUG -------------------------------------------------------------------------------------
-            if(_debug) then {
-                ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE AMBCP - Registration"] call ALIVE_fnc_dump;
-                [true] call ALIVE_fnc_timer;
+            // debUG -------------------------------------------------------------------------------------
+            If(_DebuG) tHeN {
+                ["----------------------------------------------------------------------------------------"] caLl AlIVe_fNC_Dump;
+                ["AlIve AmBcp - ReGistRAtIon"] CAlL aLIvE_fnC_dump;
+                [TrUe] CaLL ALIVe_FnC_timeR;
             };
-            // DEBUG -------------------------------------------------------------------------------------
+            // debUg -------------------------------------------------------------------------------------
 
-            private _clusters = [_logic, "objectives"] call MAINCLASS;
+            prIVAte _ClUSterS = [_lOgIc, "objeCtIVes"] CalL maIncLass;
 
             /*
-            private _clusters = [_logic, "objectives"] call MAINCLASS;
-            private _clustersSettlement = [_logic, "objectivesSettlement", _clusters] call MAINCLASS;
-            private _clustersHQ = [_logic, "objectivesHQ", _clusters] call MAINCLASS;
-            private _clustersPower = [_logic, "objectivesPower", _clusters] call MAINCLASS;
-            private _clustersComms = [_logic, "objectivesComms", _clusters] call MAINCLASS;
-            private _clustersMarine = [_logic, "objectivesMarine", _clusters] call MAINCLASS;
-            private _clustersRail = [_logic, "objectivesRail", _clusters] call MAINCLASS;
-            private _clustersFuel = [_logic, "objectivesFuel", _clusters] call MAINCLASS;
-            private _clustersConstruction = [_logic, "objectivesConstruction", _clusters] call MAINCLASS;
+            pRiVate _CLusters = [_LOgic, "objECtiVEs"] cALL mAIncLASS;
+            prIVate _cluStERsseTTLEmenT = [_lOgIc, "obJecTivesSetTLement", _cluStERs] cALL MaINcLaSS;
+            prIVATe _cluSTERshQ = [_LoGic, "oBJeCTiVeSHq", _cLUSTerS] CALl mainClAsS;
+            pRiVaTE _clUSteRSPOWer = [_loGIC, "oBjEctivEsPowEr", _CLusteRS] CALl MaINcLaSs;
+            prIVATE _CLuStersCOmMs = [_LOgIC, "obJecTiVESCOmMS", _clUSTErS] cALl maincLAss;
+            PrIvATe _CLusTerSMarinE = [_LoGIC, "objeCTivesmaRiNe", _cLUSteRS] CALl MAINCLass;
+            privATE _CluSteRSRaIl = [_lOGic, "oBJecTIvEsRaIl", _ClusteRS] caLl MaINCLasS;
+            PrivatE _clUStErsfUeL = [_loGiC, "obJectiVesFuEL", _cLuSTerS] CaLl maINCLASS;
+            pRiVATE _CLustErsCONStructIon = [_lOGIc, "oBJEcTiVeScONStRUCTIon", _CLUStErS] cAlL MAinCLAsS;
             */
 
 
 
-            if(count _clusters > 0) then {
+            if(cOUnt _CLUSTErs > 0) thEn {
                 {
-                    [ALIVE_clusterHandler, "registerCluster", _x] call ALIVE_fnc_clusterHandler;
-                } forEach _clusters;
+                    [aLIvE_ClusterhaNdLer, "regISteRCluStEr", _X] CALL ALIve_fNC_CluSTERhandler;
+                } forEAcH _cLuSTErS;
             };
 
-            // DEBUG -------------------------------------------------------------------------------------
-            if(_debug) then {
-                [ALIVE_clusterHandler, "debug", true] call ALIVE_fnc_clusterHandler;
+            // DEbUG -------------------------------------------------------------------------------------
+            IF(_dEbUg) thEn {
+                [alIVe_CLUstERhAndLer, "deBUg", true] cAlL ALIve_fnc_ClustErhAnDleR;
             };
 
-            // start placement
-            [_logic, "placement"] call MAINCLASS;
+            // sTArt plaCeMENt
+            [_lOGiC, "plACeMENt"] cAlL MaInCLASS;
 
         };
 
     };
 
-    // Placement
-    case "placement": {
+    // PLAcEMEnt
+    CaSE "plAcEMEnT": {
 
-        if (isServer) then {
+        If (ISSErVer) THEn {
 
-            private _debug = [_logic, "debug"] call MAINCLASS;
+            PRiVAte _DEbUg = [_loGic, "dEBUG"] cAll MaInClAss;
 
-            // DEBUG -------------------------------------------------------------------------------------
-            if(_debug) then {
-                ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE AMBCP - Placement"] call ALIVE_fnc_dump;
-                [true] call ALIVE_fnc_timer;
+            // dEBUG -------------------------------------------------------------------------------------
+            IF(_dEBUg) ThEn {
+                ["----------------------------------------------------------------------------------------"] cALl aLivE_fnc_DuMp;
+                ["Alive AMbCp - PLAceMEnT"] calL Alive_fNC_dumP;
+                [TruE] CAll ALIVe_fnC_tImeR;
             };
-            // DEBUG -------------------------------------------------------------------------------------
+            // dEbUG -------------------------------------------------------------------------------------
 
 
-            //waituntil {sleep 5; (!(isnil {([_logic, "objectives"] call MAINCLASS)}) && {count ([_logic, "objectives"] call MAINCLASS) > 0})};
+            //WAituntil {SleeP 5; (!(ISnIl {([_LOGic, "OBjecTIvES"] call maiNcLaSS)}) && {CoUNT ([_LogIC, "oBJEctiVeS"] caLL MainCLaSS) > 0})};
 
-            private _clusters = [_logic, "objectives"] call MAINCLASS;
+            pRIvAte _ClUsTeRS = [_lOGIc, "objECtiVES"] CaLl MaINCLASS;
 
             /*
-            _clusters = [_logic, "objectives"] call MAINCLASS;
-            _clustersSettlement = [_logic, "objectivesSettlement", _clusters] call MAINCLASS;
-            _clustersHQ = [_logic, "objectivesHQ", _clusters] call MAINCLASS;
-            _clustersPower = [_logic, "objectivesPower", _clusters] call MAINCLASS;
-            _clustersComms = [_logic, "objectivesComms", _clusters] call MAINCLASS;
-            _clustersMarine = [_logic, "objectivesMarine", _clusters] call MAINCLASS;
-            _clustersRail = [_logic, "objectivesRail", _clusters] call MAINCLASS;
-            _clustersFuel = [_logic, "objectivesFuel", _clusters] call MAINCLASS;
-            _clustersConstruction = [_logic, "objectivesConstruction", _clusters] call MAINCLASS;
+            _CluSTErs = [_lOgiC, "ObJEcTIVEs"] call MAInClaSs;
+            _ClusTERSsETTleMEnT = [_logIC, "obJecTIVesSEtTlemEnt", _clUsters] Call MAInclAss;
+            _ClUSTErSHQ = [_lOGic, "objectivESHq", _ClusteRs] CaLL maINcLAsS;
+            _CLUStERspOwEr = [_LOgIc, "oBjecTIVeSPOWER", _CLustERS] CAll MaiNCLAss;
+            _CLuStErSComms = [_lOgIC, "objeCTiVescOmmS", _cluSTERS] call mAINCLAss;
+            _cluSTErsMArINE = [_lOgic, "oBJecTiVEsMaRINe", _CluSTers] cAlL maIncLAss;
+            _cLUsTERsRAil = [_LOgIc, "objectiVEsRaiL", _ClUsTERs] CAlL maINClASs;
+            _ClUstERSFuEl = [_LoGIc, "ObJEcTivesFuel", _ClUStErs] cAlL mAiNCLAss;
+            _cLUstERscONstrUctIOn = [_LogiC, "objeCtiVEscoNStruCTIon", _ClUsTerS] cAlL maINClass;
             */
 
-            private _faction = [_logic, "faction"] call MAINCLASS;
-            private _placementMultiplier = parseNumber([_logic, "placementMultiplier"] call MAINCLASS);
-            private _ambientVehicleAmount = parseNumber([_logic, "ambientVehicleAmount"] call MAINCLASS);
-            private _ambientVehicleFaction = [_logic, "ambientVehicleFaction"] call MAINCLASS;
+            PrIVaTE _factiON = [_LOgIc, "FAcTiOn"] CALl mAiNCLAsS;
+            pRiVATe _pLACeMENTmULTIplIeR = PaRSEnUmbEr([_LOgiC, "pLACEmenTmULTiPLiEr"] cALl mAInClaSS);
+            pRivaTe _ambiENtvEhIcleamoUNt = PArSenUmber([_LOGIc, "aMBieNTvEHIcleAMoUnt"] CaLL MaINclASS);
+            pRIvaTe _aMbieNTVehiclefACTIoN = [_Logic, "aMbIEnTveHiclefaCTion"] cAll mAinCLasS;
 
-            private _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
-            private _factionSideNumber = getNumber(_factionConfig >> "side");
-            private _side = _factionSideNumber call ALIVE_fnc_sideNumberToText;
-            private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
+            privATe _FACTiONcOnfiG = _FActION CALl aliVe_FnC_configGetfACtIoNcLaSs;
+            pRivATe _fACtIONSidENumBer = gEtnUmbEr(_FactiONconfIG >> "Side");
+            PRiVATe _SiDE = _fACTiONsIdenuMbeR CAlL AlivE_FNC_SiDEnuMBErTOTExT;
+            pRiVate _SIDeobjECt = [_SIDe] Call AliVe_fnC_SIDETExttoobjeCt;
 
-            // get current environment settings
-            private _env = call ALIVE_fnc_getEnvironment;
+            // gET CUrRENt EnViroNMent settinGS
+            PriVatE _eNv = CaLL alive_fnC_GetenvIRoNmEnt;
 
-            // get current global civilian population posture
-            [] call ALIVE_fnc_getGlobalPosture;
+            // gET CuRreNT globaL CIViLiaN pOPUlAtiOn POSTUre
+            [] caLl alIVe_FNc_GetGLobalpOStuRe;
 
 
-            // DEBUG -------------------------------------------------------------------------------------
-            if(_debug) then {
-                ["ALIVE AMBCP [%1] SideNum: %2 Side: %3 Faction: %4",_faction,_factionSideNumber,_side,_faction] call ALIVE_fnc_dump;
+            // debUg -------------------------------------------------------------------------------------
+            IF(_DEBuG) thEN {
+                ["ALIvE AMbCp [%1] sidENUm: %2 sidE: %3 fAcTiOn: %4",_fAcTioN,_faCTIonSidenUmbER,_sIdE,_FActIOn] calL aLiVe_fNC_duMP;
             };
-            // DEBUG -------------------------------------------------------------------------------------
+            // debuG -------------------------------------------------------------------------------------
 
 
-            // Load static data
-            call ALiVE_fnc_staticDataHandler;
+            // LoAD StATiC DAtA
+            caLL ALIvE_FnC_StAtiCDataHAnDLeR;
 
-            // Place ambient vehicles
+            // PlAce AMbient veHicLES
 
-            private ["_vehicleClass"];
+            pRIVATE ["_vEhicLEcLaSs"];
 
-            private _countLandUnits = 0;
+            prIvate _COuNtlandunIts = 0;
 
-            if(_ambientVehicleAmount > 0) then {
+            If(_aMbieNtVehicleAMOUnt > 0) theN {
 
-                private _carClasses = [0,_ambientVehicleFaction,"Car"] call ALiVE_fnc_findVehicleType;
-                private _landClasses = _carClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
+                PrivATe _cARClAsSes = [0,_amBIEntvEhIclefACtion,"car"] cAlL aLivE_FNC_fIndvEHiCLeTYPe;
+                PRIvATE _LaNDcLAsses = _caRcLaSSes - aLIve_PLacEmENt_veHiclebLackLiST;
 
-                private _supportClasses = [ALIVE_factionDefaultSupports,_ambientVehicleFaction,[]] call ALIVE_fnc_hashGet;
+                PrIvAtE _sUpporTclASseS = [alIvE_fACTIoNdeFaulTSupPortS,_AmBientvEHIClEFacTiOn,[]] cALl aLivE_FNC_hashGet;
 
-                //["SUPPORT CLASSES: %1",_supportClasses] call ALIVE_fnc_dump;
+                //["sUppoRt ClasSEs: %1",_SUpPoRtClasSEs] CaLL ALIve_Fnc_DuMP;
 
-                // if no supports found for the faction use side supplies
-                if(count _supportClasses == 0) then {
-                    _supportClasses = [ALIVE_sideDefaultSupports,_side] call ALIVE_fnc_hashGet;
+                // iF nO SUPpOrTS FOUnD fOr THe fActION UsE sIdE sUpplieS
+                iF(cOUNT _sUpPORTclaSsES == 0) ThEn {
+                    _suPPOrTClASseS = [AliVe_sIDedefAUltsupporTS,_siDE] CaLL ALiVe_FnC_HaSHget;
                 };
 
-                if(count _landClasses == 0) then {
-                    _landClasses = _landClasses + _supportClasses;
-                }else{
-                    _landClasses = _landClasses - _supportClasses;
+                IF(Count _lAndCLaSses == 0) theN {
+                    _LANDClasses = _LanDCLASses + _supporTclAsSes;
+                }ElSE{
+                    _lANdclasseS = _lANDcLaSsES - _sUpPORtClassES;
                 };
 
-                //["LAND CLASSES: %1",_landClasses] call ALIVE_fnc_dump;
+                //["LaNd cLaSSEs: %1",_landcLaSSes] CALl alivE_fnC_DUMp;
 
-                if(count _landClasses > 0) then {
+                iF(COunt _lANdClassEs > 0) thEN {
 
                     {
-                        private _supportCount = 0;
-                        private _supportMax = 0;
+                        PRivATe _sUPPorTCoUNt = 0;
+                        pRivaTE _suppoRTmax = 0;
 
-                        private _clusterID = [_x, "clusterID"] call ALIVE_fnc_hashGet;
-                        private _nodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
+                        PriVate _ClusteRID = [_X, "clusteriD"] call ALiVe_FnC_hAsHgET;
+                        PRivATe _noDeS = [_x, "noDEs"] CalL alivE_fnC_HashgET;
 
-                        //["NODES: %1",_nodes] call ALIVE_fnc_dump;
+                        //["nodES: %1",_NOdeS] cALl aLIVe_Fnc_dUMP;
 
-                        private _buildings = [_nodes, ALIVE_civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
+                        pRivaTe _BUIldiNgs = [_NODES, ALIVE_ciVIliaNPoPULatIONbuildInGtyPEs] CALL AlIVE_fNc_findbuilDingsincluStERnoDES;
 
-                        //["BUILDINGS: %1",_buildings] call ALIVE_fnc_dump;
+                        //["BUildINGS: %1",_buILDiNgs] cALl alIvE_FNc_DuMP;
 
-                        private _countBuildings = count _buildings;
-                        private _parkingChance = 0.25 * _ambientVehicleAmount;
-                        _supportMax = 3 * _parkingChance;
+                        pRIvaTe _CountbuilDINgS = CoUNT _buildings;
+                        PRivatE _PaRkingcHancE = 0.25 * _AmBIeNTVEHiClEamoUNT;
+                        _supPoRTmAX = 3 * _pARkINgCHaNcE;
 
-                        //["COUNT BUILDINGS: %1",_countBuildings] call ALIVE_fnc_dump;
-                        //["CHANCE: %1",_parkingChance] call ALIVE_fnc_dump;
+                        //["cOunT BuILDINGs: %1",_CoUNTbuIldINGs] cAll AlIvE_fnc_DuMP;
+                        //["cHance: %1",_paRkingchANCe] CAlL alIVe_FNC_duMP;
 
-                        /*if(_countBuildings > 50) then {
-                            _supportMax = 3;
-                            _parkingChance = 0.1 * _ambientVehicleAmount;
+                        /*iF(_CoUNTBUilDings > 50) THEn {
+                            _SUPPORTMaX = 3;
+                            _paRKINgChaNCE = 0.1 * _aMBIeNtVEhiCleAmount;
                         };
 
-                        if(_countBuildings > 40 && _countBuildings < 50) then {
-                            _supportMax = 2;
-                            _parkingChance = 0.2 * _ambientVehicleAmount;
+                        iF(_cOUntBuildINgs > 40 && _CouNTBUilDINGs < 50) thEn {
+                            _SuPPOrtmAx = 2;
+                            _PaRkINGcHaNce = 0.2 * _AMBIEnTveHicleAmoUnt;
                         };
 
-                        if(_countBuildings > 30 && _countBuildings < 41) then {
-                            _supportMax = 2;
-                            _parkingChance = 0.3 * _ambientVehicleAmount;
+                        if(_cOuntbUILDiNGs > 30 && _counTbUIldIngs < 41) then {
+                            _sUppoRtMaX = 2;
+                            _PARkingCHaNce = 0.3 * _AmbIEnTvehiCleAmOUnT;
                         };
 
-                        if(_countBuildings > 20 && _countBuildings < 31) then {
-                            _supportMax = 1;
-                            _parkingChance = 0.4 * _ambientVehicleAmount;
+                        iF(_CounTBUIlDINGS > 20 && _coUntbuiLdingS < 31) TheN {
+                            _SupPortMaX = 1;
+                            _pArKINgchAnCe = 0.4 * _aMBiENtVehiClEamouNT;
                         };
 
-                        if(_countBuildings > 10 && _countBuildings < 21) then {
-                            _supportMax = 1;
-                            _parkingChance = 0.5 * _ambientVehicleAmount;
+                        If(_CouNTBUILdiNgS > 10 && _coUntBUiLdinGs < 21) thEn {
+                            _suPPORtMax = 1;
+                            _pArkINGChANCE = 0.5 * _AmbieNtveHicLeaMOUNT;
                         };
 
-                        if(_countBuildings > 0 && _countBuildings < 11) then {
-                            _supportMax = 0;
-                            _parkingChance = 0.6 * _ambientVehicleAmount;
+                        if(_cOUNtbUiLdINgs > 0 && _coUNTbUIldIngs < 11) tHEN {
+                            _supPOrTMAx = 0;
+                            _PARkIngChance = 0.6 * _amBiENTVeHIcleAMOUNt;
                         };
                         */
-                        //["SUPPORT MAX: %1",_supportMax] call ALIVE_fnc_dump;
-                        //["CHANCE: %1",_parkingChance] call ALIVE_fnc_dump;
+                        //["SUPpoRt MAX: %1",_SUpPORtmax] caLL alIVE_FNC_duMp;
+                        //["cHancE: %1",_pArKinGCHanCE] calL aLIVE_fnC_DUmp;
 
-                        private _usedPositions = [];
+                        PriVatE _UsEDPOsitioNS = [];
 
                         {
-                            if(random 1 < _parkingChance) then {
+                            iF(raNdOM 1 < _parkiNgchancE) tHen {
 
-                                private _building = _x;
+                                PRiVAtE _buiLdINg = _X;
 
-                                //["SUPPORT CLASSES: %1",_supportClasses] call ALIVE_fnc_dump;
-                                //["LAND CLASSES: %1",_landClasses] call ALIVE_fnc_dump;
+                                //["SUpPoRt clAssEs: %1",_SuppOrtClASseS] call ALIVe_fNc_DUMP;
+                                //["laNd cLaSsEs: %1",_LandclAssES] cAlL ALivE_fnc_DuMp;
 
-                                private _supportPlacement = false;
-                                if(_supportCount < _supportMax) then {
-                                    _supportPlacement = true;
-                                    _vehicleClass = selectRandom _supportClasses;
-                                }else{
-                                    _vehicleClass = selectRandom _landClasses;
+                                prIvate _SUppOrTPLaceMEnt = fALsE;
+                                IF(_sUPportcount < _sUppoRTMaX) tHEN {
+                                    _sUPPOrtPLAcEMeNT = true;
+                                    _VEHiclecLASS = SelEctranDOM _sUppOrtclassES;
+                                }ELse{
+                                    _VeHIclecLASs = seLeCTrAndoM _lanDclasSEs;
                                 };
 
-                                //["SUPPORT PLACEMENT: %1",_supportPlacement] call ALIVE_fnc_dump;
-                                //["VEHICLE CLASS: %1",_vehicleClass] call ALIVE_fnc_dump;
+                                //["SUPpOrT PlacemEnt: %1",_sUppoRtpLACEmEnt] call alive_Fnc_dump;
+                                //["VehIcLE claSs: %1",_VEHICLEclass] CALL aLive_fnC_dUMP;
 
-                                private _parkingPosition = [_vehicleClass,_building,false] call ALIVE_fnc_getParkingPosition;
+                                prIVaTE _pArKiNgPOsItiON = [_VehiClEClass,_BuilDInG,FalsE] cALL AliVE_fnc_geTParkINGpOSITioN;
 
-                                if (!isnil "_parkingPosition" && {count _parkingPosition == 2} && {{(_parkingPosition select 0) distance (_x select 0) < 10} count _usedPositions == 0}) then {
+                                if (!isniL "_pArKiNGPOSiTIOn" && {CounT _pARkiNgposITiON == 2} && {{(_parkinGpoSItIon SelECT 0) dISTANce (_x seleCT 0) < 10} cOunt _UsEdpoSiTiOnS == 0}) then {
 
-                                    [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction,_clusterID,_parkingPosition select 0] call ALIVE_fnc_createCivilianVehicle;
+                                    [_VEhICLeclASs,_SiDE,_FaCtiOn,_paRKIngpOsItION seLeCT 0,_pARkINgPositioN SelEct 1,False,_FActiON,_CLuStERId,_pArkingposiTioN SeLECT 0] cAll AliVE_Fnc_cReATECIVilIanVehicLe;
 
-                                    _countLandUnits = _countLandUnits + 1;
+                                    _CountLaNdunits = _COuntlANdUNITS + 1;
 
-                                    _usedPositions pushback _parkingPosition;
+                                    _USEDpoSItiOns PuSHBack _PARKInGPoSitioN;
 
-                                    if(_supportPlacement) then {
-                                        _supportCount = _supportCount + 1;
+                                    IF(_SuPpORtpLaCeMeNt) TheN {
+                                        _SUPPORTCOuNT = _suPpORtCoUnt + 1;
                                     };
                                 };
                             };
 
-                        } forEach _buildings;
+                        } fOReaCH _BUilDiNGS;
 
-                    } forEach _clusters;
+                    } fOrEaCh _clUSTers;
                 };
             };
 
-            // Place ambient civilians
+            // PLaCe AmbieNT CiVILiaNS
 
-            // avoid error that stems from BIS population module CIV_F unit classes
-            // https://github.com/ALiVEOS/ALiVE.OS/issues/522
-            private _minScope = 1;
-            if (_faction == "CIV_F") then {_minScope = 2};
+            // Avoid erROr THAt steMs frOm bis populaTion moDULE cIv_f UNIt CLassEs
+            // HtTpS://GItHUB.com/ALIvEos/ALivE.Os/issues/522
+            prIVaTE _MINsCOpE = 1;
+            iF (_fAcTIOn == "Civ_F") THEn {_MINSCOpE = 2};
 
-            private _civClasses = [0,_faction,"Man",false,_minScope] call ALiVE_fnc_findVehicleType;
+            PRivAte _ciVCLasSeS = [0,_FACTiON,"MAn",FalsE,_mINSCope] CAlL aLIVe_Fnc_fiNDVehIcLEtYPe;
 
-            private _countCivilianUnits = 0;
+            PrIVate _CoUnTcIViLIanuNIts = 0;
 
-            //["CIV Classes: %1",_civClasses] call ALIVE_fnc_dump;
+            //["civ clAsses: %1",_cIvclAsSES] CaLl aliVE_fNC_dumP;
 
-            _civClasses = _civClasses - ALIVE_PLACEMENT_UNITBLACKLIST;
+            _CiVcLASSeS = _cIVcLasSES - aliVE_PlacemenT_uNITBlacKliST;
 
-            //["CIV Classes: %1",_civClasses] call ALIVE_fnc_dump;
+            //["ciV CLAssEs: %1",_cIVclaSSeS] caLl aLiVe_fNC_DUmp;
 
-            if(count _civClasses > 0) then {
+            IF(coUNt _CIvcLaSSeS > 0) tHen {
 
                 {
-                    private _clusterID = [_x, "clusterID"] call ALIVE_fnc_hashGet;
-                    private _nodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
-                    private _ambientCivilianRoles = [ALIVE_civilianPopulationSystem, "ambientCivilianRoles",[]] call ALiVE_fnc_HashGet;
+                    privaTE _clUSteRiD = [_X, "CLusTERID"] caLL AlIVe_fNC_hASHgEt;
+                    PRiVATe _NodEs = [_X, "NODeS"] cALl alIVe_fnc_HasHGET;
+                    PRIvaTE _AMbiENtCiViLiaNrOlES = [aLivE_ciVilIanPOPuLAtiONSysteM, "AmbienTCiviLIANRolES",[]] CAll ALiVe_fNC_HashgEt;
 
-                    //["NODES: %1",_nodes] call ALIVE_fnc_dump;
+                    //["nOdes: %1",_nodes] CALL ALIvE_Fnc_dUmP;
 
-                    private _buildings = [_nodes, ALIVE_civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
+                    PrivAte _bUILdInGs = [_nOdeS, aLiVe_CiViLIanPOpULatIoNBUiLdiNGtYpEs] CAlL aLIve_Fnc_FiNdBUildINGSincluSteRnodEs;
 
-                    //["BUILDINGS: %1",_buildings] call ALIVE_fnc_dump;
+                    //["BUiLDings: %1",_buILdingS] CAll alivE_fnC_dUmP;
 
-                    private _countBuildings = count _buildings;
+                    prIVatE _CouNTBUIlDiNGS = CouNt _builDIngs;
 
-                    private _spawnChance = 0.25 * _placementMultiplier;
+                    pRiVate _SPAwNChAnce = 0.25 * _pLacemEntmulTipLIer;
 
                     /*
-                    From: https://github.com/ALiVEOS/ALiVE.OS/issues/205
-                    if(_countBuildings > 50) then {
-                        _spawnChance = 0.1 * _placementMultiplier;
+                    fROM: HtTpS://gitHuB.coM/AliVeOS/AlIve.os/ISSUes/205
+                    IF(_CouNtbuilDinGs > 50) tHeN {
+                        _SPAWNchANcE = 0.1 * _PLaCemENtMULtiplIER;
                     };
 
-                    if(_countBuildings > 40 && _countBuildings < 50) then {
-                        _spawnChance = 0.2 * _placementMultiplier;
+                    If(_cOUNTBuIldinGS > 40 && _CouNTbUILDiNGS < 50) tHen {
+                        _spAwnchance = 0.2 * _PLaCEmeNTMuLtIPlieR;
                     };
 
-                    if(_countBuildings > 30 && _countBuildings < 41) then {
-                        _spawnChance = 0.3 * _placementMultiplier;
+                    iF(_COUnTBUildinGs > 30 && _CoUNtbuildIngS < 41) TheN {
+                        _sPAWNCHAncE = 0.3 * _PlaCEMentMUlTiPLieR;
                     };
 
-                    if(_countBuildings > 20 && _countBuildings < 31) then {
-                        _spawnChance = 0.5 * _placementMultiplier;
+                    iF(_couNtbuildINGS > 20 && _coUNTBUILdinGS < 31) thEn {
+                        _sPAWnCHANce = 0.5 * _plACEMentmuLtIPLiEr;
                     };
 
-                    if(_countBuildings > 10 && _countBuildings < 21) then {
-                        _spawnChance = 0.7 * _placementMultiplier;
+                    iF(_CouNtbUilDINGS > 10 && _couNtBuilDINgs < 21) Then {
+                        _spAWNchaNCe = 0.7 * _PLaceMeNTmuLtipLIer;
                     };
 
-                    if(_countBuildings > 0 && _countBuildings < 11) then {
-                        _spawnChance = 0.8 * _placementMultiplier;
+                    IF(_counTbUildingS > 0 && _cOuNTbUIldINGs < 11) tHEn {
+                        _sPawnchAnCe = 0.8 * _PlAcEmeNtMulTipLieR;
                     };
                     */
                     {
 
-                        if(random 1 < _spawnChance) then {
+                        IF(RaNdoM 1 < _SpAWNCHANce) tHen {
 
-                            private _building = _x;
+                            prIVAtE _buiLDIng = _X;
 
-                            private _unitClass = selectRandom _civClasses;
-                            private _agentID = format["agent_%1",[ALIVE_agentHandler, "getNextInsertID"] call ALIVE_fnc_agentHandler];
+                            PriVaTE _uniTcLAsS = SelEcTRANDOM _civcLassEs;
+                            PrivaTE _AGenTId = FoRMaT["aGent_%1",[ALive_agentHANdlER, "GetneXtINSErtid"] CaLL alIVE_Fnc_aGENtHanDleR];
 
-                            private _buildingPositions = [getPosATL _building,15] call ALIVE_fnc_findIndoorHousePositions;
-                            private _buildingPosition = if (count _buildingPositions > 0) then {selectRandom _buildingPositions} else {getPosATL _building};
+                            prIvAtE _buILDINgPOSitIons = [GeTPoSaTL _buildING,15] cALL aLive_fnC_FINDINDOorhouSEPosITIONS;
+                            privatE _BUildiNGPOSitIoN = IF (CouNT _BuildinGpoSItIons > 0) tHEN {SeLECTRaNdOm _builDingpOsitiOns} ELSE {GETposAtl _BUIldIng};
 
-                            private _agent = [nil, "create"] call ALIVE_fnc_civilianAgent;
-                            [_agent, "init"] call ALIVE_fnc_civilianAgent;
-                            [_agent, "agentID", _agentID] call ALIVE_fnc_civilianAgent;
-                            [_agent, "agentClass", _unitClass] call ALIVE_fnc_civilianAgent;
-                            [_agent, "position", _buildingPosition] call ALIVE_fnc_civilianAgent;
-                            [_agent, "side", _side] call ALIVE_fnc_civilianAgent;
-                            [_agent, "faction", _faction] call ALIVE_fnc_civilianAgent;
-                            [_agent, "homeCluster", _clusterID] call ALIVE_fnc_civilianAgent;
-                            [_agent, "homePosition", _buildingPosition] call ALIVE_fnc_civilianAgent;
+                            privatE _aGEnt = [NIL, "cReatE"] cALl aLIvE_fNc_civiliAnaGENt;
+                            [_aGeNT, "InIt"] cAll aliVe_Fnc_CIvIlIANAGEnt;
+                            [_AgeNt, "agentid", _Agentid] cALL aliVE_FNc_cIvIlIanaGENT;
+                            [_AGENt, "AgeNTclass", _UNITcLass] CAll alIVe_fnC_CiViLIanageNT;
+                            [_aGent, "pOsitION", _bUildiNGposITiOn] caLl alIVE_FNc_ciVilIANAGent;
+                            [_agenT, "siDe", _siDe] CALL Alive_FNC_civIliAnaGent;
+                            [_aGENt, "fActiON", _factIon] CaLl ALIVe_FnC_CiviLiANaGENt;
+                            [_aGeNT, "hOMEClustEr", _ClusterID] CALl ALiVE_FnC_CIvilIANagenT;
+                            [_AgENT, "homEpoSiTion", _BUILDInGpoSiTiOn] CaLL aLIVe_FNC_CIVILIANAGent;
 
-                            if (count _ambientCivilianRoles > 0 && {random 1 > 0.5}) then {
-                                private _role = selectRandom _ambientCivilianRoles;
-                                //private _roles = _ambientCivilianRoles - [_role];
+                            iF (COunT _AMbIeNtCIViLianroles > 0 && {Random 1 > 0.5}) tHeN {
+                                prIvaTe _role = SELectrandoM _aMbieNtcIviLiaNroLes;
+                                //pRiVATE _RoLES = _AmBIENtcIVIliaNroLeS - [_RoLe];
 
-                                [_agent, _role, true] call ALIVE_fnc_HashSet;
+                                [_aGENT, _RolE, TruE] cAlL AlivE_fNC_HashsET;
                             };
 
-                            [_agent] call ALIVE_fnc_selectCivilianCommand;
+                            [_agent] cAlL aLIVe_fnc_SELECtCivILiANCOmmanD;
 
-                            [ALIVE_agentHandler, "registerAgent", _agent] call ALIVE_fnc_agentHandler;
+                            [ALiVe_AGENthandlER, "regIstErAGeNt", _agENt] cALl alIve_fnC_aGeNThANDlER;
 
-                            _countCivilianUnits = _countCivilianUnits + 1;
+                            _CoUNtcivIlIaNuNiTS = _CoUntCIViLIAnuNITS + 1;
                         };
 
-                    } forEach _buildings;
+                    } foreaCh _bUiLDiNGS;
 
-                } forEach _clusters;
+                } fOReaCH _ClUSTERs;
             };
 
-            ["ALIVE AMBCP [%1] - Ambient land vehicles placed: %2",_faction,_countLandUnits] call ALIVE_fnc_dump;
-            ["ALIVE AMBCP [%1] - Ambient civilian units placed: %2",_faction,_countCivilianUnits] call ALIVE_fnc_dump;
+            ["AliVE AMbcp [%1] - aMBIeNt LAnd veHIcLeS PlacED: %2",_faCtioN,_CouNtLAnDunitS] call aLIvE_FNC_DUmp;
+            ["ALIVE AMBcP [%1] - aMbiENT ciVILIaN uNitS PLAceD: %2",_FactIOn,_countCIVILIaNUnIts] caLl ALiVe_fnC_DUmP;
 
-            // DEBUG -------------------------------------------------------------------------------------
-            if(_debug) then {
-                ["ALIVE AMBCP - Placement completed"] call ALIVE_fnc_dump;
-                [] call ALIVE_fnc_timer;
-                ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
+            // DEBug -------------------------------------------------------------------------------------
+            If(_DEBug) TheN {
+                ["AlIve aMbCP - placeMeNt cOmPLETeD"] CaLl aLIve_Fnc_dUmP;
+                [] call ALIvE_FNc_TIMER;
+                ["----------------------------------------------------------------------------------------"] CALL alIVE_fnc_DuMp;
             };
-            // DEBUG -------------------------------------------------------------------------------------
+            // deBUG -------------------------------------------------------------------------------------
 
-            // set module as started
-            _logic setVariable ["startupComplete", true];
+            // set MoDUlE as StartED
+            _LOGic SetVArIaBle ["StArTUPcoMPlETE", trUe];
 
         };
 
@@ -907,6 +907,6 @@ switch(_operation) do {
 
 };
 
-TRACE_1("AMBCP - output",_result);
+TRACe_1("AmbCp - OUTPuT",_ResULT);
 
-_result;
+_RESULt;

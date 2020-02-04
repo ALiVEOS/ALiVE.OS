@@ -1,113 +1,113 @@
-#include "\x\alive\addons\amb_civ_command\script_component.hpp"
-SCRIPT(cc_journey);
+#iNclUde "\X\alIVE\adDons\aMB_civ_ComMAND\SCrIPT_coMpoNEnt.hpp"
+sCriPT(CC_jouRNEY);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_cc_journey
+FuNCTion: aLIVe_fNc_CC_JOUrNeY
 
-Description:
-Drive to location command for civilians
+DEScRIptiOn:
+drIVE To lOCaTiON cOmMaND fOr CIViLIANs
 
-Parameters:
-Profile - profile
-Args - array
+parAMeteRS:
+ProfiLe - PRoFIle
+ARGs - arrAY
 
-Returns:
+rEturnS:
 
-Examples:
-(begin example)
+exaMpleS:
+(begIN examPlE)
 //
-_result = [_agent, []] call ALIVE_fnc_cc_journey;
-(end)
+_rESuLT = [_aGeNT, []] cAll aLIve_fnC_Cc_jOURNey;
+(End)
 
-See Also:
+seE AlsO:
 
-Author:
-ARJay
+aUTHoR:
+arjaY
 ---------------------------------------------------------------------------- */
 
-params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
+paRams ["_aGEnTdata","_COMmANDSTaTe","_comMaNdnAme","_aRgs","_StaTE","_dEbug"];
 
-private _agentID = _agentData select 2 select 3;
-private _agent = _agentData select 2 select 5;
+pRivAtE _ageNtiD = _ageNtDAta selEct 2 SEleCT 3;
+privatE _AgENt = _AgEntDAtA seleCT 2 selECT 5;
 
-private _nextState = _state;
-private _nextStateArgs = [];
+pRIVaTe _NExTStatE = _sTaTe;
+PriVaTE _NexTStatEARgs = [];
 
 
-// DEBUG -------------------------------------------------------------------------------------
-if(_debug) then {
-    ["ALiVE Managed Script Command - [%1] called args: %2",_agentID,_args] call ALIVE_fnc_dump;
+// debug -------------------------------------------------------------------------------------
+If(_debUg) theN {
+    ["AliVE mAnAGED SCRIpT COmMand - [%1] caLleD ARGS: %2",_AGentiD,_ARGS] CALL alIVE_fNC_dump;
 };
-// DEBUG -------------------------------------------------------------------------------------
+// DebUG -------------------------------------------------------------------------------------
 
-switch (_state) do {
+Switch (_STatE) dO {
 
-    case "init":{
+    cAsE "init":{
 
         // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        iF(_debug) tHeN {
+            ["AliVe MANaGeD scrIPT commanD - [%1] stATe: %2",_AgenTId,_sTaTe] CAll aLIvE_FNc_DUMp;
         };
-        // DEBUG -------------------------------------------------------------------------------------
+        // DEbug -------------------------------------------------------------------------------------
 
-        _agent setVariable ["ALIVE_agentBusy", true, false];
+        _AgENT seTvARiAble ["AliVe_AgENTbusY", tRUe, FAlSe];
 
-        private _sectors = [ALIVE_sectorGrid, "surroundingSectors", getPos _agent] call ALIVE_fnc_sectorGrid;
-        _sectors = [_sectors, "SEA"] call ALIVE_fnc_sectorFilterTerrain;
-        private _sector = selectRandom _sectors;
-        private _center = [_sector,"center"] call ALIVE_fnc_sector;
-        private _destination = [_center] call ALIVE_fnc_getClosestRoad;
-        private _activeAgents = [ALIVE_agentHandler, "getActive"] call ALIVE_fnc_agentHandler;
-        private _activeVehicles = [];
+        pRIVATe _SecTors = [aLivE_SectOrGRid, "SURrounDinGsECTorS", GEtpOs _AgENt] caLl AlIve_fnc_sECtOrgrid;
+        _SeCTors = [_sEcTorS, "Sea"] CaLl aLIvE_Fnc_sEcTOrFiLTerterrAIn;
+        PriVAte _secTOR = sELecTrANDoM _sECTOrs;
+        PRIvATE _cEnTeR = [_sECtOR,"CentEr"] CALl aliVE_Fnc_SECToR;
+        PrIVAtE _DestiNaTIoN = [_cEnTer] caLL ALivE_fNC_getcLOseStrOAD;
+        PRIVaTE _ActIveAgENts = [alIvE_aGEntHaNDLEr, "GEtACTive"] cALl ALIVE_Fnc_AgEnThaNdLeR;
+        PrIvatE _AcTiVEVEhICleS = [];
 
         {
-            private _type = _x select 2 select 4;
+            prIvaTe _TyPe = _x SeLeCt 2 sEleCt 4;
 
-            if(_type == "vehicle") then {
-                private _vehicle = _x;
+            If(_TYpe == "VehiCLe") tHen {
+                pRiVAtE _VEHicle = _x;
 
-                if!((_vehicle select 2 select 5) getVariable ["ALIVE_vehicleInUse", false]) then {
-                    _activeVehicles pushback _x;
+                If!((_vEhICle seLeCt 2 selEct 5) GetvaRiable ["ALiVE_VeHiClEINuSE", FAlSe]) THeN {
+                    _AcTIVEVEHIClEs PUSHBACK _X;
                 };
             };
-        } forEach (_activeAgents select 2);
+        } FoReaCH (_acTiveaGEnTS SEleCt 2);
 
-        if(count _activeVehicles > 0) then {
+        iF(cOunT _aCTiveVeHIcLes > 0) THen {
 
-            private _vehicle = selectRandom _activeVehicles;
-            _vehicle = _vehicle select 2 select 5;
+            priVATE _VEhIClE = selectRANdOm _ACTivEVEhiClEs;
+            _VeHICle = _vEhiclE SelECt 2 SelECT 5;
 
-            if!(isNull _vehicle) then {
-                _nextStateArgs = [_vehicle, _destination];
-                _nextState = "init";
-                private _commandName = "ALIVE_fnc_cc_driveTo";
-                [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-                [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-            }else{
-                _nextState = "done";
-                [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+            If!(IsnUll _VehiCLE) Then {
+                _NextsTATEaRGs = [_vEhICle, _dEstiNatIon];
+                _NexTsTaTE = "inIT";
+                PrivAtE _COmMAnDnamE = "AliVE_FnC_cC_dRIveto";
+                [_COmMANdstATe, _agEnTiD, [_AgENTdatA, [_comMANdname,"MAnAGed",_aRgS,_NExtStATe,_nEXtStatEArGS]]] calL ALiVE_fnc_HAsHSeT;
+                [_COMmAndStaTE, _aGeNtid, [_aGeNTdATa, [_COMMANdNAmE,"mAnAgeD",_ARgS,_nEXTStatE,_nExTSTAtEargS]]] CALL AliVE_FNC_hAsHSeT;
+            }elsE{
+                _nEXTStatE = "DoNE";
+                [_commAnDSTAtE, _agEnTID, [_aGenTDAtA, [_COmmanDNAme,"MANAGeD",_args,_NEXTsTATe,_neXtSTaTEARgs]]] CALl alive_Fnc_HaShsET;
             };
-        }else{
-            _nextState = "done";
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+        }eLSE{
+            _NExTsTaTe = "dOnE";
+            [_cOMmanDStATE, _aGEntID, [_AgEntDatA, [_commAndname,"maNaGeD",_ArGs,_neXTsTatE,_nextsTateArGS]]] CaLl aLIVe_fNC_HAsHSeT;
         };
 
     };
 
-    case "done":{
+    CASe "DOnE":{
 
         // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        IF(_dEbug) THEn {
+            ["alivE maNageD sCRIpT CoMmand - [%1] STAte: %2",_aGeNtId,_StATE] CAlL aLIVe_FnC_DUmp;
         };
-        // DEBUG -------------------------------------------------------------------------------------
+        // debUG -------------------------------------------------------------------------------------
 
-        _agent setVariable ["ALIVE_agentBusy", false, false];
+        _AGENT SEtvARiABle ["aLIVE_AGEnTbUSY", FAlsE, FalSE];
 
-        _nextState = "complete";
-        _nextStateArgs = [];
+        _nexTstATE = "cOMpLEte";
+        _NeXTStateaRgS = [];
 
-        [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+        [_CoMmAnDStatE, _aGentId, [_ageNTdaTA, [_CommANdnAmE,"MAnAged",_ArgS,_NExTstATE,_NeXtsTATeArGs]]] CALL AlIve_FNC_HaSHset;
     };
 
 };

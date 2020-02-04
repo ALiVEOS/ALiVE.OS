@@ -1,15 +1,15 @@
-#include "\x\alive\addons\amb_civ_command\script_component.hpp"
+#incLuDe "\X\alive\adDONS\AMb_Civ_cOMMaNd\SCrIpt_COMPONENt.hPp"
 
-#define TESTS ["civCommandRouter"];
+#deFINe tESts ["CivCOmmandrOuTer"];
 
-SCRIPT(test-commandRouter);
+SCrIpT(TEst-cOMmaNdrOUTeR);
 
 // ----------------------------------------------------------------------------
 
-LOG("=== Testing Amb Civ Command Router ===");
+lOg("=== tEstING aMb civ CommanD rOuTER ===");
 
 {
-    call compile preprocessFileLineNumbers format ["\x\alive\addons\amb_civ_command\tests\test_%1.sqf", _x];
-} forEach TESTS;
+    cALl CompILE PREpROCEssfileLinEnUmBERs FoRmaT ["\x\ALiVe\addons\AMb_civ_COMmand\TEstS\test_%1.SQf", _X];
+} FOReaCh TeSTs;
 
-nil;
+NIL;

@@ -1,33 +1,33 @@
-#include "\x\alive\addons\amb_civ_placement\script_component.hpp"
-SCRIPT(AMBCPInit);
+#InCluDe "\x\ALiVe\aDDONs\aMb_Civ_PlACemeNT\sCrIpT_cOMPoNEnT.HPP"
+ScRIpt(ambCPInIT);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_AMBCPInit
-Description:
-Creates the server side object to store settings
+FUnCtIoN: aLive_Fnc_AmBCPINiT
+dESCRIpTion:
+CReateS the SERVEr sIde oBJECT to STOrE SETTINgs
 
-Parameters:
-_this select 0: OBJECT - Reference to module
-_this select 1: ARRAY - Synchronized units
+pARAmEters:
+_THIs SeLeCt 0: obJecT - reFErenCE To MoDule
+_thiS SELecT 1: ARray - syNChROnIzeD UNiTS
 
-Returns:
-Nil
+rEturns:
+niL
 
-See Also:
+see ALso:
 
-Author:
+AuThOR:
 ARJay
-Peer Reviewed:
-nil
+Peer rEVieWed:
+NIl
 ---------------------------------------------------------------------------- */
 
-params ["_logic"];
+pARaMS ["_LogiC"];
 
-// Confirm init function available
-ASSERT_DEFINED("ALIVE_fnc_AMBCP","Main function missing");
+// ConfiRM INit FunCTiON AvAIlablE
+AsSert_deFIned("AlIVE_FnC_amBcp","MaIN FunCtiOn MisSINg");
 
-private _moduleID = [_logic, true] call ALIVE_fnc_dumpModuleInit;
+prIvATE _ModUlEID = [_lOGiC, TrUe] CaLL aLIvE_FnC_DUMpmOdUleInIT;
 
-[_logic, "init"] call ALIVE_fnc_AMBCP;
+[_loGIc, "iNiT"] CALl alivE_FNC_amBCp;
 
-[_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;
+[_LOgIc, FALsE, _MOdUlEid] cALl alIve_Fnc_DUmpMOdulEINIt;

@@ -1,45 +1,45 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(getGlobalPosture);
+#includE "\X\aLIvE\ADdonS\amb_cIV_POpuLATIoN\SCRIpT_COmPoNENt.HpP"
+SCript(GetGLOBaLpOsTurE);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_getGlobalPosture
+FUnctioN: AlIve_fNC_getGlobaLPOSTURE
 
-Description:
-Determine from hostility settings the global posture of civilian population
+dEscrIptioN:
+DetermiNe froM hOstiliTy setTinGs THe gLobAL pOsTuRE Of cIVILian poPulAtiON
 
-Parameters:
+paRAMETerS:
 
-Returns:
-Array - empty if none found, 1 unit within if found
+rEtURnS:
+aRRay - emptY if NONE fOUnd, 1 UNiT Within If FoUNd
 
-Examples:
-(begin example)
+exAMPLEs:
+(BeGIn exAMPLE)
 //
-_result = [] call ALIVE_fnc_getGlobalPosture;
-(end)
+_reSULT = [] CALL aLiVe_fnC_GeTGlobalpostUre;
+(END)
 
-See Also:
+see aLsO:
 
-Author:
-ARJay
+AUThOr:
+ARJAY
 ---------------------------------------------------------------------------- */
 
-private _activeClusters = [ALIVE_clusterHandler, "getActive"] call ALIVE_fnc_clusterHandler;
+PrIVaTe _ACtIVeCLUsteRS = [alivE_ClUstERhaNDlER, "geTactIVe"] CAlL AlIVe_fNC_CLuSTeRHANDLER;
 
 {
-    private _cluster = _x;
-    private _position = _cluster select 2 select 2;
-    private _size = _cluster select 2 select 3;
-    private _clusterHostility = [_cluster, "hostility"] call ALIVE_fnc_hashGet;
+    PRIvaTe _clUStER = _X;
+    PRivAte _posITIoN = _CLUsTEr SELeCT 2 seLEct 2;
+    priVAte _SizE = _cLusTeR seLecT 2 sElECt 3;
+    PRIVATE _cLUstERhOSTiLITY = [_ClUsTer, "hoSTiLiTy"] CaLL alIVe_Fnc_HAsHGet;
 
-    private _nearUnits = [_cluster,_position, (_size*2)] call ALIVE_fnc_getAgentEnemyNear;
+    pRIVATE _nEArunITs = [_CLuStEr,_PoSiTIon, (_SIzE*2)] cAlL alivE_fnc_getAGeNTENeMyNear;
 
-    if(count _nearUnits > 0) then {
-        private _hostileSide = str(side (group(_nearUnits select 0)));
-        private _hostileLevel = [_clusterHostility, _hostileSide, 0] call ALIVE_fnc_hashGet;
-        [_cluster, "posture", _hostileLevel] call ALIVE_fnc_hashSet;
-    }else{
-        [_cluster, "posture", 0] call ALIVE_fnc_hashSet;
+    if(count _nEaruNItS > 0) THEn {
+        PRivatE _HOSTiLEsidE = STr(sIde (gRouP(_nEAruniTS sELEcT 0)));
+        PRIvaTE _hOstiLELeVEL = [_ClUsTErhoStiLiTY, _HOSTiLeSiDe, 0] caLl aLiVE_fnc_hAsHgET;
+        [_CLusteR, "PosTURE", _HostILELEvel] CALl ALIVe_fNC_HAsHSEt;
+    }elSe{
+        [_CluSTEr, "PoSTUrE", 0] caLL aLIve_FNC_HAsHset;
     };
 
-} forEach (_activeClusters select 2);
+} fOREacH (_AcTIVeclUsterS SELEct 2);

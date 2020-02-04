@@ -1,48 +1,48 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(getNearestActiveAgent);
+#includE "\X\aLIvE\ADdonS\amb_cIV_POpuLATIoN\SCRIpT_COmPoNENt.HpP"
+SCript(GetNEAReStAcTivEAGent);
 
 /* ----------------------------------------------------------------------------
-Function: ALiVE_fnc_getNearestActiveAgent
+fuNCtIon: aLIve_fNc_getNEARESTAcTiveAgent
 
-Description:
-Find nearest active agent.
+DEscriptIon:
+fiNd NearesT actiVe aGeNT.
 
-Parameters:
-Array - position
+paRamETeRs:
+ArRAY - poSITIon
 
-Returns:
-Object - Unit if one found
+retUrnS:
+obJEct - UNIT If oNe FoUNd
 
-Examples:
-(begin example)
+ExAMples:
+(beGin EXAMpLE)
 //
-_result = [_pos] call ALiVE_fnc_getNearestActiveAgent;
-(end)
+_reSUlT = [_Pos] calL aLiVE_fnc_GETNEaReSTactIVEAGenT;
+(END)
 
-See Also:
+SEE AlSo:
 
-Author:
-Tupolov
+AuthOR:
+tUPolov
 ---------------------------------------------------------------------------- */
 
 
-params ["_pos"];
-private _agentsActive = [ALIVE_agentHandler, "agentsActive"] call ALIVE_fnc_hashGet;
-private _result = [];
-private _nearAgents = [];
+paramS ["_poS"];
+PRivatE _aGENTsAcTIVE = [ALiVE_aGeNThANdLER, "ageNTsactIVe"] CalL AliVE_fNC_haShgeT;
+PrIVaTE _rESulT = [];
+PRIvATe _NEARAGENTS = [];
 {
-     private _agentProfile = [ALIVE_agentHandler, "getAgent", _x] call ALIVE_fnc_agentHandler;
-     private _position = _agentProfile select 2 select 2;
-     _nearAgents pushback [_agentProfile, _position distance _pos];
-} foreach (_agentsActive select 1);
+     PriVate _AGeNTPROfiLe = [alivE_AGeNTHAnDLeR, "GEtAGenT", _X] call aLIve_Fnc_AgEntHaNdlEr;
+     pRiVaTE _pOSITION = _aGEntPRoFILe SELECt 2 SeLect 2;
+     _nEArAgEnTs PUshBAcK [_agENtPRofiLE, _POSItIOn diSTaNCe _PoS];
+} fOrEaCH (_agENtSaCtIve seLect 1);
 
-private _sortCode = {
-    private _dist = _this select 1;
-     _dist
+priVAtE _SORtCoDe = {
+    private _disT = _thiS SeLECT 1;
+     _dISt
 };
 
-if (count (_agentsActive select 1) > 0) then {
-    _nearAgents = [_nearAgents, _sortCode] call ALiVE_fnc_shellSort;
-    _result = (_nearAgents select 0) select 0;
+if (cOUNT (_AgENtsaCTIve SeleCt 1) > 0) tHeN {
+    _NearaGEnTS = [_NeARAGenTS, _sOrtcODE] cALL AlIvE_Fnc_sHelLsORT;
+    _RESuLt = (_NeAragEntS sELect 0) sElEcT 0;
 };
-_result
+_RESult

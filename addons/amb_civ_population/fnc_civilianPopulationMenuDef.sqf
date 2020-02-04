@@ -1,106 +1,106 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-#include "\a3\editor_f\Data\Scripts\dikCodes.h"
+#INclUdE "\x\aLIve\ADdOns\AMb_CIv_poPULATIOn\scripT_CoMPonEnt.Hpp"
+#incLUde "\A3\EDitoR_f\DaTA\scriPTS\DiKcODEs.h"
 
-SCRIPT(civilianPopulationMenuDef);
+SCrIPT(cIviLiaNpoPuLatiOnMenudEF);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_civilianPopulationMenuDef
-Description:
-This function controls the View portion of civ pop.
+fuNCTIon: AliVe_fnc_cIvILIanPopULatIoNmeNUDeF
+deScripTIon:
+ThIs fUnCTion cONTRols the VIeW pORtIoN Of CIv pOp.
 
-Parameters:
-Object - The object to attach the menu too
-Array - The menu parameters
+paRaMETErs:
+objEct - THE OBJeCt TO AtTAcH thE meNu ToO
+Array - THE mENu pARamEterS
 
-Returns:
-Array - Returns the menu definitions for FlexiMenu
+returNS:
+arrAy - ReTuRNs The MEnU defINItioNS FOR flEXiMenu
 
-Examples:
-(begin example)
-// initialise main menu
+EXAmplES:
+(begIn Example)
+// iNITiAlIsE mAIn MEnu
 [
-    "player",
-    [221,[false,false,false]],
+    "PLaYeR",
+    [221,[False,fALSE,FaLSE]],
     -9500,
-    ["call ALIVE_fnc_civilianPopulationMenuDef","main"]
-] call CBA_fnc_flexiMenu_Add;
-(end)
+    ["Call ALIVe_fnC_ciVilianPopULatIonmenUDEF","MAiN"]
+] CaLL cBa_fnc_fLEXImENu_add;
+(ENd)
 
-See Also:
-- <ALIVE_fnc_IED>
-- <CBA_fnc_flexiMenu_Add>
+SEE aLSo:
+- <alive_fnc_IeD>
+- <Cba_FNc_FlExIMeNU_aDd>
 
-Author:
-Tupolov, Wolffy
+AuTHOR:
+TUpOlov, wOLFFY
 
-Peer reviewed:
-nil
+pEer reVieWEd:
+Nil
 ---------------------------------------------------------------------------- */
-// _this==[_target, _menuNameOrParams]
+// _ThIs==[_TARGET, _MenunaMeoRpARaMS]
 
-params ["_target","_params"];
+pArAmS ["_tARget","_paramS"];
 
-private _menuName = "";
-private _menuRsc = "popup";
+PRIvAtE _mENunAmE = "";
+Private _mENUrSc = "POPUP";
 
-if (typeName _params == typeName []) then {
-    if (count _params < 1) exitWith {diag_log format["Error: Invalid params: %1, %2", _this, __FILE__];};
-    _menuName = _params select 0;
-    _menuRsc = if (count _params > 1) then {_params select 1} else {_menuRsc};
-} else {
-    _menuName = _params;
+IF (tyPenamE _paRAMs == TYPENAME []) thEN {
+    IF (CoUNT _PArams < 1) ExItwIth {dIAg_LoG foRMat["erROR: iNVaLId PARams: %1, %2", _thIS, __FilE__];};
+    _mENunAme = _pARAMS seLecT 0;
+    _mEnuRSc = If (COUnT _paRAMS > 1) theN {_pArAMS sELECt 1} ELSe {_mEnUrsc};
+} ELse {
+    _MeNuNAmE = _PaRAMs;
 };
 //-----------------------------------------------------------------------------
 /*
-        ["Menu Caption", "flexiMenu resource dialog", "optional icon folder", menuStayOpenUponSelect],
+        ["mEnu CAptioN", "flExIMENu ResoURcE DIALoG", "OPTioNal IcON fOLdER", mENUsTaYOpenuPONSELeCT],
         [
-            ["caption",
-                "action",
-                "icon",
-                "tooltip",
-                {"submenu"|["menuName", "", {0|1} (optional - use embedded list menu)]},
-                -1 (shortcut DIK code),
-                {0|1/"0"|"1"/false|true} (enabled),
-                {-1|0|1/"-1"|"0"|"1"/false|true} (visible)
+            ["CapTIon",
+                "actiON",
+                "Icon",
+                "ToolTIp",
+                {"SuBMEnU"|["mEnUname", "", {0|1} (OptionAl - USE eMbEdDEd LiST MENu)]},
+                -1 (ShoRTCut DiK Code),
+                {0|1/"0"|"1"/FaLSe|TrUe} (EnablEd),
+                {-1|0|1/"-1"|"0"|"1"/faLSE|TRUE} (viSibLE)
             ],
              ...
 */
-private _menus =
+PrIVATE _mEnus =
 [
     [
-        ["main", "ALiVE", _menuRsc],
+        ["Main", "aLive", _MEnursC],
         [
         ]
     ],
     [
-        ["adminOptions", "Admin Options", "popup"],
+        ["AdMINoPTionS", "ADMiN OptIONs", "PopUP"],
         [
         ]
     ]
 ];
 
-if (_menuName == "civpop") then {
-    _menus set [count _menus,
+If (_MeNUNAme == "cIVPop") THEn {
+    _meNus sET [coUNt _mENUs,
         [
-            ["civpop", localize "STR_ALIVE_CIV_POP", "popup"],
+            ["civpOp", LOcaLIzE "STr_aLIvE_CIV_POp", "poPuP"],
             [
-                [localize "STR_ALIVE_CIV_POP_DEBUG_ENABLE",
-                    { ADDON setVariable ["debug","true",true]; [] call ALIVE_fnc_agentSystemDebug; },
+                [loCALIZe "STR_AlIVe_cIV_pop_debUG_enabLe",
+                    { addON sEtvaRiAbLe ["Debug","TrUe",TrUe]; [] CALl AlIvE_fnc_aGENtsYSteMDebuG; },
                     "",
-                    localize "STR_ALIVE_CIV_POP_DEBUG1_COMMENT",
+                    LocaLiZE "sTr_AlIvE_CiV_pop_deBUG1_cOmMeNT",
                     "",
                     -1,
-                    [QUOTE(ADDON)] call ALiVE_fnc_isModuleAvailable,
-                    !isnil QUOTE(ADDON) && {!((ADDON getVariable ["debug","false"]) == "true")}
+                    [QuOte(adDon)] CALL alIve_fNc_ismOduleavailaBLE,
+                    !IsNIL qUoTe(ADdOn) && {!((addON gETVarIAble ["dEbUg","FalSE"]) == "TRUE")}
                 ],
-                [localize "STR_ALIVE_CIV_POP_DEBUG_DISABLE",
-                    { ADDON setVariable ["debug","false",true]; [] call ALIVE_fnc_agentSystemDebug; },
+                [lOcALIZe "STR_aLIVE_cIv_pOP_dEbug_DIsAble",
+                    { AdDon SeTvAriaBLe ["dEbuG","FAlSE",TrUe]; [] cALL AlIve_FnC_AgENtsystEmDebug; },
                     "",
-                    localize "STR_ALIVE_CIV_POP_DEBUG1_COMMENT",
+                    lOCalIZe "str_aliVe_civ_poP_deBug1_coMMenT",
                     "",
                     -1,
-                    [QUOTE(ADDON)] call ALiVE_fnc_isModuleAvailable,
-                    !isnil QUOTE(ADDON) && {((ADDON getVariable ["debug","false"]) == "true")}
+                    [QuOtE(aDdOn)] caLL ALIve_fNC_ISmOduleaVaIlabLe,
+                    !iSnil qUoTE(AdDoN) && {((adDoN GETvaRiAbLE ["dEBuG","FalSe"]) == "TRUe")}
                 ]
             ]
         ]
@@ -108,14 +108,14 @@ if (_menuName == "civpop") then {
 };
 
 //-----------------------------------------------------------------------------
-private _menuDef = [];
+pRIvAte _menudEf = [];
 {
-    if (_x select 0 select 0 == _menuName) exitWith {_menuDef = _x};
-} forEach _menus;
+    IF (_X SELect 0 SeLECT 0 == _menUNAME) EXitwItH {_MEnUDeF = _X};
+} ForEACh _MENUs;
 
-if (count _menuDef == 0) then {
-    hintC format ["Error: Menu not found: %1\n%2\n%3", str _menuName, if (_menuName == "") then {_this}else{""}, __FILE__];
-    diag_log format ["Error: Menu not found: %1, %2, %3", str _menuName, _this, __FILE__];
+If (CoUNt _mENudEF == 0) THen {
+    HiNTc FOrmAT ["Error: mEnu NOt fOUnD: %1\N%2\N%3", str _MENunAme, iF (_MeNuNaME == "") tHen {_THiS}Else{""}, __fIlE__];
+    DiaG_lOG FORMaT ["erRoR: MENU NOt fOUnD: %1, %2, %3", STr _mEnUNAmE, _tHIs, __fIlE__];
 };
 
-_menuDef // return value
+_MenUdeF // RETURn VAlUe

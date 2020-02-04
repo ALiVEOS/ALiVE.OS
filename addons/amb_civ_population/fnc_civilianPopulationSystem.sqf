@@ -1,427 +1,427 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(civilianPopulationSystem);
+#iNCLUde "\x\alivE\AddoNS\AMB_cIV_popuLaTIoN\SCrIPt_ComPOnENt.HPp"
+scRIpT(CivIlianpopULAtioNSysTem);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_civilianPopulationSystem
-Description:
-Main class for civilian population system
+FuNctIon: Alive_fNc_civILIANpopUlATIONsYStem
+deSCRIpTIoN:
+mAIN ClAss FoR CIvIlIAN pOPULAtioN sySTEm
 
-Parameters:
-Nil or Object - If Nil, return a new instance. If Object, reference an existing instance.
-String - The selected function
-Array - The selected parameters
+parAMetERs:
+NiL Or oBjEcT - If NiL, REtURn A NEW InStANCe. If objecT, reference an exIsTiNG iNSTanCE.
+stRing - tHE sElectEd FUNctIoN
+ArraY - thE sElEcTEd ParAmeters
 
-Returns:
-Any - The new instance or the result of the selected function and parameters
+rETUrns:
+aNy - tHe NEW InstaNCE oR tHE rEsulT OF THE sEleCteD FunCTIoN AND PaRAmEteRs
 
-Attributes:
-Boolean - debug - Debug enable, disable or refresh
+attRiButES:
+bOOLEAn - deBuG - DEbUg enABLe, dISabLe or reFREsH
 
-Examples:
-(begin example)
-// create the
-_logic = [nil, "init"] call ALIVE_fnc_civilianPopulationSystem;
-(end)
+exampLes:
+(bEGiN eXamplE)
+// CReAtE THE
+_loGiC = [NiL, "InIT"] cAlL ALivE_fNC_CIVilianPOpuLationSyStEm;
+(ENd)
 
-See Also:
+see ALSo:
 
-Author:
-ARJay
+AUtHoR:
+ArJAy
 
-Peer reviewed:
-nil
+PEEr revIeWed:
+nIL
 ---------------------------------------------------------------------------- */
 
-#define SUPERCLASS ALIVE_fnc_baseClassHash
-#define MAINCLASS ALIVE_fnc_civilianPopulationSystem
+#DeFiNe SUPeRclaSs aLIVE_FNC_bAseclassHAsH
+#DEfine MAInclAss AlIvE_Fnc_CIvilIanpOPUlaTIoNsystEm
 
-TRACE_1("civilianPopulationSystem - input",_this);
+tRace_1("CiViLiANPOpuLaTiOnSySTeM - INPUT",_thIs);
 
-params [
-    ["_logic", objNull, [objNull,[]]],
-    ["_operation", "", [""]],
-    ["_args", objNull, [objNull,[],"",0,true,false]]
+pArams [
+    ["_LoGIC", obJnull, [oBJnuLL,[]]],
+    ["_opERatIOn", "", [""]],
+    ["_Args", obJnuLL, [OBJNULL,[],"",0,TRue,FalSE]]
 ];
-private _result = true;
+prIvaTE _rESult = TrUe;
 
-#define MTEMPLATE "ALiVE_CIVILIANPOPULATIONSYSTEM_%1"
+#deFiNe mTEMPlAtE "alivE_CiViLiANPOPulaTioNSYsTEM_%1"
 
-switch(_operation) do {
+SWItcH(_OPeratiOn) Do {
 
-    case "init": {
+    CasE "InIt": {
 
-        if (isServer) then {
-                // if server, initialise module game logic
-                [_logic,"super",SUPERCLASS] call ALIVE_fnc_hashSet;
-                [_logic,"class",MAINCLASS] call ALIVE_fnc_hashSet;
-                [_logic,"moduleType","ALIVE_civilianPopulationSystem"] call ALIVE_fnc_hashSet;
-                [_logic,"startupComplete",false] call ALIVE_fnc_hashSet;
-                //TRACE_1("After module init",_logic);
+        If (iSserVEr) thEn {
+                // IF sERVER, InitIALise moDULe GamE lOgiC
+                [_logIC,"sUPER",suPeRcLASs] cALl ALive_FNc_HashsET;
+                [_LoGIc,"cLaSS",MAInCLAss] CALl alIVE_fNc_HasHSET;
+                [_LOgIc,"MODuLETYPE","ALive_CIViLiaNPOpuLATIonsYStEM"] CAlL AliVE_fnc_hashSEt;
+                [_lOGIc,"stARTUpcOMPLeTE",FaLSe] CaLl AlIVe_fnC_HAsHsEt;
+                //TrAce_1("AftEr MODule INIT",_lOgiC);
 
-                [_logic,"debug",false] call ALIVE_fnc_hashSet;
-                [_logic,"spawnRadius",1000] call ALIVE_fnc_hashSet;
-                [_logic,"spawnTypeJetRadius",1000] call ALIVE_fnc_hashSet;
-                [_logic,"spawnTypeHeliRadius",1000] call ALIVE_fnc_hashSet;
-                [_logic,"activeLimiter",30] call ALIVE_fnc_hashSet;
-                [_logic,"spawnCycleTime",5] call ALIVE_fnc_hashSet;
-                [_logic,"despawnCycleTime",1] call ALIVE_fnc_hashSet;
-                [_logic,"listenerID",""] call ALIVE_fnc_hashSet;
-
-        };
-
-    };
-
-    case "start": {
-
-        if (isServer) then {
-
-            waituntil {!(isnil "ALIVE_profileSystemInit")};
-
-            private _debug = [_logic,"debug",false] call ALIVE_fnc_hashGet;
-            private _spawnRadius = [_logic,"spawnRadius"] call ALIVE_fnc_hashGet;
-            private _spawnTypeJetRadius = [_logic,"spawnTypeJetRadius"] call ALIVE_fnc_hashGet;
-            private _spawnTypeHeliRadius = [_logic,"spawnTypeHeliRadius"] call ALIVE_fnc_hashGet;
-            private _activeLimiter = [_logic,"activeLimiter"] call ALIVE_fnc_hashGet;
-            private _spawnCycleTime = [_logic,"spawnCycleTime"] call ALIVE_fnc_hashGet;
-            private _despawnCycleTime = [_logic,"despawnCycleTime"] call ALIVE_fnc_hashGet;
-            private _ambientCrowdSpawn = [_logic,"ambientCrowdSpawn"] call ALIVE_fnc_hashGet;
-            private _ambientCrowdDensity = [_logic,"ambientCrowdDensity"] call ALIVE_fnc_hashGet;
-            private _ambientCrowdLimit = [_logic,"ambientCrowdLimit"] call ALIVE_fnc_hashGet;
-            private _ambientCrowdFaction = [_logic,"ambientCrowdFaction"] call ALIVE_fnc_hashGet;
-
-            // DEBUG -------------------------------------------------------------------------------------
-            if(_debug) then {
-                ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE CivilianPopulationSystem - Startup"] call ALIVE_fnc_dump;
-            };
-            // DEBUG -------------------------------------------------------------------------------------
-
-            // create the cluster handler
-            ALIVE_clusterHandler = [nil, "create"] call ALIVE_fnc_clusterHandler;
-            [ALIVE_clusterHandler, "init"] call ALIVE_fnc_clusterHandler;
-            [ALIVE_clusterHandler, "debug", _debug] call ALIVE_fnc_clusterHandler;
-
-            // create the agent handler
-            ALIVE_agentHandler = [nil, "create"] call ALIVE_fnc_agentHandler;
-            [ALIVE_agentHandler, "init"] call ALIVE_fnc_agentHandler;
-
-            // create command router
-            ALIVE_civCommandRouter = [nil, "create"] call ALIVE_fnc_civCommandRouter;
-            [ALIVE_civCommandRouter, "init"] call ALIVE_fnc_civCommandRouter;
-            [ALIVE_civCommandRouter, "debug", _debug] call ALIVE_fnc_civCommandRouter;
-
-            // turn on debug again to see the state of the agent handler, and set debug on all a agents
-            [ALIVE_agentHandler, "debug", _debug] call ALIVE_fnc_agentHandler;
-
-            // DEBUG -------------------------------------------------------------------------------------
-            if(_debug) then {
-                ["ALIVE CivilianPopulationSystem - Startup completed"] call ALIVE_fnc_dump;
-                ["ALIVE Cluster handler created"] call ALIVE_fnc_dump;
-                ["ALIVE Agent handler created"] call ALIVE_fnc_dump;
-                ["ALIVE Civ command router created"] call ALIVE_fnc_dump;
-                ["ALIVE Active Limit: %1", _activeLimiter] call ALIVE_fnc_dump;
-                ["ALIVE Spawn Radius: %1", _spawnRadius] call ALIVE_fnc_dump;
-                ["ALIVE Spawn in Jet Radius: %1",_spawnTypeJetRadius] call ALIVE_fnc_dump;
-                ["ALIVE Spawn in Heli Radius: %1",_spawnTypeHeliRadius] call ALIVE_fnc_dump;
-                ["ALIVE Spawn Cycle Time: %1", _spawnCycleTime] call ALIVE_fnc_dump;
-                ["ALIVE Initial civilian hostility settings:"] call ALIVE_fnc_dump;
-                ALIVE_civilianHostility call ALIVE_fnc_inspectHash;
-
-                ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-            };
-            // DEBUG -------------------------------------------------------------------------------------
-
-            // set module as started
-            [_logic,"startupComplete",true] call ALIVE_fnc_hashSet;
-
-            // start the cluster activator
-            private _clusterActivatorFSM = [_logic,_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\amb_civ_population\clusterActivator.fsm";
-            [_logic,"activator_FSM",_clusterActivatorFSM] call ALIVE_fnc_hashSet;
-
-            if (_ambientCrowdSpawn > 0) then {
-                private _crowdActivatorFSM = [_logic,_ambientCrowdSpawn,_ambientCrowdDensity,_spawnCycleTime,_ambientCrowdLimit,_ambientCrowdFaction] execFSM "\x\alive\addons\amb_civ_population\crowdActivator.fsm";
-                [_logic,"crowd_FSM",_crowdActivatorFSM] call ALIVE_fnc_hashSet;
-            };
-
-            // start listening for events
-            [_logic,"listen"] call MAINCLASS;
+                [_LOgic,"DebuG",fAlse] cAlL AliVe_FNc_HAShSET;
+                [_lOgiC,"sPawnrADius",1000] CALL alIvE_FNc_HAShSeT;
+                [_loGIC,"SPaWnTYPEjeTraDius",1000] CAll ALIVE_fnC_hAshSet;
+                [_lOGic,"SpaWnTYPeheLiRadIuS",1000] cAll ALiVE_fNc_HAsHSeT;
+                [_LoGIc,"ACtIVeLiMITEr",30] CAlL Alive_fnc_haShseT;
+                [_LoGIc,"sPAWNcYcletImE",5] CAlL aliVE_FNc_haSHseT;
+                [_loGIC,"DesPAWNcYCLeTime",1] cAlL ALIVE_Fnc_HasHseT;
+                [_logIc,"LIsTEnErId",""] cALL aliVe_fNC_hasHset;
 
         };
 
     };
 
-    case "listen": {
+    caSe "sTArt": {
 
-        private _listenerID = [ALIVE_eventLog, "addListener",[_logic, ["AGENT_KILLED"]]] call ALIVE_fnc_eventLog;
-        [_logic,"listenerID", _listenerID] call ALIVE_fnc_hashSet;
+        If (IsserVer) tHen {
+
+            wAItuntIl {!(iSNIl "alive_PRofilESySteMInit")};
+
+            PRiVAtE _deBUG = [_LogIc,"dEbUg",FALSe] calL AlIVe_FNc_HaShGeT;
+            PRIVaTe _sPaWNrADIus = [_lOGIc,"SPAWNRAdiuS"] cAll ALIVe_fnc_haShGET;
+            PRivaTe _SPAwnTypEjeTradiUs = [_loGIc,"spaWNTYPeJETRaDIUs"] CALl ALiVE_FnC_HAshgEt;
+            prIVAte _SpaWNtYpEhEliradIuS = [_LoGIC,"SpawNtYPEHeliraDIuS"] CAll ALiVE_fnc_HaSHget;
+            pRIVaTe _aCTIVeLiMITEr = [_LOgIC,"AcTIVeLImIter"] CaLL aLIve_fNC_HASHGEt;
+            PRIVATE _SpaWNCyCleTImE = [_lOgIc,"spaWNcycLeTIme"] caLl aLIve_Fnc_haSHgET;
+            pRIvatE _DESpaWnCyclETimE = [_LOGIc,"DespaWNCYclETIMe"] caLL alivE_FNc_HAsHgET;
+            pRIVAte _aMbIeNTCRoWdSPAWN = [_LoGIC,"AMbIEnTcrowdSPaWn"] call Alive_FNc_haShGET;
+            prIvatE _aMbieNTcroWddenSiTY = [_loGIc,"aMbiEntCrOWdDensITy"] calL alive_FnC_hasHget;
+            PrIvate _AmbienTCroWDlimIT = [_lOgIc,"AmBIEntCrOWDLimIt"] CalL alivE_fnc_HASHgEt;
+            PrIvATE _amBIentcRowDfacTIoN = [_LogIC,"ambiEnTCrowdfaCTION"] CALl Alive_fnC_HaSHGeT;
+
+            // dEbug -------------------------------------------------------------------------------------
+            iF(_dEBuG) THen {
+                ["----------------------------------------------------------------------------------------"] cAll aLiVE_Fnc_DUMP;
+                ["AlivE civilIanpOPUlATIONSYSTeM - StArtup"] call aliVE_FNc_dUMP;
+            };
+            // dEbUG -------------------------------------------------------------------------------------
+
+            // CReaTe tHe cLusTeR HANDLeR
+            alive_CLustERHaNdLEr = [NiL, "creaTE"] CalL ALIvE_fnc_cLuSteRhAnDLEr;
+            [aliVe_CLuSTerHAnDlER, "InIT"] cAlL aLiVe_fnc_CLuSTERhaNdlER;
+            [alIve_CLUStERhAndler, "dEBuG", _DEBug] CaLL aLiVe_FnC_clUSTerHaNdLEr;
+
+            // cREate tHE AgENt hANdLER
+            AlIvE_aGEntHandlER = [NIl, "CreATe"] cALL aLIVE_FNC_AgENThaNDLER;
+            [Alive_agentHAndlER, "InIT"] caLL aLIVe_FnC_AGENTHAnDLer;
+
+            // create cOmmAnd ROutEr
+            ALIVE_ciVcOmMaNdrOuter = [nIL, "cREaTE"] calL ALivE_fnc_cIVcoMmandroUtER;
+            [aLiVe_civCOMMaNDRoutER, "init"] CalL aLiVe_fNC_cIVCOMMAndRoutEr;
+            [alive_CIVcommANDrOuTer, "deBUG", _DeBUG] CALL aLIVE_fNc_civCommandroUTEr;
+
+            // TUrn on deBuG AgAIN tO See The STATE OF The AgeNT hAndlER, AnD sET DeBug on ALL A AgentS
+            [ALIvE_AgEnThAnDler, "DebUG", _DebuG] caLl aLIvE_fNC_aGenthanDLEr;
+
+            // dEbuG -------------------------------------------------------------------------------------
+            If(_DEBug) thEn {
+                ["ALIve cIViLIanpOPuLationSYStEm - StarTUp cOmPlETed"] CAll AlIVe_Fnc_Dump;
+                ["alive clUSter HaNdleR CReATEd"] CAlL aLIVE_fNC_DUMP;
+                ["alIve agEnT HanDLER creaTeD"] Call ALiVe_fNc_Dump;
+                ["ALIvE civ CoMMand RouTEr cReATed"] CaLL ALIVe_FNc_DuMP;
+                ["AliVe acTIve lImIt: %1", _activelImiter] call aLive_fnc_dUmP;
+                ["alIvE sPAwn raDIUs: %1", _SpawnRadiuS] cALL aLIVE_fnC_dump;
+                ["AlivE spAwN in jeT RAdIUs: %1",_spaWNTYpEjeTRadIUs] CalL ALIVE_Fnc_DUMP;
+                ["alIvE sPaWn iN HelI RaDiUS: %1",_sPawnTYpeheLIrAdiuS] calL ALIVE_fnC_dUMP;
+                ["alIve spAWn CycLE tiME: %1", _SpawnCycleTImE] cAll aLIVe_fNc_duMp;
+                ["alIVe InITiAl cIVILian HOstiLITY seTTINGs:"] cALl ALIVe_Fnc_DUMp;
+                aLIvE_CiViLIanhostILItY call ALive_fnC_InSPECtHaSh;
+
+                ["----------------------------------------------------------------------------------------"] CAll aliVe_FnC_DUmP;
+            };
+            // deBUg -------------------------------------------------------------------------------------
+
+            // SeT moDule AS sTARTed
+            [_lOGIC,"sTaRtUPComPlete",TRuE] call ALiVe_FNC_HAShSeT;
+
+            // StarT ThE cluSteR ACTiVAToR
+            PrivaTE _CLuSTerACTiVaTOrfSM = [_LOGiC,_SPawnrAdIus,_spAWNTypeJETRADIUs,_SpawnTYPEhelirADIUS,_SpaWncyClETimE,_ACtiVelimITEr] eXEcfsm "\X\aLIve\adDOnS\amB_CIv_POPUlATiON\cluStErACTiVator.FsM";
+            [_lOGiC,"acTivaTOr_fSM",_CLusTERactivaToRFSm] caLl AliVE_fnc_haSHSET;
+
+            iF (_ambienTcROwdSpawn > 0) ThEn {
+                PRIVatE _croWDactivAToRFsm = [_loGic,_AmbientcROwDSPAwN,_AmbIeNTcROWDdensity,_SPAwNCycleTiMe,_AmBientCROwdLimIT,_aMbIENTcrOwdFACTIOn] ExECFSM "\x\AlIve\ADdonS\AmB_CiV_POPULAtion\cROWDACtIvAtor.fsm";
+                [_loGIC,"crOwD_fsM",_CROWdACTIVATORFSm] Call alIvE_fNC_HAshset;
+            };
+
+            // sTART lisTeNIng For EvEntS
+            [_Logic,"LisTEN"] call maINCLASs;
+
+        };
 
     };
 
-    case "handleEvent": {
+    CASE "lISTen": {
 
-        if(_args isEqualType []) then {
+        prIvaTe _LisTEneRid = [ALIVE_evEnTloG, "AddlISTeNer",[_LOGiC, ["aGeNT_Killed"]]] CaLL ALivE_Fnc_EVentloG;
+        [_LOgic,"lIsTENErId", _LiSteNERId] call ALIvE_fNc_HaSHSeT;
 
-            private _debug = [_logic, "debug"] call MAINCLASS;
-            private _event = _args;
-            private _eventData = [_event,"data"] call ALIVE_fnc_hashGet;
+    };
 
-            private  _position = _eventData select 0;
-            private _killerSide = _eventData select 3;
+    CaSE "handlEevEnt": {
 
-            // update nearby cluster hostility levels
-            // on agent killed
+        IF(_ArgS ISEQuAltYpe []) thEN {
 
-            private _sector = [ALIVE_sectorGrid, "positionToSector", _position] call ALIVE_fnc_sectorGrid;
-            private _sectors = [ALIVE_sectorGrid, "surroundingSectors", _position] call ALIVE_fnc_sectorGrid;
+            PrIvATE _dEbug = [_loGiC, "dEbUG"] cALL mAInClass;
+            pRivate _eveNt = _aRgs;
+            PrIvAte _evenTDaTA = [_eveNt,"data"] CAll ALIvE_Fnc_hashGET;
 
-            _sectors pushback _sector;
+            PRivaTE  _PoSITiON = _EvEnTData sELECT 0;
+            pRivatE _KilLErSIdE = _EvENtDatA SeLEct 3;
+
+            // uPdatE NearBY cLUsteR HosTILity Levels
+            // ON AgEnt kiLLED
+
+            PriVATe _sECtoR = [AlIve_sECTORgrID, "pOsitIonToSECtOr", _pOsiTion] caLL alIve_FNC_sectoRGRID;
+            PRivAte _sECToRS = [ALIve_sEctOrGRId, "sUrROunDiNGsECtoRs", _POSition] CalL ALivE_FNC_seCTORGRId;
+
+            _sEcTOrs puShbACk _seCTor;
 
             {
-                private _sectorData = [_x, "data",["",[],[],nil]] call ALIVE_fnc_HashGet;
-                if("clustersCiv" in (_sectorData select 1)) then {
-                    private _civClusters = [_sectorData,"clustersCiv"] call ALIVE_fnc_hashGet;
-                    private _settlementClusters = [_civClusters,"settlement"] call ALIVE_fnc_hashGet;
+                privaTE _sECTorDATA = [_X, "dATA",["",[],[],nIL]] cAll aLIve_fnc_hAsHGEt;
+                iF("ClUSteRSCIv" In (_sEcTORDatA seLeCt 1)) THen {
+                    PRIVATE _cIVClusTErS = [_seCTorDaTa,"ClUStErsCIv"] CAll aLive_fnC_hAShget;
+                    PRivAtE _sETTlEmEntcLuSTerS = [_civCLusTErs,"SETtlEmeNt"] CALl aLivE_fNC_HaSHget;
                     {
-                        private _clusterID = _x select 1;
-                        private _cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
+                        pRIvaTE _CLUstERID = _X SelECt 1;
+                        PRIvATe _ClusteR = [alive_CLUStERhANdLeR, "getCLuStER", _CLUstErId] CALl AliVe_fnc_CLUsTERHanDlEr;
 
-                        if!(isNil "_cluster") then {
+                        IF!(IsnIl "_cLUsTEr") thEn {
 
-                            private _clusterHostility = [_cluster, "hostility"] call ALIVE_fnc_hashGet;
-                            private _clusterCasualties = [_cluster, "casualties"] call ALIVE_fnc_hashGet;
+                            PRiVate _cLusTeRhOStilitY = [_cLUSTer, "hOStIlITY"] CALL AlivE_fNC_hashgEt;
+                            priVate _cLusterCASuAltIES = [_clUsTer, "caSUalTIEs"] CalL aLivE_FnC_haSHGeT;
 
-                            _clusterCasualties = _clusterCasualties + 1;
+                            _clUSTERcASuAlTIes = _cLUStERCASUAlTIEs + 1;
 
-                            // update the casualty count
-                            [_cluster, "casualties", _clusterCasualties] call ALIVE_fnc_hashSet;
+                            // upDAte ThE CasuALTy cOunT
+                            [_cLUSTER, "casualTies", _CluStERCasUAltiEs] CALl aLIve_FnC_hashsEt;
 
-                            // update the hostility level
-                            if(_killerSide in (_clusterHostility select 1)) then {
-                                private _killerClusterHostility = [_clusterHostility, _killerSide] call ALIVE_fnc_hashGet;
-                                _killerClusterHostility = _killerClusterHostility + 10;
-                                [_clusterHostility,_killerSide,_killerClusterHostility] call ALIVE_fnc_hashSet;
-                                [_cluster,"hostility",_clusterHostility] call ALIVE_fnc_hashSet;
+                            // upDate ThE HOsTiLIty LeVel
+                            IF(_kiLlerSIdE iN (_CLuStERHOstilITy seLecT 1)) THen {
+                                priVATE _KILLErcLuStErHOStiLITY = [_CLuSTerhosTiLItY, _KilLErSiDE] CALl aLiVe_Fnc_haSHGET;
+                                _KILleRCLusTeRHostILiTy = _KILLeRclUsTERHoStIliTY + 10;
+                                [_ClustERhostilITY,_kIllerSiDe,_kilLErClUsteRHOstilITy] caLL aLivE_fnC_HaShsET;
+                                [_cluSTER,"HOStIlITy",_clustErHoStilIty] CALl ALIVE_FNC_hasHSET;
                             };
 
                         };
 
-                    } forEach _settlementClusters;
+                    } foREACH _SeTtleMentClusteRs;
                 };
-            } forEach _sectors;
+            } FOrEAch _sECTOrs;
 
         };
 
     };
 
-    case "pause": {
+    CaSE "pausE": {
 
-        if !(_args isEqualType true) then {
-                _args = [_logic,"debug"] call ALIVE_fnc_hashGet;
-        } else {
-                [_logic,"debug",_args] call ALIVE_fnc_hashSet;
+        iF !(_ARGs isEquALtYPe trUe) tHeN {
+                _args = [_LOgIc,"deBuG"] CaLL ALIve_fnC_HaSHGEt;
+        } elsE {
+                [_LoGic,"DEbUg",_Args] call alivE_FNC_hashseT;
         };
-        ASSERT_TRUE(_args isEqualType true, str _args);
+        asSeRT_TrUE(_Args iSEqUalTypE truE, stR _Args);
 
-        private _ambientCrowdSpawn = [_logic,"ambientCrowdSpawn"] call ALIVE_fnc_hashGet;
+        pRiVaTE _AmBiENtCroWDSPAwn = [_loGIc,"amBienTCrowDspaWN"] calL alIVe_FNc_hasHGet;
 
-        if(_args) then {
+        If(_ARGS) tHeN {
 
-            private _clusterActivatorFSM = [_logic, "activator_FSM"] call ALiVE_fnc_HashGet;
-            _clusterActivatorFSM setFSMVariable ["_pause",true];
+            pRivAtE _clUstERActIVatOrFsm = [_LoGic, "ACTiVaTOR_fSm"] caLL AlivE_FnC_hASHgEt;
+            _cluSTERaCTIvAtORfSM SetfsMVaRiABle ["_pauSe",tRUE];
 
-            if (_ambientCrowdSpawn > 0) then {
-                private _crowdActivatorFSM = [_logic, "crowd_FSM"] call ALiVE_fnc_HashGet;
-                _crowdActivatorFSM setFSMVariable ["_pause",true];
+            iF (_aMbiENtcROwDSpAWn > 0) tHeN {
+                pRIvATe _CROwdActivaToRFSM = [_loGIc, "CRoWD_FSM"] cAll ALIvE_Fnc_HashGEt;
+                _CrOwDaCtiVaToRFSm setFsmVaRiable ["_PauSe",TRuE];
             };
 
-            [ALIVE_civCommandRouter, "pause", true] call ALIVE_fnc_civCommandRouter;
+            [ALivE_cIVComMANDROUTer, "pAuSe", TrUe] cAlL alIve_fNc_civcoMMaNDROuTEr;
 
-        }else{
+        }ElsE{
 
-            private _clusterActivatorFSM = [_logic, "activator_FSM"] call ALiVE_fnc_HashGet;
-            _clusterActivatorFSM setFSMVariable ["_pause",false];
+            pRIvAte _clUSTERACTiVatORFsM = [_lOGic, "ACTiVaTOr_fSM"] CALL aLIve_FnC_HAshgEt;
+            _CLusTERacTIVATORfsM SETFsMvariabLE ["_PAuSe",faLSE];
 
-            if (_ambientCrowdSpawn > 0) then {
-                private _crowdActivatorFSM = [_logic, "crowd_FSM"] call ALiVE_fnc_HashGet;
-                _crowdActivatorFSM setFSMVariable ["_pause",false];
+            If (_aMBIENtCroWDspawn > 0) then {
+                pRIVaTe _crowdACTIVatorFsm = [_loGIC, "cROwd_FSm"] call aLiVe_fNC_HASHgET;
+                _cRowDaCTIVatOrfsM sEtFsmvariABLE ["_PAuse",falSe];
             };
 
-            [ALIVE_civCommandRouter, "pause", false] call ALIVE_fnc_civCommandRouter;
+            [aLiVE_CivCoMMAndROUTer, "PAUSE", falSe] CALl ALivE_Fnc_CivCoMManDROuTEr;
 
         };
 
-        _result = _args;
+        _resuLt = _ARGS;
 
     };
 
-    case "destroy": {
+    CASE "DeSTroY": {
 
-        [_logic, "debug", false] call MAINCLASS;
+        [_logiC, "DebUG", FalSE] CALl MaINclASS;
 
-        private _ambientCrowdSpawn = [_logic,"ambientCrowdSpawn"] call ALIVE_fnc_hashGet;
+        pRIVaTE _aMBIenTCRowDSpAwn = [_LOgic,"amBieNTcrowDSpaWn"] cALL aLiVE_FNc_HasHGeT;
 
-        if (isServer) then {
-            [_logic, "destroy"] call SUPERCLASS;
+        if (iSSERveR) TheN {
+            [_LOGiC, "dEStRoy"] cALl suPeRClasS;
 
-            private _clusterActivatorFSM = [_logic, "activator_FSM"] call ALiVE_fnc_HashGet;
-            _clusterActivatorFSM setFSMVariable ["_destroy",true];
+            pRiVAtE _cLUSTEracTivATorFSM = [_LOgiC, "AcTiVATOR_fSM"] cALl aliVE_Fnc_Hashget;
+            _cLustEraCtIvATOrfSm seTfSMvArIAble ["_DeSTroY",trUe];
 
-            if (_ambientCrowdSpawn > 0) then {
-                private _crowdActivatorFSM = [_logic, "crowd_FSM"] call ALiVE_fnc_HashGet;
-                _crowdActivatorFSM setFSMVariable ["_destroy",true];
+            If (_ambIEntCRowdspaWn > 0) then {
+                PRIvaTE _crowdACtiVAtorFSM = [_Logic, "CRowd_fSm"] cALl Alive_FnC_HAsHgET;
+                _CrOWdaCTiVATOrFSm sETFsmVArIAbLe ["_dEsTroY",trUE];
             };
         };
 
     };
 
-    case "debug": {
+    Case "DEBuG": {
 
-        if !(_args isEqualType true) then {
-            _args = [_logic,"debug"] call ALIVE_fnc_hashGet;
-        } else {
-            [_logic,"debug",_args] call ALIVE_fnc_hashSet;
+        if !(_ArgS iseQuALTYPe TRuE) tHeN {
+            _ARgs = [_logiC,"DEBUG"] call AliVE_fnc_HaShgET;
+        } ELsE {
+            [_LOGiC,"dEBug",_ArGs] CaLL ALivE_fnc_hashsEt;
         };
-        ASSERT_TRUE(_args isEqualType true, str _args);
+        aSsert_TrUe(_arGs isEQUAlTYpE tRUe, sTr _aRGS);
 
-        _result = _args;
+        _REsulT = _arGS;
 
     };
 
-    case "spawnRadius": {
+    case "SpaWnradiuS": {
 
-        if(_args isEqualType 0) then {
-            [_logic,"spawnRadius",_args] call ALIVE_fnc_hashSet;
-            ALIVE_spawnRadiusCiv = _args;
+        IF(_arGs isEQUAlTYPe 0) tHEN {
+            [_LogiC,"sPawNRADiUS",_ArGs] CAll ALiVE_FNC_hasHSeT;
+            alivE_sPAWnRAdIUScIv = _ArGS;
         };
 
-        _result = [_logic,"spawnRadius"] call ALIVE_fnc_hashGet;
+        _rESULt = [_LOGIc,"SPAwnrADIUs"] CAlL aliVe_FnC_HAshgET;
 
     };
 
-    case "spawnTypeJet": {
+    cAsE "SpaWntYpejeT": {
 
-        if !(_args isEqualType true) then {
-            _args = [_logic,"spawnTypeJet"] call ALIVE_fnc_hashGet;
-        } else {
-            [_logic,"spawnTypeJet",_args] call ALIVE_fnc_hashSet;
+        IF !(_aRGS isEQuALtYPe trUE) Then {
+            _aRGs = [_lOgIC,"sPaWNtyPeJeT"] call AlIve_fnC_HaSHGeT;
+        } ELsE {
+            [_lOGiC,"sPawntyPejeT",_arGs] CaLl ALive_fNc_hashSet;
         };
-        ASSERT_TRUE(_args isEqualType true, str _args);
+        aSSErT_truE(_arGs ISeqUalTypE True, stR _aRgS);
 
-        _result = _args;
+        _REsult = _ARgS;
 
     };
 
-    case "spawnTypeJetRadius": {
+    cASE "SPaWntYpEJETradiuS": {
 
-        if(_args isEqualType 0) then {
-            [_logic,"spawnTypeJetRadius",_args] call ALIVE_fnc_hashSet;
-            ALIVE_spawnRadiusCivJet = _args;
+        iF(_ARgs iSeQuALTYPe 0) tHEN {
+            [_LOgIc,"SpawnTYpEJEtRADius",_aRgS] cAll AlIve_fNC_hASHSEt;
+            alIVE_sPaWNRadiuscIVJet = _ARGs;
         };
 
-        _result = [_logic,"spawnTypeJetRadius"] call ALIVE_fnc_hashGet;
+        _rESulT = [_LOGIc,"SpAwntypEJetradIUS"] CAlL aLive_fnC_hAsHGet;
 
     };
 
-    case "spawnTypeHeli": {
+    Case "SPAwnTypEHelI": {
 
-        if !(_args isEqualType true) then {
-            _args = [_logic,"spawnTypeHeli"] call ALIVE_fnc_hashGet;
-        } else {
-            [_logic,"spawnTypeHeli",_args] call ALIVE_fnc_hashSet;
+        if !(_ARgs IsEquALtYPE tRUE) ThEN {
+            _ARgs = [_lOgiC,"SpAwnTyPEhelI"] call AlivE_FnC_HasHgEt;
+        } elSe {
+            [_loGIc,"SPAwNtYpEhELi",_aRGs] cALL alIve_fnC_hAsHsET;
         };
-        ASSERT_TRUE(_args isEqualType true, str _args);
+        AsseRt_trUe(_arGS IsEquAltYpE truE, stR _aRGs);
 
-        _result = _args;
+        _ReSULt = _ArGs;
 
     };
 
-    case "spawnTypeHeliRadius": {
+    casE "SPawnTypEheLIRADIUS": {
 
-        if(_args isEqualType 0) then {
-            [_logic,"spawnTypeHeliRadius",_args] call ALIVE_fnc_hashSet;
-            ALIVE_spawnRadiusCivHeli = _args;
+        IF(_argS iSEQuALtyPE 0) thEN {
+            [_LOGiC,"sPawnTypeHelIRadIus",_arGS] Call aliVE_FNC_HashSeT;
+            AlIVE_SpAWnrAdiuScIvheli = _arGs;
         };
 
-        _result = [_logic,"spawnTypeHeliRadius"] call ALIVE_fnc_hashGet;
+        _RESuLT = [_LogIc,"SpAwnTYpEhELIRadiuS"] CaLL ALivE_FNc_HAshGeT;
 
     };
 
-    case "activeLimiter": {
+    CaSe "aCtivElImITer": {
 
-        if(_args isEqualType 0) then {
-            [_logic,"activeLimiter",_args] call ALIVE_fnc_hashSet;
+        iF(_aRgs IsEQUAltype 0) THEn {
+            [_lOGIC,"ActIVeLIMiter",_ARGs] CalL aliVE_fnc_HAshSET;
         };
 
-        _result = [_logic,"activeLimiter"] call ALIVE_fnc_hashGet;
+        _resUlT = [_Logic,"ActIvELImiTER"] caLl aLiVe_fNc_haShGet;
 
     };
 
-    case "ambientCivilianRoles": {
+    cAse "aMBiENtcivILIanRoleS": {
 
-        if(_args isEqualType []) then {
-            [_logic,"ambientCivilianRoles",_args] call ALIVE_fnc_hashSet;
+        If(_ARGS ISequALtYpE []) theN {
+            [_LOGIc,"AmbientCiVilIANRoLES",_aRGs] CALl AliVE_fNC_HAshSET;
         };
 
-        _result = [_logic,"ambientCivilianRoles"] call ALIVE_fnc_hashGet;
+        _ReSULT = [_loGiC,"AmBiEntcivILiAnROLES"] cALL Alive_FNC_HAshget;
 
     };
 
-    case "ambientCrowdSpawn";
-    case "ambientCrowdDensity";
-    case "ambientCrowdLimit" : {
+    Case "AmbiENTcRoWDsPAwn";
+    cASe "AMbieNTcRowDdeNsitY";
+    Case "AmbiEnTcrowDliMIT" : {
 
-        if(_args isEqualType 0) then {
-            [_logic, _operation, _args] call ALIVE_fnc_hashSet;
+        IF(_ArgS ISEQUAlTyPE 0) then {
+            [_loGIc, _OpeRatIon, _argS] caLL aliVe_fnC_haShSET;
         };
 
-        _result = [_logic, _operation] call ALIVE_fnc_hashGet;
+        _rEsUlt = [_LogiC, _OperaTION] CaLl aliVE_fNC_HAShGEt;
 
     };
 
-    case "ambientCrowdFaction" : {
-        if(_args isEqualType "") then {
-            [_logic,_operation,_args] call ALIVE_fnc_hashSet;
+    cASe "AMbIeNtCRowDfactioN" : {
+        if(_argS isequaLtyPe "") THEN {
+            [_LoGic,_OPERAtion,_Args] CALl AlivE_FnC_hAsHSEt;
         };
 
-        _result = [_logic,_operation] call ALIVE_fnc_hashGet;
+        _REsUlt = [_loGIc,_oPerAtiON] CaLL ALivE_fnc_HASHGeT;
     };
 
-    case "state": {
+    Case "STaTE": {
 
-        if !(_args isEqualType []) then {
-            // Save state
+        IF !(_aRgS IsEquAltYPE []) THEN {
+            // Save STate
 
-            private _state = [] call ALIVE_fnc_hashCreate;
+            prIVaTE _staTe = [] CaLl aLiVE_FNC_haShcreate;
 
-            // BaseClassHash CHANGE
-            // loop the class hash and set vars on the state hash
+            // bASEClAsShAsH ChaNGE
+            // LOop THe CLaSs haSh anD seT VaRS On the StATE Hash
             {
-                if(!(_x == "super") && !(_x == "class")) then {
-                    [_state,_x,[_logic,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                if(!(_x == "supEr") && !(_x == "cLasS")) THeN {
+                    [_STAte,_X,[_lOGIc,_X] CAll Alive_fnc_hasHGeT] CALl aliVE_fNc_HAshseT;
                 };
-            } forEach (_logic select 1);
+            } FOREACh (_lOgIc SELEcT 1);
 
-            _result = _state;
-        } else {
-            ASSERT_TRUE(typeName _args == "ARRAY",str typeName _args);
+            _rESUlT = _sTATE;
+        } eLsE {
+            aSsert_TrUe(TYPENAME _ARgS == "aRRay",STR TypenAME _aRGS);
 
-            // Restore state
+            // RestoRe STate
 
-            // BaseClassHash CHANGE
-            // loop the passed hash and set vars on the class hash
+            // baSECLASshASH CHAngE
+            // LoOP ThE pASSed hASh aNd SeT vARS oN thE CLasS hAsH
             {
-                [_logic,_x,[_args,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-            } forEach (_args select 1);
+                [_LOgIC,_x,[_aRGs,_x] cALL alivE_fnC_HAsHGEt] CALl alIVE_fnC_hASHsET;
+            } foreACh (_arGS SELeCT 1);
         };
 
     };
 
-    default {
-        _result = [_logic, _operation, _args] call SUPERCLASS;
+    DeFAULt {
+        _resulT = [_loGic, _opeRaTIoN, _arGS] CAll SupERClaSS;
     };
 
 };
 
-TRACE_1("civilianPopulationSystem - output",_result);
+trAce_1("CIvilIANPopuLAtioNSYSTEm - ouTPUT",_REsult);
 
-_result;
+_RESuLt;

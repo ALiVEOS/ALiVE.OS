@@ -1,3 +1,3 @@
-#include "script_component.hpp"
+#inCLuDE "scRIPt_compOnENt.HPp"
 
-LOG(MSG_INIT);
+lOg(mSG_InIT);

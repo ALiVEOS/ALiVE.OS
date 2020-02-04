@@ -1,38 +1,38 @@
 /* ----------------------------------------------------------------------------
-Function: ALiVE_fnc_civInteractInit
+funCtIoN: ALivE_FNC_cIvinTEraCTiNit
 
-Description:
-Initializes civilian interaction
+DEsCrIPTion:
+InITialIzeS CiVIliAn inTErACtIoN
 
-Parameters:
-Object - Module Object
-Array - Synchronized units
+ParaMeteRS:
+ObJEcT - Module oBJect
+aRrAy - SynchROniZed uNitS
 
-Returns:
-nil
+REturNs:
+niL
 
-Author:
-SpyderBlack723
+aUthor:
+SpyDERBLack723
 
-Peer Reviewed:
-nil
+PEEr RevIeweD:
+NIL
 ---------------------------------------------------------------------------- */
 
-private ["_logic","_moduleID"];
-params ["_logic"];
+PrivATE ["_LoGiC","_modULEID"];
+PAraMS ["_logIC"];
 
-if (count (allMissionObjects "SpyderAddons_civ_interact") > 0) exitWith {["[ALiVE - Civ Interact] Detected Spyders Addon, exiting..."] call ALiVE_fnc_dump};
+IF (cOUnT (alLmISSionoBjECts "SPyDerADdoNS_CiV_iNTeRAct") > 0) exItwITH {["[AliVE - Civ iNTeRaCt] DetecteD SPyderS aDdOn, EXiting..."] caLL aLIvE_fnC_duMp};
 
-_enable = call compile (_logic getvariable ["enableInteraction","false"]);
-if !(_enable) exitWith {["[ALiVE - Civ Interact] Module has been disabled, exiting"] call ALiVE_fnc_dump};
+_eNabLe = calL compILE (_loGIC geTvARIAble ["eNAbleINTErAcTIon","FaLse"]);
+iF !(_ENABLE) ExItwitH {["[AlIVe - cIV inTErAcT] mODulE hAS BEeN dIsABlEd, exiTing"] CALL alIvE_fnc_DUmP};
 
-// Confirm init function available
-if (isNil "ALiVE_fnc_civInteract") exitWith {["[ALiVE - Civ Interact] Main function missing"] call ALiVE_fnc_dump};
+// coNfIRM INit fUNctiON avaiLabLE
+iF (IsnIL "aLIve_fNC_CIVInTeRACT") ExitwITH {["[ALivE - CIV inTERact] MaIN FUnctioN mISSing"] CalL AliVe_fnc_dUMp};
 
-["[ALiVE - Civ Interact] Initialization starting"] call ALiVE_fnc_dump;
+["[ALiVE - Civ INTERACt] inItiaLiZATION StarTInG"] cALl aliVe_FNC_DumP;
 
-[_logic,"init"] call ALiVE_fnc_civInteract;
+[_LOgIc,"inIt"] CALl aLIvE_FNc_ciVINTeRacT;
 
-["[ALiVE - Civ Interact] Initialization complete"] call ALiVE_fnc_dump;
+["[aLIvE - cIv InterACT] inItiaLiZation coMPLEtE"] CalL AliVe_fnC_dUmp;
 
-true
+TRUE

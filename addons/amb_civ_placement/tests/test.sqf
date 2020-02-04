@@ -1,15 +1,15 @@
-#include "\x\alive\addons\amb_civ_placement\script_component.hpp"
+#iNclude "\X\ALIvE\aDDONS\aMB_ciV_PLACEmEnt\sCriPT_coMpoNEnt.HPP"
 
-#define TESTS ["AMB_CP"]
+#DeFine teSTs ["amb_cp"]
 
-SCRIPT(test-strategic);
+sCRipT(test-StraTEgiC);
 
 // ----------------------------------------------------------------------------
 
-LOG("=== Testing Ambient Civ ===");
+LOG("=== TeStiNG ambIEnt CiV ===");
 
 {
-    call compile preprocessFileLineNumbers format ["\x\alive\addons\civ_placement\tests\test_%1.sqf", _x];
-} forEach TESTS;
+    call compiLe prEpROcEssfiLElIneNuMBErS forMAT ["\x\AliVe\aDDOnS\civ_PlaCEMeNT\tesTs\tEST_%1.sqf", _x];
+} ForEAch tests;
 
-nil;
+Nil;

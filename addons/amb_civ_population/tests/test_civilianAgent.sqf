@@ -1,156 +1,156 @@
 // ----------------------------------------------------------------------------
 
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(test_civilianAgent);
+#INCLUDe "\x\alive\adDonS\Amb_CiV_poPULatIOn\ScRipT_ComPONENt.HPP"
+SCRipt(teST_CivilIANAGEnT);
 
-//execVM "\x\alive\addons\amb_civ_population\tests\test_civilianAgent.sqf"
+//ExECvM "\x\alive\adDONs\AMB_CiV_pOPULAtioN\TESts\TeST_CIvILiANAGeNt.sQF"
 
 // ----------------------------------------------------------------------------
 
-private ["_result","_err","_logic","_state","_result2"];
+pRiVatE ["_ResULt","_ERR","_logIc","_StATe","_REsuLT2"];
 
-LOG("Testing Civilian Agent Object");
+LOG("teStIng civIlIAN agent OBject");
 
-ASSERT_DEFINED("ALIVE_fnc_civilianAgent","");
+aSsErt_DeFiNEd("ALIvE_fNC_CivILIanagEnT","");
 
-#define STAT(msg) sleep 3; \
-diag_log ["TEST("+str player+": "+msg]; \
-titleText [msg,"PLAIN"]
+#DEfiNE STAt(mSG) SLEeP 3; \
+DIAg_lOg ["TEst("+str pLAyeR+": "+MsG]; \
+tItLeTEXt [MsG,"PLaIn"]
 
-#define STAT1(msg) CONT = false; \
-waitUntil{CONT}; \
-diag_log ["TEST("+str player+": "+msg]; \
-titleText [msg,"PLAIN"]
+#dEfiNE stat1(msg) CONT = fAlse; \
+wAITuNtIL{conT}; \
+DiAG_lOg ["TESt("+StR plAYER+": "+mSg]; \
+TItLETeXT [msG,"pLAin"]
 
-#define DEBUGON STAT("Setup debug parameters"); \
-_result = [_logic, "debug", true] call ALIVE_fnc_civilianAgent; \
-_err = "enabled debug"; \
-ASSERT_TRUE(typeName _result == "BOOL", _err); \
-ASSERT_TRUE(_result, _err);
+#define dEbUgoN sTAt("sEtup deBug paRaMEtERs"); \
+_ReSuLT = [_loGic, "dEbUG", TrUE] cALL ALive_fNC_CIviliANagEnt; \
+_ErR = "EnAbLEd debuG"; \
+aSSert_TrUE(tYPenaME _rESuLt == "BOOL", _erR); \
+asSeRt_TRUe(_ResUlt, _Err);
 
-#define DEBUGOFF STAT("Disable debug"); \
-_result = [_logic, "debug", false] call ALIVE_fnc_civilianAgent; \
-_err = "disable debug"; \
-ASSERT_TRUE(typeName _result == "BOOL", _err); \
-ASSERT_TRUE(!_result, _err);
+#dEFinE dEBUGOfF StAT("DIsABlE DeBug"); \
+_rEsuLT = [_lOGIC, "debuG", FalSE] CALL alIVe_fNC_ciViLIAnAgenT; \
+_Err = "dISaBLE DEbuG"; \
+asseRT_TRue(TYpeNaMe _rEsuLt == "BoOL", _ERR); \
+ASsERT_True(!_reSUlT, _eRr);
 
-#define TIMERSTART \
-_timeStart = diag_tickTime; \
-diag_log "Timer Start";
+#DefINe TiMERSTaRt \
+_TiMeStARt = DiAg_tICkTIme; \
+DIAG_lOG "TimEr StArt";
 
-#define TIMEREND \
-_timeEnd = diag_tickTime - _timeStart; \
-diag_log format["Timer End %1",_timeEnd];
+#dEFine TiMErend \
+_timEEnd = diag_tiCkTIMe - _TimEsTART; \
+DiAg_LoG FOrmat["TImEr EnD %1",_tImEENd];
 
 //========================================
 
-_logic = nil;
+_LOgIc = nIL;
 
-STAT("Create Agent instance");
-if(isServer) then {
-    _logic = [nil, "create"] call ALIVE_fnc_civilianAgent;
-    TEST_LOGIC = _logic;
-    publicVariable "TEST_LOGIC";
+STaT("CReaTe AGEnt iNStaNcE");
+iF(IsSerVEr) THen {
+    _logic = [NIL, "creATe"] caLl alIve_FNc_civiLIanaGent;
+    TeST_lOGIC = _loGiC;
+    PubliCvariABLE "teSt_loGic";
 };
 
 
-STAT("Init Agent");
-_result = [_logic, "init"] call ALIVE_fnc_civilianAgent;
-_err = "set init";
-ASSERT_TRUE(typeName _result == "BOOL", _err);
+sTAT("iNiT AgEnT");
+_reSULt = [_LoGIC, "InIt"] call AlIvE_FNC_ciViLIanAgENt;
+_eRr = "sET iNIT";
+AsSeRt_TrUE(TYPEnAmE _REsuLT == "BOol", _ERR);
 
 
-STAT("Confirm new Agent instance");
-waitUntil{!isNil "TEST_LOGIC"};
-_logic = TEST_LOGIC;
-_err = "instantiate object";
-ASSERT_DEFINED("_logic",_err);
-ASSERT_TRUE(typeName _logic == "ARRAY", _err);
+StAt("coNFIRm NeW agENt InstAnCE");
+waITUnTIl{!isnIL "TESt_LOgic"};
+_LoGIc = Test_LogIC;
+_erR = "iNsTaNtiate ObJEcT";
+asSeRt_DEfINed("_LOGiC",_eRR);
+ASSERt_TRuE(tYpENAme _LogIC == "aRrAY", _Err);
 
 
-STAT("Set agent id");
-_result = [_logic, "agentID", "agent_01"] call ALIVE_fnc_civilianAgent;
-_err = "set profile id";
-ASSERT_TRUE(typeName _result == "STRING", _err);
+stat("seT AgenT Id");
+_ReSUlT = [_lOGiC, "agENtiD", "AgeNT_01"] CalL Alive_FNc_CIvIliaNAgenT;
+_eRR = "seT profiLe id";
+AsSeRT_TRuE(tYPename _ReSuLt == "strING", _ErR);
 
 
-STAT("Set agent class");
-_result = [_logic, "agentClass", "C_man_p_fugitive_F_afro"] call ALIVE_fnc_civilianAgent;
-_err = "set vehicle classes";
-ASSERT_TRUE(typeName _result == "STRING", _err);
+sTAT("set AgENT CLAsS");
+_rEsuLT = [_LOgic, "ageNtcLaSS", "c_MAN_p_fUgitiVE_F_AfRo"] cALL ALIvE_FnC_cIviLiANAgEnT;
+_ErR = "sET vehICLe ClAsSes";
+AsSeRT_TRUE(tyPenAmE _ResuLT == "StRING", _eRR);
 
 
-STAT("Set position");
-_result = [_logic, "position", getPos player] call ALIVE_fnc_civilianAgent;
-_err = "set position";
-ASSERT_TRUE(typeName _result == "ARRAY", _err);
+sTAT("sET pOSITIoN");
+_ReSULt = [_LOgIc, "pOsITioN", gEtpOS PLAyeR] call alIVe_fNc_CiVilIAnagEnt;
+_erR = "Set pOSiTIoN";
+ASserT_TrUe(TYPEnAmE _rESult == "arRAy", _ERr);
 
 
-STAT("Get state");
-_state = [_logic, "state"] call ALIVE_fnc_civilianAgent;
-_err = "get state";
-ASSERT_TRUE(typeName _state == "ARRAY", _err);
+sTAT("GET staTe");
+_statE = [_logIc, "sTatE"] call AliVe_fNC_ciViLIAnAGenT;
+_eRR = "GEt sTaTe";
+asSeRT_truE(tYPeNaMe _State == "ArRAY", _erR);
 
 
-_state call ALIVE_fnc_inspectHash;
+_sTAtE Call ALive_FNC_iNspecthAsH;
 
 
-STAT("Spawn");
-_result = [_logic, "spawn"] call ALIVE_fnc_civilianAgent;
-_err = "spawn";
-ASSERT_TRUE(typeName _result == "BOOL", _err);
+sTAt("SPawn");
+_ResuLT = [_Logic, "SPawn"] CALl ALIVE_fnC_civIlIAnagenT;
+_ERr = "Spawn";
+aSserT_trUe(TyPeName _REsULt == "BOOL", _ErR);
 
 
-STAT("Sleeping before despawn");
+StAt("SLEepING BEfOre deSpAWn");
+slEeP 40;
+
+
+sTAT("De-SpawN");
+_RESulT = [_lOGIC, "dESpaWN"] CAll aLivE_fNC_civilIanagEnt;
+_err = "Despawn";
+aSSert_TRuE(TyPenAME _REsUlT == "bool", _ERR);
+
+
+STAT("GEt StatE");
+_stATe = [_loGiC, "STaTE"] CaLl AlivE_FnC_cIViliANaGent;
+_Err = "gET stAtE";
+aSsErt_TrUE(typeNAME _stATe == "arRAY", _ERr);
+
+
+_staTe Call alivE_FNc_inSpectHAsh;
+
+
+StAt("sLEEpinG bEfOrE rEsPAWN");
+SLeeP 10;
+
+
+sTAT("SPaWn");
+_REsULT = [_lOGIc, "SPawn"] CALL aLiVe_fnc_ciVIlIaNageNt;
+_err = "Spawn";
+ASserT_tRue(tYpenAMe _reSULt == "boOl", _Err);
+
+
+STaT("SLeEPinG BEfore DeSpawN");
+SLeep 40;
+
+
+STat("DE-spAwn");
+_reSuLt = [_lOGIc, "dEsPAWN"] CaLL ALIVE_fNc_CivIlIANAGeNT;
+_ERr = "dESpAWn";
+asSerT_tRUe(tYPEnAME _REsUlT == "bOol", _Err);
+
+
+Stat("sLeEpINg BeFOre DesTROy");
 sleep 40;
 
 
-STAT("De-Spawn");
-_result = [_logic, "despawn"] call ALIVE_fnc_civilianAgent;
-_err = "despawn";
-ASSERT_TRUE(typeName _result == "BOOL", _err);
-
-
-STAT("Get state");
-_state = [_logic, "state"] call ALIVE_fnc_civilianAgent;
-_err = "get state";
-ASSERT_TRUE(typeName _state == "ARRAY", _err);
-
-
-_state call ALIVE_fnc_inspectHash;
-
-
-STAT("Sleeping before respawn");
-sleep 10;
-
-
-STAT("Spawn");
-_result = [_logic, "spawn"] call ALIVE_fnc_civilianAgent;
-_err = "spawn";
-ASSERT_TRUE(typeName _result == "BOOL", _err);
-
-
-STAT("Sleeping before despawn");
-sleep 40;
-
-
-STAT("De-Spawn");
-_result = [_logic, "despawn"] call ALIVE_fnc_civilianAgent;
-_err = "despawn";
-ASSERT_TRUE(typeName _result == "BOOL", _err);
-
-
-STAT("Sleeping before destroy");
-sleep 40;
-
-
-STAT("Destroy old Profile instance");
-if(isServer) then {
-    [_logic, "destroy"] call ALIVE_fnc_civilianAgent;
-    TEST_LOGIC = nil;
-    publicVariable "TEST_LOGIC";
-} else {
-    waitUntil{isNull TEST_LOGIC};
+sTaT("DESTRoy oLd prOFILe InstAncE");
+iF(iSSERvEr) thEN {
+    [_lOgiC, "deStRoy"] cAlL AliVE_Fnc_CIViLiaNagENT;
+    teST_LoGiC = nIl;
+    pUBlicVaRIaBlE "teST_LogIc";
+} elSE {
+    waituNtiL{IsnuLl TEst_lOGIC};
 };
 
-nil;
+NIL;

@@ -1,17 +1,17 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
+#InclUDE "\x\ALIVe\AdDoNs\Amb_cIv_pOpuLaTIoN\sCrIpT_COmpoNENT.hPP"
 
-#define TESTS ["civilianAgent"];
+#DeFiNE tEsTS ["cIViliaNAgENt"];
 
-SCRIPT(test-civ-population);
+SCripT(tesT-CiV-PoPULATIon);
 
-//execVM "\x\alive\addons\amb_civ_population\tests\test.sqf"
+//eXeCVM "\x\AlIve\aDDons\AMB_CIv_popuLaTiOn\tEStS\TesT.Sqf"
 
 // ----------------------------------------------------------------------------
 
-LOG("=== Testing Ambient Civilian Population ===");
+loG("=== testing AMbIeNt cIvILiaN pOPULatIon ===");
 
 {
-    call compile preprocessFileLineNumbers format ["\x\alive\addons\amb_civ_population\tests\test_%1.sqf", _x];
-} forEach TESTS;
+    cAlL COMPILE PrepROCessFILELInENUMbErs FormaT ["\x\aLiVe\aDDoNS\Amb_CIv_popUlATion\teSTs\test_%1.SQf", _x];
+} FoReaCH tESTs;
 
-nil;
+Nil;

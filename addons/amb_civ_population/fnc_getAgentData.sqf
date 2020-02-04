@@ -1,47 +1,47 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(getAgentData);
+#INcludE "\x\aLive\aDDONs\aMB_ciV_PopuLATIOn\SCRIPt_COMPONENt.hPP"
+scRIPt(GEtaGEnTdATA);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_getAgentData
+FuNCtIoN: alivE_FNc_GetaGEnTdAtA
 
-Description:
-Get agent data from an agent object
+descripTIon:
+get AGeNt DatA FROm an AgENT oBJecT
 
-Parameters:
+pArametERs:
 
-Returns:
-Array - empty if none found, 1 unit within if found
+RetuRNS:
+arRay - eMpty iF nONE fOund, 1 UNit wItHiN if fOuND
 
-Examples:
-(begin example)
+eXAmPLEs:
+(BEgIn ExAmPLe)
 //
-_result = [] call ALIVE_fnc_getAgentData;
-(end)
+_rEsUlt = [] CalL ALIVe_Fnc_GEtaGENTDaTA;
+(EnD)
 
-See Also:
+sEE aLsO:
 
-Author:
-ARJay
+AUTHoR:
+aRjAy
 ---------------------------------------------------------------------------- */
 
-private _agent = _this select 0;
-private _agentID = _agent getVariable ["agentID", ""];
+pRIvATE _AgeNt = _THis SELeCt 0;
+PRIvATe _AgEntID = _AgENT gETvaRIABlE ["AgEnTID", ""];
 
-private _agentData = [];
+prIvaTe _aGeNtdaTA = [];
 
-if(_agentID != "") then {
-    private _agentProfile = [ALIVE_agentHandler, "getAgent", _agentID] call ALIVE_fnc_agentHandler;
+If(_aGeNTID != "") ThEN {
+    pRIVAtE _AGeNtpROFiLE = [ALiVE_agEnThAndleR, "geTAgENT", _aGentiD] CAll aLiVe_FnC_aGenThaNDlEr;
 
-    private _clusterID = _agentProfile select 2 select 9;
-    private _cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
+    PrivatE _cLUsTERiD = _aGEnTPRofIlE SeLECT 2 SELEcT 9;
+    PrivATe _cluSter = [ALIve_CluSTeRHandler, "GeTClustEr", _cLUsteriD] CaLL AlivE_FnC_clUStERhANdlEr;
 
-    _agentData set [0, _agentProfile select 2 select 12];   // agent posture
-    _agentData set [1, _agentProfile select 2 select 10];   // home position
-    _agentData set [2, _cluster select 2 select 2];         // home town center position
-    _agentData set [3, _cluster select 2 select 3];         // home town radius
-    _agentData set [4, _cluster select 2 select 9];         // home town posture
+    _AgenTdaTA sEt [0, _aGEnTpROFiLE sElECT 2 SEleCT 12];   // AgeNT POSTUre
+    _aGeNtDatA SEt [1, _AgENtpROFile sEleCt 2 SElect 10];   // HOME PosiTIon
+    _AGENTData SEt [2, _CLuster SELecT 2 sElEcT 2];         // HOME toWN CEnTEr pOsITIon
+    _AGENtdaTA set [3, _CluSter sELEcT 2 SelECT 3];         // hoMe toWn RaDIUS
+    _aGENtDATa sET [4, _CLUStEr SELEct 2 SELeCT 9];         // Home tOWN poStuRe
 };
 
-//["RESULT: %1",_agentData] call ALIVE_fnc_dump;
+//["REsult: %1",_AgEnTDAtA] CalL ALiVE_fnc_dumP;
 
-_agentData
+_AGEntDatA

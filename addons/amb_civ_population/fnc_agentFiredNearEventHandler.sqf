@@ -1,72 +1,72 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(agentFiredNearEventHandler);
+#INCLUDe "\x\ALIve\ADDoNS\AMB_civ_pOpUlaTIOn\script_cOMpONenT.hpp"
+ScRIpT(AGENtfIReDneaREVEnthAnDler);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_agentFiredNearEventHandler
+fUNctIOn: AliVe_Fnc_AGentfIrEDneareVenThAndLeR
 
-Description:
-FiredNear event handler for agent units
+descRIPtION:
+FiReDNEAR evEnt hAndLeR For aGeNt UNITS
 
-Parameters:
+paRAmeTERs:
 
-Returns:
+RETURns:
 
-Examples:
-(begin example)
-_eventID = _agent addEventHandler["FiredNear", ALIVE_fnc_agentFiredNearEventHandler];
-(end)
+exampLes:
+(beGin EXaMPlE)
+_EveNTiD = _AgENt addEventhAndlER["FIRedNeAr", ALIVe_FNc_AGeNtfIreDnEarevenTHAndLEr];
+(END)
 
-See Also:
+seE ALsO:
 
-Author:
-Tupolov
+aUtHOr:
+TUPOLOv
 ---------------------------------------------------------------------------- */
 
-params ["_unit", "_firer", "_distance"];
+PaRAMS ["_unit", "_FiReR", "_DIStANCE"];
 
-if (side _firer == civilian) exitWith {};
+If (SiDE _FIRER == Civilian) eXitWITH {};
 
-private _agentID = _unit getVariable "agentID";
-private _agent = [ALIVE_agentHandler, "getAgent", _agentID] call ALIVE_fnc_agentHandler;
+privatE _aGentiD = _unIt gETVArIAbLe "AgENTiD";
+pRiVaTe _AGENT = [aLIVe_AgEntHANdlER, "GETaGeNt", _AGEnTiD] CAll aLive_FnC_aGENTHAndlER;
 
-if (_distance < 50) then {
+If (_dIsTAncE < 50) TheN {
 
-	// Play panic animation
-	private _anim = "ApanPercMstpSnonWnonDnon_ApanPknlMstpSnonWnonDnon";
+	// play paNIc aNiMaTION
+	pRIvate _AnIm = "ApANPerCMStPSnonwnoNdnoN_apanpkNlMstpSnOnwNONdNON";
 
-	if (random 1 > 0.4 && !(_unit getVariable ["isFleeing", false])) then {
-		[_unit, _anim] call ALIVE_fnc_switchMove;
+	If (raNdoM 1 > 0.4 && !(_UniT GeTVaRiaBLe ["IsFleeiNG", faLSe])) then {
+		[_Unit, _anim] cALl aliVe_fnc_SwITchmOVe;
 	};
 
-	// Play panic noise
-	if (random 1 > 0.3) then {
-		private _panicNoise = selectRandom ALiVE_CivPop_PanicNoises;
-		if (isMultiplayer) then {
-			[_unit, _panicNoise] remoteExec ["say3D"];
-		} else {
-			_unit say3D _panicNoise;
+	// PlAy PanIc nOise
+	If (randOm 1 > 0.3) thEn {
+		PRIVATe _PAnIcnOISE = SelecTrandOM ALIVE_CiVpoP_paNICNOIsEs;
+		IF (ismULTIPlayeR) tHEn {
+			[_uNiT, _paNicnOisE] remotEexEC ["saY3d"];
+		} eLsE {
+			_unIT say3d _pAnIcNOISe;
 		};
 	};
 
-	// Get them to run
-	_unit setSpeedMode "FULL";
+	// GeT tHEm to RUn
+	_uNIT seTSpEEdmODE "FUlL";
 };
 
-if (_distance < 25 && !(_unit getVariable ["alreadyPissedOff", false])) then {
+If (_DistaNCE < 25 && !(_Unit GETVAriABLe ["aLreaDYPISSEdoFf", False])) TheN {
 
-	// Hostility will increase towards firer faction
-	[position _unit,[str(side _firer)], +2] call ALiVE_fnc_updateSectorHostility;
+	// HosTILiTY wiLL inCREaSe toWarDS FIrEr faCTIon
+	[POSITion _unIt,[StR(SIdE _fIreR)], +2] CALl aliVe_Fnc_UpdAtESectORHOStIlitY;
 
-	// They can only be angry once
-	_unit setVariable ["alreadyPissedOff", true, false];
+	// They CAN oNLY be AngrY oNCE
+	_UNIT setvaRIAblE ["alREadyPIssEDOfF", TRue, fAlsE];
 };
 
-if (isnil "_agent" || {!isServer}) exitwith {};
+iF (isnIl "_agENT" || {!iSseRver}) ExitWith {};
 
-if (_distance < 50 && !(_unit getVariable ["isFleeing", false])) then {
-	// Stop current command & set them to flee
+IF (_DIstaNce < 50 && !(_unIt getvARIaBle ["iSFlEEiNg", fALSe])) THEn {
+	// sTOP cUrreNt coMmAnd & set ThEm To fleE
 
-	[_agent, "setActiveCommand", ["ALIVE_fnc_cc_flee", "managed", [10,20]]] call ALIVE_fnc_civilianAgent;
+	[_aGenT, "setacTiVECOmmand", ["ALIVE_fnc_cC_FlEE", "maNAGED", [10,20]]] cAlL alIVe_FnC_cIviLiAnAGenT;
 
-	_unit setVariable ["isFleeing", true, false];
+	_UNiT sETvarIABle ["ISflEEIng", tRuE, FaLse];
 };

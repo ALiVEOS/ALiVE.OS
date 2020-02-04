@@ -1,37 +1,37 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(agentGetInEventHandler);
+#inclUDe "\x\AliVe\aDDONs\aMB_CIV_POpulatIoN\sCRIpt_COmPOnENT.hpP"
+sCrIpt(agenTgeTInEvENtHaNdler);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_agentGetInEventHandler
+functiON: aLIve_fnc_agentgeTinEventHandLEr
 
-Description:
-Get In event handler for agent units
+deScRipTiOn:
+GET IN EVeNt HaNdleR FoR AGent uniTs
 
-Parameters:
+PaRamEtERS:
 
-Returns:
+rETuRNs:
 
-Examples:
-(begin example)
-_eventID = _agent addEventHandler["getIn", ALIVE_fnc_agentGetInEventHandler];
-(end)
+eXaMPleS:
+(beGIN ExaMPlE)
+_eveNtid = _AgEnT AdDeVEnTHANdLeR["getiN", aLIVE_fnc_AGEntgEtINEvENTHaNdler];
+(enD)
 
-See Also:
+SEE AlSo:
 
-Author:
-ARJay
+aUThoR:
+ARjAy
 ---------------------------------------------------------------------------- */
 
-private _unit = _this select 0;
-private _getInUnit = _this select 2;
+privatE _UNIt = _THis sEleCT 0;
+prIVATE _GeTINUnIT = _thIS SElEct 2;
 
-if(isPlayer _getInUnit) then {
+iF(iSpLaYer _geTInUNiT) THEN {
 
-    private _agentID = _unit getVariable "agentID";
-    private _agent = [ALIVE_agentHandler, "getAgent", _agentID] call ALIVE_fnc_agentHandler;
+    PrivATe _AgeNtid = _unIT geTVaRiABle "agEnTId";
+    pRiVAtE _ageNT = [ALIvE_AgEnThanDLeR, "GETAGent", _agenTid] CaLl AlIVE_Fnc_AGEnTHandlER;
 
-    if (isnil "_agent") exitwith {};
+    if (isnIL "_AgEnt") exITwiTH {};
 
-    [ALIVE_agentHandler, "unregisterAgent", _agent] call ALIVE_fnc_agentHandler;
+    [ALIvE_aGentHAnDLeR, "UNregiSTeragEnt", _aGenT] CAlL alIvE_Fnc_aGeNTHaNdLer;
 
 };

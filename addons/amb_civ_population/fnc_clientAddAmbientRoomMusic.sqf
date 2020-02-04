@@ -1,32 +1,32 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(clientAddAmbientRoomMusic);
+#INClUDE "\x\ALIvE\AdDONs\AMb_Civ_popULAtioN\scRipT_CoMPoNEnT.hPP"
+sCrIpt(CLIeNTADDAMBientRooMmuSIC);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_clientAddAmbientRoomMusic
+FUnctION: ALIve_fNc_cliENTaDDamBIEnTROOMmUSiC
 
-Description:
-Add ambient room music on a client
+dEScription:
+aDD ambiENT ROOM mUsIC oN a CLiENT
 
-Parameters:
+pARAMEtERS:
 
-Object - building to add light to
+oBjEcT - BuildiNg TO Add lIGHT TO
 
-Returns:
+reTUrnS:
 
-Examples:
-(begin example)
-_light = [_building, _light, _brightness, _colour] call ALIVE_fnc_clientAddAmbientRoomMusic
-(end)
+EXAmPLEs:
+(bEgiN exAmplE)
+_LIGht = [_BUIldiNg, _LIGHt, _BRiGHTNess, _coLour] cALL aLIvE_Fnc_cliEntAddAmBIENTroOMmUsiC
+(enD)
 
-See Also:
+See AlsO:
 
-Author:
-ARJay
+aUtHOR:
+arjAY
 ---------------------------------------------------------------------------- */
 
-params ["_building","_source","_track"];
+paraMs ["_bUILDiNG","_SOURCe","_TrACK"];
 
-_source attachTo [_building,[1,1,1]];
-hideObjectGlobal _source;
+_source aTtacHto [_BUIldiNg,[1,1,1]];
+HIdeoBJeCtgLOBal _SouRCE;
 
-_source say3d _track;
+_SouRCe SaY3d _tRAck;

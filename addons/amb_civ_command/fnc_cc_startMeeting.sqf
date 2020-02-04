@@ -1,112 +1,112 @@
-#include "\x\alive\addons\amb_civ_command\script_component.hpp"
-SCRIPT(cc_startMeeting);
+#INclUDe "\x\ALive\ADdoNS\aMB_CIv_COMMand\sCRIpT_COMpOnEnt.hPP"
+SCripT(CC_StARtMeEting);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_cc_startMeeting
+FunCtIoN: AlivE_FnC_cC_stARtmEetING
 
-Description:
-Start meeting command for civilians
+DEsCrIptiOn:
+sTaRT MeETIng commaND foR cIVilIAnS
 
-Parameters:
-Profile - profile
-Args - array
+PARaMEteRS:
+pRofIle - ProfilE
+aRGs - ArrAY
 
-Returns:
+REtuRns:
 
-Examples:
-(begin example)
+EXaMpLEs:
+(BEGIn exampLe)
 //
-_result = [_agent, []] call ALIVE_fnc_cc_startMeeting;
-(end)
+_reSult = [_aGent, []] cAll ALIVE_Fnc_CC_STartMeetinG;
+(enD)
 
-See Also:
+SEE aLso:
 
-Author:
-ARJay
+aUTHOr:
+arJAY
 ---------------------------------------------------------------------------- */
 
-params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
+pARAMs ["_AgeNTdAta","_COmmandSTAtE","_cOMMaNDNAME","_aRGs","_staTE","_debug"];
 
-private _agentID = _agentData select 2 select 3;
-private _agent = _agentData select 2 select 5;
+PRIvaTe _aGENTId = _aGeNtdAta SelecT 2 sEleCT 3;
+prIVAte _agEnt = _AgENtdaTa seLECt 2 seLEct 5;
 
-private _nextState = _state;
-private _nextStateArgs = [];
+PrIVate _nexTSTaTE = _sTAtE;
+prIVAtE _nExtsTaTeaRgS = [];
 
 
-// DEBUG -------------------------------------------------------------------------------------
-if(_debug) then {
-    ["ALiVE Managed Script Command - [%1] called args: %2",_agentID,_args] call ALIVE_fnc_dump;
+// dEBug -------------------------------------------------------------------------------------
+If(_Debug) THen {
+    ["ALIVe maNagEd SCrIpt cOmMaNd - [%1] cALled aRGs: %2",_agENtiD,_ARgS] CaLL AliVE_fNC_dUMP;
 };
-// DEBUG -------------------------------------------------------------------------------------
+// DebuG -------------------------------------------------------------------------------------
 
-switch (_state) do {
+sWitcH (_stATE) Do {
 
-    case "init":{
+    CasE "iNit":{
 
-        // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        // DEBUg -------------------------------------------------------------------------------------
+        IF(_DeBUG) tHEN {
+            ["aLIVE mANAged sCRipT cOMMAnD - [%1] sTATe: %2",_agentId,_StAtE] Call alIve_fnc_duMp;
         };
-        // DEBUG -------------------------------------------------------------------------------------
+        // deBUg -------------------------------------------------------------------------------------
 
-        _agent setVariable ["ALIVE_agentBusy", true, false];
+        _AGeNt setVariAbLe ["aLivE_AgEntbuSy", trUe, FAlse];
 
-        private _agents = [ALIVE_agentHandler, "getActive"] call ALIVE_fnc_agentHandler;
-        _agents = _agents select 2;
+        PRiVaTE _agEntS = [alIVe_aGEnThandler, "GETACtiVe"] CalL aLiVE_fNc_aGEntHANDLeR;
+        _agenTS = _agEnTs SELEcT 2;
 
-        if(count _agents > 0) then {
-            private _partner = selectRandom _agents;
-            private _partnerAgent = _partner select 2 select 5;
+        iF(CoUnT _agEnts > 0) tHen {
+            prIVatE _pArTNER = sElECtrandOM _aGents;
+            prIVatE _PARTnerAGeNT = _partNer SELECT 2 SelecT 5;
 
-            if(!(_partnerAgent getVariable ["ALIVE_agentMeetingRequested",false]) && {!(_partnerAgent getVariable ["ALIVE_agentGatheringRequested",false])}) then {
-                _partnerAgent setVariable ["ALIVE_agentMeetingTarget", _agent, false];
-                _partnerAgent setVariable ["ALIVE_agentMeetingRequested", true, false];
+            if(!(_PArtnErAgEnT geTvARiAblE ["alivE_ageNtMeEtingreQUesteD",FAlsE]) && {!(_PArTnerAgENT gETvaRiablE ["ALIvE_AgENTGATheriNGREqUeSTED",FalsE])}) Then {
+                _PaRtnEraGENT SEtVariaBle ["alIVE_agentMEetInGTARgET", _ageNt, FaLsE];
+                _paRTNEraGENT sETVArIable ["AlIvE_agEnTMeEtINgreQueSTeD", trUe, False];
 
-                _nextState = "wait";
-                [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-            }else{
-                _nextState = "done";
-                [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+                _nexTstATE = "waiT";
+                [_COmmANDsTAtE, _AgenTId, [_AGENtDatA, [_ComMANdnAMe,"MaNAGED",_ARgS,_NExtStAte,_NexTstatEargs]]] cAll aLive_Fnc_hAShSet;
+            }Else{
+                _NExTSTATE = "dOnE";
+                [_cOmmanDSTAte, _AGEntID, [_AgeNTdata, [_COMMaNdnAme,"mANaGEd",_aRgS,_NEXtSTatE,_NExTstatEARgs]]] cAlL aLIve_Fnc_HAshset;
             };
-        }else{
-            _nextState = "done";
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+        }ElSe{
+            _NEXtState = "DoNE";
+            [_cOmmaNDsTAte, _agEntid, [_aGEntdatA, [_COMmanDnamE,"maNAGED",_aRgS,_nextsTAtE,_NEXTstAtEaRgs]]] CAlL AlIvE_fNC_hAsHset;
         };
 
     };
 
-    case "wait":{
+    CaSE "WaIT":{
 
         // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        If(_dEbuG) TheN {
+            ["aliVE ManAGeD sCrIpt cOmmaNd - [%1] statE: %2",_aGENtID,_StAte] cALL AlIve_fnC_Dump;
         };
-        // DEBUG -------------------------------------------------------------------------------------
+        // deBug -------------------------------------------------------------------------------------
 
-        if(_agent getVariable ["ALIVE_agentMeetingComplete",false]) then {
-            _agent setVariable ["ALIVE_agentMeetingComplete", nil, false];
-            _agent playMove "";
-            _nextState = "done";
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+        if(_aGEnT GetvaRiabLe ["aliVe_AgenTMeetingCoMpLetE",fAlSe]) ThEN {
+            _AGent SEtVariablE ["ALIVE_agENtMEetINGcoMpLEtE", nil, fAlse];
+            _AgenT PlayMove "";
+            _nExtsTATE = "dONe";
+            [_CommaNDStaTE, _AgenTID, [_agEnTData, [_coMmaNdnaME,"maNAGED",_ARGs,_NextSTAtE,_NExtStateaRGS]]] cALL aLivE_Fnc_HasHSet;
         };
 
     };
 
-    case "done":{
+    caSe "DoNe":{
 
-        // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        // deBUg -------------------------------------------------------------------------------------
+        iF(_DEBUG) tHen {
+            ["alivE manAgED ScRIpt COMMaNd - [%1] StaTE: %2",_AgENtId,_STate] CALl aLIve_fnC_dumP;
         };
-        // DEBUG -------------------------------------------------------------------------------------
+        // DeBuG -------------------------------------------------------------------------------------
 
-        _agent setVariable ["ALIVE_agentBusy", false, false];
+        _ageNT SETVaRIAblE ["alIve_aGenTbUsY", falSe, falSE];
 
-        _nextState = "complete";
-        _nextStateArgs = [];
+        _NEXtStATE = "COmpLetE";
+        _NexTstATeARGS = [];
 
-        [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+        [_COMmANdSTate, _AGEntiD, [_ageNtDATa, [_comMANdnAme,"MAnageD",_arGS,_NexTStAte,_NExtsTateARGs]]] cAll aLive_fnC_HaShsEt;
 
     };
 

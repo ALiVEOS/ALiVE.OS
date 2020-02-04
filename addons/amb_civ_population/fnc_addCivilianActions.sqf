@@ -1,212 +1,212 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(addCivilianActions);
+#IncLUDe "\x\aLIVe\AdDons\AMB_CIv_pOPULATIoN\ScRiPT_CoMPoNent.hpp"
+sCRIPt(addCIviliANAcTioNs);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_addCivilianActions
+FunctIoN: alivE_Fnc_aDdcIviLIaNaCtIOns
 
-Description:
-Adds civilian actions
+DEsCRIptION:
+adDS cIvilIan aCTIONs
 
-Parameters:
+PARaMETers:
 
-Returns:
-Bool - true
+reTurns:
+BOOL - TRUe
 
-Examples:
-(begin example)
+eXampLEs:
+(BeGiN EXaMpLe)
 //
-_result = _unit call ALIVE_fnc_addCivilianActions;
-(end)
+_rESUlT = _unit CAll alIvE_fNc_aDdcIvIliaNACTIoNS;
+(End)
 
-See Also:
+sEE aLsO:
 
-Author:
-Highhead
+AutHOr:
+HighhEaD
 ---------------------------------------------------------------------------- */
 
-private _object = _this select 0;
+pRiVaTE _oBjecT = _This SELECT 0;
 
-if (side _object != CIVILIAN || {isnil QGVAR(ROLES_DISABLED)} || {GVAR(ROLES_DISABLED)}) exitWith {}; // only add actions if civilian roles module field != none
+iF (sIdE _OBJEcT != cIviLiaN || {isNIl qgVar(ROLEs_DISabLED)} || {gvAr(ROlES_DISabLEd)}) EXiTwIth {}; // OnLy adD aCtions IF CivILiAN Roles MODuLe fIEld != nonE
 
-private _role = "townelder";
-private _text = format["Talk to %1",_role];
-private _params = [];
-private _code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; [_object,_caller] call ALiVE_fnc_SelectRoleAction};
-private _condition = "alive _target" + "&&" + format["_target getvariable [%1,false]",str(_role)];
+PRIvATE _roLe = "TOWneLDER";
+PrIvatE _tEXT = fOrMat["TaLk tO %1",_rolE];
+PriVaTE _PARAMs = [];
+PRIvaTe _code = {_ObjEcT = _tHiS sElecT 0; _CaLler = _ThiS seLeCT 1; _paRams = _ThiS SELect 3; [_oBjecT,_CAlleR] calL aLIve_FNC_SELEcTrOlEACTion};
+prIvATE _ConDitIOn = "aLive _TArGet" + "&&" + FoRMAt["_TArgeT GETVAriAblE [%1,false]",Str(_roLe)];
 
-private _id = _object addAction [
-    _text,
-    _code,
-    _params,
+PrivATE _Id = _OBJect AddACtIoN [
+    _teXt,
+    _COdE,
+    _pAramS,
     1,
-    false,
-    true,
+    FALsE,
+    TrUE,
     "",
-    _condition,
+    _CONditION,
     5
 ];
 
-_role = "major";
-_text = format["Talk to %1",_role];
-_params = [];
-_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; [_object,_caller] call ALiVE_fnc_SelectRoleAction};
-_condition = "alive _target" + "&&" + format["_target getvariable [%1,false]",str(_role)];
+_rOLE = "mAjoR";
+_teXT = FoRMat["taLk To %1",_ROLE];
+_paRAMs = [];
+_CODE = {_ObjEct = _ThIs SeleCT 0; _cAllER = _tHIS SElECT 1; _pArAMS = _THIs sELEct 3; [_oBjECt,_CalLeR] Call aLivE_Fnc_sELeCtROleactioN};
+_CoNdItIoN = "AliVE _tArGET" + "&&" + fOrMAt["_taRGEt geTVArIABle [%1,faLse]",sTR(_RoLe)];
 
-_id = _object addAction [
-    _text,
-    _code,
-    _params,
+_ID = _objECt aDdActIOn [
+    _TExt,
+    _coDE,
+    _PARams,
     1,
-    false,
-    true,
+    FAlSE,
+    TRUe,
     "",
-    _condition,
+    _COndiTioN,
     5
 ];
 
-_role = "priest";
-_text = format["Talk to %1",_role];
-_params = [];
-_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; [_object,_caller] call ALiVE_fnc_SelectRoleAction};
-_condition = "alive _target" + "&&" + format["_target getvariable [%1,false]",str(_role)];
+_ROLE = "prIest";
+_tEXt = fOrmat["TaLk to %1",_rolE];
+_pARaMs = [];
+_codE = {_objecT = _THis SelEcT 0; _CalLer = _tHiS SELEcT 1; _ParaMS = _tHIs seLECt 3; [_oBJeCt,_CAllER] CalL AliVE_FNc_selEctroLEaCTiON};
+_CoNDITion = "AlIVE _TargeT" + "&&" + fORmaT["_TARgET gETvArIabLE [%1,FaLSe]",str(_ROlE)];
 
-_id = _object addAction [
-    _text,
-    _code,
-    _params,
+_iD = _OBJEcT ADdACtiOn [
+    _tExt,
+    _COde,
+    _PARAMS,
     1,
-    false,
-    true,
+    FAlSE,
+    trUe,
     "",
-    _condition,
+    _CoNDItIoN,
     5
 ];
 
-_role = "muezzin";
-_text = format["Talk to %1",_role];
-_params = [];
-_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; [_object,_caller] call ALiVE_fnc_SelectRoleAction};
-_condition = "alive _target" + "&&" + format["_target getvariable [%1,false]",str(_role)];
+_Role = "MueZZiN";
+_texT = foRmaT["TAlk TO %1",_Role];
+_ParaMS = [];
+_CODe = {_objeCt = _thIS sELECt 0; _CAlLEr = _ThIS sElEct 1; _PaRaMs = _thIS SEleCt 3; [_obJeCt,_CALler] CaLl alIve_FNc_sELECTRoleAcTion};
+_CoNDition = "AlIVe _TaRgET" + "&&" + fORMaT["_TaRGet GETvaRiABlE [%1,falSE]",Str(_RoLE)];
 
-_id = _object addAction [
-    _text,
-    _code,
-    _params,
+_Id = _OBjeCT addacTIoN [
+    _TexT,
+    _cODe,
+    _PaRams,
     1,
-    false,
-    true,
+    fALsE,
+    trUe,
     "",
-    _condition,
+    _COnDiTIoN,
     5
 ];
 
-_role = "politician";
-_text = format["Talk to %1",_role];
-_params = [];
-_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; [_object,_caller] call ALiVE_fnc_SelectRoleAction};
-_condition = "alive _target" + "&&" + format["_target getvariable [%1,false]",str(_role)];
+_RoLe = "POlItIciaN";
+_text = FoRmAt["Talk To %1",_rolE];
+_paRAmS = [];
+_CODe = {_ObJecT = _ThiS sElECt 0; _CAlLer = _thiS selECT 1; _pARaMs = _tHIS seLECT 3; [_oBJeCt,_CaLLEr] caLl aliVe_fNc_SeleCTroLEActION};
+_CoNditIon = "alIve _TarGeT" + "&&" + foRMaT["_tARGet geTvaRIabLe [%1,FalSE]",STr(_rolE)];
 
-_id = _object addAction [
-    _text,
-    _code,
-    _params,
+_ID = _OBJECT aDDACTION [
+    _TExt,
+    _CODe,
+    _PArAmS,
     1,
-    false,
-    true,
+    faLse,
+    TRuE,
     "",
-    _condition,
+    _cOnDiTIoN,
     5
 ];
 
-_text = "Detain";
-_params = [];
-_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; _group = group _object; [_object] joinsilent (group _caller); _object setvariable ['detained',true,true]; _group call ALiVE_fnc_DeleteGroupRemote};
-_condition = "alive _target" + "&&" + "!(_target getvariable ['detained',false])";
+_TEXt = "DeTaiN";
+_PaRAms = [];
+_Code = {_oBJEcT = _tHIs sELecT 0; _caller = _ThiS SeLECT 1; _PARAMS = _THiS sELECT 3; _GrOup = gRoup _oBjecT; [_oBjEct] JoiNsILENt (gRoup _CAlLER); _oBjeCT SEtvArIabLe ['detaINED',tRUE,truE]; _gROup cAll Alive_FNC_delEtEGROUpREmoTE};
+_cOndITIOn = "aLivE _TarGET" + "&&" + "!(_targET GetvARIABle ['deTAInED',fALSE])";
 
-_id = _object addAction [
-    _text,
-    _code,
-    _params,
+_Id = _ObjeCt AdDacTion [
+    _tEXT,
+    _CoDE,
+    _pARamS,
     1,
-    false,
-    true,
+    FAlSe,
+    TRUE,
     "",
-    _condition,
+    _CONDITiOn,
     5
 ];
 
-_text = "Arrest";
-_params = [];
-_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; _group = if (side (group _object) == Civilian) then {group _object} else {createGroup Civilian}; [_object] joinsilent _group; _object disableAI "PATH"};
-_condition = "alive _target" + "&&" + "(_target getvariable ['detained',false])";
+_TExt = "ARRESt";
+_Params = [];
+_coDE = {_ObJEct = _thIs SElecT 0; _CAlLeR = _thIs sElECT 1; _PArAmS = _tHIs sELEcT 3; _GROup = iF (siDE (GRoUP _objECT) == cIViLIan) THeN {GROuP _oBjeCT} else {creatEgrOUP CiVIlIAN}; [_objeCt] jOiNSILent _grOUP; _OBJECT dISaBleai "pATh"};
+_coNdiTion = "AlIve _targeT" + "&&" + "(_TArgeT GetVAriable ['DETAinED',FALsE])";
 
-_id = _object addAction [
-    _text,
-    _code,
-    _params,
+_ID = _OBjEct AddActION [
+    _TeXt,
+    _Code,
+    _ParAMs,
     1,
-    false,
-    true,
+    FaLSE,
+    True,
     "",
-    _condition,
+    _cONDiTIOn,
     5
 ];
 
-_text = "Release";
-_params = [];
-_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; _group = if (side (group _object) == Civilian) then {group _object} else {createGroup Civilian}; [_object] joinsilent _group; _object setvariable ['detained',false,true]; _object enableAI "PATH"};
+_TeXT = "reLEaSE";
+_paRAMS = [];
+_cOdE = {_obJECt = _tHIS SELeCT 0; _calleR = _THis selECt 1; _pARAMS = _THIS seLEcT 3; _GRoup = if (SidE (grOup _OBjecT) == CiviliaN) THEN {grOuP _objeCt} eLSe {createGroUP CIvIlIaN}; [_ObjECt] joINSiLENt _GRoUP; _oBJeCt sETvaRiAbLe ['deTAineD',false,TRue]; _ObJeCt EnABleAI "Path"};
 /*
-// Causes units to return to group leader and pile up there - #277)
-_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; _group = [ALIVE_civilianPopulationSystem, "civGroup"] call ALiVE_fnc_HashSet; [_object] joinsilent _group; _object setvariable ['detained',false,true]};
+// CaUSes UNItS To RetuRN to gROUP LEaDeR AND pile up thEre - #277)
+_cODE = {_oBjeCT = _thIs SelECt 0; _cALlEr = _THIs SelECT 1; _PAramS = _THis sELecT 3; _GrOup = [AlivE_cIvILiANpOPUlaTIOnSySteM, "cIVgRouP"] calL ALiVE_fnc_hasHSet; [_ObjECT] jOINSILeNt _GRoup; _ObjEcT SETvAriAbLe ['DEtAined',FalSE,TruE]};
 */
-_condition = "alive _target" + "&&" + "_target getvariable ['detained',false]";
+_coNdItIOn = "aLivE _tArgeT" + "&&" + "_taRgeT GeTvariabLe ['deTAinEd',FaLse]";
 
-_id = _object addAction [
+_iD = _oBJECt AdDaCtiOn [
     _text,
-    _code,
-    _params,
+    _coDe,
+    _paRaMS,
     1,
-    false,
-    true,
+    FalSE,
+    trUE,
     "",
-    _condition,
+    _cOnDITioN,
     5
 ];
 
-_text = "Search";
-_params = [];
-_code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; _caller action ["Gear", _object]};
-_condition = "alive _target";
+_TEXt = "SeaRCh";
+_PAramS = [];
+_COde = {_ObJeCt = _THiS sELecT 0; _CAllEr = _THIS selecT 1; _ParaMs = _THIS sElEcT 3; _CaLler aCTION ["geaR", _oBJECt]};
+_coNDItION = "ALivE _tarGEt";
 
-_id = _object addAction [
-    _text,
-    _code,
-    _params,
+_ID = _ObJecT AddacTiON [
+    _TexT,
+    _CODe,
+    _pARams,
     1,
-    false,
-    true,
+    fALSe,
+    tRue,
     "",
-    _condition,
+    _conDItiON,
     5
 ];
 
-if (random 1 > 0.9) then {
-    _text = "Gather Intel";
-    _params = [];
-    _code = {_object = _this select 0; _caller = _this select 1; _params = _this select 3; openmap true; [getposATL _object, 2000] call ALiVE_fnc_OPCOMToggleInstallations; _object setvariable ["intelGathered",true]};
-    _condition = "alive _target && {isnil {_target getvariable 'intelGathered'}}";
+IF (RaNDOm 1 > 0.9) tHEN {
+    _Text = "gaTher InteL";
+    _PaRAMs = [];
+    _CODe = {_ObJEct = _THIS SElECT 0; _CAlLER = _tHIS sELECt 1; _pAraMs = _ThIS SELECt 3; openmaP TRue; [gETpoSAtL _OBjECT, 2000] CAlL AlIvE_fnC_OpComtoGGLeINstallaTiOnS; _ObjECt sETvArIaBLE ["inTELgATherEd",trUe]};
+    _CoNdITIoN = "ALiVE _TArgET && {iSnIl {_taRgeT geTVARiabLe 'inTELgAtheReD'}}";
 
-    _id = _object addAction [
-        _text,
-        _code,
-        _params,
+    _Id = _object aDDActiON [
+        _TeXt,
+        _COde,
+        _PaRAMS,
         1,
-        false,
-        true,
+        FaLSE,
+        TruE,
         "",
-        _condition,
+        _CONdiTiON,
         5
     ];
 };
 
-true;
+TRue;

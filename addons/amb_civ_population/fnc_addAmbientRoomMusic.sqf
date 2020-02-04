@@ -1,71 +1,71 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(addAmbientRoomMusic);
+#iNclUDe "\x\aLive\addonS\AMB_CiV_pOpuLAtiON\sCRIPt_coMpOneNt.hPP"
+SCrIpT(aDdAMbIeNtroOMMusIc);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_addAmbientRoomMusic
+fUNCtIoN: AlIVe_Fnc_adDAMbIENTROoMmUSIc
 
-Description:
-Add ambient room msuic
+dEsCripTION:
+ADd aMbIenT ROOM MSuiC
 
-Parameters:
+pArameTeRs:
 
-Object - building to add music to.
+objecT - buILding to Add musIC tO.
 
-Returns:
+RetURns:
 
-Examples:
-(begin example)
-_light = [_building, _faction] call ALIVE_fnc_addAmbientRoomMusic
-(end)
+ExAMPlEs:
+(begIn EXaMPlE)
+_light = [_BUIldiNg, _fAcTIoN] cALL alivE_fnc_adDAmbieNTrooMMuSIc
+(enD)
 
-See Also:
+SEe alSo:
 
-Author:
-ARJay
+AuthOr:
+ArjaY
 ---------------------------------------------------------------------------- */
 
-params ["_building",["_faction","CIV"]];
+PAramS ["_bUIldiNg",["_FACTiOn","cIv"]];
 
-private _musicSource = "RoadCone_L_F" createVehicle position _building;
-_musicSource attachTo [_building,[1,1,1]];
-hideObjectGlobal _musicSource;
+PRiVaTE _MusICsouRce = "roaDcONe_L_F" CREaTEVehICLE pOSItiON _buIlDInG;
+_mUSICsOUrCE ATtachto [_BUildiNg,[1,1,1]];
+hIdEobJectGLobal _MUsIcsOURCe;
 
-[_building, _musicSource,_faction] spawn {
-    params ["_building","_musicSource","_faction"];
-    private _tracksPlayed = 1;
-    private _source = [ALIVE_civilianFactionHouseTracks, _faction, []] call ALIVE_fnc_hashGet;
-    if (count _source == 0) then {
-        _source = ALIVE_civilianHouseTracks;
+[_BuiLDING, _MuSIcsourCE,_FACTIon] spAwN {
+    parAMS ["_BuIlding","_mUSICsOuRce","_fActION"];
+    privAte _tRaCkspLAYeD = 1;
+    pRIVaTE _SourCe = [ALiVE_cIviLIAnfaCTIOnhoUsETRacKS, _FACTIoN, []] CAll AlivE_fNc_HaSHgeT;
+    If (COUnt _SoURCe == 0) theN {
+        _SOuRce = aLive_CIvIliANHoUsetracks;
     };
-    private _totalTracks = count (_source select 1);
+    PRiVate _toTAltRackS = cOuNt (_sOURce seLeCt 1);
 
-    while { (alive _musicSource) } do {
-        while { _tracksPlayed < _totalTracks } do {
-            private _trackName = selectRandom (_source select 1);
+    WhiLe { (aLiVe _MusicsOUrce) } dO {
+        WhILe { _tRACksPLAYeD < _toTaLtrAcks } do {
+            PriVaTe _tRAcknaME = seLECTRANdOM (_sOurCE SeleCt 1);
 
-            // Don't play night sounds during the day
-            if (_trackName in ALiVE_CivPop_NightSounds && daytime < 21 && dayTime > 3) then {
-                _trackName = "ALiVE_Civpop_Audio_19";
+            // DON'T pLAy niGHT soUNDS dURiNG THE DAY
+            IF (_TRacknAMe iN alIve_CIvpop_NiGhTsoUnDS && daytIME < 21 && dAYtiMe > 3) theN {
+                _tracknAMe = "Alive_civPOP_audiO_19";
             };
 
-            private _trackDuration = [_source, _trackName] call ALIVE_fnc_hashGet;
+            PRivAte _TrackdUrATioN = [_source, _TRaCknamE] caLl alIvE_FNC_HashGet;
 
-            if(isMultiplayer) then {
-                [_building, _musicSource, _trackName] remoteExec ["ALIVE_fnc_clientAddAmbientRoomMusic"];
+            If(iSMUlTipLayER) then {
+                [_BUiLdIng, _MusICSoURCE, _TRACknamE] remOTeexeC ["alivE_fnC_cliEntAdDAmbIenTROomMuSIC"];
 
-            }else{
-                _musicSource say3d _trackName;
+            }eLsE{
+                _musIcSoURcE saY3d _tRAcKname;
             };
 
-            sleep _trackDuration;
+            sleEp _TrAcKdURation;
 
-            _tracksPlayed = _tracksPlayed + 1;
+            _trackspLayeD = _tRacKsPlaYed + 1;
 
-            if not (alive _musicSource) exitWith {};
+            IF nOt (aLIVe _mUSiCSoURCe) EXItwitH {};
         };
 
-        sleep (random 10);
+        SLEep (rAnDoM 10);
     };
 };
 
-_musicSource
+_mUSICSOUrce

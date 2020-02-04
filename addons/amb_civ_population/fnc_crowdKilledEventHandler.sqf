@@ -1,58 +1,58 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(crowdKilledEventHandler);
+#iNcLUde "\x\aLiVe\ADDOnS\AMB_cIv_pOpULAtiON\scRIpt_cOMpOnEnt.hPP"
+ScRIpt(CrOwDKIlLedevenTHaNdLeR);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_crowdKilledEventHandler
+fUNCtIon: AlIve_fNc_CrowDkIlLedEvENThaNDLEr
 
-Description:
-Killed event handler for crowd units
+DEsCRiPtiOn:
+KIlLeD EvenT HANDlER fOr croWd uNITs
 
-Parameters:
+PAraMetERS:
 
-Returns:
+REtuRNS:
 
-Examples:
-(begin example)
-_eventID = _unit addEventHandler["Killed", ALIVE_fnc_crowdKilledEventHandler];
-(end)
+exaMpLES:
+(BEgiN eXAmPLe)
+_eVEnTid = _UnIt ADdEvenTHANDleR["kILLed", AlIve_FnC_CrowDkilledEveNThAnDleR];
+(enD)
 
-See Also:
+SeE alSo:
 
-Author:
-ARJay
+AUtHor:
+ARjaY
 ---------------------------------------------------------------------------- */
 
-params ["_unit","_killer"];
+PArAMs ["_uNIt","_KIlLER"];
 
-// Set the crowd system to stop spawning due to combat in the area
-private _crowdActivatorFSM = [ALIVE_civilianPopulationSystem, "crowd_FSM"] call ALiVE_fnc_HashGet;
-_crowdActivatorFSM setFSMVariable ["_noCombat",(time + 60)];
+// SET thE cRowD SysteM TO STOP SpaWninG DUe tO coMbat In the aREA
+privATE _CROwdActiVatORfSM = [aliVe_civiLiAnpoPulatIoNSYSTeM, "CRoWd_FsM"] cALL aLivE_FnC_HaShget;
+_CROwdaCTivATOrfsm sEtfsMvAriABlE ["_noCoMBAt",(tIme + 60)];
 
-[_unit,""] call ALIVE_fnc_switchMove;
+[_UNIT,""] Call ALIve_Fnc_sWITChMOvE;
 
-private _killerSide = str(side (group _killer));
+prIvatE _kiLLerSIde = str(side (groUp _KIlLeR));
 
-// Hostility will increase towards killer's faction
+// HoSTilITY wILL iNcreASe tOwArds KILlER'S faCtIoN
 
-// log event
-if !(isNil "_unit") then {
-	private _position = getPosASL _unit;
-	private _faction = faction _unit;
-	private _side = side _unit;
+// lOg Event
+If !(iSNIl "_UNit") TheN {
+	pRivATE _POSiTION = gETposasL _uNIT;
+	prIVatE _FAcTIOn = facTIOn _UNIt;
+	privatE _SIDE = sIDE _unit;
 
-	private _event = ['AGENT_KILLED', [_position,_faction,_side,_killerSide],"Agent"] call ALIVE_fnc_event;
-	private _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
-} else {
-	[position _unit,[_killerSide], +10] call ALiVE_fnc_updateSectorHostility;
+	private _evENt = ['AGENT_KILLEd', [_PoSiTiON,_fActIOn,_SiDe,_KIlLersIde],"agent"] cALl ALivE_fnc_EVeNT;
+	PRIvATE _EVENTId = [AlIVe_eVenTLOg, "aDdEVeNT",_EvEnt] caLl ALiVe_fNc_EVEntlOg;
+} eLse {
+	[pOsITiOn _unit,[_kiLlerSide], +10] cALl aLivE_Fnc_updatEsECTORHostILIty;
 };
 
-// Make any crowds nearby flee
-if !(isNil "_unit") then {
-	private _nearCivs = [position _unit, 100, civilian] call ALIVE_fnc_getSideManNear;
+// MAKE aNY CroWdS nEArby FlEe
+if !(IsNIl "_UNit") tHEN {
+	pRivAtE _nEARcIVs = [pOsiTiON _unIt, 100, CiVIliAn] calL AliVE_fnC_gETSidEmAnnear;
 	{
-		private _isCrowdCiv = (_x getVariable ["ALIVE_CIV_ACTION",false]) isEqualType "";
-		if (_isCrowdCiv) then {
-			[_x, _killer, 50] call ALiVE_fnc_crowdFiredNearEventHandler;
+		priVate _ISCroWdcIv = (_x GEtvaRiablE ["alivE_Civ_ACtIoN",FAlSE]) iSEQuaLtYpe "";
+		IF (_IsCROWDcIv) then {
+			[_X, _kIllER, 50] cAlL alIVE_Fnc_CRowdFiRedneaREVENtHaNDler;
 		};
-	} foreach _nearCivs;
+	} FOrEach _nEARciVs;
 };

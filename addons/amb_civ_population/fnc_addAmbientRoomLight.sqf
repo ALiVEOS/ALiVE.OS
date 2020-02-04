@@ -1,46 +1,46 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(addAmbientRoomLight);
+#inCLUDE "\x\aliVe\aDDons\AMb_cIv_poPULatioN\scRipT_cOmpOnEnt.hpP"
+SCriPT(aDDAMbIeNTrooMLigHt);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_addAmbientRoomLight
+FunctIoN: AlIVe_fNC_ADDAMbiEntROoMLIGHt
 
-Description:
-Add ambient room light
+DeScRIpTion:
+ADD ambiEnt RoOm LiGhT
 
-Parameters:
+pARamEtERs:
 
-Object - building to add light to
+OBject - builDiNG tO ADD lIGHt to
 
-Returns:
+rETurnS:
 
-Examples:
-(begin example)
-_light = [_building] call ALIVE_fnc_addAmbientRoomLight
-(end)
+EXAMpLeS:
+(BeGIn eXaMPlE)
+_LIgHT = [_bUIlDIng] cAll ALiVe_Fnc_aDDamBIENTrooMLIGht
+(END)
 
-See Also:
+SeE ALso:
 
-Author:
-ARJay
+aUTHOr:
+arjaY
 ---------------------------------------------------------------------------- */
 
-private _building = _this select 0;
+priVATe _bUildING = _This SelECt 0;
 
-private _colours = [[255,217,66],[255,162,41],[221,219,206]];
-private _colour = _colours select (random((count _colours)-1));
-private _brightness = random 10 / 100;
+pRivaTe _colouRS = [[255,217,66],[255,162,41],[221,219,206]];
+pRivAte _colOuR = _COlOURS seLeCT (Random((CouNT _coLOurs)-1));
+prIvATE _briGhTnESs = ranDom 10 / 100;
 
-private _light = "#lightpoint" createVehicle getPos _building;
+pRIVATe _LiGHT = "#lIgHtPoINT" CrEAteVeHiCLE GEtPOs _bUIlDinG;
 
-if(isMultiplayer) then
+IF(ISmULtIPLAyer) ThEn
 {
-    [_building, _light, _brightness, _colour] remoteExec ["ALIVE_fnc_clientAddAmbientRoomLight"];
+    [_bUIlDiNg, _LiGHt, _bRIghTnESS, _coLoUR] REMoTEEXeC ["aLivE_FnC_cLiEntaDdaMBIenTRooMliGht"];
 }
-else
+elSe
 {
-    _light setLightBrightness _brightness;
-    _light setLightColor _colour;
-    _light lightAttachObject [_building, [1,1,1]];
+    _LIght SetligHtBRiGhtnEss _BrigHtnEss;
+    _lIGht seTlIgHTcOLOR _colOUr;
+    _LIght lIghTaTtacHOBJEct [_BuILDING, [1,1,1]];
 };
 
-_light
+_LiGhT

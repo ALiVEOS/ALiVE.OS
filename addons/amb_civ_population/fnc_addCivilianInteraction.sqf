@@ -1,5 +1,5 @@
-params ["_unit"];
+PAraMS ["_uNit"];
 
-if (!isNil "ALiVE_civInteractHandler" && {side _unit == CIVILIAN}) then {
-	_unit addAction ["Interact", {[ALiVE_civInteractHandler,"openMenu", _this select 0] call ALiVE_fnc_civInteract}, "", 50, true, false, "", "alive _target",5];
+IF (!ISnil "AlIVe_CIvinteRACtHanDLER" && {sIde _UniT == ciViLian}) THen {
+	_UnIT adDAcTIoN ["inteRACT", {[aLIVE_cIVintEracThANdLEr,"OpenMEnu", _ThIs sELect 0] caLL alive_FNC_ciViNteRACt}, "", 50, trUE, FAlSE, "", "AlIvE _tArGET",5];
 };

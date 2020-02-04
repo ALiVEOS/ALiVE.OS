@@ -1,171 +1,171 @@
-#include "\x\alive\addons\amb_civ_command\script_component.hpp"
-SCRIPT(cc_housework);
+#InclUdE "\x\ALivE\AdDoNS\amb_cIV_CoMmAnd\sCRIPt_compOnENT.HpP"
+sCRiPT(cc_hoUSEwORK);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_cc_housework
+fuNcTiOn: alIVe_fnc_cC_houSEwork
 
-Description:
-Housework command for agents
+desCRIPtION:
+HOuSEWorK COMmAnd FOr aGENtS
 
-Parameters:
-Profile - profile
-Args - array
+PAraMEteRS:
+ProFilE - proFiLE
+aRGS - ARRAY
 
-Returns:
+rETUrnS:
 
-Examples:
-(begin example)
+ExAMplES:
+(BEgIn ExAMpLE)
 //
-_result = [_agent, []] call ALIVE_fnc_cc_housework;
-(end)
+_reSULt = [_AGent, []] cALL Alive_fNC_cc_hoUsEwORk;
+(End)
 
-See Also:
+SEe ALSo:
 
-Author:
-ARJay
+aUTHor:
+aRJaY
 ---------------------------------------------------------------------------- */
 
-params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
+pARaMS ["_AGenTDaTA","_cOmmAndsTaTe","_COMmAnDnAMe","_arGs","_State","_deBUg"];
 
-private _agentID = _agentData select 2 select 3;
-private _agent = _agentData select 2 select 5;
+PRIvaTe _AGenTID = _AGENTdaTa sElect 2 seLEct 3;
+PriVate _AGENt = _AgENTdAtA SelEcT 2 SeLeCT 5;
 
-private _nextState = _state;
-private _nextStateArgs = [];
+PrIvaTe _NextSTATE = _STatE;
+PRIvATe _NeXTSTAtearGs = [];
 
 
-// DEBUG -------------------------------------------------------------------------------------
-if(_debug) then {
-    ["ALiVE Managed Script Command - [%1] called args: %2",_agentID,_args] call ALIVE_fnc_dump;
+// debug -------------------------------------------------------------------------------------
+if(_dEBuG) THEn {
+    ["AlIVE manAGed sCrIPT coMMAND - [%1] cAlLEd ARgs: %2",_agENtID,_arGs] CalL AlivE_FNc_dumP;
 };
-// DEBUG -------------------------------------------------------------------------------------
+// DEBug -------------------------------------------------------------------------------------
 
-switch (_state) do {
+switch (_stAte) Do {
 
-    case "init":{
+    CasE "INIT":{
 
-        // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        // deBUg -------------------------------------------------------------------------------------
+        iF(_dEbuG) theN {
+            ["aLIvE MAnAGEd SCriPT cOMmAnd - [%1] sTaTE: %2",_aGenTId,_sTATe] calL alive_Fnc_dUmP;
         };
-        // DEBUG -------------------------------------------------------------------------------------
+        // dEBug -------------------------------------------------------------------------------------
 
-        _agent setVariable ["ALIVE_agentBusy", true, false];
+        _aGeNT seTvAriablE ["alIVE_AGEnTbUSy", TRue, fAlsE];
 
-        private _homePosition = _agentData select 2 select 10;
+        PRiVATE _HoMEposiTioN = _AGentdaTA seLEct 2 SElECT 10;
 
-        private _positions = [_homePosition,5] call ALIVE_fnc_findIndoorHousePositions;
+        prIvATe _pOsItIoNS = [_HOmEPositiON,5] calL aLIVE_fNc_FINDInDOOrhousepOsiTions;
 
-        if(count _positions > 0) then {
-            private _position = _positions call BIS_fnc_arrayPop;
-            [_agent] call ALIVE_fnc_agentSelectSpeedMode;
-            [_agent, _position] call ALiVE_fnc_doMoveRemote;
+        If(CoUnt _poSitioNS > 0) then {
+            privatE _poSition = _poSitIONs caLL BiS_Fnc_aRRAYpOp;
+            [_aGENT] Call aLive_fNc_ageNTseLectSPeEDMOdE;
+            [_agent, _position] CaLL AlivE_fNC_DomoVeReMOte;
 
-            _nextState = "travel";
-            _nextStateArgs = [_positions];
+            _NeXtsTate = "TraVEl";
+            _nEXtsTATEARGS = [_posItIOnS];
 
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-        }else{
-            _nextState = "done";
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+            [_cOmmaNDstaTE, _ageNTId, [_ageNtdATa, [_cOmmaNdNaMe,"MAnAgEd",_Args,_neXtstaTE,_NEXtstATEArgs]]] cAlL alIvE_FnC_HAshseT;
+        }ElsE{
+            _neXtsTate = "doNe";
+            [_ComMaNdstate, _aGENtId, [_AGeNTdatA, [_CoMMAndNAME,"maNAgeD",_aRGs,_NextstATE,_NexTstAtEaRGs]]] cAll aLivE_fNc_hASHset;
         };
 
     };
 
-    case "travel":{
+    caSE "TRaVEl":{
 
-        // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        // DEBuG -------------------------------------------------------------------------------------
+        if(_DebUg) thEN {
+            ["alIvE MaNAgeD ScRiPt cOmMAnd - [%1] sTate: %2",_AGEntid,_sTaTe] CaLL AliVE_FNc_dUMp;
         };
-        // DEBUG -------------------------------------------------------------------------------------
+        // deBuG -------------------------------------------------------------------------------------
 
-        private _positions = _args select 0;
+        prIVaTE _PoSiTIOns = _ArGS sELECT 0;
 
-        if(_agent call ALiVE_fnc_unitReadyRemote) then {
+        If(_AgenT Call ALiVE_fnC_UNITreAdyrEmote) then {
 
-            private _dayState = (call ALIVE_fnc_getEnvironment) select 0;
+            pRivATe _dAystaTE = (caLL alIvE_fnC_getenVIronmeNt) seLEct 0;
 
-            if(_dayState == "EVENING" || {_dayState == "DAY"}) then {
+            If(_daysTatE == "EvenINg" || {_dAYStATe == "Day"}) TheN {
 
-                private _homePosition = _agentData select 2 select 10;
+                prIVatE _HOMEpOsitioN = _aGeNTDATa sElecT 2 SeleCT 10;
 
-                if([_homePosition, 80] call ALiVE_fnc_anyPlayersInRange > 0) then {
-                    if!(_agent getVariable ["ALIVE_agentHouseMusicOn",false]) then {
-                        private _building = _homePosition nearestObject "House";
-                        private _music = [_building, faction _agent] call ALIVE_fnc_addAmbientRoomMusic;
-                        _agent setVariable ["ALIVE_agentHouseMusic", _music, false];
-                        _agent setVariable ["ALIVE_agentHouseMusicOn", true, false];
+                if([_hOMePoSItion, 80] CAll aLIvE_FNC_anyPLaYeRSinraNGE > 0) TheN {
+                    if!(_AgeNt gETvaRiABLE ["alivE_AGenTHOUSEmUsiCOn",FALsE]) thEn {
+                        PRIvAte _builDing = _HOmEpOSitION nEArEstoBjECt "HOusE";
+                        PRiVAtE _MuSiC = [_BuilDinG, faCtiON _aGENt] Call AlivE_fNC_AddAMBIENTRoOMMUSic;
+                        _AgEnT SeTVaRiABle ["aliVE_AgENTHoUSeMusIc", _muSIC, FalSe];
+                        _AGenT SeTvariaBLE ["aLivE_AGEntHoUSeMUsIcon", tRue, FAlsE];
                     };
                 };
 
             };
 
-            if(_dayState == "EVENING" || {_dayState == "NIGHT"}) then {
+            If(_dAySTAte == "evENIng" || {_DaYStATE == "NIGHT"}) THen {
 
-                private _homePosition = _agentData select 2 select 10;
+                privATe _HOMEPOSItION = _agenTDAtA SelEct 2 select 10;
 
-                if!(_agent getVariable ["ALIVE_agentHouseLightOn",false]) then {
-                    private _building = _homePosition nearestObject "House";
-                    private _light = [_building] call ALIVE_fnc_addAmbientRoomLight;
-                    _agent setVariable ["ALIVE_agentHouseLight", _light, false];
-                    _agent setVariable ["ALIVE_agentHouseLightOn", true, false];
+                IF!(_AGeNT GetvaRIaBlE ["aLIve_aGENthousELIgHTOn",FALSe]) then {
+                    PrivaTe _BuildInG = _hOmePOSITion nearEstObJeCT "HOUse";
+                    privatE _lIgHT = [_bUILdinG] CAlL aLIVe_fnc_aDdAMBiENtRoOmliGHt;
+                    _ageNt seTVARIABLe ["ALiVe_aGenThoUseLiGHT", _liGHT, FALSE];
+                    _agEnt sEtVaRIabLE ["AlIVe_AGEnThOusELIGHToN", TRue, fAlsE];
                 };
             };
 
-            _nextState = "housework";
-            _nextStateArgs = [_positions];
+            _nEXTsTAtE = "hOuSeWorK";
+            _NexTsTateArgs = [_POSiTiOns];
 
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+            [_COmMANdstaTe, _AgEnTiD, [_aGeNtdata, [_coMMANdNAme,"MaNaged",_aRgS,_neXTsTATE,_neXtstatEARGs]]] cAll aLIvE_Fnc_HASHset;
         };
 
     };
 
-    case "housework":{
+    CASe "hoUSeWoRk":{
 
-        // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        // DEbUG -------------------------------------------------------------------------------------
+        iF(_DEBUG) tHEN {
+            ["aLive MAnAGEd ScriPT cOMmanD - [%1] sTAtE: %2",_AgentID,_STatE] cALl aLivE_FNC_Dump;
         };
-        // DEBUG -------------------------------------------------------------------------------------
+        // DebUg -------------------------------------------------------------------------------------
 
-        private _positions = _args select 0;
+        PRivAte _posiTIONS = _argS sElEct 0;
 
-        if(count _positions == 0) then
+        iF(COUNt _PoSITiONS == 0) TheN
         {
-            _nextState = "done";
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+            _neXTsTAte = "DOne";
+            [_cOMMandStaTE, _AGENtiD, [_AGeNTdaTa, [_CoMmaNdNaMe,"mANAGeD",_Args,_NEXTstATE,_NexTSTATEARGS]]] CALl aLIvE_FNC_HAsHSET;
         }
-        else
+        elsE
         {
-            if(_agent call ALiVE_fnc_unitReadyRemote) then
+            IF(_Agent call aLivE_Fnc_uNItreadyreMote) theN
             {
-                private _position = _positions call BIS_fnc_arrayPop;
-                [_agent] call ALIVE_fnc_agentSelectSpeedMode;
-                [_agent, _position] call ALiVE_fnc_doMoveRemote;
+                prIVAte _PoSiTIoN = _posItIonS caLL BIs_fnc_ArRaYPoP;
+                [_AgEnt] CAll AliVe_fNc_aGeNTSeLEcTsPeEdmODE;
+                [_agEnt, _PoSitiON] CalL AlIVe_fnc_DoMOVeREmotE;
 
-                _nextStateArgs = [_positions];
+                _neXtstATEArGs = [_posItIONs];
 
-                [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+                [_COmmANDsTatE, _AGeNtiD, [_ageNtdAta, [_cOMMAnDNamE,"MaNagEd",_aRGs,_NExtSTatE,_NExtSTaTEARGS]]] cAll alive_fnC_haSHseT;
             };
         };
 
     };
 
-    case "done":{
+    CASe "dOnE":{
 
-        // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        // deBUg -------------------------------------------------------------------------------------
+        If(_debUG) THEN {
+            ["ALiVe MaNAgED SCrIPT cOmmand - [%1] StATE: %2",_AGeNtiD,_StAtE] caLl aLivE_fNC_duMP;
         };
-        // DEBUG -------------------------------------------------------------------------------------
+        // DebUg -------------------------------------------------------------------------------------
 
-        _agent setVariable ["ALIVE_agentBusy", false, false];
+        _agENT sETvarIAble ["ALIvE_AGeNTbuSy", FalSE, FaLSe];
 
-        _nextState = "complete";
-        _nextStateArgs = [];
+        _neXTstAtE = "cOMPlETE";
+        _NExtsTATeaRgs = [];
 
-        [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+        [_coMmandSTaTE, _AGeNtId, [_ageNTdAtA, [_CoMmANdname,"maNAGEd",_ArGS,_NeXtSTate,_nExtSTAteArGs]]] CALL AliVe_fnc_hASHSeT;
 
     };
 

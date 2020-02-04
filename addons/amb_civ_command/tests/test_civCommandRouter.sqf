@@ -1,62 +1,62 @@
 // ----------------------------------------------------------------------------
 
-#include "\x\alive\addons\amb_civ_command\script_component.hpp"
-SCRIPT(test_command);
+#INcluDe "\X\alIVe\AdDOns\AmB_CIV_commaND\scRiPt_cOMpoNeNT.Hpp"
+sCRIpT(tEst_COMmAnd);
 
-//execVM "\x\alive\addons\amb_civ_command\tests\test_civCommandRouter.sqf"
+//eXEcvm "\X\ALIVE\ADDoNS\amb_civ_cOmmanD\tEsTS\test_civCOMMaNDROutER.SQf"
 
 // ----------------------------------------------------------------------------
 
-private ["_result","_err","_logic","_state","_result2","_m","_markers","_worldMarkers"];
+pRiVatE ["_ResuLT","_ERR","_lOgIc","_sTatE","_rEsULT2","_M","_mARKeRS","_wOrlDMARKeRs"];
 
-LOG("Testing Command Router Object");
+LoG("teSTInG COmMaND routEr obJEcT");
 
-ASSERT_DEFINED("ALIVE_fnc_civCommandRouter","");
+aSseRt_deFINEd("AlivE_fNc_cIvcoMMANdroUTEr","");
 
-#define STAT(msg) sleep 3; \
-diag_log ["TEST("+str player+": "+msg]; \
-titleText [msg,"PLAIN"]
+#DEfINe StAT(msG) SLEEP 3; \
+diAG_loG ["TEsT("+stR pLaYER+": "+MSg]; \
+TItLETExt [msG,"PLain"]
 
-#define STAT1(msg) CONT = false; \
-waitUntil{CONT}; \
-diag_log ["TEST("+str player+": "+msg]; \
-titleText [msg,"PLAIN"]
+#deFiNe STAt1(Msg) cOnT = fAlSE; \
+WAItuNTIl{cont}; \
+DiAG_LOg ["tEst("+str pLayeR+": "+msG]; \
+TiTLETExT [MSg,"plaiN"]
 
-#define DEBUGON STAT("Setup debug parameters"); \
-_result = [_logic, "debug", true] call ALIVE_fnc_civCommandRouter; \
-_err = "enabled debug"; \
-ASSERT_TRUE(typeName _result == "BOOL", _err); \
-ASSERT_TRUE(_result, _err);
+#DEfiNe DeBUgOn StaT("sETup dEbug ParAMeTERS"); \
+_reSulT = [_lOGIc, "DEBUG", true] CalL aliVe_fNC_cIvcOMmANdrOuTeR; \
+_ErR = "eNablED DEbug"; \
+assert_TRUe(TYpEnAmE _ResUlt == "BOol", _Err); \
+aSSeRT_True(_resuLT, _eRr);
 
-#define DEBUGOFF STAT("Disable debug"); \
-_result = [_logic, "debug", false] call ALIVE_fnc_civCommandRouter; \
-_err = "disable debug"; \
-ASSERT_TRUE(typeName _result == "BOOL", _err); \
-ASSERT_TRUE(!_result, _err);
+#dEFinE DeBUgofF StAT("dISABLE DebUG"); \
+_ReSULt = [_LoGIc, "DEbuG", fAlSe] cALl AlIve_fNc_CIvCoMMAnDRoUTeR; \
+_erR = "diSAbLe deBuG"; \
+AsSeRT_tRUE(TYpeNaME _reSult == "BoOL", _eRr); \
+assErt_TRUe(!_reSult, _erR);
 
-#define TIMERSTART \
-_timeStart = diag_tickTime; \
-diag_log "Timer Start";
+#DEfINe TimersTarT \
+_timestArT = diAG_TICKtiME; \
+dIAg_Log "TiMer StaRT";
 
-#define TIMEREND \
-_timeEnd = diag_tickTime - _timeStart; \
-diag_log format["Timer End %1",_timeEnd];
+#DeFine TiMEReNd \
+_TImEeNd = diaG_TIcKtimE - _TIMEStaRt; \
+diag_log FoRMat["Timer eNd %1",_tIMEENd];
 
 //========================================
 
 
-_profile = [ALIVE_profileHandler, "getProfile", "entity_0"] call ALIVE_fnc_profileHandler;
+_PRofilE = [ALiVe_pROFileHandlEr, "GETPrOFILE", "eNTIty_0"] caLl aliVE_fnC_ProFilEHanDler;
 
-//[_profile, "addActiveCommand", ["testCommand","fsm",["param1","param2"]]] call ALIVE_fnc_profileEntity;
-//[_profile, "addActiveCommand", ["ALIVE_fnc_testCommand","spawn",["param1","param2"]]] call ALIVE_fnc_profileEntity;
-[_profile, "addActiveCommand", ["ALIVE_fnc_testManagedCommand","managed",["param1","param2"]]] call ALIVE_fnc_profileEntity;
+//[_profilE, "addACTivEcommand", ["tEStcommAND","fsM",["pArAM1","param2"]]] CaLl ALivE_FNC_PrOfiLeenTity;
+//[_profile, "addactIVecOMManD", ["aLivE_fnC_tESTCOMManD","sPaWn",["pARAm1","pARAm2"]]] cALL ALiVE_Fnc_PROfilEENTIty;
+[_pROfIle, "ADdaCTIVecoMManD", ["AlivE_FNC_TEsTManaGEdcommand","MAnageD",["PArAM1","pARAm2"]]] CalL aLive_FNC_PROFIlEeNtiTy;
 
-STAT("De-Spawn");
-[_profile, "despawn"] call ALIVE_fnc_profileEntity;
+stat("dE-spaWn");
+[_prOFILe, "despawN"] call AlivE_FNc_pRoFileENTItY;
 
-sleep 10;
+SlEEp 10;
 
-STAT("De-Spawn");
-[_profile, "despawn"] call ALIVE_fnc_profileEntity;
+sTAt("de-sPAwN");
+[_profILe, "deSPaWn"] CAlL AliVE_fnc_PROFILeEnTITY;
 
-nil;
+niL;

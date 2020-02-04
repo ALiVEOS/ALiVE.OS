@@ -1,520 +1,520 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(civilianVehicle);
+#iNclUDe "\x\Alive\aDdoNS\AmB_civ_popULatIoN\scrIPt_COmPonenT.HPp"
+sCrIpT(CiViLianvehICLe);
 
 /* ----------------------------------------------------------------------------
-Function: MAINCLASS
-Description:
-Civilian vehicle class
+FUnCtion: mAIncLaSS
+dEsCriPtioN:
+CiVilIAn vEHIcLE ClAss
 
-Parameters:
-Nil or Object - If Nil, return a new instance. If Object, reference an existing instance.
-String - The selected function
-Array - The selected parameters
+PARAmeteRs:
+NIL oR OBJect - iF niL, rEtURn a NeW insTAnCE. If ObjECt, RefErence AN EXiStiNG INSTANCe.
+sTrinG - tHe SELECTeD fUNcTION
+arRaY - the seLecTEd PArAMETerS
 
-Returns:
-Any - The new instance or the result of the selected function and parameters
+REtUrns:
+AnY - ThE new InsTANCe Or thE ResULt of tHE sEleCtED fuNcTIon aNd pARametERs
 
-Attributes:
-Boolean - debug - Debug enable, disable or refresh
-Boolean - state - Store or restore state
-Array - agentClass - Set the agent class name
-Array - position - Set the agent position
-Boolean - active - Flag for if the agents are spawned
-Object - unit - Reference to the spawned unit
-None - spawn - Spawn the agent from the agent data
-None - despawn - De-Spawn the agent from the agent data
+atTrIbutES:
+boOlean - deBuG - deBUg enAbLe, DIsaBle oR REFreSH
+boOLeAn - stATe - StORE OR restoRe State
+ArRay - agEntcLaSs - SET the aGENt CLAss NaME
+ArRAy - poSItIon - SET thE AgENt posITion
+booLEan - acTiVe - fLag FOR iF the AgENtS ARe SpaWNeD
+ObJECT - uNiT - reFErEnce To the spawNEd UNIT
+NOne - SpaWN - sPawn tHE agENt frOM THe aGeNt DAtA
+NoNe - dESpaWn - dE-spAWn thE aGenT FroM THE AGeNt dATA
 
-Examples:
-(begin example)
-// create a agent
-_logic = [nil, "create"] call ALIVE_fnc_civilianVehicle;
+ExAmplEs:
+(BEgin EXAmPLe)
+// creAtE a aGEnT
+_lOgiC = [nil, "CreAtE"] Call alIvE_fNC_CIVIlIANVehiCLe;
 
-// init the agent
-_result = [_logic, "init"] call ALIVE_fnc_civilianVehicle;
+// iNit tHE agENT
+_RESult = [_lOGIc, "Init"] CaLL AlIvE_FnC_CIvILIanvEHICle;
 
-// set the agent agent id
-_result = [_logic, "agentID", "agent_01"] call ALIVE_fnc_civilianVehicle;
+// SEt tHE AGEnt AgEnt Id
+_ResulT = [_logIc, "agEntid", "aGeNt_01"] CalL ALiVE_fNc_ciVILIaNVEHicle;
 
-// set the agent class of the agent
-_result = [_logic, "agentClass", "B_MRAP_01_hmg_F"] call ALIVE_fnc_civilianVehicle;
+// SET tHe ageNt CLAsS of The AgeNt
+_REsULT = [_lOGiC, "ageNTclAsS", "B_Mrap_01_hmG_F"] calL aLIvE_Fnc_cIVilIanveHIcle;
 
-// set the unit position of the agent
-_result = [_logic, "position", getPos player] call ALIVE_fnc_civilianVehicle;
+// seT thE UNIT pOsItioN OF The AgENT
+_RESulT = [_Logic, "PoSitIon", getpOS plAYer] cAlL ALIVE_fNc_civILiANvEhIClE;
 
-// set the agent is active
-_result = [_logic, "active", true] call ALIVE_fnc_civilianVehicle;
+// SEt The agEnt is active
+_reSUlT = [_loGiC, "active", trUE] caLl ALiVe_fnC_civIlIanVeHICLE;
 
-// set the agent unit object reference
-_result = [_logic, "unit", _unit] call ALIVE_fnc_civilianVehicle;
+// sEt THe agent UNIT ObjECt RefErEnCE
+_REsUlT = [_loGic, "unIT", _unit] CAll ALIVE_fnC_cIvILIanVeHICLE;
 
-// spawn a unit from the agent
-_result = [_logic, "spawn"] call ALIVE_fnc_civilianVehicle;
+// SPaWN a uNit froM the ageNT
+_result = [_lOGic, "spAWN"] CAlL aliVe_FNc_CIvilIanvEhIclE;
 
-// despawn a unit from the agent
-_result = [_logic, "despawn"] call ALIVE_fnc_civilianVehicle;
-(end)
+// DESPaWn a UnIt FrOm tHe AGEnT
+_rESUlT = [_lOGIc, "DespAwn"] Call ALivE_fnc_CiVilIANvEHiCle;
+(End)
 
-See Also:
+seE aLSO:
 
-Author:
-ARJay
+aUThOR:
+aRjAy
 
-Peer reviewed:
-nil
+pEER REVieWED:
+NIl
 ---------------------------------------------------------------------------- */
 
-#define SUPERCLASS ALIVE_fnc_baseClassHash
-#define MAINCLASS ALIVE_fnc_civilianVehicle
+#DeFIne SupErCLaSS alIve_fnc_BaSEClaSSHASH
+#defINE MAinClass AlIVE_fnC_ciVIliANvEHICLE
 
-TRACE_1("civilianVehicle - input",_this);
+TRaCE_1("civIlIANvehIclE - inPuT",_tHiS);
 
-params [
-    ["_logic", objNull, [objNull,[]]],
-    ["_operation", "", [""]],
-    ["_args", objNull, [objNull,[],"",0,true,false]]
+pARamS [
+    ["_LoGIC", obJNUll, [ObJnUll,[]]],
+    ["_oPERAtION", "", [""]],
+    ["_ARgS", objNuLL, [ObjnUlL,[],"",0,TruE,FaLSe]]
 ];
-private _result = true;
+prIvatE _resulT = TRue;
 
-#define MTEMPLATE "ALiVE_CIVILIANVEHICLE_%1"
+#DefINE mTEMPLAtE "aLiVE_civIlIAnVehiCLe_%1"
 
-switch(_operation) do {
+SWItch(_OPEraTIoN) DO {
 
-    case "init": {
+    CASE "inIT": {
 
-        if (isServer) then {
-            // if server, initialise module game logic
-            // nil these out they add a lot of code to the hash..
-            [_logic,"super"] call ALIVE_fnc_hashRem;
-            [_logic,"class"] call ALIVE_fnc_hashRem;
-            //TRACE_1("After module init",_logic);
+        if (iSserVEr) ThEn {
+            // iF SErVer, INiTiAlIse modULE GaME LOgiC
+            // NiL THeSe Out tHEY aDd a lOT Of CodE To the hAsH..
+            [_lOgic,"SupER"] calL Alive_Fnc_hAsHReM;
+            [_lOgiC,"Class"] call aLIve_fnc_HaSHReM;
+            //trAce_1("AfteR mOdULe InIt",_LOgIc);
 
-            // set defaults
-            [_logic,"debug",false] call ALIVE_fnc_hashSet; // select 2 select 0
-            [_logic,"active",false] call ALIVE_fnc_hashSet; // select 2 select 1
-            [_logic,"position",[0,0]] call ALIVE_fnc_hashSet; // select 2 select 2
-            [_logic,"agentID",""] call ALIVE_fnc_hashSet; // select 2 select 3
-            [_logic,"type","vehicle"] call ALIVE_fnc_hashSet; // select 2 select 4
-            [_logic,"unit",objNull] call ALIVE_fnc_hashSet; // select 2 select 5
-            [_logic,"agentClass",""] call ALIVE_fnc_hashSet; // select 2 select 6
-            [_logic,"faction",""] call ALIVE_fnc_hashSet; // select 2 select 7
-            [_logic,"side",""] call ALIVE_fnc_hashSet; // select 2 select 8
-            [_logic,"homeCluster",""] call ALIVE_fnc_hashSet; // select 2 select 9
-            [_logic,"homePosition",[0,0]] call ALIVE_fnc_hashSet; // select 2 select 10
-            [_logic,"direction",""] call ALIVE_fnc_hashSet; // select 2 select 11
-            [_logic,"fuel",1] call ALIVE_fnc_hashSet; // select 2 select 12
-            [_logic,"damage",[]] call ALIVE_fnc_hashSet; // select 2 select 13
+            // SET DEfaUlTs
+            [_lOGiC,"DebuG",falsE] cAll ALivE_FNC_HAshSeT; // SElEcT 2 seLEcT 0
+            [_lOGIc,"activE",fAlsE] Call aLiVe_fNc_HAsHset; // SElECT 2 SELect 1
+            [_lOgic,"pOSITION",[0,0]] caLl AlIVe_fnc_haShSET; // SeLecT 2 Select 2
+            [_Logic,"aGEnTiD",""] caLl ALiVE_fNc_HAsHSEt; // selecT 2 seleCT 3
+            [_lOgIc,"TYPe","vehIclE"] CAlL aliVe_fNC_HAsHseT; // sELeCt 2 sELEct 4
+            [_LOgIc,"uniT",obJNUlL] CaLl ALIvE_FnC_haSHSet; // SeLEcT 2 sELeCt 5
+            [_logiC,"agENtcLAsS",""] CALL aLive_fnc_haSHSet; // SeleCt 2 SelEct 6
+            [_lOgic,"fACtIoN",""] caLL alIvE_fnc_HAShseT; // seLecT 2 selecT 7
+            [_logiC,"SIde",""] cAlL ALiVe_fnc_hAShsEt; // sElecT 2 seLEcT 8
+            [_LoGic,"hOMeCLuStER",""] caLL ALive_Fnc_hASHSEt; // SElECt 2 SEleCt 9
+            [_LOgIc,"HOMePositioN",[0,0]] CAll ALivE_fnc_HAshSeT; // sELecT 2 select 10
+            [_logIc,"dIrECTioN",""] CAll ALIVe_FnC_haSHseT; // SeLecT 2 selEcT 11
+            [_lOGiC,"FueL",1] Call ALIvE_FNC_HasHset; // SeLecT 2 SELEcT 12
+            [_LOGiC,"DaMagE",[]] CAll ALiVe_Fnc_hAsHsEt; // sElECT 2 SELect 13
         };
 
     };
 
-    case "state": {
+    cASe "stAtE": {
 
-        if !(_args isEqualType []) then {
-            private _state = [] call ALIVE_fnc_hashCreate;
+        if !(_ArGS ISEQUALTypE []) thEN {
+            PrivATE _StATe = [] cAlL AliVe_FNc_HaSHCrEate;
             {
-                if(!(_x == "super") && !(_x == "class")) then {
-                    [_state,_x,[_logic,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                IF(!(_X == "SUpeR") && !(_X == "Class")) THEn {
+                    [_staTE,_X,[_LOGiC,_X] Call AlIve_fNC_hAshGeT] caLl aliVE_Fnc_hAShSet;
                 };
-            } forEach (_logic select 1);
+            } foREAch (_LogiC SelEct 1);
 
-            _result = _state;
-        } else {
-            ASSERT_TRUE(_args isEqualType [], str typeName _args);
+            _RESUlt = _stATE;
+        } ELsE {
+            asseRT_tRUE(_Args iSEqUaltYPE [], sTr TYPENAme _aRGs);
             {
-                [_logic,_x,[_args,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-            } forEach (_args select 1);
+                [_LOgIC,_X,[_aRGS,_X] cAlL aliVe_FNc_HAshgET] CaLl AliVe_Fnc_HASHSEt;
+            } fOReaCH (_ARgS sELECT 1);
         };
 
     };
 
-    case "debug": {
+    case "DEbUg": {
 
-        if !(_args isEqualType true) then {
-            _args = [_logic,"debug"] call ALIVE_fnc_hashGet;
-        } else {
-            [_logic,"debug",_args] call ALIVE_fnc_hashSet;
+        iF !(_aRgs IsEqualTYPe TRUe) Then {
+            _aRgs = [_loGic,"debUG"] cAll aLIvE_FnC_HASHGet;
+        } ELSe {
+            [_loGIC,"deBUG",_ArgS] cAlL aLIVE_fNC_haShSeT;
         };
-        ASSERT_TRUE(_args isEqualType true, str _args);
+        assErt_TrUE(_ARgS iSEQuaLtypE TruE, sTR _ArGS);
 
-        [_logic,"deleteDebugMarkers"] call MAINCLASS;
+        [_logic,"DeLEteDEBugMArKERs"] cALl MainclAss;
 
-        if(_args) then {
-            [_logic,"createDebugMarkers"] call MAINCLASS;
+        IF(_ArgS) Then {
+            [_loGic,"CREATeDEBugMArkerS"] CaLL mainClaSs;
         };
 
-        _result = _args;
+        _REsult = _Args;
 
     };
 
-    case "active": {
+    casE "ActivE": {
 
-        if(_args isEqualType "") then {
-            [_logic,"active",_args] call ALIVE_fnc_hashSet;
+        if(_argS iSEqualTYPe "") THeN {
+            [_lOgIc,"aCtiVe",_aRgS] Call AlIVE_fnc_HaShsET;
         };
 
-        _result = [_logic,"active"] call ALIVE_fnc_hashGet;
+        _ResuLT = [_LoGic,"Active"] cAlL ALive_FNc_hasHget;
 
     };
 
-    case "agentID": {
+    CASE "AGENtId": {
 
-        if(_args isEqualType "") then {
-            [_logic,"agentID",_args] call ALIVE_fnc_hashSet;
+        IF(_ARgS isEqUalTyPe "") TheN {
+            [_loGIC,"AgENtiD",_aRGs] CaLl AlIVE_fNC_HAShSeT;
         };
 
-        _result = [_logic,"agentID"] call ALIVE_fnc_hashGet;
+        _ResuLT = [_logIc,"aGeNTiD"] CaLl ALiVE_Fnc_HaShgET;
 
     };
 
-    case "side": {
+    cAse "sIde": {
 
-        if(_args isEqualType "") then {
-                [_logic,"side",_args] call ALIVE_fnc_hashSet;
+        If(_arGS ISequAltype "") THEN {
+                [_lOGIC,"sIDE",_arGs] cAlL aLiVE_fnc_HAShSEt;
         };
 
-        _result = [_logic,"side"] call ALIVE_fnc_hashGet;
+        _RESult = [_LoGic,"SiDE"] CaLL aLivE_FNc_hasHGET;
 
     };
 
-    case "faction": {
+    cASe "faCTIOn": {
 
-        if(_args isEqualType "") then {
-            [_logic,"faction",_args] call ALIVE_fnc_hashSet;
+        iF(_ARgs iseQuaLTYpe "") ThEN {
+            [_LoGIC,"FACTiON",_arGS] CaLl aLiVe_fNC_haShsET;
         };
-        _result = [_logic,"faction"] call ALIVE_fnc_hashGet;
+        _RESUlT = [_LoGIC,"FaCtIOn"] calL alIve_FNc_hASHgeT;
 
     };
 
-    case "type": {
+    cAsE "tYpE": {
 
-        if(_args isEqualType "") then {
-            [_logic,"type",_args] call ALIVE_fnc_hashSet;
+        iF(_aRgs ISeQuALTyPe "") Then {
+            [_Logic,"tYPE",_ARGS] calL ALiVE_fnc_hAsHSET;
         };
 
-        _result = [_logic,"type"] call ALIVE_fnc_hashGet;
+        _ReSuLt = [_lOGIC,"TyPE"] CaLl aLiVe_fnC_hASHGEt;
 
     };
 
-    case "agentClass": {
+    cASe "aGeNTClasS": {
 
-        if(_args isEqualType "") then {
-            [_logic,"agentClass",_args] call ALIVE_fnc_hashSet;
+        iF(_argS ISEQuAltype "") ThEN {
+            [_loGic,"AGENtClaSS",_ARGs] calL aLivE_fNC_hashSeT;
         };
 
-        _result = _logic select 2 select 6; //[_logic,"agentClass"] call ALIVE_fnc_hashGet;
+        _ResuLt = _lOgic selECt 2 seLEct 6; //[_LogIc,"AgentCLASs"] cALL aLiVe_fnc_HaShgET;
 
     };
 
-    case "position": {
+    casE "POsitioN": {
 
-        if(_args isEqualType []) then {
+        iF(_ARGs IsEQuAltYpe []) thEN {
 
-            if(count _args == 2) then  {
-                _args pushback 0;
+            if(cOUNt _ARGS == 2) THeN  {
+                _ArGs pUsHBACK 0;
             };
 
-            [_logic,"position",_args] call ALIVE_fnc_hashSet;
+            [_lOGIc,"POSiTIon",_ArGS] cAlL AliVE_FNC_HasHsET;
 
-            if([_logic,"debug"] call ALIVE_fnc_hashGet) then {
-                [_logic,"debug",true] call MAINCLASS;
+            IF([_Logic,"deBUg"] CalL ALivE_Fnc_hasHgEt) tHeN {
+                [_loGiC,"DeBUg",trUE] CAlL MainCLasS;
             };
         };
 
-        _result = [_logic,"position"] call ALIVE_fnc_hashGet;
+        _RESulT = [_lOgIc,"POsITIOn"] caLL AliVE_FNC_haSHgeT;
 
     };
 
-    case "unit": {
+    caSE "UNIt": {
 
-        if(_args isEqualType objNull) then {
-            [_logic,"unit",_args] call ALIVE_fnc_hashSet;
+        if(_ARGs isEqUALtYPe objnULL) thEN {
+            [_LOGiC,"UNIT",_ARGs] call aLIvE_fnc_HaShseT;
         };
 
-        _result = [_logic,"unit"] call ALIVE_fnc_hashGet;
+        _reSUlt = [_logiC,"UnIt"] call alIvE_fNC_hAshGet;
 
     };
 
-    case "homeCluster": {
+    cASe "hOMEClusTEr": {
 
-        if(_args isEqualType "") then {
-            [_logic,"homeCluster",_args] call ALIVE_fnc_hashSet;
+        if(_aRgs isEQUaltYpe "") theN {
+            [_lOgic,"hoMECLuSTEr",_ArGs] cALL ALIve_FnC_hASHSET;
         };
 
-        _result = [_logic,"homeCluster"] call ALIVE_fnc_hashGet;
+        _ResuLT = [_loGIC,"homecLUSTER"] cALL aLIVe_fnC_haShget;
 
     };
 
-    case "homePosition": {
+    cAse "homepoSiTiON": {
 
-        if(_args isEqualType []) then {
+        IF(_ArgS IseqUaLtyPE []) theN {
 
-            if(count _args == 2) then  {
-                _args pushback 0;
+            if(COunT _ArgS == 2) theN  {
+                _aRgS pUshbaCk 0;
             };
 
-            [_logic,"homePosition",_args] call ALIVE_fnc_hashSet;
+            [_lOGiC,"HomepOSitIoN",_ARGs] caLl AlIvE_fnC_haSHsEt;
         };
 
-        _result = [_logic,"homePosition"] call ALIVE_fnc_hashGet;
+        _result = [_lOgiC,"hOMePoSitIon"] cAlL ALIvE_fNc_hasHGet;
 
     };
 
-    case "direction": {
+    CasE "DIrEcTIOn": {
 
-        if(_args isEqualType 0) then {
-                [_logic,"direction",_args] call ALIVE_fnc_hashSet;
+        iF(_ARGS ISEQUaLTYPe 0) THEN {
+                [_lOgIc,"DIRecTion",_arGS] cAll aliVe_fnc_hasHSET;
         };
 
-        _result = [_logic,"direction"] call ALIVE_fnc_hashGet;
+        _RESuLt = [_lOgIc,"DiRectioN"] CalL aLivE_fnc_hAShGeT;
 
     };
 
-    case "damage": {
+    CaSe "daMAge": {
 
-        if(_args isEqualType []) then {
-                [_logic,"damage",_args] call ALIVE_fnc_hashSet;
+        IF(_ARgs isEquaLtYpE []) THEN {
+                [_LOGic,"damAgE",_ArGs] CALl ALIve_FNc_hAshsEt;
         };
 
-        _result = [_logic,"damage"] call ALIVE_fnc_hashGet;
+        _rEsUlT = [_LogIc,"damAGe"] CaLl AlivE_FNc_haShgeT;
 
     };
 
-    case "fuel": {
+    caSe "FuEL": {
 
-        if(_args isEqualType 0) then {
-                [_logic,"fuel",_args] call ALIVE_fnc_hashSet;
+        IF(_aRGS isEQUAlTyPe 0) thEn {
+                [_LogIC,"FUeL",_aRgS] CAlL aLiVE_fnC_hASHsEt;
         };
 
-        _result = [_logic,"fuel"] call ALIVE_fnc_hashGet;
+        _RESUlT = [_LogiC,"FueL"] cAll aLIve_FNc_HAshGeT;
 
     };
 
-    case "spawn": {
+    CaSe "Spawn": {
 
-        private _debug = _logic select 2 select 0;  //[_logic,"debug"] call ALIVE_fnc_hashGet;
-        private _active = _logic select 2 select 1;         //[_logic,"active"] call ALIVE_fnc_hashGet;
-        private _position = _logic select 2 select 2;       //[_logic,"position"] call ALIVE_fnc_hashGet;
-        private _agentID = _logic select 2 select 3;        //[_logic,"agentID"] call ALIVE_fnc_hashGet;
-        private _agentClass = _logic select 2 select 6;     //[_logic,"agentClass"] call ALIVE_fnc_hashGet;
-        private _side = _logic select 2 select 8;           //[_logic,"side"] call ALIVE_fnc_hashGet;
-        private _direction = _logic select 2 select 11;     //[_logic,"direction"] call ALIVE_fnc_hashGet;
-        private _fuel = _logic select 2 select 12;          //[_logic,"fuel"] call ALIVE_fnc_hashGet;
-        private _damage = _logic select 2 select 13;        //[_logic,"damage"] call ALIVE_fnc_hashGet;
+        PrIvAte _dEbUG = _loGIC SElect 2 seLECT 0;  //[_LoGic,"DeBUg"] CALL ALiVe_Fnc_hasHgEt;
+        PrIVaTe _AcTiVE = _logIc sELEcT 2 selECt 1;         //[_lOgiC,"acTIVE"] CALL AlivE_fNc_hAsHGET;
+        PrivaTE _pOSiTIOn = _LogIc SeLECT 2 sELEct 2;       //[_lOgiC,"POsItIoN"] call ALIve_FNC_haShgEt;
+        pRIVATe _ageNTID = _lOgiC SELecT 2 selECt 3;        //[_LogIC,"AgEnTId"] CAll alIve_fNC_HAshget;
+        PRiVatE _AGentcLass = _LogIC SelECt 2 SeleCt 6;     //[_lOGiC,"agENtClASs"] CAll alIVE_fNc_HAsHGeT;
+        Private _sIde = _lOgIC sElEct 2 SELEcT 8;           //[_LogIC,"SIDE"] CaLL ALIvE_fNc_hasHgET;
+        PrIVatE _dIRectIoN = _loGic seLEcT 2 SelecT 11;     //[_logIC,"DIrECTION"] cAlL aLIve_fNC_HAShGET;
+        PRivAtE _fUEL = _LoGIc SELECt 2 seLECT 12;          //[_LOgiC,"FuEl"] CalL aLIve_Fnc_HAsHGet;
+        PRiVATE _daMAGE = _lOgic sELEcT 2 sELeCt 13;        //[_lOGIc,"DamAGE"] call aliVe_FNC_HAsHGET;
 
-        private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
+        prIvAtE _sIdeOBJEct = [_SidE] call alIVE_FNC_sidEtExtToObjecT;
 
-        // not already active
-        if!(_active) then {
+        // NOT ALREadY aCTIVe
+        if!(_ActiVe) THEn {
 
-            private _unit = createVehicle [_agentClass, [0,0,500 + random 500], [], 0, "NONE"];
+            PrivatE _uNit = cReATevehicLE [_AGEnTCLAsS, [0,0,500 + rANdOM 500], [], 0, "NOne"];
             
-            _unit setDir _direction;
+            _UnIt SeTdIr _DIreCtIon;
             
-            _unit setVelocity [0,0,0];
+            _unIt SETveLoCiTy [0,0,0];
 
-            [_unit,+_position] call ALiVE_fnc_setPosAGLS;
+            [_unit,+_POsiTION] CalL alive_fnC_sEtPOsAGlS;
             
-            _unit setFuel _fuel;
+            _unIt SETFUEl _fuEL;
 
-            if(count _damage > 0) then {
-                [_unit, _damage] call ALIVE_fnc_vehicleSetDamage;
+            If(cOunt _DAmAgE > 0) ThEn {
+                [_UNiT, _DaMAGe] cAll ALIVe_FNC_VeHicLEseTDaMAGE;
             };
             
-            // set profile id on the unit
-            _unit setVariable ["agentID", _agentID];
+            // seT pRoFile iD ON ThE UNit
+            _uNIt setVariABLe ["AgeNtiD", _AgEntID];
 
-            // killed event handler
-            private _eventID = _unit addMPEventHandler["MPKilled", ALIVE_fnc_agentKilledEventHandler];
+            // KILleD eVenT HanDlEr
+            pRivAte _eventiD = _UniT addmpEvENtHAndLer["mpkIlled", ALIve_fNC_AGeNtkIllEDeVeNtHAndlEr];
 
-            // getin event handler
-            _eventID = _unit addEventHandler["getIn", ALIVE_fnc_agentGetInEventHandler];
+            // geTin evEnt haNDLeR
+            _evENTiD = _UNIT ADDEVEnThandlEr["gETiN", alIVE_fnc_AgeNtGeTineveNTHandLer];
 
-            // set profile as active and store a reference to the unit on the profile
-            [_logic,"unit",_unit] call ALIVE_fnc_hashSet;
-            [_logic,"active",true] call ALIVE_fnc_hashSet;
+            // SEt ProfILe as ACTIVE AnD sToRe A REFerENcE tO tHE UNIT On THe pROFiLe
+            [_logic,"UNit",_unIt] call AlIvE_FnC_HAShset;
+            [_LOgiC,"AcTIvE",TruE] CalL alIVE_fnC_hashSeT;
 
-            // store the profile id on the active profiles index
-            [ALIVE_agentHandler,"setActive",[_agentID,_logic]] call ALIVE_fnc_agentHandler;
+            // StoRe The pROFIlE Id ON The ACtIVE proFILEs INdeX
+            [ALIVE_ageNthandlEr,"SETaCTIve",[_aGENTId,_logIc]] CaLL AlIVE_fnC_AgeNtHAnDLEr;
 
             // DEBUG -------------------------------------------------------------------------------------
-            if(_debug) then {
-                //["Agent [%1] Spawn - class: %2 pos: %3",_agentID,_agentClass,_position] call ALIVE_fnc_dump;
-                [_logic,"debug",true] call MAINCLASS;
+            IF(_dEbug) THeN {
+                //["agent [%1] Spawn - cLaSS: %2 Pos: %3",_AgeNTid,_aGenTClAsS,_poSition] CalL ALive_fnc_dump;
+                [_lOGiC,"debug",tRUe] cAlL mAINcLaSS;
             };
             // DEBUG -------------------------------------------------------------------------------------
         };
 
     };
 
-    case "despawn": {
+    cASe "dESpawn": {
 
-        private _debug = _logic select 2 select 0;      //[_logic,"debug"] call ALIVE_fnc_hashGet;
-        private _active = _logic select 2 select 1;     //[_logic,"active"] call ALIVE_fnc_hashGet;
-        private _side = _logic select 2 select 8;       //[_logic,"side"] call ALIVE_fnc_hashGet;
-        private _unit = _logic select 2 select 5;       //[_logic,"unit"] call ALIVE_fnc_hashGet;
-        private _agentID = _logic select 2 select 3;    //[_logic,"agentID"] call ALIVE_fnc_hashGet;
+        PrivATe _dEbUg = _lOgiC Select 2 Select 0;      //[_LogIc,"dEBuG"] caLL ALiVE_fNC_haShgeT;
+        prIVATE _aCtIvE = _LoGic selECt 2 selECT 1;     //[_lOGIC,"acTIvE"] cAll aliVE_FNc_HAShgET;
+        PRiVaTE _SIde = _logiC sElecT 2 seLeCT 8;       //[_loGiC,"sIdE"] Call aLIve_fNc_HASHGeT;
+        PrivatE _uniT = _lOgIc seLEct 2 sELEct 5;       //[_LOgic,"UnIT"] cAlL AlIVe_fnc_hASHgeT;
+        PRivAte _AGenTiD = _LoGIc SElEcT 2 seLeCT 3;    //[_Logic,"AgENtId"] CalL alive_fNC_HASHget;
 
-        // not already inactive
-        if(_active) then {
+        // noT alREAdy inactivE
+        iF(_aCTIVE) TheN {
 
-            [_logic,"active",false] call ALIVE_fnc_hashSet;
+            [_LogIc,"AcTIve",FaLSE] cAlL ALIve_fNC_HAshset;
 
-            private _position = getPosATL _unit;
-            _position set [2, (_position select 2) + 1];
+            PRIVaTe _PosITION = gETPoSatL _Unit;
+            _posiTION SEt [2, (_PosITiOn selecT 2) + 1];
 
-            // update profile before despawn
-            [_logic,"position", _position] call ALIVE_fnc_hashSet;
-            [_logic,"unit",objNull] call ALIVE_fnc_hashSet;
-            [_logic,"direction", getDir _unit] call ALIVE_fnc_hashSet;
-            [_logic,"damage", _unit call ALIVE_fnc_vehicleGetDamage] call ALIVE_fnc_hashSet;
-            [_logic,"fuel", fuel _unit] call ALIVE_fnc_hashSet;
+            // UpdATE pRofile BeFORe DEsPAWn
+            [_loGIC,"POSitioN", _PosITioN] CAll AlIVE_FNc_hAsHset;
+            [_LOGic,"UNiT",ObJnuLl] caLl AlIve_FnC_HAshSet;
+            [_loGiC,"dIReCtiON", GEtDiR _UNIT] Call ALIve_Fnc_haShSeT;
+            [_lOgiC,"daMAGE", _UniT CaLL ALIve_fNC_VehICLegetdaMAGe] CAlL ALIVe_fnc_HAshsET;
+            [_lOGIc,"fuEL", FUEl _UNIt] CALl AlIve_fNc_HaShseT;
 
-            // delete
-            deleteVehicle _unit;
+            // DElEtE
+            DELEteVeHiCLe _UnIT;
 
-            // store the profile id on the in active profiles index
-            [ALIVE_agentHandler,"setInActive",[_agentID,_logic]] call ALIVE_fnc_agentHandler;
+            // STOrE THe ProFILe id ON the IN activE ProfILEs iNDex
+            [aLive_AgeNtHandLer,"setinACtivE",[_agEntid,_lOGIC]] cALl aLive_fNC_ageNTHAndLeR;
 
-            // DEBUG -------------------------------------------------------------------------------------
-            if(_debug) then {
-                //["Agent [%1] Despawn - pos: %2",_agentID,_position] call ALIVE_fnc_dump;
-                [_logic,"debug",true] call MAINCLASS;
+            // debuG -------------------------------------------------------------------------------------
+            if(_DEbUg) THeN {
+                //["AGEnt [%1] dESpAwn - poS: %2",_ageNTId,_pOSiTioN] call alive_fnc_dump;
+                [_loGIc,"DEbUG",TRue] CAll mAInclasS;
             };
-            // DEBUG -------------------------------------------------------------------------------------
+            // DebUg -------------------------------------------------------------------------------------
 
         };
 
     };
 
-    case "handleDeath": {
+    casE "hANDLEdEAtH": {
 
-        [_logic,"damage",1] call ALIVE_fnc_hashSet;
-
-    };
-
-    case "createMarker": {
-
-        private ["_color"];
-
-        private _alpha = _args param [0, 0.5, [1]];
-
-        private _markers = [];
-
-        private _position = [_logic,"position"] call ALIVE_fnc_hashGet;
-        private _agentID = [_logic,"agentID"] call ALIVE_fnc_hashGet;
-        private _side = [_logic,"side"] call ALIVE_fnc_hashGet;
-        private _active = [_logic,"active"] call ALIVE_fnc_hashGet;
-
-        switch(_side) do {
-            case "EAST":{
-                _color = "ColorRed";
-            };
-            case "WEST":{
-                _color = "ColorBlue";
-            };
-            case "CIV":{
-                _color = "ColorYellow";
-            };
-            case "GUER":{
-                _color = "ColorGreen";
-            };
-            default {
-                _color = [_logic,"debugColor","ColorGreen"] call ALIVE_fnc_hashGet;
-            };
-        };
-
-        private _icon = "n_inf";
-
-        if(count _position > 0) then {
-            private _m = createMarker [format[MTEMPLATE, format["%1_debug",_agentID]], _position];
-            _m setMarkerShape "ICON";
-            _m setMarkerSize [0.4, 0.4];
-            _m setMarkerType _icon;
-            _m setMarkerColor _color;
-            _m setMarkerAlpha _alpha;
-
-            _markers pushback _m;
-
-            [_logic,"markers",_markers] call ALIVE_fnc_hashSet;
-        };
-
-        _result = _markers;
+        [_lOGiC,"daMage",1] CALL AlIve_fNc_HASHsET;
 
     };
 
-    case "deleteMarker": {
+    cASE "CrEatEmARkEr": {
+
+        PrIVaTe ["_COloR"];
+
+        pRiVaTE _ALpHA = _aRgs pArAM [0, 0.5, [1]];
+
+        PRivATE _mARKErs = [];
+
+        PRiVate _pOsiTioN = [_LogIC,"POsitIon"] CalL aLIVE_FNC_HasHgEt;
+        pRiVate _aGeNtiD = [_LoGiC,"AgENtid"] calL alive_FNc_HASHGET;
+        PrIvatE _SidE = [_LoGic,"SIde"] CAlL aLiVE_FNC_haShget;
+        pRIvaTE _ACTivE = [_LogIc,"ActIVE"] caLl AlIVE_fNC_HAShgeT;
+
+        swITCh(_sIDE) Do {
+            cAse "EAST":{
+                _COLor = "ColoRRed";
+            };
+            cAse "wEst":{
+                _coLOr = "coLoRBluE";
+            };
+            CASE "CIV":{
+                _ColOR = "CoLORYelLOW";
+            };
+            cASe "GUER":{
+                _COLoR = "COlorGREeN";
+            };
+            dEFAult {
+                _coLOr = [_LogiC,"debugcoLOR","COlORgreeN"] cALl AliVE_FNC_hAsHGet;
+            };
+        };
+
+        PRIvate _icOn = "N_iNF";
+
+        If(cOuNt _posiTIon > 0) thEN {
+            PriVAte _m = crEatEmARKeR [FOrmAt[mtEMPLAte, FoRMAT["%1_dEbUg",_AgeNTId]], _posItIoN];
+            _m sETMARKErsHaPe "IcoN";
+            _M setMarkerSiZe [0.4, 0.4];
+            _M SetMArKeRtyPE _icon;
+            _M SETMaRkErCOLor _cOLOr;
+            _M seTMARKeraLPHa _ALPHA;
+
+            _MarkeRS pushbaCK _m;
+
+            [_LOGiC,"MARkERs",_MaRkErS] Call aLIve_fNC_HAShSET;
+        };
+
+        _rEsulT = _MarKErs;
+
+    };
+
+    CasE "dELetEMArkEr": {
 
         {
-            deleteMarker _x;
-        } forEach ([_logic,"markers", []] call ALIVE_fnc_hashGet);
+            dELeteMarKEr _x;
+        } fOReACH ([_LOgic,"marKErs", []] CaLL aLiVE_FNc_HasHGeT);
 
     };
 
-    case "createDebugMarkers": {
+    CAse "cReAtedEBUgMarKers": {
 
-        private ["_debugColor"];
+        PRiVATe ["_deBUGcOLOR"];
 
-        private _markers = [];
+        PRiVate _mARKErS = [];
 
-        private _position = [_logic,"position"] call ALIVE_fnc_hashGet;
-        private _agentID = [_logic,"agentID"] call ALIVE_fnc_hashGet;
-        private _agentSide = [_logic,"side"] call ALIVE_fnc_hashGet;
-        private _agentActive = [_logic,"active"] call ALIVE_fnc_hashGet;
+        PRiVate _pOSITIoN = [_loGiC,"pOsITION"] cAll aLIve_fnC_hashGEt;
+        PrivATe _AGeNtId = [_loGiC,"ageNtiD"] CALl ALIve_FNC_HAsHGET;
+        pRiVaTe _ageNtsiDE = [_LoGIC,"sidE"] cAlL alive_Fnc_HaSHgEt;
+        prIVAte _AgeNtAcTIVE = [_LOGic,"AcTIVE"] cALl ALIVe_FNC_HAShGet;
 
-        switch(_agentSide) do {
-            case "EAST":{
-                _debugColor = "ColorRed";
+        SWITcH(_AGENTSiDe) do {
+            cASe "eaSt":{
+                _debUgColoR = "CoLoRrED";
             };
-            case "WEST":{
-                _debugColor = "ColorBlue";
+            CaSe "weST":{
+                _deBUGCoLoR = "colorbLue";
             };
-            case "CIV":{
-                _debugColor = "ColorYellow";
+            caSE "CIV":{
+                _deBUGCOLor = "COloRyeLLOw";
             };
-            case "GUER":{
-                _debugColor = "ColorGreen";
+            Case "guER":{
+                _deBuGCOloR = "CoLORGrEen";
             };
-            default {
-                _debugColor = [_logic,"debugColor","ColorGreen"] call ALIVE_fnc_hashGet;
+            DEfaULt {
+                _deBUGcoloR = [_LoGIC,"DebuGcolor","CoLorGreeN"] CALL aLIVE_FNc_hasHGET;
             };
         };
 
-        private _debugIcon = "n_inf";
+        pRIVATE _dEBugicOn = "N_inF";
 
-        private _debugAlpha = 0.5;
-        if(_agentActive) then {
-            _debugAlpha = 1;
+        PriVaTe _dEbuGalPhA = 0.5;
+        iF(_AgentActivE) tHEn {
+            _dEBugalPHa = 1;
         };
 
-        if(count _position > 0) then {
-            private _m = createMarker [format[MTEMPLATE, _agentID], _position];
-            _m setMarkerShape "ICON";
-            _m setMarkerSize [0.4, 0.4];
-            _m setMarkerType _debugIcon;
-            _m setMarkerColor _debugColor;
-            _m setMarkerAlpha _debugAlpha;
+        If(cOuNt _PosiTion > 0) theN {
+            PRivate _m = CREATeMarkER [fORmAT[mTeMplaTe, _AgeNTid], _POSItiON];
+            _M sETmArKERShaPE "icon";
+            _m setMarkERSize [0.4, 0.4];
+            _M SeTmarkeRtYPe _DebugicON;
+            _M SetMArKeRcoLOR _dEBUGcoLoR;
+            _M SETMARKerAlPHA _dEBugALpha;
 
-            _markers pushback _m;
+            _MARkerS PUsHback _M;
 
-            [_logic,"debugMarkers",_markers] call ALIVE_fnc_hashSet;
+            [_LOgIc,"DebuGmArKErs",_marKERs] call AlIVe_FnC_HAsHseT;
         };
 
     };
 
-    case "deleteDebugMarkers": {
+    CASE "deLETEDEBugMARKerS": {
 
         {
-                deleteMarker _x;
-        } forEach ([_logic,"debugMarkers", []] call ALIVE_fnc_hashGet);
+                DEleteMaRKeR _X;
+        } forEAch ([_LOgIC,"dEBuGmaRKErs", []] Call alIve_FNc_hashgEt);
 
     };
 
-    default {
-        _result = [_logic, _operation, _args] call SUPERCLASS;
+    dEFAULt {
+        _rEsulT = [_lOGIc, _OPeratIoN, _ARgS] cALL SupercLaSS;
     };
 
 };
 
-TRACE_1("civilianAgent - output",_result);
+Trace_1("civiLIanAGenT - oUTpUt",_rEsUlT);
 
-_result;
+_resUlT;

@@ -1,145 +1,145 @@
-#include "\x\alive\addons\amb_civ_command\script_component.hpp"
-SCRIPT(cc_campfire);
+#InClude "\x\aLIvE\ADdONS\AmB_civ_coMmand\sCripT_CoMpOnEnT.HPp"
+scripT(cC_caMpfiRe);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_cc_campfire
+FUNCtiOn: aLiVe_fnc_cc_cAmpfiRe
 
-Description:
-Campfire command for civilians
+dEScrIPTiOn:
+CaMPfIrE COmManD fOr CIvILIaNs
 
-Parameters:
-Profile - profile
-Args - array
+pARamEteRs:
+prOfile - pRoFiLe
+argS - arRay
 
-Returns:
+REturNs:
 
-Examples:
-(begin example)
+exaMples:
+(bEgIn ExaMplE)
 //
-_result = [_agent, []] call ALIVE_fnc_cc_campfire;
-(end)
+_reSULt = [_AGeNt, []] calL AlIVE_fNC_CC_cAmpFiRE;
+(enD)
 
-See Also:
+sEe also:
 
-Author:
-ARJay
+authoR:
+ARjAY
 ---------------------------------------------------------------------------- */
 
-params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
+paRaMs ["_agenTData","_coMMAndsTaTE","_COMMandNAme","_ARGs","_StaTE","_DEBUg"];
 
-private _agentID = _agentData select 2 select 3;
-private _agent = _agentData select 2 select 5;
+PRivaTE _AgENTid = _AGENTdATA seleCT 2 sEleCT 3;
+priVatE _agenT = _AgentDatA sELEct 2 seLECt 5;
 
-private _nextState = _state;
-private _nextStateArgs = [];
+PrivATe _NexTstaTe = _stATE;
+PRivAte _NeXTStaTEARGs = [];
 
 
-// DEBUG -------------------------------------------------------------------------------------
-if(_debug) then {
-    ["ALiVE Managed Script Command - [%1] called args: %2",_agentID,_args] call ALIVE_fnc_dump;
+// deBUG -------------------------------------------------------------------------------------
+if(_dEbuG) THEn {
+    ["aLIVe managEd sCrIPT cOmmAnd - [%1] CALlED argS: %2",_AGenTid,_ArgS] caLl alIve_Fnc_Dump;
 };
-// DEBUG -------------------------------------------------------------------------------------
+// deBuG -------------------------------------------------------------------------------------
 
-switch (_state) do {
+Switch (_sTATe) do {
 
-    case "init":{
+    cASE "INIt":{
 
-        // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        // DEBuG -------------------------------------------------------------------------------------
+        If(_DeBUg) ThEN {
+            ["aLIVE ManageD ScrIPT coMmanD - [%1] stAte: %2",_agEnTID,_sTATe] CALL AliVe_fnC_DuMP;
         };
-        // DEBUG -------------------------------------------------------------------------------------
+        // DEBuG -------------------------------------------------------------------------------------
 
-        _agent setVariable ["ALIVE_agentBusy", true, false];
+        _aGeNt sEtVariAblE ["alIVe_AgENtBusy", trUe, fALSe];
 
-        _args params ["_minTimeout","_maxTimeout"];
+        _ARGS PARaMs ["_mInTIMEout","_MAxTimEouT"];
 
-        private _pos = getposATL _agent;
-        private _position = [_pos,0,10,1,0,10,0,[],[_pos]] call BIS_fnc_findSafePos;
+        PRiVATe _pOs = geTPoSATl _AGeNT;
+        priVATE _pOSItIoN = [_PoS,0,10,1,0,10,0,[],[_POS]] CALL bIs_fNc_findSaFePos;
 
-        if(count _position > 0) then {
-            [_agent] call ALIVE_fnc_agentSelectSpeedMode;
-            [_agent, _position] call ALiVE_fnc_doMoveRemote;
+        iF(COunT _pOsiTiOn > 0) THen {
+            [_aGeNT] Call ALiVE_FnC_AgenTsElECtspEEDMOde;
+            [_agENt, _pOSITioN] cALl AlIve_FnC_DoMoveREmote;
 
-            private _timeout = _minTimeout + floor(random _maxTimeout);
-            private _timer = 0;
+            prIvaTe _tIMEOUT = _mInTimeout + FLooR(RAnDOm _MAXtIMeOut);
+            prIVatE _tiMeR = 0;
 
-            _nextState = "travel";
-            _nextStateArgs = [_timeout, _timer];
+            _NextSTatE = "trAVEL";
+            _nExtstATEARGs = [_tIMEOUt, _timer];
 
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-        }else{
-            _nextState = "done";
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-        };
-
-    };
-    case "travel":{
-
-        // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
-        };
-        // DEBUG -------------------------------------------------------------------------------------
-
-        private _positions = _args select 0;
-
-        if(_agent call ALiVE_fnc_unitReadyRemote) then {
-
-            private _fire = "FirePlace_burning_F" createVehicle (position _agent);
-
-            _agent lookAt _fire;
-
-            _agent action ["SITDOWN",_agent];
-
-            _nextState = "wait";
-            _nextStateArgs = _args + [_fire];
-
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+            [_COMMaNdsTatE, _aGeNTID, [_agEnTDaTA, [_cOmManDNAMe,"ManAGed",_args,_nextSTATe,_neXtSTAteaRGS]]] caLl aliVE_FnC_hAshsET;
+        }ELse{
+            _NEXtSTaTe = "DOne";
+            [_COMmandstaTE, _AgeNtId, [_aGEntdATA, [_comMAndnamE,"mAnAGed",_aRGS,_nExTSTate,_NEXtstAteARgS]]] cALL aLivE_fNc_HAsHsET;
         };
 
     };
+    CASE "TRAveL":{
 
-    case "wait":{
-
-        // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        // DEbUg -------------------------------------------------------------------------------------
+        iF(_dEbUg) tHen {
+            ["alive MANaGEd SCRiPt cOmMaND - [%1] STAtE: %2",_AGenTid,_STATe] cALl AlIVe_fNC_DuMP;
         };
-        // DEBUG -------------------------------------------------------------------------------------
+        // DEbuG -------------------------------------------------------------------------------------
 
-        _args params ["_timeout","_timer","_fire"];
+        prIVate _posiTiONS = _ArgS sELeCt 0;
 
-        if(_timer > _timeout) then
+        if(_agent cAll Alive_fNc_UNITreADYrEMoTe) TheN {
+
+            privATE _firE = "fIREPLAce_bUrNInG_F" CReateveHicle (pOSItIOn _AgeNt);
+
+            _AGEnt LOokat _FIrE;
+
+            _AgeNT ActIoN ["sitDOwn",_aGEnt];
+
+            _neXtStAte = "WaiT";
+            _NEXtSTatEARGS = _aRgS + [_FIRe];
+
+            [_comMANdStaTE, _AGENtID, [_AgEnTdAtA, [_cOMmANDname,"maNageD",_Args,_NExtStaTE,_NeXtsTatearGS]]] CALL aLIvE_Fnc_hAshSet;
+        };
+
+    };
+
+    CAsE "WaIT":{
+
+        // Debug -------------------------------------------------------------------------------------
+        IF(_deBug) tHeN {
+            ["Alive mANAGEd sCRipt commAnd - [%1] STAte: %2",_aGEntiD,_STaTE] CaLL ALIVE_FNc_dump;
+        };
+        // debuG -------------------------------------------------------------------------------------
+
+        _aRgS pArAMS ["_tiMEOut","_TimeR","_FirE"];
+
+        IF(_TImER > _tiMEoUT) theN
         {
-            _agent playMove "";
-            deleteVehicle _fire;
-            _nextState = "done";
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-        }else{
-            _timer = _timer + 1;
+            _AGENT PLAyMoVe "";
+            DeleTeVEhICLe _Fire;
+            _NExTSTaTe = "DONE";
+            [_COmmAnDSTate, _aGEnTID, [_aGenTDatA, [_commaNdnaME,"mANAGed",_arGS,_NExtStaTE,_nEXtsTatEaRGS]]] caLl alive_fnC_HaSHset;
+        }Else{
+            _TIMer = _TiMeR + 1;
 
-            _nextStateArgs = [_timeout, _timer, _fire];
+            _nEXtSTAtearGs = [_TimeOUt, _tIMeR, _FIre];
 
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+            [_COmmaNDSTAte, _aGentiD, [_AGeNTDAta, [_CoMmanDnAme,"mANAgEd",_ArgS,_NextStAtE,_NexTsTATeaRgS]]] CalL ALivE_fNc_HAshseT;
         };
 
     };
 
-    case "done":{
+    CASe "done":{
 
-        // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        // DebUG -------------------------------------------------------------------------------------
+        IF(_DEbUG) theN {
+            ["aLIve MAnaged ScRIpt commAnd - [%1] StATe: %2",_aGENTid,_stAte] CAll ALive_FNC_DUMp;
         };
-        // DEBUG -------------------------------------------------------------------------------------
+        // deBUG -------------------------------------------------------------------------------------
 
-        _agent setVariable ["ALIVE_agentBusy", false, false];
+        _AGENT sEtvARIABlE ["AlIVe_agENtbuSy", falSe, FaLSe];
 
-        _nextState = "complete";
-        _nextStateArgs = [];
+        _NExtsTAtE = "comPleTe";
+        _nExTsTateArgS = [];
 
-        [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+        [_CommANDsTATe, _AgEnTID, [_AgeNtdATA, [_COmMANDnAmE,"mANagED",_args,_NExtstaTe,_neXTStAtEARgs]]] cAlL aLIve_FNC_hAShSeT;
     };
 
 };

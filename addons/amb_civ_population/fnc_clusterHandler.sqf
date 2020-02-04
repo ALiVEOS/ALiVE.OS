@@ -1,267 +1,267 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(clusterHandler);
+#IncLUDe "\X\AlIve\aDdoNS\AMb_ciV_popUlaTIon\sCRIPt_cOMPonENT.HPP"
+sCRIPT(CLuSTERHAnDLer);
 
 /* ----------------------------------------------------------------------------
-Function: MAINCLASS
-Description:
-The main cluster handler / repository
+FUncTIoN: maInClaSS
+dEscriptION:
+tHe MaIN CluSTeR hANdler / rEposITory
 
-Parameters:
-Nil or Object - If Nil, return a new instance. If Object, reference an existing instance.
-String - The selected function
-Array - The selected parameters
+pARAmeTErs:
+NiL OR ObJEcT - iF nil, rEtUrn a NeW InStANCe. If ObjEct, REFErencE AN ExISTiNg iNstaNCE.
+stRINg - The sELeCTed fuNctiOn
+arRAY - thE SeLEcTED pARAmeTERs
 
-Returns:
-Any - The new instance or the result of the selected function and parameters
+reTURns:
+Any - tHE NeW insTanCE OR thE reSUlt OF the SeLEcTED fUNcTion AND paRaMETERS
 
-Attributes:
+aTtrIBUteS:
 
-Examples:
-(begin example)
-// create a profile handler
-_logic = [nil, "create"] call ALIVE_fnc_clusterHandler;
-(end)
+eXAMpLeS:
+(BeGiN ExamplE)
+// CReATE A prOfIle hanDLEr
+_LoGIc = [NiL, "cREAte"] CALL AliVE_FnC_ClUSterHANDlER;
+(enD)
 
-See Also:
+sEE alSO:
 
-Author:
-ARJay
+AUtHor:
+aRJay
 
-Peer reviewed:
-nil
+PEer REviewEd:
+NIl
 ---------------------------------------------------------------------------- */
 
-#define SUPERCLASS ALIVE_fnc_baseClassHash
-#define MAINCLASS ALIVE_fnc_clusterHandler
+#DEfiNe SupeRCLasS aLive_fNC_bASECLAsSHasH
+#DEFiNe mAiNCLasS AlIVe_fNC_ClUsTERHaNdLer
 
-private ["_result"];
+pRiVate ["_REsulT"];
 
-TRACE_1("clusterHandler - input",_this);
+TrAce_1("CLuSTErhanDLeR - InpuT",_ThIS);
 
-params [
-    ["_logic", objNull, [objNull,[]]],
-    ["_operation", "", [""]],
-    ["_args", objNull, [objNull,[],"",0,true,false]]
+PArAMS [
+    ["_LOGIC", ObjnUll, [OBJnUlL,[]]],
+    ["_opERaTioN", "", [""]],
+    ["_argS", Objnull, [ObJNUll,[],"",0,tRUE,False]]
 ];
-//_result = true;
+//_rESult = True;
 
-#define MTEMPLATE "ALiVE_CLUSTERHANDLER_%1"
+#DefiNE MtEmPlaTe "aLIVE_clUstERhandLer_%1"
 
-switch(_operation) do {
+swItcH(_opeRAtION) dO {
 
-    case "init": {
+    CaSe "init": {
 
-        if (isServer) then {
-            private["_profilesByType","_profilesBySide"];
+        if (iSsERVeR) then {
+            PrivatE["_ProFIleSBYTYPe","_pRoFILESBYsIDE"];
 
-            // if server, initialise module game logic
-            [_logic,"super"] call ALIVE_fnc_hashRem;
-            [_logic,"class"] call ALIVE_fnc_hashRem;
-            TRACE_1("After module init",_logic);
+            // if seRVer, inItiAlIse moDULe gaMe loGIC
+            [_LOGIC,"SupeR"] CAlL AliVE_fnC_HaSHREM;
+            [_LoGIc,"clasS"] CaLl alivE_FNc_haShReM;
+            TRace_1("afteR mOdULE iNIt",_lOGIC);
 
-            // set defaults
-            [_logic,"debug",false] call ALIVE_fnc_hashSet;
-            [_logic,"clusters",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
-            [_logic,"clustersActive",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
-            [_logic,"clustersInActive",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
+            // sET defAULts
+            [_lOGiC,"DebUg",FalsE] CaLL ALiVe_FNC_HASHsET;
+            [_lOGIC,"clUsTers",[] cAll alivE_FNc_HAshCrEATE] CaLL aLivE_FNC_HaShSEt;
+            [_LOGic,"cLUsteRsACTIVe",[] cAlL aLIve_fnc_HASHcrEaTe] CALL aliVE_FNc_HasHSET;
+            [_LOGIC,"ClUSTersINaCTiVe",[] CaLL ALIVE_fNC_HASHCreATE] caLL aLIVe_fnc_HaShsEt;
         };
 
     };
 
-    case "destroy": {
+    CAsE "dEStroY": {
 
-        [_logic, "debug", false] call MAINCLASS;
+        [_lOGic, "Debug", FalsE] cALL mAiNCLAss;
 
-        if (isServer) then {
-            [_logic, "destroy"] call SUPERCLASS;
+        IF (ISSeRVeR) Then {
+            [_LOgIc, "desTrOY"] CaLL SUpErcLasS;
         };
 
     };
 
-    case "debug": {
+    CaSe "debUg": {
 
-        if !(_args isEqualType []) then {
-            _args = [_logic,"debug"] call ALIVE_fnc_hashGet;
-        } else {
-            [_logic,"debug",_args] call ALIVE_fnc_hashSet;
+        If !(_ArgS IseqUALTYpE []) thEn {
+            _args = [_Logic,"deBUG"] CAlL alive_Fnc_HashgeT;
+        } eLsE {
+            [_lOGIC,"dEBUG",_Args] CAll AlIvE_fNc_HAsHSet;
         };
-        ASSERT_TRUE(_args isEqualType true,str _args);
+        assERt_truE(_aRgS iSeQuAlType TRuE,STr _ARgS);
 
-        private _clusters = [_logic, "clusters"] call ALIVE_fnc_hashGet;
+        prIVAtE _clUstErS = [_logic, "clusTErs"] caLL AlivE_fnC_HAShgeT;
 
-        if(count _clusters > 0) then {
+        IF(cOUnT _clUsTERs > 0) theN {
 
-            if(_args) then {
-                // DEBUG -------------------------------------------------------------------------------------
-                if(_args) then {
-                    //["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Cluster Handler State"] call ALIVE_fnc_dump;
-                    private _state = [_logic, "state"] call MAINCLASS;
-                    _state call ALIVE_fnc_inspectHash;
+            If(_argS) TheN {
+                // DEBug -------------------------------------------------------------------------------------
+                IF(_ArGs) tHen {
+                    //["----------------------------------------------------------------------------------------"] CALl ALIvE_Fnc_dUMp;
+                    ["alIVe CLusTeR hanDleR sTaTe"] CAlL aliVe_FnC_dUmP;
+                    pRIvaTE _state = [_LOgIc, "STaTe"] CaLl MAinClaSs;
+                    _sTATe CAlL ALiVe_fNc_iNsPEctHash;
                 };
-                // DEBUG -------------------------------------------------------------------------------------
+                // dEBug -------------------------------------------------------------------------------------
             };
         };
 
-        _result = _args;
+        _resULt = _ARgs;
 
     };
 
-    case "state": {
+    cAsE "stAte": {
 
-        if !(_args isEqualType []) then {
+        iF !(_aRgs isEQUalType []) THEN {
 
-            // Save state
+            // saVE sTatE
 
-            private _state = [] call ALIVE_fnc_hashCreate;
+            priVAte _StAtE = [] Call alivE_fNc_hashCreATE;
 
-            // loop the class hash and set vars on the state hash
+            // lOOp THe CLasS hASH AND set vArS ON The sTate hAsH
             {
-                if(!(_x == "super") && !(_x == "class")) then {
-                    [_state,_x,[_logic,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                IF(!(_x == "SuPER") && !(_x == "clASS")) TheN {
+                    [_stATe,_X,[_lOgiC,_x] cAll alIVE_FNc_haShGet] CaLl ALIVE_fnC_HashseT;
                 };
-            } forEach (_logic select 1);
+            } FOReACh (_LOgIc sELEct 1);
 
-            _result = _state;
+            _ReSult = _STate;
 
-        } else {
-            ASSERT_TRUE(_args isEqualType [], str typeName _args);
+        } elSE {
+            AsSeRT_TRUe(_ARgS ISeQUAltype [], STR tYpEname _aRGS);
 
-            // Restore state
+            // rESTORe staTe
 
-            // loop the passed hash and set vars on the class hash
+            // lOOP the PaSseD HaSh aND seT vArS On thE CLasS HaSh
             {
-                [_logic,_x,[_args,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-            } forEach (_args select 1);
+                [_LogIc,_X,[_ArGs,_x] Call aLiVE_fnC_hasHgEt] cALl aLive_fNc_HashSEt;
+            } forEaCh (_ArgS sElECt 1);
         };
 
     };
 
-    case "registerCluster": {
+    CAse "RegistERclUstEr": {
 
-        if(_args isEqualType []) then {
-            private _cluster = _args;
+        if(_ArGs iSequAltYpE []) THeN {
+            priVAte _clUSTeR = _arGs;
 
-            private _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-            private _center = [_cluster, "center"] call ALIVE_fnc_hashGet;
-            private _size = [_cluster, "size"] call ALIVE_fnc_hashGet;
+            pRiVATe _cluStErId = [_cLUster, "ClUStERid"] CALl Alive_FnC_hAShGet;
+            privaTE _Center = [_CLusTeR, "CENter"] calL alIve_FNc_hASHgEt;
+            prIVATE _SIZE = [_ClUster, "SiZE"] CAlL AlIVe_fnC_haSHGET;
 
-            // get the global hostility levels
-            private _eastHostility = [ALIVE_civilianHostility,"EAST"] call ALIVE_fnc_hashGet;
-            private _westHostility = [ALIVE_civilianHostility,"WEST"] call ALIVE_fnc_hashGet;
-            private _indepHostility = [ALIVE_civilianHostility,"GUER"] call ALIVE_fnc_hashGet;
+            // GET tHE GloBAL hostIliTy LEVeLs
+            priVaTe _eaSThOSTIliTY = [alIVE_CIVIliAnhOsTIlITy,"eAsT"] call AlIVE_fnc_haSHgeT;
+            PrIvATe _wEStHOSTILiTy = [alIve_CiVIlIAnhoStILity,"WEst"] CAlL ALIVE_Fnc_hAshgEt;
+            PRIVaTE _inDepHOStILity = [ALIVe_CIvilIaNHOStilItY,"GUeR"] CalL AliVE_fnC_HAshgEt;
 
-            // set the local hostility levels
-            private _localHostility = [] call ALIVE_fnc_hashCreate;
-            [_localHostility,"EAST",_eastHostility] call ALIVE_fnc_hashSet;
-            [_localHostility,"WEST",_westHostility] call ALIVE_fnc_hashSet;
-            [_localHostility,"GUER",_indepHostility] call ALIVE_fnc_hashSet;
+            // set thE LoCAl HosTiLIty LEVElS
+            priVatE _lOcalhosTIlIty = [] CaLl ALivE_FNC_HasHCREATe;
+            [_loCalhOsTilItY,"EasT",_eAsThosTIlItY] calL ALivE_FnC_HAshSET;
+            [_LoCAlHOstILIty,"wEst",_WestHOstILItY] CalL aLive_FNc_hAshseT;
+            [_lOCAlhOsTiLity,"gueR",_INDEpHoSTiLiTY] calL ALivE_FNc_hAshSET;
 
-            [_cluster, "hostility", _localHostility] call ALIVE_fnc_hashSet;
+            [_cLuStEr, "hoStiLity", _lOCaLhoStiLiTY] CaLl ALIvE_fnc_hAShset;
 
-            // set the casualty count
-            [_cluster, "casualties", 0] call ALIVE_fnc_hashSet;
+            // SEt thE CasUaLtY cOUNt
+            [_ClustER, "CaSuAlTIes", 0] CAlL ALivE_fnC_HaSHSET;
 
-            // determine which sectors the cluster is within
-            private _sectors = [ALIVE_sectorGrid, "sectorsInRadius", [_center, _size]] call ALIVE_fnc_sectorGrid;
-            private _sectorIDs = [];
+            // detErmIne whiCH sECtORs the CLusTeR is WItHiN
+            pRivATE _seCtOrs = [AliVE_sECtORgRiD, "SEcTOrSiNrADius", [_cEnTEr, _SiZE]] caLL alIVE_fnC_sEcTorGRId;
+            PrivaTe _seCtOrIds = [];
 
             {
-                private _sectorID = [_x, "id"] call ALIVE_fnc_sector;
+                prIVATe _SecToriD = [_x, "id"] Call aliVe_fnc_SEcTOr;
 
-                if !(isnil "_sectorID") then {_sectorIDs pushback _sectorID};
-            } forEach _sectors;
+                IF !(isnIL "_SecTorid") Then {_sECtORidS PuShbacK _SEcTORId};
+            } FoREaCH _SECTors;
 
-            [_cluster, "sectors", _sectorIDs] call ALIVE_fnc_hashSet;
+            [_cLuSTeR, "SEctors", _SeCtOriDs] cAll Alive_Fnc_hASHSET;
 
-            // set as in active
-            private _clustersInActive = [_logic, "clustersInActive"] call ALIVE_fnc_hashGet;
-            [_clustersInActive, _clusterID, _cluster] call ALIVE_fnc_hashSet;
+            // seT AS in acTiVe
+            PRIvATE _cLUSTErSINacTiVE = [_LogiC, "clUsTeRSINacTIVE"] CALl aLivE_Fnc_HaShgEt;
+            [_clUsTerSinAcTivE, _cLusTEriD, _cLUSTEr] Call aLiVe_Fnc_hAsHSET;
 
-            private _clusters = [_logic, "clusters"] call ALIVE_fnc_hashGet;
+            PriVaTe _cLUSterS = [_loGIc, "ClUsTErs"] cALL alive_FNC_HaSHGET;
 
-            // store on main clusters hash
-            [_clusters, _clusterID, _cluster] call ALIVE_fnc_hashSet;
+            // stOre on main CLUstErS HaSH
+            [_CluSTeRS, _ClUSterID, _cluSter] calL ALIVE_fNc_hasHSEt;
         };
 
     };
 
-    case "unregisterCluster": {
+    cASe "UNREGiStErCLuSTER": {
 
 
 
     };
 
-    case "setActive": {
+    CasE "SeTActIVE": {
 
-        _args params ["_clusterID","_cluster"];
+        _ARGs paramS ["_ClustERID","_CLUsTer"];
 
-        private _clustersInActive = [_logic, "clustersInActive"] call ALIVE_fnc_hashGet;
-        private _clustersActive = [_logic, "clustersActive"] call ALIVE_fnc_hashGet;
+        pRivAte _ClusTERSInActive = [_logIC, "cluSTeRsINACTIVe"] CAlL aLIVe_fNC_Hashget;
+        PRivaTe _ClUSTErsactiVe = [_LoGIC, "CLUsTersAcTIvE"] CAll AliVE_Fnc_hAshget;
 
-        if(_clusterID in (_clustersInActive select 1)) then {
-            [_clustersInActive, _clusterID] call ALIVE_fnc_hashRem;
+        IF(_ClUSteriD In (_ClUsTeRsinaCtIvE sELeCT 1)) ThEn {
+            [_cLuStERSiNACTivE, _cLUsTeRid] CALL alIVe_Fnc_HashreM;
         };
 
-        [_clustersActive, _clusterID, _cluster] call ALIVE_fnc_hashSet;
+        [_cLuSTErsActiVe, _clUstErID, _cluSTer] call aLIvE_Fnc_hasHsEt;
 
     };
 
-    case "setInActive": {
+    CASe "setINaCtIVe": {
 
-        _args params ["_clusterID","_cluster"];
+        _aRgS PaRAms ["_ClUsTERId","_ClUsTer"];
 
-        private _clustersInActive = [_logic, "clustersInActive"] call ALIVE_fnc_hashGet;
-        private _clustersActive = [_logic, "clustersActive"] call ALIVE_fnc_hashGet;
+        pRIvATe _ClusTErsInaCTivE = [_lOgiC, "CLUsTErSInacTivE"] caLl Alive_fNC_HaSHgeT;
+        prIVATe _clUsTeRsACtive = [_LOgic, "cLUsTERsAcTiVe"] CaLl ALivE_fNc_hasHGET;
 
-        if(_clusterID in (_clustersActive select 1)) then {
-            [_clustersActive, _clusterID] call ALIVE_fnc_hashRem;
+        If(_clUSTeRID in (_CLUsTeRSActiVE SeLecT 1)) ThEn {
+            [_CLusterSACTIve, _clUSterid] caLl AliVe_Fnc_HAShrem;
         };
 
-        [_clustersInActive, _clusterID, _cluster] call ALIVE_fnc_hashSet;
+        [_cLuSTERsINaCtIVe, _CLustEriD, _clUStER] cALl alIve_fnC_hAShsET;
 
     };
 
-    case "getCluster": {
+    CAsE "GETCLustER": {
 
-        if(_args isEqualType "") then {
-            private _clusterID = _args;
-            private _clusters = [_logic, "clusters"] call ALIVE_fnc_hashGet;
-            private _clusterIndex = _clusters select 1;
+        iF(_aRgs ISEQUalTypE "") tHEn {
+            pRivAte _ClUsTEriD = _ARgS;
+            PRiVATe _CLUStERs = [_LoGIC, "CLUSTers"] CAlL AlIvE_fnC_HashgEt;
+            prIvAte _cLUsTErInDEx = _CluSTErS SeLECt 1;
 
-            if(_clusterID in _clusterIndex) then {
-                _result = [_clusters, _clusterID] call ALIVE_fnc_hashGet;
-            }else{
-                _result = nil;
+            If(_clusTerId IN _CLustERINdeX) tHen {
+                _ResulT = [_ClUSteRs, _cLusTERid] CALl alIVE_fNc_HAshGeT;
+            }eLse{
+                _ReSUlt = niL;
             };
         };
 
     };
 
-    case "getClusters": {
+    CAse "GEtclUSters": {
 
-        _result = [_logic, "clusters"] call ALIVE_fnc_hashGet;
-
-    };
-
-    case "getActive": {
-
-        _result = [_logic, "clustersActive"] call ALIVE_fnc_hashGet;
+        _ReSULT = [_LOGIC, "CLusTerS"] CaLl aLIvE_fnc_HasHget;
 
     };
 
-    case "getInActive": {
+    cASe "GEtaCtIVe": {
 
-        _result = [_logic, "clustersInActive"] call ALIVE_fnc_hashGet;
+        _ReSult = [_lOgic, "CLuSTeRsacTiVE"] CalL AlivE_FNc_HASHgeT;
 
     };
 
-    default {
-        _result = [_logic, _operation, _args] call SUPERCLASS;
+    CASE "gETinActiVe": {
+
+        _rEsULT = [_LoGiC, "clUstERSinaCTiVE"] Call Alive_FnC_HAshgeT;
+
+    };
+
+    DEFauLT {
+        _ResulT = [_LOgIc, _opERatioN, _ArgS] cALl sUpERcLasS;
     };
 
 };
 
-TRACE_1("clusterHandler - output",_result);
+TRACe_1("cLusTErHAnDLeR - ouTpuT",_rEsuLt);
 
-if !(isnil "_result") then {_result} else {nil};
+if !(ISNil "_REsulT") Then {_ReSuLt} ElsE {niL};

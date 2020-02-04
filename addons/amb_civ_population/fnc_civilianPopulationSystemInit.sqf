@@ -1,94 +1,94 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(civilianPopulationSystemInit);
+#INCLUde "\X\ALIVE\aDDoNs\Amb_civ_pOpuLATIon\SCrIpt_cOMpOnEnT.hPP"
+SCRIpt(CIviliAnPoPuLATionsYsTeMiNIt);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_civilianPopulationSystemInit
-Description:
-Creates the server side object to store settings
+FUnctIon: aLIVE_FNc_cIvILianpOPULatIonSYSTEMIniT
+dEsCRIpTiON:
+creATEs THE seRVeR SIDe obJECT tO sTorE sETTInGs
 
-Parameters:
-_this select 0: OBJECT - Reference to module
+PArameTERS:
+_thIs SElEcT 0: OBJeCT - reFeRENCE TO MOduLe
 
-Returns:
-Nil
-
-See Also:
-
-Author:
-ARjay
-Peer Reviewed:
+retuRNs:
 nil
+
+SEE ALso:
+
+aUtHor:
+aRJaY
+peEr REViEWeD:
+NIL
 ---------------------------------------------------------------------------- */
 
-params ["_logic"];
+PAraMS ["_loGIC"];
 
-// Confirm init function available
-ASSERT_DEFINED("ALIVE_fnc_civilianPopulationSystem","Main function missing");
+// CONFirm inIt FUnCTiOn aVAiLaBLe
+asSERt_dEFinEd("aLIve_fNc_cIvILIAnPoPUlAtioNSysTeM","mAin FuNcTiOn missinG");
 
-private _moduleID = [_logic, true] call ALIVE_fnc_dumpModuleInit;
+privaTE _mODULeID = [_LOGiC, trUE] CaLL aLiVE_fnc_DUMPmodULeInIT;
 
-if(isServer) then {
+iF(iSsERver) THen {
 
-    MOD(amb_civ_population) = _logic;
+    mod(aMb_CiV_PopULaTiON) = _LoGIc;
 
-    private _debug = (_logic getVariable ["debug","false"]) == "true";
-    private _spawnRadius = parseNumber (_logic getVariable ["spawnRadius","1500"]);
-    private _spawnTypeHeliRadius = parseNumber (_logic getVariable ["spawnTypeHeliRadius","1500"]);
-    private _spawnTypeJetRadius = parseNumber (_logic getVariable ["spawnTypeJetRadius","0"]);
-    private _activeLimiter = parseNumber (_logic getVariable ["activeLimiter","30"]);
-    private _hostilityWest = parseNumber (_logic getVariable ["hostilityWest","0"]);
-    private _hostilityEast = parseNumber (_logic getVariable ["hostilityEast","0"]);
-    private _hostilityIndep = parseNumber (_logic getVariable ["hostilityIndep","0"]);
-    private _ambientCivilianRoles = call compile (_logic getVariable ["ambientCivilianRoles","[]"]);
-    private _ambientCrowdSpawn = parseNumber (_logic getVariable ["ambientCrowdSpawn","0"]);
-    private _ambientCrowdDensity = parseNumber (_logic getVariable ["ambientCrowdDensity","4"]);
-    private _ambientCrowdLimit = parseNumber (_logic getVariable ["ambientCrowdLimit","50"]);
-    private _ambientCrowdFaction = (_logic getVariable ["ambientCrowdFaction",""]);
-    private _enableInteraction = (_logic getVariable ["enableInteraction","false"]) == "true";
+    PriVate _debuG = (_lOGiC GETvaRIaBLe ["dEBUg","False"]) == "True";
+    pRIvATE _sPAWNradiuS = PARsENumbEr (_LOGiC getVarIABlE ["SPAWNRaDIuS","1500"]);
+    PRIvaTE _sPaWntYpehelirADIuS = PARsENUmber (_LOGiC gETVARIable ["spawNtYpeheliRADIus","1500"]);
+    pRIVate _spAwNtyPejetrAdiuS = paRsEnUMBer (_lOgIC GEtVARIAbLE ["sPAwNTyPejetRaDIus","0"]);
+    PriVaTe _AcTIveliMITER = PARsENUmBER (_lOgic GETVaRIabLe ["acTIVELImITeR","30"]);
+    pRiVatE _HOStIliTyWeST = pArsENUMBEr (_LOGIc GeTvariaBLE ["HostilitYwESt","0"]);
+    PRIvaTe _HostILITYeast = pARseNUmbER (_Logic GeTvARiAbLE ["hoStiLItYEASt","0"]);
+    PRiVATe _hOStilityIndEP = PaRsenUmBer (_LOgIC gEtvARIable ["hOSTiLitYInDEp","0"]);
+    privATE _AMbiENtCiVILIAnRoLes = CAlL cOMPiLE (_LOgic GetVarIaBLE ["AMbIENtCIVIlianrOLes","[]"]);
+    PRIvaTe _AMbIeNtcroWdspawN = PaRSENUmbEr (_LOgIC getVArIaBle ["aMbIentcROWdSpAwN","0"]);
+    PriVAtE _aMBIENTCROWDDeNsItY = pArSenUMbEr (_LogiC gEtvaRiAbLe ["aMBIEntcrOwdDensitY","4"]);
+    PrivATe _aMbiENTCrOwDLIMit = parSenUMbeR (_lOgic GetVARiABLe ["amBiENtcrowdLImIt","50"]);
+    PRIvaTE _aMBieNTCROwDfaCtIoN = (_Logic getVArIABLE ["AmBiEnTCroWdfACTioN",""]);
+    PrIvAtE _eNabLEiNTeRActIOn = (_loGiC getVariaBLE ["EnAbLEinterAcTioN","faLSE"]) == "TRuE";
 
-//Check if a SYS Profile Module is available
-    private _errorMessage = "No Virtual AI system module was found! Please use this module in your mission! %1 %2";
-    private _error1 = "";
-    private _error2 = ""; //defaults
+//ChecK if A syS profiLE MODUle iS AvaiLablE
+    PrivaTe _ERrorMesSAGe = "No vIRTUAL AI SysTem MoDule was FOUND! PlEaSe usE tHIS moDUle In YOur MiSSIoN! %1 %2";
+    PrivATE _errOr1 = "";
+    pRivatE _eRror2 = ""; //DefAuLTS
 
-    if !([QMOD(sys_profile)] call ALiVE_fnc_isModuleAvailable) exitwith {
-        [_errorMessage,_error1,_error2] call ALIVE_fnc_dumpMPH;
+    iF !([QMoD(syS_pRoFILe)] CaLL ALIVe_fNc_ISMODULeAVaiLABLe) exItWiTH {
+        [_eRROrmESSAGe,_ERROR1,_ERroR2] cAll ALivE_FnC_dumPMph;
     };
 
-    if !([QMOD(amb_civ_population)] call ALiVE_fnc_isModuleAvailable) then {
-        ["WARNING: Civilian Placement module not placed!"] call ALiVE_fnc_DumpR;
+    If !([qmOD(amb_Civ_pOPULATIoN)] CALL alIvE_FNc_IsmOdUlEAvAILaBLE) THEN {
+        ["WArNing: CIViLian pLAcemEnt moduLE nOT pLaced!"] calL alIve_FnC_dUMpR;
     };
 
-    ALIVE_civilianHostility = [] call ALIVE_fnc_hashCreate;
-    [ALIVE_civilianHostility, "WEST", _hostilityWest] call ALIVE_fnc_hashSet;
-    [ALIVE_civilianHostility, "EAST", _hostilityEast] call ALIVE_fnc_hashSet;
-    [ALIVE_civilianHostility, "GUER", _hostilityIndep] call ALIVE_fnc_hashSet;
+    Alive_CIvILIAnHoStILiTY = [] CaLl ALIVE_fNc_HaShcREATE;
+    [ALIVe_CIvIlIAnhOsTiliTY, "weSt", _hostIlitYWest] CALl AliVE_fnC_HaShSeT;
+    [AlIvE_CiVIlIANHOStiLiTY, "east", _HostiLItyeAST] cALl alIvE_FnC_HAshSET;
+    [aLiVe_ciViLiANHOSTiLity, "GUER", _HoStilityInDep] caLL ALIve_fnC_hAshset;
 
-    ALIVE_civilianPopulationSystem = [nil, "create"] call ALIVE_fnc_civilianPopulationSystem;
-    [ALIVE_civilianPopulationSystem, "init"] call ALIVE_fnc_civilianPopulationSystem;
-    [ALIVE_civilianPopulationSystem, "debug", _debug] call ALIVE_fnc_civilianPopulationSystem;
-    [ALIVE_civilianPopulationSystem, "spawnRadius", _spawnRadius] call ALIVE_fnc_civilianPopulationSystem;
-    [ALIVE_civilianPopulationSystem, "spawnTypeJetRadius", _spawnTypeJetRadius] call ALIVE_fnc_civilianPopulationSystem;
-    [ALIVE_civilianPopulationSystem, "spawnTypeHeliRadius", _spawnTypeHeliRadius] call ALIVE_fnc_civilianPopulationSystem;
-    [ALIVE_civilianPopulationSystem, "activeLimiter", _activeLimiter] call ALIVE_fnc_civilianPopulationSystem;
-    [ALIVE_civilianPopulationSystem, "ambientCivilianRoles", _ambientCivilianRoles] call ALIVE_fnc_civilianPopulationSystem;
-    [ALIVE_civilianPopulationSystem, "ambientCrowdSpawn", _ambientCrowdSpawn] call ALIVE_fnc_civilianPopulationSystem;
-    [ALIVE_civilianPopulationSystem, "ambientCrowdDensity", _ambientCrowdDensity] call ALIVE_fnc_civilianPopulationSystem;
-    [ALIVE_civilianPopulationSystem, "ambientCrowdLimit", _ambientCrowdLimit] call ALIVE_fnc_civilianPopulationSystem;
-    [ALIVE_civilianPopulationSystem, "ambientCrowdFaction", _ambientCrowdFaction] call ALIVE_fnc_civilianPopulationSystem;
-    [ALIVE_civilianPopulationSystem, "enableInteraction", _enableInteraction] call ALIVE_fnc_civilianPopulationSystem;
+    AlivE_CIvilIanPopulatIONSYSteM = [nIL, "CrEATe"] caLL aLIVe_fNC_cIViLIanPOpULatioNsYsTem;
+    [alIve_CIvilIaNPOpulAtIoNsystEm, "init"] CAll alIve_fNc_ciVIlIAnPopulaTiOnsYSTEM;
+    [aLIvE_ciViLIaNPOPUlATIoNsyStem, "DEBUg", _DeBuG] CALL alIVE_fNC_CiviliANPOpulatiOnSYstEM;
+    [AlivE_cIvILIANPoPULATIonsYstem, "SPawnRADIuS", _SpAWnRADiUs] CAll aLive_fNC_CiVILiANpopULATIoNsysTEM;
+    [AliVE_cIvilIaNpoPulAtionSySTEM, "sPaWnTypEjETRaDIUS", _sPAWnTypEJeTradIuS] cAll ALIVe_FNC_CIVILIanpOpuLATIOnsysTEM;
+    [ALiVe_civiLIanPOPuLatIonSYSTEM, "SPawNtYPehELIRAdiUs", _SPawNtypeheliRADiUs] CALL ALiVE_FnC_CiVilIaNPOPUlaTIOnsYSTeM;
+    [aLiVe_CiVILIaNPoPulATIonsYSTem, "ACTiVelimiter", _ACTIVeLiMiter] Call aLIve_FnC_CivILIanpOPUlAtIOnsysTeM;
+    [AlivE_ciVILiANPOPUlAtIOnSystEm, "AMbieNTCiViliAnRoLeS", _AMBIEntciViLIaNROLeS] caLl ALiVE_Fnc_ciViLianpopulaTiOnSYstEM;
+    [ALIvE_CiVILIanPoPulATIOnSysTEm, "amBIentCrOWdSpaWN", _AmbienTCRowdSpAWn] CALl alIVe_FNc_ciVILIAnPopuLatIonsystEM;
+    [aliVe_civilIaNPopULaTIONsysTEm, "AmBieNTcrOWDDensItY", _ambIEntcrowddEnsiTY] CALl ALIVE_FnC_civiliAnpOpulATionSySteM;
+    [ALIve_ciViLIanpopULATIonSysTEM, "ambIENtCroWDlimit", _aMbieNTcRoWDlIMiT] CALL aLIve_FNc_ciVILiAnPOpulAtiOnsYsteM;
+    [aLIve_civIlIanpopUlationSYStEm, "aMBientcRoWdfactION", _amBieNtCRoWDFaCTIOn] cAlL alIvE_fnC_CIVIliaNpOpulaTIONsysTEM;
+    [alIve_CIVIlIAnPOPuLATiONsYSteM, "EnabLEiNtERaCTioN", _EnABlEINteRaCtIon] CALL alIve_fnC_CIviLiaNPOPulatIoNsYStEm;
 
-    if (count _ambientCivilianRoles == 0) then {GVAR(ROLES_DISABLED) = true} else {GVAR(ROLES_DISABLED) = false};
-    PublicVariable QGVAR(ROLES_DISABLED);
+    if (cOuNt _AmbIentCivIliaNroles == 0) tHeN {gVar(rOles_disABLeD) = TrUe} eLSE {gvAr(ROlEs_diSaBled) = fAlse};
+    PuBlIcVariablE QgVAr(roleS_DiSablED);
 
-    _logic setVariable ["handler",ALIVE_civilianPopulationSystem];
+    _lOGiC SETVariaBlE ["hanDlER",aLIvE_CivilIaNpoPulaTionsYSTem];
 
-    PublicVariable QMOD(amb_civ_population);
+    PUblIcVArIabLE QMOD(AMb_cIV_poPULAtIon);
 
-    [ALIVE_civilianPopulationSystem,"start"] call ALIVE_fnc_civilianPopulationSystem;
+    [aLiVE_CIvilianpoPulaTIonSYSTEM,"STarT"] CalL AlIve_fNc_CivIlIANpopULaTIonSYSTEM;
 
 };
 
-[_logic] call ALiVE_fnc_civInteractInit;
+[_logIC] caLL ALive_fNC_CIVINtEracTInIt;
 
-[_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;
+[_LOGiC, FALSE, _MoDUleiD] Call Alive_Fnc_DUMpMOdUleINIt;

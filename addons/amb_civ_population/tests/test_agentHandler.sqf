@@ -1,140 +1,140 @@
 // ----------------------------------------------------------------------------
 
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(test_agentHandler);
+#INCLUDE "\X\ALIVE\ADdoNs\AmB_civ_pOPULAtion\scRiPT_cOMponeNt.HPp"
+scriPt(teST_AgeNTHaNDLeR);
 
-//execVM "\x\alive\addons\amb_civ_population\tests\test_agentHandler.sqf"
+//eXEcvM "\x\ALIVE\aDdoNs\AMB_cIV_POPUlation\teSts\TEST_agENThaNDLEr.SqF"
 
 // ----------------------------------------------------------------------------
 
-private ["_result","_err","_logic","_state","_result2"];
+priVATe ["_RESULT","_eRr","_lOgIc","_StAte","_rEsulT2"];
 
-LOG("Testing Agent Handler Object");
+LOg("teStiNG aGeNT hANDler ObjeCT");
 
-ASSERT_DEFINED("ALIVE_fnc_agentHandler","");
+ASseRt_DEfINeD("aliVe_FNc_AGeNThANdLer","");
 
-#define STAT(msg) sleep 3; \
-diag_log ["TEST("+str player+": "+msg]; \
-titleText [msg,"PLAIN"]
+#DEFine sTAt(mSg) SleEP 3; \
+DIag_LOG ["tESt("+stR PlAyeR+": "+msg]; \
+TITLEteXt [mSg,"PLAIN"]
 
-#define STAT1(msg) CONT = false; \
-waitUntil{CONT}; \
-diag_log ["TEST("+str player+": "+msg]; \
-titleText [msg,"PLAIN"]
+#DEFinE stat1(MSg) CoNt = fAlse; \
+WaitUnTil{cOnt}; \
+dIaG_LoG ["TeST("+sTr PLAyER+": "+msg]; \
+TITLetExt [MsG,"PLaIN"]
 
-#define DEBUGON STAT("Setup debug parameters"); \
-_result = [ALIVE_agentHandler, "debug", true] call ALIVE_fnc_agentHandler; \
-_err = "enabled debug"; \
-ASSERT_TRUE(typeName _result == "BOOL", _err); \
-ASSERT_TRUE(_result, _err);
+#dEFIne debuGoN Stat("setUp DebUg paRAmEteRs"); \
+_REsULt = [AliVE_aGEnthaNdlER, "DEBUg", tRUe] cALL AlIvE_fNc_AgENthaNdLeR; \
+_Err = "EnabLED DEBUg"; \
+asSeRT_TrUe(TyPeNAMe _REsuLT == "Bool", _ErR); \
+assErT_tRue(_rESUlt, _erR);
 
-#define DEBUGOFF STAT("Disable debug"); \
-_result = [ALIVE_agentHandler, "debug", true] call ALIVE_fnc_agentHandler; \
-_err = "disable debug"; \
-ASSERT_TRUE(typeName _result == "BOOL", _err); \
-ASSERT_TRUE(!_result, _err);
+#DEFiNe DEBUGoff StAT("disABLe dEbuG"); \
+_REsult = [aliVE_AGENTHandLER, "DEbUg", tRuE] CALL aliVe_fNC_AgEnthanDLer; \
+_erR = "DisabLe dEBUG"; \
+AsSerT_truE(TYPeNAmE _reSUlt == "Bool", _err); \
+asSErt_tRue(!_resUlT, _ERR);
 
-#define TIMERSTART \
-_timeStart = diag_tickTime; \
-diag_log "Timer Start";
+#dEFiNE TimERsTarT \
+_TIMeSTARt = DIaG_TIckTIme; \
+DiAG_LOg "TImER STArt";
 
-#define TIMEREND \
-_timeEnd = diag_tickTime - _timeStart; \
-diag_log format["Timer End %1",_timeEnd];
+#deFINE tIMEreNd \
+_TimEEND = DIAg_TIckTiMe - _timeSTaRt; \
+DiAG_lOg FORmaT["tIMer enD %1",_TImEEnd];
 
 //========================================
 
-_logic = nil;
+_LoGic = NIL;
 
-STAT("Create Agent Handler instance");
-if(isServer) then {
-    ALIVE_agentHandler = [nil, "create"] call ALIVE_fnc_agentHandler;
-    TEST_LOGIC = ALIVE_agentHandler;
-    publicVariable "TEST_LOGIC";
+stAT("CReaTE AgEnt HanDler InStAnCE");
+if(isSeRver) then {
+    aliVE_aGENThANdlER = [nIl, "CREaTe"] cALL ALIVe_FNc_agEnthANdler;
+    teSt_LOgiC = alive_aGenThaNDler;
+    pubLiCvAriAblE "tEsT_lOgIc";
 };
 
 
-STAT("Init Agent Handler");
-_result = [ALIVE_agentHandler, "init"] call ALIVE_fnc_agentHandler;
-_err = "set init";
+sTat("inIt Agent HandLEr");
+_RESulT = [AlIVe_aGEnTHandLer, "iNIt"] CaLL ALIve_fnc_agenTHAndler;
+_eRr = "sET iniT";
 
 
-STAT("Confirm new Agent Handler instance");
-waitUntil{!isNil "TEST_LOGIC"};
-_logic = TEST_LOGIC;
-_err = "instantiate object";
-ASSERT_DEFINED("_logic",_err);
-ASSERT_TRUE(typeName _logic == "ARRAY", _err);
+StaT("COnFiRM nEw aGent HaNDlER InSTAnCE");
+waiTunTIl{!ISNIL "tesT_LOGic"};
+_LoGic = TeST_loGic;
+_err = "InstANTIAte ObjEct";
+aSseRT_DEFINEd("_LOGIc",_eRR);
+assert_tRuE(tYPENamE _LOGIc == "arRAy", _err);
 
 
-STAT("Create Agent");
-_agent1 = [nil, "create"] call ALIVE_fnc_civilianAgent;
-[_agent1, "init"] call ALIVE_fnc_civilianAgent;
-[_agent1, "agentID", "agent_01"] call ALIVE_fnc_civilianAgent;
-[_agent1, "agentClass", "C_man_p_fugitive_F_afro"] call ALIVE_fnc_civilianAgent;
-[_agent1, "position", getPos player] call ALIVE_fnc_civilianAgent;
-[_agent1, "side", "CIV"] call ALIVE_fnc_civilianAgent;
-[_agent1, "faction", "CIV_F"] call ALIVE_fnc_civilianAgent;
-[_agent1, "homeCluster", "C_0"] call ALIVE_fnc_civilianAgent;
+Stat("CREAtE aGEnT");
+_aGenT1 = [nil, "creAtE"] CAll ALIVE_fNc_ciVIlianAGent;
+[_AgenT1, "iNIt"] caLl alive_FNC_civIliAnAgenT;
+[_AgeNT1, "AGEnTId", "AGENt_01"] calL AlivE_fnc_ciViliAnAGenT;
+[_AgeNt1, "aGENtCLass", "c_mAN_p_fuGiTiVE_f_AFro"] CAll ALIVE_fnC_CivIliAnagEnT;
+[_AGENt1, "poSItion", geTPOS PLayEr] caLl aliVe_fNc_CIvIlIaNAgENt;
+[_aGEnt1, "SIdE", "CIV"] CaLL aLivE_fNC_civILIaNAGENt;
+[_aGent1, "FAcTion", "Civ_f"] CalL alIvE_fnc_ciVIlIAnaGEnT;
+[_agENT1, "HomeClUSTeR", "C_0"] cALL aLIVE_fnC_ciViLiAnAgENt;
 
 
-STAT("Register Agent");
-_result = [_logic, "registerAgent", _agent1] call ALIVE_fnc_agentHandler;
-_err = "register agent";
+stat("REGister agEnT");
+_REsulT = [_LoGIc, "RegIsTeraGeNt", _AGEnT1] CAlL AlivE_FNC_AgENThAndLer;
+_erR = "rEGiStEr aGenT";
 
 
-DEBUGON;
+DEBuGon;
 
 
-STAT("Get Agent");
-_agent1 = [_logic, "getAgent", "agent_01"] call ALIVE_fnc_agentHandler;
-_err = "get agent";
-ASSERT_TRUE(typeName _agent1 == "ARRAY", _err);
+sTat("get AGEnT");
+_AGeNt1 = [_lOgic, "GETAgenT", "agENT_01"] caLL AlIvE_FnC_AGeNTHanDLeR;
+_eRR = "gEt AgEnT";
+aSseRt_True(tyPename _AGeNT1 == "ARRay", _eRr);
 
 
-diag_log _result;
+DIAg_loG _rEsUlt;
 
 
-STAT("Get Agents by cluster");
-_result = [_logic, "getAgentsByCluster", "C_0"] call ALIVE_fnc_agentHandler;
-_err = "get Agents by cluster";
-ASSERT_TRUE(typeName _result == "ARRAY", _err);
+sTAt("GET AgEntS BY CLUSTER");
+_rEsulT = [_lOGiC, "geTagEntSBycLuster", "c_0"] cALl aLivE_FnC_AgenTHANdLeR;
+_err = "gEt AGEnts BY clusTer";
+asserT_tRUe(TyPenaME _ReSuLT == "arRaY", _Err);
 
 
-diag_log _result;
+dIaG_LoG _resulT;
 
 
 
-STAT("Spawn Agent 1");
-[_agent1, "spawn"] call ALIVE_fnc_civilianAgent;
+StAt("SpaWN AgENT 1");
+[_AgENT1, "SPAwn"] caLL alIVe_fnc_CiViLianagent;
 
 
-DEBUGON;
+debugon;
 
 
-STAT("Despawn Agent 1");
-[_agent1, "despawn"] call ALIVE_fnc_civilianAgent;
+StAt("DEspAwn AGenT 1");
+[_agent1, "despAWn"] caLL AlIVE_fNc_CIviLIANAgeNt;
 
 
-DEBUGON;
+DEBUGoN;
 
 
-STAT("Un-Register Agent 1");
-_result = [_logic, "unregisterAgent", _agent1] call ALIVE_fnc_agentHandler;
-_err = "unregister agent";
-ASSERT_TRUE(typeName _result == "BOOL", _err);
+StaT("un-ReGIsTEr AgEnt 1");
+_ResuLT = [_lOGIC, "UNregIStErAgEnt", _AgEnt1] CALl ALIVE_FNC_agEntHANDLeR;
+_eRr = "unreGISTEr AgENT";
+AsSERT_tRue(typenamE _rESuLT == "bOoL", _err);
 
 
-DEBUGON;
+debUgOn;
 
 
-STAT("Destroy old Profile Handler instance");
-if(isServer) then {
-    [_logic, "destroy"] call ALIVE_fnc_agentHandler;
-    TEST_LOGIC = nil;
-    publicVariable "TEST_LOGIC";
-} else {
-    waitUntil{isNull TEST_LOGIC};
+StAt("DEStROY old pRofiLe hANDLeR inStaNce");
+if(isserVeR) Then {
+    [_lOgIc, "DeStROy"] cALl ALiVE_FNc_AgentHandLER;
+    teSt_LoGIc = NIL;
+    PUblICVaRIABLe "TESt_loGic";
+} eLSe {
+    waiTUntIL{ISnUlL teSt_LOGiC};
 };
 
-nil;
+nIL;

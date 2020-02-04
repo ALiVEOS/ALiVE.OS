@@ -1,39 +1,39 @@
 // ----------------------------------------------------------------------------
 
-#include "\x\alive\addons\amb_civ_placement\script_component.hpp"
-SCRIPT(test_AMB_CP);
+#IncLude "\X\AlIVE\aDDoNs\AMB_cIv_plACEmENT\Script_COMpONeNT.Hpp"
+SCRIpT(teST_Amb_Cp);
 
 // ----------------------------------------------------------------------------
 
-private ["_result","_err","_logic","_amo","_state","_result2"];
+PRivaTE ["_ResULT","_ERR","_loGic","_AMo","_StAtE","_ReSULt2"];
 
-LOG("Testing CO");
+Log("tESTINg CO");
 
-ASSERT_DEFINED("ALIVE_fnc_AMB_CP","");
+asSErt_DefinEd("ALivE_fNC_aMB_CP","");
 
-#define STAT(msg) sleep 0.5; \
-diag_log ["TEST("+str player+": "+msg]; \
-titleText [msg,"PLAIN"]
+#dEfiNe StAt(MSg) SlEeP 0.5; \
+dIAg_LOg ["teST("+Str PlAyER+": "+msG]; \
+TITletEXt [msg,"pLaIN"]
 
-#define STAT1(msg) CONT = false; \
-waitUntil{CONT}; \
-diag_log ["TEST("+str player+": "+msg]; \
-titleText [msg,"PLAIN"]
+#DEFiNE STAT1(MsG) cont = falSE; \
+WAItUNTIl{COnt}; \
+diag_lOg ["tEsT("+sTR pLAyer+": "+MSg]; \
+tiTlEteXT [MsG,"PLAIN"]
 
-#define DEBUGON STAT("Setup debug parameters"); \
-_result = [_logic, "debug", true] call ALIVE_fnc_AMB_CP; \
-_err = "enabled debug"; \
-ASSERT_TRUE(typeName _result == "BOOL", _err); \
-ASSERT_TRUE(_result, _err);
+#dEfine dEbUGOn STAT("seTup debuG PARameTErS"); \
+_ResUlt = [_lOgiC, "DeBuG", trUe] CaLL AlIVE_fNc_aMB_cP; \
+_Err = "enABLEd DEbug"; \
+asSErT_TrUe(tyPEnAme _ReSULT == "bOOL", _ErR); \
+asserT_truE(_rEsULt, _ERR);
 
-#define DEBUGOFF STAT("Disable debug"); \
-_result = [_logic, "debug", false] call ALIVE_fnc_AMB_CP; \
-_err = "disable debug"; \
-ASSERT_TRUE(typeName _result == "BOOL", _err); \
-ASSERT_TRUE(!_result, _err);
+#DefIne debuGoff sTAT("DiSAbLe DeBUg"); \
+_ResuLT = [_lOGIC, "DEBUG", FaLse] CaLL AlIvE_fNC_amB_cp; \
+_ERR = "dIsablE dEBUG"; \
+AssERt_TrUe(typeNamE _ResuLT == "BooL", _ErR); \
+AssERt_TRUE(!_reSULt, _err);
 
 //========================================
 
-_amo = allMissionObjects "";
+_amo = aLlMIssioNoBjECts "";
 
-nil;
+niL;

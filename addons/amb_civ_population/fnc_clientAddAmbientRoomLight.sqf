@@ -1,33 +1,33 @@
-#include "\x\alive\addons\amb_civ_population\script_component.hpp"
-SCRIPT(clientAddAmbientRoomLight);
+#InCLUDe "\x\ALIVE\aDDoNS\AmB_cIV_pOpulATiOn\SCRipt_cOmpoNENT.hPp"
+SCRIPt(CliENTADdAmbieNtROomLIght);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_clientAddAmbientRoomLight
+FuNcTiON: aLIVE_fnc_clIENTaDDAmBIentroOMlIght
 
-Description:
-Add ambient room light on a client
+dEsCriptiOn:
+aDD aMbIent rOOM LighT on a clIeNt
 
-Parameters:
+paRaMETeRS:
 
-Object - building to add light to
+ObjecT - BUildiNG to add liGhT To
 
-Returns:
+ReturNS:
 
-Examples:
-(begin example)
-_light = [_building, _light, _brightness, _colour] call ALIVE_fnc_clientAddAmbientRoomLight
-(end)
+EXAmpLES:
+(BEGIn eXaMPle)
+_lIghT = [_buILDiNG, _liGHt, _BrIGhTNESS, _COloUr] CaLL ALIVe_fnC_CLIENTADDambIENtROomliGht
+(enD)
 
-See Also:
+SEE alSO:
 
-Author:
-ARJay
+AUthOr:
+ARjAy
 ---------------------------------------------------------------------------- */
 
-params ["_building","_light","_brightness","_colour"];
+pAraMs ["_BuILdING","_lIgHT","_BRIghtNESS","_colouR"];
 
-if (hasInterface) then {
-    _light setLightBrightness _brightness;
-    _light setLightColor _colour;
-    _light lightAttachObject [_building, [1,1,1]];
+IF (HASINterfAcE) tHEN {
+    _ligHt SetLIghTBrIGhTnEsS _BRIghtNeSS;
+    _LIGHT sETlIgHTColOr _coLOUr;
+    _lIGHT LIGhTaTtACHObJeCT [_BuilDInG, [1,1,1]];
 };

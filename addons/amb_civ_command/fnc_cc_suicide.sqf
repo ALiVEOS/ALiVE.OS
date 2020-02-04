@@ -1,247 +1,247 @@
-#include "\x\alive\addons\amb_civ_command\script_component.hpp"
-SCRIPT(cc_suicide);
+#INcLUDe "\X\AlIVe\Addons\aMB_cIV_CommaNd\ScRiPT_CoMPoNenT.HPp"
+sCRIpt(CC_suiciDe);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_cc_suicide
+FuNction: Alive_fnC_Cc_sUiCIDe
 
-Description:
-Suicide Bomber command for civilians
+deSCriPTiOn:
+SuiCidE boMber COmManD fOr ciVILians
 
-Parameters:
-Profile - profile
-Args - array
+PARaMEtErS:
+PrOfile - pROFilE
+arGS - ARray
 
-Returns:
+retURnS:
 
-Examples:
-(begin example)
+EXampLeS:
+(bEGIn ExAMpLE)
 //
-_result = [_agent, []] call ALIVE_fnc_cc_suicide;
-(end)
+_resULT = [_AgenT, []] cALL aLIvE_FNC_CC_sUIciDe;
+(eND)
 
-See Also:
+seE ALSo:
 
-Author:
-ARJay
+aUthor:
+ARjAY
 ---------------------------------------------------------------------------- */
 
-params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
+PArAmS ["_aGenTDatA","_cOMMaNDSTATe","_coMmaNDnamE","_aRGs","_StAte","_debug"];
 
-private _agentID = _agentData select 2 select 3;
-private _agent = _agentData select 2 select 5;
+pRivaTE _AgentID = _AgENTdATa selECT 2 sElEcT 3;
+pRiVATe _AGEnt = _AGEnTdAta sELECt 2 select 5;
 
-private _nextState = _state;
-private _nextStateArgs = [];
+PrIVAte _neXTstaTE = _STaTe;
+PrIVaTe _nexTSTaTeArGs = [];
 
 
-// DEBUG -------------------------------------------------------------------------------------
-if(_debug) then {
-    ["ALiVE Managed Script Command - [%1] called args: %2",_agentID,_args] call ALIVE_fnc_dump;
+// DEbUG -------------------------------------------------------------------------------------
+IF(_DeBUg) then {
+    ["AlIVe maNaged sCRIpt cOMMaND - [%1] CAllED ARGs: %2",_AGentId,_ARgS] CALL ALiVe_Fnc_DUMP;
 };
-// DEBUG -------------------------------------------------------------------------------------
+// DEbUg -------------------------------------------------------------------------------------
 
-switch (_state) do {
+SwitCh (_STate) do {
 
-    case "init":{
+    cAse "INiT":{
 
-        // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        // dEBug -------------------------------------------------------------------------------------
+        IF(_dEbuG) tHEN {
+            ["ALIve mANaGed scRIpt cOmMAnd - [%1] stAte: %2",_AgeNTID,_sTaTe] cAll aLivE_FNC_dump;
         };
-        // DEBUG -------------------------------------------------------------------------------------
+        // DEBug -------------------------------------------------------------------------------------
 
-        _agent setVariable ["ALIVE_agentBusy", true, false];
+        _AGenT SeTvAriabLe ["AlIve_AGEntBUsy", tRUE, FaLse];
 
-        private _agentClusterID = _agentData select 2 select 9;
-        private _agentCluster = [ALIVE_clusterHandler,"getCluster",_agentClusterID] call ALIVE_fnc_clusterHandler;
+        privatE _aGEnTcLUstERid = _aGENTDaTA seLECt 2 SeLect 9;
+        PRIvATE _agentclUSTER = [AlIve_cLuSTerHandLER,"GetcluSTEr",_agENTcLuSTErid] CaLl aLIve_FNc_clusteRHaNdLER;
 
-        private _target = [_agentCluster,getPosASL _agent, 50] call ALIVE_fnc_getAgentEnemyNear;
+        PrivATE _targeT = [_ageNTCluSTer,getPoSasL _aGENT, 50] CAlL aLIVe_FnC_GETaGENTenEmyneAr;
 
-        if(count _target > 0) then {
+        iF(couNT _tArGeT > 0) tHEN {
 
-            _target = _target select 0;
+            _taRget = _tarGet SeleCt 0;
 
-            private _homePosition = _agentData select 2 select 10;
-            private _positions = [_homePosition,5] call ALIVE_fnc_findIndoorHousePositions;
+            PRIvAte _hoMEPoSitIOn = _AgenTDaTA sELeCT 2 SelECt 10;
+            prIvaTe _pOsitIonS = [_hOMePoSItIoN,5] calL aLIvE_fNc_FiNdInDOOrHOusEPosiTIOnS;
 
-            if(count _positions > 0) then {
-                private _position = _positions call BIS_fnc_arrayPop;
-                [_agent] call ALIVE_fnc_agentSelectSpeedMode;
-                [_agent, _position] call ALiVE_fnc_doMoveRemote;
+            If(cOuNT _pOsitioNS > 0) ThEN {
+                PRiVaTE _pOSItion = _poSiTioNs Call biS_fnc_arrayPoP;
+                [_agEnt] cALL aliVe_FnC_agEnTSelecTsPeEDMoDe;
+                [_AGent, _POsITION] CalL aLive_fnC_DOMOvEreMote;
 
-                _nextStateArgs = [_target];
+                _nEXtstateaRgs = [_targeT];
 
-                _nextState = "arm";
-                [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-            }else{
-                _nextState = "done";
-                [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+                _NexTsTATE = "ArM";
+                [_COMmAnDStAtE, _aGentID, [_AGeNtDaTa, [_COMmANdNAMe,"manaGeD",_arGS,_nExtStaTE,_nEXtSTATEARgS]]] cALL aLive_fNc_hashSET;
+            }eLsE{
+                _NeXtsTatE = "done";
+                [_CommAndsTAtE, _AgeNtiD, [_agEntDAta, [_coMMANDnAmE,"mAnagEd",_ARgs,_NEXtstAtE,_NextSTatEARgs]]] CalL AlIve_FNC_hashSeT;
             };
-        }else{
-            _nextState = "done";
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+        }ElSe{
+            _NeXtsTaTe = "dONe";
+            [_CoMmAnDstAtE, _agEntID, [_AgENTdaTa, [_CoMManDnAme,"MaNaGed",_ARgS,_neXTSTATe,_nEXtStaTEArGS]]] CALl AlIvE_FNc_HashsET;
         };
 
     };
 
-    case "arm":{
+    CaSe "ARm":{
 
-        // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        // dEBug -------------------------------------------------------------------------------------
+        IF(_DeBuG) then {
+            ["aLIvE ManaGED SCRIPt COmMAnd - [%1] sTaTE: %2",_agEntId,_stAte] Call ALive_FNc_DUmP;
         };
-        // DEBUG -------------------------------------------------------------------------------------
+        // DEbuG -------------------------------------------------------------------------------------
 
-        if(_agent call ALiVE_fnc_unitReadyRemote) then {
+        If(_aGEnT Call alivE_fnc_UNITREaDyREMOtE) TheN {
 
-            private _bomb1 = "DemoCharge_Remote_Ammo" createVehicle [0,0,0];
-            private _bomb2 = "DemoCharge_Remote_Ammo" createVehicle  [0,0,0];
-            private _bomb3 = "DemoCharge_Remote_Ammo" createVehicle  [0,0,0];
+            privATE _BOMb1 = "DEmoCHaRgE_rEMotE_ammo" cReATevEhICLE [0,0,0];
+            pRivAtE _BoMB2 = "dEMoCHaRgE_REmotE_Ammo" createvEHIcLe  [0,0,0];
+            PRivaTe _BoMB3 = "deMOcHArge_REMOTe_AMMo" crEAtevEhiCLE  [0,0,0];
 
-            sleep 0.01;
+            sLeeP 0.01;
 
-            _bomb1 attachTo [_agent, [-0.1,0.1,0.15],"Pelvis"];
-            _bomb1 setVectorDirAndUp [[0.5,0.5,0],[-0.5,0.5,0]];
-            _bomb1 setPosATL (getPosATL _bomb1);
+            _BOMb1 ATtaCHto [_AgEnT, [-0.1,0.1,0.15],"pelviS"];
+            _bOMb1 SEtVecTORDiRaNdUp [[0.5,0.5,0],[-0.5,0.5,0]];
+            _bomB1 setPosatl (geTpoSatL _bOmB1);
 
-            _bomb2 attachTo [_agent, [0,0.15,0.15],"Pelvis"];
-            _bomb2 setVectorDirAndUp [[1,0,0],[0,1,0]];
-            _bomb2 setPosATL (getPosATL _bomb2);
+            _BOMb2 AtTaCHtO [_AGent, [0,0.15,0.15],"pELViS"];
+            _BOmB2 setVECtORDIRaNDUP [[1,0,0],[0,1,0]];
+            _bOMB2 SeTposatl (GEtPosatL _BoMB2);
 
-            _bomb3 attachTo [_agent, [0.1,0.1,0.15],"Pelvis"];
-            _bomb3 setVectorDirAndUp [[0.5,-0.5,0],[0.5,0.5,0]];
-            _bomb3 setPosATL (getPosATL _bomb3);
+            _boMB3 ATTAChTO [_AgEnT, [0.1,0.1,0.15],"pelvis"];
+            _boMB3 sEtVEctOrDIrANdUp [[0.5,-0.5,0],[0.5,0.5,0]];
+            _BoMB3 SEtPOSaTl (getPosatL _BomB3);
 
-            _agent setVariable ["ALIVE_agentSuicide", true, false];
+            _AGENT SeTVaRIAble ["AliVE_agENtsUiCidE", tRuE, falSe];
 
-            _nextStateArgs = _args + [_bomb1, _bomb2, _bomb3];
+            _NEXtStatearGS = _arGs + [_bOMB1, _BOmb2, _Bomb3];
 
-            _nextState = "target";
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+            _NeXtSTAte = "tarGEt";
+            [_cOmMANdStATE, _AgEntid, [_AGentdATA, [_COmMaNdname,"mANAgED",_Args,_neXtStAte,_NexTSTATeaRgS]]] CAll aliVE_fnC_HAshSET;
         };
 
     };
 
-    case "target":{
+    CasE "tARGet":{
 
-        // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        // deBug -------------------------------------------------------------------------------------
+        IF(_DEBUg) THEN {
+            ["alIvE MANaged ScRiPt CoMManD - [%1] stAte: %2",_AGEntID,_STATE] CaLL alive_fnC_dUMP;
         };
-        // DEBUG -------------------------------------------------------------------------------------
+        // DebUG -------------------------------------------------------------------------------------
 
-        _args params ["_target","_bomb1","_bomb2","_bomb3"];
+        _ARGs pARamS ["_TARGet","_bOmb1","_bomb2","_bOMb3"];
 
-        if!(isNil "_target") then {
+        if!(iSNiL "_taRGeT") ThEN {
 
-            _agent setSpeedMode "FULL";
+            _AGENt SetSPEEdModE "fulL";
 
-            private _handle = [_agent, _target, _bomb1, _bomb2, _bomb3] spawn {
+            prIvate _HanDLe = [_Agent, _taRGet, _bOMb1, _bomb2, _bOMb3] SPAwn {
 
-                params ["_agent","_target","_bomb1","_bomb2","_bomb3"];
+                params ["_agEnt","_TargeT","_BOMB1","_boMb2","_bOmB3"];
 
-                [_agent, getPosASL _target] call ALiVE_fnc_doMoveRemote;
+                [_aGenT, gEtpoSAsl _taRget] caLl AliVe_FNc_DoMovEreMOTe;
 
-                private _timer = time;
+                pRIVaTE _tiMeR = TImE;
 
-                waituntil {
-                    sleep 0.5;
+                WAItunTIl {
+                    SlEEP 0.5;
 
-                    if (time - _timer > 15) then {[_agent, getPosASL _target] call ALiVE_fnc_doMoveRemote; _timer = time};
+                    If (tIme - _TiMER > 15) THeN {[_agenT, GEtpOSASl _taRget] calL aLivE_Fnc_DOmOvEremotE; _tiMEr = TIME};
 
-                    private _distance = _agent distance _target;
+                    PRIVaTe _disTanCE = _AGenT diStanCE _TarGET;
 
-                    //["SPAWNED SUICIDE distance: %1 alive: %2 condition: %3",_distance, (alive _agent), ((_distance < 5) || !(alive _agent))] call ALIVE_fnc_dump;
-                    ((_distance < 5) || !(alive _agent))
+                    //["sPAWNEd sUICiDE dIStaNcE: %1 aLiVe: %2 cONdITIOn: %3",_dIsTANcE, (AlIvE _AGEnT), ((_diStaNCE < 5) || !(AlIVE _aGENT))] cAlL AlIve_FNC_dump;
+                    ((_distance < 5) || !(AliVe _aGENT))
                 };
 
-                [_agent, _target] call ALIVE_fnc_addToEnemyGroup;
+                [_AGENT, _TarGet] CAll ALiVE_fNC_aDDTOEneMygROuP;
 
-                deleteVehicle _bomb1;
-                deleteVehicle _bomb2;
-                deleteVehicle _bomb3;
+                DeLeTeVehICLe _bOmb1;
+                DeLEtEveHicLE _BOmb2;
+                DELetEvEhIcLE _BoMB3;
 
-                private _diceRoll = random 1;
+                pRIVAte _dicErolL = Random 1;
 
-                if(_diceRoll > 0.2) then {
-                    private _object = "HelicopterExploSmall" createVehicle (getPos _agent);
-                    _object attachTo [_agent,[-0.02,-0.07,0.042],"rightHand"];
+                if(_diCERoLl > 0.2) tHEN {
+                    privaTe _oBjeCT = "HelICOPTerExplOsMAlL" CREateVEhIclE (getPOs _agEnT);
+                    _ObJecT ATTachtO [_aGeNT,[-0.02,-0.07,0.042],"righthAnd"];
                 };
             };
 
-            // this is causing a bug!!
-            //[_agent, _target] call ALIVE_fnc_addToEnemyGroup;
+            // ThiS IS Causing a bug!!
+            //[_aGEnt, _TArGEt] CAlL alive_fnc_ADDtoeNEMygROUP;
 
-            _agent setCombatMode "RED";
-            _agent setBehaviour "AWARE";
+            _agenT sETCOMBatmODE "reD";
+            _AGEnt SeTbEHAvIouR "Aware";
 
-            _nextStateArgs = _args + [_handle];
+            _nexTsTatEArgs = _aRgs + [_hANdlE];
 
-            _nextState = "travel";
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
-        }else{
-            _nextState = "done";
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+            _nExTSTAtE = "tRAvEl";
+            [_coMmAndStAtE, _AGenTID, [_agEntdaTA, [_COmmandNaME,"MANaged",_args,_NeXTsTatE,_NEXTStatEARGS]]] CAll ALIvE_fnC_HaSHSET;
+        }elsE{
+            _NExtstATE = "dOnE";
+            [_coMmaNDSTaTE, _aGEntID, [_AgentDATA, [_cOMmAndNAmE,"ManaGEd",_aRgs,_nexTStAte,_NEXtStAteargs]]] cAlL ALIVE_FNC_HaShSet;
         };
 
     };
 
-    case "travel":{
+    CAsE "TrAvEL":{
 
-        // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        // deBug -------------------------------------------------------------------------------------
+        if(_DEbUg) THEN {
+            ["alIVE manAgEd ScriPT COmMand - [%1] STAte: %2",_agENtid,_StATE] CAll AlIVe_Fnc_DuMP;
         };
-        // DEBUG -------------------------------------------------------------------------------------
+        // DeBuG -------------------------------------------------------------------------------------
 
-        private _target = _args select 0;
-        private _handle = _args select 4;
+        prIvAte _tARGEt = _aRGs SelECt 0;
+        PRIVaTe _HANDlE = _Args SElect 4;
 
-        _nextStateArgs = _args;
+        _NexTsTateaRGs = _aRGs;
 
-        if(!(isNil "_target") || !(alive _target)) then {
-            terminate _handle;
-            _nextState = "done";
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+        if(!(Isnil "_taRgET") || !(alive _TaRgEt)) thEN {
+            tERmInatE _haNdLe;
+            _neXtSTate = "DOne";
+            [_cOMMaNdsTATE, _aGEnTId, [_aGEnTdATA, [_cOmmANdnaME,"mAnAgED",_aRgs,_NexTStaTE,_nExTStATEARGS]]] CALL aLive_FNc_haSHsET;
         };
 
-        if(scriptDone _handle) then {
-            _nextState = "done";
-            [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+        IF(sCriPTdONE _hANdLe) ThEN {
+            _nExtSTaTE = "DonE";
+            [_cOmmAnDStATe, _AGENTid, [_aGeNTDAtA, [_cOMMaNdNAMe,"mAnAged",_ARGS,_nExtsTaTe,_nextSTatEaRgs]]] CaLL aliVE_fNC_HashSET;
         };
 
     };
 
-    case "done":{
+    casE "dOne":{
 
         // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+        If(_DEbuG) ThEn {
+            ["AlIVE ManAgeD ScrIPt COMmaND - [%1] StAte: %2",_aGENTId,_STATE] call aLiVE_fNC_DUmP;
         };
-        // DEBUG -------------------------------------------------------------------------------------
+        // dEbUg -------------------------------------------------------------------------------------
 
-        if(count _args > 1) then {
-            private _bomb1 = _args select 1;
-            private _bomb2 = _args select 2;
-            private _bomb3 = _args select 3;
+        If(coUnt _ArgS > 1) theN {
+            PriVaTe _Bomb1 = _aRgS SeleCt 1;
+            prIVATe _bOmb2 = _argS SElEcT 2;
+            PRiVATE _BoMB3 = _ARGs SelEct 3;
 
-            if!(isNull _bomb1) then { deleteVehicle _bomb1 };
-            if!(isNull _bomb2) then { deleteVehicle _bomb2 };
-            if!(isNull _bomb3) then { deleteVehicle _bomb3 };
-        };
-
-        _agent setVariable ["ALIVE_agentBusy", false, false];
-
-        if(alive _agent) then {
-            _agent setCombatMode "WHITE";
-            _agent setBehaviour "SAFE";
-            _agent setSkill 0.1;
+            IF!(ISnull _BoMb1) Then { DelEtevEHIclE _BOMb1 };
+            if!(isNulL _bOMb2) tHEN { DelEtevehicLE _BOmB2 };
+            iF!(ISNUlL _boMB3) tHEN { deLEtEvehiCLE _BOmB3 };
         };
 
-        _nextState = "complete";
-        _nextStateArgs = [];
+        _AGeNt SeTVaRIABlE ["AlIvE_aGEnTBusy", falSE, fAlse];
 
-        [_commandState, _agentID, [_agentData, [_commandName,"managed",_args,_nextState,_nextStateArgs]]] call ALIVE_fnc_hashSet;
+        iF(aLiVE _aGeNT) then {
+            _aGEnt seTCOmBatMODe "WHiTe";
+            _Agent sEtbEhaviOUR "SAfE";
+            _AgEnt sETsKill 0.1;
+        };
+
+        _NexTstAtE = "COmPleTE";
+        _neXTsTatEargs = [];
+
+        [_coMMANDstate, _AgenTId, [_AgENtDAtA, [_CoMmANDNamE,"MaNAGed",_aRgS,_nEXtSTatE,_NextsTAteArgS]]] CALL AlIve_Fnc_hasHSEt;
 
     };
 
