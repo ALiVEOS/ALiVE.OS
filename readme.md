@@ -27,7 +27,12 @@
     <a href="https://github.com/ALiVEOS/ALiVE.OS/labels/Ready">
         <img src="https://img.shields.io/badge/Label-Ready-blue.svg" alt="Ready">
     </a>
-    <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=WIP&title=WIP" alt="WIP">
+    <a href="https://github.com/ALiVEOS/ALiVE.OS/labels/WIP">
+        <img src="https://img.shields.io/badge/Label-WIP-blue.svg" alt="WIP">
+    </a>
+    <a href="https://github.com/ALiVEOS/ALiVE.OS/labels/Testing">
+        <img src="https://img.shields.io/badge/Label-Testing-blue.svg" alt="Testing">
+    </a>
     <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=Needs%20Testing&title=Testing" alt="Testing">
 </p>
 
