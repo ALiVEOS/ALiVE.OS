@@ -16,7 +16,7 @@
         <img src="https://img.shields.io/badge/ALiVE-Wiki-lightgrey.svg" alt="ALiVE Wiki">
     </a>
     <a href="https://github.com/ALiVEOS/ALiVE.OS/blob/master/LICENSE.txt">
-        <img src="https://img.shields.io/github/license/ALiVEOS/ALiVE.OS.svg?maxAge=2592000" alt="ALiVE License">
+        <img src="https://img.shields.io/github/license/ALiVEOS/ALiVE.OS.svg" alt="ALiVE License">
     </a>
 </p>
 
@@ -24,9 +24,15 @@
     <a href="https://github.com/ALiVEOS/ALiVE.OS/issues">
         <img src="https://img.shields.io/github/issues/ALiVEOS/ALiVE.OS.svg?maxAge=2592000" alt="ALiVE Issues">
     </a>
-    <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=ready&title=Ready" alt="Ready">
-    <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=WIP&title=WIP" alt="WIP">
-    <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=Needs%20Testing&title=Testing" alt="Testing">
+    <a href="https://github.com/ALiVEOS/ALiVE.OS/labels/Ready">
+        <img src="https://img.shields.io/badge/Label-Ready-blue.svg" alt="Ready">
+    </a>
+    <a href="https://github.com/ALiVEOS/ALiVE.OS/labels/WIP">
+        <img src="https://img.shields.io/badge/Label-WIP-blue.svg" alt="WIP">
+    </a>
+    <a href="https://github.com/ALiVEOS/ALiVE.OS/labels/Needs%20Testing">
+        <img src="https://img.shields.io/badge/Label-Testing-blue.svg" alt="Testing">
+    </a>
 </p>
 
 <p align="center">
