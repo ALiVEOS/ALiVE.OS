@@ -24,7 +24,7 @@
     <a href="https://github.com/ALiVEOS/ALiVE.OS/issues">
         <img src="https://img.shields.io/github/issues/ALiVEOS/ALiVE.OS.svg?maxAge=2592000" alt="ALiVE Issues">
     </a>
-    <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=ready&title=Ready" alt="Ready">
+    <img src="https://https://img.shields.io/badge/Label-Ready-blue.svg?label=ready&title=Ready" alt="Ready">
     <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=WIP&title=WIP" alt="WIP">
     <img src="https://badge.waffle.io/ALiVEOS/ALiVE.OS.svg?label=Needs%20Testing&title=Testing" alt="Testing">
 </p>
