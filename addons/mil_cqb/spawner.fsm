@@ -63,7 +63,7 @@ link30[] = {25,26};
 link31[] = {26,11};
 link32[] = {27,25};
 globals[] = {0.000000,0,0,0,0,640,480,1,126,6316128,1,-900.076416,-159.876709,-167.956421,-1093.480957,675,844,1};
-window[] = {2,-1,-1,-32000,-32000,1156,64,1996,64,3,697};
+window[] = {2,-1,-1,-1,-1,1252,160,2092,160,3,697};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -206,7 +206,7 @@ class FSM
                         name = "END";
                         itemno = 4;
                         init = /*%FSM<STATEINIT""">*/"_logic setvariable [""process"", nil];" \n
-                         "missionnamespace setvariable [""wtf"",true];"/*%FSM</STATEINIT""">*/;
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
