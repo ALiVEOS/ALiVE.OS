@@ -71,15 +71,19 @@ if !(_unit getVariable ["ALiVE_Crowd_Fleeing", false]) then {
 	// Get them to run
 	_unit setSpeedMode "FULL";
 
-	// Choose somewhere to run to
-	private _pos = _unit getPos [100, random 360];
-	private _nearestPos = [position _unit, 50] call ALIVE_fnc_findIndoorHousePositions;
+	// Choose somewhere to run to inside
+	private _pos = [position _unit, 50] call ALIVE_fnc_findIndoorHousePositions;
 
-	if (count _nearestPos > 0) then {
-		_pos =  selectRandom _nearestPos;
-	} else {
+	if (count _pos == 0) then {
 		_pos = [position _unit,60,"House"] call ALIVE_fnc_findNearHousePositions;
 	};
+
+	if (count _pos > 0) then {
+		_pos = selectRandom _pos;
+	} else {
+		_pos = _unit getPos [100, random 360];
+	};
+
 
 	[_unit,_pos] call ALiVE_fnc_doMoveRemote;
 	_unit moveTo _pos;
