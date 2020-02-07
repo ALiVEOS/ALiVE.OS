@@ -160,7 +160,6 @@
 			class Object12 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {3.42334,-14.7395,0}; dir = 97.7588;};
 			class Object13 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {3.79492,-1.38403,0}; dir = 330;};
 			class Object14 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {0.0378418,0.0717773,0}; dir = 0;};
-			class Object15 {side = 8; vehicle = "C_Quadbike_01_F"; rank = ""; position[] = {-5.94824,-3.96631,0}; dir = 290;};
 			class Object16 {side = 8; vehicle = "Land_TentDome_F"; rank = ""; position[] = {3.57568,5.78174,0}; dir = 265.785;};
 			class Object17 {side = 8; vehicle = "Land_TentDome_F"; rank = ""; position[] = {-1.65161,3.43237,0}; dir = 205.785;};
 			class Object18 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {-7.22485,-14.3511,0}; dir = 90;};

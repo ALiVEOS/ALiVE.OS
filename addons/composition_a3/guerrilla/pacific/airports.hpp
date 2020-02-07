@@ -8,7 +8,6 @@
 			class Object0 {side = 8; vehicle = "Land_TinWall_01_m_4m_v2_F"; rank = ""; position[] = {-7.24005,-35.1348,0}; dir = 360;};
 			class Object1 {side = 8; vehicle = "Land_TinWall_01_m_4m_v2_F"; rank = ""; position[] = {-9.25983,-33.1348,0}; dir = 90;};
 			class Object2 {side = 8; vehicle = "Land_TinWall_01_m_4m_v1_F"; rank = ""; position[] = {-9.24866,-29.1353,0}; dir = 90;};
-			class Object3 {side = 8; vehicle = "I_G_Van_01_fuel_F"; rank = ""; position[] = {-12.0059,-24.877,0}; dir = 240.01;};
 			class Object4 {side = 8; vehicle = "Land_LampShabby_F"; rank = ""; position[] = {-8.88654,-31.1079,0}; dir = 90;};
 			class Object5 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {-5.38269,-18.9121,0}; dir = 315;};
 			class Object6 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-7.86682,-19.5156,0}; dir = 180;};
@@ -82,10 +81,7 @@
 			class Object75 {side = 8; vehicle = "Land_PortableLight_double_F"; rank = ""; position[] = {11.1111,-12.1885,0}; dir = 120;};
 			class Object76 {side = 8; vehicle = "Land_Portable_generator_F"; rank = ""; position[] = {11.3564,-11.0518,0}; dir = 269.994;};
 			class Object77 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x5_F"; rank = ""; position[] = {10.3735,-16.1548,0}; dir = 0;};
-			class Object78 {side = 8; vehicle = "I_C_Offroad_02_unarmed_F"; rank = ""; position[] = {25.247,5.99219,0}; dir = 14.9987;};
 			class Object79 {side = 8; vehicle = "Land_PalletTrolley_01_yellow_F"; rank = ""; position[] = {9.5,3.12451,0}; dir = 330.004;};
-			class Object80 {side = 8; vehicle = "I_C_Plane_Civil_01_F"; rank = ""; position[] = {-0.621582,7.25195,0}; dir = 255.001;};
-			class Object81 {side = 8; vehicle = "I_C_Plane_Civil_01_F"; rank = ""; position[] = {5.50354,-5.37402,0}; dir = 270;};
 			class Object82 {side = 8; vehicle = "Land_LampShabby_F"; rank = ""; position[] = {12.952,-15.5532,0}; dir = 135;};
 			class Object83 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {0.125,22.125,0}; dir = 270;};
 			class Object84 {side = 8; vehicle = "Land_CratesWooden_F"; rank = ""; position[] = {2.25,21.5,0}; dir = 0;};
