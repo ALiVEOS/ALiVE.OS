@@ -102,8 +102,6 @@
 			class Object4 {side = 8; vehicle = "Land_WoodenTable_small_F"; rank = ""; position[] = {-3.19165,-4.85608,0.1}; dir = 269.995;};
 			class Object5 {side = 8; vehicle = "Land_CampingChair_V2_F"; rank = ""; position[] = {-3.31616,-4.12585,0.1}; dir = 344.996;};
 			class Object6 {side = 8; vehicle = "Land_i_Shed_Ind_F"; rank = ""; position[] = {-0.991699,-1.91809,0}; dir = 0;};
-			class Object7 {side = 8; vehicle = "O_Truck_02_transport_F"; rank = ""; position[] = {-3.44897,2.22058,0.1}; dir = 270;};
-			class Object8 {side = 8; vehicle = "O_Truck_02_covered_F"; rank = ""; position[] = {4.83032,-0.904297,0.1}; dir = 285.001;};
 			class Object9 {side = 8; vehicle = "Land_WaterBarrel_F"; rank = ""; position[] = {0.00390625,-4.88928,0.1}; dir = 359.992;};
 			class Object10 {side = 8; vehicle = "Land_Pallets_F"; rank = ""; position[] = {1.36035,-5.47705,0.1}; dir = 0;};
 			class Object11 {side = 8; vehicle = "Land_WoodenBox_F"; rank = ""; position[] = {5.64746,-5.14453,0.1}; dir = 3.8887e-006;};
@@ -199,7 +197,6 @@
 			class Object3 {side = 8; vehicle = "Land_PaperBox_open_empty_F"; rank = ""; position[] = {-6.87378,-2.32178,0.1}; dir = 75;};
 			class Object4 {side = 8; vehicle = "Land_WoodenTable_small_F"; rank = ""; position[] = {-9.05957,-1.74683,0.1}; dir = 179.996;};
 			class Object5 {side = 8; vehicle = "Land_CampingChair_V2_F"; rank = ""; position[] = {-9.78979,-1.87134,0.1}; dir = 254.998;};
-			class Object6 {side = 8; vehicle = "B_Truck_01_ammo_F"; rank = ""; position[] = {-0.640625,1.86816,0.1}; dir = 270;};
 			class Object7 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {0.0378418,0.0717773,0.1}; dir = 0;};
 			class Object8 {side = 8; vehicle = "Land_PaperBox_open_full_F"; rank = ""; position[] = {-0.582764,-4.22876,0.1}; dir = 270;};
 			class Object9 {side = 8; vehicle = "Land_CncBarrier_stripes_F"; rank = ""; position[] = {3.84497,-3.6261,0.1}; dir = 285;};
@@ -302,7 +299,6 @@
 			class Object2 {side = 8; vehicle = "Land_ToolTrolley_02_F"; rank = ""; position[] = {0.635986,-3.89636,0.1}; dir = 119.995;};
 			class Object3 {side = 8; vehicle = "Land_i_Shed_Ind_F"; rank = ""; position[] = {-0.429199,-1.08228,0.1}; dir = 0;};
 			class Object4 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {0.0378418,0.0717773,0.1}; dir = 0;};
-			class Object5 {side = 8; vehicle = "I_Truck_02_transport_F"; rank = ""; position[] = {1.88989,1.35437,0.1}; dir = 285;};
 			class Object6 {side = 8; vehicle = "Land_GarbagePallet_F"; rank = ""; position[] = {7.21753,-3.02954,0.1}; dir = 225;};
 			class Object7 {side = 8; vehicle = "Land_Tyres_F"; rank = ""; position[] = {12.1155,4.43677,0.1}; dir = 30;};
 			class Object8 {side = 8; vehicle = "Land_WoodenTable_large_F"; rank = ""; position[] = {9.1106,1.4668,0.1}; dir = 225;};

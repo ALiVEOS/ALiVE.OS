@@ -13,7 +13,6 @@
 			class Object2 {side = 8; vehicle = "Land_Mound02_8m_F"; rank = ""; position[] = {15.3074,-3.99292,0}; dir = 0;};
 			class Object3 {side = 8; vehicle = "Land_BarGate_F"; rank = ""; position[] = {4.31274,0.75,0}; dir = 0;};
 			class Object4 {side = 8; vehicle = "Land_Wreck_Ural_F"; rank = ""; position[] = {-13.2856,1.3562,0}; dir = 285;};
-			class Object5 {side = 8; vehicle = "B_G_Offroad_01_armed_F"; rank = ""; position[] = {14.998,5.90063,0}; dir = 195.003;};
 			class Object6 {side = 8; vehicle = "Land_Wreck_Offroad_F"; rank = ""; position[] = {13.8996,-1.8811,0}; dir = 75;};
 			class Object7 {side = 8; vehicle = "Land_Wreck_Car2_F"; rank = ""; position[] = {9.85373,-2.14038,0}; dir = 120;};
 			class Object8 {side = 8; vehicle = "Land_Wreck_Truck_dropside_F"; rank = ""; position[] = {-16.3718,3.97827,0}; dir = 75;};

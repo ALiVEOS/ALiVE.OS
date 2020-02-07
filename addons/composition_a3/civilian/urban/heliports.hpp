@@ -38,7 +38,6 @@
 			class Object27 {side = 8; vehicle = "Land_WoodenBox_F"; rank = ""; position[] = {-8.98853,-0.748291,0}; dir = 135.001;};
 			class Object28 {side = 8; vehicle = "Land_WoodenBox_F"; rank = ""; position[] = {-9.48853,0.251709,0}; dir = 120;};
 			class Object29 {side = 8; vehicle = "Land_Wall_IndCnc_2deco_F"; rank = ""; position[] = {-11.25,-0.5,0}; dir = 90;};
-			class Object30 {side = 8; vehicle = "C_Heli_Light_01_civil_F"; rank = ""; position[] = {0.751465,0.770508,0}; dir = 225.001;};
 			class Object31 {side = 8; vehicle = "Land_Concrete_SmallWall_8m_F"; rank = ""; position[] = {13.99,-10.2439,0}; dir = 90;};
 			class Object32 {side = 8; vehicle = "Land_Concrete_SmallWall_8m_F"; rank = ""; position[] = {10.24,-10.2439,0}; dir = 90;};
 			class Object33 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {7.53772,-6.17822,0}; dir = 0;};

@@ -30,7 +30,6 @@
 			class Object23 {side = 8; vehicle = "Land_CinderBlocks_01_F"; rank = ""; position[] = {11.0417,-14.3657,0}; dir = 0;};
 			class Object24 {side = 8; vehicle = "Land_Cargo20_cyan_F"; rank = ""; position[] = {9,8.5,0}; dir = 360;};
 			class Object25 {side = 8; vehicle = "Land_Cargo20_blue_F"; rank = ""; position[] = {-10.5,-11.625,0}; dir = 180;};
-			class Object26 {side = 8; vehicle = "O_T_VTOL_02_infantry_F"; rank = ""; position[] = {-9.53931,1.53467,0}; dir = 270.002;};
 			class Object27 {side = 8; vehicle = "Land_WaterTank_03_F"; rank = ""; position[] = {9.62378,-14.3696,0}; dir = 0;};
 			class Object28 {side = 8; vehicle = "WaterPump_01_forest_F"; rank = ""; position[] = {9.375,14.75,0}; dir = 240.001;};
 			class Object29 {side = 8; vehicle = "Land_DieselGroundPowerUnit_01_F"; rank = ""; position[] = {-6.25098,15.5,0}; dir = 284.994;};
@@ -107,7 +106,6 @@
 			class Object37 {side = 8; vehicle = "Land_WoodenPlanks_01_F"; rank = ""; position[] = {-10.1957,-18.3906,0}; dir = 0;};
 			class Object38 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x5_F"; rank = ""; position[] = {7.49847,1.97021,0}; dir = 0;};
 			class Object39 {side = 8; vehicle = "Land_Cargo10_light_green_F"; rank = ""; position[] = {6.75,6.25,0}; dir = 359.999;};
-			class Object40 {side = 8; vehicle = "B_Plane_CAS_01_F"; rank = ""; position[] = {-11.0949,-0.412109,0}; dir = 269.993;};
 			class Object41 {side = 8; vehicle = "Land_LampShabby_F"; rank = ""; position[] = {8.61346,-17.8579,0}; dir = 90;};
 			class Object42 {side = 8; vehicle = "Land_JetEngineStarter_01_F"; rank = ""; position[] = {2.5,13.625,0}; dir = 270;};
 			class Object43 {side = 8; vehicle = "Land_DieselGroundPowerUnit_01_F"; rank = ""; position[] = {-2.62592,13.5,0}; dir = 254.993;};
@@ -116,7 +114,6 @@
 			class Object46 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x3_F"; rank = ""; position[] = {-7.9292,14.0063,0}; dir = 0;};
 			class Object47 {side = 8; vehicle = "Land_CampingTable_small_F"; rank = ""; position[] = {4.625,9.875,0}; dir = 59.9952;};
 			class Object48 {side = 8; vehicle = "Land_CampingChair_V1_F"; rank = ""; position[] = {5.37506,10.375,0}; dir = 44.9851;};
-			class Object49 {side = 8; vehicle = "B_T_Truck_01_fuel_F"; rank = ""; position[] = {13.2507,-18.8784,0}; dir = 180;};
 		};
     };
     class AirportsMedium

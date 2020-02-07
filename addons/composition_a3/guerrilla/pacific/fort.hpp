@@ -230,7 +230,6 @@
 			icon = "\A3\ui_f\data\map\markers\flags\Syndicat_ca.paa";
 			side = 8;
 			class Object0 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-11.2656,-0.883301,0}; dir = 270;};
-			class Object1 {side = 8; vehicle = "I_C_Offroad_02_unarmed_F"; rank = ""; position[] = {-7.74083,-9.62158,0}; dir = 239.999;};
 			class Object2 {side = 8; vehicle = "Land_WoodenCrate_01_stack_x5_F"; rank = ""; position[] = {-6.72011,-5.00146,0}; dir = 270;};
 			class Object3 {side = 8; vehicle = "Land_BagFence_01_long_green_F"; rank = ""; position[] = {-11.2344,-3.7417,0}; dir = 90;};
 			class Object4 {side = 8; vehicle = "Land_HBarrier_01_line_5_green_F"; rank = ""; position[] = {-9.00385,4.89355,0}; dir = 90;};

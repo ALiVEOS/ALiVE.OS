@@ -33,9 +33,7 @@
 			class Object22 {side = 8; vehicle = "Land_RiceBox_F"; rank = ""; position[] = {-1.73596,-5.04114,0}; dir = 267.139;};
 			class Object23 {side = 8; vehicle = "Land_CncBarrier_F"; rank = ""; position[] = {-8.11487,-3.83875,0}; dir = 345;};
 			class Object24 {side = 8; vehicle = "Land_Bucket_painted_F"; rank = ""; position[] = {-2.60669,-2.15845,0}; dir = 359.956;};
-			class Object25 {side = 8; vehicle = "O_MRAP_02_F"; rank = ""; position[] = {-3.13904,11.1425,0}; dir = 330;};
 			class Object26 {side = 8; vehicle = "Land_Cargo10_grey_F"; rank = ""; position[] = {-7.52625,7.35425,0}; dir = 178.669;};
-			class Object27 {side = 8; vehicle = "O_UAV_01_F"; rank = ""; position[] = {-8.69922,0.609863,0}; dir = 327.743;};
 			class Object28 {side = 8; vehicle = "Land_WoodenTable_large_F"; rank = ""; position[] = {-8.81958,2.25854,0}; dir = 358.165;};
 			class Object29 {side = 8; vehicle = "Land_WoodenTable_large_F"; rank = ""; position[] = {-8.83301,4.48926,0}; dir = 359.109;};
 			class Object30 {side = 8; vehicle = "Land_Suitcase_F"; rank = ""; position[] = {-8.59937,4.22571,0}; dir = 170.938;};
@@ -87,7 +85,6 @@
 			icon = "\a3\Ui_f\data\Map\Markers\Flags\nato_ca.paa";
 			side = 8;
 			class Object1 {side = 8; vehicle = "Land_TentHangar_V1_F"; rank = ""; position[] = {-3.26056,0.549316,0}; dir = 0;};
-			class Object2 {side = 8; vehicle = "B_Truck_01_mover_F"; rank = ""; position[] = {-7.75,-7.00635,0}; dir = 180.001;};
 			class Object3 {side = 8; vehicle = "Land_Razorwire_F"; rank = ""; position[] = {-15.3174,-4.60376,0}; dir = 270;};
 			class Object4 {side = 8; vehicle = "Land_IronPipes_F"; rank = ""; position[] = {-12.5453,-3.58154,0}; dir = 90;};
 			class Object5 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {-14.489,-9.89795,0}; dir = 0;};
@@ -141,7 +138,6 @@
 			class Object53 {side = 8; vehicle = "Land_Screwdriver_V1_F"; rank = ""; position[] = {1.99969,6.87524,0}; dir = 89.755;};
 			class Object54 {side = 8; vehicle = "Land_Screwdriver_V2_F"; rank = ""; position[] = {1.97272,7.00439,0}; dir = 75.0532;};
 			class Object55 {side = 8; vehicle = "Land_HBarrierWall_corridor_F"; rank = ""; position[] = {-2.50018,12.498,0}; dir = 270;};
-			class Object56 {side = 8; vehicle = "B_MRAP_01_F"; rank = ""; position[] = {3.87494,14.249,0}; dir = 15.0001;};
 			class Object57 {side = 8; vehicle = "Land_Pallet_vertical_F"; rank = ""; position[] = {2.62506,4.50122,0}; dir = 0.0022646;};
 		};
 		class HangarConverted_IND_F {
@@ -155,7 +151,6 @@
 			class Object5 {side = 8; vehicle = "Land_CncBarrier_F"; rank = ""; position[] = {-8.50195,-16.2578,0}; dir = 0;};
 			class Object6 {side = 8; vehicle = "Land_MetalBarrel_F"; rank = ""; position[] = {-6.24994,-6,0}; dir = 225.009;};
 			class Object7 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {-7.46228,-2.92822,0}; dir = 0;};
-			class Object8 {side = 8; vehicle = "I_MRAP_03_F"; rank = ""; position[] = {-6.6275,12.7505,0}; dir = 345.013;};
 			class Object9 {side = 8; vehicle = "WaterPump_01_forest_F"; rank = ""; position[] = {-10.1251,0.875,0}; dir = 225.001;};
 			class Object10 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {-12.977,12.761,0}; dir = 270;};
 			class Object11 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {-12.739,11.6021,0}; dir = 0;};
