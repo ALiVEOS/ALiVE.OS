@@ -48,9 +48,6 @@
 			class Object20 {side = 8; vehicle = "Land_HBarrier_3_F"; rank = ""; position[] = {-16.9771,4.13599,0}; dir = 270;};
 			class Object21 {side = 8; vehicle = "Land_HBarrier_1_F"; rank = ""; position[] = {-2.49805,19.7573,0}; dir = 195;};
 			class Object22 {side = 8; vehicle = "Land_HelipadRescue_F"; rank = ""; position[] = {-14.25,17.75,0}; dir = 0;};
-			class Object23 {side = 8; vehicle = "B_Slingload_01_Medevac_F"; rank = ""; position[] = {-24,12.25,0}; dir = 330;};
-			class Object24 {side = 8; vehicle = "C_Offroad_01_F"; rank = ""; position[] = {12.25,1.78076,0}; dir = 180;};
-			class Object25 {side = 8; vehicle = "C_Hatchback_01_F"; rank = ""; position[] = {8.75,2.2522,0}; dir = 0;};
 			class Object26 {side = 8; vehicle = "Land_Garbage_square5_F"; rank = ""; position[] = {0.0377197,0.0717773,0}; dir = 0;};
 			class Object27 {side = 8; vehicle = "Land_Crash_barrier_F"; rank = ""; position[] = {0.249878,4.93384,0}; dir = 180;};
 			class Object28 {side = 8; vehicle = "Land_Crash_barrier_F"; rank = ""; position[] = {7.24988,4.93384,0}; dir = 180;};

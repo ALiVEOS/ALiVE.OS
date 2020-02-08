@@ -28,8 +28,6 @@
 			class Object20 {side = 8; vehicle = "Windsock_01_F"; rank = ""; position[] = {-18.5,-10.375,0}; dir = 0;};
 			class Object21 {side = 8; vehicle = "PortableHelipadLight_01_yellow_F"; rank = ""; position[] = {-12.2246,5.67432,0}; dir = 358.984;};
 			class Object22 {side = 8; vehicle = "PortableHelipadLight_01_green_F"; rank = ""; position[] = {-12.209,-4.18799,0}; dir = 358.997;};
-			class Object23 {side = 8; vehicle = "I_C_Heli_Light_01_civil_F"; rank = ""; position[] = {-7.00146,0.127441,0}; dir = 134.994;};
-			class Object24 {side = 8; vehicle = "I_CargoNet_01_ammo_F"; rank = ""; position[] = {-14.875,-7.125,0}; dir = 75;};
 			class Object25 {side = 8; vehicle = "Land_HBarrier_01_line_1_green_F"; rank = ""; position[] = {-7.24268,10.25,0}; dir = 270;};
 			class Object26 {side = 8; vehicle = "CamoNet_INDP_open_F"; rank = ""; position[] = {7.63721,-4.72363,0}; dir = 90;};
 			class Object27 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {1.99219,-9.28711,0}; dir = 315;};
@@ -89,7 +87,6 @@
 			class Object18 {side = 8; vehicle = "Land_HelipadSquare_F"; rank = ""; position[] = {1.5,0.375,0}; dir = 0;};
 			class Object20 {side = 8; vehicle = "PortableHelipadLight_01_green_F"; rank = ""; position[] = {-3.58398,-4.18799,0}; dir = 359.003;};
 			class Object21 {side = 8; vehicle = "PortableHelipadLight_01_yellow_F"; rank = ""; position[] = {-3.59961,5.67432,0}; dir = 358.984;};
-			class Object22 {side = 8; vehicle = "I_C_Heli_Light_01_civil_F"; rank = ""; position[] = {1.62354,0.126953,0}; dir = 134.995;};
 			class Object23 {side = 8; vehicle = "Land_BagFence_01_end_green_F"; rank = ""; position[] = {-0.111816,-7.91602,0}; dir = 285;};
 			class Object24 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {10.7871,9.61719,0}; dir = 225;};
 			class Object25 {side = 8; vehicle = "Land_BagFence_01_round_green_F"; rank = ""; position[] = {10.6172,-9.28711,0}; dir = 315;};
