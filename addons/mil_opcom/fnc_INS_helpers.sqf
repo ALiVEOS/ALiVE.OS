@@ -444,15 +444,50 @@ ALiVE_fnc_INS_roadblocks = {
 
                     // Create disable action on newly created roadblocks
                     {
-                        private _charge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo", position _x, [], 0, "CAN_COLLIDE"];
+                        private ["_charge","_actionObjects","_actionObject","_nearRoads","_road","_roadConnectedTo","_connectedRoad","_direction","_roadSidePos"];
+                        _charge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo", position _x, [], 0, "CAN_COLLIDE"];
+                        _charge hideObjectGlobal true;
+                        _charge allowDamage false;
+
+                        // Check if bargate is withing spawned composition
+                        _actionObjects = nearestObjects [_x, ["Land_BarGate_F"], 10];
+
+                        // Check if bargate was found. If not we'll spawn a crate.
+                        if (count _actionObjects > 0) then {
+                            
+                            // Select the bargate.
+                            _actionObject = _actionObjects select 0;
+                        } else {
+                            // Check for roads near composition creation position
+                           _nearRoads = position _x nearRoads 10;
+
+                            // Check if near roads were found. If they were, we get direction.
+                            if(count _nearRoads > 0) then {
+                                _road = _nearRoads select 0;
+                                _roadConnectedTo = roadsConnectedTo _road;
+                                _connectedRoad = _roadConnectedTo select 0;
+                                if!(isNil '_connectedRoad') then {
+                                    _direction = _road getRelDir _connectedRoad;
+                                };
+                            };
+
+                            // Create the crate and set its position and move it sideways to be on the roadside. (Works Okay for now)
+                            _actionObject = createVehicle ["Box_FIA_Wps_F", position _road, [], 0, "CAN_COLLIDE"];
+                            _actionObject allowDamage false;
+                            _actionObject setDir _direction;
+                            _objectLocation = getPos _actionObject;
+                            _roadSidePos = [(_objectLocation select 0) - 6, (_objectLocation select 1) + 6];
+                            _actionObject setPos _roadSidePos;
+                            _actionObject setVectorUp [0,0,1];
+                        };
 
                         [
-                            _charge,
+                            _actionObject,
                             "disable the roadblock!",
                             "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
                             "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
-                            "_this distance2D _target < 2.5",
-                            "_caller distance2D _target < 2.5",
+                            "_this distance2D _target < 3",
+                            "_caller distance2D _target < 3",
                             {},
                             {},
                             {
