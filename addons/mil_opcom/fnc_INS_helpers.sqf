@@ -787,8 +787,8 @@ ALiVE_fnc_INS_spawnIEDfactory = {
         "disable the IED factory!",
         "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
         "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
-        "_this distance2D _target < 2.5 && {isnil {_this getvariable 'ALiVE_MIL_OPCOM_FACTORY_DISABLED'}}",
-        "_caller distance2D _target < 2.5",
+        "_this distance2D _target < 3 && {isnil {_this getvariable 'ALiVE_MIL_OPCOM_FACTORY_DISABLED'}}",
+        "_caller distance2D _target < 3",
         {},
         {},
         {
@@ -824,8 +824,8 @@ ALiVE_fnc_INS_spawnHQ = {
         "disable the Recruitment HQ!",
         "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
         "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
-        "_this distance2D _target < 2.5 && {isnil {_this getvariable 'ALiVE_MIL_OPCOM_HQ_DISABLED'}}",
-        "_caller distance2D _target < 2.5",
+        "_this distance2D _target < 3 && {isnil {_this getvariable 'ALiVE_MIL_OPCOM_HQ_DISABLED'}}",
+        "_caller distance2D _target < 3",
         {},
         {},
         {
@@ -861,8 +861,8 @@ ALiVE_fnc_INS_spawnDepot = {
         "disable the weapons depot!",
         "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
         "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
-        "_this distance2D _target < 2.5 && {isnil {_this getvariable 'ALiVE_MIL_OPCOM_DEPOT_DISABLED'}}",
-        "_caller distance2D _target < 2.5",
+        "_this distance2D _target < 3 && {isnil {_this getvariable 'ALiVE_MIL_OPCOM_DEPOT_DISABLED'}}",
+        "_caller distance2D _target < 3",
         {},
         {},
         {
