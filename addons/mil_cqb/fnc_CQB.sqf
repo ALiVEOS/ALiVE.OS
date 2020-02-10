@@ -1398,7 +1398,7 @@ switch(_operation) do {
                 _fsm = _logic getvariable "process";
 
                 if !(isnil "_fsm") then {
-                    _fsm setfsmvariable ["_exitFSM", true];
+                    _fsm setvariable ["_exitFSM", true];
                     _logic setvariable ["process",nil];
                 };
             };
