@@ -1367,32 +1367,40 @@ switch(_operation) do {
     };
 
     case "active": {
-        if (isNil "_args") exitWith {};
+        if(isNil "_args") exitWith {
+            _args = _logic getVariable ["active", false];
+        };
 
-        private _cqbActive = _logic getVariable ["active", false];
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
 
-        // needs isequalto for some reason..
-        if (_args isequalto _cqbActive) exitwith {};
+        // xor check args is different to current debug setting
+        if (
+            ((_args || (_logic getVariable ["active", false])) &&
+            !(_args && (_logic getVariable ["active", false])))
+        ) then {
+            ASSERT_TRUE(typeName _args == "BOOL",str _args);
+            _logic setVariable ["active", _args];
 
-        _logic setVariable ["active", _args];
+            // if active
+            if (_args) then {
+                private _spawnerFSM = [_logic] execFSM "\x\alive\addons\mil_cqb\spawner.fsm";
+                _logic setvariable ["process",_spawnerFSM];
+            } else {
+                // clean up groups
 
-        if (_args) then {
-            private _spawnerFSM = [_logic] execFSM "\x\alive\addons\mil_cqb\spawner.fsm";
-            _logic setvariable ["process",_spawnerFSM];
-        } else {
-            // clean up groups
+                private _groups = _logic getVariable ["groups",[]];
+                {
+                    [_logic, "delGroup", _x] call ALiVE_fnc_CQB;
+                } forEach _groups;
 
-            private _groups = _logic getVariable ["groups",[]];
-            {
-                [_logic, "delGroup", _x] call ALiVE_fnc_CQB;
-            } forEach _groups;
+                // turn off spawner
 
-            // turn off spawner
+                _fsm = _logic getvariable "process";
 
-            _fsm = _logic getvariable "process";
-            if !(isnil "_fsm") then {
-                _fsm setfsmvariable ["_exitFSM", true];
-                _logic setvariable ["process",nil];
+                if !(isnil "_fsm") then {
+                    _fsm setfsmvariable ["_exitFSM", true];
+                    _logic setvariable ["process",nil];
+                };
             };
         };
     };
