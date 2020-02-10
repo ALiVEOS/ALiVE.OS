@@ -418,6 +418,7 @@ switch(_operation) do {
             - Start CQB Controller on Server
             */
 
+            [_logic, "GarbageCollecting", true] call ALiVE_fnc_CQB;
             [_logic, "active", true] call ALiVE_fnc_CQB;
 
             //Indicate startup is done on server for that instance
@@ -632,25 +633,24 @@ switch(_operation) do {
             [[_logic, _operation, _args],"ALIVE_fnc_CQB", false, false] call BIS_fnc_MP;
         };
 
-        private _houses = _logic getvariable ["houses",[]];
-        private _color = _logic getVariable ["debugColor","ColorGreen"];
-        private _prefix = _logic getVariable ["debugPrefix","CQB"];
+        private ["_houses","_housesPending","_color","_prefix","_housesTotal"];
+
+        _houses = _logic getvariable ["houses",[]];
+        _housesPending = _logic getvariable ["houses_pending",[]];
+        _color = _logic getVariable ["debugColor","ColorGreen"];
+        _prefix = _logic getVariable ["debugPrefix","CQB"];
+
+        _houses = _houses - _housesPending;
+        _housesPending = _housesPending - _houses;
+        _housesTotal = _housesPending + _houses;
 
         if (_args) then {
 
             [{
-                private _marker = format [MTEMPLATE, _x];
+                private _type = if (isNil {_x getVariable "group"}) then { "mil_dot" } else { "Waypoint" };
+                private _alpha = if (_x in _housesPending) then { 0.2 } else { 1 };
 
-                private ["_type","_alpha"];
-                if (isnil {_x getVariable "group"}) then {
-                    _type = "mil_dot";
-                    _alpha = 0.2;
-                } else {
-                    _type = "Waypoint";
-                    _alpha = 1;
-                };
-
-                [_marker, getposATL _x,"ICON", [0.5,0.5],_color,format ["cqb:%1", _prefix],_type,"FDiagonal",0.3,_alpha] call ALIVE_fnc_createMarkerGlobal;
+                [format[MTEMPLATE, _x], getposATL _x,"ICON", [0.5,0.5],_color,_prefix,_type,"FDiagonal",0,_alpha] call ALIVE_fnc_createMarkerGlobal;
 
                 private _sector = [ALIVE_sectorGrid, "positionToSector", getPosATL _x] call ALIVE_fnc_sectorGrid;
                 private _subSector = [_sector, SUBGRID_SIZE, getPosATL _x] call ALiVE_fnc_positionToSubSector;
@@ -658,26 +658,20 @@ switch(_operation) do {
                 private _subSectorPosition = [_subSector, "position"] call ALiVE_fnc_sector;
                 private _subSectorDimensions = [_subSector, "dimensions"] call ALiVE_fnc_sector;
 
-                /*
-                I'm not really sure this adds any value, so I'm disabling for now
-                Feel free to re-enable if you disagree
-                - SpyderBlack723
-
                 if (getMarkerType (format [GTEMPLATE, _subSectorID]) == "") then {
                     [format[GTEMPLATE, _subSectorID], _subSectorPosition, "RECTANGLE", _subSectorDimensions, "ColorBlack", _subSectorID, "", "Solid", 0, 0.6] call ALIVE_fnc_createMarkerGlobal;
                 };
 
                 if (getMarkerType (format [STEMPLATE, _subSectorID]) == "") then {
-                    [format[STEMPLATE, _subSectorID], _subSectorPosition, "ICON", [0.5, 0.5], "ColorBlack", format ["id:%1", _subSectorID], "mil_dot", "FDiagonal", 0, 1] call ALIVE_fnc_createMarkerGlobal;
+                    [format[STEMPLATE, _subSectorID], _subSectorPosition, "ICON", [0.5, 0.5], "ColorBlack", _subSectorID, "mil_dot", "FDiagonal", 0, 1] call ALIVE_fnc_createMarkerGlobal;
                 };
-                */
-            },_houses,10] call ALiVE_fnc_arrayFrameSplitter;
+            },_houses + _housesPending,10] call ALiVE_fnc_arrayFrameSplitter;
         } else {
             [{
-                deleteMarker _marker;
+                deleteMarker format[MTEMPLATE, _x];
                 deleteMarker format[GTEMPLATE, _x getVariable ["sectorID", ""]];
                 deleteMarker format[STEMPLATE, _x getVariable ["sectorID", ""]];
-            },_houses,10] call ALiVE_fnc_arrayFrameSplitter;
+            },_housesTotal,10] call ALiVE_fnc_arrayFrameSplitter;
         };
 
         _args;
@@ -1099,12 +1093,59 @@ switch(_operation) do {
         };
     };
 
+    case "GarbageCollecting": {
+            if (isNil "_args") then {
+                // if no arguments provided return current setting
+                _args = _logic getVariable ["GarbageCollecting", false];
+            } else {
+                // if an argument is provided then execute
+                ASSERT_TRUE(typeName _args == "BOOL",str typeName _args);
+                _logic setVariable ["GarbageCollecting", _args, true];
+
+                // if false then exit GC
+                if !(_args) exitwith {};
+
+                //else run a GC for each instance, until it is deleted
+                private _spawn = _logic getVariable ["spawnDistance", 700];
+                private _spawnStatic = _logic getVariable ["spawnDistanceStatic", 1200];
+                private _spawnHeli = _logic getVariable ["spawnDistanceHeli", 0];
+                private _spawnJet = _logic getVariable ["spawnDistanceJet", 0];
+
+                _GC = [_logic,_spawn, _spawnStatic, _spawnHeli,_spawnJet] spawn {
+                    private _logic = _this select 0;
+                    private _spawn = _this select 1;
+                    private _spawnStatic = _this select 2;
+                    private _spawnHeli = _this select 3;
+                    private _spawnJet = _this select 4;
+
+                    while {_logic getVariable ["GarbageCollecting",false]} do {
+                        sleep 30;
+                        {
+                           private _lead = leader _x;
+
+                           // add static weapon distance to spawn distance
+                           private _staticRange = 0;
+                           if (!isNil {(_lead getVariable "house") getVariable "staticWeapons"}) then {
+                               _staticRange = 0 max (_spawnStatic - _spawn);
+                           };
+
+                            if ((local _lead) && {!([getposATL _lead, (_spawn + _staticRange) * 3, _spawnJet*3,_spawnHeli*3] call ALiVE_fnc_anyPlayersInRangeIncludeAir)}) then {
+                                [_logic, "delGroup", _x] call ALiVE_fnc_CQB;
+                            };
+                        } forEach (_logic getVariable ["groups",[]]);
+                    };
+                };
+        };
+        _args;
+    };
+
     case "groups": {
         if (isNil "_args") then {
             // if no new groups list was provided return current setting
             _args = _logic getVariable ["groups", []];
         } else {
             // if a new groups list was provided set groups list
+            ASSERT_TRUE(typeName _args == "ARRAY",str typeName _args);
             _logic setVariable ["groups", _args, true];
         };
         _args;
@@ -1142,6 +1183,9 @@ switch(_operation) do {
             private _debug = _logic getVariable ["debug", false];
             if (_debug) then {
                 ["CQB Population: Group %1 created on %2", _grp, owner _leader] call ALiVE_fnc_Dump;
+
+                // mark active houses
+                format[MTEMPLATE, _house] setMarkerType "Waypoint";
             };
         };
     };
@@ -1159,8 +1203,7 @@ switch(_operation) do {
                 _house setVariable ["group",nil, true];
 
                 if (_debug) then {
-                    private _marker = format [MTEMPLATE, _house];
-                    _marker setmarkeralpha 0.3;
+                    format[MTEMPLATE, _house] setMarkerType "mil_Dot";
                 };
             };
 
@@ -1185,27 +1228,23 @@ switch(_operation) do {
     };
 
     case "spawnGroup": {
-        // if a house and unit is provided start spawn process
+        if (isNil "_args") then {
+            // if no units and house was provided return false
+            _args = false;
+        } else {
+            // if a house and unit is provided start spawn process
 
-        _args params ["_house","_faction"];
+            _args params ["_house","_faction"];
 
-        _house setvariable ["group","preinit",true];
+            private _factions = _logic getvariable ["factions",DEFAULT_FACTIONS];
+            private _debug = _logic getVariable ["debug",false];
 
-        private _factions = _logic getvariable ["factions",DEFAULT_FACTIONS];
-        private _debug = _logic getVariable ["debug",false];
-
-        if (_debug) then {
-            private _marker = format [MTEMPLATE, _house];
-            _marker setmarkeralpha 1;
-        };
-
-        private _units = _house getVariable ["unittypes", []];
-        private _houseFaction = _house getVariable ["faction", selectRandom _factions];
-
-        {
             // Action: spawn AI
             // this just flags the house as beginning spawning
             // and will be over-written in addHouse
+
+            private _units = _house getVariable ["unittypes", []];
+            private _houseFaction = _house getVariable ["faction", selectRandom _factions];
 
             // Check: if no units already defined
             if (_units isequalto [] || { _houseFaction != _faction }) then {
@@ -1217,59 +1256,67 @@ switch(_operation) do {
                 _house setVariable ["unittypes", _units, true];
                 _house setVariable ["faction", _faction, true];
             };
-        } call CBA_fnc_directCall;
 
-        if (_units isequalto []) exitWith {
-            if (_debug) then {
-                ["CQB Population: no units..."] call ALiVE_fnc_Dump;
+            if (_units isequalto []) exitWith {
+                if (_debug) then {
+                    ["CQB Population: no units..."] call ALiVE_fnc_Dump;
+                };
             };
-        };
 
-        // Action: restore AI
-        private _groupSideNumber = getNumber (configFile >> "Cfgvehicles" >> _units select 0 >> "side");
-        private _side = [[_groupSideNumber] call ALiVE_fnc_sideNumberToText] call ALiVE_fnc_sideTextToObject;
+            // Action: restore AI
+            private _groupSideNumber = getNumber (configFile >> "Cfgvehicles" >> _units select 0 >> "side");
+            private _side = [[_groupSideNumber] call ALiVE_fnc_sideNumberToText] call ALiVE_fnc_sideTextToObject;
 
-        //["CQB spawning %1 AI",count _units] call ALiVE_fnc_DumpH;
+            //["CQB spawning %1 AI",count _units] call ALiVE_fnc_DumpH;
 
-        private _grp = createGroup _side;
-        private _spawnPos = getposatl _house;
+            private _grp = createGroup _side;
 
-        {
-            _grp createUnit [_x, _spawnPos, [], 0 , "NONE"];
-            sleep MOD(smoothSpawn);
-        } foreach _units;
+            private _spawnPos = getposatl _house;
+            {
+                _grp createUnit [_x, _spawnPos, [], 0 , "NONE"];
+                sleep MOD(smoothSpawn);
+            } foreach _units;
 
-        // position AI
-        private _positions = [_house] call ALiVE_fnc_getBuildingPositions;
+            if ((units _grp) isequalto []) exitWith {
+                if (_debug) then {
+                    ["CQB Population: Group %1 deleted on creation - no units...", _grp] call ALiVE_fnc_Dump;
+                };
 
-        if (_positions isequalto []) exitwith {
-            _args = _grp;
-        };
+                [_logic,"delGroup", _grp] call ALiVE_fnc_CQB;
+            };
 
-        private _staticWeaponsIntensity = _logic getvariable ["StaticWeaponsIntensity",0];
+            // position AI
+            private _positions = [_house] call ALiVE_fnc_getBuildingPositions;
 
-        [_logic,"addGroup", [_house, _grp]] call ALiVE_fnc_CQB;
-        [_logic,"addStaticWeapons", [_house, _staticWeaponsIntensity]] call ALiVE_fnc_CQB;
+            if (_positions isequalto []) exitwith {
+                _args = _grp;
+            };
 
-        {
-            private _unit = _x;
+            private _staticWeaponsIntensity = _logic getvariable ["StaticWeaponsIntensity",0];
+
+            [_logic,"addGroup", [_house, _grp]] call ALiVE_fnc_CQB;
+            [_logic,"addStaticWeapons", [_house, _staticWeaponsIntensity]] call ALiVE_fnc_CQB;
 
             {
-                private _pos = _x;
+                private _unit = _x;
 
-                _unit setPosATL [_pos select 0, _pos select 1, (_pos select 2 + 0.4)];
-            } foreach _positions;
+                {
+                    private _pos = _x;
 
-        } forEach (units _grp);
+                    _unit setPosATL [_pos select 0, _pos select 1, (_pos select 2 + 0.4)];
+                } foreach _positions;
 
-        // TODO Notify controller to start directing
-        // TODO this needs to be refactored
-        // TODO somebody needs to do these todos
-        private _fsm = "\x\alive\addons\mil_cqb\HousePatrol.fsm";
-        private _hdl = [_logic,(leader _grp), 50, true, 60] execFSM _fsm;
-        (leader _grp) setVariable ["FSM", [_hdl,_fsm], true];
+            } forEach (units _grp);
 
-        _args = _grp;
+            // TODO Notify controller to start directing
+            // TODO this needs to be refactored
+            // TODO somebody needs to do these todos
+            private _fsm = "\x\alive\addons\mil_cqb\HousePatrol.fsm";
+            private _hdl = [_logic,(leader _grp), 50, true, 60] execFSM _fsm;
+            (leader _grp) setVariable ["FSM", [_hdl,_fsm], true];
+
+            _args = _grp;
+        };
     };
 
     case "addStaticWeapons": {
