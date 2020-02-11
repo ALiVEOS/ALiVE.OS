@@ -144,4 +144,1237 @@
 <Key ID="STR_ALIVE_CIV_POP_CROWD_FACTION_COMMENT">
     <Original>Optional: Will improve performance if single default faction is specified. Otherwise faction will be chosen based on civilian clusster faction.</Original>
 </Key>
-</Container></Package></Project>
+</Container>
+<Container name="CIV_INTERACTION">
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_TOWNELDER">
+    <Original>townelder.</Original>
+    <Spanish>Jeque</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_MAJOR">
+    <Original>major</Original>
+    <Spanish>alcalde</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_PRIEST">
+    <Original>priest</Original>
+    <Spanish>sacerdote</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_MUEZZIN">
+    <Original>muezzin</Original>
+    <Spanish>almuédano</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_POLITICIAN">
+    <Original>politician</Original>
+    <Spanish>político</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_TALKTO">
+    <Original>Talk to %1</Original>
+    <Spanish>Hablar con %1</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_DETAIN">
+    <Original>Detain</Original>
+    <Spanish>Detener</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_ARREST">
+    <Original>Arrest</Original>
+    <Spanish>Arrestar</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_RELEASE">
+    <Original>Release</Original>
+    <Spanish>Liberar</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_SEARCH">
+    <Original>Search</Original>
+    <Spanish>Registrar</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_GATHERINTEL">
+    <Original>Gather Intel</Original>
+    <Spanish>Obtener inteligencia</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_HOME">
+    <Original>Where do you live?</Original>
+    <Spanish>¿Dónde vives?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_TOWN">
+    <Original>What town do you live in?</Original>
+    <Spanish>¿En qué pueblo vives?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IEDS">
+    <Original>Have you seen any IED's lately?</Original>
+    <Spanish>¿Has visto algún IED recientemente?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_INSURGENTS">
+    <Original>Have you seen any insurgent activity lately?</Original>
+    <Spanish>¿Has visto actividad insurgente últimamente?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_HIDEOUTS">
+    <Original>Do you know the location of any insurgent hideouts?</Original>
+    <Spanish>¿Conoces la ubicación de algún escondite insurgente?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_STRANGEBEHAVIOR">
+    <Original>Have you seen any strange behavior lately?</Original>
+    <Spanish>¿Has visto algún comportamientoe extraño recientemente?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_OPINION">
+    <Original>Do you support us?</Original>
+    <Spanish>¿Nos apoyas?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_TOWNOPINION">
+    <Original>What is the opinion of our forces in this area?</Original>
+    <Spanish>¿Cuál es la opinión de nuestras fuerzas en esta área?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_HOSTILE_1">
+    <Original> *%1 grows visibly annoyed*</Original>
+    <Spanish> *%1 comienza a molestarse*</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_HOSTILE_2">
+    <Original> *%1 appears uninterested in the conversation*</Original>
+    <Spanish> *%1 parece no tener interés en la conversación*</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_HOSTILE_3">
+    <Original> Please leave me alone now.</Original>
+    <Spanish> Déjame tranquilo, por favor.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_HOSTILE_4">
+    <Original> I do not want to talk to you anymore.</Original>
+    <Spanish> Ya no quiero seguir hablando contigo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_HOSTILE_5">
+    <Original> Can I go now?</Original>
+    <Spanish> ¿Ya me puedo ir?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_NOTHOSTILE_1">
+    <Original> *%1 looks anxious*</Original>
+    <Spanish> *%1 se ve ansioso*</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_NOTHOSTILE_2">
+    <Original> *%1 looks distracted*</Original>
+    <Spanish> *%1 se ve distraído*</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_NOTHOSTILE_3">
+    <Original> Are you done yet?</Original>
+    <Spanish> ¿Aún no has terminado?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_NOTHOSTILE_4">
+    <Original> You ask too many questions.</Original>
+    <Spanish> Haces demasiadas preguntas.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_NOTHOSTILE_5">
+    <Original> You need to leave now.</Original>
+    <Spanish> Ya deberías irte.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDE_1">
+    <Original>carrying out a suicide bombing</Original>
+    <Spanish>llevando un chaleco suicida.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDE_2">
+    <Original>strapping himself with explosives</Original>
+    <Spanish>atándose explosivos</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDE_3">
+    <Original>planning a bombing</Original>
+    <Spanish>planeando un atentado</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDE_4">
+    <Original>getting ready to bomb your forces</Original>
+    <Spanish>alistándose para explotar encima de tus fuerzas</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDE_5">
+    <Original>about to bomb your forces</Original>
+    <Spanish>apunto de hacer un atentado explosivo contra tus fuerzas</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDETARGET_1">
+    <Original>planning on carrying out a suicide bombing</Original>
+    <Spanish>planeando en llevar a cabo un atentado explosivo suicida</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDETARGET_2">
+    <Original>strapping himself with explosives</Original>
+    <Spanish>atándose explosivos al cuerpo</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDETARGET_3">
+    <Original>planning a bombing</Original>
+    <Spanish>planeando un atentado explosivo</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDETARGET_4">
+    <Original>getting ready to bomb your forces</Original>
+    <Spanish>preparándose para explotar encima de tus fuerzas</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDETARGET_5">
+    <Original>about to bomb your forces</Original>
+    <Spanish>apunto de hacer un atentado explosivo contra tus fuerzas</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUE_1">
+    <Original>storing a weapon in his house</Original>
+    <Spanish>manteniendo un arma en su casa</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUE_2">
+    <Original>stockpiling weapons</Original>
+    <Spanish>almacenando armamento</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUE_3">
+    <Original>planning on shooting a patrol</Original>
+    <Spanish>planeando en disparar a una patrulla</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUE_4">
+    <Original>looking for patrols to shoot at</Original>
+    <Spanish>buscando patrullas a quién disparar</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUE_5">
+    <Original>paid to shoot at your forces</Original>
+    <Spanish>recibiendo dinero para disparar a tus fuerzas</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUETARGET_1">
+    <Original>storing a weapon in his house</Original>
+    <Spanish>manteniendo un arma en su casa</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUETARGET_2">
+    <Original>stockpiling weapons</Original>
+    <Spanish>almacenando armamento</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUETARGET_3">
+    <Original>planning on shooting a patrol</Original>
+    <Spanish>planeando en disparar a una patrulla</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUETARGET_4">
+    <Original>looking for patrols to shoot at</Original>
+    <Spanish>buscando patrullas a quién disparar</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUETARGET_5">
+    <Original>paid to shoot at your forces</Original>
+    <Spanish>recibiendo dinero para disparar a tus fuerzas</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SABOTAGE_1">
+    <Original>planning on sabotaging a building</Original>
+    <Spanish>planeando sabotear un edificio</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SABOTAGE_2">
+    <Original>blowing up a building</Original>
+    <Spanish>haciendo explotar un edificio</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SABOTAGE_3">
+    <Original>planting explosives nearby</Original>
+    <Spanish>plantando explosivos en los al rededores</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SABOTAGE_4">
+    <Original>getting ready to plant explosives</Original>
+    <Spanish>preparándose para plantar explosivos</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SABOTAGE_5">
+    <Original>paid to shoot at your forces</Original>
+    <Spanish>recibiendo dinero para disparar a tus fuerzas</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_GETWEAPONS_1">
+    <Original>retrieving weapons from a nearby weapons depot</Original>
+    <Spanish>consiguiendo armas desde un depósito de armamento cercano</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_GETWEAPONS_2">
+    <Original>planning on joining the insurgents</Original>
+    <Spanish>planeando en unirse a los insurgentes</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_GETWEAPONS_3">
+    <Original>getting ready to go to a nearby insurgent recruitment center</Original>
+    <Spanish>preparándose para ir a un centro de reclutamiento insurgente cercano</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_GETWEAPONS_4">
+    <Original>getting ready to retrieve weapons from a cache</Original>
+    <Spanish>preparándose para conseguir armas desde un depósito</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_GETWEAPONS_5">
+    <Original>paid to attack your forces</Original>
+    <Spanish>recibiendo dinero para atacar a tus fuerzas</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_GETWEAPONS_6">
+    <Original>forced to join the insurgents</Original>
+    <Spanish>forzado a unirse a los insurgentes</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_GETWEAPONS_7">
+    <Original>preparing to attack your forces</Original>
+    <Spanish>preparándose para atacar a tus fuerzas</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_1">
+    <Original>I'm not telling you again.</Original>
+    <Spanish>No te lo voy a decir de nuevo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_2">
+    <Original>Haven't we already discussed this?</Original>
+    <Spanish>¿No que ya discutimos este tema?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_3">
+    <Original>I have already answered that.</Original>
+    <Spanish>Ya te he respondido eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_4">
+    <Original>Why are you asking me again.</Original>
+    <Spanish>Y... ¿Por qué me preguntas lo mismo?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_5">
+    <Original>You already asked me that.</Original>
+    <Spanish>Ya me has preguntado eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_6">
+    <Original>You are beginning to annoy me with that question.</Original>
+    <Spanish>Estás comenzando a aburrirme con esa pregunta</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_7">
+    <Original>I cannot talk about this anymore.</Original>
+    <Spanish>Ya no puedo seguir hablando de eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_8">
+    <Original>You have gotten your answers already.</Original>
+    <Spanish>Ya tienes tu respuesta sobre eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_8">
+    <Original>You have gotten your answers already.</Original>
+    <Spanish>Ya tienes tu respuesta sobre eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_1">
+    <Original>I live over there, I'll show you (%1's house has been marked on the map).</Original>
+    <Spanish>Vivo por allá, te mostraré. (La casa de %1 se ha marcado en el mapa)</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_2">
+    <Original>I live nearby (%1's house has been marked on the map).</Original>
+    <Spanish>Vivo por aquí (La casa de %1 se ha marcado en el mapa)</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_3">
+    <Original>I will point it out for you (%1's house has been marked on the map).</Original>
+    <Spanish>Deja, te lo apunto. (La casa de %1 se ha marcado en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_4">
+    <Original>I live right over there (%1's house has been marked on the map).</Original>
+    <Spanish>Vivo justo por allá. (La casa de %1 se ha marcado en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_4">
+    <Original>Just over there. (The house is marked on the map).</Original>
+    <Spanish>Allí nada más. (La casa de %1 se ha marcado en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HOME_HOSTILE_1">
+    <Original>I am sorry, but I don't feel comfortable giving that information out.</Original>
+    <Spanish>Lo siento mucho, pero no me siento cómodo dando esa información.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HOME_HOSTILE_2">
+    <Original>I do not want to share that with you.</Original>
+    <Spanish>No quiero compartir eso contigo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HOME_HOSTILE_3">
+    <Original>I do not owe you anything.</Original>
+    <Spanish>No tengo por qué contestar.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HOME_HOSTILE_4">
+    <Original>Please leave me alone.</Original>
+    <Spanish>Por favor déjame tranquilo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HOME_HOSTILE_5">
+    <Original>Please leave.</Original>
+    <Spanish>Vete por favor.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HOME_HOSTILE_6">
+    <Original>Get out of here!</Original>
+    <Spanish>¡Váyanse de aquí!</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_NOTHOSTILE_1">
+    <Original>I live by %1.</Original>
+    <Spanish>Vivo por %1</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_NOTHOSTILE_2">
+    <Original>I live in %1.</Original>
+    <Spanish>Vivo en %1</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_NOTHOSTILE_3">
+    <Original>I live in the village of %1.</Original>
+    <Spanish>Vivo en la aldea de %1</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_NOTHOSTILE_4">
+    <Original>My home town is %1.</Original>
+    <Spanish>Mi pueblo natal es %1</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_NOTHOSTILE_5">
+    <Original>You should not be here.</Original>
+    <Spanish>Ustedes no deberían estar aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_NOTHOSTILE_6">
+    <Original>They would not like me talking to you.</Original>
+    <Spanish>A ellos no les gustaría que hable con ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_BADLUCK_1">
+    <Original>I am sorry, but I do not feel comfortable giving that information out.</Original>
+    <Spanish>Lo siento, pero no me siento cómodo entregando esa información.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_BADLUCK_2">
+    <Original>Sorry, I do not want to answer that.</Original>
+    <Spanish>Lo siento, pero no quiero contestar eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_BADLUCK_3">
+    <Original>I should not share that with you</Original>
+    <Spanish>No debería compartir eso contigo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_BADLUCK_4">
+    <Original>I just want to be left alone.</Original>
+    <Spanish>Sólo quiero que me dejen tranquilo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_BADLUCK_5">
+    <Original>Please leave my community alone.</Original>
+    <Spanish>Por favor, deja a mi gente tranquila.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_HOSTILE_1">
+    <Original>I am sorry, but I do not feel comfortable giving that information out.</Original>
+    <Spanish>Lo siento, pero no me siento cómodo entregando esa información.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_HOSTILE_2">
+    <Original>I should not share that with you.</Original>
+    <Spanish>No debería compartir esa información contigo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_HOSTILE_3">
+    <Original>I do not owe you anything.</Original>
+    <Spanish>No tengo por qué contestar eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_HOSTILE_4">
+    <Original>You should not be here.</Original>
+    <Spanish>Ustedes no deberían estar aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_HOSTILE_5">
+    <Original>Please leave me alone.</Original>
+    <Spanish>Por favor, déjenme tranquilo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_HOSTILE_6">
+    <Original>I will not tell you where I live!</Original>
+    <Spanish>¡No pienso decirles donde vivo!</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWN_HOSTILE_7">
+    <Original>You will not terrorize my town!</Original>
+    <Spanish>¡No dejaré que aterroricen a mi pueblo!</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_IEDS_NOPRESENCE_NOTHOSTILE_1">
+    <Original>There are no IEDs nearby.</Original>
+    <Spanish>No hay IEDs por aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_IEDS_NOPRESENCE_NOTHOSTILE_2">
+    <Original>Sorry, I haven't seen any.</Original>
+    <Spanish>Lo siento, no he visto ninguno.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_IEDS_NOPRESENCE_NOTHOSTILE_3">
+    <Original>Not that I know of, sorry.</Original>
+    <Spanish>No que yo sepa, lo siento.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_IEDS_NOPRESENCE_NOTHOSTILE_4">
+    <Original>No IEDs have been set near here.</Original>
+    <Spanish>No se han puesto IED's por esta zona.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_1">
+    <Original>Like I would tell you.</Original>
+    <Spanish>No te lo diría ni muerto.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_2">
+    <Original>Just leave me alone already.</Original>
+    <Spanish>Ya déjenme en paz, ¿Quieren?.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_3">
+    <Original>You will have to find that out for yourself.</Original>
+    <Spanish>Tendrán que descubrirlo ustedes mismos.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_4">
+    <Original>Watch your step.</Original>
+    <Spanish>Yo que tú, camino con cuidado.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_5">
+    <Original>Maybe I should have planted a few.</Original>
+    <Spanish>Y quizás debería salir a plantar un par.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_IEDS_PRESENCE_NOTHOSTILE_1">
+    <Original>Yes I saw one earlier (Location marked on map).</Original>
+    <Spanish>Sí, vi uno temprano hoy (Ubicación marcada en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_IEDS_PRESENCE_NOTHOSTILE_2">
+    <Original>Let me show you one (Location marked on map).</Original>
+    <Spanish>Deja que te muestre donde vi uno (Ubicación marcada en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_IEDS_PRESENCE_NOTHOSTILE_3">
+    <Original>I think I know a spot (Location marked on map).</Original>
+    <Spanish>Creo recordar un punto (Ubicación marcada en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_IEDS_PRESENCE_NOTHOSTILE_4">
+    <Original>I saw an insurgent plant one (Location marked on map).</Original>
+    <Spanish>Vi a un insurgente plantando uno aquí (Ubicación marcada en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_IEDS_BADLUCK_1">
+    <Original>Sorry, I do not know.</Original>
+    <Spanish>Lo siento, pero no tengo idea.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_IEDS_BADLUCK_2">
+    <Original>I cannot give that type of information out.</Original>
+    <Spanish>No puedo entregar ese tipo de información.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_IEDS_BADLUCK_3">
+    <Original>I would be killed if I told you.</Original>
+    <Spanish>Me matarían si te lo dijera.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_IEDS_BADLUCK_4">
+    <Original>Please leave, they can't see me talking to you.</Original>
+    <Spanish>Por favor váyanse, no quiero que me vean hablando con ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_NOTHOSTILE_1">
+    <Original>Sorry I have not seen any.</Original>
+    <Spanish>Lo siento, no he visto a ninguno.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_NOTHOSTILE_2">
+    <Original>No, there are none nearby.</Original>
+    <Spanish>No, no hay ninguno por estos lados.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_NOTHOSTILE_3">
+    <Original>Not recently, sorry.</Original>
+    <Spanish>No he visto ninguno estos días.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_NOTHOSTILE_4">
+    <Original>Thankfully no.</Original>
+    <Spanish>Gracias a Dios, no.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_NOTHOSTILE_5">
+    <Original>I haven't seen any.</Original>
+    <Spanish>No he visto a ninguno.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_1">
+    <Original>Some insurgents are near %1.</Original>
+    <Spanish>Hay algunos insurgentes cerca de %1.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_2">
+    <Original>Don't snitch on me (Insurgents marked on map).</Original>
+    <Spanish>No le digas a nadie que te he dicho (Insurgentes marcados en el mapa)</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_3">
+    <Original>Yes, let me show you where I saw them (Insurgents marked on map).</Original>
+    <Spanish>Sí, déjame que te muestre dónde los vi (Insurgentes marcados en el mapa)</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_4">
+    <Original>Yes, but you must keep this secret (Insurgents marked on map).</Original>
+    <Spanish>Sí, pero debes mantener en secreto quién te dijo (Insurgentes marcados en el mapa)</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_BADLUCK_1">
+    <Original>Please, just leave me alone.</Original>
+    <Spanish>Por favor, déjenme en paz.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_BADLUCK_2">
+    <Original>I don't want to talk about this.</Original>
+    <Spanish>No quiero hablar sobre eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_BADLUCK_3">
+    <Original>I don't want to talk to you.</Original>
+    <Spanish>No quiero hablar con ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_BADLUCK_4">
+    <Original>I can't tell you.</Original>
+    <Spanish>No puedo decírtelo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_BADLUCK_5">
+    <Original>They wouldn't like me talking to you.</Original>
+    <Spanish>A ellos no les gustaría que hable con ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_HOSTILE_1">
+    <Original>As if I would tell you.</Original>
+    <Spanish>Como si te lo fuese a decir.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_HOSTILE_2">
+    <Original>Get away from me.</Original>
+    <Spanish>Aléjate de mí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_HOSTILE_3">
+    <Original>Please, just leave me alone.</Original>
+    <Spanish>Por favor, sólo déjenme tranquilo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_HOSTILE_4">
+    <Original>I don't want to talk about this.</Original>
+    <Spanish>No quiero hablar sobre eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_HOSTILE_5">
+    <Original>I don't want to talk to you.</Original>
+    <Spanish>No quiero hablar con ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_BADLUCK_1">
+    <Original>They wouldn't want me talking to you.</Original>
+    <Spanish>Ellos no querrían verme hablando con ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_BADLUCK_2">
+    <Original>You can't ask questions like that.</Original>
+    <Spanish>No puedes preguntar ese tipo de cosas.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_BADLUCK_3">
+    <Original>Are you crazy?</Original>
+    <Spanish>¿Estás loco?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_BADLUCK_4">
+    <Original>Please, just leave me alone.</Original>
+    <Spanish>Por favor, déjenme en paz.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_BADLUCK_5">
+    <Original>I don't want to talk about this.</Original>
+    <Spanish>No quiero hablar con ustedes sobre eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_BADLUCK_6">
+    <Original>I don't want to talk to you.</Original>
+    <Spanish>No quiero hablar con ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_1">
+    <Original>As if I would tell you.</Original>
+    <Spanish>Como si te lo fuese a decir.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_2">
+    <Original>Get away from me.</Original>
+    <Spanish>¡Aléjense de mí!</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_3">
+    <Original>Please, just leave me alone.</Original>
+    <Spanish>Por favor, déjenme en paz.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_4">
+    <Original>I don't want to talk about this.</Original>
+    <Spanish>No quiero hablar sobre eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_5">
+    <Original>I don't want to talk to you.</Original>
+    <Spanish>No quiero hablar con ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_1">
+    <Original>Insurgents have not established any installations here.</Original>
+    <Spanish>Los insurgentes no tienen ninguna instalación aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_2">
+    <Original>Luckily, no.</Original>
+    <Spanish>Afortunadamente, no.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_3">
+    <Original>No, I have not.</Original>
+    <Spanish>No, no he visto.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_4">
+    <Original>There are no insurgent bases here.</Original>
+    <Spanish>No hay bases insurgentes por aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_5">
+    <Original>There are no insurgent hideouts here.</Original>
+    <Spanish>No hay escondites insurgentes por aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_6">
+    <Original>Insurgents have not taken over this area yet.</Original>
+    <Spanish>Los insurgentes no se han tomado esta área aún.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_7">
+    <Original>There are no hideouts here.</Original>
+    <Spanish>No hay escondites aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_8">
+    <Original>There are no installations here.</Original>
+    <Spanish>No hay instalaciones aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_9">
+    <Original>We are still free from their reign.</Original>
+    <Spanish>Aún no han llegado a mandar aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_BADLUCK_1">
+    <Original>Are you crazy.</Original>
+    <Spanish>¿Estás loco?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_BADLUCK_2">
+    <Original>I cannot talk about this.</Original>
+    <Spanish>No puedo hablar sobre eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_BADLUCK_3">
+    <Original>Do you want to get me killed?</Original>
+    <Spanish>¿Acaso quieres que me maten?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_BADLUCK_4">
+    <Original>I will not put myself in danger.</Original>
+    <Spanish>No me voy a poner en peligro a mí mismo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_BADLUCK_5">
+    <Original>I cannot put my family at risk by answering that.</Original>
+    <Spanish>No puedo arriesgar a mi familiar respondiendo eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_1">
+    <Original>I don't have time for this.</Original>
+    <Spanish>No tengo tiempo para esto.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_2">
+    <Original>I cannot talk about this right now.</Original>
+    <Spanish>No puedo hablar sobre eso ahora mismo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_3">
+    <Original>Are you crazy.</Original>
+    <Spanish>Estás loco.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_4">
+    <Original>Why would you ask me such question.</Original>
+    <Spanish>¿Por qué me haces estas preguntas?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_5">
+    <Original>That is a crazy question to ask.</Original>
+    <Spanish>Esa es una pregunta muy idiota.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_6">
+    <Original>Do you want to get me killed?<Original>
+    <Spanish>¿Acaso quieres que me maten?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_6">
+    <Original>I will not put myself in danger.<Original>
+    <Spanish>No me voy a poner en peligro a mí mismo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_7">
+    <Original>Why would you ask that?<Original>
+    <Spanish>¿Por qué haces esa pregunta?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_8">
+    <Original>I cannot help you with that.<Original>
+    <Spanish>No te puedo ayudar con eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_IEDFACTORY">
+    <Original>IED Factory<Original>
+    <Spanish>Fábrica de IEDs</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_RECRUITMENTHQ">
+    <Original>Recruitment HQ<Original>
+    <Spanish>Cantón de reclutamiento</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_MUNITIONSDEPOT">
+    <Original>Munitions Depot<Original>
+    <Spanish>Depósito de municiones</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_ROADBLOCK">
+    <Original>Roadblocks<Original>
+    <Spanish>Bloqueo de carretera</Spanish>
+</Key>
+
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPE_IEDFACTORY">
+    <Original>IED factory<Original>
+    <Spanish>fábrica de IEDs</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPE_RECRUITMENTHQ">
+    <Original>recruitment HQ<Original>
+    <Spanish>cantón de reclutamiento</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPE_MUNITIONSDEPOT">
+    <Original>munitions depot<Original>
+    <Spanish>depósito de municiones</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPE_ROADBLOCK">
+    <Original>roadblocks<Original>
+    <Spanish>bloqueo de carretera</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_1">
+    <Original>I noticed a %1 nearby (%2 marked on map).<Original>
+    <Spanish>Noté que hay un %1 cerca (%2 marcado en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_2">
+    <Original>Someone told me there was a %1 close by (%2 marked on map).<Original>
+    <Spanish>Alguien me dijo que hay un %1 por acá cerca (%2 marcado en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_3">
+    <Original>I observed insurgents setting up a %1 (%2 marked on map).<Original>
+    <Spanish>Vi insurgentes instalando un %1 (%2 marcado en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_4">
+    <Original>I know the location of a %1 (%2 marked on map).<Original>
+    <Spanish>Conozco la ubicación de un %1 (%2 marcado en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_5">
+    <Original>Insurgents established a %1 (%2 marked on map).<Original>
+    <Spanish>Insurgentes establecieron un %1 (%2 marcado en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_6">
+    <Original>I can show you the location of a %1 (%2 marked on map).<Original>
+    <Spanish>Puedo mostrarte la ubicación de un %1 (%2 marcado en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_7">
+    <Original>You must keep this a secret (%2 marked on map).<Original>
+    <Spanish>Tienes que mantener el secreto, si (%2 marcado en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_8">
+    <Original>You must promise to protect me (%2 marked on map).<Original>
+    <Spanish>Tienen que prometer que me protegerán (%2 marcado en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_9">
+    <Original>Please remove the %1 from the area and restore peace (%2 marked on map).<Original>
+    <Spanish>Por favor eliminen el %1 del área y devuélvannos la paz (%2 marcado en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_1">
+    <Original>I noticed a %1 nearby.<Original>
+    <Spanish>Noté que hay un %1 cerca.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_2">
+    <Original>Someone told me there was a %1 close by.<Original>
+    <Spanish>Alguien me dijo que hay un %1 cerca.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_3">
+    <Original>I observed insurgents setting up a %1.<Original>
+    <Spanish>Vi insurgentes instalando un %1.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_4">
+    <Original>Insurgents have prepared a %1 nearby.<Original>
+    <Spanish>Los insurgentes han preparado un %1 cerca.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_5">
+    <Original>Insurgents established a %1 close by here.<Original>
+    <Spanish>Insurgentes establecieron un %1 por aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_6">
+    <Original>Others have mentioned a %1 close by.<Original>
+    <Spanish>Hay rumores de un %1 por aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_7">
+    <Original>Insurgents have setup a %1 nearby.<Original>
+    <Spanish>Los insurgentes instalaron un %1 cerca de aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_8">
+    <Original>Restore peace to this area, there is a %1 around here.<Original>
+    <Spanish>Traigan paz a esta área. Hay un %1 en alguna parte.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_9">
+    <Original>I do not know where it is, but insurgents are operating a %1 somewhere around here.<Original>
+    <Spanish>No estoy seguro dónde, pero los insurgentes tienen un %1 por aquí en algún lugar.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_1">
+    <Original>I can't talk about that.<Original>
+    <Spanish>No puedo hablar sobre eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_2">
+    <Original>They would kill me.<Original>
+    <Spanish>Me matarían si dijera algo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_3">
+    <Original>Are you crazy.<Original>
+    <Spanish>Estás loco.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_4">
+    <Original>Do you want to get me killed.<Original>
+    <Spanish>Tú me quieres ver muerto.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_5">
+    <Original>I cannot put my family at risk by answering that.<Original>
+    <Spanish>No puedo poner a mi familia en riesgo contestando eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_6">
+    <Original>Get out of here!<Original>
+    <Spanish>¡Fuera de aquí!</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_7">
+    <Original>Get away from me!<Original>
+    <Spanish>¡Aléjate de mí!</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_7">
+    <Original>You disgust me!<Original>
+    <Spanish>¡Ustedes me dan asco!</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_NOTHOSTILE_1">
+    <Original>I have not seen anything.<Original>
+    <Spanish>No he visto nada.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_NOTHOSTILE_2">
+    <Original>Sorry, I haven't.<Original>
+    <Spanish>Lo siento, pero no.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_NOTHOSTILE_3">
+    <Original>No, I have not.<Original>
+    <Spanish>No, no he visto nada.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_NOTHOSTILE_4">
+    <Original>There has been no suspicious behavior lately.<Original>
+    <Spanish>No ha habido ningún comportamiento sospechoso últimamente.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_NOTHOSTILE_5">
+    <Original>Everything is peaceful here.<Original>
+    <Spanish>Todo anda tranquilo por aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_NOTHOSTILE_6">
+    <Original>We are a peaceful community.<Original>
+    <Spanish>Somos una comunidad tranquila.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_BADLUCK_1">
+    <Original>I will not put myself at risk.<Original>
+    <Spanish>No me voy a arriesgar por ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_BADLUCK_2">
+    <Original>They would kill me if I told you.<Original>
+    <Spanish>Me matarían si te dijera algo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_BADLUCK_3">
+    <Original>I cannot talk about that.<Original>
+    <Spanish>No puedo hablar sobre eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_BADLUCK_4">
+    <Original>There has been no suspicious behavior lately.<Original>
+    <Spanish>No ha habido ningún comportamiento sospechoso últimamente.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_BADLUCK_5">
+    <Original>They wouldn't want me talking to you.<Original>
+    <Spanish>Ellos no querrían que yo hable con ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_BADLUCK_6">
+    <Original>I shouldn't be talking about this.<Original>
+    <Spanish>No debería hablar de eso con ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_HOSTILE_1">
+    <Original>I cannot talk about that.<Original>
+    <Spanish>No puedo hablar sobre eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_HOSTILE_2">
+    <Original>They wouldn't want me talking to you.<Original>
+    <Spanish>Ellos no querrían que yo hable con ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_HOSTILE_3">
+    <Original>I cannot help you.<Original>
+    <Spanish>No puedo ayudarles.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_HOSTILE_4">
+    <Original>No, I have not.<Original>
+    <Spanish>No, no he visto nada.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_HOSTILE_5">
+    <Original>I have not seen anything lately.<Original>
+    <Spanish>No he visto nada reciente.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_HOSTILE_6">
+    <Original>There is no danger here.<Original>
+    <Spanish>No hay ningún peligro aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_HOSTILE_7">
+    <Original>I don't have time for this.<Original>
+    <Spanish>No tengo tiempo para ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_1">
+    <Original>I heard %1 was %2.<Original>
+    <Spanish>Oí que %1 estaba %2.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_2">
+    <Original>Someone told me that %1 was %2.<Original>
+    <Spanish>Alguien me dijo que %1 estaba %2.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_3">
+    <Original>I saw that %1 was %2.<Original>
+    <Spanish>Vi que %1 estaba %2.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_4">
+    <Original>I think %1 was %2.<Original>
+    <Spanish>Creo que %1 estaba %2.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_5">
+    <Original>I was informed that %1 was %2.<Original>
+    <Spanish>Me informaron que %1 estaba %2.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_6">
+    <Original>I was told %1 was %2.<Original>
+    <Spanish>Me dijeron que %1 estaba %2.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_MAP_1">
+    <Original> I overheard where he was (Position marked on map).<Original>
+    <Spanish> Escuche dónde andaba (Posición marcada en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_MAP_2">
+    <Original> Someone told me where he was (Position marked on map).<Original>
+    <Spanish> Alguien me dijo dónde andaba (Posición marcada en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_MAP_3">
+    <Original> I saw him earlier (Position marked on map).<Original>
+    <Spanish> Lo ví hoy temprano (Posición marcada en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_MAP_3">
+    <Original> I saw him earlier (Position marked on map).<Original>
+    <Spanish> Lo ví hoy temprano (Posición marcada en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_MAP_4">
+    <Original> I I think I know where you can find him (Position marked on map).<Original>
+    <Spanish> Creo que sé dónde le pueden encontrar (Posición marcada en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_HOME_1">
+    <Original> I'll show you where he lives (Home marked on map).<Original>
+    <Spanish> Te mostraré dónde vive (Casa marcada en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_HOME_2">
+    <Original> I know where he lives (Home marked on map).<Original>
+    <Spanish> Sé dónde vive (Casa marcada en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_HOME_3">
+    <Original> Someone told me where he lives (Home marked on map).<Original>
+    <Spanish> Alguien me dijo dónde vive (Casa marcada en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_HOME_4">
+    <Original> I will show you where you can find him (Home marked on map).<Original>
+    <Spanish> Te mostraré dónde lo pueden encontrar (Casa marcada en el mapa).</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_TOWN_1">
+    <Original>They wouldn't like me talking to you.<Original>
+    <Spanish>Ellos no querrían que hable con ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_TOWN_2">
+    <Original>I can't talk about this.<Original>
+    <Spanish>No puedo hablar sobre eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_TOWN_3">
+    <Original>Please... just leave me alone.<Original>
+    <Spanish>Por favor... Déjenme tranquilo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_TOWN_4">
+    <Original>I can't help you.<Original>
+    <Spanish>No puedo ayudarles.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_TOWN_5">
+    <Original>Please leave before they see you.<Original>
+    <Spanish>Por favor, váyanse antes de que los vean.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_TOWN_6">
+    <Original>You must leave immediately.<Original>
+    <Spanish>Deben irse de inmediato.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_TOWN_7">
+    <Original>They must not see me talking to you.<Original>
+    <Spanish>No puedo dejar que me vean hablando con ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_STRONG_1">
+    <Original>I support you.<Original>
+    <Spanish>les apoyo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_STRONG_2">
+    <Original>You will have no problems with me.<Original>
+    <Spanish>Por mi parte, no tendrán problemas.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_STRONG_3">
+    <Original>I support your cause.<Original>
+    <Spanish>Apoyo su causa.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_STRONG_4">
+    <Original>You do not have to worry about me.<Original>
+    <Spanish>No hay por qué preocuparse por mí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_STRONG_5">
+    <Original>I fully support your forces.<Original>
+    <Spanish>Doy todo mi apoyo a sus fuerzas.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_MEDIUM_1">
+    <Original>I mostly support you.<Original>
+    <Spanish>Les apoyo, la mayoría del tiempo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_MEDIUM_2">
+    <Original>I support you. Do not mess it up.<Original>
+    <Spanish>Les apoyo, nada más no la caguen.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_MEDIUM_3">
+    <Original>I have mixed feelings about your forces.<Original>
+    <Spanish>Tengo sentimientos encontrados sobre ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_MEDIUM_4">
+    <Original>You have keep my trust.<Original>
+    <Spanish>Tienen que mantener mi confianza.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_MEDIUM_5">
+    <Original>I have supported you for awhile.<Original>
+    <Spanish>Les vengo apoyando hace un tiempo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_WEAK_1">
+    <Original>Your forces have made bad decisions lately.<Original>
+    <Spanish>Sus fuerzas han tomado algunas malas decisiones últimamente.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_WEAK_2">
+    <Original>I am beginning to dislike you.<Original>
+    <Spanish>Estoy comenzando a perder simpatía por ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_WEAK_3">
+    <Original>You must regain my trust.<Original>
+    <Spanish>Tendrían que reganar mi confianza.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_WEAK_4">
+    <Original>You better not stay long.<Original>
+    <Spanish>Preferiría que no se queden por mucho tiempo aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_WEAK_5">
+    <Original>I do not support you.<Original>
+    <Spanish>No los apoyo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_STRONG_1">
+    <Original>I strongly oppose of your presence here.<Original>
+    <Spanish>Me opongo rotundamente a su presencia aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_STRONG_2">
+    <Original>You better leave.<Original>
+    <Spanish>Sería mejor que se vayan.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_STRONG_3">
+    <Original>I do not support you.<Original>
+    <Spanish>No los apoyo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_STRONG_4">
+    <Original>I hate your forces.<Original>
+    <Spanish>Odio a sus fuerzas.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_STRONG_5">
+    <Original>You need to leave immediately.<Original>
+    <Spanish>Deberían irse, ¡Ya!.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_EXTREME_1">
+    <Original>I am extremely opposed to you.<Original>
+    <Spanish>Estoy absolutamente en contra de ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_EXTREME_2">
+    <Original>You do not here.<Original>
+    <Spanish>Ustedes, fuera de aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_EXTREME_3">
+    <Original>You need to leave now.<Original>
+    <Spanish>No veo la hora de que se vayan.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_EXTREME_4">
+    <Original>Get out of here!<Original>
+    <Spanish>¡Fuera de aquí!</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_EXTREME_5">
+    <Original>Who would support people like you?<Original>
+    <Spanish>¿Quién podría darle apoyo a tipos como ustedes?</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_NOANSWER_1">
+    <Original>I don't want to talk right now.<Original>
+    <Spanish>No quiero hablar ahora mismo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_NOANSWER_2">
+    <Original>I don't think I should be talking to you.<Original>
+    <Spanish>Creo que no debería estar hablando con ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_NOANSWER_3">
+    <Original>I shouldn't be talking to you.<Original>
+    <Spanish>No debería hablar con ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_NOANSWER_4">
+    <Original>You should move on.<Original>
+    <Spanish>No tiene importancia.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_NOANSWER_5">
+    <Original>I can't answer that.<Original>
+    <Spanish>No puedo contestar eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_OPINION_NOANSWER_6">
+    <Original>Get out of here!<Original>
+    <Spanish>¡Fuera de aquí!</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_DANGER_1">
+    <Original>They wouldn't like me talking to you.<Original>
+    <Spanish>Ellos no querrían que esté hablando con ustedes</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_DANGER_2">
+    <Original>I can't talk about this.<Original>
+    <Spanish>No puedo hablar sobre eso.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_DANGER_3">
+    <Original>You must leave this place immediately.<Original>
+    <Spanish>Deberían irse de aquí, inmediatamente.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_DANGER_4">
+    <Original>You are in severe danger here.<Original>
+    <Spanish>Están en grave peligro aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_DANGER_5">
+    <Original>Please leave before they see you.<Original>
+    <Spanish>Por favor, váyanse antes de que los vean.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_DANGER_6">
+    <Original>You must leave immediately.<Original>
+    <Spanish>Deberían irse inmediatamente.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_DANGER_7">
+    <Original>They must not see me talking to you.<Original>
+    <Spanish>No puedo dejar que me vean hablando con ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_STRONG_1">
+    <Original>You are well respected around here.<Original>
+    <Spanish>Ustedes son respetados por aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_STRONG_2">
+    <Original>I don't think you need to worry about our hostility here.<Original>
+    <Spanish>No creo que tengan nada de qué preocuparse en este pueblo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_STRONG_3">
+    <Original>We support you.<Original>
+    <Spanish>Les brindamos nuestro apoyo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_STRONG_4">
+    <Original>We will help you if we can.<Original>
+    <Spanish>Les ayudaremos en lo que podamos.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_STRONG_5">
+    <Original>You are supported here.<Original>
+    <Spanish>Aquí los apoyamos.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_MEDIUM_1">
+    <Original>Tensions have been rising lately.<Original>
+    <Spanish>La tensión está al alza últimamente.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_MEDIUM_2">
+    <Original>The people around here are undecided.<Original>
+    <Spanish>La gente aquí está indecisa.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_MEDIUM_3">
+    <Original>There are mixed feelings about you.<Original>
+    <Spanish>Hay opiniones mixtas sobre ustedes.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_MEDIUM_4">
+    <Original>You might want to try and lower hostility around here.<Original>
+    <Spanish>Puede que quieran bajar la hostilidad en esta zona.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_MEDIUM_5">
+    <Original>Most of us support you.<Original>
+    <Spanish>La mayoría de nosotros les apoyamos.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_MEDIUM_1">
+    <Original>Tensions have risen greatly.<Original>
+    <Spanish>La tensión aquí ha aumentado bastante.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_MEDIUM_2">
+    <Original>The people around here do not like you.<Original>
+    <Spanish>No les agradan a la gente de aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_MEDIUM_3">
+    <Original>You are not liked around here.<Original>
+    <Spanish>No son del agrado de la gente de por acá.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_MEDIUM_4">
+    <Original>You shouldn't stay long.<Original>
+    <Spanish>No deberían quedarse mucho tiempo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_MEDIUM_5">
+    <Original>Most people do not support you.<Original>
+    <Spanish>La mayoría de la gente no les da apoyo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_STRONG_1">
+    <Original>Tensions are very high.<Original>
+    <Spanish>La tensión aquí es muy alta.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_STRONG_2">
+    <Original>Be very careful of people around here.<Original>
+    <Spanish>Sean muy cuidadosos con la gente de por aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_STRONG_3">
+    <Original>You are strongly opposed here.<Original>
+    <Spanish>Hay una oposición férrea a ustedes aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_STRONG_4">
+    <Original>You shouldn't stay long<Original>
+    <Spanish>No deberían quedarse mucho tiempo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_STRONG_5">
+    <Original>Very few of us support you.<Original>
+    <Spanish>Muy pocos de nosotros les apoyamos.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_EXTREME_1">
+    <Original>Tensions are extremely high.<Original>
+    <Spanish>La tensión aquí es extremadamente alta.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_EXTREME_2">
+    <Original>You might get followed if you stick around.<Original>
+    <Spanish>Puede que los sigan si se quedan mucho tiempo aquí.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_EXTREME_3">
+    <Original>You are hated around here.<Original>
+    <Spanish>La gente de aquí los odia.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_EXTREME_4">
+    <Original>You should leave now.<Original>
+    <Spanish>Deberían irse, ahora mismo.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_EXTREME_4">
+    <Original>Barely anybody here supports you.<Original>
+    <Spanish>Prácticamente nadie aquí los apoya.</Spanish>
+</Key>
+</Container>
+
+</Package></Project>
