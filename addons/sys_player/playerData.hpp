@@ -238,6 +238,7 @@ GVAR(LOADOUT_DATA) = [
         _target selectWeapon _weap;
         _magazines;},
      {
+        removeBackpack (_this select 0);
         (_this select 0) addbackpack "B_Bergen_mcamo"; // as a place to put items temporarily
         {
             [(_this select 0), _x] call addItemToUniformOrVest;
