@@ -155,15 +155,10 @@ if (_spawnSources isEqualTo []) then {
 private _lastProfileSpawnedTime = [MOD(profileSystem),"profileLastSpawnTime"] call ALiVE_fnc_hashGet;
 
 if (!(_profilesToSpawnQueue isEqualTo []) && {time - _lastProfileSpawnedTime > ALiVE_smoothSpawn}) then {
-    private _profileID = _profilesToSpawnQueue select 0;
+    private _profileID = _profilesToSpawnQueue deleteat 0;
     private _profile = [MOD(profileHandler),"getProfile", _profileID] call ALiVE_fnc_profileHandler;
 
-    if (isnil "_profile" || {_profile select 2 select 1} || {[_profile,"locked", false] call ALiVE_fnc_HashGet}) then {
-        // profile no longer exists, is active, or is locked
-        // remove from queue
-
-        _profilesToSpawnQueue deleteat 0;
-    } else {
+    if (!isnil "_profile" && {!(_profile select 2 select 1)} && {!([_profile,"locked", false] call ALiVE_fnc_HashGet)}) then {
 		private _activeLimiter = [MOD(profileSystem),"activeLimiter"] call ALiVE_fnc_profileSystem;
         private _activeEntityCount = count ([MOD(profileHandler),"getActiveEntities"] call ALiVE_fnc_profileHandler);
 
