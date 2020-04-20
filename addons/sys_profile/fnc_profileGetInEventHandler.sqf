@@ -31,9 +31,9 @@ if(isPlayer _getInUnit) then {
     _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
 
     if (isnil "_profile") exitwith {};
-
-    private _entitiesInCommandOf = _unit select 2 select 8;
-    private _entitiesInCargoOf = _unit select 2 select 9;
+    
+    private _entitiesInCommandOf = _profile select 2 select 8;
+    private _entitiesInCargoOf = _profile select 2 select 9;
 
     if (_entitiesInCommandOf isequalto [] && { _entitiesInCargoOf isequalto [] }) then {
         [ALIVE_profileHandler, "unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
