@@ -57,15 +57,22 @@ if (_spawnSources isEqualTo []) then {
         if (!isnil "_profile") then {
             private _leader = _profile select 2 select 10;
 
+            //["TRACE | Despawn %1 - Despawn Queue %2",_profileID,_profilesToDespawnQueue] call ALiVE_fnc_Dump;
+
             // if unit is in the air, prevent despawn
             if ((getpos _leader) select 2 < 3) then {
                 if ((_profile select 2 select 5) == "entity") then {
                     [_profile,"despawn"] call ALiVE_fnc_profileEntity;
                 } else {
-                    [_profile,"despawn"] call ALiVE_fnc_profileVehicle;
+                    private _vehicleAssignments = [_profile,"vehicleAssignments"] call ALiVE_fnc_HashGet;
+
+                    if (isNil "_vehicleAssignments") then {
+                        [_profile,"despawn"] call ALiVE_fnc_profileVehicle;
+                    };
                 };
             };
         };
+
     } else {
         // all profiles have been despawned
         // repopulate spawn sources
@@ -84,6 +91,8 @@ if (_spawnSources isEqualTo []) then {
 
             _spawnSourcesUnfiltered = _spawnSourcesUnfiltered select {_x distance _spawnSource > 30};
         };
+
+        //["TRACE | Checked Spawn Sources %1 - unfiltered %2",_spawnSources,_spawnSourcesUnfiltered] call ALiVE_fnc_Dump;
     };
 } else {
 
@@ -105,6 +114,9 @@ if (_spawnSources isEqualTo []) then {
     private _profilesInSpawnRange = [MOD(profileSystem),"profilesInSpawnRange"] call ALiVE_fnc_hashGet;
 
     {
+        //private _type = [_x,"type","entity"] call ALiVE_fnc_HashGet;
+        //private _emptyVehicle = (_type == "vehicle") && {(([_x,"entitiesInCommandOf",[]] call ALiVE_fnc_HashGet) + ([_x,"entitiesInCargoOf",[]] call ALiVE_fnc_HashGet)) isEqualTo []};
+
         // don't spawn or despawn player profiles
         if (!([_x,"isPlayer", false] call ALiVE_fnc_hashGet)) then {
             if (!(_x select 2 select 1)) then {
@@ -128,6 +140,8 @@ if (_spawnSources isEqualTo []) then {
         };
     } foreach _profilesInDeactivationRange;
 
+    //["TRACE | Collected Profiles to be spawned %1",_profilesToSpawnQueue] call ALiVE_fnc_Dump;
+
     // if all spawn sources have been checked
     // populate despawn list with active profiles
     // that are not in spawn range list
@@ -144,6 +158,8 @@ if (_spawnSources isEqualTo []) then {
                 _profilesToDespawnQueue pushback _x;
             };
         } foreach _activeProfiles;
+
+        //["TRACE | Collected Profiles to be despawned %1",_profilesToDespawnQueue] call ALiVE_fnc_Dump;
     };
 };
 
@@ -166,7 +182,11 @@ if (!(_profilesToSpawnQueue isEqualTo []) && {time - _lastProfileSpawnedTime > A
             if ((_profile select 2 select 5) == "entity") then {
                 [_profile,"spawn"] spawn ALiVE_fnc_profileEntity;
             } else {
-                [_profile,"spawn"] spawn ALiVE_fnc_profileVehicle;
+                private _vehicleAssignments = [_profile,"vehicleAssignments"] call ALiVE_fnc_HashGet;
+
+                if (isNil "_vehicleAssignments") then {
+                    [_profile,"spawn"] spawn ALiVE_fnc_profileVehicle;
+                };
             };
 
             [MOD(profileSystem),"profileLastSpawnTime", time] call ALiVE_fnc_hashSet;
