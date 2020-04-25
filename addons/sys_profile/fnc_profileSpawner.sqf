@@ -66,7 +66,7 @@ if (_spawnSources isEqualTo []) then {
                 } else {
                     private _vehicleAssignments = [_profile,"vehicleAssignments"] call ALiVE_fnc_HashGet;
 
-                    if (isNil "_vehicleAssignments") then {
+                    if (isNil "_vehicleAssignments" || {(_vehicleAssignments select 1) isEqualTo []}) then {
                         [_profile,"despawn"] call ALiVE_fnc_profileVehicle;
                     };
                 };
@@ -184,7 +184,7 @@ if (!(_profilesToSpawnQueue isEqualTo []) && {time - _lastProfileSpawnedTime > A
             } else {
                 private _vehicleAssignments = [_profile,"vehicleAssignments"] call ALiVE_fnc_HashGet;
 
-                if (isNil "_vehicleAssignments") then {
+                if (isNil "_vehicleAssignments" || {(_vehicleAssignments select 1) isEqualTo []}) then {
                     [_profile,"spawn"] spawn ALiVE_fnc_profileVehicle;
                 };
             };
