@@ -1133,7 +1133,7 @@ class FSM
                          "" \n
                          "  } else {" \n
                          "" \n
-                         "	if (!isnil ""_civClasses"" && {!isnil ""_building"" }) then {" \n
+                         "		if (!isnil ""_civClasses"" && {count _civClasses > 0} && {!isnil ""_building"" }) then {" \n
                          "" \n
                          "		private _m = createAgent [selectRandom _civClasses, selectRandom _positions, [], 0, ""NONE""]; " \n
                          "		_m setVariable [""BIS_fnc_animalBehaviour_disable"", true];" \n
