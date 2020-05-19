@@ -16,6 +16,10 @@
 #include "CFP_B_SDMilitia_Logistics.hpp"
 #include "CFP_B_UGARMY_Logistics.hpp"
 #include "CFP_B_USARMY_WDL_Logistics.hpp"
+#include "CFP_B_USARMY_2003_WDL_Logistics.hpp"
+#include "CFP_B_USARMY_2003_DES_Logistics.hpp"
+#include "CFP_B_USARMY_1991_WDL_Logistics.hpp"
+#include "CFP_B_USARMY_1991_DES_Logistics.hpp"
 #include "CFP_B_USCIA_Logistics.hpp"
 #include "CFP_B_USMC_DES_Logistics.hpp"
 #include "CFP_B_USRANGERS_WDL_Logistics.hpp"
@@ -50,4 +54,3 @@
 #include "CUP_B_US_ARMY_Logistics.hpp"
 #include "CUP_B_USMC_Logistics.hpp"
 #include "CUP_O_RU_Logistics.hpp"
-
