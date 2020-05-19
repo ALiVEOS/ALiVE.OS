@@ -868,7 +868,7 @@ switch(_operation) do {
 
                 if (isnil "_unitParentData") then {
                     _unitParentData = _cfgVehicles >> _unitParent;
-                    _unitParentFaction = getText (_unitParentData >> "faction");
+                    _unitParentFaction = tolower (getText (_unitParentData >> "faction"));
                     _unitParentEditorSubcategory = getText (_unitParentData >> "editorSubcategory");
 
                     private _unitParentFactionClass = _unitParentFaction call ALiVE_fnc_configGetFactionClass;
@@ -1570,7 +1570,7 @@ switch(_operation) do {
             _factionSide = getNumber (_factionConfig >> "side");
 
             if (_factionSide >= 0 && {_factionSide <= 3}) then {
-                _factionConfigName = configName _factionConfig;
+                _factionConfigName = tolower (configName _factionConfig);
 
                 [_result,_factionConfigName, [[],[]]] call ALiVE_fnc_hashSet;
             };
@@ -1591,7 +1591,7 @@ switch(_operation) do {
                     _entrySide = getNumber (_entry >> "side");
 
                     if (_entrySide >= 0 && {_entrySide <= 3}) then {
-                        _entryFaction = getText (_entry >> "faction");
+                        _entryFaction = tolower (getText (_entry >> "faction"));
 
                         _factionData = nil;
                         _factionData = [_result,_entryFaction] call ALiVE_fnc_hashGet;
@@ -1650,7 +1650,7 @@ switch(_operation) do {
                         _groupConfigName = configName _group;
                         _groupName = getText (_group >> "name");
                         _groupSide = getNumber (_group >> "side");
-                        _groupFaction = getText (_group >> "faction");
+                        _groupFaction = tolower (getText (_group >> "faction"));
                         _groupIcon = getText (_group >> "icon");
                         _rarityGroup = getNumber (_group >> "rarityGroup");
 
@@ -2470,7 +2470,7 @@ switch(_operation) do {
             private _unitParent = configName (inheritsFrom _unitConfig);
             private _unitDisplayName = getText (_unitConfig >> "displayName");
             private _unitSide = getNumber (_unitConfig >> "side");
-            private _unitFaction = getText (_unitConfig >> "faction");
+            private _unitFaction = tolower (getText (_unitConfig >> "faction"));
             private _import = true;
             private _identityTypes = [_logic,"getUnitIdentityTypes", _unit] call MAINCLASS;
 
@@ -4646,7 +4646,7 @@ switch(_operation) do {
             _unitConfig = configFile >> "CfgVehicles" >> _unit;
             _unitConfigName = configName _unitConfig;
             _unitSide = getNumber (_unitConfig >> "side");
-            _unitFaction = getText (_unitConfig >> "faction");
+            _unitFaction = tolower (getText (_unitConfig >> "faction"));
             _unitDisplayName = getText (_unitConfig >> "displayName");
             _unitLoadout = getUnitLoadout _asset;
 
