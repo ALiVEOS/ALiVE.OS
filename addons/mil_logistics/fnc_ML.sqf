@@ -1974,6 +1974,9 @@ switch(_operation) do {
 
                                 _motorisedProfiles pushback _profileIDs;
 
+                            } else {
+                                _groupCount = _groupCount - 1;
+                                _totalCount = _totalCount - 1;
                             };
                         };
 
@@ -2153,6 +2156,9 @@ switch(_operation) do {
 
                                 _infantryProfiles pushback _profileIDs;
 
+                            } else {
+                                _groupCount = _groupCount - 1;
+                                _totalCount = _totalCount - 1;
                             };
                         };
 
@@ -2296,6 +2302,9 @@ switch(_operation) do {
 
                                 _armourProfiles pushback _profileIDs;
 
+                            } else {
+                                _groupCount = _groupCount - 1;
+                                _totalCount = _totalCount - 1;
                             };
                         };
 
@@ -2343,6 +2352,9 @@ switch(_operation) do {
 
                                 _mechanisedProfiles pushback _profileIDs;
 
+                            } else {
+                                _groupCount = _groupCount - 1;
+                                _totalCount = _totalCount - 1;
                             };
                         };
 
@@ -2509,14 +2521,23 @@ switch(_operation) do {
                         }else{
 
                             // no profiles were created
-                            // nothing to do so cancel..
+                            // nothing to do so cancel...
+
+                            if(_debug) then {
+                                ["ALIVE ML - No reinforcements have been created! Cancelling event: %1", _eventID] call ALIVE_fnc_dump;
+                            };                            
+
                             [_logic, "removeEvent", _eventID] call MAINCLASS;
                         };
                     };
                 }else{
-
                     // no insertion point available
-                    // nothing to do so cancel..
+                    // nothing to do so cancel...
+
+                    if(_debug) then {
+                        ["ALIVE ML - No insertion point available! Cancelling event: %1", _eventID] call ALIVE_fnc_dump;
+                    };
+
                     [_logic, "removeEvent", _eventID] call MAINCLASS;
 
                 };
