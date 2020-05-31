@@ -345,11 +345,12 @@ GVAR(LOADOUT_DATA) = [
         } foreach uniformItems (_this select 0);
         _uniformItems;
      }, {
+        private ["_acreActive"];
         PLACEHOLDERCOUNT = 0;
-        with_acre = isClass(configFile >> "CfgPatches" >> "acre_main");
+        _acreActive = isClass(configFile >> "CfgPatches" >> "acre_main");
         {
             //[(_this select 0), _x] call addItemToUniformOrVest;
-            if ((with_acre) && {_x call acre_api_fnc_isRadio}) then 
+            if ((_acreActive) && {_x call acre_api_fnc_isRadio}) then 
             {
                 (_this select 0) addItemToUniform (_x call acre_api_fnc_getBaseRadio);
             } 
@@ -398,9 +399,10 @@ GVAR(LOADOUT_DATA) = [
         } foreach vestItems (_this select 0);
         _vestItems;
     }, {
-        with_acre = isClass(configFile >> "CfgPatches" >> "acre_main");
+        private ["_acreActive"];
+        _acreActive = isClass(configFile >> "CfgPatches" >> "acre_main");
         {
-            if ((with_acre) && {_x call acre_api_fnc_isRadio}) then 
+            if ((_acreActive) && {_x call acre_api_fnc_isRadio}) then 
             {
                 (_this select 0) addItemToVest (_x call acre_api_fnc_getBaseRadio);
             } 
@@ -444,9 +446,9 @@ GVAR(LOADOUT_DATA) = [
         } foreach (_cargo select 0);
         _backpacks;
     },{
+        private ["_acreActive","_target"];
         clearAllItemsFromBackpack (_this select 0);
-        with_acre = isClass(configFile >> "CfgPatches" >> "acre_main");
-        private ["_target"];
+        _acreActive = isClass(configFile >> "CfgPatches" >> "acre_main");
         _target = _this select 0;
         {
             private "_item";
@@ -454,7 +456,7 @@ GVAR(LOADOUT_DATA) = [
             if(_item != "") then {
                 if(getNumber(configFile>>"CfgVehicles">>_item>>"isbackpack")==1) then {
                     TRACE_2("adding item to backpack", _target, _item);
-                    if ((with_acre) && {_x call acre_api_fnc_isRadio}) then 
+                    if ((_acreActive) && {_x call acre_api_fnc_isRadio}) then 
                     {
                         (unitBackpack _target) addBackpackCargoGlobal [(_item call acre_api_fnc_getBaseRadio),1];
                     } 
@@ -487,9 +489,9 @@ GVAR(LOADOUT_DATA) = [
         } foreach backpackitems (_this select 0);
         _bp;
     }, {
-        private ["_target"];
+        private ["_target","_acreActive"];
         _target = _this select 0;
-        with_acre = isClass(configFile >> "CfgPatches" >> "acre_main");
+        _acreActive = isClass(configFile >> "CfgPatches" >> "acre_main");
         {
             private "_item";
             _item = _x;
@@ -498,7 +500,7 @@ GVAR(LOADOUT_DATA) = [
                     if(isClass(configFile>>"CfgWeapons">>_item>>"WeaponSlotsInfo") && getNumber(configFile>>"CfgWeapons">>_item>>"showempty")==1) then {
                         (unitBackpack _target) addWeaponCargoGlobal [_item,1];
                     } else {
-                        if ((with_acre) && {_x call acre_api_fnc_isRadio}) then 
+                        if ((_acreActive) && {_x call acre_api_fnc_isRadio}) then 
                         {
                             _target addItem (_item call acre_api_fnc_getBaseRadio);
                         } 
