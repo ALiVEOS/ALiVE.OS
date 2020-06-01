@@ -28,15 +28,15 @@ Highhead
 
 if !(isServer) exitwith {};
 
-if (isNil QMOD(PNS_STORE)) then {
-    MOD(PNS_STORE) = [] call ALiVE_fnc_HashCreate;
-};
-
 private _id = _this select 0;
 private _data = _this select 1;
 
 private _mission = format["ALiVE_%1",missionName];
 private _allMissions = profileNamespace getVariable [QMOD(SAVEDMISSIONS),[]];
+
+if (isNil QMOD(PNS_STORE)) then {
+    MOD(PNS_STORE) = +(profileNamespace getVariable [_mission, [] call ALiVE_fnc_HashCreate]);
+};
 
 [MOD(PNS_STORE),_id,_data] call ALiVE_fnc_HashSet;
 
