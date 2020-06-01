@@ -448,7 +448,6 @@ switch(_operation) do {
     case "smoothSpawn": {
             if(typeName _args == "SCALAR") then {
                     [_logic,"smoothSpawn",_args] call ALIVE_fnc_hashSet;
-                    ALIVE_spawnRadiusJet = _args;
             };
             _result = [_logic,"smoothSpawn"] call ALIVE_fnc_hashGet;
     };

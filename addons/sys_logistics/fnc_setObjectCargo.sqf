@@ -27,10 +27,12 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_input","_id","_cargo","_cargoR","_cargoT","_cargoL","_cargoWMI","_cargoW","_cargoM","_cargoI","_typesLogistics","_typesWeapons"];
+private ["_input","_id","_cargo","_cargoR","_cargoT","_cargoL","_cargoWMI","_cargoW","_cargoM","_cargoI","_typesLogistics","_typesWeapons", "_acreActive", "_baseRadio"];
 
 _input = [_this, 0, objNull, [objNull]] call BIS_fnc_param;
 _id = [MOD(SYS_LOGISTICS),"id",_input] call ALiVE_fnc_Logistics;
+
+_acreActive = isClass(configFile >> "CfgPatches" >> "acre_main");
 
 if (count _this > 1) then {
     _cargo = [_this, 1, [], [[]]] call BIS_fnc_param;
@@ -63,7 +65,8 @@ if (_global) then {
 
  {_input addMagazine [_x select 0,_x select 1]} forEach _ammo;
 
-// Reset weapons and items state
+// Reset weapons and items state. Replace ACRE radios with Base Class if ACRE is running
+
 _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"ItemCargo"]];
 {
     private ["_content","_current","_operation"];
@@ -74,9 +77,33 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
     };
 
     private _actions2 = if (_global) then {
-        [{_input addWeaponCargoGlobal [_type,_count]}, {_input addMagazineCargoGlobal [_type,_count]},{_input addItemCargoGlobal [_type,_count]}]; 
+        [{_input addWeaponCargoGlobal [_type,_count]}, {_input addMagazineCargoGlobal [_type,_count]},{
+            if !(_acreActive) then {
+                _input addItemCargoGlobal [_type,_count];
+            } else {
+               if (_type call acre_api_fnc_isRadio) then {
+                    _baseRadio = _type call acre_api_fnc_isBaseRadio;
+                    if !(_baseRadio) then {_type = _type call acre_api_fnc_getBaseRadio};
+                    _input addItemCargoGlobal [_type, _count];
+                } else {
+                    _input addItemCargoGlobal [_type, _count];
+                };
+            };
+        }]; 
     } else {
-        [{_input addWeaponCargo [_type,_count]}, {_input addMagazineCargo [_type,_count]},{_input addItemCargo [_type,_count]}];
+        [{_input addWeaponCargo [_type,_count]}, {_input addMagazineCargo [_type,_count]},{
+            if !(_acreActive) then {
+                _input addItemCargo [_type,_count];
+            } else {
+                if (_type call acre_api_fnc_isRadio) then {
+                    _baseRadio = _type call acre_api_fnc_isBaseRadio;
+                    if !(_baseRadio) then {_type = _type call acre_api_fnc_getBaseRadio};
+                    _input addItemCargo [_type, _count];
+                } else {
+                    _input addItemCargo [_type, _count];
+                };
+            };
+        }];
     };
 
     _content = _x select 0;
