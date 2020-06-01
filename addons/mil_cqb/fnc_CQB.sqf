@@ -1337,7 +1337,7 @@ switch(_operation) do {
 	                private _placement = _x;
 
 	                _placement set [2,(_placement select 2) + 0.3];
-                    _placement = [_placement,0.75,_placement getdir _buildingPosition] call BIS_fnc_relPos;
+                    _placement = [_placement,1.5,_placement getdir _buildingPosition] call BIS_fnc_relPos;
 
 			    	private _staticWeapon = createVehicle [_class, _placement, [], 0, "CAN_COLLIDE"];
 
