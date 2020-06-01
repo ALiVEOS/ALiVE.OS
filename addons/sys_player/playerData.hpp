@@ -458,7 +458,7 @@ GVAR(LOADOUT_DATA) = [
                     TRACE_2("adding item to backpack", _target, _item);
                     if ((_acreActive) && {_x call acre_api_fnc_isRadio}) then 
                     {
-                        (unitBackpack _target) addBackpackCargoGlobal [(_item call acre_api_fnc_getBaseRadio),1];
+                        (unitBackpack _target) addItemCargoGlobal [(_item call acre_api_fnc_getBaseRadio),1];
                     } 
                     else 
                     {
@@ -502,11 +502,15 @@ GVAR(LOADOUT_DATA) = [
                     } else {
                         if ((_acreActive) && {_x call acre_api_fnc_isRadio}) then 
                         {
-                            _target addItem (_item call acre_api_fnc_getBaseRadio);
+                           (unitBackpack _target) addItemCargoGlobal [(_item call acre_api_fnc_getBaseRadio),1];
                         } 
                         else 
                         {
-                            _target addItem _item;
+                            if (_item == "ItemRadio") then {
+                                (unitBackpack _target) addItemCargoGlobal [_item,1];
+                            } else {
+                                _target addItem _item;
+                            };
                         };
                             //_target addItem _item;
                         };
