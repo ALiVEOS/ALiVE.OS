@@ -5,7 +5,7 @@ SCRIPT(setObjectPointDamage);
 Function: ALIVE_fnc_setObjectPointDamage
 Description:
 
-Set specific hitpoint damage of given object. Is backwards compatible if the _damage object is an Int/Float (SCALAR)
+Set specific hitpoint damage of given object.
 
 Parameters:
 _this: ARRAY of OBJECTs
