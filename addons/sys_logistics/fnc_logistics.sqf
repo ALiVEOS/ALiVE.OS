@@ -294,6 +294,7 @@ switch (_operation) do {
                     [_args,QGVAR(CARGO),[_x] call ALiVE_fnc_getObjectCargo] call ALiVE_fnc_HashSet;
                     [_args,QGVAR(FUEL),[_x] call ALiVE_fnc_getObjectFuel] call ALiVE_fnc_HashSet;
                     [_args,QGVAR(DAMAGE),[_x] call ALiVE_fnc_getObjectDamage] call ALiVE_fnc_HashSet;
+                    [_args,QGVAR(POINTDAMAGE),[_x] call ALiVE_fnc_getObjectPointDamage] call ALiVE_fnc_HashSet;
 
                     //Set dynamic data (to fight errors on loading back existing data from DB)
                     if (!isnil {_x getvariable QGVAR(CONTAINER)} && {!isnull (_x getvariable QGVAR(CONTAINER))}) then {
@@ -1145,6 +1146,7 @@ switch (_operation) do {
                 [QGVAR(CARGO),"ASL_CA"],
                 [QGVAR(FUEL),"ASL_FU"],
                 [QGVAR(DAMAGE),"ASL_DA"],
+                [QGVAR(POINTDAMAGE),"ASL_HP"],
                 [QGVAR(CONTAINER),"ASL_CO"],
                 ["_rev","_rev"]
             ];
@@ -1166,7 +1168,6 @@ switch (_operation) do {
                 _args = [_data,_x] call ALiVE_fnc_HashGet;
 
                 {[_convertedObject,call _selection_1,[_args,call _selection_2] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashSet} foreach _dataSet;
-
                 [_convertedData,_x,_convertedObject] call ALiVE_fnc_HashSet;
             } foreach (_data select 1);
 

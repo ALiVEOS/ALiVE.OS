@@ -1,34 +1,33 @@
 #include "\x\alive\addons\sys_logistics\script_component.hpp"
-SCRIPT(setObjectDamage);
+SCRIPT(getObjectPointDamage);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_setObjectDamage
+Function: ALIVE_fnc_getObjectPointDamage
 Description:
 
-Set damage of given object
+Gets damage state of each hitpoint on an object
 
 Parameters:
 _this: ARRAY of OBJECTs
 
 Returns:
-SCALAR - Damage
+ARRAY - Nested ARRAY containing hitpointsNamesArray, selectionsNamesArray, damageValuesArray
 
 See Also:
-- <ALIVE_fnc_setObjectCargo>
+- <ALIVE_fnc_getObjectCargo>
 
 Author:
-Highhead
+Trapw0w
 
 Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_object","_damage"];
+private ["_object"];
 
 _object = [_this, 0, objNull, [objNull]] call BIS_fnc_param;
-_damage = [_this, 1, -1, [-1]] call BIS_fnc_param;
 
 if (isNull _object) exitwith {};
 
-_object setDamage _damage;
-_damage;
+_d = getAllHitPointsDamage _object;
+_d;
