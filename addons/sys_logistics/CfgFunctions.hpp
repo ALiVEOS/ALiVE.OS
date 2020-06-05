@@ -120,7 +120,17 @@ class cfgFunctions {
                                 description = "Logistics load data to ProfileNameSpace";
                                 file = "\x\alive\addons\sys_logistics\fnc_logisticsLoadDataPNS.sqf";
                                 RECOMPILE;
-                        };                        
+                        };
+                        class getObjectPointDamage {
+                                description = "Get hit point damage for a given object";
+                                file = "\x\alive\addons\sys_logistics\fnc_getObjectPointDamage.sqf";
+                                RECOMPILE;
+                        };
+                        class setObjectPointDamage {
+                                description = "Set hit point damage for a given object";
+                                file = "\x\alive\addons\sys_logistics\fnc_setObjectPointDamage.sqf";
+                                RECOMPILE;
+                        };         
                 };
         };
 };

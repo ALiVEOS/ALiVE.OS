@@ -25,10 +25,9 @@ nil
 ---------------------------------------------------------------------------- */
 if (isnil "_this") exitwith {};
 
-private ["_object","_state","_id","_data"];
+params [["_object", objNull, [objNull]], ["_state", ["",[],[],nil], [[]]]];
 
-_object = [_this, 0, objNull, [objNull]] call BIS_fnc_param;
-_state = [_this, 1, ["",[],[],nil], [[]]] call BIS_fnc_param;
+private ["_id","_data"];
 
 _id = [MOD(SYS_LOGISTICS),"id",_object] call ALiVE_fnc_logistics;
 [GVAR(STORE),_id,_state] call ALiVE_fnc_HashSet;
@@ -40,6 +39,22 @@ _object setVectorDirAndUp ([_state,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
 
 [_object,([_state,QGVAR(CARGO)] call ALiVE_fnc_HashGet)] call ALiVE_fnc_setObjectCargo;
 [_object,([_state,QGVAR(FUEL)] call ALiVE_fnc_HashGet)] call ALiVE_fnc_setObjectFuel;
-[_object,([_state,QGVAR(DAMAGE)] call ALiVE_fnc_HashGet)] call ALiVE_fnc_setObjectDamage;
 
+
+_damageModel = [_state,QGVAR(POINTDAMAGE)] call ALiVE_fnc_HashGet;
+
+
+if (_object isKindof "LandVehicle" || _object isKindOf "Air" || _object isKindOf "Ship") then {
+	// _damageModel returns Nil if HP currently not set. This is needed for backwards compatibility
+	if (isNil "_damageModel") then {
+		if(ALiVE_SYS_DATA_DEBUG_ON) then {
+			["ALiVE SYS_LOGISTICS - RESTORING LEGACY DAMAGE FOR %1", _object] call ALIVE_fnc_dump;
+		};
+		[_object,([_state,QGVAR(DAMAGE)] call ALiVE_fnc_HashGet)] call ALiVE_fnc_setObjectDamage;
+	} else {
+		[_object,_damageModel] call ALiVE_fnc_setObjectPointDamage;
+	};
+} else {
+	[_object,([_state,QGVAR(DAMAGE)] call ALiVE_fnc_HashGet)] call ALiVE_fnc_setObjectDamage;
+};
 _state;
