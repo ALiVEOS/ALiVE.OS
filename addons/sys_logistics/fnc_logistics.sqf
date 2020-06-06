@@ -317,7 +317,7 @@ switch (_operation) do {
                 [[_logic, _operation, _args],"ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
             };
 
-            private ["_id"];
+            private ["_id","_object"];
             _object = _args param [0, objNull, [objNull, ""]];
 
             switch (typeName _object) do {

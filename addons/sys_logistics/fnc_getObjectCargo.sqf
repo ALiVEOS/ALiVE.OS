@@ -31,7 +31,6 @@ params[["_object", objNull, [objNull]]];
 _weapons = [getWeaponCargo _object] param [0, [], [[]]];
 _magazines = [getMagazineCargo _object] param [0, [], [[]]];
 _items = [getItemCargo _object] param [0, [], [[]]];
-
 _ammo = [if ({_object isKindOf _x} count ["ReammoBox","ReammoBox_F"] == 0) then {magazinesAmmo _object} else {[]}] param [0, [], [[]]]; // Thank you BIS, magazinesAmmo _box returns different resultset than magazinesAmmo _car. Applause!
 
 private ["_cargo"];
