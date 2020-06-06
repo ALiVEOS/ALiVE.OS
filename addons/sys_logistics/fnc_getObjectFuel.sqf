@@ -23,9 +23,7 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_object"];
-
-_object = [_this, 0, objNull, [objNull]] call BIS_fnc_param;
+params[["_object", objNull, [objNull]]];
 
 if (isNull _object) exitwith {};
 

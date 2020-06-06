@@ -31,7 +31,7 @@ switch (typename _this) do {
     case ("ARRAY") : {_object = _this};
 };
 
-_object = [_this, 0, objNull, [objNull]] call BIS_fnc_param;
+params[["_object", objNull, [objNull]]];
 _id = [MOD(SYS_LOGISTICS),"id",_object] call ALiVE_fnc_logistics;
 
 [MOD(SYS_LOGISTICS),"updateObject",[_object]] call ALiVE_fnc_logistics;
