@@ -113,7 +113,7 @@ link53[] = {38,6};
 link54[] = {39,40};
 link55[] = {40,6};
 link56[] = {41,18};
-globals[] = {0.000000,0,0,0,0,640,480,1,97,6316128,1,-1141.883301,-365.162964,712.106812,-1034.814697,554,1246,1};
+globals[] = {0.000000,0,0,0,0,640,480,1,97,6316128,1,-1245.638184,-468.917297,677.057495,-1069.864380,554,1246,1};
 window[] = {0,0,0,-1,-1,1420,1278,2562,17,1,571};
 *//*%FSM</HEAD>*/
 class FSM
@@ -319,31 +319,32 @@ class FSM
                          "            //Get objectives" \n
                          "            _obj = ([_OPCOM_HANDLER,""objectives"",[]] call AliVE_fnc_HashGet);" \n
                          "" \n
-                         "                        _un = [];" \n
-                         "                        _at = [];" \n
-                         "                        _def = [];" \n
-                         "                        _res = [];" \n
-                         "                        _idl = [];" \n
-                         "                        _active = 0;" \n
+                         "            _un = [];" \n
+                         "            _at = [];" \n
+                         "            _def = [];" \n
+                         "            _res = [];" \n
+                         "            _idl = [];" \n
+                         "            _active = 0;" \n
                          "" \n
-                         "                 			{" \n
-                         "				private _objectiveID = [_x, ""objectiveID""] call AliVE_fnc_HashGet;" \n
-                         "				if !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) then {" \n
-                         "                            private [""_state""];" \n
+                         "            {" \n
+                         "                private _objectiveID = [_x, ""objectiveID""] call AliVE_fnc_HashGet;" \n
                          "" \n
-                         "                            _state = _x select 2 select 5;" \n
+                         "                if !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) then {" \n
+                         "                    private [""_state""];" \n
                          "" \n
-                         "                            switch (_state) do {" \n
-                         "                                case (""unassigned"") : {_un pushback _x};" \n
-                         "                                case (""attack"") : {_at pushback _x};" \n
-                         "                                case (""defend"") : {_def pushback _x};" \n
-                         "                                case (""reserve"") : {_res pushback _x};" \n
-                         "                                case (""idle"") : {_idl pushback _x};" \n
-                         "                            };" \n
+                         "                    _state = _x select 2 select 5;" \n
                          "" \n
-                         "                            if (_state in [""attacking"",""defending""]) then {_active = _active + 1};" \n
-                         "				};" \n
-                         "                        } foreach _obj;" \n
+                         "                    switch (_state) do {" \n
+                         "                        case (""unassigned"") : {_un pushback _x};" \n
+                         "                        case (""attack"") : {_at pushback _x};" \n
+                         "                        case (""defend"") : {_def pushback _x};" \n
+                         "                        case (""reserve"") : {_res pushback _x};" \n
+                         "                        case (""idle"") : {_idl pushback _x};" \n
+                         "                    };" \n
+                         "" \n
+                         "                    if (_state in [""attacking"",""defending""]) then {_active = _active + 1};" \n
+                         "                };" \n
+                         "            } foreach _obj;" \n
                          "" \n
                          "            //AnalyzeResults - prepare orders" \n
                          "" \n
@@ -459,15 +460,17 @@ class FSM
                          "                // debug ---------------------------------------" \n
                          "" \n
                          "            }  else {" \n
-                         "_OPCOM_SKIP_OBJECTIVES pushBack ([_target,""objectiveID""] call AliVE_fnc_HashGet);" \n
-                         "_OPCOM_DATA = [""analyze"",nil];" \n
-                         "_skipObjective = true;" \n
-                         "" \n
+                         "                _OPCOM_SKIP_OBJECTIVES pushBack ([_target, ""objectiveID""] call AliVE_fnc_HashGet);" \n
+                         "                _OPCOM_DATA = [""analyze"", nil];" \n
+                         "                _skipObjective = true;" \n
                          "" \n
                          "                [_target,""opcom_orders"",""none""] call ALiVE_fnc_HashSet;" \n
                          "" \n
                          "                // debug ---------------------------------------" \n
-                         "                if(_debug) then { [""TACOM message received: %1"",_return] call ALIVE_fnc_dumpR; };" \n
+                         "                if(_debug) then {" \n
+                         "                    [""TACOM message received: %1"", _return] call ALIVE_fnc_dumpR;" \n
+                         "                    [""OPCOM skipping objective %1 for this cycle"", [_target, ""objectiveID""] call AliVE_fnc_HashGet] call ALIVE_fnc_dumpR;" \n
+                         "                };" \n
                          "                // debug ---------------------------------------" \n
                          "" \n
                          "            };" \n
@@ -508,7 +511,8 @@ class FSM
                          "" \n
                          "};" \n
                          "" \n
-                         "_lastAnalyze = time;"/*%FSM</STATEINIT""">*/;
+                         "_lastAnalyze = time;" \n
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -952,34 +956,44 @@ class FSM
                         init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""reset"";" \n
                          "_timestamp = time;" \n
                          "" \n
-                         "diag_log ""RESETTING"";" \n
+                         "// debug ---------------------------------------" \n
+                         "if (_debug) then {" \n
+                         "    [""OPCOM analysis finished""] call ALIVE_fnc_dump;" \n
+                         "    [] call ALIVE_fnc_timer;" \n
+                         "    [""---------------------""] call ALIVE_fnc_dump;" \n
+                         "" \n
+                         "    private [""_obj""];" \n
+                         "    _obj = [_OPCOM_HANDLER,""objectives"",[]] call ALiVE_fnc_HashGet;" \n
+                         "" \n
+                         "    [" \n
+                         "        ""ALiVE OPCOM %9 analyzed: Total of %1 targets | unassigned: %2 | assigned: %3 | completed: %4 | defending: %5 | secured: %6 | internal: %7 | others: %8""," \n
+                         "        count _obj," \n
+                         "        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""unassigned""} count _obj), " \n
+                         "        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""attacking""} count _obj)," \n
+                         "        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""reserving""} count _obj)," \n
+                         "        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""defending""} count _obj)," \n
+                         "        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""idle""} count _obj)," \n
+                         "        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""internal""} count _obj)," \n
+                         "        ({!(([_x,""opcom_state""] call AliVE_fnc_HashGet) in [""internal"",""idle"",""defending"",""reserving"",""attacking"",""unassigned""])} count _obj)," \n
+                         "        _side" \n
+                         "    ] call ALIVE_fnc_dumpR;" \n
+                         "" \n
+                         "    if ((count _OPCOM_SKIP_OBJECTIVES) > 0) then {" \n
+                         "        {" \n
+                         "            [" \n
+                         "                ""ALiVE OPCOM %1: Reconsidering skipped objective %2""," \n
+                         "                _side," \n
+                         "                _x" \n
+                         "            ] call ALiVE_fnc_dumpR;" \n
+                         "        } forEach _OPCOM_SKIP_OBJECTIVES;" \n
+                         "    };" \n
+                         "};" \n
+                         "// debug ---------------------------------------" \n
+                         "" \n
                          "_OPCOM_SKIP_OBJECTIVES = [];" \n
-                         "_skipObjective = false;" \n
-                         "" \n
-                         "// debug ---------------------------------------" \n
-                         "            if(_debug) then {" \n
-                         "                [""OPCOM analysis finished""] call ALIVE_fnc_dump;" \n
-                         "                [] call ALIVE_fnc_timer;" \n
-                         "                [""---------------------""] call ALIVE_fnc_dump;" \n
-                         "" \n
-                         "                private [""_obj""];" \n
-                         "                _obj = [_OPCOM_HANDLER,""objectives"",[]] call ALiVE_fnc_HashGet;" \n
-                         "" \n
-                         "                     [""ALiVE OPCOM %9 analyzed: Total of %1 targets | unassigned: %2 | assigned: %3 | completed: %4 | defending: %5 | secured: %6 | internal: %7 | others: %8""," \n
-                         "                         count _obj," \n
-                         "                        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""unassigned""} count _obj), " \n
-                         "                        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""attacking""} count _obj)," \n
-                         "                        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""reserving""} count _obj)," \n
-                         "                        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""defending""} count _obj)," \n
-                         "                        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""idle""} count _obj)," \n
-                         "                        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""internal""} count _obj)," \n
-                         "                        ({!(([_x,""opcom_state""] call AliVE_fnc_HashGet) in [""internal"",""idle"",""defending"",""reserving"",""attacking"",""unassigned""])} count _obj)," \n
-                         "                        _side" \n
-                         "                    ] call ALIVE_fnc_dumpR; " \n
-                         "                };" \n
-                         "// debug ---------------------------------------" \n
-                         "" \n
-                         "_OPCOM_DATA= [""analyze"",nil]; _busy = false;"/*%FSM</STATEINIT""">*/;
+                         "_OPCOM_DATA = [""analyze"", nil];" \n
+                         "_busy = false;" \n
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
