@@ -5,7 +5,7 @@ item0[] = {"INIT",0,250,-717.630066,-1005.371277,-627.630066,-955.371338,0.00000
 item1[] = {"INIT_COMPLETE",4,218,-720.395935,-937.944458,-630.395935,-887.944458,0.000000,"INIT" \n "COMPLETE"};
 item2[] = {"ANALYZE",2,4346,-915.210754,-306.293610,-417.475098,-258.428986,0.000000,"ANALYZE"};
 item3[] = {"OPCOM_FEEDER",4,218,-711.187256,-222.682648,-621.187195,-172.682648,1.000000,"OPCOM" \n "FEEDER"};
-item4[] = {"ATTACK_Condition",4,218,-924.627625,-202.879486,-834.627502,-152.879486,5.000000,"ATTACK" \n "Conditions"};
+item4[] = {"ATTACK_Condition",4,218,-891.552124,-203.731567,-801.552002,-153.731567,5.000000,"ATTACK" \n "Conditions"};
 item5[] = {"",7,210,-341.155090,36.380066,-333.155060,44.380096,0.000000,""};
 item6[] = {"",7,210,-347.610199,-817.749023,-339.610168,-809.749023,0.000000,""};
 item7[] = {"DEFEND_condition",4,218,-787.492737,-203.595917,-697.492737,-153.595917,4.000000,"DEFEND" \n "conditions"};
@@ -42,8 +42,7 @@ item37[] = {"RECON_Conditions",4,218,9.105785,-308.301544,99.105774,-258.301483,
 item38[] = {"REQUEST_RECON",2,250,10.006296,-836.706787,100.006363,-786.706909,0.000000,"REQUEST" \n "RECON"};
 item39[] = {"OCA_Conditions",4,218,150.274902,-304.513031,240.274811,-254.513000,0.000000,"OCA" \n "Conditions"};
 item40[] = {"REQUEST_OCA",2,250,150.634949,-836.432495,240.634949,-786.432495,0.000000,"REQUEST" \n "OCA"};
-item41[] = {"NOT_BUSY_2",2,250,-935.188538,-541.860413,-845.188538,-491.860413,0.000000,"NOT BUSY"};
-item42[] = {"skip",4,218,-918.987915,-421.248352,-828.987854,-371.248352,0.000000,"skip"};
+item41[] = {"Skip_Objective",4,218,-994.924133,-204.559387,-904.923767,-154.559387,0.000000,"Skip" \n "Objective"};
 version=1;
 class LayoutItems
 {
@@ -71,7 +70,7 @@ link10[] = {2,30};
 link11[] = {2,35};
 link12[] = {2,37};
 link13[] = {2,39};
-link14[] = {2,42};
+link14[] = {2,41};
 link15[] = {3,2};
 link16[] = {4,11};
 link17[] = {5,6};
@@ -113,10 +112,9 @@ link52[] = {37,38};
 link53[] = {38,6};
 link54[] = {39,40};
 link55[] = {40,6};
-link56[] = {41,16};
-link57[] = {42,41};
-globals[] = {0.000000,0,0,0,0,640,480,1,96,6316128,1,-1119.773682,-124.015083,676.397095,-1599.109009,554,1266,1};
-window[] = {0,0,0,-1,-1,1420,1278,2562,-3,1,571};
+link56[] = {41,18};
+globals[] = {0.000000,0,0,0,0,640,480,1,97,6316128,1,-1141.883301,-365.162964,712.106812,-1034.814697,554,1246,1};
+window[] = {0,0,0,-1,-1,1420,1278,2562,17,1,571};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -158,7 +156,6 @@ class FSM
                          "private _colorside = ""ColorRed"";" \n
                          "" \n
                          "private _OPCOM_SKIP_OBJECTIVES = [];" \n
-                         "private _skipObjective = false;" \n
                          "" \n
                          "switch (_side) do {" \n
                          "    case (""WEST"") : {_colorside = ""ColorBlue""};" \n
@@ -257,6 +254,8 @@ class FSM
                          "private _defend = nil;" \n
                          "private _reserve = nil;" \n
                          "private _custom = nil;" \n
+                         "" \n
+                         "private _skipObjective = false;" \n
                          "" \n
                          "_data_operation = nil;" \n
                          "_data_value = nil;" \n
@@ -655,12 +654,12 @@ class FSM
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
-                                /*%FSM<LINK "skip">*/
-                                class skip
+                                /*%FSM<LINK "Skip_Objective">*/
+                                class Skip_Objective
                                 {
-                                        itemno = 42;
+                                        itemno = 41;
                                         priority = 0.000000;
-                                        to="NOT_BUSY_2";
+                                        to="NOT_BUSY";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"_skipObjective"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
@@ -1538,44 +1537,6 @@ class FSM
                          "};" \n
                          "" \n
                          "_OPCOM_DATA= [""analyze"",nil]; _oca = nil; _busy = false;"/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                                /*%FSM<LINK "OPCOM_RECEIVER">*/
-                                class OPCOM_RECEIVER
-                                {
-                                        itemno = 9;
-                                        priority = 1.000000;
-                                        to="COLLECT_TO_QUEUE";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/"_failsafe = false; _failsafe = (time - _timestamp) > _cycleTime;" \n
-                                         ""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_OPCOM_status = ""waiting for data""; " \n
-                                         "" \n
-                                         "//See PreCondition and Action for _failsafe and _pause" \n
-                                         "(!(isnil ""_OPCOM_DATA"") || {isnil ""_OPCOM_DATA"" && {count _OPCOM_QUEUE > 0}} || {_orderFailed} || {_failsafe}) && {!_pause};"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"if (_orderFailed || {_failsafe}) then {" \n
-                                         "	_orderFailed = false;" \n
-                                         "	_failsafe = false;" \n
-                                         "	_OPCOM_DATA = [""analyze"",nil];" \n
-                                         "};" \n
-                                         "" \n
-                                         "_busy = false;"/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                        };
-                };
-                /*%FSM</STATE>*/
-                /*%FSM<STATE "NOT_BUSY_2">*/
-                class NOT_BUSY_2
-                {
-                        name = "NOT_BUSY_2";
-                        itemno = 41;
-                        init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""reset"";" \n
-                         "_timestamp = time;" \n
-                         "" \n
-                         "_busy = false;" \n
-                         "" \n
-                         "_skipObjective = false;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
