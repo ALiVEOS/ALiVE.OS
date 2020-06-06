@@ -2604,7 +2604,7 @@ switch(_operation) do {
                 private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
 
                 private _OPCOM_FSM = [_logic,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet;
-                private _skippy = _OPCOM_FSM getFSMvariable ["_skippy", []];
+                private _OPCOM_SKIP_OBJECTIVES = _OPCOM_FSM getFSMvariable ["_OPCOM_SKIP_OBJECTIVES", []];
 
                 private _objectives = [_logic, "objectives", []] call AliVE_fnc_HashGet;
                 private _target = nil;
@@ -2613,7 +2613,7 @@ switch(_operation) do {
                 {
                     private _objectiveID = [_x, "objectiveID"] call AliVE_fnc_HashGet;
 
-                    if !(_objectiveID in _skippy) then {
+                    if !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) then {
                         private _objectiveState = [_x, "opcom_state"] call AliVE_fnc_HashGet;
 
                         if (_objectiveState == _state) then {
