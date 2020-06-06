@@ -157,8 +157,8 @@ class FSM
                          "private _orderFailed = false;" \n
                          "private _colorside = ""ColorRed"";" \n
                          "" \n
-                         "private _skippy = [];" \n
-                         "private _skip = false;" \n
+                         "private _OPCOM_SKIP_OBJECTIVES = [];" \n
+                         "private _skipObjective = false;" \n
                          "" \n
                          "switch (_side) do {" \n
                          "    case (""WEST"") : {_colorside = ""ColorBlue""};" \n
@@ -329,7 +329,7 @@ class FSM
                          "" \n
                          "                 			{" \n
                          "				private _objectiveID = [_x, ""objectiveID""] call AliVE_fnc_HashGet;" \n
-                         "				if !(_objectiveID in _skippy) then {" \n
+                         "				if !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) then {" \n
                          "                            private [""_state""];" \n
                          "" \n
                          "                            _state = _x select 2 select 5;" \n
@@ -460,9 +460,9 @@ class FSM
                          "                // debug ---------------------------------------" \n
                          "" \n
                          "            }  else {" \n
-                         "_skippy pushBack ([_target,""objectiveID""] call AliVE_fnc_HashGet);" \n
+                         "_OPCOM_SKIP_OBJECTIVES pushBack ([_target,""objectiveID""] call AliVE_fnc_HashGet);" \n
                          "_OPCOM_DATA = [""analyze"",nil];" \n
-                         "_skip = true;" \n
+                         "_skipObjective = true;" \n
                          "" \n
                          "" \n
                          "                [_target,""opcom_orders"",""none""] call ALiVE_fnc_HashSet;" \n
@@ -662,7 +662,7 @@ class FSM
                                         priority = 0.000000;
                                         to="NOT_BUSY_2";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_skip"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_skipObjective"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -954,8 +954,8 @@ class FSM
                          "_timestamp = time;" \n
                          "" \n
                          "diag_log ""RESETTING"";" \n
-                         "_skippy = [];" \n
-                         "_skip = false;" \n
+                         "_OPCOM_SKIP_OBJECTIVES = [];" \n
+                         "_skipObjective = false;" \n
                          "" \n
                          "// debug ---------------------------------------" \n
                          "            if(_debug) then {" \n
@@ -1575,7 +1575,7 @@ class FSM
                          "" \n
                          "_busy = false;" \n
                          "" \n
-                         "_skip = false;"/*%FSM</STATEINIT""">*/;
+                         "_skipObjective = false;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
