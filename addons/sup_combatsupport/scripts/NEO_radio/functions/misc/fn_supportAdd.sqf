@@ -11,7 +11,7 @@ switch (_support) do
         _callsign = toupper _callsign;
         _height = parsenumber _height;
 
-        private _tasks = ["Pickup", "Land", "land (Eng off)", "Move", "Circle","Insertion"];
+        private _tasks = ["Pickup", "Land", "land (Eng off)", "Move", "Circle", "Insertion", "Slingload", "Unhook"];
 
         private _transportfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\transport.fsm";
         private _faction = gettext(configfile >> "CfgVehicles" >> _type >> "faction");
