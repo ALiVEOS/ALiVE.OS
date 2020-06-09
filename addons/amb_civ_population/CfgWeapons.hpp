@@ -37,7 +37,7 @@ class CfgWeapons
 		descriptionShort = "A Bottle of Water that can be given to civilians.";
 		class ItemInfo: CBA_MiscItem_ItemInfo
 		{
-				mass = 6;
+				mass = 5;
 		};
 	};
 
@@ -54,7 +54,7 @@ class CfgWeapons
 		descriptionShort = "A Rice Pack that can be given to civilians.";
 		class ItemInfo: CBA_MiscItem_ItemInfo
 		{
-				mass = 10;
+				mass = 6;
 		};
 	};
 };

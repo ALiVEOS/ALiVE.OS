@@ -68,8 +68,8 @@ switch (_operation) do {
 			//-- Get settings
 			_debug = _logic getVariable "debug";
 			_factionEnemy = _logic getVariable "insurgentFaction";
-			private _humanitarianDecrease = _logic getVariable["humanitarianHostilityChance", 20];
-			private _maxAllowAid = _logic getVariable["maxAllowAid", 3];
+			private _humanitarianDecrease = parseNumber (_logic getVariable["humanitarianHostilityChance", "20"]);
+			private _maxAllowAid = parseNumber (_logic getVariable["maxAllowAid", "3"]);
 			private _authorized = (_logic getVariable "limitInteraction") call ALiVE_fnc_stringListToArray;
 
 			//-- Create interact handler object
@@ -79,8 +79,8 @@ switch (_operation) do {
 			[MOD(civInteractHandler), "authorized", _authorized] call ALiVE_fnc_hashSet;
 
 			// -- Check ACEX Compat
-			_water = if isClass(configfile >> "CfgPatches" >> "acex_main") then {"ACE_WaterBottle"} else {"ALiVE_Waterbottle_Item"};
-			_humrat = if isClass(configfile >> "CfgPatches" >> "acex_main") then {"ACE_Humanitarian_Ration"} else {"ALiVE_Humrat_Item"};
+			private _water = if isClass(configfile >> "CfgPatches" >> "acex_main") then {"ACE_WaterBottle"} else {"ALiVE_Waterbottle_Item"};
+			private _humrat = if isClass(configfile >> "CfgPatches" >> "acex_main") then {"ACE_Humanitarian_Ration"} else {"ALiVE_Humrat_Item"};
 
 			// -- Store init data
 			_humanitarianData = [] call ALiVE_fnc_hashCreate;
@@ -800,6 +800,7 @@ switch (_operation) do {
 
 	case "giveItem": {
 		_arguments params ["_itemType"];
+		private ["_civ", "_humanitarian", "_item", "_decreaseChance", "_maxAllowAid", "_consumed"];
 
 		_civ = [_logic, "Civ"] call ALiVE_fnc_hashGet;
 		_humanitarian = [_logic, "humanitarianData"] call ALiVE_fnc_hashGet;
@@ -809,7 +810,7 @@ switch (_operation) do {
 
 		// Check amount of aid already received
 		_consumed = _civ getVariable[QGVAR(consumedItems), 0];
-		if (_consumed >= (parseNumber _maxAllowAid)) exitWith {
+		if (_consumed >= _maxAllowAid) exitWith {
 			["openSideSmall",0.3] call ALIVE_fnc_displayMenu; 
 			["setSideSmallText","This Civilian has already received the max allowed aid!"] spawn ALIVE_fnc_displayMenu;
 		};
@@ -827,7 +828,7 @@ switch (_operation) do {
 			player playAction "putdown"; sleep 0.2; _civ playAction "putdown";
 		};
 
-		if ((parseNumber _decreaseChance) > random 100) then {
+		if (_decreaseChance > random 100) then {
 			[_logic, "UpdateHostility", [_civ, -7]] remoteExecCall [QUOTE(MAINCLASS),2]
 		};
 	};
