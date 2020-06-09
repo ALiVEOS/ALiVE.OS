@@ -1,7 +1,7 @@
 class CfgWeapons
 {
 	class CBA_MiscItem;
-    class CBA_MiscItem_ItemInfo;
+	class CBA_MiscItem_ItemInfo;
 	class GrenadeLauncher;
 	class Throw: GrenadeLauncher
 	{
