@@ -133,6 +133,32 @@ class ALiVE_CivilianInteraction {
 			colorActive[] = {0,0,0,0.5};
 		};
 
+		class CivInteract_Ration: CivInteract_RscButton
+		{
+			idc = 92314;
+			action = "[ALiVE_civInteractHandler,'giveItem',['humratItem']] call ALiVE_fnc_civInteract";
+
+			text = "Give Ration";
+			x = 0.17 * safezoneW + safezoneX;
+			y = 0.643 * safezoneH + safezoneY;
+			w = 0.065625 * safezoneW;
+			h = 0.0280001 * safezoneH;
+			colorActive[] = {0,0,0,0.5};
+		};
+		
+		class CivInteract_Water: CivInteract_RscButton
+		{
+			idc = 92315;
+			action = "[ALiVE_civInteractHandler,'giveItem',['waterItem']] call ALiVE_fnc_civInteract";
+
+			text = "Give Water";
+			x = 0.17 * safezoneW + safezoneX;
+			y = 0.687 * safezoneH + safezoneY;
+			w = 0.065625 * safezoneW;
+			h = 0.0280001 * safezoneH;
+			colorActive[] = {0,0,0,0.5};
+		};
+
 		class CivInteract_Close: CivInteract_RscButton {
 			idc = 9237;
 			action = "closeDialog 0";

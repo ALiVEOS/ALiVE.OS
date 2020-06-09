@@ -68,6 +68,8 @@ switch (_operation) do {
 			//-- Get settings
 			_debug = _logic getVariable "debug";
 			_factionEnemy = _logic getVariable "insurgentFaction";
+			private _humanitarianDecrease = _logic getVariable["humanitarianHostilityChance", 20];
+			private _maxAllowAid = _logic getVariable["maxAllowAid", 3];
 			private _authorized = (_logic getVariable "limitInteraction") call ALiVE_fnc_stringListToArray;
 
 			//-- Create interact handler object
@@ -75,6 +77,18 @@ switch (_operation) do {
 			[MOD(civInteractHandler), "Debug", _debug] call ALiVE_fnc_hashSet;
 			[MOD(civInteractHandler), "InsurgentFaction", _factionEnemy] call ALiVE_fnc_hashSet;
 			[MOD(civInteractHandler), "authorized", _authorized] call ALiVE_fnc_hashSet;
+
+			// -- Check ACEX Compat
+			_water = if isClass(configfile >> "CfgPatches" >> "acex_main") then {"ACE_WaterBottle"} else {"ALiVE_Waterbottle_Item"};
+			_humrat = if isClass(configfile >> "CfgPatches" >> "acex_main") then {"ACE_Humanitarian_Ration"} else {"ALiVE_Humrat_Item"};
+
+			// -- Store init data
+			_humanitarianData = [] call ALiVE_fnc_hashCreate;
+			[_humanitarianData, "waterItem", _water] call ALiVE_fnc_hashSet;
+			[_humanitarianData, "humratItem", _humrat] call ALiVE_fnc_hashSet;
+			[_humanitarianData, "hostilityDecrease", _humanitarianDecrease] call ALiVE_fnc_hashSet;
+			[_humanitarianData, "maxAllowAid", _maxAllowAid] call ALiVE_fnc_hashSet;
+			[MOD(civInteractHandler), "humanitarianData", _humanitarianData] call ALiVE_fnc_hashSet;
 		};
 	};
 
@@ -394,7 +408,8 @@ switch (_operation) do {
 			_civInfo params ["_homePos","_individualHostility","_townHostility","_name"];
 
 			_individualHostility = _individualHostility + _value;
-			_townHostilityValue = floor random 4;
+			// -- Check if the caller is trying to increase or decrease hostility
+			_townHostilityValue = if (_value < 0) then {floor random -4} else {floor random 4};
 			_townHostility = _townHostility + _townHostilityValue;
 			[_civData, "CivInfo", [_homePos, _individualHostility, _townHostility, _name]] call ALiVE_fnc_hashSet;
 
@@ -783,6 +798,39 @@ switch (_operation) do {
 		};
 	};
 
+	case "giveItem": {
+		_arguments params ["_itemType"];
+
+		_civ = [_logic, "Civ"] call ALiVE_fnc_hashGet;
+		_humanitarian = [_logic, "humanitarianData"] call ALiVE_fnc_hashGet;
+		_item = [_humanitarian, _itemType] call ALiVE_fnc_hashGet;
+		_decreaseChance = [_humanitarian, "hostilityDecrease"] call ALiVE_fnc_hashGet;
+		_maxAllowAid = [_humanitarian, "maxAllowAid"] call ALiVE_fnc_hashGet;
+
+		// Check amount of aid already received
+		_consumed = _civ getVariable[QGVAR(consumedItems), 0];
+		if (_consumed >= (parseNumber _maxAllowAid)) exitWith {
+			["openSideSmall",0.3] call ALIVE_fnc_displayMenu; 
+			["setSideSmallText","This Civilian has already received the max allowed aid!"] spawn ALIVE_fnc_displayMenu;
+		};
+
+		// Ensure item is in the inventory & remove it
+		if !(_item in items player) exitWith {
+			["openSideSmall",0.3] call ALIVE_fnc_displayMenu; 
+			["setSideSmallText","You do not have an item provide this Civilian"] spawn ALIVE_fnc_displayMenu;
+		};
+		player removeItem _item;
+
+		_civ setVariable[QGVAR(consumedItems), (_consumed + 1)];
+		[_civ] spawn {
+			params ["_civ"];
+			player playAction "putdown"; sleep 0.2; _civ playAction "putdown";
+		};
+
+		if ((parseNumber _decreaseChance) > random 100) then {
+			[_logic, "UpdateHostility", [_civ, -7]] remoteExecCall [QUOTE(MAINCLASS),2]
+		};
+	};
 };
 
 
