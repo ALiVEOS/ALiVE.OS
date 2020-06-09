@@ -220,6 +220,41 @@ class CfgVehicles {
                     description = "$STR_ALIVE_CIV_POP_CROWD_FACTION_COMMENT";
                     defaultvalue = "";
             };
+            class humanitarianHostilityChance
+            {
+                displayName = "$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE";
+                description = "$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_COMMENT";
+                class Values
+                  {
+                          class LOW
+                          {
+                                  name = "Low Chance";
+                                  value = "20";
+                                  default = 1;
+                          };
+                          class MEDIUM
+                          {
+                                  name = "Medium Chance";
+                                  value = "40";
+                          };
+                          class HIGH
+                          {
+                                  name = "High Chance";
+                                  value = "60";
+                          };
+                          class EXTREME
+                          {
+                                  name = "Extreme Chance";
+                                  value = "80";
+                          };
+                  };
+            };
+            class maxAllowAid
+            {
+                displayName = "$STR_ALIVE_CIV_POP_MAX_ALLOWED_AID";
+                description = "$STR_ALIVE_CIV_POP_MAX_ALLOWED_AID_COMMENT";
+                defaultvalue = "3";
+            };
         };
 
     };

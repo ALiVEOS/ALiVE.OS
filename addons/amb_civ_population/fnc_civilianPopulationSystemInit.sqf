@@ -44,6 +44,9 @@ if(isServer) then {
     private _ambientCrowdDensity = parseNumber (_logic getVariable ["ambientCrowdDensity","4"]);
     private _ambientCrowdLimit = parseNumber (_logic getVariable ["ambientCrowdLimit","50"]);
     private _ambientCrowdFaction = (_logic getVariable ["ambientCrowdFaction",""]);
+    private _enableInteraction = (_logic getVariable ["enableInteraction","false"]) == "true";
+    private _humanitarianHostilityChance = (_logic getVariable ["humanitarianHostilityChance",20]);
+    private _maxAllowAid = (_logic getVariable ["maxAllowAid", 3]);
 
 //Check if a SYS Profile Module is available
     private _errorMessage = "No Virtual AI system module was found! Please use this module in your mission! %1 %2";
@@ -75,6 +78,9 @@ if(isServer) then {
     [ALIVE_civilianPopulationSystem, "ambientCrowdDensity", _ambientCrowdDensity] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "ambientCrowdLimit", _ambientCrowdLimit] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "ambientCrowdFaction", _ambientCrowdFaction] call ALIVE_fnc_civilianPopulationSystem;
+    [ALIVE_civilianPopulationSystem, "enableInteraction", _enableInteraction] call ALIVE_fnc_civilianPopulationSystem;
+    [ALIVE_civilianPopulationSystem, "humanitarianHostilityChance", _humanitarianHostilityChance] call ALIVE_fnc_civilianPopulationSystem;
+    [ALIVE_civilianPopulationSystem, "maxAllowAid", _maxAllowAid] call ALIVE_fnc_civilianPopulationSystem;
 
     if (count _ambientCivilianRoles == 0) then {GVAR(ROLES_DISABLED) = true} else {GVAR(ROLES_DISABLED) = false};
     PublicVariable QGVAR(ROLES_DISABLED);
