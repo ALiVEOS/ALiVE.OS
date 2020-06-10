@@ -82,8 +82,8 @@ switch (_operation) do {
 			[MOD(civInteractHandler), "authorized", _authorized] call ALiVE_fnc_hashSet;
 
 			// -- Check ACEX Compat
-			_water = if (isClass(configfile >> "CfgPatches" >> "acex_main") && _enableACEX) then {"ACE_WaterBottle"} else {"ALiVE_Waterbottle_Item"};
-			_humrat = if (isClass(configfile >> "CfgPatches" >> "acex_main") && _enableACEX) then {"ACE_Humanitarian_Ration"} else {"ALiVE_Humrat_Item"};
+			_water = if (isClass(configfile >> "CfgPatches" >> "acex_main") && _enableACEX) then {"ACE_WaterBottle"} else {"ALiVE_Waterbottle"};
+			_humrat = if (isClass(configfile >> "CfgPatches" >> "acex_main") && _enableACEX) then {"ACE_Humanitarian_Ration"} else {"ALiVE_Humrat"};
 
 			// -- Store init data
 			_humanitarianData = [] call ALiVE_fnc_hashCreate;

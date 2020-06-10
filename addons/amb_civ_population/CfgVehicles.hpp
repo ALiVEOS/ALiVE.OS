@@ -258,7 +258,7 @@ class CfgVehicles {
             class disableACEX
             {
                 displayName = "$STR_ALIVE_CIV_POP_ACEX_COMPAT";
-                description = "%STR_ALIVE_CIV_POP_ACEX_COMPAT_COMMENT";
+                description = "$STR_ALIVE_CIV_POP_ACEX_COMPAT_COMMENT";
                 typeName = "BOOL";
                 defaultValue = 0;
             };  
