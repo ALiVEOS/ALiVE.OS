@@ -302,8 +302,8 @@ class CfgVehicles {
         scope = 2;
         accuracy = 1;
         displayName = "ALiVE Humanitarian Crate";
-        transportMaxItems = 200;
-        maximumload = 200;
+        transportMaxItems = 2000;
+        maximumload = 2000;
         model = "\A3\weapons_F\AmmoBoxes\WpnsBox_large_F";
         editorPreview = "\A3\EditorPreviews_F\Data\CfgVehicles\Box_NATO_WpsSpecial_F.jpg";
         class TransportItems {
