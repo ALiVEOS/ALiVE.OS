@@ -33,45 +33,49 @@ _result = [];
 switch (_taskState) do {
     case "init":{
 
-        private [
-            "_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
-            "_taskApplyType","_startTime","_taskEnemySide","_targetSector","_targetEntity","_taskPlayers","_targetBuilding","_targetBuildings",
-            "_targetTypes","_blacklist","_tasksCurrent"
-        ];
+        private ["_startTime","_taskEnemySide","_targetSector","_targetEntity","_taskPlayers","_targetTypes","_blacklist"];
 
-        _taskID = [_task, 0, "", [""]] call BIS_fnc_param;
-        _requestPlayerID = [_task, 1, "", [""]] call BIS_fnc_param;
-        _taskSide = [_task, 2, "", [""]] call BIS_fnc_param;
-        _taskFaction = [_task, 3, "", [""]] call BIS_fnc_param;
-        _taskLocationType = [_task, 5, "", [""]] call BIS_fnc_param;
-        _taskLocation = [_task, 6, [], [[]]] call BIS_fnc_param;
-        _taskPlayers = [_task, 7, [], [[]]] call BIS_fnc_param;
-        _taskEnemyFaction = [_task, 8, "", [""]] call BIS_fnc_param;
-        _taskCurrent = [_taskData, 9, "", [""]] call BIS_fnc_param;
-        _taskApplyType = [_taskData, 10, "", [""]] call BIS_fnc_param;
-        _targetBuilding = [_taskData, 11, [], [objnull,[]]] call BIS_fnc_param;
+        private _taskID = [_task, 0, "", [""]] call BIS_fnc_param;
+        private _requestPlayerID = [_task, 1, "", [""]] call BIS_fnc_param;
+        private _taskSide = [_task, 2, "", [""]] call BIS_fnc_param;
+        private _taskFaction = [_task, 3, "", [""]] call BIS_fnc_param;
+        private _taskType = [_task, 4, "", [""]] call BIS_fnc_param;
+        private _taskLocationType = [_task, 5, "", [""]] call BIS_fnc_param;
+        private _taskLocation = [_task, 6, [], [[]]] call BIS_fnc_param;
+        private _taskPlayers = [_task, 7, [], [[]]] call BIS_fnc_param;
+        private _taskEnemyFaction = [_task, 8, "", [""]] call BIS_fnc_param;
+        private _taskCurrent = [_task, 9, "", [""]] call BIS_fnc_param;
+        private _taskApplyType = [_task, 10, "", [""]] call BIS_fnc_param;
+        private _targetBuildings = [_task, 11, [], [objnull,[]]] call BIS_fnc_param;
+        private _tasksCurrent = ([ALiVE_TaskHandler,"tasks",["",[],[],nil]] call ALiVE_fnc_HashGet) select 2;
 
-        switch (typeName _targetBuilding) do {
-            case ("ARRAY") : {_targetBuilding = if (count _targetBuilding > 0) then {_targetBuilding select 0} else {objNull}};
+        private _targetBuilding = switch (typeName _targetBuildings) do {
+            case ("ARRAY") : {
+                if (count _targetBuildings > 0) then {
+                    _targetBuildings select 0
+                } else {
+                    nearestBuilding _taskLocation;
+                };
+            };
         };
-
-        _tasksCurrent = ([ALiVE_TaskHandler,"tasks",["",[],[],nil]] call ALiVE_fnc_HashGet) select 2;
-
-        /*
-        //Inputs
-        ["%1 | %2 | %3 | %4 | %5 | %6 | %7 | %8 | %9 | %10",
-            _taskID,
-            _requestPlayerID,
-            _taskSide,
-            _taskFaction,
-            _taskLocationType,
-            _taskLocation,
-            _taskPlayers,
-            _taskEnemyFaction,
-            _taskCurrent,
-            _taskApplyType
-        ] call ALiVE_fnc_Dump;
-        */
+        
+        if (_debug) then {
+            //Inputs
+            ["ALIVE_fnc_taskDestroyBuilding Task inputs: %1 | %2 | %3 | %4 | %5 | %6 | %7 | %8 | %9 | %10 | %11 | %12",
+                _taskID,
+                _requestPlayerID,
+                _taskSide,
+                _taskFaction,
+                _taskLocationType,
+                _taskLocation,
+                _taskPlayers,
+                _taskEnemyFaction,
+                _taskCurrent,
+                _taskApplyType,
+                _taskType,
+                _targetBuilding
+            ] call ALiVE_fnc_Dump;
+        };
 
         if (_taskID == "") exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _taskID!"] call ALiVE_fnc_Dump};
         if (_requestPlayerID == "") exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _requestPlayerID!"] call ALiVE_fnc_Dump};
