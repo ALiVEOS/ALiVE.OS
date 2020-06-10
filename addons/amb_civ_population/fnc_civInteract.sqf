@@ -66,11 +66,14 @@ switch (_operation) do {
 
 		if (isNil QMOD(civInteractHandler)) then {
 			//-- Get settings
+			private ["_debug", "_factionEnemy", "_humanitarianDecrease", "_maxAllowAid", "_enableACEX", "_authorized", "_water", "_humrat"];
+
 			_debug = _logic getVariable "debug";
 			_factionEnemy = _logic getVariable "insurgentFaction";
-			private _humanitarianDecrease = parseNumber (_logic getVariable["humanitarianHostilityChance", "20"]);
-			private _maxAllowAid = parseNumber (_logic getVariable["maxAllowAid", "3"]);
-			private _authorized = (_logic getVariable "limitInteraction") call ALiVE_fnc_stringListToArray;
+			_humanitarianDecrease = parseNumber (_logic getVariable["humanitarianHostilityChance", "20"]);
+			_maxAllowAid = parseNumber (_logic getVariable["maxAllowAid", "3"]);
+			_enableACEX = _logic getVariable ["disableACEX", false];
+			_authorized = (_logic getVariable "limitInteraction") call ALiVE_fnc_stringListToArray;
 
 			//-- Create interact handler object
 			MOD(civInteractHandler) = [nil,"create"] call MAINCLASS;
@@ -79,8 +82,8 @@ switch (_operation) do {
 			[MOD(civInteractHandler), "authorized", _authorized] call ALiVE_fnc_hashSet;
 
 			// -- Check ACEX Compat
-			private _water = if isClass(configfile >> "CfgPatches" >> "acex_main") then {"ACE_WaterBottle"} else {"ALiVE_Waterbottle_Item"};
-			private _humrat = if isClass(configfile >> "CfgPatches" >> "acex_main") then {"ACE_Humanitarian_Ration"} else {"ALiVE_Humrat_Item"};
+			_water = if (isClass(configfile >> "CfgPatches" >> "acex_main") && _enableACEX) then {"ACE_WaterBottle"} else {"ALiVE_Waterbottle_Item"};
+			_humrat = if (isClass(configfile >> "CfgPatches" >> "acex_main") && _enableACEX) then {"ACE_Humanitarian_Ration"} else {"ALiVE_Humrat_Item"};
 
 			// -- Store init data
 			_humanitarianData = [] call ALiVE_fnc_hashCreate;

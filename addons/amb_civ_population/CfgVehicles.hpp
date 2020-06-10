@@ -255,7 +255,60 @@ class CfgVehicles {
                 description = "$STR_ALIVE_CIV_POP_MAX_ALLOWED_AID_COMMENT";
                 defaultvalue = "3";
             };
+            class disableACEX
+            {
+                displayName = "Use ACEX Humanitarian Items";
+                description = "Enable the user of ACEX Humanitarian items over the default ALiVE ones";
+                typeName = "BOOL";
+                defaultValue = 0;
+            };  
         };
 
+    };
+
+    class Item_Base_F;
+    class ALiVE_Waterbottle_Item: Item_Base_F
+    {
+        scope = 2;
+        scopeCurator = 2;
+        displayName = "ALiVE Water Bottle (Full)";
+        author = "ALiVE Mod";
+        vehicleClass = "Items";
+        class TransportItems {
+                class ALiVE_Waterbottle {
+                        name = "ALiVE_Waterbottle";
+                        count = 1;
+                }; 
+        };
+    };
+    class ALiVE_Humrat_Item: Item_Base_F
+    {
+        scope = 2;
+        scopeCurator = 2;
+        displayName = "ALiVE Rice Pack";
+        author = "ALiVE Mod";
+        vehicleClass = "Items";
+        class TransportItems {
+                class ALiVE_Humrat {
+                        name = "ALiVE_Humrat";
+                        count = 1;
+                }; 
+        };
+    };
+
+    class NATO_Box_Base;
+    class ALiVE_Humanitarian_Crates: NATO_Box_Base
+    {
+        scope = 2;
+        accuracy = 1;
+        displayName = "ALiVE Humanitarian Crate";
+        transportMaxItems = 200;
+        maximumload = 200;
+        model = "\A3\weapons_F\AmmoBoxes\WpnsBox_large_F";
+        editorPreview = "\A3\EditorPreviews_F\Data\CfgVehicles\Box_NATO_WpsSpecial_F.jpg";
+        class TransportItems {
+                MACRO_ADDITEM(ALiVE_Waterbottle,100);
+                MACRO_ADDITEM(ALiVE_Humrat,100);
+        };
     };
 };

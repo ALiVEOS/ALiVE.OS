@@ -63,3 +63,7 @@
 #endif
 #define RECOMPILE recompile = 1
 #define MODULE_AUTHOR QUOTE(ALiVE Mod Team)
+#define MACRO_ADDITEM(ITEM,COUNT) class _xx_##ITEM { \
+    name = #ITEM; \
+    count = COUNT; \
+}

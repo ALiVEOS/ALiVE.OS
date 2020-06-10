@@ -24,13 +24,13 @@ class CfgWeapons
 		};
 	};
 
-	class ALiVE_Waterbottle_Item: CBA_MiscItem
+	class ALiVE_Waterbottle: CBA_MiscItem
 	{
 		author = "ALiVE Mod";
 		scope = 2;
 		scopeArsenal = 2;
 		scopeCurator = 2;
-		displayName = "Water Bottle (Full)";
+		displayName = "ALiVE Water Bottle (Full)";
 		model = "\A3\Props_F_Orange\Humanitarian\Supplies\WaterBottle_01_full_F.p3d";
 		picture = "\x\alive\addons\amb_civ_population\data\ui\WaterBottle.paa";
 		icon = "iconObject_circle";
@@ -41,13 +41,13 @@ class CfgWeapons
 		};
 	};
 
-	class ALiVE_Humrat_Item: CBA_MiscItem
+	class ALiVE_Humrat: CBA_MiscItem
 	{
 		author = "ALiVE Mod";
 		scope = 2;
 		scopeArsenal = 2;
 		scopeCurator = 2;
-		displayName = "Rice Pack";
+		displayName = "ALiVE Rice Pack";
 		model = "\A3\Structures_F_EPA\Items\Food\RiceBox_F.p3d";
 		picture = "\x\alive\addons\amb_civ_population\data\ui\RicePack.paa";
 		icon = "iconObject_circle";
