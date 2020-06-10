@@ -156,6 +156,12 @@
 <Key ID="STR_ALIVE_CIV_POP_MAX_ALLOWED_AID_COMMENT">
     <Original>Maximum number of Humanitarian Rations/Water Bottles a Civilian is allowed to receive</Original>
 </Key>
+<Key ID="STR_ALIVE_CIV_POP_ACEX_COMPAT">
+    <Original>Use ACEX Humanitarian Items</Original>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_ACEX_COMPAT_COMMENT">
+    <Original>Enable the use of ACEX Humanitarian items instead of the default ALiVE ones</Original>
+</Key>
 </Container>
 <Container name="CIV_INTERACTION">
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_TOWNELDER">
