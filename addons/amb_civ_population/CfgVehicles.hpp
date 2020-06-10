@@ -257,8 +257,8 @@ class CfgVehicles {
             };
             class disableACEX
             {
-                displayName = "Use ACEX Humanitarian Items";
-                description = "Enable the user of ACEX Humanitarian items over the default ALiVE ones";
+                displayName = "$STR_ALIVE_CIV_POP_ACEX_COMPAT";
+                description = "%STR_ALIVE_CIV_POP_ACEX_COMPAT_COMMENT";
                 typeName = "BOOL";
                 defaultValue = 0;
             };  
