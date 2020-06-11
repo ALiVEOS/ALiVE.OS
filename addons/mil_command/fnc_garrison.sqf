@@ -24,16 +24,14 @@ Author:
 Highhead
 ---------------------------------------------------------------------------- */
 
-private ["_type","_waypoints","_unit","_profile","_active","_args","_pos","_radius","_onlyProfiles","_assignments","_group"];
-
-_profile = [_this, 0, ["",[],[],nil], [[]]] call BIS_fnc_param;
-_args = [_this, 1, 200, [-1,[]]] call BIS_fnc_param;
+private ["_type","_waypoints","_unit","_active","_pos","_radius","_onlyProfiles","_assignments","_group"];
+params [["_profile", ["",[],[],nil], [[]]], ["_args", 200, [-1,[]]]];
 
 _radius = _args;
 _onlyProfiles = false;
 
 if (_args isEqualType []) then {
-    _radius = [_args, 0, 200, [-1]] call BIS_fnc_param;
+    _radius = _args param [0, 200, [-1]];
     _onlyProfiles = (_args param [1, "false", [""]]) == "true";
 };
 
