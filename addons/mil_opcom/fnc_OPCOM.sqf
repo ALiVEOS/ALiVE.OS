@@ -2598,81 +2598,50 @@ switch(_operation) do {
         };
 
         case "selectordersbystate": {
-                private ["_target","_state","_DATA_TMP","_ord","_module"];
                 ASSERT_TRUE(typeName _args == "STRING",str _args);
 
-                _state = _args;
-                _module = [_logic,"module"] call ALiVE_fnc_HashGet;
+                private _state = _args;
+                private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
 
-                _DATA_TMP = nil;
-                _ord = nil;
+                private _OPCOM_FSM = [_logic,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet;
+                private _OPCOM_SKIP_OBJECTIVES = _OPCOM_FSM getFSMvariable ["_OPCOM_SKIP_OBJECTIVES", []];
 
-                switch (_state) do {
-                    case ("attack") : {
-                        {
-                            _state = [_x,"opcom_state"] call AliVE_fnc_HashGet;
+                private _objectives = [_logic, "objectives", []] call AliVE_fnc_HashGet;
+                private _target = nil;
+                private _order = nil;
 
-                            //Set attack only if any synchronized triggers are activated
-                            if ((_state == "attack") && {{((typeof _x) == "EmptyDetector") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0}) exitwith {_target = _x};
-                        } foreach ([_logic,"objectives",[]] call AliVE_fnc_HashGet);
+                {
+                    private _objectiveID = [_x, "objectiveID"] call AliVE_fnc_HashGet;
 
-                        //Trigger order execution
-                        if !(isnil "_target") then {
-                            _ord = [_target,"opcom_orders","none"] call AliVE_fnc_HashGet;
-                            [_target,"opcom_orders","attack"] call AliVE_fnc_HashSet;
-                            _DATA_TMP = ["execute",_target];
+                    if !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) then {
+                        private _objectiveState = [_x, "opcom_state"] call AliVE_fnc_HashGet;
+
+                        if (_objectiveState == _state) then {
+                            switch (true) do {
+                                case (_state == "attack" && {{((typeof _x) == "EmptyDetector") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0}); /* FALLTHROUGH */
+                                case (_state == "unassigned" && {{((typeof _x) == "EmptyDetector") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0}): {
+                                    _target = _x;
+                                    _order = "attack";
+                                };
+                                case (_state == "defend"); /* FALLTHROUGH */
+                                case (_state == "reserve"): {
+                                    _target = _x;
+                                    _order = _state;
+                                };
+                            };
                         };
-                    };
-                    case ("unassigned") : {
-                        {
-                            _state = [_x,"opcom_state"] call AliVE_fnc_HashGet;
 
-                            //Set attack only if any synchronized triggers are activated
-                            if ((_state == "unassigned") && {{((typeof _x) == "EmptyDetector") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0}) exitwith {_target = _x};
-                        } foreach ([_logic,"objectives",[]] call AliVE_fnc_HashGet);
-
-                        //Trigger order execution
-                        if !(isnil "_target") then {
-                            _ord = [_target,"opcom_orders","none"] call AliVE_fnc_HashGet;
-                            //if (!(_ord == "attack")) then {
-                                [_target,"opcom_orders","attack"] call AliVE_fnc_HashSet;
-                                _DATA_TMP = ["execute",_target];
-                            //};
-                        };
+                        if !(isNil "_target") exitWith {};
                     };
-                    case ("defend") : {
-                        {
-                            _state = [_x,"opcom_state"] call AliVE_fnc_HashGet;
-                            if (_state == "defend") exitwith {_target = _x};
-                        } foreach ([_logic,"objectives",[]] call AliVE_fnc_HashGet);
+                } forEach _objectives;
 
-                        //Trigger order execution
-                        if !(isnil "_target") then {
-                            _ord = [_target,"opcom_orders","none"] call AliVE_fnc_HashGet;
-                            //if (!(_ord == "defend")) then {
-                                [_target,"opcom_orders","defend"] call AliVE_fnc_HashSet;
-                                _DATA_TMP = ["execute",_target];
-                            //};
-                        };
-                    };
-                    case ("reserve") : {
-                        {
-                            _state = [_x,"opcom_state"] call AliVE_fnc_HashGet;
-                            if (_state == "reserve") exitwith {_target = _x};
-                        } foreach ([_logic,"objectives",[]] call AliVE_fnc_HashGet);;
+                if !(isNil "_target") then {
+                    [_target, "opcom_orders", _order] call AliVE_fnc_HashSet;
 
-                        //Trigger order execution
-                        if !(isnil "_target") then {
-                            _ord = [_target,"opcom_orders","none"] call AliVE_fnc_HashGet;
-                            //if (!(_ord == "reserve")) then {
-                                [_target,"opcom_orders","reserve"] call AliVE_fnc_HashSet;
-                                _DATA_TMP = ["execute",_target];
-                            //};
-                        };
-                    };
+                    _result = ["execute", _target];
+                } else {
+                    _result = nil;
                 };
-
-                if !(isnil "_DATA_TMP") then {_result = _DATA_TMP} else {_result = nil};
         };
 
         case "destroy": {
