@@ -275,8 +275,8 @@ class SITREP_RscButton
 class SITREP_RscMap
 {
     access = 0;
-    alphaFadeEndScale = 0.4;
-    alphaFadeStartScale = 0.35;
+    alphaFadeEndScale = 2;//0.4;
+    alphaFadeStartScale = 2;//0.35;
     colorBackground[] = {0.9, 0.9, 0.9, 1}; //colorBackground[] = {0.969,0.957,0.949,1};
     colorCountlines[] = {0.65, 0.53, 0.3, 1}; //colorCountlines[] = {0.572,0.354,0.188,0.25};
     colorCountlinesWater[] = {0.491,0.577,0.702,0.3};
@@ -309,7 +309,7 @@ class SITREP_RscMap
     fontLevel = "TahomaB";
     fontNames = "PuristaMedium";
     fontUnits = "TahomaB";
-    maxSatelliteAlpha = 0; //maxSatelliteAlpha = 0.85;
+    maxSatelliteAlpha = 0.85; //maxSatelliteAlpha = 0;
     moveOnEdges = 1;
     ptsPerSquareSea = 8;
     ptsPerSquareTxt = 10;
