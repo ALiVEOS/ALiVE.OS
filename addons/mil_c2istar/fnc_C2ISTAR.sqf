@@ -1029,7 +1029,7 @@ switch(_operation) do {
                      private ["_texturedMapEnabled","_texturedMap","_nonTexturedMap"];
 
                    _texturedMapEnabled = _logic getVariable ["texturedMap", true];
-                    diag_log format ["_texturedMapEnabled: %1", _texturedMapEnabled]; 
+
                    if(_texturedMapEnabled) then {   
                     _texturedMap = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapTextured);
                     _texturedMap ctrlShow false;
