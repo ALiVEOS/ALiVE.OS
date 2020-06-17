@@ -87,7 +87,9 @@ Peer Reviewed:
 #define C2Tablet_CTRL_TaskAddDescriptionEdit 70021
 #define C2Tablet_CTRL_TaskAddStateEditTitle 70030
 #define C2Tablet_CTRL_TaskAddStateEdit 70031
-#define C2Tablet_CTRL_TaskAddMap 70022
+#define C2Tablet_CTRL_TaskAddMapTextured 70022
+#define C2Tablet_CTRL_TaskAddMapNonTextured 70057
+#define C2Tablet_CTRL_ToggleTexturesButton 70058
 #define C2Tablet_CTRL_TaskAddCreateButton 70023
 #define C2Tablet_CTRL_TaskCurrentList 70025
 #define C2Tablet_CTRL_TaskCurrentListEditButton 70026
@@ -1023,6 +1025,33 @@ switch(_operation) do {
 
                 };
 
+                case "TOGGLE_MAP_TEXTURES": {
+                     private ["_texturedMapEnabled","_texturedMap","_nonTexturedMap"];
+
+                   _texturedMapEnabled = _logic getVariable ["texturedMap", true];
+                    diag_log format ["_texturedMapEnabled: %1", _texturedMapEnabled]; 
+                   if(_texturedMapEnabled) then {   
+                    _texturedMap = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapTextured);
+                    _texturedMap ctrlShow false;
+
+                    _nonTexturedMap = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapNonTextured);
+                    _nonTexturedMap ctrlShow true;
+
+                     _nonTexturedMap ctrlSetEventHandler ["MouseButtonDown", "['TASK_GENERATE_MAP_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
+                     _logic setVariable ["texturedMap", false];
+                   } else {
+
+                    _nonTexturedMap = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapNonTextured);
+                    _nonTexturedMap ctrlShow false;
+
+                    _texturedMap = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapTextured);
+                    _texturedMap ctrlShow true;
+
+                   _texturedMap ctrlSetEventHandler ["MouseButtonDown", "['TASK_GENERATE_MAP_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
+                   _logic setVariable ["texturedMap", true];
+                   };
+                };
+
                 case "TASK_ADD_BACK_BUTTON_CLICK": {
 
                     [_logic,"disableAddTask"] call MAINCLASS;
@@ -1217,7 +1246,7 @@ switch(_operation) do {
 
                 case "TASK_ADD_MAP_CLICK": {
 
-                    private ["_button","_posX","_posY","_map","_position","_markers","_marker","_markerLabel","_selectedDeliveryValue"];
+                    private ["_button","_posX","_posY","_map","_texturedMapEnabled","_position","_markers","_marker","_markerLabel","_selectedDeliveryValue"];
 
                     _button = _args select 0 select 1;
                     _posX = _args select 0 select 2;
@@ -1231,9 +1260,15 @@ switch(_operation) do {
                             deleteMarkerLocal (_markers select 0);
                         };
 
-                        _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMap);
+                         _texturedMapEnabled = _logic getVariable ["texturedMap", true];
 
-                        _position = _map ctrlMapScreenToWorld [_posX, _posY];
+                        if(_texturedMapEnabled) then {
+                                _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapTextured);
+                        } else {
+                                _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapNonTextured);
+                        };
+
+                         _position = _map ctrlMapScreenToWorld [_posX, _posY];
 
                         ctrlMapAnimClear _map;
                         _map ctrlMapAnimAdd [0.5, ctrlMapScale _map, _position];
@@ -1901,7 +1936,7 @@ switch(_operation) do {
 
                 case "TASK_GENERATE_MAP_CLICK": {
 
-                    private ["_button","_posX","_posY","_map","_position","_markers","_marker","_markerLabel","_selectedDeliveryValue"];
+                    private ["_button","_posX","_posY","_map","_texturedMapEnabled","_position","_markers","_marker","_markerLabel","_selectedDeliveryValue"];
 
                     _button = _args select 0 select 1;
                     _posX = _args select 0 select 2;
@@ -1915,7 +1950,13 @@ switch(_operation) do {
                             deleteMarkerLocal (_markers select 0);
                         };
 
-                        _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMap);
+                        _texturedMapEnabled = _logic getVariable ["texturedMap", true];
+
+                        if(_texturedMapEnabled) then {
+                                _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapTextured);
+                        } else {
+                                _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapNonTextured);
+                        };
 
                         _position = _map ctrlMapScreenToWorld [_posX, _posY];
 
@@ -2646,9 +2687,16 @@ switch(_operation) do {
 
         private ["_map"];
 
-        _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMap);
+        _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapTextured);
         _map ctrlShow true;
         _map ctrlSetEventHandler ["MouseButtonDown", "['TASK_GENERATE_MAP_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
+        _logic setVariable ["texturedMap", true];
+
+        private ["_toggleTextureButton"];
+
+        _toggleTextureButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_ToggleTexturesButton);
+        _toggleTextureButton ctrlShow true;
+        _toggleTextureButton ctrlSetEventHandler ["MouseButtonDown", "['TOGGLE_MAP_TEXTURES',[_this]] call ALIVE_fnc_C2TabletOnAction"];
 
         private ["_createButton"];
 
@@ -2744,10 +2792,20 @@ switch(_operation) do {
         _statusText = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddStatusText);
         _statusText ctrlShow false;
 
-        private ["_map"];
+        private ["_mapTextured"];
 
-        _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMap);
-        _map ctrlShow false;
+        _mapTextured = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapTextured);
+        _mapTextured ctrlShow false;
+
+        private ["_mapNonTextured"];
+
+        _mapNonTextured = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapNonTextured);
+        _mapNonTextured ctrlShow false;
+
+        private ["_toggleTexturesButton"];
+
+        _toggleTexturesButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_ToggleTexturesButton);
+        _toggleTexturesButton ctrlShow false;
     };
 
     case "enableGenerateTaskManagePlayers": {
@@ -2888,7 +2946,7 @@ switch(_operation) do {
         _abortButton ctrlShow true;
 
         private ["_editTitle","_titleEdit","_editDescription","_descriptionEdit","_map","_createButton","_stateTitle",
-        "_stateList","_stateListOptions","_managePlayersButton","_applyTitle","_applyList","_applyListOptions","_statusText"];
+        "_stateList","_stateListOptions","_managePlayersButton","_applyTitle","_applyList","_applyListOptions","_statusText","_toggleTextureButton"];
 
         _editTitle = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddTitleEditTitle);
         _editTitle ctrlShow true;
@@ -2970,9 +3028,13 @@ switch(_operation) do {
 
         _parentList ctrlSetEventHandler ["LBSelChanged", "['TASK_ADD_PARENT_LIST_SELECT',[_this]] call ALIVE_fnc_C2TabletOnAction"];
 
-        _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMap);
+        _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapTextured);
         _map ctrlShow true;
         _map ctrlSetEventHandler ["MouseButtonDown", "['TASK_ADD_MAP_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
+
+        _toggleTextureButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_ToggleTexturesButton);
+        _toggleTextureButton ctrlShow true;
+        _toggleTextureButton ctrlSetEventHandler ["MouseButtonDown", "['TOGGLE_MAP_TEXTURES',[_this]] call ALIVE_fnc_C2TabletOnAction"];
 
         _statusText = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddStatusText);
         _statusText ctrlShow true;
@@ -3007,7 +3069,7 @@ switch(_operation) do {
         _abortButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_SubMenuAbort);
         _abortButton ctrlShow false;
 
-        private ["_editTitle","_titleEdit","_editDescription","_descriptionEdit","_map","_createButton","_stateTitle",
+        private ["_editTitle","_titleEdit","_editDescription","_descriptionEdit","_map","_mapNonTextured","_toggleTexturesButton","_createButton","_stateTitle",
         "_stateList","_managePlayersButton","_applyTitle","_applyList","_currentTitle","_currentList","_statusText","_parentTitle","_parentList"];
 
         _editTitle = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddTitleEditTitle);
@@ -3046,8 +3108,14 @@ switch(_operation) do {
         _parentList = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddParentEdit);
         _parentList ctrlShow false;
 
-        _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMap);
+        _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapTextured);
         _map ctrlShow false;
+
+        _mapNonTextured = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapNonTextured);
+        _mapNonTextured ctrlShow false;
+
+        _toggleTexturesButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_ToggleTexturesButton);
+        _toggleTexturesButton ctrlShow false;
 
         _statusText = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddStatusText);
         _statusText ctrlShow false;
@@ -3212,7 +3280,7 @@ switch(_operation) do {
         _abortButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_SubMenuAbort);
         _abortButton ctrlShow true;
 
-        private ["_editTitle","_titleEdit","_editDescription","_descriptionEdit","_taskEditingDisabled","_map","_createButton","_editButton"];
+        private ["_editTitle","_titleEdit","_editDescription","_descriptionEdit","_taskEditingDisabled","_map","_createButton","_editButton","_toggleTextureButton"];
 
         _editTitle = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddTitleEditTitle);
         _editTitle ctrlShow true;
@@ -3332,8 +3400,12 @@ switch(_operation) do {
 
         _taskEditingDisabled = [_logic,"taskEditingDisabled"] call MAINCLASS;
 
-        _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMap);
+        _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapTextured);
         _map ctrlShow true;
+
+        _toggleTexturesButton =  C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_ToggleTexturesButton);
+        _toggleTexturesButton ctrlShow true;
+        _toggleTextureButton ctrlSetEventHandler ["MouseButtonDown", "['TOGGLE_MAP_TEXTURES',[_this]] call ALIVE_fnc_C2TabletOnAction"];
 
         if!(_taskEditingDisabled) then {
             _map ctrlSetEventHandler ["MouseButtonDown", "['TASK_ADD_MAP_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
@@ -3441,8 +3513,14 @@ switch(_operation) do {
         _parentList = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddParentEdit);
         _parentList ctrlShow false;
 
-        _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMap);
+        _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapTextured);
         _map ctrlShow false;
+
+        _mapNonTextured = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMapNonTextured);
+        _mapNonTextured ctrlShow false;
+
+        _toggleTexturesButton =  C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_ToggleTexturesButton);
+        _toggleTexturesButton ctrlShow false;
 
         _statusText = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddStatusText);
         _statusText ctrlShow false;

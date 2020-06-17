@@ -350,9 +350,18 @@ class C2Tablet
             rowHeight = (safeZoneW / 75) + (safeZoneH / 275);
         };
 
-        class C2Tablet_taskingMap : C2Tablet_RscMap
+        class C2Tablet_taskingMapTextured : C2Tablet_RscMapTextured
         {
             idc = 70022;
+            x = 0.519796 * safezoneW + safezoneX;
+            y = 0.1584 * safezoneH + safezoneY;
+            w = 0.216525 * safezoneW;
+            h = 0.4 * safezoneH;
+        };
+
+       class C2Tablet_taskingMapNonTextured : C2Tablet_RscMapNonTextured
+        {
+            idc = 70057;
             x = 0.519796 * safezoneW + safezoneX;
             y = 0.1584 * safezoneH + safezoneY;
             w = 0.216525 * safezoneW;
@@ -396,6 +405,21 @@ class C2Tablet
             style = 0x02;
             x = 0.519796 * safezoneW + safezoneX;
             y = 0.6300 * safezoneH + safezoneY;
+            w = 0.216525 * safezoneW;
+            h = 0.028 * safezoneH;
+            sizeEx = 0.8 * GUI_GRID_H;
+            colorBackground[] = {0.384,0.439,0.341,1};
+            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
+            colorFocused[] = {0.706,0.706,0.706,1};
+        };
+
+        class C2Tablet_toggleMapTexturesButton : C2Tablet_RscButton
+        {
+            idc = 70058;
+            text = "Toggle Map Textures";
+            style = 0x02;
+            x = 0.519796 * safezoneW + safezoneX;
+            y = 0.5950 * safezoneH + safezoneY;
             w = 0.216525 * safezoneW;
             h = 0.028 * safezoneH;
             sizeEx = 0.8 * GUI_GRID_H;
