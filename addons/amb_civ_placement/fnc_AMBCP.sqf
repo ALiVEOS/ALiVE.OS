@@ -537,7 +537,7 @@ switch(_operation) do {
                     // start registration
                     [_logic, "registration"] call MAINCLASS;
                 }else{
-                    ["ALIVE AMBCP - Warning no locations found for placement, you need to include civilian locations within the TAOR marker"] call ALIVE_fnc_dumpR;
+                    ["ALIVE AMBCP - Warning no locations found for placement, you need to include civilian locations within the TAOR marker: %1", _taor] call ALIVE_fnc_dumpR;
 
                     // set module as started
                     _logic setVariable ["startupComplete", true];
