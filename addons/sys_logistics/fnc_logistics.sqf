@@ -717,7 +717,7 @@ switch (_operation) do {
                         _result;
                     };
                     _container = {_this select 1};
-                    _condition = "alive _target && {vehicle _target == _target} && {{!isnull _x} count (attachedObjects _target) > 0 || {count (_target getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) > 0}}";
+                    _condition = "alive _target && {vehicle _target == _originalTarget} && {{!isnull _x} count (attachedObjects _target) > 0 || {count (_target getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) > 0}}";
                 };
                 case ("unloadObjects") : {
                     _text = "Load out cargo";
