@@ -580,7 +580,7 @@ switch(_operation) do {
                         // start placement
                         [_logic, "placement"] call MAINCLASS;
                     }else{
-                        ["ALIVE MP [%1] - Warning no locations found for placement, you need to include military locations within the TAOR marker",_faction] call ALIVE_fnc_dumpR;
+                        ["ALIVE MP [%1] - Warning no locations found for placement, you need to include military locations within the TAOR marker: %2",_faction, _taor] call ALIVE_fnc_dumpR;
 
                         // set module as started
                         _logic setVariable ["startupComplete", true];
