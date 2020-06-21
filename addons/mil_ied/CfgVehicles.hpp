@@ -80,6 +80,41 @@ class CfgVehicles {
                                         };
                                 };
                         };
+                        class IED_Starting_Threat
+                        {
+                                displayName = "$STR_ALIVE_ied_IED_Starting_Threat";
+                                description = "$STR_ALIVE_ied_IED_Starting_Threat_COMMENT";
+                                typeName = "NUMBER";
+                                class Values
+                                {
+                                        class None
+                                        {
+                                                name = "None";
+                                                value = 0;
+                                                default = 1;
+                                        };
+                                        class Low
+                                        {
+                                                name = "Low";
+                                                value = 50;
+                                        };
+                                        class Med
+                                        {
+                                                name = "Medium";
+                                                value = 100;
+                                        };
+                                        class High
+                                        {
+                                                name = "High";
+                                                value = 200;
+                                        };
+                                        class Extreme
+                                        {
+                                                name = "Extreme";
+                                                value = 350;
+                                        };
+                                };
+                        };
                         class IED_Detection
                         {
                                 displayName = "$STR_ALIVE_ied_IED_Detection";

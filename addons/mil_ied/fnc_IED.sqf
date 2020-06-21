@@ -64,6 +64,7 @@ DEFAULT_CLUTTER [Land_Misc_Rubble_EP1","Land_Misc_Garb_Heap_EP1","Garbage_contai
 #define DEFAULT_VB_IED_THREAT 5
 #define DEFAULT_VB_IED_SIDE "CIV"
 #define DEFAULT_LOCS_IED 0
+#define DEFAULT_STARTING_IED_THREAT 0
 #define DEFAULT_TAOR []
 #define DEFAULT_BLACKLIST []
 #define DEFAULT_ROADIEDS ["ALIVE_IEDUrbanSmall_Remote_Ammo","ALIVE_IEDLandSmall_Remote_Ammo","ALIVE_IEDUrbanBig_Remote_Ammo","ALIVE_IEDLandBig_Remote_Ammo"]
@@ -160,8 +161,10 @@ switch(_operation) do {
 
                     publicVariable QUOTE(ADDON);
 
+                    _debug = [_logic, "debug"] call MAINCLASS;
+
                     // Reset states with provided data;
-                    if (_logic getvariable ["Persistence",false]) then {
+                    if !(_logic getvariable ["Persistence",false]) then {
                         if (isServer && {[QMOD(SYS_DATA)] call ALiVE_fnc_isModuleAvailable}) then {
                             waituntil {!isnil QMOD(SYS_DATA) && {MOD(SYS_DATA) getvariable ["startupComplete",false]}};
                         };
@@ -171,6 +174,7 @@ switch(_operation) do {
                         if !(typeName _state == "BOOL") then {
                             GVAR(STORE) = _state;
                             GVAR(Loaded) = true;
+                            [_logic, "restoreIEDs", GVAR(STORE)] call MAINCLASS;
                             // DEBUG -------------------------------------------------------------------------------------
                             if(_debug) then { ["ALIVE IED - IEDs have been loaded from Database"] call ALIVE_fnc_dump; };
                             // DEBUG -------------------------------------------------------------------------------------
@@ -255,6 +259,15 @@ switch(_operation) do {
 
                     };
 
+                    if (count synchronizedObjects _logic > 0) then {
+                        for "_i" from 0 to ((count synchronizedObjects _logic) - 1) do {
+                            _mod = (synchronizedObjects _logic) select _i;
+                            if (typeof _mod == "ALiVE_mil_OPCOM") then {
+                                ["[alive_ied] - Setting Starting IEDs!"] call ALiVE_fnc_dump;
+                                [_logic, "setupTriggers", [_locations, "starting"]] call MAINCLASS;
+                            };
+                        };
+                    };
                 } else {
                     _locations = [GVAR(STORE), "locations",[]] call ALiVE_fnc_hashGet;
 
@@ -277,136 +290,7 @@ switch(_operation) do {
                     };
                 };
 
-                // Set up Bombers and IED triggers at each location (except any player starting location)
-                {
-                    private ["_fate","_pos","_trg","_twn"];
-
-                    //Get the location object
-                    _pos = position _x;
-                    _twn = (nearestLocations [_pos, ["NameCityCapital","NameCity","NameVillage","Strategic"],200]) select 0;
-                    _size = (size _twn) select 0;
-                    if (_size < 250) then {_size = 250;};
-
-                    if (_debug) then {
-                        diag_log format ["town is %1 at %2. %3m in size and type %4", text _twn, position _twn, _size, type _twn];
-                    };
-
-                    // Place triggers if not within distance of players
-                    if ({(getpos _x distance _pos) < _size} count ([] call BIS_fnc_listPlayers) == 0 || GVAR(Loaded)) then {
-                        private ["_sidelist","_sideNum","_factions","_factionClasses"];
-
-                        // If ALiVE Ambient civilians are available get the faction from there
-                        if (["ALiVE_amb_civ_placement"] call ALiVE_fnc_isModuleAvailable) then {
-
-                            waituntil {!isnil QMOD(amb_civ_placement)};
-
-                            _factions = [ALiVE_amb_civ_placement getvariable ["faction","CIV_F"]];
-                        } else {
-                            // Else get faction from side
-                            _factions = [];
-                            _sidelist = ["EAST","WEST","IND","CIV"];
-                            _blacklist = ["Virtual_F","Interactive_F"];
-                            _sideNum = _sidelist find _side;
-                            _factionClasses = (configfile >> "CfgFactionClasses");
-                            for "_i" from 1 to (count _factionClasses - 1) do {
-                                private "_element";
-                                _element = _factionClasses select _i;
-                                if (isclass _element) then {
-                                    if (getnumber(_element >> "side") == _sideNum && (_blacklist find (configName _element)) == -1) then {
-                                        _factions pushback configName _element;
-                                    };
-                                };
-                            };
-                        };
-
-                        _faction = (selectRandom _factions);
-
-                        //Roll the dice
-                        if (GVAR(Loaded)) then {
-                            _fate = 0;
-                        } else {
-                            _fate = random 33;
-                        };
-
-                        // Bombers
-                        if (_fate < _logic getvariable ["Bomber_Threat", DEFAULT_BOMBER_THREAT]) then {
-
-                            // Place Suicide Bomber trigger
-
-                            _trg = createTrigger["EmptyDetector",getpos _twn];
-
-                            _trg setTriggerArea[(_size+250),(_size+250),0,false];
-
-                            _trg setTriggerActivation["ANY","PRESENT",false];
-                            _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [[getpos thisTrigger,%1,'%2'],thisList] call ALIVE_fnc_createBomber", _size, _faction], ""];
-
-                             if (_debug) then {
-                                diag_log format ["ALIVE-%1 Suicide Bomber Trigger: created at %2 (%3)", time, text _twn, mapgridposition  (getpos _twn)];
-                            };
-
-                            if !(GVAR(Loaded)) then {
-                                private "_locs";
-                                // Set location in store
-                                _locs = [GVAR(STORE), "locations", []] call ALiVE_fnc_hashGet;
-                                _locs pushback _x;
-                                [GVAR(STORE), "locations", _locs] call ALiVE_fnc_hashSet;
-                            };
-                        };
-
-                        // VBIEDs
-                        if (_fate < _logic getvariable ["VB_IED_Threat", DEFAULT_VB_IED_THREAT]) then {
-
-                            // Place VBIED
-
-                            _trg = createTrigger["EmptyDetector",getpos _twn];
-
-                            _trg setTriggerArea[(_size+250),(_size+250),0,false];
-
-                            _trg setTriggerActivation["ANY","PRESENT",false];
-                            _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1] call ALIVE_fnc_placeVBIED",_size], ""];
-
-                             if (_debug) then {
-                                diag_log format ["ALIVE-%1 VBIED Trigger: created at %2 (%3)", time, text _twn, mapgridposition  (getpos _twn)];
-                            };
-
-                            if !(GVAR(Loaded)) then {
-                                private "_locs";
-                                // Set location in store
-                                _locs = [GVAR(STORE), "locations", []] call ALiVE_fnc_hashGet;
-                                _locs pushback _x;
-                                [GVAR(STORE), "locations", _locs] call ALiVE_fnc_hashSet;
-                            };
-                        };
-
-                        // IEDS
-                        if (_fate < ((_logic getvariable ["IED_Threat", DEFAULT_IED_THREAT]) / 3)) then {
-                            // Place IED trigger
-                            _trg = createTrigger["EmptyDetector",getpos _twn];
-
-                            _trg setTriggerArea[(_size+250), (_size+250),0,false];
-
-                            if (_logic getvariable ["Locs_IED", DEFAULT_LOCS_IED] == 1) then {
-                                _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
-                                _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2'] call ALIVE_fnc_createIED",_size, text _twn], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED", text _twn]];
-                            } else {
-                                _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
-                                _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2'] call ALIVE_fnc_createIED",_size, text _twn], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _twn]];
-                            };
-
-                            if (_debug) then {
-                                  diag_log format ["ALIVE-%1 IED Trigger: created at %2 (%3)", time, text _twn, mapgridposition  (getpos _twn)];
-                            };
-
-                            if !(GVAR(Loaded)) then {
-                                private "_locs";
-                                // Set location in store
-                                _locs = [GVAR(STORE), "locations", []] call ALiVE_fnc_hashGet;
-                                _locs pushback _x;
-                                [GVAR(STORE), "locations", _locs] call ALiVE_fnc_hashSet;
-                            };
-                        };
-                    };
-                } foreach _locations;
+                [_logic, "setupTriggers", [_locations, "regular"]] call MAINCLASS;
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if ([_logic, "debug"] call MAINCLASS) then {
@@ -419,6 +303,154 @@ switch(_operation) do {
                 // set module as started
                 _logic setVariable ["startupComplete", true];
             };
+        };
+        case "setupTriggers": {
+            private ["_iedThreat", "_startupIED", "_triggerType"];
+
+            _triggerType = _args select 1;
+
+            switch (_triggerType) do {
+                case "starting": {
+                    _startupIED = true;
+                    _iedThreat = _logic getvariable ["IED_Starting_Threat", DEFAULT_STARTING_IED_THREAT];
+                };
+                case "regular": {
+                    _startupIED = false;
+                    _iedThreat = _logic getvariable ["IED_Threat", DEFAULT_IED_THREAT];
+                };
+            };
+
+            // Set up Bombers and IED triggers at each location (except any player starting location)
+            {
+                private ["_fate","_pos","_trg","_twn"];
+
+                //Get the location object
+                _pos = position _x;
+                _twn = (nearestLocations [_pos, ["NameCityCapital","NameCity","NameVillage","Strategic"],200]) select 0;
+                _size = (size _twn) select 0;
+                if (_size < 250) then {_size = 250;};
+
+                if (_debug) then {
+                    diag_log format ["town is %1 at %2. %3m in size and type %4", text _twn, position _twn, _size, type _twn];
+                };
+
+                // Place triggers if not within distance of players
+                if ({(getpos _x distance _pos) < _size} count ([] call BIS_fnc_listPlayers) == 0 || GVAR(Loaded)) then {
+                    private ["_sidelist","_sideNum","_factions","_factionClasses"];
+
+                    // If ALiVE Ambient civilians are available get the faction from there
+                    if (["ALiVE_amb_civ_placement"] call ALiVE_fnc_isModuleAvailable) then {
+
+                        waituntil {!isnil QMOD(amb_civ_placement)};
+
+                        _factions = [ALiVE_amb_civ_placement getvariable ["faction","CIV_F"]];
+                    } else {
+                        // Else get faction from side
+                        _factions = [];
+                        _sidelist = ["EAST","WEST","IND","CIV"];
+                        _blacklist = ["Virtual_F","Interactive_F"];
+                        _sideNum = _sidelist find _side;
+                        _factionClasses = (configfile >> "CfgFactionClasses");
+                        for "_i" from 1 to (count _factionClasses - 1) do {
+                            private "_element";
+                            _element = _factionClasses select _i;
+                            if (isclass _element) then {
+                                if (getnumber(_element >> "side") == _sideNum && (_blacklist find (configName _element)) == -1) then {
+                                    _factions pushback configName _element;
+                                };
+                            };
+                        };
+                    };
+
+                    _faction = (selectRandom _factions);
+
+                    //Roll the dice
+                    if (GVAR(Loaded)) then {
+                        _fate = 0;
+                    } else {
+                        _fate = random 33;
+                    };
+
+                    // Bombers
+                    if (_fate < _logic getvariable ["Bomber_Threat", DEFAULT_BOMBER_THREAT]) then {
+
+                        // Place Suicide Bomber trigger
+
+                        _trg = createTrigger["EmptyDetector",getpos _twn];
+
+                        _trg setTriggerArea[(_size+250),(_size+250),0,false];
+
+                        _trg setTriggerActivation["ANY","PRESENT",false];
+                        _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [[getpos thisTrigger,%1,'%2'],thisList] call ALIVE_fnc_createBomber", _size, _faction], ""];
+
+                            if (_debug) then {
+                            diag_log format ["ALIVE-%1 Suicide Bomber Trigger: created at %2 (%3)", time, text _twn, mapgridposition  (getpos _twn)];
+                        };
+
+                        if !(GVAR(Loaded)) then {
+                            private "_locs";
+                            // Set location in store
+                            _locs = [GVAR(STORE), "locations", []] call ALiVE_fnc_hashGet;
+                            _locs pushback _x;
+                            [GVAR(STORE), "locations", _locs] call ALiVE_fnc_hashSet;
+                        };
+                    };
+
+                    // VBIEDs
+                    if (_fate < _logic getvariable ["VB_IED_Threat", DEFAULT_VB_IED_THREAT]) then {
+
+                        // Place VBIED
+
+                        _trg = createTrigger["EmptyDetector",getpos _twn];
+
+                        _trg setTriggerArea[(_size+250),(_size+250),0,false];
+
+                        _trg setTriggerActivation["ANY","PRESENT",false];
+                        _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1] call ALIVE_fnc_placeVBIED",_size], ""];
+
+                            if (_debug) then {
+                            diag_log format ["ALIVE-%1 VBIED Trigger: created at %2 (%3)", time, text _twn, mapgridposition  (getpos _twn)];
+                        };
+
+                        if !(GVAR(Loaded)) then {
+                            private "_locs";
+                            // Set location in store
+                            _locs = [GVAR(STORE), "locations", []] call ALiVE_fnc_hashGet;
+                            _locs pushback _x;
+                            [GVAR(STORE), "locations", _locs] call ALiVE_fnc_hashSet;
+                        };
+                    };
+
+                    // IEDS
+                    if (_fate < (_iedThreat / 3)) then {
+                        // Place IED trigger
+                        _trg = createTrigger["EmptyDetector",getpos _twn];
+
+                        _trg setTriggerArea[(_size+250), (_size+250),0,false];
+
+                        if (_startupIED) then {
+                            _numIEDs = round ((_size / 50) * ( _iedThreat / 100));
+                            _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
+                            _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2',%3] call ALIVE_fnc_createIED",_size, text _twn, _numIEDs], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _twn]];
+                        } else {
+                            _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
+                            _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2'] call ALIVE_fnc_createIED",_size, text _twn], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED", text _twn]];
+                        };
+
+                        if (_debug) then {
+                                diag_log format ["ALIVE-%1 IED Trigger: created at %2 (%3)", time, text _twn, mapgridposition  (getpos _twn)];
+                        };
+
+                        if !(GVAR(Loaded) && _startupIED) then {
+                            private "_locs";
+                            // Set location in store
+                            _locs = [GVAR(STORE), "locations", []] call ALiVE_fnc_hashGet;
+                            _locs pushback _x;
+                            [GVAR(STORE), "locations", _locs] call ALiVE_fnc_hashSet;
+                        };
+                    };
+                };
+            } foreach _locations;
         };
         // Return TAOR marker
         case "removeIED": {
@@ -591,6 +623,51 @@ switch(_operation) do {
 
                 if(hasInterface) then {
                 };
+        };
+        case "restoreIEDs": {
+            if !(isServer) exitwith {};
+            _ieds = [_args,"IEDs"] call ALIVE_fnc_hashGet;
+            _debug = [_logic, "debug"] call MAINCLASS;
+            {
+                [[],0, _x] call ALiVE_fnc_createIED;
+                
+                if (_debug) then {
+                    _markers = _logic getVariable ["debugMarkers",[]];
+                    private ["_t","_m","_text","_iedm","_pos","_type"];
+                    //Mark IED position
+                    _locIEDs = [[_args, "IEDs", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet, _x, [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
+                    ["_locIEDs: %1",_locIEDs] call ALiVE_fnc_dump;
+                    {
+
+                        _IED = [_locIEDs, _x, [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
+                        ["_IED: %1",_IED] call ALiVE_fnc_dump;
+                        _t = format["ied_r%1", floor (random 1000)];
+                        _pos = [_IED, "IEDpos", [0,0,0]] call ALiVE_fnc_hashGet;
+                        _type = [_IED, "IEDtype", "IED"] call ALiVE_fnc_hashGet;
+                        _iedm = [_t, _pos, "Icon", [0.5,0.5], "TEXT:", _type, "TYPE:", "mil_dot", "COLOR:", "ColorRed", "GLOBAL"] call CBA_fnc_createMarker;
+                        ["_iedm: %1",_iedm] call ALiVE_fnc_dump;
+
+                        _markers pushback _iedm;
+
+                    } forEach (_locIEDs select 1);
+                    _logic setVariable ["debugMarkers",_markers];
+                };
+            } forEach (_ieds select 1);
+        };
+
+        case "state": {
+            TRACE_1("ALiVE MIL IED state called",_logic);
+
+            if ((isnil "_args") || {!isServer}) exitwith {
+                _result = GVAR(STORE)
+            };
+
+            // State is being set - restore IEDs
+            _result = GVAR(STORE);
+        };
+        case "load": {
+            // Get IEDs from DB
+            _result = call ALiVE_fnc_IEDLoadData;
         };
 };
 TRACE_1("IED - output",_result);

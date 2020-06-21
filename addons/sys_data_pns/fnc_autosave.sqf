@@ -104,6 +104,11 @@ ALiVE_SYS_DATA_PNS_AUTOSAVE = _interval spawn {
 			    ["ALiVE SYS DATA PNS Autosave - Server Save OPCOM State"] call ALIVE_fnc_dump;
 			    _results = [] call ALiVE_fnc_OPCOMSaveData;
 			};
+
+			if (["ALiVE_mil_IED"] call ALiVE_fnc_isModuleAvailable) then {
+				["ALiVE SYS DATA PNS Autosave - Server Save IED State"] call ALIVE_fnc_dump;
+				[] call ALiVE_fnc_IEDSaveData;
+			};
 			
 			if (["ALiVE_mil_cqb"] call ALiVE_fnc_isModuleAvailable) then {
 			    ["ALiVE SYS DATA PNS Autosave - Server Save CQB State"] call ALIVE_fnc_dump;
