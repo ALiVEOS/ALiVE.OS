@@ -23,11 +23,10 @@ Highhead
 Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
+params[["_object", objNull, [objNull]], ["_container", objNull, [objNull]]];
 
-private ["_object","_container","_containerCanLift","_objectCanLift","_canLift","_blacklist"];
+private ["_containerCanLift","_objectCanLift","_canLift","_blacklist"];
 
-_object = [_this, 0, objNull, [objNull]] call BIS_fnc_param;
-_container = [_this, 1, objNull, [objNull]] call BIS_fnc_param;
 _allowedContainers = GVAR(LIFTABLE) select 0;
 _allowedObjects = GVAR(LIFTABLE) select 1;
 _blacklist = GVAR(LIFTABLE) select 2;

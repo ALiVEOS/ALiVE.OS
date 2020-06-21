@@ -36,11 +36,10 @@ Tupolov
 #define SUPERCLASS ALIVE_fnc_baseClassHash
 #define MAINCLASS ALIVE_fnc_Data
 
-private ["_result", "_operation", "_args", "_logic", "_ops"];
+private ["_result","_ops"];
 
-_logic = [_this, 0, objNull, [objNull,[]]] call BIS_fnc_param;
-_operation = [_this, 1, "", [""]] call BIS_fnc_param;
-_args = [_this, 2, objNull, [objNull,[],"",0,true,false]] call BIS_fnc_param;
+params [["_logic", objNull, [objNull,[]]], ["_operation", "", [""]], ["_args", objNull, [objNull,[],"",0,true,false]]];
+
 private _sourceOverride = param [3, "", [""]];
 
 //TRACE_3("SYS_DATA",_logic, _operation, _args);

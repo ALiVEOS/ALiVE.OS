@@ -24,9 +24,8 @@ Author:
 Highhead
 ---------------------------------------------------------------------------- */
 
-private _profile = [_this, 0, ["",[],[],nil], [[]]] call BIS_fnc_param;
-private _params = [_this, 1, [], [[]]] call BIS_fnc_param;
-private _sidesEnemy = [_params, 0, ["WEST"], [[]]] call BIS_fnc_param;
+params [["_profile", ["",[],[],nil], [[]]], ["_params", [], [[]]]];
+private _sidesEnemy = _params param [0, ["WEST"], [[]]];
 
 _sidesEnemy = +_sidesEnemy;
 

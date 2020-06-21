@@ -99,12 +99,9 @@ nil
 #define SYS_MARKER_MAP_TEXT 5999
 
 
-private ["_result", "_operation", "_args", "_logic"];
+private ["_result"];
 
-_logic = [_this, 0, objNull, [objNull]] call BIS_fnc_param;
-_operation = [_this, 1, "", [""]] call BIS_fnc_param;
-_args = [_this, 2, objNull, [objNull,[],"",0,true,false]] call BIS_fnc_param;
-
+params [["_logic", objNull, [objNull]], ["_operation", "", [""]], ["_args", objNull, [objNull,[],"",0,true,false]]];
 
 TRACE_3("SYS_marker",_logic, _operation, _args);
 

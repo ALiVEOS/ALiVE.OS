@@ -37,13 +37,12 @@ Peer Reviewed:
 #define MAINCLASS ALIVE_fnc_tour
 #define MTEMPLATE "ALiVE_TOUR_%1"
 
-private ["_logic","_operation","_args","_result","_debug"];
+private ["_result","_debug"];
+
+params [["_logic", objNull, [objNull]], ["_operation", "", [""]], ["_args", objNull, [objNull,[],"",0,true,false]]];
 
 TRACE_1("TOUR - input",_this);
 
-_logic = [_this, 0, objNull, [objNull]] call BIS_fnc_param;
-_operation = [_this, 1, "", [""]] call BIS_fnc_param;
-_args = [_this, 2, objNull, [objNull,[],"",0,true,false]] call BIS_fnc_param;
 _result = true;
 
 switch(_operation) do {
