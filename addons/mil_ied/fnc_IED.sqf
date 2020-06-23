@@ -273,7 +273,7 @@ switch(_operation) do {
                     //_locations = [GVAR(STORE), "locations",[]] call ALiVE_fnc_hashGet;
                     _locations = [];
                     /*
-                        Testing, needs review 
+                        Testing, needs review. Think we may need to set _location to the store hash as this may break debug
                     */
 
                 };
@@ -303,7 +303,7 @@ switch(_operation) do {
                 [_logic, "setupTriggers", [_locations, "regular"]] call MAINCLASS;
 
                 // DEBUG -------------------------------------------------------------------------------------
-                if ([_logic, "debug"] call MAINCLASS) then {
+                if (_debug) then {
                     ["ALIVE IED - Startup completed"] call ALIVE_fnc_dump;
                     ["ALIVE IED - Count IED Locations %1", count ([GVAR(STORE), "locations"] call ALiVE_fnc_hashGet)] call ALIVE_fnc_dump;
                     [] call ALIVE_fnc_timer;
@@ -447,7 +447,9 @@ switch(_operation) do {
                         } else {
                             _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
                             _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2'] call ALIVE_fnc_createIED",_size, text _twn], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED", text _twn]];
-                            [_logic, "storeTrigger", [_size,_twn,getPos _twn]] call MAINCLASS;
+                            if (_logic getVariable["Persistence",false]) then {
+                                [_logic, "storeTrigger", [_size,_twn,getPos _twn]] call MAINCLASS;
+                            };
                         };
 
                         if (_debug) then {
@@ -676,7 +678,7 @@ switch(_operation) do {
                 _trg setTriggerArea[(_size+250), (_size+250),0,false];
                 _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
 
-                if (isNull _num) then {
+                if (isNil "_num") then {
                     _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2'] call ALIVE_fnc_createIED",_size, text _twn], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _twn]];
                 } else {
                     _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2',%3] call ALIVE_fnc_createIED",_size, text _twn, _num], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _twn]];

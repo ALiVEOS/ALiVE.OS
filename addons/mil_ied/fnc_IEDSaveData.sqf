@@ -30,6 +30,8 @@ private ["_result","_data","_async","_missionName","_message","_messages","_save
 
 if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
 
+if !(ALiVE_MIL_IED getVariable["persistence",false]) exitWith {["ALIVE IED - Persistence not enabled.. exiting"] call ALiVE_fnc_dump};
+
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     [true, "ALiVE IED - Save Data", "iedper"] call ALIVE_fnc_timer;
 };

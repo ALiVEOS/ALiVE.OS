@@ -63,7 +63,7 @@
     <Original>Starting IED Threat:</Original>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_Starting_Threat_COMMENT">
-    <Original>Define the initial starting threat of IED's on first Mission load when IED module is synced to the OPCOM Commander</Original>
+    <Original>Define the initial starting threat of IED's on first Mission load when IED module is synced to the Military Commander</Original>
 </Key>
 <Key ID="STR_ALIVE_IED_VB_IED_Threat">
     <Original>Vehicle Borne IED Threat:</Original>
