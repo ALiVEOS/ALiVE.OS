@@ -30,7 +30,7 @@ if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) ex
 private ["_data"];
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    [true, "ALiVE MIL IED persistence load data started", "iedper"] call ALIVE_fnc_timer;
+    [true, "ALiVE IED persistence load data started", "iedper"] call ALIVE_fnc_timer;
 };
 
 _async = false;
@@ -40,7 +40,7 @@ _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName];
 if (isNil QGVAR(DATAHANDLER)) then {
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-        ["LOAD MIL IED, CREATE DATA HANDLER!"] call ALIVE_fnc_dump;
+        ["LOAD ALiVE IED, CREATE DATA HANDLER!"] call ALIVE_fnc_dump;
     };
 
     GVAR(DATAHANDLER) = [nil, "create"] call ALIVE_fnc_Data;
@@ -52,7 +52,7 @@ _data = [GVAR(DATAHANDLER), "bulkLoad", ["mil_ied", _missionName, _async]] call 
 if (!(isnil "_this") && {typeName _this == "BOOL"} && {!_this}) exitwith {
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-        [false, "ALiVE MIL IED persistence load data complete", "iedper"] call ALIVE_fnc_timer;
+        [false, "ALiVE IED persistence load data complete", "iedper"] call ALIVE_fnc_timer;
     };
 
     _data

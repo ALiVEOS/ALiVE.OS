@@ -14,6 +14,12 @@
 <Key ID="STR_ALIVE_IED_DEBUG_COMMENT">
     <Original>Enables debug</Original>
 </Key>
+<Key ID="STR_ALIVE_IED_PERSISTENCE">
+    <Original>Persist IEDs:</Original>
+</Key>
+<Key ID="STR_ALIVE_IED_PERSISTENCE_COMMENT">
+    <Original>Persist IED locations over mission loads</Original>
+</Key>
 <Key ID="STR_ALIVE_ied_IED_Detection">
     <Original>IED Detection Alert:</Original>
 </Key>

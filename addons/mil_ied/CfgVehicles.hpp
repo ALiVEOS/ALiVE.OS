@@ -33,6 +33,26 @@ class CfgVehicles {
                                         };
                                 };
                         };
+                        class persistence
+                        {
+                                displayName = "$STR_ALIVE_IED_PERSISTENCE";
+                                description = "$STR_ALIVE_IED_PERSISTENCE_COMMENT";
+                                typeName = "BOOL";
+                                class Values
+                                {
+                                        class Yes
+                                        {
+                                                name = "Yes";
+                                                value = 1;
+                                        };
+                                        class No
+                                        {
+                                                name = "No";
+                                                value = 0;
+                                                default = 1;
+                                        };
+                                };
+                        };
                         class taor
                         {
                                 displayName = "$STR_ALIVE_IED_TAOR";

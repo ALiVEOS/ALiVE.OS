@@ -162,25 +162,27 @@ switch(_operation) do {
                     publicVariable QUOTE(ADDON);
 
                     _debug = [_logic, "debug"] call MAINCLASS;
+                    {_x setMarkerAlpha 0} foreach (_logic getVariable ["taor", DEFAULT_TAOR]);
+                    {_x setMarkerAlpha 0} foreach (_logic getVariable ["blacklist", DEFAULT_TAOR]);
 
                     // Reset states with provided data;
-                    if !(_logic getvariable ["Persistence",false]) then {
+                    if (_logic getvariable ["Persistence",false]) then {
                         if (isServer && {[QMOD(SYS_DATA)] call ALiVE_fnc_isModuleAvailable}) then {
                             waituntil {!isnil QMOD(SYS_DATA) && {MOD(SYS_DATA) getvariable ["startupComplete",false]}};
                         };
 
                         _state = [_logic, "load"] call MAINCLASS;
-
                         if !(typeName _state == "BOOL") then {
                             GVAR(STORE) = _state;
                             GVAR(Loaded) = true;
-                            [_logic, "restoreIEDs", GVAR(STORE)] call MAINCLASS;
+                            [_logic, "restoreTriggers", [GVAR(STORE), "triggers"] call ALiVE_fnc_hashGet] call MAINCLASS;
                             // DEBUG -------------------------------------------------------------------------------------
                             if(_debug) then { ["ALIVE IED - IEDs have been loaded from Database"] call ALIVE_fnc_dump; };
                             // DEBUG -------------------------------------------------------------------------------------
                         } else {
-                            LOG("No data loaded...");
+                            ["ALiVE IED - No data loaded.. restoring defaults"] call ALiVE_fnc_dump;
                             [GVAR(STORE), "IEDs", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
+                            [GVAR(STORE), "triggers", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
                         };
 
                     } else {
@@ -263,13 +265,16 @@ switch(_operation) do {
                         for "_i" from 0 to ((count synchronizedObjects _logic) - 1) do {
                             _mod = (synchronizedObjects _logic) select _i;
                             if (typeof _mod == "ALiVE_mil_OPCOM") then {
-                                ["[alive_ied] - Setting Starting IEDs!"] call ALiVE_fnc_dump;
                                 [_logic, "setupTriggers", [_locations, "starting"]] call MAINCLASS;
                             };
                         };
                     };
                 } else {
-                    _locations = [GVAR(STORE), "locations",[]] call ALiVE_fnc_hashGet;
+                    //_locations = [GVAR(STORE), "locations",[]] call ALiVE_fnc_hashGet;
+                    _locations = [];
+                    /*
+                        Testing, needs review 
+                    */
 
                 };
 
@@ -281,12 +286,17 @@ switch(_operation) do {
                         // if the module is synced to OPCOM, let OPCOM handle the locations but leave other settings for better customization
                         if (typeof _mod == "ALiVE_mil_OPCOM") then {
 
-                            _locations = [];
-
                             [GVAR(STORE), "locations", _locations] call ALiVE_fnc_hashSet;
 
-                            ["ALiVE MIL IED reset for usage with OPCOM Insurgency!"] call ALiVE_fnc_Dump;
+                            // Restore locations to empty to ensure we don't execute twice
+                            _locations = [];
+
+                            ["ALiVE IED - Control handed to OPCOM Insurgency Commander!"] call ALiVE_fnc_Dump;
                         };
+                    };
+                } else {
+                    if (_debug && !(_logic getVariable["IED_Starting_Threat",0] == 0)) then{
+                        ["ALIVE MIL - Starting IED Threat set without being synced with the OPCOM Commander! Ignoring Starting Threat.."] call ALiVE_fnc_dump;
                     };
                 };
 
@@ -305,8 +315,9 @@ switch(_operation) do {
             };
         };
         case "setupTriggers": {
-            private ["_iedThreat", "_startupIED", "_triggerType"];
-
+            private ["_iedThreat", "_startupIED", "_triggerType", "_locations"];
+            
+            _locations = _args select 0;
             _triggerType = _args select 1;
 
             switch (_triggerType) do {
@@ -429,19 +440,21 @@ switch(_operation) do {
                         _trg setTriggerArea[(_size+250), (_size+250),0,false];
 
                         if (_startupIED) then {
-                            _numIEDs = round ((_size / 50) * ( _iedThreat / 100));
+                            _num = round ((_size / 50) * ( _iedThreat / 100));
                             _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
-                            _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2',%3] call ALIVE_fnc_createIED",_size, text _twn, _numIEDs], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _twn]];
+                            _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2',%3] call ALIVE_fnc_createIED",_size, text _twn, _num], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _twn]];
+                            [_logic, "storeTrigger", [_size,_twn,getPos _twn, _num]] call MAINCLASS;
                         } else {
                             _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
                             _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2'] call ALIVE_fnc_createIED",_size, text _twn], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED", text _twn]];
+                            [_logic, "storeTrigger", [_size,_twn,getPos _twn]] call MAINCLASS;
                         };
 
                         if (_debug) then {
                                 diag_log format ["ALIVE-%1 IED Trigger: created at %2 (%3)", time, text _twn, mapgridposition  (getpos _twn)];
                         };
 
-                        if !(GVAR(Loaded) && _startupIED) then {
+                        if !(GVAR(Loaded)) then {
                             private "_locs";
                             // Set location in store
                             _locs = [GVAR(STORE), "locations", []] call ALiVE_fnc_hashGet;
@@ -624,39 +637,60 @@ switch(_operation) do {
                 if(hasInterface) then {
                 };
         };
-        case "restoreIEDs": {
-            if !(isServer) exitwith {};
-            _ieds = [_args,"IEDs"] call ALIVE_fnc_hashGet;
-            _debug = [_logic, "debug"] call MAINCLASS;
+
+        case "storeTrigger": {
+            private ["_num", "_data"];
+            _args params ["_size", "_twn", "_pos"];
+
+            if (count _args > 3) then {
+                _num = _args select 3;
+            } else {
+                _num = objNull;
+            };
+            
+            _data = [] call ALiVE_fnc_hashCreate;
+            [_data, "TrgSize", _size] call ALiVE_fnc_hashSet;
+            [_data, "TrgTwn", _twn] call ALiVE_fnc_hashSet;
+            [_data, "TrgPos", _pos] call ALiVE_fnc_hashSet;
+            [_data, "TrgNum", _num] call ALiVE_fnc_hashSet;
+            [[GVAR(STORE), "triggers"] call ALiVE_fnc_hashGet, text _twn, _data] call ALiVE_fnc_hashSet;
+
+            if (_logic getVariable["debug",false]) then {
+                    ["ALIVE IED - Saving trigger for %1",text _twn] call ALiVE_fnc_dump;
+            };
+        };
+
+        case "restoreTriggers": {
             {
-                [[],0, _x] call ALiVE_fnc_createIED;
-                
-                if (_debug) then {
-                    _markers = _logic getVariable ["debugMarkers",[]];
-                    private ["_t","_m","_text","_iedm","_pos","_type"];
-                    //Mark IED position
-                    _locIEDs = [[_args, "IEDs", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet, _x, [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
-                    ["_locIEDs: %1",_locIEDs] call ALiVE_fnc_dump;
-                    {
+                private ["_data", "_twn", "_size", "_num", "_trg"];
 
-                        _IED = [_locIEDs, _x, [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
-                        ["_IED: %1",_IED] call ALiVE_fnc_dump;
-                        _t = format["ied_r%1", floor (random 1000)];
-                        _pos = [_IED, "IEDpos", [0,0,0]] call ALiVE_fnc_hashGet;
-                        _type = [_IED, "IEDtype", "IED"] call ALiVE_fnc_hashGet;
-                        _iedm = [_t, _pos, "Icon", [0.5,0.5], "TEXT:", _type, "TYPE:", "mil_dot", "COLOR:", "ColorRed", "GLOBAL"] call CBA_fnc_createMarker;
-                        ["_iedm: %1",_iedm] call ALiVE_fnc_dump;
+                // Get data
+                _data = [_args, _x] call ALiVE_fnc_hashGet;
+                _twn = [_data, "TrgTwn"] call ALiVE_fnc_hashGet;
+                _pos = [_data, "TrgPos"] call ALiVE_fnc_hashGet;
+                _size = [_data, "TrgSize"] call ALiVE_fnc_hashGet;
+                _num = [_data, "TrgNum"] call ALiVE_fnc_hashGet;
 
-                        _markers pushback _iedm;
+                // Build trigger
+                _trg = createTrigger["EmptyDetector",_pos];
+                _trg setTriggerArea[(_size+250), (_size+250),0,false];
+                _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
 
-                    } forEach (_locIEDs select 1);
-                    _logic setVariable ["debugMarkers",_markers];
+                if (isNull _num) then {
+                    _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2'] call ALIVE_fnc_createIED",_size, text _twn], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _twn]];
+                } else {
+                    _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2',%3] call ALIVE_fnc_createIED",_size, text _twn, _num], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _twn]];
                 };
-            } forEach (_ieds select 1);
+
+                if (_logic getVariable["debug",false]) then {
+                    ["ALIVE IED - Restoring trigger in %1",text _twn] call ALiVE_fnc_dump;
+                };
+
+            } forEach (_args select 1);
         };
 
         case "state": {
-            TRACE_1("ALiVE MIL IED state called",_logic);
+            TRACE_1("ALiVE IED state called",_logic);
 
             if ((isnil "_args") || {!isServer}) exitwith {
                 _result = GVAR(STORE)

@@ -31,7 +31,7 @@ private ["_result","_data","_async","_missionName","_message","_messages","_save
 if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {false};
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    [true, "ALiVE MIL IED - Save Data", "iedper"] call ALIVE_fnc_timer;
+    [true, "ALiVE IED - Save Data", "iedper"] call ALIVE_fnc_timer;
 };
 
 _async = false;
@@ -41,25 +41,25 @@ _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName];
 _data = [MOD(MIL_IED),"state"] call ALiVE_fnc_IED;
 
 if (count (_data select 1) == 0) exitwith {
-    ["ALiVE SAVE MIL IED DATA HAS NO ENTRIES: %1! DO NOT SAVE...",_data] call ALIVE_fnc_dump;
+    ["ALiVE SAVE IED DATA HAS NO ENTRIES: %1! DO NOT SAVE...",_data] call ALIVE_fnc_dump;
 };
 
 _result = [false,[]];
 
-_message = format["ALiVE MIL IED - Preparing to save %1 IEDs..",count(_data select 1)];
+_message = format["ALiVE IED - Preparing to save %1 IEDs..",count(_data select 1)];
 _messages = _result select 1;
 _messages pushback _message;
 
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SAVE MIL IED DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALIVE_fnc_dump;
+    ["ALiVE SAVE IED DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALIVE_fnc_dump;
     _data call ALIVE_fnc_inspectHash;
 };
 
 
 if (isNil QGVAR(DATAHANDLER)) then {
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-        ["SAVE MIL IED, CREATE DATA HANDLER!"] call ALIVE_fnc_dump;
+        ["SAVE ALiVE IED, CREATE DATA HANDLER!"] call ALIVE_fnc_dump;
     };
 
     GVAR(DATAHANDLER) = [nil, "create"] call ALIVE_fnc_Data;
@@ -70,15 +70,15 @@ _saveResult = [GVAR(DATAHANDLER), "bulkSave", ["mil_ied", _data, _missionName, _
 _result set [0,_saveResult];
 
 
-_message = format["ALiVE MIL IED - Save Result: %1",_saveResult];
+_message = format["ALiVE IED - Save Result: %1",_saveResult];
 _messages = _result select 1;
 _messages pushback _message;
 
 
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    [false, "ALiVE MIL IED - Save data complete","iedper"] call ALIVE_fnc_timer;
-    ["ALiVE MIL IED SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_Dump;
+    [false, "ALiVE IED - Save data complete","iedper"] call ALIVE_fnc_timer;
+    ["ALiVE IED SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_Dump;
 };
 
 _result

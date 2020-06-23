@@ -220,7 +220,7 @@ _saveServer = {
         private ["_results","_result","_messages"];
 
         if!(isNil "_admin") then {
-            [["updateList","ALiVE MIL IED - Saving Data"],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
+            [["updateList","ALiVE IED - Saving Data"],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
         };
 
         ["ALiVE Exit - Server Save MIL IED State"] call ALIVE_fnc_dump;
