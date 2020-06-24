@@ -21,6 +21,10 @@ INT - IED_Threat -
         values[]= {0,50,100,200,350};
         texts[]= {"None","Low","Med","High","Extreme"};
         default = 50;
+INT - Starting_IED_Threat -
+        values[]= {0,50,100,200,350};
+        texts[]= {"None","Low","Med","High","Extreme"};
+        default = 0;
 INT - Bomber_Threat -
         values[]= {0,10,20,30,50};
         texts[]= {"None","Low","Med","High","Extreme"};
@@ -45,7 +49,7 @@ See Also:
 - <ALIVE_fnc_IEDMenuDef>
 
 Author:
-Tupolov
+Tupolov, modificationss by Trapw0w
 
 Peer reviewed:
 nil
@@ -75,9 +79,8 @@ private ["_logic","_operation","_args","_result"];
 
 TRACE_1("IED - input",_this);
 
-_logic = [_this, 0, objNull, [objNull]] call BIS_fnc_param;
-_operation = [_this, 1, "", [""]] call BIS_fnc_param;
-_args = [_this, 2, objNull, [objNull,[],"",0,true,false]] call BIS_fnc_param;
+params [["_logic", objNull, [objNull]], ["_operation", "", [""]], ["_args", objNull, [objNull,[],"",0,true,false]]];
+
 _result = true;
 
 switch(_operation) do {
@@ -266,44 +269,23 @@ switch(_operation) do {
                             _mod = (synchronizedObjects _logic) select _i;
                             if (typeof _mod == "ALiVE_mil_OPCOM") then {
                                 [_logic, "setupTriggers", [_locations, "starting"]] call MAINCLASS;
+                                _locations = [];
                             };
                         };
-                    };
-                } else {
-                    //_locations = [GVAR(STORE), "locations",[]] call ALiVE_fnc_hashGet;
-                    _locations = [];
-                    /*
-                        Testing, needs review. Think we may need to set _location to the store hash as this may break debug
-                    */
-
-                };
-
-                if (count synchronizedObjects _logic > 0) then {
-                    for "_i" from 0 to ((count synchronizedObjects _logic) - 1) do {
-
-                        _mod = (synchronizedObjects _logic) select _i;
-
-                        // if the module is synced to OPCOM, let OPCOM handle the locations but leave other settings for better customization
-                        if (typeof _mod == "ALiVE_mil_OPCOM") then {
-
-                            [GVAR(STORE), "locations", _locations] call ALiVE_fnc_hashSet;
-
-                            // Restore locations to empty to ensure we don't execute twice
-                            _locations = [];
-
-                            ["ALiVE IED - Control handed to OPCOM Insurgency Commander!"] call ALiVE_fnc_Dump;
+                    } else {
+                        if (!(_logic getVariable["IED_Starting_Threat",0] == 0) && _debug) then {
+                            ["ALIVE MIL - Starting IED Threat set without being synced with the OPCOM Commander! Ignoring Starting Threat.."] call ALiVE_fnc_dump;
                         };
                     };
                 } else {
-                    if (_debug && !(_logic getVariable["IED_Starting_Threat",0] == 0)) then{
-                        ["ALIVE MIL - Starting IED Threat set without being synced with the OPCOM Commander! Ignoring Starting Threat.."] call ALiVE_fnc_dump;
-                    };
+                    // Data has already been loaded & triggers restored, ensure we don't loop a second time
+                    _locations = [];
                 };
 
                 [_logic, "setupTriggers", [_locations, "regular"]] call MAINCLASS;
 
                 // DEBUG -------------------------------------------------------------------------------------
-                if (_debug) then {
+                if ([_logic, "debug"] call MAINCLASS) then {
                     ["ALIVE IED - Startup completed"] call ALIVE_fnc_dump;
                     ["ALIVE IED - Count IED Locations %1", count ([GVAR(STORE), "locations"] call ALiVE_fnc_hashGet)] call ALIVE_fnc_dump;
                     [] call ALIVE_fnc_timer;
@@ -443,7 +425,9 @@ switch(_operation) do {
                             _num = round ((_size / 50) * ( _iedThreat / 100));
                             _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
                             _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2',%3] call ALIVE_fnc_createIED",_size, text _twn, _num], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _twn]];
-                            [_logic, "storeTrigger", [_size,_twn,getPos _twn, _num]] call MAINCLASS;
+                            if (_logic getVariable["Persistence",false]) then {
+                                [_logic, "storeTrigger", [_size,_twn,getPos _twn, _num]] call MAINCLASS;
+                            };
                         } else {
                             _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
                             _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2'] call ALIVE_fnc_createIED",_size, text _twn], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED", text _twn]];
@@ -647,7 +631,7 @@ switch(_operation) do {
             if (count _args > 3) then {
                 _num = _args select 3;
             } else {
-                _num = objNull;
+                _num = 0;
             };
             
             _data = [] call ALiVE_fnc_hashCreate;
@@ -678,7 +662,7 @@ switch(_operation) do {
                 _trg setTriggerArea[(_size+250), (_size+250),0,false];
                 _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
 
-                if (isNil "_num") then {
+                if (_num > 0) then {
                     _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2'] call ALIVE_fnc_createIED",_size, text _twn], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _twn]];
                 } else {
                     _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2',%3] call ALIVE_fnc_createIED",_size, text _twn, _num], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _twn]];
