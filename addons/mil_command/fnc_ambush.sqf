@@ -29,6 +29,8 @@ params [
     ["_params", [], [[]]]
 ];
 
+//["Params %1",_params] call AliVE_fnc_DumpH; getRelDir
+
 private _destination = [_params, 2, [0,0,0], [[]]] call BIS_fnc_param;
 
 if (isnil "_profile") exitwith {};
@@ -50,23 +52,57 @@ if (_type == "entity") then {
     private _group = _profile select 2 select 13;
     private _units = +(units _group);
 
+    //["Waiting for Entity to arrive!"] call AliVE_fnc_DumpH;
     waituntil {sleep 2; {alive _x && _x distance _destination < 50} count _units > 0 || count _units == 0};
 
     private _roads = _destination nearRoads 50;
 
     if (count _roads > 0) then {
+
+        //["Entity arrived and Roads found!"] call AliVE_fnc_DumpH;
         {
             private _agent = _x;
+            private _road = selectRandom _roads;
 
-            [_agent, getposATL (selectRandom _roads)] call ALiVE_fnc_doMoveRemote;
+            [_agent, _road, _bombs] spawn {
 
-            sleep 5;
+                private _agent = _this select 0;
+                private _road = _this select 1;
+                private _bombs = _this select 2;
 
-            _agent playActionNow "PutDown";
-            private _bomb = "DemoCharge_Remote_Ammo_Scripted" createVehicle (getposATL _agent);
-            _bomb setposATL (getposATL _agent);
+                private _bombTypes = ["ALIVE_IEDUrbanSmall_Remote_Ammo","ALIVE_IEDLandSmall_Remote_Ammo","ALIVE_IEDLandBig_Remote_Ammo"];
+                private _roadPos = _road getRelPos [4,90];
 
-            _bombs pushBack _bomb;
+                private _time = time;
+                private _timeout = 30;
+
+                [_agent, _roadPos] call ALiVE_fnc_doMoveRemote;
+
+                waituntil {_agent call ALiVE_fnc_UnitReadyRemote || {time - _time >= _timeout}};
+
+                private _bombPos = getposATL _agent; 
+                
+                //set pos a little below ground to not make IED object clip
+                _bombPos set [2,-0.1];
+
+                //["Creating IED at %1!",_bombPos] call AliVE_fnc_DumpH;
+                private _bombObject = createVehicle [selectRandom _bombTypes, _bombPos, [], 0, "CAN_COLLIDE"];
+
+                //place real mine a little above IED or they won't explode
+                _bombPos set [2,0.1];
+
+                //Create real mine
+                private _bomb = createMine [selectRandom ["ATMine","APERSMine"], _bombPos, [], 0];
+
+                //disableSim to not make them explode on placement (esp. happening for APERS)
+                _bomb enableSimulationGlobal false;
+                _bomb hideObjectGlobal true;
+
+                _agent playActionNow "PutDown";
+
+                _bombs pushBack _bomb;
+                _bombs pushBack _bombObject;
+            };
         } foreach _units;
 
         private _newPosition = [
@@ -81,20 +117,24 @@ if (_type == "entity") then {
             [_destination]
         ] call BIS_fnc_findSafePos;
 
+        //["Entity moves off site!"] call AliVE_fnc_DumpH;
         [_group,_newPosition] call ALiVE_fnc_MoveRemote;
         _group setbehaviour "AWARE";
         _group setSpeedmode "NORMAL";
 
         [_bombs,_destination] spawn {
-            private _time = time; waituntil {sleep 2; {_x distance (_this select 1) < 20} count vehicles > 0 || {time - _time > 1800}};
+            private _time = time;
+            private _timeout = 1800;
 
-            // timeout
-            if (time - _time >= 1800) then {
-                {deletevehicle _x} foreach (_this select 0);
-            // detonate
-            } else {
-                {_x setdamage 1} foreach (_this select 0);
-            };
+            sleep 30;
+
+            //["Enabling bombs!"] call AliVE_fnc_DumpH;
+            {_x enableSimulationGlobal true} foreach (_this select 0);
+            
+            waituntil {sleep 10; time - _timeout > 1800};
+
+            //["Cleaning up whats left"] call AliVE_fnc_DumpH;
+            {deletevehicle _x} foreach (_this select 0);
         };
     };
 };
