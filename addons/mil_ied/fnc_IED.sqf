@@ -79,7 +79,11 @@ private ["_logic","_operation","_args","_result"];
 
 TRACE_1("IED - input",_this);
 
-params [["_logic", objNull, [objNull]], ["_operation", "", [""]], ["_args", objNull, [objNull,[],"",0,true,false]]];
+params [
+    ["_logic", objNull, [objNull]], 
+    ["_operation", "", [""]], 
+    ["_args", objNull, [objNull,[],"",0,true,false]]
+];
 
 _result = true;
 
