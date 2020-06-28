@@ -29,4 +29,10 @@
 <Key ID="STR_ALIVE_playeroptions_USAGE">
     <Original>Simply place the ALiVE Player Options module and set the appropriate parameters. You do not need to sync, position or orientate this module.</Original>
 </Key>
+<Key ID="STR_ALIVE_player_RESTORE_MARKERS">
+    <Original>Restore ALiVE Markers</Original>
+</Key>
+<Key ID="STR_ALIVE_player_RESTORE_MARKERS_COMMENT">
+    <Original>Reinitialise the ALiVE SYS Marker Store locally</Original>
+</Key>
 </Container></Package></Project>
