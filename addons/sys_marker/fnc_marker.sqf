@@ -343,7 +343,7 @@ switch (_operation) do {
                     _control = _display displayCtrl MAP_CONTROL;
                     _control ctrlAddEventHandler ["MouseButtonClick", "[ALiVE_SYS_marker,'mouseButton',[player, _this]] call ALiVE_fnc_marker;"];
                     _control ctrlAddEventHandler ["MouseButtonDblClick", "if !(ALIVE_SYS_MARKER_HINT) then { hintSilent 'Only ALIVE Advanced Markers will be stored. Default BIS markers are not supported by ALIVE. CTRL-MOUSE BUTTON to create an Advanced Marker.'; ALIVE_SYS_MARKER_HINT = true;};"];
-                       _control ctrlAddEventHandler ["draw", "[ALiVE_SYS_marker,'draw',[player, _this]] call ALiVE_fnc_marker;"];
+                    _control ctrlAddEventHandler ["draw", "[ALiVE_SYS_marker,'draw',[player, _this]] call ALiVE_fnc_marker;"];
                     _control ctrlAddEventHandler ["MouseMoving", {[ALiVE_SYS_marker,"mouseMoving",[player, _this]] call ALiVE_fnc_marker;}];
 
                     _display displayAddEventHandler ["keyDown", {[ALiVE_SYS_marker,"keyDown",[player, _this]] call ALiVE_fnc_marker;}];
@@ -524,7 +524,7 @@ switch (_operation) do {
                 _result = false;
 
             } else {
-                _result = true;
+                _result = false;
             };
         };
 
