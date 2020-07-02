@@ -107,6 +107,12 @@
 <Key ID="STR_ALIVE_ML_ALLOW_PLANE_COMMENT">
     <Original>Allow planes reinforcements</Original>
 </Key>
+<Key ID="STR_ALIVE_ML_ENABLE_AIR_TRANSPORT">
+    <Original>Enable Air Transport:</Original>
+</Key>
+<Key ID="STR_ALIVE_ML_ENABLE_AIR_TRANSPORT_COMMENT">
+    <Original>Allow reinforcements to be flown in by air transport</Original>
+</Key>
 <Key ID="STR_ALIVE_ML_LIMIT">
     <Original>Air Transport Assets:</Original>
 </Key>
