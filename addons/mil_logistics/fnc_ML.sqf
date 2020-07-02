@@ -281,6 +281,20 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "enableAirTransport": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["enableAirTransport", _args];
+        } else {
+            _args = _logic getVariable ["enableAirTransport", false];
+        };
+        if (typeName _args == "STRING") then {
+            if(_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["enableAirTransport", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
     case "limitTransportToFaction": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["limitTransportToFaction", _args];
@@ -351,6 +365,7 @@ switch(_operation) do {
             _allowHeli = [_logic, "allowHeliReinforcement"] call MAINCLASS;
             _allowPlane = [_logic, "allowPlaneReinforcement"] call MAINCLASS;
 
+            _enableAirTransport = [_logic, "enableAirTransport"] call MAINCLASS;
             _limitTransportToFaction = [_logic, "limitTransportToFaction"] call MAINCLASS;
 
             // DEBUG -------------------------------------------------------------------------------------
@@ -365,6 +380,7 @@ switch(_operation) do {
                 ["ALIVE ML - Allow armour requests: %1",_allowArmour] call ALIVE_fnc_dump;
                 ["ALIVE ML - Allow heli requests: %1",_allowHeli] call ALIVE_fnc_dump;
                 ["ALIVE ML - Allow plane requests: %1",_allowPlane] call ALIVE_fnc_dump;
+                ["ALIVE ML - Enable air transport: %1",_enableAirTransport] call ALIVE_fnc_dump;
                 ["ALIVE ML - Limit air assets to faction only: %1",_limitTransportToFaction] call ALIVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -1710,7 +1726,7 @@ switch(_operation) do {
          "_eventTransportProfiles","_eventTransportVehiclesProfiles","_playerRequested","_playerRequestProfiles","_reinforcementPriorityTotal"
          ,"_reinforcementType","_reinforcementAvailable","_reinforcementPrimaryObjective","_event",
          "_eventID","_eventQueue","_forcePool","_logEvent","_playerID","_requestID","_payload","_emptyVehicles",
-         "_staticIndividuals","_joinIndividuals","_reinforceIndividuals","_staticGroups","_joinGroups","_reinforceGroups","_limitTransportToFaction"];
+         "_staticIndividuals","_joinIndividuals","_reinforceIndividuals","_staticGroups","_joinGroups","_reinforceGroups","_enableAirTransport","_limitTransportToFaction"];
 
         _debug = [_logic, "debug"] call MAINCLASS;
         _registryID = [_logic, "registryID"] call MAINCLASS;
@@ -1720,6 +1736,7 @@ switch(_operation) do {
         _side = [_logic, "side"] call MAINCLASS;
         _eventQueue = [_logic, "eventQueue"] call MAINCLASS;
 
+        _enableAirTransport = [_logic, "enableAirTransport"] call MAINCLASS;
         _limitTransportToFaction = [_logic, "limitTransportToFaction"] call MAINCLASS;
 
         _eventID = [_event, "id"] call ALIVE_fnc_hashGet;
@@ -1846,15 +1863,19 @@ switch(_operation) do {
                         };
 
                         _slingAvailable = false; // slingloading is available as a service
-                        _airTrans = [ALIVE_factionDefaultAirTransport,_eventFaction,[]] call ALIVE_fnc_hashGet;
-                        if(count _airTrans == 0 && !_limitTransportToFaction) then {
-                             _airTrans = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
+                        _airTrans = [];
+
+                        if (_enableAirTransport) then {
+                            _airTrans = [ALIVE_factionDefaultAirTransport,_eventFaction,[]] call ALIVE_fnc_hashGet;
+                            if(count _airTrans == 0 && !_limitTransportToFaction) then {
+                                 _airTrans = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
+                            };
+                            // Check helicopters can slingload
+                            {
+                                _slingAvailable = [(configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass"), 0] call ALiVE_fnc_getConfigValue > 1000;
+                                if (_slingAvailable) exitWith {};
+                            } foreach  _airTrans;
                         };
-                        // Check helicopters can slingload
-                        {
-                            _slingAvailable = [(configFile >> "CfgVehicles" >> _x >> "slingLoadMaxCargoMass"), 0] call ALiVE_fnc_getConfigValue > 1000;
-                            if (_slingAvailable) exitWith {};
-                        } foreach  _airTrans;
 
                         // TBD: WHAT THE FUCK IS THIS PILE OF SHIT BELOW?! THIS NEEDS TO BE REDONE PROPERLY!
 
