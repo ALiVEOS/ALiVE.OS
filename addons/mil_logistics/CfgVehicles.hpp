@@ -265,7 +265,7 @@ class CfgVehicles
                                     name = "No";
                                     value = false;
                                 };
-                            }
+                            };
                         };
                         class limitTransportToFaction
                         {
