@@ -48,6 +48,9 @@ if (isNil QGVAR(DATAHANDLER)) then {
 };
 
 _data = [GVAR(DATAHANDLER), "bulkLoad", ["mil_ied", _missionName, _async]] call ALIVE_fnc_Data;
+if !(typeName _data == "BOOL") then {
+    [ADDON, "convertData", _data] call ALiVE_fnc_IED;
+};
 
 if (!(isnil "_this") && {typeName _this == "BOOL"} && {!_this}) exitwith {
 

@@ -225,7 +225,7 @@ _saveServer = {
 
         ["ALiVE Exit - Server Save MIL IED State"] call ALIVE_fnc_dump;
 
-        _results = [] call ALiVE_fnc_IEDSaveData;
+        _result = [] call ALiVE_fnc_IEDSaveData;
 
         if(!(isNil "_admin") && !(isNil "_result")) then {
             _messages = _result select 1;

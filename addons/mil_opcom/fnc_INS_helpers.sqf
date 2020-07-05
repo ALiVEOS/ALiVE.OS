@@ -113,8 +113,8 @@ ALiVE_fnc_INS_ambush = {
                     _trg setTriggerActivation ["ANY","PRESENT",true];
                     _trg setTriggerStatements [
                         "this && {(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0",
-                            format["null = [getpos thisTrigger,%1,%2,%3] call ALIVE_fnc_createIED",100,str(_id),ceil(random 2)],
-                            format["null = [getpos thisTrigger,%1] call ALIVE_fnc_removeIED",str(_id)]
+                            format["null = [getpos thisTrigger,%1,%2,%3] call ALIVE_fnc_createIED",100,text _id,ceil(random 2)],
+                            format["null = [getpos thisTrigger,%1] call ALIVE_fnc_removeIED",text _id]
                     ];
                 };
 
@@ -273,12 +273,12 @@ ALiVE_fnc_INS_ied = {
                     _num = ceil(_size/100);
                     _trg setTriggerStatements [
                         "this && {(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0",
-                            format["null = [getpos thisTrigger,%1,%2,%3] call ALIVE_fnc_createIED",_size,str(_id),_num],
-                            format["null = [getpos thisTrigger,%1] call ALIVE_fnc_removeIED",str(_id)]
+                            format["null = [getpos thisTrigger,%1,'%2',%3] call ALIVE_fnc_createIED",_size,text _id,_num],
+                            format["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _id]
                     ];
 
                     if (MOD(MIL_IED) getVariable["persistence",false]) then {
-                        [MOD(MIL_IED), "storeTrigger", [_size,_id,_pos,_num]] call ALiVE_fnc_IED;
+                        [MOD(MIL_IED), "storeTrigger", [_size,format["%1",_id],_pos,_num]] call ALiVE_fnc_IED;
                     };
 
                     [_pos,_size,1] call ALiVE_fnc_placeVBIED;
