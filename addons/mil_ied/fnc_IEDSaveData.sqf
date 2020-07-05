@@ -41,6 +41,7 @@ _missionName = [missionName, "%20","-"] call CBA_fnc_replace;
 _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName];
 
 _data = [MOD(MIL_IED),"state"] call ALiVE_fnc_IED;
+[_data, "locations", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
 
 if (count (_data select 1) == 0) exitwith {
     ["ALiVE SAVE IED DATA HAS NO ENTRIES: %1! DO NOT SAVE...",_data] call ALIVE_fnc_dump;

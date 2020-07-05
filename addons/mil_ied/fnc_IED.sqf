@@ -194,6 +194,7 @@ switch(_operation) do {
 
                     } else {
                         [GVAR(STORE), "IEDs", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
+                        [GVAR(STORE), "triggers", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
                     };
 
                     GVAR(STORE) call ALIVE_fnc_inspectHash;
@@ -289,7 +290,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if ([_logic, "debug"] call MAINCLASS) then {
                     ["ALIVE IED - Startup completed"] call ALIVE_fnc_dump;
-                    ["ALIVE IED - Count IED Locations %1", count ([GVAR(STORE), "locations", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet select 1)] call ALIVE_fnc_dump;
+                    ["ALIVE IED - Count IED Triggers %1", count ([GVAR(STORE), "triggers", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet select 1)] call ALIVE_fnc_dump;
                     [] call ALIVE_fnc_timer;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
@@ -367,7 +368,7 @@ switch(_operation) do {
                     };
 
                     // Bombers
-                    if (_fate < _logic getvariable ["Bomber_Threat", DEFAULT_BOMBER_THREAT]) then {
+                    if (_fate < _logic getvariable ["Bomber_Threat", DEFAULT_BOMBER_THREAT] && !(_startupIED)) then {
 
                         // Place Suicide Bomber trigger
 
@@ -378,7 +379,7 @@ switch(_operation) do {
                         _trg setTriggerActivation["ANY","PRESENT",false];
                         _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [[getpos thisTrigger,%1,'%2'],thisList] call ALIVE_fnc_createBomber", _size, _faction], ""];
 
-                            if (_debug) then {
+                        if (_debug) then {
                             diag_log format ["ALIVE-%1 Suicide Bomber Trigger: created at %2 (%3)", time, text _twn, mapgridposition  (getpos _twn)];
                         };
 
@@ -396,10 +397,9 @@ switch(_operation) do {
                     };
 
                     // VBIEDs
-                    if (_fate < _logic getvariable ["VB_IED_Threat", DEFAULT_VB_IED_THREAT]) then {
+                    if (_fate < _logic getvariable ["VB_IED_Threat", DEFAULT_VB_IED_THREAT] && !(_startupIED)) then {
 
                         // Place VBIED
-
                         _trg = createTrigger["EmptyDetector",getpos _twn];
 
                         _trg setTriggerArea[(_size+250),(_size+250),0,false];
@@ -407,7 +407,7 @@ switch(_operation) do {
                         _trg setTriggerActivation["ANY","PRESENT",false];
                         _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1] call ALIVE_fnc_placeVBIED",_size], ""];
 
-                            if (_debug) then {
+                        if (_debug) then {
                             diag_log format ["ALIVE-%1 VBIED Trigger: created at %2 (%3)", time, text _twn, mapgridposition  (getpos _twn)];
                         };
 
@@ -435,31 +435,15 @@ switch(_operation) do {
                             _num = round ((_size / 50) * ( _iedThreat / 100));
                             _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
                             _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2',%3] call ALIVE_fnc_createIED",_size, text _twn, _num], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _twn]];
-                            if (_logic getVariable["Persistence",false]) then {
-                                [_logic, "storeTrigger", [_size,text _twn,getPos _twn, _num]] call MAINCLASS;
-                            };
+                            [_logic, "storeTrigger", [_size,text _twn,getPos _twn, false,"IED",_num]] call MAINCLASS;
                         } else {
                             _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
                             _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2'] call ALIVE_fnc_createIED",_size, text _twn], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED", text _twn]];
-                            if (_logic getVariable["Persistence",false]) then {
-                                [_logic, "storeTrigger", [_size,text _twn,getPos _twn]] call MAINCLASS;
-                            };
+                            [_logic, "storeTrigger", [_size,text _twn,getPos _twn, false, "IED"]] call MAINCLASS;
                         };
 
                         if (_debug) then {
-                                diag_log format ["ALIVE-%1 IED Trigger: created at %2 (%3)", time, text _twn, mapgridposition  (getpos _twn)];
-                        };
-
-                        if !(GVAR(Loaded)) then {
-                            private ["_locs", "_data"];
-                            // Set location in store
-                            _locs = [GVAR(STORE), "locations", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
-
-                            _data = [] call ALiVE_fnc_hashCreate;
-                            [_data, "LocationObj", [_logic, "convertLocations", [_x]] call MAINCLASS] call ALiVE_fnc_hashSet;
-                            [_locs, text _x, _data] call ALiVE_fnc_hashSet;
-
-                            [GVAR(STORE), "locations", _locs] call ALiVE_fnc_hashSet;
+                            diag_log format ["ALIVE-%1 IED Trigger: created at %2 (%3)", time, text _twn, mapgridposition  (getpos _twn)];
                         };
                     };
                 };
@@ -579,27 +563,41 @@ switch(_operation) do {
             _markers = [];
 
             _generateMarkers = {
-                private ["_pos","_twn","_size","_t","_m","_ieds"];
+                private ["_pos","_twn","_size","_t","_m","_ieds", "_isObj"];
                 if (_key == "_id" || _key == "_rev") exitWith {};
 
-                _pos = [_value, "LocationObj"] call ALiVE_fnc_hashGet;
-                _twn = (nearestLocations [_pos, ["NameCityCapital","NameCity","NameVillage","Strategic"],200]) select 0;
-                _size = (size _twn) select 0;
-                if (_size < 250) then {_size = 250;};
+                _isObj = [_logic, "convertString", [_value, "TrgObj"] call ALiVE_fnc_hashGet] call MAINCLASS;
+                _pos = [_value, "TrgPos"] call ALiVE_fnc_hashGet;
+                if (_isObj) then {
+                    _size = [_value, "TrgSize"] call ALiVE_fnc_hashGet;
 
-                // Mark Locations
-                _t = format["loc_t%1", random 1000];
-                _m = [_t, getpos _twn, "Ellipse", [_size+250,_size+250], "TEXT:", text _twn, "COLOR:", "ColorRed", "BRUSH:", "Border", "GLOBAL"] call CBA_fnc_createMarker;
+                    // Mark Locations
+                    _t = format["loc_t%1", random 1000];
+                    _m = [_t, _pos, "Ellipse", [_size+250,_size+250], "TEXT:", _key, "COLOR:", "ColorYellow", "BRUSH:", "Border", "GLOBAL"] call CBA_fnc_createMarker;
+                    _markers pushback _m;
 
-                _markers pushback _m;
+                    // Mark IEDs
+                    _ieds = [[GVAR(STORE), "IEDs", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet, _key, [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
 
-                // Mark IEDs
-                _ieds = [[GVAR(STORE), "IEDs", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet, text _twn, [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
+                } else {
+                    _twn = (nearestLocations [_pos, ["NameCityCapital","NameCity","NameVillage","Strategic"],200]) select 0;
+                    _size = (size _twn) select 0;
+                    if (_size < 250) then {_size = 250;};
+
+                    // Mark Locations
+                    _t = format["loc_t%1", random 1000];
+                    _m = [_t, getpos _twn, "Ellipse", [_size+250,_size+250], "TEXT:", text _twn, "COLOR:", "ColorRed", "BRUSH:", "Border", "GLOBAL"] call CBA_fnc_createMarker;
+                    _markers pushback _m;
+
+                    // Mark IEDs
+                    _ieds = [[GVAR(STORE), "IEDs", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet, text _twn, [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
+
+                };
 
                 {
                     private ["_t","_m","_text","_iedm","_pos","_type"];
-                    //Mark IED position
 
+                    //Mark IED position
                     _IED = [_ieds, _x, [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
 
                     _t = format["ied_r%1", floor (random 1000)];
@@ -613,7 +611,7 @@ switch(_operation) do {
 
             };
 
-            [[GVAR(STORE), "locations", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet, _generateMarkers] call CBA_fnc_hashEachPair;
+            [[GVAR(STORE), "triggers", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet, _generateMarkers] call CBA_fnc_hashEachPair;
 
             _logic setVariable ["debugMarkers",_markers];
 
@@ -644,21 +642,24 @@ switch(_operation) do {
 
         case "storeTrigger": {
             private ["_num", "_data"];
-            _args params ["_size", "_twn", "_pos"];
+            _args params ["_size", "_twn", "_pos", "_isObj","_type"];
 
-            if (count _args > 3) then {
-                _num = _args select 3;
+            if (count _args > 5) then {
+                _num = _args select 5;
             } else {
                 _num = 0;
             };
-            
+
             _data = [] call ALiVE_fnc_hashCreate;
             [_data, "TrgSize", _size] call ALiVE_fnc_hashSet;
             [_data, "TrgPos", _pos] call ALiVE_fnc_hashSet;
             [_data, "TrgNum", _num] call ALiVE_fnc_hashSet;
-            [[GVAR(STORE), "triggers"] call ALiVE_fnc_hashGet, _twn, _data] call ALiVE_fnc_hashSet;
+            [_data, "TrgType", _type] call ALiVE_fnc_hashSet;
+            [_data, "TrgObj", _isObj] call ALiVE_fnc_hashSet;
 
-            if (_logic getVariable["debug",false]) then {
+            [[GVAR(STORE), "triggers"] call ALiVE_fnc_hashGet, format["%1-%2",_twn,_type], _data] call ALiVE_fnc_hashSet;
+
+            if ([_logic, "debug"] call MAINCLASS) then {
                     ["ALIVE IED - Saving trigger for %1",str(_twn)] call ALiVE_fnc_dump;
             };
         };
@@ -669,6 +670,7 @@ switch(_operation) do {
                 if (_key == "_id" || _key == "_rev") exitWith {};
                 
                 // Get data
+                _type = [_value, "TrgType"] call ALiVE_fnc_hashGet;
                 _pos = [_value, "TrgPos"] call ALiVE_fnc_hashGet;
                 _twn = (nearestLocations [_pos, ["NameCityCapital","NameCity","NameVillage","Strategic"],5]) select 0;
                 _size = [_value, "TrgSize"] call ALiVE_fnc_hashGet;
@@ -691,7 +693,7 @@ switch(_operation) do {
                 };
 
                 if (_logic getVariable["debug",false]) then {
-                    ["ALIVE IED - Restoring trigger in %1",str(_twn)] call ALiVE_fnc_dump;
+                    ["ALIVE IED - Restoring %1 trigger in %2",_type,str(_twn)] call ALiVE_fnc_dump;
                 };
 
             };
@@ -764,7 +766,9 @@ switch(_operation) do {
                         };
                     };
                 };
-
+                case "BOOL": {
+                    _result = _data;
+                };
             };
         };
 
@@ -773,17 +777,8 @@ switch(_operation) do {
             private["_data", "_locations", "_triggers", "_ieds"];
             _data = _args;
 
-            _locations = [_data, "locations", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
             _triggers = [_data, "triggers", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
             _ieds = [_data, "IEDs", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
-
-            _convertLocations = {
-                private ["_loc"];
-                if (_key == "_id" || _key == "_rev") exitWith {};
-
-                _loc = [_logic, "convertString", [_value, "LocationObj"] call ALiVE_fnc_hashGet] call MAINCLASS;
-                [_value, "LocationObj", _loc] call ALiVE_fnc_hashSet;
-            };
 
             _convertTriggers = {
                 private ["_keys"];
@@ -815,7 +810,6 @@ switch(_operation) do {
                 [_value, _script] call CBA_fnc_hashEachPair;
             };
 
-            [_locations, _convertLocations] call CBA_fnc_hashEachPair;
             [_triggers, _convertTriggers] call CBA_fnc_hashEachPair;
             [_ieds, _convertIEDs] call CBA_fnc_hashEachPair;
         };

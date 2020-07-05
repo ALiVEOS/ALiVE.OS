@@ -277,9 +277,7 @@ ALiVE_fnc_INS_ied = {
                             format["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _id]
                     ];
 
-                    if (MOD(MIL_IED) getVariable["persistence",false]) then {
-                        [MOD(MIL_IED), "storeTrigger", [_size,format["%1",_id],_pos,_num]] call ALiVE_fnc_IED;
-                    };
+                    [MOD(MIL_IED), "storeTrigger", [_size,format["%1",_id],_pos,true,"IED",_num]] call ALiVE_fnc_IED;
 
                     [_pos,_size,1] call ALiVE_fnc_placeVBIED;
 
