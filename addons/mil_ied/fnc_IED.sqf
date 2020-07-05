@@ -281,6 +281,19 @@ switch(_operation) do {
                         };
                     };
                 } else {
+                    if (count synchronizedObjects _logic == 0) then {
+                        // Setup SBIEDs & VBIEDs as they're not yet persisted. Once these are persisted this code can be removed along with the locations hash
+                        _locations = [];
+                        _locs = {
+                            if (_key == "_id" || _key == "_rev") exitWith {};
+                            _loc = [_logic, "convertLocations", [[_value, "LocationObj"] call ALiVE_fnc_hashGet]] call MAINCLASS;
+                            _locations pushBack _loc;
+                        };
+
+                        [[GVAR(STORE), "locations"] call ALiVE_fnc_hashGet, _locs] call CBA_fnc_hashEachPair;
+                        ["ALiVE MIL IED - Setting up new SBIED & VBIED Locations"] call ALiVE_fnc_dump;
+                        [_logic, "setupTriggers", [_locations, "regular", true]] call MAINCLASS;
+                    };
                     // Data has already been loaded & triggers restored, ensure we don't loop a second time
                     _locations = [];
                 };
@@ -300,10 +313,15 @@ switch(_operation) do {
             };
         };
         case "setupTriggers": {
-            private ["_iedThreat", "_startupIED", "_triggerType", "_locations"];
+            private ["_iedThreat", "_startupIED", "_triggerType", "_locations", "_noIED"];
             
             _locations = _args select 0;
             _triggerType = _args select 1;
+            if (count _args > 2) then {
+                _noIED = _args select 2;
+            } else {
+                _noIED = false;
+            };
 
             switch (_triggerType) do {
                 case "starting": {
@@ -425,7 +443,7 @@ switch(_operation) do {
                     };
 
                     // IEDS
-                    if (_fate < (_iedThreat / 3)) then {
+                    if (_fate < (_iedThreat / 3) && !(_noIED)) then {
                         // Place IED trigger
                         _trg = createTrigger["EmptyDetector",getpos _twn];
 
@@ -777,8 +795,17 @@ switch(_operation) do {
             private["_data", "_locations", "_triggers", "_ieds"];
             _data = _args;
 
+            _locations = [_data, "locations", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
             _triggers = [_data, "triggers", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
             _ieds = [_data, "IEDs", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
+
+            _convertLocations = {
+                private ["_loc"];
+                if (_key == "_id" || _key == "_rev") exitWith {};
+
+                _loc = [_logic, "convertString", [_value, "LocationObj"] call ALiVE_fnc_hashGet] call MAINCLASS;
+                [_value, "LocationObj", _loc] call ALiVE_fnc_hashSet;
+            };
 
             _convertTriggers = {
                 private ["_keys"];
@@ -810,6 +837,7 @@ switch(_operation) do {
                 [_value, _script] call CBA_fnc_hashEachPair;
             };
 
+            [_locations, _convertLocations] call CBA_fnc_hashEachPair;
             [_triggers, _convertTriggers] call CBA_fnc_hashEachPair;
             [_ieds, _convertIEDs] call CBA_fnc_hashEachPair;
         };
