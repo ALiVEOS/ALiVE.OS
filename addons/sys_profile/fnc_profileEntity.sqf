@@ -1076,17 +1076,17 @@ switch(_operation) do {
             [_logic,"units", _units] call ALIVE_fnc_hashSet;
             [_logic,"active", true] call ALIVE_fnc_hashSet;
 
-            //["Profile [%1] Spawn - Create Waypoints",_profileID] call ALIVE_fnc_dump;
-            //[true] call ALIVE_fnc_timer;
-            // create waypoints from profile waypoints
-            _waypoints append _waypointsCompleted;
-            [_waypoints, _group] call ALIVE_fnc_profileWaypointsToWaypoints;
-            //[] call ALIVE_fnc_timer;
-
             //["Profile [%1] Spawn - Create Vehicle Assignments",_profileID] call ALIVE_fnc_dump;
             //[true] call ALIVE_fnc_timer;
             // create vehicle assignments from profile vehicle assignments
             [_vehicleAssignments, _logic] call ALIVE_fnc_profileVehicleAssignmentsToVehicleAssignments;
+            //[] call ALIVE_fnc_timer;
+			
+			//["Profile [%1] Spawn - Create Waypoints",_profileID] call ALIVE_fnc_dump;
+            //[true] call ALIVE_fnc_timer;
+            // create waypoints from profile waypoints
+            _waypoints append _waypointsCompleted;
+            [_waypoints, _group] call ALIVE_fnc_profileWaypointsToWaypoints;
             //[] call ALIVE_fnc_timer;
 
             //["Profile [%1] Spawn - Process Commands",_profileID] call ALIVE_fnc_dump;
