@@ -152,6 +152,15 @@ if (_menuName == "playeroptions") then {
                     -1,
                      (MOD(sys_player) getVariable ["allowManualSave", true]),
                      !isNil QMOD(sys_player) && MOD(sys_player) getVariable ["enablePlayerPersistence",false] && (MOD(sys_player) getVariable ["allowManualSave", true])
+                ],
+                [localize "STR_ALIVE_player_RESTORE_MARKERS",
+                    {[ALIVE_SYS_MARKER, "restoreMarkers", [ALIVE_SYS_MARKER_STORE]] call ALiVE_fnc_marker},
+                    "",
+                    localize "STR_ALIVE_player_RESTORE_MARKERS_COMMENT",
+                     "",
+                     -1,
+                     true,
+                     !(MOD(require) getVariable["ALiVE_DISABLEMARKERS",false])
                 ]
             ]
         ]
