@@ -76,6 +76,16 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_ied\fnc_removeActionIED.sqf";
                                 RECOMPILE;
                         };
+                        class IEDLoadData {
+                                description = "Load Persisted IED's";
+                                file = "\x\alive\addons\mil_ied\fnc_IEDLoadData.sqf";
+                                RECOMPILE;
+                        };
+                        class IEDSaveData {
+                                description = "Save IED's to DB";
+                                file = "\x\alive\addons\mil_ied\fnc_IEDSaveData.sqf";
+                                RECOMPILE;
+                        };
                 };
         };
 };

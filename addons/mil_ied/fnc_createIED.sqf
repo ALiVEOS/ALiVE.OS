@@ -8,7 +8,7 @@ SCRIPT(createIED);
 #define DEFAULT_IED_CHARGE "ALIVE_IEDUrbanSmall_Remote_Ammo"
 
 // IED - create IED(s) at location
-private ["_position","_town","_debug","_numIEDs","_j","_size","_posloc","_IEDs","_threat","_IEDData","_IEDcount"];
+private ["_position","_town","_debug","_numIEDs","_j","_size","_posloc","_IEDs","_threat","_IEDData","_IEDcount", "_dud"];
 
 if !(isServer) exitWith {diag_log "IED Not running on server!";};
 
@@ -134,17 +134,20 @@ for "_j" from 1 to _numIEDs do {
         _IED = createVehicle [_IEDskin, _IEDpos, [], 0, "NONE"];
 
         _ID = format ["%1-%2", _town, _j];
+        if (random 1 < 0.95) then {_dud = false} else {_dud = true};
 
         _data = [] call ALiVE_fnc_hashCreate;
         [_data, "IEDskin", _IEDskin] call ALiVE_fnc_hashSet;
         [_data, "IEDpos", getposATL _IED] call ALiVE_fnc_hashSet;
         [_data, "IEDtype", "IED"] call ALiVE_fnc_hashSet;
+        [_data, "IEDDud", _dud] call ALiVE_fnc_hashSet;
         [_IEDdata, _ID, _data] call ALiVE_fnc_hashSet;
 
     } else {
         private ["_data"];
         _ID = (_IEDs select 1) select (_j-1);
         _data = [_IEDs, _ID] call ALiVE_fnc_hashGet;
+        _dud = [_data, "IEDDud"] call ALiVE_fnc_hashGet;
         _IED = createVehicle [[_data, "IEDskin", "ALIVE_IEDUrbanSmall_Remote_Ammo"] call ALiVE_fnc_hashGet, [_data, "IEDpos",[0,0,0]] call ALiVE_fnc_hashGet, [], 0, "NONE"];
         if (_thirdParty) then {
             _IED setpos [(position _IED) select 0, (position _IED) select 1, 0.15];
@@ -156,8 +159,8 @@ for "_j" from 1 to _numIEDs do {
     _IED setvariable ["ID", _ID];
     _IED setvariable ["town", _town];
 
-    // Choose IED or Dud IED
-    if (random 1 < 0.95 && !_thirdParty) then {
+    // Check if Dud IED
+    if (!_dud && !_thirdParty) then {
         [_IED, typeOf _IED] call ALIVE_fnc_armIED;
 
         // Attach something that can take a hit to the IED and add a damage handler
