@@ -135,7 +135,7 @@ switch(_operation) do {
                 private _factionIcon = getText (_factionClass >> "icon");
                 private _factionPriority = getNumber (_factionClass >> "priority");
 
-                private _factionAssetData = [_assetsByFaction, _faction] call ALiVE_fnc_hashGet;
+                private _factionAssetData = [_assetsByFaction, tolower _faction] call ALiVE_fnc_hashGet;
                 private _factionAssetCategories = _factionAssetData select 0;
                 private _factionAssets = _factionAssetData select 1;
 
