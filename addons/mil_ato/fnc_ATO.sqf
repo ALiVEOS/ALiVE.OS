@@ -1890,14 +1890,14 @@ switch(_operation) do {
                                         // Handle reversed hangars
                                         if (typeof _x in ALIVE_problematicHangarBuildings  || str(_posi) in ALIVE_problematicHangarBuildings) then {
                                             // reverse the direction of planes
-                                            _dire = (direction _x) + 180;
+                                            _dire = _dire + 180;
 
                                         };
 
                                         // open all doors
                                         private _numOfDoors = getNumber (configfile >> "CfgVehicles" >> typeOf _x >> "numberOfDoors");
                                         if (_numOfDoors > 0) then {
-                                            for "_i" from 0 to (_numOfDoors - 1) do {
+                                            for "_i" from 1 to _numOfDoors do {
                                                 [_x, _i, 1] call BIS_fnc_door;
                                             };
                                         }

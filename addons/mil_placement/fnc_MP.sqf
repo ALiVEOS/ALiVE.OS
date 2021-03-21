@@ -1067,7 +1067,7 @@ switch(_operation) do {
                                     // open all doors of hangar
                                     private _numOfDoors = getNumber (configfile >> "CfgVehicles" >> typeOf _x >> "numberOfDoors");
                                     if (_numOfDoors > 0) then {
-                                        for "_i" from 0 to (_numOfDoors - 1) do {
+                                        for "_i" from 1 to _numOfDoors do {
                                             [_x, _i, 1] call BIS_fnc_door;
                                         };
                                     }
