@@ -1059,10 +1059,9 @@ switch(_operation) do {
                                     _direction = direction _x;
 
                                     // Handle reversed hangars
-                                    if (typeof _x in ALIVE_problematicHangarBuildings  || str(_posi) in ALIVE_problematicHangarBuildings) then {
+                                    if (typeof _x in ALIVE_problematicHangarBuildings || str(_position) in ALIVE_problematicHangarBuildings) then {
                                         // reverse the direction of planes
-                                        _dire = (direction _x) + 180;
-
+                                        _direction = _direction + 180;
                                     };
 
                                     // open all doors of hangar
