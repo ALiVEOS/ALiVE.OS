@@ -845,7 +845,8 @@ switch(_operation) do {
 
                                 // Get nearest building position
                                 if !(_isOnCarrier) then {
-                                    _crewPos = selectRandom ((nearestBuilding _position) buildingPos -1);
+                                    // Select indoor building position
+                                    _crewPos = selectRandom (((nearestBuilding _position) buildingPos -1) select {lineIntersects [AGLToASL _x, (AGLToASL _x) vectorAdd [0,0,10]]});
                                     if (isNil "_crewPos") then {
                                         _crewPos = _position getpos [10 + (random 15), random 360];
                                     };
@@ -1614,7 +1615,7 @@ switch(_operation) do {
                 _modulesAir append _moduleAir;
 
                 if (_debug) then {
-                    ["ALIVE ATO %1 OPCOM possible air assets: %2", _logic, _moduleAir] call ALiVE_fnc_dump;
+                    ["ALIVE ATO %1 OPCOM (%3) possible air assets: %2", _logic, _moduleAir, _module] call ALiVE_fnc_dump;
                 };
 
                 // Get objectives?
@@ -1885,6 +1886,22 @@ switch(_operation) do {
                                     if (([typeOf _x, "hangar"] call CBA_fnc_find != -1 || [typeOf _x, "Hangar"] call CBA_fnc_find != -1) && _vehicleClass iskindof "Plane") then {
                                         _posi = position _x;
                                         _dire = direction _x;
+
+                                        // Handle reversed hangars
+                                        if (typeof _x in ALIVE_problematicHangarBuildings  || str(_posi) in ALIVE_problematicHangarBuildings) then {
+                                            // reverse the direction of planes
+                                            _dire = (direction _x) + 180;
+
+                                        };
+
+                                        // open all doors
+                                        private _numOfDoors = getNumber (configfile >> "CfgVehicles" >> typeOf _x >> "numberOfDoors");
+                                        if (_numOfDoors > 0) then {
+                                            for "_i" from 0 to (_numOfDoors - 1) do {
+                                                [_x, _i, 1] call BIS_fnc_door;
+                                            };
+                                        }
+
                                     } else {
 
                                         // find a taxiway

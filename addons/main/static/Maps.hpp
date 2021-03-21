@@ -4,11 +4,14 @@
  * Map bounds for analysis grid, this is for when the map bounds function is faulty
  * due to incorrect map size values from config.
  */
- 
+
 ALIVE_mapBounds = [] call ALIVE_fnc_hashCreate;
 [ALIVE_mapBounds, "Imrali", 11000] call ALIVE_fnc_hashSet;
 [ALIVE_mapBounds, "wake", 11000] call ALIVE_fnc_hashSet;
 [ALIVE_mapBounds, "Colleville", 6000] call ALIVE_fnc_hashSet;
+
+// Add fix for problematic hangars
+ALIVE_problematicHangarBuildings = [];
 
 /*
  * CP MP building types for cluster generation
@@ -166,6 +169,10 @@ if (!_fileExists) then {
             "amphitheater",
             "chapel_v",
             "households"
+        ];
+
+        ALIVE_problematicHangarBuildings = ALIVE_problematicHangarBuildings + [
+            "[14401.4,16225.4,-0.000520706]"
         ];
 
     };

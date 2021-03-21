@@ -1055,7 +1055,24 @@ switch(_operation) do {
                                 // Find safe place to put aircraft
                                 private ["_pavement","_runway"];
                                 if ( ([tolower(typeOf _x), "hangar"] call CBA_fnc_find != -1) && !_large) then {
+
                                     _direction = direction _x;
+
+                                    // Handle reversed hangars
+                                    if (typeof _x in ALIVE_problematicHangarBuildings  || str(_posi) in ALIVE_problematicHangarBuildings) then {
+                                        // reverse the direction of planes
+                                        _dire = (direction _x) + 180;
+
+                                    };
+
+                                    // open all doors of hangar
+                                    private _numOfDoors = getNumber (configfile >> "CfgVehicles" >> typeOf _x >> "numberOfDoors");
+                                    if (_numOfDoors > 0) then {
+                                        for "_i" from 0 to (_numOfDoors - 1) do {
+                                            [_x, _i, 1] call BIS_fnc_door;
+                                        };
+                                    }
+
                                 } else { // find a taxiway
                                     _runway = [];
                                     {
