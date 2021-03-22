@@ -186,7 +186,7 @@ switch(_operation) do {
             ASSERT_TRUE(typeName _args == "BOOL",str _args);
 
             _result = _args;
-        };
+    };
     case "placeHelis": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["placeHelis", _args];
@@ -520,7 +520,6 @@ switch(_operation) do {
                 [_logic, "objectives", _clusters + _landclusters] call MAINCLASS;
 
 
-
                 //Move on to special objectives
                 if !(isnil "ALIVE_clustersMilHQ") then {
                     _HQClusters = ALIVE_clustersMilHQ select 2;
@@ -565,11 +564,11 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE MP - Startup completed"] call ALIVE_fnc_dump;
-                    ["ALIVE MP - Count clusters %1",count _clusters] call ALIVE_fnc_dump;
-                    ["ALIVE MP - Count land clusters %1",count _landClusters] call ALIVE_fnc_dump;
-                    ["ALIVE MP - Count air clusters %1",count _airClusters] call ALIVE_fnc_dump;
-                    ["ALIVE MP - Count heli clusters %1",count _heliClusters] call ALIVE_fnc_dump;
+                    ["ALIVE MP %1 - Startup completed", _faction] call ALIVE_fnc_dump;
+                    ["ALIVE MP %2 - Count clusters %1",count _clusters, _faction] call ALIVE_fnc_dump;
+                    ["ALIVE MP %2 - Count land clusters %1",count _landClusters, _faction] call ALIVE_fnc_dump;
+                    ["ALIVE MP %2 - Count air clusters %1",count _airClusters, _faction] call ALIVE_fnc_dump;
+                    ["ALIVE MP %2 - Count heli clusters %1",count _heliClusters, _faction] call ALIVE_fnc_dump;
                     [] call ALIVE_fnc_timer;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
@@ -978,7 +977,7 @@ switch(_operation) do {
 
                                 if !(_position isEqualTo [0,0,0]) then {
 
-    	                            if(random 1 > 0.8) then {
+    	                            if(random 1 > 0.2) then {
     	                                [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
 
     	                                _countProfiles = _countProfiles + 1;

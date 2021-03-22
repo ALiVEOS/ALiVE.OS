@@ -263,6 +263,13 @@ ALiVE_fnc_getAircraftRoles = {
     private _attack = false;
     private _fighter = false;
 
+    private _maxSpeed = _class call ALIVE_fnc_configGetVehicleMaxSpeed;
+
+    // Enable all helos to act as Recon platforms
+    if (_class isKindOf "Helicopter" && _maxSpeed > 200) then {
+        _recce = true;
+    };
+
     // Go through weapons and check for guns and cameras
     private _weapons = _class call BIS_fnc_weaponsEntityType;
     {
