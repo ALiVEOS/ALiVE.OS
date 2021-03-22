@@ -4325,10 +4325,10 @@ switch(_operation) do {
                                 case "CAS": {
                                     // SAD waypoint, if targets then DESTROY
                                     if ( count _eventTargets == 1 && !(isNull (_eventTargets select 0)) ) then {
+                                        _wp waypointAttachVehicle (_eventTargets select 0);
                                         _wp setWaypointType "DESTROY";
                                         _grp reveal (_eventTargets select 0);
                                         (units _grp) doTarget (_eventTargets select 0);
-                                        _wp waypointAttachVehicle (_eventTargets select 0);
                                         _wp setWaypointCompletionRadius _eventHeight;
                                     } else {
                                         _wp setWaypointType "SAD";
@@ -4396,9 +4396,9 @@ switch(_operation) do {
                                             };
                                         } foreach _eventTargets;
                                     } else {
+                                        _wp waypointAttachVehicle _targetObject;
                                         _wp setWaypointType "DESTROY";
                                         (units _grp) doTarget _targetObject;
-                                        _wp waypointAttachVehicle _targetObject;
                                         _wp setWaypointCompletionRadius _eventHeight;
                                     };
 
@@ -4636,9 +4636,7 @@ switch(_operation) do {
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
 
-
                 private _profileID = [_aircraft,"profileID"] call ALiVE_fnc_hashGet;
-
                 private _missionComplete = false;
                 private _healthIssue = false;
                 private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
@@ -4647,12 +4645,25 @@ switch(_operation) do {
                 [_aircraft,"currentPos", position _vehicle] call ALiVE_fnc_hashSet;
 
                 private _radioChoice = "STR_ALIVE_ATO_RETURN";
+
+                // Check to see if unit still has waypoints
                 if (count waypoints (group _vehicle) > 0) then {
                     // Check waypoint
                     if (time > (_eventTime + (_eventDuration*60)) ) then {
                         _missionComplete = true;
                     };
                 } else {
+                    if (_debug) then {
+                        ["ALIVE ATO %3 - Aircraft (%1 - %2) has no more waypoints.", _profileID, typeof _vehicle, _logic] call ALIVE_fnc_dump;
+                    };
+                    _missionComplete = true;
+                };
+
+                // Check to see if target is still there
+                if (count _eventTargets > 0 && isNull (_eventTargets select 0)) then {
+                    if (_debug) then {
+                        ["ALIVE ATO %3 - Aircraft (%1 - %2) has no valid target.", _profileID, typeof _vehicle, _logic] call ALIVE_fnc_dump;
+                    };
                     _missionComplete = true;
                 };
 
