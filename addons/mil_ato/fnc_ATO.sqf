@@ -1610,17 +1610,10 @@ switch(_operation) do {
                     };
                 } foreach _moduleFactions;
 
-                // Get an initial list of air assets from OPCOM
-                private _moduleAir = [_module,"air",[]] call ALiVE_fnc_HashGet;
-                _modulesAir append _moduleAir;
-
-                if (_debug) then {
-                    ["ALIVE ATO %1 OPCOM (%3) possible air assets: %2", _logic, _moduleAir, _module] call ALiVE_fnc_dump;
-                };
-
-                // Get objectives?
+                // Get objectives
                 private _objectives = [_module,"objectives"] call ALiVE_fnc_hashGet;
                 // (_objectives select 0) call ALIVE_fnc_inspectHash;
+
             } forEach _modules;
 
             [_logic, "factions", _modulesFactions] call MAINCLASS;
@@ -1665,7 +1658,7 @@ switch(_operation) do {
                 } foreach _profileIDs;
 
                 if (_debug) then {
-                        ["ALIVE ATO %1 OPCOM overall air assets: %2", _logic, _modulesAir] call ALiVE_fnc_dump;
+                        ["ALIVE ATO %1 OPCOM has %3 air assets: %2", _logic, _modulesAir, count _modulesAir] call ALiVE_fnc_dump;
                 };
 
                 // Go through all profiles and register them ---------------------------------------------------------------------------------------------------
@@ -2669,7 +2662,20 @@ switch(_operation) do {
 
                 // Validate airspace
                 if (_airspace isEqualType "" && {_airspace == ""}) then {
-                    _airpsace = ([_logic, "airspace"] call MAINCLASS) select 0;
+                    _airspace = ([_logic, "airspace"] call MAINCLASS) select 0;
+                };
+
+                // Check to see if airspace position has been provided, if so set airspace
+                if (_airspace isEqualType []) then {
+                    private _tmpAirspace = "";
+                    {
+                        if (_airspace inArea _x) exitWith {
+                            _tmpAirspace = _x;
+                        };
+                    } foreach (([_logic, "airspaceAssets"] call MAINCLASS) select 1);
+                    _airspace = _tmpAirspace;
+                    _eventData set [3,_airspace];
+                    [_event,"data",_eventData] call ALiVE_fnc_hashSet;
                 };
 
                 // Check if this module is operating and has assets
@@ -3896,19 +3902,26 @@ switch(_operation) do {
                         private _logEvent = ['ATO_RESPONSE', [_requestID,_playerID],"Logistics","REQUEST_LOST"] call ALIVE_fnc_event;
                         [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
                     };
+
                     // set state to event complete
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
 
-                    private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
-                    // if plane check to see if runway is busy, wait
-                    private _airportBusy = [_airports, _airportID] call ALiVE_fnc_hashGet;
+                    if (_isPlane) then {
 
-                    if (_airportBusy) then {
+                        private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
 
-                        // Mark airport as no longer busy
-                        [_airports, _airportID, false] call ALiVE_fnc_hashSet;
-                        [_logic,"runways",_airports] call MAINCLASS;
+                        // if plane check to see if runway is busy, wait
+                        private _airportBusy = [_airports, _airportID] call ALiVE_fnc_hashGet;
+
+                        if (isNil "_airportBusy") then {_airportBusy = false};
+
+                        if (_airportBusy) then {
+
+                            // Mark airport as no longer busy
+                            [_airports, _airportID, false] call ALiVE_fnc_hashSet;
+                            [_logic,"runways",_airports] call MAINCLASS;
+                        };
                     };
 
                 };
@@ -4224,10 +4237,10 @@ switch(_operation) do {
                     };
 
                     // Wait for driver or time expiration
-                    if ( !(isNUll (driver _vehicle)) || {time > (_eventTime + ((_eventDuration/3)*60))} || {_isOnCarrier}) then {
+                    if ( !(isNull (driver _vehicle)) || {time > (_eventTime + ((_eventDuration/3)*60))} || {_isOnCarrier}) then {
 
                         // Check driver is onboard if not put the crew in there
-                        if (isNUll (driver _vehicle) || {time > (_eventTime + ((_eventDuration/3)*60))} ) then {
+                        if (isNull (driver _vehicle) || {time > (_eventTime + ((_eventDuration/3)*60))} ) then {
                             if (_debug) then {
                                 ["ALIVE ATO %3 - aircraft (%1 - %2) is waiting on the pilot in group %4 with the units: %5.", _profileID, typeof _vehicle, _logic, _grp, units _grp] call ALIVE_fnc_dump;
                             };
@@ -4240,7 +4253,7 @@ switch(_operation) do {
                         };
 
                         // Ok driver should be in vehicle now
-                        if !(isNUll (driver _vehicle)) then {
+                        if !(isNull (driver _vehicle)) then {
 
                             // DEBUG -------------------------------------------------------------------------------------
                             if(_debug) then {
@@ -4314,11 +4327,14 @@ switch(_operation) do {
                                     if ( count _eventTargets == 1 && !(isNull (_eventTargets select 0)) ) then {
                                         _wp setWaypointType "DESTROY";
                                         _grp reveal (_eventTargets select 0);
+                                        (units _grp) doTarget (_eventTargets select 0);
                                         _wp waypointAttachVehicle (_eventTargets select 0);
+                                        _wp setWaypointCompletionRadius _eventHeight;
                                     } else {
                                         _wp setWaypointType "SAD";
                                         _wp setWaypointPosition [_eventPosition, 0];
                                         _wp setWaypointTimeout [_eventDuration,_eventDuration,_eventDuration];
+
                                     };
                                 };
                                 case "OCA";
@@ -4381,7 +4397,9 @@ switch(_operation) do {
                                         } foreach _eventTargets;
                                     } else {
                                         _wp setWaypointType "DESTROY";
+                                        (units _grp) doTarget _targetObject;
                                         _wp waypointAttachVehicle _targetObject;
+                                        _wp setWaypointCompletionRadius _eventHeight;
                                     };
 
                                 };
@@ -4655,11 +4673,14 @@ switch(_operation) do {
                 // Check Weapons
                 // Calculate % of ammo
                 private _ammoArray = _vehicle call ALiVE_fnc_vehicleGetAmmo;
-                private _avail = 0;
-                {
-                    _avail = _avail + ((_x select 1)/(_x select 2));
-                } foreach _ammoArray;
-                private _ammo = _avail / count _ammoArray;
+                private _ammo = 0;
+                if (count _ammoArray > 0) then {
+                    private _avail = 0;
+                    {
+                        _avail = _avail + ((_x select 1)/(_x select 2));
+                    } foreach _ammoArray;
+                    _ammo = _avail / count _ammoArray;
+                };
                 if (_ammo < 0.1) then {
                     _healthIssue = true;
                     _radioChoice = "STR_ALIVE_ATO_RETURN_AMMO";
