@@ -221,7 +221,7 @@ switch(_operation) do {
             _center = [_logic, "center"] call MAINCLASS;
             if(count _center > 0) then {
                 {
-                    if(_x distance _center > _result) then {_result = _x distance _center;};
+                    if(_x distance _center > _result && _x distance _center < (worldSize / 2) ) then {_result = _x distance _center;};
                 } forEach _nodes;
             };
             [_logic, _operation, _result] call ALIVE_fnc_hashSet;
