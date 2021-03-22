@@ -479,7 +479,7 @@ switch (_operation) do {
 
                     // Check to see if placed on carrier/ship
                     if !([_position] call ALiVE_fnc_nearShip) then {
-                        _position set [2,0];
+                        _position set [2,0.5];
                     } else {
                        // _special = "NONE";
                         if (_debug) then {
@@ -493,14 +493,14 @@ switch (_operation) do {
                     _paraDrop = true;
 
                 }else{
-                    //_position = [_position, 0, 50, 5, 0, 5 , 0, [], [_position]] call BIS_fnc_findSafePos;
-
-                    _position set [2,0];
-                    //_special = "CAN_COLLIDE";
+                    _position = [_position, 0, 50, 5, 0, 5 , 0, [], [_position]] call BIS_fnc_findSafePos;
+                    _position set [2,0.5];
+                    _special = "CAN_COLLIDE";
                 };
             };
 
             _vehicle = createVehicle [_vehicleClass, _position, [], 0, _special];
+            _vehicle allowDamage false;
             _vehicle setDir _direction;
             _vehicle setFuel _fuel;
             _vehicle engineOn _engineOn;
@@ -701,6 +701,9 @@ switch (_operation) do {
 
             // store the profile id on the active profiles index
             [ALIVE_profileHandler,"setActive",[_profileID,_side,_logic]] call ALIVE_fnc_profileHandler;
+
+            // Kick off timer to enable damage
+            [{_this allowDamage true;}, _vehicle, 5] call CBA_fnc_waitAndExecute;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
