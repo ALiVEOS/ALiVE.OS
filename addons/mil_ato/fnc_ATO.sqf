@@ -1706,7 +1706,6 @@ switch(_operation) do {
 
                     private _baseCluster = [_logic, "currentBase"] call MAINCLASS;
                     private _center = [_baseCluster,"center"] call ALiVE_fnc_hashGet;
-                    // [_baseCluster, "debug", true] call ALIVE_fnc_cluster;
 
                     // Set airspace where base and assets are located
                     private _baseAirspace = _airspace select 0;
@@ -1740,16 +1739,19 @@ switch(_operation) do {
                         {
                             private _pos = [0,0,0];
                             private _dir = 0;
-                            private _helipad = nil;
+                            private _helipad = objNull;
                             if (_x isKindOf "HeliH") then {
                                 _pos = position _x;
                                 _dir = direction _x;
                                 _helipad = _x;
                             } else {
-                                _helipad = nearestObject [position _x, "HeliH"];
+                                private _helipads = nearestObjects [position _x, ["HeliH"], 250];
+                                if (count _helipads > 0) then {
+                                    _helipad = _helipads select 0;
+                                };
                             };
 
-                            if (!isNil "_helipad") then {
+                            if (!isNull _helipad) then {
 
                                 _pos = position _helipad;
                                 _dir = getdir _helipad;
@@ -1761,6 +1763,10 @@ switch(_operation) do {
                                 if (count _nearbyObj == 0 && count _nearbyProfiles == 0) then {
 
                                     private _vehicleClass = _heliClasses call BIS_fnc_selectRandom;
+
+                                    if(_debug) then {
+                                        ["ALIVE ATO (%2) - Found helipad at %3 adding %1", _vehicleClass, _faction, _pos] call ALIVE_fnc_dump;
+                                    };
 
                                     private _tmp = [_vehicleClass,_side,_faction,"CAPTAIN",_pos,_dir,false,_faction,false] call ALIVE_fnc_createProfilesCrewedVehicle;
                                     {
@@ -1776,12 +1782,20 @@ switch(_operation) do {
                         // IF there are no helipads available, we want atleast 1 chopper. Spawn a composition
                         if (count _aprofiles == 0) then {
                             // Spawn a heliport
+                            private _validPos = true;
                             private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
+
                             private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
                             private _heliport = nil;
                             private _flatPos = [_pos,_size,30] call ALiVE_fnc_findFlatArea;
 
-                            if (isNil QMOD(COMPOSITIONS_LOADED)) then {
+                            private _position = _flatpos;
+
+                            if (str(_flatPos) == "[0,0,0]") then {
+                                _validPos = false;
+                            };
+
+                            if (isNil QMOD(COMPOSITIONS_LOADED) && _validPos) then {
 
                                 // Get a composition
                                 private _compType = "Military";
@@ -1815,6 +1829,8 @@ switch(_operation) do {
 
                                     if !(isNull _helipad) then {
 
+                                        _position = position _helipad;
+
                                         // remove any pre-placed aircraft on composition?
                                         private _nearbyObj = nearestObjects [position _helipad, ["Helicopter"], 20];
                                         if (count _nearbyObj > 0) then {
@@ -1823,16 +1839,25 @@ switch(_operation) do {
                                             }foreach _nearbyObj;
                                         };
 
-                                        private _vehicleClass = selectRandom _heliClasses;
-
-                                        private _tmp = [_vehicleClass,_side,_faction,"CAPTAIN",position _helipad,direction _helipad,true,_faction,false] call ALIVE_fnc_createProfilesCrewedVehicle;
-                                        {
-                                            // _x call ALIVE_fnc_inspectHash;
-                                            if ([_x,"type"] call ALiVE_fnc_hashGet == "entity") then {
-                                                _aprofiles pushback ([_x,"profileID"] call ALiVE_fnc_hashGet);
-                                            };
-                                        } foreach _tmp;
+                                    } else {
+                                        // add a bloody helipad TODO: improve placement
+                                        "Land_HelipadEmpty_F" createVehicle _flatPos;
                                     };
+
+                                    private _vehicleClass = selectRandom _heliClasses;
+
+                                    if(_debug) then {
+                                        ["ALIVE ATO %1 (%2) - Created helipad at %3 adding %1", _vehicleClass, _faction, _position] call ALIVE_fnc_dump;
+                                    };
+
+                                    private _tmp = [_vehicleClass,_side,_faction,"CAPTAIN",_position,_direct,true,_faction,false] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                    {
+                                        // _x call ALIVE_fnc_inspectHash;
+                                        if ([_x,"type"] call ALiVE_fnc_hashGet == "entity") then {
+                                            _aprofiles pushback ([_x,"profileID"] call ALiVE_fnc_hashGet);
+                                        };
+                                    } foreach _tmp;
+
                                 };
                             };
                         };
