@@ -985,30 +985,27 @@ switch(_operation) do {
         };
 
         case "getobjectivebyid": {
-            ASSERT_TRUE(typeName _args == "STRING",str _args);
+            private _id = _args;
 
-            private ["_objective","_id"];
-
-            _id = _args;
-
-            if (!isnil "_logic" && {typeName _logic == "ARRAY"} && {count _logic > 0}) then {
+            if (!isnil "_logic" && {_logic isequaltype []} && {count _logic > 0}) then {
+                // find objective from passed opcom
                 {
-                    if (([_x,"objectiveID"] call ALiVE_fnc_hashGet) == _id) exitwith {_objective = _x};
+                    if (([_x,"objectiveID"] call ALiVE_fnc_hashGet) == _id) exitwith {
+                        _result = _x;
+                    };
                 } foreach ([_logic, "objectives"] call ALIVE_fnc_HashGet);
             } else {
+                // find objective from any opcom
                 {
-                    private ["_exit"];
+                    {
+                        if (([_x,"objectiveID"] call ALiVE_fnc_hashGet) == _id) exitwith {
+                            _result = _x;
+                        };
+                    } foreach ([_x, "objectives"] call ALIVE_fnc_HashGet);
 
-                    _exit = false;
-
-                    {_o = _x; if (([_o,"objectiveID"] call ALiVE_fnc_hashGet) == _id) exitwith {_objective = _o; _exit = true}} foreach ([_x, "objectives"] call ALIVE_fnc_HashGet);
-
-                    if (_exit) exitwith {};
-
+                    if (!isnil "_result") exitwith {};
                 } foreach OPCOM_INSTANCES;
             };
-
-            _result = _objective;
         };
 
         case "sortObjectives": {
