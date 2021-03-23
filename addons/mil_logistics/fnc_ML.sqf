@@ -5644,10 +5644,17 @@ switch(_operation) do {
                     _group = _entityProfile select 2 select 13;
                     _group setBehaviour "CARELESS";
 
-                    _position = [_eventPosition, 0, 300, 15, 0, 0.5, 0] call BIS_fnc_findSafePos;
-                    if(count _position == 0) then {
+                    // #TODO: blacklist locations of existing helipads with 15m radius
+                    _position = [];
+                    for "_i" from 0 to 1 do {
+                        if (_position isequalto []) then {
+                            _position = [_eventPosition, 0, 300, 13.5, 0, 0.5, 0] call BIS_fnc_findSafePos;
+                        };
+                    };
+                    if(_position isequalto []) then {
                         _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
                     };
+
                     _heliPad = "Land_HelipadEmpty_F" createVehicle _position;
 
                     _eventAssets pushback _heliPad;
