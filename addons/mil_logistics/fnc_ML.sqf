@@ -2972,9 +2972,7 @@ switch(_operation) do {
 
             case "heliTransportReturn": {
 
-                private ["_position","_profileWaypoint","_profile","_reinforcementPosition","_count"];
-
-                _count = [_logic, "checkEvent", _event] call MAINCLASS;
+                private _count = [_logic, "checkEvent", _event] call MAINCLASS;
                 if(_count == 0) exitWith {
                     // set state to event complete
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
@@ -2984,19 +2982,34 @@ switch(_operation) do {
                 if(count _eventTransportProfiles > 0) then {
 
                     // send transport vehicles back to insertion point and beyond 1500m to ensure it
+                    // egress in opposite direction of ingress to avoid AI fun time
+
+                    private _eventDestination = [_event, "finalDestination"] call ALIVE_fnc_hashGet;
+                    private _reinforcementPosition = [_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet;
+                    private _returnDest = _reinforcementPosition getPos [1500, _eventDestination getDir _reinforcementPosition];
+
+                    // #TODO: Change this so each helicopter peels off in the direction of it's offset from the eventDestination position
                     {
-                        _reinforcementPosition = [_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet;
-                        _position = _reinforcementPosition getPos [1500, (([_event, "finalDestination"] call ALIVE_fnc_hashGet) getDir _reinforcementPosition)];
-                        _profileWaypoint = [_position, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                        private _transportProfile = [ALIVE_profileHandler,"getProfile", _x] call ALiVE_fnc_profileHandler;
+                        if!(isNil "_transportProfile") then {
+                            private _transportProfilePos = _transportProfile select 2 select 2;
 
-                        _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-                        if!(isNil "_profile") then {
+                            private _leaveDir = [(_transportProfilePos getDir _reinforcementPosition) - 180] call ALiVE_fnc_modDegrees;
+                            private _turnDirOffset = if (random 1 > 0.5) then { 50 } else { -50 };
+                            private _leaveDist = 300 + (random 200);
+                            
+                            private _leavePosStraight = _transportProfilePos getpos [_leaveDist, _leaveDir];
+                            private _leavePosTurn = _transportProfilePos getpos [_leaveDist * 1.5, [_leaveDir + _turnDirOffset] call ALiVE_fnc_modDegrees];
 
-                            [_profile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
-                            [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+                            private _leaveWPStraight = [_leavePosStraight, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                            private _leaveWPTurn = [_leavePosTurn, 100, "MOVE", "NORMAL", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                            private _leaveWPFinal = [_returnDest, 100, "MOVE", "NORMAL", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
 
+                            [_transportProfile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                            [_transportProfile, "addWaypoint", _leaveWPStraight] call ALIVE_fnc_profileEntity;
+                            [_transportProfile, "addWaypoint", _leaveWPTurn] call ALIVE_fnc_profileEntity;
+                            [_transportProfile, "addWaypoint", _leaveWPFinal] call ALIVE_fnc_profileEntity;
                         };
-
                     } forEach _eventTransportProfiles;
 
                     // set state to wait for return of transports
@@ -5631,7 +5644,7 @@ switch(_operation) do {
                     _group = _entityProfile select 2 select 13;
                     _group setBehaviour "CARELESS";
 
-                    _position = [_eventPosition, 0, 300, 10, 0, 0.5, 0] call BIS_fnc_findSafePos;
+                    _position = [_eventPosition, 0, 300, 15, 0, 0.5, 0] call BIS_fnc_findSafePos;
                     if(count _position == 0) then {
                         _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
                     };
@@ -5654,6 +5667,20 @@ switch(_operation) do {
                         } forEach _inCargo;
                     };
 
+                    private _vehiclesInCommandOf = _entityProfile select 2 select 8;
+                    {
+                        private _vehicleProfile = [ALIVE_profileHandler,"getProfile", _x] call ALiVE_fnc_profileHandler;
+                        private _isActive = _vehicleProfile select 2 select 1;
+                        if (_isActive) then {
+                            private _vehicleObject = _vehicleProfile select 2 select 10;
+                            if (_vehicleObject iskindof "Helicopter") then {
+                                private _landPos = getpos _helipad;
+
+                                private _landWaypoint = [_landPos, 25, "MOVE"] call ALIVE_fnc_createProfileWaypoint;
+                                [_entityProfile, "addWaypoint", _landWaypoint] call ALIVE_fnc_profileEntity;
+                            };
+                        };
+                    } foreach _vehiclesInCommandOf;
                 }else{
 
                     private ["_position","_inCargo","_cargoProfileID","_cargoProfile"];
@@ -6285,7 +6312,7 @@ switch(_operation) do {
                             };
                         };
 
-                        _profileWaypoint = [_returnPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                        _profileWaypoint = [_returnPosition, 100, "MOVE", "NORMAL", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
                         _profileCount = 0;
 
                         {
