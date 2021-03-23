@@ -1276,6 +1276,10 @@ switch(_operation) do {
                  _airClusters = [(ALIVE_clustersMil select 2), _airspace] call ALIVE_fnc_clustersInsideMarker;
             };
 
+            if (count _airClusters == 0) exitWith {
+                ["ALIVE ATO - Warning no usable military buildings within airspace found, the ATO module for %1 may be incorrectly configured.", _faction] call ALIVE_fnc_dumpR;
+            };
+
             // Select the nearest cluster to the module or use Aircraft Carrier
             private _position = getposATL _logic;
 
