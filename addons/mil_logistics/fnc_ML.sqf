@@ -5644,11 +5644,18 @@ switch(_operation) do {
                     _group = _entityProfile select 2 select 13;
                     _group setBehaviour "CARELESS";
 
-                    // #TODO: blacklist locations of existing helipads with 15m radius
+                    private _blacklistPositions = [];
+                    {
+                        if (typeof _x == "Land_HelipadEmpty_F") then {
+                            private _blacklistCenter = getpos _x;
+                            _blacklistPositions pushback [_blacklistCenter, 20];
+                        };
+                    } foreach _eventAssets;
+
                     _position = [];
                     for "_i" from 0 to 1 do {
                         if (_position isequalto []) then {
-                            _position = [_eventPosition, 0, 300, 13.5, 0, 0.5, 0] call BIS_fnc_findSafePos;
+                            _position = [_eventPosition, 0, 300, 13.5, 0, 0.5, 0, _blacklistPositions] call BIS_fnc_findSafePos;
                         };
                     };
                     if(_position isequalto []) then {
@@ -5683,7 +5690,8 @@ switch(_operation) do {
                             if (_vehicleObject iskindof "Helicopter") then {
                                 private _landPos = getpos _helipad;
 
-                                private _landWaypoint = [_landPos, 25, "MOVE"] call ALIVE_fnc_createProfileWaypoint;
+                                private _landWaypoint = [_landPos, 15, "MOVE"] call ALIVE_fnc_createProfileWaypoint;
+                                [_entityProfile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
                                 [_entityProfile, "addWaypoint", _landWaypoint] call ALIVE_fnc_profileEntity;
                             };
                         };
