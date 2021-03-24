@@ -46,7 +46,16 @@ if (count _veh > 0) then {
 } else {
     private ["_carClasses","_roads","_factions"];
     // Create random vehicles
-    _factions = ADDON getvariable ["VB_IED_Side", "CIV"] call ALiVE_fnc_getSideFactions;
+    // If ALiVE Ambient civilians are available get the faction from there
+    if (["ALiVE_amb_civ_placement"] call ALiVE_fnc_isModuleAvailable) then {
+
+        waituntil {!isnil QMOD(amb_civ_placement)};
+
+        _factions = [ALiVE_amb_civ_placement getvariable ["faction","CIV_F"]];
+    } else {
+        _factions = ADDON getvariable ["VB_IED_Side", "CIV"] call ALiVE_fnc_getSideFactions;
+    };
+
     _carClasses = [0,_factions,"Car"] call ALiVE_fnc_findVehicleType;
     _carClasses = _carClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
     _roads = _location nearRoads _radius;
