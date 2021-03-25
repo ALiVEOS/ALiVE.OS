@@ -336,6 +336,20 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "scomOpsAllowImageIntelligence": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["scomOpsAllowImageIntelligence", _args];
+        } else {
+            _args = _logic getVariable ["scomOpsAllowImageIntelligence", false];
+        };
+        if (typeName _args == "STRING") then {
+                if(_args == "true") then {_args = true;} else {_args = false;};
+                _logic setVariable ["scomOpsAllowImageIntelligence", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
     case "scomIntelLimit": {
         _result = [_logic,_operation,_args,DEFAULT_SCOM_LIMIT,["SIDE","FACTION","ALL"]] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -503,18 +517,20 @@ switch(_operation) do {
         [_gm, "debug", _debug] call ALIVE_fnc_GM;
         [_gm, "init",[]] call ALIVE_fnc_GM;
 
-        private["_scomOpsLimit","_scomIntelLimit","_scomOpsAllowSpectate","_scomOpsAllowJoin","_scom"];
+        private["_scomOpsLimit","_scomIntelLimit","_scomOpsAllowSpectate","_scomOpsAllowJoin","_scomOpsAllowImageIntelligence","_scom"];
 
         _scomOpsLimit = [_logic, "scomOpsLimit"] call MAINCLASS;
         _scomIntelLimit = [_logic, "scomIntelLimit"] call MAINCLASS;
         _scomOpsAllowSpectate = [_logic, "scomOpsAllowSpectate"] call MAINCLASS;
         _scomOpsAllowJoin = [_logic, "scomOpsAllowInstantJoin"] call MAINCLASS;
+        _scomOpsAllowImageIntelligence = [_logic, "scomOpsAllowImageIntelligence"] call MAINCLASS;
 
         _scom = [nil, "create"] call ALIVE_fnc_SCOM;
         [_scom, "opsLimit", _scomOpsLimit] call ALIVE_fnc_SCOM;
         [_scom, "intelLimit", _scomIntelLimit] call ALIVE_fnc_SCOM;
         [_scom, "scomOpsAllowSpectate", _scomOpsAllowSpectate] call ALIVE_fnc_SCOM;
         [_scom, "scomOpsAllowInstantJoin", _scomOpsAllowJoin] call ALIVE_fnc_SCOM;
+        [_scom, "scomOpsAllowImageIntelligence", _scomOpsAllowImageIntelligence] call ALIVE_fnc_SCOM;
         [_scom, "debug", _debug] call ALIVE_fnc_SCOM;
         [_scom, "init",[]] call ALIVE_fnc_SCOM;
 

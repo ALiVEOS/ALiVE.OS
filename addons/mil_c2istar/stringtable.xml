@@ -125,6 +125,12 @@
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_JOIN_COMMENT">
     <Original>Allow commanders to join remote forces via remote control</Original>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_IMAGE_INTELLIGENCE">
+    <Original>Allow IMINT:</Original>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_IMAGE_INTELLIGENCE_COMMENT">
+    <Original>Allow commanders to view live feed from friendly air units</Original>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_INTEL_LIMIT">
     <Original>Limit Intel:</Original>
 </Key>

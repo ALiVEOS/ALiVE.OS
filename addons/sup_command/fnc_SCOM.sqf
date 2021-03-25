@@ -167,6 +167,23 @@ switch (_operation) do {
 
     };
 
+    case "scomOpsAllowImageIntelligence": {
+
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["scomOpsAllowImageIntelligence", _args];
+        } else {
+            _args = _logic getVariable ["scomOpsAllowImageIntelligence", false];
+        };
+        if (typeName _args == "STRING") then {
+                if(_args == "true") then {_args = true;} else {_args = false;};
+                _logic setVariable ["scomOpsAllowImageIntelligence", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+
+    };
+
     case "intelLimit": {
 
         _result = [_logic,_operation,_args,DEFAULT_SCOM_LIMIT,["SIDE","FACTION","ALL"]] call ALIVE_fnc_OOsimpleOperation;
@@ -274,8 +291,18 @@ switch (_operation) do {
 
             // intel state
 
-            [_commandState,"intelTypeOptions",["Commander Objectives","Unit Marking","Imagery"]] call ALIVE_fnc_hashSet;
-            [_commandState,"intelTypeValues",["Objectives","Marking","IMINT"]] call ALIVE_fnc_hashSet;
+            private _enableImageIntelligence = [_logic,"scomOpsAllowImageIntelligence"] call MAINCLASS;
+
+            private _intelTypeOptions = ["Commander Objectives","Unit Marking"];
+            private _intelTypeValues = ["Objectives","Marking"];
+
+            if (_enableImageIntelligence) then {
+                _intelTypeOptions pushback "Imagery";
+                _intelTypeValues pushback "IMINT";
+            };
+
+            [_commandState,"intelTypeOptions",_intelTypeOptions] call ALIVE_fnc_hashSet;
+            [_commandState,"intelTypeValues",_intelTypeValues] call ALIVE_fnc_hashSet;
             [_commandState,"intelTypeSelectedIndex",DEFAULT_SELECTED_INDEX] call ALIVE_fnc_hashSet;
             [_commandState,"intelTypeSelectedValue",DEFAULT_SELECTED_VALUE] call ALIVE_fnc_hashSet;
 
