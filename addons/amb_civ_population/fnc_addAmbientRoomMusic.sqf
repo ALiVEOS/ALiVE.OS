@@ -45,10 +45,10 @@ hideObjectGlobal _musicSource;
 
             // Don't play night sounds during the day
             if (_trackName in ALiVE_CivPop_NightSounds && daytime < 21 && dayTime > 3) then {
-                _trackName = "ALiVE_Civpop_Audio_19";
+                _trackName = "ALiVE_Civpop_Audio_18";
             };
 
-            private _trackDuration = [_source, _trackName] call ALIVE_fnc_hashGet;
+            private _trackDuration = [_source, _trackName, 30] call ALIVE_fnc_hashGet;
 
             if(isMultiplayer) then {
                 [_building, _musicSource, _trackName] remoteExec ["ALIVE_fnc_clientAddAmbientRoomMusic"];
