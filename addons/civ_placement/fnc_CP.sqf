@@ -551,8 +551,6 @@ switch(_operation) do {
 
                         _marineClusters = [_marineClusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
 
-                        ["ALIVE CP [%1] - Marine Clusters Count: %2",_faction, count _marineClusters] call ALIVE_fnc_dump;
-
                         /*
                         {
                             [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
@@ -566,8 +564,18 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE CP - Startup completed"] call ALIVE_fnc_dump;
-                    ["ALIVE CP - Count clusters %1",count _clusters] call ALIVE_fnc_dump;
+                    ["ALIVE CP %1 - Startup completed", _faction] call ALIVE_fnc_dump;
+                    ["ALIVE CP %2 - Filtered Civ clusters %1",count _clusters, _faction] call ALIVE_fnc_dump;
+                    ["ALIVE CP %2 - All Civilian clusters %1", count (ALIVE_clustersCiv select 2), _faction] call ALIVE_fnc_dump;
+                    ["ALIVE CP %2 - Settlement clusters %1", count (ALIVE_clustersCivSettlement select 2), _faction] call ALIVE_fnc_dump;
+                    ["ALIVE CP %2 - HQ clusters %1",count (ALIVE_clustersCivHQ select 2), _faction] call ALIVE_fnc_dump;
+                    ["ALIVE CP %2 - Marine clusters %1",count (ALIVE_clustersCivMarine select 2), _faction] call ALIVE_fnc_dump;
+                    ["ALIVE CP %2 - Rail clusters %1",count (ALIVE_clustersCivRail select 2), _faction] call ALIVE_fnc_dump;
+                    ["ALIVE CP %2 - Fuel clusters %1",count (ALIVE_clustersCivFuel select 2), _faction] call ALIVE_fnc_dump;
+                    ["ALIVE CP %2 - Power clusters %1",count (ALIVE_clustersCivPower select 2), _faction] call ALIVE_fnc_dump;
+                    ["ALIVE CP %2 - Comms clusters %1",count (ALIVE_clustersCivComms select 2), _faction] call ALIVE_fnc_dump;
+                    ["ALIVE CP %2 - Construction clusters %1",count (ALIVE_clustersCivConstruction select 2), _faction] call ALIVE_fnc_dump;
+
                     [] call ALIVE_fnc_timer;
                 };
                 // DEBUG -------------------------------------------------------------------------------------

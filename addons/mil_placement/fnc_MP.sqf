@@ -566,6 +566,7 @@ switch(_operation) do {
                 if(_debug) then {
                     ["ALIVE MP %1 - Startup completed", _faction] call ALIVE_fnc_dump;
                     ["ALIVE MP %2 - Count clusters %1",count _clusters, _faction] call ALIVE_fnc_dump;
+                    ["ALIVE MP %2 - Count HQ clusters %1",count _HQClusters, _faction] call ALIVE_fnc_dump;
                     ["ALIVE MP %2 - Count land clusters %1",count _landClusters, _faction] call ALIVE_fnc_dump;
                     ["ALIVE MP %2 - Count air clusters %1",count _airClusters, _faction] call ALIVE_fnc_dump;
                     ["ALIVE MP %2 - Count heli clusters %1",count _heliClusters, _faction] call ALIVE_fnc_dump;
@@ -905,6 +906,7 @@ switch(_operation) do {
                             _vehicleClass = (selectRandom _supplyClasses);
 
                             if(random 1 > 0.6) then {
+
                                 _box = createVehicle [_vehicleClass, _position, [], 0, "NONE"];
                                 _countSupplies = _countSupplies + 1;
                             };
