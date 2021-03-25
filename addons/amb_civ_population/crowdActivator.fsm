@@ -1,4 +1,4 @@
-/*%FSM<COMPILE "scriptedFSM.cfg, Crowd Activator">*/
+/*%FSM<COMPILE "C:\Program Files (x86)\Steam\steamapps\common\Arma 3 Tools\FSMEditor\scriptedFSM.cfg, Crowd Activator">*/
 /*%FSM<HEAD>*/
 /*
 item0[] = {"MOVE",2,250,-835.013550,511.870850,-745.013550,561.870850,0.000000,"MOVE"};
@@ -133,8 +133,8 @@ link64[] = {47,46};
 link65[] = {48,6};
 link66[] = {49,0};
 link67[] = {50,33};
-globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-955.882080,285.045715,1156.796997,-171.266068,826,884,1};
-window[] = {2,-1,-1,-32000,-32000,1234,2197,4267,134,3,844};
+globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-1161.255615,490.419067,987.520752,-22.864317,1517,928,1};
+window[] = {0,-1,-1,-1,-1,1187,867,3195,87,1,1535};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -1108,7 +1108,11 @@ class FSM
                          "// DEBUG -------------------------------------------------------------------------------------" \n
                          "" \n
                          "" \n
-                         "private _index = round (_agentSpawnCount / _lightAdjustedCrowdDensity);" \n
+                         "private _index = 0;" \n
+                         "" \n
+                         "if (_agentSpawnCount > 0 && _lightAdjustedCrowdDensity > 0) then {" \n
+                         "	round (_agentSpawnCount / _lightAdjustedCrowdDensity);" \n
+                         "};" \n
                          "" \n
                          "private _building = _toSpawn select _index select 0;" \n
                          "" \n
