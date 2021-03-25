@@ -5647,15 +5647,14 @@ switch(_operation) do {
                     private _blacklistPositions = [];
                     {
                         if (typeof _x == "Land_HelipadEmpty_F") then {
-                            private _blacklistCenter = getpos _x;
-                            _blacklistPositions pushback [_blacklistCenter, 20];
+                            _blacklistPositions pushback [getpos _x, 20];
                         };
                     } foreach _eventAssets;
 
                     _position = [];
                     for "_i" from 0 to 1 do {
                         if (_position isequalto []) then {
-                            _position = [_eventPosition, 0, 300, 13.5, 0, 0.5, 0, _blacklistPositions] call BIS_fnc_findSafePos;
+                            _position = [_eventPosition, 0, 300, 15, 0, 0.25, 0, _blacklistPositions] call BIS_fnc_findSafePos;
                         };
                     };
                     if(_position isequalto []) then {
