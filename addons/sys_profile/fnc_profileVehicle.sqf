@@ -493,7 +493,13 @@ switch (_operation) do {
                     _paraDrop = true;
 
                 }else{
-                    _position = [_position, 0, 50, 5, 0, 5 , 0, [], [_position]] call BIS_fnc_findSafePos;
+
+                    if (tolower _vehicleType == "ship") then {
+                        _position = [_position, 0, 50, 10, 2, 5 , 0, [], [_position]] call BIS_fnc_findSafePos;
+                    } else {
+                        _position = [_position, 0, 50, 5, 0, 5 , 0, [], [_position]] call BIS_fnc_findSafePos;
+                    };
+                    
                     _position set [2,0.5];
                     _special = "CAN_COLLIDE";
                 };
