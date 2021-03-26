@@ -31,7 +31,8 @@ private ["_configPath","_sideNumber","_sortedVehicles","_item","_configName","_v
 params [
     ["_faction", "none", [""]],
     ["_blacklist", [], [[]]],
-    ["_whitelist", [], [[]]]
+    ["_whitelist", [], [[]]],
+    ["_civ", true, [true]]
 ];
 
 _configPath = configFile >> "CFGVehicles";
@@ -59,6 +60,8 @@ for "_i" from 0 to ((count _configPath) - 1) do
             };
             
             if ((count _whitelist > 0 && {!(_configName in _whitelist)}) || {count _blacklist > 0 && {_configName in _blacklist}}) exitwith {};
+
+            if (!_civ && _side == 3 && (_configName isKindOf "Man" || _configName isKindOf "LandVehicle" || _configName isKindOf "Air" || _configName isKindOf "Ship")) exitwith {};
 
             if!(_vehicleClass in (_sortedVehicles select 1)) then {
                 [_sortedVehicles,_vehicleClass,[_configName]] call ALIVE_fnc_hashSet;

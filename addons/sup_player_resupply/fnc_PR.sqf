@@ -615,12 +615,16 @@ switch(_operation) do {
             private _sortedVehicles = [] call ALiVE_fnc_hashCreate;
             private _sortedGroups = [] call ALiVE_fnc_hashCreate;
 
+            // Check to see if there's a faction whitelist
+            private _pr_faction_whitelist = [_logic, "factions", _logic getVariable ["pr_factionWhitelist", DEFAULT_FACTIONS]] call MAINCLASS;
+            private _civ = count _pr_faction_whitelist == 0;
+
             // get sorted config data
             if(_restrictionType == "SIDE") then {
                 _sortedVehicles = [_sideText,ALiVE_PR_BLACKLIST,ALiVE_PR_WHITELIST] call ALIVE_fnc_sortCFGVehiclesByClass;
             }else{
                 {
-                    private _tempVehicles = [_x,ALiVE_PR_BLACKLIST,ALiVE_PR_WHITELIST] call ALIVE_fnc_sortCFGVehiclesByFactionClass;
+                    private _tempVehicles = [_x,ALiVE_PR_BLACKLIST,ALiVE_PR_WHITELIST, _civ] call ALIVE_fnc_sortCFGVehiclesByFactionClass;
                     private _mergeHash = {
                         private _listOfVeh = [_sortedVehicles, _key, []] call ALiVE_fnc_hashGet;
                         {
