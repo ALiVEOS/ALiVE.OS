@@ -3039,7 +3039,7 @@ switch(_operation) do {
 
                             if (_heli == 1) then {
                                 private _createdProfiles = [_vehicleClass,_side,_faction,"CAPTAIN",_position,_dir,false,_faction,false] call ALIVE_fnc_createProfilesCrewedVehicle;
-                                _tmp = _createsProfiles select (_createdProfiles findIf { ([_x,"type"] call ALiVE_fnc_hashGet) == "vehicle" });
+                                _tmp = _createdProfiles select (_createdProfiles findIf { ([_x,"type"] call ALiVE_fnc_hashGet) == "vehicle" });
                             };
 
                             if (_plane == 1) then {
