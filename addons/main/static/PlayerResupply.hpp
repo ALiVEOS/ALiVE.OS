@@ -47,6 +47,11 @@ ALIVE_globalDefaultResupplyDefenceStoreOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_globalDefaultResupplyDefenceStoreOptions, "PR_HELI_INSERT", [["<< Back","Static","Fortifications","Tents","Military"],["<< Back","Static","Fortifications","Tents","Structures_Military"]]] call ALIVE_fnc_hashSet;
 [ALIVE_globalDefaultResupplyDefenceStoreOptions, "PR_STANDARD", [["<< Back","Static","Fortifications","Tents","Military"],["<< Back","Static","Fortifications","Tents","Structures_Military"]]] call ALIVE_fnc_hashSet;
 
+ALIVE_VNDefaultResupplyDefenceStoreOptions = [] call ALIVE_fnc_hashCreate;
+[ALIVE_VNDefaultResupplyDefenceStoreOptions, "PR_AIRDROP", [["<< Back","Static","Fortifications"],["<< Back","Static","Fortifications"]]] call ALIVE_fnc_hashSet;
+[ALIVE_VNDefaultResupplyDefenceStoreOptions, "PR_HELI_INSERT", [["<< Back","Static","Fortifications"],["<< Back","Static","Fortifications"]]] call ALIVE_fnc_hashSet;
+[ALIVE_VNDefaultResupplyDefenceStoreOptions, "PR_STANDARD", [["<< Back","Static","Fortifications"],["<< Back","Static","Fortifications"]]] call ALIVE_fnc_hashSet;
+
 ALIVE_sideDefaultResupplyDefenceStoreOptions = [] call ALIVE_fnc_hashCreate;
 
 [ALIVE_sideDefaultResupplyDefenceStoreOptions, "EAST", ALIVE_globalDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
@@ -69,6 +74,13 @@ ALIVE_factionDefaultResupplyDefenceStoreOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyDefenceStoreOptions, "BLU_T_F", ALIVE_globalDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyDefenceStoreOptions, "BLU_CTRG_F", ALIVE_globalDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyDefenceStoreOptions, "Gendarmerie", ALIVE_globalDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+
+//VN
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "O_PAVN", ALIVE_VNDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "O_VC", ALIVE_VNDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "I_ARVN", ALIVE_VNDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "B_MACV", ALIVE_VNDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "C_VIET", ALIVE_VNDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
 
 ALIVE_globalDefaultResupplyCombatSuppliesOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_globalDefaultResupplyCombatSuppliesOptions, "PR_AIRDROP", [["<< Back","Ammo"],["<< Back","Ammo"]]] call ALIVE_fnc_hashSet;
@@ -103,6 +115,12 @@ ALIVE_globalDefaultResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_globalDefaultResupplyIndividualOptions, "PR_HELI_INSERT", [["<< Back","Men","MenDiver","MenRecon","MenSniper","MenSupport"],["<< Back","Men","MenDiver","MenRecon","MenSniper","MenSupport"]]] call ALIVE_fnc_hashSet;
 [ALIVE_globalDefaultResupplyIndividualOptions, "PR_STANDARD", [["<< Back","Men","MenDiver","MenRecon","MenSniper","MenSupport"],["<< Back","Men","MenDiver","MenRecon","MenSniper","MenSupport"]]] call ALIVE_fnc_hashSet;
 
+//VN
+ALIVE_globalVNResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
+[ALIVE_globalVNResupplyIndividualOptions, "PR_AIRDROP", [["<< Back","Men"],["<< Back","Men"]]] call ALIVE_fnc_hashSet;
+[ALIVE_globalVNResupplyIndividualOptions, "PR_HELI_INSERT", [["<< Back","Men"],["<< Back","Men"]]] call ALIVE_fnc_hashSet;
+[ALIVE_globalVNResupplyIndividualOptions, "PR_STANDARD", [["<< Back","Men"],["<< Back","Men"]]] call ALIVE_fnc_hashSet;
+
 ALIVE_sideDefaultResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 
 [ALIVE_sideDefaultResupplyIndividualOptions, "EAST", ALIVE_globalDefaultResupplyIndividualOptions] call ALIVE_fnc_hashSet;
@@ -125,6 +143,13 @@ ALIVE_factionDefaultResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyIndividualOptions, "BLU_T_F", ALIVE_globalDefaultResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "BLU_CTRG_F", ALIVE_globalDefaultResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "Gendarmerie", ALIVE_globalDefaultResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+
+// VN
+[ALIVE_factionDefaultResupplyIndividualOptions, "O_PAVN", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "O_VC", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "I_ARVN", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "B_MACV", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "C_VIET", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 
 // THE FOLLOWING IS A BLACKLIST
 
@@ -155,5 +180,8 @@ ALIVE_factionDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyGroupOptions, "BLU_T_F", ALIVE_globalDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "BLU_CTRG_F", ALIVE_globalDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "Gendarmerie", ALIVE_globalDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+
+// VN
+
 
 // OVER

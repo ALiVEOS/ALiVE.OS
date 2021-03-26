@@ -32,6 +32,10 @@ ALIVE_civilianWeapons = [] call ALIVE_fnc_hashCreate;
 
 [ALIVE_civilianWeapons, "CFP_C_AFG", [["CUP_arifle_ak47","CUP_30Rnd_762x39_AK47_M"],["CUP_arifle_ak74","CUP_30Rnd_762x39_AK47_M"],["CUP_arifle_AKM","CUP_30Rnd_762x39_AK47_M"],["CUP_arifle_AKS","CUP_30Rnd_762x39_AK47_M"],["CUP_srifle_LeeEnfield","CUP_10x_303_M"],["CUP_hgun_Makarov","CUP_8Rnd_9x18_Makarov_M"]]] call ALIVE_fnc_hashSet;
 
+// CDLC
+[ALIVE_civilianWeapons, "C_VIET", [["vn_p38s","vn_m10_mag"],["vn_hp","vn_hp_mag"],["vm_m1895","vm_m1895_mag"],["vn_tt33","vn_tt33_mag"],["vn_m1911","vn_m1911_mag"],["vn_m10","vn_m10_mag"]]] call ALIVE_fnc_hashSet;
+
+
 // Civ Pop Crowds
 
 ALiVE_CivPop_customBuildings = [] call ALiVE_fnc_hashCreate;
@@ -70,6 +74,7 @@ ALiVE_CivPop_customBuildings_Mosque = [] call ALiVE_fnc_hashCreate;
     ["ALiVE_Civpop_Audio_Buildings_Prayer5",380]
   ]
 ] call ALiVE_fnc_hashSet;
+
 [ALiVE_CivPop_customBuildings_Mosque, "times", [
     [4.5,4.75],
     [5.75,6],
@@ -210,7 +215,7 @@ ALIVE_civilianHouseTracks = [] call ALIVE_fnc_hashCreate;
 
 // Pacific Factions
 
-// CUP TAKI
+// TANOA
 CIV_F_TANOA_ALIVE_civilianHouseTracks =+ALIVE_civilianHouseTracks;
 
 [CIV_F_TANOA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_7"] call ALIVE_fnc_hashRem; // Greek Radio
@@ -365,3 +370,40 @@ CFP_C_AFRISLAMIC_ALIVE_civilianHouseTracks =+CFP_C_AFRCHRISTIAN_ALIVE_civilianHo
 [ALIVE_civilianFactionHouseTracks, "CFP_C_AFRISLAMIC", CFP_C_AFRISLAMIC_ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;
 
 
+// VN
+VN_C_VIET_ALIVE_civilianHouseTracks = [] call ALIVE_fnc_hashCreate;
+
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_3", 48] call ALIVE_fnc_hashSet;
+//[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_5", 59] call ALIVE_fnc_hashSet;
+//[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_11", 57] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_13", 50] call ALIVE_fnc_hashSet;
+//[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_15", 35] call ALIVE_fnc_hashSet;
+//[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_17", 43] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_18", 30] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_19", 100] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_20", 16] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_21", 20] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_22", 10] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_23", 12] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_24", 156] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_25", 158] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_26", 60] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_27", 5] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_28", 10] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_29", 30] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_30", 9] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_13", 30] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_14", 128] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_15", 30] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_17", 30] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_18", 4] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_20", 7] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_21", 7] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_22", 7] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_23", 7] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_24", 7] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_25", 7] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "vn_ambient_village_sound_1", 180] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "vn_ambient_village_sound_2", 180] call ALIVE_fnc_hashSet;
+
+[ALIVE_civilianFactionHouseTracks, "C_VIET", VN_C_VIET_ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;

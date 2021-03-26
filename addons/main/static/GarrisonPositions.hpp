@@ -30,3 +30,26 @@ ALIVE_garrisonPositions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_garrisonPositions,"Land_PillboxBunker_01_big_F", [2,0,3,1,4,5]] call ALIVE_fnc_hashSet;
 [ALIVE_garrisonPositions,"Land_PillboxBunker_01_hex_F", [0,2,3,1,4]] call ALIVE_fnc_hashSet;
 [ALIVE_garrisonPositions,"Land_PillboxBunker_01_rectangle_F", [2,3,4]] call ALIVE_fnc_hashSet;
+
+// VN
+[ALIVE_garrisonPositions,"Land_vn_b_tower_01", [1]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_pillboxbunker_01_big_f", [1,4]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_pillboxbunker_02_hex_f", [6]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_guardtower_01_f", [1,2,4]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_guardtower_02_f", [1]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_guardtower_04_f", [0]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_bunker_small_01", [1,2]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_o_tower_03", [4]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_o_tower_02", [4]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_o_tower_01", [4]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_airport_01_controltower_f", [11,12,13]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_tropo_antenna_01", [2,8,3,4]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_guardhouse_01", [2,4]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_b_trench_bunker_04_01", [4,5,6]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_bunker_big_02", [6,7,10,13,14]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_tower_signal_01", [2]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_o_platform_06", [3]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_hut_tower_02", [1]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_hut_tower_01", [1]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_o_bunker_02", [2]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_o_shelter_01", [0]] call ALIVE_fnc_hashSet;

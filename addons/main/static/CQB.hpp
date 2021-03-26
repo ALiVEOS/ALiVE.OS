@@ -1,4 +1,3 @@
-
 if (isnil "ALiVE_MIL_CQB_CUSTOM_STRATEGICHOUSES") then {ALiVE_MIL_CQB_CUSTOM_STRATEGICHOUSES = []};
 if (isnil "ALiVE_MIL_CQB_CUSTOM_UNITBLACKLIST") then {ALiVE_MIL_CQB_CUSTOM_UNITBLACKLIST = []};
 
@@ -51,7 +50,37 @@ ALiVE_MIL_CQB_STRATEGICHOUSES = ALiVE_MIL_CQB_CUSTOM_STRATEGICHOUSES +
     "Land_fortified_nest_big_EP1",
     "Land_Fort_Watchtower_EP1",
     "Land_Ind_PowerStation_EP1",
-    "Land_Ind_PowerStation"
+    "Land_Ind_PowerStation",
+
+    //VN
+    "Land_vn_b_tower_01",
+    "Land_vn_pillboxbunker_01_big_f",
+    "Land_vn_hut_tower_03",
+    "Land_vn_hut_tower_02",
+    "Land_vn_hut_tower_01",
+    "Land_vn_guardtower_01_f",
+    "Land_vn_guardtower_02_f",
+    "Land_vn_guardtower_04_f",
+    "Land_WaterTower_01_F",
+    "Land_vn_fuelstation_shed_f",
+    "Land_vn_pillboxbunker_02_hex_f",
+    "Land_vn_dp_bigtank_f",
+    "Land_vn_tower_signal_01",
+    "Land_vn_mobileradar_01_radar_f",
+    "Land_vn_bunker_small_01",
+    "Land_vn_b_trench_firing_01",
+    "Land_vn_b_trench_bunker_01_01",
+    "Land_vn_b_trench_firing_05",
+    "Land_vn_b_trench_bunker_04_01",
+    "Land_vn_tropo_antenna_01",
+    "Land_vn_airport_01_controltower_f",
+    "Land_vn_o_tower_03",
+    "Land_vn_o_tower_02",
+    "Land_vn_o_tower_01",
+    "Land_vn_o_bunker_02",
+    "Land_vn_o_platform_06",
+    "Land_vn_hut_tower_02",
+    "Land_vn_o_shelter_01"
 ];
 
 /*
@@ -111,7 +140,7 @@ ALiVE_MIL_CQB_UNITBLACKLIST = ALiVE_MIL_CQB_CUSTOM_UNITBLACKLIST +
     "C_Marshal_F",
     "C_man_pilot_F",
 
-     // APEX
+     //APEX
     "B_T_Crew_F",
     "B_T_Pilot_F",
     "B_T_Helicrew_F",
@@ -119,9 +148,7 @@ ALiVE_MIL_CQB_UNITBLACKLIST = ALiVE_MIL_CQB_CUSTOM_UNITBLACKLIST +
     "B_T_Diver_TL_F",
     "B_T_Diver_exp_F",
     "B_UAV_AI",
-
     "B_CTRG_Miller_F",
-
     "O_T_Helipilot_F",
     "O_T_Diver_F",
     "O_T_Diver_TL_F",
@@ -129,8 +156,66 @@ ALiVE_MIL_CQB_UNITBLACKLIST = ALiVE_MIL_CQB_CUSTOM_UNITBLACKLIST +
     "O_T_Crew_F",
     "O_T_Pilot_F",
     "O_T_Helicrew_F",
-
     "I_C_Helipilot_F",
     "I_C_Pilot_F",
-    "I_C_Soldier_Camo_F"
+    "I_C_Soldier_Camo_F",
+
+    //VN
+    "vn_b_men_jetpilot_07",
+    "vn_b_men_aircrew_13",
+    "vn_b_men_aircrew_09",
+    "vn_b_men_aircrew_16",
+    "vn_b_men_aircrew_12",
+    "vn_b_men_aircrew_15",
+    "vn_b_men_aircrew_11",
+    "vn_b_men_jetpilot_08",
+    "vn_b_men_aircrew_14",
+    "vn_b_men_aircrew_10",
+    "vn_b_men_jetpilot_01",
+    "vn_b_men_jetpilot_09",
+    "vn_b_men_aircrew_01",
+    "vn_b_men_aircrew_04",
+    "vn_b_men_aircrew_03",
+    "vn_b_men_jetpilot_02",
+    "vn_b_men_jetpilot_10",
+    "vn_b_men_aircrew_02",
+    "vn_b_men_aircrew_01",
+    "vn_b_men_jetpilot_05",
+    "vn_b_men_jetpilot_03",
+    "vn_b_men_aircrew_21",
+    "vn_b_men_navy_06",
+    "vn_b_men_navy_05",
+    "vn_b_men_aircrew_24",
+    "vn_b_men_aircrew_23",
+    "vn_b_men_navy_03",
+    "vn_b_men_jetpilot_06",
+    "vn_b_men_jetpilot_04",
+    "vn_b_men_aircrew_22",
+    "vn_b_men_navy_02",
+    "vn_b_men_navy_01",
+    "vn_b_men_army_30",
+    "vn_b_men_army_31",
+    "vn_b_men_aircrew_25",
+    "vn_b_men_aircrew_26",
+    "vn_b_men_army_25",
+    "vn_b_men_army_24",
+    "vn_b_men_army_23",
+    "vn_b_men_aircrew_07",
+    "vn_b_men_army_13",
+    "vn_b_men_army_14",
+    "vn_b_men_aircrew_06",
+    "vn_b_men_aircrew_17",
+    "vn_b_men_aircrew_20",
+    "vn_b_men_aircrew_19",
+    "vn_b_men_aircrew_18",
+    "vn_o_men_aircrew_06",
+    "vn_o_men_aircrew_05",
+    "vn_o_men_aircrew_08",
+    "vn_o_men_aircrew_07",
+    "vn_o_men_aircrew_01",
+    "vn_o_men_aircrew_04",
+    "vn_o_men_aircrew_03",
+    "vn_o_men_aircrew_02",
+    "vn_b_men_army_26",
+    "vn_b_men_army_13"
 ];

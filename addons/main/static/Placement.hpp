@@ -32,8 +32,67 @@ ALiVE_PLACEMENT_UNITBLACKLIST = ALiVE_PLACEMENT_CUSTOM_UNITBLACKLIST +
     "C_Marshal_F",
     "C_man_pilot_F",
     "C_Protagonist_VR_F",
+
     // JETS
-    "B_Deck_Crew_F"
+    "B_Deck_Crew_F",
+
+    // VN
+    "vn_b_men_jetpilot_07",
+    "vn_b_men_aircrew_13",
+    "vn_b_men_aircrew_09",
+    "vn_b_men_aircrew_16",
+    "vn_b_men_aircrew_12",
+    "vn_b_men_aircrew_15",
+    "vn_b_men_aircrew_11",
+    "vn_b_men_jetpilot_08",
+    "vn_b_men_aircrew_14",
+    "vn_b_men_aircrew_10",
+    "vn_b_men_jetpilot_01",
+    "vn_b_men_jetpilot_09",
+    "vn_b_men_aircrew_01",
+    "vn_b_men_aircrew_04",
+    "vn_b_men_aircrew_03",
+    "vn_b_men_jetpilot_02",
+    "vn_b_men_jetpilot_10",
+    "vn_b_men_aircrew_02",
+    "vn_b_men_aircrew_01",
+    "vn_b_men_jetpilot_05",
+    "vn_b_men_jetpilot_03",
+    "vn_b_men_aircrew_21",
+    "vn_b_men_navy_06",
+    "vn_b_men_navy_05",
+    "vn_b_men_aircrew_24",
+    "vn_b_men_aircrew_23",
+    "vn_b_men_navy_03",
+    "vn_b_men_jetpilot_06",
+    "vn_b_men_jetpilot_04",
+    "vn_b_men_aircrew_22",
+    "vn_b_men_navy_02",
+    "vn_b_men_navy_01",
+    "vn_b_men_army_30",
+    "vn_b_men_army_31",
+    "vn_b_men_aircrew_25",
+    "vn_b_men_aircrew_26",
+    "vn_b_men_army_25",
+    "vn_b_men_army_24",
+    "vn_b_men_army_23",
+    "vn_b_men_aircrew_07",
+    "vn_b_men_army_13",
+    "vn_b_men_army_14",
+    "vn_b_men_aircrew_06",
+    "vn_b_men_aircrew_17",
+    "vn_b_men_aircrew_20",
+    "vn_b_men_aircrew_19",
+    "vn_b_men_aircrew_18",
+    "vn_o_men_aircrew_06",
+    "vn_o_men_aircrew_05",
+    "vn_o_men_aircrew_08",
+    "vn_o_men_aircrew_07",
+    "vn_o_men_aircrew_01",
+    "vn_o_men_aircrew_04",
+    "vn_o_men_aircrew_03",
+    "vn_o_men_aircrew_02"
+
 ];
 
 /*
@@ -77,7 +136,10 @@ ALiVE_PLACEMENT_VEHICLEBLACKLIST = ALiVE_PLACEMENT_CUSTOM_VEHICLEBLACKLIST +
 
     // APEX
     "O_T_UGV_01_ghex_F",
-    "O_T_UGV_01_rcws_ghex_F"
+    "O_T_UGV_01_rcws_ghex_F",
+
+    // CDLC
+    "vn_b_air_f4b_ejection_seat_01"
 ];
 
 /*
@@ -111,7 +173,8 @@ ALiVE_PLACEMENT_GROUPBLACKLIST = ALiVE_PLACEMENT_CUSTOM_GROUPBLACKLIST +
     "OI_diverTeam_Boat",
     "OI_diverTeam_SDV",
     "BUS_TankPlatoon_AA", // BUG in CfgGroups vehicle name wrong
-    "BUS_MechInf_AA" , // BUG in CfgGroups vehicle name wrong
+    "BUS_MechInf_AA", // BUG in CfgGroups vehicle name wrong
+
     // APEX
     "B_T_AttackTeam_UAV",
     "B_T_ReconTeam_UAV",
@@ -128,7 +191,41 @@ ALiVE_PLACEMENT_GROUPBLACKLIST = ALiVE_PLACEMENT_CUSTOM_GROUPBLACKLIST +
     "O_T_SmallTeam_UAV",
     "O_T_diverTeam",
     "O_T_diverTeam_Boat",
-    "O_T_diverTeam_SDV"
+    "O_T_diverTeam_SDV",
+
+    //VN
+    "vn_b_group_men_cobra_01",
+    "vn_b_group_men_cobra_02",
+    "vn_b_group_men_cobra_03",
+    "vn_b_group_men_plane_01", "vn_b_group_men_plane_02", "vn_b_group_men_plane_03","vn_b_group_men_plane_04","vn_b_group_men_plane_05", "vn_b_group_men_plane_06",
+    "vn_b_group_men_uh1_01", "vn_b_group_men_uh1_02", "vn_b_group_men_uh1_03","vn_b_group_men_uh1_04","vn_b_group_men_uh1_05", "vn_b_group_men_uh1_06",
+    "vn_b_group_motor_army_07",
+    "vn_b_group_mech_army_03", "vn_b_group_mech_army_04", "vn_b_group_mech_army_05", "vn_b_group_mech_army_06",
+    "vn_b_group_boat_02",
+    "vn_b_group_men_navy_01",
+
+    "vn_o_group_boat_02",
+    "vn_o_group_mech_nva_02","vn_o_group_mech_nva_03","vn_o_group_mech_nva_04","vn_o_group_mech_nva_05",
+    "vn_o_group_mech_nva_65_02","vn_o_group_mech_nva_65_03","vn_o_group_mech_nva_65_04","vn_o_group_mech_nva_65_05",
+    "vn_o_group_mech_nvam_02","vn_o_group_mech_nvam_03","vn_o_group_mech_nvam_04","vn_o_group_mech_nvam_05",
+    "vn_o_group_men_nva_navy_01",
+    "vn_o_group_men_nva_navy_02",
+    "vn_o_group_men_vpaf_01","vn_o_group_men_vpaf_02","vn_o_group_men_vpaf_03",
+    "vn_o_group_motor_nva_07",
+    "vn_o_group_motor_nva_65_07",
+    "vn_o_group_motor_nvam_07",
+
+    "vn_o_group_boat_vcmf_02","vn_o_group_boat_vcmf_03", "vn_o_group_boat_vcmf_04", "vn_o_group_boat_vcmf_05", "vn_o_group_boat_vcmf_06",
+    "vn_o_group_mech_vcmf_02", "vn_o_group_mech_vcmf_03", "vn_o_group_mech_vcmf_04", "vn_o_group_mech_vcmf_05",
+    "vn_o_group_motor_vcmf_07",
+
+    "vn_i_group_mech_army_03", "vn_i_group_mech_army_04",
+    "vn_i_group_men_ch34_01",
+    "vn_i_group_men_plane_01",
+    "vn_i_group_men_uh1_01",
+    "vn_i_group_men_army_04", // police
+    "vn_i_group_motor_army_07"
+
 ];
 
 /*
@@ -160,6 +257,55 @@ ALIVE_factionDefaultSupports = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultSupports, "Gendarmerie", ["B_GEN_Offroad_01_gen_F"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultSupports, "BLU_CTRG_F", ["B_T_Truck_01_ammo_F","B_T_Truck_01_fuel_F","B_T_Truck_01_medical_F","B_T_Truck_01_Repair_F","B_T_Truck_01_transport_F","B_T_Truck_01_covered_F","B_T_APC_Tracked_01_CRV_F","B_T_Truck_01_mover_F","B_CTRG_LSV_01_light_F"]] call ALIVE_fnc_hashSet;
 
+// VN CDLC Default Supports
+[ALIVE_factionDefaultSupports, "O_PAVN", [
+    "vn_o_bicycle_02",
+    "vn_o_wheeled_btr40_02",
+    "vn_o_wheeled_btr40_01",
+    "vn_o_wheeled_z157_ammo",
+    "vn_o_wheeled_z157_fuel",
+    "vn_o_wheeled_z157_repair",
+    "vn_o_wheeled_z157_02",
+    "vn_o_wheeled_z157_01"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports, "O_VC", [
+    "vn_o_bicycle_02_vcmf",
+    "vn_o_wheeled_btr40_02_vcmf",
+    "vn_o_wheeled_btr40_01_vcmf",
+    "vn_o_wheeled_z157_ammo_vcmf",
+    "vn_o_wheeled_z157_fuel_vcmf",
+    "vn_o_wheeled_z157_01_vcmf",
+    "vn_o_wheeled_z157_repair_vcmf",
+    "vn_o_wheeled_z157_02_vcmf"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports, "I_ARVN", [
+    "vn_i_wheeled_m54_03",
+    "vn_i_wheeled_m151_01",
+    "vn_i_wheeled_m151_02",
+    "vn_i_wheeled_m151_02_mp",
+    "vn_i_wheeled_m151_01_mp",
+    "vn_i_wheeled_m54_repair",
+    "vn_i_wheeled_m54_fuel",
+    "vn_i_wheeled_m54_ammo",
+    "vn_i_wheeled_m54_01",
+    "vn_i_wheeled_m54_02"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports, "B_MACV", [
+    "vn_b_wheeled_m151_01",
+    "vn_b_wheeled_m54_01_sog",
+    "vn_b_wheeled_m151_02",
+    "vn_b_wheeled_m151_02_mp",
+    "vn_b_wheeled_m151_01_mp",
+    "vn_b_wheeled_m54_repair",
+    "vn_b_wheeled_m54_fuel",
+    "vn_b_wheeled_m54_ammo",
+    "vn_b_wheeled_m54_01",
+    "vn_b_wheeled_m54_02_sog",
+    "vn_b_wheeled_m54_02"
+]] call ALIVE_fnc_hashSet;
 
 /*
  * Mil placement random supply boxes for sides
@@ -169,6 +315,7 @@ ALIVE_sideDefaultSupplies = [] call ALIVE_fnc_hashCreate;
 [ALIVE_sideDefaultSupplies, "EAST", ["Box_East_Ammo_F","Box_East_AmmoOrd_F","Box_East_Grenades_F","Box_East_Support_F","Box_East_Wps_F","Box_East_WpsLaunch_F","Box_East_WpsSpecial_F"]] call ALIVE_fnc_hashSet;
 [ALIVE_sideDefaultSupplies, "WEST", ["Box_NATO_Ammo_F","Box_NATO_AmmoOrd_F","Box_NATO_Grenades_F","Box_NATO_Support_F","Box_NATO_Wps_F","Box_NATO_WpsLaunch_F","Box_NATO_WpsSpecial_F"]] call ALIVE_fnc_hashSet;
 [ALIVE_sideDefaultSupplies, "GUER", ["Box_IND_Ammo_F","Box_IND_AmmoOrd_F","Box_IND_Grenades_F","Box_IND_Support_F","Box_IND_Wps_F","Box_IND_WpsLaunch_F","Box_IND_WpsSpecial_F"]] call ALIVE_fnc_hashSet;
+
 
 /*
  * Mil placement random supply boxes per faction
@@ -187,3 +334,45 @@ ALIVE_factionDefaultSupplies = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultSupplies, "Gendarmerie", ["Box_GEN_Equip_F"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultSupplies, "BLU_T_F", ["Box_NATO_Ammo_F","Box_NATO_AmmoOrd_F","Box_NATO_Grenades_F","Box_NATO_Support_F","Box_T_NATO_Wps_F","Box_NATO_WpsLaunch_F","Box_T_NATO_WpsSpecial_F"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultSupplies, "BLU_CTRG_F", ["Box_NATO_Ammo_F","Box_NATO_AmmoOrd_F","Box_NATO_Grenades_F","Box_NATO_Support_F","Box_T_NATO_Wps_F","Box_NATO_WpsLaunch_F","Box_T_NATO_WpsSpecial_F"]] call ALIVE_fnc_hashSet;
+
+// VN CDLC
+[ALIVE_factionDefaultSupplies, "O_PAVN", [
+    "vn_o_ammobox_full_02",
+    "vn_o_ammobox_kit_nva",
+    "vn_o_ammobox_full_01",
+    "vn_o_ammobox_full_03",
+    "vn_o_ammobox_full_02",
+    "vn_o_ammobox_full_04",
+    "vn_o_ammobox_full_08"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupplies, "O_VC", [
+    "vn_o_ammobox_full_02",
+    "vn_o_ammobox_full_01",
+    "vn_o_ammobox_full_03",
+    "vn_o_ammobox_full_02",
+    "vn_o_ammobox_full_04",
+    "vn_o_ammobox_full_05"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupplies, "I_ARVN", [
+    "vn_b_ammobox_full_09",
+    "vn_b_ammobox_supply_01",
+    "vn_b_ammobox_full_01",
+    "vn_b_ammobox_full_10",
+    "vn_b_ammobox_full_03",
+    "vn_b_ammobox_full_02",
+    "vn_b_ammobox_full_04",
+    "vn_b_ammobox_full_09"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupplies, "B_MACV", [
+    "vn_b_ammobox_supply_01",
+    "vn_b_ammobox_full_01",
+    "vn_b_ammobox_full_10",
+    "vn_b_ammobox_full_03",
+    "vn_b_ammobox_full_02",
+    "vn_b_ammobox_full_04",
+    "vn_b_ammobox_kit_sog",
+    "vn_b_ammobox_full_09"
+]] call ALIVE_fnc_hashSet;
