@@ -1,0 +1,25 @@
+//http://community.bistudio.com/wiki/description.ext#Header_Class
+class header {
+    gametype = COOP;
+    minplayers = 1;
+    maxplayers = 12;
+    playerCountMultipleOf = 1;  //Coop type missions use 1, Team type missions use 2
+};
+
+author = ALiVE Mod Team;
+onLoadMission = "PAVN launch a general offensive against military and civilian objectives throughout South Vietnam, supported by VC conducting cross-border insurgency operations.";
+onLoadIntroTime = 1;
+onLoadMissionTime = 1;
+onLoadName = ALiVE | Op Van Tien;
+loadScreen = "x\alive\addons\missions\logo_alive.paa";
+overviewPicture = "x\alive\addons\missions\logo_alive.paa";
+overviewText = "PAVN forces have launched a surprise offensive against key military and civilian objectives throughout the area of operations. With limited resources at your disposal, your US Army squad based at FOB Kon Tum is faced with a tough decision: hold your position and hope for relief or take your chances with the VC insurgency in the West.";
+
+aiKills = 0;
+briefing = 1;
+debriefing = 1;
+respawn = 3;
+respawnDelay = 15;
+RespawnDialog = 0;
+enableDebugConsole = 1;
+allowFunctionsRecompile = 1;

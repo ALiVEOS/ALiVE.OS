@@ -62,6 +62,14 @@ class CfgMissions
             overviewText = "Obtain Air Superiority over Altis and eliminate the given targets! AA positions have been confirmed all over the coastline - plan your mission waypoints carefully!";
             author = "ALiVE Mod Team";
         };                      
+        class Showcase_Vietnam
+        {
+            briefingName = "ALiVE | Op Van Tien";
+            directory = "x\alive\addons\missions\mpscenarios\ALiVE_PF.Cam_Lao_Nam";
+            overviewPicture = "x\alive\addons\missions\logo_alive.paa";
+            overviewText = "PAVN launch a general offensive against military and civilian objectives throughout South Vietnam, supported by VC conducting cross-border insurgency operations.";
+            author = "ALiVE Mod Team";
+        };
     };
     class MPMissions
     {
@@ -121,6 +129,14 @@ class CfgMissions
             overviewText = "Lead an insurgency on Altis, use sabotage and subterfuge to capture weapons and establish safe houses across the island.";
             author = "ALiVE Mod Team";   
         };            
+        class MP_COOP_Vietnam
+        {
+            briefingName = "ALiVE | Op Van Tien (COOP 12)";
+            directory = "x\alive\addons\missions\mpscenarios\ALiVE_PF.Cam_Lao_Nam";
+            overviewPicture = "x\alive\addons\missions\logo_alive.paa";
+            overviewText = "PAVN launch a general offensive against military and civilian objectives throughout South Vietnam, supported by VC conducting cross-border insurgency operations.";
+            author = "ALiVE Mod Team";
+        };
     };
 };
 
