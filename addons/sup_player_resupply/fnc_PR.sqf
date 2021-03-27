@@ -967,14 +967,15 @@ switch(_operation) do {
 
                         params ["_logic","_position"];
 
-                        sleep 180;
+                        //Needs investigation: REQUEST_DELIVERED is called twice for some reason. Thats why those markers are not being deleted.
+                        //Workaround: reduced from 180 to 30.
+                        sleep 30;
 
                         private _markers = [_logic,"destinationMarker"] call MAINCLASS;
 
                         {
                                 deleteMarker _x;
                         } foreach _markers;
-
                     };
 
                 };
