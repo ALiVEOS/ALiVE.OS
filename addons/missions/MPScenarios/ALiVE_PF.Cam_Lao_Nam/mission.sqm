@@ -10234,7 +10234,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="VC insurgency in the West is creating a diversion for a major PAVN offensive from the North.  Your squad is tasked with defendinng  <marker name='FOB2'>FOB Kon Tum</marker> and subsequently conducting counter insurgency ops based out of <marker name='FSB'>FSB Quan Loi</marker>.<br/><br/><marker name='CS'>Combat Support</marker> and  <marker name='CSS'>Combat Service Support</marker> assets are available including Support Helicopters, Artillery, Mortars and a Cobra Attack Helicopter on call for Close Air Support.  The RTO must equip a PRC-77  to radio for support from HQ.";
+							value="VC insurgency in the West is creating a diversion for a major PAVN offensive from the North. Your squad has the option of defendinng <marker name='FOB2'>FOB Kon Tum</marker>, FOB3 Mai Loc and the nearby airbase or conducting counter insurgency ops to the west based out of <marker name='FSB'>FSB Quan Loi</marker>.<br/><br/><marker name='CS'>Combat Support</marker> and <marker name='CSS'>Combat Service Support</marker> assets are available including Support Helicopters, Artillery, Mortars and a Cobra Attack Helicopter on call for Close Air Support.  The RTO must equip a PRC-77 to radio for support from HQ.";
 						};
 					};
 				};

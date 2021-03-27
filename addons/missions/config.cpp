@@ -24,7 +24,7 @@ class CfgMissions
         };
         class Showcase_Getting_Started
         {
-            briefingName = "ALiVE | Quick Start";
+            briefingName = "ALiVE | Quick Start (Stratis)";
             directory = "x\alive\addons\missions\showcases\basic.stratis";
             overviewPicture = "x\alive\addons\missions\logo_alive.paa";
             overviewText = "This is the basic quick start mission featured in the ALiVE documentation and Wiki (alivemod.com)";
@@ -32,7 +32,7 @@ class CfgMissions
         };
         class Showcase_Getting_Started_APEX
         {
-            briefingName = "ALiVE | Quick Start APEX";
+            briefingName = "ALiVE | Quick Start APEX (Tanoa)";
             directory = "x\alive\addons\missions\showcases\basic2.tanoa";
             overviewPicture = "x\alive\addons\missions\logo_alive.paa";
             overviewText = "This is the basic quick start mission (on Tanoa) featured in the ALiVE documentation and Wiki (alivemod.com)";
@@ -40,7 +40,7 @@ class CfgMissions
         };        
         class Showcase_Divide_And_Rule
         {
-            briefingName = "ALiVE | Divide and Rule";
+            briefingName = "ALiVE | Divide and Rule (Altis)";
             directory = "x\alive\addons\missions\showcases\alive_divide_and_rule.altis";
             overviewPicture = "x\alive\addons\missions\logo_alive.paa";
             overviewText = "INTEL has been received about a nuclear device being built by a scientist named Ahelef Mahmoud in an hideout in Zaros! Locate Mahmoud, disable the bomb, and return home safely!";
@@ -48,7 +48,7 @@ class CfgMissions
         };        
         class Showcase_HurtLocker
         {
-            briefingName = "ALiVE | Hurt Locker";
+            briefingName = "ALiVE | Hurt Locker (Stratis)";
             directory = "x\alive\addons\missions\showcases\hurtlocker.stratis";
             overviewPicture = "x\alive\addons\missions\logo_alive.paa";
             overviewText = "Stratis is reeling from a brutal insurgency campaign. IED's litter the landscape, its your job to identify and disarm IEDs to ensure the safety of the civilian population. Beware of the local militia!";
@@ -56,7 +56,7 @@ class CfgMissions
         };
         class Showcase_Air_Superiority
         {
-            briefingName = "ALiVE | Air Superiortiy";
+            briefingName = "ALiVE | Air Superiority (Altis)";
             directory = "x\alive\addons\missions\mpscenarios\ALiVE_air_superiority.Altis";
             overviewPicture = "x\alive\addons\missions\logo_alive.paa";
             overviewText = "Obtain Air Superiority over Altis and eliminate the given targets! AA positions have been confirmed all over the coastline - plan your mission waypoints carefully!";
@@ -64,7 +64,7 @@ class CfgMissions
         };                      
         class Showcase_Vietnam
         {
-            briefingName = "ALiVE | Op Van Tien";
+            briefingName = "ALiVE | Op Van Tien (Vietnam)";
             directory = "x\alive\addons\missions\mpscenarios\ALiVE_PF.Cam_Lao_Nam";
             overviewPicture = "x\alive\addons\missions\logo_alive.paa";
             overviewText = "PAVN launch a general offensive against military and civilian objectives throughout South Vietnam, supported by VC conducting cross-border insurgency operations.";
@@ -99,7 +99,7 @@ class CfgMissions
         };
         class MP_COOP_Air_Superiority
         {
-            briefingName = "ALiVE | Air Superiortiy (CO 12)";
+            briefingName = "ALiVE | Air Superiority (CO 12)";
             directory = "x\alive\addons\missions\mpscenarios\ALiVE_air_superiority.Altis";
             overviewPicture = "x\alive\addons\missions\logo_alive.paa";
             overviewText = "Obtain Air Superiority over Altis and eliminate the given targets! AA positions have been confirmed all over the coastline - plan your mission waypoints carefully!";
