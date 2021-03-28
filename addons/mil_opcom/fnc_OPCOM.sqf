@@ -2595,50 +2595,37 @@ switch(_operation) do {
         };
 
         case "selectordersbystate": {
-                ASSERT_TRUE(typeName _args == "STRING",str _args);
+            private _state = _args;
 
-                private _state = _args;
-                private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
+            private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
+            private _objectives = [_logic, "objectives", []] call AliVE_fnc_HashGet;
+            private _OPCOM_FSM = [_logic,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet;
+            private _OPCOM_SKIP_OBJECTIVES = _OPCOM_FSM getFSMvariable ["_OPCOM_SKIP_OBJECTIVES", []];
 
-                private _OPCOM_FSM = [_logic,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet;
-                private _OPCOM_SKIP_OBJECTIVES = _OPCOM_FSM getFSMvariable ["_OPCOM_SKIP_OBJECTIVES", []];
+            private _allSyncedTriggersActivated = {{((typeof _x) == "EmptyDetector") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0};
 
-                private _objectives = [_logic, "objectives", []] call AliVE_fnc_HashGet;
-                private _target = nil;
-                private _order = nil;
+            private _targetObjectiveIndex = _objectives findIf {
+                private _objectiveID = [_x, "objectiveID"] call AliVE_fnc_HashGet;
+                private _objectiveState = [_x, "opcom_state"] call AliVE_fnc_HashGet;
 
-                {
-                    private _objectiveID = [_x, "objectiveID"] call AliVE_fnc_HashGet;
+                !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) &&
+                _objectiveState == _state &&
+                {!(_objectiveState in ["attack","unassigned"]) || _allSyncedTriggersActivated}
+            };
 
-                    if !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) then {
-                        private _objectiveState = [_x, "opcom_state"] call AliVE_fnc_HashGet;
+            if (_targetObjectiveIndex != -1) then {
+                private _targetObjective = _objectives select _targetObjectiveIndex;
 
-                        if (_objectiveState == _state) then {
-                            switch (true) do {
-                                case (_state == "attack" && {{((typeof _x) == "EmptyDetector") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0}); /* FALLTHROUGH */
-                                case (_state == "unassigned" && {{((typeof _x) == "EmptyDetector") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0}): {
-                                    _target = _x;
-                                    _order = "attack";
-                                };
-                                case (_state == "defend"); /* FALLTHROUGH */
-                                case (_state == "reserve"): {
-                                    _target = _x;
-                                    _order = _state;
-                                };
-                            };
-                        };
-
-                        if !(isNil "_target") exitWith {};
-                    };
-                } forEach _objectives;
-
-                if !(isNil "_target") then {
-                    [_target, "opcom_orders", _order] call AliVE_fnc_HashSet;
-
-                    _result = ["execute", _target];
-                } else {
-                    _result = nil;
+                private _nextOrders = switch (_state) do {
+                    case "attack": { "attack" };
+                    case "unassigned": { "attack" };
+                    case "defend": { "defend" };
+                    case "reserve": { "reserve" };
                 };
+
+                [_targetObjective,"opcom_orders", _nextOrders] call AliVE_fnc_HashSet;
+                _result = ["execute", _targetObjective];
+            };
         };
 
         case "destroy": {
