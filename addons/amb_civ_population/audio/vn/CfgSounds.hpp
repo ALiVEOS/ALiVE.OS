@@ -178,3 +178,9 @@
         sound[] = {"x\alive\addons\amb_civ_population\audio\vn\doorknock.ogg", 1, 1, 30};
         titles[] = {};
     };
+    class ALiVE_Civpop_Audio_VN_31
+    {
+        name = "No VC";
+        sound[] = {"x\alive\addons\amb_civ_population\audio\vn\novc.ogg", 1, 1, 30};
+        titles[] = {};
+    };
