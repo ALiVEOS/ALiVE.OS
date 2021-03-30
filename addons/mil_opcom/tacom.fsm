@@ -232,7 +232,7 @@ class FSM
                          "		    //[""Analyze internal | %1 | %2"",time,_lastEnemyScan] call ALiVE_fnc_DumpR;" \n
                          "" \n
                          "            if (time - _lastEnemyScan > 60) then {" \n
-                         "                [_OPCOM_HANDLER,""scanallenemies""] spawn ALIVE_fnc_OPCOM;" \n
+                         "                [_OPCOM_HANDLER,""scanFriendliesForNearEnemies""] spawn ALIVE_fnc_OPCOM;" \n
                          "" \n
                          "                _targets = [_OPCOM_HANDLER,""knownentities"",[]] call ALiVE_fnc_HashGet;" \n
                          "" \n
