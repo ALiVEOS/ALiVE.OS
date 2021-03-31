@@ -697,8 +697,8 @@ ALiVE_fnc_spawnFurniture = {
 
     _furnitures = ["Land_RattanTable_01_F"];
     _bombs = ["ALIVE_IEDUrbanSmall_Remote_Ammo","ALIVE_IEDLandSmall_Remote_Ammo","ALIVE_IEDLandBig_Remote_Ammo"];
-    _objects = ["Fridge_01_open_F","Land_MapBoard_F","Land_WaterCooler_01_new_F"];
-    _boxes = ["Box_East_AmmoOrd_F"];
+    _objects = ["Land_Canteen_F","Land_TinContainer_F"];
+    _boxes = ["VirtualReammoBox_small_F"];
     _created = [];
 
     _pos = getposATL _building;
@@ -750,9 +750,13 @@ ALiVE_fnc_spawnFurniture = {
                 };
             } else {
                 if (_add && {random 1 < 0.5}) then {
-                    _object = createVehicle [(selectRandom _objects), _pos, [], 0, "CAN_COLLIDE"];
-                    _object setdir (_building getDir _object);
+                    _furniture = createVehicle [(selectRandom _furnitures), _pos, [], 0, "CAN_COLLIDE"];
+                    _furniture setdir getdir _building;
 
+                    _object = createVehicle [(selectRandom _objects), _pos, [], 0, "CAN_COLLIDE"];
+                    _object attachTo [_furniture, [0,0,(_furniture call ALiVE_fnc_getRelativeTop) + 0.15]];
+
+                    _created pushback _furniture;
                     _created pushback _object;
                 } else {
                     if (_ammo && {random 1 < 0.5}) then {
