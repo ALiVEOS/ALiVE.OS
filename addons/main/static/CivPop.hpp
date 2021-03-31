@@ -392,6 +392,7 @@ VN_C_VIET_ALIVE_civilianHouseTracks = [] call ALIVE_fnc_hashCreate;
 [VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_28", 10] call ALIVE_fnc_hashSet;
 [VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_29", 30] call ALIVE_fnc_hashSet;
 [VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_30", 9] call ALIVE_fnc_hashSet;
+[VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_31", 20] call ALIVE_fnc_hashSet;
 [VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_13", 30] call ALIVE_fnc_hashSet;
 [VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_14", 128] call ALIVE_fnc_hashSet;
 [VN_C_VIET_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_15", 30] call ALIVE_fnc_hashSet;
