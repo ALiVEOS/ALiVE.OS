@@ -265,7 +265,7 @@ ALiVE_fnc_getAircraftRoles = {
 
     private _maxSpeed = _class call ALIVE_fnc_configGetVehicleMaxSpeed;
 
-    // Enable all helos to act as Recon platforms
+    // Enable all (fast) helos to act as Recon platforms
     if (_class isKindOf "Helicopter" && _maxSpeed > 200) then {
         _recce = true;
     };
@@ -309,6 +309,22 @@ ALiVE_fnc_getAircraftRoles = {
     if (_recce) then {_result pushback "Recon"};
     if (_attack) then {_result pushback "Attack"};
     if (_fighter) then {_result pushback "Fighter"};
+
+    _result
+};
+
+ALiVE_fnc_isAntiAir = {
+    params [
+        ["_class", "", ["",objNull]]
+    ];
+
+    private _result = false;
+
+    if (_class isEqualType objNull) then {_class = typeof _class};
+
+    private _threats = getArray(configFile >> "CfgVehicles" >> _class >> "threat");
+
+    _result = ((_threats select 2) > 0.4) && (_class iskindOf "LandVehicle");
 
     _result
 };
@@ -645,8 +661,15 @@ switch(_operation) do {
     // Methods
     case "registerThreat": {
         private _threat = _args;
+        //diag_log format["THREAT: %1 : %2", _threat, typeof _threat];
         if (isNil QGVAR(threats)) then {GVAR(threats) = [] call ALiVE_fnc_hashCreate;};
-        private _threatArray = [GVAR(threats), str(_logic)] call ALiVE_fnc_hashGet;
+        private _threatArray = [GVAR(threats), str(_logic),[]] call ALiVE_fnc_hashGet;
+
+        private _profileID = _threat getVariable ["profileID",nil];
+        if !(isNil "_profileID") then {
+            _threat = _profileID;
+        };
+
         _threatArray pushbackUnique _threat;
         [GVAR(threats), str(_logic), _threatArray] call ALiVE_fnc_hashSet;
     };
@@ -684,7 +707,7 @@ switch(_operation) do {
         // Check for AA sites
         {
             private _vehicle = _x;
-            if ((_vehicle iskindOf "AAA_System_01_base_F" || _vehicle iskindOf "SAM_System_01_base_F" || _vehicle iskindOf "SAM_System_02_base_F" ) && {str(side _vehicle) in _enemySides}) then {
+            if ((_vehicle iskindOf "AAA_System_01_base_F" || _vehicle iskindOf "SAM_System_01_base_F" || _vehicle iskindOf "SAM_System_02_base_F" || [_vehicle] call ALiVE_fnc_isAntiAir || [_vehicle] call ALiVE_fnc_isAA) && {str(side _vehicle) in _enemySides}) then {
                 private _tmpAS = [_airspace,[_vehicle],{_Input0 distance (getMarkerPos _x)},"ASCEND"] call ALiVE_fnc_SortBy;
                 private _tmp = [_airDefenses, (_tmpAS select 0), []] call ALiVE_fnc_hashGet;
                 _tmp pushback _vehicle;
@@ -702,14 +725,24 @@ switch(_operation) do {
         private _threats = [GVAR(threats),str(_logic),[]] call ALiVE_fnc_hashGet;
         // Check for known AA units
         {
-            private _profile = [ALiVE_profileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
-            if !(isNil "_profile") then {
-                private _position = [_profile, "position"] call ALiVE_fnc_hashGet;
-                private _tmpAS = [_airspace,[_position],{_Input0 distance (getMarkerPos _x)},"ASCEND"] call ALiVE_fnc_SortBy;
-                private _tmp = [_airDefenses, (_tmpAS select 0), []] call ALiVE_fnc_hashGet;
-                _tmp pushback _x;
-                [_airDefenses, (_tmpAS select 0), _tmp] call ALiVE_fnc_hashSet;
+            private _position = [0,0,0];
+
+            if (_x isEqualTo objNull) then {
+                _position = position _x;
+            } else {
+                private _profile = [ALiVE_profileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
+                if !(isNil "_profile") then {
+                    _position = [_profile, "position"] call ALiVE_fnc_hashGet;
+                };
             };
+
+            if (str(_position) == "[0,0,0]") exitWith {};
+
+            private _tmpAS = [_airspace,[_position],{_Input0 distance (getMarkerPos _x)},"ASCEND"] call ALiVE_fnc_SortBy;
+            private _tmp = [_airDefenses, (_tmpAS select 0), []] call ALiVE_fnc_hashGet;
+            _tmp pushback _x;
+            [_airDefenses, (_tmpAS select 0), _tmp] call ALiVE_fnc_hashSet;
+
         } foreach _threats;
 
         _result = _airDefenses;
@@ -1020,8 +1053,10 @@ switch(_operation) do {
         };
 
         // 1st target will be handled by ATO, check other targets for player
-        _targets set [0, -1];
-        _targets = _targets - [-1];
+        if (_type != "SEAD") then {
+            _targets set [0, -1];
+            _targets = _targets - [-1];
+        };
 
         if (isNil QGVAR(playerRequests)) then {
             GVAR(playerRequests) = [] call ALiVE_fnc_hashCreate;
@@ -1059,7 +1094,7 @@ switch(_operation) do {
                 _enemyFaction = faction _target;
             };
 
-            // Request task - Defend HQ?, Destroy Vehicles, CSAR
+            // Request task - Defend HQ?, Destroy Vehicles, CSAR, SEAD
             private _side = [_logic,"side"] call MAINCLASS;
             private _faction = [_logic,"faction"] call MAINCLASS;
             private _requestID = format["%1_%2",_faction,floor(time)];
@@ -1484,6 +1519,7 @@ switch(_operation) do {
                     If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
                         _compType = "Guerrilla";
                     };
+
                     // Find an Anti Air site or SAM Site
                     _AA = selectRandom ([_compType, ["fort"], [], _faction, false, _searchString] call ALiVE_fnc_getCompositions);
 
@@ -1949,7 +1985,7 @@ switch(_operation) do {
                                         } else {
 
                                             // No safe place for plane, try to place VTOL instead
-                                            diag_log format["Cannot find hangar or taxiway, looking for safe place to put aircraft %1", _vehicleClass];
+                                            //diag_log format["Cannot find hangar or taxiway, looking for safe place to put aircraft %1", _vehicleClass];
                                             _availablePlane = false;
 
                                             If !(_vehicleClass isKindOf "VTOL_Base_F") then {
@@ -3249,7 +3285,6 @@ switch(_operation) do {
                         {
 
                             sleep (random 5);
-
                             if ("CAP" in ([_logic,"types"] call MAINCLASS)) then {
                                 private _currentOps = [_logic, "airspaceOps", _x] call MAINCLASS;
                                 private _CAP = false;
@@ -3280,9 +3315,10 @@ switch(_operation) do {
                                     private _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
                                 };
                             };
+
                         } foreach _airspace;
 
-                        // Check to see if there are any static air defences
+                        // Check to see if there are any air defences
                         if ("SEAD" in ([_logic,"types"] call MAINCLASS)) then {
 
                             // Check for static air defenses near ATO
@@ -3320,10 +3356,12 @@ switch(_operation) do {
                                             _targets                 // TARGETS
                                         ];
 
-                                        private _event = ['ATO_REQUEST', [_type, _side, _faction, _x, _args],"ATO"] call ALIVE_fnc_event;
-                                        private _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+                                        // Disabled as aircraft get owned by AA
+                                        //private _event = ['ATO_REQUEST', [_type, _side, _faction, _x, _args],"ATO"] call ALIVE_fnc_event;
+                                        //private _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
-                                        if (count _targets > 1) then {
+
+                                        if (count _targets > 0) then {
 
                                             // Request that players handle SEAD
                                             // DEBUG -------------------------------------------------------------------------------------
@@ -3332,7 +3370,8 @@ switch(_operation) do {
                                             };
                                             // DEBUG -------------------------------------------------------------------------------------
 
-                                            if (_generateTasks && _C2ISTARisAvailable) then {
+                                            // Send this task regardless of generate tasks, if taskings are on for C2ISTAR it will process the request.
+                                            if (_C2ISTARisAvailable) then {
 
                                                 [_logic, "requestPlayerTask", ["SEAD",_targets]] call MAINCLASS;
 
@@ -3700,7 +3739,7 @@ switch(_operation) do {
                                             private _active = [_targetProfile,"active"] call ALiVE_fnc_hashGet;
                                             if !(_active) then {
                                                  private _type = [_targetProfile,"type"] call ALiVE_fnc_hashGet;
-                                                 diag_log format["ATO %3 SPAWNING %4 TARGET %1: %2",_type, _x, _logic, _eventType];
+                                                 //diag_log format["ATO %3 SPAWNING %4 TARGET %1: %2",_type, _x, _logic, _eventType];
                                                  if (_type == "entity") then {
                                                     [_targetProfile,"spawn"] call ALiVE_fnc_profileEntity;
                                                  } else {
@@ -3761,11 +3800,11 @@ switch(_operation) do {
                         // Add entity profile ID
                         _eventFriendlyProfiles pushback _profileID;
 
-                        // Log details
-                        ["AI ATO Side: %1, Faction: %2, Asset: %3, Profiles: %8, Start: %4, Position: %5, ATO: %6, Targets: %7", _eventSide, _eventFaction, _vehicleClass, _currentPosition, _eventPosition, _eventType, _eventTargets,_eventFriendlyProfiles] call ALiVE_fnc_dump;
-
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
+                            // Log details
+                            ["AI ATO Side: %1, Faction: %2, Asset: %3, Profiles: %8, Start: %4, Position: %5, ATO: %6, Targets: %7", _eventSide, _eventFaction, _vehicleClass, _currentPosition, _eventPosition, _eventType, _eventTargets,_eventFriendlyProfiles] call ALiVE_fnc_dump;
+
                             switch(_eventType) do {
                                 case "CAP": {
                                     [_logic, "createMarker", [_currentPosition,_eventSide,"CAP ASSET",0]] call MAINCLASS;
@@ -4455,19 +4494,30 @@ switch(_operation) do {
 
                             // If SEAD available add eventhandler to aircraft to detect any GBAD
                             if ("SEAD" in ([_logic,"types"] call MAINCLASS)) then {
-                                private _code = {
+
+                                _vehicle setVariable [QGVAR(logic),_logic];
+
+                                // Check if anything fires a missile at the aircraft
+                                private _missileCode = {
                                     private _vehicle = _this select 0;
                                     private _attacker = _this select 2;
 
-                                    if ( (vehicle _attacker) iskindof "Car" || (vehicle _attacker) iskindof "Tank" || (vehicle _attacker) iskindof "Armored") then {
-                                        private _profile = _attacker getVariable ["profileID",nil];
-                                        if !(isNil "_profile") then {
-                                            [_vehicle getvariable QGVAR(logic),"registerThreat", _profile] call MAINCLASS;
-                                        };
+                                    if ( (vehicle _attacker) iskindof "LandVehicle" ) then {
+                                        [_vehicle getvariable QGVAR(logic),"registerThreat", _attacker] call MAINCLASS;
                                     };
                                 };
-                                _vehicle setVariable [QGVAR(logic),_logic];
-                                _vehicle addEventHandler ["IncomingMissile",_code];
+                                _vehicle addEventHandler ["IncomingMissile",_missileCode];
+
+                                // Check if anything hits the aircraft
+                                private _hitCode = {
+                                    private _vehicle = _this select 0;
+                                    private _attacker = _this select 1;
+                                    if ((position _vehicle) select 2 < 5) exitWith {};
+                                    if ( (vehicle _attacker) iskindof "LandVehicle" ) then {
+                                        [_vehicle getvariable QGVAR(logic),"registerThreat", _attacker] call MAINCLASS;
+                                    };
+                                };
+                                _vehicle addEventHandler ["hit",_hitCode];
                             };
 
                             // dispatch event
