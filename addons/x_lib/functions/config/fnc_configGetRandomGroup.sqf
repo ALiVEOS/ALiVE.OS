@@ -123,7 +123,7 @@ if!(_customGroup) then {
     for "_i" from 0 to count _typeConfig -1 do {
         _class = _typeConfig select _i;
 
-        if (isClass _class) then {
+        if (isClass _class && !((configName _class) in ALiVE_PLACEMENT_GROUPBLACKLIST)) then {
 
             _countUnits = 0;
             for "_y" from 0 to count _class -1 do {
