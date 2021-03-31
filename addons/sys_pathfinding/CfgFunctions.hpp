@@ -14,9 +14,9 @@ class CfgFunctions {
                 RECOMPILE;
             };
 
-            class pathfindingSector {
+            class createPathfindingSector {
                 description = "";
-                file = "\x\alive\addons\sys_pathfinding\fnc_pathfindingSector.sqf";
+                file = "\x\alive\addons\sys_pathfinding\fnc_createPathfindingSector.sqf";
                 RECOMPILE;
             };
 

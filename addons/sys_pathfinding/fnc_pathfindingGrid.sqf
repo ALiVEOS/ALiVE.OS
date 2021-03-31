@@ -16,13 +16,13 @@ switch (_operation) do {
 
         // create sector grid
 
-        private _sectors = [];
+        private _sectors = createHashMap;
         private _gridWidth = ceil(worldsize / _sectorSize) + 1;
 
         for "_i" from 0 to _gridWidth - 1 do {
             for "_j" from 0 to _gridWidth - 1 do {
-                private _newSector = [nil,"create", [[_j,_i],[_sectorSize * _j, _sectorSize * _i], _sectorSize]] call alive_fnc_pathfindingSector;
-                _sectors pushback _newSector;
+                private _newSector = [[_j,_i],[_sectorSize * _j, _sectorSize * _i], _sectorSize] call ALiVE_fnc_createPathfindingSector;
+                _sectors set [[_i,_j], _newSector];
             };
         };
 
@@ -43,14 +43,9 @@ switch (_operation) do {
 
     case "getSector": {
 
-        _args params ["_x","_y"];
-
         private _sectors = [_logic,"sectors"] call ALiVE_fnc_hashGet;
-        private _gridWidth = [_logic,"gridWidth"] call ALiVE_fnc_hashGet;
 
-        private _index = (_y * _gridWidth) + _x;
-
-        _result = _sectors select _index;
+        _result = _sectors get _args;
 
     };
 
