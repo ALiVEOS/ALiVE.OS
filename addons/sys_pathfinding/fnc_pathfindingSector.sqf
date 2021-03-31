@@ -17,7 +17,7 @@ switch (_operation) do {
         private _roads = count (_pos nearRoads (_size * 0.6)) > 0;
         private _isLand = !(surfaceIsWater _pos);
 
-        _logic = [_index, _pos, _roads, _isLand];
+        _logic = [_index, _pos, _roads, _isLand, -1];
 
         _result = _logic;
 

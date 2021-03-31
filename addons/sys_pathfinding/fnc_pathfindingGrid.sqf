@@ -11,7 +11,7 @@ private "_result";
 switch (_operation) do {
 
     case "create": {
-
+["PATHFINDING GRID START - %1 || %2", diag_ticktime, cansuspend] call ALiVE_fnc_Dump;
         _args params ["_sectorSize"];
 
         // create sector grid
@@ -33,9 +33,12 @@ switch (_operation) do {
             ["sectorSize", _sectorSize],
             ["gridWidth", _gridWidth]
         ]] call ALiVE_fnc_hashCreate;
+		
+		[_logic,"determineRegions"] call MAINCLASS;
+		[_logic,"colormegrid"] call MAINCLASS;
 
         _result = _logic;
-
+["PATHFINDING GRID END - %1 || %2", diag_ticktime, cansuspend] call ALiVE_fnc_Dump;
     };
 
     case "getSector": {
@@ -73,6 +76,7 @@ switch (_operation) do {
 
     };
 
+	// determine and store at mission start?
     case "getNeighbors": {
 
         _args params [
@@ -132,6 +136,58 @@ switch (_operation) do {
         _result = _indices;
 
     };
+	
+	case "determineRegions": {
+
+		private _sectors = [_logic,"sectors"] call ALiVE_fnc_hashGet;
+		private _nextRegionID = 0;
+
+        {
+            if ((_x select 4) == -1) then {
+                private _sourceSector = _x;
+                private _regionTerrainType = _sourceSector select 3;
+
+                private _regionID = _nextRegionID;
+                _nextRegionID = _nextRegionID + 1;
+
+                private _connected = [_sourceSector];
+                while { _connected isnotequalto [] } do {
+                    private _connectedSector = _connected deleteat 0;
+                    _connectedSector set [4, _regionID];
+
+                    // private _connectedSectorNeighbors = [_logic,"getNeighbors", [_connectedSector]] call MAINCLASS;
+                    // private _validNeighbors = _connectedSectorNeighbors select { ((_x select 4) == -1) && ((_x select 3) == _regionTerrainType)};
+
+                    // _connected append _validNeighbors;
+                };
+            };
+        } foreach _sectors;
+		
+	};
+	
+	case "colormegrid": {
+		private _colors = ["COLORRED","COLORBLUE","COLORGREEN","COLORYELLOW","COLORBROWN","COLORORANGE","COLORWHITE","COLORBLACK","COLORGREY"];
+        private _colorCount = count _colors;
+	
+		private _sectorSize = [_logic,"sectorSize"] call ALiVE_fnc_hashGet;
+		private _halfSectorSize = _sectorSize * 0.5;
+		private _sectors = [_logic,"sectors"] call ALiVE_fnc_hashGet;
+		{
+			private _region = _x select 4;
+			if (_region >= 0) then {
+				private _color = _colors select (_region mod _colorCount);
+				
+				private _pos = _x select 1;
+				private _center = _pos vectoradd [_halfSectorSize, _halfSectorSize];
+				
+				private _marker = createMarker [str random 10000, _pos];
+				_marker setMarkerShape "RECTANGLE";
+				_marker setMarkerSize [_halfSectorSize,_halfSectorSize];
+				_marker setMarkerColor _color;
+				_marker setMarkerAlpha 0.3;
+			};
+		} foreach _sectors;
+	};
 
 };
 
