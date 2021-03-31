@@ -41,8 +41,6 @@ private _targets = _args select 3; // array of objects or profile IDs
 private _playerID = _args select 4; // module name or player ID
 private _strategic = _args select 5; // If this should integrate with C2ISTAR auto task generation functionality
 
-["ALIVE PLAYER TASK REQUEST %1", _this] call ALIVE_fnc_dump;
-
 // Check faction has strategic tasks turned on
 private _autoGenerateStrategicTasks = false;
 
@@ -105,19 +103,19 @@ if (_autoGenerateStrategicTasks) then {
             case "STRING" : {
                 private _targetProfile = [ALiVE_profileHandler, "getProfile", _target] call ALiVE_fnc_ProfileHandler;
                 //_targetProfile call ALiVE_fnc_inspecthash;
-                
+
                 if !(isNil "_targetProfile") then {
                     _destination = [_targetProfile, "position"] call ALiVE_fnc_hashGet;
                     _enemyFaction = [_targetProfile, "faction"] call ALiVE_fnc_hashGet;
-                };                
+                };
             };
             case "OBJECT" : {
                 _destination = position _target;
-                _enemyFaction = faction _target;                
+                _enemyFaction = faction _target;
             };
             case "ARRAY" : {
                 _destination = [_target, "position"] call ALiVE_fnc_hashGet;
-                _enemyFaction = [_target, "faction"] call ALiVE_fnc_hashGet;                
+                _enemyFaction = [_target, "faction"] call ALiVE_fnc_hashGet;
             };
         };
 
