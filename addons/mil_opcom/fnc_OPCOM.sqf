@@ -262,10 +262,10 @@ switch(_operation) do {
                     };
 
                     //Wait for virtual profiles ready, output debug for tracing mission makers errors (like forgetting Virtual AI System module)
-                    waituntil {["ALiVE OPCOM Waiting for Virtual AI System..."] call ALiVE_fnc_Dump; !(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
+                    waituntil {["OPCOM Waiting for Virtual AI System..."] call ALiVE_fnc_dump; !(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
 
                     //Wait for sector grid to be ready
-                    //waituntil {["ALiVE OPCOM Waiting for Sector Grid System..."] call ALiVE_fnc_Dump; count (([([ALIVE_sectorGrid, "positionToSector", [1,1,0]] call ALIVE_fnc_sectorGrid),"data"] call ALIVE_fnc_hashGet) select 1) > 0};
+                    //waituntil {["OPCOM Waiting for Sector Grid System..."] call ALiVE_fnc_dump; count (([([ALIVE_sectorGrid, "positionToSector", [1,1,0]] call ALIVE_fnc_sectorGrid),"data"] call ALIVE_fnc_hashGet) select 1) > 0};
 
                     //Load Data from DB
                     if ([_handler,"persistent",false] call ALIVE_fnc_HashGet) then {
@@ -285,7 +285,7 @@ switch(_operation) do {
                     };
 
                     if (!(isnil "_objectives") && {count _objectives > 0}) then {
-                        ["ALiVE OPCOM loaded %1 objectives from DB!",count _objectives] call ALiVE_fnc_Dump;
+                        ["OPCOM loaded %1 objectives from DB!",count _objectives] call ALiVE_fnc_dump;
                     } else {
                         //If no data was loaded from DB then get objectives data from other modules or placed Location logics!
                         _objectives = [];
@@ -337,7 +337,7 @@ switch(_operation) do {
                             };
                         };
 
-                        ["ALiVE OPCOM created %1 new objectives!",count _objectives] call ALiVE_fnc_Dump;
+                        ["OPCOM created %1 new objectives!",count _objectives] call ALiVE_fnc_dump;
                     };
 
 
@@ -428,7 +428,7 @@ switch(_operation) do {
                     //Perform initial cluster occupation and troops analysis as MP modules are finished
                     _clusterOccupationAnalysis = [_handler,_side,_sidesEnemy,_sidesFriendly] call {[_this select 0,"analyzeclusteroccupation",[_this select 3,_this select 2]] call ALiVE_fnc_OPCOM};
                     _forcesInit = [_handler,"scantroops"] call ALiVE_fnc_OPCOM;
-                    ["ALiVE OPCOM %1 Initial analysis done...",_side] call ALiVE_fnc_Dump;
+                    ["OPCOM %1 Initial analysis done...",_side] call ALiVE_fnc_dump;
 
                     //done this way to easily switch between spawn and call for testing purposes
                     ["OPCOM and TACOM %1 starting...",_side] call ALiVE_fnc_Dump;
@@ -1025,11 +1025,11 @@ switch(_operation) do {
                                 _objectives = [_objectives,[_logic],{
                                     _final = ([_Input0, "position"] call ALIVE_fnc_HashGet) distance (_x select 2 select 1);
 
-                                    //["ALiVE OPCOM Priority calculated %1",_final] call ALiVE_fnc_DumpR;
+                                    //["OPCOM Priority calculated %1",_final] call ALiVE_fnc_dumpR;
 
                                     _final = _final*(1-(random 0.33));
 
-                                    //["ALiVE OPCOM Priority randomized with a variety of one third in relation to distance %1 ",_final] call ALiVE_fnc_DumpR;
+                                    //["OPCOM Priority randomized with a variety of one third in relation to distance %1 ",_final] call ALiVE_fnc_dumpR;
 
                                     _final
                                 },"ASCEND"] call ALiVE_fnc_SortBy;
@@ -1046,11 +1046,11 @@ switch(_operation) do {
 
                                     _final = (_value1 + _value2 + _value3) - _value4;
 
-                                    //["ALiVE OPCOM Priority calculated %1",_final] call ALiVE_fnc_DumpR;
+                                    //["OPCOM Priority calculated %1",_final] call ALiVE_fnc_dumpR;
 
                                     _final = _final*(1-(random 0.33));
 
-                                    //["ALiVE OPCOM Priority randomized with a variety of one third in relation to size, height, distance, cluster priority %1",_final] call ALiVE_fnc_DumpR;
+                                    //["OPCOM Priority randomized with a variety of one third in relation to size, height, distance, cluster priority %1",_final] call ALiVE_fnc_dumpR;
 
                                     _final
                                 },"DESCEND"] call ALiVE_fnc_SortBy;
@@ -1065,7 +1065,7 @@ switch(_operation) do {
 
                                 _objectives = _objectivesFilteredCiv + _objectivesFilteredMil;
 
-                                //["ALiVE OPCOM Asymmetric Priority randomized with a variety of one fifth in relation to distance"] call ALiVE_fnc_DumpR;
+                                //["OPCOM Asymmetric Priority randomized with a variety of one fifth in relation to distance"] call ALiVE_fnc_dumpR;
 
                                 if (_asym_occupation <= 0) exitwith {};
 
@@ -1506,7 +1506,7 @@ switch(_operation) do {
                     _TACOM_FSM setFSMvariable ["_pause",_args];
                     _OPCOM_FSM setFSMvariable ["_pause",_args];
 
-                    ["ALiVE Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_Dump;
+                    ["Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_dump;
             };
             _result = _args;
         };
@@ -1529,7 +1529,7 @@ switch(_operation) do {
                 waituntil {sleep 1; isnil {[_this select 0, "OPCOM_FSM"] call ALiVE_fnc_HashGet}};
             };
 
-            ["ALiVE OPCOM stopped..."] call ALiVE_fnc_Dump;
+            ["OPCOM stopped..."] call ALiVE_fnc_dump;
 
             _result = true;
         };
@@ -1597,7 +1597,7 @@ switch(_operation) do {
                 private ["_exportProfiles","_async","_missionName"];
 
                 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                    ["ALiVE OPCOM - SAVE DATA TRIGGERED"] call ALiVE_fnc_Dump;
+                    ["OPCOM - SAVE DATA TRIGGERED"] call ALiVE_fnc_dump;
                 };
 
                 _result = [false,[]];
@@ -1617,23 +1617,23 @@ switch(_operation) do {
                     GVAR(OBJECTIVES_DB_SAVE) = [_objectivesGlobal,time];
                     {
                         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                            ["ALiVE OPCOM - SAVE DATA Objective prepared for DB: %1",_x] call ALiVE_fnc_Dump;
+                            ["OPCOM - SAVE DATA Objective prepared for DB: %1",_x] call ALiVE_fnc_dump;
                         };
                     } foreach (GVAR(OBJECTIVES_DB_SAVE) select 0);
                     _save = true;
                 };
-                if (isnil "_save") exitwith {["ALiVE OPCOM - SAVE DATA Please wait at least 5 minutes before saving again!"] call ALiVE_fnc_Dump;};
-                if (count (GVAR(OBJECTIVES_DB_SAVE) select 0) == 0) exitwith {["ALiVE SAVE OPCOM DATA Dataset is empty, not saving...!"] call ALiVE_fnc_Dump;};
+                if (isnil "_save") exitwith {["OPCOM - SAVE DATA Please wait at least 5 minutes before saving again!"] call ALiVE_fnc_dump;};
+                if (count (GVAR(OBJECTIVES_DB_SAVE) select 0) == 0) exitwith {["SAVE OPCOM DATA Dataset is empty, not saving...!"] call ALiVE_fnc_dump;};
 
                 //If I didnt send you to hell - go and save, the feck!
                 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                    ["ALiVE OPCOM - SAVE DATA - SYS DATA EXISTS"] call ALIVE_fnc_dump;
+                    ["OPCOM - SAVE DATA - SYS DATA EXISTS"] call ALiVE_fnc_dump;
                 };
 
                 if (isNil QGVAR(DATAHANDLER)) then {
 
                     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                        ["ALiVE OPCOM - CREATE DATA HANDLER!"] call ALIVE_fnc_dump;
+                        ["OPCOM - CREATE DATA HANDLER!"] call ALiVE_fnc_dump;
                     };
 
                     GVAR(DATAHANDLER) = [nil, "create"] call ALIVE_fnc_Data;
@@ -1657,7 +1657,7 @@ switch(_operation) do {
                     [_exportObjectives, _objectiveID, _exportObjective] call ALIVE_fnc_hashSet;
 
                     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                        ["ALiVE OPCOM - EXPORT READY OBJECTIVE:"] call ALIVE_fnc_dump;
+                        ["OPCOM - EXPORT READY OBJECTIVE:"] call ALiVE_fnc_dump;
                         _exportObjective call ALIVE_fnc_inspectHash;
                     };
 
@@ -1675,7 +1675,7 @@ switch(_operation) do {
                 _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName]; // must include group_id to ensure mission reference is unique across groups
 
                 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                    ["ALiVE OPCOM - SAVE DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_Dump;
+                    ["OPCOM - SAVE DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_dump;
                 };
 
                 _saveResult = [GVAR(DATAHANDLER), "bulkSave", ["mil_opcom", _exportObjectives, _missionName, _async]] call ALIVE_fnc_Data;
@@ -1705,8 +1705,8 @@ switch(_operation) do {
                 };
 
                 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                    ["ALiVE OPCOM - SAVE DATA RESULT (maybe truncated in RPT, dont worry): %1",_saveResult] call ALIVE_fnc_dump;
-                    ["ALiVE OPCOM - SAVE DATA SAVING COMPLETE!"] call ALiVE_fnc_Dump;
+                    ["OPCOM - SAVE DATA RESULT (maybe truncated in RPT, dont worry): %1",_saveResult] call ALiVE_fnc_dump;
+                    ["OPCOM - SAVE DATA SAVING COMPLETE!"] call ALiVE_fnc_dump;
                 };
             };
         };
@@ -1714,7 +1714,7 @@ switch(_operation) do {
         case "loadData": {
             private ["_stopped","_result"];
 
-            if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {["ALiVE LOAD OPCOM DATA FROM DB NOT POSSIBLE! NO SYS DATA MODULE AVAILABLE OR NOT DEDICATED!"] call ALIVE_fnc_dumpR};
+            if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {["LOAD OPCOM DATA FROM DB NOT POSSIBLE! NO SYS DATA MODULE AVAILABLE OR NOT DEDICATED!"] call ALiVE_fnc_dumpR};
 
             //Stop OPCOM
             _stopped = [_logic,"stop"] call ALiVE_fnc_OPCOM;
@@ -1758,7 +1758,7 @@ switch(_operation) do {
             };
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["ALiVE OPCOM - LOAD DATA Imported %1 objectives from DB!",count ([_logic,"objectives",[]] call ALiVE_fnc_HashGet)] call ALiVE_fnc_Dump;
+                ["OPCOM - LOAD DATA Imported %1 objectives from DB!",count ([_logic,"objectives",[]] call ALiVE_fnc_HashGet)] call ALiVE_fnc_dump;
             };
 
             _result = _objectives;
@@ -1781,20 +1781,20 @@ switch(_operation) do {
                     _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName];
 
                     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                        ["ALiVE OPCOM - LOAD DATA  - MISSION: %1",_missionName] call ALiVE_fnc_Dump;
+                        ["OPCOM - LOAD DATA  - MISSION: %1",_missionName] call ALiVE_fnc_dump;
                     };
 
                     //Load only every 5 minutes
                     if (isnil QGVAR(OBJECTIVES_DB_LOAD) || {!(isnil QGVAR(OBJECTIVES_DB_LOAD)) && {time - (GVAR(OBJECTIVES_DB_LOAD) select 1) > 300}}) then {
 
                         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                            ["ALiVE OPCOM - LOAD DATA  FROM DB, PLEASE WAIT..."] call ALiVE_fnc_Dump;
+                            ["OPCOM - LOAD DATA  FROM DB, PLEASE WAIT..."] call ALiVE_fnc_dump;
                         };
 
                         if (isNil QGVAR(DATAHANDLER)) then {
 
                             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                                ["ALiVE OPCOM - CREATE DATA HANDLER!"] call ALIVE_fnc_dump;
+                                ["OPCOM - CREATE DATA HANDLER!"] call ALiVE_fnc_dump;
                             };
 
                             GVAR(DATAHANDLER) = [nil, "create"] call ALIVE_fnc_Data;
@@ -1809,12 +1809,12 @@ switch(_operation) do {
                         if (((typeName (GVAR(OBJECTIVES_DB_LOAD) select 0)) == "BOOL") && {!(GVAR(OBJECTIVES_DB_LOAD) select 0)}) exitwith {};
 
                         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                            ["ALiVE OPCOM - LOAD DATA %1 OBJECTIVES LOADED FROM DB!",count ((GVAR(OBJECTIVES_DB_LOAD) select 0) select 2)] call ALiVE_fnc_Dump;
+                            ["OPCOM - LOAD DATA %1 OBJECTIVES LOADED FROM DB!",count ((GVAR(OBJECTIVES_DB_LOAD) select 0) select 2)] call ALiVE_fnc_dump;
                         };
                     } else {
 
                         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                            ["ALiVE OPCOM - LOAD DATA FROM CACHE!"] call ALiVE_fnc_Dump;
+                            ["OPCOM - LOAD DATA FROM CACHE!"] call ALiVE_fnc_dump;
                         };
                     };
 
@@ -1828,7 +1828,7 @@ switch(_operation) do {
 
                             if (_id == _opcomID) then {
 
-                                //["ALiVE LOAD OPCOM DATA RESETTING RESULT %1/%2!",_foreachIndex,(count _objectives)] call ALiVE_fnc_Dump;
+                                //["LOAD OPCOM DATA RESETTING RESULT %1/%2!",_foreachIndex,(count _objectives)] call ALiVE_fnc_dump;
 
                                 _rev = [_x,"_rev",""] call ALiVE_fnc_HashGet;
 
@@ -1855,7 +1855,7 @@ switch(_operation) do {
                         {
                             private ["_entry","_target"];
 
-                            //["ALiVE LOAD OPCOM DATA CLEANING HASH %1/%2!",_foreachIndex,(count _objectives)] call ALiVE_fnc_Dump;
+                            //["LOAD OPCOM DATA CLEANING HASH %1/%2!",_foreachIndex,(count _objectives)] call ALiVE_fnc_dump;
 
                             _entry = _x;
 
@@ -1889,7 +1889,7 @@ switch(_operation) do {
                                 _i = 0;
 
                                 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                                    ["ALiVE OPCOM - LOAD DATA REBUILDING OBJECTIVE %1/%2!",_foreachIndex,(count _objectives)] call ALiVE_fnc_Dump;
+                                    ["OPCOM - LOAD DATA REBUILDING OBJECTIVE %1/%2!",_foreachIndex,(count _objectives)] call ALiVE_fnc_dump;
                                 };
                             };
 
@@ -1917,16 +1917,16 @@ switch(_operation) do {
                         _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
 
                         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                            ["ALiVE OPCOM - LOAD DATA IMPORTED %1 OBJECTIVES FROM DB!",count _objectives] call ALiVE_fnc_Dump;
+                            ["OPCOM - LOAD DATA IMPORTED %1 OBJECTIVES FROM DB!",count _objectives] call ALiVE_fnc_dump;
                         };
                     } else {
                         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                            ["ALiVE OPCOM - LOAD DATA LOADING FROM DB FAILED!"] call ALIVE_fnc_dump;
+                            ["OPCOM - LOAD DATA LOADING FROM DB FAILED!"] call ALiVE_fnc_dump;
                         };
                     };
                 } else {
                     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                        ["ALiVE OPCOM - LOAD DATA FROM DB NOT POSSIBLE! NO SYS DATA MODULE AVAILABLE!"] call ALIVE_fnc_dumpR;
+                        ["OPCOM - LOAD DATA FROM DB NOT POSSIBLE! NO SYS DATA MODULE AVAILABLE!"] call ALiVE_fnc_dumpR;
                     };
                 };
             };
@@ -1964,7 +1964,7 @@ switch(_operation) do {
                     } foreach OPCOM_instances;
                 };
 
-                if (!isnil "_found" && {!_found}) exitwith {["ALiVE - vAI operation addObjective didn't find an OPCOM of faction or side %1!",_logic] call ALiVE_fnc_Dump};
+                if (!isnil "_found" && {!_found}) exitwith {["- vAI operation addObjective didn't find an OPCOM of faction or side %1!",_logic] call ALiVE_fnc_dump};
 
                 if(isnil "_args") then {
                     _args = [_logic,"objectives"] call ALIVE_fnc_hashGet;
@@ -2595,37 +2595,50 @@ switch(_operation) do {
         };
 
         case "selectordersbystate": {
-            private _state = _args;
+                ASSERT_TRUE(typeName _args == "STRING",str _args);
 
-            private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
-            private _objectives = [_logic, "objectives", []] call AliVE_fnc_HashGet;
-            private _OPCOM_FSM = [_logic,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet;
-            private _OPCOM_SKIP_OBJECTIVES = _OPCOM_FSM getFSMvariable ["_OPCOM_SKIP_OBJECTIVES", []];
+                private _state = _args;
+                private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
 
-            private _allSyncedTriggersActivated = {{((typeof _x) == "EmptyDetector") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0};
+                private _OPCOM_FSM = [_logic,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet;
+                private _OPCOM_SKIP_OBJECTIVES = _OPCOM_FSM getFSMvariable ["_OPCOM_SKIP_OBJECTIVES", []];
 
-            private _targetObjectiveIndex = _objectives findIf {
-                private _objectiveID = [_x, "objectiveID"] call AliVE_fnc_HashGet;
-                private _objectiveState = [_x, "opcom_state"] call AliVE_fnc_HashGet;
+                private _objectives = [_logic, "objectives", []] call AliVE_fnc_HashGet;
+                private _target = nil;
+                private _order = nil;
 
-                !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) &&
-                _objectiveState == _state &&
-                {!(_objectiveState in ["attack","unassigned"]) || _allSyncedTriggersActivated}
-            };
+                {
+                    private _objectiveID = [_x, "objectiveID"] call AliVE_fnc_HashGet;
 
-            if (_targetObjectiveIndex != -1) then {
-                private _targetObjective = _objectives select _targetObjectiveIndex;
+                    if !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) then {
+                        private _objectiveState = [_x, "opcom_state"] call AliVE_fnc_HashGet;
 
-                private _nextOrders = switch (_state) do {
-                    case "attack": { "attack" };
-                    case "unassigned": { "attack" };
-                    case "defend": { "defend" };
-                    case "reserve": { "reserve" };
+                        if (_objectiveState == _state) then {
+                            switch (true) do {
+                                case (_state == "attack" && {{((typeof _x) == "EmptyDetector") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0}); /* FALLTHROUGH */
+                                case (_state == "unassigned" && {{((typeof _x) == "EmptyDetector") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0}): {
+                                    _target = _x;
+                                    _order = "attack";
+                                };
+                                case (_state == "defend"); /* FALLTHROUGH */
+                                case (_state == "reserve"): {
+                                    _target = _x;
+                                    _order = _state;
+                                };
+                            };
+                        };
+
+                        if !(isNil "_target") exitWith {};
+                    };
+                } forEach _objectives;
+
+                if !(isNil "_target") then {
+                    [_target, "opcom_orders", _order] call AliVE_fnc_HashSet;
+
+                    _result = ["execute", _target];
+                } else {
+                    _result = nil;
                 };
-
-                [_targetObjective,"opcom_orders", _nextOrders] call AliVE_fnc_HashSet;
-                _result = ["execute", _targetObjective];
-            };
         };
 
         case "destroy": {

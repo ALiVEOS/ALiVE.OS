@@ -185,7 +185,7 @@ switch (_taskState) do {
                 _vehicle setDir _dir;
                 _vehicle setposATL _pos;
                 _vehicle setDamage 1;
-                // diag_log format["%1 spawned at %2 with %3 damage", _aircraft, _pos, damage _vehicle];
+                // ["%1 spawned at %2 with %3 damage", _aircraft, _pos, damage _vehicle] call ALiVE_fnc_dump;
 
             } else {
                 // Spawn parachute on ground
@@ -461,7 +461,7 @@ switch (_taskState) do {
 
                 _parentTask set [8,"Failed"];
                 _parentTask set [10,"N"];
-                
+
                 [ALiVE_TaskHandler,"TASK_UPDATE",_parentTask] call ALiVE_fnc_TaskHandler;
 
                 [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
@@ -757,7 +757,7 @@ switch (_taskState) do {
 
                 _parentTask set [8,"Failed"];
                 _parentTask set [10,"N"];
-                
+
                 [ALiVE_TaskHandler,"TASK_UPDATE",_parentTask] call ALiVE_fnc_TaskHandler;
 
                 [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;

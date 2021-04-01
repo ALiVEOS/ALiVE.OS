@@ -223,7 +223,7 @@ switch (_operation) do {
     case "init": {
 
         //Only one init per instance is allowed
-        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SUP Command - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["SUP Command - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
         //Start init
         _logic setVariable ["initGlobal", false];
@@ -383,8 +383,8 @@ switch (_operation) do {
 
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE Command State"] call ALIVE_fnc_dump;
-                ["ALIVE Command Side: %1, Faction: %2, OPS Limit: %3 Intel Limit: %4",_sideText,_playerFaction,_opsLimit,_intelLimit] call ALIVE_fnc_dump;
+                ["Command State"] call ALiVE_fnc_dump;
+                ["Command Side: %1, Faction: %2, OPS Limit: %3 Intel Limit: %4",_sideText,_playerFaction,_opsLimit,_intelLimit] call ALiVE_fnc_dump;
                 _commandState call ALIVE_fnc_inspectHash;
             };
 
@@ -415,7 +415,7 @@ switch (_operation) do {
             private _debug = [_logic, "debug"] call MAINCLASS;
             if (_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALiVE_fnc_dump;
-                ["ALiVE SCOM - %1 Event received", _type] call ALiVE_fnc_dump;
+                ["SCOM - %1 Event received", _type] call ALiVE_fnc_dump;
                 _data call ALiVE_fnc_inspectArray;
             };
 

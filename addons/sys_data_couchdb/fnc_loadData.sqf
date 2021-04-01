@@ -36,7 +36,7 @@ _flag = _args select 2;
 TRACE_3("loadData", _logic, _args, _flag);
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SYS_DATA_COUCHDB - LOAD DATA: %1",_args] call ALIVE_fnc_dump;
+    ["SYS_DATA_COUCHDB - LOAD DATA: %1",_args] call ALiVE_fnc_dump;
 };
 
 // Read in index document for unique mission key (for this module)
@@ -56,7 +56,7 @@ if (typeName _indexDoc == "ARRAY") then {
     _index = [_indexDoc, "index"] call CBA_fnc_hashGet; // Should be an array of key values
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-        ["ALiVE SYS_DATA_COUCHDB - LOAD DATA LOAD INDEX: %1",_index] call ALIVE_fnc_dump;
+        ["SYS_DATA_COUCHDB - LOAD DATA LOAD INDEX: %1",_index] call ALiVE_fnc_dump;
     };
 
     TRACE_1("Load index", _index);
@@ -72,13 +72,13 @@ if (typeName _indexDoc == "ARRAY") then {
     _result = _data;
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-        ["ALiVE SYS_DATA_COUCHDB - LOAD DATA RESULT: %1",[str(_result)] call CBA_fnc_strLen] call ALIVE_fnc_dump;
+        ["SYS_DATA_COUCHDB - LOAD DATA RESULT: %1",[str(_result)] call CBA_fnc_strLen] call ALiVE_fnc_dump;
     };
 } else {
     _result = false;
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-        ["ALiVE SYS_DATA_COUCHDB - LOAD RESULT: %1",_result] call ALIVE_fnc_dump;
+        ["SYS_DATA_COUCHDB - LOAD RESULT: %1",_result] call ALiVE_fnc_dump;
     };
 };
 

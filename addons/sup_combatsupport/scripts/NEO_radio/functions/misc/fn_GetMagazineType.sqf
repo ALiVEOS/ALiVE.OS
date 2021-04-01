@@ -27,7 +27,7 @@ if (_weaponType in _howitzer) then {
     if (_ordnanceType == "LASER") then {_ord = "2Rnd_155mm_Mo_LG"};
     if (_ordnanceType == "MINE") then {_ord = "6Rnd_155mm_Mo_mine"};
     if (_ordnanceType == "AT MINE") then {_ord = "6Rnd_155mm_Mo_AT_mine"};
-        diag_log format["_ord Type: %1",_ord];
+        ["_ord Type: %1",_ord] call ALiVE_fnc_dump;
 };
 
 if (_weaponType in _mlrs) then {

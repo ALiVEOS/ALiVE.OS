@@ -488,7 +488,7 @@ switch(_operation) do {
     case "init": {
 
         //Only one init per instance is allowed
-        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE MIL C2ISTAR - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["MIL C2ISTAR - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
         //Start init
         _logic setVariable ["initGlobal", false];
@@ -671,7 +671,7 @@ switch(_operation) do {
             };
 
             if (_debug) then {
-                ["---------------------------- ALiVE C2ISTAR %1 - Initial Settings ---------------------------------", _logic] call ALiVE_fnc_dump;
+                ["---------------------------- C2ISTAR %1 - Initial Settings ---------------------------------", _logic] call ALiVE_fnc_dump;
                 private _settings = allVariables _logic;
                 _settings = _settings - ["super","class"];
                 {

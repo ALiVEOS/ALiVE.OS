@@ -135,7 +135,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_args) then {
                     //["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    //["ALIVE Agent Handler State"] call ALIVE_fnc_dump;
+                    //["Agent Handler State"] call ALiVE_fnc_dump;
                     //_state = [_logic, "state"] call MAINCLASS;
                     //_state call ALIVE_fnc_inspectHash;
                 };
@@ -201,7 +201,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if([_logic,"debug"] call ALIVE_fnc_hashGet) then {
                 [_agent, "debug", true] call ALIVE_fnc_civilianAgent;
-                ["ALIVE Agent Handler"] call ALIVE_fnc_dump;
+                ["Agent Handler"] call ALiVE_fnc_dump;
                 ["Register Agent [%1]",_agentID] call ALIVE_fnc_dump;
                 _agent call ALIVE_fnc_inspectHash;
             };
@@ -254,7 +254,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if([_logic,"debug"] call ALIVE_fnc_hashGet) then {
-                ["ALIVE Agent Handler"] call ALIVE_fnc_dump;
+                ["Agent Handler"] call ALiVE_fnc_dump;
                 ["Un-Register Agent [%1]",_agentID] call ALIVE_fnc_dump;
                 _agent call ALIVE_fnc_inspectHash;
             };

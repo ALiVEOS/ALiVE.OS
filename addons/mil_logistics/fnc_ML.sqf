@@ -121,7 +121,7 @@ switch(_operation) do {
 
                 //Set value
                 _args = [_logic,"pause",_args,false] call ALIVE_fnc_OOsimpleOperation;
-                ["ALiVE Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_DumpR;
+                ["Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_dumpR;
         };
         _result = _args;
     };
@@ -371,17 +371,17 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE ML - Init"] call ALIVE_fnc_dump;
-                ["ALIVE ML - Type: %1",_type] call ALIVE_fnc_dump;
-                ["ALIVE ML - Force pool type: %1 limit: %2",[_logic, "forcePool"] call MAINCLASS,[_logic, "forcePoolType"] call MAINCLASS] call ALIVE_fnc_dump;
-                ["ALIVE ML - Allow infantry requests: %1",_allowInfantry] call ALIVE_fnc_dump;
-                ["ALIVE ML - Allow mechanised requests: %1",_allowMechanised] call ALIVE_fnc_dump;
-                ["ALIVE ML - Allow motorised requests: %1",_allowMotorised] call ALIVE_fnc_dump;
-                ["ALIVE ML - Allow armour requests: %1",_allowArmour] call ALIVE_fnc_dump;
-                ["ALIVE ML - Allow heli requests: %1",_allowHeli] call ALIVE_fnc_dump;
-                ["ALIVE ML - Allow plane requests: %1",_allowPlane] call ALIVE_fnc_dump;
-                ["ALIVE ML - Enable air transport: %1",_enableAirTransport] call ALIVE_fnc_dump;
-                ["ALIVE ML - Limit air assets to faction only: %1",_limitTransportToFaction] call ALIVE_fnc_dump;
+                ["ML - Init"] call ALiVE_fnc_dump;
+                ["ML - Type: %1",_type] call ALiVE_fnc_dump;
+                ["ML - Force pool type: %1 limit: %2",[_logic, "forcePool"] call MAINCLASS,[_logic, "forcePoolType"] call MAINCLASS] call ALiVE_fnc_dump;
+                ["ML - Allow infantry requests: %1",_allowInfantry] call ALiVE_fnc_dump;
+                ["ML - Allow mechanised requests: %1",_allowMechanised] call ALiVE_fnc_dump;
+                ["ML - Allow motorised requests: %1",_allowMotorised] call ALiVE_fnc_dump;
+                ["ML - Allow armour requests: %1",_allowArmour] call ALiVE_fnc_dump;
+                ["ML - Allow heli requests: %1",_allowHeli] call ALiVE_fnc_dump;
+                ["ML - Allow plane requests: %1",_allowPlane] call ALiVE_fnc_dump;
+                ["ML - Enable air transport: %1",_enableAirTransport] call ALiVE_fnc_dump;
+                ["ML - Limit air assets to faction only: %1",_limitTransportToFaction] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -410,7 +410,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE ML - Startup"] call ALIVE_fnc_dump;
+                ["ML - Startup"] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -453,7 +453,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE ML - Startup completed"] call ALIVE_fnc_dump;
+                ["ML - Startup completed"] call ALiVE_fnc_dump;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -469,7 +469,7 @@ switch(_operation) do {
                 // start initial analysis
                 [_logic, "initialAnalysis", _modules] call MAINCLASS;
             }else{
-                ["ALIVE ML - Warning no OPCOM modules synced to Military Logistics module, nothing to do.."] call ALIVE_fnc_dumpR;
+                ["ML - Warning no OPCOM modules synced to Military Logistics module, nothing to do.."] call ALiVE_fnc_dumpR;
 
             };
         };
@@ -1153,7 +1153,7 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE ML - Global force pool:"] call ALIVE_fnc_dump;
+                    ["ML - Global force pool:"] call ALiVE_fnc_dump;
                     ALIVE_globalForcePool call ALIVE_fnc_inspectHash;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
@@ -1280,8 +1280,8 @@ switch(_operation) do {
 
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
-                            ["ALIVE ML - Reinforce event received"] call ALIVE_fnc_dump;
-                            ["ALIVE ML - Current force pool for side: %2 available: %3", _side, _forcePool] call ALIVE_fnc_dump;
+                            ["ML - Reinforce event received"] call ALiVE_fnc_dump;
+                            ["ML - Current force pool for side: %2 available: %3", _side, _forcePool] call ALiVE_fnc_dump;
                             _event call ALIVE_fnc_inspectHash;
                         };
                         // DEBUG -------------------------------------------------------------------------------------
@@ -1302,7 +1302,7 @@ switch(_operation) do {
 
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
-                        ["ALIVE ML - Reinforce event denied, force pool for side: %1 exhausted : %2", _side, _forcePool] call ALIVE_fnc_dump;
+                        ["ML - Reinforce event denied, force pool for side: %1 exhausted : %2", _side, _forcePool] call ALiVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
 
@@ -1362,7 +1362,7 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE ML - On demand dynamic analysis started"] call ALIVE_fnc_dump;
+                    ["ML - On demand dynamic analysis started"] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -1639,11 +1639,11 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE ML - On demand analysis complete"] call ALIVE_fnc_dump;
-                    ["ALIVE ML - Priority total: %1",_priorityTotal] call ALIVE_fnc_dump;
-                    ["ALIVE ML - Reinforcement type: %1",_reinforcementType] call ALIVE_fnc_dump;
-                    ["ALIVE ML - Primary reinforcement objective available: %1",_available] call ALIVE_fnc_dump;
-                    ["ALIVE ML - Primary reinforcement objective:"] call ALIVE_fnc_dump;
+                    ["ML - On demand analysis complete"] call ALiVE_fnc_dump;
+                    ["ML - Priority total: %1",_priorityTotal] call ALiVE_fnc_dump;
+                    ["ML - Reinforcement type: %1",_reinforcementType] call ALiVE_fnc_dump;
+                    ["ML - Primary reinforcement objective available: %1",_available] call ALiVE_fnc_dump;
+                    ["ML - Primary reinforcement objective:"] call ALiVE_fnc_dump;
                     _primaryReinforcementObjective call ALIVE_fnc_inspectHash;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
@@ -1669,7 +1669,7 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE ML - Monitoring loop started"] call ALIVE_fnc_dump;
+                    ["ML - Monitoring loop started"] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -1786,7 +1786,7 @@ switch(_operation) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALIVE ML - Monitoring Event"] call ALIVE_fnc_dump;
+            ["ML - Monitoring Event"] call ALiVE_fnc_dump;
             _event call ALIVE_fnc_inspectHash;
             //_reinforcementAnalysis call ALIVE_fnc_inspectHash;
         };
@@ -1830,7 +1830,7 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE ML - Event state: %1 event timer: %2 wait time on event: %3 ",_eventState, (time - _eventTime), _waitTime] call ALIVE_fnc_dump;
+                    ["ML - Event state: %1 event timer: %2 wait time on event: %3 ",_eventState, (time - _eventTime), _waitTime] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -2000,7 +2000,7 @@ switch(_operation) do {
                         [_eventCargoProfiles, "motorised", _motorisedProfiles] call ALIVE_fnc_hashSet;
 
                         if(_debug) then {
-                            ["ALIVE ML - Profiles: %1 %2 %3 ", _eventForceMotorised, _motorisedGroups, _motorisedProfiles] call ALIVE_fnc_dump;
+                            ["ML - Profiles: %1 %2 %3 ", _eventForceMotorised, _motorisedGroups, _motorisedProfiles] call ALiVE_fnc_dump;
                         };
 
                         TRACE_1("ML HELI INSERT", _motorisedProfiles);
@@ -2095,7 +2095,7 @@ switch(_operation) do {
                                             [_slingloadProfile,"slung",[[_profiles select 1 select 2 select 4]]] call ALIVE_fnc_profileVehicle;
 
                                             if(_debug) then {
-                                                ["ALIVE ML - Slingloading: %1", _vehicleClass] call ALIVE_fnc_dump;
+                                                ["ML - Slingloading: %1", _vehicleClass] call ALiVE_fnc_dump;
                                                 _slingloadProfile call ALIVE_fnc_inspectHash;
                                             };
 
@@ -2468,7 +2468,7 @@ switch(_operation) do {
 
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
-                            ["ALIVE ML - Profiles created: %1 ",_totalCount] call ALIVE_fnc_dump;
+                            ["ML - Profiles created: %1 ",_totalCount] call ALiVE_fnc_dump;
                             switch(_eventType) do {
                                 case "STANDARD": {
                                     [_logic, "createMarker", [_reinforcementPosition,_eventFaction,"ML INSERTION"]] call MAINCLASS;
@@ -2542,8 +2542,8 @@ switch(_operation) do {
                             // nothing to do so cancel...
 
                             if(_debug) then {
-                                ["ALIVE ML - No reinforcements have been created! Cancelling event: %1", _eventID] call ALIVE_fnc_dump;
-                            };                            
+                                ["ML - No reinforcements have been created! Cancelling event: %1", _eventID] call ALiVE_fnc_dump;
+                            };
 
                             [_logic, "removeEvent", _eventID] call MAINCLASS;
                         };
@@ -2553,7 +2553,7 @@ switch(_operation) do {
                     // nothing to do so cancel...
 
                     if(_debug) then {
-                        ["ALIVE ML - No insertion point available! Cancelling event: %1", _eventID] call ALIVE_fnc_dump;
+                        ["ML - No insertion point available! Cancelling event: %1", _eventID] call ALiVE_fnc_dump;
                     };
 
                     [_logic, "removeEvent", _eventID] call MAINCLASS;
@@ -2997,7 +2997,7 @@ switch(_operation) do {
                             private _leaveDir = [(_transportProfilePos getDir _reinforcementPosition) - 180] call ALiVE_fnc_modDegrees;
                             private _turnDirOffset = if (random 1 > 0.5) then { 50 } else { -50 };
                             private _leaveDist = 300 + (random 200);
-                            
+
                             private _leavePosStraight = _transportProfilePos getpos [_leaveDist, _leaveDir];
                             private _leavePosTurn = _transportProfilePos getpos [_leaveDist * 1.5, [_leaveDir + _turnDirOffset] call ALiVE_fnc_modDegrees];
 
@@ -3979,7 +3979,7 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE ML - Event state: %1 event timer: %2 wait time on event: %3 ",_eventState, (time - _eventTime), _waitTime] call ALIVE_fnc_dump;
+                    ["ML - Event state: %1 event timer: %2 wait time on event: %3 ",_eventState, (time - _eventTime), _waitTime] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -4932,7 +4932,7 @@ switch(_operation) do {
 
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
-                            ["ALIVE ML - Profiles created: %1 ",_totalCount] call ALIVE_fnc_dump;
+                            ["ML - Profiles created: %1 ",_totalCount] call ALiVE_fnc_dump;
                             switch(_eventType) do {
                                 case "PR_STANDARD": {
                                     [_logic, "createMarker", [_reinforcementPosition,_eventFaction,"PR CONVOY START"]] call MAINCLASS;
@@ -5308,7 +5308,7 @@ switch(_operation) do {
         _result = _totalCount;
 
     };
-    
+
     // takes an array of profileIDs
     // and returns a new array with the inactive profileIDs removed
 

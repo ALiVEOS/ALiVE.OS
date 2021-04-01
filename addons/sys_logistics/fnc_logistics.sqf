@@ -89,7 +89,7 @@ switch (_operation) do {
             private ["_exit"];
 
             //Only one init per instance is allowed
-            if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS LOGISTICS - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+            if !(isnil {_logic getVariable "initGlobal"}) exitwith {["SYS LOGISTICS - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
             //Start init
             _logic setVariable ["initGlobal", false];
@@ -109,7 +109,7 @@ switch (_operation) do {
             if (["AliVE_SYS_LOGISTICSDISABLE"] call ALiVE_fnc_isModuleAvailable) then {waituntil {!isnil {_logic getvariable "DEBUG"}}};
 
             // Exit if disabled
-            if (_logic getvariable ["DISABLELOG",false]) exitwith {["ALiVE SYS LOGISTICS DISABLED! Exiting..."] call ALiVE_fnc_Dump};
+            if (_logic getvariable ["DISABLELOG",false]) exitwith {["SYS LOGISTICS DISABLED! Exiting..."] call ALiVE_fnc_dump};
 
             TRACE_1("Creating data store",true);
 
@@ -171,12 +171,12 @@ switch (_operation) do {
                 // Reset states with provided data;
                 if !(_logic getvariable ["DISABLEPERSISTENCE",false]) then {
                     if (isServer && {[QMOD(SYS_DATA)] call ALiVE_fnc_isModuleAvailable}) then {
-                        
+
                         waituntil {!isnil QMOD(SYS_DATA) && {MOD(SYS_DATA) getvariable ["startupComplete",false]}};
                     };
 
 					_state = call ALiVE_fnc_logisticsLoadData;
-                    
+
                     if !(typeName _state == "BOOL") then {
                         GVAR(STORE) = _state;
                     };
@@ -836,7 +836,7 @@ switch (_operation) do {
                 switch _args do {
                     case (QGVAR(BUILDINGCHANGED)) : {
 
-                        _result = addMissionEventHandler ["BuildingChanged", 
+                        _result = addMissionEventHandler ["BuildingChanged",
                         {
                             params ["_from", "_to", "_isRuins"];
 
@@ -845,7 +845,7 @@ switch (_operation) do {
                             };
 
                             if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {
-                                ["ALiVE SYS LOGISTICS EH BUILDINGCHANGED firing"] call ALiVE_fnc_DumpR;
+                                ["SYS LOGISTICS EH BUILDINGCHANGED firing"] call ALiVE_fnc_dumpR;
                             };
                         }];
                     };
@@ -872,16 +872,16 @@ switch (_operation) do {
                                 //Update vehicle if player is in a vehicle
 		                        [MOD(SYS_LOGISTICS),"updateObject",[vehicle _object]] call ALIVE_fnc_logistics;
                             };
-                            
+
                             //Deactivate actions
-                            [MOD(SYS_LOGISTICS),"removeActions",_object] call ALIVE_fnc_logistics;                   
+                            [MOD(SYS_LOGISTICS),"removeActions",_object] call ALIVE_fnc_logistics;
                         };
 
                         //Update object to persist the destroyed state
                         [MOD(SYS_LOGISTICS),"updateObject",[_object]] call ALIVE_fnc_logistics;
 
                         if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {
-                            ["ALiVE SYS LOGISTICS EH Killed firing"] call ALiVE_fnc_DumpR;
+                            ["SYS LOGISTICS EH Killed firing"] call ALiVE_fnc_dumpR;
                         };
                 }]]];
 
@@ -889,10 +889,10 @@ switch (_operation) do {
                 if (hasInterface) then {
                     //apply these EHs on players
                     _object setvariable [QGVAR(EH_INVENTORYCLOSED),_object getvariable [QGVAR(EH_INVENTORYCLOSED),
-                        
+
                         _object addEventHandler ["InventoryClosed", {
                             if !((_this select 1) isKindOf "Man") then {[ALiVE_SYS_LOGISTICS,"updateObject",[_this select 1, _this select 0]] call ALIVE_fnc_logistics};
-                            if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {["ALiVE SYS LOGISTICS EH InventoryClosed firing"] call ALiVE_fnc_DumpR};
+                            if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {["SYS LOGISTICS EH InventoryClosed firing"] call ALiVE_fnc_dumpR};
                         }]
                     ]];
                 };
@@ -909,7 +909,7 @@ switch (_operation) do {
                                     if !(typeof (_this select 0) in _blacklist) then {
                                         [ALiVE_SYS_LOGISTICS,"updateObject",[_this select 0]] call ALIVE_fnc_logistics;
                                         if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {
-                                            ["ALiVE SYS LOGISTICS EH Getout firing"] call ALiVE_fnc_DumpR
+                                            ["SYS LOGISTICS EH Getout firing"] call ALiVE_fnc_dumpR
                                         };
                                     };
                                 };
@@ -1046,7 +1046,7 @@ switch (_operation) do {
 
                     //Get 2D position without altering original data
                     private _position = +([_args,QGVAR(POSITION)] call ALiVE_fnc_hashGet); _position resize 2;
-                    
+
                     //Filter existing objects of same type in a 1m² radius
                     private _near = nearestObjects [_position,[_type],20];
                     private _exists = [];
@@ -1064,7 +1064,7 @@ switch (_operation) do {
                         _object setposATL ([_args,QGVAR(POSITION)] call ALiVE_fnc_HashGet);
                         _object setVectorDirAndUp ([_args,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
 
-                        ["ALiVE SYS LOGISTICS - recreated non existing object %1 of type %2",_object,_type] call ALiVE_fnc_Dump;
+                        ["SYS LOGISTICS - recreated non existing object %1 of type %2",_object,_type] call ALiVE_fnc_dump;
 
                     } else {
                         TRACE_1("ALiVE SYS LOGISTICS Remapping existing map object!",_x);
@@ -1074,7 +1074,7 @@ switch (_operation) do {
                         [_args,QGVAR(ID),[MOD(SYS_LOGISTICS),"id",_object] call ALiVE_fnc_logistics] call ALiVE_fnc_HashSet;
                         [_args,QGVAR(POSITION),getposATL _object] call ALiVE_fnc_hashSet;
 
-                        ["ALiVE SYS LOGISTICS - remapped existing object %1 of type %2",_object,_type] call ALiVE_fnc_Dump;
+                        ["SYS LOGISTICS - remapped existing object %1 of type %2",_object,_type] call ALiVE_fnc_dump;
                     };
 
                     _createdObjects pushback _object;
@@ -1092,27 +1092,27 @@ switch (_operation) do {
                 _args = [GVAR(STORE),_x getvariable QGVAR(ID)] call ALiVE_fnc_HashGet;
 
                 if !(isnil "_args") then {
-                
+
                 	private _damage = [_args,QGVAR(DAMAGE),0] call ALiVE_fnc_HashGet;
-                
+
                 	if !(_damage == 1) then {
-                	
+
                     	TRACE_1("ALiVE SYS LOGISTICS Resetting state for object!",_x);
                     	[_x,_args] call ALiVE_fnc_setObjectState;
-	
+
                    	} else {
 
                         if (_x isKindOf "House") then {
                             TRACE_1("ALiVE SYS LOGISTICS Destroying building which has been destroyed in a previous session!",_x);
 
-                            ["ALiVE SYS LOGISTICS - Destroying building %1 which has been destroyed in a previous session!",_x] call ALiVE_fnc_Dump;
+                            ["SYS LOGISTICS - Destroying building %1 which has been destroyed in a previous session!",_x] call ALiVE_fnc_dump;
 
                             // Do not setdamage or delete directly here but destroy the buildings when mission has started
                             _buildings pushback _x;
                         } else {
                    		    TRACE_1("ALiVE SYS LOGISTICS Deleting object which has been destroyed in a previous session!",_x);
 
-                            ["ALiVE SYS LOGISTICS - Deleting object %1 which has been destroyed in a previous session!",_x] call ALiVE_fnc_Dump;
+                            ["SYS LOGISTICS - Deleting object %1 which has been destroyed in a previous session!",_x] call ALiVE_fnc_dump;
 
                    		    deleteVehicle _x;
                         };

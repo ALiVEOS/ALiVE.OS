@@ -59,14 +59,14 @@ _json = _cmd + "]";
 TRACE_1("COUCH READ DATA", _json);
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SYS_DATA_COUCHDB - READ DATA: %1",_json] call ALIVE_fnc_dump;
+    ["SYS_DATA_COUCHDB - READ DATA: %1",_json] call ALiVE_fnc_dump;
 };
 
 // Send JSON to plugin
 _response = [_json] call ALIVE_fnc_sendToPlugIn;
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SYS_DATA_COUCHDB - READ DATA RESPONSE: %1",_response] call ALIVE_fnc_dump;
+    ["SYS_DATA_COUCHDB - READ DATA RESPONSE: %1",_response] call ALiVE_fnc_dump;
 };
 
 // From response create key/value pair arrays
@@ -79,7 +79,7 @@ if (([_response, "SYS_DATA_ERROR"] call CBA_fnc_find == -1) && _response != "UNA
 };
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SYS_DATA_COUCHDB - READ DATA RESULT: %1",_result] call ALIVE_fnc_dump;
+    ["SYS_DATA_COUCHDB - READ DATA RESULT: %1",_result] call ALiVE_fnc_dump;
 };
 
 /*

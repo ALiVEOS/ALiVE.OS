@@ -1,5 +1,5 @@
 //Starting Init
-["ALiVE | SABOTAGE - Executing init.sqf..."] call ALiVE_fnc_Dump;
+["| SABOTAGE - Executing init.sqf..."] call ALiVE_fnc_dump;
 
 //Initialise functions
 call compile preprocessFile "functions.sqf";
@@ -13,7 +13,7 @@ call compile preprocessFile "functions.sqf";
 
 if (isServer) then {
 
-    ["ALiVE | SABOTAGE - Running ServerInit..."] call ALiVE_fnc_Dump;
+    ["| SABOTAGE - Running ServerInit..."] call ALiVE_fnc_dump;
 
     call SABOTAGE_fnc_initServer;
 
@@ -33,7 +33,7 @@ waituntil {!isnil "SABOTAGE_SERVERINIT"};
 
 if (hasInterface) then {
 
-    ["ALiVE | SABOTAGE - Running ClientInit..."] call ALiVE_fnc_Dump;
+    ["| SABOTAGE - Running ClientInit..."] call ALiVE_fnc_dump;
 
     //Intro
     [] spawn {
@@ -111,7 +111,7 @@ if (hasInterface) then {
 /////////////////////
 
 
-["ALiVE | SABOTAGE - Running GlobalInit..."] call ALiVE_fnc_Dump;
+["| SABOTAGE - Running GlobalInit..."] call ALiVE_fnc_dump;
 
 
 // Adjust combat logistics options to restrict resupply
@@ -163,4 +163,4 @@ _options pushback _tasksData;
 
 [ALIVE_generatedTasks, "SabotageBuilding", ["Sabotage installation",_options]] call ALIVE_fnc_hashSet;
 
-["ALiVE | SABOTAGE - Initalisation finished..."] call ALiVE_fnc_Dump;
+["| SABOTAGE - Initalisation finished..."] call ALiVE_fnc_dump;

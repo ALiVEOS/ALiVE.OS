@@ -38,7 +38,7 @@ diag_log "Timer Start";
 
 #define TIMEREND \
 _timeEnd = diag_tickTime - _timeStart; \
-diag_log format["Timer End %1",_timeEnd];
+["Timer End %1",_timeEnd] call ALiVE_fnc_dump;
 
 //========================================
 
@@ -125,7 +125,7 @@ _count = 0;
 STAT("Get Within Sector");
 _result = [_logic, "within", getPos player] call ALIVE_fnc_sector;
 ASSERT_TRUE(typeName _result == "BOOL", _err);
-diag_log format["Player within sector: %1",_result];
+["Player within sector: %1",_result] call ALiVE_fnc_dump;
 
 
 STAT("Save state");

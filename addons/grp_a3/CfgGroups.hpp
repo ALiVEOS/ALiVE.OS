@@ -2501,7 +2501,81 @@ class CfgGroups
                     };
                 };
             };
+        }; /*
+        class VN_PAVN
+        {
+            class Naval
+            {
+                name = "Single Boat Groups";
+                class vn_o_group_boat_03
+                {
+                    name = $STR_VN_O_GROUP_BOAT_NVA_01;
+                    faction = "O_PAVN";
+                    icon = "\A3\ui_f\data\map\markers\nato\o_naval.paa";
+                    rarityGroup = 0.5;
+                    side = 0;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "vn_o_boat_03_02";
+                        rank = "CAPTAIN";
+                        position[] = {0,0,0};
+                    };
+                };
+                class vn_o_group_boat_04
+                {
+                    name = $STR_VN_O_GROUP_BOAT_NVA_01;
+                    faction = "O_PAVN";
+                    icon = "\A3\ui_f\data\map\markers\nato\o_naval.paa";
+                    rarityGroup = 0.5;
+                    side = 0;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "vn_o_boat_04_02";
+                        rank = "CAPTAIN";
+                        position[] = {0,0,0};
+                    };
+                };
+            }
         };
+        class VN_VC
+        {
+            class Naval
+            {
+                name = "Single Boat Groups";
+                class vn_o_group_boat_vcmf_07
+                {
+                    name = $STR_VN_O_GROUP_BOAT_VCMF_01;
+                    faction = "O_VC";
+                    icon = "\A3\ui_f\data\map\markers\nato\o_naval.paa";
+                    rarityGroup = 0.5;
+                    side = 0;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "vn_o_boat_01_mg_00";
+                        rank = "CAPTAIN";
+                        position[] = {0,0,0};
+                    };
+                };
+                class vn_o_group_boat_vcmf_08
+                {
+                    name = $STR_VN_O_GROUP_BOAT_VCMF_01;
+                    faction = "O_VC";
+                    icon = "\A3\ui_f\data\map\markers\nato\o_naval.paa";
+                    rarityGroup = 0.5;
+                    side = 0;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "vn_o_boat_02_mg_00";
+                        rank = "CAPTAIN";
+                        position[] = {0,0,0};
+                    };
+                };
+            }
+        };*/
     };
 
     class West
@@ -2669,19 +2743,19 @@ class CfgGroups
                 class B_T_sentryTeam_SpeedBoat
                 {
                     name = "$STR_A3_CfgGroups_East_OPF_F_Naval_OIA_sentryTeam_Boat0";
-                    side = 0;
+                    side = 1;
                     faction = "BLU_T_F";
                     icon = "\A3\ui_f\data\map\markers\nato\b_naval.paa";
                     class Unit0
                     {
-                        side = 0;
+                        side = 1;
                         vehicle = "B_T_soldier_TL_F";
                         rank = "SERGEANT";
                         position[] = {0,0,0};
                     };
                     class Unit1
                     {
-                        side = 0;
+                        side = 1;
                         vehicle = "B_T_Boat_Armed_01_minigun_F";
                         rank = "PRIVATE";
                         position[] = {-32,-57,0};
@@ -2815,6 +2889,44 @@ class CfgGroups
                 };
             };
         };
+        /*
+        class VN_MACV
+        {
+            class Naval
+            {
+                name = "Single Boat Groups";
+                class vn_b_group_boat_03
+                {
+                    name = $STR_VN_B_GROUP_BOAT_01;
+                    faction = "B_MACV";
+                    icon = "\A3\ui_f\data\map\markers\nato\b_naval.paa";
+                    rarityGroup = 0.5;
+                    side = 1;
+                    class Unit0
+                    {
+                        side = 1;
+                        vehicle = "vn_b_boat_06_02";
+                        rank = "CAPTAIN";
+                        position[] = {0,0,0};
+                    };
+                };
+                class vn_b_group_boat_04
+                {
+                    name = $STR_VN_B_GROUP_BOAT_01;
+                    faction = "B_MACV";
+                    icon = "\A3\ui_f\data\map\markers\nato\b_naval.paa";
+                    rarityGroup = 0.5;
+                    side = 1;
+                    class Unit0
+                    {
+                        side = 1;
+                        vehicle = "vn_b_boat_05_02";
+                        rank = "CAPTAIN";
+                        position[] = {0,0,0};
+                    };
+                };
+            }
+        };*/
     };
 
     class Indep
@@ -2827,19 +2939,19 @@ class CfgGroups
                 class HAF_sentryTeam_SpeedBoat
                 {
                     name = "$STR_A3_CfgGroups_East_OPF_F_Naval_OIA_sentryTeam_Boat0";
-                    side = 0;
+                    side = 2;
                     faction = "IND_F";
                     icon = "\A3\ui_f\data\map\markers\nato\n_naval.paa";
                     class Unit0
                     {
-                        side = 0;
+                        side = 2;
                         vehicle = "I_soldier_TL_F";
                         rank = "SERGEANT";
                         position[] = {0,0,0};
                     };
                     class Unit1
                     {
-                        side = 0;
+                        side = 2;
                         vehicle = "I_Boat_Armed_01_minigun_F";
                         rank = "PRIVATE";
                         position[] = {-32,-57,0};

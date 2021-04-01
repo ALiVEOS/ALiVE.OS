@@ -76,8 +76,7 @@ switch(_operation) do {
     };
 
     default {
-        private _err = format["%1 does not support ""%2"" operation", _logic, _operation];
-        _err call ALiVE_fnc_logger;
+        ["'%2' operation is not supported by %1", _logic, _operation] call ALiVE_fnc_dump;
     };
 
 };

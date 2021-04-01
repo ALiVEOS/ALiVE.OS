@@ -47,7 +47,7 @@ ASSERT_TRUE(_result,typeOf _expected + " != " + typeOf _returned);
             hint "Starting ALiVE Servicebus Test (expected duration: 20 secs)!";
 
             for "_i" from 1 to 100 do {
-                ["server","Subject",[_i,{["ALiVE automated test BUS #%1",_this] call ALiVE_fnc_DumpR; RESULTSET_SERVER pushback _this}]] call ALiVE_fnc_BUS;
+                ["server","Subject",[_i,{["automated test BUS #%1",_this] call ALiVE_fnc_dumpR; RESULTSET_SERVER pushback _this}]] call ALiVE_fnc_BUS;
             };
 
             ERROR_CLIENT = false;
@@ -66,7 +66,7 @@ ASSERT_TRUE(_result,typeOf _expected + " != " + typeOf _returned);
             hint "Starting ALiVE Servicebus Test (expected duration: 20 secs)!";
 
             for "_i" from 1 to 100 do {
-                [playableUnits select 0,"Subject",[_i,{["ALiVE automated test BUS #%1",_this] call ALiVE_fnc_DumpR; RESULTSET_CLIENT pushback _this}]] call ALiVE_fnc_BUS;
+                [playableUnits select 0,"Subject",[_i,{["automated test BUS #%1",_this] call ALiVE_fnc_dumpR; RESULTSET_CLIENT pushback _this}]] call ALiVE_fnc_BUS;
             };
 
             ERROR_SERVER = false;
@@ -83,10 +83,10 @@ ASSERT_TRUE(_result,typeOf _expected + " != " + typeOf _returned);
     if (isnil "ERROR_CLIENT") then {ERROR_CLIENT = true};
 
     if (ERROR_SERVER || ERROR_CLIENT) then {
-        ["ALiVE BUS Automated Test Client > Server! OK: %1 Quality: %2/100!",!ERROR_CLIENT,count RESULTSET_SERVER] call ALiVE_fnc_DumpR;
-        ["ALiVE BUS Automated Test Server > Client! OK: %1 Quality: %2/100!",!ERROR_SERVER,count RESULTSET_CLIENT] call ALiVE_fnc_DumpR;
+        ["BUS Automated Test Client > Server! OK: %1 Quality: %2/100!",!ERROR_CLIENT,count RESULTSET_SERVER] call ALiVE_fnc_dumpR;
+        ["BUS Automated Test Server > Client! OK: %1 Quality: %2/100!",!ERROR_SERVER,count RESULTSET_CLIENT] call ALiVE_fnc_dumpR;
     } else {
-        ["ALiVE BUS Automated Tests! Quality %1 | %2",count RESULTSET_SERVER,count RESULTSET_CLIENT] call ALiVE_fnc_DumpR;
+        ["BUS Automated Tests! Quality %1 | %2",count RESULTSET_SERVER,count RESULTSET_CLIENT] call ALiVE_fnc_dumpR;
     };
     nil;
 };

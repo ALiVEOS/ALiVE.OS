@@ -290,7 +290,7 @@ switch(_operation) do {
 
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE AMBCP - Startup"] call ALIVE_fnc_dump;
+                ["AMBCP - Startup"] call ALiVE_fnc_dump;
                 [true] call ALIVE_fnc_timer;
             };
 
@@ -306,7 +306,7 @@ switch(_operation) do {
             waituntil {!(isnil "ALIVE_loadedCIVClusters") && {ALIVE_loadedCIVClusters}};
 
             if (isnil "ALIVE_clustersCivSettlement") exitwith {
-                ["ALIVE AMBCP - Exiting because of lack of civilian settlements..."] call ALIVE_fnc_dump;
+                ["AMBCP - Exiting because of lack of civilian settlements..."] call ALiVE_fnc_dump;
                 _logic setVariable ["startupComplete", true];
             };
 
@@ -523,8 +523,8 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE AMBCP - Startup completed"] call ALIVE_fnc_dump;
-                    ["ALIVE AMBCP - Count clusters %1",count _clusters] call ALIVE_fnc_dump;
+                    ["AMBCP - Startup completed"] call ALiVE_fnc_dump;
+                    ["AMBCP - Count clusters %1",count _clusters] call ALiVE_fnc_dump;
                     [] call ALIVE_fnc_timer;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
@@ -536,7 +536,7 @@ switch(_operation) do {
                     // start registration
                     [_logic, "registration"] call MAINCLASS;
                 }else{
-                    ["ALIVE AMBCP - Warning no locations found for placement, you need to include civilian locations within the TAOR marker: %1", _taor] call ALIVE_fnc_dumpR;
+                    ["AMBCP - Warning no locations found for placement, you need to include civilian locations within the TAOR marker: %1", _taor] call ALiVE_fnc_dumpR;
 
                     // set module as started
                     _logic setVariable ["startupComplete", true];
@@ -557,11 +557,10 @@ switch(_operation) do {
 
             private _debug = [_logic, "debug"] call MAINCLASS;
 
-
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE AMBCP - Registration"] call ALIVE_fnc_dump;
+                ["AMBCP - Registration"] call ALiVE_fnc_dump;
                 [true] call ALIVE_fnc_timer;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -593,6 +592,14 @@ switch(_operation) do {
                 [ALIVE_clusterHandler, "debug", true] call ALIVE_fnc_clusterHandler;
             };
 
+            // DEBUG -------------------------------------------------------------------------------------
+            if(_debug) then {
+                ["AMBCP - Registration Completed"] call ALiVE_fnc_dump;
+                [] call ALIVE_fnc_timer;
+                ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
+            };
+            // DEBUG -------------------------------------------------------------------------------------
+
             // start placement
             [_logic, "placement"] call MAINCLASS;
 
@@ -610,7 +617,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE AMBCP - Placement"] call ALIVE_fnc_dump;
+                ["AMBCP - Placement"] call ALiVE_fnc_dump;
                 [true] call ALIVE_fnc_timer;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -651,7 +658,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE AMBCP [%1] SideNum: %2 Side: %3 Faction: %4",_faction,_factionSideNumber,_side,_faction] call ALIVE_fnc_dump;
+                ["AMBCP [%1] SideNum: %2 Side: %3 Faction: %4",_faction,_factionSideNumber,_side,_faction] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -886,12 +893,12 @@ switch(_operation) do {
                 } forEach _clusters;
             };
 
-            ["ALIVE AMBCP [%1] - Ambient land vehicles placed: %2",_faction,_countLandUnits] call ALIVE_fnc_dump;
-            ["ALIVE AMBCP [%1] - Ambient civilian units placed: %2",_faction,_countCivilianUnits] call ALIVE_fnc_dump;
+            ["AMBCP [%1] - Ambient land vehicles placed: %2",_faction,_countLandUnits] call ALiVE_fnc_dump;
+            ["AMBCP [%1] - Ambient civilian units placed: %2",_faction,_countCivilianUnits] call ALiVE_fnc_dump;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE AMBCP - Placement completed"] call ALIVE_fnc_dump;
+                ["AMBCP - Placement completed"] call ALiVE_fnc_dump;
                 [] call ALIVE_fnc_timer;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };

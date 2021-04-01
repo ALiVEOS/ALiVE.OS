@@ -172,7 +172,7 @@ switch(_operation) do {
                             GVAR(STORE) = _state;
                             GVAR(Loaded) = true;
                             // DEBUG -------------------------------------------------------------------------------------
-                            if(_debug) then { ["ALIVE IED - IEDs have been loaded from Database"] call ALIVE_fnc_dump; };
+                            if(_debug) then { ["IED - IEDs have been loaded from Database"] call ALiVE_fnc_dump; };
                             // DEBUG -------------------------------------------------------------------------------------
                         } else {
                             LOG("No data loaded...");
@@ -228,7 +228,7 @@ switch(_operation) do {
 
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE IED - Startup"] call ALIVE_fnc_dump;
+                    ["IED - Startup"] call ALiVE_fnc_dump;
                     [true] call ALIVE_fnc_timer;
                 };
 
@@ -272,7 +272,7 @@ switch(_operation) do {
 
                             [GVAR(STORE), "locations", _locations] call ALiVE_fnc_hashSet;
 
-                            ["ALiVE MIL IED reset for usage with OPCOM Insurgency!"] call ALiVE_fnc_Dump;
+                            ["MIL IED reset for usage with OPCOM Insurgency!"] call ALiVE_fnc_dump;
                         };
                     };
                 };
@@ -410,8 +410,8 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if ([_logic, "debug"] call MAINCLASS) then {
-                    ["ALIVE IED - Startup completed"] call ALIVE_fnc_dump;
-                    ["ALIVE IED - Count IED Locations %1", count ([GVAR(STORE), "locations"] call ALiVE_fnc_hashGet)] call ALIVE_fnc_dump;
+                    ["IED - Startup completed"] call ALiVE_fnc_dump;
+                    ["IED - Count IED Locations %1", count ([GVAR(STORE), "locations"] call ALiVE_fnc_hashGet)] call ALiVE_fnc_dump;
                     [] call ALIVE_fnc_timer;
                 };
                 // DEBUG -------------------------------------------------------------------------------------

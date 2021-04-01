@@ -1179,7 +1179,7 @@ class FSM
        "        _nearProfiles = [_OPCOM_HANDLER,_center,_factions,_sizeSection - (count _section),_types] call _fnc_selectSection;" \n
        "        _section = _section + _nearProfiles;" \n
        "" \n
-       "	  //[""ALiVE Asymm Commander compiling _section %1 (nearProfiles %2)"",_section,_nearProfiles] call ALiVE_fnc_DumpR;" \n
+       "	  //[""Asymm Commander compiling _section %1 (nearProfiles %2)"",_section,_nearProfiles] call ALiVE_fnc_dumpR;" \n
        "    " \n
        "        // Add section" \n
        "        if ((count _section) >= ceil(_sizeSection/3)) then {" \n

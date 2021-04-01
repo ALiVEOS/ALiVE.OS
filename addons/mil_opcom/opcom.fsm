@@ -1086,7 +1086,7 @@ class FSM
                          "    _base = [_OPCOM_HANDLER,""findReinforcementBase""] call ALiVE_fnc_OPCOM;" \n
                          "" \n
                          "    if (isnil ""_base"") exitwith {" \n
-                         "        if (_debug) then {[""ALiVE OPCOM - Requesting reinforcments for side %1 not possible! No position secured!"",_side] call ALiVE_fnc_DumpR};" \n
+                         "        if (_debug) then {[""OPCOM - Requesting reinforcments for side %1 not possible! No position secured!"",_side] call ALiVE_fnc_dumpR};" \n
                          "    };" \n
                          "    " \n
                          "    [_OPCOM_HANDLER, _base,_reinforce,_factions,_side] spawn {" \n
@@ -1191,7 +1191,7 @@ class FSM
                          "                    case 7 : {_typeReinf = ""Artillery""};" \n
                          "                };" \n
                          "            " \n
-                         "                [""ALiVE OPCOM - Requesting reinforcments for side %3 %1x %2 units!"",_x,_typeReinf,_side] call ALiVE_fnc_DumpR;" \n
+                         "                [""OPCOM - Requesting reinforcments for side %3 %1x %2 units!"",_x,_typeReinf,_side] call ALiVE_fnc_dumpR;" \n
                          "            } foreach _reinforce;" \n
                          "" \n
                          "			[""ALiVE OPCOM - FORCEMAKEUP DATA %1 | %2 | %3 | %4""," \n
@@ -1260,14 +1260,14 @@ class FSM
                          "  if ( _currentCount != 0 && _startCount != 0 && [""ALiVE_MIL_LOGISTICS""] call ALiVE_fnc_isModuleAvailable) then {" \n
                          "" \n
                          "    if (_debug) then {" \n
-                         "        [""ALiVE OPCOM analysing troops for logistics""] call ALiVE_fnc_DumpR;" \n
+                         "        [""OPCOM analysing troops for logistics""] call ALiVE_fnc_dumpR;" \n
                          "        [""Starting Forces: %1"",_startForcesStrength] call ALiVE_fnc_DumpR;" \n
                          "        [""Current Forces: %1"",_currentForceStrength] call ALiVE_fnc_DumpR;" \n
                          "        [""Difference: %1"",_diff] call ALiVE_fnc_DumpR;" \n
                          "        [""Starting Count: %1"",_startCount] call ALiVE_fnc_DumpR;" \n
                          "        [""Current Count: %1"",_currentCount] call ALiVE_fnc_DumpR;" \n
                          "        [""Needed Ratio: %1"",_reinforcementRatio] call ALiVE_fnc_DumpR;" \n
-                         "        [""ALiVE OPCOM reinforcements needed: %1"",((_currentCount / _startCount) < _reinforcementRatio)] call ALiVE_fnc_DumpR;" \n
+                         "        [""OPCOM reinforcements needed: %1"",((_currentCount / _startCount) < _reinforcementRatio)] call ALiVE_fnc_dumpR;" \n
                          "    };" \n
                          "      " \n
                          "    if ((_currentCount / _startCount) < _reinforcementRatio) then {_reinforce = +_diff};" \n

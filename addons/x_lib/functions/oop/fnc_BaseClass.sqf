@@ -58,9 +58,7 @@ _result = true;
 
 switch(_operation) do {
     default {
-        private["_err"];
-        _err = format["%1 does not support ""%2"" operation", _logic, _operation];
-        _err call ALiVE_fnc_logger;
+        ["""%2"" operation is not supported by %1", _logic, _operation] call ALiVE_fnc_dump;
     };
     case "create": {
         // Create a module object for settings and persistence
