@@ -61,7 +61,7 @@ class FSM
        "_iteration = 0;" \n
        "" \n
        "// debug ---------------------------------------" \n
-       "if(_debug) then { [""ALiVE Executed FSM Command - [%1] called args: %2"",_profileID,_args] call ALIVE_fnc_dump; };" \n
+       "if(_debug) then { [""Executed FSM Command - [%1] called args: %2"",_profileID,_args] call ALiVE_fnc_dump; };" \n
        "// debug ---------------------------------------"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
@@ -84,7 +84,7 @@ class FSM
     {
       name = "END";
       init = /*%FSM<STATEINIT""">*/"// debug ---------------------------------------" \n
-       "if(_debug) then { [""ALiVE Executed FSM Command - [%1] destroy"",_profileID] call ALIVE_fnc_dump; };" \n
+       "if(_debug) then { [""Executed FSM Command - [%1] destroy"",_profileID] call ALiVE_fnc_dump; };" \n
        "// debug ---------------------------------------"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
@@ -97,7 +97,7 @@ class FSM
     {
       name = "ACTION";
       init = /*%FSM<STATEINIT""">*/"// debug ---------------------------------------" \n
-       "if(_debug) then { [""ALiVE Executed FSM Command - [%1] iteration: %2"",_profileID,_iteration] call ALIVE_fnc_dump; };" \n
+       "if(_debug) then { [""Executed FSM Command - [%1] iteration: %2"",_profileID,_iteration] call ALiVE_fnc_dump; };" \n
        "// debug ---------------------------------------" \n
        "" \n
        "_iteration = _iteration + 1;" \n

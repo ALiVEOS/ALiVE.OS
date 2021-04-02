@@ -3,7 +3,7 @@
 #endif
 
 //Starting Init
-["ALiVE | Air Assault - Executing init.sqf..."] call ALiVE_fnc_Dump;
+["| Air Assault - Executing init.sqf..."] call ALiVE_fnc_dump;
 
 /////////////////////
 // Init server
@@ -20,7 +20,7 @@ if (isServer) then {
 
 if (hasInterface) then {
 
-    ["ALiVE | Air Assault - Running ClientInit..."] call ALiVE_fnc_Dump;
+    ["| Air Assault - Running ClientInit..."] call ALiVE_fnc_dump;
 
     //Intro
     [] spawn {

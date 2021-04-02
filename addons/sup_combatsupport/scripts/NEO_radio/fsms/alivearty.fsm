@@ -193,7 +193,7 @@ class FSM
                          "_side = _this select 10;" \n
                          "_removeFSM = false;" \n
                          "" \n
-                         "diag_log format[""START ARTY FSM: %1"",_this];" \n
+                         "[""START ARTY FSM: %1"",_this] call ALiVE_fnc_dump;" \n
                          "" \n
                          "private " \n
                          "[" \n

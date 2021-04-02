@@ -25,7 +25,7 @@ ARJay
 
 params ["_profile","_group"];
 
-if (isnil "_profile" || isnil "_group") exitwith {["ALiVE SYS PROFILE Warning: ALIVE_fnc_waypointsToProfileWaypoints has wrong inputs! - %1", _this] call ALiVE_fnc_Dump};
+if (isnil "_profile" || isnil "_group") exitwith {["SYS PROFILE Warning: ALIVE_fnc_waypointsToProfileWaypoints has wrong inputs! - %1", _this] call ALiVE_fnc_dump};
 
 private _waypoints = waypoints _group;
 if (count _waypoints == 0) exitwith {};

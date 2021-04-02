@@ -91,10 +91,10 @@ switch(_operation) do {
                 /*
                 MODEL - no visual just reference data
                 */
-                if (_logic getVariable ["playertags_style_setting","Modern"] == "None") exitWith {["ALiVE SYS PLAYERTAGS - Feature turned off! Exiting..."] call ALiVE_fnc_Dump};
+                if (_logic getVariable ["playertags_style_setting","Modern"] == "None") exitWith {["SYS PLAYERTAGS - Feature turned off! Exiting..."] call ALiVE_fnc_dump};
 
                 //Only one init per instance is allowed
-                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS PLAYERTAGS - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["SYS PLAYERTAGS - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
                 //Start init
                 _logic setVariable ["initGlobal", false];
@@ -175,7 +175,7 @@ switch(_operation) do {
 
                 // Debug
                 if (GVAR(DEBUG)) then {
-                    ["ALIVE Player Tags - Menu Starting... Radius: %1, playertags_tolerance: %2, playertags_scale:, %3", playertags_distance, playertags_tolerance, playertags_scale] call ALIVE_fnc_dump;
+                    ["Player Tags - Menu Starting... Radius: %1, playertags_tolerance: %2, playertags_scale:, %3", playertags_distance, playertags_tolerance, playertags_scale] call ALiVE_fnc_dump;
                 };
 
                 /*

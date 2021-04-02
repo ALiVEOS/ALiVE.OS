@@ -141,7 +141,7 @@ class FSM
        "            _entities set [count _entities,_x select 2 select 4];" \n
        "            " \n
        "            //player sidechat format[""Entities: %1, count total %2 val %3"",_entities,count _entities,(_x select 2 select 4)];" \n
-       "           //diag_log format[""Entities: %1, count total %2 val %3"",_entities,count _entities,(_x select 2 select 4)];" \n
+       "           //[""Entities: %1, count total %2 val %3"",_entities,count _entities,(_x select 2 select 4)] call ALiVE_fnc_dump;" \n
        "        };" \n
        "        //sleep 0.03;" \n
        "} foreach _profiles;" \n

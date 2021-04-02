@@ -1228,7 +1228,7 @@ class FSM
                          "        _needsAlign = false;" \n
                          "        _target = [_veh, _posCas, _radiusCas,_weapon] call NEO_fnc_pickCasTarget;" \n
                          "" \n
-                         "        diag_log format[""Telling %1 to target %2 (%3 %4)"",_veh,_target, _posCas,_radiusCas];" \n
+                         "        [""Telling %1 to target %2 (%3 %4)"",_veh,_target, _posCas,_radiusCas] call ALiVE_fnc_dump;" \n
                          "        " \n
                          "        _parents = [ (configFile >> ""CfgWeapons"" >> _weapon),true] call BIS_fnc_returnParents;" \n
                          "        if( ""RocketPods"" in _parents) then {" \n
@@ -1262,7 +1262,7 @@ class FSM
                          "                    _radiusCas = 2 * _radiusCas;" \n
                          "                    _target = [_veh, _posCas, _radiusCas,_weapon] call NEO_fnc_pickCasTarget;" \n
                          "                };" \n
-                         "                if(!isNull _target) then { diag_log format[""Telling %1 to target %2 (%3 %4)"",_veh,_target, _posCas,_radiusCas]; };" \n
+                         "                if(!isNull _target) then { [""Telling %1 to target %2 (%3 %4)"",_veh,_target, _posCas,_radiusCas] call ALiVE_fnc_dump; };" \n
                          "            };" \n
                          "        };" \n
                          "" \n

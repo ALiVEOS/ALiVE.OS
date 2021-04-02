@@ -42,9 +42,9 @@ _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName];
 _data = [MOD(SYS_marker),"state"] call ALiVE_fnc_marker;
 
 if (count (_data select 1) == 0) exitwith {
-    
-    ["ALiVE SAVE SYS MARKER DATA HAS NO ENTRIES: %1! DO NOT SAVE...",_data] call ALIVE_fnc_dump;
-    
+
+    ["SAVE SYS MARKER DATA HAS NO ENTRIES: %1! DO NOT SAVE...",_data] call ALiVE_fnc_dump;
+
     //[["ALiVE_LOADINGSCREEN"],"BIS_fnc_endLoadingScreen",true,false] call BIS_fnc_MP;
 };
 
@@ -56,7 +56,7 @@ _messages pushback _message;
 
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SAVE SYS MARKER DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALIVE_fnc_dump;
+    ["SAVE SYS MARKER DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_dump;
     _data call ALIVE_fnc_inspectHash;
 };
 
@@ -82,7 +82,7 @@ _messages pushback _message;
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     [false, "ALiVE SYS MARKER - Save data complete","markerper"] call ALIVE_fnc_timer;
-    ["ALiVE SYS MARKER SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_Dump;
+    ["SYS MARKER SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_dump;
 };
 
 _result

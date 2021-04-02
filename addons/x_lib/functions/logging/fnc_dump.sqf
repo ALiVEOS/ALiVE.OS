@@ -46,4 +46,11 @@ if(isNil {_variableType}) then {
     };
 };
 
+private _prefix = format[
+        "ALiVE %1 : %2",
+        time,
+        diag_tickTime
+    ];
+
+_output = _prefix + " - " + _output;
 diag_log text _output;

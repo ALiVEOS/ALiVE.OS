@@ -35,7 +35,7 @@ PARAMS_1(_cmd);
 GVAR(ASYNC_QUEUE) pushBack _cmd;
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SYS_DATA - SEND TO PLUGIN ASYNC: %1, %2", _cmd, count GVAR(ASYNC_QUEUE)] call ALIVE_fnc_dump;
+    ["SYS DATA - SEND TO PLUGIN ASYNC: %1, %2", _cmd, count GVAR(ASYNC_QUEUE)] call ALiVE_fnc_dump;
 };
 
 // Is this needed? No longer using PVEH

@@ -45,7 +45,7 @@ _saveData = {
     _documentID = _missionKey + "-" + _key;
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-        ["ALiVE SYS_DATA_COUCHDB - SAVE DATA: %1 %2 %3", _missionKey, _key, _value] call ALIVE_fnc_dump;
+        ["SYS_DATA_COUCHDB - SAVE DATA: %1 %2 %3", _missionKey, _key, _value] call ALiVE_fnc_dump;
     };
 
     _response = [_logic, "write", [_module, _value, _async, _documentID] ] call ALIVE_fnc_Data;
@@ -85,7 +85,7 @@ TRACE_1("Save Data new index", _newIndexDoc);
 //=============================================
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SYS_DATA_COUCHDB - SAVE DATA RESULT: %1", _result] call ALIVE_fnc_dump;
+    ["SYS_DATA_COUCHDB - SAVE DATA RESULT: %1", _result] call ALiVE_fnc_dump;
 };
 
 

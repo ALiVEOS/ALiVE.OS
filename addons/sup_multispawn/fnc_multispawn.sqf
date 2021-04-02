@@ -101,7 +101,7 @@ switch(_operation) do {
                 };
 
                 //Only one init per instance is allowed
-                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SUP MULTISPAWN - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["SUP MULTISPAWN - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
                 //Start init
                 _logic setVariable ["initGlobal", false];
@@ -240,11 +240,11 @@ switch(_operation) do {
                         //Initialise a local "killed"-EH
                         case ("forwardspawn") : {
                             //Not compatible with revive
-                            if ([QMOD(SYS_REVIVE)] call ALiVE_fnc_isModuleAvailable) exitwith {["ALiVE SUP MULTISPAWN - Revive is enabled, exiting Multispawn!"] call ALiVE_fnc_Dump};
+                            if ([QMOD(SYS_REVIVE)] call ALiVE_fnc_isModuleAvailable) exitwith {["SUP MULTISPAWN - Revive is enabled, exiting Multispawn!"] call ALiVE_fnc_dump};
 
                             waituntil {!isnull player};
 
-                            ["ALiVE SUP MULTISPAWN - Forward Spawn EH placed at %1...", time] call ALiVE_fnc_Dump;
+                            ["SUP MULTISPAWN - Forward Spawn EH placed at %1...", time] call ALiVE_fnc_dump;
 
                             player addEventHandler ["KILLED",{
                                 if (!isnil "ALiVE_SYS_PLAYER_LOADOUT_DATA" && {GVAR(RESPAWN_WITH_GEAR)}) then {GVAR(PLAYERGEAR) = [objNull, [_this select 0]] call ALiVE_fnc_setGear};
@@ -269,7 +269,7 @@ switch(_operation) do {
 
                             waituntil {!isnull player};
 
-                            ["ALiVE SUP MULTISPAWN - Insertion EH placed at %1...", time] call ALiVE_fnc_Dump;
+                            ["SUP MULTISPAWN - Insertion EH placed at %1...", time] call ALiVE_fnc_dump;
 
                             player addEventHandler ["KILLED", {
                                 if (!isnil "ALiVE_SYS_PLAYER_LOADOUT_DATA" && {GVAR(RESPAWN_WITH_GEAR)}) then {GVAR(PLAYERGEAR) = [objNull, [_this select 0]] call ALiVE_fnc_setGear};
@@ -310,7 +310,7 @@ switch(_operation) do {
                             if !(_respawn call ALiVE_fnc_markerExists) then {createMarkerLocal [_respawn, getposATL _logic]};
                             if !(!isnil "_respawnVehicle" && {_respawnVehicle}) exitwith {["ALiVE_SUP_MULTISPAWN - Please place a vehicle with name ALiVE_SUP_MULTISPAWN_RESPAWNVEHICLE_%1... Defaulting to regular respawn point!",faction player] call ALiVE_fnc_DumpR};
 
-                            ["ALiVE SUP MULTISPAWN - Vehicle EH placed at %1...", time] call ALiVE_fnc_Dump;
+                            ["SUP MULTISPAWN - Vehicle EH placed at %1...", time] call ALiVE_fnc_dump;
 
                             player addEventHandler ["KILLED", {
                                 if (!isnil "ALiVE_SYS_PLAYER_LOADOUT_DATA" && {GVAR(RESPAWN_WITH_GEAR)}) then {GVAR(PLAYERGEAR) = [objNull, [_this select 0]] call ALiVE_fnc_setGear};
@@ -331,7 +331,7 @@ switch(_operation) do {
                                     if !(isnil {call compile (format["ALiVE_SUP_MULTISPAWN_RESPAWNVEHICLE_%1",faction player])}) then {
                                         _v = call compile format["ALiVE_SUP_MULTISPAWN_RESPAWNVEHICLE_%1",faction player];
 
-                                        if !(alive _v) exitwith {["ALiVE_SUP_MULTISPAWN - No ALiVE_SUP_MULTISPAWN_RESPAWNVEHICLE_%1 available... Exiting!",faction player] call ALiVE_fnc_Dump};
+                                        if !(_v) exitwith {["ALiVE_SUP_MULTISPAWN - No ALiVE_SUP_MULTISPAWN_RESPAWNVEHICLE_%1 available... Exiting!",faction player] call ALiVE_fnc_dump};
                                         if ([_v] call ALIVE_fnc_vehicleCountEmptyPositions > 0) then {player moveInCargo _v} else {player setposATL [(getposATL _v), 10] call CBA_fnc_RandPos};
                                     };
 
@@ -351,9 +351,9 @@ switch(_operation) do {
                             _respawnBuilding = nearestObject [getmarkerpos format["ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1",faction player], "Building"];
 
                             if !(_respawn call ALiVE_fnc_markerExists) then {createMarkerLocal [_respawn, getposATL _logic]};
-                            if !(!isnil "_respawnBuilding" && {alive _respawnBuilding}) exitwith {["ALiVE_SUP_MULTISPAWN - Please place a ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1 marker near a building... Defaulting to regular respawn point!",faction player] call ALiVE_fnc_DumpR};
+                            if !(!isnil "_respawnBuilding" && {_respawnBuilding}) exitwith {["ALiVE_SUP_MULTISPAWN - Please place a ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1 marker near a building... Defaulting to regular respawn point!",faction player] call ALiVE_fnc_dumpR};
 
-                            ["ALiVE SUP MULTISPAWN - Building EH placed at %1...", getposATL _respawnBuilding] call ALiVE_fnc_Dump;
+                            ["SUP MULTISPAWN - Building EH placed at %1...", getposATL _respawnBuilding] call ALiVE_fnc_dump;
 
                             player addEventHandler ["KILLED", {
                                 if (!isnil "ALiVE_SYS_PLAYER_LOADOUT_DATA" && {GVAR(RESPAWN_WITH_GEAR)}) then {GVAR(PLAYERGEAR) = [objNull, [_this select 0]] call ALiVE_fnc_setGear};

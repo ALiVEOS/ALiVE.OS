@@ -72,7 +72,7 @@ _messages = _result select 1;
 _messages set [count _messages,_message];
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SAVE MIL air tasking orders DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALIVE_fnc_dump;
+    ["SAVE MIL air tasking orders DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_dump;
     _data call ALIVE_fnc_inspectHash;
 };
 
@@ -97,7 +97,7 @@ _messages set [count _messages,_message];
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     [false, "ALiVE MIL air tasking orders - Save data complete","atoper"] call ALIVE_fnc_timer;
-    ["ALiVE MIL air tasking orders SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_Dump;
+    ["MIL air tasking orders SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_dump;
 };
 
 _result

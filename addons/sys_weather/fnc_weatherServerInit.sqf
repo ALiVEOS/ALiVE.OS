@@ -140,7 +140,7 @@ switch (INITIAL_WEATHER) do
         };
 
         if (typeName GVAR(REAL_WEATHER) == "BOOL") exitWith {
-            diag_log format["--------------------------------- ERROR GETTING REAL WEATHER : %1", WEATHER_CYCLE_REAL_LOCATION];
+            ["--------------------------------- ERROR GETTING REAL WEATHER : %1", WEATHER_CYCLE_REAL_LOCATION] call ALiVE_fnc_dump;
         };
 
         _rainProbability = (parseNumber ([GVAR(REAL_WEATHER),"rain", 0] call ALiVE_fnc_hashGet)) * 100;

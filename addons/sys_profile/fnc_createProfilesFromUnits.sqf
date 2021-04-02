@@ -107,7 +107,7 @@ if(_createMode == "IGNORE") then {
 // DEBUG -------------------------------------------------------------------------------------
 if(_debug) then {
     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-    ["ALIVE Create profiles from map groups"] call ALIVE_fnc_dump;
+    ["Create profiles from map groups"] call ALiVE_fnc_dump;
     [true] call ALIVE_fnc_timer;
 };
 // DEBUG -------------------------------------------------------------------------------------
@@ -249,10 +249,10 @@ if(_debug) then {
 // DEBUG -------------------------------------------------------------------------------------
 if(_debug) then {
     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-    ["ALIVE Create profiles from map groups Complete - entity profiles created: [%1] vehicle profiles created: [%2]",_entityCount,_vehicleCount] call ALIVE_fnc_dump;
+    ["Create profiles from map groups Complete - entity profiles created: [%1] vehicle profiles created: [%2]",_entityCount,_vehicleCount] call ALiVE_fnc_dump;
     [] call ALIVE_fnc_timer;
     [true] call ALIVE_fnc_timer;
-    ["ALIVE Deleting existing groups"] call ALIVE_fnc_dump;
+    ["Deleting existing groups"] call ALiVE_fnc_dump;
 };
 // DEBUG -------------------------------------------------------------------------------------
 
@@ -309,10 +309,10 @@ _deleteVehicleCount = 0;
 // DEBUG -------------------------------------------------------------------------------------
 if(_debug) then {
     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-    ["ALIVE Deleting existing groups Complete - groups deleted: [%1] vehicles deleted: [%2]",_deleteEntityCount,_deleteVehicleCount] call ALIVE_fnc_dump;
+    ["Deleting existing groups Complete - groups deleted: [%1] vehicles deleted: [%2]",_deleteEntityCount,_deleteVehicleCount] call ALiVE_fnc_dump;
     [] call ALIVE_fnc_timer;
     [true] call ALIVE_fnc_timer;
-    ["ALIVE Create profiles from map empty vehicles"] call ALIVE_fnc_dump;
+    ["Create profiles from map empty vehicles"] call ALiVE_fnc_dump;
 };
 // DEBUG -------------------------------------------------------------------------------------
 
@@ -374,7 +374,7 @@ if(_debug) then {
 // DEBUG -------------------------------------------------------------------------------------
 if(_debug) then {
     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-    ["ALIVE Create profiles from map empty vehicles Complete"] call ALIVE_fnc_dump;
+    ["Create profiles from map empty vehicles Complete"] call ALiVE_fnc_dump;
     [] call ALIVE_fnc_timer;
 };
 // DEBUG -------------------------------------------------------------------------------------

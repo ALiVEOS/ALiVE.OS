@@ -289,7 +289,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 private _agentID = _logic select 2 select 3;
-                ["ALIVE Agent [%1] Add Active Command - %2", _agentID, _args select 0] call ALIVE_fnc_dump;
+                ["Agent [%1] Add Active Command - %2", _agentID, _args select 0] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 

@@ -81,7 +81,7 @@ if(!isNil "ALIVE_factionCustomMappings") then {
                     _side = _factionSide call ALIVE_fnc_sideNumberToText;
                 };
             } else {
-                ["Warning Side: %1 Faction: %3 maybe incorrectly configured for ALiVE (Group Type: %2)",_side,_type,_faction] call ALIVE_fnc_dump;
+                ["Warning Side: %1 Faction: %3 maybe incorrectly configured for (Group Type: %2)",_side,_type,_faction] call ALiVE_fnc_dump;
                 _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
 
                 _factionSide = getNumber(_factionConfig >> "side");

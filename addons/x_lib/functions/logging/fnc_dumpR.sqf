@@ -46,5 +46,6 @@ if(isNil {_variableType}) then {
     };
 };
 
-diag_log text _output;
 player sidechat _output;
+
+_this call ALIVE_fnc_dump;

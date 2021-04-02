@@ -44,11 +44,11 @@ _waypoints = [_profile,"waypoints",[]] call ALiVE_fnc_HashGet;
 _assignments = [_profile,"vehicleAssignments",["",[],[],nil]] call ALIVE_fnc_HashGet;
 
 if (isnil "_pos") exitwith {
-    // ["ALiVE MIL COMMAND Garrison - Detected wrong input for profile %1! Exiting...",_id] call ALiVE_fnc_Dump;
+    // ["MIL COMMAND Garrison - Detected wrong input for profile %1! Exiting...",_id] call ALiVE_fnc_dump;
 };
 
 if (count _waypoints > 0) then {
-    // ["ALiVE MIL COMMAND Garrison - Detected existing waypoints for profile %1! Deleting...",_id] call ALiVE_fnc_Dump;
+    // ["MIL COMMAND Garrison - Detected existing waypoints for profile %1! Deleting...",_id] call ALiVE_fnc_dump;
 
 	[_profile, "clearWaypoints"] call ALiVE_fnc_profileEntity;
 };

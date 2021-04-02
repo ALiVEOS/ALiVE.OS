@@ -62,7 +62,7 @@ _instances = (ALiVE_CQB getVariable ["instances",[]]);
     if ((_logic getvariable ["CQB_persistent","false"]) == "true") then {
         _state = [_logic,"state"] call ALiVE_fnc_CQB;
 
-        ["ALiVE LOAD CQB DATA APPLYING STATE!"] call ALIVE_fnc_dumpMPH;
+        ["LOAD CQB DATA APPLYING STATE!"] call ALiVE_fnc_dumpMPH;
         [_state,"houses",_data] call ALiVE_fnc_HashSet;
 
         //_state call ALIVE_fnc_inspectHash;

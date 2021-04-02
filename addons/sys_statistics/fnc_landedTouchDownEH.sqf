@@ -42,13 +42,13 @@ if (GVAR(ENABLED)) then {
     _vehicle = _this select 0;
     _airport = _this select 1;
 
-    diag_log format["LandedTouchDown: %1", _this];
+    ["LandedTouchDown: %1", _this] call ALiVE_fnc_dump;
 
     if (isPlayer (driver _vehicle)) then {
         // Check to see if vehicle is having a "bumpy" landing
         _LandedInterval = time - (_vehicle getVariable [QGVAR(LandedTime),31]);
 
-        diag_log format["Last landed %1 seconds ago (%2)", _LandedInterval, time];
+        ["Last landed %1 seconds ago (%2)", _LandedInterval, time] call ALiVE_fnc_dump;
 
         if (_LandedInterval > 30) then {
             _sidevehicle = side (group _vehicle); // group side is more reliable

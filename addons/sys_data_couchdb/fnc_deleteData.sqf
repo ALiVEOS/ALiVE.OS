@@ -57,7 +57,7 @@ if (_uid != "") then {
 _json = _cmd + "]";
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SYS_DATA_COUCHDB - DELETE DATA: %1",_json] call ALIVE_fnc_dump;
+    ["SYS_DATA_COUCHDB - DELETE DATA: %1",_json] call ALiVE_fnc_dump;
 };
 
 TRACE_1("COUCH DELETE DATA", _json);
@@ -68,7 +68,7 @@ _response = [_json] call ALIVE_fnc_sendToPlugInAsync;
 TRACE_1("COUCH RESPONSE", _response);
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SYS_DATA_COUCHDB - DELETE DATA RESULT: %1",_response] call ALIVE_fnc_dump;
+    ["SYS_DATA_COUCHDB - DELETE DATA RESULT: %1",_response] call ALiVE_fnc_dump;
 };
 
 /*

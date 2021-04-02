@@ -62,8 +62,8 @@ _roads = _pos nearRoads (_radius + 20);
 _roads = _roads select {_x distance _pos >= (_radius - 10) || {isOnRoad _x} || {(str _x) find "invisible" == -1}};
 
 if (_roads isEqualTo []) exitWith {
-    ["ALiVE No roads found for roadblock! Cannot create..."] call ALiVE_fnc_Dump;
-    
+    ["No roads found for roadblock! Cannot create..."] call ALiVE_fnc_dump;
+
     _result;
 };
 
@@ -86,14 +86,14 @@ for "_j" from 1 to (count _roadpoints) do {
 
     _roadpos = _roadpoints select (_j - 1);
 
-    if ({_roadpos distance _x < 100} count GVAR(ROADBLOCKS) > 0) exitWith {["ALiVE Roadblock %1 to close to another! Not created...",_roadpos] call ALiVE_fnc_Dump};
+    if ({_roadpos distance _x < 100} count GVAR(ROADBLOCKS) > 0) exitWith {["Roadblock %1 to close to another! Not created...",_roadpos] call ALiVE_fnc_dump};
 
     // check for non road position (should be obsolete due to filtering at the beginning)
-    if (!isOnRoad _roadpos) exitWith {["ALiVE Roadblock %1 is not on a road %2! Not created...",_roadpos, position _roadpos] call ALiVE_fnc_Dump};
+    if (!isOnRoad _roadpos) exitWith {["Roadblock %1 is not on a road %2! Not created...",_roadpos, position _roadpos] call ALiVE_fnc_dump};
 
     _roadConnectedTo = roadsConnectedTo _roadpos;
 
-    if (count _roadConnectedTo == 0) exitWith {["ALiVE Selected road %1 for roadblock is a dead end! Not created...",_roadpos] call ALiVE_fnc_Dump};
+    if (count _roadConnectedTo == 0) exitWith {["Selected road %1 for roadblock is a dead end! Not created...",_roadpos] call ALiVE_fnc_dump};
 
     GVAR(ROADBLOCKS) pushBack (position _roadpos);
 
@@ -107,7 +107,7 @@ for "_j" from 1 to (count _roadpoints) do {
 
         _id = str(floor((getpos _roadpos) select 0)) + str(floor((getpos _roadpos) select 1));
 
-        ["ALiVE Position of Road Block is %1, dir %2", getpos _roadpos, _direction] call ALiVE_fnc_Dump;
+        ["Position of Road Block is %1, dir %2", getpos _roadpos, _direction] call ALiVE_fnc_dump;
 
         [format["roadblock_%1", _id], _roadpos, "Icon", [1,1], "TYPE:", "mil_dot", "TEXT:", "RoadBlock",  "GLOBAL"] call CBA_fnc_createMarker;
     };
