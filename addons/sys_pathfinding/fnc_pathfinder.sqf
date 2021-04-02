@@ -13,7 +13,7 @@ switch (_operation) do {
     case "create": {
 
         private _worldSize = [ALiVE_mapBounds,worldname, worldsize] call ALiVE_fnc_hashGet;
-        private _sectorSize = ceil (_worldSize / 110);
+        private _sectorSize = ceil (_worldSize / 130);
         private _terrainGrid = [nil,"create", [_sectorSize]] call ALiVE_fnc_pathfindingGrid;
 
         _logic = [[

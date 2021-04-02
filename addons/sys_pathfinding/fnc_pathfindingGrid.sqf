@@ -19,10 +19,13 @@ switch (_operation) do {
         private _sectors = createHashMap;
         private _gridWidth = ceil(worldsize / _sectorSize) + 1;
 
+        private _fullSectorSizeArg = [_sectorSize, _sectorSize];
+        private _halfSectorSizeArg = [_sectorSize / 2, _sectorSize / 2];
+
         for "_i" from 0 to _gridWidth - 1 do {
             for "_j" from 0 to _gridWidth - 1 do {
-                private _newSector = [[_j,_i],[_sectorSize * _j, _sectorSize * _i], _sectorSize] call ALiVE_fnc_createPathfindingSector;
-                _sectors set [[_i,_j], _newSector];
+                private _newSector = [[_j,_i],[_sectorSize * _j, _sectorSize * _i], _fullSectorSizeArg, _halfSectorSizeArg] call ALiVE_fnc_createPathfindingSector;
+                _sectors set [[_j,_i], _newSector];
             };
         };
 
@@ -33,9 +36,11 @@ switch (_operation) do {
             ["sectorSize", _sectorSize],
             ["gridWidth", _gridWidth]
         ]] call ALiVE_fnc_hashCreate;
+
+        [_logic] call ALiVE_fnc_findAndSetSectorNeighbors;
 		
 		[_logic,"determineRegions"] call MAINCLASS;
-		[_logic,"colormegrid"] call MAINCLASS;
+		[_logic,"colorGridByRegion"] call MAINCLASS;
 
         _result = _logic;
 ["PATHFINDING GRID END - %1 || %2", diag_ticktime, cansuspend] call ALiVE_fnc_Dump;
@@ -138,29 +143,55 @@ switch (_operation) do {
 		private _nextRegionID = 0;
 
         {
-            if ((_x select 4) == -1) then {
-                private _sourceSector = _x;
+            if ((_y select 4) == -1) then {
+                private _sourceSector = _y;
                 private _regionTerrainType = _sourceSector select 3;
 
                 private _regionID = _nextRegionID;
                 _nextRegionID = _nextRegionID + 1;
 
-                private _connected = [_sourceSector];
+                private _connected = [_y];
                 while { _connected isnotequalto [] } do {
                     private _connectedSector = _connected deleteat 0;
+                    systemchat str (_connectedSector select 0);
+                    if ((_connectedSector select 0) isequalto [108,30]) then {
+                        [] spawn {
+                            while {true} do {
+                                sleep 1;
+                                systemchat 'okkk';
+                            };
+                        };
+                    };
+
                     _connectedSector set [4, _regionID];
 
-                    // private _connectedSectorNeighbors = [_logic,"getNeighbors", [_connectedSector]] call MAINCLASS;
-                    // private _validNeighbors = _connectedSectorNeighbors select { ((_x select 4) == -1) && ((_x select 3) == _regionTerrainType)};
+                    private _connectedSectorNeighbors = _connectedSector select 5;
+                    private _validNeighbors = [];
+                    {
+                        private _neighborSector = _sectors get _x;
+                        
+                        if ((_connectedSector select 0) isequalto [108,30]) then {
+                            systemchat 'check 1';
+                            if (_x isequalto [109,30]) then {
+                                systemchat format ["_connectedSector.id = %1 || neighbor.id = %2", _connectedSector select 4, _neighborSector select 4];
+                            };
+                        };
 
-                    // _connected append _validNeighbors;
+                        if (((_neighborSector select 4) == -1) && ((_neighborSector select 3) == _regionTerrainType)) then {
+                            _neighborSector set [4, _regionID];
+                            _validNeighbors pushback _neighborSector;
+                        };
+
+                    } foreach _connectedSectorNeighbors;
+
+                    _connected append _validNeighbors;
                 };
             };
         } foreach _sectors;
 		
 	};
 	
-	case "colormegrid": {
+	case "colorGridByRegion": {
 		private _colors = ["COLORRED","COLORBLUE","COLORGREEN","COLORYELLOW","COLORBROWN","COLORORANGE","COLORWHITE","COLORBLACK","COLORGREY"];
         private _colorCount = count _colors;
 	
@@ -168,19 +199,44 @@ switch (_operation) do {
 		private _halfSectorSize = _sectorSize * 0.5;
 		private _sectors = [_logic,"sectors"] call ALiVE_fnc_hashGet;
 		{
-			private _region = _x select 4;
+			private _region = _y select 4;
 			if (_region >= 0) then {
 				private _color = _colors select (_region mod _colorCount);
 				
-				private _pos = _x select 1;
+				private _pos = _y select 1;
 				private _center = _pos vectoradd [_halfSectorSize, _halfSectorSize];
 				
-				private _marker = createMarker [str random 10000, _pos];
+				private _marker = createMarker [str _x, _center];
 				_marker setMarkerShape "RECTANGLE";
 				_marker setMarkerSize [_halfSectorSize,_halfSectorSize];
 				_marker setMarkerColor _color;
 				_marker setMarkerAlpha 0.3;
 			};
+		} foreach _sectors;
+	};
+
+	case "colorGridByTerrainType": {
+        private _terrainTypeColors = createHashMapFromArray [
+            [true, "ColorBrown"],
+            [false, "ColorBlue"]
+        ];
+	
+        private _sectors = [_logic,"sectors"] call ALiVE_fnc_hashGet;
+		private _sectorSize = [_logic,"sectorSize"] call ALiVE_fnc_hashGet;
+		private _halfSectorSize = _sectorSize * 0.5;
+
+		{
+			private _terrainType = _y select 3;
+            private _color = _terrainTypeColors get _terrainType;
+
+            private _pos = _y select 1;
+            private _center = _pos vectoradd [_halfSectorSize, _halfSectorSize];
+
+            private _marker = createMarker [str _x, _center];
+            _marker setMarkerShape "RECTANGLE";
+            _marker setMarkerSize [_halfSectorSize,_halfSectorSize];
+            _marker setMarkerColor _color;
+            _marker setMarkerAlpha 0.6;
 		} foreach _sectors;
 	};
 

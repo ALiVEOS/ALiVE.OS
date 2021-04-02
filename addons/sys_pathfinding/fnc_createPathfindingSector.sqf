@@ -1,7 +1,9 @@
-params ["_index","_pos","_size"];
+params ["_index","_pos","_size","_halfSize"];
 
-private _roads = count (_pos nearRoads (_size * 0.6)) > 0;
-private _isLand = !(surfaceIsWater _pos);
+private _center = _pos vectorAdd _halfSize;
+private _roads = count (_center nearRoads ((_size select 0) * 0.6)) > 0;
+
+private _isLand = !(surfaceIsWater _center) || {!(surfaceIsWater _pos)} || {!(surfaceIsWater (_pos vectoradd _size))};
 
 _sector = [_index, _pos, _roads, _isLand, -1, []];
 

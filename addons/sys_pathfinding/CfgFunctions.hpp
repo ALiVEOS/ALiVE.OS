@@ -20,6 +20,12 @@ class CfgFunctions {
                 RECOMPILE;
             };
 
+            class findAndSetSectorNeighbors {
+                description = "";
+                file = "\x\alive\addons\sys_pathfinding\fnc_findAndSetSectorNeighbors.sqf";
+                RECOMPILE;
+            };
+
         };
     };
 };
