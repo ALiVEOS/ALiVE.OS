@@ -31,7 +31,7 @@ params
     ["_interval", 60]
 ];
 
-if (!isServer) exitwith {["ALiVE AI Distributor should ONLY run on the server !"] call ALiVE_fnc_Dump};
+if (!isServer) exitwith {["AI Distributor should ONLY run on the server !"] call ALiVE_fnc_Dump};
 
 GVAR(AI_DISTRIBUTOR_MODE) = _mode;
 
@@ -41,14 +41,14 @@ if (isNil QGVAR(AI_DISTRIBUTOR)) then {
 };
 
 // Handle mode: <false> (disabled) calls //
-if (!GVAR(AI_DISTRIBUTOR_MODE) && {isNull GVAR(AI_DISTRIBUTOR)}) exitWith {["ALiVE AI Distributor not enabled (mode: %1).", GVAR(AI_DISTRIBUTOR_MODE)] call ALiVE_fnc_dump};
+if (!GVAR(AI_DISTRIBUTOR_MODE) && {isNull GVAR(AI_DISTRIBUTOR)}) exitWith {["AI Distributor not enabled (mode: %1).", GVAR(AI_DISTRIBUTOR_MODE)] call ALiVE_fnc_dump};
 
 // Handle duplicate start calls //
-if (GVAR(AI_DISTRIBUTOR_MODE) && {!isNull GVAR(AI_DISTRIBUTOR)}) exitwith {["ALiVE AI Distributor already running !"] call ALiVE_fnc_dump};
+if (GVAR(AI_DISTRIBUTOR_MODE) && {!isNull GVAR(AI_DISTRIBUTOR)}) exitwith {["AI Distributor already running !"] call ALiVE_fnc_dump};
 
 // Handle shutdown call //
 if (!GVAR(AI_DISTRIBUTOR_MODE) && {!isNull GVAR(AI_DISTRIBUTOR)}) exitWith {
-    ["ALiVE AI Distributor shutting down (mode: %1).", GVAR(AI_DISTRIBUTOR_MODE)] call ALiVE_fnc_dump;
+    ["AI Distributor shutting down (mode: %1).", GVAR(AI_DISTRIBUTOR_MODE)] call ALiVE_fnc_dump;
     terminate GVAR(AI_DISTRIBUTOR);
     waitUntil {scriptDone GVAR(AI_DISTRIBUTOR)};
 };
@@ -60,7 +60,7 @@ if (isClass(configFile >> "CfgPatches" >> "acex_headless")) then {
     waitUntil {!isNil "acex_headless_enabled"};
 
     if (acex_headless_enabled) then {
-        ["ALiVE AI Distributor detected ACEX Headless module enabled, shutting down !"] call ALiVE_fnc_dump;
+        ["AI Distributor detected ACEX Headless module enabled, shutting down !"] call ALiVE_fnc_dump;
         terminate _thisScript;
         waitUntil {scriptDone _thisScript};
     };
@@ -75,7 +75,7 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
 
     waitUntil {!isNil QMOD(REQUIRE_INITIALISED)};
 
-    ["ALIVE AI Distributor starting."] call ALiVE_fnc_Dump;
+    ["AI Distributor starting."] call ALiVE_fnc_dump;
 
     while {GVAR(AI_DISTRIBUTOR_MODE)} do {
 
@@ -94,7 +94,7 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
 
         {
             // Abandon loop if no HCs connected //
-            if (GVAR(AI_DISTRIBUTOR_HCLIST) isEqualTo []) exitWith {["ALiVE AI Distributor detected no HCs, idling for %1 seconds.", _delay] call ALiVE_fnc_Dump};
+            if (GVAR(AI_DISTRIBUTOR_HCLIST) isEqualTo []) exitWith {["AI Distributor detected no HCs, idling for %1 seconds.", _delay] call ALiVE_fnc_Dump};
 
             if ( (local _x) && { { (alive _x) && { !((vehicle _x) getVariable ["ALiVE_CombatSupport", false])} && {!(_x getVariable ["ALiVE_ignore_HC", false])}} count (units _x) > 0}) then {
 
@@ -106,7 +106,7 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
 
                 _x setGroupOwner (owner _HC);
 
-                ["ALIVE AI Distributor switching group '%1' to HC '%2'.", _x, _HC] call ALiVE_fnc_Dump;
+                ["AI Distributor switching group '%1' to HC '%2'.", _x, _HC] call ALiVE_fnc_dump;
             };
 
             if (_debug) then {

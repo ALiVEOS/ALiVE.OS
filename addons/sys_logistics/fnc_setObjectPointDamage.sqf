@@ -26,7 +26,7 @@ nil
 params [["_object", objNull, [objNull]], ["_damage", objNull]];
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SYS_LOGISTICS - SETTING HP: %1 - %2",_object, _damage] call ALIVE_fnc_dump;
+    ["SYS_LOGISTICS - SETTING HP: %1 - %2",_object, _damage] call ALiVE_fnc_dump;
 };
 
 if (isNull _object) exitwith {};

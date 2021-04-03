@@ -328,7 +328,7 @@ if (_mapBounds != 0) then {
         // Split into chunks that won't be too large to pass to the extension
         while {_windowStart < (count _category - 1)} do {
             _partialArray = _category select [_windowStart,_windowLength min (count _category - _windowStart)];
-            diag_log format['staticData~%1|%2 = %2 + %3;',worldName,_array, _partialArray];
+            ['staticData~%1|%2 = %2 + %3;',worldName,_array, _partialArray] call ALiVE_fnc_dump;
             _result = "ALiVEClient" callExtension format['staticData~%1|%2 = %2 + %3;',worldName,_array, _partialArray];
             _windowStart = _windowStart + _windowLength;
         };

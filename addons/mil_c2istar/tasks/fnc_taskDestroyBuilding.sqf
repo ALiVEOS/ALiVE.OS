@@ -58,7 +58,7 @@ switch (_taskState) do {
                 };
             };
         };
-        
+
         if (_debug) then {
             //Inputs
             ["ALIVE_fnc_taskDestroyBuilding Task inputs: %1 | %2 | %3 | %4 | %5 | %6 | %7 | %8 | %9 | %10 | %11 | %12",
@@ -85,7 +85,7 @@ switch (_taskState) do {
         if (count _taskPlayers == 0) exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _taskPlayers!"] call ALiVE_fnc_Dump};
         if (_taskEnemyFaction == "") exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _taskEnemyFaction!"] call ALiVE_fnc_Dump};
         if (_taskApplyType == "") exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _taskApplyType!"] call ALiVE_fnc_Dump};
-        if (!alive _targetBuilding) exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _targetBuilding!"] call ALiVE_fnc_Dump};
+        if (!_targetBuilding) exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _targetBuilding!"] call ALiVE_fnc_dump};
 
         _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideObjectToNumber;

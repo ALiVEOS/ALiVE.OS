@@ -40,7 +40,7 @@ diag_log "Timer Start";
 
 #define TIMEREND \
 _timeEnd = diag_tickTime - _timeStart; \
-diag_log format["Timer End %1",_timeEnd];
+["Timer End %1",_timeEnd] call ALiVE_fnc_dump;
 
 //========================================
 
@@ -87,7 +87,7 @@ _result = [_logic, "positionToGridIndex", getPos player] call ALIVE_fnc_sectorGr
 _err = "set positionToGridIndex";
 ASSERT_TRUE(typeName _result == "ARRAY", _err);
 
-diag_log format["Player position to sector: %1",_result];
+["Player position to sector: %1",_result] call ALiVE_fnc_dump;
 
 
 STAT("Grid Index To Sector");

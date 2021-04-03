@@ -63,7 +63,7 @@ private _launch = _this select 2;
     [">>>>>>>>>>>>>>>>>> Compiling list of objects from deWRP in wrp_objects array"] call ALiVE_fnc_dump;
     _file = format["@ALiVE\indexing\%1\x\alive\addons\fnc_strategic\indexes\objects.%1.sqf", tolower(worldName)];
 
-    // diag_log format["FILE CHECK: %1", _file];
+    // ["FILE CHECK: %1", _file] call ALiVE_fnc_dump;
 
     call compile (preprocessFile _file);
 

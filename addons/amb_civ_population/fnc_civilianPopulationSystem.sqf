@@ -92,7 +92,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE CivilianPopulationSystem - Startup"] call ALIVE_fnc_dump;
+                ["CivilianPopulationSystem - Startup"] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -115,16 +115,16 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE CivilianPopulationSystem - Startup completed"] call ALIVE_fnc_dump;
-                ["ALIVE Cluster handler created"] call ALIVE_fnc_dump;
-                ["ALIVE Agent handler created"] call ALIVE_fnc_dump;
-                ["ALIVE Civ command router created"] call ALIVE_fnc_dump;
-                ["ALIVE Active Limit: %1", _activeLimiter] call ALIVE_fnc_dump;
-                ["ALIVE Spawn Radius: %1", _spawnRadius] call ALIVE_fnc_dump;
-                ["ALIVE Spawn in Jet Radius: %1",_spawnTypeJetRadius] call ALIVE_fnc_dump;
-                ["ALIVE Spawn in Heli Radius: %1",_spawnTypeHeliRadius] call ALIVE_fnc_dump;
-                ["ALIVE Spawn Cycle Time: %1", _spawnCycleTime] call ALIVE_fnc_dump;
-                ["ALIVE Initial civilian hostility settings:"] call ALIVE_fnc_dump;
+                ["CivilianPopulationSystem - Startup completed"] call ALiVE_fnc_dump;
+                ["Cluster handler created"] call ALiVE_fnc_dump;
+                ["Agent handler created"] call ALiVE_fnc_dump;
+                ["Civ command router created"] call ALiVE_fnc_dump;
+                ["Active Limit: %1", _activeLimiter] call ALiVE_fnc_dump;
+                ["Spawn Radius: %1", _spawnRadius] call ALiVE_fnc_dump;
+                ["Spawn in Jet Radius: %1",_spawnTypeJetRadius] call ALiVE_fnc_dump;
+                ["Spawn in Heli Radius: %1",_spawnTypeHeliRadius] call ALiVE_fnc_dump;
+                ["Spawn Cycle Time: %1", _spawnCycleTime] call ALiVE_fnc_dump;
+                ["Initial civilian hostility settings:"] call ALiVE_fnc_dump;
                 ALIVE_civilianHostility call ALIVE_fnc_inspectHash;
 
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;

@@ -116,7 +116,7 @@ class FSM
       name = "End";
       init = /*%FSM<STATEINIT""">*/"deleteMarkerLocal format[""GP:%1"", _unit];" \n
        "if(_debug) then {" \n
-       "    format[""%1 killed - ending Simple Guard Post FSM"",  _unit] call ALiVE_fnc_logger;" \n
+       "    [""%1 killed - ending Simple Guard Post FSM"",  _unit] call ALiVE_fnc_dump;" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -295,7 +295,7 @@ class FSM
        "" \n
        "deleteMarkerLocal format[""GP:%1"", _unit];" \n
        "if(_debug) then {" \n
-       "    format[""%1 aborting Simple Guard Post FSM"",  _unit] call ALiVE_fnc_logger;" \n
+       "    [""%1 aborting Simple Guard Post FSM"",  _unit] call ALiVE_fnc_dump;" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;

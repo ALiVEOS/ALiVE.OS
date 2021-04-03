@@ -4,7 +4,7 @@ disableSerialization;
 _display = findDisplay 655555;
 _tasklb = _display displayctrl 655565;
 _task = _tasklb lbText (lbCurSel _tasklb);
-diag_log format["_task: %1", _task];
+["_task: %1", _task] call ALiVE_fnc_dump;
 
 
 switch (toUpper _task) do

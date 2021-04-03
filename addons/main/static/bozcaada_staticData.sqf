@@ -2,7 +2,7 @@ private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["ALiVE SETTING UP MAP: bozcaada"] call ALIVE_fnc_dump;
+["SETTING UP MAP: bozcaada"] call ALiVE_fnc_dump;
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_airBuildingTypes = [];
@@ -373,7 +373,7 @@ if (tolower(_worldName) == "bozcaada") then {
         "a3\structures_f\naval\piers\pier_f.p3d",
         "a3\structures_f\dominants\lighthouse\lighthouse_small_f.p3d"
     ];
- 
+
     ALIVE_civilianRailBuildingTypes = ALIVE_civilianRailBuildingTypes + [];
 
     ALIVE_civilianFuelBuildingTypes = ALIVE_civilianFuelBuildingTypes + [

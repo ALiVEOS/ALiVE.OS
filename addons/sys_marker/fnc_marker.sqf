@@ -153,7 +153,7 @@ switch (_operation) do {
              [_logic, "drawToggle", DEFAULT_TOGGLE] call ALIVE_fnc_marker;
              [_logic, "drawing", false] call ALIVE_fnc_marker;
 
-            //             diag_log format["TOGGLE: %1", [_logic, "drawToggle",[]] call MAINCLASS];
+            //             ["TOGGLE: %1", [_logic, "drawToggle",[]] call MAINCLASS] call ALiVE_fnc_dump;
 
             // Define module basics on server
             if (isServer) then {

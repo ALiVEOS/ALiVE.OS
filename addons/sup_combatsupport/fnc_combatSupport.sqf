@@ -59,7 +59,7 @@ switch(_operation) do {
                 };
 
                 //Only one init per instance is allowed
-                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SUP COMBATSUPPORT - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["SUP COMBATSUPPORT - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
                 //Start init
                 _logic setVariable ["initGlobal", false];
@@ -374,7 +374,7 @@ switch(_operation) do {
                                 _crew = crew _veh;
                                 _crew joinSilent _grp;
                                 _grp addVehicle _veh;
-                                
+
                              } else {
                                 _veh = _veh select 0;
                                 _grp = group (driver _veh);

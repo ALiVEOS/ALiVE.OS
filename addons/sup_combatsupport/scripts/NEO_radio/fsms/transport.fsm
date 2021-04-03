@@ -188,7 +188,7 @@ class FSM
                          "_audio = _this select 9;" \n
                          "_slingloading = _this select 10;" \n
                          "" \n
-                         "diag_log format[""START TRANSPORT FSM: %1"",_this];" \n
+                         "[""START TRANSPORT FSM: %1"",_this] call ALiVE_fnc_dump;" \n
                          "" \n
                          "_h = createVehicle [""Land_HelipadEmpty_F"", _base, [], 0, ""CAN_COLLIDE""];" \n
                          "_task = ""NONE"";" \n

@@ -29,7 +29,7 @@ if (!isDedicated) then {
     _fileExists = [format["x\alive\addons\main\static\%1_staticData.sqf", toLower(worldName)]] call ALiVE_fnc_fileExists;
 
     If (_fileExists) then {
-        ["ALiVE LOADING MAP DATA: %1",_worldName] call ALIVE_fnc_dump;
+        ["LOADING MAP DATA: %1",_worldName] call ALiVE_fnc_dump;
         _file = format["x\alive\addons\main\static\%1_staticData.sqf", toLower(worldName)];
         call compile preprocessFileLineNumbers _file;
     };
@@ -37,7 +37,7 @@ if (!isDedicated) then {
 
 if (!_fileExists) then {
 
-    ["ALiVE SETTING UP MAP: %1",_worldName] call ALIVE_fnc_dump;
+    ["SETTING UP MAP: %1",_worldName] call ALiVE_fnc_dump;
 
     ALIVE_airBuildingTypes = [];
     ALIVE_militaryParkingBuildingTypes = [];
@@ -264,7 +264,7 @@ if (!_fileExists) then {
     };
 
     if (count ALIVE_civilianPopulationBuildingTypes == 0) then { // if no buildings try loading from file
-        ["MAP NOT INDEXED OR DEDI SERVER FILE LOAD... ALiVE LOADING MAP DATA: %1",_worldName] call ALIVE_fnc_dump;
+        ["MAP NOT INDEXED OR DEDI SERVER FILE LOAD... LOADING MAP DATA: %1",_worldName] call ALiVE_fnc_dump;
         _file = format["x\alive\addons\main\static\%1_staticData.sqf", toLower(worldName)];
         call compile preprocessFileLineNumbers _file;
     };

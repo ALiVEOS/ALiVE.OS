@@ -27,7 +27,7 @@ Highhead
 
 params ["_position","_radius"];
 
-//["ALiVE - Removing  Composition: %1", _this] call ALiVE_fnc_dump;
+//["- Removing  Composition: %1", _this] call ALiVE_fnc_dump;
 
 private _compositions = [MOD(PCOMPOSITIONS),"compositions",[]] call ALiVE_fnc_HashGet;
 private _positions = _compositions select 0;

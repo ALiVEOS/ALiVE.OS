@@ -47,7 +47,7 @@ if (isDedicated) exitWith {};
 
 params ["_type","_args"];
 
-diag_log format["WEATHER EFFECTS: %1",_this];
+["WEATHER EFFECTS: %1",_this] call ALiVE_fnc_dump;
 
 switch (_type) do {
     case "Mist": {

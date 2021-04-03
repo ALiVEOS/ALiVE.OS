@@ -99,7 +99,7 @@ _string = _string + "]";
 TRACE_1("COUCH UPDATE DATA", _string);
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SYS_DATA_COUCHDB - UPDATE DATA: (%1) %2",[str(_string)] call CBA_fnc_strLen,_string] call ALIVE_fnc_dump;
+    ["SYS_DATA_COUCHDB - UPDATE DATA: (%1) %2",[str(_string)] call CBA_fnc_strLen,_string] call ALiVE_fnc_dump;
 };
 
 // Send JSON to plugin
@@ -110,7 +110,7 @@ if (!_async) then {
 };
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SYS_DATA_COUCHDB - UPDATE DATA RESULT: %1",_response] call ALIVE_fnc_dump;
+    ["SYS_DATA_COUCHDB - UPDATE DATA RESULT: %1",_response] call ALiVE_fnc_dump;
 };
 
 // Need to send the response to restore function

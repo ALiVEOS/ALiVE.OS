@@ -65,7 +65,7 @@ switch (_operation) do {
         } else {
             [_logic, "debug", _args] call ALIVE_fnc_hashSet;
         };
-		
+
         _result = _args;
     };
     case "init": {
@@ -254,7 +254,7 @@ switch (_operation) do {
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-            ["ALiVE Task Handler - Update Tasks event received"] call ALIVE_fnc_dump;
+            ["Task Handler - Update Tasks event received"] call ALiVE_fnc_dump;
             _eventData call ALIVE_fnc_inspectArray;
         };
         // DEBUG -------------------------------------------------------------------------------------
@@ -271,7 +271,7 @@ switch (_operation) do {
         // DEBUG -------------------------------------------------------------------------------------
         if (_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-            ["ALiVE Task Handler - Create Task event received"] call ALIVE_fnc_dump;
+            ["Task Handler - Create Task event received"] call ALiVE_fnc_dump;
             _eventData call ALIVE_fnc_inspectArray;
         };
         // DEBUG -------------------------------------------------------------------------------------
@@ -286,7 +286,7 @@ switch (_operation) do {
         // DEBUG -------------------------------------------------------------------------------------
         if (_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-            ["ALiVE Task Handler - Update Task event received"] call ALIVE_fnc_dump;
+            ["Task Handler - Update Task event received"] call ALiVE_fnc_dump;
             _eventData call ALIVE_fnc_inspectArray;
         };
         // DEBUG -------------------------------------------------------------------------------------
@@ -338,7 +338,7 @@ switch (_operation) do {
         // DEBUG -------------------------------------------------------------------------------------
         if (_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-            ["ALiVE Task Handler - Delete Task event received"] call ALIVE_fnc_dump;
+            ["Task Handler - Delete Task event received"] call ALiVE_fnc_dump;
             _eventData call ALIVE_fnc_inspectArray;
         };
         // DEBUG -------------------------------------------------------------------------------------
@@ -387,7 +387,7 @@ switch (_operation) do {
         // DEBUG -------------------------------------------------------------------------------------
         if (_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-            ["ALiVE Task Handler - Sync Task event received"] call ALIVE_fnc_dump;
+            ["Task Handler - Sync Task event received"] call ALiVE_fnc_dump;
             _eventData call ALIVE_fnc_inspectArray;
         };
         // DEBUG -------------------------------------------------------------------------------------
@@ -401,7 +401,7 @@ switch (_operation) do {
         // DEBUG -------------------------------------------------------------------------------------
         if (_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-            ["ALiVE Task Handler - Generate Task event received"] call ALIVE_fnc_dump;
+            ["Task Handler - Generate Task event received"] call ALiVE_fnc_dump;
             _eventData call ALIVE_fnc_inspectArray;
         };
         // DEBUG -------------------------------------------------------------------------------------
@@ -416,7 +416,7 @@ switch (_operation) do {
         // DEBUG -------------------------------------------------------------------------------------
         if (_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-            ["ALiVE Task Handler - Auto Generate Tasks event received"] call ALIVE_fnc_dump;
+            ["Task Handler - Auto Generate Tasks event received"] call ALiVE_fnc_dump;
             _eventData call ALIVE_fnc_inspectArray;
         };
         // DEBUG -------------------------------------------------------------------------------------
@@ -469,7 +469,7 @@ switch (_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if (_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALiVE Task Handler - Auto generate task for side: %1",_taskSide] call ALIVE_fnc_dump;
+                    ["Task Handler - Auto generate task for side: %1",_taskSide] call ALiVE_fnc_dump;
                     _task call ALIVE_fnc_inspectArray;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
@@ -479,7 +479,7 @@ switch (_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if (_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALiVE Task Handler - Auto generating tasks for side %1 failed! Tasks available %2! Active tasks %3!",_taskSide, !isnil "ALIVE_autoGeneratedTasks" && {count ALIVE_autoGeneratedTasks > 0}, _countActive] call ALIVE_fnc_dump;
+                    ["Task Handler - Auto generating tasks for side %1 failed! Tasks available %2! Active tasks %3!",_taskSide, !isnil "ALIVE_autoGeneratedTasks" && {count ALIVE_autoGeneratedTasks > 0}, _countActive] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
             };
@@ -490,6 +490,7 @@ switch (_operation) do {
             private _debug = [_logic, "debug", false] call ALIVE_fnc_hashGet;
 
             private _taskData = _args;
+
 			_taskData params [
 					"_taskID",
 					"_requestPlayerID",
@@ -517,9 +518,10 @@ switch (_operation) do {
 
             private _taskSet = ["init", _taskID, _taskData, [], _debug] call (missionNamespace getVariable [format["ALIVE_fnc_task%1", _taskType],{}]);
 
+
             if (!isNil "_taskSet" && {_taskSet isEqualType [] && !(_taskSet isEqualTo [])}) then {
 				private _managedTaskParams = [_logic, "managedTaskParams"] call ALIVE_fnc_hashSet;
-				
+
 				if !(_taskID in (_managedTaskParams select 1)) then {
 					[_managedTaskParams, _taskID, _taskSet select 1] call ALIVE_fnc_hashSet;
 				};
@@ -532,10 +534,12 @@ switch (_operation) do {
                 private _autoGenerateSides = [_logic, "autoGenerateSides"] call ALIVE_fnc_hashGet;
                 private _sideAutoGeneration = [_autoGenerateSides, _taskSide] call ALIVE_fnc_hashGet;
 
-                if (_sideAutoGeneration select 0 != "None") then {
+                if (_sideAutoGeneration select 0 == "Constant") then {
                     uiSleep 10;
 
                     private _generate = [format ["%1_%2", _taskSide, time + 1], _requestPlayerID, _taskSide, _taskFaction, _taskEnemyFaction, _sideAutoGeneration select 0];
+
+                    ["Starting auto tasks for some reason, tasks set to %1", _sideAutoGeneration] call ALiVE_fnc_dump;
                     [_logic, "autoGenerateTasks", _generate] call MAINCLASS;
                 };
             };
@@ -568,7 +572,7 @@ switch (_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if (_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALiVE Task Handler - Sync Connecting Player: %1 %2 %3 %4",_playerID,_groupID,_player,_playerSide] call ALIVE_fnc_dump;
+                    ["Task Handler - Sync Connecting Player: %1 %2 %3 %4",_playerID,_groupID,_player,_playerSide] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -586,7 +590,7 @@ switch (_operation) do {
 
 							// DEBUG -------------------------------------------------------------------------------------
 							if (_debug) then {
-								["ALiVE Task Handler - Sync Side Task: %1",_x] call ALIVE_fnc_dump;
+								["Task Handler - Sync Side Task: %1",_x] call ALiVE_fnc_dump;
 							};
 							// DEBUG -------------------------------------------------------------------------------------
 						};
@@ -604,7 +608,7 @@ switch (_operation) do {
 
 								// DEBUG -------------------------------------------------------------------------------------
 								if (_debug) then {
-									["ALiVE Task Handler - Sync Player Task: %1",_x] call ALIVE_fnc_dump;
+									["Task Handler - Sync Player Task: %1",_x] call ALiVE_fnc_dump;
 								};
 								// DEBUG -------------------------------------------------------------------------------------
 							};
@@ -622,7 +626,7 @@ switch (_operation) do {
 
 							// DEBUG -------------------------------------------------------------------------------------
 							if (_debug) then {
-								["ALiVE Task Handler - Sync Group Task: %1",_x] call ALIVE_fnc_dump;
+								["Task Handler - Sync Group Task: %1",_x] call ALiVE_fnc_dump;
 							};
 							// DEBUG -------------------------------------------------------------------------------------
 						};
@@ -759,7 +763,7 @@ switch (_operation) do {
 											"_fParent",
 											"_fSource"
 										];
-									
+
                                     if (_fTaskID == _parent) exitWith {
                                         private _fEvent = ["TASK_CREATE", _fTaskID, _fRequestPlayerID, _fPosition, _fTitle, _fDescription, _fState, _fCurrent, _fParent, _fSource];
 
@@ -818,7 +822,7 @@ switch (_operation) do {
 					"",
 					"_taskSource"
 				];
-            
+
             _taskPlayers = _taskPlayers select 0;
 
             // if the task is set to side application
@@ -839,7 +843,7 @@ switch (_operation) do {
 
                 {
                     ([_x] call ALiVE_fnc_getPlayersInGroupDataSource) params ["_currentGroupPlayerOptions", "_currentGroupPlayerValues"];
-                    
+
                     {
                         if !(_x in _groupPlayerOptions) then {
                             _groupPlayerOptions pushBack _x;
@@ -976,7 +980,7 @@ switch (_operation) do {
 					"",
 					"_taskSource"
 				];
-			
+
             _updatedTaskPlayers = _updatedTaskPlayers select 0;
 
             private _task = [_logic, "getTask", _taskID] call MAINCLASS;
@@ -1008,7 +1012,7 @@ switch (_operation) do {
 
                 {
                     ([_x] call ALiVE_fnc_getPlayersInGroupDataSource) params ["_currentGroupPlayerOptions", "_currentGroupPlayerValues"];
-                    
+
                     {
                         if !(_x in _groupPlayerOptions) then {
                             _groupPlayerOptions pushback _x;
@@ -1073,7 +1077,7 @@ switch (_operation) do {
             // is now not current remove from the active tasks array
             if (_taskCurrent == "N" || _taskState in ["Succeeded", "Failed", "Canceled"]) then {
                 private _activeTasks = [_logic, "activeTasks"] call ALIVE_fnc_hashGet;
-                
+
 				if (_taskID in (_activeTasks select 1)) then {
                     [_previousTaskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
                     [_activeTasks, _taskID] call ALIVE_fnc_hashRem;
@@ -1209,7 +1213,7 @@ switch (_operation) do {
                             private _group = group _player;
                             _group = [format ["%1", _group], " ", "_"] call CBA_fnc_replace;
 							private _groupTasks = nil;
-							
+
                             if (_group in (_tasksByGroup select 1)) then {
                                 _groupTasks = [_tasksByGroup, _group] call ALIVE_fnc_hashGet;
                             } else {
@@ -1295,12 +1299,12 @@ switch (_operation) do {
             private _debug = [_logic, "debug", false] call ALIVE_fnc_hashGet;
             private _tasksBySide = [_logic, "tasksBySide"] call ALIVE_fnc_hashGet;
             private _sideTasks = [_logic, "getTasksBySide", _taskSide] call MAINCLASS;
-            
+
 			private _tasksToDispatch = [_logic, "tasksToDispatch"] call ALIVE_fnc_hashGet;
             private _createTasks = [_tasksToDispatch, "create"] call ALIVE_fnc_hashGet;
             private _updateTasks = [_tasksToDispatch, "update"] call ALIVE_fnc_hashGet;
             private _deleteTasks = [_tasksToDispatch, "delete"] call ALIVE_fnc_hashGet;
-            
+
 			private _autoGenerateSides = [_logic, "autoGenerateSides"] call ALIVE_fnc_hashGet;
             private _autoGenerateSide = [_autoGenerateSides, _taskSide] call ALIVE_fnc_hashGet;
 
@@ -1445,7 +1449,7 @@ switch (_operation) do {
         // DEBUG -------------------------------------------------------------------------------------
         if (_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-            ["ALiVE Task Handler - Task Manager Started"] call ALIVE_fnc_dump;
+            ["Task Handler - Task Manager Started"] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
@@ -1483,7 +1487,7 @@ switch (_operation) do {
 
                         // DEBUG -------------------------------------------------------------------------------------
                         if (_debug) then {
-                            ["ALiVE Task Handler - Manage Task:"] call ALIVE_fnc_dump;
+                            ["Task Handler - Manage Task:"] call ALiVE_fnc_dump;
                             _mainTask call ALIVE_fnc_inspectArray;
                             _taskParams call ALIVE_fnc_inspectHash;
                         };
@@ -1586,7 +1590,7 @@ switch (_operation) do {
         // DEBUG -------------------------------------------------------------------------------------
         if (_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-            ["ALiVE Task Handler - Task Manager Stopped"] call ALIVE_fnc_dump;
+            ["Task Handler - Task Manager Stopped"] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
     };
@@ -1595,7 +1599,7 @@ switch (_operation) do {
             private _taskID = _args;
             private _tasks = [_logic, "tasks"] call ALIVE_fnc_hashGet;
             private _taskIndex = _tasks select 1;
-			
+
             if (_taskID in _taskIndex) then {
                 _result = [_tasks, _taskID] call ALIVE_fnc_hashGet;
             } else {

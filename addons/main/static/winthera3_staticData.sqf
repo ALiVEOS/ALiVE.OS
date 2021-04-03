@@ -1,6 +1,6 @@
 private["_worldName"];
  _worldName = tolower(worldName);
- ["ALiVE SETTING UP MAP: winthera3"] call ALIVE_fnc_dump;
+ ["SETTING UP MAP: winthera3"] call ALiVE_fnc_dump;
  ALIVE_Indexing_Blacklist = [];
  ALIVE_airBuildingTypes = [];
  ALIVE_militaryParkingBuildingTypes = [];
@@ -21,9 +21,9 @@ private["_worldName"];
  ALIVE_civilianFuelBuildingTypes = [];
  ALIVE_civilianConstructionBuildingTypes = [];
  ALIVE_civilianSettlementBuildingTypes = [];
- 
+
  //ALiVE_mapCompositionType = "Woodland";
- 
+
  if(tolower(_worldName) == "winthera3") then {
 ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + ["ca\air2\uh1y\uh1y_crashed.p3d","ibr\panthera_objects\jablon.p3d","a3\structures_f\households\house_small02\d_house_small_02_v1_f.p3d","a3\structures_f\mil\bunker\bunker_f.p3d","ca\buildings2\a_generalstore_01\a_generalstore_01.p3d","ca\misc\mi8_crashed.p3d","ca\buildings2\misc_cargo\seacrate.p3d","ca\air2\uh1y\uh1ywreck.p3d","ca\buildings\dum_zboreny_lidice.p3d","a3\structures_f\civ\lamps\lampsolar_off_f.p3d","ibr\panthera_objects\ibr_most_bez_lamp.p3d","ibr\panthera_objects\conslab.p3d","ibr\panthera_objects\ibr_most_stred30.p3d","ca\buildings2\houseruins\r_housev2_01a.p3d","ca\buildings\dum_istan4_zidka.p3d","ca\structures\wall\wall_woodvil_pole.p3d","ca\buildings2\shed_small\shed_m02.p3d","ca\structures_e\ind\ind_coltan_mine\ind_coltan_tunnel_ep1.p3d","ibr\ibr_dinopark\ibr_zoofence.p3d","ibr\ibr_dinopark\ibr_zoodoor.p3d","ibr\ibr_dinopark\ibr_zoogate.p3d"];
 ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + ["ca\buildings\hlidac_budka.p3d","ca\buildings\fuelstation_army.p3d","ca\buildings\posed.p3d","a3\structures_f\mil\barracks\i_barracks_v2_f.p3d","ca\buildings\telek1.p3d","ca\buildings\hangar_2.p3d","a3\structures_f\ind\airport\airport_tower_f.p3d","ca\buildings2\ind_workshop01\ind_workshop01_l.p3d","ca\buildings2\ind_workshop01\ind_workshop01_03.p3d","a3\structures_f\mil\offices\miloffices_v1_f.p3d","a3\structures_f\mil\barracks\u_barracks_v2_f.p3d","ca\structures\mil\mil_controltower.p3d","ca\buildings\tents\camo_box.p3d","ca\structures\mil\mil_barracks_i.p3d","ca\buildings\hospital.p3d","a3\structures_f\research\research_house_v1_f.p3d","a3\structures_f\research\research_hq_f.p3d","a3\structures_f\ind\airport\hangar_f.p3d","a3\structures_f\mil\tenthangar\tenthangar_v1_f.p3d","ca\structures\mil\mil_house.p3d","a3\structures_f\research\dome_small_plates_f.p3d","a3\structures_f\research\dome_small_f.p3d","a3\structures_f\mil\cargo\cargo_patrol_v2_f.p3d","a3\structures_f\mil\cargo\cargo_patrol_v1_f.p3d","a3\structures_f\walls\mil_wallbig_gate_f.p3d","a3\structures_f\mil\cargo\cargo_hq_v1_f.p3d","ca\structures\mil\mil_guardhouse.p3d","a3\structures_f\mil\cargo\medevac_house_v1_f.p3d"];

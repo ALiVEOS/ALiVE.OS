@@ -75,7 +75,7 @@ private _configPaths = [
 
 // Default to regular if additional PBOs are not loaded
 if (!isClass (_configPaths select 0) && !isClass(_configPaths select 1)) then {
-    ["WARNING: You don't appear to have the %1 compositions loaded, make sure you have added the composition PBOs to your @ALiVE or @ALiVEServer addon folders! Falling back to %2!", _compType,_comp] call ALiVE_fnc_dump;
+    ["WARNING: You don't appear to have the %1 compositions loaded, make sure you have added the composition PBOs to your @or @ALiVEServer addon folders! Falling back to %2!", _compType,_comp] call ALiVE_fnc_dump;
 
     _configPaths = [
         missionConfigFile >> "CfgGroups" >> "Empty" >> _comp,
@@ -122,8 +122,8 @@ if (count _faction != 0) then {
                     _enemyFactions pushback _x;
                 };
             } foreach (_enemy call ALiVE_fnc_getSideFactions);
-            // diag_log format["FRIEND %1",_friendlySide];
-            // diag_log format["ENEMY %1",_enemy];
+            // ["FRIEND %1",_friendlySide] call ALiVE_fnc_dump;
+            // ["ENEMY %1",_enemy] call ALiVE_fnc_dump;
         } foreach _enemySide;
     } foreach _faction;
 

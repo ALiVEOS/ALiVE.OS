@@ -45,7 +45,7 @@ private _strategic = _args select 5; // If this should integrate with C2ISTAR au
 private _autoGenerateStrategicTasks = false;
 
 if (isNil "ALIVE_MIL_C2ISTAR") exitwith {
-    ["ALIVE PLAYER TASK REQUEST FAILED! NO C2ISTAR MODULE AVAILABLE!"] call ALIVE_fnc_dump;
+    ["PLAYER TASK REQUEST FAILED! NO C2ISTAR MODULE AVAILABLE!"] call ALiVE_fnc_dump;
 
     _autoGenerateStrategicTasks
 };

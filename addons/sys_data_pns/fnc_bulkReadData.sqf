@@ -24,6 +24,6 @@ Peer Reviewed:
 #include "script_component.hpp"
 SCRIPT(bulkReadData_pns);
 
-["ALiVE SYS DATA PNS - Operation bulkRead unsupported! Called by %1 - input %2",_fnc_scriptNameParent,_this] call ALiVE_fnc_Dump;
+["SYS DATA PNS - Operation bulkRead unsupported! Called by %1 - input %2",_fnc_scriptNameParent,_this] call ALiVE_fnc_dump;
 
 "SYS DATA ERROR";
