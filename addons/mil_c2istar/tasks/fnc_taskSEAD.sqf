@@ -107,7 +107,9 @@ switch (_taskState) do {
 
             if (typeName _targetVehicle != "OBJECT") then {
                 _vehicleProfile = [ALIVE_profileHandler, "getProfile", _targetVehicle] call ALIVE_fnc_profileHandler;
-                _vehicleProfile call ALIVE_fnc_inspectHash;
+                if (_debug) then {
+                    _vehicleProfile call ALIVE_fnc_inspectHash;
+                };
                 _vehiclePosition = _vehicleProfile select 2 select 2;
                 _vehicleType = _vehicleProfile select 2 select 11;
             } else {
