@@ -28,7 +28,7 @@ private ["_profile","_params","_startPos","_type","_speed","_formation","_behavi
 _profile = _this select 0;
 _params = _this select 1;
 
-_debug = false;
+_debug = true;
 
 if (isnil "_profile") exitWith {};
 
@@ -74,7 +74,16 @@ switch(_profileSide) do {
     };
 };
 
-// Add startpoint as waypoint
+// Ensure first start-WP is in water
+if !(surfaceIsWater _startpos) then {
+
+    _startPos = [_startPos, 10, 50, 10, 2, 5 , 0, [], [_startPos]] call BIS_fnc_findSafePos;
+
+    if (_debug) then {
+        ["SEA PATROL - Start-WP of Sea Patrol has not been in water! Switched position to be in water: %1 on water (%3) with params: %2",  _profileID, _params, surfaceIsWater _startPos] call ALiVE_fnc_dump;
+    };
+};
+
 _profileWaypoint = [_startPos, 15, _type, _speed, 30, [], _formation, "NO CHANGE", _behaviour] call ALIVE_fnc_createProfileWaypoint;
 [_profileWaypoint,"statements",["true","_disableSimulation = true;"]] call ALIVE_fnc_hashSet;
 [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
