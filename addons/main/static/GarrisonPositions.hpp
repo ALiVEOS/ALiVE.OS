@@ -53,3 +53,4 @@ ALIVE_garrisonPositions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_garrisonPositions,"Land_vn_hut_tower_01", [1]] call ALIVE_fnc_hashSet;
 [ALIVE_garrisonPositions,"Land_vn_o_bunker_02", [2]] call ALIVE_fnc_hashSet;
 [ALIVE_garrisonPositions,"Land_vn_o_shelter_01", [0]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_vn_cave_04_01", [53,54,4,6,8,16,24,42,45]] call ALIVE_fnc_hashSet;
