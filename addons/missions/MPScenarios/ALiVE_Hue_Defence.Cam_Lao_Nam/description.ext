@@ -104,14 +104,14 @@ class Params
 	};
 	class Enablemapmarkers
 	{
-	    title = $STR_VN_PARAMS_MAPMARKERS;
+	    title = $STR_VN_COALIVE_PARAMS_MAPMARKERS;
 	    isGlobal = 1;
 	    values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
 	    default = 0;
 	};
 	class Enablegroupmarkers {
-			title = $STR_VN_PARAMS_GROUPMARKERS;
+			title = $STR_VN_COALIVE_PARAMS_GROUPMARKERS;
 			isGlobal = 1;
 			values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
