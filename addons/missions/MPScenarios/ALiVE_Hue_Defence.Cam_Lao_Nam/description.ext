@@ -30,7 +30,6 @@ minPlayerDistance = 150;
 allowProfileGlasses = 0;
 
 #include "CfgFunctions.inc"
-#include "\vn\missions_f_vietnam\script_components.inc"
 #include "scripts\groupMarkers.hpp"
 
 class Params

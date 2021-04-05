@@ -46,7 +46,7 @@ class Playermarker_RscEdit {
 	soundExpand[] = {"",0.1,1};
 	colorText[] = {0.95, 0.95, 0.95, 1};
 	colorDisabled[] = {1, 1, 1, 0.25};
-	autocomplete = false;
+	autocomplete = 0;
 	colorSelection[] = {"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.3843])", "(profilenamespace getvariable ['GUI_BCG_RGB_G',0.7019])", "(profilenamespace getvariable ['GUI_BCG_RGB_B',0.8862])", 1};
 	canModify = 1;
 };
@@ -79,8 +79,8 @@ class PlayerMarker_Settings
 {
     idd = 56000;
     name= "PlayerMarker_Settings";
-    movingEnable = false;
-    enableSimulation = true;
+    movingEnable = 0;
+    enableSimulation = 1;
 
     class controlsBackground
     {
