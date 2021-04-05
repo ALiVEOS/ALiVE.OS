@@ -64,7 +64,7 @@ class Params
 	    isGlobal = 1;
 	    values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
-	    default = 0;
+	    default = 1;
 	    function = "vn_ms_fnc_params_stamina";
 	};
 	class AimCoef
@@ -73,7 +73,7 @@ class Params
 	    isGlobal = 1;
 	    values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
-	    default = 1;
+	    default = 0;
 	    function = "vn_ms_fnc_params_aimCoef";
 	};
 	class FailOnWipe
@@ -81,7 +81,7 @@ class Params
 	    title = $STR_VN_PARAMS_FAILONWIPE;
 	    values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
-	    default = 0;
+	    default = 1;
 	    function = "vn_ms_fnc_params_failOnWipe";
 	};
 	class TeleportAction
@@ -90,7 +90,7 @@ class Params
 	    isGlobal = 1;
 	    values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
-	    default = 1;
+	    default = 0;
 	    function = "vn_ms_fnc_params_teleportAction";
 	};
 	class MissionArsenal
@@ -99,7 +99,7 @@ class Params
 	    isGlobal = 1;
 	    values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
-	    default = 1;
+	    default = 0;
 	    function = "vn_ms_fnc_params_arsenal";
 	};
 	class Enablemapmarkers
@@ -108,14 +108,14 @@ class Params
 	    isGlobal = 1;
 	    values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
-	    default = 1;
+	    default = 0;
 	};
 	class Enablegroupmarkers {
 			title = $STR_VN_PARAMS_GROUPMARKERS;
 			isGlobal = 1;
 			values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
-			default = 1;
+			default = 0;
 	};
 };
 
