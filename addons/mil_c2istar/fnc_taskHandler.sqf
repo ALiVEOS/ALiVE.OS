@@ -490,6 +490,7 @@ switch (_operation) do {
             private _debug = [_logic, "debug", false] call ALIVE_fnc_hashGet;
 
             private _taskData = _args;
+
 			_taskData params [
 					"_taskID",
 					"_requestPlayerID",
@@ -517,6 +518,7 @@ switch (_operation) do {
 
             private _taskSet = ["init", _taskID, _taskData, [], _debug] call (missionNamespace getVariable [format["ALIVE_fnc_task%1", _taskType],{}]);
 
+
             if (!isNil "_taskSet" && {_taskSet isEqualType [] && !(_taskSet isEqualTo [])}) then {
 				private _managedTaskParams = [_logic, "managedTaskParams"] call ALIVE_fnc_hashSet;
 
@@ -532,10 +534,12 @@ switch (_operation) do {
                 private _autoGenerateSides = [_logic, "autoGenerateSides"] call ALIVE_fnc_hashGet;
                 private _sideAutoGeneration = [_autoGenerateSides, _taskSide] call ALIVE_fnc_hashGet;
 
-                if (_sideAutoGeneration select 0 != "None") then {
+                if (_sideAutoGeneration select 0 == "Constant") then {
                     uiSleep 10;
 
                     private _generate = [format ["%1_%2", _taskSide, time + 1], _requestPlayerID, _taskSide, _taskFaction, _taskEnemyFaction, _sideAutoGeneration select 0];
+
+                    ["Starting auto tasks for some reason, tasks set to %1", _sideAutoGeneration] call ALiVE_fnc_dump;
                     [_logic, "autoGenerateTasks", _generate] call MAINCLASS;
                 };
             };

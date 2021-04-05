@@ -289,15 +289,18 @@ switch (_taskState) do {
             _taskIDs pushback _taskID;
 
             // Create secure task
-            _dialog = [_dialogOption,"DefenceWave"] call ALIVE_fnc_hashGet;
-            _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
-            _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
-            _newTaskID = format["%1_c2",_taskID];
-            _taskSource = format["%1-CSAR-DefenceWave",_taskID];
-            _newTask = [_newTaskID,_requestPlayerID,_taskSide,_newTaskPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,"Created",_taskApplyType,"N",_taskID,_taskSource,true];
+            // IF ATO or OPCOM is calling, don't create a wave of attackers.
+            if (_requestPlayerID != "ATO" && _requestPlayerID != "OPCOM" ) then {
+                _dialog = [_dialogOption,"DefenceWave"] call ALIVE_fnc_hashGet;
+                _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
+                _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
+                _newTaskID = format["%1_c2",_taskID];
+                _taskSource = format["%1-CSAR-DefenceWave",_taskID];
+                _newTask = [_newTaskID,_requestPlayerID,_taskSide,_newTaskPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,"Created",_taskApplyType,"N",_taskID,_taskSource,true];
 
-            _tasks pushback _newTask;
-            _taskIDs pushback _newTaskID;
+                _tasks pushback _newTask;
+                _taskIDs pushback _newTaskID;
+            };
 
             // create the return task
             _dialog = [_dialogOption,"Return"] call ALIVE_fnc_hashGet;

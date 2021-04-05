@@ -976,6 +976,12 @@ switch(_operation) do {
             _isAlive = true;
         };
 
+        if (isNil "_destination") exitWith {
+             if(_debug) then {
+                ["ATO - CSAR Request does not have a desintation: %1", _aircraft] call ALiVE_fnc_dump;
+            };
+        };
+
         // Find crashsite and check if its on land
         private _crashsites = [];
         {
@@ -1053,7 +1059,7 @@ switch(_operation) do {
         };
 
         // 1st target will be handled by ATO, check other targets for player
-        if (_type != "SEAD") then {
+        if (_type != "SEAD" && _type != "DefendHQ") then {
             _targets set [0, -1];
             _targets = _targets - [-1];
         };
@@ -1092,6 +1098,13 @@ switch(_operation) do {
             } else {
                 _destination = position _target;
                 _enemyFaction = faction _target;
+            };
+
+            // Don't send request if destination isn't defined
+            if (count _destination == 0) exitWith {
+                 if(_debug) then {
+                    ["ATO - Task Request does not have a desintation target: %1", _target] call ALiVE_fnc_dump;
+                };
             };
 
             // Request task - Defend HQ?, Destroy Vehicles, CSAR, SEAD
