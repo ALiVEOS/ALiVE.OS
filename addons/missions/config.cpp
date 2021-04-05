@@ -137,6 +137,14 @@ class CfgMissions
             overviewText = "PAVN launch a general offensive against military and civilian objectives throughout South Vietnam, supported by VC conducting cross-border insurgency operations.";
             author = "ALiVE Mod Team";
         };
+        class MP_COOP_Vietnam
+        {
+            briefingName = "ALiVE | Hue Defence (COOP 20)";
+            directory = "x\alive\addons\missions\mpscenarios\ALiVE_Hue_Defence.Cam_Lao_Nam";
+            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Hue_Defence.Cam_Lao_Name\img\splash.paa";
+            overviewText = "Travel by convoy to Hue, consolidate positions defend Hue and the Imperial City Citadel from enemy attack.";
+            author = "ALiVE Mod Team";
+        };
     };
 };
 

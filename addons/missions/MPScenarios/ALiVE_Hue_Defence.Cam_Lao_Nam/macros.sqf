@@ -9,8 +9,6 @@
 *
 * Created by [KH]Jman
 * Creation date: 07/01/2017
-* Email: jman@kellys-heroes.eu
-* Web: http://www.kellys-heroes.eu
 * 
 * */
 // ====================================================================================

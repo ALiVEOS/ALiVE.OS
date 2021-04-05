@@ -10,8 +10,6 @@
 * 
 * Created by [KH]Jman
 * Creation date: 05/04/2021
-* Email: jman@kellys-heroes.eu
-* Web: http://www.kellys-heroes.eu
 * 
 * */
 // ====================================================================================
