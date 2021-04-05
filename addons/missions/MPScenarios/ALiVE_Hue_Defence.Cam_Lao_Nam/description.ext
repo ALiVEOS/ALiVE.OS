@@ -1,0 +1,136 @@
+class Header {
+    gameType = "alive";
+    minPlayers = 1;
+    maxPlayers = 20;
+};
+dev = "Jman";
+author = $STR_VN_MISSIONS_AUTHOR_ALIVE;
+briefingName = $STR_VN_MISSIONS_TITLE_MISSION_ALIVE;
+overviewPicture = "img\mission.paa";
+overviewText = $STR_VN_MISSIONS_DESC_MISSION_ALIVE;
+onLoadName = $STR_VN_MISSIONS_TITLE_MISSION_ALIVE;
+loadScreen = "img\mission.paa";
+onLoadMission = $STR_VN_MISSIONS_TITLE_MISSION_ALIVE_SUB;
+aiKills = 0;
+enableDebugConsole = 1;
+allowFunctionsLog = 1;
+allowFunctionsRecompile = 1;
+respawnButton = 1;
+respawnTemplates[] = {"MenuPosition"};
+respawn = 3;
+respawnOnStart = -1;
+disabledAI = 1;
+disableRandomization[] = {};
+joinUnassigned = 1;
+saving = 0;
+corpseManagerMode = 1;
+corpseLimit = 50;
+corpseRemovalMaxTime = 450;
+minPlayerDistance = 150;
+allowProfileGlasses = 0;
+
+#include "CfgFunctions.inc"
+#include "\vn\missions_f_vietnam\script_components.inc"
+#include "scripts\groupMarkers.hpp"
+
+class Params
+{
+	class EnvironmentSettings
+	{
+	    title = $STR_VN_PARAMS_ENVIRONMENT_SETTINGS;
+	    values[] = {""};
+	    texts[] = {""};
+	    default = "";
+	};
+	class Difficulty
+	{
+	    title = $STR_VN_PARAMS_DIFFICULTY;
+	    values[] = {1, 2, 3, 4};
+	    texts[] = {$STR_VN_PARAMS_DIFFICULTY_EASY, $STR_VN_PARAMS_DIFFICULTY_NORMAL, $STR_VN_PARAMS_DIFFICULTY_HARD, $STR_VN_PARAMS_DIFFICULTY_HELL};
+	    default = 2;
+	    function = "vn_ms_fnc_params_difficulty";
+	};
+	class vn_respawn_delay
+	{
+	    title = $STR_VN_PARAMS_RESPAWN_DELAY;
+	    isGlobal = 1;
+	    values[] = {10, 30, 60, 90, 120};
+	    texts[] = {"10", "30", "60", "90", "120"};
+	    default = 10;
+	    function = "vn_ms_fnc_params_respawnDelay";
+	};
+	class Stamina
+	{
+	    title = $STR_VN_PARAMS_STAMINA;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 0;
+	    function = "vn_ms_fnc_params_stamina";
+	};
+	class AimCoef
+	{
+	    title = $STR_VN_PARAMS_AIMCOEF;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_ms_fnc_params_aimCoef";
+	};
+	class FailOnWipe
+	{
+	    title = $STR_VN_PARAMS_FAILONWIPE;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 0;
+	    function = "vn_ms_fnc_params_failOnWipe";
+	};
+	class TeleportAction
+	{
+	    title = $STR_VN_PARAMS_TELEPORTACTION;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_ms_fnc_params_teleportAction";
+	};
+	class MissionArsenal
+	{
+	    title = $STR_VN_PARAMS_ARSENAL;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_ms_fnc_params_arsenal";
+	};
+	class Enablemapmarkers
+	{
+	    title = $STR_VN_PARAMS_MAPMARKERS;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	};
+	class Enablegroupmarkers {
+			title = $STR_VN_PARAMS_GROUPMARKERS;
+			isGlobal = 1;
+			values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+			default = 1;
+	};
+};
+
+
+class CfgDebriefing
+{
+};
+
+class CfgTaskDescriptions
+{
+};
+
+
+
+
+
+

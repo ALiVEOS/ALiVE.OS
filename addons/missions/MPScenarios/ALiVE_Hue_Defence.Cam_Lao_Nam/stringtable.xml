@@ -1,0 +1,462 @@
+<?xml version="1.0" ?>
+<Project name="missions_coalive">
+<Package name="Actions">
+<Key ID="STR_VN_MISSIONS_ACTION_SAVELOADOUT">
+<Chinese>设置重生武装</Chinese>
+<English>Set respawn loadout</English>
+<French>Définir équipement réapparition</French>
+<German>Respawn-Ausrüstung festlegen</German>
+<Italian>Imposta carico rigenerazione</Italian>
+<Portuguese>Definir pertences de ressurgimento</Portuguese>
+<Russian>Сохранить комплект</Russian>
+<Spanish>Configurar arsenal al reaparecer</Spanish>
+</Key>
+<Key ID="STR_VN_MISSIONS_ACTION_TELEPORT_AO">
+<Chinese>传送到行动区</Chinese>
+<English>Teleport to AO</English>
+<French>Se téléporter sur ZO</French>
+<German>Ins Einsatzgebiet teleportieren</German>
+<Italian>Teletrasporto nell’area delle operazioni</Italian>
+<Portuguese>Teleportar até AO</Portuguese>
+<Russian>Переместиться в оперативную зону</Russian>
+<Spanish>Teletransporte a zona de operaciones</Spanish>
+</Key>
+<Key ID="STR_VN_MISSIONS_ACTION_TELEPORT_LEADER">
+<Chinese>传送到队长位置</Chinese>
+<English>Teleport to group leader</English>
+<French>Se téléporter sur chef de groupe</French>
+<German>Zum Gruppenführer teleportieren</German>
+<Italian>Teletrasporto dal caposquadra</Italian>
+<Portuguese>Teleportar até líder do grupo</Portuguese>
+<Russian>Переместиться к лидеру отряда</Russian>
+<Spanish>Teletransporte a líder de grupo</Spanish>
+</Key>
+<Key ID="STR_VN_MISSIONS_ACTION_INJECT_SYRETTE">
+<Chinese>注射吗啡针剂</Chinese>
+<English>Inject syrette</English>
+<French>Injecter syrette</French>
+<German>Syrette injizieren</German>
+<Italian>Inietta siringa monouso</Italian>
+<Portuguese>Injetar Syrette</Portuguese>
+<Russian>Вставить шприц</Russian>
+<Spanish>Inyectar jeringuilla</Spanish>
+</Key>
+<Key ID="STR_VN_MISSIONS_ACTION_SKIP_TRAVEL">
+<Chinese>跳过行进</Chinese>
+<English>Skip travel</English>
+<French>Passer voyage</French>
+<German>Reise überspringen</German>
+<Italian>Salta viaggio</Italian>
+<Portuguese>Pular viagem</Portuguese>
+<Russian>Пропустить перемещение</Russian>
+<Spanish>Saltar viaje</Spanish>
+</Key>
+</Package>
+<Package name="Descriptions">
+<Key ID="STR_VN_MISSIONS_DESC_MISSION_ALIVE">
+<Chinese></Chinese>
+<English>Defend Hue from enemy attack.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="General">
+<Key ID="STR_VN_MISSIONS_AUTHOR_ALIVE">
+<Chinese></Chinese>
+<English>Jman, ALiVE Mod Team</English>
+<French>Jman, ALiVE Mod Team</French>
+<German>Jman, ALiVE Mod Team</German>
+<Italian>Jman, ALiVE Mod Team</Italian>
+<Portuguese>Jman, ALiVE Mod Team</Portuguese>
+<Russian>Jman, ALiVE Mod Team</Russian>
+<Spanish>Jman, ALiVE Mod Team</Spanish>
+</Key>
+</Package>
+<Package name="Misc">
+<Key ID="STR_VN_MISSIONS_MISC_TELEPORTTITLE">
+<Chinese>--- 正在行进 ---\n- 待命 -</Chinese>
+<English>--- Traveling ---\n- Standby -</English>
+<French>--- Déplacement ---\n- Patientez -</French>
+<German>--- Reisen ---\n- Bitte warten -</German>
+<Italian>--- In viaggio ---\n- Attendi -</Italian>
+<Portuguese>--- Viajando ---\n- Aguarde -</Portuguese>
+<Russian>--- Перемещение---\n- Ожидайте -</Russian>
+<Spanish>--- Viajando ---\n- Un momento -</Spanish>
+</Key>
+<Key ID="STR_VN_MISSIONS_MISC_RESPAWNPOS_XRAY">
+<Chinese></Chinese>
+<English>Team X-Ray</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_MISSIONS_MISC_RESPAWNPOS_S4">
+<Chinese>S-4</Chinese>
+<English>S-4</English>
+<French>S-4</French>
+<German>S-4</German>
+<Italian>S-4</Italian>
+<Portuguese>S-4</Portuguese>
+<Russian>С-4</Russian>
+<Spanish>S-4</Spanish>
+</Key>
+</Package>
+<Package name="Debrief">
+<Key ID="STR_VN_DEBRIEFING_FAILOBJECTIVE_TITLE">
+<Chinese>任务失败</Chinese>
+<English>MISSION FAILED</English>
+<French>ÉCHEC DE LA MISSION</French>
+<German>MISSION FEHLGESCHLAGEN</German>
+<Italian>MISSIONE FALLITA</Italian>
+<Portuguese>MISSÃO FRACASSADA</Portuguese>
+<Russian>МИССИЯ ПРОВАЛЕНА</Russian>
+<Spanish>MISIÓN FALLIDA</Spanish>
+</Key>
+<Key ID="STR_VN_DEBRIEFING_FAILOBJECTIVE_SUBTITLE">
+<Chinese></Chinese>
+<English>The enemy forced us to retreat.</English>
+<French>Il a fallu reculer face à l'ennemi.</French>
+<German>Der Feind hat uns zum Rückzug gezwungen.</German>
+<Italian>Il nemico ci ha costretti alla ritirata.</Italian>
+<Portuguese>O inimigo nos forçou a recuar.</Portuguese>
+<Russian>Враг заставил нас отступить.</Russian>
+<Spanish>El enemigo nos ha obligado a retirarnos.</Spanish>
+</Key>
+
+<Key ID="STR_VN_DEBRIEFING_FAILDEATH_SUBTITLE">
+<Chinese>我们失去了 X-Ray。</Chinese>
+<English>We lost X-Ray.</English>
+<French>On a perdu X-Ray.</French>
+<German>Wir haben X-Ray verloren.</German>
+<Italian>Abbiamo perso X-Ray.</Italian>
+<Portuguese>Perdemos X-Ray.</Portuguese>
+<Russian></Russian>
+<Spanish>Hemos perdido a X-Ray.</Spanish>
+</Key>
+<Key ID="STR_VN_DEBRIEFING_VICTORY_TITLE">
+<Chinese>任务完成</Chinese>
+<English>MISSION ACCOMPLISHED</English>
+<French>MISSION RÉUSSIE</French>
+<German>MISSION ERFOLGREICH</German>
+<Italian>MISSIONE COMPIUTA</Italian>
+<Portuguese>MISSÃO CUMPRIDA</Portuguese>
+<Russian>МИССИЯ ВЫПОЛНЕНА</Russian>
+<Spanish>MISIÓN CUMPLIDA</Spanish>
+</Key>
+<Key ID="STR_VN_DEBRIEFING_VICTORY_SUBTITLE">
+<Chinese>Columbia 完成了任务。</Chinese>
+<English>X-Ray finished the job.</English>
+<French>X-Ray a rempli son objectif.</French>
+<German>X-Ray hat den Job erledigt.</German>
+<Italian>X-Ray ha terminato l’incarico.</Italian>
+<Portuguese>X-Ray terminou o trabalho.</Portuguese>
+<Russian></Russian>
+<Spanish>X-Ray ha terminado el trabajo.</Spanish>
+</Key>
+<Key ID="STR_VN_DEBRIEFING_VICTORY_SUBTITLE_TD">
+<Chinese>欢迎来到越南。</Chinese>
+<English>Welcome to Vietnam.</English>
+<French>Bienvenue au Vietnam.</French>
+<German>Willkommen in Vietnam.</German>
+<Italian>Benvenuto in Vietnam.</Italian>
+<Portuguese>Bem-vindo ao Vietnã.</Portuguese>
+<Russian>Добро пожаловать во Вьетнам!</Russian>
+<Spanish>Te damos la bienvenida a Vietnam.</Spanish>
+</Key>
+</Package>
+<Package name="CO01 Briefing">
+<Key ID="STR_VN_BRIEFING_COALIVE_SITUATION">
+<Chinese></Chinese>
+<English>&lt;img image=&quot;img\situation.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Defend Hue and the Imperial City Citadel from enemy attack.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish>.</Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_MISSION">
+<Chinese></Chinese>
+<English>&lt;img image=&quot;img\mission.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Defend Hue and the Imperial City Citadel from enemy attack:&lt;br/&gt;Travel by convoy to &lt;marker name='vn_wp01'&gt;Hue&lt;/marker&gt;, consolidate positions and defend Hue and the Imperial City Citadel from enemy attack.</English>
+<French></French>
+<German></German>
+<Italian>.</Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_TACTICAL">
+<Chinese></Chinese>
+<English>&lt;img image=&quot;img\tactical.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;TARGET AO:&lt;br/&gt;&lt;marker name='vn_wp01'&gt;Hue&lt;/marker&gt;&lt;br/&gt;Expected weather: Fair&lt;br/&gt;&lt;br/&gt;Frequency 64.7Mhz&lt;br/&gt;Emergency Freq. 243.00 UHF&lt;br/&gt;&lt;br/&gt;STANCE:&lt;br/&gt;Defend Hue and the Imperial City Citadel from enemy attack.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_EXECUTION_INF">
+<Chinese></Chinese>
+<English>&lt;img image=&quot;img\execution.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;1. Travel by convoy to &lt;marker name='vn_wp01'&gt;Hue&lt;/marker&gt;.&lt;br/&gt;2. Consolidate positions.&lt;br/&gt;3. Defend Hue and the Imperial City Citadel.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_EXECUTION_HELI">
+<Chinese></Chinese>
+<English>1. Board the &lt;marker name='vn_coalive_helipads'&gt;Steelking&lt;/marker&gt;.&lt;br/&gt;2. Transport X-Ray to &lt;marker name='vn_wp01'&gt;AO&lt;/marker&gt;.&lt;br/&gt;3. Return to &lt;marker name='vn_coalive_reconClub'&gt;base&lt;/marker&gt;.&lt;br/&gt;4. Daily duty until X-Ray request pickup.&lt;br/&gt;5. Pickup X-Ray at LZ in the &lt;marker name='vn_wp01'&gt;AO&lt;/marker&gt;.&lt;br/&gt;6. Transport X-Ray back to &lt;marker name='vn_coalive_reconClub'&gt;base&lt;/marker&gt;.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_SIGNAL">
+<Chinese></Chinese></Chinese>
+<English>&lt;img image=&quot;img\signal.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Your squad must take a PRC-77 radio from the &lt;marker name='marker_squadradio'&gt;Radio Crate&lt;/marker&gt; to use ALiVE Combat Support Arty, CAS and transport.&lt;br/&gt;&lt;br/&gt;To teleport to Group Leader use the &lt;marker name='marker_dutyofficer'&gt;Duty Officer&lt;/marker&gt; interaction.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="CO01 Debriefing">
+<Key ID="STR_VN_DEBRIEFING_COALIVE_OVERVIEW">
+<Chinese></Chinese>
+<English></English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="CO01 Hints">
+<Key ID="STR_VN_HINTS_CO01_25">
+<Chinese>欢迎回来。去侦察兵酒吧喝杯啤酒，和其他 Spike Team 交流一下经验教训。他们当时都不确定你们是否能活下来。干得漂亮。</Chinese>
+<English>Welcome back. Head over to the Recon Club for a cold one and swap lessons learned with the other Spike Teams. They weren't sure you'd make it out of there. Job well done.</English>
+<French>Vous revoilà. Allez prendre une bière bien fraîche au Recon Club et racontez votre aventure aux autres Spike Teams. Les gars se demandaient si vous alliez vous en sortir... Bon boulot.</French>
+<German>Willkommen zurück! Schaut mal im Recon Club auf ein kaltes Bier vorbei und tauscht euch mit den anderen Spike Teams aus. Man war sich nicht sicher, ob ihr da wieder in einem Stück rauskommt. Gute Arbeit.</German>
+<Italian>Bentornato. Dirigiti al Recon Bar per una bibita fresca e per condividere quanto appreso con le altre Spike Team. Non ci credevano molto che ce l’avresti fatta. Davvero un ottimo lavoro.</Italian>
+<Portuguese>Bem-vindo de volta. Vá até o Bar dos Batedores para tomar uma gelada e compartilhe o que você aprendeu com outras Equipes Spike. O pessoal não tinha certeza se você ia conseguir se safar. Foi um trabalho bem executado.</Portuguese>
+<Russian>С возвращением! Идите в бар, пропустите по пивку и обменяйтесь историями с другими оперативниками. Они не верили, что в этот раз у вас все получится. Отлично сработано.</Russian>
+<Spanish>Bienvenidos de vuelta. Pasaos por el Club de Reconocimiento para tomaros algo fresco y compartir las lecciones aprendidas con los otros equipos Spike. No tenían claro que lo fueseis a conseguir. Muy buen trabajo.</Spanish>
+</Key>
+</Package>
+<Package name="CO01 Radio Comms">
+</Package>
+<Package name="CO01 Tasks">
+</Package>
+<Package name="DGBT Tasks">
+</Package>
+<Package name="Parameters">
+<Key ID="STR_VN_PARAMS_AIMCOEF">
+<Chinese>减少武器摆动</Chinese>
+<English>Reduce weapon sway</English>
+<French>Réduire oscillation arme</French>
+<German>Waffenschwanken reduzieren</German>
+<Italian>Riduci oscillazione dell’arma</Italian>
+<Portuguese>Reduzir balanço de arma</Portuguese>
+<Russian>Уменьшить колебание оружия</Russian>
+<Spanish>Reducción de oscilación de armas</Spanish>
+</Key>
+<Key ID="STR_VN_PARAMS_MAPMARKERS">
+<Chinese></Chinese>
+<English>Side Map Markers</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_PARAMS_GROUPMARKERS">
+<Chinese></Chinese>
+<English>Enable 3D Player Markers (SHIFT+CTRL+F1)</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_PARAMS_ARSENAL">
+<Chinese>虚拟军火库</Chinese>
+<English>Virtual arsenal</English>
+<French>Arsenal Virtuel</French>
+<German>Virtuelles Arsenal</German>
+<Italian>Arsenale virtuale</Italian>
+<Portuguese>Arsenal virtual</Portuguese>
+<Russian>Виртуальный арсенал</Russian>
+<Spanish>Arsenal virtual</Spanish>
+</Key>
+<Key ID="STR_VN_PARAMS_DIFFICULTY">
+<Chinese>任务难度</Chinese>
+<English>Mission difficulty</English>
+<French>Difficulté de mission</French>
+<German>Missions-Schwierigkeit</German>
+<Italian>Difficoltà della missione</Italian>
+<Portuguese>Dificuldade da missão</Portuguese>
+<Russian>Сложность</Russian>
+<Spanish>Dificultad de misión</Spanish>
+</Key>
+<Key ID="STR_VN_PARAMS_DIFFICULTY_EASY">
+<Chinese>容易</Chinese>
+<English>Easy</English>
+<French>Facile</French>
+<German>Leicht</German>
+<Italian>Facile</Italian>
+<Portuguese>Fácil</Portuguese>
+<Russian>Легко</Russian>
+<Spanish>Fácil</Spanish>
+</Key>
+<Key ID="STR_VN_PARAMS_DIFFICULTY_NORMAL">
+<Chinese>正常</Chinese>
+<English>Normal</English>
+<French>NORMALE</French>
+<German>NORMAL</German>
+<Italian>NORMALE</Italian>
+<Portuguese>NORMAL</Portuguese>
+<Russian>НОРМАЛЬНОЕ</Russian>
+<Spanish>NORMAL</Spanish>
+</Key>
+<Key ID="STR_VN_PARAMS_DIFFICULTY_HELL">
+<Chinese>绿色地狱</Chinese>
+<English>Green Hell</English>
+<French>Enfer vert</French>
+<German>Grüne Hölle</German>
+<Italian>Inferno</Italian>
+<Portuguese>Inferno verde</Portuguese>
+<Russian>Зеленый ад</Russian>
+<Spanish>Infierno verde</Spanish>
+</Key>
+<Key ID="STR_VN_PARAMS_DIFFICULTY_HARD">
+<Chinese>困难</Chinese>
+<English>Hard</English>
+<French>Intermédiaire</French>
+<German>Schwierig</German>
+<Italian>Difficile</Italian>
+<Portuguese>Difícil</Portuguese>
+<Russian>Трудно</Russian>
+<Spanish>Difícil</Spanish>
+</Key>
+<Key ID="STR_VN_PARAMS_FAILONWIPE">
+<Chinese>如果小队被团灭，则任务失败</Chinese>
+<English>Mission fail on squad wipe</English>
+<French>Échec de mission si escouade éliminée</French>
+<German>Mission scheitert, wenn der Trupp stirbt</German>
+<Italian>Missione fallita se la squadra è K.O.</Italian>
+<Portuguese>Missão fracassada, esquadrão eliminado</Portuguese>
+<Russian>Миссия провалена. Отряд уничтожен.</Russian>
+<Spanish>Misión fracasada al morir el escuadrón</Spanish>
+</Key>
+<Key ID="STR_VN_PARAMS_RESPAWN_DELAY">
+<Chinese>重生延迟</Chinese>
+<English>Respawn delay</English>
+<French>Délai de réapparition</French>
+<German>Respawn-Verzögerung</German>
+<Italian>Intervallo rigenerazione</Italian>
+<Portuguese>Atraso de ressurgimento</Portuguese>
+<Russian>Задержка на возрождение</Russian>
+<Spanish>Demora de reaparición</Spanish>
+</Key>
+<Key ID="STR_VN_PARAMS_ENVIRONMENT_SETTINGS">
+<Chinese>#=== 游戏设置 ===#</Chinese>
+<English>#=== GAMEPLAY SETTINGS ===#</English>
+<French>#=== PARAMÈTRES DE GAMEPLAY ===#</French>
+<German>#=== SPIELEINSTELLUNGEN ===#</German>
+<Italian>#=== IMPOSTAZIONI GAMEPLAY ===#</Italian>
+<Portuguese>#=== CONFIGURAÇÕES DE JOGABILIDADE ===#</Portuguese>
+<Russian>#=== Настройки игрового процесса ===#</Russian>
+<Spanish>#=== CONFIGURACIÓN DE JUEGO ===#</Spanish>
+</Key>
+<Key ID="STR_VN_PARAMS_HINTS">
+<Chinese>MACV SOG 老兵的金玉良言</Chinese>
+<English>Hints from MACV SOG Veterans</English>
+<French>Conseils des vétérans du MACV SOG</French>
+<German>Ratschläge von MACV SOG-Veteranen</German>
+<Italian>Suggerimenti dai veterani del MACV-SOG</Italian>
+<Portuguese>Dicas dos veteranos do MACV SOG</Portuguese>
+<Russian>Подсказки от ветеранов MACV SOG</Russian>
+<Spanish>Consejos de veteranos del MACV SOG</Spanish>
+</Key>
+<Key ID="STR_VN_PARAMS_STAMINA">
+<Chinese>耐力</Chinese>
+<English>Stamina</English>
+<French>Endurance</French>
+<German>Ausdauer</German>
+<Italian>Resistenza</Italian>
+<Portuguese>Vigor</Portuguese>
+<Russian>Выносливость</Russian>
+<Spanish>Aguante</Spanish>
+</Key>
+<Key ID="STR_VN_PARAMS_TELEPORTACTION">
+<Chinese>对值勤军官实施传送动作</Chinese>
+<English>Teleport action on the duty officer</English>
+<French>Téléportation sur officier de service</French>
+<German>Teleportaktion beim Offizier</German>
+<Italian>Teletrasporto dall’ufficiale in servizio</Italian>
+<Portuguese>Ação de teleporte do oficial de serviço</Portuguese>
+<Russian>Переместиться к дежурному офицеру</Russian>
+<Spanish>Teletransporte a oficial de guardia</Spanish>
+</Key>
+</Package>
+<Package name="Titles">
+<Key ID="STR_VN_MISSIONS_TITLE_MISSION_ALIVE">
+<Chinese></Chinese>
+<English>ALiVE | Hue Defence (COOP 20)</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_MISSIONS_TITLE_MISSION_ALIVE_SUB">
+<Chinese></Chinese>
+<English>Defend Hue and the Imperial City Citadel from enemy attack.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="Waypoints">
+<Key ID="STR_VN_MISSIONS_WAYPOINTS">
+<Chinese>越南</Chinese>
+<English>Vietnam</English>
+<French>Vietnam</French>
+<German>Vietnam</German>
+<Italian>Vietnam</Italian>
+<Portuguese>Vietnã</Portuguese>
+<Russian>Вьетнам</Russian>
+<Spanish>Vietnam</Spanish>
+</Key>
+<Key ID="STR_VN_MISSIONS_WAYPOINTS_BARRAGE">
+<Chinese>火炮齐射</Chinese>
+<English>ARTILLERY BARRAGE</English>
+<French>BARRAGE ARTILLERIE</French>
+<German>ARTILLERIEFEUER</German>
+<Italian>FUOCO DI SBARRAM.</Italian>
+<Portuguese>BARRAGEM DE ARTILHARIA</Portuguese>
+<Russian>АРТИЛЛЕРИЙСКИЙ УДАР</Russian>
+<Spanish>FUEGO ARTILLERO</Spanish>
+</Key>
+</Package>
+</Project>
