@@ -24,19 +24,15 @@ Author:
 marceldev89
 ---------------------------------------------------------------------------- */
 
-private _ordnanceType       = param [0];
-private _magazineClassName  = param [1];
-
-private _he_substrings      = ["Mo_shells", "he"];
-private _smoke_substrings   = ["Mo_smoke", "wp"];
-private _guided_substrings  = ["Mo_guided"];
-private _cluster_substrings = ["Mo_Cluster"];
-private _laser_substrings   = ["Mo_LG", "laser"];
-private _mine_substrings    = ["Mo_Mine"];
-private _at_mine_substrings = ["Mo_AT_mine"];
-private _rocket_substrings  = ["rockets"];
-private _illum_substrings   = ["illum", "flare", "lume"];
-
+#define HE_SUBSTRINGS      ["Mo_shells", "he"];
+#define SMOKE_SUBSTRINGS   ["Mo_smoke", "wp"];
+#define GUIDED_SUBSTRINGS  ["Mo_guided"];
+#define CLUSTER_SUBSTRINGS ["Mo_Cluster"];
+#define LASER_SUBSTRINGS   ["Mo_LG", "laser"];
+#define MINE_SUBSTRINGS    ["Mo_Mine"];
+#define AT_MINE_SUBSTRINGS ["Mo_AT_mine"];
+#define ROCKET_SUBSTRINGS  ["rockets"];
+#define ILLUM_SUBSTRINGS   ["illum", "flare", "lume"];
 /*
 unknown substrings for VN:
 - ab    (air burst)
@@ -45,16 +41,19 @@ unknown substrings for VN:
 - chem  (mustard gas)
 */
 
+private _ordnanceType      = param [0];
+private _magazineClassName = param [1];
+
 private _substrings = switch (_ordnanceType) do {
-    case "HE":      { _he_substrings };
-    case "SMOKE":   { _smoke_substrings };
-    case "SADARM":  { _guided_substrings };
-    case "CLUSTER": { _cluster_substrings };
-    case "LASER":   { _laser_substrings };
-    case "MINE":    { _mine_substrings };
-    case "AT MINE": { _at_mine_substrings };
-    case "ROCKETS": { _rocket_substrings };
-    case "ILLUM":   { _illum_substrings };
+    case "HE":      { HE_SUBSTRINGS };
+    case "SMOKE":   { SMOKE_SUBSTRINGS };
+    case "SADARM":  { GUIDED_SUBSTRINGS };
+    case "CLUSTER": { CLUSTER_SUBSTRINGS };
+    case "LASER":   { LASER_SUBSTRINGS };
+    case "MINE":    { MINE_SUBSTRINGS };
+    case "AT MINE": { AT_MINE_SUBSTRINGS };
+    case "ROCKETS": { ROCKET_SUBSTRINGS };
+    case "ILLUM":   { ILLUM_SUBSTRINGS };
     default         { [] };
 };
 
