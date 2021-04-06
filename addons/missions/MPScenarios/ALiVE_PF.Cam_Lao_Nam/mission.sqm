@@ -16,14 +16,13 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=40;
+		nextID=42;
 	};
 	class Camera
 	{
 		pos[]={14835.061,124.59,6790.8784};
-		dir[]={-1.2363449e-007,-0.70710683,0.70710683};
-		up[]={-1.2363449e-007,0.70710671,0.70710683};
-		aside[]={1,0,1.7484557e-007};
+		dir[]={0,-0.70710683,0.70710683};
+		up[]={0,0.70710671,0.70710683};
 	};
 };
 binarizationWanted=0;
@@ -58,14 +57,13 @@ addons[]=
 	"wheeled_f_vietnam_c",
 	"boat_f_vietnam_c",
 	"A3_Modules_F_Intel",
-	"A3_Modules_F_Curator_Curator",
-	"alive_sup_multispawn"
+	"A3_Modules_F_Curator_Curator"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=30;
+		items=29;
 		class Item0
 		{
 			className="ALiVE_main";
@@ -248,12 +246,6 @@ class AddonsMetaData
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item29
-		{
-			className="ALiVE_sup_multispawn";
-			name="alive_sup_multispawn";
-			author="ALiVE Mod Team";
-		};
 	};
 };
 randomSeed=8300791;
@@ -409,7 +401,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=23;
+		items=22;
 		class Item0
 		{
 			dataType="Layer";
@@ -4093,7 +4085,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="FDiagonal";
+									value="None";
 								};
 							};
 						};
@@ -10509,115 +10501,6 @@ class Mission
 								};
 							};
 							value=1;
-						};
-					};
-				};
-				nAttributes=5;
-			};
-		};
-		class Item22
-		{
-			dataType="Logic";
-			class PositionInfo
-			{
-				position[]={14731.46,99.589996,6988.4561};
-			};
-			id=573;
-			type="ALiVE_sup_multispawn";
-			class CustomAttributes
-			{
-				class Attribute0
-				{
-					property="ALiVE_sup_multispawn_spawntype";
-					expression="_this setVariable ['spawntype',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="forwardspawn";
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="ALiVE_sup_multispawn_timeout";
-					expression="_this setVariable ['timeout',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="60";
-						};
-					};
-				};
-				class Attribute2
-				{
-					property="ALiVE_sup_multispawn_spawningnearenemiesallowed";
-					expression="_this setVariable ['spawningnearenemiesallowed',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="false";
-						};
-					};
-				};
-				class Attribute3
-				{
-					property="ALiVE_sup_multispawn_respawnWithGear";
-					expression="_this setVariable ['respawnWithGear',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="true";
-						};
-					};
-				};
-				class Attribute4
-				{
-					property="ALiVE_sup_multispawn_debug";
-					expression="_this setVariable ['debug',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="false";
 						};
 					};
 				};
