@@ -27,7 +27,7 @@ if (!hasInterface) exitWith {true};
     _diaryList lnbSetCurSelRow 1; // Briefing
 
     private _ca_diaryIndex = (_display displayCtrl 1002);
-    _ca_diaryIndex lnbSetCurSelRow 0; // How To Play ALiVE
+    _ca_diaryIndex lnbSetCurSelRow 0; // Mission
 };
 
 
@@ -56,16 +56,21 @@ player createDiaryRecord [
 ];
 
 
-player createDiaryRecord [
-    "Diary", ["ALiVE Respawn", localize "STR_VN_BRIEFING_COALIVE_ALIVERESPAWN_XRAY"]
+
+player createDiarySubject [
+    "ALiVE", "ALiVE Instructions"
 ];
 
 player createDiaryRecord [
-    "Diary", ["ALiVE Menu and Interactions", localize "STR_VN_BRIEFING_COALIVE_ALIVEMENUINTER_XRAY"]
+    "ALiVE", ["Commander Actions", localize "STR_VN_BRIEFING_COALIVE_ALIVEACTIONS_XRAY"]
 ];
 
 player createDiaryRecord [
-    "Diary", ["How To Play ALiVE", localize "STR_VN_BRIEFING_COALIVE_ALIVEHOWTO_XRAY"]
+    "ALiVE", ["Menu / Interactions", localize "STR_VN_BRIEFING_COALIVE_ALIVEMENUINTER_XRAY"]
+];
+
+player createDiaryRecord [
+    "ALiVE", ["Overview", localize "STR_VN_BRIEFING_COALIVE_ALIVEHOWTO_XRAY"]
 ];
 
 true

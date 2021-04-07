@@ -27,7 +27,7 @@ if (!hasInterface) exitWith {true};
     _diaryList lnbSetCurSelRow 1; // Briefing
 
     private _ca_diaryIndex = (_display displayCtrl 1002);
-    _ca_diaryIndex lnbSetCurSelRow 0; // How To Play ALiVE
+    _ca_diaryIndex lnbSetCurSelRow 0; // Mission
 };
 
 
