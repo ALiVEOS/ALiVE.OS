@@ -20,11 +20,7 @@ Author:
 ARJay, Highhead
 ---------------------------------------------------------------------------- */
 
-private _group = _this select 0;
-private _position = _this select 1;
-private _radius = _this select 2;
-private _moveInstantly = _this select 3;
-private _onlyProfiled = if (count _this > 4) then {_this select 4} else {false};
+params ["_group","_position","_radius","_moveInstantly", ["_onlyProfiled", false]];
 
 private _units = units _group;
 
@@ -45,7 +41,7 @@ private _staticWeapons = nearestObjects [_position, ["StaticWeapon"], _radius];
 
 // Add armed vehicles to list of static weapons to garrison
 {
-    if ([_x] call ALIVE_fnc_isArmed && {!(_onlyProfiled && !(isNil {_x getVariable "profileID"}))}) then {
+    if ([_x] call ALIVE_fnc_isArmed && { !(_onlyProfiled && !(isNil {_x getVariable "profileID"})) }) then {
         _staticWeapons pushBack _x;
     };
 } foreach (nearestObjects [_position, ["Car"], _radius]);

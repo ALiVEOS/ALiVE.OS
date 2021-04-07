@@ -515,6 +515,13 @@ class getArtyRounds
 	RECOMPILE;
 };
 
+class isMagazineOfOrdnanceType
+{
+	file = "\x\alive\addons\x_lib\functions\config\fnc_isMagazineOfOrdnanceType.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class getConfigValue
 {
 	file = "\x\alive\addons\x_lib\functions\config\fnc_getConfigValue.sqf";

@@ -30,7 +30,7 @@ _profile = [_this, 0, ["",[],[],nil], [[]]] call BIS_fnc_param;
 _args = [_this, 1, 200, [-1,[]]] call BIS_fnc_param;
 
 _radius = _args;
-_onlyProfiles = false;
+_onlyProfiles = true;
 
 if (_args isEqualType []) then {
     _radius = [_args, 0, 200, [-1]] call BIS_fnc_param;
@@ -55,7 +55,10 @@ if (count _waypoints > 0) then {
 
 [_profile,_radius/3] call ALiVE_fnc_ambientMovement;
 
-waituntil {sleep 0.5; [_profile,"active"] call ALiVE_fnc_HashGet};
+waituntil {
+    sleep 0.5;
+    [_profile,"active"] call ALiVE_fnc_HashGet;
+};
 sleep 0.3;
 
 if (_type == "entity" && {count (_assignments select 1) == 0}) then {
