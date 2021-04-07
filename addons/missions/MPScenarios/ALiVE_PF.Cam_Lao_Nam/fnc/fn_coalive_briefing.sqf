@@ -56,16 +56,20 @@ player createDiaryRecord [
 ];
 
 
-player createDiaryRecord [
-    "Diary", ["ALiVE Respawn", localize "STR_VN_BRIEFING_COALIVE_ALIVERESPAWN_VANTIEN"]
+player createDiarySubject [
+    "ALiVE", "ALiVE Instructions"
 ];
 
 player createDiaryRecord [
-    "Diary", ["ALiVE Menu and Interactions", localize "STR_VN_BRIEFING_COALIVE_ALIVEMENUINTER_VANTIEN"]
+    "ALiVE", ["Commander Actions", localize "STR_VN_BRIEFING_COALIVE_ALIVEACTIONS_VANTIEN"]
 ];
 
 player createDiaryRecord [
-    "Diary", ["How To Play ALiVE", localize "STR_VN_BRIEFING_COALIVE_ALIVEHOWTO_VANTIEN"]
+    "ALiVE", ["Menu / Interactions", localize "STR_VN_BRIEFING_COALIVE_ALIVEMENUINTER_VANTIEN"]
+];
+
+player createDiaryRecord [
+    "ALiVE", ["Overview", localize "STR_VN_BRIEFING_COALIVE_ALIVEHOWTO_VANTIEN"]
 ];
 
 true
