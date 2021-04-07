@@ -28,7 +28,7 @@ private ["_profile","_params","_startPos","_type","_speed","_formation","_behavi
 _profile = _this select 0;
 _params = _this select 1;
 
-_debug = true;
+_debug = false;
 
 if (isnil "_profile") exitWith {};
 
