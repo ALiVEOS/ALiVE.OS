@@ -710,7 +710,7 @@ switch(_operation) do {
             if ((_vehicle iskindOf "AAA_System_01_base_F" || _vehicle iskindOf "SAM_System_01_base_F" || _vehicle iskindOf "SAM_System_02_base_F" || [_vehicle] call ALiVE_fnc_isAntiAir || [_vehicle] call ALiVE_fnc_isAA) && {str(side _vehicle) in _enemySides}) then {
                 private _tmpAS = [_airspace,[_vehicle],{_Input0 distance (getMarkerPos _x)},"ASCEND"] call ALiVE_fnc_SortBy;
                 private _tmp = [_airDefenses, (_tmpAS select 0), []] call ALiVE_fnc_hashGet;
-                _tmp pushback _vehicle;
+                _tmp pushbackUnique _vehicle;
                 [_airDefenses, (_tmpAS select 0), _tmp] call ALiVE_fnc_hashSet;
 
                 /*
@@ -1044,7 +1044,7 @@ switch(_operation) do {
                 _taskData pushback _crewID;
             };
 
-            private _event = ['TASK_GENERATE', _taskData, "C2ISTAR"] call ALIVE_fnc_event;
+            private _event = ['TASK_GENERATE', _taskData, "ATO"] call ALIVE_fnc_event;
             [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
         };
     };
@@ -1086,7 +1086,7 @@ switch(_operation) do {
             _currentTargets pushback _target;
 
             private _destination = [];
-            private _enemyFaction = "BLU_F";
+            private _enemyFaction = "OPF_F";
 
             // Target could be profiled aircraft, profile AA, non-profiled AA, building, HQ
             if (_target isEqualType "") then {
@@ -1152,7 +1152,7 @@ switch(_operation) do {
                 _taskData pushback _friendly;
             };
 
-            private _event = ["TASK_GENERATE", _taskData, "C2ISTAR"] call ALIVE_fnc_event;
+            private _event = ["TASK_GENERATE", _taskData, "ATO"] call ALIVE_fnc_event;
             [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
             [GVAR(playerRequests), _type, _currentTargets] call ALiVE_fnc_hashSet;
@@ -3071,7 +3071,7 @@ switch(_operation) do {
                             };
                         } else {
 
-                            // If not LOGCOM, create asset and add a maintenance timeBO
+                            // If not LOGCOM, create asset and add a maintenance time
 
                             private _debug = [_logic,"debug"] call MAINCLASS;
 
