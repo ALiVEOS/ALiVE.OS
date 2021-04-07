@@ -3,7 +3,7 @@
 <Package name="Actions">
 </Package>
 <Package name="Descriptions">
-<Key ID="STR_VN_MISSIONS_DESC_MISSION_ALIVE">
+<Key ID="STR_VN_MISSIONS_DESC_MISSION_ALIVE_XRAY">
 <Chinese></Chinese>
 <English>Defend Hue and the Imperial City Citadel from enemy attack: Travel by convoy to Hue. Consolidate your positions and defend Hue and the Imperial City Citadel from enemy PAVN and VC incursions.</English>
 <French></French>
@@ -163,7 +163,7 @@
 </Key>
 </Package>
 <Package name="Titles">
-<Key ID="STR_VN_MISSIONS_TITLE_MISSION_ALIVE">
+<Key ID="STR_VN_MISSIONS_TITLE_MISSION_ALIVE_XRAY">
 <Chinese></Chinese>
 <English>ALiVE | Hue Defence</English>
 <French></French>
