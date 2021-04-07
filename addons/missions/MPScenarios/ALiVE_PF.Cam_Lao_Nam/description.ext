@@ -5,7 +5,7 @@ class header {
     maxplayers = 12;
     playerCountMultipleOf = 1;  //Coop type missions use 1, Team type missions use 2
 };
-
+dev = "Friznit,Jman,Highhead";
 author = ALiVE Mod Team;
 onLoadMission = "PAVN launch a general offensive against military and civilian objectives throughout South Vietnam, supported by VC conducting cross-border insurgency operations.";
 onLoadIntroTime = 1;
@@ -14,12 +14,99 @@ onLoadName = ALiVE | Op Van Tien;
 loadScreen = "x\alive\addons\missions\MPScenarios\ALiVE_PF.Cam_Lao_Nam\pics\splash.paa";
 overviewPicture = "x\alive\addons\missions\MPScenarios\ALiVE_PF.Cam_Lao_Nam\pics\splash.paa";
 overviewText = "PAVN forces have launched a surprise offensive against key military and civilian objectives throughout the area of operations. With limited resources at your disposal, your US Army squad based at FOB Kon Tum is faced with a tough decision: hold your position and hope for relief or take your chances with the VC insurgency in the West.";
-
+disabledAI = 0;
 aiKills = 0;
 briefing = 1;
 debriefing = 1;
 respawn = 3;
 respawnDelay = 15;
+joinUnassigned = 1;
+saving = 0;
+corpseManagerMode = 1;
+corpseLimit = 50;
 RespawnDialog = 0;
 enableDebugConsole = 1;
 allowFunctionsRecompile = 1;
+respawnButton = 1;
+respawnTemplates[] = {"MenuPosition"};
+respawnVehicleDelay = 100000;
+
+class Params
+{
+	class EnvironmentSettings
+	{
+	    title = $STR_VN_PARAMS_ENVIRONMENT_SETTINGS;
+	    values[] = {""};
+	    texts[] = {""};
+	    default = "";
+	};
+	class Difficulty
+	{
+	    title = $STR_VN_PARAMS_DIFFICULTY;
+	    values[] = {1, 2, 3, 4};
+	    texts[] = {$STR_VN_PARAMS_DIFFICULTY_EASY, $STR_VN_PARAMS_DIFFICULTY_NORMAL, $STR_VN_PARAMS_DIFFICULTY_HARD, $STR_VN_PARAMS_DIFFICULTY_HELL};
+	    default = 2;
+	    function = "vn_ms_fnc_params_difficulty";
+	};
+	class vn_respawn_delay
+	{
+	    title = $STR_VN_PARAMS_RESPAWN_DELAY;
+	    isGlobal = 1;
+	    values[] = {10, 30, 60, 90, 120};
+	    texts[] = {"10", "30", "60", "90", "120"};
+	    default = 10;
+	    function = "vn_ms_fnc_params_respawnDelay";
+	};
+	class Stamina
+	{
+	    title = $STR_VN_PARAMS_STAMINA;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_ms_fnc_params_stamina";
+	};
+	class AimCoef
+	{
+	    title = $STR_VN_PARAMS_AIMCOEF;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 0;
+	    function = "vn_ms_fnc_params_aimCoef";
+	};
+	class TeleportAction
+	{
+	    title = $STR_VN_PARAMS_TELEPORTACTION;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_ms_fnc_params_teleportAction";
+	};
+	class MissionArsenal
+	{
+	    title = $STR_VN_PARAMS_ARSENAL;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 0;
+	    function = "vn_ms_fnc_params_arsenal";
+	};
+	class Enablemapmarkers
+	{
+	    title = "Side Map Markers";
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 0;
+	};
+	
+	#define DAYTIMEHOUR_DEFAULT 6
+	#include "\a3\functions_f\Params\paramDaytimeHour.hpp"
+	
+	#define TICKETS_MIN 100
+	#define TICKETS_MAX	1000
+	#define TICKETS_DEFAULT	-1
+	#include "\a3\functions_f\Params\paramRespawnTickets.hpp"
+};
