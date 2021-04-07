@@ -127,6 +127,7 @@ switch(_operation) do {
                 playertags_group = (_logic getvariable ["playertags_displaygroup_setting","true"]) == "true";
                 playertags_rank = (_logic getvariable ["playertags_displayrank_setting","true"]) == "true";
                 playertags_invehicle = (_logic getvariable ["playertags_invehicle_setting","false"]) == "true";
+                playertags_restricttofriendly = (_logic getvariable ["playertags_restricttofriendly_setting","true"]) == "true";
                 playertags_distance = _logic getvariable ["playertags_distance_setting",20];
                 playertags_tolerance = _logic getvariable ["playertags_tolerance_setting",0.75];
                 playertags_scale = _logic getvariable ["playertags_scale_setting",0.65];
@@ -197,10 +198,21 @@ switch(_operation) do {
                 if (_args) then {
                     _logic setvariable [QGVAR(EH_DRAW3D), addMissionEventHandler ["Draw3D", {
 
-                        _onView = {true}; if (GVAR(ONVIEW)) then {_onView = {cursortarget == _x}};
+                        private _onView = if (GVAR(ONVIEW)) then {
+                            { cursortarget == _x }
+                        } else {
+                            { true }
+                        };
+                        
+                        private _playerSide = playerSide;
 
                         {
-                            if ((_x distance player < GVAR(RADIUS)) && {call _onView} && {!(lineIntersects [eyePos player, eyePos _x, player, _x])}) then {
+                            if (
+                                (_x distance player < GVAR(RADIUS)) &&
+                                {call _onView} &&
+                                {!(lineIntersects [eyePos player, eyePos _x, player, _x])} &&
+                                { !playertags_restricttofriendly || { side _x == _playerSide } }
+                            ) then {
 
                                     private ["_icon","_color"];
 

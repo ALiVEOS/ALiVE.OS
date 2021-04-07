@@ -56,6 +56,12 @@
 <Key ID="STR_ALIVE_PLAYERTAGS_INVEHICLE_COMMENT">
     <Original>Enables Player Tags whilst in Vehicles (disable if using crewinfo module)</Original>
 </Key>
+<Key ID="STR_ALIVE_PLAYERTAGS_FRIENDLYUNITSONLY">
+    <Original>Restrict To Friendly Units:</Original>
+</Key>
+<Key ID="STR_ALIVE_PLAYERTAGS_FRIENDLYUNITSONLY_COMMENT">
+    <Original>Only show player tags for units that are friendly to the player</Original>
+</Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_TARGETS">
     <Original>Player Tag Targets:</Original>
 </Key>

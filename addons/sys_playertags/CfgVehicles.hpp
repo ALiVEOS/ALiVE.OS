@@ -143,6 +143,27 @@ class CfgVehicles {
                                             };
                                     };
 
+                                    class playertags_restricttofriendly_setting
+                                    {
+                                            displayName = "$STR_ALIVE_PLAYERTAGS_FRIENDLYUNITSONLY";
+                                            description = "$STR_ALIVE_PLAYERTAGS_FRIENDLYUNITSONLY_COMMENT";
+                                             class Values
+                                            {
+
+                                                    class No
+                                                    {
+                                                            name = "No";
+                                                            value = false;
+                                                    };
+                                                    class Yes
+                                                    {
+                                                            name = "Yes";
+                                                            value = true;
+                                                            default = 1;
+                                                    };
+                                            };
+                                    };
+
                                     class playertags_targets_setting
                                     {
                                             displayName = "$STR_ALIVE_PLAYERTAGS_TARGETS";
