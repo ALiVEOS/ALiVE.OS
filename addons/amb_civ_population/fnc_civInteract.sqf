@@ -81,14 +81,20 @@ switch (_operation) do {
 			[MOD(civInteractHandler), "InsurgentFaction", _factionEnemy] call ALiVE_fnc_hashSet;
 			[MOD(civInteractHandler), "authorized", _authorized] call ALiVE_fnc_hashSet;
 
-			// -- Check ACEX Compat
-			_water = if (isClass(configfile >> "CfgPatches" >> "acex_main") && _enableACEX) then {"ACE_WaterBottle"} else {"ALiVE_Waterbottle"};
-			_humrat = if (isClass(configfile >> "CfgPatches" >> "acex_main") && _enableACEX) then {"ACE_Humanitarian_Ration"} else {"ALiVE_Humrat"};
+			private _waterItems = [
+				"ALiVE_Waterbottle",
+				"ACE_WaterBottle"			// ACEX
+			];
+			private _humratItems = [
+				"ALiVE_Humrat",
+				"ACE_Humanitarian_Ration" 	// ACEX
+				"vn_b_item_rations_01"		// VN
+			];
 
 			// -- Store init data
 			_humanitarianData = [] call ALiVE_fnc_hashCreate;
-			[_humanitarianData, "waterItem", _water] call ALiVE_fnc_hashSet;
-			[_humanitarianData, "humratItem", _humrat] call ALiVE_fnc_hashSet;
+			[_humanitarianData, "waterItems", _waterItems] call ALiVE_fnc_hashSet;
+			[_humanitarianData, "humratItems", _humratItems] call ALiVE_fnc_hashSet;
 			[_humanitarianData, "hostilityDecrease", _humanitarianDecrease] call ALiVE_fnc_hashSet;
 			[_humanitarianData, "maxAllowAid", _maxAllowAid] call ALiVE_fnc_hashSet;
 			[MOD(civInteractHandler), "humanitarianData", _humanitarianData] call ALiVE_fnc_hashSet;
@@ -807,7 +813,7 @@ switch (_operation) do {
 
 		_civ = [_logic, "Civ"] call ALiVE_fnc_hashGet;
 		_humanitarian = [_logic, "humanitarianData"] call ALiVE_fnc_hashGet;
-		_item = [_humanitarian, _itemType] call ALiVE_fnc_hashGet;
+		_items = [_humanitarian, _itemType] call ALiVE_fnc_hashGet;
 		_decreaseChance = [_humanitarian, "hostilityDecrease"] call ALiVE_fnc_hashGet;
 		_maxAllowAid = [_humanitarian, "maxAllowAid"] call ALiVE_fnc_hashGet;
 
@@ -819,11 +825,12 @@ switch (_operation) do {
 		};
 
 		// Ensure item is in the inventory & remove it
-		if !(_item in items player) exitWith {
+		private _validItems = (items player) arrayIntersect _items;
+		if (_validItems isequalto []) exitWith {
 			["openSideSmall",0.3] call ALIVE_fnc_displayMenu; 
 			["setSideSmallText","You do not have an item provide this Civilian"] spawn ALIVE_fnc_displayMenu;
 		};
-		player removeItem _item;
+		player removeItem (_validItems select 0);
 
 		_civ setVariable[QGVAR(consumedItems), (_consumed + 1)];
 		[_civ] spawn {
