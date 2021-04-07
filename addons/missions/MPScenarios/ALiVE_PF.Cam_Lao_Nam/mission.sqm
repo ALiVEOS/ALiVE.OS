@@ -8,7 +8,7 @@ class EditorData
 	toggles=1537;
 	class ItemIDProvider
 	{
-		nextID=937;
+		nextID=944;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=199;
+		nextID=209;
 	};
 	class Camera
 	{
-		pos[]={14828.542,251.28673,9573.3672};
-		dir[]={-0.2647495,-0.20175081,0.9429763};
-		up[]={-0.054534838,0.97943693,0.19424044};
-		aside[]={0.96277398,0,0.2703079};
+		pos[]={14752.25,275.22076,9641.9326};
+		dir[]={-0.68984801,-0.6563372,-0.30550155};
+		up[]={-0.60012239,0.75446773,-0.26576626};
+		aside[]={-0.40492335,1.4901161e-008,0.91435075};
 	};
 };
 binarizationWanted=0;
@@ -316,6 +316,11 @@ class AddonsMetaData
 		};
 	};
 };
+dlcs[]=
+{
+	"Enoch",
+	"Heli"
+};
 randomSeed=8300791;
 class ScenarioData
 {
@@ -469,7 +474,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=154;
+		items=157;
 		class Item0
 		{
 			dataType="Layer";
@@ -1780,7 +1785,7 @@ class Mission
 					class PositionInfo
 					{
 						position[]={14755.704,243.32841,9714.0107};
-						angles[]={6.1973982,0,6.0781078};
+						angles[]={6.197402,0,6.0781093};
 					};
 					id=31;
 					type="ALiVE_amb_civ_placement";
@@ -1966,7 +1971,7 @@ class Mission
 					class PositionInfo
 					{
 						position[]={14759.631,242.71666,9714.0186};
-						angles[]={6.1421275,0,6.1323414};
+						angles[]={6.1421275,0,6.1323361};
 					};
 					id=32;
 					type="ALiVE_amb_civ_population";
@@ -2044,7 +2049,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="";
+									value="C_VIET";
 								};
 							};
 						};
@@ -2446,6 +2451,25 @@ class Mission
 						};
 						class Attribute5
 						{
+							property="ALiVE_SYS_playeroptions_347";
+							expression="_this setVariable ['PLAYER_TAGS',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="";
+								};
+							};
+						};
+						class Attribute6
+						{
 							property="ALiVE_SYS_playeroptions_playertags_thisgroupleadernamecolour_setting";
 							expression="_this setVariable ['playertags_thisgroupleadernamecolour_setting',_value,true];";
 							class Value
@@ -2463,7 +2487,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute6
+						class Attribute7
 						{
 							property="ALiVE_SYS_playeroptions_savePosition";
 							expression="_this setVariable ['savePosition',_value,true];";
@@ -2482,7 +2506,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute7
+						class Attribute8
 						{
 							property="ALiVE_SYS_playeroptions_storeToDB";
 							expression="_this setVariable ['storeToDB',_value,true];";
@@ -2501,7 +2525,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute8
+						class Attribute9
 						{
 							property="ALiVE_SYS_playeroptions_saveHealth";
 							expression="_this setVariable ['saveHealth',_value,true];";
@@ -2520,7 +2544,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute9
+						class Attribute10
 						{
 							property="ALiVE_SYS_playeroptions_allowManualSave";
 							expression="_this setVariable ['allowManualSave',_value,true];";
@@ -2539,7 +2563,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute10
+						class Attribute11
 						{
 							property="ALiVE_SYS_playeroptions_allowDiffClass";
 							expression="_this setVariable ['allowDiffClass',_value,true];";
@@ -2558,7 +2582,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute11
+						class Attribute12
 						{
 							property="ALiVE_SYS_playeroptions_debug";
 							expression="_this setVariable ['debug',_value,true];";
@@ -2577,7 +2601,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute12
+						class Attribute13
 						{
 							property="ALiVE_SYS_playeroptions_playertags_height_setting";
 							expression="_this setVariable ['playertags_height_setting',_value,true];";
@@ -2596,7 +2620,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute13
+						class Attribute14
 						{
 							property="ALiVE_SYS_playeroptions_playertags_onview_setting";
 							expression="_this setVariable ['playertags_onview_setting',_value,true];";
@@ -2615,7 +2639,26 @@ class Mission
 								};
 							};
 						};
-						class Attribute14
+						class Attribute15
+						{
+							property="ALiVE_SYS_playeroptions_315";
+							expression="_this setVariable ['CREW_INFO',_value,true];";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="";
+								};
+							};
+						};
+						class Attribute16
 						{
 							property="ALiVE_SYS_playeroptions_playertags_namecolour_setting";
 							expression="_this setVariable ['playertags_namecolour_setting',_value,true];";
@@ -2634,10 +2677,10 @@ class Mission
 								};
 							};
 						};
-						class Attribute15
+						class Attribute17
 						{
-							property="ALiVE_SYS_playeroptions_359";
-							expression="_this setVariable ['PLAYER_TAGS',_value,true];";
+							property="ALiVE_SYS_playeroptions_playertags_restricttofriendly_setting";
+							expression="_this setVariable ['playertags_restricttofriendly_setting',_value,true];";
 							class Value
 							{
 								class data
@@ -2649,11 +2692,11 @@ class Mission
 											"STRING"
 										};
 									};
-									value="";
+									value="true";
 								};
 							};
 						};
-						class Attribute16
+						class Attribute18
 						{
 							property="ALiVE_SYS_playeroptions_playertags_distance_setting";
 							expression="_this setVariable ['playertags_distance_setting',_value,true];";
@@ -2672,7 +2715,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute17
+						class Attribute19
 						{
 							property="ALiVE_SYS_playeroptions_playertags_displayrank_setting";
 							expression="_this setVariable ['playertags_displayrank_setting',_value,true];";
@@ -2691,7 +2734,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute18
+						class Attribute20
 						{
 							property="ALiVE_SYS_playeroptions_VIEW_DISTANCE";
 							expression="_this setVariable ['VIEW_DISTANCE',_value,true];";
@@ -2710,7 +2753,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute19
+						class Attribute21
 						{
 							property="ALiVE_SYS_playeroptions_enablePlayerPersistence";
 							expression="_this setVariable ['enablePlayerPersistence',_value,true];";
@@ -2729,7 +2772,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute20
+						class Attribute22
 						{
 							property="ALiVE_SYS_playeroptions_minTG";
 							expression="_this setVariable ['minTG',_value,true];";
@@ -2748,7 +2791,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute21
+						class Attribute23
 						{
 							property="ALiVE_SYS_playeroptions_allowReset";
 							expression="_this setVariable ['allowReset',_value,true];";
@@ -2767,7 +2810,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute22
+						class Attribute24
 						{
 							property="ALiVE_SYS_playeroptions_maxTG";
 							expression="_this setVariable ['maxTG',_value,true];";
@@ -2786,7 +2829,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute23
+						class Attribute25
 						{
 							property="ALiVE_SYS_playeroptions_saveLoadout";
 							expression="_this setVariable ['saveLoadout',_value,true];";
@@ -2805,26 +2848,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute24
-						{
-							property="ALiVE_SYS_playeroptions_325";
-							expression="_this setVariable ['CREW_INFO',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="";
-								};
-							};
-						};
-						class Attribute25
+						class Attribute26
 						{
 							property="ALiVE_SYS_playeroptions_playertags_displaygroup_setting";
 							expression="_this setVariable ['playertags_displaygroup_setting',_value,true];";
@@ -2843,7 +2867,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute26
+						class Attribute27
 						{
 							property="ALiVE_SYS_playeroptions_playertags_thisgroupcolour_setting";
 							expression="_this setVariable ['playertags_thisgroupcolour_setting',_value,true];";
@@ -2862,7 +2886,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute27
+						class Attribute28
 						{
 							property="ALiVE_SYS_playeroptions_saveAmmo";
 							expression="_this setVariable ['saveAmmo',_value,true];";
@@ -2881,7 +2905,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute28
+						class Attribute29
 						{
 							property="ALiVE_SYS_playeroptions_crewinfo_ui_setting";
 							expression="_this setVariable ['crewinfo_ui_setting',_value,true];";
@@ -2900,7 +2924,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute29
+						class Attribute30
 						{
 							property="ALiVE_SYS_playeroptions_playertags_style_setting";
 							expression="_this setVariable ['playertags_style_setting',_value,true];";
@@ -2919,7 +2943,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute30
+						class Attribute31
 						{
 							property="ALiVE_SYS_playeroptions_101";
 							expression="_this setVariable ['PERSISTENCE',_value,true];";
@@ -2938,7 +2962,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute31
+						class Attribute32
 						{
 							property="ALiVE_SYS_playeroptions_39";
 							expression="_this setVariable ['MODULE_PARAMS',_value,true];";
@@ -2957,7 +2981,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute32
+						class Attribute33
 						{
 							property="ALiVE_SYS_playeroptions_minVD";
 							expression="_this setVariable ['minVD',_value,true];";
@@ -2976,7 +3000,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute33
+						class Attribute34
 						{
 							property="ALiVE_SYS_playeroptions_playertags_targets_setting";
 							expression="_this setVariable ['playertags_targets_setting',_value,true];";
@@ -2995,7 +3019,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute34
+						class Attribute35
 						{
 							property="ALiVE_SYS_playeroptions_playertags_invehicle_setting";
 							expression="_this setVariable ['playertags_invehicle_setting',_value,true];";
@@ -3014,7 +3038,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute35
+						class Attribute36
 						{
 							property="ALiVE_SYS_playeroptions_maxVD";
 							expression="_this setVariable ['maxVD',_value,true];";
@@ -3033,7 +3057,7 @@ class Mission
 								};
 							};
 						};
-						nAttributes=36;
+						nAttributes=37;
 					};
 				};
 				class Item7
@@ -8570,8 +8594,8 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={14721.9,244.08421,9635.8643};
-						angles[]={0,5.1272373,0.017997233};
+						position[]={14716.034,244.11812,9638.7842};
+						angles[]={6.2651882,5.1272373,0};
 					};
 					id=379;
 					type="ALiVE_sup_artillery";
@@ -9477,7 +9501,7 @@ class Mission
 				};
 			};
 			id=45;
-			atlOffset=64.944504;
+			atlOffset=64.890945;
 		};
 		class Item1
 		{
@@ -10507,7 +10531,7 @@ class Mission
 			};
 			id=592;
 			type="vn_b_item_radio_urc10_gh";
-			atlOffset=0.000177145;
+			atlOffset=0.00017428398;
 		};
 		class Item26
 		{
@@ -10592,7 +10616,7 @@ class Mission
 			};
 			id=598;
 			type="Land_vn_photos_v6_f";
-			atlOffset=0.0010199547;
+			atlOffset=0.0010170937;
 		};
 		class Item31
 		{
@@ -10610,7 +10634,7 @@ class Mission
 			};
 			id=599;
 			type="Land_vn_photos_v2_f";
-			atlOffset=2.1934509e-005;
+			atlOffset=1.9073486e-005;
 		};
 		class Item32
 		{
@@ -10966,7 +10990,7 @@ class Mission
 					};
 					id=668;
 					type="vn_steeldrum_bbq_02";
-					atlOffset=-0.00050354004;
+					atlOffset=-0.00047302246;
 				};
 				class Item1
 				{
@@ -11019,7 +11043,7 @@ class Mission
 					};
 					id=671;
 					type="vn_bar_01_lawnchair_01";
-					atlOffset=-0.00021362305;
+					atlOffset=-0.00022888184;
 				};
 				class Item4
 				{
@@ -11500,7 +11524,7 @@ class Mission
 							};
 							id=683;
 							type="B_Soldier_F";
-							atlOffset=0.25134277;
+							atlOffset=0.25135803;
 							class CustomAttributes
 							{
 								class Attribute0
@@ -11625,7 +11649,7 @@ class Mission
 					{
 					};
 					id=682;
-					atlOffset=0.25134277;
+					atlOffset=0.25135803;
 				};
 				class Item13
 				{
@@ -11740,7 +11764,7 @@ class Mission
 				};
 			};
 			id=631;
-			atlOffset=-0.045135498;
+			atlOffset=21.140121;
 		};
 		class Item46
 		{
@@ -12686,7 +12710,7 @@ class Mission
 			};
 			id=720;
 			type="vn_b_ammobox_full_09";
-			atlOffset=-0.045013428;
+			atlOffset=-0.045028687;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -14509,6 +14533,7 @@ class Mission
 							};
 							id=717;
 							type="vn_b_prop_prc77_01";
+							atlOffset=3.0517578e-005;
 						};
 						class Item16
 						{
@@ -14525,6 +14550,7 @@ class Mission
 							};
 							id=718;
 							type="vn_b_ammobox_02";
+							atlOffset=1.5258789e-005;
 							class CustomAttributes
 							{
 								class Attribute0
@@ -15836,11 +15862,11 @@ class Mission
 						};
 					};
 					id=410;
-					atlOffset=-129.69122;
+					atlOffset=-129.70003;
 				};
 			};
 			id=768;
-			atlOffset=-129.69122;
+			atlOffset=-129.70003;
 		};
 		class Item76
 		{
@@ -17561,6 +17587,7 @@ class Mission
 			};
 			id=878;
 			type="Land_vn_waterbottle_01_empty_f";
+			atlOffset=4.7683716e-007;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -17594,12 +17621,13 @@ class Mission
 				angles[]={6.282495,1.9794693,0};
 			};
 			side="Empty";
+			flags=4;
 			class Attributes
 			{
 			};
 			id=880;
 			type="ALiVE_Humrat_Item";
-			atlOffset=0.42705345;
+			atlOffset=2.3841858e-007;
 		};
 		class Item116
 		{
@@ -17616,6 +17644,7 @@ class Mission
 			};
 			id=882;
 			type="ALiVE_Humrat_Item";
+			atlOffset=4.7683716e-007;
 		};
 		class Item117
 		{
@@ -18469,6 +18498,7 @@ class Mission
 			};
 			id=915;
 			type="Land_vn_waterbottle_01_empty_f";
+			atlOffset=2.3841858e-007;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -18509,6 +18539,7 @@ class Mission
 			};
 			id=916;
 			type="Land_vn_waterbottle_01_empty_f";
+			atlOffset=4.7683716e-007;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -18549,6 +18580,7 @@ class Mission
 			};
 			id=917;
 			type="Land_vn_waterbottle_01_empty_f";
+			atlOffset=2.3841858e-007;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -19060,6 +19092,336 @@ class Mission
 					};
 				};
 				nAttributes=1;
+			};
+		};
+		class Item154
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={14752.488,243.80247,9706.0879};
+				angles[]={0.017994344,0,6.0973601};
+			};
+			id=941;
+			type="ModuleCreateDiaryRecord_F";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ModuleCreateDiaryRecord_F_PresetTitle";
+					expression="_this setVariable ['PresetTitle',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Execution";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="ModuleCreateDiaryRecord_F_Title";
+					expression="_this setVariable ['Title',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Commanders Actions";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="ModuleCreateDiaryRecord_F_Description";
+					expression="_this setVariable ['Description',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Commanders Actions enable players to co-ordinate actions and tasks with AI commanders, access intelligence, call in combat support and much more." \n "<br/>" \n "<br/>" \n "Note: This requires the player to be equipped with a PRC-77 radio." \n "<br/>" \n "<br/>" \n "Press the ALiVE Menu key to access Commander Actions. " \n "<br/>" \n "<br/>" \n "Personnel - Move players and AI units between groups " \n "<br/>" \n "<br/>" \n "Intel - Provides access to your side's AI Commander objectives as well as marking any known units on the map. " \n " <br/>" \n "<br/>" \n "Logistics - Call in resupplies, from individuals and groups to vehicles, weapons and fortifications. Use convoys, airdrop or airlift. " \n "<br/>" \n "<br/>" \n " " \n "Tasks - Request tasks from the AI commander in order to contribute to the overall battlefield situation. " \n "<br/>" \n "<br/>" \n " " \n "Operations - Direct AI groups and issue waypoints or join AI controlled groups and fight alongside them. " \n "<br/>" \n "<br/>" \n " " \n "Combat Support - Request artillery, close air support or transport from assets within the AO. " \n "<br/>" \n "<br/>" \n "Reports - Commanders can leave PATROLREPS and SITREPS in order to keep other commanders up to date with player and enemy activities. ";
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="ModuleCreateDiaryRecord_F_Owner";
+					expression="_this setVariable ['Owner',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=3;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="ModuleCreateDiaryRecord_F_Subject";
+					expression="_this setVariable ['Subject',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="ALiVE Instructions";
+						};
+					};
+				};
+				nAttributes=5;
+			};
+		};
+		class Item155
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={14752.527,243.71164,9708.8037};
+				angles[]={0.043970551,0,6.0723672};
+			};
+			id=942;
+			type="ModuleCreateDiaryRecord_F";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ModuleCreateDiaryRecord_F_PresetTitle";
+					expression="_this setVariable ['PresetTitle',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Execution";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="ModuleCreateDiaryRecord_F_Title";
+					expression="_this setVariable ['Title',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="ALiVE Menu / Interactions";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="ModuleCreateDiaryRecord_F_Description";
+					expression="_this setVariable ['Description',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="The ALiVE Menu can be activated using the RIGHT APP MENU key (or a user defined key 20).  <br/>" \n "<br/>" \n "For ADMINS, the ALiVE Menu offers the chance to debug issues, teleport players, access the debug console and more. " \n "<br/>" \n "<br/>" \n "For PLAYERS, the ALiVE Menu offers some basic settings and a chance to save your position and loadout.  " \n "<br/>" \n "<br/>" \n "PLAYERS may also enable the ALiVE logistics system to pick up, carry and load objects onto and off vehicles, build FOBs and more. Using the scroll wheel on certain objects will allow players to pick them up. " \n "<br/>" \n "<br/>" \n "Using the scroll wheel, PLAYERS can interact with civilians to question them on the local situation and even influence them by giving them rations. Civilians though won't forgive collateral damage. " \n "<br/>" \n "<br/>" \n "" \n "Using the map, PLAYERS can leave SPOTREPS and ADVANCED MARKERS by hitting the LEFT CTRL key when creating a map marker. " \n "<br/>" \n "<br/>" \n "For PLAYER COMMANDERS with an appropriate radio (PRC-77) the ALiVE Menu enables you to access COMMANDER ACTIONS to manage personnel, logistics, tasks, combat support and more. ";
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="ModuleCreateDiaryRecord_F_Owner";
+					expression="_this setVariable ['Owner',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=3;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="ModuleCreateDiaryRecord_F_Subject";
+					expression="_this setVariable ['Subject',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="ALiVE Instructions";
+						};
+					};
+				};
+				nAttributes=5;
+			};
+		};
+		class Item156
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={14752.294,243.76978,9711.4434};
+				angles[]={6.2412086,0,6.0723667};
+			};
+			id=943;
+			type="ModuleCreateDiaryRecord_F";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ModuleCreateDiaryRecord_F_PresetTitle";
+					expression="_this setVariable ['PresetTitle',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Execution";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="ModuleCreateDiaryRecord_F_Title";
+					expression="_this setVariable ['Title',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Overview";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="ModuleCreateDiaryRecord_F_Description";
+					expression="_this setVariable ['Description',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="ALiVE populates the entire map with a full scale war. Two or more AI commanders fight it out using conventional or asymmetric warfare tactics. Infantry, motorized, mechanized, armored units and aircraft are used to capture or defend strategic objectives across the area of operations. <br/>" \n "<br/> " \n "AI commanders even call in resupply, reinforcements, close air support, air patrols, air strikes, boat patrols, setup roadblocks, IEDs, conduct suicide bombings and sabotage. Meanwhile, the civilian population actively support or turn against combatants based on their actions and interactions. <br/>" \n "<br/>" \n "As a squad playing an ALiVE mission, you must work together to use the tools at your disposal to patrol, identify and attack enemy units, positions and assets. Player Commanders using the ALiVE Menu can manage operations and tasks in coordination with AI commanders";
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="ModuleCreateDiaryRecord_F_Owner";
+					expression="_this setVariable ['Owner',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=3;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="ModuleCreateDiaryRecord_F_Subject";
+					expression="_this setVariable ['Subject',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="ALiVE Instructions";
+						};
+					};
+				};
+				nAttributes=5;
 			};
 		};
 	};
