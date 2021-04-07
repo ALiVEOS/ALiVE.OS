@@ -18,7 +18,6 @@ if (isServer) then {
 
     // Add playable groups to respawn
     [vn_grp_1marinexray_01] call vn_ms_fnc_respawn_addGroup;
-    [vn_grp_steelking] call vn_ms_fnc_respawn_addGroup;
 
     // Vehicles of playable groups
     vn_ms_respawnVehicles = [vn_veh_steelking];
@@ -51,10 +50,6 @@ if (isServer) then {
 private _group = group player;
 if (_group == vn_grp_1marinexray_01) then {
     [player, vn_ms_spawn_infantry, localize "STR_VN_MISSIONS_MISC_RESPAWNPOS_XRAY"] call BIS_fnc_addRespawnPosition;
-};
-
-if (_group == vn_grp_steelking) then {
-    [player, vn_ms_spawn_heliCrew, localize "STR_VN_MISSIONS_MISC_RESPAWNPOS_S4"] call BIS_fnc_addRespawnPosition;
 };
 
 // Save custom loadout without showing a hint

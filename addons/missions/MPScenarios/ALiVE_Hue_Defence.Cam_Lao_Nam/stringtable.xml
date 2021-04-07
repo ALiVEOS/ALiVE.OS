@@ -29,7 +29,7 @@
 <Package name="Misc">
 <Key ID="STR_VN_MISSIONS_MISC_RESPAWNPOS_XRAY">
 <Chinese></Chinese>
-<English>Team X-Ray</English>
+<English>Group Leader</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -56,7 +56,7 @@
 <English>&lt;img image=&quot;img\mission.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Defend Hue and the Imperial City Citadel from enemy attack:&lt;br/&gt;Travel by convoy to &lt;marker name='vn_wp01'&gt;Hue&lt;/marker&gt;, consolidate positions and defend Hue and the Imperial City Citadel from enemy attack.</English>
 <French></French>
 <German></German>
-<Italian>.</Italian>
+<Italian></Italian>
 <Portuguese></Portuguese>
 <Russian></Russian>
 <Spanish></Spanish>

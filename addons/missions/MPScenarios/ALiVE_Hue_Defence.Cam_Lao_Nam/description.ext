@@ -1,7 +1,8 @@
 class Header {
-    gameType = "alive";
+    gametype = ALIVE;
     minPlayers = 1;
     maxPlayers = 20;
+    playerCountMultipleOf = 1;
 };
 dev = "Jman";
 author = $STR_VN_MISSIONS_AUTHOR_ALIVE;
@@ -19,7 +20,7 @@ respawnButton = 1;
 respawnTemplates[] = {"MenuPosition"};
 respawn = 3;
 respawnOnStart = -1;
-disabledAI = 1;
+disabledAI = 0;
 disableRandomization[] = {};
 joinUnassigned = 1;
 saving = 0;
@@ -28,6 +29,8 @@ corpseLimit = 50;
 corpseRemovalMaxTime = 450;
 minPlayerDistance = 150;
 allowProfileGlasses = 0;
+respawnVehicleDelay = 100000;
+
 
 #include "CfgFunctions.inc"
 #include "scripts\groupMarkers.hpp"
@@ -90,7 +93,7 @@ class Params
 	    isGlobal = 1;
 	    values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
-	    default = 0;
+	    default = 1;
 	    function = "vn_ms_fnc_params_teleportAction";
 	};
 	class MissionArsenal
@@ -117,6 +120,12 @@ class Params
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
 			default = 0;
 	};
+	
+	#define TICKETS_MIN 100
+	#define TICKETS_MAX	1000
+	#define TICKETS_DEFAULT	-1
+	#include "\a3\functions_f\Params\paramRespawnTickets.hpp"
+	
 };
 
 
@@ -127,6 +136,8 @@ class CfgDebriefing
 class CfgTaskDescriptions
 {
 };
+
+
 
 
 

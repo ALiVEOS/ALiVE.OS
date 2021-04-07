@@ -18,7 +18,7 @@ _player = _this select 0;
 _didJIP = _this select 1;
 
 // init map markers 
-if (isNil "PARAMS_Enablemapmarkers") then {PARAMS_Enablemapmarkers = 0;};
+if (isNil "PARAMS_Enablemapmarkers") then {PARAMS_Enablemapmarkers = 1;};
 diag_log format["%2: initPlayerLocal.sqf -> PARAMS_Enablemapmarkers: %1", PARAMS_Enablemapmarkers, missionName];
 if (PARAMS_Enablemapmarkers == 1) then {
 	[] execVM "scripts\mapMarkers.sqf";
@@ -26,7 +26,7 @@ if (PARAMS_Enablemapmarkers == 1) then {
 
 
 // init group markers (3D)
-if (isNil "PARAMS_Enablegroupmarkers") then {PARAMS_Enablegroupmarkers = 0;};
+if (isNil "PARAMS_Enablegroupmarkers") then {PARAMS_Enablegroupmarkers = 1;};
 diag_log format["%2: initPlayerLocal.sqf -> PARAMS_Enablegroupmarkers: %1", PARAMS_Enablegroupmarkers, missionName];
 if (PARAMS_Enablegroupmarkers == 1) then {
 		#include "scripts\groupMarkers.sqf";
