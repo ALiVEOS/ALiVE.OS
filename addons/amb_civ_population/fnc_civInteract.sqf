@@ -87,7 +87,7 @@ switch (_operation) do {
 			];
 			private _humratItems = [
 				"ALiVE_Humrat",
-				"ACE_Humanitarian_Ration" 	// ACEX
+				"ACE_Humanitarian_Ration", 	// ACEX
 				"vn_b_item_rations_01"		// VN
 			];
 
