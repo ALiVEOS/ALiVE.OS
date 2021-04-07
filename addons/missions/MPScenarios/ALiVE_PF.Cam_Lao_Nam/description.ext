@@ -5,15 +5,14 @@ class header {
     maxplayers = 12;
     playerCountMultipleOf = 1;  //Coop type missions use 1, Team type missions use 2
 };
-dev = "Friznit,Jman,Highhead";
-author = ALiVE Mod Team;
-onLoadMission = "PAVN launch a general offensive against military and civilian objectives throughout South Vietnam, supported by VC conducting cross-border insurgency operations.";
-onLoadIntroTime = 1;
-onLoadMissionTime = 1;
-onLoadName = ALiVE | Op Van Tien;
-loadScreen = "x\alive\addons\missions\MPScenarios\ALiVE_PF.Cam_Lao_Nam\pics\splash.paa";
+dev = "ALiVE Mod Team";
+author = $STR_VN_MISSIONS_AUTHOR_ALIVE;
+briefingName = $STR_VN_MISSIONS_TITLE_MISSION_ALIVE;
 overviewPicture = "x\alive\addons\missions\MPScenarios\ALiVE_PF.Cam_Lao_Nam\pics\splash.paa";
-overviewText = "PAVN forces have launched a surprise offensive against key military and civilian objectives throughout the area of operations. With limited resources at your disposal, your US Army squad based at FOB Kon Tum is faced with a tough decision: hold your position and hope for relief or take your chances with the VC insurgency in the West.";
+overviewText = $STR_VN_MISSIONS_DESC_MISSION_ALIVE;
+onLoadName = $STR_VN_MISSIONS_TITLE_MISSION_ALIVE;
+onLoadMission = $STR_VN_MISSIONS_DESC_MISSION_ALIVE;
+loadScreen = "x\alive\addons\missions\MPScenarios\ALiVE_PF.Cam_Lao_Nam\pics\splash.paa";
 disabledAI = 0;
 aiKills = 0;
 briefing = 1;
@@ -30,6 +29,8 @@ allowFunctionsRecompile = 1;
 respawnButton = 1;
 respawnTemplates[] = {"MenuPosition"};
 respawnVehicleDelay = 100000;
+
+#include "CfgFunctions.inc"
 
 class Params
 {
@@ -95,7 +96,7 @@ class Params
 	};
 	class Enablemapmarkers
 	{
-	    title = "Side Map Markers";
+	    title = $STR_VN_COALIVE_PARAMS_MAPMARKERS;
 	    isGlobal = 1;
 	    values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};

@@ -1,5 +1,5 @@
 /*
-    Author: Wyqer, veteran29
+    Original Author: Wyqer, veteran29
     Date: 2019-07-21
 
     Description:
@@ -17,8 +17,7 @@
 if (isServer) then {
 
     // Add playable groups to respawn
-    [vn_grp_1marinexray_01] call vn_ms_fnc_respawn_addGroup;
-    [vn_grp_1marinexray_02] call vn_ms_fnc_respawn_addGroup;
+    [vn_grp_marinesquad_01] call vn_ms_fnc_respawn_addGroup;
 
 
     // Throw out bodies of disconnecting pilots and gunners to prevent respawn issues
@@ -46,11 +45,12 @@ if (isServer) then {
     };
 };
 
+/*
 private _group = group player;
-if (_group == vn_grp_1marinexray_01 || _group == vn_grp_1marinexray_02) then {
-    [player, vn_ms_spawn_infantry, "Group Leader"] call BIS_fnc_addRespawnPosition;
+if (_group == vn_grp_marinesquad_01) then {
+    [player, vn_ms_spawn_infantry, localize "STR_VN_MISSIONS_MISC_RESPAWNPOS_GROUP"] call BIS_fnc_addRespawnPosition;
 };
-
+*/
 
 // Save custom loadout without showing a hint
 [player, false] call vn_ms_fnc_respawn_saveLoadout;

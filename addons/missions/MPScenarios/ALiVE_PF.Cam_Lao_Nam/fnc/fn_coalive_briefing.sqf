@@ -33,39 +33,39 @@ if (!hasInterface) exitWith {true};
 
 
 player createDiaryRecord [
-    "Diary", [localize "STR_A3_Diary_Signal_title", localize "STR_VN_BRIEFING_COALIVE_SIGNAL_XRAY"]
+    "Diary", [localize "STR_A3_Diary_Signal_title", localize "STR_VN_BRIEFING_COALIVE_SIGNAL_VANTIEN"]
 ];
 
 
 player createDiaryRecord [
-    "Diary", ["Tactical", localize "STR_VN_BRIEFING_COALIVE_TACTICAL_XRAY"]
+    "Diary", ["Tactical", localize "STR_VN_BRIEFING_COALIVE_TACTICAL_VANTIEN"]
 ];
 
 
 player createDiaryRecord [
-    "Diary", [localize "STR_A3_Diary_Execution_title", localize "STR_VN_BRIEFING_COALIVE_EXECUTION_XRAY"]
+    "Diary", [localize "STR_A3_Diary_Execution_title", localize "STR_VN_BRIEFING_COALIVE_EXECUTION_VANTIEN"]
 ];
 
 player createDiaryRecord [
-    "Diary", [localize "STR_A3_Diary_Situation_title", localize "STR_VN_BRIEFING_COALIVE_SITUATION_XRAY"]
-];
-
-
-player createDiaryRecord [
-    "Diary", [localize "STR_A3_Diary_Mission_title", localize "STR_VN_BRIEFING_COALIVE_MISSION_XRAY"]
+    "Diary", [localize "STR_A3_Diary_Situation_title", localize "STR_VN_BRIEFING_COALIVE_SITUATION_VANTIEN"]
 ];
 
 
 player createDiaryRecord [
-    "Diary", ["ALiVE Respawn", localize "STR_VN_BRIEFING_COALIVE_ALIVERESPAWN_XRAY"]
+    "Diary", [localize "STR_A3_Diary_Mission_title", localize "STR_VN_BRIEFING_COALIVE_MISSION_VANTIEN"]
+];
+
+
+player createDiaryRecord [
+    "Diary", ["ALiVE Respawn", localize "STR_VN_BRIEFING_COALIVE_ALIVERESPAWN_VANTIEN"]
 ];
 
 player createDiaryRecord [
-    "Diary", ["ALiVE Menu and Interactions", localize "STR_VN_BRIEFING_COALIVE_ALIVEMENUINTER_XRAY"]
+    "Diary", ["ALiVE Menu and Interactions", localize "STR_VN_BRIEFING_COALIVE_ALIVEMENUINTER_VANTIEN"]
 ];
 
 player createDiaryRecord [
-    "Diary", ["How To Play ALiVE", localize "STR_VN_BRIEFING_COALIVE_ALIVEHOWTO_XRAY"]
+    "Diary", ["How To Play ALiVE", localize "STR_VN_BRIEFING_COALIVE_ALIVEHOWTO_VANTIEN"]
 ];
 
 true

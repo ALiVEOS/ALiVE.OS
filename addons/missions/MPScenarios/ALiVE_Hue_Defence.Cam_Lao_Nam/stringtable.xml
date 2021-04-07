@@ -5,7 +5,7 @@
 <Package name="Descriptions">
 <Key ID="STR_VN_MISSIONS_DESC_MISSION_ALIVE">
 <Chinese></Chinese>
-<English>Defend Hue from enemy attack.</English>
+<English>Defend Hue and the Imperial City Citadel from enemy attack: Travel by convoy to Hue. Consolidate your positions and defend Hue and the Imperial City Citadel from enemy PAVN and VC incursions.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -17,17 +17,17 @@
 <Package name="General">
 <Key ID="STR_VN_MISSIONS_AUTHOR_ALIVE">
 <Chinese></Chinese>
-<English>Jman, ALiVE Mod Team</English>
-<French>Jman, ALiVE Mod Team</French>
-<German>Jman, ALiVE Mod Team</German>
-<Italian>Jman, ALiVE Mod Team</Italian>
-<Portuguese>Jman, ALiVE Mod Team</Portuguese>
-<Russian>Jman, ALiVE Mod Team</Russian>
-<Spanish>Jman, ALiVE Mod Team</Spanish>
+<English>ALiVE Mod Team</English>
+<French>ALiVE Mod Team</French>
+<German>ALiVE Mod Team</German>
+<Italian>ALiVE Mod Team</Italian>
+<Portuguese>ALiVE Mod Team</Portuguese>
+<Russian>ALiVE Mod Team</Russian>
+<Spanish>ALiVE Mod Team</Spanish>
 </Key>
 </Package>
 <Package name="Misc">
-<Key ID="STR_VN_MISSIONS_MISC_RESPAWNPOS_XRAY">
+<Key ID="STR_VN_MISSIONS_MISC_RESPAWNPOS_GROUP">
 <Chinese></Chinese>
 <English>Group Leader</English>
 <French></French>
@@ -41,9 +41,39 @@
 <Package name="Debrief">
 </Package>
 <Package name="CO01 Briefing">
-<Key ID="STR_VN_BRIEFING_COALIVE_SITUATION">
+<Key ID="STR_VN_BRIEFING_COALIVE_ALIVEHOWTO_XRAY">
 <Chinese></Chinese>
-<English>&lt;img image=&quot;img\situation.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Defend Hue and the Imperial City Citadel from enemy attack.</English>
+<English>ALiVE populates the entire map with a full scale war. Two or more AI commanders fight it out using conventional or asymmetric warfare tactics. Infantry, motorized, mechanized, armored units and aircraft are used to capture or defend strategic objectives across the area of operations.&lt;br/&gt;&lt;br/&gt;AI commanders even call in resupply, reinforcements, close air support, air patrols, air strikes, boat patrols, setup roadblocks, IEDs, conduct suicide bombings and sabotage. Meanwhile, the civilian population actively support or turn against combatants based on their actions and interactions.&lt;br/&gt;&lt;br/&gt;As a squad playing an ALiVE mission, you must work together as a team to use the tools at your disposal to patrol, identify and attack enemy units, positions and assets. Player Commanders using the ALiVE Menu can manage operations and tasks in coordination with AI commanders.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_ALIVEMENUINTER_XRAY">
+<Chinese></Chinese>
+<English>The ALiVE Menu can be activated using the RIGHT APP MENU key (or a user defined key 20).&lt;br/&gt;&lt;br/&gt;For ADMINS, the ALiVE Menu offers the chance to debug issues, teleport players, access the debug console and more.&lt;br/&gt;&lt;br/&gt;For PLAYERS, the ALiVE Menu offers some basic settings and a chance to save your position and loadout.&lt;br/&gt;&lt;br/&gt;PLAYERS may also enable the ALiVE logistics system to pick up, carry and load objects onto and off vehicles, build FOBs and more. Using the scroll wheel on certain objects will allow players to pick them up.&lt;br/&gt;&lt;br/&gt;Using the scroll wheel,PLAYERS can interact with civilians to question them on the local situation and even influence them by giving them rations. Civilians though won't forgive collateral damage.&lt;br/&gt;&lt;br/&gt;Using the map, PLAYERS can leave SPOTREPS and ADVANCED MARKERS by hitting the LEFT CTRL key when creating a map marker.&lt;br/&gt;&lt;br/&gt;For PLAYER COMMANDERS with an appropriate radio (PRC-77) the ALiVE Menu enables you to access COMMANDER ACTIONS to manage personnel, logistics, tasks, combat support and more.&lt;br/&gt;&lt;br/&gt;ALiVE COMMANDER ACTIONS (requires PRC-77)&lt;br/&gt;&lt;br/&gt;Press the ALiVE Menu key to access Commander Actions.&lt;br/&gt;&lt;br/&gt;Personnel - Move players and AI units between groups&lt;br/&gt;&lt;br/&gt;Intel - Provides access to your side's AI Commander objectives as well as marking any known units on the map.&lt;br/&gt;&lt;br/&gt;Logistics - Call in resupplies, from individuals and groups to vehicles, weapons and fortifications. Use convoys, airdrop or airlift.&lt;br/&gt;&lt;br/&gt;Tasks - Request tasks from the AI commander in order to contribute to the overall battlefield situation.&lt;br/&gt;&lt;br/&gt;Operations - Direct AI groups and issue waypoints or join AI controlled groups and fight alongside them.&lt;br/&gt;&lt;br/&gt;Combat Support - Request artillery, close air support or transport from assets within the AO.&lt;br/&gt;&lt;br/&gt;Reports - Commanders can leave PATROLREPS and SITREPS in order to keep other commanders up to date with player and enemy activities.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_ALIVERESPAWN_XRAY">
+<Chinese></Chinese>
+<English>If you are killed, ALiVE provides the ability to respawn back by your group leader or back at one of the FOBs.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_SITUATION_XRAY">
+<Chinese></Chinese>
+<English>&lt;img image=&quot;img\situation.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Defend Hue and the Imperial City Citadel from enemy PAVN and VC incursions.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -51,9 +81,9 @@
 <Russian></Russian>
 <Spanish>.</Spanish>
 </Key>
-<Key ID="STR_VN_BRIEFING_COALIVE_MISSION">
+<Key ID="STR_VN_BRIEFING_COALIVE_MISSION_XRAY">
 <Chinese></Chinese>
-<English>&lt;img image=&quot;img\mission.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Defend Hue and the Imperial City Citadel from enemy attack:&lt;br/&gt;Travel by convoy to &lt;marker name='vn_wp01'&gt;Hue&lt;/marker&gt;, consolidate positions and defend Hue and the Imperial City Citadel from enemy attack.</English>
+<English>&lt;img image=&quot;img\mission.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Defend Hue and the Imperial City Citadel from enemy attack:&lt;br/&gt;Travel by convoy to &lt;marker name='vn_wp01'&gt;Hue&lt;/marker&gt;, consolidate positions and defend Hue and the Imperial City Citadel from enemy PAVN and VC incursions.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -61,9 +91,9 @@
 <Russian></Russian>
 <Spanish></Spanish>
 </Key>
-<Key ID="STR_VN_BRIEFING_COALIVE_TACTICAL">
+<Key ID="STR_VN_BRIEFING_COALIVE_TACTICAL_XRAY">
 <Chinese></Chinese>
-<English>&lt;img image=&quot;img\tactical.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;TARGET AO:&lt;br/&gt;&lt;marker name='vn_wp01'&gt;Hue&lt;/marker&gt;&lt;br/&gt;Expected weather: Fair&lt;br/&gt;&lt;br/&gt;Frequency 64.7Mhz&lt;br/&gt;Emergency Freq. 243.00 UHF&lt;br/&gt;&lt;br/&gt;STANCE:&lt;br/&gt;Defend Hue and the Imperial City Citadel from enemy attack.</English>
+<English>&lt;img image=&quot;img\tactical.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;TARGET AO:&lt;br/&gt;&lt;marker name='vn_wp01'&gt;Hue&lt;/marker&gt;&lt;br/&gt;Expected weather: Fair&lt;br/&gt;&lt;br/&gt;Frequency 64.7Mhz&lt;br/&gt;Emergency Freq. 243.00 UHF&lt;br/&gt;&lt;br/&gt;STANCE:&lt;br/&gt;Defend Hue and the Imperial City Citadel from enemy PAVN and VC incursions.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -71,7 +101,7 @@
 <Russian></Russian>
 <Spanish></Spanish>
 </Key>
-<Key ID="STR_VN_BRIEFING_COALIVE_EXECUTION_INF">
+<Key ID="STR_VN_BRIEFING_COALIVE_EXECUTION_XRAY">
 <Chinese></Chinese>
 <English>&lt;img image=&quot;img\execution.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;1. Travel by convoy to &lt;marker name='vn_wp01'&gt;Hue&lt;/marker&gt;.&lt;br/&gt;2. Consolidate positions.&lt;br/&gt;3. Defend Hue and the Imperial City Citadel.</English>
 <French></French>
@@ -81,17 +111,7 @@
 <Russian></Russian>
 <Spanish></Spanish>
 </Key>
-<Key ID="STR_VN_BRIEFING_COALIVE_EXECUTION_HELI">
-<Chinese></Chinese>
-<English>1. Board the &lt;marker name='vn_coalive_helipads'&gt;Steelking&lt;/marker&gt;.&lt;br/&gt;2. Transport X-Ray to &lt;marker name='vn_wp01'&gt;AO&lt;/marker&gt;.&lt;br/&gt;3. Return to &lt;marker name='vn_coalive_reconClub'&gt;base&lt;/marker&gt;.&lt;br/&gt;4. Daily duty until X-Ray request pickup.&lt;br/&gt;5. Pickup X-Ray at LZ in the &lt;marker name='vn_wp01'&gt;AO&lt;/marker&gt;.&lt;br/&gt;6. Transport X-Ray back to &lt;marker name='vn_coalive_reconClub'&gt;base&lt;/marker&gt;.</English>
-<French></French>
-<German></German>
-<Italian></Italian>
-<Portuguese></Portuguese>
-<Russian></Russian>
-<Spanish></Spanish>
-</Key>
-<Key ID="STR_VN_BRIEFING_COALIVE_SIGNAL">
+<Key ID="STR_VN_BRIEFING_COALIVE_SIGNAL_XRAY">
 <Chinese></Chinese></Chinese>
 <English>&lt;img image=&quot;img\signal.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Your squad must take a PRC-77 radio from the &lt;marker name='marker_squadradio'&gt;Radio Crate&lt;/marker&gt; to use ALiVE Combat Support Arty, CAS and transport.&lt;br/&gt;&lt;br/&gt;To teleport to Group Leader use the &lt;marker name='marker_dutyofficer'&gt;Duty Officer&lt;/marker&gt; interaction.</English>
 <French></French>
@@ -135,17 +155,7 @@
 <Package name="Titles">
 <Key ID="STR_VN_MISSIONS_TITLE_MISSION_ALIVE">
 <Chinese></Chinese>
-<English>ALiVE | Hue Defence (COOP 20)</English>
-<French></French>
-<German></German>
-<Italian></Italian>
-<Portuguese></Portuguese>
-<Russian></Russian>
-<Spanish></Spanish>
-</Key>
-<Key ID="STR_VN_MISSIONS_TITLE_MISSION_ALIVE_SUB">
-<Chinese></Chinese>
-<English>Defend Hue and the Imperial City Citadel from enemy attack.</English>
+<English>ALiVE | Hue Defence</English>
 <French></French>
 <German></German>
 <Italian></Italian>

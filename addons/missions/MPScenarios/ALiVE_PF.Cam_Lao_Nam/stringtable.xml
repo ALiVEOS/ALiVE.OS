@@ -1,0 +1,159 @@
+<?xml version="1.0" ?>
+<Project name="missions_coalive">
+<Package name="Actions">
+</Package>
+<Package name="Descriptions">
+<Key ID="STR_VN_MISSIONS_DESC_MISSION_ALIVE">
+<Chinese></Chinese>
+<English>PAVN forces have launched a surprise offensive against key military and civilian objectives throughout the area of operations. With limited resources at your disposal, your US Army squad based at FOB Kon Tum is faced with a tough decision: hold your position and hope for relief or take your chances with the VC insurgency in the West.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="General">
+<Key ID="STR_VN_MISSIONS_AUTHOR_ALIVE">
+<Chinese></Chinese>
+<English>ALiVE Mod Team</English>
+<French>ALiVE Mod Team</French>
+<German>ALiVE Mod Team</German>
+<Italian>ALiVE Mod Team</Italian>
+<Portuguese>ALiVE Mod Team</Portuguese>
+<Russian>ALiVE Mod Team</Russian>
+<Spanish>ALiVE Mod Team</Spanish>
+</Key>
+</Package>
+<Package name="Misc">
+<Key ID="STR_VN_MISSIONS_MISC_RESPAWNPOS_GROUP">
+<Chinese></Chinese>
+<English>Group Leader</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="Debrief">
+</Package>
+<Package name="CO01 Briefing">
+<Key ID="STR_VN_BRIEFING_COALIVE_SITUATION_VANTIEN">
+<Chinese></Chinese>
+<English></English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish>.</Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_ALIVEHOWTO_VANTIEN">
+<Chinese></Chinese>
+<English>ALiVE populates the entire map with a full scale war. Two or more AI commanders fight it out using conventional or asymmetric warfare tactics. Infantry, motorized, mechanized, armored units and aircraft are used to capture or defend strategic objectives across the area of operations.&lt;br/&gt;&lt;br/&gt;AI commanders even call in resupply, reinforcements, close air support, air patrols, air strikes, boat patrols, setup roadblocks, IEDs, conduct suicide bombings and sabotage. Meanwhile, the civilian population actively support or turn against combatants based on their actions and interactions.&lt;br/&gt;&lt;br/&gt;As a squad playing an ALiVE mission, you must work together as a team to use the tools at your disposal to patrol, identify and attack enemy units, positions and assets. Player Commanders using the ALiVE Menu can manage operations and tasks in coordination with AI commanders.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_ALIVEMENUINTER_VANTIEN">
+<Chinese></Chinese>
+<English>The ALiVE Menu can be activated using the RIGHT APP MENU key (or a user defined key 20).&lt;br/&gt;&lt;br/&gt;For ADMINS, the ALiVE Menu offers the chance to debug issues, teleport players, access the debug console and more.&lt;br/&gt;&lt;br/&gt;For PLAYERS, the ALiVE Menu offers some basic settings and a chance to save your position and loadout.&lt;br/&gt;&lt;br/&gt;PLAYERS may also enable the ALiVE logistics system to pick up, carry and load objects onto and off vehicles, build FOBs and more. Using the scroll wheel on certain objects will allow players to pick them up.&lt;br/&gt;&lt;br/&gt;Using the scroll wheel,PLAYERS can interact with civilians to question them on the local situation and even influence them by giving them rations. Civilians though won't forgive collateral damage.&lt;br/&gt;&lt;br/&gt;Using the map, PLAYERS can leave SPOTREPS and ADVANCED MARKERS by hitting the LEFT CTRL key when creating a map marker.&lt;br/&gt;&lt;br/&gt;For PLAYER COMMANDERS with an appropriate radio (PRC-77) the ALiVE Menu enables you to access COMMANDER ACTIONS to manage personnel, logistics, tasks, combat support and more.&lt;br/&gt;&lt;br/&gt;ALiVE COMMANDER ACTIONS (requires PRC-77)&lt;br/&gt;&lt;br/&gt;Press the ALiVE Menu key to access Commander Actions.&lt;br/&gt;&lt;br/&gt;Personnel - Move players and AI units between groups&lt;br/&gt;&lt;br/&gt;Intel - Provides access to your side's AI Commander objectives as well as marking any known units on the map.&lt;br/&gt;&lt;br/&gt;Logistics - Call in resupplies, from individuals and groups to vehicles, weapons and fortifications. Use convoys, airdrop or airlift.&lt;br/&gt;&lt;br/&gt;Tasks - Request tasks from the AI commander in order to contribute to the overall battlefield situation.&lt;br/&gt;&lt;br/&gt;Operations - Direct AI groups and issue waypoints or join AI controlled groups and fight alongside them.&lt;br/&gt;&lt;br/&gt;Combat Support - Request artillery, close air support or transport from assets within the AO.&lt;br/&gt;&lt;br/&gt;Reports - Commanders can leave PATROLREPS and SITREPS in order to keep other commanders up to date with player and enemy activities.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_ALIVERESPAWN_VANTIEN">
+<Chinese></Chinese>
+<English>If you are killed, ALiVE provides the ability to respawn back by your group leader or back at one of the FOBs.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_MISSION_VANTIEN">
+<Chinese></Chinese>
+<English>&lt;img image=&quot;pics\splash.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;The VC insurgency in the West is creating a diversion for a major PAVN offensive from the North. Your squad is tasked with defending &lt;marker name='FOB2'&gt;FOB Mai Loc&lt;/marker&gt;and subsequently conducting counter insurgency ops based out of &lt;marker name='FSB'&gt;FSB Quan Loi&lt;/marker&gt;.&lt;br/&gt;&lt;br/&gt;&lt;marker name='CS'&gt;Combat Support&lt;/marker&gt; and &lt;marker name='CSS'&gt;Combat Service Support&lt;/marker&gt; assets are available including Support Helicopters, Artillery, Mortars and a Cobra Attack Helicopter on call for Close Air Support.&lt;br/&gt;&lt;br/&gt;There are a limited number of PRC-77 radios available for the RTO to request and coord support from HQ.  Don't lose them!</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_TACTICAL_VANTIEN">
+<Chinese></Chinese>
+<English></English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_EXECUTION_VANTIEN">
+<Chinese></Chinese>
+<English></English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_SIGNAL_VANTIEN">
+<Chinese></Chinese></Chinese>
+<English></English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="CO01 Hints">
+</Package>
+<Package name="CO01 Radio Comms">
+</Package>
+<Package name="CO01 Tasks">
+</Package>
+<Package name="DGBT Tasks">
+</Package>
+<Package name="Parameters">
+<Key ID="STR_VN_COALIVE_PARAMS_MAPMARKERS">
+<Chinese></Chinese>
+<English>Side Map Markers</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="Titles">
+<Key ID="STR_VN_MISSIONS_TITLE_MISSION_ALIVE">
+<Chinese></Chinese>
+<English>ALiVE | Op Van Tien</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="Waypoints">
+</Package>
+</Project>

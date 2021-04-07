@@ -1,5 +1,5 @@
 /*
-    Author: Wyqer, veteran29
+    Original Author: Wyqer, veteran29
     Date: 2019-07-21
 
     Description:
@@ -47,10 +47,12 @@ if (isServer) then {
     };
 };
 
+/*
 private _group = group player;
 if (_group == vn_grp_1marinexray_01) then {
     [player, vn_ms_spawn_infantry, localize "STR_VN_MISSIONS_MISC_RESPAWNPOS_XRAY"] call BIS_fnc_addRespawnPosition;
 };
+*/
 
 // Save custom loadout without showing a hint
 [player, false] call vn_ms_fnc_respawn_saveLoadout;

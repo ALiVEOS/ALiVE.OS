@@ -8,6 +8,10 @@ class CfgFunctions
         {
             file = "fnc";
 
+            class coalive_briefing
+            {
+                postInit = 1;
+            };
             class coalive_respawnInit
             {
                 postInit = 1;

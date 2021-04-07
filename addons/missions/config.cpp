@@ -66,8 +66,16 @@ class CfgMissions
         {
             briefingName = "ALiVE | Op Van Tien (Vietnam)";
             directory = "x\alive\addons\missions\mpscenarios\ALiVE_PF.Cam_Lao_Nam";
-            overviewPicture = "x\alive\addons\missions\logo_alive.paa";
+            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_PF.Cam_Lao_Nam\pics\splash.paa";
             overviewText = "PAVN launch a general offensive against military and civilian objectives throughout South Vietnam, supported by VC conducting cross-border insurgency operations.";
+            author = "ALiVE Mod Team";
+        };
+        class Showcase_Hue_Defence
+        {
+            briefingName = "ALiVE | Hue Defence (Vietnam)";
+            directory = "x\alive\addons\missions\mpscenarios\ALiVE_Hue_Defence.Cam_Lao_Nam";
+            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Hue_Defence.Cam_Lao_Name\img\splash.paa";
+            overviewText = "Travel by convoy to Hue, consolidate positions defend Hue and the Imperial City Citadel from enemy attack.";
             author = "ALiVE Mod Team";
         };
     };
@@ -133,7 +141,7 @@ class CfgMissions
         {
             briefingName = "ALiVE | Op Van Tien (COOP 12)";
             directory = "x\alive\addons\missions\mpscenarios\ALiVE_PF.Cam_Lao_Nam";
-            overviewPicture = "x\alive\addons\missions\logo_alive.paa";
+            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_PF.Cam_Lao_Nam\pics\splash.paa";
             overviewText = "PAVN launch a general offensive against military and civilian objectives throughout South Vietnam, supported by VC conducting cross-border insurgency operations.";
             author = "ALiVE Mod Team";
         };
