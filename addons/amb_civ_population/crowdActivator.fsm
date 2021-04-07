@@ -1147,7 +1147,7 @@ class FSM
                          "		_m forceWalk true;" \n
                          "		_m addWeapon ""Throw"";" \n
                          "" \n
-                         "		_m addMPEventHandler[""MPKilled"", ALIVE_fnc_crowdKilledEventHandler];" \n
+                         "		_m addEventHandler[""Killed"", ALIVE_fnc_crowdKilledEventHandler];" \n
                          "		_m addEventHandler[""FiredNear"", ALIVE_fnc_crowdFiredNearEventHandler];" \n
                          "" \n
                          "		// Move unit" \n
