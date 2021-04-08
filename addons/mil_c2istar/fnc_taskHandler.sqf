@@ -1245,6 +1245,9 @@ switch (_operation) do {
             private _taskSide = _task select 2;
             private _taskPlayers = _task select 7 select 0;
 
+            // Remove any markers
+            [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+
             // prepare tasks to dispatch
             private _tasksToDispatch = [_logic, "tasksToDispatch"] call ALIVE_fnc_hashGet;
             private _deleteTasks = [_tasksToDispatch, "delete"] call ALIVE_fnc_hashGet;
