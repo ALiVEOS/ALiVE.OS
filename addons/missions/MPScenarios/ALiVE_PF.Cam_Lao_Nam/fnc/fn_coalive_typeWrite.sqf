@@ -24,7 +24,7 @@
             ["Operation: ", "<t align = 'left' shadow = '1' size = '0.7' font='tt2020style_e_vn_bold'>%1</t>"],
             ["Van Tien"],
             [format ["Sunday 5th May 1968. %1%2%3%4h", ["0", ""] select (_hour >= 10), _hour, ["0", ""] select (_minute >= 10), _minute]],
-            ["1st Marine Regiment, South Vietnam", "<t align = 'left' shadow = '1' size = '0.7'>%1</t><br/><br/>"],
+            ["1st Battalion, 8th Infantry, South Vietnam", "<t align = 'left' shadow = '1' size = '0.7'>%1</t><br/><br/>"],
             ["Mission: ", "<t align = 'left' shadow = '1' size = '0.7' font='tt2020style_e_vn_bold'>%1</t>"],
             ["Defend FOB Mai Loc, conduct counter insurgency operations from FSB Quan Loi", nil, 3.5]
         ],

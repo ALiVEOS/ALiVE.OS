@@ -32,13 +32,13 @@ if (!hasInterface) exitWith {true};
 
 
 
-player createDiaryRecord [
-    "Diary", [localize "STR_A3_Diary_Signal_title", localize "STR_VN_BRIEFING_COALIVE_SIGNAL_VANTIEN"]
-];
+//player createDiaryRecord [
+//    "Diary", [localize "STR_A3_Diary_Signal_title", localize "STR_VN_BRIEFING_COALIVE_SIGNAL_VANTIEN"]
+//];
 
 
 player createDiaryRecord [
-    "Diary", ["Tactical", localize "STR_VN_BRIEFING_COALIVE_TACTICAL_VANTIEN"]
+    "Diary", ["Coordinating Instructions", localize "STR_VN_BRIEFING_COALIVE_TACTICAL_VANTIEN"]
 ];
 
 
@@ -46,13 +46,14 @@ player createDiaryRecord [
     "Diary", [localize "STR_A3_Diary_Execution_title", localize "STR_VN_BRIEFING_COALIVE_EXECUTION_VANTIEN"]
 ];
 
+
 player createDiaryRecord [
-    "Diary", [localize "STR_A3_Diary_Situation_title", localize "STR_VN_BRIEFING_COALIVE_SITUATION_VANTIEN"]
+    "Diary", [localize "STR_A3_Diary_Mission_title", localize "STR_VN_BRIEFING_COALIVE_MISSION_VANTIEN"]
 ];
 
 
 player createDiaryRecord [
-    "Diary", [localize "STR_A3_Diary_Mission_title", localize "STR_VN_BRIEFING_COALIVE_MISSION_VANTIEN"]
+    "Diary", [localize "STR_A3_Diary_Situation_title", localize "STR_VN_BRIEFING_COALIVE_SITUATION_VANTIEN"]
 ];
 
 
