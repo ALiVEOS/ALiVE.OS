@@ -124,7 +124,7 @@ class Params
 	#define TICKETS_MIN 100
 	#define TICKETS_MAX	1000
 	#define TICKETS_DEFAULT	-1
-	#include "\a3\functions_f\Params\paramRespawnTickets.hpp"
+	#include "\x\alive\addons\missions\GlobalParams\functions_f\Params\paramRespawnTickets.hpp"
 	
 };
 

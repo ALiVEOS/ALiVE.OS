@@ -5,7 +5,7 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=513;
+	toggles=641;
 	class ItemIDProvider
 	{
 		nextID=812;
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=3873;
+		nextID=3987;
 	};
 	class Camera
 	{
-		pos[]={18661.008,31.806761,8387.5137};
-		dir[]={-0.65359193,-0.28026044,0.70309216};
-		up[]={-0.19091237,0.95988625,0.20537065};
-		aside[]={0.7324422,2.4854671e-007,0.68087524};
+		pos[]={18592.047,26.677015,8412.0732};
+		dir[]={0.05959595,-0.8630113,0.50165713};
+		up[]={0.10180828,0.50518453,0.85698521};
+		aside[]={0.99301732,-3.7252903e-009,-0.11796865};
 	};
 };
 binarizationWanted=0;
@@ -51,7 +51,6 @@ addons[]=
 	"A3_Modules_F_Curator_Curator",
 	"structures_f_vietnam_c",
 	"A3_Structures_F_Civ_Garbage",
-	"A3_Structures_F_Enoch_Decals_Horizontal",
 	"alive_main",
 	"alive_sys_playeroptions",
 	"armor_f_vietnam_c",
@@ -75,7 +74,7 @@ class AddonsMetaData
 {
 	class List
 	{
-		items=35;
+		items=34;
 		class Item0
 		{
 			className="missions_modules_f_vietnam";
@@ -202,104 +201,97 @@ class AddonsMetaData
 		};
 		class Item18
 		{
-			className="A3_Structures_F_Enoch";
-			name="Arma 3 Contact Platform - Buildings and Structures";
-			author="Bohemia Interactive";
-			url="https://www.arma3.com";
-		};
-		class Item19
-		{
 			className="ALiVE_main";
 			name="alive_main";
 			author="ALiVE Mod Team";
 		};
-		class Item20
+		class Item19
 		{
 			className="ALiVE_SYS_playeroptions";
 			name="alive_sys_playeroptions";
 			author="ALiVE Mod Team";
 		};
-		class Item21
+		class Item20
 		{
 			className="armor_f_vietnam_c";
 			name="armor_f_vietnam_c";
 			author="Savage Game Design";
 			url="https://www.arma3.com";
 		};
-		class Item22
+		class Item21
 		{
 			className="ALiVE_sup_combatsupport";
 			name="alive_sup_combatsupport";
 			author="ALiVE Mod Team";
 		};
-		class Item23
+		class Item22
 		{
 			className="ALiVE_sys_profile";
 			name="alive_sys_profile";
 			author="ALiVE Mod Team";
 		};
-		class Item24
+		class Item23
 		{
 			className="ALiVE_SUP_PLAYER_RESUPPLY";
 			name="alive_sup_player_resupply";
 			author="ALiVE Mod Team";
 		};
-		class Item25
+		class Item24
 		{
 			className="ALiVE_MIL_C2ISTAR";
 			name="alive_mil_c2istar";
 			author="ALiVE Mod Team";
 		};
-		class Item26
+		class Item25
 		{
 			className="ALiVE_sys_data";
 			name="alive_sys_data";
 			author="ALiVE Mod Team";
 		};
-		class Item27
+		class Item26
 		{
 			className="ALiVE_mil_placement";
 			name="alive_mil_placement";
 			author="ALiVE Mod Team";
 		};
-		class Item28
+		class Item27
 		{
 			className="ALiVE_mil_OPCOM";
 			name="alive_mil_opcom";
 			author="ALiVE Mod Team";
 		};
-		class Item29
+		class Item28
 		{
 			className="cba_modules";
 			name="Community Base Addons - Modules";
 			author="CBA Team";
 			url="https://www.github.com/CBATeam/CBA_A3";
 		};
-		class Item30
+		class Item29
 		{
 			className="ALiVE_civ_placement";
 			name="alive_civ_placement";
 			author="ALiVE Mod Team";
 		};
-		class Item31
+		class Item30
 		{
 			className="ALiVE_mil_logistics";
 			name="alive_mil_logistics";
 			author="ALiVE Mod Team";
 		};
-		class Item32
+		class Item31
 		{
 			className="ALiVE_mil_placement_custom";
 			name="alive_mil_placement_custom";
 			author="ALiVE Mod Team";
 		};
-		class Item33
+		class Item32
 		{
 			className="ALiVE_amb_civ_population";
 			name="ALiVE_amb_civ_population";
 			author="ALiVE Mod Team";
 		};
-		class Item34
+		class Item33
 		{
 			className="static_f_vietnam_c";
 			name="static_f_vietnam_c";
@@ -310,7 +302,6 @@ class AddonsMetaData
 };
 dlcs[]=
 {
-	"Enoch",
 	"Heli"
 };
 randomSeed=9982020;
@@ -1332,14 +1323,16 @@ class Mission
 						class Item1
 						{
 							dataType="Marker";
-							position[]={18672.338,22.614571,8313.6924};
-							name="xray_base_1";
+							position[]={18602.977,21.417,8383.792};
+							name="respawn_west";
+							text="FOB  Phu Bai";
 							type="Empty";
 							id=549;
+							atlOffset=-0.00024795532;
 						};
 					};
 					id=120;
-					atlOffset=0.78442001;
+					atlOffset=-0.035547256;
 				};
 				class Item1
 				{
@@ -1350,7 +1343,7 @@ class Mission
 				};
 			};
 			id=119;
-			atlOffset=31.77721;
+			atlOffset=31.477818;
 		};
 		class Item16
 		{
@@ -3998,7 +3991,7 @@ class Mission
 			name="Recon Bar";
 			class Entities
 			{
-				items=17;
+				items=16;
 				class Item0
 				{
 					dataType="Object";
@@ -4155,22 +4148,6 @@ class Mission
 					atlOffset=-0.005613327;
 				};
 				class Item9
-				{
-					dataType="Object";
-					class PositionInfo
-					{
-						position[]={18592.621,21.717319,8414.9297};
-						angles[]={0,2.1506,0};
-					};
-					side="Empty";
-					flags=5;
-					class Attributes
-					{
-					};
-					id=219;
-					type="Land_DirtPatch_05_F";
-				};
-				class Item10
 				{
 					dataType="Group";
 					side="West";
@@ -4333,7 +4310,7 @@ class Mission
 					id=220;
 					atlOffset=1.5258789e-005;
 				};
-				class Item11
+				class Item10
 				{
 					dataType="Group";
 					side="West";
@@ -4493,7 +4470,7 @@ class Mission
 					};
 					id=222;
 				};
-				class Item12
+				class Item11
 				{
 					dataType="Group";
 					side="West";
@@ -4675,7 +4652,7 @@ class Mission
 					id=224;
 					atlOffset=0.25548363;
 				};
-				class Item13
+				class Item12
 				{
 					dataType="Object";
 					class PositionInfo
@@ -4715,7 +4692,7 @@ class Mission
 						nAttributes=1;
 					};
 				};
-				class Item14
+				class Item13
 				{
 					dataType="Logic";
 					class PositionInfo
@@ -4770,7 +4747,7 @@ class Mission
 						nAttributes=2;
 					};
 				};
-				class Item15
+				class Item14
 				{
 					dataType="Object";
 					class PositionInfo
@@ -4786,7 +4763,7 @@ class Mission
 					id=228;
 					type="Land_vn_paperbox_01_small_stacked_f";
 				};
-				class Item16
+				class Item15
 				{
 					dataType="Object";
 					class PositionInfo
@@ -4805,7 +4782,7 @@ class Mission
 				};
 			};
 			id=209;
-			atlOffset=0.062498093;
+			atlOffset=0.062711716;
 		};
 		class Item32
 		{
@@ -13587,7 +13564,7 @@ class Mission
 			title="PAVN Invasion";
 			description="PAVN Invasion Mode.  They will attempt to take and hold objectives in Hue";
 			id=434;
-			atlOffset=115.95526;
+			atlOffset=119.97778;
 		};
 		class Item76
 		{
@@ -19034,7 +19011,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={18681.764,21.41,8419.7998};
-				angles[]={-0,4.5143185,0};
+				angles[]={0,4.5143185,0};
 			};
 			side="Empty";
 			flags=4;
@@ -19074,7 +19051,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={18680.982,21.41,8420.2334};
-				angles[]={-0,4.5143185,0};
+				angles[]={0,4.5143185,0};
 			};
 			side="Empty";
 			flags=4;
@@ -19114,7 +19091,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={18683.246,21.41,8420.1914};
-				angles[]={-0,4.5143185,0};
+				angles[]={0,4.5143185,0};
 			};
 			side="Empty";
 			flags=4;
@@ -19154,7 +19131,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={18682.504,21.41,8421.0869};
-				angles[]={-0,3.087697,0};
+				angles[]={0,3.087697,0};
 			};
 			side="Empty";
 			flags=4;
@@ -19194,7 +19171,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={18681.152,21.41,8418.9355};
-				angles[]={-0,6.0831227,0};
+				angles[]={0,6.0831227,0};
 			};
 			side="Empty";
 			flags=4;
@@ -19234,7 +19211,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={18682.213,21.41,8418.502};
-				angles[]={-0,3.8493719,0};
+				angles[]={0,3.8493719,0};
 			};
 			side="Empty";
 			flags=4;
@@ -19274,7 +19251,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={18679.617,21.41,8419.8643};
-				angles[]={-0,4.0677156,0};
+				angles[]={0,4.0677156,0};
 			};
 			side="Empty";
 			flags=4;
@@ -19834,7 +19811,7 @@ class Mission
 					class PositionInfo
 					{
 						position[]={14853.233,244.69083,9602.7422};
-						angles[]={-0,2.0048141,0.0060001095};
+						angles[]={0,2.0048141,0.0060001095};
 					};
 					side="West";
 					flags=4;
@@ -19850,7 +19827,7 @@ class Mission
 					class PositionInfo
 					{
 						position[]={14853.233,244.69083,9602.7422};
-						angles[]={-0,2.0048141,0.0060001095};
+						angles[]={0,2.0048141,0.0060001095};
 					};
 					side="West";
 					flags=4;
@@ -19866,7 +19843,7 @@ class Mission
 					class PositionInfo
 					{
 						position[]={14853.233,244.69083,9602.7422};
-						angles[]={-0,2.0048141,0.0060001095};
+						angles[]={0,2.0048141,0.0060001095};
 					};
 					side="West";
 					flags=4;
@@ -19882,7 +19859,7 @@ class Mission
 					class PositionInfo
 					{
 						position[]={14853.233,244.69083,9602.7422};
-						angles[]={-0,2.0048141,0.0060001095};
+						angles[]={0,2.0048141,0.0060001095};
 					};
 					side="West";
 					flags=4;
@@ -20023,7 +20000,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={14853.043,247.49696,9602.541};
-				angles[]={-0,2.0048141,0.0060001095};
+				angles[]={0,2.0048141,0.0060001095};
 			};
 			side="West";
 			flags=4;
