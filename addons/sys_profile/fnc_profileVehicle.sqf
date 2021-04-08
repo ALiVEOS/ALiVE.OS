@@ -498,7 +498,6 @@ switch (_operation) do {
                         _position = [_position, 0, 50, 10, 2, 5 , 0, [], [_position]] call BIS_fnc_findSafePos;
                     } else {
                         //_position = [_position, 0, 50, 5, 0, 5 , 0, [], [_position]] call BIS_fnc_findSafePos;
-                        ["test"] call ALiVE_fnc_dumpR;
                     };
                     
                     _position set [2,0.5];
