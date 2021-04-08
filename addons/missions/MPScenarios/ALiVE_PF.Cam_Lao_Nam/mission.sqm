@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=349;
+		nextID=358;
 	};
 	class Camera
 	{
-		pos[]={14711.169,293.50015,9597.8965};
-		dir[]={0.11756693,-0.74228001,0.65969568};
-		up[]={0.13023266,0.67008984,0.73076606};
-		aside[]={0.98448837,-7.4505806e-009,-0.17544951};
+		pos[]={14729.19,245.36548,9619.1367};
+		dir[]={0.45985612,-0.1681941,-0.87192935};
+		up[]={0.078465477,0.98575151,-0.14877699};
+		aside[]={-0.88452846,5.0413655e-007,-0.46650198};
 	};
 };
 binarizationWanted=0;
@@ -60,7 +60,6 @@ addons[]=
 	"A3_Weapons_F_Items",
 	"structures_f_vietnam_c",
 	"A3_Structures_F_Civ_Garbage",
-	"A3_Structures_F_Enoch_Decals_Horizontal",
 	"A3_Characters_F",
 	"A3_Modules_F",
 	"A3_Modules_F_Effects",
@@ -76,7 +75,7 @@ class AddonsMetaData
 {
 	class List
 	{
-		items=38;
+		items=37;
 		class Item0
 		{
 			className="ALiVE_main";
@@ -261,61 +260,54 @@ class AddonsMetaData
 		};
 		class Item29
 		{
-			className="A3_Structures_F_Enoch";
-			name="Arma 3 Contact Platform - Buildings and Structures";
-			author="Bohemia Interactive";
-			url="https://www.arma3.com";
-		};
-		class Item30
-		{
 			className="A3_Characters_F";
 			name="Arma 3 Alpha - Characters and Clothing";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item31
+		class Item30
 		{
 			className="A3_Modules_F";
 			name="Arma 3 Alpha - Scripted Modules";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item32
+		class Item31
 		{
 			className="wheeled_f_vietnam_c";
 			name="wheeled_f_vietnam_c";
 			author="Savage Game Design";
 			url="https://www.arma3.com";
 		};
-		class Item33
+		class Item32
 		{
 			className="cba_modules";
 			name="Community Base Addons - Modules";
 			author="CBA Team";
 			url="https://www.github.com/CBATeam/CBA_A3";
 		};
-		class Item34
+		class Item33
 		{
 			className="air_f_vietnam_c";
 			name="air_f_vietnam_c";
 			author="Savage Game Design";
 			url="https://www.arma3.com";
 		};
-		class Item35
+		class Item34
 		{
 			className="boat_f_vietnam_c";
 			name="boat_f_vietnam_c";
 			author="Savage Game Design";
 			url="https://www.arma3.com";
 		};
-		class Item36
+		class Item35
 		{
 			className="missions_modules_f_vietnam";
 			name="missions_f_vietnam";
 			author="Savage Game Design";
 			url="https://www.arma3.com";
 		};
-		class Item37
+		class Item36
 		{
 			className="static_f_vietnam_c";
 			name="static_f_vietnam_c";
@@ -326,7 +318,6 @@ class AddonsMetaData
 };
 dlcs[]=
 {
-	"Enoch",
 	"Heli"
 };
 randomSeed=8300791;
@@ -10622,7 +10613,7 @@ class Mission
 			name="Recon Bar";
 			class Entities
 			{
-				items=16;
+				items=15;
 				class Item0
 				{
 					dataType="Object";
@@ -10777,22 +10768,6 @@ class Mission
 					atlOffset=-0.013168335;
 				};
 				class Item9
-				{
-					dataType="Object";
-					class PositionInfo
-					{
-						position[]={14752.36,244.17377,9606.7852};
-						angles[]={0,2.9095228,0};
-					};
-					side="Empty";
-					flags=5;
-					class Attributes
-					{
-					};
-					id=677;
-					type="Land_DirtPatch_05_F";
-				};
-				class Item10
 				{
 					dataType="Group";
 					side="West";
@@ -10955,7 +10930,7 @@ class Mission
 					id=678;
 					atlOffset=0.43466187;
 				};
-				class Item11
+				class Item10
 				{
 					dataType="Group";
 					side="West";
@@ -11117,7 +11092,7 @@ class Mission
 					id=680;
 					atlOffset=1.1074371;
 				};
-				class Item12
+				class Item11
 				{
 					dataType="Group";
 					side="West";
@@ -11299,7 +11274,7 @@ class Mission
 					id=682;
 					atlOffset=0.25135803;
 				};
-				class Item13
+				class Item12
 				{
 					dataType="Object";
 					class PositionInfo
@@ -11339,7 +11314,7 @@ class Mission
 						nAttributes=1;
 					};
 				};
-				class Item14
+				class Item13
 				{
 					dataType="Logic";
 					class PositionInfo
@@ -11394,7 +11369,7 @@ class Mission
 						nAttributes=2;
 					};
 				};
-				class Item15
+				class Item14
 				{
 					dataType="Object";
 					class PositionInfo
@@ -11412,7 +11387,7 @@ class Mission
 				};
 			};
 			id=631;
-			atlOffset=-0.045135498;
+			atlOffset=-0.04347229;
 		};
 		class Item44
 		{
@@ -12486,7 +12461,7 @@ class Mission
 		class Item59
 		{
 			dataType="Marker";
-			position[]={14731.832,1.2294485e+029,9615.7744};
+			position[]={14720.588,1.2294485e+029,9625.6699};
 			name="respawn_west";
 			text="FOB Mai Loc";
 			type="Empty";
@@ -12505,7 +12480,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={14731.281,244.28717,9616.6299};
+						position[]={14723.462,244.11375,9622.9902};
 						angles[]={0,4.7076855,0};
 					};
 					side="West";
@@ -18877,7 +18852,7 @@ class Mission
 					class PositionInfo
 					{
 						position[]={14711.852,244.10811,9636.1475};
-						angles[]={-0,4.2639518,6.2651882};
+						angles[]={0,4.2639518,6.2651882};
 					};
 					side="West";
 					flags=6;
@@ -18921,7 +18896,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={14711.865,244.8403,9636.0967};
-				angles[]={-0,4.2639518,6.2651882};
+				angles[]={0,4.2639518,6.2651882};
 			};
 			side="West";
 			flags=6;
