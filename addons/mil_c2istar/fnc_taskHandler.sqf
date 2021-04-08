@@ -1544,7 +1544,7 @@ switch (_operation) do {
                         private _taskSide = _x;
                         private _taskSideData = [_autoGenerateSides, _taskSide] call ALiVE_fnc_HashGet;
 
-                        if (_taskSideData select 0 != "None") then {
+                        if (_taskSideData select 0 == "Constant") then {
 
                             private _sidePlayers = [_taskSide] call ALiVE_fnc_getPlayersDataSource;
                             private _sidePlayerIDs = _sidePlayers select 1;

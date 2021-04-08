@@ -232,7 +232,20 @@ switch (_taskState) do {
         _lastState = [_params,"lastState"] call ALIVE_fnc_hashGet;
         _taskDialog = [_params,"dialog"] call ALIVE_fnc_hashGet;
         _currentTaskDialog = [_taskDialog,_taskState] call ALIVE_fnc_hashGet;
-        _vehicleProfiles = [_params,"vehicleProfileIDs"] call ALIVE_fnc_hashGet;
+        _vehicleProfiles = [_params,"vehicleProfileIDs",[]] call ALIVE_fnc_hashGet;
+
+        if (count _vehicleProfiles == 0) exitWith {
+            [_params,"nextTask",""] call ALIVE_fnc_hashSet;
+
+            _task set [8,"Succeeded"];
+            _task set [10, "N"];
+            _result = _task;
+
+            [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+
+            ["chat_success",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+
+        };
 
         if(_lastState != "Destroy") then {
 
