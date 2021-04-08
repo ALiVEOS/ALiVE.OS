@@ -194,6 +194,7 @@ ALiVE_PLACEMENT_GROUPBLACKLIST = ALiVE_PLACEMENT_CUSTOM_GROUPBLACKLIST +
     "O_T_diverTeam_SDV",
 
     //VN
+    // aircraft crews and boat groups
     "vn_b_group_men_cobra_01",
     "vn_b_group_men_cobra_02",
     "vn_b_group_men_cobra_03",
@@ -204,10 +205,17 @@ ALiVE_PLACEMENT_GROUPBLACKLIST = ALiVE_PLACEMENT_CUSTOM_GROUPBLACKLIST +
     "vn_b_group_boat_02",
     "vn_b_group_men_navy_01",
 
+    "vn_b_group_men_army_05", // tank crew
+    "vn_b_group_men_army_06", // tunnel rats
+    "vn_b_group_men_army_07", // artillery gun crew
+    "vn_b_group_men_army_09", // vehicle crew
+
     "vn_o_group_boat_02",
     "vn_o_group_mech_nva_02","vn_o_group_mech_nva_03","vn_o_group_mech_nva_04","vn_o_group_mech_nva_05",
     "vn_o_group_mech_nva_65_02","vn_o_group_mech_nva_65_03","vn_o_group_mech_nva_65_04","vn_o_group_mech_nva_65_05",
     "vn_o_group_mech_nvam_02","vn_o_group_mech_nvam_03","vn_o_group_mech_nvam_04","vn_o_group_mech_nvam_05",
+    "vn_o_group_men_nva_05", // tank crew
+    "vn_o_group_men_nva_08", // vehicle crew
     "vn_o_group_men_nva_navy_01",
     "vn_o_group_men_nva_navy_02",
     "vn_o_group_men_vpaf_01","vn_o_group_men_vpaf_02","vn_o_group_men_vpaf_03",
@@ -223,8 +231,9 @@ ALiVE_PLACEMENT_GROUPBLACKLIST = ALiVE_PLACEMENT_CUSTOM_GROUPBLACKLIST +
     "vn_i_group_men_ch34_01",
     "vn_i_group_men_plane_01",
     "vn_i_group_men_uh1_01",
-    "vn_i_group_men_army_04", // police
-    "vn_i_group_motor_army_07"
+    "vn_i_group_motor_army_07",
+    "vn_i_group_men_army_05",
+    "vn_i_group_men_army_09"
 
 ];
 
