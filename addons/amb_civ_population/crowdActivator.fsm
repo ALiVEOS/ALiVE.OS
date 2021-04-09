@@ -2,7 +2,7 @@
 /*%FSM<HEAD>*/
 /*
 item0[] = {"MOVE",2,250,-835.013550,511.870850,-745.013550,561.870850,0.000000,"MOVE"};
-item1[] = {"INIT",0,250,-277.342499,-271.307617,-187.342514,-221.307678,0.000000,"INIT"};
+item1[] = {"INIT",0,4346,-277.342499,-271.307617,-187.342514,-221.307678,0.000000,"INIT"};
 item2[] = {"INIT_COMPLETE",4,218,-277.365326,-192.055389,-187.365341,-142.055359,0.000000,"INIT" \n "COMPLETE"};
 item3[] = {"_",-1,250,-440.685394,-235.585892,-437.600311,-235.585892,0.000000,""};
 item4[] = {"DESTROY",4,218,-157.505569,-114.375870,-67.505569,-64.375847,0.000000,"DESTROY"};
@@ -22,7 +22,7 @@ item17[] = {"HAS_NEW__BUILDIN",4,218,-94.943115,202.020569,-4.943207,252.020691,
 item18[] = {"WAIT",4,218,-402.581726,-117.430069,-312.581726,-67.430016,1.000000,"WAIT"};
 item19[] = {"NO__ACTIVATE",4,218,201.312622,276.080139,291.312500,326.080261,0.000000,"NO " \n "ACTIVATE"};
 item20[] = {"ANALYSE_NEW_HOUS",2,250,13.272003,273.792206,103.272133,323.792389,0.000000,"ANALYSE" \n "NEW" \n "HOUSES"};
-item21[] = {"SPAWN_LOOP",2,4346,12.918488,595.304810,102.918610,645.305054,0.000000,"SPAWN" \n "LOOP"};
+item21[] = {"SPAWN_LOOP",2,250,12.918488,595.304810,102.918610,645.305054,0.000000,"SPAWN" \n "LOOP"};
 item22[] = {"ITERATE",4,218,144.952240,594.056030,234.952271,644.056152,1.000000,"ITERATE"};
 item23[] = {"END_LOOP",4,218,13.280243,665.988647,103.280182,715.988647,0.000000,"END" \n "LOOP"};
 item24[] = {"ANALYSE_ACTIVE_A",2,250,-565.516724,302.894653,-475.516846,352.894592,0.000000,"ANALYSE" \n "ACTIVE" \n "AGENTS"};
@@ -133,8 +133,8 @@ link64[] = {47,46};
 link65[] = {48,6};
 link66[] = {49,0};
 link67[] = {50,33};
-globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-1161.255615,490.419067,987.520752,-22.864317,1517,928,1};
-window[] = {0,-1,-1,-1,-1,1187,867,3195,87,1,1535};
+globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-1243.839355,573.002686,1298.393921,-393.383789,639,744,1};
+window[] = {2,-1,-1,-32000,-32000,988,-73,1387,68,3,657};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -569,7 +569,7 @@ class FSM
                          "if (_faction != """") then {" \n
                          "" \n
                          "  private _minScope = 1;" \n
-                         "  if (_faction == ""CIV_F"") then {_minScope = 2};" \n
+                         "  if (_faction == ""CIV_F"" || _faction == ""C_VIET"" ) then {_minScope = 2};" \n
                          "  _civClasses = [0,_faction,""Man"",false,_minScope] call ALiVE_fnc_findVehicleType;" \n
                          "  _civCLasses = _civCLasses - ALIVE_PLACEMENT_UNITBLACKLIST;" \n
                          "" \n
@@ -583,7 +583,7 @@ class FSM
                          "       if (_factionSide == 3) then {" \n
                          "            _factionConfigName = configName _factionConfig;" \n
                          "            private _minScope = 1;" \n
-                         "            if (_factionConfigName == ""CIV_F"") then {_minScope = 2};" \n
+                         "            if (_factionConfigName == ""CIV_F"" || _factionConfigName == ""C_VIET"") then {_minScope = 2};" \n
                          "            _classes = [0,_factionConfigName,""Man"",false,_minScope] call ALiVE_fnc_findVehicleType;" \n
                          "            _classes = _classes - ALIVE_PLACEMENT_UNITBLACKLIST;" \n
                          "             [_civilianCLasses, _factionConfigName, _classes] call ALiVE_fnc_hashSet;" \n
@@ -653,7 +653,7 @@ class FSM
                          "ALiVE_fnc_isInHouse = {" \n
                          "  // need to fix stuttering" \n
                          "  params [""_pos""];" \n
-                         "  private _building = nearestBuilding _pos;" \n
+                         "  private _building = nearestObject [_pos, ""Building""];" \n
                          "  private _result = false;" \n
                          "  private _box = _building getVariable [""ALiVE_BBR"",[]];" \n
                          "  if (count _box == 0 ) then {" \n
