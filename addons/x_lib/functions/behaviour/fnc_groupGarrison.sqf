@@ -41,7 +41,7 @@ private _staticWeapons = nearestObjects [_position, ["StaticWeapon"], _radius];
 
 // Add armed vehicles to list of static weapons to garrison
 {
-    if ([_x] call ALIVE_fnc_isArmed && { !(_onlyProfiled && !(isNil {_x getVariable "profileID"})) }) then {
+    if ([_x] call ALIVE_fnc_isArmed && { !_onlyProfiled || !isnil { _x getVariable "profileID" } }) then {
         _staticWeapons pushBack _x;
     };
 } foreach (nearestObjects [_position, ["Car"], _radius]);
