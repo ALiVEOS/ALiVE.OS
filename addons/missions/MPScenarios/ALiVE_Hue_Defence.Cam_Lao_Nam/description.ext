@@ -6,7 +6,7 @@ class Header {
 };
 dev = "ALiVE Mod Team";
 author = $STR_VN_MISSIONS_AUTHOR_ALIVE;
-briefingName = $STR_VN_MISSIONS_TITLE_MISSION_ALIVE_XRAY;
+briefingName = "ALiVE | Hue Defence";
 overviewPicture = "x\alive\addons\missions\MPScenarios\ALiVE_Hue_Defence.Cam_Lao_Nam\img\mission.paa";
 overviewText = $STR_VN_MISSIONS_DESC_MISSION_ALIVE_XRAY;
 onLoadName = $STR_VN_MISSIONS_TITLE_MISSION_ALIVE_XRAY;

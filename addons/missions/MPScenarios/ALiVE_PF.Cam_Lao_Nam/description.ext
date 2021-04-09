@@ -7,7 +7,7 @@ class header {
 };
 dev = "ALiVE Mod Team";
 author = $STR_VN_MISSIONS_AUTHOR_ALIVE;
-briefingName = $STR_VN_MISSIONS_TITLE_MISSION_ALIVE;
+briefingName = "ALiVE | Op Van Tien";
 overviewPicture = "x\alive\addons\missions\MPScenarios\ALiVE_PF.Cam_Lao_Nam\pics\splash.paa";
 overviewText = $STR_VN_MISSIONS_DESC_MISSION_ALIVE;
 onLoadName = $STR_VN_MISSIONS_TITLE_MISSION_ALIVE;
