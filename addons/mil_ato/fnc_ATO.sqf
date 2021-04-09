@@ -888,7 +888,8 @@ switch(_operation) do {
                                 // Get nearest building position
                                 if !(_isOnCarrier) then {
                                     // Select indoor building position
-                                    _crewPos = selectRandom (((nearestBuilding _position) buildingPos -1) select {lineIntersects [AGLToASL _x, (AGLToASL _x) vectorAdd [0,0,10]]});
+                                    private _nearBuildings = nearestObjects [_position, ["House", "Building"], 300];
+                                    _crewPos = selectRandom (((_nearBuildings select 0) buildingPos -1) select {lineIntersects [AGLToASL _x, (AGLToASL _x) vectorAdd [0,0,10]]});
                                     if (isNil "_crewPos") then {
                                         _crewPos = _position getpos [10 + (random 15), random 360];
                                     };
