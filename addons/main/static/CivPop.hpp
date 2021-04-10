@@ -35,6 +35,17 @@ ALIVE_civilianWeapons = [] call ALIVE_fnc_hashCreate;
 // CDLC
 [ALIVE_civilianWeapons, "C_VIET", [["vn_p38s","vn_m10_mag"],["vn_hp","vn_hp_mag"],["vm_m1895","vm_m1895_mag"],["vn_tt33","vn_tt33_mag"],["vn_m1911","vn_m1911_mag"],["vn_m10","vn_m10_mag"]]] call ALIVE_fnc_hashSet;
 
+// Civ Pop Interaction
+ALiVE_CivPop_Interaction_WaterItems = [
+        "ALiVE_Waterbottle",
+        "ACE_WaterBottle"     // ACEX
+];
+
+ALiVE_CivPop_Interaction_RationItems = [
+        "ALiVE_Humrat",
+        "ACE_Humanitarian_Ration",  // ACEX
+        "vn_b_item_rations_01"    // VN
+];
 
 // Civ Pop Crowds
 
