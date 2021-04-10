@@ -39,7 +39,7 @@ allowProfileGlasses = 0;
 briefing = 1;
 debriefing = 1;
 
-forceRotorLibSimulation = 1
+forceRotorLibSimulation = 1;
 
 #include "CfgFunctions.inc"
 #include "scripts\groupMarkers.hpp"
