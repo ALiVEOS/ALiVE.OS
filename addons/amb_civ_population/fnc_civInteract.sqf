@@ -820,7 +820,7 @@ switch (_operation) do {
 		_consumed = _civ getVariable[QGVAR(consumedItems), 0];
 		if (_consumed >= _maxAllowAid) exitWith {
 			["openSideSmall",0.3] call ALIVE_fnc_displayMenu;
-			["setSideSmallText","This Civilian has already received the max allowed aid!"] spawn ALIVE_fnc_displayMenu;
+			["setSideSmallText","This civilian does not require any more humanitarian aid!"] spawn ALIVE_fnc_displayMenu;
 		};
 
 		// Ensure item is in the inventory & remove it
