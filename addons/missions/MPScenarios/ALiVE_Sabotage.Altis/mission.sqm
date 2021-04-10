@@ -186,13 +186,15 @@ randomSeed=15429146;
 class ScenarioData
 {
 	author="SpyderBlack723";
+	overviewText="Lead an insurgency on Altis, use sabotage and subterfuge to capture weapons and establish safe houses across the island";
+	overviewTextLocked="Lead an insurgency on Altis, use sabotage and subterfuge to capture weapons and establish safe houses across the island";
+	onLoadMission="Lead an insurgency on Altis, use sabotage and subterfuge to capture weapons and establish safe houses across the island";
 };
 class Mission
 {
 	class Intel
 	{
-		briefingName="ALiVE_Sabotage Demo";
-		overviewText="By HighHead";
+		briefingName="ALiVE | Sabotage";
 		resistanceWest=0;
 		resistanceEast=1;
 		startWeather=1;

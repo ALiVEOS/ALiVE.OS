@@ -2,4 +2,4 @@
 author = "HeroesandvillaindOS";
 OnLoadName = "ALiVE | Quickstart II";
 OnLoadMission = "Jump into the action with this Quickstart template from the ALiVE mod wiki.";
-loadScreen = "alive.jpg";
+loadScreen = "x\alive\addons\missions\logo_alive.paa";

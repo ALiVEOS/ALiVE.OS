@@ -1,10 +1,19 @@
-//http://community.bistudio.com/wiki/description.ext#Header_Class
 class header {
     gametype = COOP;
     minplayers = 1;
     maxplayers = 7;
-    playerCountMultipleOf = 1;  //Coop type missions use 1, Team type missions use 2
+    playerCountMultipleOf = 1; 
 };
+
+author = ALiVE Mod Team || Mission by Highhead;
+onLoadMission = "INTEL has been received about a nuclear device beeing built by a scientist named Ahelef Mahmoud in an hideout in Zaros! Locate Mahmoud, disable the bomb, and return home safely!";
+overviewText = "INTEL has been received about a nuclear device beeing built by a scientist named Ahelef Mahmoud in an hideout in Zaros! Locate Mahmoud, disable the bomb, and return home safely!";
+onLoadIntroTime = 1;
+onLoadMissionTime = 1;
+onLoadName = ALiVE | Divide and Rule;
+loadScreen = "x\alive\addons\main\logo_alive.paa";
+overviewPicture = "x\alive\addons\missions\logo_alive.paa";
+
 
 class CfgDebriefing
 {
@@ -35,12 +44,6 @@ class CfgRespawnInventory
     };
 };
 
-author = ALiVE Mod Team || Mission by Highhead;
-onLoadMission = "INTEL has been received about a nuclear device beeing built by a scientist named Ahelef Mahmoud in an hideout in Zaros! Locate Mahmoud, disable the bomb, and return home safely!";
-onLoadIntroTime = 1;
-onLoadMissionTime = 1;
-onLoadName = ALiVE | Divide and Rule;
-loadScreen = "x\alive\addons\main\logo_alive.paa";
 
 aiKills = 0;
 briefing = 1;

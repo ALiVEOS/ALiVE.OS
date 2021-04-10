@@ -355,7 +355,8 @@ class Mission
 {
 	class Intel
 	{
-		briefingName="@STR_VN_MISSIONS_TITLE_MISSION_ALIVE";
+		briefingName="@STR_VN_MISSIONS_TITLE_MISSION_ALIVE_XRAY";
+		overviewText="ALiVE Defensive Operation";
 		startWeather=0.34750906;
 		startFog=0.45418191;
 		startWind=0.1;

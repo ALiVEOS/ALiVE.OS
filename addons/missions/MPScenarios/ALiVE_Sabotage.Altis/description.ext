@@ -6,13 +6,13 @@ class header {
     playerCountMultipleOf = 1;  //Coop type missions use 1, Team type missions use 2
 };
 
-author = ALiVE Studios | Mission by Highhead;
-onLoadMission = "Lead an insurgency on Altis, use sabotage and subterfuge to capture weapons and establish safe houses across the island!";
-overviewText = "Lead an insurgency on Altis, use sabotage and subterfuge to capture weapons and establish safe houses across the island.";
+author = ALiVE Mod Team || Mission by Highhead;
+onLoadMission = "Lead an insurgency on Altis, use sabotage and subterfuge to capture weapons and establish safe houses across the island";
+overviewText = "Lead an insurgency on Altis, use sabotage and subterfuge to capture weapons and establish safe houses across the island";
 onLoadIntroTime = 1;
 onLoadMissionTime = 1;
 onLoadName = ALiVE | Sabotage;
-loadScreen = "x\alive\addons\ui\logo_alive.paa";
+loadScreen = "x\alive\addons\main\logo_alive.paa";
 overviewPicture = "x\alive\addons\missions\logo_alive.paa";
 aiKills = 0;
 briefing = 1;

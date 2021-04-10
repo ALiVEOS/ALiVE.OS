@@ -16,7 +16,7 @@ class CfgMissions
     {
         class Showcase_Tour
         {
-            briefingName = "ALiVE | Tour";
+            briefingName = "ALiVE | Tour (Stratis)";
             directory = "x\alive\addons\missions\showcases\tour.stratis";
             overviewPicture = "x\alive\addons\missions\logo_alive.paa";
             overviewText = "ALiVE Tour will take you through the different modules, technology and gameplay offered by ALiVE.";
@@ -29,6 +29,22 @@ class CfgMissions
             overviewPicture = "x\alive\addons\missions\logo_alive.paa";
             overviewText = "This is the basic quick start mission featured in the ALiVE documentation and Wiki (alivemod.com)";
             author = "ALiVE Mod Team";                    
+        };
+        class Showcase_Vietnam
+        {
+            briefingName = "ALiVE | Op Van Tien (Cam Lao Nam)";
+            directory = "x\alive\addons\missions\mpscenarios\ALiVE_PF.Cam_Lao_Nam";
+            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_PF.Cam_Lao_Nam\pics\splash.paa";
+            overviewText = "PAVN launch a general offensive against military and civilian objectives throughout South Vietnam, supported by VC conducting cross-border insurgency operations.";
+            author = "ALiVE Mod Team";
+        };
+        class Showcase_Hue_Defence
+        {
+            briefingName = "ALiVE | Hue Defence (Cam Lao Nam)";
+            directory = "x\alive\addons\missions\mpscenarios\ALiVE_Hue_Defence.Cam_Lao_Nam";
+            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Hue_Defence.Cam_Lao_Name\img\splash.paa";
+            overviewText = "Travel by convoy to Hue, consolidate positions defend Hue and the Imperial City Citadel from enemy attack.";
+            author = "ALiVE Mod Team";
         };
         class Showcase_Getting_Started_APEX
         {
@@ -62,22 +78,6 @@ class CfgMissions
             overviewText = "Obtain Air Superiority over Altis and eliminate the given targets! AA positions have been confirmed all over the coastline - plan your mission waypoints carefully!";
             author = "ALiVE Mod Team";
         };                      
-        class Showcase_Vietnam
-        {
-            briefingName = "ALiVE | Op Van Tien (Vietnam)";
-            directory = "x\alive\addons\missions\mpscenarios\ALiVE_PF.Cam_Lao_Nam";
-            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_PF.Cam_Lao_Nam\pics\splash.paa";
-            overviewText = "PAVN launch a general offensive against military and civilian objectives throughout South Vietnam, supported by VC conducting cross-border insurgency operations.";
-            author = "ALiVE Mod Team";
-        };
-        class Showcase_Hue_Defence
-        {
-            briefingName = "ALiVE | Hue Defence (Vietnam)";
-            directory = "x\alive\addons\missions\mpscenarios\ALiVE_Hue_Defence.Cam_Lao_Nam";
-            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Hue_Defence.Cam_Lao_Name\img\splash.paa";
-            overviewText = "Travel by convoy to Hue, consolidate positions defend Hue and the Imperial City Citadel from enemy attack.";
-            author = "ALiVE Mod Team";
-        };
     };
     class MPMissions
     {
@@ -107,7 +107,7 @@ class CfgMissions
         };
         class MP_COOP_Air_Superiority
         {
-            briefingName = "ALiVE | Air Superiority (CO 12)";
+            briefingName = "ALiVE | Air Superiority (COOP 12)";
             directory = "x\alive\addons\missions\mpscenarios\ALiVE_air_superiority.Altis";
             overviewPicture = "x\alive\addons\missions\logo_alive.paa";
             overviewText = "Obtain Air Superiority over Altis and eliminate the given targets! AA positions have been confirmed all over the coastline - plan your mission waypoints carefully!";

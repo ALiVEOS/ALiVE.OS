@@ -41,6 +41,8 @@ onLoadIntroTime = 1;
 onLoadMissionTime = 1;
 onLoadName = ALiVE | Divide and Rule;
 loadScreen = "x\alive\addons\main\logo_alive.paa";
+overviewPicture = "x\alive\addons\missions\logo_alive.paa";
+overviewText = "INTEL has been received about a nuclear device beeing built by a scientist named Ahelef Mahmoud in an hideout in Zaros! Locate Mahmoud, disable the bomb, and return home safely!";
 
 aiKills = 0;
 briefing = 1;

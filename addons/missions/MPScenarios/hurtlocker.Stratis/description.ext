@@ -11,6 +11,7 @@ onLoadMission = "Stratis is reeling from a brutal insurgency campaign. IED's lit
 onLoadIntroTime = 1;
 onLoadMissionTime = 1;
 loadScreen = "x\alive\addons\missions\logo_alive.paa";
+overviewPicture = "x\alive\addons\missions\logo_alive.paa";
 
 aiKills = 0;
 briefing = 0;
