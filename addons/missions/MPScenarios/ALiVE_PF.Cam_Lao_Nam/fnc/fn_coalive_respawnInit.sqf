@@ -24,7 +24,7 @@ if (isServer) then {
     addMissionEventHandler ["HandleDisconnect", {
         params ["_unit"];
 
-        if (_unit distance2d (markerPos "respawn_west") < 500 && _unit distance2d (markerPos "respawn_west_2") < 500) exitWith {
+        if (_unit distance2d (markerPos "respawn_west") < 500 && _unit distance2d (markerPos "respawn_west_1") < 500) exitWith {
             deleteVehicle _unit;
         };
 

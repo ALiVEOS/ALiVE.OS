@@ -11,25 +11,35 @@ overviewText = $STR_VN_MISSIONS_DESC_MISSION_ALIVE_XRAY;
 onLoadName = $STR_VN_MISSIONS_TITLE_MISSION_ALIVE_XRAY;
 loadScreen = "x\alive\addons\missions\MPScenarios\ALiVE_Hue_Defence.Cam_Lao_Nam\img\mission.paa";
 onLoadMission = $STR_VN_MISSIONS_DESC_MISSION_ALIVE_XRAY;
-aiKills = 0;
-enableDebugConsole = 1;
-allowFunctionsLog = 1;
-allowFunctionsRecompile = 1;
-respawnButton = 1;
-respawnTemplates[] = {"MenuPosition"};
-respawn = 3;
-respawnOnStart = -1;
+
 disabledAI = 0;
-disableRandomization[] = {};
+aiKills = 0;
+
 joinUnassigned = 1;
 saving = 0;
-corpseManagerMode = 1;
+
+enableDebugConsole = 1;
+allowFunctionsLog = 1;
+allowFunctionsRecompile = 0;
+
+respawn = 3;
+respawnOnStart = -1;
+respawnTemplates[] = {"MenuPosition"};
+respawnDelay = 15;
+RespawnDialog = 0;
+respawnButton = 1;
+
+corpseManagerMode = 2;
 corpseLimit = 50;
 corpseRemovalMaxTime = 450;
 minPlayerDistance = 150;
-allowProfileGlasses = 0;
-respawnVehicleDelay = 100000;
 
+allowProfileGlasses = 0;
+
+briefing = 1;
+debriefing = 1;
+
+forceRotorLibSimulation = 1
 
 #include "CfgFunctions.inc"
 #include "scripts\groupMarkers.hpp"
