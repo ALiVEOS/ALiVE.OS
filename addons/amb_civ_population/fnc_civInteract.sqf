@@ -68,6 +68,11 @@ switch (_operation) do {
 			//-- Get settings
 			private ["_debug", "_factionEnemy", "_humanitarianDecrease", "_maxAllowAid", "_enableACEX", "_authorized"];
 
+			waitUntil {_result = _logic getVariable "waterItems"; !isNil "_result"};
+
+			private _waterItems = _logic getVariable ["waterItems", []];
+			private _humratItems = _logic getVariable ["rationItems", []];
+
 			_debug = _logic getVariable "debug";
 			_factionEnemy = _logic getVariable "insurgentFaction";
 			_humanitarianDecrease = parseNumber (_logic getVariable["humanitarianHostilityChance", "20"]);
@@ -75,20 +80,11 @@ switch (_operation) do {
 			_enableACEX = _logic getVariable ["disableACEX", false];
 			_authorized = (_logic getVariable "limitInteraction") call ALiVE_fnc_stringListToArray;
 
-			private _customWaterItems = [_logic getvariable "customWaterItems", " ", ""] call CBA_fnc_replace;
-            _customWaterItems = [_customWaterItems, ","] call CBA_fnc_split;
-
-			private _customRationItems = [_logic getvariable "customRationItems", " ", ""] call CBA_fnc_replace;
-            _customRationItems = [_customRationItems, ","] call CBA_fnc_split;
-
 			//-- Create interact handler object
 			MOD(civInteractHandler) = [nil,"create"] call MAINCLASS;
 			[MOD(civInteractHandler), "Debug", _debug] call ALiVE_fnc_hashSet;
 			[MOD(civInteractHandler), "InsurgentFaction", _factionEnemy] call ALiVE_fnc_hashSet;
 			[MOD(civInteractHandler), "authorized", _authorized] call ALiVE_fnc_hashSet;
-
-			private _waterItems = ALiVE_CivPop_Interaction_WaterItems + _customWaterItems;
-			private _humratItems = ALiVE_CivPop_Interaction_RationItems + _customRationItems;
 
 			// -- Store init data
 			_humanitarianData = [] call ALiVE_fnc_hashCreate;
@@ -820,14 +816,14 @@ switch (_operation) do {
 		_consumed = _civ getVariable[QGVAR(consumedItems), 0];
 		if (_consumed >= _maxAllowAid) exitWith {
 			["openSideSmall",0.3] call ALIVE_fnc_displayMenu;
-			["setSideSmallText","This civilian does not require any more humanitarian aid!"] spawn ALIVE_fnc_displayMenu;
+			["setSideSmallText",localize "STR_ALIVE_CIV_POP_TOOMUCHAID"] spawn ALIVE_fnc_displayMenu;
 		};
 
 		// Ensure item is in the inventory & remove it
 		private _validItems = ((vestItems player) + (uniformItems player) + (backpackItems player)) arrayIntersect _items;
 		if (_validItems isequalto []) exitWith {
 			["openSideSmall",0.3] call ALIVE_fnc_displayMenu;
-			["setSideSmallText","You have no humanitarian aid to give to this civilian!"] spawn ALIVE_fnc_displayMenu;
+			["setSideSmallText",localize "STR_ALIVE_CIV_POP_NOAID"] spawn ALIVE_fnc_displayMenu;
 		};
 
 		private _item = _validItems select 0;

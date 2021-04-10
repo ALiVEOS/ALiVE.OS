@@ -24,7 +24,7 @@ params ["_logic"];
 if (count (allMissionObjects "SpyderAddons_civ_interact") > 0) exitWith {["[Civ Interact] Detected Spyders Addon, exiting..."] call ALiVE_fnc_dump};
 
 _enable = call compile (_logic getvariable ["enableInteraction","false"]);
-if !(_enable) exitWith {["[- Civ Interact] Module has been disabled, exiting"] call ALiVE_fnc_dump};
+if !(_enable) exitWith {["[Civ Interact] Module has been disabled, exiting"] call ALiVE_fnc_dump};
 
 // Confirm init function available
 if (isNil "ALiVE_fnc_civInteract") exitWith {["[Civ Interact] Main function missing"] call ALiVE_fnc_dump};
