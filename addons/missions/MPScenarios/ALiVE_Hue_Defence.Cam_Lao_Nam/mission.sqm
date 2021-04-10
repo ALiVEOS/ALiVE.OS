@@ -5,7 +5,7 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=513;
+	toggles=521;
 	class ItemIDProvider
 	{
 		nextID=813;
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=4101;
+		nextID=4158;
 	};
 	class Camera
 	{
-		pos[]={18592.047,26.677015,8412.0732};
-		dir[]={0.05959595,-0.8630113,0.50165713};
-		up[]={0.10180828,0.50518453,0.85698521};
-		aside[]={0.99301732,-3.7252903e-009,-0.11796865};
+		pos[]={18604.035,33.553028,8369.543};
+		dir[]={0.79922605,-0.54165512,-0.2604759};
+		up[]={0.51499456,0.84060079,-0.16784199};
+		aside[]={-0.30986872,0,-0.9507795};
 	};
 };
 binarizationWanted=0;
@@ -3839,17 +3839,17 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={18594.438,21.557848,8412.874};
-						angles[]={6.2392135,5.073081,6.2452021};
+						position[]={18594.438,22.040451,8412.874};
+						angles[]={0,5.073081,0};
 					};
 					side="Empty";
-					flags=4;
 					class Attributes
 					{
 						disableSimulation=1;
 					};
 					id=211;
 					type="Land_vn_sofa_01_f";
+					atlOffset=0.48260307;
 				};
 				class Item2
 				{
@@ -4350,7 +4350,7 @@ class Mission
 							};
 							id=225;
 							type="B_Soldier_F";
-							atlOffset=0.25548363;
+							atlOffset=0.59728622;
 							class CustomAttributes
 							{
 								class Attribute0
@@ -4475,7 +4475,7 @@ class Mission
 					{
 					};
 					id=224;
-					atlOffset=0.25548363;
+					atlOffset=0.59728622;
 				};
 				class Item12
 				{
@@ -4607,7 +4607,7 @@ class Mission
 				};
 			};
 			id=209;
-			atlOffset=0.062711716;
+			atlOffset=0.062726974;
 		};
 		class Item31
 		{
@@ -8267,7 +8267,7 @@ class Mission
 			};
 			id=280;
 			type="vn_b_prop_fmradio_01";
-			atlOffset=1.0054626;
+			atlOffset=1.0055237;
 			class CustomAttributes
 			{
 				class Attribute0

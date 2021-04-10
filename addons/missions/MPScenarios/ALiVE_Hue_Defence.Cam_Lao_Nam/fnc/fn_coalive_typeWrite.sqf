@@ -15,8 +15,8 @@
 [] spawn {
     sleep 2;
     // Corner coordinates
-    private _w = 0.80;
-    private _h = 0.45;
+    private _w = 0.95;
+    private _h = 0.55;
     date params ["", "", "", "_hour", "_minute"];
 
     [
