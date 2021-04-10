@@ -827,7 +827,7 @@ switch (_operation) do {
 		private _validItems = ((vestItems player) + (uniformItems player) + (backpackItems player)) arrayIntersect _items;
 		if (_validItems isequalto []) exitWith {
 			["openSideSmall",0.3] call ALIVE_fnc_displayMenu;
-			["setSideSmallText","You do not have an item provide this Civilian"] spawn ALIVE_fnc_displayMenu;
+			["setSideSmallText","You have no humanitarian aid to give to this civilian!"] spawn ALIVE_fnc_displayMenu;
 		};
 
 		private _item = _validItems select 0;
