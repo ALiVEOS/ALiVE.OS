@@ -998,7 +998,7 @@ class FSM
                          "                      		private _fac = faction (_nearCivs select 0);" \n
                          "                          	private _minScope = 1;" \n
                          "                     		" \n
-                         "							if (_fac == ""CIV_F"") then {_minScope = 2};" \n
+                         "							if (_fac == ""CIV_F"" || _fac == ""C_VIET"") then {_minScope = 2};" \n
                          "" \n
                          "                     		_houseCivClasses = [_civilianClasses, _fac,[]] call ALiVE_fnc_hashGet;" \n
                          "" \n
