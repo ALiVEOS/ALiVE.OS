@@ -1,1 +1,0 @@
-#include "\x\alive\addons\missions\GlobalParams\functions_f\Params\paramDaytimeHour.inc"
