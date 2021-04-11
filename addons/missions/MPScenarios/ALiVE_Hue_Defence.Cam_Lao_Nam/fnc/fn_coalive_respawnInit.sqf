@@ -17,11 +17,9 @@
 if (isServer) then {
 
     // Add playable groups to respawn
-    [vn_grp_1marinexray_01] call vn_ms_fnc_respawn_addGroup;
-
-    // Vehicles of playable groups
-    vn_ms_respawnVehicles = [vn_veh_steelking];
-
+    [vn_alivegrp_xray_1] call vn_ms_fnc_respawn_addGroup;
+    [vn_alivegrp_xray_2] call vn_ms_fnc_respawn_addGroup;
+    
     // Throw out bodies of disconnecting pilots and gunners to prevent respawn issues
     addMissionEventHandler ["HandleDisconnect", {
         params ["_unit"];
@@ -47,12 +45,6 @@ if (isServer) then {
     };
 };
 
-/*
-private _group = group player;
-if (_group == vn_grp_1marinexray_01) then {
-    [player, vn_ms_spawn_infantry, localize "STR_VN_MISSIONS_MISC_RESPAWNPOS_XRAY"] call BIS_fnc_addRespawnPosition;
-};
-*/
 
 // Save custom loadout without showing a hint
 [player, false] call vn_ms_fnc_respawn_saveLoadout;

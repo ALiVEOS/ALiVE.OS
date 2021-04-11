@@ -1,16 +1,22 @@
-/* 
-* Filename:
-* mapMarkers.sqf
-*
-* Description:
-* Player map markers
-* 
-* Created by Jman
-* Creation date: 05/04/2021
-* 
-* */
-// ====================================================================================
-if (isDedicated || !hasInterface) exitWith {};
+/*
+    Author: Jman
+    Date: 11-04-2021
+
+    Description: Fetches and handles map markers parameter.
+
+    Parameter(s):
+        _paramValue - Value of the parameter [NUMBER, defaults to 0]
+
+    Returns:
+        Function reached the end [BOOL]
+*/
+
+params [
+    ["_paramValue", 0, [0]]
+];
+
+if (hasInterface && {_paramValue == 1}) then {
+
 private [
 	'_side','_sides','_QS_ST_X','_QS_ST_map_enableUnitIcons','_QS_ST_gps_enableUnitIcons',	'_QS_ST_enableGroupIcons','_QS_ST_faction','_QS_ST_friendlySides_EAST',
 	'_QS_ST_friendlySides_WEST','_QS_ST_friendlySides_RESISTANCE','_QS_ST_friendlySides_CIVILIAN','_QS_ST_friendlySides_Dynamic','_QS_ST_iconColor_EAST','_QS_ST_iconColor_WEST',
@@ -33,7 +39,7 @@ private [
 //================== MASTER SWITCHES
 
 _QS_ST_map_enableUnitIcons = TRUE;							// BOOL. TRUE to enable MAP unit/vehicle Icons. Default TRUE.
-_QS_ST_gps_enableUnitIcons = FALSE;							// BOOL. TRUE to enable GPS unit/vehicle Icons. Default TRUE.
+_QS_ST_gps_enableUnitIcons = TRUE;							// BOOL. TRUE to enable GPS unit/vehicle Icons. Default TRUE.
 _QS_ST_enableGroupIcons = FALSE;								// BOOL. TRUE to enable Map+GPS+HUD GROUP Icons. Default TRUE.
 
 //================= ADMIN
@@ -75,11 +81,11 @@ _QS_ST_iconColor_UNKNOWN = [0.7,0.6,0,0.5];						// ARRAY (NUMBER). RGBA color c
 
 //================= MEDICAL
 
-_QS_ST_showMedicalWounded = FALSE;								// BOOL. TRUE to show wounded on the map and GPS. FALSE to not show wounded on the map with this script. Default TRUE.
+_QS_ST_showMedicalWounded = TRUE;								// BOOL. TRUE to show wounded on the map and GPS. FALSE to not show wounded on the map with this script. Default TRUE.
 _QS_ST_MedicalSystem = [										// ARRAY(STRING). The Active Medical System. Uncomment ONLY ONE. FIRST UNCOMMENTED ONE WILL BE USED. Comment the rest out as shown. Do not add commas and only allow 1 to be uncommented.
 	//'BIS'														// BIS Revive.
 	//'BTC'														// BTC Revive.
-	//'AIS'														// AIS Revive.
+	'AIS'														// AIS Revive.
 	//'ACE'														// ACE 3 Revive.
 	//'FAR'														// Farooq's Revive.
 	//'AWS'    													// A3 Wounding System by Psycho.
@@ -92,13 +98,13 @@ _QS_ST_colorInjured = [0.75,0.55,0,0.75];						// ARRAY (NUMBER). RGBA color cod
 //==================================================================================//
 
 _QS_ST_showFactionOnly = FALSE;									// BOOL. will override ST_showFriendlySides TRUE. If TRUE then will only show players faction. If FALSE then can show friendly factions. Default FALSE.
-_QS_ST_showAI = FALSE;											// BOOL. FALSE = players only, TRUE = players and AI. Default TRUE.
+_QS_ST_showAI = TRUE;											// BOOL. FALSE = players only, TRUE = players and AI. Default TRUE.
 _QS_ST_AINames = FALSE;											// BOOL. Set TRUE to show human names for AI with the map/vehicle icons. Set FALSE and will be named 'AI'. Default FALSE.
 _QS_ST_showCivilianIcons = FALSE;								// BOOL. Set TRUE to allow showing of civilians, only works if Dynamic Diplomacy is enabled above. Default FALSE.
 _QS_ST_iconMapText = TRUE;										// BOOL. TRUE to show unit/vehicle icon text on the map. FALSE to only show the icon and NO text (name/class). Default TRUE.
 _QS_ST_showMOS = TRUE;											// BOOL. TRUE = show Military Occupational Specialty text(unit/vehicle class/role display name), FALSE = disable and only show icons and names. Default FALSE.
 _QS_ST_showMOS_range = 3500;									// NUMBER. Range in distance to show MOS on the map. Default 3500.
-_QS_ST_showGroupOnly = TRUE;									// BOOL. Set TRUE to show ONLY the unit icons of THE PLAYERS GROUP MEMBERS on the MAP, FALSE to show ALL your factions units. May override other config. Default TRUE.
+_QS_ST_showGroupOnly = FALSE;									// BOOL. Set TRUE to show ONLY the unit icons of THE PLAYERS GROUP MEMBERS on the MAP, FALSE to show ALL your factions units. May override other config. Default TRUE.
 _QS_ST_showOnlyVehicles = FALSE;								// BOOL. Set TRUE to show ONLY vehicles, no foot-soldier units will be shown. May override other config. Default TRUE.
 _QS_ST_iconMapClickShowDetail = TRUE;							// BOOL. Set TRUE to show unit/vehicle detail when player clicks on their map near the vehicle. Only works for shown vehicles. Default TRUE.
 _QS_ST_iconUpdatePulseDelay = 0;								// NUMBER. How often should location of unit on the MAP be updated? 0 = as fast as possible, else if > 0 then it = time in seconds. Default 0.
@@ -1698,3 +1704,9 @@ if (_QS_ST_X select 2) then {
 		};
 	};
 };
+
+
+   
+};
+
+true

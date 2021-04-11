@@ -1,10 +1,3 @@
-//http://community.bistudio.com/wiki/description.ext#Header_Class
-class header {
-    gametype = ALIVE;
-    minplayers = 1;
-    maxplayers = 12;
-    playerCountMultipleOf = 1;  //Coop type missions use 1, Team type missions use 2
-};
 dev = "ALiVE Mod Team";
 author = ALiVE Mod Team || Mission by Friznit;
 overviewPicture = "x\alive\addons\missions\MPScenarios\ALiVE_PF.Cam_Lao_Nam\pics\splash.paa";
@@ -26,7 +19,7 @@ allowFunctionsRecompile = 0;
 
 respawn = 3;
 respawnOnStart = 1;
-respawnTemplates[] = {"MenuPosition"};
+respawnTemplates[] = {"MenuPosition", "MenuInventory", "Spectator"};
 respawnDelay = 15;
 RespawnDialog = 0;
 respawnButton = 1;
@@ -44,6 +37,15 @@ debriefing = 1;
 forceRotorLibSimulation = 1;
 
 #include "CfgFunctions.inc"
+#include "groupMarkers.hpp"
+#include "LoadoutClasses.inc"
+
+class header {
+    gametype = ALIVE;
+    minplayers = 1;
+    maxplayers = 12;
+    playerCountMultipleOf = 1;
+};
 
 class Params
 {
@@ -54,14 +56,6 @@ class Params
 	    texts[] = {""};
 	    default = "";
 	};
-	class Difficulty
-	{
-	    title = $STR_VN_PARAMS_DIFFICULTY;
-	    values[] = {1, 2, 3, 4};
-	    texts[] = {$STR_VN_PARAMS_DIFFICULTY_EASY, $STR_VN_PARAMS_DIFFICULTY_NORMAL, $STR_VN_PARAMS_DIFFICULTY_HARD, $STR_VN_PARAMS_DIFFICULTY_HELL};
-	    default = 2;
-	    function = "vn_ms_fnc_params_difficulty";
-	};
 	class vn_respawn_delay
 	{
 	    title = $STR_VN_PARAMS_RESPAWN_DELAY;
@@ -69,8 +63,10 @@ class Params
 	    values[] = {10, 30, 60, 90, 120};
 	    texts[] = {"10", "30", "60", "90", "120"};
 	    default = 10;
-	    function = "vn_ms_fnc_params_respawnDelay";
+	    function = "vn_alivems_fnc_params_respawnDelay";
 	};
+	#include "params\paramDaytimeHour.hpp"
+	#include "params\paramRespawnTickets.hpp"
 	class Stamina
 	{
 	    title = $STR_VN_PARAMS_STAMINA;
@@ -78,7 +74,7 @@ class Params
 	    values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
 	    default = 1;
-	    function = "vn_ms_fnc_params_stamina";
+	    function = "vn_alivems_fnc_params_stamina";
 	};
 	class AimCoef
 	{
@@ -87,7 +83,7 @@ class Params
 	    values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
 	    default = 0;
-	    function = "vn_ms_fnc_params_aimCoef";
+	    function = "vn_alivems_fnc_params_aimCoef";
 	};
 	class TeleportAction
 	{
@@ -96,7 +92,7 @@ class Params
 	    values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
 	    default = 1;
-	    function = "vn_ms_fnc_params_teleportAction";
+	    function = "vn_alivems_fnc_params_teleportAction";
 	};
 	class MissionArsenal
 	{
@@ -104,8 +100,8 @@ class Params
 	    isGlobal = 1;
 	    values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
-	    default = 0;
-	    function = "vn_ms_fnc_params_arsenal";
+	    default = 1;
+	    function = "vn_alivems_fnc_params_arsenal";
 	};
 	class Enablemapmarkers
 	{
@@ -114,13 +110,14 @@ class Params
 	    values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
 	    default = 0;
+	    function = "vn_alivems_fnc_params_mapMarkers";
 	};
-	
-	#define DAYTIMEHOUR_DEFAULT 6
-	#include "\x\alive\addons\missions\GlobalParams\functions_f\Params\paramDaytimeHour.hpp"
-	
-	#define TICKETS_MIN 100
-	#define TICKETS_MAX	1000
-	#define TICKETS_DEFAULT	-1
-	#include "\x\alive\addons\missions\GlobalParams\functions_f\Params\paramRespawnTickets.hpp"
+	class Enablegroupmarkers {
+			title = $STR_VN_COALIVE_PARAMS_GROUPMARKERS;
+			isGlobal = 1;
+			values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+			default = 0;
+			function = "vn_alivems_fnc_params_groupMarkers";
+	};
 };

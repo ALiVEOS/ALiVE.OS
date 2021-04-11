@@ -1,16 +1,22 @@
-/* 
-* Filename:
-* groupMarkers.sqf
-*
-* Description:
-* Player group markers
-* 
-* Created by Jman
-* Creation date: 05/04/2021
-* 
-* */
-// ====================================================================================
+/*
+    Author: Jman
+    Date: 11-04-2021
 
+    Description: Fetches and handles map markers parameter.
+
+    Parameter(s):
+        _paramValue - Value of the parameter [NUMBER, defaults to 0]
+
+    Returns:
+        Function reached the end [BOOL]
+*/
+
+params [
+    ["_paramValue", 0, [0]]
+];
+
+if (hasInterface && {_paramValue == 1}) then {
+	
 	_diary =
 	{
 		if (isNull player) exitWith {false};
@@ -76,3 +82,8 @@ player setVariable ['playermarker_customName',profileName,true];
   (findDisplay 46) displayAddEventHandler ["KeyDown", "if (_this select 1 isEqualto 59 && _this select 2 && _this select 3) then {createDialog ""PlayerMarker_Settings""; {_x ctrlSetFade 1; _x ctrlCommit 0;}forEach(allcontrols (findDisplay 56000)); [] spawn {uiSleep 0.1; {_x ctrlSetFade 0; _x ctrlCommit 0.5;}forEach(allcontrols (findDisplay 56000))};};"];
 
 };
+
+
+};
+
+true

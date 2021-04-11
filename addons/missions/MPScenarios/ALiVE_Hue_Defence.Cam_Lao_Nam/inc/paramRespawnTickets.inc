@@ -23,7 +23,7 @@
 	#define TICKETS_MIN	100
 #endif
 #ifndef TICKETS_MAX
-	#define TICKETS_MAX	1100
+	#define TICKETS_MAX	1000
 #endif
 #ifndef TICKETS_DEFAULT
 	#define TICKETS_DEFAULT	-1

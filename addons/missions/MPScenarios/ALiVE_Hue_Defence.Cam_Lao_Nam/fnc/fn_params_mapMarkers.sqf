@@ -1,5 +1,22 @@
+/*
+    Author: Jman
+    Date: 11-04-2021
 
-if (isDedicated || !hasInterface) exitWith {};
+    Description: Fetches and handles map markers parameter.
+
+    Parameter(s):
+        _paramValue - Value of the parameter [NUMBER, defaults to 0]
+
+    Returns:
+        Function reached the end [BOOL]
+*/
+
+params [
+    ["_paramValue", 0, [0]]
+];
+
+if (hasInterface && {_paramValue == 1}) then {
+
 private [
 	'_side','_sides','_QS_ST_X','_QS_ST_map_enableUnitIcons','_QS_ST_gps_enableUnitIcons',	'_QS_ST_enableGroupIcons','_QS_ST_faction','_QS_ST_friendlySides_EAST',
 	'_QS_ST_friendlySides_WEST','_QS_ST_friendlySides_RESISTANCE','_QS_ST_friendlySides_CIVILIAN','_QS_ST_friendlySides_Dynamic','_QS_ST_iconColor_EAST','_QS_ST_iconColor_WEST',
@@ -1687,3 +1704,9 @@ if (_QS_ST_X select 2) then {
 		};
 	};
 };
+
+
+   
+};
+
+true

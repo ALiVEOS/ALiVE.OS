@@ -24,7 +24,7 @@ if (isServer) then {
     addMissionEventHandler ["HandleDisconnect", {
         params ["_unit"];
 
-        if (_unit distance2d (markerPos "respawn_west") < 500 && _unit distance2d (markerPos "respawn_west_1") < 500) exitWith {
+        if (_unit distance2d (markerPos "respawn_west") < 500 && _unit distance2d (markerPos "respawn_west_fsb") < 500) exitWith {
             deleteVehicle _unit;
         };
 
@@ -44,13 +44,6 @@ if (isServer) then {
         };
     };
 };
-
-/*
-private _group = group player;
-if (_group == vn_grp_marinesquad_01) then {
-    [player, vn_ms_spawn_infantry, localize "STR_VN_MISSIONS_MISC_RESPAWNPOS_GROUP"] call BIS_fnc_addRespawnPosition;
-};
-*/
 
 // Save custom loadout without showing a hint
 [player, false] call vn_ms_fnc_respawn_saveLoadout;
