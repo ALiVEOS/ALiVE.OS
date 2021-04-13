@@ -53,8 +53,8 @@ if(isServer) then {
 
     waitUntil {!isnil "ALiVE_STATIC_DATA_LOADED"};
 
-    _logic setVariable ["waterItems", ALiVE_CivPop_Interaction_WaterItems + _customWaterItems];
-    _logic setVariable ["rationItems", ALiVE_CivPop_Interaction_RationItems + _customRationItems];
+    _logic setVariable ["waterItems", ALiVE_CivPop_Interaction_WaterItems + _customWaterItems, true];
+    _logic setVariable ["rationItems", ALiVE_CivPop_Interaction_RationItems + _customRationItems, true];
 
 //Check if a SYS Profile Module is available
     private _errorMessage = "No Virtual AI system module was found! Please use this module in your mission! %1 %2";
