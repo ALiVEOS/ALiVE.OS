@@ -1111,6 +1111,25 @@ switch(_operation) do {
             private _attackID = [_logic,"attackID"] call ALiVE_fnc_hashGet;
             if (!isnil "_attackID") then {
                 private _attack = [MOD(profileCombatHandler),"getAttack", _attackID] call ALiVE_fnc_profileCombatHandler;
+                
+                // if targets are active
+                // reveal them to use so we can keep the party going
+                private _targets = _attack select 2 select 8;
+                {
+                    private _targetProfile = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_profileHandler;
+                    if (!isnil "_targetProfile" && { [_targetProfile,"active"] call ALiVE_fnc_hashGet }) then {
+                        private _targetGroup = _targetProfile select 2 select 13;
+                        {
+                            _group reveal [_x, 3];
+                        } foreach (units _targetGroup);
+
+                        // also reveal us to them in case we weren't active when they spawned
+                        {
+                            _targetGroup reveal [_x, 3];
+                        } foreach (units _group);
+                    };
+                } foreach _targets;
+
                 [MOD(profileCombatHandler),"removeAttacks", [_attack]] call ALiVE_fnc_profileCombatHandler;
             };
 
