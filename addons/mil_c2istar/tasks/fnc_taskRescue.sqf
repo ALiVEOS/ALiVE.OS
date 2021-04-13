@@ -170,7 +170,7 @@ switch (_taskState) do {
             };
 
             _returnPosition = [_returnPosition, 250] call ALIVE_fnc_findFlatArea;
-            
+
             _compType = "Military";
             If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
                 _compType = "Guerrilla";
@@ -444,9 +444,7 @@ switch (_taskState) do {
                         removeVest _hostage;
                         removeAllAssignedItems _hostage;
                         if ((random 1) > 0.6) then {
-                            removeUniform _hostage;
                             _hostage setDamage (random 0.4);
-                            _hostage forceAddUniform "U_C_WorkerCoveralls";
                         };
                         _hostage setformdir 0;
                         _hostage setpos [getpos _table select 0,(getpos _table select 1)-2,0];
@@ -501,7 +499,7 @@ switch (_taskState) do {
 
                 _parentTask set [8,"Failed"];
                 _parentTask set [10,"N"];
-                
+
                 [ALiVE_TaskHandler,"TASK_UPDATE",_parentTask] call ALiVE_fnc_TaskHandler;
 
                 [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
@@ -523,7 +521,7 @@ switch (_taskState) do {
                         private "_hostage";
 
                         _group = _profile select 2 select 13;
-                        
+
                         _hostage = leader _group;
                         _position = getPos _hostage;
 

@@ -135,15 +135,20 @@ switch (_taskState) do {
 
                     _targetPosition = [_objectives select 0,"center"] call ALiVE_fnc_HashGet;
 
-                    _targetPosition = [_targetPosition,500] call ALiVE_fnc_findFlatArea;
+                    // Check for buildings before spawning a composition
+                    private _targetBuildings = nearestObjects [_targetPosition, ["House", "Building"], 300];
 
-                    //[_targetPosition, "camps", _taskEnemyFaction, 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
-                    private ["_category","_compType"];
-                    _compType = "Military";
-                    If (_taskEnemySide == "GUER") then {
-                        _compType = "Guerrilla";
+                    if (count _targetBuildings < 2) then {
+                        _targetPosition = [_targetPosition,500] call ALiVE_fnc_findFlatArea;
+
+                        //[_targetPosition, "camps", _taskEnemyFaction, 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+                        private ["_category","_compType"];
+                        _compType = "Military";
+                        If (_taskEnemySide == "GUER") then {
+                            _compType = "Guerrilla";
+                        };
+                        [_targetPosition, _compType, ["HQ", "Outposts", "FieldHQ", "Camps"], _taskEnemyFaction, ["Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
                     };
-                    [_targetPosition, _compType, ["HQ", "Outposts", "FieldHQ", "Camps"], _taskEnemyFaction, ["Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
 
                 };
             } else {
@@ -152,13 +157,18 @@ switch (_taskState) do {
         } else {
             _targetPosition = _taskLocation;
 
-            private ["_category","_compType"];
-            _compType = "Military";
-            If (_taskEnemySide == "GUER") then {
-                _compType = "Guerrilla";
+            // Check for buildings before spawning a composition
+            private _targetBuildings = nearestObjects [_targetPosition, ["House", "Building"], 300];
+
+            if (count _targetBuildings < 2) then {
+                private ["_category","_compType"];
+                _compType = "Military";
+                If (_taskEnemySide == "GUER") then {
+                    _compType = "Guerrilla";
+                };
+                _category = (selectRandom ["HQ", "Outposts", "FieldHQ", "Camps"]);
+                [_targetPosition, _compType, _category, _taskEnemyFaction, "Small", 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
             };
-            _category = (selectRandom ["HQ", "Outposts", "FieldHQ", "Camps"]);
-            [_targetPosition, _compType, _category, _taskEnemyFaction, "Small", 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
         };
 
         if!(isNil "_targetPosition") then {
