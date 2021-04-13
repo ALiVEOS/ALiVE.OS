@@ -195,48 +195,49 @@ switch (_operation) do {
         private _debug = [_logic,"debug"] call ALiVE_fnc_hashGet;
 
         {
-            private _attack = _x;
+            private _attackID = _x;
+            private _attack = [_attacksByID,_attackID] call ALiVE_fnc_hashGet;
 
-            if (_debug) then {
-                if (isnil "_attack") then {
-                    ["Why is my fucking attack null - %1 --- %2", _attacks, _attacksByID] call ALiVE_fnc_Dump;
+            if (!isnil "_attack") then {
+                if (_debug) then {
+                    if (isnil "_attack") then {
+                        ["Why is my fucking attack null - %1 --- %2", _attacks, _attacksByID] call ALiVE_fnc_Dump;
+                    };
                 };
+
+                private _attackPosition = [_attack,"position"] call ALiVE_fnc_hashGet;
+                private _attackerID = [_attack,"attacker"] call ALiVE_fnc_hashGet;
+                private _targetsLeft = [_attack,"targets"] call ALiVE_fnc_hashGet;
+
+                // remove from combatBySide
+                private _attackerSide = [_attack,"attackerSide"] call ALiVE_fnc_hashGet;
+
+                switch (_attackerSide) do {
+                    case "EAST": {
+                        private _array = (_profilesInCombatBySide select 0);
+                        _array deleteAt (_array find _attackerID);
+                    };
+                    case "WEST": {
+                        private _array = (_profilesInCombatBySide select 1);
+                        _array deleteAt (_array find _attackerID);
+                    };
+                    case "GUER": {
+                        private _array = (_profilesInCombatBySide select 2);
+                        _array deleteAt (_array find _attackerID);
+                    };
+                };
+
+                [_attacksByID,_attackID] call ALiVE_fnc_hashRem;
+
+                // log event
+
+                private _timeStarted = [_attack,"timeStarted"] call ALiVE_fnc_hashGet;
+                private _maxRange = [_attack,"maxRange"] call ALiVE_fnc_hashGet;
+                private _cyclesLeft = [_attack,"cyclesLeft"] call ALiVE_fnc_hashGet;
+
+                private _event = ['PROFILE_ATTACK_END', [_attackID,_attackerID,_targetsLeft,_attackPosition,_attackerSide,_timeStarted,_maxRange,_cyclesLeft], "profileCombatHandler"] call ALiVE_fnc_event;
+                [MOD(eventLog),"addEvent", _event] call ALiVE_fnc_eventLog;
             };
-
-            private _attackID = [_attack,"attackID"] call ALiVE_fnc_hashGet;
-
-            private _attackPosition = [_attack,"position"] call ALiVE_fnc_hashGet;
-            private _attackerID = [_attack,"attacker"] call ALiVE_fnc_hashGet;
-            private _targetsLeft = [_attack,"targets"] call ALiVE_fnc_hashGet;
-
-            // remove from combatBySide
-            private _attackerSide = [_attack,"attackerSide"] call ALiVE_fnc_hashGet;
-
-            switch (_attackerSide) do {
-                case "EAST": {
-                    private _array = (_profilesInCombatBySide select 0);
-                    _array deleteAt (_array find _attackerID);
-                };
-                case "WEST": {
-                    private _array = (_profilesInCombatBySide select 1);
-                    _array deleteAt (_array find _attackerID);
-                };
-                case "GUER": {
-                    private _array = (_profilesInCombatBySide select 2);
-                    _array deleteAt (_array find _attackerID);
-                };
-            };
-
-            [_attacksByID,_attackID] call ALiVE_fnc_hashRem;
-
-            // log event
-
-            private _timeStarted = [_attack,"timeStarted"] call ALiVE_fnc_hashGet;
-            private _maxRange = [_attack,"maxRange"] call ALiVE_fnc_hashGet;
-            private _cyclesLeft = [_attack,"cyclesLeft"] call ALiVE_fnc_hashGet;
-
-            private _event = ['PROFILE_ATTACK_END', [_attackID,_attackerID,_targetsLeft,_attackPosition,_attackerSide,_timeStarted,_maxRange,_cyclesLeft], "profileCombatHandler"] call ALiVE_fnc_event;
-            [MOD(eventLog),"addEvent", _event] call ALiVE_fnc_eventLog;
         } foreach _attacks;
 
     };
