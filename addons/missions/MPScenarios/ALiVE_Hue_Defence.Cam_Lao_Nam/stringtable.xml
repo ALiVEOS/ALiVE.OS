@@ -121,24 +121,6 @@
 <Russian></Russian>
 <Spanish></Spanish>
 </Key>
-<Key ID="STR_VN_BRIEFING_COALIVE_SIGNAL_XRAY">
-<Chinese></Chinese></Chinese>
-<English>&lt;img image=&quot;img\signal.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Your squad must take a PRC-77 radio from the &lt;marker name='marker_squadradio'&gt;Radio Crate&lt;/marker&gt; to use ALiVE Combat Support Arty, CAS and transport.&lt;br/&gt;&lt;br/&gt;To teleport to Group Leader use the &lt;marker name='marker_dutyofficer'&gt;Duty Officer&lt;/marker&gt; interaction.</English>
-<French></French>
-<German></German>
-<Italian></Italian>
-<Portuguese></Portuguese>
-<Russian></Russian>
-<Spanish></Spanish>
-</Key>
-</Package>
-<Package name="CO01 Hints">
-</Package>
-<Package name="CO01 Radio Comms">
-</Package>
-<Package name="CO01 Tasks">
-</Package>
-<Package name="DGBT Tasks">
 </Package>
 <Package name="Parameters">
 <Key ID="STR_VN_COALIVE_PARAMS_MAPMARKERS_XRAY">

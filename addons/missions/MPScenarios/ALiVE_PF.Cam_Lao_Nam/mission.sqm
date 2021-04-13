@@ -5,10 +5,10 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=1025;
+	toggles=1;
 	class ItemIDProvider
 	{
-		nextID=1082;
+		nextID=1083;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=643;
+		nextID=679;
 	};
 	class Camera
 	{
-		pos[]={11486.353,4.7635612,6391.5488};
-		dir[]={-0.74438769,-0.27382705,-0.60903877};
-		up[]={-0.21194267,0.96177185,-0.17340496};
-		aside[]={-0.63323933,-7.301569e-007,0.77396703};
+		pos[]={14735.726,246.75731,9607.9883};
+		dir[]={0.064305052,-0.7865597,-0.61415708};
+		up[]={0.081908651,0.61751413,-0.78228337};
+		aside[]={-0.99456322,3.7252903e-009,-0.10413532};
 	};
 };
 binarizationWanted=0;
@@ -425,7 +425,7 @@ class CustomAttributes
 };
 class Mission
 {
-	assetType="Free";
+	appId=1227700;
 	class Intel
 	{
 		briefingName="Op Van Tien";
@@ -11108,7 +11108,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={14723.462,244.11375,9622.9902};
+						position[]={14721.177,244.07262,9623.8906};
 						angles[]={0,4.7076769,0};
 					};
 					side="West";
@@ -11117,6 +11117,7 @@ class Mission
 					{
 						skill=0.55000001;
 						rank="LIEUTENANT";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Rifleman"");}";
 						description="Group Leader";
 						isPlayer=1;
 						isPlayable=1;
@@ -11171,7 +11172,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={14714.44,244.16492,9624.3916};
+						position[]={14715.329,244.18149,9624.3848};
 						angles[]={0,2.3293166,0};
 					};
 					side="West";
@@ -11179,6 +11180,7 @@ class Mission
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Rifleman"");}";
 						description="Squad Leader";
 						isPlayable=1;
 					};
@@ -11232,7 +11234,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={14714.639,244.1971,9627.4834};
+						position[]={14716.516,244.15594,9626.627};
 						angles[]={0,0.41254345,0};
 					};
 					side="West";
@@ -11240,6 +11242,7 @@ class Mission
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_CombatLifesaver"");}";
 						description="Medic";
 						isPlayable=1;
 					};
@@ -11293,7 +11296,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={14715.428,244.05144,9619.7871};
+						position[]={14714.83,244.10434,9621.9834};
 						angles[]={0,1.0248922,0};
 					};
 					side="West";
@@ -11302,6 +11305,7 @@ class Mission
 					{
 						skill=0.44999999;
 						rank="CORPORAL";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Engineer"");}";
 						description="Engineer";
 						isPlayable=1;
 					};
@@ -11355,7 +11359,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={14716.874,244.18953,9630.4463};
+						position[]={14717.204,244.18047,9629.3506};
 						angles[]={0,0.55375808,0};
 					};
 					side="West";
@@ -11364,6 +11368,7 @@ class Mission
 					{
 						skill=0.44999999;
 						rank="CORPORAL";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_ExplosiveSpecialist"");}";
 						description="Demolitions Expert";
 						isPlayable=1;
 					};
@@ -11417,7 +11422,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={14721.743,244.27457,9631.5625};
+						position[]={14720.45,244.17128,9628.7744};
 						angles[]={0,0.86135489,0};
 					};
 					side="West";
@@ -11425,6 +11430,7 @@ class Mission
 					class Attributes
 					{
 						skill=0.40000001;
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Autorifleman"");}";
 						description="Machine Gunner";
 						isPlayable=1;
 					};
@@ -11486,6 +11492,7 @@ class Mission
 					class Attributes
 					{
 						skill=0.40000001;
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Grenadier"");}";
 						description="Grenadier";
 						isPlayable=1;
 					};
@@ -11547,6 +11554,7 @@ class Mission
 					class Attributes
 					{
 						skill=0.40000001;
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_RTO"");}";
 						description="Radio Telephone Operator";
 						isPlayable=1;
 					};
@@ -11600,7 +11608,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={14720.302,244.05687,9623.7695};
+						position[]={14718.536,244.09534,9624.2129};
 						angles[]={0,1.2186238,0};
 					};
 					side="West";
@@ -11608,6 +11616,7 @@ class Mission
 					class Attributes
 					{
 						skill=0.40000001;
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_ReconScout"");}";
 						description="Scout";
 						isPlayable=1;
 					};
@@ -11661,7 +11670,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={14710.69,244.09937,9621.6963};
+						position[]={14713.511,244.16109,9625.29};
 						angles[]={0,2.7594006,0};
 					};
 					side="West";
@@ -11669,6 +11678,7 @@ class Mission
 					class Attributes
 					{
 						skill=0.40000001;
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Marksman"");}";
 						description="Marksman";
 						isPlayable=1;
 					};
@@ -11722,7 +11732,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={14724.15,244.224,9626.8037};
+						position[]={14722.404,244.14925,9626.8672};
 						angles[]={0,2.5084569,0};
 					};
 					side="West";
@@ -11730,6 +11740,7 @@ class Mission
 					class Attributes
 					{
 						skill=0.40000001;
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Sniper"");}";
 						description="Sniper";
 						isPlayable=1;
 					};
@@ -11783,19 +11794,20 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={14719.506,244.13629,9627.8779};
-						angles[]={0,2.8642771,0};
+						position[]={14719.726,244.09665,9626.5566};
+						angles[]={6.2531958,2.8642771,0};
 					};
 					side="West";
-					flags=5;
+					flags=4;
 					class Attributes
 					{
 						skill=0.40000001;
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_HeavyGunner"");}";
 						description="Anti Tank Soldier";
 						isPlayable=1;
 					};
-					id=737;
-					type="vn_b_men_army_12";
+					id=1082;
+					type="vn_b_men_army_27";
 					class CustomAttributes
 					{
 						class Attribute0
@@ -12382,7 +12394,7 @@ class Mission
 			};
 			id=745;
 			type="Land_vn_b_helipad_01";
-			atlOffset=0.26101685;
+			atlOffset=0.2681427;
 		};
 		class Item61
 		{
@@ -12398,7 +12410,7 @@ class Mission
 			};
 			id=747;
 			type="Land_vn_b_helipad_01";
-			atlOffset=0.25086975;
+			atlOffset=0.25799561;
 		};
 		class Item62
 		{
@@ -12452,7 +12464,7 @@ class Mission
 			class Attributes
 			{
 				name="vn_veh_huey02";
-				pylons="vn_rocket_ffar_m229_he_x7;vn_rocket_ffar_m229_he_x7;vn_gunpod_xm21_v_3000_mag[1];vn_gunpod_xm21_v_3000_mag[1];";
+				pylons="vn_rocket_ffar_m229_he_x7;vn_rocket_ffar_m229_he_x7;vn_gunpod_xm21_v_3000_mag[0];vn_gunpod_xm21_v_3000_mag[0];";
 			};
 			id=754;
 			type="vn_b_air_uh1c_02_02";
@@ -12487,7 +12499,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={14778.147,246.79041,9592.2021};
-				angles[]={0,0.38472679,0};
+				angles[]={0,0.38472292,0};
 			};
 			side="Empty";
 			flags=4;
@@ -12849,7 +12861,7 @@ class Mission
 			};
 			id=760;
 			type="Land_vn_b_helipad_01";
-			atlOffset=0.2527771;
+			atlOffset=0.25990295;
 		};
 		class Item68
 		{
@@ -14999,8 +15011,8 @@ class Mission
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={14731.558,245.35446,9613.6445};
-				angles[]={0,3.6793404,0};
+				position[]={14735.298,244.82333,9607.4092};
+				angles[]={0,3.6793461,0};
 			};
 			side="Empty";
 			class Attributes
@@ -15011,7 +15023,7 @@ class Mission
 			};
 			id=928;
 			type="vn_b_prop_fmradio_01";
-			atlOffset=0.98039246;
+			atlOffset=0.44926453;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -15069,7 +15081,7 @@ class Mission
 			};
 			id=934;
 			type="Land_vn_b_helipad_01";
-			atlOffset=0.290802;
+			atlOffset=0.29792786;
 		};
 		class Item105
 		{
@@ -15080,14 +15092,13 @@ class Mission
 				angles[]={6.251193,1.0488032,6.2711778};
 			};
 			side="Empty";
-			flags=4;
 			class Attributes
 			{
 				name="vn_veh_seahorse01";
 			};
 			id=936;
 			type="vn_b_air_ch34_03_01";
-			atlOffset=0.00039672852;
+			atlOffset=0.34399414;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -15701,8 +15712,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -15711,10 +15722,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_02";
+											value=0;
 										};
 									};
 								};
@@ -15777,8 +15788,8 @@ class Mission
 								};
 								class Attribute5
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -15787,10 +15798,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_02";
 										};
 									};
 								};
@@ -15901,8 +15912,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -15911,10 +15922,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_09";
+											value=0;
 										};
 									};
 								};
@@ -15958,8 +15969,8 @@ class Mission
 								};
 								class Attribute4
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -15968,10 +15979,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_09";
 										};
 									};
 								};

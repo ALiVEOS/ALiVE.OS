@@ -30,7 +30,15 @@ class CfgMissions
             overviewText = "This is the basic quick start mission featured in the ALiVE documentation and Wiki (alivemod.com)";
             author = "ALiVE Mod Team";                    
         };
-        class Showcase_Vietnam
+        class Showcase_HurtLocker
+        {
+            briefingName = "ALiVE | Hurt Locker (Stratis)";
+            directory = "x\alive\addons\missions\showcases\hurtlocker.stratis";
+            overviewPicture = "x\alive\addons\missions\logo_alive.paa";
+            overviewText = "Stratis is reeling from a brutal insurgency campaign. IED's litter the landscape, its your job to identify and disarm IEDs to ensure the safety of the civilian population. Beware of the local militia!";
+            author = "ALiVE Mod Team";   
+        };
+        class Showcase_Van_Tien
         {
             briefingName = "ALiVE | Op Van Tien (Cam Lao Nam)";
             directory = "x\alive\addons\missions\mpscenarios\ALiVE_PF.Cam_Lao_Nam";
@@ -44,6 +52,14 @@ class CfgMissions
             directory = "x\alive\addons\missions\mpscenarios\ALiVE_Hue_Defence.Cam_Lao_Nam";
             overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Hue_Defence.Cam_Lao_Name\img\splash.paa";
             overviewText = "Travel by convoy to Hue, consolidate positions defend Hue and the Imperial City Citadel from enemy attack.";
+            author = "ALiVE Mod Team";
+        };
+        class Showcase_Paper_Hands
+        {
+            briefingName = "ALiVE | Paper Hands (Cam Lao Nam)";
+            directory = "x\alive\addons\missions\mpscenarios\ALiVE_Paper_Hands.Cam_Lao_Nam";
+            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Paper_Hands.Cam_Lao_Name\pics\execution.paa";
+            overviewText = "MACV-SOG are running deniable operations using Spike Teams (ST) - across the fence - in Cambodia, Laos and South Vietnam.";
             author = "ALiVE Mod Team";
         };
         class Showcase_Getting_Started_APEX
@@ -62,14 +78,6 @@ class CfgMissions
             overviewText = "INTEL has been received about a nuclear device being built by a scientist named Ahelef Mahmoud in an hideout in Zaros! Locate Mahmoud, disable the bomb, and return home safely!";
             author = "ALiVE Mod Team";                       
         };        
-        class Showcase_HurtLocker
-        {
-            briefingName = "ALiVE | Hurt Locker (Stratis)";
-            directory = "x\alive\addons\missions\showcases\hurtlocker.stratis";
-            overviewPicture = "x\alive\addons\missions\logo_alive.paa";
-            overviewText = "Stratis is reeling from a brutal insurgency campaign. IED's litter the landscape, its your job to identify and disarm IEDs to ensure the safety of the civilian population. Beware of the local militia!";
-            author = "ALiVE Mod Team";   
-        };
         class Showcase_Air_Superiority
         {
             briefingName = "ALiVE | Air Superiority (Altis)";
@@ -137,7 +145,7 @@ class CfgMissions
             overviewText = "Lead an insurgency on Altis, use sabotage and subterfuge to capture weapons and establish safe houses across the island.";
             author = "ALiVE Mod Team";   
         };            
-        class MP_COOP_Vietnam
+        class MP_COOP_Van_Tien
         {
             briefingName = "ALiVE | Op Van Tien (COOP 12)";
             directory = "x\alive\addons\missions\mpscenarios\ALiVE_PF.Cam_Lao_Nam";

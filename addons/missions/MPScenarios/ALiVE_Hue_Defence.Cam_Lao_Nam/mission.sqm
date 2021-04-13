@@ -5,7 +5,7 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=641;
+	toggles=513;
 	class ItemIDProvider
 	{
 		nextID=865;
@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=5070;
+		nextID=5127;
 	};
 	class Camera
 	{
@@ -322,6 +322,7 @@ class CustomAttributes
 };
 class Mission
 {
+	appId=1227700;
 	class Intel
 	{
 		briefingName="@STR_VN_MISSIONS_TITLE_MISSION_ALIVE_XRAY";
@@ -2711,6 +2712,7 @@ class Mission
 			};
 			id=188;
 			type="Land_vn_b_helipad_01";
+			atlOffset=0.0071239471;
 		};
 		class Item24
 		{
@@ -2959,8 +2961,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -2969,10 +2971,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_02";
+											value=0;
 										};
 									};
 								};
@@ -3035,8 +3037,8 @@ class Mission
 								};
 								class Attribute5
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -3045,10 +3047,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_02";
 										};
 									};
 								};
@@ -3159,8 +3161,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -3169,10 +3171,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_09";
+											value=0;
 										};
 									};
 								};
@@ -3216,8 +3218,8 @@ class Mission
 								};
 								class Attribute4
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -3226,10 +3228,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_09";
 										};
 									};
 								};
@@ -7168,6 +7170,7 @@ class Mission
 			};
 			id=318;
 			type="Land_vn_b_helipad_01";
+			atlOffset=0.0071258545;
 		};
 		class Item45
 		{
@@ -7184,6 +7187,7 @@ class Mission
 			};
 			id=319;
 			type="Land_vn_b_helipad_01";
+			atlOffset=0.0071258545;
 		};
 		class Item46
 		{
@@ -7200,6 +7204,7 @@ class Mission
 			};
 			id=320;
 			type="Land_vn_b_helipad_01";
+			atlOffset=0.0071258545;
 		};
 		class Item47
 		{
@@ -7215,7 +7220,7 @@ class Mission
 			};
 			id=321;
 			type="Land_vn_b_helipad_01";
-			atlOffset=0.25979614;
+			atlOffset=0.266922;
 		};
 		class Item48
 		{
@@ -11879,7 +11884,7 @@ class Mission
 			title="PAVN Invasion";
 			description="PAVN Invasion Mode.  They will attempt to take and hold objectives in Hue";
 			id=434;
-			atlOffset=115.95526;
+			atlOffset=119.97778;
 		};
 		class Item69
 		{
@@ -16092,6 +16097,7 @@ class Mission
 			};
 			id=657;
 			type="vn_b_air_uh1c_07_04";
+			atlOffset=0.039993286;
 		};
 		class Item139
 		{
@@ -16115,6 +16121,7 @@ class Mission
 					};
 					id=658;
 					type="vn_b_men_aircrew_09";
+					atlOffset=0.039993286;
 				};
 				class Item1
 				{
@@ -16131,6 +16138,7 @@ class Mission
 					};
 					id=659;
 					type="vn_b_men_aircrew_10";
+					atlOffset=0.039993286;
 				};
 				class Item2
 				{
@@ -16147,6 +16155,7 @@ class Mission
 					};
 					id=660;
 					type="vn_b_men_aircrew_11";
+					atlOffset=0.039993286;
 				};
 				class Item3
 				{
@@ -16163,6 +16172,7 @@ class Mission
 					};
 					id=661;
 					type="vn_b_men_aircrew_12";
+					atlOffset=0.039993286;
 				};
 			};
 			class Attributes
@@ -16223,6 +16233,7 @@ class Mission
 				};
 			};
 			id=636;
+			atlOffset=0.039993286;
 		};
 		class Item140
 		{
@@ -16265,7 +16276,7 @@ class Mission
 					};
 					id=751;
 					type="vn_b_men_aircrew_05";
-					atlOffset=1.5258789e-005;
+					atlOffset=0.039993286;
 				};
 				class Item1
 				{
@@ -16282,7 +16293,7 @@ class Mission
 					};
 					id=752;
 					type="vn_b_men_aircrew_06";
-					atlOffset=1.5258789e-005;
+					atlOffset=0.039993286;
 				};
 				class Item2
 				{
@@ -16299,7 +16310,7 @@ class Mission
 					};
 					id=753;
 					type="vn_b_men_aircrew_07";
-					atlOffset=1.5258789e-005;
+					atlOffset=0.039993286;
 				};
 				class Item3
 				{
@@ -16316,7 +16327,7 @@ class Mission
 					};
 					id=754;
 					type="vn_b_men_aircrew_08";
-					atlOffset=1.5258789e-005;
+					atlOffset=0.039993286;
 				};
 				class Item4
 				{
@@ -16333,6 +16344,7 @@ class Mission
 					};
 					id=756;
 					type="vn_b_men_aircrew_05";
+					atlOffset=0.039993286;
 				};
 				class Item5
 				{
@@ -16349,6 +16361,7 @@ class Mission
 					};
 					id=757;
 					type="vn_b_men_aircrew_06";
+					atlOffset=0.039993286;
 				};
 				class Item6
 				{
@@ -16365,6 +16378,7 @@ class Mission
 					};
 					id=758;
 					type="vn_b_men_aircrew_07";
+					atlOffset=0.039993286;
 				};
 				class Item7
 				{
@@ -16381,6 +16395,7 @@ class Mission
 					};
 					id=759;
 					type="vn_b_men_aircrew_08";
+					atlOffset=0.039993286;
 				};
 			};
 			class Attributes
@@ -16541,7 +16556,7 @@ class Mission
 			};
 			id=760;
 			type="Land_vn_b_helipad_01";
-			atlOffset=0.25263405;
+			atlOffset=0.259758;
 		};
 		class Item145
 		{

@@ -1,5 +1,11 @@
 class CfgRoles
 {
+	
+	class Recon
+	{
+		displayName = $STR_A3_Role_Recon;
+		icon = "a3\Ui_f\data\GUI\Cfg\RespawnRoles\recon_ca.paa";
+	};
 	class Assault
 	{
 		displayName = $STR_A3_Role_Assault;
@@ -10,29 +16,11 @@ class CfgRoles
 		displayName = $STR_A3_Role_Support;
 		icon = "a3\Ui_f\data\GUI\Cfg\RespawnRoles\support_ca.paa";
 	};
-	class Recon
-	{
-		displayName = $STR_A3_Role_Recon;
-		icon = "a3\Ui_f\data\GUI\Cfg\RespawnRoles\recon_ca.paa";
-	};
 };
 
 
 class CfgRespawnInventory
 {
-	class B_Rifleman
-	{
-		displayName = $STR_A3_cfgvehicles_b_soldier_f0;
-		icon = "\A3\ui_f\data\map\VehicleIcons\iconMan_ca.paa";
-		show = "side group _this == west";
-		role = "Assault";
-		weapons[] = {"vn_m16","Throw","Put"};
-		magazines[] = {"vn_m16_20_t_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m18_yellow_mag","vn_m18_red_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m61_grenade_mag"};
-		items[] = {"vn_b_item_firstaidkit","vn_b_item_firstaidkit","vn_b_item_firstaidkit"};
-		linkedItems[] = {"vn_b_vest_usarmy_02","vn_b_helmet_m1_07_01","vn_b_aviator","vn_b_item_map","vn_b_item_compass","vn_b_item_watch","vn_b_item_radio_urc10"};
-		uniformClass = "vn_b_uniform_macv_04_01";
-		backpack = "vn_b_pack_lw_01_m16_pl";
-	};
 	class B_Grenadier
 	{
 		displayName = $STR_b_soldier_gl_f0;
@@ -72,6 +60,19 @@ class CfgRespawnInventory
 		uniformClass = "vn_b_uniform_macv_05_01";
 		backpack = "vn_b_pack_lw_02_m60_pl";
 	};
+	class B_Rifleman
+	{
+		displayName = $STR_A3_cfgvehicles_b_soldier_f0;
+		icon = "\A3\ui_f\data\map\VehicleIcons\iconMan_ca.paa";
+		show = "side group _this == west";
+		role = "Assault";
+		weapons[] = {"vn_m16","vn_m1911","Throw","Put"};
+		magazines[] = {"vn_m16_20_t_mag","vn_m1911_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m18_yellow_mag","vn_m18_red_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m61_grenade_mag"};
+		items[] = {"vn_b_item_firstaidkit","vn_b_item_firstaidkit","vn_b_item_firstaidkit"};
+		linkedItems[] = {"vn_b_vest_usarmy_02","vn_b_helmet_m1_07_01","vn_b_aviator","vn_b_item_map","vn_b_item_compass","vn_b_item_watch","vn_b_item_radio_urc10"};
+		uniformClass = "vn_b_uniform_macv_04_01";
+		backpack = "vn_b_pack_lw_01_m16_pl";
+	};
   class B_Engineer
 	{
 		displayName = $STR_b_engineer_f0;
@@ -91,8 +92,8 @@ class CfgRespawnInventory
 		icon = "\A3\ui_f\data\map\VehicleIcons\iconman_ca.paa";
 		show = "side group _this == west";
 		role = "Support";
-		weapons[] = {"vn_m16","vn_m19_binocs_grn","Throw","Put"};
-		magazines[] = {"vn_m16_20_t_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m18_yellow_mag","vn_m18_red_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m61_grenade_mag"};
+		weapons[] = {"vn_m16","vn_m1911","vn_m19_binocs_grn","Throw","Put"};
+		magazines[] = {"vn_m16_20_t_mag","vn_m1911_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m18_yellow_mag","vn_m18_red_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m61_grenade_mag"};
 		items[] = {"vn_b_item_firstaidkit","vn_b_item_firstaidkit","vn_b_item_firstaidkit"};
 		linkedItems[] = {"vn_b_vest_usarmy_02","vn_b_helmet_m1_07_01","vn_b_aviator","vn_b_item_map","vn_b_item_compass","vn_b_item_watch","vn_b_item_radio_urc10"};
 		uniformClass = "vn_b_uniform_macv_04_01";
@@ -104,8 +105,8 @@ class CfgRespawnInventory
 		icon = "\A3\ui_f\data\map\VehicleIcons\iconManMedic_ca.paa";
 		show = "side group _this == west";
 		role = "Support";
-		weapons[] = {"vn_m16","Throw","Put"};
-		magazines[] = {"vn_m16_20_t_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m18_red_mag","vn_m18_red_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m18_yellow_mag","vn_m18_yellow_mag","vn_m18_purple_mag","vn_m18_purple_mag"};
+		weapons[] = {"vn_m16","vn_m1911","Throw","Put"};
+		magazines[] = {"vn_m16_20_t_mag","vn_m1911_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m18_red_mag","vn_m18_red_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m16_20_t_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m18_yellow_mag","vn_m18_yellow_mag","vn_m18_purple_mag","vn_m18_purple_mag"};
 		items[] = {"vn_b_item_firstaidkit","vn_b_item_medikit_01","vn_b_item_firstaidkit","vn_b_item_firstaidkit"};
 		linkedItems[] = {"vn_b_vest_usarmy_07","vn_b_helmet_m1_04_01","vn_g_spectacles_02","vn_b_item_map","vn_b_item_compass","vn_b_item_watch","vn_b_item_radio_urc10"};
 		uniformClass = "vn_b_uniform_macv_03_01";
@@ -117,9 +118,9 @@ class CfgRespawnInventory
 		icon = "\A3\ui_f\data\map\VehicleIcons\iconManRecon_ca.paa";
 		show = "side group _this == west";
 		role = "Recon";
-		weapons[] = {"vn_sten","Throw","Put"};
+		weapons[] = {"vn_sten","vn_m1911","Throw","Put"};
 		magazines[] = {"vn_sten_t_mag","vn_sten_t_mag","vn_sten_t_mag","vn_sten_t_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m14_grenade_mag","vn_mine_m18_mag","vn_mine_m18_mag","vn_sten_t_mag","vn_sten_t_mag","vn_sten_t_mag","vn_sten_t_mag","vn_sten_t_mag","vn_sten_t_mag","vn_sten_t_mag","vn_sten_t_mag","vn_sten_t_mag","vn_sten_t_mag","vn_sten_t_mag","vn_sten_t_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m61_grenade_mag","vn_m18_yellow_mag","vn_m18_yellow_mag","vn_mine_m14_mag","vn_mine_m14_mag","vn_mine_m14_mag","vn_mine_m14_mag","vn_mine_m14_mag","vn_mine_m14_mag","vn_mine_m18_range_mag","vn_mine_m18_range_mag"};
-		items[] = {"vn_b_item_firstaidkit","vn_b_item_firstaidkit","vn_b_item_firstaidkit"};
+		items[] = {"vn_b_item_firstaidkit","vn_m1911_mag","vn_b_item_firstaidkit","vn_b_item_firstaidkit"};
 		linkedItems[] = {"vn_b_vest_sog_04","vn_b_boonie_02_01","vn_b_scarf_01_01","vn_b_item_map","vn_b_item_compass_sog","vn_b_item_watch","vn_b_item_radio_urc10"};
 		uniformClass = "vn_b_uniform_sog_02_01";
 		backpack = "vn_b_pack_02_sten_pl";

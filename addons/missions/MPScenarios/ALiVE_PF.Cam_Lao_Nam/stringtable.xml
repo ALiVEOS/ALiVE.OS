@@ -121,24 +121,6 @@
 <Russian></Russian>
 <Spanish></Spanish>
 </Key>
-<Key ID="STR_VN_BRIEFING_COALIVE_SIGNAL_VANTIEN">
-<Chinese></Chinese></Chinese>
-<English></English>
-<French></French>
-<German></German>
-<Italian></Italian>
-<Portuguese></Portuguese>
-<Russian></Russian>
-<Spanish></Spanish>
-</Key>
-</Package>
-<Package name="CO01 Hints">
-</Package>
-<Package name="CO01 Radio Comms">
-</Package>
-<Package name="CO01 Tasks">
-</Package>
-<Package name="DGBT Tasks">
 </Package>
 <Package name="Parameters">
 <Key ID="STR_VN_COALIVE_PARAMS_MAPMARKERS">

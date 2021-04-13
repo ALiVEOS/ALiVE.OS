@@ -29,7 +29,7 @@ if (hasInterface) then {
         titleText ["The ALiVE Team presents...", "BLACK IN",9999];
         0 fadesound 0;
 
-        playMusic "vn_enemy_territory";
+        playMusic "vn_calm_before_the_storm";
 
         private ["_cam","_camx","_camy","_camz","_object"];
         _start = time;
@@ -50,7 +50,7 @@ if (hasInterface) then {
 
         _cam camsetpos [_camx -15 ,_camy + 15,_camz+3];
 
-        titleText ["A L i V E   |   T H E  B A T T L E  O F  H U E", "BLACK IN",10];
+        titleText ["A L i V E   |   T H E   B A T T L E   O F   H U E", "BLACK IN",10];
 
         10 fadesound 0.9;
         _cam CamCommit 25;

@@ -31,12 +31,6 @@ if (!hasInterface) exitWith {true};
 };
 
 
-
-//player createDiaryRecord [
-//    "Diary", [localize "STR_A3_Diary_Signal_title", localize "STR_VN_BRIEFING_COALIVE_SIGNAL_VANTIEN"]
-//];
-
-
 player createDiaryRecord [
     "Diary", ["Coordinating Instructions", localize "STR_VN_BRIEFING_COALIVE_TACTICAL_PH"]
 ];
