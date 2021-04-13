@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=469;
+		nextID=475;
 	};
 	class Camera
 	{
-		pos[]={6977.9434,23.352938,8700.1152};
-		dir[]={-0.57739675,-0.64003861,0.50691587};
-		up[]={-0.48097834,0.76834273,0.4222669};
-		aside[]={0.65975225,1.4901161e-008,0.75148332};
+		pos[]={6972.6924,16.052361,8699.9697};
+		dir[]={0.94734854,-0.31936488,-0.023170276};
+		up[]={0.31926939,0.94763178,-0.0078086993};
+		aside[]={-0.024450714,0,-0.99970102};
 	};
 };
 binarizationWanted=0;
@@ -8175,7 +8175,7 @@ class Mission
 				};
 			};
 			id=45;
-			atlOffset=-30.249771;
+			atlOffset=63.229111;
 		};
 		class Item1
 		{
@@ -10427,7 +10427,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={6974.8008,13.997098,8693.5215};
+						position[]={6974.8008,14.126795,8693.5215};
 					};
 					side="West";
 					flags=5;
@@ -10438,7 +10438,7 @@ class Mission
 					};
 					id=983;
 					type="vn_b_men_sog_03";
-					atlOffset=9.5367432e-006;
+					atlOffset=0.12970638;
 				};
 				class Item3
 				{
@@ -10789,8 +10789,8 @@ class Mission
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={6975.0039,15.013757,8701.1152};
-				angles[]={6.2272439,0,0.017997233};
+				position[]={6974.3936,15.379764,8699.7715};
+				angles[]={6.2347474,0,0.0034353647};
 			};
 			side="Empty";
 			flags=4;
@@ -10799,6 +10799,7 @@ class Mission
 			};
 			id=1056;
 			type="ALiVE_Waterbottle_Item";
+			atlOffset=0.014624596;
 		};
 		class Item36
 		{
@@ -10923,8 +10924,8 @@ class Mission
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={6975.1426,15.027187,8701.3105};
-				angles[]={6.2272439,0,0.017997233};
+				position[]={6974.5322,15.401236,8699.9668};
+				angles[]={6.2347474,0,0.0034353647};
 			};
 			side="Empty";
 			flags=4;
@@ -10933,14 +10934,15 @@ class Mission
 			};
 			id=1066;
 			type="ALiVE_Waterbottle_Item";
+			atlOffset=0.026151657;
 		};
 		class Item44
 		{
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={6975.3423,15.041335,8701.499};
-				angles[]={6.2272439,0,0.017997233};
+				position[]={6974.4814,15.380236,8699.5};
+				angles[]={6.2347474,0,0.0034353647};
 			};
 			side="Empty";
 			flags=4;
@@ -10949,15 +10951,15 @@ class Mission
 			};
 			id=1067;
 			type="ALiVE_Waterbottle_Item";
-			atlOffset=-6.6757202e-006;
+			atlOffset=0.027955055;
 		};
 		class Item45
 		{
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={6974.8911,15.008382,8701.0205};
-				angles[]={6.2272439,0,0};
+				position[]={6974.2266,15.378814,8699.6348};
+				angles[]={6.2347474,0,0.0034353647};
 			};
 			side="Empty";
 			flags=4;
@@ -10966,49 +10968,45 @@ class Mission
 			};
 			id=1068;
 			type="ALiVE_Waterbottle_Item";
-			atlOffset=9.5367432e-007;
+			atlOffset=0.020877838;
 		};
 		class Item46
 		{
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={6974.4912,14.710546,8699.9014};
-				angles[]={6.234746,0,0.0034353647};
+				position[]={6976.7266,14.893449,8703.3809};
 			};
 			side="Empty";
-			flags=4;
 			class Attributes
 			{
 			};
 			id=1069;
 			type="vn_magazine_grenade_v40";
-			atlOffset=7.6293945e-006;
+			atlOffset=0.38132858;
 		};
 		class Item47
 		{
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={6974.3203,14.697099,8699.6357};
-				angles[]={6.234746,0,0.0034353647};
+				position[]={6976.6274,15.023212,8703.5732};
 			};
 			side="Empty";
-			flags=4;
 			class Attributes
 			{
 			};
 			id=1070;
 			type="vn_magazine_grenade_t67";
-			atlOffset=2.5749207e-005;
+			atlOffset=0.50056744;
 		};
 		class Item48
 		{
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={6974.1494,14.698796,8699.6836};
-				angles[]={6.234746,0,0.0034353647};
+				position[]={6976.731,14.919222,8703.5078};
+				angles[]={0,1.6074771,0};
 			};
 			side="Empty";
 			class Attributes
@@ -11016,24 +11014,22 @@ class Mission
 			};
 			id=1071;
 			type="vn_magazine_grenade_rkg3";
-			atlOffset=0.42737293;
+			atlOffset=0.3978157;
 		};
 		class Item49
 		{
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={6974.502,14.704131,8699.7676};
-				angles[]={6.234746,0,0.0034353647};
+				position[]={6976.6426,14.910844,8703.4414};
 			};
 			side="Empty";
-			flags=4;
 			class Attributes
 			{
 			};
 			id=1072;
 			type="vn_magazine_grenade_m67";
-			atlOffset=4.196167e-005;
+			atlOffset=0.39719296;
 		};
 		class Item50
 		{

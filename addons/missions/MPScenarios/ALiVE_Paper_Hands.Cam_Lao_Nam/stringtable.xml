@@ -83,7 +83,7 @@
 </Key>
 <Key ID="STR_VN_BRIEFING_COALIVE_SITUATION_PH">
 <Chinese></Chinese>
-<English>&lt;img image=&quot;pics\splash.paa&quot; width=&quot;380&quot; height=&quot;380&quot;/&gt;&lt;br/&gt;&lt;br/&gt;MACV-SOG are running deniable operations using Spike Teams (ST) "across the fence" in Cambodia, Laos and South Vietnam.&lt;br/&gt;&lt;br/&gt;Viet Cong and NVA forces are consolidating positions and supplies lines in the Tri-Border area in an effort to open a western front.&lt;br/&gt;&lt;br/&gt;Int indicates a growing insurgency with Viet Cong establishing outposts at villages in the AO and villagers being recruited by VC.&lt;br/&gt; &lt;br/&gt;While VC operate primarily on the western side of the river, NVA forces predominantly hold the eastern side.</English>
+<English>&lt;img image=&quot;pics\splash.paa&quot; width=&quot;380&quot; height=&quot;380&quot;/&gt;&lt;br/&gt;&lt;br/&gt;MACV-SOG are running deniable operations using Spike Teams (ST) "across the fence" in Cambodia, Laos and South Vietnam.&lt;br/&gt;&lt;br/&gt;Viet Cong and NVA forces are consolidating positions and supply lines in the Tri-Border area in an effort to open a western front.&lt;br/&gt;&lt;br/&gt;Int indicates a growing insurgency with Viet Cong establishing outposts at villages in the AO and villagers being recruited by VC.&lt;br/&gt; &lt;br/&gt;While VC operate primarily on the western side of the river, NVA forces predominantly hold the eastern side.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -103,7 +103,7 @@
 </Key>
 <Key ID="STR_VN_BRIEFING_COALIVE_TACTICAL_PH">
 <Chinese></Chinese>
-<English>&lt;img image=&quot;pics\cobra.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;&lt;marker name='CS'&gt;Combat Support&lt;/marker&gt; and &lt;marker name='CSS'&gt;Combat Service Support&lt;/marker&gt; assets are available including Support Helicopters, Artillery, Mortars and a Cobra Attack Helicopter on call for Close Air Support.&lt;br/&gt;&lt;br/&gt;There are a limited number of PRC-77 radios available for the RTO to request and coord support from HQ. Don't lose them!&lt;br/&gt;&lt;br/&gt;The Duty Officer at Outpost Scurlock can despatch you directly to your squad (if its enabled in mission settings).&lt;br/&gt;&lt;br/&gt;MACV SOG HQ will provide intelligence and suggested taskings on a regular basis. You don't have to accept these tasks, a commander can manage taskings using the PRC-77.</English>
+<English>&lt;img image=&quot;pics\cobra.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;&lt;marker name='CS'&gt;Combat Support&lt;/marker&gt; and &lt;marker name='CSS'&gt;Combat Service Support&lt;/marker&gt; assets are available including Support Helicopters, Artillery, Mortars and a Cobra Attack Helicopter on call for Close Air Support.&lt;br/&gt;&lt;br/&gt;There are a limited number of PRC-77 radios available for the RTO to request and coord support from HQ. Don't lose them!&lt;br/&gt;&lt;br/&gt;The Duty Officer at Outpost Scurlock can despatch you directly to your squad (if its enabled in mission settings).&lt;br/&gt;&lt;br/&gt;MACV SOG HQ will provide intelligence and suggested taskings on a regular basis. You DON'T have to accept these tasks, a commander can manage taskings using the PRC-77.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -113,7 +113,7 @@
 </Key>
 <Key ID="STR_VN_BRIEFING_COALIVE_EXECUTION_PH">
 <Chinese></Chinese>
-<English>&lt;img image=&quot;pics\execution.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Advance north either along the river using the &lt;marker name='marker_14'&gt;PTF Nasty Boats&lt;/marker&gt; provided or by foot.&lt;br/&gt;&lt;br/&gt;Disrupt VC activity in the area and collect intelligence on high value targets, arms caches, cave and tunnel systems and prisoners of war.&lt;br/&gt;&lt;br/&gt;Resupplies, close air support, artillery and air extraction can be requested via PRC-77.&lt;br/&gt;&lt;br/&gt;Counter the insurgency, win hearts and minds by distributing rations and water to villagers. Villagers may provide intelligence. Dead soldiers may also carry intelligence on them.</English>
+<English>&lt;img image=&quot;pics\execution.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Advance north either along the river using the &lt;marker name='marker_14'&gt;PTF Nasty Boats&lt;/marker&gt; provided or by foot.&lt;br/&gt;&lt;br/&gt;Disrupt VC activity in the area and collect intelligence on high value targets, arms caches, cave and tunnel systems and prisoners of war.&lt;br/&gt;&lt;br/&gt;Resupplies, close air support, artillery and air extraction can be requested via PRC-77.&lt;br/&gt;&lt;br/&gt;Counter the insurgency, win hearts and minds by distributing rations and water to villagers. Villagers may provide intelligence. Dead soldiers may also carry intelligence on them, search them for any interesting items.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
