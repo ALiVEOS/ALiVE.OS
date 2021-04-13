@@ -15,7 +15,7 @@ Notes:
 
     - Each profile and attack will store it's time of last simulation
     - To simulate profiles regardless of time passed between simulations, subtract the time of last simulation from the current time
-    - Multiply the resulting value by any anything that relates to time, such as distance moved or damage dealt
+      Multiply the resulting value by any anything that relates to time, such as distance moved or damage dealt
 
 Parameters:
 
@@ -628,7 +628,8 @@ if (!_simAttacks) then {
 
             private ["_attacker"];
 
-            private _attack = [MOD(profileCombatHandler),"getAttack", _attacksToSim select 0] call ALiVE_fnc_profileCombatHandler;
+            private _attackID = _attacksToSim select 0;
+            private _attack = [MOD(profileCombatHandler),"getAttack", _attackID] call ALiVE_fnc_profileCombatHandler;
             _attacksToSim deleteat 0;
 
             if (!isnil "_attack") then {
@@ -885,7 +886,7 @@ if (!_simAttacks) then {
                     };
 
                     if (!_active) then {
-                        _attacksToRemove pushback _attack;
+                        _attacksToRemove pushback _attackID;
 
                         if (!isnil "_attacker") then {
                             [_attacker,"combat", false] call ALiVE_fnc_hashSet;

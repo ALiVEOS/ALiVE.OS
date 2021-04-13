@@ -88,7 +88,7 @@ switch (_taskState) do {
 
         // establish the location for the task
         // get enemy cluster position
-		if (isNil "_taskLocation") then {
+		if (isNil "_taskLocation" || [_taskLocation, _taskPlayers select 0] call ALIVE_fnc_taskGetClosestPlayerDistanceToDestination < 600) then {
 		    _targetPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
 		} else {
             _targetPosition = _taskLocation;
@@ -217,7 +217,7 @@ switch (_taskState) do {
             _aircraftName = getText(configFile >> "CfgVehicles" >> _aircraft >> "displayName");
 
             // For CSAR missions place the marker within 1000m of the actual crashsite or crew, so that players have to search
-            _newTaskPosition = _targetPosition getpos [350 + (random 350),random 360];
+            _newTaskPosition = _targetPosition getpos [300 + (random 200),random 360];
 
             // Rescue
             _nearestTown = [_newTaskPosition] call ALIVE_fnc_taskGetNearestLocationName;
