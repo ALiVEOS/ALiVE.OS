@@ -199,12 +199,6 @@ switch (_operation) do {
             private _attack = [_attacksByID,_attackID] call ALiVE_fnc_hashGet;
 
             if (!isnil "_attack") then {
-                if (_debug) then {
-                    if (isnil "_attack") then {
-                        ["Why is my fucking attack null - %1 --- %2", _attacks, _attacksByID] call ALiVE_fnc_Dump;
-                    };
-                };
-
                 private _attackPosition = [_attack,"position"] call ALiVE_fnc_hashGet;
                 private _attackerID = [_attack,"attacker"] call ALiVE_fnc_hashGet;
                 private _targetsLeft = [_attack,"targets"] call ALiVE_fnc_hashGet;
