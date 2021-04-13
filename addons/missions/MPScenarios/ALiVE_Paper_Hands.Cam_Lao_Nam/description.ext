@@ -1,0 +1,132 @@
+//http://community.bistudio.com/wiki/description.ext#Header_Class
+class header {
+    gametype = ALIVE;
+    minplayers = 1;
+    maxplayers = 12;
+    playerCountMultipleOf = 1;  //Coop type missions use 1, Team type missions use 2
+};
+
+dev = "ALiVE Mod Team";
+author = ALiVE Mod Team || Mission by Tupolov;
+overviewPicture = "x\alive\addons\missions\MPScenarios\ALiVE_Paper_Hands.Cam_Lao_Nam\pics\execution.paa";
+overviewText = $STR_VN_MISSIONS_DESC_MISSION_ALIVE_PH;
+onLoadName = $STR_VN_MISSIONS_TITLE_MISSION_ALIVE_PH;
+onLoadMission = $STR_VN_MISSIONS_DESC_MISSION_ALIVE_PH;
+loadScreen = "x\alive\addons\missions\MPScenarios\ALiVE_Paper_Hands.Cam_Lao_Nam\pics\execution.paa";
+
+disabledAI = 0;
+aiKills = 0;
+
+joinUnassigned = 1;
+saving = 0;
+
+enableDebugConsole = 1;
+allowFunctionsLog = 1;
+allowFunctionsRecompile = 0;
+
+respawn = 3;
+respawnOnStart = 1;
+respawnTemplates[] = {"MenuPosition", "MenuInventory", "Spectator"};
+respawnDelay = 15;
+RespawnDialog = 0;
+respawnButton = 1;
+
+corpseManagerMode = 2;
+corpseLimit = 50;
+corpseRemovalMaxTime = 450;
+minPlayerDistance = 150;
+
+allowProfileGlasses = 0;
+
+briefing = 1;
+debriefing = 1;
+
+forceRotorLibSimulation = 1;
+
+#include "CfgFunctions.inc"
+#include "groupMarkers.hpp"
+
+class Params
+{
+	class EnvironmentSettings
+	{
+	    title = $STR_VN_PARAMS_ENVIRONMENT_SETTINGS;
+	    values[] = {""};
+	    texts[] = {""};
+	    default = "";
+	};
+
+	#include "params\paramRespawnTickets.hpp"
+
+	class vn_respawn_delay
+	{
+	    title = $STR_VN_PARAMS_RESPAWN_DELAY;
+	    isGlobal = 1;
+	    values[] = {10, 30, 60, 90, 120};
+	    texts[] = {"10", "30", "60", "90", "120"};
+	    default = 10;
+	    function = "vn_alivems_fnc_params_respawnDelay";
+	};
+	class Stamina
+	{
+	    title = $STR_VN_PARAMS_STAMINA;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_alivems_fnc_params_stamina";
+	};
+	class AimCoef
+	{
+	    title = $STR_VN_PARAMS_AIMCOEF;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 0;
+	    function = "vn_alivems_fnc_params_aimCoef";
+	};
+	class FailOnWipe
+	{
+	    title = $STR_VN_PARAMS_FAILONWIPE;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_alivems_fnc_params_failOnWipe";
+	};
+	class TeleportAction
+	{
+	    title = $STR_VN_PARAMS_TELEPORTACTION;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_alivems_fnc_params_teleportAction";
+	};
+	class MissionArsenal
+	{
+	    title = $STR_VN_PARAMS_ARSENAL;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_alivems_fnc_params_arsenal";
+	};
+	class Enablemapmarkers
+	{
+	    title = $STR_VN_COALIVE_PARAMS_MAPMARKERS_XRAY;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 0;
+	    function = "vn_alivems_fnc_params_mapMarkers";
+	};
+	class Enablegroupmarkers
+	{
+			title = $STR_VN_COALIVE_PARAMS_GROUPMARKERS_XRAY;
+			isGlobal = 1;
+			values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+			default = 0;
+			function = "vn_alivems_fnc_params_groupMarkers";
+	};
+};

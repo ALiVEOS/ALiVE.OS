@@ -153,6 +153,14 @@ class CfgMissions
             overviewText = "Travel by convoy to Hue, consolidate positions defend Hue and the Imperial City Citadel from enemy attack.";
             author = "ALiVE Mod Team";
         };
+        class MP_COOP_Paper_Hands
+        {
+            briefingName = "ALiVE | Paper Hands (COOP 12)";
+            directory = "x\alive\addons\missions\mpscenarios\ALiVE_Paper_Hands.Cam_Lao_Nam";
+            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Paper_Hands.Cam_Lao_Name\pics\execution.paa";
+            overviewText = "MACV-SOG are running deniable operations using Spike Teams (ST) ""across the fence"" in Cambodia, Laos and South Vietnam.";
+            author = "ALiVE Mod Team";
+        };
     };
 };
 
