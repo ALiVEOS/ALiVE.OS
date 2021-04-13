@@ -158,7 +158,7 @@ class CfgMissions
             briefingName = "ALiVE | Paper Hands (COOP 12)";
             directory = "x\alive\addons\missions\mpscenarios\ALiVE_Paper_Hands.Cam_Lao_Nam";
             overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Paper_Hands.Cam_Lao_Name\pics\execution.paa";
-            overviewText = "MACV-SOG are running deniable operations using Spike Teams (ST) 'across the fence' in Cambodia, Laos and South Vietnam.";
+            overviewText = "MACV-SOG are running deniable operations using Spike Teams (ST) - across the fence - in Cambodia, Laos and South Vietnam.";
             author = "ALiVE Mod Team";
         };
     };

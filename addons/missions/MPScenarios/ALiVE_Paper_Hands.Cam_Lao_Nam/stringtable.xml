@@ -3,9 +3,9 @@
 <Package name="Actions">
 </Package>
 <Package name="Descriptions">
-<Key ID="STR_VN_MISSIONS_DESC_MISSION_PH">
+<Key ID="STR_VN_MISSIONS_DESC_MISSION_ALIVE_PH">
 <Chinese></Chinese>
-<English>MACV-SOG are running deniable operations using Spike Teams (ST) 'across the fence' in Cambodia, Laos and South Vietnam. Disrupt Viet Cong supply lines, operations and outposts along the tri-border area.</English>
+<English>MACV-SOG are running deniable operations using Spike Teams (ST) - across the fence - in Cambodia, Laos and South Vietnam. ST Sisler have been tasked with disrupting Viet Cong supply lines, operations and outposts along the tri-border area.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
