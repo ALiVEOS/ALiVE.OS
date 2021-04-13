@@ -38,13 +38,15 @@ ALIVE_civilianWeapons = [] call ALIVE_fnc_hashCreate;
 // Civ Pop Interaction
 ALiVE_CivPop_Interaction_WaterItems = [
         "ALiVE_Waterbottle",
-        "ACE_WaterBottle"     // ACEX
+        "ACE_WaterBottle",    // ACEX
+        "vn_prop_drink_01", "vn_prop_drink_02", "vn_prop_drink_05" // VN crate drinks
 ];
 
 ALiVE_CivPop_Interaction_RationItems = [
         "ALiVE_Humrat",
         "ACE_Humanitarian_Ration",  // ACEX
-        "vn_b_item_rations_01"    // VN
+        "vn_b_item_rations_01",    // VN
+        "vn_prop_food_fresh_01", "vn_prop_food_fresh_02", "vn_prop_food_meal_01", "vn_prop_food_sack_01", "vn_prop_food_sack_02" // VN crate food
 ];
 
 // Civ Pop Crowds
