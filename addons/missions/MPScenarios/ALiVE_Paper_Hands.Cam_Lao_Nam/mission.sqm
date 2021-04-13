@@ -5,7 +5,7 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=1673;
+	toggles=1545;
 	class ItemIDProvider
 	{
 		nextID=1074;
@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=463;
+		nextID=469;
 	};
 	class Camera
 	{
@@ -47,7 +47,6 @@ addons[]=
 	"alive_mil_ied",
 	"alive_sup_artillery",
 	"alive_sup_cas",
-	"alive_sys_data",
 	"A3_Ui_F",
 	"objects_f_vietnam_c",
 	"ALiVE_Missions",
@@ -65,7 +64,7 @@ class AddonsMetaData
 {
 	class List
 	{
-		items=30;
+		items=29;
 		class Item0
 		{
 			className="ALiVE_main";
@@ -170,86 +169,80 @@ class AddonsMetaData
 		};
 		class Item17
 		{
-			className="ALiVE_sys_data";
-			name="alive_sys_data";
-			author="ALiVE Mod Team";
-		};
-		class Item18
-		{
 			className="A3_Ui_F";
 			name="Arma 3 - User Interface";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item19
+		class Item18
 		{
 			className="objects_f_vietnam_c";
 			name="objects_f_vietnam_c";
 			author="Savage Game Design";
 			url="https://www.arma3.com";
 		};
-		class Item20
+		class Item19
 		{
 			className="ALiVE_Missions";
 			name="ALiVE_Missions";
 		};
-		class Item21
+		class Item20
 		{
 			className="A3_Modules_F_Curator";
 			name="Arma 3 Zeus Update - Scripted Modules";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item22
+		class Item21
 		{
 			className="modules_f_vietnam";
 			name="modules_f_vietnam";
 			author="Savage Game Design";
 			url="https://www.arma3.com";
 		};
-		class Item23
+		class Item22
 		{
 			className="characters_f_vietnam_c";
 			name="characters_f_vietnam_c";
 			author="Savage Game Design";
 			url="https://www.arma3.com";
 		};
-		class Item24
+		class Item23
 		{
 			className="weapons_f_vietnam_c";
 			name="weapons_f_vietnam_c";
 			author="Savage Game Design";
 			url="https://www.arma3.com";
 		};
-		class Item25
+		class Item24
 		{
 			className="boat_f_vietnam_c";
 			name="boat_f_vietnam_c";
 			author="Savage Game Design";
 			url="https://www.arma3.com";
 		};
-		class Item26
+		class Item25
 		{
 			className="structures_f_vietnam_c";
 			name="structures_f_vietnam_c";
 			author="Savage Game Design";
 			url="https://www.arma3.com";
 		};
-		class Item27
+		class Item26
 		{
 			className="static_f_vietnam_c";
 			name="static_f_vietnam_c";
 			author="Savage Game Design";
 			url="https://www.arma3.com";
 		};
-		class Item28
+		class Item27
 		{
 			className="A3_Modules_F";
 			name="Arma 3 Alpha - Scripted Modules";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item29
+		class Item28
 		{
 			className="ALiVE_mil_logistics";
 			name="alive_mil_logistics";
@@ -417,7 +410,7 @@ class Mission
 			name="ALiVE";
 			class Entities
 			{
-				items=26;
+				items=25;
 				class Item0
 				{
 					dataType="Logic";
@@ -2316,11 +2309,11 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={7558.0425,8.8065529,6278.916};
+						position[]={7558.042,8.8063068,6278.916};
 					};
 					id=34;
 					type="ALiVE_SYS_playeroptions";
-					atlOffset=20.667252;
+					atlOffset=20.667;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -2338,7 +2331,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="false";
+									value="true";
 								};
 							};
 						};
@@ -2471,7 +2464,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="false";
+									value="true";
 								};
 							};
 						};
@@ -2509,7 +2502,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="false";
+									value="true";
 								};
 							};
 						};
@@ -2528,7 +2521,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="false";
+									value="true";
 								};
 							};
 						};
@@ -2737,7 +2730,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="false";
+									value="true";
 								};
 							};
 						};
@@ -2813,7 +2806,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="false";
+									value="true";
 								};
 							};
 						};
@@ -2870,7 +2863,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="false";
+									value="true";
 								};
 							};
 						};
@@ -7229,212 +7222,6 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={7947.0381,109.06934,6865.1914};
-						angles[]={6.2651882,0,0.14888987};
-					};
-					id=572;
-					type="ALiVE_sys_data";
-					atlOffset=0.00019836426;
-					class CustomAttributes
-					{
-						class Attribute0
-						{
-							property="ALiVE_sys_data_killFeed";
-							expression="_this setVariable ['killFeed',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="None";
-								};
-							};
-						};
-						class Attribute1
-						{
-							property="ALiVE_sys_data_disablePerfMon";
-							expression="_this setVariable ['disablePerfMon',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="true";
-								};
-							};
-						};
-						class Attribute2
-						{
-							property="ALiVE_sys_data_source";
-							expression="_this setVariable ['source',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="pns";
-								};
-							};
-						};
-						class Attribute3
-						{
-							property="ALiVE_sys_data_customPerfMonCode";
-							expression="_this setVariable ['customPerfMonCode',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="[['entities',150],['vehicles',300],['agents',450],['allDead',600],['objects',750],['triggers',900], ['activeScripts',1050]]";
-								};
-							};
-						};
-						class Attribute4
-						{
-							property="ALiVE_sys_data_debug";
-							expression="_this setVariable ['debug',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="false";
-								};
-							};
-						};
-						class Attribute5
-						{
-							property="ALiVE_sys_data_disableStats";
-							expression="_this setVariable ['disableStats',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="false";
-								};
-							};
-						};
-						class Attribute6
-						{
-							property="ALiVE_sys_data_saveDateTime";
-							expression="_this setVariable ['saveDateTime',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="true";
-								};
-							};
-						};
-						class Attribute7
-						{
-							property="ALiVE_sys_data_disableAAR";
-							expression="_this setVariable ['disableAAR',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="false";
-								};
-							};
-						};
-						class Attribute8
-						{
-							property="ALiVE_sys_data_saveCompositions";
-							expression="_this setVariable ['saveCompositions',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="true";
-								};
-							};
-						};
-						class Attribute9
-						{
-							property="ALiVE_sys_data_disablePerf";
-							expression="_this setVariable ['disablePerf',_value,true];";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="true";
-								};
-							};
-						};
-						nAttributes=10;
-					};
-				};
-				class Item23
-				{
-					dataType="Logic";
-					class PositionInfo
-					{
 						position[]={13740.857,438.45999,8412.3135};
 					};
 					id=958;
@@ -7672,7 +7459,7 @@ class Mission
 						nAttributes=12;
 					};
 				};
-				class Item24
+				class Item23
 				{
 					dataType="Logic";
 					class PositionInfo
@@ -8105,7 +7892,7 @@ class Mission
 						nAttributes=22;
 					};
 				};
-				class Item25
+				class Item24
 				{
 					dataType="Logic";
 					class PositionInfo
