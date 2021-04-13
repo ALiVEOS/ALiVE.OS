@@ -5,7 +5,7 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=1153;
+	toggles=1025;
 	class ItemIDProvider
 	{
 		nextID=1082;
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=631;
+		nextID=643;
 	};
 	class Camera
 	{
-		pos[]={14753.358,245.97606,9616.9531};
-		dir[]={0.7490266,-0.071573041,0.65866262};
-		up[]={0.053747956,0.99743533,0.047263701};
-		aside[]={0.66035616,0,-0.75095248};
+		pos[]={11486.353,4.7635612,6391.5488};
+		dir[]={-0.74438769,-0.27382705,-0.60903877};
+		up[]={-0.21194267,0.96177185,-0.17340496};
+		aside[]={-0.63323933,-7.301569e-007,0.77396703};
 	};
 };
 binarizationWanted=0;
@@ -15701,8 +15701,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -15711,10 +15711,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_02";
 										};
 									};
 								};
@@ -15777,8 +15777,8 @@ class Mission
 								};
 								class Attribute5
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -15787,10 +15787,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_02";
+											value=0;
 										};
 									};
 								};
@@ -15901,8 +15901,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -15911,10 +15911,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_09";
 										};
 									};
 								};
@@ -15958,8 +15958,8 @@ class Mission
 								};
 								class Attribute4
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -15968,10 +15968,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_09";
+											value=0;
 										};
 									};
 								};
@@ -16587,7 +16587,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="[[[[],[]],[[],[]],[[],[]],[[],[]]],true]";
+							value="[[[[],[]],[[],[]],[[],[]],[[""vn_b_pack_prc77_01""],[3]]],false]";
 						};
 					};
 				};
@@ -16897,7 +16897,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={11489.946,1.1576501,6427.5303};
-				angles[]={0,3.3214679,0};
+				angles[]={0,3.3214662,0};
 			};
 			side="Empty";
 			flags=4;
@@ -16925,7 +16925,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="[[[[],[]],[[],[]],[[],[]],[[],[]]],true]";
+							value="[[[[],[]],[[],[]],[[],[]],[[""vn_b_pack_prc77_01""],[3]]],false]";
 						};
 					};
 				};

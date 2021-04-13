@@ -5,10 +5,10 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=513;
+	toggles=641;
 	class ItemIDProvider
 	{
-		nextID=861;
+		nextID=865;
 	};
 	class MarkerIDProvider
 	{
@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=4785;
+		nextID=5070;
 	};
 	class Camera
 	{
@@ -325,7 +325,7 @@ class Mission
 	class Intel
 	{
 		briefingName="@STR_VN_MISSIONS_TITLE_MISSION_ALIVE_XRAY";
-		overviewText="ALiVE Defensive Operation";
+		overviewText="The Battle of Hue";
 		startWeather=0.4534058;
 		startFog=0.49583459;
 		startWind=0.1;
@@ -1013,6 +1013,7 @@ class Mission
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Rifleman"");}";
 						name="vn_xray_01_01";
 						description="Squad Leader";
 						isPlayer=1;
@@ -1088,13 +1089,14 @@ class Mission
 					class PositionInfo
 					{
 						position[]={18606.055,21.434641,8393.8398};
-						angles[]={0,4.4972425,0.02199479};
+						angles[]={0,4.4972425,0.021991149};
 					};
 					side="West";
 					flags=4;
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_ExplosiveSpecialist"");}";
 						name="vn_xray_01_06";
 						description="Demolitions ";
 						isPlayable=1;
@@ -1169,12 +1171,13 @@ class Mission
 					class PositionInfo
 					{
 						position[]={18601.604,21.40107,8391.7178};
-						angles[]={6.2771854,4.6194677,0.0060001095};
+						angles[]={6.2771816,4.6194677,0.0060039326};
 					};
 					side="West";
 					flags=4;
 					class Attributes
 					{
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_CombatLifesaver"");}";
 						name="vn_xray_01_03";
 						description="Medic";
 						isPlayable=1;
@@ -1255,6 +1258,7 @@ class Mission
 					flags=4;
 					class Attributes
 					{
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_RTO"");}";
 						name="vn_xray_01_02";
 						description="Radio Telephone Operator";
 						isPlayable=1;
@@ -1328,21 +1332,22 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={18614.75,21.626747,8393.3232};
-						angles[]={0.03798008,2.0620368,0};
+						position[]={18614.75,21.627054,8393.3232};
+						angles[]={0.037978366,2.0620368,0};
 					};
 					side="West";
 					flags=4;
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Grenadier"");}";
 						name="vn_xray_01_07";
 						description="Grenadier";
 						isPlayable=1;
 					};
 					id=487;
 					type="vn_b_men_army_07";
-					atlOffset=0.14969444;
+					atlOffset=0.15000153;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -1410,21 +1415,22 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={18610.816,21.587433,8394.3574};
-						angles[]={0.03798008,2.0620368,0};
+						position[]={18610.816,21.58774,8394.3574};
+						angles[]={0.037978366,2.0620368,0};
 					};
 					side="West";
 					flags=4;
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Marksman"");}";
 						name="vn_xray_01_08";
 						description="Marksman";
 						isPlayable=1;
 					};
 					id=490;
 					type="vn_b_men_army_10";
-					atlOffset=0.14969444;
+					atlOffset=0.15000153;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -1511,20 +1517,21 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={18613.094,21.58544,8394.4102};
+						position[]={18613.094,21.585747,8394.4102};
 						angles[]={0,1.9142771,0};
 					};
 					side="West";
 					flags=4;
 					class Attributes
 					{
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Autorifleman"");}";
 						name="vn_xray_01_05";
-						description="Machine Gunner";
+						description="M60 Machine Gunner";
 						isPlayable=1;
 					};
 					id=497;
 					type="vn_b_men_army_06";
-					atlOffset=0.024309158;
+					atlOffset=0.024616241;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -1593,13 +1600,14 @@ class Mission
 					class PositionInfo
 					{
 						position[]={18605.279,21.417587,8392.2871};
-						angles[]={0,2.0620368,0.02199479};
+						angles[]={0,2.0620368,0.021991149};
 					};
 					side="West";
 					flags=4;
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Rifleman"");}";
 						name="vn_xray_01_04";
 						description="Rifleman";
 						isPlayable=1;
@@ -1673,20 +1681,21 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={18608.436,21.430035,8394.2041};
-						angles[]={0.02199479,2.0620368,0};
+						position[]={18605.9,21.431257,8390.5811};
+						angles[]={0,2.0620368,0.021991149};
 					};
 					side="West";
 					flags=4;
 					class Attributes
 					{
 						rank="SERGEANT";
-						name="vn_xray_01_09";
-						description="Anti Tank Soldier";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Rifleman"");}";
+						name="vn_xray_01_10";
+						description="Rifleman";
 						isPlayable=1;
 					};
-					id=506;
-					type="vn_b_men_army_12";
+					id=851;
+					type="vn_b_men_army_16";
 					class CustomAttributes
 					{
 						class Attribute0
@@ -1754,20 +1763,21 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={18605.9,21.431257,8390.5811};
-						angles[]={0,2.0620368,0.02199479};
+						position[]={18608.436,21.430035,8394.2041};
+						angles[]={0.021991149,2.0620368,0};
 					};
 					side="West";
 					flags=4;
 					class Attributes
 					{
 						rank="SERGEANT";
-						name="vn_xray_01_10";
-						description="Rifleman";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_HeavyGunner"");}";
+						name="vn_xray_01_09";
+						description="Shorty Machine Gunner";
 						isPlayable=1;
 					};
-					id=851;
-					type="vn_b_men_army_16";
+					id=863;
+					type="vn_b_men_army_27";
 					class CustomAttributes
 					{
 						class Attribute0
@@ -2949,8 +2959,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -2959,10 +2969,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_02";
 										};
 									};
 								};
@@ -3025,8 +3035,8 @@ class Mission
 								};
 								class Attribute5
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -3035,10 +3045,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_02";
+											value=0;
 										};
 									};
 								};
@@ -3149,8 +3159,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -3159,10 +3169,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_09";
 										};
 									};
 								};
@@ -3206,8 +3216,8 @@ class Mission
 								};
 								class Attribute4
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -3216,10 +3226,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_09";
+											value=0;
 										};
 									};
 								};
@@ -11869,7 +11879,7 @@ class Mission
 			title="PAVN Invasion";
 			description="PAVN Invasion Mode.  They will attempt to take and hold objectives in Hue";
 			id=434;
-			atlOffset=119.97778;
+			atlOffset=115.95526;
 		};
 		class Item69
 		{
@@ -12109,8 +12119,8 @@ class Mission
 						class Item1
 						{
 							dataType="Marker";
-							position[]={14844.586,252.77499,9586.2207};
-							name="marker_38";
+							position[]={14844.586,252.77499,9586.2197};
+							name="marker_css";
 							text="1st Cavalry Division Air Support";
 							type="hd_dot";
 							colorName="ColorWEST";
@@ -12120,13 +12130,13 @@ class Mission
 						class Item2
 						{
 							dataType="Marker";
-							position[]={18674.906,31.806,8429.1514};
-							name="marker_39";
+							position[]={18668.389,31.806,8410.2295};
+							name="marker_cs";
 							text="5th Marine Fire Support";
 							type="hd_dot";
 							colorName="ColorWEST";
 							id=465;
-							atlOffset=10.396;
+							atlOffset=7.9643803;
 						};
 						class Item3
 						{
@@ -12152,11 +12162,11 @@ class Mission
 						};
 					};
 					id=461;
-					atlOffset=17.434116;
+					atlOffset=17.558205;
 				};
 			};
 			id=460;
-			atlOffset=17.434116;
+			atlOffset=17.558205;
 		};
 		class Item78
 		{
@@ -12168,18 +12178,18 @@ class Mission
 				class Item0
 				{
 					dataType="Marker";
-					position[]={14162.522,10.043945,12866.499};
+					position[]={14162.522,10.044,12866.499};
 					name="marker_9";
-					text="804th Battalion, 4th Regiment";
+					text="3rd Battalion, 6th Regiment";
 					type="o_inf";
 					a=1.5;
 					b=1.5;
 					id=468;
-					atlOffset=-2.7080641;
+					atlOffset=-2.7080097;
 				};
 			};
 			id=467;
-			atlOffset=-2.7080641;
+			atlOffset=-2.7080097;
 		};
 		class Item79
 		{
@@ -17269,8 +17279,8 @@ class Mission
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={18595.896,21.746946,8382.1602};
-				angles[]={6.2771854,4.8537226,6.2551947};
+				position[]={18595.896,21.746494,8382.1592};
+				angles[]={6.2771816,4.8537254,6.2551899};
 			};
 			side="Empty";
 			flags=4;
@@ -17281,7 +17291,7 @@ class Mission
 			};
 			id=846;
 			type="vn_b_ammobox_full_09";
-			atlOffset=0.02044487;
+			atlOffset=0.020000458;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -17299,7 +17309,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="[[[[],[]],[[],[]],[[],[]],[[],[]]],true]";
+							value="[[[[],[]],[[],[]],[[],[]],[[""vn_b_pack_prc77_01""],[3]]],false]";
 						};
 					};
 				};
@@ -17505,6 +17515,7 @@ class Mission
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Rifleman"");}";
 						name="vn_xray_02_01";
 						description="Squad Leader";
 						isPlayable=1;
@@ -17579,12 +17590,13 @@ class Mission
 					class PositionInfo
 					{
 						position[]={18605.434,21.421309,8382.9717};
-						angles[]={0.0060001095,5.6757584,6.2771854};
+						angles[]={0.0060039326,5.6757584,6.2771816};
 					};
 					side="West";
 					flags=4;
 					class Attributes
 					{
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_RTO"");}";
 						name="vn_xray_02_02";
 						description="Radio Telephone Operator";
 						isPlayable=1;
@@ -17666,6 +17678,7 @@ class Mission
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_ExplosiveSpecialist"");}";
 						name="vn_xray_02_06";
 						description="Demolitions ";
 						isPlayable=1;
@@ -17740,12 +17753,13 @@ class Mission
 					class PositionInfo
 					{
 						position[]={18604.865,21.438499,8380.5391};
-						angles[]={0.0060001095,4.0148683,0};
+						angles[]={0.0060039326,4.0148683,0};
 					};
 					side="West";
 					flags=4;
 					class Attributes
 					{
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_CombatLifesaver"");}";
 						name="vn_xray_02_03";
 						description="Medic";
 						isPlayable=1;
@@ -17821,13 +17835,14 @@ class Mission
 					class PositionInfo
 					{
 						position[]={18607.971,21.41819,8380.9531};
-						angles[]={0.0060001095,0.043807764,6.2771854};
+						angles[]={0.0060039326,0.043807764,6.2771816};
 					};
 					side="West";
 					flags=4;
 					class Attributes
 					{
 						rank="MAJOR";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Rifleman"");}";
 						name="vn_xray_02_04";
 						description="Rifleman";
 						isPlayable=1;
@@ -17902,13 +17917,14 @@ class Mission
 					class PositionInfo
 					{
 						position[]={18610.248,21.416889,8380.2803};
-						angles[]={0,0.043807764,0.02199479};
+						angles[]={0,0.043807764,0.021991149};
 					};
 					side="West";
 					flags=4;
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Rifleman"");}";
 						name="vn_xray_02_10";
 						description="Rifleman";
 						isPlayable=1;
@@ -17982,95 +17998,15 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={18611.436,21.447649,8383.9033};
-						angles[]={6.2671833,0.043807764,0.037981652};
-					};
-					side="West";
-					flags=4;
-					class Attributes
-					{
-						rank="SERGEANT";
-						name="vn_xray_02_09";
-						description="Anti Tank Soldier";
-						isPlayable=1;
-					};
-					id=503;
-					type="vn_b_men_army_12";
-					class CustomAttributes
-					{
-						class Attribute0
-						{
-							property="speaker";
-							expression="_this setspeaker _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="Male01ENG";
-								};
-							};
-						};
-						class Attribute1
-						{
-							property="pitch";
-							expression="_this setpitch _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"SCALAR"
-										};
-									};
-									value=1.01;
-								};
-							};
-						};
-						class Attribute2
-						{
-							property="unitchestinsignialeft";
-							expression="[_this,_value,'d_pocket_l'] call vn_fnc_setunitchestinsignia;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="vn_b_insignia_1_id_01";
-								};
-							};
-						};
-						nAttributes=3;
-					};
-				};
-				class Item7
-				{
-					dataType="Object";
-					class PositionInfo
-					{
 						position[]={18612.836,21.485132,8382.9209};
-						angles[]={6.2671833,0.043807764,0.037981652};
+						angles[]={6.2671809,0.043807764,0.037978366};
 					};
 					side="West";
 					flags=4;
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Marksman"");}";
 						name="vn_xray_02_08";
 						description="Marksman";
 						isPlayable=1;
@@ -18139,20 +18075,21 @@ class Mission
 						nAttributes=3;
 					};
 				};
-				class Item8
+				class Item7
 				{
 					dataType="Object";
 					class PositionInfo
 					{
 						position[]={18614.387,21.546579,8383.0762};
-						angles[]={6.2671833,2.2669034,0.037981652};
+						angles[]={6.2671809,2.2669034,0.037978366};
 					};
 					side="West";
 					flags=4;
 					class Attributes
 					{
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Autorifleman"");}";
 						name="vn_xray_02_05";
-						description="Machine Gunner";
+						description="M60 Machine Gunner";
 						isPlayable=1;
 					};
 					id=482;
@@ -18219,25 +18156,108 @@ class Mission
 						nAttributes=3;
 					};
 				};
-				class Item9
+				class Item8
 				{
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={18615.992,21.861174,8382.9209};
+						position[]={18615.992,21.861542,8382.9209};
 						angles[]={0,0.043807764,0};
 					};
 					side="West";
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Grenadier"");}";
 						name="vn_xray_02_07";
 						description="Grenadier";
 						isPlayable=1;
 					};
 					id=493;
 					type="vn_b_men_army_07";
-					atlOffset=0.31563187;
+					atlOffset=0.31599998;
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="speaker";
+							expression="_this setspeaker _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Male01ENG";
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="pitch";
+							expression="_this setpitch _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=1.01;
+								};
+							};
+						};
+						class Attribute2
+						{
+							property="unitchestinsignialeft";
+							expression="[_this,_value,'d_pocket_l'] call vn_fnc_setunitchestinsignia;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="vn_b_insignia_1_id_01";
+								};
+							};
+						};
+						nAttributes=3;
+					};
+				};
+				class Item9
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={18611.436,21.447649,8383.9033};
+						angles[]={6.2671809,0.043807764,0.037978366};
+					};
+					side="West";
+					flags=4;
+					class Attributes
+					{
+						rank="SERGEANT";
+						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Sniper"");}";
+						name="vn_xray_02_09";
+						description="Sniper";
+						isPlayable=1;
+					};
+					id=864;
+					type="vn_b_men_army_11";
 					class CustomAttributes
 					{
 						class Attribute0

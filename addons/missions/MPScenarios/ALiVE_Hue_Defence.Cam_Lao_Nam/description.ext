@@ -17,7 +17,7 @@ allowFunctionsLog = 1;
 allowFunctionsRecompile = 0;
 
 respawn = 3;
-respawnOnStart = 1;
+respawnOnStart = -1;
 respawnTemplates[] = {"MenuPosition", "MenuInventory", "Spectator"};
 respawnDelay = 15;
 RespawnDialog = 0;

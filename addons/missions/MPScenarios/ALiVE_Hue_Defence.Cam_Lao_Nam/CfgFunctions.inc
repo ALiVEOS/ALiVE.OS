@@ -16,10 +16,6 @@ class CfgFunctions
             {
                 postInit = 1;
             };
-            class coalive_typeWrite
-            {
-                postInit = 1;
-            };
         };
 				class params
 				{
