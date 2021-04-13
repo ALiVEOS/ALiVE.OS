@@ -15,7 +15,7 @@ Notes:
 
     - Each profile and attack will store it's time of last simulation
     - To simulate profiles regardless of time passed between simulations, subtract the time of last simulation from the current time
-    - Multiply the resulting value by any anything that relates to time, such as distance moved or damage dealt
+      Multiply the resulting value by any anything that relates to time, such as distance moved or damage dealt
 
 Parameters:
 

@@ -191,11 +191,18 @@ switch (_operation) do {
         private _attacks = _args;
 
         private _attacksByID = [_logic,"attacksByID"] call ALiVE_fnc_hashGet;
-
         private _profilesInCombatBySide = ([_logic,"profilesInCombatBySide"] call ALiVE_fnc_hashGet) select 2;
+        private _debug = [_logic,"debug"] call ALiVE_fnc_hashGet;
 
         {
             private _attack = _x;
+
+            if (_debug) then {
+                if (isnil "_attack") then {
+                    ["Why is my fucking attack null - %1 --- %2", _attacks, _attacksByID] call ALiVE_fnc_Dump;
+                };
+            };
+
             private _attackID = [_attack,"attackID"] call ALiVE_fnc_hashGet;
 
             private _attackPosition = [_attack,"position"] call ALiVE_fnc_hashGet;
