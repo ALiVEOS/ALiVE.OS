@@ -8,7 +8,7 @@ class EditorData
 	toggles=1;
 	class ItemIDProvider
 	{
-		nextID=1083;
+		nextID=1084;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=727;
+		nextID=739;
 	};
 	class Camera
 	{
-		pos[]={14735.726,246.75731,9607.9883};
-		dir[]={0.064305052,-0.7865597,-0.61415708};
-		up[]={0.081908651,0.61751413,-0.78228337};
-		aside[]={-0.99456322,3.7252903e-009,-0.10413532};
+		pos[]={17211.379,332.52277,6965.8042};
+		dir[]={-0.012968011,-0.97856748,0.20551766};
+		up[]={-0.061624322,0.20592633,0.9766252};
+		aside[]={0.99801517,9.3132257e-010,0.062974013};
 	};
 };
 binarizationWanted=0;
@@ -451,7 +451,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=135;
+		items=136;
 		class Item0
 		{
 			dataType="Layer";
@@ -8873,7 +8873,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="vn_b_air_ah1g_04";
+									value="vn_b_air_f4b_navy_hcas";
 								};
 							};
 						};
@@ -15712,8 +15712,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -15722,10 +15722,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_02";
 										};
 									};
 								};
@@ -15788,8 +15788,8 @@ class Mission
 								};
 								class Attribute5
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -15798,10 +15798,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_02";
+											value=0;
 										};
 									};
 								};
@@ -15912,8 +15912,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -15922,10 +15922,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_09";
 										};
 									};
 								};
@@ -15969,8 +15969,8 @@ class Mission
 								};
 								class Attribute4
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -15979,10 +15979,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_09";
+											value=0;
 										};
 									};
 								};
@@ -17178,16 +17178,107 @@ class Mission
 				nAttributes=2;
 			};
 		};
+		class Item135
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={17305.271,14.98,6982.9141};
+				angles[]={-0,1.5707964,0};
+			};
+			id=1083;
+			type="ALiVE_sup_cas";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ALiVE_sup_cas_cas_type";
+					expression="_this setVariable ['cas_type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="vn_b_air_f4b_navy_hcas";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="ALiVE_sup_cas_cas_callsign";
+					expression="_this setVariable ['cas_callsign',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="HIGHHEAD ONE";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="ALiVE_sup_cas_cas_code";
+					expression="_this setVariable ['cas_code',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="";
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="ALiVE_sup_cas_cas_height";
+					expression="_this setVariable ['cas_height',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="0";
+						};
+					};
+				};
+				nAttributes=4;
+			};
+		};
 	};
 	class Connections
 	{
 		class LinkIDProvider
 		{
-			nextID=41;
+			nextID=43;
 		};
 		class Links
 		{
-			items=41;
+			items=43;
 			class Item0
 			{
 				linkID=0;
@@ -17593,6 +17684,26 @@ class Mission
 				linkID=40;
 				item0=771;
 				item1=952;
+				class CustomData
+				{
+					type="Sync";
+				};
+			};
+			class Item41
+			{
+				linkID=41;
+				item0=1083;
+				item1=313;
+				class CustomData
+				{
+					type="Sync";
+				};
+			};
+			class Item42
+			{
+				linkID=42;
+				item0=1083;
+				item1=38;
 				class CustomData
 				{
 					type="Sync";
