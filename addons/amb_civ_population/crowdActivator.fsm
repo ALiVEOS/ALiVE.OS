@@ -133,8 +133,8 @@ link64[] = {47,46};
 link65[] = {48,6};
 link66[] = {49,0};
 link67[] = {50,33};
-globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-1243.839355,573.002686,1298.393921,-393.383789,639,744,1};
-window[] = {2,-1,-1,-32000,-32000,988,-73,1387,68,3,657};
+globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-796.765137,125.927490,380.468292,-379.708893,1215,1001,1};
+window[] = {0,-1,-1,-32000,-32000,1355,182,2682,182,1,1233};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -650,6 +650,18 @@ class FSM
                          "	_result" \n
                          "};" \n
                          "" \n
+                         "ALiVE_fnc_isCivBuilding = {" \n
+                         "	params [""_building""];" \n
+                         "	private _result = false;" \n
+                         "  private _model = toLower(getText(configFile >> ""CfgVehicles"" >> (typeOf _building) >> ""model""));" \n
+                         "	{" \n
+                         "		if (_model find _x != -1) exitWith {" \n
+                         "			_result = true;" \n
+                         "		};" \n
+                         "	} foreach ALIVE_civilianSettlementBuildingTypes;" \n
+                         "	_result" \n
+                         "};" \n
+                         "" \n
                          "ALiVE_fnc_isInHouse = {" \n
                          "  // need to fix stuttering" \n
                          "  params [""_pos""];" \n
@@ -984,8 +996,9 @@ class FSM
                          "        private _position = position _building;" \n
                          "        private _indoorPositions = [_position,4] call ALIVE_fnc_findIndoorHousePositions;" \n
                          "	    private _isSpecialCivBuilding = ([_building] call ALiVE_fnc_isSpecialCivBuilding) select 0;" \n
+                         "      private _isCivBuilding = [_building] call ALiVE_fnc_isCivBuilding;" \n
                          "" \n
-                         "        if (count _indoorPositions > 0 || _isSpecialCivBuilding) then {" \n
+                         "        if ((_isCivBuilding && count _indoorPositions > 0) || _isSpecialCivBuilding) then {" \n
                          "" \n
                          "                 // Get faction for building if no default && not cached" \n
                          "                 if (_faction == """") then {" \n
@@ -1696,7 +1709,7 @@ class FSM
                          "	if (_positionIsAllowed) then {" \n
                          "             private _buildings = [position _x, _spawnDistance] call ALiVE_fnc_getEnterableHouses;" \n
                          "            {" \n
-                         "                       if ( !(_x in _activeBuildings) && (random 1) <= sunOrMoon) then {" \n
+                         "                       if (!(_x in _activeBuildings) && (random 1) <= sunOrMoon) then {" \n
                          "                           _newBuildings pushBackUnique _x;" \n
                          "                       };" \n
                          "              } foreach _buildings;" \n
