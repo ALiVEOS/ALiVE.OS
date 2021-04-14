@@ -43,7 +43,7 @@ if (hasInterface) then {
     ["| Op Van Tien - Running ClientInit..."] call ALiVE_fnc_dump;
 
     [] spawn {
-        enableRadio false;
+     //   enableRadio false;
        
         playMusic "vn_deadly_jungle";
         _start = time;

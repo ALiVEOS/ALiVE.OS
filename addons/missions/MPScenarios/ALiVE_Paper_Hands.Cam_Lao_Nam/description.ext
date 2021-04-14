@@ -35,6 +35,7 @@ briefing = 1;
 debriefing = 1;
 
 #include "CfgFunctions.inc"
+#include "classes.hpp"
 #include "groupMarkers.hpp"
 
 class header {

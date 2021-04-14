@@ -25,7 +25,7 @@ if (hasInterface) then {
     ["| The Battle of Hue - Running ClientInit..."] call ALiVE_fnc_dump;
 
     [] spawn {
-        enableRadio false;
+       // enableRadio false;
         titleText ["The ALiVE Team presents...", "BLACK IN",9999];
         0 fadesound 0;
 
