@@ -56,15 +56,15 @@ player createDiarySubject [
 ];
 
 player createDiaryRecord [
-    "ALiVE", ["Commander Actions", localize "STR_VN_BRIEFING_COALIVE_ALIVEACTIONS_VANTIEN"]
+    "ALiVE", ["Commander Actions", localize "STR_VN_BRIEFING_COALIVE_ALIVEACTIONS_PH"]
 ];
 
 player createDiaryRecord [
-    "ALiVE", ["Menu / Interactions", localize "STR_VN_BRIEFING_COALIVE_ALIVEMENUINTER_VANTIEN"]
+    "ALiVE", ["Menu / Interactions", localize "STR_VN_BRIEFING_COALIVE_ALIVEMENUINTER_PH"]
 ];
 
 player createDiaryRecord [
-    "ALiVE", ["Overview", localize "STR_VN_BRIEFING_COALIVE_ALIVEHOWTO_VANTIEN"]
+    "ALiVE", ["Overview", localize "STR_VN_BRIEFING_COALIVE_ALIVEHOWTO_PH"]
 ];
 
 true

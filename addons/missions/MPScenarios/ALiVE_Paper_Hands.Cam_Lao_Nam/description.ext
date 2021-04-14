@@ -1,13 +1,6 @@
-//http://community.bistudio.com/wiki/description.ext#Header_Class
-class header {
-    gametype = ALIVE;
-    minplayers = 1;
-    maxplayers = 12;
-    playerCountMultipleOf = 1;  //Coop type missions use 1, Team type missions use 2
-};
 
-dev = "ALiVE Mod Team";
-author = ALiVE Mod Team || Mission by Tupolov;
+dev = $STR_VN_MISSIONS_AUTHOR_ALIVE_PH;
+author = $STR_VN_MISSIONS_AUTH_MISSION_ALIVE_PH;
 overviewPicture = "x\alive\addons\missions\MPScenarios\ALiVE_Paper_Hands.Cam_Lao_Nam\pics\execution.paa";
 overviewText = $STR_VN_MISSIONS_DESC_MISSION_ALIVE_PH;
 onLoadName = $STR_VN_MISSIONS_TITLE_MISSION_ALIVE_PH;
@@ -26,7 +19,7 @@ allowFunctionsRecompile = 0;
 
 respawn = 3;
 respawnOnStart = -1;
-respawnTemplates[] = {"MenuPosition", "MenuInventory", "Spectator"};
+respawnTemplates[] = {"MenuPosition", "Spectator"};
 respawnDelay = 15;
 RespawnDialog = 0;
 respawnButton = 1;
@@ -41,10 +34,15 @@ allowProfileGlasses = 0;
 briefing = 1;
 debriefing = 1;
 
-forceRotorLibSimulation = 1;
-
 #include "CfgFunctions.inc"
 #include "groupMarkers.hpp"
+
+class header {
+    gametype = ALIVE;
+    minplayers = 1;
+    maxplayers = 12;
+    playerCountMultipleOf = 1;
+};
 
 class Params
 {
@@ -113,7 +111,7 @@ class Params
 	};
 	class Enablemapmarkers
 	{
-	    title = $STR_VN_COALIVE_PARAMS_MAPMARKERS_XRAY;
+	    title = $STR_VN_COALIVE_PARAMS_MAPMARKERS_PH;
 	    isGlobal = 1;
 	    values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
@@ -122,11 +120,20 @@ class Params
 	};
 	class Enablegroupmarkers
 	{
-			title = $STR_VN_COALIVE_PARAMS_GROUPMARKERS_XRAY;
+			title = $STR_VN_COALIVE_PARAMS_GROUPMARKERS_PH;
 			isGlobal = 1;
 			values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
 			default = 0;
 			function = "vn_alivems_fnc_params_groupMarkers";
+	};
+	class RotorLib
+	{
+	    title = $STR_VN_PARAMS_ROTORLIB_PH;
+	    isGlobal = 1;
+	    values[] = {2, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 2;
+	    function = "vn_alivems_fnc_params_rotorLib";
 	};
 };

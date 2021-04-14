@@ -13,23 +13,9 @@
 <Russian></Russian>
 <Spanish></Spanish>
 </Key>
-</Package>
-<Package name="General">
-<Key ID="STR_VN_MISSIONS_AUTHOR_ALIVE">
+<Key ID="STR_VN_MISSIONS_MINDESC_MISSION_ALIVE_XRAY">
 <Chinese></Chinese>
-<English>ALiVE Mod Team</English>
-<French>ALiVE Mod Team</French>
-<German>ALiVE Mod Team</German>
-<Italian>ALiVE Mod Team</Italian>
-<Portuguese>ALiVE Mod Team</Portuguese>
-<Russian>ALiVE Mod Team</Russian>
-<Spanish>ALiVE Mod Team</Spanish>
-</Key>
-</Package>
-<Package name="Misc">
-<Key ID="STR_VN_MISSIONS_MISC_RESPAWNPOS_GROUP">
-<Chinese></Chinese>
-<English>Group Leader</English>
+<English>Premature Tet Offensive attacks at Nha Trang and Qui Nhon on the morning have led to the cancellation of the Tet ceasefire. Advance north, defend the Imperial City.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -37,6 +23,20 @@
 <Russian></Russian>
 <Spanish></Spanish>
 </Key>
+</Package>
+<Package name="General">
+<Key ID="STR_VN_MISSIONS_AUTH_MISSION_ALIVE_XRAY">
+<Chinese></Chinese>
+<English>ALiVE Mod Team || Mission by Jman</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="Misc">
 </Package>
 <Package name="Debrief">
 </Package>
@@ -64,16 +64,6 @@
 <Key ID="STR_VN_BRIEFING_COALIVE_ALIVEACTIONS_XRAY">
 <Chinese></Chinese>
 <English>ALiVE COMMANDER ACTIONS (requires PRC-77)&lt;br/&gt;&lt;br/&gt;Press the ALiVE Menu key to access Commander Actions.&lt;br/&gt;&lt;br/&gt;Personnel - Move players and AI units between groups&lt;br/&gt;&lt;br/&gt;Intel - Provides access to your side's AI Commander objectives as well as marking any known units on the map.&lt;br/&gt;&lt;br/&gt;Logistics - Call in resupplies, from individuals and groups to vehicles, weapons and fortifications. Use convoys, airdrop or airlift.&lt;br/&gt;&lt;br/&gt;Tasks - Request tasks from the AI commander in order to contribute to the overall battlefield situation.&lt;br/&gt;&lt;br/&gt;Operations - Direct AI groups and issue waypoints or join AI controlled groups and fight alongside them.&lt;br/&gt;&lt;br/&gt;Combat Support - Request artillery, close air support or transport from assets within the AO.&lt;br/&gt;&lt;br/&gt;Reports - Commanders can leave PATROLREPS and SITREPS in order to keep other commanders up to date with player and enemy activities.</English>
-<French></French>
-<German></German>
-<Italian></Italian>
-<Portuguese></Portuguese>
-<Russian></Russian>
-<Spanish></Spanish>
-</Key>
-<Key ID="STR_VN_BRIEFING_COALIVE_ALIVERESPAWN_XRAY">
-<Chinese></Chinese>
-<English>If you are killed, ALiVE provides the ability to respawn back by your group leader or back at one of the FOBs.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -143,6 +133,16 @@
 <Russian></Russian>
 <Spanish></Spanish>
 </Key>
+<Key ID="STR_VN_PARAMS_ROTORLIB_XRAY">
+<Chinese></Chinese>
+<English>Enable Advanced Rotor Flight Model</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
 </Package>
 <Package name="Titles">
 <Key ID="STR_VN_MISSIONS_TITLE_MISSION_ALIVE_XRAY">
@@ -154,6 +154,16 @@
 <Portuguese></Portuguese>
 <Russian></Russian>
 <Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_MISSIONS_AUTHOR_ALIVE_XRAY">
+<Chinese></Chinese>
+<English>ALiVE Mod Team</English>
+<French>ALiVE Mod Team</French>
+<German>ALiVE Mod Team</German>
+<Italian>ALiVE Mod Team</Italian>
+<Portuguese>ALiVE Mod Team</Portuguese>
+<Russian>ALiVE Mod Team</Russian>
+<Spanish>ALiVE Mod Team</Spanish>
 </Key>
 </Package>
 <Package name="Waypoints">

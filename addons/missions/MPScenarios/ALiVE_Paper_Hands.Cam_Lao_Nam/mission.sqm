@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=475;
+		nextID=505;
 	};
 	class Camera
 	{
 		pos[]={6972.6924,16.052361,8699.9697};
-		dir[]={0.94734854,-0.31936488,-0.023170276};
-		up[]={0.31926939,0.94763178,-0.0078086993};
-		aside[]={-0.024450714,0,-0.99970102};
+		dir[]={0.94734854,-0.31936485,-0.023170276};
+		up[]={0.31926933,0.94763178,-0.0078086983};
+		aside[]={-0.024450712,-4.6566129e-010,-0.99970096};
 	};
 };
 binarizationWanted=0;
@@ -253,10 +253,9 @@ class AddonsMetaData
 randomSeed=8300791;
 class ScenarioData
 {
-	author="The ALiVE team";
+	author="@STR_VN_MISSIONS_AUTH_MISSION_ALIVE_PH";
 	overviewText="Conduct counter-insurgency operations on the Cambodian/Laos/Vietnam borders in order to slow NVA and Viet Cong advances into South Vietnam.";
 	overViewPicture="pics\splash.paa";
-	disabledAI=1;
 	respawnDelay=10;
 	respawnVehicleDelay=10;
 	class Header
@@ -378,8 +377,8 @@ class Mission
 	appId=1227700;
 	class Intel
 	{
-		briefingName="Op Paper Hands";
-		overviewText="ALiVE Op Paper Hands";
+		briefingName="@STR_VN_MISSIONS_TITLE_MISSION_ALIVE_PH";
+		overviewText="@STR_VN_MISSIONS_MINDESC_MISSION_ALIVE_PH";
 		resistanceWest=0;
 		resistanceEast=1;
 		timeOfChanges=1800.0002;

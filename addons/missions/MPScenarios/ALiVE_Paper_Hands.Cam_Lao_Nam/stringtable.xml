@@ -13,23 +13,9 @@
 <Russian></Russian>
 <Spanish></Spanish>
 </Key>
-</Package>
-<Package name="General">
-<Key ID="STR_VN_MISSIONS_AUTHOR_ALIVE">
+<Key ID="STR_VN_MISSIONS_MINDESC_MISSION_ALIVE_PH">
 <Chinese></Chinese>
-<English>ALiVE Mod Team</English>
-<French>ALiVE Mod Team</French>
-<German>ALiVE Mod Team</German>
-<Italian>ALiVE Mod Team</Italian>
-<Portuguese>ALiVE Mod Team</Portuguese>
-<Russian>ALiVE Mod Team</Russian>
-<Spanish>ALiVE Mod Team</Spanish>
-</Key>
-</Package>
-<Package name="Misc">
-<Key ID="STR_VN_MISSIONS_MISC_RESPAWNPOS_GROUP">
-<Chinese></Chinese>
-<English>Group Leader</English>
+<English>MACV-SOG are running deniable operations using Spike Teams (ST) - across the fence - in Cambodia, Laos and South Vietnam. ST Sisler have been tasked with disrupting Viet Cong supply lines, operations and outposts along the tri-border area.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -38,10 +24,24 @@
 <Spanish></Spanish>
 </Key>
 </Package>
+<Package name="General">
+<Key ID="STR_VN_MISSIONS_AUTH_MISSION_ALIVE_PH">
+<Chinese></Chinese>
+<English>ALiVE Mod Team || Mission by Tupolov</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>	
+</Package>
+<Package name="Misc">
+</Package>
 <Package name="Debrief">
 </Package>
 <Package name="CO01 Briefing">
-<Key ID="STR_VN_BRIEFING_COALIVE_ALIVEHOWTO_VANTIEN">
+<Key ID="STR_VN_BRIEFING_COALIVE_ALIVEHOWTO_PH">
 <Chinese></Chinese>
 <English>ALiVE populates the entire map with a full scale war. The AI commanders determine the strategy and use conventional or asymmetric warfare tactics to achieve their goals. Infantry, motorized, mechanized, armored units and aircraft are used to capture or defend strategic objectives across the area of operations.&lt;br/&gt;&lt;br/&gt;AI commanders will call in resupply and reinforcements, close air support and air strikes and recruit insurgencts from the civilian population to plant IEDs and conduct sabotage. Meanwhile, the civilian population actively support or turn against combatants based on their actions and interactions.&lt;br/&gt;&lt;br/&gt;As a squad playing an ALiVE mission, you must work together to use the tools at your disposal to patrol, identify and attack enemy units, positions and assets. Player Commanders using the ALiVE Menu can manage operations and tasks in coordination with AI commanders.</English>
 <French></French>
@@ -51,7 +51,7 @@
 <Russian></Russian>
 <Spanish></Spanish>
 </Key>
-<Key ID="STR_VN_BRIEFING_COALIVE_ALIVEMENUINTER_VANTIEN">
+<Key ID="STR_VN_BRIEFING_COALIVE_ALIVEMENUINTER_PH">
 <Chinese></Chinese>
 <English>The ALiVE Menu can be activated using the RIGHT APP MENU key (or a user defined key 20).&lt;br/&gt;&lt;br/&gt;For ADMINS, the ALiVE Menu offers the chance to debug issues, teleport players, access the debug console and more.&lt;br/&gt;&lt;br/&gt;For PLAYERS, the ALiVE Menu offers some basic settings and a chance to save your position and loadout.&lt;br/&gt;&lt;br/&gt;Using the scroll wheel,PLAYERS can interact with civilians to question them on the local situation and influence them by giving them rations. Civilians won't forgive collateral damage.&lt;br/&gt;&lt;br/&gt;Using the map, PLAYERS can leave SPOTREPS and ADVANCED MARKERS by hitting the LEFT CTRL key when creating a map marker.&lt;br/&gt;&lt;br/&gt;For PLAYER COMMANDERS with an appropriate radio (PRC-77) the ALiVE Menu enables you to access COMMANDER ACTIONS to manage personnel, logistics, tasks, combat support and more.&lt;br/&gt;&lt;br/&gt;</English>
 <French></French>
@@ -61,19 +61,9 @@
 <Russian></Russian>
 <Spanish></Spanish>
 </Key>
-<Key ID="STR_VN_BRIEFING_COALIVE_ALIVEACTIONS_VANTIEN">
+<Key ID="STR_VN_BRIEFING_COALIVE_ALIVEACTIONS_PH">
 <Chinese></Chinese>
 <English>ALiVE COMMANDER ACTIONS (requires PRC-77)&lt;br/&gt;&lt;br/&gt;Press the ALiVE Menu key to access Commander Actions.&lt;br/&gt;&lt;br/&gt;Personnel - Move players and AI units between groups&lt;br/&gt;&lt;br/&gt;Intel - Provides access to your side's AI Commander objectives as well as marking any known units on the map.&lt;br/&gt;&lt;br/&gt;Logistics - Call in resupplies, from individuals and groups to vehicles, weapons and fortifications. Use convoys, airdrop or airlift.&lt;br/&gt;&lt;br/&gt;Tasks - Request tasks from the AI commander in order to contribute to the overall battlefield situation.&lt;br/&gt;&lt;br/&gt;Operations - Direct AI groups and issue waypoints or join AI controlled groups and fight alongside them.&lt;br/&gt;&lt;br/&gt;Combat Support - Request artillery, close air support or transport from assets within the AO.&lt;br/&gt;&lt;br/&gt;Reports - Commanders can leave PATROLREPS and SITREPS in order to keep other commanders up to date with player and enemy activities.</English>
-<French></French>
-<German></German>
-<Italian></Italian>
-<Portuguese></Portuguese>
-<Russian></Russian>
-<Spanish></Spanish>
-</Key>
-<Key ID="STR_VN_BRIEFING_COALIVE_ALIVERESPAWN_VANTIEN">
-<Chinese></Chinese>
-<English>If you are killed, ALiVE provides the ability to respawn back by your group leader or back at one of the FOBs.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -123,9 +113,29 @@
 </Key>
 </Package>
 <Package name="Parameters">
-<Key ID="STR_VN_COALIVE_PARAMS_MAPMARKERS">
+<Key ID="STR_VN_COALIVE_PARAMS_MAPMARKERS_PH">
 <Chinese></Chinese>
 <English>Side Map Markers</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_COALIVE_PARAMS_GROUPMARKERS_PH">
+<Chinese></Chinese>
+<English>Enable 3D Player Markers (SHIFT+CTRL+F1)</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_PARAMS_ROTORLIB_PH">
+<Chinese></Chinese>
+<English>Enable Advanced Rotor Flight Model</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -144,6 +154,16 @@
 <Portuguese></Portuguese>
 <Russian></Russian>
 <Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_MISSIONS_AUTHOR_ALIVE_PH">
+<Chinese></Chinese>
+<English>ALiVE Mod Team</English>
+<French>ALiVE Mod Team</French>
+<German>ALiVE Mod Team</German>
+<Italian>ALiVE Mod Team</Italian>
+<Portuguese>ALiVE Mod Team</Portuguese>
+<Russian>ALiVE Mod Team</Russian>
+<Spanish>ALiVE Mod Team</Spanish>
 </Key>
 </Package>
 <Package name="Waypoints">

@@ -20,27 +20,27 @@
 */
 
 #ifndef TICKETS_MIN
-	#define TICKETS_MIN	100
+	#define TICKETS_MIN	10
 #endif
 #ifndef TICKETS_MAX
-	#define TICKETS_MAX	1000
+	#define TICKETS_MAX	100
 #endif
 #ifndef TICKETS_DEFAULT
 	#define TICKETS_DEFAULT	-1
 #endif
 
-__EXEC(_ticketsStep = TICKETS_MAX * 0.1 - TICKETS_MIN * 0.1;)
+__EXEC(_ticketsStep = TICKETS_MAX * 1 - TICKETS_MIN * 1;)
 __EXEC(_tickets0 = TICKETS_MIN + 0 * _ticketsStep;)
-__EXEC(_tickets1 = TICKETS_MIN + 1 * _ticketsStep;)
-__EXEC(_tickets2 = TICKETS_MIN + 2 * _ticketsStep;)
-__EXEC(_tickets3 = TICKETS_MIN + 3 * _ticketsStep;)
-__EXEC(_tickets4 = TICKETS_MIN + 4 * _ticketsStep;)
-__EXEC(_tickets5 = TICKETS_MIN + 5 * _ticketsStep;)
-__EXEC(_tickets6 = TICKETS_MIN + 6 * _ticketsStep;)
-__EXEC(_tickets7 = TICKETS_MIN + 7 * _ticketsStep;)
-__EXEC(_tickets8 = TICKETS_MIN + 8 * _ticketsStep;)
-__EXEC(_tickets9 = TICKETS_MIN + 9 * _ticketsStep;)
-__EXEC(_tickets10 = TICKETS_MIN + 10 * _ticketsStep;)
+__EXEC(_tickets1 = TICKETS_MIN + 0.1 * _ticketsStep;)
+__EXEC(_tickets2 = TICKETS_MIN + 0.2 * _ticketsStep;)
+__EXEC(_tickets3 = TICKETS_MIN + 0.3 * _ticketsStep;)
+__EXEC(_tickets4 = TICKETS_MIN + 0.4 * _ticketsStep;)
+__EXEC(_tickets5 = TICKETS_MIN + 0.5 * _ticketsStep;)
+__EXEC(_tickets6 = TICKETS_MIN + 0.6 * _ticketsStep;)
+__EXEC(_tickets7 = TICKETS_MIN + 0.7 * _ticketsStep;)
+__EXEC(_tickets8 = TICKETS_MIN + 0.8 * _ticketsStep;)
+__EXEC(_tickets9 = TICKETS_MIN + 0.9 * _ticketsStep;)
+__EXEC(_tickets10 = TICKETS_MIN + 1 * _ticketsStep;)
 
 class RespawnTickets
 {

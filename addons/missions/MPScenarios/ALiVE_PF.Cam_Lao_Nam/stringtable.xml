@@ -3,7 +3,7 @@
 <Package name="Actions">
 </Package>
 <Package name="Descriptions">
-<Key ID="STR_VN_MISSIONS_DESC_MISSION_ALIVE">
+<Key ID="STR_VN_MISSIONS_DESC_MISSION_ALIVE_VANTIEN">
 <Chinese></Chinese>
 <English>PAVN forces have launched a surprise offensive against key military and civilian objectives throughout the area of operations. With limited resources at your disposal, your US Army squad is faced with a tough decision: hold your position and hope for relief or take your chances with the VC insurgency in the West.</English>
 <French></French>
@@ -13,23 +13,9 @@
 <Russian></Russian>
 <Spanish></Spanish>
 </Key>
-</Package>
-<Package name="General">
-<Key ID="STR_VN_MISSIONS_AUTHOR_ALIVE">
+<Key ID="STR_VN_MISSIONS_MINDESC_MISSION_ALIVE_VANTIEN">
 <Chinese></Chinese>
-<English>ALiVE Mod Team</English>
-<French>ALiVE Mod Team</French>
-<German>ALiVE Mod Team</German>
-<Italian>ALiVE Mod Team</Italian>
-<Portuguese>ALiVE Mod Team</Portuguese>
-<Russian>ALiVE Mod Team</Russian>
-<Spanish>ALiVE Mod Team</Spanish>
-</Key>
-</Package>
-<Package name="Misc">
-<Key ID="STR_VN_MISSIONS_MISC_RESPAWNPOS_GROUP">
-<Chinese></Chinese>
-<English>Group Leader</English>
+<English>PAVN forces have launched a surprise offensive against key military and civilian objectives throughout the area of operations.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -37,6 +23,20 @@
 <Russian></Russian>
 <Spanish></Spanish>
 </Key>
+</Package>
+<Package name="General">
+<Key ID="STR_VN_MISSIONS_AUTH_MISSION_ALIVE_VANTIEN">
+<Chinese></Chinese>
+<English>ALiVE Mod Team || Mission by Friznit</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="Misc">
 </Package>
 <Package name="Debrief">
 </Package>
@@ -64,16 +64,6 @@
 <Key ID="STR_VN_BRIEFING_COALIVE_ALIVEACTIONS_VANTIEN">
 <Chinese></Chinese>
 <English>ALiVE COMMANDER ACTIONS (requires PRC-77)&lt;br/&gt;&lt;br/&gt;Press the ALiVE Menu key to access Commander Actions.&lt;br/&gt;&lt;br/&gt;Personnel - Move players and AI units between groups&lt;br/&gt;&lt;br/&gt;Intel - Provides access to your side's AI Commander objectives as well as marking any known units on the map.&lt;br/&gt;&lt;br/&gt;Logistics - Call in resupplies, from individuals and groups to vehicles, weapons and fortifications. Use convoys, airdrop or airlift.&lt;br/&gt;&lt;br/&gt;Tasks - Request tasks from the AI commander in order to contribute to the overall battlefield situation.&lt;br/&gt;&lt;br/&gt;Operations - Direct AI groups and issue waypoints or join AI controlled groups and fight alongside them.&lt;br/&gt;&lt;br/&gt;Combat Support - Request artillery, close air support or transport from assets within the AO.&lt;br/&gt;&lt;br/&gt;Reports - Commanders can leave PATROLREPS and SITREPS in order to keep other commanders up to date with player and enemy activities.</English>
-<French></French>
-<German></German>
-<Italian></Italian>
-<Portuguese></Portuguese>
-<Russian></Russian>
-<Spanish></Spanish>
-</Key>
-<Key ID="STR_VN_BRIEFING_COALIVE_ALIVERESPAWN_VANTIEN">
-<Chinese></Chinese>
-<English>If you are killed, ALiVE provides the ability to respawn back by your group leader or back at one of the FOBs.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -123,7 +113,7 @@
 </Key>
 </Package>
 <Package name="Parameters">
-<Key ID="STR_VN_COALIVE_PARAMS_MAPMARKERS">
+<Key ID="STR_VN_COALIVE_PARAMS_MAPMARKERS_VANTIEN">
 <Chinese></Chinese>
 <English>Side Map Markers</English>
 <French></French>
@@ -133,7 +123,7 @@
 <Russian></Russian>
 <Spanish></Spanish>
 </Key>
-<Key ID="STR_VN_COALIVE_PARAMS_GROUPMARKERS">
+<Key ID="STR_VN_COALIVE_PARAMS_GROUPMARKERS_VANTIEN">
 <Chinese></Chinese>
 <English>Enable 3D Player Markers (SHIFT+CTRL+F1)</English>
 <French></French>
@@ -143,9 +133,19 @@
 <Russian></Russian>
 <Spanish></Spanish>
 </Key>
+<Key ID="STR_VN_PARAMS_ROTORLIB_VANTIEN">
+<Chinese></Chinese>
+<English>Enable Advanced Rotor Flight Model</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
 </Package>
 <Package name="Titles">
-<Key ID="STR_VN_MISSIONS_TITLE_MISSION_ALIVE">
+<Key ID="STR_VN_MISSIONS_TITLE_MISSION_ALIVE_VANTIEN">
 <Chinese></Chinese>
 <English>ALiVE | Op Van Tien</English>
 <French></French>
@@ -154,6 +154,16 @@
 <Portuguese></Portuguese>
 <Russian></Russian>
 <Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_MISSIONS_AUTHOR_ALIVE_VANTIEN">
+<Chinese></Chinese>
+<English>ALiVE Mod Team</English>
+<French>ALiVE Mod Team</French>
+<German>ALiVE Mod Team</German>
+<Italian>ALiVE Mod Team</Italian>
+<Portuguese>ALiVE Mod Team</Portuguese>
+<Russian>ALiVE Mod Team</Russian>
+<Spanish>ALiVE Mod Team</Spanish>
 </Key>
 </Package>
 <Package name="Waypoints">

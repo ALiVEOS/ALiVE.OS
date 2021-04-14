@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=5127;
+		nextID=5583;
 	};
 	class Camera
 	{
@@ -268,11 +268,12 @@ dlcs[]=
 randomSeed=9982020;
 class ScenarioData
 {
-	author="Jman";
+	author="@STR_VN_MISSIONS_AUTH_MISSION_ALIVE_XRAY";
 	overViewPicture="img\splash.paa";
 	class Header
 	{
 		gameType="alive";
+		minPlayers=1;
 		maxPlayers=20;
 	};
 };
@@ -326,7 +327,7 @@ class Mission
 	class Intel
 	{
 		briefingName="@STR_VN_MISSIONS_TITLE_MISSION_ALIVE_XRAY";
-		overviewText="The Battle of Hue";
+		overviewText="@STR_VN_MISSIONS_MINDESC_MISSION_ALIVE_XRAY";
 		startWeather=0.4534058;
 		startFog=0.49583459;
 		startWind=0.1;
@@ -2712,7 +2713,6 @@ class Mission
 			};
 			id=188;
 			type="Land_vn_b_helipad_01";
-			atlOffset=0.0071239471;
 		};
 		class Item24
 		{
@@ -7170,7 +7170,6 @@ class Mission
 			};
 			id=318;
 			type="Land_vn_b_helipad_01";
-			atlOffset=0.0071258545;
 		};
 		class Item45
 		{
@@ -7187,7 +7186,6 @@ class Mission
 			};
 			id=319;
 			type="Land_vn_b_helipad_01";
-			atlOffset=0.0071258545;
 		};
 		class Item46
 		{
@@ -7204,7 +7202,6 @@ class Mission
 			};
 			id=320;
 			type="Land_vn_b_helipad_01";
-			atlOffset=0.0071258545;
 		};
 		class Item47
 		{
@@ -7220,7 +7217,7 @@ class Mission
 			};
 			id=321;
 			type="Land_vn_b_helipad_01";
-			atlOffset=0.266922;
+			atlOffset=0.25979614;
 		};
 		class Item48
 		{
@@ -16097,7 +16094,6 @@ class Mission
 			};
 			id=657;
 			type="vn_b_air_uh1c_07_04";
-			atlOffset=0.039993286;
 		};
 		class Item139
 		{
@@ -16121,7 +16117,6 @@ class Mission
 					};
 					id=658;
 					type="vn_b_men_aircrew_09";
-					atlOffset=0.039993286;
 				};
 				class Item1
 				{
@@ -16138,7 +16133,6 @@ class Mission
 					};
 					id=659;
 					type="vn_b_men_aircrew_10";
-					atlOffset=0.039993286;
 				};
 				class Item2
 				{
@@ -16155,7 +16149,6 @@ class Mission
 					};
 					id=660;
 					type="vn_b_men_aircrew_11";
-					atlOffset=0.039993286;
 				};
 				class Item3
 				{
@@ -16172,7 +16165,6 @@ class Mission
 					};
 					id=661;
 					type="vn_b_men_aircrew_12";
-					atlOffset=0.039993286;
 				};
 			};
 			class Attributes
@@ -16233,7 +16225,6 @@ class Mission
 				};
 			};
 			id=636;
-			atlOffset=0.039993286;
 		};
 		class Item140
 		{
@@ -16276,7 +16267,7 @@ class Mission
 					};
 					id=751;
 					type="vn_b_men_aircrew_05";
-					atlOffset=0.039993286;
+					atlOffset=1.5258789e-005;
 				};
 				class Item1
 				{
@@ -16293,7 +16284,7 @@ class Mission
 					};
 					id=752;
 					type="vn_b_men_aircrew_06";
-					atlOffset=0.039993286;
+					atlOffset=1.5258789e-005;
 				};
 				class Item2
 				{
@@ -16310,7 +16301,7 @@ class Mission
 					};
 					id=753;
 					type="vn_b_men_aircrew_07";
-					atlOffset=0.039993286;
+					atlOffset=1.5258789e-005;
 				};
 				class Item3
 				{
@@ -16327,7 +16318,7 @@ class Mission
 					};
 					id=754;
 					type="vn_b_men_aircrew_08";
-					atlOffset=0.039993286;
+					atlOffset=1.5258789e-005;
 				};
 				class Item4
 				{
@@ -16344,7 +16335,6 @@ class Mission
 					};
 					id=756;
 					type="vn_b_men_aircrew_05";
-					atlOffset=0.039993286;
 				};
 				class Item5
 				{
@@ -16361,7 +16351,6 @@ class Mission
 					};
 					id=757;
 					type="vn_b_men_aircrew_06";
-					atlOffset=0.039993286;
 				};
 				class Item6
 				{
@@ -16378,7 +16367,6 @@ class Mission
 					};
 					id=758;
 					type="vn_b_men_aircrew_07";
-					atlOffset=0.039993286;
 				};
 				class Item7
 				{
@@ -16395,7 +16383,6 @@ class Mission
 					};
 					id=759;
 					type="vn_b_men_aircrew_08";
-					atlOffset=0.039993286;
 				};
 			};
 			class Attributes
@@ -16556,7 +16543,7 @@ class Mission
 			};
 			id=760;
 			type="Land_vn_b_helipad_01";
-			atlOffset=0.259758;
+			atlOffset=0.25263405;
 		};
 		class Item145
 		{
