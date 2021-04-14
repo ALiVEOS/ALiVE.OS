@@ -48,7 +48,7 @@ class CfgMissions
         };
         class Showcase_Hue_Defence
         {
-            briefingName = "ALiVE | Hue Defence (Cam Lao Nam)";
+            briefingName = "ALiVE | The Battle of Hue (Cam Lao Nam)";
             directory = "x\alive\addons\missions\mpscenarios\ALiVE_Hue_Defence.Cam_Lao_Nam";
             overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Hue_Defence.Cam_Lao_Name\img\splash.paa";
             overviewText = "Travel by convoy to Hue, consolidate positions defend Hue and the Imperial City Citadel from enemy attack.";
@@ -155,7 +155,7 @@ class CfgMissions
         };
         class MP_COOP_Hue_Defence
         {
-            briefingName = "ALiVE | Hue Defence (COOP 20)";
+            briefingName = "ALiVE | The Battle of Hue (COOP 20)";
             directory = "x\alive\addons\missions\mpscenarios\ALiVE_Hue_Defence.Cam_Lao_Nam";
             overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Hue_Defence.Cam_Lao_Name\img\splash.paa";
             overviewText = "Travel by convoy to Hue, consolidate positions defend Hue and the Imperial City Citadel from enemy attack.";
