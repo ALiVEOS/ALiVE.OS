@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=511;
+		nextID=517;
 	};
 	class Camera
 	{
 		pos[]={6972.6924,16.052361,8699.9697};
-		dir[]={0.94734854,-0.31936485,-0.023170276};
-		up[]={0.31926933,0.94763178,-0.0078086983};
-		aside[]={-0.024450712,-4.6566129e-010,-0.99970096};
+		dir[]={0.50615305,-0.25375256,0.82426924};
+		up[]={0.1327837,0.96726906,0.21623805};
+		aside[]={0.85216099,-4.0046871e-008,-0.52328032};
 	};
 };
 binarizationWanted=0;
@@ -6690,7 +6690,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="ALIVE_IEDUrbanSmall_Remote_Ammo,ALIVE_IEDUrbanBig_Remote_Ammo,Land_JunkPile_F,Land_GarbageContainer_closed_F,Land_GarbageBags_F,Land_Tyres_F,Land_GarbagePallet_F,Land_Basket_F,Land_Sack_F,Land_Sacks_goods_F,Land_Sacks_heap_F,Land_BarrelTrash_F";
+									value="ALIVE_IEDUrbanSmall_Remote_Ammo,ALIVE_IEDUrbanBig_Remote_Ammo,Land_JunkPile_F,Land_Tyres_F,Land_Basket_F,Land_Sack_F,Land_Sacks_goods_F,Land_Sacks_heap_F,Land_BarrelTrash_F";
 								};
 							};
 						};
@@ -6747,7 +6747,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="Land_JunkPile_F,Land_GarbageContainer_closed_F,Land_GarbageBags_F,Land_GarbagePallet_F,Land_Basket_F,Land_Sack_F,Land_Sacks_goods_F,Land_Sacks_heap_F";
+									value="Land_JunkPile_F,Land_Basket_F,Land_Sack_F,Land_Sacks_goods_F,Land_Sacks_heap_F";
 								};
 							};
 						};
