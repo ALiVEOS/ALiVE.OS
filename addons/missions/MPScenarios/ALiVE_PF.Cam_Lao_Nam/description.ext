@@ -38,7 +38,6 @@ debriefing = 1;
 #include "CfgFunctions.inc"
 #include "classes.hpp"
 #include "groupMarkers.hpp"
-#include "LoadoutClasses.inc"
 
 class header {
     gametype = ALIVE;

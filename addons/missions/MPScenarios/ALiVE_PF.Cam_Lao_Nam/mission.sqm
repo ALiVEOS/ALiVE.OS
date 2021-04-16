@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=751;
+		nextID=775;
 	};
 	class Camera
 	{
@@ -11116,7 +11116,6 @@ class Mission
 					{
 						skill=0.55000001;
 						rank="LIEUTENANT";
-						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Rifleman"");}";
 						description="Group Leader";
 						isPlayer=1;
 						isPlayable=1;
@@ -11171,7 +11170,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={14715.329,244.18149,9624.3848};
+						position[]={14715.33,244.18149,9624.3848};
 						angles[]={0,2.3293166,0};
 					};
 					side="West";
@@ -11179,7 +11178,6 @@ class Mission
 					class Attributes
 					{
 						rank="SERGEANT";
-						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Rifleman"");}";
 						description="Squad Leader";
 						isPlayable=1;
 					};
@@ -11241,7 +11239,6 @@ class Mission
 					class Attributes
 					{
 						rank="SERGEANT";
-						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_CombatLifesaver"");}";
 						description="Medic";
 						isPlayable=1;
 					};
@@ -11304,7 +11301,6 @@ class Mission
 					{
 						skill=0.44999999;
 						rank="CORPORAL";
-						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Engineer"");}";
 						description="Engineer";
 						isPlayable=1;
 					};
@@ -11367,7 +11363,6 @@ class Mission
 					{
 						skill=0.44999999;
 						rank="CORPORAL";
-						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_ExplosiveSpecialist"");}";
 						description="Demolitions Expert";
 						isPlayable=1;
 					};
@@ -11429,7 +11424,6 @@ class Mission
 					class Attributes
 					{
 						skill=0.40000001;
-						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Autorifleman"");}";
 						description="Machine Gunner";
 						isPlayable=1;
 					};
@@ -11491,7 +11485,6 @@ class Mission
 					class Attributes
 					{
 						skill=0.40000001;
-						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Grenadier"");}";
 						description="Grenadier";
 						isPlayable=1;
 					};
@@ -11553,7 +11546,6 @@ class Mission
 					class Attributes
 					{
 						skill=0.40000001;
-						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_RTO"");}";
 						description="Radio Telephone Operator";
 						isPlayable=1;
 					};
@@ -11615,7 +11607,6 @@ class Mission
 					class Attributes
 					{
 						skill=0.40000001;
-						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_ReconScout"");}";
 						description="Scout";
 						isPlayable=1;
 					};
@@ -11677,7 +11668,6 @@ class Mission
 					class Attributes
 					{
 						skill=0.40000001;
-						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Marksman"");}";
 						description="Marksman";
 						isPlayable=1;
 					};
@@ -11739,7 +11729,6 @@ class Mission
 					class Attributes
 					{
 						skill=0.40000001;
-						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_Sniper"");}";
 						description="Sniper";
 						isPlayable=1;
 					};
@@ -11794,14 +11783,13 @@ class Mission
 					class PositionInfo
 					{
 						position[]={14719.726,244.09665,9626.5566};
-						angles[]={6.2531958,2.8642771,0};
+						angles[]={6.2532005,2.8642771,0};
 					};
 					side="West";
 					flags=4;
 					class Attributes
 					{
 						skill=0.40000001;
-						init="call{this setUnitLoadout (missionConfigfile >> ""CfgRespawnInventory"" >> ""B_HeavyGunner"");}";
 						description="Anti Tank Soldier";
 						isPlayable=1;
 					};
@@ -12393,7 +12381,7 @@ class Mission
 			};
 			id=745;
 			type="Land_vn_b_helipad_01";
-			atlOffset=0.2681427;
+			atlOffset=0.26101685;
 		};
 		class Item61
 		{
@@ -12409,7 +12397,7 @@ class Mission
 			};
 			id=747;
 			type="Land_vn_b_helipad_01";
-			atlOffset=0.25799561;
+			atlOffset=0.25086975;
 		};
 		class Item62
 		{
@@ -12860,7 +12848,7 @@ class Mission
 			};
 			id=760;
 			type="Land_vn_b_helipad_01";
-			atlOffset=0.25990295;
+			atlOffset=0.2527771;
 		};
 		class Item68
 		{
@@ -15080,7 +15068,7 @@ class Mission
 			};
 			id=934;
 			type="Land_vn_b_helipad_01";
-			atlOffset=0.29792786;
+			atlOffset=0.290802;
 		};
 		class Item105
 		{
