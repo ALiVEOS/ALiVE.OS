@@ -195,6 +195,8 @@ switch (_operation) do {
         private _debug = [_logic,"debug"] call ALiVE_fnc_hashGet;
 
         {
+            if (isnil "_x") then { continue }; // why the fuck can we be nil here
+
             private _attackID = _x;
             private _attack = [_attacksByID,_attackID] call ALiVE_fnc_hashGet;
 
