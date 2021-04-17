@@ -225,6 +225,9 @@ switch (_operation) do {
 
                 [_attacksByID,_attackID] call ALiVE_fnc_hashRem;
 
+                private _attacker = [MOD(profileHandler),"getProfile", _attackerID] call ALiVE_fnc_profileHandler;
+                [_attacker,"attackID"] call ALiVE_fnc_hashRem;
+
                 // log event
 
                 private _timeStarted = [_attack,"timeStarted"] call ALiVE_fnc_hashGet;
