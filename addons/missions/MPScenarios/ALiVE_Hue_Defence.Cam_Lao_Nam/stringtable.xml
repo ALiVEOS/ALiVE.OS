@@ -39,8 +39,78 @@
 <Package name="Misc">
 </Package>
 <Package name="Debrief">
+<Key ID="STR_VN_DEBRIEFING_FAILDEATH_TITLE_XRAY">
+<Chinese></Chinese>
+<English>TASK FORCE X-RAY KIA</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_DEBRIEFING_FAILDEATH_SUBTITLE_XRAY">
+<Chinese></Chinese>
+<English>We lost X-Ray.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>	
+<Key ID="STR_VN_DEBRIEFING_COALIVE_FAILDEATH_XRAY">
+<Chinese></Chinese>
+<English>Rest-in-Peace Task Force X-Ray. On March 2, the longest sustained infantry battle the war had seen to that point was officially declared over.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_DEBRIEFING_VICTORY_SUBTITLE_XRAY">
+<Chinese></Chinese>
+<English>X-Ray finished the job.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_DEBRIEFING_COALIVE_VICTORY_XRAY">
+<Chinese></Chinese>
+<English>Well done! Task Force X-Ray successfully defended Hue and the Imperial City Citadel from the PAVN-VC attack.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
 </Package>
 <Package name="CO01 Briefing">
+<Key ID="STR_VN_DEBRIEFING_COALIVE_OVERVIEW_XRAY">
+<Chinese></Chinese>
+<English>Task Force X-Ray were tasked with defending Hue and the Imperial City Citadel, with an objective to push back the expected PAVN-VC incursions.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_DEBRIEFING_COALIVE_NOTES_XRAY">
+<Chinese></Chinese>
+<English>Many of the Marines of Task Force X-Ray had little or no urban combat experience and the U.S. troops were not trained for urban close-quarters combat, so this battle was especially tough for them. Due to Huế's religious and cultural status, Allied forces were ordered not to bomb or shell the city, for fear of destroying the historic structures.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>	
 <Key ID="STR_VN_BRIEFING_COALIVE_ALIVEHOWTO_XRAY">
 <Chinese></Chinese>
 <English>ALiVE populates the entire map with a full scale war. Two or more AI commanders fight it out using conventional or asymmetric warfare tactics. Infantry, motorized, mechanized, armored units and aircraft are used to capture or defend strategic objectives across the area of operations.&lt;br/&gt;&lt;br/&gt;AI commanders even call in resupply, reinforcements, close air support, air patrols, air strikes, boat patrols, setup roadblocks, IEDs, conduct suicide bombings and sabotage. Meanwhile, the civilian population actively support or turn against combatants based on their actions and interactions.&lt;br/&gt;&lt;br/&gt;As a squad playing an ALiVE mission, you must work together to use the tools at your disposal to patrol, identify and attack enemy units, positions and assets. Player Commanders using the ALiVE Menu can manage operations and tasks in coordination with AI commanders.</English>
@@ -103,7 +173,7 @@
 </Key>
 <Key ID="STR_VN_BRIEFING_COALIVE_EXECUTION_XRAY">
 <Chinese></Chinese>
-<English>&lt;img image=&quot;img\execution.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Advance north by convoy to &lt;marker name='vn_wp01'&gt;Hue&lt;/marker&gt; or by foot.&lt;br/&gt;&lt;br/&gt;Consolidate your forces in Hue and the Imperial City Citadel. Defend and push back the expected attack by enemy PAVN and VC units.&lt;br/&gt;&lt;br/&gt;Resupplies, close air support, artillery and mortar fire can be requested via PRC-77.&lt;br/&gt;&lt;br/&gt;Command has directed we must keep collateral damage to a minimum therefore strict target indentification procedure must be followed when tasking ground support units.</English>
+<English>&lt;img image=&quot;img\execution.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Advance north by convoy to &lt;marker name='vn_wp01'&gt;Hue&lt;/marker&gt; or by foot.&lt;br/&gt;&lt;br/&gt;Consolidate your forces in Hue and the Imperial City Citadel. Defend and push back the expected attack by enemy PAVN and VC units.&lt;br/&gt;&lt;br/&gt;Resupplies, close air support, artillery and mortar fire can be requested via PRC-77.&lt;br/&gt;&lt;br/&gt;Command has directed we must keep collateral damage to a minimum therefore strict target indentification procedure must be followed when tasking ground support units. Allied forces are ordered NOT to bomb or shell the city, for fear of destroying the historic structures.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -164,6 +234,88 @@
 <Portuguese>ALiVE Mod Team</Portuguese>
 <Russian>ALiVE Mod Team</Russian>
 <Spanish>ALiVE Mod Team</Spanish>
+</Key>
+</Package>
+<Package name="COALIVE Tasks">
+<Key ID="STR_VN_TASKS_COALIVE_A01_T01_TITLE">
+<Chinese></Chinese>
+<English>Gear Up</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T01_DESCR">
+<Chinese></Chinese>
+<English>Grab your gear from the ammo crates</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T02_TITLE">
+<Chinese></Chinese>
+<English>Form Up</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T02_DESCR">
+<Chinese></Chinese>
+<English>Join the transport convoy</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T03_TITLE">
+<Chinese></Chinese>
+<English>Locate AO</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T03_DESCR">
+<Chinese></Chinese>
+<English>Advance north by convoy to Hue</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T04_TITLE">
+<Chinese></Chinese>
+<English>Defend AO</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T04_DESCR">
+<Chinese></Chinese>
+<English>Defend and push back the expected attack by enemy PAVN and VC units</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
 </Key>
 </Package>
 <Package name="Waypoints">

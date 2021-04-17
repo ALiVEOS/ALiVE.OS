@@ -38,7 +38,6 @@ debriefing = 1;
 #include "CfgFunctions.inc"
 #include "classes.hpp"
 #include "groupMarkers.hpp"
-#include "LoadoutClasses.inc"
 
 class Header {
     gametype = ALIVE;
@@ -55,6 +54,14 @@ class Params
 	    values[] = {""};
 	    texts[] = {""};
 	    default = "";
+	};
+	class vn_hints
+	{
+	    title = $STR_VN_PARAMS_HINTS;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_alivems_fnc_params_hints";
 	};
 	// #include "params\paramDaytimeHour.hpp"
 	#include "params\paramRespawnTickets.hpp"
@@ -144,12 +151,56 @@ class Params
 
 class CfgDebriefing
 {
+    class coalive_fail1
+    {
+        title =	$STR_VN_DEBRIEFING_FAILOBJECTIVE_TITLE;
+        subtitle = $STR_VN_DEBRIEFING_FAILOBJECTIVE_SUBTITLE;
+        description = $STR_VN_DEBRIEFING_CO01_FAILOBJECTIVE;
+        pictureBackground = "x\alive\addons\missions\MPScenarios\ALiVE_Hue_Defence.Cam_Lao_Nam\data\debrief_fail.jpg";
+        vn_debrief_mission_text = $STR_VN_DEBRIEFING_COALIVE_OVERVIEW_XRAY;
+        vn_debrief_notes_text = $STR_VN_DEBRIEFING_COALIVE_NOTES_XRAY;
+        vn_debrief_background = "x\alive\addons\missions\MPScenarios\ALiVE_Hue_Defence.Cam_Lao_Nam\data\debrief.paa";
+    };
+    class coalive_fail2: coalive_fail1
+    {
+        title =	$STR_VN_DEBRIEFING_FAILDEATH_TITLE_XRAY;
+        subtitle = $STR_VN_DEBRIEFING_FAILDEATH_SUBTITLE_XRAY;
+        description = $STR_VN_DEBRIEFING_COALIVE_FAILDEATH_XRAY;
+    };
+    class coalive_victory: coalive_fail1
+    {
+        title =	$STR_VN_DEBRIEFING_VICTORY_TITLE;
+        subtitle = $STR_VN_DEBRIEFING_VICTORY_SUBTITLE_XRAY;
+        description = $STR_VN_DEBRIEFING_COALIVE_VICTORY_XRAY;
+        pictureBackground = "x\alive\addons\missions\MPScenarios\ALiVE_Hue_Defence.Cam_Lao_Nam\data\debrief_success.jpg";
+    };
 };
 
 class CfgTaskDescriptions
 {
+	
+		// create equip task
+    class vn_tasks_coalive_a01_t01
+    {
+        title       = $STR_VN_TASKS_COALIVE_A01_T01_TITLE;
+        description = $STR_VN_TASKS_COALIVE_A01_T01_DESCR;
+    }; 
+    class vn_tasks_coalive_a01_t02
+    {
+        title       = $STR_VN_TASKS_COALIVE_A01_T02_TITLE;
+        description = $STR_VN_TASKS_COALIVE_A01_T02_DESCR;
+    };
+    class vn_tasks_coalive_a01_t03
+    {
+        title       = $STR_VN_TASKS_COALIVE_A01_T03_TITLE;
+        description = $STR_VN_TASKS_COALIVE_A01_T03_DESCR;
+    };
+    class vn_tasks_coalive_a01_t04
+    {
+        title       = $STR_VN_TASKS_COALIVE_A01_T04_TITLE;
+        description = $STR_VN_TASKS_COALIVE_A01_T04_DESCR;
+    };
 };
-
 
 
 

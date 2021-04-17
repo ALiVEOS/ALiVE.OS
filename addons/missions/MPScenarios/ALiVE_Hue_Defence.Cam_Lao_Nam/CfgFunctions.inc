@@ -61,5 +61,13 @@ class CfgFunctions
 							recompile = 0;
 						};
 				};
+        class coalive_fsm
+        {
+            file = "fsm";
+            class coalive_xray
+            {
+              ext = ".fsm";
+            };
+        };	
     };
 };
