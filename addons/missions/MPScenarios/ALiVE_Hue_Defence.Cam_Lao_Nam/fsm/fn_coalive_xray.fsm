@@ -7,7 +7,7 @@ item2[] = {"exit",1,250,-325.000000,-425.000000,-225.000000,-375.000000,0.000000
 item3[] = {"isServer_",4,218,-75.000000,-350.000000,25.000000,-300.000000,1.000000,"isServer?"};
 item4[] = {"init_and_wait_for",2,250,-75.000000,-275.000000,25.000000,-225.000000,0.000000,"init and" \n "wait for players"};
 item5[] = {"units___0_",4,218,-75.000000,-200.000000,25.000000,-150.000000,0.000000,"units > 0?"};
-item6[] = {"create_equip_tas",2,250,-75.000000,-125.000000,25.000000,-75.000000,0.000000,"create equip task"};
+item6[] = {"create_equip_tas",2,250,-72.606003,-123.204498,27.393997,-73.204498,0.000000,"create equip task"};
 item7[] = {"near_arsenal",4,218,-71.489258,-23.824707,28.510742,26.175293,1.000000,"near arsenal"};
 item8[] = {"board_transport",2,250,-71.515411,212.537292,28.484589,262.537354,0.000000,"board transport"};
 item9[] = {"transport_boarded",4,218,-80.325638,311.937683,40.726715,385.419128,0.000000,"transport boarded?"};
@@ -16,7 +16,7 @@ item11[] = {"___100m_distance",4,218,-81.702271,699.362244,35.938477,764.217529,
 item12[] = {"ALL_enemy_re_enforcements",4,218,-260.078705,901.061890,-44.021118,982.629883,0.000000,"ALL enemy re-enforcements " \n "depleated"};
 item13[] = {"task_succeeded",2,250,-153.305725,1041.054443,-53.305725,1091.054443,0.000000,"task succeeded"};
 item14[] = {"_",8,218,-78.305725,1116.054443,21.694275,1166.054443,0.000000,""};
-item15[] = {"all_players_dead",4,4314,1.336548,889.920288,140.331909,964.060547,1.000000,"all players dead"};
+item15[] = {"all_players_dead",4,218,1.336548,889.920288,140.331909,964.060547,1.000000,"all players dead"};
 item16[] = {"task_failed",2,250,-3.305725,1041.054443,96.694275,1091.054443,0.000000,"task failed"};
 item17[] = {"",7,210,-27.663452,885.060547,-19.663452,893.060303,0.000000,""};
 item18[] = {"",7,210,47.336548,885.060547,55.336548,893.060303,0.000000,""};
@@ -31,6 +31,14 @@ item26[] = {"let_them_equip_and",2,250,-71.489258,51.175293,28.510742,101.175293
 item27[] = {"time_passed_",4,218,-71.489258,130.445099,28.510742,180.445099,0.000000,"time passed?"};
 item28[] = {"",7,210,-24.410835,-32.015686,-16.410820,-24.015678,0.000000,""};
 item29[] = {"",7,210,-19.948189,594.038757,-11.948174,602.038757,0.000000,""};
+item30[] = {"broadcast__radio",2,250,116.745613,-24.408417,216.745605,25.591583,0.000000,"broadcast" \n " radio msg"};
+item31[] = {"check_forcepool",4,218,103.047577,-130.907135,229.753021,-65.050781,0.000000,"check forcepool"};
+item32[] = {"forcepool_receiv",4,218,102.823822,89.396553,229.529266,155.252914,0.000000,"forcepool" \n "receiver"};
+item33[] = {"",7,210,42.674072,1125.137695,50.674072,1133.137695,0.000000,""};
+item34[] = {"broadcast_feeder",4,218,266.411316,209.618332,393.116760,275.474701,0.000000,"broadcast" \n "feeder"};
+item35[] = {"forcepool_analyz",2,250,116.399338,194.714432,216.399353,244.714493,0.000000,"forcepool" \n "analyze"};
+item36[] = {"broadcast_update",4,218,101.070480,297.088165,227.775909,362.944519,0.000000,"broadcast" \n "update"};
+item37[] = {"broadcast",2,250,114.132141,433.272827,214.132156,483.272888,0.000000,"broadcast"};
 link0[] = {0,1};
 link1[] = {0,3};
 link2[] = {1,2};
@@ -38,31 +46,41 @@ link3[] = {3,4};
 link4[] = {4,5};
 link5[] = {5,6};
 link6[] = {6,28};
-link7[] = {7,26};
-link8[] = {8,9};
-link9[] = {9,23};
-link10[] = {10,11};
-link11[] = {11,25};
-link12[] = {12,13};
-link13[] = {13,20};
-link14[] = {14,22};
-link15[] = {15,16};
-link16[] = {16,21};
-link17[] = {17,18};
-link18[] = {17,19};
-link19[] = {18,15};
-link20[] = {19,12};
-link21[] = {20,14};
-link22[] = {21,14};
-link23[] = {23,24};
-link24[] = {24,29};
-link25[] = {25,17};
-link26[] = {26,27};
-link27[] = {27,8};
-link28[] = {28,7};
-link29[] = {29,10};
-globals[] = {0.000000,0,0,0,0,640,480,1,192,6316128,1,-237.428314,158.489746,1288.859619,593.404541,419,736,1};
-window[] = {0,-1,-1,-1,-1,978,823,2168,70,1,437};
+link7[] = {6,31};
+link8[] = {7,26};
+link9[] = {8,9};
+link10[] = {9,23};
+link11[] = {10,11};
+link12[] = {11,25};
+link13[] = {12,13};
+link14[] = {13,20};
+link15[] = {14,22};
+link16[] = {15,16};
+link17[] = {16,33};
+link18[] = {17,18};
+link19[] = {17,19};
+link20[] = {18,15};
+link21[] = {19,12};
+link22[] = {20,14};
+link23[] = {21,14};
+link24[] = {23,24};
+link25[] = {24,29};
+link26[] = {25,17};
+link27[] = {26,27};
+link28[] = {27,8};
+link29[] = {28,7};
+link30[] = {29,10};
+link31[] = {30,7};
+link32[] = {30,32};
+link33[] = {31,30};
+link34[] = {32,35};
+link35[] = {33,21};
+link36[] = {34,35};
+link37[] = {35,34};
+link38[] = {35,36};
+link39[] = {36,37};
+globals[] = {0.000000,0,0,0,0,640,480,1,212,6316128,1,-163.205307,443.664429,618.475769,-154.985596,663,845,1};
+window[] = {0,-1,-1,-32000,-32000,1043,-4,1610,26,1,681};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -127,8 +145,11 @@ class FSM
                          "];" \n
                          "" \n
                          "" \n
+                         "private _sideObject = [""WEST""] call ALIVE_fnc_sideTextToObject;" \n
+                         "" \n
                          "// Debug variable to skip task if set to true" \n
-                         "vn_task_debug = false;"/*%FSM</STATEINIT""">*/;
+                         "vn_task_debug = false;" \n
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -145,7 +166,8 @@ class FSM
                                          "    _grpUnits append (units _x);" \n
                                          "} forEach _xrayGroups;" \n
                                          "" \n
-                                         "!(_grpUnits isEqualTo []) && time > 60"/*%FSM</CONDITION""">*/;
+                                         "" \n
+                                         "!(_grpUnits isEqualTo []) && time > 40"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -157,7 +179,21 @@ class FSM
                 {
                         name = "create_equip_tas";
                         itemno = 6;
-                        init = /*%FSM<STATEINIT""">*/"// Create task xray" \n
+                        init = /*%FSM<STATEINIT""">*/"" \n
+                         "_grpUnits = [];" \n
+                         "{" \n
+                         "  _grpUnits append (units _x);" \n
+                         "} forEach _xrayGroups;" \n
+                         "" \n
+                         "// Fade sound" \n
+                         "{" \n
+                         "  [10, 0] remoteExecCall [""fadeMusic"", _x];" \n
+                         "} forEach (_grpUnits);" \n
+                         "" \n
+                         "" \n
+                         "" \n
+                         "" \n
+                         "// Create task xray" \n
                          "[" \n
                          "    _xrayGroups," \n
                          "    ""vn_tasks_coalive_a01_t01""," \n
@@ -197,6 +233,36 @@ class FSM
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
+                                /*%FSM<LINK "check_forcepool">*/
+                                class check_forcepool
+                                {
+                                        itemno = 31;
+                                        priority = 0.000000;
+                                        to="broadcast__radio";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"" \n
+                                         "_grpUnits = [];" \n
+                                         "{" \n
+                                         "  _grpUnits append (units _x);" \n
+                                         "} forEach _xrayGroups;" \n
+                                         "" \n
+                                         "" \n
+                                         "_cycleTime = 60;" \n
+                                         "_lastanalyze = 0;" \n
+                                         "_forcePoolPAVN = [ALiVE_GlobalForcePool,""O_PAVN"",0] call ALiVE_fnc_Hashget;" \n
+                                         "_forcePoolVC = [ALiVE_GlobalForcePool,""O_VC"",0] call ALiVE_fnc_Hashget;" \n
+                                         "_forcePool = (_forcePoolPAVN + _forcePoolVC);" \n
+                                         "_sideObject = [""WEST""] call ALIVE_fnc_sideTextToObject;" \n
+                                         "" \n
+                                         "" \n
+                                         "" \n
+                                         "[""Check Forcepool -> _lastAnalyze: %1  _cycleTime: %2  _forcePool: %3"",_lastAnalyze, _cycleTime, _forcePool] call ALiVE_fnc_dump;" \n
+                                         "" \n
+                                         "" \n
+                                         "!(_grpUnits isEqualTo [])"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                         };
                 };
                 /*%FSM</STATE>*/
@@ -213,11 +279,11 @@ class FSM
                          "    _xrayGroups," \n
                          "    ""vn_tasks_coalive_a01_t02""," \n
                          "    """"," \n
-                         "    [vn_aliveveh_truck, true]," \n
+                         "    objNull," \n
                          "    ""ASSIGNED""," \n
                          "    0," \n
                          "    true," \n
-                         "    ""scout""," \n
+                         "    ""use""," \n
                          "    true" \n
                          "] call BIS_fnc_taskCreate;" \n
                          "" \n
@@ -245,51 +311,64 @@ class FSM
                                          "||" \n
                                          "{" \n
                                          "" \n
-                                         "  [_grpUnits, vn_aliveveh_truck, 1] call vn_ms_fnc_isNear" \n
+                                         "  [_grpUnits, vn_aliveveh_tank, 1, true] call vn_ms_fnc_isNear" \n
                                          "" \n
                                          "}" \n
                                          "||" \n
                                          "{" \n
                                          "" \n
-                                         "  [_grpUnits, vn_aliveveh_tank, 1] call vn_ms_fnc_isNear" \n
+                                         "  [_grpUnits, vn_aliveveh_truck_00, 1, true] call vn_ms_fnc_isNear" \n
                                          "" \n
                                          "}" \n
                                          "||" \n
                                          "{" \n
                                          "" \n
-                                         "  [_grpUnits, vn_aliveveh_truck_01, 1] call vn_ms_fnc_isNear" \n
+                                         "  [_grpUnits, vn_aliveveh_guntruck, 2, true] call vn_ms_fnc_isNear" \n
                                          "" \n
                                          "}" \n
                                          "||" \n
                                          "{" \n
                                          "" \n
-                                         "  [_grpUnits, vn_aliveveh_ammotruck, 1] call vn_ms_fnc_isNear" \n
+                                         "  [_grpUnits, vn_aliveveh_ammotruck, 1, true] call vn_ms_fnc_isNear" \n
                                          "" \n
                                          "}" \n
                                          "||" \n
                                          "{" \n
                                          "" \n
-                                         "  [_grpUnits, vn_aliveveh_jeep, 1] call vn_ms_fnc_isNear" \n
+                                         "  [_grpUnits, vn_aliveveh_jeep, 1, true] call vn_ms_fnc_isNear" \n
                                          "" \n
                                          "}" \n
                                          "||" \n
                                          "{" \n
                                          "" \n
-                                         "  [_grpUnits, vn_aliveveh_covered, 1] call vn_ms_fnc_isNear" \n
+                                         "  [_grpUnits, vn_aliveveh_covered, 1, true] call vn_ms_fnc_isNear" \n
                                          "" \n
                                          "}" \n
                                          "||" \n
                                          "{" \n
                                          "" \n
-                                         "  [_grpUnits, vn_aliveveh_covered_01, 1] call vn_ms_fnc_isNear" \n
+                                         "  [_grpUnits, vn_aliveveh_covered_01, 1, true] call vn_ms_fnc_isNear" \n
                                          "" \n
                                          "}" \n
                                          "||" \n
                                          "{" \n
                                          "" \n
-                                         "  [_grpUnits, vn_aliveveh_jeep_01, 1] call vn_ms_fnc_isNear" \n
+                                         "  [_grpUnits, vn_aliveveh_jeep_01, 1, true] call vn_ms_fnc_isNear" \n
                                          "" \n
                                          "}" \n
+                                         "||" \n
+                                         "{" \n
+                                         "" \n
+                                         "  [_grpUnits, vn_aliveveh_jeep_02, 1, true] call vn_ms_fnc_isNear" \n
+                                         "" \n
+                                         "}" \n
+                                         "||" \n
+                                         "{" \n
+                                         "" \n
+                                         "  [_grpUnits, vn_aliveveh_jeep_03, 1, true] call vn_ms_fnc_isNear" \n
+                                         "" \n
+                                         "}" \n
+                                         "" \n
                                          "" \n
                                          "" \n
                                          "" \n
@@ -311,14 +390,7 @@ class FSM
                 {
                         name = "travel_to_one_marked";
                         itemno = 10;
-                        init = /*%FSM<STATEINIT""">*/"" \n
-                         "// Play music" \n
-                         "(_xrayGroups + [vn_aliveveh_truck]) spawn {" \n
-                         "    waitUntil {sleep 0.1; ((getPos vn_aliveveh_truck) select 2) > 10};" \n
-                         "    [""vn_trippin""] remoteExecCall [""playMusic"", _this];" \n
-                         "};" \n
-                         "" \n
-                         "// Create task 03" \n
+                        init = /*%FSM<STATEINIT""">*/"// Create task 03" \n
                          "[" \n
                          "    _xrayGroups," \n
                          "    ""vn_tasks_coalive_a01_t03""," \n
@@ -327,16 +399,8 @@ class FSM
                          "    ""ASSIGNED""," \n
                          "    0," \n
                          "    true," \n
-                         "    ""scout""" \n
-                         "] call BIS_fnc_taskCreate;" \n
-                         "" \n
-                         "" \n
-                         "// Fade sound" \n
-                         "{" \n
-                         "    [1, 0.4] remoteExecCall [""fadeSound"", _x];" \n
-                         "} forEach (_xrayGroups + [vn_aliveveh_truck]);" \n
-                         "" \n
-                         ""/*%FSM</STATEINIT""">*/;
+                         "    ""walk""" \n
+                         "] call BIS_fnc_taskCreate;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -465,11 +529,15 @@ class FSM
                                         condition=/*%FSM<CONDITION""">*/"vn_task_debug" \n
                                          "||" \n
                                          "{" \n
-                                         "   !((units vn_aliveveh_truck) isEqualTo [])" \n
+                                         "   !((units vn_aliveveh_tank) isEqualTo [])" \n
                                          "}" \n
                                          "||" \n
                                          "{" \n
-                                         " 	!((units vn_aliveveh_truck_01) isEqualTo [])" \n
+                                         "   !((units vn_aliveveh_truck_00) isEqualTo [])" \n
+                                         "}" \n
+                                         "||" \n
+                                         "{" \n
+                                         " 	!((units vn_aliveveh_guntruck) isEqualTo [])" \n
                                          "}" \n
                                          "||" \n
                                          "{" \n
@@ -491,7 +559,14 @@ class FSM
                                          "{" \n
                                          "	!((units vn_aliveveh_jeep_01) isEqualTo [])" \n
                                          "}" \n
-                                         "" \n
+                                         "||" \n
+                                         "{" \n
+                                         "	!((units vn_aliveveh_jeep_02) isEqualTo [])" \n
+                                         "}" \n
+                                         "||" \n
+                                         "{" \n
+                                         "	!((units vn_aliveveh_jeep_03) isEqualTo [])" \n
+                                         "}" \n
                                          ""/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
@@ -515,11 +590,11 @@ class FSM
                          "    _xrayGroups," \n
                          "    ""vn_tasks_coalive_a01_t04""," \n
                          "    """"," \n
-                         "    markerPos ""marker_36""," \n
+                         "    objNull," \n
                          "    ""ASSIGNED""," \n
                          "    0," \n
                          "    true," \n
-                         "    ""scout""" \n
+                         "    ""attack""" \n
                          "] call BIS_fnc_taskCreate;" \n
                          "" \n
                          ""/*%FSM</STATEINIT""">*/;
@@ -561,10 +636,12 @@ class FSM
                                         to="task_succeeded";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"_forcePoolPAVN = [ALiVE_GlobalForcePool,""O_PAVN"",0] call ALiVE_fnc_Hashget;" \n
+                                         "_forcePoolVC = [ALiVE_GlobalForcePool,""O_VC"",0] call ALiVE_fnc_Hashget;" \n
+                                         "_forcePool = (_forcePoolPAVN + _forcePoolVC);" \n
                                          "" \n
                                          "vn_task_debug" \n
                                          "|| {" \n
-                                         "	_forcePoolPAVN < 100}" \n
+                                         "	_forcePool < 50}" \n
                                          "" \n
                                          "" \n
                                          ""/*%FSM</CONDITION""">*/;
@@ -597,6 +674,145 @@ class FSM
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "broadcast__radio">*/
+                class broadcast__radio
+                {
+                        name = "broadcast__radio";
+                        itemno = 30;
+                        init = /*%FSM<STATEINIT""">*/" [""broadcast radio msg""] call ALiVE_fnc_dump;" \n
+                         "" \n
+                         "_message = format[""%1 approximate force level: %2"", ""O_PAVN"", _forcePoolPAVN];" \n
+                         "_radioBroadcast = [objNull,_message,""side"",_sideObject,false,false,false,true,""HQ""];" \n
+                         "[""WEST"",_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;" \n
+                         "" \n
+                         "_message = format[""%1 approximate force level: %2"", ""O_VC"", _forcePoolVC];" \n
+                         "_radioBroadcast = [objNull,_message,""side"",_sideObject,false,false,false,true,""HQ""];" \n
+                         "[""WEST"",_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;" \n
+                         "" \n
+                         "_message = format[""PAVN-VC approximate force level: %1"", _forcePool];" \n
+                         "_radioBroadcast = [objNull,_message,""side"",_sideObject,false,false,false,true,""HQ""];" \n
+                         "[""WEST"",_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "near_arsenal">*/
+                                class near_arsenal
+                                {
+                                        itemno = 7;
+                                        priority = 1.000000;
+                                        to="let_them_equip_and";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_grpUnits = [];" \n
+                                         "" \n
+                                         "{" \n
+                                         "  _grpUnits append (units _x);" \n
+                                         "} forEach _xrayGroups;" \n
+                                         "" \n
+                                         "vn_task_debug" \n
+                                         "||" \n
+                                         "{" \n
+                                         "    [_grpUnits, vn_obj_arsenal, 5, true] call vn_ms_fnc_isNear" \n
+                                         "}" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "forcepool_receiv">*/
+                                class forcepool_receiv
+                                {
+                                        itemno = 32;
+                                        priority = 0.000000;
+                                        to="forcepool_analyz";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"time - _lastAnalyze >= _cycleTime;" \n
+                                         "//[""forcepool receiver -> _lastAnalyze: %1  _cycleTime: %2"",_lastAnalyze, _cycleTime] call ALiVE_fnc_dump;" \n
+                                         "" \n
+                                         "" \n
+                                         "" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "forcepool_analyz">*/
+                class forcepool_analyz
+                {
+                        name = "forcepool_analyz";
+                        itemno = 35;
+                        init = /*%FSM<STATEINIT""">*/"[""forcepool analyze""] call ALiVE_fnc_dump;" \n
+                         "time - _lastAnalyze >= _cycleTime;" \n
+                         "_lastAnalyze = time;" \n
+                         "" \n
+                         "" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "broadcast_update">*/
+                                class broadcast_update
+                                {
+                                        itemno = 36;
+                                        priority = 0.000000;
+                                        to="broadcast";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"" \n
+                                         "time - _lastAnalyze >= _cycleTime;" \n
+                                         "//[""broadcast update""] call ALiVE_fnc_dump;" \n
+                                         "" \n
+                                         "_updateforcePoolPAVN = [ALiVE_GlobalForcePool,""O_PAVN"",0] call ALiVE_fnc_Hashget;" \n
+                                         "_updateforcePoolVC = [ALiVE_GlobalForcePool,""O_VC"",0] call ALiVE_fnc_Hashget;" \n
+                                         "_updateforcePool = (_updateforcePoolPAVN + _updateforcePoolVC);" \n
+                                         "" \n
+                                         "_forcePoolPAVN = [ALiVE_GlobalForcePool,""O_PAVN"",0] call ALiVE_fnc_Hashget;" \n
+                                         "_forcePoolVC = [ALiVE_GlobalForcePool,""O_VC"",0] call ALiVE_fnc_Hashget;" \n
+                                         "_forcePool = (_forcePoolPAVN + _forcePoolVC);" \n
+                                         "" \n
+                                         "{" \n
+                                         "_updateforcePool < _forcePool" \n
+                                         "}" \n
+                                         "" \n
+                                         "" \n
+                                         "" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "broadcast_feeder">*/
+                                class broadcast_feeder
+                                {
+                                        itemno = 34;
+                                        priority = 0.000000;
+                                        to="forcepool_analyz";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"time - _lastAnalyze > _cycleTime;" \n
+                                         "// [""broadcast feeder""] call ALiVE_fnc_dump;" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "broadcast">*/
+                class broadcast
+                {
+                        name = "broadcast";
+                        itemno = 37;
+                        init = /*%FSM<STATEINIT""">*/"[""broadcast""] call ALiVE_fnc_dump;" \n
+                         "_message = format[""PAVN-VC approximate force level: %1"", _forcePool];" \n
+                         "_radioBroadcast = [objNull,_message,""side"",_sideObject,false,false,false,true,""HQ""];" \n
+                         "[""WEST"",_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;" \n
+                         "" \n
+                         "" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
                         };
                 };
                 /*%FSM</STATE>*/

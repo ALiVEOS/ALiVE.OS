@@ -25,7 +25,7 @@ if (hasInterface) then {
     ["| The Battle of Hue - Running ClientInit..."] call ALiVE_fnc_dump;
 
     [] spawn {
-       // enableRadio false;
+      
         titleText ["The ALiVE Team presents...", "BLACK IN",9999];
         0 fadesound 0;
 
@@ -83,7 +83,7 @@ if (hasInterface) then {
         sleep 20;
 
         _title = "<t size='1.5' color='#68a7b7' shadow='1'>THE BATTLE OF HUE</t><br/>";
-        _text = format["%1<t>Welcome to FOB Phu Bai. Weapons, ammo and supplies are available under the camo netting, load up and head out.</t>",_title];
+        _text = format["%1<t>Welcome to FOB Phu Bai. Ammo crates are located under the Camouflage netting. Addtional support weapons can be loaded into the trucks.</t>",_title];
 
         ["openSideSmall",0.4] call ALIVE_fnc_displayMenu;
         ["setSideSmallText",_text] call ALIVE_fnc_displayMenu;
@@ -99,7 +99,7 @@ if (hasInterface) then {
         sleep 15;
 
         _title = "<t size='1.5' color='#68a7b7' shadow='1'>THE BATTLE OF HUE</t><br/>";
-        _text = format["%1<t>Head north in convoy or by foot. Consolidate and defend Hue</t>",_title];
+        _text = format["%1<t>Advance north in convoy to the city of Hue. Take Highway 1 north east.</t>",_title];
 
         ["openSideSmall",0.4] call ALIVE_fnc_displayMenu;
         ["setSideSmallText",_text] call ALIVE_fnc_displayMenu;

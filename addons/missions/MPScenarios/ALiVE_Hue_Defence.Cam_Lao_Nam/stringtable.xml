@@ -153,7 +153,7 @@
 </Key>
 <Key ID="STR_VN_BRIEFING_COALIVE_MISSION_XRAY">
 <Chinese></Chinese>
-<English>&lt;img image=&quot;img\mission.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Task Force X-Ray are based at &lt;marker name='respawn_west'&gt;FOB Phu Bai&lt;/marker&gt;. Advance north by convoy to &lt;marker name='vn_wp01'&gt;Hue&lt;/marker&gt;, consolidate your positions and defend the Imperial City and Citadel from PAVN-VC incursions.</English>
+<English>&lt;img image=&quot;img\mission.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Task Force X-Ray are based at &lt;marker name='respawn_west'&gt;FOB Phu Bai&lt;/marker&gt;. Advance north by convoy to &lt;marker name='vn_wp01'&gt;Hue&lt;/marker&gt;, consolidate your positions and support the ARVN Forces. Fefend the Imperial City and Citadel from PAVN-VC incursions.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -173,7 +173,7 @@
 </Key>
 <Key ID="STR_VN_BRIEFING_COALIVE_EXECUTION_XRAY">
 <Chinese></Chinese>
-<English>&lt;img image=&quot;img\execution.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Advance north by convoy to &lt;marker name='vn_wp01'&gt;Hue&lt;/marker&gt; or by foot.&lt;br/&gt;&lt;br/&gt;Consolidate your forces in Hue and the Imperial City Citadel. Defend and push back the expected attack by enemy PAVN and VC units.&lt;br/&gt;&lt;br/&gt;Resupplies, close air support, artillery and mortar fire can be requested via PRC-77.&lt;br/&gt;&lt;br/&gt;Command has directed we must keep collateral damage to a minimum therefore strict target indentification procedure must be followed when tasking ground support units. Allied forces are ordered NOT to bomb or shell the city, for fear of destroying the historic structures.</English>
+<English>&lt;img image=&quot;img\execution.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Advance north by convoy to &lt;marker name='vn_wp01'&gt;Hue&lt;/marker&gt; or by foot.&lt;br/&gt;&lt;br/&gt;Consolidate your forces in Hue and the Imperial City Citadel. Support the ARVN Forces. Defend and push back the expected attack by enemy PAVN and VC units.&lt;br/&gt;&lt;br/&gt;Resupplies, close air support, artillery and mortar fire can be requested via PRC-77.&lt;br/&gt;&lt;br/&gt;Command has directed we must keep collateral damage to a minimum therefore strict target indentification procedure must be followed when tasking ground support units. Allied forces are ordered NOT to bomb or shell the city, for fear of destroying the historic structures.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -239,7 +239,7 @@
 <Package name="COALIVE Tasks">
 <Key ID="STR_VN_TASKS_COALIVE_A01_T01_TITLE">
 <Chinese></Chinese>
-<English>Gear Up</English>
+<English>Gather equipment and assemble supplies</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -249,7 +249,7 @@
 </Key>
 <Key ID="STR_VN_TASKS_COALIVE_A01_T01_DESCR">
 <Chinese></Chinese>
-<English>Grab your gear from the ammo crates</English>
+<English>Gather your equipment and assemble your supplies from the ammo crates. Ammo crates are located under the Camouflage netting. Addtional support weapons can be loaded into the trucks.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -259,7 +259,7 @@
 </Key>
 <Key ID="STR_VN_TASKS_COALIVE_A01_T02_TITLE">
 <Chinese></Chinese>
-<English>Form Up</English>
+<English>Prepare to embark</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -269,7 +269,7 @@
 </Key>
 <Key ID="STR_VN_TASKS_COALIVE_A01_T02_DESCR">
 <Chinese></Chinese>
-<English>Join the transport convoy</English>
+<English>Prepare to embark. Locate a suitable convoy transport vehicle and get in.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -279,7 +279,7 @@
 </Key>
 <Key ID="STR_VN_TASKS_COALIVE_A01_T03_TITLE">
 <Chinese></Chinese>
-<English>Locate AO</English>
+<English>Move out!</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -289,7 +289,7 @@
 </Key>
 <Key ID="STR_VN_TASKS_COALIVE_A01_T03_DESCR">
 <Chinese></Chinese>
-<English>Advance north by convoy to Hue</English>
+<English>Advance north in convoy to the city of Hue. Take Highway 1 north east.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -299,7 +299,7 @@
 </Key>
 <Key ID="STR_VN_TASKS_COALIVE_A01_T04_TITLE">
 <Chinese></Chinese>
-<English>Defend AO</English>
+<English>Defend Hue and the Imperial City Citadel</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -309,7 +309,7 @@
 </Key>
 <Key ID="STR_VN_TASKS_COALIVE_A01_T04_DESCR">
 <Chinese></Chinese>
-<English>Defend and push back the expected attack by enemy PAVN and VC units</English>
+<English>Consolidate your forces in Hue and the Imperial City Citadel. Support the ARVN Forces. Defend and push back the expected attack by enemy. Neutralize PAVN and VC units.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
