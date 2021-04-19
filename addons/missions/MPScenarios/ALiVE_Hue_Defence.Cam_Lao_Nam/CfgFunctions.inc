@@ -68,6 +68,10 @@ class CfgFunctions
             {
               ext = ".fsm";
             };
+            class coalive_forcepool
+            {
+              ext = ".fsm";
+            };
         };	
     };
 };

@@ -27,7 +27,7 @@ if (isDedicated) then  {
 };
 
 [] spawn {
-    waitUntil {!isNil "ALiVE_REQUIRE_INITIALISED"};
+    waitUntil {!isNil "ALiVE_REQUIRE_INITIALISED" && time > 120};
     
     ALiVE_Helper_opcomEventListener = compile preprocessFileLineNumbers "opcomEventListener.sqf";
     opcomEventListener = [nil,"create", ["ALiVE_Helper_opcomEventListener"]] call ALiVE_Helper_opcomEventListener;
