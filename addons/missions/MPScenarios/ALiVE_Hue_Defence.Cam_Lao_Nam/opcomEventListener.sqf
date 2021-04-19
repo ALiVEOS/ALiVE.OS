@@ -2,6 +2,10 @@ params ["_logic","_operation","_args"];
 
 private "_result";
 
+_grpUnits = [];
+_xrayGroups = [vn_alivegrp_xray_1,vn_alivegrp_xray_2];
+
+
 switch (_operation) do {
     case "create": {
         _args params ["_functionName"];
@@ -35,7 +39,15 @@ switch (_operation) do {
                 if (_opcomSide == "EAST" && _orderType == "attack") then {
                     private _objectivePosition = [_objective,"center"] call ALiVE_fnc_hashGet;
                     private _location = [_logic,"getClosestLocationName", [_objectivePosition]] call _thisFunction;
-                    systemchat format ["OPFOR is preparing an attack on %1", _location];
+                //  systemchat format ["OPFOR is preparing an attack on %1", _location];
+                
+									 _title = "<t size='1.5' color='#68a7b7' shadow='1'>INTEL RECEIVED</t><br/>";
+									 _text = format["%1<t>PAVN-VC is preparing an attack on %2</t>",_title,_location];
+									 { _grpUnits append (units _x);} forEach _xrayGroups;
+									 {["openSideSmall",0.4] remoteExecCall ["ALIVE_fnc_displayMenu", _x];
+								   ["setSideSmallText",_text] remoteExecCall ["ALIVE_fnc_displayMenu", _x];} forEach (_grpUnits);
+		                
+                
                 };
             };
             case "TACOM_ORDER_ISSUED": {
@@ -44,7 +56,15 @@ switch (_operation) do {
                 if (_opcomSide == "EAST" && _orderType == "capture") then {
                     private _objectivePosition = [_objective,"center"] call ALiVE_fnc_hashGet;
                     private _location = [_logic,"getClosestLocationName", [_objectivePosition]] call _thisFunction;
-                    systemchat format ["OPFOR is initiating it's attack on %1 ", _location];
+                //    systemchat format ["OPFOR is initiating it's attack on %1 ", _location];
+                
+									 _title = "<t size='1.5' color='#68a7b7' shadow='1'>INTEL RECEIVED</t><br/>";
+									 _text = format["%1<t>PAVN-VC is initiating an attack on %2</t>",_title,_location];
+									 { _grpUnits append (units _x);} forEach _xrayGroups;
+									 {["openSideSmall",0.4] remoteExecCall ["ALIVE_fnc_displayMenu", _x];
+								   ["setSideSmallText",_text] remoteExecCall ["ALIVE_fnc_displayMenu", _x];} forEach (_grpUnits);
+		                
+                
                 };
             };
         };
