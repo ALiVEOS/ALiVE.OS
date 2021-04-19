@@ -103,6 +103,7 @@ class CfgVehicles {
                     {
                         displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER";
                         description = "$STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER_COMMENT";
+                        typeName = "NUMBER";
                         class Values
                         {
                             class None
@@ -110,6 +111,11 @@ class CfgVehicles {
                                 name = "None";
                                 value = 1;
                                 default = 1;
+                            };
+                            class Lowest
+                            {
+                                name = "12.5%";
+                                value = 0.125;
                             };
                             class Low
                             {
