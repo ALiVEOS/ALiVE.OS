@@ -47,8 +47,8 @@ if(isServer) then {
     private _spawnTypeJetRadius = parseNumber (_logic getVariable ["spawnTypeJetRadius","0"]);
 	private _spawnTypeUAVRadius = parseNumber (_logic getVariable ["spawnRadiusUAV", "-1"]);
     private _activeLimiter = parseNumber (_logic getVariable ["activeLimiter","30"]);
-    private _speedModifier = _logic getVariable ["speedModifier",1];
-    private _virtualCombatSpeedModifier = _logic getVariable ["virtualcombat_speedmodifier", "1"];
+    private _speedModifier = parseNumber (_logic getVariable ["speedModifier","1"]);
+    private _virtualCombatSpeedModifier = parsenumber (_logic getVariable ["virtualcombat_speedmodifier", "1"]);
     private _pathfinding = (_logic getVariable ["pathfinding", "false"]) == "true";
     private _seaTransport = (_logic getVariable ["seaTransport", "false"]) == "true";
     private _smoothSpawn = parseNumber (_logic getVariable ["smoothSpawn", "0.3"]);
@@ -72,7 +72,7 @@ if(isServer) then {
     [ALIVE_profileSystem, "spawnTypeHeliRadius", _spawnTypeHeliRadius] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "activeLimiter", _activeLimiter] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "speedModifier", _speedModifier] call ALIVE_fnc_profileSystem;
-    [ALIVE_profileSystem, "combatRate", parseNumber _virtualCombatSpeedModifier] call ALIVE_fnc_profileSystem;
+    [ALIVE_profileSystem, "combatRate", _virtualCombatSpeedModifier] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "pathfinding", _pathfinding] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "seaTransport", _seaTransport] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "smoothSpawn", _smoothSpawn] call ALIVE_fnc_profileSystem;

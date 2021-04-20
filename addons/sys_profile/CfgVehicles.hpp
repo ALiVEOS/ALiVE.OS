@@ -103,39 +103,49 @@ class CfgVehicles {
                     {
                         displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER";
                         description = "$STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER_COMMENT";
-                        typeName = "NUMBER";
+                        typeName = "STRING";
                         class Values
                         {
-                            class None
-                            {
-                                name = "None";
-                                value = 1;
-                                default = 1;
-                            };
-                            class Lowest
-                            {
-                                name = "12.5%";
-                                value = 0.125;
-                            };
                             class Low
                             {
                                 name = "25%";
-                                value = 0.25;
+                                value = "0.25";
                             };
-                            class Med
+                            class Medium
                             {
                                 name = "50%";
-                                value = 0.5;
+                                value = "0.50";
                             };
                             class High
                             {
                                 name = "75%";
-                                value = 0.75;
+                                value = "0.75";
+                            };
+                            class None
+                            {
+                                name = "100%";
+                                value = "1.00";
+                                default = 1;
                             };
                             class Extreme
                             {
                                 name = "125%";
-                                value = 1.25;
+                                value = "1.25";
+                            };
+                            class Extremer
+                            {
+                                name = "150%";
+                                value = "1.50";
+                            };
+                            class Crazy
+                            {
+                                name = "175%";
+                                value = "1.75";
+                            };
+                            class Insane
+                            {
+                                name = "200%";
+                                value = "2.00";
                             };
                         };
                     };
