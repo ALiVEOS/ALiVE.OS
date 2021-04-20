@@ -60,6 +60,18 @@ class CfgFunctions
 						{
 							recompile = 0;
 						};
+						class params_forcePoolPollint
+						{
+							recompile = 0;
+						};
+						class params_forcePoolPavn
+						{
+							recompile = 0;
+						};
+						class params_forcePoolVc
+						{
+							recompile = 0;
+						};
 				};
         class coalive_fsm
         {

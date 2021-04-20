@@ -12,7 +12,7 @@
 */
 
 //Starting Init
-["| The Battle of Hue - Executing init.sqf..."] call ALiVE_fnc_dump;
+["ALiVE | The Battle of Hue - Executing init.sqf..."] call ALiVE_fnc_dump;
 
 [] call vn_ms_fnc_enableSOGTraits;
 
@@ -22,7 +22,7 @@ if (isServer) then {
 
 if (hasInterface) then {
 
-    ["| The Battle of Hue - Running ClientInit..."] call ALiVE_fnc_dump;
+    ["ALiVE | The Battle of Hue - Running ClientInit..."] call ALiVE_fnc_dump;
 
     [] spawn {
       

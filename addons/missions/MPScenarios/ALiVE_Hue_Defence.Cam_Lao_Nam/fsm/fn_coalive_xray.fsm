@@ -63,8 +63,8 @@ link27[] = {27,8};
 link28[] = {28,7};
 link29[] = {29,10};
 link30[] = {30,21};
-globals[] = {0.000000,0,0,0,0,640,480,1,217,6316128,1,-185.073105,408.717804,195.173615,-503.647125,718,845,1};
-window[] = {0,-1,-1,-1,-1,1101,541,1892,84,1,736};
+globals[] = {0.000000,0,0,0,0,640,480,1,217,6316128,1,-185.073105,408.717804,195.173615,-503.647125,1046,894,1};
+window[] = {2,-1,-1,-1,-1,1121,104,1455,104,3,1064};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -122,7 +122,7 @@ class FSM
                 {
                         name = "init_and_wait_for";
                         itemno = 4;
-                        init = /*%FSM<STATEINIT""">*/"[""| The Battle of Hue - Executing fn_coalive_xray.fsm...""] call ALiVE_fnc_dump;" \n
+                        init = /*%FSM<STATEINIT""">*/"[""ALiVE | The Battle of Hue - Executing fn_coalive_xray.fsm...""] call ALiVE_fnc_dump;" \n
                          "// All infantry groups" \n
                          "private _xrayGroups = [" \n
                          "    vn_alivegrp_xray_1," \n
