@@ -8,7 +8,7 @@ class EditorData
 	toggles=1545;
 	class ItemIDProvider
 	{
-		nextID=1074;
+		nextID=1092;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=517;
+		nextID=529;
 	};
 	class Camera
 	{
-		pos[]={6972.6924,16.052361,8699.9697};
-		dir[]={0.50615305,-0.25375256,0.82426924};
-		up[]={0.1327837,0.96726906,0.21623805};
-		aside[]={0.85216099,-4.0046871e-008,-0.52328032};
+		pos[]={15790.095,224.70364,6839.7603};
+		dir[]={0.43549111,-0.4313103,0.79015964};
+		up[]={0.20822231,0.90217292,0.3777993};
+		aside[]={0.87580788,-3.434252e-007,-0.48269591};
 	};
 };
 binarizationWanted=0;
@@ -58,13 +58,14 @@ addons[]=
 	"structures_f_vietnam_c",
 	"static_f_vietnam_c",
 	"A3_Modules_F_Multiplayer",
-	"alive_mil_logistics"
+	"alive_mil_logistics",
+	"air_f_vietnam_c"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=29;
+		items=30;
 		class Item0
 		{
 			className="ALiVE_main";
@@ -247,6 +248,13 @@ class AddonsMetaData
 			className="ALiVE_mil_logistics";
 			name="alive_mil_logistics";
 			author="ALiVE Mod Team";
+		};
+		class Item29
+		{
+			className="air_f_vietnam_c";
+			name="air_f_vietnam_c";
+			author="Savage Game Design";
+			url="https://www.arma3.com";
 		};
 	};
 };
@@ -791,10 +799,10 @@ class Mission
 									{
 										type[]=
 										{
-											"STRING"
+											"SCALAR"
 										};
 									};
-									value="0.25";
+									value=0.25;
 								};
 							};
 						};
@@ -889,7 +897,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="0.1";
+									value="0.35";
 								};
 							};
 						};
@@ -3348,7 +3356,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="vn_b_pack_prc77";
+									value="vn_b_pack_prc77,vn_b_pack_lw";
 								};
 							};
 						};
@@ -3493,12 +3501,11 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={16059.438,29.000183,7391.5439};
-						angles[]={0,0.1808161,0};
+						position[]={16077.516,28.751587,7304.063};
+						angles[]={0,0.1808161,0.099675752};
 					};
 					id=38;
 					type="ALiVE_sup_combatsupport";
-					atlOffset=0.00018310547;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -3516,7 +3523,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="vn_b_pack_prc77";
+									value="vn_b_pack_prc77,vn_b_pack_lw";
 								};
 							};
 						};
@@ -3683,7 +3690,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="vn_b_air_uh1c_07_01";
+									value="vn_b_air_uh1d_02_01";
 								};
 							};
 						};
@@ -3983,7 +3990,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="vn_b_pack_prc77";
+									value="vn_b_pack_prc77,vn_b_pack_lw";
 								};
 							};
 						};
@@ -8174,7 +8181,7 @@ class Mission
 				};
 			};
 			id=45;
-			atlOffset=63.229111;
+			atlOffset=63.229076;
 		};
 		class Item1
 		{
@@ -9232,7 +9239,7 @@ class Mission
 							};
 							id=839;
 							type="vn_b_ammobox_02";
-							atlOffset=6.6757202e-006;
+							atlOffset=5.7220459e-006;
 							class CustomAttributes
 							{
 								class Attribute0
@@ -9291,7 +9298,7 @@ class Mission
 							};
 							id=875;
 							type="vn_b_ammobox_02";
-							atlOffset=2.2888184e-005;
+							atlOffset=2.1934509e-005;
 							class CustomAttributes
 							{
 								class Attribute0
@@ -9492,7 +9499,7 @@ class Mission
 							};
 							id=979;
 							type="vn_b_ammobox_kit_sog";
-							atlOffset=0.0023069382;
+							atlOffset=0.0023078918;
 						};
 						class Item11
 						{
@@ -9811,7 +9818,7 @@ class Mission
 							};
 							id=964;
 							type="vn_b_ammobox_full_06";
-							atlOffset=-0.00046730042;
+							atlOffset=-0.00045776367;
 						};
 						class Item30
 						{
@@ -9828,7 +9835,7 @@ class Mission
 							};
 							id=965;
 							type="vn_b_ammobox_full_07";
-							atlOffset=0.0074310303;
+							atlOffset=0.0074510574;
 						};
 						class Item31
 						{
@@ -9932,7 +9939,7 @@ class Mission
 							};
 							id=830;
 							type="vn_b_ammobox_full_09";
-							atlOffset=0.024474144;
+							atlOffset=0.024477959;
 							class CustomAttributes
 							{
 								class Attribute0
@@ -10025,7 +10032,7 @@ class Mission
 							};
 							id=974;
 							type="vn_b_ammobox_full_04";
-							atlOffset=0.0045099258;
+							atlOffset=0.0045108795;
 						};
 						class Item40
 						{
@@ -10661,22 +10668,6 @@ class Mission
 		class Item27
 		{
 			dataType="Marker";
-			position[]={4386.8599,170.25101,13806.67};
-			name="marker_17";
-			text="AO";
-			markerType="RECTANGLE";
-			type="rectangle";
-			colorName="ColorBlack";
-			fillName="DiagGrid";
-			a=5361.0981;
-			b=83.410004;
-			angle=90.269951;
-			id=1027;
-			atlOffset=-161.55356;
-		};
-		class Item28
-		{
-			dataType="Marker";
 			position[]={6781.4756,14.398,13827.404};
 			name="marker_18";
 			text="Area of Operations";
@@ -10690,7 +10681,7 @@ class Mission
 			id=1028;
 			atlOffset=10.045046;
 		};
-		class Item29
+		class Item28
 		{
 			dataType="Object";
 			class PositionInfo
@@ -10707,53 +10698,7 @@ class Mission
 			type="Land_vn_campingchair_v1_f";
 			atlOffset=-8.1062317e-005;
 		};
-		class Item30
-		{
-			dataType="Marker";
-			position[]={9253.9385,33.497002,13821.092};
-			name="marker_19";
-			text="AO";
-			markerType="RECTANGLE";
-			type="rectangle";
-			colorName="ColorBlack";
-			fillName="DiagGrid";
-			a=5361.0981;
-			b=83.410004;
-			angle=90.269951;
-			id=1046;
-			atlOffset=-208.94666;
-		};
-		class Item31
-		{
-			dataType="Marker";
-			position[]={6796.582,-4.8179998,8416.7803};
-			name="marker_20";
-			text="AO";
-			markerType="RECTANGLE";
-			type="rectangle";
-			colorName="ColorBlack";
-			fillName="DiagGrid";
-			a=2510.929;
-			b=83.410004;
-			id=1047;
-			atlOffset=-97.016212;
-		};
-		class Item32
-		{
-			dataType="Marker";
-			position[]={6860.9941,184.263,19237.943};
-			name="marker_21";
-			text="AO";
-			markerType="RECTANGLE";
-			type="rectangle";
-			colorName="ColorBlack";
-			fillName="DiagGrid";
-			a=2517.23;
-			b=83.410004;
-			id=1048;
-			atlOffset=-1.2825317;
-		};
-		class Item33
+		class Item29
 		{
 			dataType="Marker";
 			position[]={9608.0078,-208.286,6887.3979};
@@ -10769,7 +10714,7 @@ class Mission
 			id=1051;
 			atlOffset=-303.95453;
 		};
-		class Item34
+		class Item30
 		{
 			dataType="Marker";
 			position[]={16646.137,18.235001,6948.6509};
@@ -10783,7 +10728,7 @@ class Mission
 			id=1054;
 			atlOffset=3.2550011;
 		};
-		class Item35
+		class Item31
 		{
 			dataType="Object";
 			class PositionInfo
@@ -10798,9 +10743,9 @@ class Mission
 			};
 			id=1056;
 			type="ALiVE_Waterbottle_Item";
-			atlOffset=0.014624596;
+			atlOffset=0.014626503;
 		};
-		class Item36
+		class Item32
 		{
 			dataType="Object";
 			class PositionInfo
@@ -10816,7 +10761,7 @@ class Mission
 			type="vn_b_prop_prc77_01";
 			atlOffset=0.42662811;
 		};
-		class Item37
+		class Item33
 		{
 			dataType="Object";
 			class PositionInfo
@@ -10833,7 +10778,7 @@ class Mission
 			type="vn_b_ammobox_supply_03";
 			atlOffset=-2.3841858e-005;
 		};
-		class Item38
+		class Item34
 		{
 			dataType="Object";
 			class PositionInfo
@@ -10850,7 +10795,7 @@ class Mission
 			type="vn_b_item_firstaidkit_gh";
 			atlOffset=0.00048065186;
 		};
-		class Item39
+		class Item35
 		{
 			dataType="Object";
 			class PositionInfo
@@ -10867,7 +10812,7 @@ class Mission
 			type="vn_b_item_firstaid_01";
 			atlOffset=0.00029087067;
 		};
-		class Item40
+		class Item36
 		{
 			dataType="Object";
 			class PositionInfo
@@ -10884,7 +10829,7 @@ class Mission
 			type="vn_b_vest_sog_01";
 			atlOffset=0.0011844635;
 		};
-		class Item41
+		class Item37
 		{
 			dataType="Object";
 			class PositionInfo
@@ -10901,7 +10846,7 @@ class Mission
 			type="vn_b_uniform_item_sog_01_05";
 			atlOffset=0.0010070801;
 		};
-		class Item42
+		class Item38
 		{
 			dataType="Object";
 			class PositionInfo
@@ -10918,7 +10863,7 @@ class Mission
 			type="vn_b_pack_02";
 			atlOffset=7.5340271e-005;
 		};
-		class Item43
+		class Item39
 		{
 			dataType="Object";
 			class PositionInfo
@@ -10933,9 +10878,9 @@ class Mission
 			};
 			id=1066;
 			type="ALiVE_Waterbottle_Item";
-			atlOffset=0.026151657;
+			atlOffset=0.026152611;
 		};
-		class Item44
+		class Item40
 		{
 			dataType="Object";
 			class PositionInfo
@@ -10950,9 +10895,9 @@ class Mission
 			};
 			id=1067;
 			type="ALiVE_Waterbottle_Item";
-			atlOffset=0.027955055;
+			atlOffset=0.027956963;
 		};
-		class Item45
+		class Item41
 		{
 			dataType="Object";
 			class PositionInfo
@@ -10967,9 +10912,9 @@ class Mission
 			};
 			id=1068;
 			type="ALiVE_Waterbottle_Item";
-			atlOffset=0.020877838;
+			atlOffset=0.020878792;
 		};
-		class Item46
+		class Item42
 		{
 			dataType="Object";
 			class PositionInfo
@@ -10984,7 +10929,7 @@ class Mission
 			type="vn_magazine_grenade_v40";
 			atlOffset=0.38132858;
 		};
-		class Item47
+		class Item43
 		{
 			dataType="Object";
 			class PositionInfo
@@ -10999,7 +10944,7 @@ class Mission
 			type="vn_magazine_grenade_t67";
 			atlOffset=0.50056744;
 		};
-		class Item48
+		class Item44
 		{
 			dataType="Object";
 			class PositionInfo
@@ -11015,7 +10960,7 @@ class Mission
 			type="vn_magazine_grenade_rkg3";
 			atlOffset=0.3978157;
 		};
-		class Item49
+		class Item45
 		{
 			dataType="Object";
 			class PositionInfo
@@ -11030,16 +10975,15 @@ class Mission
 			type="vn_magazine_grenade_m67";
 			atlOffset=0.39719296;
 		};
-		class Item50
+		class Item46
 		{
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={16164.952,14.97998,7054.957};
+				position[]={15781.197,14.98,7211.189};
 			};
 			id=1073;
 			type="ALiVE_mil_logistics";
-			atlOffset=-1.9073486e-005;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -11272,6 +11216,305 @@ class Mission
 				};
 				nAttributes=12;
 			};
+		};
+		class Item47
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={16448.063,18.098137,7060.335};
+			};
+			side="Empty";
+			class Attributes
+			{
+				init="call{[this] call vn_ms_fnc_addRopeAttachEH}";
+			};
+			id=1074;
+			type="vn_b_air_uh1d_02_07";
+			atlOffset=0.25760937;
+		};
+		class Item48
+		{
+			dataType="Group";
+			side="West";
+			class Entities
+			{
+				items=2;
+				class Item0
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={16449.779,14.981439,7068.624};
+					};
+					side="West";
+					flags=7;
+					class Attributes
+					{
+						skill=1;
+						rank="CAPTAIN";
+						description="Transport Pilot";
+						isPlayable=1;
+					};
+					id=1076;
+					type="vn_b_men_aircrew_17";
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="speaker";
+							expression="_this setspeaker _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Male09ENG";
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="pitch";
+							expression="_this setpitch _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=0.97000003;
+								};
+							};
+						};
+						nAttributes=2;
+					};
+				};
+				class Item1
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={16447.713,14.981439,7069.1118};
+					};
+					side="West";
+					flags=5;
+					class Attributes
+					{
+						skill=1;
+						rank="LIEUTENANT";
+						description="Transport Co-Pilot";
+						isPlayable=1;
+					};
+					id=1077;
+					type="vn_b_men_aircrew_18";
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="speaker";
+							expression="_this setspeaker _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Male04ENG";
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="pitch";
+							expression="_this setpitch _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=0.98000002;
+								};
+							};
+						};
+						nAttributes=2;
+					};
+				};
+			};
+			class Attributes
+			{
+			};
+			id=1075;
+		};
+		class Item49
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={16476.129,17.760262,7061.0522};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=1084;
+			type="vn_b_air_ah1g_04";
+		};
+		class Item50
+		{
+			dataType="Group";
+			side="West";
+			class Entities
+			{
+				items=2;
+				class Item0
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={16474.004,14.981439,7068.5557};
+					};
+					side="West";
+					flags=7;
+					class Attributes
+					{
+						rank="CAPTAIN";
+						description="CAS Pilot";
+						isPlayable=1;
+					};
+					id=1090;
+					type="vn_b_men_aircrew_05";
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="speaker";
+							expression="_this setspeaker _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Male02ENG";
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="pitch";
+							expression="_this setpitch _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=1;
+								};
+							};
+						};
+						nAttributes=2;
+					};
+				};
+				class Item1
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={16476.109,14.981439,7068.6519};
+					};
+					side="West";
+					flags=5;
+					class Attributes
+					{
+						rank="LIEUTENANT";
+						description="CAS Co-Pilot";
+						isPlayable=1;
+					};
+					id=1091;
+					type="vn_b_men_aircrew_06";
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="speaker";
+							expression="_this setspeaker _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Male05ENG";
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="pitch";
+							expression="_this setpitch _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=1.04;
+								};
+							};
+						};
+						nAttributes=2;
+					};
+				};
+			};
+			class Attributes
+			{
+			};
+			id=1089;
 		};
 	};
 	class Connections
