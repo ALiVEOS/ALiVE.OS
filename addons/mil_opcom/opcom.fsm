@@ -1,4 +1,4 @@
-/*%FSM<COMPILE "Z:\home\marcel\.steam\root\steamapps\common\Arma 3 Tools\FSMEditor\scriptedFSM.cfg, opcom">*/
+/*%FSM<COMPILE "scriptedFSM.cfg, opcom">*/
 /*%FSM<HEAD>*/
 /*
 item0[] = {"INIT",0,250,-717.630066,-1005.371277,-627.630066,-955.371338,0.000000,"INIT"};
@@ -14,7 +14,7 @@ item9[] = {"OPCOM_RECEIVER",4,218,-717.074463,-838.579346,-627.074646,-788.57934
 item10[] = {"CUSTOM_condition",4,218,-502.155029,-201.889679,-412.155121,-151.889679,2.000000,"CUSTOM" \n "conditions"};
 item11[] = {"ORDER_TACOM",2,250,-924.860840,-94.510040,-425.593536,-50.306946,0.000000,"ORDER" \n "TACOM"};
 item12[] = {"TACOM_CONFIRM",4,218,-651.682068,14.823029,-561.682068,64.823029,0.000000,"TACOM" \n "CONFIRM"};
-item13[] = {"TACOM_NOT_CONFIR",4,218,-767.965027,13.736359,-677.965149,63.736359,0.000000,"TACOM" \n "NOT CONFIRM"};
+item13[] = {"TACOM_NOT_CONFIR",4,218,-767.100525,23.245697,-677.100647,73.245697,0.000000,"TACOM" \n "NOT CONFIRM"};
 item14[] = {"",7,210,-1031.257935,34.909210,-1023.257385,42.909210,0.000000,""};
 item15[] = {"_",-1,250,-433.177032,51.216019,-430.091949,51.216019,0.000000,""};
 item16[] = {"",7,210,-1032.922607,-816.473755,-1024.922607,-808.473755,0.000000,""};
@@ -113,8 +113,8 @@ link53[] = {38,6};
 link54[] = {39,40};
 link55[] = {40,6};
 link56[] = {41,18};
-globals[] = {0.000000,0,0,0,0,640,480,1,97,6316128,1,-1245.638184,-468.917297,677.057495,-1069.864380,554,1246,1};
-window[] = {0,0,0,-1,-1,1420,1278,2562,17,1,571};
+globals[] = {0.000000,0,0,0,0,640,480,1,97,6316128,1,-1394.207031,96.503479,173.147522,-1267.162598,769,743,1};
+window[] = {0,-1,-1,-1,-1,974,89,1844,59,1,787};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -154,6 +154,7 @@ class FSM
                          "private _lastanalyze = 0;" \n
                          "private _orderFailed = false;" \n
                          "private _colorside = ""ColorRed"";" \n
+                         "private _reinforcementsInProgress = false;" \n
                          "" \n
                          "private _OPCOM_SKIP_OBJECTIVES = [];" \n
                          "" \n
@@ -162,6 +163,8 @@ class FSM
                          "    case (""EAST"") : {_colorside = ""ColorRed""};" \n
                          "    case (""GUER"") : {_colorside = ""ColorGreen""};" \n
                          "};" \n
+                         "" \n
+                         "" \n
                          "" \n
                          "// debug ---------------------------------------" \n
                          "if(_debug) then {" \n
@@ -173,37 +176,37 @@ class FSM
                          "/*" \n
                          "//Mock targets for testing purposes" \n
                          "" \n
-                         "                        // markers m_0 -  m_15" \n
-                         "                        _objectives_unsorted = [];" \n
-                         "                        for ""_i"" from 0 to 15 do {" \n
-                         "                            _objectives_unsorted pushback [(getmarkerpos format[""m_%1"",_i]),150,""civilian"",25];" \n
-                         "                        };" \n
+                         "// markers m_0 -  m_15" \n
+                         "_objectives_unsorted = [];" \n
+                         "for ""_i"" from 0 to 15 do {" \n
+                         "	_objectives_unsorted pushback [(getmarkerpos format[""m_%1"",_i]),150,""civilian"",25];" \n
+                         "};" \n
                          "" \n
-                         "                        _objectives = [_objectives_unsorted,[],{([_OPCOM_HANDLER,""position""] call ALiVE_fnc_HashGet) distance (_x select 0)},""ASCEND""] call ALiVE_fnc_SortBy;" \n
-                         "                        " \n
-                         "                        //Create objectives for OPCOM and set it on the OPCOM Handler " \n
-                         "                        //GetObjectivesByPriority" \n
-                         "                        {" \n
-                         "                                    _target = [nil, ""createhashobject""] call ALIVE_fnc_OPCOM;" \n
-                         "                        " \n
-                         "                                    _id = format[""OPCOM_objective_%1_%2"",_side,_foreachIndex]; [_target, ""objectiveID"",_id] call ALIVE_fnc_HashSet;" \n
-                         "                                    _pos = _x select 0; [_target, ""center"",_pos] call ALIVE_fnc_HashSet;" \n
-                         "                                    _size = _x select 1; [_target, ""size"",_size] call ALIVE_fnc_HashSet;" \n
-                         "                                    _type = _x select 2; [_target, ""objectiveType"",_type] call ALIVE_fnc_HashSet;" \n
-                         "                                    _priority = _x select 3; [_target, ""priority"",_priority] call ALIVE_fnc_HashSet;" \n
-                         "                                    _opcom_state = ""unassigned""; [_target, ""opcom_state"",_opcom_state] call ALIVE_fnc_HashSet;" \n
-                         "                        " \n
-                         "                                    if  (_debug) then {" \n
-                         "                                        _m = createMarkerLocal [_id, _pos];" \n
-                         "                                        _m setMarkerShapeLocal ""RECTANGLE"";" \n
-                         "                                        _m setMarkerSizeLocal [_size, _size];" \n
-                         "                                        _m setMarkerTypeLocal ""hd_dot"";" \n
-                         "                                        _m setMarkerColorLocal ""ColorWhite"";" \n
-                         "                                        //_m setMarkerTextLocal format[""Objective Priority %1"",_foreachIndex];" \n
-                         "                                    };" \n
-                         "                    " \n
-                         "                                    _objectives set [_forEachIndex, _target];" \n
-                         "                         } foreach _objectives;" \n
+                         "_objectives = [_objectives_unsorted,[],{([_OPCOM_HANDLER,""position""] call ALiVE_fnc_HashGet) distance (_x select 0)},""ASCEND""] call ALiVE_fnc_SortBy;" \n
+                         "" \n
+                         "//Create objectives for OPCOM and set it on the OPCOM Handler " \n
+                         "//GetObjectivesByPriority" \n
+                         "{" \n
+                         "	_target = [nil, ""createhashobject""] call ALIVE_fnc_OPCOM;" \n
+                         "" \n
+                         "	_id = format[""OPCOM_objective_%1_%2"",_side,_foreachIndex]; [_target, ""objectiveID"",_id] call ALIVE_fnc_HashSet;" \n
+                         "	_pos = _x select 0; [_target, ""center"",_pos] call ALIVE_fnc_HashSet;" \n
+                         "	_size = _x select 1; [_target, ""size"",_size] call ALIVE_fnc_HashSet;" \n
+                         "	_type = _x select 2; [_target, ""objectiveType"",_type] call ALIVE_fnc_HashSet;" \n
+                         "	_priority = _x select 3; [_target, ""priority"",_priority] call ALIVE_fnc_HashSet;" \n
+                         "	_opcom_state = ""unassigned""; [_target, ""opcom_state"",_opcom_state] call ALIVE_fnc_HashSet;" \n
+                         "" \n
+                         "	if  (_debug) then {" \n
+                         "		_m = createMarkerLocal [_id, _pos];" \n
+                         "		_m setMarkerShapeLocal ""RECTANGLE"";" \n
+                         "		_m setMarkerSizeLocal [_size, _size];" \n
+                         "		_m setMarkerTypeLocal ""hd_dot"";" \n
+                         "		_m setMarkerColorLocal ""ColorWhite"";" \n
+                         "		//_m setMarkerTextLocal format[""Objective Priority %1"",_foreachIndex];" \n
+                         "	};" \n
+                         "" \n
+                         "	_objectives set [_forEachIndex, _target];" \n
+                         " } foreach _objectives;" \n
                          "" \n
                          "_objectives = [_OPCOM_HANDLER,""objectives"",_objectives] call ALiVE_fnc_OPCOM;" \n
                          "*/" \n
@@ -454,6 +457,10 @@ class FSM
                          "                			_OPCOM_DATA = [""analyze"",nil];" \n
                          "						  };" \n
                          "                };" \n
+                         "				" \n
+                         "				private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
+                         "				private _event = ['OPCOM_ORDER_CONFIRMED', [_opcomID, _target,_operation, _side, _factions], ""OPCOM""] call ALIVE_fnc_event;" \n
+                         "				[ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
                          "" \n
                          "                // debug ---------------------------------------" \n
                          "                if(_debug) then { [""TACOM message received: %1 %2! Details: %3!"",([_target,""opcom_state""] call AliVE_fnc_HashGet),([_target,""objectiveID""] call AliVE_fnc_HashGet),_return] call ALIVE_fnc_dumpR; };" \n
@@ -621,7 +628,7 @@ class FSM
                                         priority = 0.000000;
                                         to="REQUEST_REEINFOR";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"!(isnil ""_reinforce"");"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(isnil ""_reinforce"") && !_reinforcementsInProgress;"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -1083,31 +1090,30 @@ class FSM
                          "    _base = [_OPCOM_HANDLER,""findReinforcementBase""] call ALiVE_fnc_OPCOM;" \n
                          "" \n
                          "    if (isnil ""_base"") exitwith {" \n
-                         "        if (_debug) then {[""ALiVE OPCOM - Requesting reinforcments for side %1 not possible! No position secured!"",_side] call ALiVE_fnc_DumpR};" \n
+                         "        if (_debug) then {[""OPCOM - Requesting reinforcments for side %1 not possible! No position secured!"",_side] call ALiVE_fnc_dumpR};" \n
                          "    };" \n
                          "    " \n
-                         "    [_base,_reinforce,_factions,_side] spawn {" \n
+                         "    [_OPCOM_HANDLER, _base,_reinforce,_factions,_side] spawn {" \n
                          "" \n
-                         "        _base = _this select 0;" \n
-                         "        _reinforce = _this select 1;" \n
-                         "        _factions = _this select 2;" \n
-                         "        _side = _this select 3;" \n
-                         "        _debug = false;" \n
+                         "		params [""_opcom"",""_base"",""_reinforce"",""_factions"",""_side""];" \n
+                         "" \n
+                         "		private _opcomFSM = [_opcom,""OPCOM_FSM""] call ALiVE_fnc_hashGet;" \n
+                         "        _debug = [_opcom,""debug""] call ALiVE_fnc_hashGet;" \n
                          "" \n
                          "        // Reinforcement of air assets is handled by ATO" \n
                          "        _reinforce set [4,0]; // air" \n
                          "" \n
-                         "        _infantry = if ((_reinforce select 0) > 8) then {8} else {_reinforce select 0};" \n
-                         "        _motorized = if ((_reinforce select 1) > 5) then {5} else {_reinforce select 1};" \n
-                         "        _mechanized = if ((_reinforce select 2) > 10) then {10} else {_reinforce select 2};" \n
-                         "        _armoured = if (((_reinforce select 3) + (_reinforce select 6) + (_reinforce select 7)) > 10) then {10} else {((_reinforce select 3) + (_reinforce select 6) + (_reinforce select 7))};" \n
-                         "        _air = if ((_reinforce select 4) > 5) then {5} else {_reinforce select 4};" \n
+                         "        _infantry = (_reinforce select 0) min 8;" \n
+                         "        _motorized = (_reinforce select 1) min 5;" \n
+                         "        _mechanized = (_reinforce select 2) min 10;" \n
+                         "        _armoured = ((_reinforce select 3) + (_reinforce select 6) + (_reinforce select 7)) min 10;" \n
+                         "        _air = (_reinforce select 4) min 5;" \n
                          "        " \n
                          "        _position = [_base,""center""] call ALiVE_fnc_HashGet;" \n
                          "        _faction = selectRandom _factions;" \n
                          "" \n
                          "        // Calculate total amount of air vehicles that could be present" \n
-                         "        _airAssets = _air + _infantry + _motorized;        " \n
+                         "        _airAssets = _air + _infantry + _motorized;" \n
                          "                            " \n
                          "        if (_airAssets > 2) then {" \n
                          "" \n
@@ -1124,14 +1130,25 @@ class FSM
                          "            _event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,""STANDARD""],""OPCOM""] call ALIVE_fnc_event;" \n
                          "            _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;            " \n
                          "" \n
-                         "            // Then send air transports and reinforced air assets with a 70 seconds delay so they do not crash in each other            " \n
-                         "            for ""_i"" from 1 to ceil(_airAssets / 2) do {" \n
+                         "            // Then send air transports and reinforced air assets with a 210 second delay so they do not crash in each other" \n
+                         "			private _numberOfWaves = ceil(_airAssets / 2);" \n
+                         "			if (_numberOfWaves > 1) then {" \n
+                         "				_opcomFSM setFSMVariable [""_reinforcementsInProgress"", true];" \n
+                         "			};" \n
+                         "			" \n
+                         "            for ""_i"" from 1 to _numberOfWaves do {" \n
                          "" \n
                          "                sleep 10;" \n
+                         "				" \n
+                         "				private _infantryToSend = _infantry min 2;" \n
+                         "				private _motorizedToSend = _motorized min 2;" \n
+                         "				" \n
+                         "				_infantry = _infantry - _infantryToSend;" \n
+                         "				_motorized = _motorized - _motorizedToSend;" \n
                          "" \n
                          "                _forceMakeup = [" \n
-                         "                    if (_infantry > 2) then {_infantry = _infantry - 2; 2} else {_infantryTmp = _infantry; _infantry = 0; _infantryTmp}," \n
-                         "                    if (_motorized > 2) then {_motorized = _motorized - 2; 2} else {_motorizedTmp = _motorized; _motorized = 0; _motorizedTmp}," \n
+                         "                    _infantryToSend," \n
+                         "                    _motorizedToSend," \n
                          "                    0," \n
                          "                    0," \n
                          "                    0, // Zero since plane reinforcements are handled by ATO " \n
@@ -1141,20 +1158,22 @@ class FSM
                          "                _event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,""STANDARD""],""OPCOM""] call ALIVE_fnc_event;" \n
                          "                _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
                          "" \n
-                         "					 if ((_air + _infantry + _motorized) == 0) exitwith {};" \n
+                         "                if ((_air + _infantry + _motorized) == 0) exitwith {" \n
+                         "					_opcomFSM setFSMVariable [""_reinforcementsInProgress"", false];" \n
+                         "				};" \n
                          "" \n
-                         "                sleep 60;" \n
+                         "                sleep 200;" \n
                          "            };" \n
                          "" \n
                          "        } else {" \n
                          "" \n
                          "            _forceMakeup = [" \n
-                         "                if ((_reinforce select 0) > 10) then {10} else {_reinforce select 0}," \n
-                         "                if ((_reinforce select 1) > 10) then {10} else {_reinforce select 1}," \n
-                         "                if ((_reinforce select 2) > 10) then {10} else {_reinforce select 2}," \n
-                         "                if (((_reinforce select 3) + (_reinforce select 6) + (_reinforce select 7)) > 10) then {10} else {((_reinforce select 3) + (_reinforce select 6) + (_reinforce select 7))}," \n
-                         "                if ((_reinforce select 4) > 10) then {10} else {_reinforce select 4}," \n
-                         "                if ((_reinforce select 5) > 10) then {10} else {_reinforce select 5}" \n
+                         "                (_reinforce select 0) min 10," \n
+                         "                (_reinforce select 1) min 10," \n
+                         "                (_reinforce select 2) min 10," \n
+                         "                ((_reinforce select 3) + (_reinforce select 6) + (_reinforce select 7)) min 10," \n
+                         "                (_reinforce select 4) min 10," \n
+                         "                (_reinforce select 5) min 10" \n
                          "            ];" \n
                          "" \n
                          "            _event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,""STANDARD""],""OPCOM""] call ALIVE_fnc_event;" \n
@@ -1163,9 +1182,7 @@ class FSM
                          "        " \n
                          "        if (_debug) then {" \n
                          "            {" \n
-                         "                private [""_typeReinf""];" \n
-                         "            " \n
-                         "                _typeReinf = _foreachIndex;" \n
+                         "                private _typeReinf = _foreachIndex;" \n
                          "            " \n
                          "                switch (_typeReinf) do {" \n
                          "                    case 0 : {_typeReinf = ""infantry""};" \n
@@ -1178,17 +1195,17 @@ class FSM
                          "                    case 7 : {_typeReinf = ""Artillery""};" \n
                          "                };" \n
                          "            " \n
-                         "                [""ALiVE OPCOM - Requesting reinforcments for side %3 %1x %2 units!"",_x,_typeReinf,_side] call ALiVE_fnc_DumpR;" \n
+                         "                [""OPCOM - Requesting reinforcments for side %3 %1x %2 units!"",_x,_typeReinf,_side] call ALiVE_fnc_dumpR;" \n
                          "            } foreach _reinforce;" \n
                          "" \n
-                         "				[""ALiVE OPCOM - FORCEMAKEUP DATA %1 | %2 | %3 | %4""," \n
-                         "                    _infantry," \n
-                         "                    _motorized," \n
-                         "                    _mechanized," \n
-                         "                    _armoured," \n
-                         "                    0," \n
-                         "                    0" \n
-                         "                ] call ALiVE_fnc_DumpR;" \n
+                         "			[""ALiVE OPCOM - FORCEMAKEUP DATA %1 | %2 | %3 | %4""," \n
+                         "				_infantry," \n
+                         "				_motorized," \n
+                         "				_mechanized," \n
+                         "				_armoured," \n
+                         "				0," \n
+                         "				0" \n
+                         "			] call ALiVE_fnc_DumpR;" \n
                          "        };" \n
                          "    };" \n
                          "};" \n
@@ -1247,14 +1264,14 @@ class FSM
                          "  if ( _currentCount != 0 && _startCount != 0 && [""ALiVE_MIL_LOGISTICS""] call ALiVE_fnc_isModuleAvailable) then {" \n
                          "" \n
                          "    if (_debug) then {" \n
-                         "        [""ALiVE OPCOM analysing troops for logistics""] call ALiVE_fnc_DumpR;" \n
+                         "        [""OPCOM analysing troops for logistics""] call ALiVE_fnc_dumpR;" \n
                          "        [""Starting Forces: %1"",_startForcesStrength] call ALiVE_fnc_DumpR;" \n
                          "        [""Current Forces: %1"",_currentForceStrength] call ALiVE_fnc_DumpR;" \n
                          "        [""Difference: %1"",_diff] call ALiVE_fnc_DumpR;" \n
                          "        [""Starting Count: %1"",_startCount] call ALiVE_fnc_DumpR;" \n
                          "        [""Current Count: %1"",_currentCount] call ALiVE_fnc_DumpR;" \n
                          "        [""Needed Ratio: %1"",_reinforcementRatio] call ALiVE_fnc_DumpR;" \n
-                         "        [""ALiVE OPCOM reinforcements needed: %1"",((_currentCount / _startCount) < _reinforcementRatio)] call ALiVE_fnc_DumpR;" \n
+                         "        [""OPCOM reinforcements needed: %1"",((_currentCount / _startCount) < _reinforcementRatio)] call ALiVE_fnc_dumpR;" \n
                          "    };" \n
                          "      " \n
                          "    if ((_currentCount / _startCount) < _reinforcementRatio) then {_reinforce = +_diff};" \n

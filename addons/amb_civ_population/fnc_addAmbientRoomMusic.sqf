@@ -24,7 +24,7 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-params ["_building",["_faction","CIV"]];
+params ["_building",["_faction","CIV_F"]];
 
 private _musicSource = "RoadCone_L_F" createVehicle position _building;
 _musicSource attachTo [_building,[1,1,1]];
@@ -35,6 +35,7 @@ hideObjectGlobal _musicSource;
     private _tracksPlayed = 1;
     private _source = [ALIVE_civilianFactionHouseTracks, _faction, []] call ALIVE_fnc_hashGet;
     if (count _source == 0) then {
+        ["Warning: Cannot find %1 in ALIVE_civilianFactionHouseTracks", _faction] call ALiVE_fnc_dump;
         _source = ALIVE_civilianHouseTracks;
     };
     private _totalTracks = count (_source select 1);

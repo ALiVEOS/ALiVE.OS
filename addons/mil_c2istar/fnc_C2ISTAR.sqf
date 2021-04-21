@@ -1238,7 +1238,6 @@ switch(_operation) do {
 
                 case "TASK_ADD_MAP_CLICK_NULL": {
 
-
                 };
 
                 case "TASK_ADD_MANAGE_PLAYERS_BUTTON_CLICK": {
@@ -1471,9 +1470,17 @@ switch(_operation) do {
                     _taskCurrentEditButton ctrlShow true;
                     _taskCurrentEditButton ctrlSetEventHandler ["MouseButtonClick", "['TASK_CURRENT_EDIT_BUTTON_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
 
+                    // Only allow parent tasks to be deleted
                     _taskCurrentDeleteButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskCurrentListDeleteButton);
-                    _taskCurrentDeleteButton ctrlShow true;
-                    _taskCurrentDeleteButton ctrlSetEventHandler ["MouseButtonClick", "['TASK_CURRENT_DELETE_BUTTON_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
+                    _taskCurrentDeleteButton ctrlShow false;
+
+                    private _currentTask = [_taskingState,"currentTaskListSelectedValue"] call ALIVE_fnc_hashGet;
+                    private _isParentTask = _currentTask select 11 == "None";
+
+                    if (_isParentTask) then {
+                        _taskCurrentDeleteButton ctrlShow true;
+                        _taskCurrentDeleteButton ctrlSetEventHandler ["MouseButtonClick", "['TASK_CURRENT_DELETE_BUTTON_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
+                    };
 
                 };
 

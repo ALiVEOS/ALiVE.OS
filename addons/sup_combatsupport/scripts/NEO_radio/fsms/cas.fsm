@@ -32,10 +32,12 @@ item27[] = {"__8",2,250,102.770233,578.284058,192.770218,628.284058,0.000000,""}
 item28[] = {"Attack",4,218,236.318878,328.071045,326.319061,378.071075,0.000000,"Attack"};
 item29[] = {"__9",2,250,231.784821,410.297485,321.784790,460.297638,0.000000,""};
 item30[] = {"nr_position",4,218,236.070999,501.930420,326.070984,551.930481,0.000000,"nr position"};
-item31[] = {"__10",2,4346,236.055298,615.580505,326.055267,665.580505,0.000000,""};
+item31[] = {"__10",2,250,236.055298,615.580505,326.055267,665.580505,0.000000,""};
 item32[] = {"",7,210,270.519501,264.013885,278.519501,272.013885,0.000000,""};
 item33[] = {"__11",2,250,405.681854,578.019287,495.681854,628.019287,0.000000,""};
 item34[] = {"at_base",4,218,500.489563,627.793274,590.489563,677.793274,0.000000,"at base"};
+item35[] = {"landed",4,218,390.638611,917.867065,480.638611,967.867065,0.000000,"landed"};
+item36[] = {"__12",2,250,252.746429,911.599243,342.746460,961.599243,0.000000,""};
 link0[] = {0,1};
 link1[] = {0,3};
 link2[] = {1,2};
@@ -63,7 +65,7 @@ link23[] = {16,10};
 link24[] = {17,16};
 link25[] = {17,18};
 link26[] = {18,19};
-link27[] = {19,20};
+link27[] = {19,35};
 link28[] = {20,16};
 link29[] = {21,24};
 link30[] = {21,32};
@@ -84,8 +86,10 @@ link44[] = {32,28};
 link45[] = {33,16};
 link46[] = {33,34};
 link47[] = {34,15};
-globals[] = {0.000000,0,0,0,0,640,480,1,66,6316128,1,-773.082947,767.814148,1312.105591,93.721832,1118,884,1};
-window[] = {2,-1,-1,-32000,-32000,789,1972,3232,52,3,1136};
+link48[] = {35,36};
+link49[] = {36,20};
+globals[] = {0.000000,0,0,0,0,640,480,1,68,6316128,1,-218.901215,833.197510,1265.211426,473.675842,1175,884,1};
+window[] = {2,-1,-1,-1,-1,893,156,1416,156,3,1193};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -502,21 +506,16 @@ class FSM
                 {
                         name = "__2";
                         itemno = 12;
-                        init = /*%FSM<STATEINIT""">*/"[_veh,_callsign, _audio, _player] spawn" \n
-                         "{" \n
-                         "        private [""_veh"", ""_callsign""];" \n
-                         "        _veh = _this select 0;" \n
-                         "        _callsign = _this select 1;" \n
-                         "        _audio = _this select 2;" \n
-                         "        _player = _this select 3;" \n
+                        init = /*%FSM<STATEINIT""">*/"[_veh,_callsign, _audio, _player] spawn {" \n
+                         "	params [""_veh"",""_callsign"",""_audio"",""_player""];" \n
                          "" \n
-                         "          sleep 5;" \n
+                         "	sleep 5;" \n
                          "" \n
-                         "        if (_audio) then {" \n
-                         "            leader _veh kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Heli_Accomplished"", ""GROUP""];    " \n
-                         "        } else {" \n
-                         "              [[_veh, format[""%1 is RTB. Out."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
-                         "        };" \n
+                         "	if (_audio) then {" \n
+                         "		leader _veh kbTell [_player, ""ALIVE_SUPP_protocol"", ""CAS_Heli_Accomplished"", ""GROUP""];    " \n
+                         "	} else {" \n
+                         "		[[_veh, format[""%1 is RTB. Out."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "	};" \n
                          "};" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -629,6 +628,7 @@ class FSM
                          "_veh setDamage 0;" \n
                          "_veh setVehicleAmmo 1;" \n
                          "_veh setFuel 0;" \n
+                         "_veh engineOn false;" \n
                          "" \n
                          "_parking = true;" \n
                          "" \n
@@ -769,9 +769,8 @@ class FSM
                                          "" \n
                                          "[_veh, ""LAND""] call ALiVE_fnc_landRemote;" \n
                                          "" \n
-                                         "if (_veh isKindOf ""Helicopter"") then" \n
-                                         "{" \n
-                                         "  [[_veh, format[""%1 is at base. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                                         "if (_veh isKindOf ""Helicopter"") then {" \n
+                                         "	[[_veh, format[""%1 is at base. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                                          "};" \n
                                          ""/*%FSM</ACTION""">*/;
                                 };
@@ -784,64 +783,19 @@ class FSM
                 {
                         name = "__5";
                         itemno = 19;
-                        init = /*%FSM<STATEINIT""">*/"_veh setFuel 1;" \n
-                         "_veh setVehicleAmmo 1;" \n
-                         "_veh setDamage 0;" \n
-                         "" \n
-                         ""/*%FSM</STATEINIT""">*/;
+                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
-                                /*%FSM<LINK "killed">*/
-                                class killed
+                                /*%FSM<LINK "landed">*/
+                                class landed
                                 {
-                                        itemno = 1;
-                                        priority = 50.000000;
-                                        to="end1";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/"private [""_aliveAsset"",""_canMoveAsset"",""_aliveDriver"",""_damaged""];" \n
-                                         "" \n
-                                         "_aliveAsset = alive _veh;" \n
-                                         "_canMoveAsset = canMove _veh;" \n
-                                         "_damaged = (damage _veh) > 0.1;" \n
-                                         "_aliveDriver = alive driver _veh;" \n
-                                         ""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"!_aliveAsset" \n
-                                         "||" \n
-                                         "{!_canMoveAsset && {_damaged}}" \n
-                                         "||" \n
-                                         "{!_aliveDriver}"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"_veh setVariable [""NEO_radioCasUnitStatus"", ""KILLED"", true];" \n
-                                         "" \n
-                                         "if !(isNil ""_h"") then {deleteVehicle _h};"/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                                /*%FSM<LINK "New_Task">*/
-                                class New_Task
-                                {
-                                        itemno = 3;
-                                        priority = 10.000000;
-                                        to="_";
+                                        itemno = 35;
+                                        priority = 0.000000;
+                                        to="__12";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"!isNil { _veh getVariable ""NEO_radioCasNewTask"" }" \n
-                                         ""/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"if(_restoreAmmo) then {" \n
-                                         "    _restoreAmmo = false;" \n
-                                         "    [_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
-                                         "};" \n
-                                         "" \n
-                                         "_taskArray = _veh getVariable ""NEO_radioCasNewTask"";" \n
-                                         "_task = _taskArray select 0;" \n
-                                         "_posCas = _taskArray select 1;" \n
-                                         "_radiusCas = _taskArray select 2;" \n
-                                         "_flyInHeight = _taskArray select 3;" \n
-                                         "_weapon =  _taskArray select 4;" \n
-                                         "_ROE = _taskArray select 5;" \n
-                                         "_player = _taskArray select 6;" \n
-                                         "" \n
-                                         "_veh setVariable [""NEO_radioCurrentTask"",_veh getVariable ""NEO_radioCasNewTask"", true];" \n
-                                         "_veh setVariable [""NEO_radioCasNewTask"", nil, true];" \n
-                                         "" \n
-                                         ""/*%FSM</ACTION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"isTouchingGround _veh"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };
@@ -1226,26 +1180,8 @@ class FSM
                          "	_radiusCas = _this select 9;" \n
                          "" \n
                          "	_needsAlign = false;" \n
-                         "	//_target = [_veh, _posCas, _radiusCas,_weapon] call NEO_fnc_pickCasTarget;" \n
-                         "" \n
-                         "	_enemies = _veh call BIS_fnc_enemySides;" \n
-                         "	_dummy = ""CBA_O_InvisibleTargetVehicle"";" \n
-                         "" \n
-                         "	if (EAST in _enemies) then {" \n
-                         "		_dummy = ""CBA_O_InvisibleTargetVehicle"";" \n
-                         "	} else {" \n
-                         "		if (WEST in _enemies) then {" \n
-                         "			_dummy = ""CBA_B_InvisibleTargetVehicle"";" \n
-                         "		} else {" \n
-                         "			if (RESISTANCE in _enemies) then {" \n
-                         "				_dummy = ""CBA_I_InvisibleTargetVehicle"";" \n
-                         "			};" \n
-                         "		};" \n
-                         "	};" \n
-                         "" \n
-                         "	_target = _dummy createVehicle [_posCas select 0, _posCas select 1, 0];" \n
-                         "	_laser = ""LaserTargetBase"" createVehicle [getpos _target select 0,getpos _target select 1,0];" \n
-                         "	_Laser attachto [_target,[0,0,4]];" \n
+                         "	" \n
+                         "	_target = [_veh, _posCas, _radiusCas,_weapon] call NEO_fnc_pickCasTarget;" \n
                          "" \n
                          "	[""Telling %1 to target %2 (%3 %4)"",_veh,_target, _posCas,_radiusCas] call ALiVE_fnc_dump;" \n
                          "	" \n
@@ -1315,8 +1251,6 @@ class FSM
                          "        _grp enableAttack false;" \n
                          "    };" \n
                          "" \n
-                         "	deleteVehicle _Laser;" \n
-                         "	deleteVehicle _target;" \n
                          "};"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
@@ -1447,6 +1381,73 @@ class FSM
                                         condition=/*%FSM<CONDITION""">*/"// Landed and waiting at starting position" \n
                                          "((getposATL _veh) select 2) < 1 && {_veh distance _base < 20};"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "__12">*/
+                class __12
+                {
+                        name = "__12";
+                        itemno = 36;
+                        init = /*%FSM<STATEINIT""">*/"_veh setFuel 1;" \n
+                         "_veh setVehicleAmmo 1;" \n
+                         "_veh setDamage 0;" \n
+                         "_veh engineOn false;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "killed">*/
+                                class killed
+                                {
+                                        itemno = 1;
+                                        priority = 50.000000;
+                                        to="end1";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/"private [""_aliveAsset"",""_canMoveAsset"",""_aliveDriver"",""_damaged""];" \n
+                                         "" \n
+                                         "_aliveAsset = alive _veh;" \n
+                                         "_canMoveAsset = canMove _veh;" \n
+                                         "_damaged = (damage _veh) > 0.1;" \n
+                                         "_aliveDriver = alive driver _veh;" \n
+                                         ""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!_aliveAsset" \n
+                                         "||" \n
+                                         "{!_canMoveAsset && {_damaged}}" \n
+                                         "||" \n
+                                         "{!_aliveDriver}"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"_veh setVariable [""NEO_radioCasUnitStatus"", ""KILLED"", true];" \n
+                                         "" \n
+                                         "if !(isNil ""_h"") then {deleteVehicle _h};"/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "New_Task">*/
+                                class New_Task
+                                {
+                                        itemno = 3;
+                                        priority = 10.000000;
+                                        to="_";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!isNil { _veh getVariable ""NEO_radioCasNewTask"" }" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"if(_restoreAmmo) then {" \n
+                                         "    _restoreAmmo = false;" \n
+                                         "    [_veh,_ammoCount] call NEO_fnc_reenableWeapons;" \n
+                                         "};" \n
+                                         "" \n
+                                         "_taskArray = _veh getVariable ""NEO_radioCasNewTask"";" \n
+                                         "_task = _taskArray select 0;" \n
+                                         "_posCas = _taskArray select 1;" \n
+                                         "_radiusCas = _taskArray select 2;" \n
+                                         "_flyInHeight = _taskArray select 3;" \n
+                                         "_weapon =  _taskArray select 4;" \n
+                                         "_ROE = _taskArray select 5;" \n
+                                         "_player = _taskArray select 6;" \n
+                                         "" \n
+                                         "_veh setVariable [""NEO_radioCurrentTask"",_veh getVariable ""NEO_radioCasNewTask"", true];" \n
+                                         "_veh setVariable [""NEO_radioCasNewTask"", nil, true];" \n
+                                         "" \n
+                                         ""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };

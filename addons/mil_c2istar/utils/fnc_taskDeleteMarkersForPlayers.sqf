@@ -21,10 +21,12 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_taskPosition","_taskSide","_taskID","_taskPlayers","_taskType","_colour","_markerDefinition","_player"];
+private ["_taskPosition","_taskSide","_taskType","_colour","_markerDefinition","_player"];
 
-_taskPlayers = _this select 0;
-_taskID = _this select 1;
+params [
+    ["_taskPlayers", []],
+    ["_taskID", "", [""]]
+];
 
 {
     _player = [_x] call ALIVE_fnc_getPlayerByUID;

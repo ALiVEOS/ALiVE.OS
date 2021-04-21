@@ -704,7 +704,10 @@ ALiVE_fnc_spawnFurniture = {
     _pos = getposATL _building;
     _positions = [_pos,15] call ALIVE_fnc_findIndoorHousePositions;
 
-    if (count _positions == 0) exitwith {[]};
+    if (count _positions == 0) exitwith {
+        ["ALiVE MIL OPCOM Insurgency has not found indoor Houspositions to place IED Factory/HQ/depot objects for building %1 at %2",_building, getposATL _building] call ALiVE_fnc_Dump;
+        [];
+    };
 
     {
         private ["_pos"];
@@ -714,7 +717,12 @@ ALiVE_fnc_spawnFurniture = {
         if ({(_pos select 2) - (_x select 2) < 0.5} count _positions > 1) then {
             if (random 1 < 0.3) then {
                 _furniture = createVehicle [(selectRandom _furnitures), _pos, [], 0, "CAN_COLLIDE"];
+                _furniture setposATL _pos;
                 _furniture setdir getdir _building;
+
+                // Disable sim to avoid flipping furniture. Bombs are not affected and still exploding.
+                // Once building is destroyed or site is disabled, the furniture gets deleted.
+                _furniture enableSimulation false;
 
                 _created pushback _furniture;
 
@@ -974,3 +982,54 @@ ALiVE_fnc_INS_compileList = {
             _list = [_list, ",", ", "] call CBA_fnc_replace;
             _list;
 };
+
+ALiVE_fnc_INS_filterObjectiveBuildings = {
+
+    params ["_center","_size"];
+
+    private _buildings = [_center, _size] call ALiVE_fnc_getEnterableHouses;
+
+    //["Enterable buildings total: %1",_buildings] call ALiVE_fnc_DumpR;
+
+    {
+        private _h = _x;
+        private _type = typeOf _h;
+        private _index = _foreachIndex;
+        private _blacklist = ["tower","cage","platform","trench","bridge"];
+
+        //["Building selected: %1 | %2",typeOf _h, _h] call ALiVE_fnc_DumpR;
+
+        private _buildingPositions = [getposATL _h,5] call ALIVE_fnc_findIndoorHousePositions;
+        
+        if (count _buildingPositions == 0) then {
+            //["Deleted buildingtype %1! No indoor houseposition!",typeof _h] call ALiVE_fnc_DumpR;
+            _buildings set [_index,objNull];
+        } else {          
+            private _dimensions = _h call BIS_fnc_boundingBoxDimensions;
+
+            // too small
+            if (((_dimensions select 0) + (_dimensions select 1)) < 10) then {
+                //["Deleted buildingtype %1! Building is too small!",typeof _h] call ALiVE_fnc_DumpR;
+
+                _buildings set [_index,objNull];
+            } else {
+                if (
+                    //Building is double as high as broad and is very likely a tower, or contains a blacklisted class
+                    (((_dimensions select 2)/2) > (_dimensions select 0) && {((_dimensions select 2)/2) > (_dimensions select 1)})
+                    ||
+                    {{[_type , _x] call CBA_fnc_find != -1} count _blacklist > 0}
+                ) then {
+                    //["Deleted buildingtype %1! Building is a tower or blacklisted!",typeof _h] call ALiVE_fnc_DumpR;
+                    _buildings set [_index,objNull];
+                };
+            };
+        };
+    } foreach _buildings;
+
+    _buildings = _buildings - [objNull];
+
+    //["Enterable buildings filtered: %1",_buildings] call ALiVE_fnc_DumpR;
+
+    _buildings;
+};
+
