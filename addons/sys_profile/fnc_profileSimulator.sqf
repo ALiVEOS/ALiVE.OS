@@ -890,7 +890,6 @@ if (!_simAttacks) then {
 
                         if (!isnil "_attacker") then {
                             [_attacker,"combat", false] call ALiVE_fnc_hashSet;
-                            [_attacker,"attackID"] call ALiVE_fnc_hashRem;
                         };
                     };
 

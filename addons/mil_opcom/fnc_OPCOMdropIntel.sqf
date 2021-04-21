@@ -56,13 +56,14 @@ if (!isNull _object) then {
     //Add Action globally
     _args = [
         "Read Intel", //Action Text
-        {_object = _this select 0; _caller = _this select 1; _params = _this select 3; openmap true; [_params select 0, 1500, _params select 1] call ALiVE_fnc_OPCOMToggleInstallations}, //Action Code
+        {_object = _this select 0; _caller = _this select 1; _params = _this select 3; openmap true; [_params select 0, 1500, _params select 1] call ALiVE_fnc_OPCOMToggleInstallations; deleteVehicle _object}, //Action Code
         [_position,_side], //Params
         1, //Prio
         false, //showWindow
         true, //hideOnUse
         "", //showrtcut
-        "alive _target" //condition
+        "true", //condition
+        2
     ];
     [[_object, _args],"addAction",true,true] call BIS_fnc_MP;
 
@@ -79,7 +80,7 @@ if (!isNull _object) then {
         _object = _this select 1;
         _marker = _this select 2;
 
-        waituntil {sleep 10; isNil "_unit" || {isNull _unit}};
+        waituntil {sleep 20; isNil "_unit" || {isNull _unit}};
 
         //["OPCOM DropIntel TRACE deleting object %1! DropIntel finishing!",_object] call ALiVE_fnc_dumpR;
         //deleteMarker _marker;

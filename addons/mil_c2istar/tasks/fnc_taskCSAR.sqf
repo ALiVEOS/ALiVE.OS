@@ -217,7 +217,7 @@ switch (_taskState) do {
             _aircraftName = getText(configFile >> "CfgVehicles" >> _aircraft >> "displayName");
 
             // For CSAR missions place the marker within 1000m of the actual crashsite or crew, so that players have to search
-            _newTaskPosition = _targetPosition getpos [300 + (random 200),random 360];
+            _newTaskPosition = _targetPosition getpos [200 + (random 200),random 360];
 
             // Rescue
             _nearestTown = [_newTaskPosition] call ALIVE_fnc_taskGetNearestLocationName;
@@ -490,7 +490,7 @@ switch (_taskState) do {
 
                         _position = getPos _crew;
 
-                        if (!_crashsite && !_crewFound && [_targetposition,_taskPlayers,350] call ALIVE_fnc_taskHavePlayersReachedDestination) then {
+                        if (!_crashsite && !_crewFound && [_targetposition,_taskPlayers,500] call ALIVE_fnc_taskHavePlayersReachedDestination) then {
                             // Chat update
                             _formatChat = [_currentTaskDialog,"chat_update"] call ALIVE_fnc_hashGet;
                             _formatMessage = _formatChat select 0;

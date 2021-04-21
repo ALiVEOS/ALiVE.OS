@@ -1242,54 +1242,57 @@ switch (_operation) do {
         if (_args isEqualType "") then {
             private _taskID = _args;
             private _task = [_logic, "getTask", _taskID] call MAINCLASS;
-            private _taskSide = _task select 2;
-            private _taskPlayers = _task select 7 select 0;
 
-            // Remove any markers
-            [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+            if (!isNil "_task") then {
+                private _taskSide = _task select 2;
+                private _taskPlayers = _task select 7 select 0;
 
-            // prepare tasks to dispatch
-            private _tasksToDispatch = [_logic, "tasksToDispatch"] call ALIVE_fnc_hashGet;
-            private _deleteTasks = [_tasksToDispatch, "delete"] call ALIVE_fnc_hashGet;
+                // Remove any markers
+                [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
 
-            {
-                // prepare task for dispatch to this player
-                [_deleteTasks, _x, _task] call ALIVE_fnc_hashSet;
-            } forEach _taskPlayers;
+                // prepare tasks to dispatch
+                private _tasksToDispatch = [_logic, "tasksToDispatch"] call ALIVE_fnc_hashGet;
+                private _deleteTasks = [_tasksToDispatch, "delete"] call ALIVE_fnc_hashGet;
 
-            // remove from main tasks hash
-            private _tasks = [_logic, "tasks"] call ALIVE_fnc_hashGet;
-            [_tasks, _taskID] call ALIVE_fnc_hashRem;
-            [_logic, "tasks", _tasks] call ALIVE_fnc_hashSet;
+                {
+                    // prepare task for dispatch to this player
+                    [_deleteTasks, _x, _task] call ALIVE_fnc_hashSet;
+                } forEach _taskPlayers;
 
-            // remove from tasks by side hash
-            private _tasksBySide = [_logic, "tasksBySide"] call ALIVE_fnc_hashGet;
-            private _sideTasks = [_tasksBySide, _taskSide] call ALIVE_fnc_hashGet;
-            [_sideTasks, _taskID] call ALIVE_fnc_hashRem;
-            [_tasksBySide, _taskSide, _sideTasks] call ALIVE_fnc_hashSet;
+                // remove from main tasks hash
+                private _tasks = [_logic, "tasks"] call ALIVE_fnc_hashGet;
+                [_tasks, _taskID] call ALIVE_fnc_hashRem;
+                [_logic, "tasks", _tasks] call ALIVE_fnc_hashSet;
 
-            // remove from tasks by groups hash
-            private _tasksByGroup = [_logic, "tasksByGroup"] call ALIVE_fnc_hashGet;
-            {
-                private _group = _x;
-                private _groupTasks = [_tasksByGroup, _group] call ALIVE_fnc_hashGet;
-                [_groupTasks, _taskID] call ALIVE_fnc_hashRem;
-                [_tasksByGroup, _group, _groupTasks] call ALIVE_fnc_hashSet;
-            } forEach (_tasksByGroup select 1);
+                // remove from tasks by side hash
+                private _tasksBySide = [_logic, "tasksBySide"] call ALIVE_fnc_hashGet;
+                private _sideTasks = [_tasksBySide, _taskSide] call ALIVE_fnc_hashGet;
+                [_sideTasks, _taskID] call ALIVE_fnc_hashRem;
+                [_tasksBySide, _taskSide, _sideTasks] call ALIVE_fnc_hashSet;
 
-            // remove from tasks from player hash
-            private _tasksByPlayer = [_logic, "tasksByPlayer"] call ALIVE_fnc_hashGet;
-            {
-                private _player = _x;
-                private _playerTasks = [_tasksByPlayer, _player] call ALIVE_fnc_hashGet;
-                [_playerTasks, _taskID] call ALIVE_fnc_hashRem;
-                [_tasksByPlayer, _player, _playerTasks] call ALIVE_fnc_hashSet;
-            } forEach (_tasksByPlayer select 1);
+                // remove from tasks by groups hash
+                private _tasksByGroup = [_logic, "tasksByGroup"] call ALIVE_fnc_hashGet;
+                {
+                    private _group = _x;
+                    private _groupTasks = [_tasksByGroup, _group] call ALIVE_fnc_hashGet;
+                    [_groupTasks, _taskID] call ALIVE_fnc_hashRem;
+                    [_tasksByGroup, _group, _groupTasks] call ALIVE_fnc_hashSet;
+                } forEach (_tasksByGroup select 1);
 
-            // remove from active tasks
-            private _activeTasks = [_logic, "activeTasks"] call ALIVE_fnc_hashGet;
-            if (_taskID in (_activeTasks select 1)) then {
-                [_activeTasks, _taskID] call ALIVE_fnc_hashRem;
+                // remove from tasks from player hash
+                private _tasksByPlayer = [_logic, "tasksByPlayer"] call ALIVE_fnc_hashGet;
+                {
+                    private _player = _x;
+                    private _playerTasks = [_tasksByPlayer, _player] call ALIVE_fnc_hashGet;
+                    [_playerTasks, _taskID] call ALIVE_fnc_hashRem;
+                    [_tasksByPlayer, _player, _playerTasks] call ALIVE_fnc_hashSet;
+                } forEach (_tasksByPlayer select 1);
+
+                // remove from active tasks
+                private _activeTasks = [_logic, "activeTasks"] call ALIVE_fnc_hashGet;
+                if (_taskID in (_activeTasks select 1)) then {
+                    [_activeTasks, _taskID] call ALIVE_fnc_hashRem;
+                };
             };
         };
     };
