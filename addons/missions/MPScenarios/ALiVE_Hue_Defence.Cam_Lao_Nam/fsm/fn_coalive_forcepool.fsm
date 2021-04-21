@@ -20,7 +20,7 @@ link6[] = {6,7};
 link7[] = {7,8};
 link8[] = {8,7};
 globals[] = {0.000000,0,0,0,0,640,480,1,217,6316128,1,-401.612640,203.825958,197.786682,-477.103699,802,894,1};
-window[] = {2,-1,-1,-32000,-32000,1043,26,1698,26,3,820};
+window[] = {2,-1,-1,-1,-1,1095,78,1750,78,3,820};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -122,8 +122,8 @@ class FSM
                         name = "init_values";
                         itemno = 6;
                         init = /*%FSM<STATEINIT""">*/"private _lastanalyze = 0;" \n
-                         "private _forcePoolPAVN = [ALiVE_GlobalForcePool,""O_PAVN"",0] call ALiVE_fnc_Hashget;" \n
-                         "private _forcePoolVC = [ALiVE_GlobalForcePool,""O_VC"",0] call ALiVE_fnc_Hashget;" \n
+                         "private _forcePoolPAVN = [ALIVE_globalForcePool,""O_PAVN"",0] call ALiVE_fnc_Hashget;" \n
+                         "private _forcePoolVC = [ALIVE_globalForcePool,""O_VC"",0] call ALiVE_fnc_Hashget;" \n
                          "private _forcePool = (_forcePoolPAVN + _forcePoolVC);" \n
                          "private _maxforcePool = _forcePool;" \n
                          "private _currentPercent = 100;" \n
@@ -167,8 +167,8 @@ class FSM
                          "[""ALiVE | The Battle of Hue - broadcast analyze -> _forcePool: %1"",_forcePool] call ALiVE_fnc_dump;" \n
                          "[""ALiVE | The Battle of Hue - forcepool analyze -> _lastAnalyze: %1"", _lastAnalyze] call ALiVE_fnc_dump;" \n
                          "" \n
-                         "_updateforcePoolPAVN = [ALiVE_GlobalForcePool,""O_PAVN"",0] call ALiVE_fnc_Hashget;" \n
-                         "_updateforcePoolVC = [ALiVE_GlobalForcePool,""O_VC"",0] call ALiVE_fnc_Hashget;" \n
+                         "_updateforcePoolPAVN = [ALIVE_globalForcePool,""O_PAVN"",0] call ALiVE_fnc_Hashget;" \n
+                         "_updateforcePoolVC = [ALIVE_globalForcePool,""O_VC"",0] call ALiVE_fnc_Hashget;" \n
                          "_updateforcePool = (_updateforcePoolPAVN + _updateforcePoolVC);" \n
                          "[""ALiVE | The Battle of Hue - broadcast analyze -> _updateforcePool: %1"",_updateforcePool] call ALiVE_fnc_dump;" \n
                          "" \n
@@ -197,8 +197,8 @@ class FSM
                          " [""WEST"",_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;" \n
                          "" \n
                          "" \n
-                         " _forcePoolPAVN = [ALiVE_GlobalForcePool,""O_PAVN"",0] call ALiVE_fnc_Hashget;" \n
-                         " _forcePoolVC = [ALiVE_GlobalForcePool,""O_VC"",0] call ALiVE_fnc_Hashget;" \n
+                         " _forcePoolPAVN = [ALIVE_globalForcePool,""O_PAVN"",0] call ALiVE_fnc_Hashget;" \n
+                         " _forcePoolVC = [ALIVE_globalForcePool,""O_VC"",0] call ALiVE_fnc_Hashget;" \n
                          " _forcePool = (_forcePoolPAVN + _forcePoolVC);" \n
                          "" \n
                          "};" \n
