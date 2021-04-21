@@ -47,7 +47,7 @@ if(isServer) then {
     private _spawnTypeJetRadius = parseNumber (_logic getVariable ["spawnTypeJetRadius","0"]);
 	private _spawnTypeUAVRadius = parseNumber (_logic getVariable ["spawnRadiusUAV", "-1"]);
     private _activeLimiter = parseNumber (_logic getVariable ["activeLimiter","30"]);
-    private _speedModifier = parseNumber (_logic getVariable ["speedModifier","1"]);
+    private _speedModifier = (_logic getVariable ["speedModifier","1"]) call BIS_fnc_parseNumber;
     private _virtualCombatSpeedModifier = parsenumber (_logic getVariable ["virtualcombat_speedmodifier", "1"]);
     private _pathfinding = (_logic getVariable ["pathfinding", "false"]) == "true";
     private _seaTransport = (_logic getVariable ["seaTransport", "false"]) == "true";
