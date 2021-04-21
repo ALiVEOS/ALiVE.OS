@@ -24,18 +24,4 @@ Author:
     Tupolov
 ---------------------------------------------------------------------------- */
 
-private ["_ctrl", "_fileExists","_file"];
-
-_file = _this select 0;
-
-disableSerialization;
-
-_ctrl = findDisplay 0 ctrlCreate ["RscHTML", -1];
-
-_ctrl htmlLoad _file;
-
-_fileExists = ctrlHTMLLoaded _ctrl;
-
-ctrlDelete _ctrl;
-
-_fileExists
+fileExists (_this select 0)
