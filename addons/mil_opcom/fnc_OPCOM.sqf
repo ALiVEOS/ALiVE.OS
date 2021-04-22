@@ -210,6 +210,11 @@ switch(_operation) do {
                     [_handler, "intelchance",_intelChance] call ALiVE_fnc_HashSet;
                     [_handler, "roadblocks",_roadblocks] call ALiVE_fnc_HashSet;
 
+                    private _G2 = [nil,"create"] call ALiVE_fnc_G2;
+                    [_G2,"init"] call ALiVE_fnc_G2;
+
+                    [_handler,"G2", _G2] call ALiVE_fnc_hashSet;
+
                     //Spread Intel Information for this OPCOMs side
                     call compile (format["ALiVE_MIL_OPCOM_INTELCHANCE_%1 = _intelChance",[_side] call ALiVE_fnc_SideTextToObject]);
                     call compile (format["PublicVariable 'ALiVE_MIL_OPCOM_INTELCHANCE_%1'",[_side] call ALiVE_fnc_SideTextToObject]);
