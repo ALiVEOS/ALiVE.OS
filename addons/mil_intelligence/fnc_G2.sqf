@@ -23,7 +23,7 @@ SpyderBlack723
 
 #define SUPERCLASS  ALiVE_fnc_baseClass
 #define MAINCLASS   ALiVE_fnc_G2
-#define MTEMPLATE   "ALiVE_G2_%1"
+#define MTEMPLATE   "ALiVE_G2_%1_%2"
 
 private "_result";
 
@@ -50,13 +50,10 @@ switch(_operation) do {
             [_logic,"setIntelDisplayStrategy", "map"] call MAINCLASS;
 
             _logic setvariable ["nextIntelIDNum", 0];
-            _logic setvariable ["maxIntelLifetime", 10 * 60];
+            _logic setvariable ["maxIntelLifetime", 3 * 60];
 
-            private _intel = createHashMapFromArray [
-                ["spotrep", createHashMap]
-            ];
-
-            _logic setvariable ["intel", _intel];
+            _logic setvariable ["intel", createHashMap];
+            _logic setvariable ["spotrepsByProfileID", createHashMap];
 
             [_logic,"start"] call MAINCLASS;
         };
@@ -76,10 +73,10 @@ switch(_operation) do {
     };
 
     case "getNextIntelID": {
-        private nextIntelNum = _logic getvariable "nextIntelIDNum";
-        _logic setvariable ["nextIntelIDNum", nextIntelNum + 1];
+        private _nextIntelIDNum = _logic getvariable "nextIntelIDNum";
+        _logic setvariable ["nextIntelIDNum", _nextIntelIDNum + 1];
 
-        _result = format ["intel_%1", nextIntelNum];
+        _result = format ["intel_%1", _nextIntelIDNum];
     };
 
     case "getIntelDisplayStrategies": {
@@ -100,8 +97,24 @@ switch(_operation) do {
         };
     };
 
+    /*
+        opcom = OPCOM_INSTANCES select 0;
+        g2 = [opcom,"G2"] call ALiVE_fnc_hashGet;
+        [g2,"createSpotrep", [
+            "EAST",
+            "OPF_F",
+            "",
+            player getRelPos [100, getdir player],
+            "Infantry",
+            8,
+            0,
+            0,
+            0
+        ]] call ALiVE_fnc_G2;
+    */
+
     case "createSpotrep": {
-        _args params ["_side","_faction","_groupType","_groupCount","_groupSpeed","_groupDirection","_timeSinceSeen"];
+        _args params ["_side","_faction","_profileID","_groupPosition","_groupType","_groupCount","_groupSpeed","_groupDirection","_timeSinceSeen"];
 
         private _maxIntelLifetime = _logic getvariable "maxIntelLifetime";
 
@@ -114,7 +127,9 @@ switch(_operation) do {
             ["type", "spotrep"],
             ["side", _side],
             ["faction", _faction],
-            ["groupType", _groupType],
+            ["profileID", _profileID],
+            ["position", _groupPosition],
+            ["groupType", tolower _groupType],
             ["groupCount", _groupCount],
             ["speed", _groupSpeed],
             ["direction", _groupDirection],
@@ -122,25 +137,44 @@ switch(_operation) do {
             ["confidence", _reportConfidence]
         ];
 
+        if (_profileID != "") then {
+            private _spotrepsByProfileID = _logic getvariable "spotrepsByProfileID";
+            spotrepsByProfileID set [_profileID, _spotrep];
+        };
+
         [_logic,"storeIntelReport", _spotrep] call MAINCLASS;
     };
 
     case "storeIntelReport": {
         private _report = _args;
 
-        private _reportType = _report get "type";
         private _reportID = [_logic,"getNextIntelID"] call MAINCLASS;
-
         _report set ["id", _reportID];
 
         private _intel = _logic getvariable "intel";
-        private _reportsOfType = _intel get _reportType;
-
-        _reports set [_reportID, _report];
+        _intel set [_reportID, _report];
 
         private _intelDisplayStrategies = _logic getvariable "intelDisplayStrategies";
         private _intelOnRemoveDisplayStrategy = _intelDisplayStrategies get "onCreate";
         [_logic,_intelOnRemoveDisplayStrategy, _report] call MAINCLASS;
+    };
+
+    case "updateIntelReport": {
+        _args params ["_report","_changes"];
+
+        {
+            _report set [_this select 0, _this select 1];
+        } foreach _changes;
+    };
+
+    case "refreshIntelReport": {
+        private _reportID = _args;
+
+        private _intel = _logic getvariable "intel";
+        private _intelReport = _intel get _reportID;
+        if (!isnil "_intelReport") then {
+            [_logic,"updateIntelReport", [_intelReport, ["confidence", 1]]] call MAINCLASS;
+        };
     };
 
     case "removeIntelReports": {
@@ -151,38 +185,141 @@ switch(_operation) do {
         private _intelOnRemoveDisplayStrategy = _intelDisplayStrategies get "onRemove";
 
         {
-            private _reportType = _x get "type";
             private _reportID = _x get "id";
 
-            [_logic,_intelOnRemoveDisplayStrategy, _report] call MAINCLASS;
+            [_logic,_intelOnRemoveDisplayStrategy, _x] call MAINCLASS;
 
-            private _reportsOfType = _intel get _reportType;
-            _reportsOfType deleteat _reportID;
+            _intel deleteat _reportID;
         } foreach _reports;
     };
 
     case "onFrame": {
+        if (isGamePaused) exitwith {};
+
         private _intel = _logic getvariable "intel";
         private _maxIntelLifetime = _logic getvariable "maxIntelLifetime";
         private _timeBetweenConfidenceDecay = _logic getvariable "timeBetweenConfidenceDecay";
-        private _confidenceDecay = _timeBetweenConfidenceDecay / _maxIntelLifetime;
+        private _confidenceDecay = (_timeBetweenConfidenceDecay / _maxIntelLifetime) * accTime;
 
         private _intelDisplayStrategies = _logic getvariable "intelDisplayStrategies";
         private _intelOnRemoveDisplayStrategy = _intelDisplayStrategies get "onDecay";
 
-        private _reportsToRemove = _intel select {
+        private _reportsToRemove = [];
+        {
             private _confidence = _y get "confidence";
             private _newConfidence = _confidence - _confidenceDecay;
 
             _y set ["confidence", _newConfidence];
 
-            [_logic,_intelOnRemoveDisplayStrategy, _report] call MAINCLASS;
+            [_logic,_intelOnRemoveDisplayStrategy, _y] call MAINCLASS;
 
-            _newConfidence <= 0
-        };
+            if (_newConfidence <= 0) then {
+                _reportsToRemove pushback _y;
+            };
+        } foreach _intel;
 
         [_logic,"removeIntelReports", _reportsToRemove] call MAINCLASS;
     };
+
+    // map display strategies
+    case "onCreateMAP": {
+        private _report = _args;
+        
+        private _reportType = _report get "type";
+        switch (_reportType) do {
+            case "spotrep": {
+                private _reportID = _report get "id";
+                private _groupSide = _report get "side";
+                private _groupFaction = _report get "faction";
+                private _groupPosition = _report get "position";
+                private _groupType = _report get "groupType";
+                private _groupCount = _report get "count";
+                private _speed = _report get "speed";
+                private _direction = _report get "direction";
+                private _confidence = _report get "confidence";
+
+                ([_logic,"determineMarkerTypeandColor", [_groupSide, _groupType]] call MAINCLASS) params ["_markerType","_markerColor"];
+
+                private _marker = createMarker [format [MTEMPLATE, _reportID, 1], _groupPosition];
+                _marker setMarkerShape "ICON";
+                _marker setMarkerSize [1, 1];
+                _marker setMarkerType _markerType;
+                _marker setMarkerColor _markerColor;
+
+                private _markers = [_marker];
+
+                if (_speed > 0) then {
+                    private _arrowMarker = createMarker [format [MTEMPLATE, _reportID, 2], _groupPosition getpos [100, _direction]];
+                    _arrowMarker setMarkerShape "ICON";
+                    _arrowMarker setMarkerSize [1, 2];
+                    _arrowMarker setMarkerType "hd_arrow";
+                    _arrowMarker setMarkerColor _markerColor;
+                    _arrowMarker setMarkerDir _direction;
+
+                    _markers pushback _arrowMarker;
+                };
+
+                _marker setMarkerAlpha _confidence;
+
+                _report set ["markers", _markers];
+            };
+        };
+    };
+
+    case "onDecayMAP": {
+        private _report = _args;
+        private _reportMarkers = _report get "markers";
+        private _reportConfidence = _report get "confidence";
+
+        {
+            _x setMarkerAlpha _reportConfidence;
+        } foreach _reportMarkers;
+    };
+
+    case "onRemoveMAP": {
+        private _report = _args;
+        private _reportMarkers = _report get "markers";
+        {
+            deletemarker _x;
+        } foreach _reportMarkers;
+    };
+
+    case "determineMarkerTypeandColor": {
+        _args params ["_side","_groupType"];
+
+        private ["_typePrefix","_color"];
+        switch (_side) do {
+            case "EAST": {
+                _typePrefix = "b";
+                _color = "ColorOPFOR";
+            };
+            case "WEST": {
+                _typePrefix = "o";
+                _color = "ColorBLUFOR";
+            };
+            case "GUER": {
+                _typePrefix = "n";
+                _color = "ColorIndependent";
+            };
+        };
+
+        private _markerType = switch (_groupType) do {
+            case "infantry": { format ["%1_inf", _typePrefix] };
+            case "specops": { format ["%1_recon", _typePrefix] };
+            case "motorized": { format ["%1_motor_inf", _typePrefix] };
+            case "mechanized": { format ["%1_mech_inf", _typePrefix] };
+            case "armored": { format ["%1_armor", _typePrefix] };
+            case "artillery": { format ["%1_art", _typePrefix] };
+            case "boat": { format ["%1_unknown", _typePrefix] };
+            case "helicopter": { format ["%1_air", _typePrefix] };
+            case "plane": { format ["%1_plane", _typePrefix] };
+            case "uav": { format ["%1_uav", _typePrefix] };
+            default { format ["%1_unknown", _typePrefix] };
+        };
+
+        _result = [_markerType,_color];
+    };
+    //
 
     case "debug": {
         if (!isnil "_args") then {
@@ -193,9 +330,13 @@ switch(_operation) do {
     };
 
     case "destroy": {
-        [_logic,"debug", false] call MAINCLASS;
-
         if (isServer) then {
+            [_logic,"debug", false] call MAINCLASS;
+
+            private _intel = _logic getvariable "intel";
+            private _allReports = (keys _intel) apply { _intel get _x };
+            [_logic,"removeIntelReports", _allReports] call MAINCLASS;
+
             _logic setVariable ["super", nil];
             _logic setVariable ["class", nil];
 
@@ -203,38 +344,12 @@ switch(_operation) do {
         };
     };
 
-    // map display strategies
-        case "onCreateMAP": {
-            private _report = _args;
-            
-            private _reportType = _report get "type";
-            switch (_reportType) do {
-                case "spotrep": {
-                    private _groupSide = _report get "side";
-                    private _groupFaction = _report get "faction";
-                    private _groupType = _report get "type";
-                    private _groupCount = _report get "count";
-                    private _speed = _report get "speed";
-                    private _direction = _report get "direction";
-                };
-            };
-        };
-        case "onDecayMAP": {
-            private _report = _args;
-            private _reportMarkers = _report get "markers";
-            private _reportConfidence = _report get "confidence";
-
-            {
-                _x setMarkerAlpha _reportConfidence;
-            } foreach _reportMarkers;
-        };
-        case "onRemoveMAP": {
-
-        };
-    //
-
     default {
-        _result = [_logic, _operation, _args] call SUPERCLASS;
+        if (isnil "_args") then {
+            _result = [_logic, _operation] call SUPERCLASS;
+        } else {
+            _result = [_logic, _operation, _args] call SUPERCLASS;
+        };
     };
 };
 
