@@ -5,7 +5,7 @@ item0[] = {"author__Jman",0,250,-75.000000,-425.000000,25.000000,-375.000000,0.0
 item1[] = {"_",8,218,-200.000000,-425.000000,-100.000000,-375.000000,0.000000,""};
 item2[] = {"exit",1,250,-325.000000,-425.000000,-225.000000,-375.000000,0.000000,"exit"};
 item3[] = {"isServer_",4,218,-75.000000,-350.000000,25.000000,-300.000000,1.000000,"isServer?"};
-item4[] = {"init_and_wait_for",2,4346,-75.000000,-275.000000,25.000000,-225.000000,0.000000,"init and" \n "wait for players"};
+item4[] = {"init_and_wait_for",2,250,-75.000000,-275.000000,25.000000,-225.000000,0.000000,"init and" \n "wait for players"};
 item5[] = {"units___0_",4,218,-75.000000,-200.000000,25.000000,-150.000000,0.000000,"units > 0?"};
 item6[] = {"create_equip_tas",2,250,-72.606003,-123.204498,27.393997,-73.204498,0.000000,"create equip task"};
 item7[] = {"near_arsenal",4,218,-71.489258,-23.824707,28.510742,26.175293,1.000000,"near arsenal"};
@@ -13,7 +13,7 @@ item8[] = {"board_transport",2,250,-71.515411,212.537292,28.484589,262.537354,0.
 item9[] = {"transport_boarded",4,218,-80.325638,311.937683,40.726715,385.419128,0.000000,"transport boarded?"};
 item10[] = {"travel_to_one_marked",2,250,-69.060150,600.163940,30.939850,650.163940,0.000000,"travel to one" \n "marked area"};
 item11[] = {"___100m_distance",4,218,-81.702271,699.362244,35.938477,764.217529,1.000000,"< 100m" \n "distance to" \n "AO"};
-item12[] = {"ALL_enemy_re_enforcements",4,218,-260.078705,901.061890,-44.021118,982.629883,0.000000,"ALL enemy re-enforcements " \n "depleated"};
+item12[] = {"ALL_enemy_re_enforcements",4,4314,-260.078705,901.061890,-44.021118,982.629883,0.000000,"ALL enemy re-enforcements " \n "depleated"};
 item13[] = {"task_succeeded",2,250,-153.305725,1041.054443,-53.305725,1091.054443,0.000000,"task succeeded"};
 item14[] = {"_",8,218,-78.305725,1116.054443,21.694275,1166.054443,0.000000,""};
 item15[] = {"all_players_dead",4,218,1.336548,889.920288,140.331909,964.060547,1.000000,"all players dead"};
@@ -63,8 +63,8 @@ link27[] = {27,8};
 link28[] = {28,7};
 link29[] = {29,10};
 link30[] = {30,21};
-globals[] = {0.000000,0,0,0,0,640,480,1,217,6316128,1,-185.073105,408.717804,195.173615,-503.647125,718,845,1};
-window[] = {0,-1,-1,-1,-1,1101,541,1892,84,1,736};
+globals[] = {0.000000,0,0,0,0,640,480,1,217,6316128,1,-501.076477,269.518372,1600.660889,469.442841,524,721,1};
+window[] = {2,-1,-1,-32000,-32000,967,229,1908,74,1,542};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -122,13 +122,19 @@ class FSM
                 {
                         name = "init_and_wait_for";
                         itemno = 4;
-                        init = /*%FSM<STATEINIT""">*/"[""| The Battle of Hue - Executing fn_coalive_xray.fsm...""] call ALiVE_fnc_dump;" \n
+                        init = /*%FSM<STATEINIT""">*/"[""ALiVE | The Battle of Hue - Executing fn_coalive_xray.fsm...""] call ALiVE_fnc_dump;" \n
                          "// All infantry groups" \n
                          "private _xrayGroups = [" \n
                          "    vn_alivegrp_xray_1," \n
                          "	  vn_alivegrp_xray_2" \n
                          "];" \n
                          "" \n
+                         "" \n
+                         "private _totalforcePoolPAVN = [ALIVE_globalForcePool,""O_PAVN"",0] call ALiVE_fnc_Hashget;" \n
+                         "private _totalforcePoolVC = [ALIVE_globalForcePool,""O_VC"",0] call ALiVE_fnc_Hashget;" \n
+                         "private _totalforcePool = (_totalforcePoolPAVN + _totalforcePoolVC);" \n
+                         "" \n
+                         "[""ALiVE | The Battle of Hue - fn_coalive_xray -> _totalforcePool: %1"",_totalforcePool] call ALiVE_fnc_dump;" \n
                          "" \n
                          "// Debug variable to skip task if set to true" \n
                          "vn_task_debug = false;" \n
@@ -587,13 +593,20 @@ class FSM
                                         priority = 0.000000;
                                         to="task_succeeded";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_forcePoolPAVN = [ALiVE_GlobalForcePool,""O_PAVN"",0] call ALiVE_fnc_Hashget;" \n
-                                         "_forcePoolVC = [ALiVE_GlobalForcePool,""O_VC"",0] call ALiVE_fnc_Hashget;" \n
-                                         "_forcePool = (_forcePoolPAVN + _forcePoolVC);" \n
+                                        condition=/*%FSM<CONDITION""">*/"_updateforcePoolPAVN = [ALIVE_globalForcePool,""O_PAVN"",0] call ALiVE_fnc_Hashget;" \n
+                                         "_updateforcePoolVC = [ALIVE_globalForcePool,""O_VC"",0] call ALiVE_fnc_Hashget;" \n
+                                         "_updateforcePool = (_updateforcePoolPAVN + _updateforcePoolVC);" \n
+                                         "" \n
+                                         "//[""ALiVE | The Battle of Hue - fn_coalive_xray(2) -> _totalforcePool: %1"",_totalforcePool] call ALiVE_fnc_dump;" \n
+                                         "" \n
+                                         "_currentPercent = (_updateforcePool / _totalforcePool) * 100;" \n
+                                         "_currentPercentformatted = floor _currentPercent;" \n
+                                         "" \n
+                                         "//[""ALiVE | The Battle of Hue - fn_coalive_xray -> current forcePool _currentPercentformatted: %1"",_currentPercentformatted] call ALiVE_fnc_dump;" \n
                                          "" \n
                                          "vn_task_debug" \n
                                          "|| {" \n
-                                         "	_forcePool < 50}" \n
+                                         "	_currentPercentformatted < 10}" \n
                                          "" \n
                                          "" \n
                                          ""/*%FSM</CONDITION""">*/;

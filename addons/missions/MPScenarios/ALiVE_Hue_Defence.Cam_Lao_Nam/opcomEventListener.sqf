@@ -5,7 +5,6 @@ private "_result";
 _grpUnits = [];
 _xrayGroups = [vn_alivegrp_xray_1,vn_alivegrp_xray_2];
 
-
 switch (_operation) do {
     case "create": {
         _args params ["_functionName"];
