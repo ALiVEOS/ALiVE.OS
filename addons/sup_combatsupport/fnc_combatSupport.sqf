@@ -804,68 +804,67 @@ switch(_operation) do {
                    };
 
                 // and wait for game logic to initialise
-                // TODO merge into lazy evaluation
-                waitUntil {!isNil "NEO_radioLogic"};
-                waitUntil {NEO_radioLogic getVariable ["init", false]};
+                waitUntil {!isNil "NEO_radioLogic" && {NEO_radioLogic getVariable ["init", false]}};
 
                 /*
                 VIEW - purely visual
                 */
-                NEO_radioLogic setVariable ["NEO_radioPlayerActionArray",
-                    [
-                        [
-                            ("<t color=""#700000"">" + ("Talk To Pilot") + "</t>"),
-                            {
-                                private _caller = _this select 1;
-                                private _vehicle = nil;
-
-                                if (vehicle _caller != _caller) then {
-                                    _vehicle = vehicle _caller;
-                                }
-                                else {
-                                    _vehicle = cursorTarget;
-                                };
-
-                                ["talk"] call ALIVE_fnc_radioAction;
-                                NEO_radioLogic setVariable ["NEO_radioTalkWithPilot", _vehicle];
-                            },
-                            "talk",
-                            -1,
-                            false,
-                            true,
-                            "",
-                            "
-                                private _vehicle = nil;
-                                private _vehicle_found = false;
-
-                                {
-                                    if (_x select 0 == cursorTarget && {_this distance cursorTarget <= 50}) exitWith {
-                                        _vehicle = _x select 0;
-                                    };
-
-                                    if (_x select 0 == vehicle _this) exitWith {
-                                        _vehicle = _x select 0;
-                                    };
-
-                                } forEach (NEO_radioLogic getVariable format [""NEO_radioTrasportArray_%1"", playerSide]);
-
-                                if (!isNil ""_vehicle"" && {alive (driver _vehicle)}) then {
-                                    _vehicle_found = true;
-                                };
-
-                                _vehicle_found;
-                            "
-                        ]
-                    ]
-                ];
-
-                {player addAction _x} foreach (NEO_radioLogic getVariable "NEO_radioPlayerActionArray");
-                player addEventHandler ["Respawn", { {(_this select 0) addAction _x } foreach (NEO_radioLogic getVariable "NEO_radioPlayerActionArray") }];
-
-                //if there is a real screen it must be a player so hand out the menu item
-                if (hasInterface) then {
+                //if there is a real screen it must be a player so hand out the actions and menu items
+                if (hasInterface) then {    
                     //Initialise Functions and add respawn eventhandler
-                    waituntil {(!(isnull player) && !(isnil "NEO_radioLogic"))};
+                    waituntil {!isnull player};
+
+                    NEO_radioLogic setVariable ["NEO_radioPlayerActionArray",
+                        [
+                            [
+                                ("<t color=""#700000"">" + ("Talk To Pilot") + "</t>"),
+                                {
+                                    private _caller = _this select 1;
+                                    private _vehicle = nil;
+
+                                    if (vehicle _caller != _caller) then {
+                                        _vehicle = vehicle _caller;
+                                    }
+                                    else {
+                                        _vehicle = cursorTarget;
+                                    };
+
+                                    ["talk"] call ALIVE_fnc_radioAction;
+                                    NEO_radioLogic setVariable ["NEO_radioTalkWithPilot", _vehicle];
+                                },
+                                "talk",
+                                -1,
+                                false,
+                                true,
+                                "",
+                                "
+                                    private _vehicle = nil;
+                                    private _vehicle_found = false;
+
+                                    {
+                                        if (_x select 0 == cursorTarget && {_this distance cursorTarget <= 50}) exitWith {
+                                            _vehicle = _x select 0;
+                                        };
+
+                                        if (_x select 0 == vehicle _this) exitWith {
+                                            _vehicle = _x select 0;
+                                        };
+
+                                    } forEach (NEO_radioLogic getVariable format [""NEO_radioTrasportArray_%1"", playerSide]);
+
+                                    if (!isNil ""_vehicle"" && {alive (driver _vehicle)}) then {
+                                        _vehicle_found = true;
+                                    };
+
+                                    _vehicle_found;
+                                "
+                            ]
+                        ]
+                    ];
+
+                    //Add Neo actions
+                    {player addAction _x} foreach (NEO_radioLogic getVariable "NEO_radioPlayerActionArray");
+                    player addEventHandler ["Respawn", { {(_this select 0) addAction _x } foreach (NEO_radioLogic getVariable "NEO_radioPlayerActionArray") }];
 
                     if (isNil "SELF_INTERACTION_KEY") then {SELF_INTERACTION_KEY = [221,[false,false,false]]};
 
