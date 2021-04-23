@@ -166,36 +166,43 @@ for "_j" from 1 to _numIEDs do {
 
         // Add damage handler
         _ehID = _IEDCharge addeventhandler ["HandleDamage",{
-            private ["_trgr","_IED"];
+
+            private _charge = _this select 0;
+            private _killer = _this select 3;
+            private _IED = attachedTo _charge;
+            private _pos = getpos _charge;
 
             //diag_log str(_this);
-            if (isPlayer (_this select 3)) then { // GO BOOOOOOOOOOM!
-
-                _IED = attachedTo (_this select 0);
-
-                // Remove from store
-                [ADDON, "removeIED", _IED] call ALiVE_fnc_IED;
+            if (isPlayer _killer) then { // GO BOOOOOOOOOOM AND AWARD PLAYER
 
                 if (ADDON getVariable "debug") then {
-                    diag_log format ["ALIVE-%1 IED: %2 explodes due to damage by %3", time, _IED, (_this select 3)];
+                    diag_log format ["ALIVE-%1 IED: %2 explodes due to damage by %3", time, _IED, _victim];
                     [_IED getvariable "Marker"] call cba_fnc_deleteEntity;
                 };
 
-                "M_Mo_120mm_AT" createVehicle [(getpos (_this select 0)) select 0, (getpos (_this select 0)) select 1,0];
-
 				// Update Sector Hostility
-    			[position _IED, [str(side (_this select 3))], +10] call ALiVE_fnc_updateSectorHostility;
+    			[position _IED, [str(side _killer)], +10] call ALiVE_fnc_updateSectorHostility;
 
-                deletevehicle (_this select 0);
-                deleteVehicle _IED;
-
-                _trgr = (position (_this select 0)) nearObjects ["EmptyDetector", 3];
-                {
-                    deleteVehicle _x;
-                } foreach _trgr;
+                //set pos to 0 height and give it an extra shot
+                _pos set [2,0];
+                "M_Mo_120mm_AT" createVehicle _pos;
             };
 
+            // Remove from store if damaged
+            [ADDON, "removeIED", _IED] call ALiVE_fnc_IED;
+
+            // Delete all that shizzle if damaged
+            detach _ied;
+            deleteVehicle _IED;
+            deletevehicle _charge;
+
+            // Including all triggers around
+            private _trgr = _pos nearObjects ["EmptyDetector", 3];
+            {
+                deleteVehicle _x;
+            } foreach _trgr;
         }];
+
         _IED setVariable ["ehID",_ehID, true];
         _IED setvariable ["charge", _IEDCharge, true];
     };
