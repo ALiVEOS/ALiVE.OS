@@ -69,7 +69,7 @@ if (_faction != "") then {
 	_text = _text + format["            name = ""%1%2"";%3", _name, format[" [%1]",faction player], _br];
 
 	private _icon = getText(configFile >> "CfgFactionClasses" >> faction player >> "flag");
-	_text = _text + format["            icon = '%1';%2", _icon, _br];
+	_text = _text + format["            icon = %1;%2", _icon, _br];
 } else {
 	_text = _text + format["        class %1%2_%3 %4        {%4", _type, _size, _class, _br];
 	_text = _text + format["            name = ""%1"";%2", _name, _br];

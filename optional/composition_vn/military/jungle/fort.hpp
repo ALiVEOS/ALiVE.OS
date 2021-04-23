@@ -11,7 +11,7 @@
         class FortMedium_Bunker_B_MACV
         {
             name = "Bunker (Fortified) [B_MACV]";
-            icon = '\vn\objects_f_vietnam\flags\vn_flag_01_usa_co.paa';
+            icon = \vn\objects_f_vietnam\flags\vn_flag_01_usa_co.paa;
             size = 8;
             class Object0	{side = 8; vehicle = "Land_vn_razorwire_f"; rank = ""; position[] = {-1.729,0.0668945,0}; dir = 0;};
             class Object1	{side = 8; vehicle = "Land_vn_razorwire_f"; rank = ""; position[] = {-1.48242,0.180176,0}; dir = 0;};

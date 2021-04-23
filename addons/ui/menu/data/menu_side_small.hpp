@@ -51,7 +51,8 @@ class AliveMenuSideSmall
             y = safeZoneY + safeZoneH - 0.25;
             h = 0.25;
             w = 0.51 * 3 / 4; //w == h
-            sizeEx = 0.1;
+            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25))";
+            size = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25))";
             colorBackground[] = {0,0,0,0};
             colorText[] = {0.616,0.812,0.894,1};
         };

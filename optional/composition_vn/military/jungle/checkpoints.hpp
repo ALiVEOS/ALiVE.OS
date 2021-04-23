@@ -13,7 +13,7 @@
         class CheckpointsSmall_Barricade_B_MACV
         {
             name = "Barricade [B_MACV]";
-            icon = '\vn\objects_f_vietnam\flags\vn_flag_01_usa_co.paa';
+            icon = \vn\objects_f_vietnam\flags\vn_flag_01_usa_co.paa;
             size = 8;
             class Object0	{side = 8; vehicle = "Land_vn_garbageheap_02_f"; rank = ""; position[] = {0.39502,0.0219727,0.952881}; dir = 0;};
             class Object1	{side = 8; vehicle = "Land_vn_sacks_heap_f"; rank = ""; position[] = {-6.51514,-1.9292,0.00105476}; dir = 93.4869;};
