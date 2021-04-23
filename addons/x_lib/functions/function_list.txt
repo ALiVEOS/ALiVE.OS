@@ -107,7 +107,11 @@ conversions
 
 data
 
+	ALiVE_fnc_doSegmentsIntersect
 	ALiVE_fnc_encodeJSON
+	ALiVE_fnc_findConvexHull
+	ALiVE_fnc_findMidpoint
+	ALiVE_fnc_findOffsetFromSegment
 	ALiVE_fnc_hashAddWarRoomData
 	ALiVE_fnc_hashCopy
 	ALiVE_fnc_hashCreate
