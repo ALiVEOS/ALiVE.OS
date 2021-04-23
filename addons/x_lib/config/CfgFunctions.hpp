@@ -1397,6 +1397,13 @@ class emptyInit
 	RECOMPILE;
 };
 
+class exportCfgComposition
+{
+	file = "\x\alive\addons\x_lib\functions\composition\fnc_exportCfgComposition.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class exportCfgVehicles
 {
 	file = "\x\alive\addons\x_lib\functions\misc\fnc_exportCfgVehicles.sqf";
