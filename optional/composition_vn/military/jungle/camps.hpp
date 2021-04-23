@@ -5,7 +5,7 @@
         class CampsLarge_POW_Camp_O_PAVN
         {
             name = "POW Camp [O_PAVN]";
-            icon = '\vn\objects_f_vietnam\flags\vn_flag_01_pavn_co.paa';
+            icon = \vn\objects_f_vietnam\flags\vn_flag_01_pavn_co.paa;
             size = 8;
             class Object0	{side = 8; vehicle = "Land_vn_hut_05"; rank = ""; position[] = {-0.343872,-0.300293,0}; dir = 0;};
             class Object1	{side = 8; vehicle = "Land_vn_o_prop_cong_cage_01"; rank = ""; position[] = {-12.953,-10.3975,0}; dir = -90.271;};
@@ -124,7 +124,7 @@
         class CampsMedium_POW_Camp_O_PAVN
         {
             name = "POW Camp [O_PAVN]";
-            icon = '\vn\objects_f_vietnam\flags\vn_flag_01_pavn_co.paa';
+            icon = \vn\objects_f_vietnam\flags\vn_flag_01_pavn_co.paa;
             size = 8;
             class Object0	{side = 8; vehicle = "Land_vn_fence_bamboo_02_gate"; rank = ""; position[] = {-0.00439453,0.0864258,0}; dir = 0;};
             class Object1	{side = 8; vehicle = "Land_vn_fence_bamboo_02_gate"; rank = ""; position[] = {-4.26807,0.0966797,0}; dir = 0;};
@@ -242,7 +242,7 @@
         class CampsSmall_Camp_O_PAVN
         {
             name = "Camp [O_PAVN]";
-            icon = '\vn\objects_f_vietnam\flags\vn_flag_01_pavn_co.paa';
+            icon = \vn\objects_f_vietnam\flags\vn_flag_01_pavn_co.paa;
             size = 8;
             class Object0	{side = 8; vehicle = "Land_BagFence_Long_F"; rank = ""; position[] = {-0.00341797,0.015625,0.00174713}; dir = 0;};
             class Object1	{side = 8; vehicle = "Land_vn_o_shelter_06"; rank = ""; position[] = {3.80225,-1.27197,0}; dir = -50.8858;};
