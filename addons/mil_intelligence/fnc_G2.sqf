@@ -304,6 +304,34 @@ switch(_operation) do {
         };
     };
 
+    /////////////////////////////////////////////////////////////////////
+
+    case "getMovingSpotreps": {
+        private _intel = _logic getvariable "intel";
+        _result = [];
+        {
+            private _type = _y get "type";
+            if (_type == "spotrep") then {
+                private _speed = _y get "speed";
+                if (_speed > 0) then {
+                    _result pushback _y;
+                };
+            };
+        } foreach _intel;
+    };
+
+    case "coolshit": {
+        private _movingSpotreps = [_logic,"getMovingSpotreps"] call MAINCLASS;
+        private _movingSpotrepDatapoints = _movingSpotreps apply {
+            private _position = _x get "position";
+            [_position, _x]
+        };
+        private _convexHull = _movingSpotrepDatapoints call ALiVE_fnc_findConvexHull;
+        
+    };
+
+    /////////////////////////////////////////////////////////////////////
+
     // map display strategies
     case "onCreateMAP": {
         private _report = _args;
