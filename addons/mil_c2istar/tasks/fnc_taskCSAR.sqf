@@ -423,7 +423,7 @@ switch (_taskState) do {
 
                             [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
 
-                            ["chat_failed",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+                            ["chat_cancelled",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
                         };
 
                         waitUntil {
