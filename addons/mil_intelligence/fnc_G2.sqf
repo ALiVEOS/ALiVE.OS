@@ -36,31 +36,36 @@ params [
 // https://docs.google.com/document/d/10fISYf_yAGgBsMOAPpzvOnSIBfteXFBsOG13JqIujcM/edit#heading=h.ik70z9iq923x
 
 switch(_operation) do {
+    case "create": {
+        _args params ["_opcom"];
 
-    case "init": {
-        if (isServer) then {
-            _logic setvariable ["super", QUOTE(SUPERCLASS)];
-            _logic setvariable ["class", QUOTE(MAINCLASS)];
-            _logic setvariable ["moduleType", "ALiVE_G2"];
-            _logic setvariable ["startupComplete", false];
+        _logic = [nil,"create"] call SUPERCLASS;
 
-            _logic setvariable ["perFrameID", -1];
-            _logic setvariable ["timeBetweenConfidenceDecay", 15];
+        _logic setvariable ["super", QUOTE(SUPERCLASS)];
+        _logic setvariable ["class", QUOTE(MAINCLASS)];
+        _logic setvariable ["moduleType", "ALiVE_G2"];
+        _logic setvariable ["listenerID", -1];
+        _logic setvariable ["startupComplete", false];
 
-            [_logic,"setIntelDisplayStrategy", "map"] call MAINCLASS;
+        _logic setvariable ["opcom", _opcom];
+        _logic setvariable ["opcomID", [_opcom,"opcomID"] call ALiVE_fnc_hashGet];
 
-            _logic setvariable ["nextIntelIDNum", 0];
-            _logic setvariable ["maxIntelLifetime", 3 * 60];
+        _logic setvariable ["perFrameID", -1];
+        _logic setvariable ["timeBetweenConfidenceDecay", 15];
 
-            _logic setvariable ["intel", createHashMap];
-            _logic setvariable ["spotrepsByProfileID", createHashMap];
+        [_logic,"setIntelDisplayStrategy", "map"] call MAINCLASS;
 
-            [_logic,"start"] call MAINCLASS;
-        };
+        _logic setvariable ["nextIntelIDNum", 0];
+        _logic setvariable ["maxIntelLifetime", 3 * 60];
+
+        _logic setvariable ["intel", createHashMap];
+        _logic setvariable ["spotrepsByProfileID", createHashMap];
     };
 
     case "start": {
         private _timeBetweenConfidenceDecay = _logic getvariable "timeBetweenConfidenceDecay";
+
+        [_logic,"listen"] call MAINCLASS;
 
         private _perFrameID = [{
             private _logic = _this select 0;
@@ -70,6 +75,11 @@ switch(_operation) do {
         _logic setvariable ["perFrameID", _perFrameID];
 
         _logic setvariable ["startupComplete", true];
+    };
+
+    case "listen": {
+        private _listenerID = [ALiVE_eventLog, "addListener", [_logic, ["OPCOM_ORDER_CONFIRMED","TACOM_ORDER_ISSUED"]]] call ALiVE_fnc_eventLog;
+        _logic setvariable ["listenerID", _listenerID];
     };
 
     case "getNextIntelID": {
@@ -221,10 +231,83 @@ switch(_operation) do {
         [_logic,"removeIntelReports", _reportsToRemove] call MAINCLASS;
     };
 
+    case "buildSpotrepForProfile": {
+        _args params ["_profile","_timeSinceSeen"];
+
+        if (_profile isequaltype "") then {
+            [ALiVE_profileHandler,"getProfile", _profile] call ALiVE_fnc_profileHandler;
+        };
+
+        private _profileID = _profile select 2 select 4;
+        private _side = _profile select 2 select 3;
+        private _position = _profile select 2 select 2;
+
+        private _faction = [_profile,"faction"] call ALiVE_fnc_hashGet;
+        private _groupType = [_profile,"objectType"] call ALiVE_fnc_hashGet;
+
+        private _entityType = _profile select 2 select 5;
+        private ["_speed","_direction","_groupType","_groupSize"];
+        if (_entityType == "entity") then {
+            _speed = _profile select 2 select 22
+
+            // calculate direction
+            private _waypoints = _profile select 2 select 16;
+            if (_waypoints isnotequalto []) then {
+                private _nextWP = _waypoints select 0;
+                private _nextWPPos = _nextWP select 2 select 0;
+                _direction = _position getdir _nextWPPos;
+            } else {
+                _direction = 0;
+            };
+
+            // calculate group size
+            private _vehiclesInCommandOf = _profile select 2 select 22;
+            if (_vehiclesInCommandOf isequalto []) then {
+                private _units = _profile select 2 select 21;
+                _groupSize = count _units;
+            } else {
+                _groupSize = count _vehiclesInCommandOf;
+            };
+        } else {
+            _speed = 0;
+            _direction = 0;
+            _groupSize = 1;
+        };
+
+        _result = [
+            _side,
+            _faction,
+            _profileID,
+            _position,
+            _groupType,
+            _groupSize,
+            _speed,
+            _direction,
+            _timeSinceSeen
+        ];
+    };
+
+    case "handleEvent": {
+        private _event = _args;
+
+        private _opcomID = _logic getvariable "opcomID";
+
+        private _eventData = [_event,"data"] call ALiVE_fnc_hashGet;
+        private _eventOpcomID = _eventData select 0;
+
+        if (_opcomID == _eventOpcomID) then {
+            private _type = [_event,"type"] call ALiVE_fnc_hashGet;
+
+            switch (_type) do {
+
+            };
+        };
+    };
+
     // map display strategies
     case "onCreateMAP": {
         private _report = _args;
-        
+
         private _reportType = _report get "type";
         switch (_reportType) do {
             case "spotrep": {
