@@ -416,7 +416,7 @@ switch (_taskState) do {
                             _parent = if (_parent == "None") then {_taskID} else {_parent};
                             _parentTask = [ALiVE_TaskHandler,"getTask",_parent] call ALiVE_fnc_TaskHandler;
 
-                            _parentTask set [8,"Failed"];
+                            _parentTask set [8,"Canceled"];
                             _parentTask set [10,"N"];
 
                             [ALiVE_TaskHandler,"TASK_UPDATE",_parentTask] call ALiVE_fnc_TaskHandler;
