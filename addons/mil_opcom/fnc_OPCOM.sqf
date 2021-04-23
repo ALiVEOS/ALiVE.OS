@@ -1114,7 +1114,7 @@ switch(_operation) do {
 
 	                                        private ["_building","_road"];
 
-	                                        _buildings = [_center,_size] call ALIVE_fnc_getEnterableHouses;
+	                                        _buildings = [_center,_size] call ALiVE_fnc_INS_filterObjectiveBuildings;
 	                                        _roads = _center nearRoads _size;
 	                                        _faction = selectRandom _factions;
 	                                        _dominantFaction = [_center, _size] call ALiVE_fnc_getDominantFaction;
