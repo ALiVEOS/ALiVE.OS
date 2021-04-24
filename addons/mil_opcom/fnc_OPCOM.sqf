@@ -193,6 +193,8 @@ switch(_operation) do {
                     //Create OPCOM ID
                     _opcomID = str(floor(_position select 0)) + str(floor(_position select 1));
 
+                    [_handler,"class", "ALiVE_fnc_OPCOM"] call ALiVE_fnc_hashSet;
+
                     [_handler, "side",_side] call ALiVE_fnc_HashSet;
                     [_handler, "factions",_factions] call ALiVE_fnc_HashSet;
                     [_handler, "sidesenemy",_sidesEnemy] call ALiVE_fnc_HashSet;
@@ -471,15 +473,64 @@ switch(_operation) do {
 
                 //Set startup complete and end loading screen if init has passed or an error occurred
                 if (isServer) then {
+                    [_handler,"listen"] call MAINCLASS;
+
                     _logic setVariable ["startupComplete",true,true];
                     [_handler,"startupComplete",true] call ALiVE_fnc_HashSet;
-
                 };
 
 
                 /*
                 VIEW - purely visual
                 */
+        };
+
+        case "listen": {
+            private _listenerID = [ALiVE_eventLog, "addListener", [_logic, [
+                "PROFILE_ATTACK_START",
+                "PROFILE_ATTACK_END"
+            ]]] call ALiVE_fnc_eventLog;
+            [_logic,"listenerID", _listenerID] call ALiVE_fnc_hashSet;
+        };
+
+        case "handleEvent": {
+            private _event = _args;
+
+            private _eventData = [_event,"data"] call ALiVE_fnc_hashGet;
+            private _eventOpcomID = _eventData select 0;
+
+            private _opcomSide = [_logic, "side"] call ALiVE_fnc_HashGet;
+            private _type = [_event,"type"] call ALiVE_fnc_hashGet;
+
+            switch (_type) do {
+                case "PROFILE_ATTACK_START": {
+                    _eventData params ["_attackID","_attackerID","_targets","_attackPosition","_attackerSide","_maxRange","_cyclesLeft"];
+
+                    if (_opcomSide == _attackerSide) then {
+                        [_logic,"createSpotrepForProfiles", _targets] call MAINCLASS;
+                    };
+                };
+
+                case "PROFILE_ATTACK_END": {
+                    _eventData params ["_attackID","_attackerID","_targetsLeft","_targetsKilled","_attackPosition","_attackerSide","_timeStarted","_maxRange","_cyclesLeft"];
+
+                    if (_opcomSide == _attackerSide) then {
+                        private _G2 = [_logic,"G2"] call ALiVE_fnc_hashGet;
+                        [_G2,"removeProfileSpotreps", _targetsKilled] call ALiVE_fnc_G2;
+                    };
+                };
+            };
+        };
+
+        case "createSpotrepForProfiles": {
+            private _profiles = _args;
+
+            private _G2 = [_logic,"G2"] call ALiVE_fnc_hashGet;
+
+            {
+                private _spotrepData = [_G2,"buildSpotrepForProfile", [_x,0]] call ALiVE_fnc_G2;
+                [_G2,"createSpotrep", _spotrepData] call ALiVE_fnc_G2;
+            } foreach _profiles;
         };
 
         case "cleanupduplicatesections": {
@@ -2416,7 +2467,7 @@ switch(_operation) do {
 
 			private _controlledProfileIDs = [];
 			{
-				_controlledProfileIDs = _controlledProfileIDs + ([ALiVE_ProfileHandler,"getProfilesByFaction",_x] call ALiVE_fnc_ProfileHandler);
+				_controlledProfileIDs append ([ALiVE_ProfileHandler,"getProfilesByFaction",_x] call ALiVE_fnc_ProfileHandler);
 			} foreach _factions;
 
             private _knownEntities = [];
@@ -2432,6 +2483,8 @@ switch(_operation) do {
                     } foreach _nearEnemies;
                 };
 			} foreach _controlledProfileIDs;
+
+            [_logic,"createSpotrepForProfiles", _knownEntities apply { _x select 0}] call MAINCLASS;
 
 			[_logic,"knownentities", _knownEntities] call ALiVE_fnc_HashSet;
 
