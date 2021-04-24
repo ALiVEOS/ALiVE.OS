@@ -233,8 +233,9 @@ switch (_operation) do {
                 private _timeStarted = [_attack,"timeStarted"] call ALiVE_fnc_hashGet;
                 private _maxRange = [_attack,"maxRange"] call ALiVE_fnc_hashGet;
                 private _cyclesLeft = [_attack,"cyclesLeft"] call ALiVE_fnc_hashGet;
+                private _targetsKilled = [_attack,"targetsKilled"] call ALiVE_fnc_hashGet;
 
-                private _event = ['PROFILE_ATTACK_END', [_attackID,_attackerID,_targetsLeft,_attackPosition,_attackerSide,_timeStarted,_maxRange,_cyclesLeft], "profileCombatHandler"] call ALiVE_fnc_event;
+                private _event = ['PROFILE_ATTACK_END', [_attackID,_attackerID,_targetsLeft,_targetsKilled,_attackPosition,_attackerSide,_timeStarted,_maxRange,_cyclesLeft], "profileCombatHandler"] call ALiVE_fnc_event;
                 [MOD(eventLog),"addEvent", _event] call ALiVE_fnc_eventLog;
             };
         } foreach _attacks;
