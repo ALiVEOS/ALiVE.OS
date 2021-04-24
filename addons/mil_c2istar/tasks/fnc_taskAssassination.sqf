@@ -399,6 +399,19 @@ switch (_taskState) do {
                         [_params,"HVTSpawned",true] call ALIVE_fnc_hashSet;
                         [_params,"entityProfileIDs",[_HVTProfile1ID]] call ALIVE_fnc_hashSet;
 
+                        private _nearestTown = [_remotePosition] call ALIVE_fnc_taskGetNearestLocationName;
+                        private _formatChat = [_currentTaskDialog,"chat_insertion"] call ALIVE_fnc_hashGet;
+                        private _formatMessage = _formatChat select 0;
+                        private _formatMessageText = _formatMessage select 1;
+                        _formatMessageText = format[_formatMessageText,_nearestTown];
+                        _formatMessage set [1,_formatMessageText];
+                        _formatChat set [0,_formatMessage];
+                        [_currentTaskDialog,"chat_insertion",_formatChat] call ALIVE_fnc_hashSet;
+
+                        ["chat_insertion",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+
+                        [_remotePosition,_taskEnemySide,_taskPlayers,_taskID,"Insertion"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+
                     };
                     case "extraction":{
 
@@ -416,6 +429,19 @@ switch (_taskState) do {
 
                         [_params,"HVTSpawned",true] call ALIVE_fnc_hashSet;
                         [_params,"entityProfileIDs",[_HVTProfile1ID]] call ALIVE_fnc_hashSet;
+
+                        private _nearestTown = [_extractionPosition] call ALIVE_fnc_taskGetNearestLocationName;
+                        private _formatChat = [_currentTaskDialog,"chat_extraction"] call ALIVE_fnc_hashGet;
+                        private _formatMessage = _formatChat select 0;
+                        private _formatMessageText = _formatMessage select 1;
+                        _formatMessageText = format[_formatMessageText,_nearestTown];
+                        _formatMessage set [1,_formatMessageText];
+                        _formatChat set [0,_formatMessage];
+                        [_currentTaskDialog,"chat_extraction",_formatChat] call ALIVE_fnc_hashSet;
+
+                        ["chat_extraction",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+
+                        [_extractionPosition,_taskEnemySide,_taskPlayers,_taskID,"Extraction"] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
                     };
                 };
