@@ -23,7 +23,7 @@ SpyderBlack723
 
 #define SUPERCLASS  ALiVE_fnc_baseClass
 #define MAINCLASS   ALiVE_fnc_G2
-#define MTEMPLATE   "ALiVE_G2_%1_%2"
+#define MTEMPLATE   "ALiVE_G2_%1_%2_%3"
 
 private "_result";
 
@@ -47,11 +47,16 @@ switch(_operation) do {
         _logic setvariable ["listenerID", -1];
         _logic setvariable ["startupComplete", false];
 
+        private _side = [_opcom,"side"] call ALiVE_fnc_hashGet;
+        private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
+
         _logic setvariable ["opcom", _opcom];
         _logic setvariable ["opcomID", [_opcom,"opcomID"] call ALiVE_fnc_hashGet];
+        _logic setvariable ["side", _side];
+        _logic setvariable ["sideObject", _sideObject];
 
         _logic setvariable ["perFrameID", -1];
-        _logic setvariable ["timeBetweenConfidenceDecay", 15];
+        _logic setvariable ["timeBetweenConfidenceDecay", 30];
 
         [_logic,"setIntelDisplayStrategy", "map"] call MAINCLASS;
 
@@ -60,6 +65,8 @@ switch(_operation) do {
 
         _logic setvariable ["intel", createHashMap];
         _logic setvariable ["spotrepsByProfileID", createHashMap];
+
+        _result = _logic;
     };
 
     case "start": {
@@ -78,7 +85,10 @@ switch(_operation) do {
     };
 
     case "listen": {
-        private _listenerID = [ALiVE_eventLog, "addListener", [_logic, ["OPCOM_ORDER_CONFIRMED","TACOM_ORDER_ISSUED"]]] call ALiVE_fnc_eventLog;
+        private _listenerID = [ALiVE_eventLog, "addListener", [_logic, [
+            "OPCOM_ORDER_CONFIRMED",
+            "TACOM_ORDER_ISSUED"
+        ]]] call ALiVE_fnc_eventLog;
         _logic setvariable ["listenerID", _listenerID];
     };
 
@@ -149,10 +159,18 @@ switch(_operation) do {
 
         if (_profileID != "") then {
             private _spotrepsByProfileID = _logic getvariable "spotrepsByProfileID";
-            spotrepsByProfileID set [_profileID, _spotrep];
+
+            private _previousReport = _spotrepsByProfileID get _profileID;
+            if (!isnil "_previousReport") then {
+                [_logic,"removeIntelReports", [_previousReport]] call MAINCLASS;
+            };
+
+            _spotrepsByProfileID set [_profileID, _spotrep];
         };
 
         [_logic,"storeIntelReport", _spotrep] call MAINCLASS;
+
+        _result = _spotrep;
     };
 
     case "storeIntelReport": {
@@ -166,7 +184,7 @@ switch(_operation) do {
 
         private _intelDisplayStrategies = _logic getvariable "intelDisplayStrategies";
         private _intelOnRemoveDisplayStrategy = _intelDisplayStrategies get "onCreate";
-        [_logic,_intelOnRemoveDisplayStrategy, _report] call MAINCLASS;
+        [_logic,_intelOnRemoveDisplayStrategy, [_logic,_report]] call MAINCLASS;
     };
 
     case "updateIntelReport": {
@@ -197,10 +215,31 @@ switch(_operation) do {
         {
             private _reportID = _x get "id";
 
-            [_logic,_intelOnRemoveDisplayStrategy, _x] call MAINCLASS;
+            [_logic,_intelOnRemoveDisplayStrategy, [_logic,_x]] call MAINCLASS;
+
+            private _profileID = _x get "profileID";
+            if (_profileID != "") then {
+                private _spotrepsByProfileID = _logic getvariable "spotrepsByProfileID";
+                _spotrepsByProfileID deleteat _profileID;
+            };
 
             _intel deleteat _reportID;
         } foreach _reports;
+    };
+
+    case "removeProfileSpotreps": {
+        private _profiles = _args;
+
+        private _spotrepsByProfileID = _logic getvariable "spotrepsByProfileID";
+        private _spotrepsToRemove = [];
+        {
+            private _profileSpotrep = _spotrepsByProfileID get _x;
+            if (!isnil "_profileSpotrep") then {
+                _spotrepsToRemove pushback _profileSpotrep;
+            };
+        } foreach _profiles;
+
+        [_logic,"removeIntelReports", _spotrepsToRemove] call MAINCLASS;
     };
 
     case "onFrame": {
@@ -221,7 +260,7 @@ switch(_operation) do {
 
             _y set ["confidence", _newConfidence];
 
-            [_logic,_intelOnRemoveDisplayStrategy, _y] call MAINCLASS;
+            [_logic,_intelOnRemoveDisplayStrategy, [_logic,_y]] call MAINCLASS;
 
             if (_newConfidence <= 0) then {
                 _reportsToRemove pushback _y;
@@ -235,7 +274,7 @@ switch(_operation) do {
         _args params ["_profile","_timeSinceSeen"];
 
         if (_profile isequaltype "") then {
-            [ALiVE_profileHandler,"getProfile", _profile] call ALiVE_fnc_profileHandler;
+            _profile = [ALiVE_profileHandler,"getProfile", _profile] call ALiVE_fnc_profileHandler;
         };
 
         private _profileID = _profile select 2 select 4;
@@ -243,35 +282,38 @@ switch(_operation) do {
         private _position = _profile select 2 select 2;
 
         private _faction = [_profile,"faction"] call ALiVE_fnc_hashGet;
-        private _groupType = [_profile,"objectType"] call ALiVE_fnc_hashGet;
 
         private _entityType = _profile select 2 select 5;
         private ["_speed","_direction","_groupType","_groupSize"];
         if (_entityType == "entity") then {
-            _speed = _profile select 2 select 22
-
-            // calculate direction
+            // calculate speed and direction
             private _waypoints = _profile select 2 select 16;
             if (_waypoints isnotequalto []) then {
                 private _nextWP = _waypoints select 0;
                 private _nextWPPos = _nextWP select 2 select 0;
                 _direction = _position getdir _nextWPPos;
+                _speed = (_profile select 2 select 22) select 1;
             } else {
                 _direction = 0;
+                _speed = 0;
             };
 
             // calculate group size
-            private _vehiclesInCommandOf = _profile select 2 select 22;
+            private _vehiclesInCommandOf = _profile select 2 select 8;
             if (_vehiclesInCommandOf isequalto []) then {
                 private _units = _profile select 2 select 21;
                 _groupSize = count _units;
+                _groupType = "infantry";
             } else {
                 _groupSize = count _vehiclesInCommandOf;
+                private _vehicleInCommandOf = [ALiVE_profileHandler,"getProfile", _vehiclesInCommandOf select 0] call ALiVE_fnc_profileHandler;
+                _groupType = [_vehicleInCommandOf,"objectType"] call ALiVE_fnc_hashGet;
             };
         } else {
             _speed = 0;
             _direction = 0;
             _groupSize = 1;
+            _groupType = [_profile,"objectType"] call ALiVE_fnc_hashGet;
         };
 
         _result = [
@@ -334,7 +376,11 @@ switch(_operation) do {
 
     // map display strategies
     case "onCreateMAP": {
-        private _report = _args;
+        _args params ["_logic","_report"];
+
+        private _sideObject = _logic getvariable "sideObject";
+        private _playersToSendMarkerTo = allPlayers select { side (group _X) == _sideObject };
+        systemchat format ["Sending to players of Side: %1 - count = %2", _sideObject, count _playersToSendMarkerTo];
 
         private _reportType = _report get "type";
         switch (_reportType) do {
@@ -351,34 +397,59 @@ switch(_operation) do {
 
                 ([_logic,"determineMarkerTypeandColor", [_groupSide, _groupType]] call MAINCLASS) params ["_markerType","_markerColor"];
 
-                private _marker = createMarker [format [MTEMPLATE, _reportID, 1], _groupPosition];
-                _marker setMarkerShape "ICON";
-                _marker setMarkerSize [1, 1];
-                _marker setMarkerType _markerType;
-                _marker setMarkerColor _markerColor;
+                private _opcomID = _logic getvariable "opcomID";
 
-                private _markers = [_marker];
+                private _markerIcon = [
+                    format [MTEMPLATE, _opcomID, _reportID, 1],
+                    _groupPosition,
+                    "ICON",
+                    [1, 1],
+                    _markerType,
+                    _markerColor,
+                    0,
+                    _confidence
+                ];
+
+                // private _marker = createMarker [format [MTEMPLATE, _opcomID, _reportID, 1], _groupPosition];
+                // _marker setMarkerShape "ICON";
+                // _marker setMarkerSize [1, 1];
+                // _marker setMarkerType _markerType;
+                // _marker setMarkerColor _markerColor;
+
+                private _markers = [_markerIcon];
 
                 if (_speed > 0) then {
-                    private _arrowMarker = createMarker [format [MTEMPLATE, _reportID, 2], _groupPosition getpos [100, _direction]];
-                    _arrowMarker setMarkerShape "ICON";
-                    _arrowMarker setMarkerSize [1, 2];
-                    _arrowMarker setMarkerType "hd_arrow";
-                    _arrowMarker setMarkerColor _markerColor;
-                    _arrowMarker setMarkerDir _direction;
+                    private _markerArrow = [
+                        format [MTEMPLATE, _opcomID, _reportID, 2],
+                        _groupPosition getpos [100, _direction],
+                        "ICON",
+                        [1, 2],
+                        "hd_arrow",
+                        _markerColor,
+                        _direction,
+                        _confidence
+                    ];
 
-                    _markers pushback _arrowMarker;
+                    // private _arrowMarker = createMarker [format [MTEMPLATE, _opcomID, _reportID, 2], _groupPosition getpos [100, _direction]];
+                    // _arrowMarker setMarkerShape "ICON";
+                    // _arrowMarker setMarkerSize [1, 2];
+                    // _arrowMarker setMarkerType "hd_arrow";
+                    // _arrowMarker setMarkerColor _markerColor;
+                    // _arrowMarker setMarkerDir _direction;
+
+                    _markers pushback _markerArrow;
                 };
 
-                _marker setMarkerAlpha _confidence;
+                _report set ["markers", _markers apply { _x select 0 }];
 
-                _report set ["markers", _markers];
+                [nil,"createMarkersLocally", _markers] remoteExecCall ["ALiVE_fnc_G2", _playersToSendMarkerTo];
             };
         };
     };
 
     case "onDecayMAP": {
-        private _report = _args;
+        _args params ["_logic","_report"];
+
         private _reportMarkers = _report get "markers";
         private _reportConfidence = _report get "confidence";
 
@@ -388,11 +459,28 @@ switch(_operation) do {
     };
 
     case "onRemoveMAP": {
-        private _report = _args;
+        _args params ["_logic","_report"];
+
         private _reportMarkers = _report get "markers";
         {
             deletemarker _x;
         } foreach _reportMarkers;
+    };
+
+    case "createMarkersLocally": {
+        private _markersData = _args;
+
+        {
+            _x params ["_id","_position","_shape","_size","_type","_color","_dir","_alpha"];
+
+            private _marker = createMarkerLocal [_id, _position];
+            _marker setMarkerShapeLocal _shape;
+            _marker setMarkerSizeLocal _size;
+            _marker setMarkerTypeLocal _type;
+            _marker setMarkerColorLocal _color;
+            _marker setMarkerDirLocal _dir;
+            _marker setMarkerAlphaLocal _alpha;
+        } foreach _markersData;
     };
 
     case "determineMarkerTypeandColor": {
@@ -417,10 +505,14 @@ switch(_operation) do {
         private _markerType = switch (_groupType) do {
             case "infantry": { format ["%1_inf", _typePrefix] };
             case "specops": { format ["%1_recon", _typePrefix] };
+            case "car";
+            case "truck";
             case "motorized": { format ["%1_motor_inf", _typePrefix] };
             case "mechanized": { format ["%1_mech_inf", _typePrefix] };
+            case "tank";
             case "armored": { format ["%1_armor", _typePrefix] };
             case "artillery": { format ["%1_art", _typePrefix] };
+            case "ship";
             case "boat": { format ["%1_unknown", _typePrefix] };
             case "helicopter": { format ["%1_air", _typePrefix] };
             case "plane": { format ["%1_plane", _typePrefix] };
