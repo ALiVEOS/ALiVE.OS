@@ -93,10 +93,10 @@
     <Original>Sets the pace of virtual combat. Fastest combat resolves twice as quickly as regular.</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING">
-    <Original>Pathfinding:</Original>
+    <Original>Experimental Pathfinding:</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_COMMENT">
-    <Original>Experimental!\nProfiles will use intelligent pathing to reach their destinations.\nThis feature is highly experimental and could break missions.</Original>
+    <Original>Experimental!\nThis feature is highly experimental and could break missions.\n Please disable if you notice any issues.\nProfiles will use intelligent pathing to reach their destinations.</Original>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT">
     <Original>Infantry sea transport:</Original>

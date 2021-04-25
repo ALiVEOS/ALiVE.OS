@@ -155,6 +155,8 @@
 	[_taskData,"title","Eliminate the target"] call ALIVE_fnc_hashSet;
 	[_taskData,"description","We received HUMINT of an High Value Target (HVT) near %1! Eliminate the target as quickly as possible!"] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_start",[["HQ","We received HUMINT of an High Value Target (HVT) near %1! Eliminate the target as quickly as possible!"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_insertion",[["HQ","We received additional intel that the HVT is in transit from near %1 to the target area"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_extraction",[["HQ","We received additional intel that the HVT is going to be extracted from the AO near %1. Eliminate target before they are extracted."],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_success",[["PLAYERS","High Value Target neutralised, Over"],["HQ","Roger, well done, Out"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_failed",[["PLAYERS","Mission aborted, HVT has escaped, Over"],["HQ","Roger, better luck next time, Out"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_cancelled",[["PLAYERS","Callsign compromised, mission aborted, Over"],["HQ","Roger, break contact and withdraw. Send SITREP when ready, Out"]]] call ALIVE_fnc_hashSet;
