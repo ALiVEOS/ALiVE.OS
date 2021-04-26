@@ -2973,6 +2973,10 @@ switch(_operation) do {
                         _assets = call compile _assets;
                     };
 
+                    // Cleanup killed assets
+                    private _allAssetIds = +(_assets select 1);
+                    private _currentAssetIds = [_logic, "removeUnregisteredProfiles", _allAssetIds] call MAINCLASS;
+
                     // Handle additional 2 records (id,rev) when saved to ClownDB
                     if (count (_assets  select 1) > 0 && {_assets select 1 select 0 == "_id" }) then {
                         _loaded = true;
@@ -3088,12 +3092,25 @@ switch(_operation) do {
 
                             private _tmp = [];
 
+                            if (_debug) then {
+                                //["ATO - Replenishing %1 for side %2!",_vehicleClass, _side] call ALiVE_fnc_dumpR;
+                            };
+
                             if (_heli == 1) then {
+
+                                // Check to see if there is a wreck around, causing explosions
+                                private _nearbyObj = nearestObjects [_position, ["Helicopter"], 5];
+                                {if (!alive _x) then {deleteVehicle _x}} foreach _nearbyObj;
+
                                 private _createdProfiles = [_vehicleClass,_side,_faction,"CAPTAIN",_position,_dir,false,_faction,false] call ALIVE_fnc_createProfilesCrewedVehicle;
                                 _tmp = _createdProfiles select (_createdProfiles findIf { ([_x,"type"] call ALiVE_fnc_hashGet) == "vehicle" });
                             };
 
                             if (_plane == 1) then {
+                                // Check to see if there is a wreck around, causing explosions
+                                private _nearbyObj = nearestObjects [_position, ["Plane"], 5];
+                                {if (!alive _x) then {deleteVehicle _x}} foreach _nearbyObj;
+
                                 _tmp = [_vehicleClass,_side,_faction,_position,_dir,false,_faction] call ALIVE_fnc_createProfileVehicle;
                             };
 
