@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=535;
+		nextID=541;
 	};
 	class Camera
 	{
@@ -261,7 +261,7 @@ class AddonsMetaData
 randomSeed=8300791;
 class ScenarioData
 {
-	author="@STR_VN_MISSIONS_AUTH_MISSION_ALIVE_PH";
+	author="ALiVE Mod Team";
 	overviewText="Conduct counter-insurgency operations on the Cambodian/Laos/Vietnam borders in order to slow NVA and Viet Cong advances into South Vietnam.";
 	overViewPicture="pics\splash.paa";
 	respawnDelay=10;
@@ -385,8 +385,8 @@ class Mission
 	appId=1227700;
 	class Intel
 	{
-		briefingName="@STR_VN_MISSIONS_TITLE_MISSION_ALIVE_PH";
-		overviewText="@STR_VN_MISSIONS_MINDESC_MISSION_ALIVE_PH";
+		briefingName="ALiVE | Op Paper Hands";
+		overviewText="MACV-SOG are running deniable operations across the fence. ST Sisler have been tasked with disrupting Viet Cong supply lines, operations and outposts along the tri-border area.";
 		resistanceWest=0;
 		resistanceEast=1;
 		timeOfChanges=1800.0002;
@@ -7919,7 +7919,7 @@ class Mission
 				};
 			};
 			id=45;
-			atlOffset=63.229076;
+			atlOffset=63.229084;
 		};
 		class Item1
 		{

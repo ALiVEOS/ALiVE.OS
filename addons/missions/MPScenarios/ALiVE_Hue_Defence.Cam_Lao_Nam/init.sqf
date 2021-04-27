@@ -83,7 +83,7 @@ if (hasInterface) then {
         sleep 20;
 
         _title = "<t size='1.5' color='#68a7b7' shadow='1'>THE BATTLE OF HUE</t><br/>";
-        _text = format["%1<t>Welcome to FOB Phu Bai. Ammo crates are located under the Camouflage netting. Addtional support weapons can be loaded into the trucks.</t>",_title];
+        _text = format["%1<t>Welcome to FOB Phu Bai. Ammo crates are located under netting. Support weapons can be loaded into the trucks.</t>",_title];
 
         ["openSideSmall",0.4] call ALIVE_fnc_displayMenu;
         ["setSideSmallText",_text] call ALIVE_fnc_displayMenu;
