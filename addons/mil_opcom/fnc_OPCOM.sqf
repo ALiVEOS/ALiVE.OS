@@ -885,88 +885,89 @@ switch(_operation) do {
         };
 
         case "setorders": {
-                ASSERT_TRUE(typeName _args == "ARRAY",str _args);
+            ASSERT_TRUE(typeName _args == "ARRAY",str _args);
 
-                private ["_section","_profile","_profileID","_objectiveID","_pos","_orders","_pending_orders","_objectives","_id"];
+            private ["_section","_profile","_profileID","_objectiveID","_pos","_orders","_pending_orders","_objectives","_id"];
 
-                _pos = _args select 0;
-                _profileID = _args select 1;
-                _objectiveID = _args select 2;
-                _orders = _args select 3;
-                _TACOM_FSM = [_logic,"TACOM_FSM"] call ALiVE_fnc_HashGet;
-                _objectives = [_logic,"objectives"] call ALiVE_fnc_HashGet;
+            _pos = _args select 0;
+            _profileID = _args select 1;
+            _objectiveID = _args select 2;
+            _orders = _args select 3;
+            _TACOM_FSM = [_logic,"TACOM_FSM"] call ALiVE_fnc_HashGet;
+            _objectives = [_logic,"objectives"] call ALiVE_fnc_HashGet;
 
-                {
-                    _id = [_x,"objectiveID"] call ALiVE_fnc_HashGet;
-                    _section = [_x,"section",[]] call ALiVE_fnc_HashGet;
+            {
+                _id = [_x,"objectiveID"] call ALiVE_fnc_HashGet;
+                _section = [_x,"section",[]] call ALiVE_fnc_HashGet;
 
-                    if ((_profileID in _section) && {!(_objectiveID == _id)}) then {
-                        [_logic,"resetorders",_profileID] call ALiVE_fnc_OPCOM;
-                    };
-                } foreach _objectives;
-
-                _pending_orders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
-                _pending_orders_tmp = _pending_orders;
-
-                if (({(_x select 1) == _profileID} count _pending_orders_tmp) > 0) then {
-                    {
-                        if ((_x select 1) == _profileID) then {_pending_orders_tmp set [_foreachIndex,"x"]};
-                    } foreach _pending_orders_tmp;
-                    _pending_orders = _pending_orders_tmp - ["x"];
+                if ((_profileID in _section) && {!(_objectiveID == _id)}) then {
+                    [_logic,"resetorders",_profileID] call ALiVE_fnc_OPCOM;
                 };
+            } foreach _objectives;
 
-                _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
+            _pending_orders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
+            _pending_orders_tmp = _pending_orders;
 
-                [_profile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
-                [_profile, "clearActiveCommands"] call ALIVE_fnc_profileEntity;
+            if (({(_x select 1) == _profileID} count _pending_orders_tmp) > 0) then {
+                {
+                    if ((_x select 1) == _profileID) then {_pending_orders_tmp set [_foreachIndex,"x"]};
+                } foreach _pending_orders_tmp;
+                _pending_orders = _pending_orders_tmp - ["x"];
+            };
 
-                _profileWaypoint = [_pos, 15] call ALIVE_fnc_createProfileWaypoint;
+            _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
 
-                _var = ["_TACOM_DATA",["completed",[_ProfileID,_objectiveID,_orders]]];
-                _statements = format["[] spawn {sleep (random 10); %1 setfsmvariable %2}",_TACOM_FSM,_var];
-                [_profileWaypoint,"statements",["true",_statements]] call ALIVE_fnc_hashSet;
-                [_profileWaypoint,"behaviour","AWARE"] call ALIVE_fnc_hashSet;
-                [_profileWaypoint,"speed","NORMAL"] call ALIVE_fnc_hashSet;
+            [_profile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+            [_profile, "clearActiveCommands"] call ALIVE_fnc_profileEntity;
 
-                [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+            _profileWaypoint = [_pos, 15] call ALIVE_fnc_createProfileWaypoint;
 
-                _ordersFull = [_pos,_ProfileID,_objectiveID,time];
-                [_logic,"pendingorders",_pending_orders + [_ordersFull]] call ALiVE_fnc_HashSet;
+            _var = ["_TACOM_DATA",["completed",[_ProfileID,_objectiveID,_orders]]];
+            _statements = format["[] spawn {sleep (random 10); %1 setfsmvariable %2}",_TACOM_FSM,_var];
+            [_profileWaypoint,"statements",["true",_statements]] call ALIVE_fnc_hashSet;
+            [_profileWaypoint,"behaviour","AWARE"] call ALIVE_fnc_hashSet;
+            [_profileWaypoint,"speed","NORMAL"] call ALIVE_fnc_hashSet;
 
-                _result = _profileWaypoint;
+            [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+
+            _ordersFull = [_pos,_ProfileID,_objectiveID,time];
+            [_logic,"pendingorders",_pending_orders + [_ordersFull]] call ALiVE_fnc_HashSet;
+
+            _result = _profileWaypoint;
         };
 
         case "synchronizeorders": {
-                ASSERT_TRUE(typeName _args == "STRING",str _args);
+            ASSERT_TRUE(typeName _args == "STRING",str _args);
 
-                private ["_ProfileIDInput","_profiles","_orders_pending","_synchronized","_item","_objectiveID","_profileID"];
+            private ["_ProfileIDInput","_profiles","_orders_pending","_synchronized","_item","_objectiveID","_profileID"];
 
-                _ProfileIDInput = _args;
-                _profiles = ([ALIVE_profileHandler, "getProfiles","entity"] call ALIVE_fnc_profileHandler) select 1;
-                _orders_pending = ([_logic,"pendingorders",[]] call ALiVE_fnc_HashGet);
-                _synchronized = false;
+            _ProfileIDInput = _args;
+            _profiles = ([ALIVE_profileHandler, "getProfiles","entity"] call ALIVE_fnc_profileHandler) select 1;
+            _orders_pending = ([_logic,"pendingorders",[]] call ALiVE_fnc_HashGet);
+            _synchronized = false;
 
-                for "_i" from 0 to ((count _orders_pending)-1) do {
-                    if (_i >= (count _orders_pending)) exitwith {};
+            for "_i" from 0 to ((count _orders_pending)-1) do {
+                if (_i >= (count _orders_pending)) exitwith {};
 
-                    _item = _orders_pending select _i;
+                _item = _orders_pending select _i;
 
-                    if (typeName _item == "ARRAY") then {
-                        _pos = _item select 0;
-                        _profileID = _item select 1;
-                        _objectiveID = _item select 2;
-                        _time = _item select 3;
-                        _dead = !(_ProfileID in _profiles);
-                        _timeout = (time - _time) > 3600;
+                if (typeName _item == "ARRAY") then {
+                    _pos = _item select 0;
+                    _profileID = _item select 1;
+                    _objectiveID = _item select 2;
+                    _time = _item select 3;
+                    _dead = !(_ProfileID in _profiles);
+                    _timeout = (time - _time) > 3600;
 
-                        if ((_dead) || {_timeout} || {_ProfileID == _ProfileIDInput}) then {
-                            _orders_pending set [_i,"x"]; _orders_pending = _orders_pending - ["x"];
-                            [_logic,"pendingorders",_orders_pending] call ALiVE_fnc_HashSet;
-                            if (({_objectiveID == (_x select 2)} count (_orders_pending)) == 0) then {_synchronized = true};
-                        };
+                    if ((_dead) || {_timeout} || {_ProfileID == _ProfileIDInput}) then {
+                        _orders_pending set [_i,"x"]; _orders_pending = _orders_pending - ["x"];
+                        [_logic,"pendingorders",_orders_pending] call ALiVE_fnc_HashSet;
+                        if (({_objectiveID == (_x select 2)} count (_orders_pending)) == 0) then {_synchronized = true};
                     };
                 };
-                _result = _synchronized;
+            };
+            
+            _result = _synchronized;
         };
 
         case "resetorders": {
