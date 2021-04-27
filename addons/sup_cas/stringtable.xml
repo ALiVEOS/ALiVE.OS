@@ -3,37 +3,37 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_CAS">
-    <Original>Player Combat Support (CAS)</Original>
+    <English>Player Combat Support (CAS)</English>
 </Key>
 <Key ID="STR_ALIVE_CAS_COMMENT">
-    <Original>CAS Module for ALiVE Combat Support</Original>
+    <English>CAS Module for ALiVE Combat Support</English>
 </Key>
 <Key ID="STR_ALIVE_CAS_USAGE">
-    <Original>Place Module and set the settings accordingly! Sync to a Combat Support Module!</Original>
+    <English>Place Module and set the settings accordingly! Sync to a Combat Support Module!</English>
 </Key>
 <Key ID="STR_ALIVE_CAS_CALLSIGN">
-    <Original>Callsign</Original>
+    <English>Callsign</English>
 </Key>
 <Key ID="STR_ALIVE_CAS_CALLSIGN_DESC">
-    <Original>Enter the Callsign, ensure that it is unique</Original>
+    <English>Enter the Callsign, ensure that it is unique</English>
 </Key>
 <Key ID="STR_ALIVE_CAS_TYPE">
-    <Original>CAS Vehicle Type</Original>
+    <English>CAS Vehicle Type</English>
 </Key>
 <Key ID="STR_ALIVE_CAS_TYPE_DESC">
-    <Original>Type of CAS i.e B_Heli_Attack_01_F or I_Plane_Fighter_03_CAS_F</Original>
+    <English>Type of CAS i.e B_Heli_Attack_01_F or I_Plane_Fighter_03_CAS_F</English>
 </Key>
 <Key ID="STR_ALIVE_CAS_HEIGHT">
-    <Original>Spawn Height</Original>
+    <English>Spawn Height</English>
 </Key>
 <Key ID="STR_ALIVE_CAS_HEIGHT_DESC">
-    <Original>Sets Assets Spawn Height ASL, for use with Nimitz Addon</Original>
+    <English>Sets Assets Spawn Height ASL, for use with Nimitz Addon</English>
 </Key>
 <Key ID="STR_ALIVE_CAS_CODE">
-    <Original>Code</Original>
+    <English>Code</English>
 </Key>
 <Key ID="STR_ALIVE_CAS_CODE_DESC">
-    <Original>Code that will be ran on this unit</Original>
+    <English>Code that will be ran on this unit</English>
 </Key>
 
 </Container></Package></Project>

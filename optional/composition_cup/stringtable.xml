@@ -3,1774 +3,1774 @@
 <Package name="ZECCUP">
 <Container name="STR_DN">
 <Key ID="STR_ZECCUP_AirportsLarge">
-    <Original>Airports (Large)</Original>
+    <English>Airports (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_AirportsMedium">
-    <Original>Airports (Medium)</Original>
+    <English>Airports (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_AirportsSmall">
-    <Original>Airports (Small)</Original>
+    <English>Airports (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_CampsLarge">
-    <Original>Camps (Large)</Original>
+    <English>Camps (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_CampsMedium">
-    <Original>Camps (Medium)</Original>
+    <English>Camps (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_CampsSmall">
-    <Original>Camps (Small)</Original>
+    <English>Camps (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_CheckpointsBarricadesLarge">
-    <Original>Checkpoints &amp; Barricades (Large)</Original>
+    <English>Checkpoints &amp; Barricades (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_CheckpointsBarricadesMedium">
-    <Original>Checkpoints &amp; Barricades (Medium)</Original>
+    <English>Checkpoints &amp; Barricades (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_CheckpointsBarricadesSmall">
-    <Original>Checkpoints &amp; Barricades (Small)</Original>
+    <English>Checkpoints &amp; Barricades (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_CommunicationsLarge">
-    <Original>Communications (Large)</Original>
+    <English>Communications (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_CommunicationsMedium">
-    <Original>Communications (Medium)</Original>
+    <English>Communications (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_CommunicationsSmall">
-    <Original>Communications (Small)</Original>
+    <English>Communications (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_ConstructionLarge">
-    <Original>Construction (Large)</Original>
+    <English>Construction (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_ConstructionMedium">
-    <Original>Construction (Medium)</Original>
+    <English>Construction (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_ConstructionSmall">
-    <Original>Construction (Small)</Original>
+    <English>Construction (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_ConstructionSuppliesLarge">
-    <Original>Construction Supplies (Large)</Original>
+    <English>Construction Supplies (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_ConstructionSuppliesMedium">
-    <Original>Construction Supplies (Medium)</Original>
+    <English>Construction Supplies (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_ConstructionSuppliesSmall">
-    <Original>Construction Supplies (Small)</Original>
+    <English>Construction Supplies (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_CrashsitesLarge">
-    <Original>Crash Sites (Large)</Original>
+    <English>Crash Sites (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_CrashsitesMedium">
-    <Original>Crash Sites (Medium)</Original>
+    <English>Crash Sites (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_CrashsitesSmall">
-    <Original>Crash Sites (Small)</Original>
+    <English>Crash Sites (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_FieldHQLarge">
-    <Original>Field HQ (Large)</Original>
+    <English>Field HQ (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_FieldHQMedium">
-    <Original>Field HQ (Medium)</Original>
+    <English>Field HQ (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_FieldHQSmall">
-    <Original>Field HQ (Small)</Original>
+    <English>Field HQ (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_FortLarge">
-    <Original>Fortifications &amp; Bunkers (Large)</Original>
+    <English>Fortifications &amp; Bunkers (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_FortMedium">
-    <Original>Fortifications &amp; Bunkers (Medium)</Original>
+    <English>Fortifications &amp; Bunkers (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_FortSmall">
-    <Original>Fortifications &amp; Bunkers (Small)</Original>
+    <English>Fortifications &amp; Bunkers (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_FuelLarge">
-    <Original>Fuel (Large)</Original>
+    <English>Fuel (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_FuelMedium">
-    <Original>Fuel (Medium)</Original>
+    <English>Fuel (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_FuelSmall">
-    <Original>Fuel (Small)</Original>
+    <English>Fuel (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_GeneralLarge">
-    <Original>General (Large)</Original>
+    <English>General (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_GeneralMedium">
-    <Original>General (Medium)</Original>
+    <English>General (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_GeneralSmall">
-    <Original>General (Small)</Original>
+    <English>General (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_HeliportsLarge">
-    <Original>Heliports (Large)</Original>
+    <English>Heliports (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_HeliportsMedium">
-    <Original>Heliports (Medium)</Original>
+    <English>Heliports (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_HeliportsSmall">
-    <Original>Heliports (Small)</Original>
+    <English>Heliports (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_HqLarge">
-    <Original>HQ (Large)</Original>
+    <English>HQ (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_HqMedium">
-    <Original>HQ (Medium)</Original>
+    <English>HQ (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_HqSmall">
-    <Original>HQ (Small)</Original>
+    <English>HQ (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_IndustrialLarge">
-    <Original>Industrial (Large)</Original>
+    <English>Industrial (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_IndustrialMedium">
-    <Original>Industrial (Medium)</Original>
+    <English>Industrial (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_IndustrialSmall">
-    <Original>Industrial (Small)</Original>
+    <English>Industrial (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_MarineLarge">
-    <Original>Marine (Large)</Original>
+    <English>Marine (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_MarineMedium">
-    <Original>Marine (Medium)</Original>
+    <English>Marine (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_MarineSmall">
-    <Original>Marine (Small)</Original>
+    <English>Marine (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_MedicalLarge">
-    <Original>Medical (Large)</Original>
+    <English>Medical (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_MedicalMedium">
-    <Original>Medical (Medium)</Original>
+    <English>Medical (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_MedicalSmall">
-    <Original>Medical (Small)</Original>
+    <English>Medical (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_MiningOilLarge">
-    <Original>Mining, Refining &amp; Oil (Large)</Original>
+    <English>Mining, Refining &amp; Oil (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_MiningOilMedium">
-    <Original>Mining, Refining &amp; Oil (Medium)</Original>
+    <English>Mining, Refining &amp; Oil (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_MiningOilSmall">
-    <Original>Mining, Refining &amp; Oil (Small)</Original>
+    <English>Mining, Refining &amp; Oil (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_OutpostsLarge">
-    <Original>Outposts (Large)</Original>
+    <English>Outposts (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_OutpostsMedium">
-    <Original>Outposts (Medium)</Original>
+    <English>Outposts (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_OutpostsSmall">
-    <Original>Outposts (Small)</Original>
+    <English>Outposts (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_PowerLarge">
-    <Original>Power (Large)</Original>
+    <English>Power (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_PowerMedium">
-    <Original>Power (Medium)</Original>
+    <English>Power (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_PowerSmall">
-    <Original>Power (Small)</Original>
+    <English>Power (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_RailLarge">
-    <Original>Rail (Large)</Original>
+    <English>Rail (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_RailMedium">
-    <Original>Rail (Medium)</Original>
+    <English>Rail (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_RailSmall">
-    <Original>Rail (Small)</Original>
+    <English>Rail (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_SettlementsLarge">
-    <Original>Settlements (Large)</Original>
+    <English>Settlements (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_SettlementsMedium">
-    <Original>Settlements (Medium)</Original>
+    <English>Settlements (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_SettlementsSmall">
-    <Original>Settlements (Small)</Original>
+    <English>Settlements (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_SuppliesLarge">
-    <Original>Supplies &amp; Storage (Large)</Original>
+    <English>Supplies &amp; Storage (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_SuppliesMedium">
-    <Original>Supplies &amp; Storage (Medium)</Original>
+    <English>Supplies &amp; Storage (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_SuppliesSmall">
-    <Original>Supplies &amp; Storage (Small)</Original>
+    <English>Supplies &amp; Storage (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_SupportsLarge">
-    <Original>Support (Large)</Original>
+    <English>Support (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_SupportsMedium">
-    <Original>Support (Medium)</Original>
+    <English>Support (Medium)</English>
 </Key>
 <Key ID="STR_ZECCUP_SupportsSmall">
-    <Original>Support (Small)</Original>
+    <English>Support (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_Civilian_ConstructionSuppliesLarge_FillerIndustrial">
-    <Original>Filler - Industrial</Original>
+    <English>Filler - Industrial</English>
 </Key>
 <Key ID="STR_ZECCUP_Civilian_ConstructionSuppliesLarge_PipesSmall">
-    <Original>Pipes - Small</Original>
+    <English>Pipes - Small</English>
 </Key>
 <Key ID="STR_ZECCUP_Civilian_ConstructionSuppliesLarge_PipesLarge">
-    <Original>Pipes - Large</Original>
+    <English>Pipes - Large</English>
 </Key>
 <Key ID="STR_ZECCUP_Civilian_ConstructionSuppliesLarge_WallsEastern">
-    <Original>Walls Eastern</Original>
+    <English>Walls Eastern</English>
 </Key>
 <Key ID="STR_ZECCUP_Civilian_ConstructionSuppliesLarge_WallsWestern">
-    <Original>Walls Western</Original>
+    <English>Walls Western</English>
 </Key>
 <Key ID="STR_ZECCUP_Civilian_ConstructionSuppliesLarge_FillerMisc1">
-    <Original>Filler - Misc #1</Original>
+    <English>Filler - Misc #1</English>
 </Key>
 <Key ID="STR_ZECCUP_Civilian_ConstructionSuppliesLarge_FillerMisc2">
-    <Original>Filler - Misc #2</Original>
+    <English>Filler - Misc #2</English>
 </Key>
 <Key ID="STR_ZECCUP_Civilian_GeneralLarge_Castle">
-    <Original>Castle</Original>
+    <English>Castle</English>
 </Key>
 <Key ID="STR_ZECCUP_Civilian_GeneralLarge_Mosque">
-    <Original>Mosque</Original>
+    <English>Mosque</English>
 </Key>
 <Key ID="STR_ZECCUP_Civilian_IndustrialLarge_Dam">
-    <Original>Dam</Original>
+    <English>Dam</English>
 </Key>
 <Key ID="STR_ZECCUP_Civilian_IndustrialLarge_IndustrialBuilding1">
-    <Original>Industrial Building #1</Original>
+    <English>Industrial Building #1</English>
 </Key>
 <Key ID="STR_ZECCUP_Civilian_IndustrialLarge_IndustrialBuilding2">
-    <Original>Industrial Building #2</Original>
+    <English>Industrial Building #2</English>
 </Key>
 <Key ID="STR_ZECCUP_Civilian_IndustrialMedium_Crane">
-    <Original>Dock Crane</Original>
+    <English>Dock Crane</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CampsSmall_Camp_CUP_O_TK">
-    <Original>Camp</Original>
+    <English>Camp</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CampsSmall_Camp_CUP_B_USMC">
-    <Original>Camp</Original>
+    <English>Camp</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CheckpointsBarricadesMedium_BunkerLarge_CUP_O_TK">
-    <Original>Bunker (Large) Checkpoint</Original>
+    <English>Bunker (Large) Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CheckpointsBarricadesMedium_VehicleHBarrier_CUP_O_TK">
-    <Original>Vehicle H-Barrier Checkpoint</Original>
+    <English>Vehicle H-Barrier Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CheckpointsBarricadesMedium_TowerBunker_CUP_O_TK">
-    <Original>Tower Bunker Checkpoint</Original>
+    <English>Tower Bunker Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CheckpointsBarricadesMedium_BunkerLarge_CUP_B_USMC">
-    <Original>Bunker (Large) Checkpoint</Original>
+    <English>Bunker (Large) Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CheckpointsBarricadesMedium_TowerBunker_CUP_B_USMC">
-    <Original>Tower Bunker Checkpoint</Original>
+    <English>Tower Bunker Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CheckpointsBarricadesSmall_BunkerSmall_CUP_O_TK">
-    <Original>Bunker (Small) Checkpoint</Original>
+    <English>Bunker (Small) Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CheckpointsBarricadesSmall_Sandbag_CUP_O_TK">
-    <Original>Sandbag Checkpoint</Original>
+    <English>Sandbag Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CheckpointsBarricadesSmall_SandbagNet_CUP_O_TK">
-    <Original>Sandbag Checkpoint (Net)</Original>
+    <English>Sandbag Checkpoint (Net)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CheckpointsBarricadesSmall_Concrete_CUP_O_TK">
-    <Original>Concrete Checkpoint</Original>
+    <English>Concrete Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CheckpointsBarricadesSmall_Sandbag_CUP_B_USMC">
-    <Original>Sandbag Checkpoint</Original>
+    <English>Sandbag Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CheckpointsBarricadesSmall_SandbagNet_CUP_B_USMC">
-    <Original>Sandbag Checkpoint (Net)</Original>
+    <English>Sandbag Checkpoint (Net)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CheckpointsBarricadesSmall_BunkersSmall_CUP_B_USMC">
-    <Original>Bunkers (Small) Checkpoint</Original>
+    <English>Bunkers (Small) Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CheckpointsBarricadesSmall_LightBunker_CUP_B_USMC">
-    <Original>Light Checkpoint</Original>
+    <English>Light Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CommunicationsLarge_AirRadar_CUP_O_TK">
-    <Original>Anti-Air Radar</Original>
+    <English>Anti-Air Radar</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CommunicationsLarge_AirRadar_CUP_B_USMC">
-    <Original>Anti-Air Radar</Original>
+    <English>Anti-Air Radar</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CommunicationsLarge_ArtilleryRadar_CUP_O_TK">
-    <Original>Artillery Radar</Original>
+    <English>Artillery Radar</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CommunicationsLarge_ArtilleryRadar_CUP_B_USMC">
-    <Original>Artillery Radar</Original>
+    <English>Artillery Radar</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CommunicationsMedium_RadioTower_CUP_O_TK">
-    <Original>Radio Tower</Original>
+    <English>Radio Tower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CommunicationsMedium_RadioTower_CUP_B_USMC">
-    <Original>Radio Tower</Original>
+    <English>Radio Tower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CommunicationsSmall_UAVTerminal_CUP_O_TK">
-    <Original>UAV Terminal</Original>
+    <English>UAV Terminal</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_CommunicationsSmall_UAVTerminal_CUP_B_USMC">
-    <Original>UAV Terminal</Original>
+    <English>UAV Terminal</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_ConstructionLarge_LightFactory_CUP_O_TK">
-    <Original>Light Factory</Original>
+    <English>Light Factory</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_ConstructionLarge_LightFactory_CUP_B_USMC">
-    <Original>Light Factory</Original>
+    <English>Light Factory</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_ConstructionLarge_HeavyFactory_CUP_O_TK">
-    <Original>Heavy Factory</Original>
+    <English>Heavy Factory</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_ConstructionLarge_HeavyFactory_CUP_B_USMC">
-    <Original>Heavy Factory</Original>
+    <English>Heavy Factory</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_ConstructionMedium_Yard_CUP_O_TK">
-    <Original>Container Yard</Original>
+    <English>Container Yard</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_ConstructionMedium_Yard_CUP_B_USMC">
-    <Original>Container Yard</Original>
+    <English>Container Yard</English>
 </Key>
 STR_ZECCUP_MilitaryDesert_ConstructionSuppliesLarge_FillerSupplies
 <Key ID="STR_ZECCUP_MilitaryDesert_ConstructionSuppliesLarge_BaseObjects">
-    <Original>Base Objects</Original>
+    <English>Base Objects</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_ConstructionSuppliesLarge_MiscItems">
-    <Original>Misc Items</Original>
+    <English>Misc Items</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_ConstructionSuppliesLarge_ExternalItems">
-    <Original>External Items</Original>
+    <English>External Items</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_ConstructionSuppliesLarge_Walls">
-    <Original>Walls</Original>
+    <English>Walls</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_ConstructionSuppliesLarge_Sandbags_CUP_B_USMC">
-    <Original>Sandbags - West</Original>
+    <English>Sandbags - West</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_ConstructionSuppliesLarge_Sandbags_CUP_O_TK">
-    <Original>Sandbags - East</Original>
+    <English>Sandbags - East</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_ConstructionSuppliesLarge_FillerSupplies">
-    <Original>Filler - Supplies</Original>
+    <English>Filler - Supplies</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQLarge_HQTent_CUP_O_TK">
-    <Original>Field Tents</Original>
+    <English>Field Tents</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQLarge_FieldBarracks1_CUP_O_TK">
-    <Original>Field Barracks #1</Original>
+    <English>Field Barracks #1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQLarge_FieldBarracks2_CUP_O_TK">
-    <Original>Field Barracks #2</Original>
+    <English>Field Barracks #2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQLarge_FieldRadar_CUP_O_TK">
-    <Original>Field Radar</Original>
+    <English>Field Radar</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQLarge_FieldHQ_CUP_O_TK">
-    <Original>Field HQ</Original>
+    <English>Field HQ</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQLarge_FieldDepot_CUP_O_TK">
-    <Original>Field Depot</Original>
+    <English>Field Depot</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQLarge_FieldBarracks1_CUP_B_USMC">
-    <Original>Field Barracks #1</Original>
+    <English>Field Barracks #1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQLarge_FieldBarracks2_CUP_B_USMC">
-    <Original>Field Barracks #2</Original>
+    <English>Field Barracks #2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQLarge_FieldRadar_CUP_B_USMC">
-    <Original>Field Radar</Original>
+    <English>Field Radar</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQLarge_FieldHQ_CUP_B_USMC">
-    <Original>Field HQ</Original>
+    <English>Field HQ</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQLarge_FieldDepot_CUP_B_USMC">
-    <Original>Field Depot</Original>
+    <English>Field Depot</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_HQTent_CUP_B_USMC">
-    <Original>Fortified Tent HQ</Original>
+    <English>Fortified Tent HQ</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_HQField_CUP_O_TK">
-    <Original>Basic HQ</Original>
+    <English>Basic HQ</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_HQField_CUP_B_USMC">
-    <Original>Basic HQ</Original>
+    <English>Basic HQ</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_FortifiedFieldHQ1_CUP_B_USMC">
-    <Original>Fortified HQ #B1</Original>
+    <English>Fortified HQ #B1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_FortifiedFieldHQ2_CUP_B_USMC">
-    <Original>Fortified HQ #B2</Original>
+    <English>Fortified HQ #B2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_FortifiedFieldHQ3_CUP_B_USMC">
-    <Original>Fortified HQ #B3</Original>
+    <English>Fortified HQ #B3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_FortifiedFieldHQ4_CUP_B_USMC">
-    <Original>Fortified HQ #B4</Original>
+    <English>Fortified HQ #B4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_FortifiedFieldHQ5_CUP_B_USMC">
-    <Original>Fortified HQ #B5</Original>
+    <English>Fortified HQ #B5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_FortifiedFieldHQ6_CUP_B_USMC">
-    <Original>Fortified HQ #B6</Original>
+    <English>Fortified HQ #B6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_FortifiedFieldHQ7_CUP_B_USMC">
-    <Original>Fortified HQ #B7</Original>
+    <English>Fortified HQ #B7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_FortifiedFieldHQ8_CUP_B_USMC">
-    <Original>Fortified HQ #B8</Original>
+    <English>Fortified HQ #B8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_FortifiedFieldHQ1_CUP_O_TK">
-    <Original>Fortified HQ #O1</Original>
+    <English>Fortified HQ #O1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_FortifiedFieldHQ2_CUP_O_TK">
-    <Original>Fortified HQ #O2</Original>
+    <English>Fortified HQ #O2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_FortifiedFieldHQ3_CUP_O_TK">
-    <Original>Fortified HQ #O3</Original>
+    <English>Fortified HQ #O3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_FortifiedFieldHQ4_CUP_O_TK">
-    <Original>Fortified HQ #O4</Original>
+    <English>Fortified HQ #O4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_FortifiedFieldHQ5_CUP_O_TK">
-    <Original>Fortified HQ #O5</Original>
+    <English>Fortified HQ #O5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_FortifiedFieldHQ6_CUP_O_TK">
-    <Original>Fortified HQ #O6</Original>
+    <English>Fortified HQ #O6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_FortifiedFieldHQ7_CUP_O_TK">
-    <Original>Fortified HQ #O7</Original>
+    <English>Fortified HQ #O7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FieldHQMedium_FortifiedFieldHQ8_CUP_O_TK">
-    <Original>Fortified HQ #O8</Original>
+    <English>Fortified HQ #O8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortLarge_MortarPit_CUP_O_TK">
-    <Original>Mortar Pit</Original>
+    <English>Mortar Pit</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortLarge_MortarPit_CUP_B_USMC">
-    <Original>Mortar Pit</Original>
+    <English>Mortar Pit</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_VehicleBunker_CUP_O_TK">
-    <Original>Vehicle Bunker</Original>
+    <English>Vehicle Bunker</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerTowerHvy_CUP_O_TK">
-    <Original>Bunker Tower (Heavy)</Original>
+    <English>Bunker Tower (Heavy)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerTowerLit_CUP_O_TK">
-    <Original>Bunker Tower (Light)</Original>
+    <English>Bunker Tower (Light)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLargeMed_CUP_O_TK">
-    <Original>Bunker Large</Original>
+    <English>Bunker Large</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerTowerMed_CUP_O_TK">
-    <Original>Bunker Tower</Original>
+    <English>Bunker Tower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLargeLit_CUP_O_TK">
-    <Original>Bunker Large (Light)</Original>
+    <English>Bunker Large (Light)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_VehicleBunker_CUP_B_USMC">
-    <Original>Vehicle Bunker</Original>
+    <English>Vehicle Bunker</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerTowerHvy_CUP_B_USMC">
-    <Original>Bunker Tower (Heavy)</Original>
+    <English>Bunker Tower (Heavy)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerTowerLit_CUP_B_USMC">
-    <Original>Bunker Tower (Light)</Original>
+    <English>Bunker Tower (Light)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLargeMed_CUP_B_USMC">
-    <Original>Bunker Large</Original>
+    <English>Bunker Large</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerTowerMed_CUP_B_USMC">
-    <Original>Bunker Tower</Original>
+    <English>Bunker Tower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLargeLit_CUP_B_USMC">
-    <Original>Bunker Large (Light)</Original>
+    <English>Bunker Large (Light)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge1_CUP_B_USMC">
-    <Original>Bunker (Large) #B1</Original>
+    <English>Bunker (Large) #B1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge2_CUP_B_USMC">
-    <Original>Bunker (Large) #B2</Original>
+    <English>Bunker (Large) #B2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge3_CUP_B_USMC">
-    <Original>Bunker (Large) #B3</Original>
+    <English>Bunker (Large) #B3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge4_CUP_B_USMC">
-    <Original>Bunker (Large) #B4</Original>
+    <English>Bunker (Large) #B4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge5_CUP_B_USMC">
-    <Original>Bunker (Large) #B5</Original>
+    <English>Bunker (Large) #B5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge6_CUP_B_USMC">
-    <Original>Bunker (Large) #B6</Original>
+    <English>Bunker (Large) #B6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge7_CUP_B_USMC">
-    <Original>Bunker (Large) #B7</Original>
+    <English>Bunker (Large) #B7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge8_CUP_B_USMC">
-    <Original>Bunker (Large) #B8</Original>
+    <English>Bunker (Large) #B8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge9_CUP_B_USMC">
-    <Original>Bunker (Large) #B9</Original>
+    <English>Bunker (Large) #B9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower1_CUP_B_USMC">
-    <Original>Cargo Tower #B1</Original>
+    <English>Cargo Tower #B1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower2_CUP_B_USMC">
-    <Original>Cargo Tower #B2</Original>
+    <English>Cargo Tower #B2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower3_CUP_B_USMC">
-    <Original>Cargo Tower #B3</Original>
+    <English>Cargo Tower #B3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower4_CUP_B_USMC">
-    <Original>Cargo Tower #B4</Original>
+    <English>Cargo Tower #B4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower5_CUP_B_USMC">
-    <Original>Cargo Tower #B5</Original>
+    <English>Cargo Tower #B5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower6_CUP_B_USMC">
-    <Original>Cargo Tower #B6</Original>
+    <English>Cargo Tower #B6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower7_CUP_B_USMC">
-    <Original>Cargo Tower #B7</Original>
+    <English>Cargo Tower #B7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower8_CUP_B_USMC">
-    <Original>Cargo Tower #B8</Original>
+    <English>Cargo Tower #B8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower9_CUP_B_USMC">
-    <Original>Cargo Tower #B9</Original>
+    <English>Cargo Tower #B9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_VehicleWatchtower_CUP_B_USMC">
-    <Original>Vehicle Watchtower</Original>
+    <English>Vehicle Watchtower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_VehicleCargoPost_CUP_B_USMC">
-    <Original>Vehicle Cargo Post</Original>
+    <English>Vehicle Cargo Post</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_VehicleLargeBunker_CUP_B_USMC">
-    <Original>Vehicle Bunker (Large)</Original>
+    <English>Vehicle Bunker (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_VehicleTower_CUP_B_USMC">
-    <Original>Vehicle Tower</Original>
+    <English>Vehicle Tower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_VehicleSmallBunker_CUP_B_USMC">
-    <Original>Vehicle Bunker (Small)</Original>
+    <English>Vehicle Bunker (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge1_CUP_O_TK">
-    <Original>Bunker (Large) #O1</Original>
+    <English>Bunker (Large) #O1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge2_CUP_O_TK">
-    <Original>Bunker (Large) #O2</Original>
+    <English>Bunker (Large) #O2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge3_CUP_O_TK">
-    <Original>Bunker (Large) #O3</Original>
+    <English>Bunker (Large) #O3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge4_CUP_O_TK">
-    <Original>Bunker (Large) #O4</Original>
+    <English>Bunker (Large) #O4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge5_CUP_O_TK">
-    <Original>Bunker (Large) #O5</Original>
+    <English>Bunker (Large) #O5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge6_CUP_O_TK">
-    <Original>Bunker (Large) #O6</Original>
+    <English>Bunker (Large) #O6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge7_CUP_O_TK">
-    <Original>Bunker (Large) #O7</Original>
+    <English>Bunker (Large) #O7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge8_CUP_O_TK">
-    <Original>Bunker (Large) #O8</Original>
+    <English>Bunker (Large) #O8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_BunkerLarge9_CUP_O_TK">
-    <Original>Bunker (Large) #O9</Original>
+    <English>Bunker (Large) #O9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower1_CUP_O_TK">
-    <Original>Cargo Tower #O1</Original>
+    <English>Cargo Tower #O1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower2_CUP_O_TK">
-    <Original>Cargo Tower #O2</Original>
+    <English>Cargo Tower #O2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower3_CUP_O_TK">
-    <Original>Cargo Tower #O3</Original>
+    <English>Cargo Tower #O3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower4_CUP_O_TK">
-    <Original>Cargo Tower #O4</Original>
+    <English>Cargo Tower #O4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower5_CUP_O_TK">
-    <Original>Cargo Tower #O5</Original>
+    <English>Cargo Tower #O5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower6_CUP_O_TK">
-    <Original>Cargo Tower #O6</Original>
+    <English>Cargo Tower #O6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower7_CUP_O_TK">
-    <Original>Cargo Tower #O7</Original>
+    <English>Cargo Tower #O7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower8_CUP_O_TK">
-    <Original>Cargo Tower #O8</Original>
+    <English>Cargo Tower #O8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_CargoTower9_CUP_O_TK">
-    <Original>Cargo Tower #O9</Original>
+    <English>Cargo Tower #O9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_VehicleWatchtower_CUP_O_TK">
-    <Original>Vehicle Watchtower</Original>
+    <English>Vehicle Watchtower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_VehicleCargoPost_CUP_O_TK">
-    <Original>Vehicle Cargo Post</Original>
+    <English>Vehicle Cargo Post</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_VehicleLargeBunker_CUP_O_TK">
-    <Original>Vehicle Bunker (Large)</Original>
+    <English>Vehicle Bunker (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_VehicleTower_CUP_O_TK">
-    <Original>Vehicle Tower</Original>
+    <English>Vehicle Tower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortMedium_VehicleSmallBunker_CUP_O_TK">
-    <Original>Vehicle Bunker (Small)</Original>
+    <English>Vehicle Bunker (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall1_CUP_B_USMC">
-    <Original>Bunker (Small) #B1</Original>
+    <English>Bunker (Small) #B1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall2_CUP_B_USMC">
-    <Original>Bunker (Small) #B2</Original>
+    <English>Bunker (Small) #B2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall3_CUP_B_USMC">
-    <Original>Bunker (Small) #B3</Original>
+    <English>Bunker (Small) #B3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall4_CUP_B_USMC">
-    <Original>Bunker (Small) #B4</Original>
+    <English>Bunker (Small) #B4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall5_CUP_B_USMC">
-    <Original>Bunker (Small) #B5</Original>
+    <English>Bunker (Small) #B5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall6_CUP_B_USMC">
-    <Original>Bunker (Small) #B6</Original>
+    <English>Bunker (Small) #B6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall7_CUP_B_USMC">
-    <Original>Bunker (Small) #B7</Original>
+    <English>Bunker (Small) #B7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall8_CUP_B_USMC">
-    <Original>Bunker (Small) #B8</Original>
+    <English>Bunker (Small) #B8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall9_CUP_B_USMC">
-    <Original>Bunker (Small) #B9</Original>
+    <English>Bunker (Small) #B9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost1_CUP_B_USMC">
-    <Original>Cargo Post #B1</Original>
+    <English>Cargo Post #B1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost2_CUP_B_USMC">
-    <Original>Cargo Post #B2</Original>
+    <English>Cargo Post #B2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost3_CUP_B_USMC">
-    <Original>Cargo Post #B3</Original>
+    <English>Cargo Post #B3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost4_CUP_B_USMC">
-    <Original>Cargo Post #B4</Original>
+    <English>Cargo Post #B4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost5_CUP_B_USMC">
-    <Original>Cargo Post #B5</Original>
+    <English>Cargo Post #B5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost6_CUP_B_USMC">
-    <Original>Cargo Post #B6</Original>
+    <English>Cargo Post #B6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost7_CUP_B_USMC">
-    <Original>Cargo Post #B7</Original>
+    <English>Cargo Post #B7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost8_CUP_B_USMC">
-    <Original>Cargo Post #B8</Original>
+    <English>Cargo Post #B8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost9_CUP_B_USMC">
-    <Original>Cargo Post #B9</Original>
+    <English>Cargo Post #B9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Watchtower2_CUP_B_USMC">
-    <Original>Watchtower #B2</Original>
+    <English>Watchtower #B2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Watchtower3_CUP_B_USMC">
-    <Original>Watchtower #B3</Original>
+    <English>Watchtower #B3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Watchtower4_CUP_B_USMC">
-    <Original>Watchtower #B4</Original>
+    <English>Watchtower #B4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Watchtower5_CUP_B_USMC">
-    <Original>Watchtower #B5</Original>
+    <English>Watchtower #B5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Watchtower6_CUP_B_USMC">
-    <Original>Watchtower #B6</Original>
+    <English>Watchtower #B6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Watchtower7_CUP_B_USMC">
-    <Original>Watchtower #B7</Original>
+    <English>Watchtower #B7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Watchtower8_CUP_B_USMC">
-    <Original>Watchtower #B8</Original>
+    <English>Watchtower #B8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Watchtower9_CUP_B_USMC">
-    <Original>Watchtower #B9</Original>
+    <English>Watchtower #B9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower1_CUP_B_USMC">
-    <Original>Bunker (Tower) #B1</Original>
+    <English>Bunker (Tower) #B1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower2_CUP_B_USMC">
-    <Original>Bunker (Tower) #B2</Original>
+    <English>Bunker (Tower) #B2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower3_CUP_B_USMC">
-    <Original>Bunker (Tower) #B3</Original>
+    <English>Bunker (Tower) #B3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower4_CUP_B_USMC">
-    <Original>Bunker (Tower) #B4</Original>
+    <English>Bunker (Tower) #B4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower5_CUP_B_USMC">
-    <Original>Bunker (Tower) #B5</Original>
+    <English>Bunker (Tower) #B5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower6_CUP_B_USMC">
-    <Original>Bunker (Tower) #B6</Original>
+    <English>Bunker (Tower) #B6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower7_CUP_B_USMC">
-    <Original>Bunker (Tower) #B7</Original>
+    <English>Bunker (Tower) #B7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower8_CUP_B_USMC">
-    <Original>Bunker (Tower) #B8</Original>
+    <English>Bunker (Tower) #B8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower9_CUP_B_USMC">
-    <Original>Bunker (Tower) #B9</Original>
+    <English>Bunker (Tower) #B9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall1_CUP_O_TK">
-    <Original>Bunker (Small) #O1</Original>
+    <English>Bunker (Small) #O1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall2_CUP_O_TK">
-    <Original>Bunker (Small) #O2</Original>
+    <English>Bunker (Small) #O2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall3_CUP_O_TK">
-    <Original>Bunker (Small) #O3</Original>
+    <English>Bunker (Small) #O3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall4_CUP_O_TK">
-    <Original>Bunker (Small) #O4</Original>
+    <English>Bunker (Small) #O4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall5_CUP_O_TK">
-    <Original>Bunker (Small) #O5</Original>
+    <English>Bunker (Small) #O5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall6_CUP_O_TK">
-    <Original>Bunker (Small) #O6</Original>
+    <English>Bunker (Small) #O6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall7_CUP_O_TK">
-    <Original>Bunker (Small) #O7</Original>
+    <English>Bunker (Small) #O7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall8_CUP_O_TK">
-    <Original>Bunker (Small) #O8</Original>
+    <English>Bunker (Small) #O8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerSmall9_CUP_O_TK">
-    <Original>Bunker (Small) #O9</Original>
+    <English>Bunker (Small) #O9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost1_CUP_O_TK">
-    <Original>Cargo Post #O1</Original>
+    <English>Cargo Post #O1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost2_CUP_O_TK">
-    <Original>Cargo Post #O2</Original>
+    <English>Cargo Post #O2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost3_CUP_O_TK">
-    <Original>Cargo Post #O3</Original>
+    <English>Cargo Post #O3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost4_CUP_O_TK">
-    <Original>Cargo Post #O4</Original>
+    <English>Cargo Post #O4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost5_CUP_O_TK">
-    <Original>Cargo Post #O5</Original>
+    <English>Cargo Post #O5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost6_CUP_O_TK">
-    <Original>Cargo Post #O6</Original>
+    <English>Cargo Post #O6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost7_CUP_O_TK">
-    <Original>Cargo Post #O7</Original>
+    <English>Cargo Post #O7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost8_CUP_O_TK">
-    <Original>Cargo Post #O8</Original>
+    <English>Cargo Post #O8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_CargoPost9_CUP_O_TK">
-    <Original>Cargo Post #O9</Original>
+    <English>Cargo Post #O9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Watchtower1_CUP_O_TK">
-    <Original>Watchtower #O1</Original>
+    <English>Watchtower #O1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Watchtower2_CUP_O_TK">
-    <Original>Watchtower #O2</Original>
+    <English>Watchtower #O2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Watchtower3_CUP_O_TK">
-    <Original>Watchtower #O3</Original>
+    <English>Watchtower #O3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Watchtower4_CUP_O_TK">
-    <Original>Watchtower #O4</Original>
+    <English>Watchtower #O4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Watchtower5_CUP_O_TK">
-    <Original>Watchtower #O5</Original>
+    <English>Watchtower #O5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Watchtower6_CUP_O_TK">
-    <Original>Watchtower #O6</Original>
+    <English>Watchtower #O6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Watchtower7_CUP_O_TK">
-    <Original>Watchtower #O7</Original>
+    <English>Watchtower #O7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Watchtower8_CUP_O_TK">
-    <Original>Watchtower #O8</Original>
+    <English>Watchtower #O8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Watchtower9_CUP_O_TK">
-    <Original>Watchtower #O9</Original>
+    <English>Watchtower #O9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower1_CUP_O_TK">
-    <Original>Bunker (Tower) #O1</Original>
+    <English>Bunker (Tower) #O1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower2_CUP_O_TK">
-    <Original>Bunker (Tower) #O2</Original>
+    <English>Bunker (Tower) #O2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower3_CUP_O_TK">
-    <Original>Bunker (Tower) #O3</Original>
+    <English>Bunker (Tower) #O3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower4_CUP_O_TK">
-    <Original>Bunker (Tower) #O4</Original>
+    <English>Bunker (Tower) #O4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower5_CUP_O_TK">
-    <Original>Bunker (Tower) #O5</Original>
+    <English>Bunker (Tower) #O5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower6_CUP_O_TK">
-    <Original>Bunker (Tower) #O6</Original>
+    <English>Bunker (Tower) #O6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower7_CUP_O_TK">
-    <Original>Bunker (Tower) #O7</Original>
+    <English>Bunker (Tower) #O7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower8_CUP_O_TK">
-    <Original>Bunker (Tower) #O8</Original>
+    <English>Bunker (Tower) #O8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_BunkerTower9_CUP_O_TK">
-    <Original>Bunker (Tower) #O9</Original>
+    <English>Bunker (Tower) #O9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_NestSandbag_CUP_O_TK">
-    <Original>Nest - Sandbag</Original>
+    <English>Nest - Sandbag</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_NestHBarrier_CUP_O_TK">
-    <Original>Nest H-Barrier</Original>
+    <English>Nest H-Barrier</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Sandbags_CUP_O_TK">
-    <Original>Sandbags</Original>
+    <English>Sandbags</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_SandbagNet_CUP_O_TK">
-    <Original>Net #O5</Original>
+    <English>Net #O5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_SandbagNetHvy_CUP_O_TK">
-    <Original>Sandbag Net (Heavy)</Original>
+    <English>Sandbag Net (Heavy)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_NestMed_CUP_O_TK">
-    <Original>Nest</Original>
+    <English>Nest</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_SandbagNetLit_CUP_O_TK">
-    <Original>Sandbag Net</Original>
+    <English>Sandbag Net</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_LightNet1_CUP_O_TK">
-    <Original>Net #O1</Original>
+    <English>Net #O1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_LightNet2_CUP_O_TK">
-    <Original>Net #O2</Original>
+    <English>Net #O2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_LightNet3_CUP_O_TK">
-    <Original>Net #O3</Original>
+    <English>Net #O3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_LightNet4_CUP_O_TK">
-    <Original>Net #O4</Original>
+    <English>Net #O4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_NetCamo_CUP_O_TK">
-    <Original>Vehicle Net</Original>
+    <English>Vehicle Net</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_NestSandbag_CUP_B_USMC">
-    <Original>Nest - Sandbag</Original>
+    <English>Nest - Sandbag</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_NestHBarrier_CUP_B_USMC">
-    <Original>Nest H-Barrier</Original>
+    <English>Nest H-Barrier</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_Sandbags_CUP_B_USMC">
-    <Original>Sandbags</Original>
+    <English>Sandbags</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_SandbagNet_CUP_B_USMC">
-    <Original>Net #B5</Original>
+    <English>Net #B5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_SandbagNetHvy_CUP_B_USMC">
-    <Original>Sandbag Net (Heavy)</Original>
+    <English>Sandbag Net (Heavy)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_NestMed_CUP_B_USMC">
-    <Original>Nest</Original>
+    <English>Nest</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_SandbagNetLit_CUP_B_USMC">
-    <Original>Sandbag Net</Original>
+    <English>Sandbag Net</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_LightNet1_CUP_B_USMC">
-    <Original>Net #B1</Original>
+    <English>Net #B1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_LightNet2_CUP_B_USMC">
-    <Original>Net #B2</Original>
+    <English>Net #B2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_LightNet3_CUP_B_USMC">
-    <Original>Net #B3</Original>
+    <English>Net #B3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_LightNet4_CUP_B_USMC">
-    <Original>Net #B4</Original>
+    <English>Net #B4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FortSmall_NetCamo_CUP_B_USMC">
-    <Original>Vehicle Net</Original>
+    <English>Vehicle Net</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_HeliportsLarge_AirFact_CUP_O_TK">
-    <Original>Air Factory</Original>
+    <English>Air Factory</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_HeliportsLarge_AirFact_CUP_B_USMC">
-    <Original>Air Factory</Original>
+    <English>Air Factory</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_HeliportsLarge_LandingZone_CUP_O_TK">
-    <Original>Landing Zone</Original>
+    <English>Landing Zone</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_HeliportsLarge_LandingZone_CUP_B_USMC">
-    <Original>Landing Zone</Original>
+    <English>Landing Zone</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_HeliportsMedium_LandingZone_CUP_O_TK">
-    <Original>Landing Zone</Original>
+    <English>Landing Zone</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_HeliportsMedium_LandingZone_CUP_B_USMC">
-    <Original>Landing Zone</Original>
+    <English>Landing Zone</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_HeliportsSmall_LandingZone_CUP_O_TK">
-    <Original>Landing Zone</Original>
+    <English>Landing Zone</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_HeliportsSmall_LandingZone_CUP_B_USMC">
-    <Original>Landing Zone</Original>
+    <English>Landing Zone</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_HQLarge_Headquarters_CUP_B_USMC">
-    <Original>Headquarters</Original>
+    <English>Headquarters</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_HQLarge_Headquarters_CUP_O_TK">
-    <Original>Headquarters</Original>
+    <English>Headquarters</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_HQMedium_HQCargo_CUP_O_TK">
-    <Original>HQ Cargo Post</Original>
+    <English>HQ Cargo Post</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_HQMedium_HQCargo_CUP_B_USMC">
-    <Original>HQ Cargo Post</Original>
+    <English>HQ Cargo Post</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_HQSmall_HQUnfoldedBRDM_CUP_O_TK">
-    <Original>Mobile HQ &amp; Tower</Original>
+    <English>Mobile HQ &amp; Tower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_HQSmall_HQUnfoldedBMP_CUP_O_TK">
-    <Original>Mobile HQ</Original>
+    <English>Mobile HQ</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_HQSmall_HQUnfoldedM1130A_CUP_B_USMC">
-    <Original>Mobile HQ &amp; Tower</Original>
+    <English>Mobile HQ &amp; Tower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_HQSmall_HQUnfoldedM1130B_CUP_B_USMC">
-    <Original>Mobile HQ</Original>
+    <English>Mobile HQ</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_MedicalLarge_Hospital_CUP_O_TK">
-    <Original>Hospital</Original>
+    <English>Hospital</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_MedicalLarge_Hospital_CUP_B_USMC">
-    <Original>Hospital</Original>
+    <English>Hospital</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_PowerSmall_Generator_CUP_O_TK">
-    <Original>Generator</Original>
+    <English>Generator</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_PowerSmall_Generator_CUP_B_USMC">
-    <Original>Generator</Original>
+    <English>Generator</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_SuppliesMedium_AmmoDump_CUP_O_TK">
-    <Original>Ammo Dump</Original>
+    <English>Ammo Dump</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_SuppliesMedium_AmmoDump_CUP_B_USMC">
-    <Original>Ammo Dump</Original>
+    <English>Ammo Dump</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_SuppliesSmall_Cache_CUP_O_TK">
-    <Original>Cache</Original>
+    <English>Cache</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_SuppliesSmall_Cache_CUP_B_USMC">
-    <Original>Cache</Original>
+    <English>Cache</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_SupportsLarge_Barracks_CUP_O_TK">
-    <Original>Barracks</Original>
+    <English>Barracks</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_SupportsLarge_Barracks_CUP_B_USMC">
-    <Original>Barracks</Original>
+    <English>Barracks</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_SupportsMedium_ServicePoint_CUP_O_TK">
-    <Original>Service Point</Original>
+    <English>Service Point</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_SupportsMedium_ServicePoint_CUP_B_USMC">
-    <Original>Service Point</Original>
+    <English>Service Point</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_SupportsMedium_ServiceArea_CUP_O_TK">
-    <Original>Service Area</Original>
+    <English>Service Area</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_SupportsMedium_ServiceArea_CUP_B_USMC">
-    <Original>Service Area</Original>
+    <English>Service Area</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_SupportsMedium_Barracks_CUP_O_TK">
-    <Original>Barracks</Original>
+    <English>Barracks</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_SupportsMedium_Barracks_CUP_B_USMC">
-    <Original>Barracks</Original>
+    <English>Barracks</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_SupportsSmall_LivingQuarters_CUP_O_TK">
-    <Original>Living Quarters</Original>
+    <English>Living Quarters</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_SupportsSmall_LivingQuarters_CUP_B_USMC">
-    <Original>Living Quarters</Original>
+    <English>Living Quarters</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FuelMedium_OilT_CUP_O_TK">
-    <Original>Oil Tower</Original>
+    <English>Oil Tower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FuelMedium_OilT_CUP_B_USMC">
-    <Original>Oil Tower</Original>
+    <English>Oil Tower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FuelMedium_FuelDump_CUP_O_TK">
-    <Original>Fuel Dump</Original>
+    <English>Fuel Dump</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryDesert_FuelMedium_FuelDump_CUP_B_USMC">
-    <Original>Fuel Dump</Original>
+    <English>Fuel Dump</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CampsSmall_Camp_CUP_O_RU">
-    <Original>Camp</Original>
+    <English>Camp</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CampsSmall_Camp_CUP_B_CDF">
-    <Original>Camp</Original>
+    <English>Camp</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CheckpointsBarricadesMedium_VehicleBunker_CUP_O_RU">
-    <Original>Vehicle Bunker Checkpoint</Original>
+    <English>Vehicle Bunker Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CheckpointsBarricadesMedium_TowerBunker_CUP_O_RU">
-    <Original>Tower Bunker Checkpoint</Original>
+    <English>Tower Bunker Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CheckpointsBarricadesMedium_HeavyBunker_CUP_O_RU">
-    <Original>Heavy Bunker Checkpoint</Original>
+    <English>Heavy Bunker Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CheckpointsBarricadesMedium_VehicleBunker_CUP_B_CDF">
-    <Original>Vehicle Bunker Checkpoint</Original>
+    <English>Vehicle Bunker Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CheckpointsBarricadesMedium_TowerBunker_CUP_B_CDF">
-    <Original>Tower Bunker Checkpoint</Original>
+    <English>Tower Bunker Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CheckpointsBarricadesMedium_ConcreteTower_CUP_B_CDF">
-    <Original>Concrete Tower Checkpoint</Original>
+    <English>Concrete Tower Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CheckpointsBarricadesSmall_SandbagNet_CUP_O_RU">
-    <Original>Sandbag Checkpoint (Net)</Original>
+    <English>Sandbag Checkpoint (Net)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CheckpointsBarricadesSmall_VehicleRampart_CUP_O_RU">
-    <Original>Vehicle Rampart Checkpoint</Original>
+    <English>Vehicle Rampart Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CheckpointsBarricadesSmall_BunkerSmall_CUP_O_RU">
-    <Original>Bunker (Small) Checkpoint</Original>
+    <English>Bunker (Small) Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CheckpointsBarricadesSmall_SandbagNet_CUP_B_CDF">
-    <Original>Sandbag Checkpoint (Net)</Original>
+    <English>Sandbag Checkpoint (Net)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CheckpointsBarricadesSmall_ConcretePost_CUP_B_CDF">
-    <Original>Concrete Post Checkpoint</Original>
+    <English>Concrete Post Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CheckpointsBarricadesSmall_BunkerSmall_CUP_B_CDF">
-    <Original>Bunker (Small) Checkpoint</Original>
+    <English>Bunker (Small) Checkpoint</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CommunicationsLarge_AirRadar_CUP_O_RU">
-    <Original>Anti-Air Radar</Original>
+    <English>Anti-Air Radar</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CommunicationsLarge_AirRadar_CUP_B_CDF">
-    <Original>Anti-Air Radar</Original>
+    <English>Anti-Air Radar</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CommunicationsLarge_ArtilleryRadar_CUP_O_RU">
-    <Original>Artillery Radar</Original>
+    <English>Artillery Radar</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CommunicationsLarge_ArtilleryRadar_CUP_B_CDF">
-    <Original>Artillery Radar</Original>
+    <English>Artillery Radar</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CommunicationsMedium_RadioTower_CUP_O_RU">
-    <Original>Radio Tower</Original>
+    <English>Radio Tower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CommunicationsMedium_RadioTower_CUP_B_CDF">
-    <Original>Radio Tower</Original>
+    <English>Radio Tower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CommunicationsSmall_UAVTerminal_CUP_O_RU">
-    <Original>UAV Terminal</Original>
+    <English>UAV Terminal</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_CommunicationsSmall_UAVTerminal_CUP_B_CDF">
-    <Original>UAV Terminal</Original>
+    <English>UAV Terminal</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_ConstructionMedium_ContainerYard_CUP_O_RU">
-    <Original>Container Yard</Original>
+    <English>Container Yard</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_ConstructionMedium_ContainerYard_CUP_B_CDF">
-    <Original>Container Yard</Original>
+    <English>Container Yard</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_ConstructionSuppliesLarge_BaseObjects">
-    <Original>Base Objects</Original>
+    <English>Base Objects</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_ConstructionSuppliesLarge_MiscItems">
-    <Original>Misc Items</Original>
+    <English>Misc Items</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_ConstructionSuppliesLarge_ExternalItems">
-    <Original>External Items</Original>
+    <English>External Items</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_ConstructionSuppliesLarge_Walls">
-    <Original>Walls</Original>
+    <English>Walls</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_ConstructionSuppliesLarge_Sandbags_CUP_B_USMC">
-    <Original>Sandbags - West</Original>
+    <English>Sandbags - West</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_ConstructionSuppliesLarge_Sandbags_CUP_O_TK">
-    <Original>Sandbags - East</Original>
+    <English>Sandbags - East</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_ConstructionSuppliesLarge_FillerSupplies">
-    <Original>Filler - Supplies</Original>
+    <English>Filler - Supplies</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQLarge_FieldBarracks1_CUP_O_RU">
-    <Original>Field Barracks #1</Original>
+    <English>Field Barracks #1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQLarge_FieldBarracks2_CUP_O_RU">
-    <Original>Field Barracks #2</Original>
+    <English>Field Barracks #2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQLarge_FieldRadar_CUP_O_RU">
-    <Original>Field Radar</Original>
+    <English>Field Radar</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQLarge_FieldHQ_CUP_O_RU">
-    <Original>Field HQ</Original>
+    <English>Field HQ</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQLarge_FieldDepot_CUP_O_RU">
-    <Original>Field Depot</Original>
+    <English>Field Depot</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQLarge_FieldBarracks1_CUP_B_CDF">
-    <Original>Field Barracks #1</Original>
+    <English>Field Barracks #1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQLarge_FieldBarracks2_CUP_B_CDF">
-    <Original>Field Barracks #2</Original>
+    <English>Field Barracks #2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQLarge_FieldRadar_CUP_B_CDF">
-    <Original>Field Radar</Original>
+    <English>Field Radar</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQLarge_FieldHQ_CUP_B_CDF">
-    <Original>Field HQ</Original>
+    <English>Field HQ</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQLarge_FieldDepot_CUP_B_CDF">
-    <Original>Field Depot</Original>
+    <English>Field Depot</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_HQField_CUP_O_RU">
-    <Original>Basic HQ</Original>
+    <English>Basic HQ</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_HQField_CUP_B_CDF">
-    <Original>Basic HQ</Original>
+    <English>Basic HQ</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_HQTent_CUP_O_RU">
-    <Original>Fortified Tent HQ</Original>
+    <English>Fortified Tent HQ</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_HQTent_CUP_B_CDF">
-    <Original>Fortified Tent HQ</Original>
+    <English>Fortified Tent HQ</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_FortifiedFieldHQ1_CUP_B_CDF">
-    <Original>Fortified HQ #B1</Original>
+    <English>Fortified HQ #B1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_FortifiedFieldHQ2_CUP_B_CDF">
-    <Original>Fortified HQ #B2</Original>
+    <English>Fortified HQ #B2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_FortifiedFieldHQ3_CUP_B_CDF">
-    <Original>Fortified HQ #B3</Original>
+    <English>Fortified HQ #B3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_FortifiedFieldHQ4_CUP_B_CDF">
-    <Original>Fortified HQ #B4</Original>
+    <English>Fortified HQ #B4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_FortifiedFieldHQ5_CUP_B_CDF">
-    <Original>Fortified HQ #B5</Original>
+    <English>Fortified HQ #B5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_FortifiedFieldHQ6_CUP_B_CDF">
-    <Original>Fortified HQ #B6</Original>
+    <English>Fortified HQ #B6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_FortifiedFieldHQ7_CUP_B_CDF">
-    <Original>Fortified HQ #B7</Original>
+    <English>Fortified HQ #B7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_FortifiedFieldHQ8_CUP_B_CDF">
-    <Original>Fortified HQ #B8</Original>
+    <English>Fortified HQ #B8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_FortifiedFieldHQ1_CUP_O_RU">
-    <Original>Fortified HQ #O1</Original>
+    <English>Fortified HQ #O1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_FortifiedFieldHQ2_CUP_O_RU">
-    <Original>Fortified HQ #O2</Original>
+    <English>Fortified HQ #O2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_FortifiedFieldHQ3_CUP_O_RU">
-    <Original>Fortified HQ #O3</Original>
+    <English>Fortified HQ #O3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_FortifiedFieldHQ4_CUP_O_RU">
-    <Original>Fortified HQ #O4</Original>
+    <English>Fortified HQ #O4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_FortifiedFieldHQ5_CUP_O_RU">
-    <Original>Fortified HQ #O5</Original>
+    <English>Fortified HQ #O5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_FortifiedFieldHQ6_CUP_O_RU">
-    <Original>Fortified HQ #O6</Original>
+    <English>Fortified HQ #O6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_FortifiedFieldHQ7_CUP_O_RU">
-    <Original>Fortified HQ #O7</Original>
+    <English>Fortified HQ #O7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FieldHQMedium_FortifiedFieldHQ8_CUP_O_RU">
-    <Original>Fortified HQ #O8</Original>
+    <English>Fortified HQ #O8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortLarge_MortarPit_CUP_O_RU">
-    <Original>Mortar Pit</Original>
+    <English>Mortar Pit</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortLarge_MortarPit_CUP_B_CDF">
-    <Original>Mortar Pit</Original>
+    <English>Mortar Pit</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_VehicleBunker_CUP_O_RU">
-    <Original>Vehicle Bunker</Original>
+    <English>Vehicle Bunker</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerTowerHvy_CUP_O_RU">
-    <Original>Bunker Tower (Heavy)</Original>
+    <English>Bunker Tower (Heavy)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerTowerLit_CUP_O_RU">
-    <Original>Bunker Tower (Light)</Original>
+    <English>Bunker Tower (Light)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLargeMed_CUP_O_RU">
-    <Original>Bunker Large</Original>
+    <English>Bunker Large</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerTowerMed_CUP_O_RU">
-    <Original>Bunker Tower</Original>
+    <English>Bunker Tower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLargeLit_CUP_O_RU">
-    <Original>Bunker Large (Light)</Original>
+    <English>Bunker Large (Light)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_VehicleBunker_CUP_B_CDF">
-    <Original>Vehicle Bunker</Original>
+    <English>Vehicle Bunker</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerTowerHvy_CUP_B_CDF">
-    <Original>Bunker Tower (Heavy)</Original>
+    <English>Bunker Tower (Heavy)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerTowerLit_CUP_B_CDF">
-    <Original>Bunker Tower (Light)</Original>
+    <English>Bunker Tower (Light)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLargeMed_CUP_B_CDF">
-    <Original>Bunker Large</Original>
+    <English>Bunker Large</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerTowerMed_CUP_B_CDF">
-    <Original>Bunker Tower</Original>
+    <English>Bunker Tower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLargeLit_CUP_B_CDF">
-    <Original>Bunker Large (Light)</Original>
+    <English>Bunker Large (Light)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge1_CUP_B_CDF">
-    <Original>Bunker (Large) #B1</Original>
+    <English>Bunker (Large) #B1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge2_CUP_B_CDF">
-    <Original>Bunker (Large) #B2</Original>
+    <English>Bunker (Large) #B2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge3_CUP_B_CDF">
-    <Original>Bunker (Large) #B3</Original>
+    <English>Bunker (Large) #B3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge4_CUP_B_CDF">
-    <Original>Bunker (Large) #B4</Original>
+    <English>Bunker (Large) #B4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge5_CUP_B_CDF">
-    <Original>Bunker (Large) #B5</Original>
+    <English>Bunker (Large) #B5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge6_CUP_B_CDF">
-    <Original>Bunker (Large) #B6</Original>
+    <English>Bunker (Large) #B6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge7_CUP_B_CDF">
-    <Original>Bunker (Large) #B7</Original>
+    <English>Bunker (Large) #B7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge8_CUP_B_CDF">
-    <Original>Bunker (Large) #B8</Original>
+    <English>Bunker (Large) #B8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge9_CUP_B_CDF">
-    <Original>Bunker (Large) #B9</Original>
+    <English>Bunker (Large) #B9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower1_CUP_B_CDF">
-    <Original>Cargo Tower #B1</Original>
+    <English>Cargo Tower #B1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower2_CUP_B_CDF">
-    <Original>Cargo Tower #B2</Original>
+    <English>Cargo Tower #B2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower3_CUP_B_CDF">
-    <Original>Cargo Tower #B3</Original>
+    <English>Cargo Tower #B3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower4_CUP_B_CDF">
-    <Original>Cargo Tower #B4</Original>
+    <English>Cargo Tower #B4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower5_CUP_B_CDF">
-    <Original>Cargo Tower #B5</Original>
+    <English>Cargo Tower #B5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower6_CUP_B_CDF">
-    <Original>Cargo Tower #B6</Original>
+    <English>Cargo Tower #B6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower7_CUP_B_CDF">
-    <Original>Cargo Tower #B7</Original>
+    <English>Cargo Tower #B7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower8_CUP_B_CDF">
-    <Original>Cargo Tower #B8</Original>
+    <English>Cargo Tower #B8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower9_CUP_B_CDF">
-    <Original>Cargo Tower #B9</Original>
+    <English>Cargo Tower #B9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_VehicleWatchtower_CUP_B_CDF">
-    <Original>Vehicle Watchtower</Original>
+    <English>Vehicle Watchtower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_VehicleCargoPost_CUP_B_CDF">
-    <Original>Vehicle Cargo Post</Original>
+    <English>Vehicle Cargo Post</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_VehicleLargeBunker_CUP_B_CDF">
-    <Original>Vehicle Bunker (Large)</Original>
+    <English>Vehicle Bunker (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_VehicleTower_CUP_B_CDF">
-    <Original>Vehicle Tower</Original>
+    <English>Vehicle Tower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_VehicleSmallBunker_CUP_B_CDF">
-    <Original>Vehicle Bunker (Small)</Original>
+    <English>Vehicle Bunker (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge1_CUP_O_RU">
-    <Original>Bunker (Large) #O1</Original>
+    <English>Bunker (Large) #O1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge2_CUP_O_RU">
-    <Original>Bunker (Large) #O2</Original>
+    <English>Bunker (Large) #O2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge3_CUP_O_RU">
-    <Original>Bunker (Large) #O3</Original>
+    <English>Bunker (Large) #O3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge4_CUP_O_RU">
-    <Original>Bunker (Large) #O4</Original>
+    <English>Bunker (Large) #O4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge5_CUP_O_RU">
-    <Original>Bunker (Large) #O5</Original>
+    <English>Bunker (Large) #O5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge6_CUP_O_RU">
-    <Original>Bunker (Large) #O6</Original>
+    <English>Bunker (Large) #O6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge7_CUP_O_RU">
-    <Original>Bunker (Large) #O7</Original>
+    <English>Bunker (Large) #O7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge8_CUP_O_RU">
-    <Original>Bunker (Large) #O8</Original>
+    <English>Bunker (Large) #O8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_BunkerLarge9_CUP_O_RU">
-    <Original>Bunker (Large) #O9</Original>
+    <English>Bunker (Large) #O9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower1_CUP_O_RU">
-    <Original>Cargo Tower #O1</Original>
+    <English>Cargo Tower #O1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower2_CUP_O_RU">
-    <Original>Cargo Tower #O2</Original>
+    <English>Cargo Tower #O2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower3_CUP_O_RU">
-    <Original>Cargo Tower #O3</Original>
+    <English>Cargo Tower #O3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower4_CUP_O_RU">
-    <Original>Cargo Tower #O4</Original>
+    <English>Cargo Tower #O4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower5_CUP_O_RU">
-    <Original>Cargo Tower #O5</Original>
+    <English>Cargo Tower #O5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower6_CUP_O_RU">
-    <Original>Cargo Tower #O6</Original>
+    <English>Cargo Tower #O6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower7_CUP_O_RU">
-    <Original>Cargo Tower #O7</Original>
+    <English>Cargo Tower #O7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower8_CUP_O_RU">
-    <Original>Cargo Tower #O8</Original>
+    <English>Cargo Tower #O8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_CargoTower9_CUP_O_RU">
-    <Original>Cargo Tower #O9</Original>
+    <English>Cargo Tower #O9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_VehicleWatchtower_CUP_O_RU">
-    <Original>Vehicle Watchtower</Original>
+    <English>Vehicle Watchtower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_VehicleCargoPost_CUP_O_RU">
-    <Original>Vehicle Cargo Post</Original>
+    <English>Vehicle Cargo Post</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_VehicleLargeBunker_CUP_O_RU">
-    <Original>Vehicle Bunker (Large)</Original>
+    <English>Vehicle Bunker (Large)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_VehicleTower_CUP_O_RU">
-    <Original>Vehicle Tower</Original>
+    <English>Vehicle Tower</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortMedium_VehicleSmallBunker_CUP_O_RU">
-    <Original>Vehicle Bunker (Small)</Original>
+    <English>Vehicle Bunker (Small)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall1_CUP_B_CDF">
-    <Original>Bunker (Small) #B1</Original>
+    <English>Bunker (Small) #B1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall2_CUP_B_CDF">
-    <Original>Bunker (Small) #B2</Original>
+    <English>Bunker (Small) #B2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall3_CUP_B_CDF">
-    <Original>Bunker (Small) #B3</Original>
+    <English>Bunker (Small) #B3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall4_CUP_B_CDF">
-    <Original>Bunker (Small) #B4</Original>
+    <English>Bunker (Small) #B4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall5_CUP_B_CDF">
-    <Original>Bunker (Small) #B5</Original>
+    <English>Bunker (Small) #B5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall6_CUP_B_CDF">
-    <Original>Bunker (Small) #B6</Original>
+    <English>Bunker (Small) #B6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall7_CUP_B_CDF">
-    <Original>Bunker (Small) #B7</Original>
+    <English>Bunker (Small) #B7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall8_CUP_B_CDF">
-    <Original>Bunker (Small) #B8</Original>
+    <English>Bunker (Small) #B8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall9_CUP_B_CDF">
-    <Original>Bunker (Small) #B9</Original>
+    <English>Bunker (Small) #B9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost1_CUP_B_CDF">
-    <Original>Cargo Post #B1</Original>
+    <English>Cargo Post #B1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost2_CUP_B_CDF">
-    <Original>Cargo Post #B2</Original>
+    <English>Cargo Post #B2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost3_CUP_B_CDF">
-    <Original>Cargo Post #B3</Original>
+    <English>Cargo Post #B3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost4_CUP_B_CDF">
-    <Original>Cargo Post #B4</Original>
+    <English>Cargo Post #B4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost5_CUP_B_CDF">
-    <Original>Cargo Post #B5</Original>
+    <English>Cargo Post #B5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost6_CUP_B_CDF">
-    <Original>Cargo Post #B6</Original>
+    <English>Cargo Post #B6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost7_CUP_B_CDF">
-    <Original>Cargo Post #B7</Original>
+    <English>Cargo Post #B7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost8_CUP_B_CDF">
-    <Original>Cargo Post #B8</Original>
+    <English>Cargo Post #B8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost9_CUP_B_CDF">
-    <Original>Cargo Post #B9</Original>
+    <English>Cargo Post #B9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower1_CUP_B_CDF">
-    <Original>Watchtower #B1</Original>
+    <English>Watchtower #B1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower2_CUP_B_CDF">
-    <Original>Watchtower #B2</Original>
+    <English>Watchtower #B2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower3_CUP_B_CDF">
-    <Original>Watchtower #B3</Original>
+    <English>Watchtower #B3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower4_CUP_B_CDF">
-    <Original>Watchtower #B4</Original>
+    <English>Watchtower #B4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower5_CUP_B_CDF">
-    <Original>Watchtower #B5</Original>
+    <English>Watchtower #B5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower6_CUP_B_CDF">
-    <Original>Watchtower #B6</Original>
+    <English>Watchtower #B6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower7_CUP_B_CDF">
-    <Original>Watchtower #B7</Original>
+    <English>Watchtower #B7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower8_CUP_B_CDF">
-    <Original>Watchtower #B8</Original>
+    <English>Watchtower #B8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower9_CUP_B_CDF">
-    <Original>Watchtower #B9</Original>
+    <English>Watchtower #B9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower1_CUP_B_CDF">
-    <Original>Bunker (Tower) #B1</Original>
+    <English>Bunker (Tower) #B1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower2_CUP_B_CDF">
-    <Original>Bunker (Tower) #B2</Original>
+    <English>Bunker (Tower) #B2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower3_CUP_B_CDF">
-    <Original>Bunker (Tower) #B3</Original>
+    <English>Bunker (Tower) #B3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower4_CUP_B_CDF">
-    <Original>Bunker (Tower) #B4</Original>
+    <English>Bunker (Tower) #B4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower5_CUP_B_CDF">
-    <Original>Bunker (Tower) #B5</Original>
+    <English>Bunker (Tower) #B5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower6_CUP_B_CDF">
-    <Original>Bunker (Tower) #B6</Original>
+    <English>Bunker (Tower) #B6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower7_CUP_B_CDF">
-    <Original>Bunker (Tower) #B7</Original>
+    <English>Bunker (Tower) #B7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower8_CUP_B_CDF">
-    <Original>Bunker (Tower) #B8</Original>
+    <English>Bunker (Tower) #B8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower9_CUP_B_CDF">
-    <Original>Bunker (Tower) #B9</Original>
+    <English>Bunker (Tower) #B9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall1_CUP_O_RU">
-    <Original>Bunker (Small) #O1</Original>
+    <English>Bunker (Small) #O1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall2_CUP_O_RU">
-    <Original>Bunker (Small) #O2</Original>
+    <English>Bunker (Small) #O2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall3_CUP_O_RU">
-    <Original>Bunker (Small) #O3</Original>
+    <English>Bunker (Small) #O3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall4_CUP_O_RU">
-    <Original>Bunker (Small) #O4</Original>
+    <English>Bunker (Small) #O4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall5_CUP_O_RU">
-    <Original>Bunker (Small) #O5</Original>
+    <English>Bunker (Small) #O5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall6_CUP_O_RU">
-    <Original>Bunker (Small) #O6</Original>
+    <English>Bunker (Small) #O6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall7_CUP_O_RU">
-    <Original>Bunker (Small) #O7</Original>
+    <English>Bunker (Small) #O7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall8_CUP_O_RU">
-    <Original>Bunker (Small) #O8</Original>
+    <English>Bunker (Small) #O8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerSmall9_CUP_O_RU">
-    <Original>Bunker (Small) #O9</Original>
+    <English>Bunker (Small) #O9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost1_CUP_O_RU">
-    <Original>Cargo Post #O1</Original>
+    <English>Cargo Post #O1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost2_CUP_O_RU">
-    <Original>Cargo Post #O2</Original>
+    <English>Cargo Post #O2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost3_CUP_O_RU">
-    <Original>Cargo Post #O3</Original>
+    <English>Cargo Post #O3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost4_CUP_O_RU">
-    <Original>Cargo Post #O4</Original>
+    <English>Cargo Post #O4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost5_CUP_O_RU">
-    <Original>Cargo Post #O5</Original>
+    <English>Cargo Post #O5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost6_CUP_O_RU">
-    <Original>Cargo Post #O6</Original>
+    <English>Cargo Post #O6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost7_CUP_O_RU">
-    <Original>Cargo Post #O7</Original>
+    <English>Cargo Post #O7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost8_CUP_O_RU">
-    <Original>Cargo Post #O8</Original>
+    <English>Cargo Post #O8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_CargoPost9_CUP_O_RU">
-    <Original>Cargo Post #O9</Original>
+    <English>Cargo Post #O9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower1_CUP_O_RU">
-    <Original>Watchtower #O1</Original>
+    <English>Watchtower #O1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower2_CUP_O_RU">
-    <Original>Watchtower #O2</Original>
+    <English>Watchtower #O2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower3_CUP_O_RU">
-    <Original>Watchtower #O3</Original>
+    <English>Watchtower #O3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower4_CUP_O_RU">
-    <Original>Watchtower #O4</Original>
+    <English>Watchtower #O4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower5_CUP_O_RU">
-    <Original>Watchtower #O5</Original>
+    <English>Watchtower #O5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower6_CUP_O_RU">
-    <Original>Watchtower #O6</Original>
+    <English>Watchtower #O6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower7_CUP_O_RU">
-    <Original>Watchtower #O7</Original>
+    <English>Watchtower #O7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower8_CUP_O_RU">
-    <Original>Watchtower #O8</Original>
+    <English>Watchtower #O8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Watchtower9_CUP_O_RU">
-    <Original>Watchtower #O9</Original>
+    <English>Watchtower #O9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower1_CUP_O_RU">
-    <Original>Bunker (Tower) #O1</Original>
+    <English>Bunker (Tower) #O1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower2_CUP_O_RU">
-    <Original>Bunker (Tower) #O2</Original>
+    <English>Bunker (Tower) #O2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower3_CUP_O_RU">
-    <Original>Bunker (Tower) #O3</Original>
+    <English>Bunker (Tower) #O3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower4_CUP_O_RU">
-    <Original>Bunker (Tower) #O4</Original>
+    <English>Bunker (Tower) #O4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower5_CUP_O_RU">
-    <Original>Bunker (Tower) #O5</Original>
+    <English>Bunker (Tower) #O5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower6_CUP_O_RU">
-    <Original>Bunker (Tower) #O6</Original>
+    <English>Bunker (Tower) #O6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower7_CUP_O_RU">
-    <Original>Bunker (Tower) #O7</Original>
+    <English>Bunker (Tower) #O7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower8_CUP_O_RU">
-    <Original>Bunker (Tower) #O8</Original>
+    <English>Bunker (Tower) #O8</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_BunkerTower9_CUP_O_RU">
-    <Original>Bunker (Tower) #O9</Original>
+    <English>Bunker (Tower) #O9</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_NestHBarrier_CUP_O_RU">
-    <Original>Nest H-Barrier</Original>
+    <English>Nest H-Barrier</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Sandbags_CUP_O_RU">
-    <Original>Sandbags</Original>
+    <English>Sandbags</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_SandbagNetHvy_CUP_O_RU">
-    <Original>Sandbag Net (Heavy)</Original>
+    <English>Sandbag Net (Heavy)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_NestMed_CUP_O_RU">
-    <Original>Nest</Original>
+    <English>Nest</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_LightNet1_CUP_O_RU">
-    <Original>Net #O1</Original>
+    <English>Net #O1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_LightNet2_CUP_O_RU">
-    <Original>Net #O2</Original>
+    <English>Net #O2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_LightNet3_CUP_O_RU">
-    <Original>Net #O3</Original>
+    <English>Net #O3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_LightNet4_CUP_O_RU">
-    <Original>Net #O4</Original>
+    <English>Net #O4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_NestSandbag_CUP_O_RU">
-    <Original>Net #O5</Original>
+    <English>Net #O5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_SandbagNetLit_CUP_O_RU">
-    <Original>Net #06</Original>
+    <English>Net #06</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_SandbagNet_CUP_O_RU">
-    <Original>Net #O7</Original>
+    <English>Net #O7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_NetCamo_CUP_O_RU">
-    <Original>Vehicle Net</Original>
+    <English>Vehicle Net</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_NestSandbag_CUP_B_CDF">
-    <Original>Net #O5</Original>
+    <English>Net #O5</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_NestHBarrier_CUP_B_CDF">
-    <Original>Nest H-Barrier</Original>
+    <English>Nest H-Barrier</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_Sandbags_CUP_B_CDF">
-    <Original>Sandbags</Original>
+    <English>Sandbags</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_SandbagNet_CUP_B_CDF">
-    <Original>Net #B7</Original>
+    <English>Net #B7</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_SandbagNetHvy_CUP_B_CDF">
-    <Original>Sandbag Net (Heavy)</Original>
+    <English>Sandbag Net (Heavy)</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_NestMed_CUP_B_CDF">
-    <Original>Nest</Original>
+    <English>Nest</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_SandbagNetLit_CUP_B_CDF">
-    <Original>Net #B6</Original>
+    <English>Net #B6</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_LightNet1_CUP_B_CDF">
-    <Original>Net #B1</Original>
+    <English>Net #B1</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_LightNet2_CUP_B_CDF">
-    <Original>Net #B2</Original>
+    <English>Net #B2</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_LightNet3_CUP_B_CDF">
-    <Original>Net #B3</Original>
+    <English>Net #B3</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_LightNet4_CUP_B_CDF">
-    <Original>Net #B4</Original>
+    <English>Net #B4</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FortSmall_NetCamo_CUP_B_CDF">
-    <Original>Vehicle Net</Original>
+    <English>Vehicle Net</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_HeliportsLarge_AirFactory_CUP_O_RU">
-    <Original>Air Factory</Original>
+    <English>Air Factory</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_HeliportsLarge_AirFactory_CUP_B_CDF">
-    <Original>Air Factory</Original>
+    <English>Air Factory</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_HeliportsLarge_LandingZone_CUP_O_RU">
-    <Original>Landing Zone</Original>
+    <English>Landing Zone</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_HeliportsLarge_LandingZone_CUP_B_CDF">
-    <Original>Landing Zone</Original>
+    <English>Landing Zone</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_HeliportsMedium_LandingZone_CUP_O_RU">
-    <Original>Landing Zone</Original>
+    <English>Landing Zone</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_HeliportsMedium_LandingZone_CUP_B_CDF">
-    <Original>Landing Zone</Original>
+    <English>Landing Zone</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_HeliportsSmall_LandingZone_CUP_O_RU">
-    <Original>Landing Zone</Original>
+    <English>Landing Zone</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_HeliportsSmall_LandingZone_CUP_B_CDF">
-    <Original>Landing Zone</Original>
+    <English>Landing Zone</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_HQLarge_Headquarters_CUP_B_CDF">
-    <Original>Headquarters</Original>
+    <English>Headquarters</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_HQLarge_Headquarters_CUP_O_RU">
-    <Original>Headquarters</Original>
+    <English>Headquarters</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_HQMedium_HQCargo_CUP_O_RU">
-    <Original>HQ Cargo Post</Original>
+    <English>HQ Cargo Post</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_HQMedium_HQCargo_CUP_B_CDF">
-    <Original>HQ Cargo Post</Original>
+    <English>HQ Cargo Post</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_HQSmall_HQUnfoldedBTR_CUP_O_RU">
-    <Original>Mobile HQ - BTR</Original>
+    <English>Mobile HQ - BTR</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_HQSmall_HQUnfoldedLAV_CUP_B_CDF">
-    <Original>Mobile HQ - LAV</Original>
+    <English>Mobile HQ - LAV</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_MedicalLarge_Hospital_CUP_O_RU">
-    <Original>Hospital</Original>
+    <English>Hospital</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_MedicalLarge_Hospital_CUP_B_CDF">
-    <Original>Hospital</Original>
+    <English>Hospital</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_PowerSmall_Generator_CUP_O_RU">
-    <Original>Generator</Original>
+    <English>Generator</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_PowerSmall_Generator_CUP_B_CDF">
-    <Original>Generator</Original>
+    <English>Generator</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_SuppliesMedium_AmmoDump_CUP_O_RU">
-    <Original>Ammo Dump</Original>
+    <English>Ammo Dump</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_SuppliesMedium_AmmoDump_CUP_B_CDF">
-    <Original>Ammo Dump</Original>
+    <English>Ammo Dump</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_SuppliesSmall_Cache_CUP_O_RU">
-    <Original>Cache</Original>
+    <English>Cache</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_SuppliesSmall_Cache_CUP_B_CDF">
-    <Original>Cache</Original>
+    <English>Cache</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_SupportsLarge_Barracks_CUP_O_RU">
-    <Original>Barracks</Original>
+    <English>Barracks</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_SupportsLarge_Barracks_CUP_B_CDF">
-    <Original>Barracks</Original>
+    <English>Barracks</English>
 </Key>
 	<Key ID="STR_ZECCUP_MilitaryWoodland_SupportsMedium_ServiceArea_CUP_O_RU">
-    <Original>Service Area</Original>
+    <English>Service Area</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_SupportsMedium_ServiceArea_CUP_B_CDF">
-    <Original>Service Area</Original>
+    <English>Service Area</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_SupportsMedium_Barracks_CUP_O_RU">
-    <Original>Barracks</Original>
+    <English>Barracks</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_SupportsMedium_Barracks_CUP_B_CDF">
-    <Original>Barracks</Original>
+    <English>Barracks</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_SupportsSmall_LivingQuarters_CUP_O_RU">
-    <Original>Living Quarters</Original>
+    <English>Living Quarters</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_SupportsSmall_LivingQuarters_CUP_B_CDF">
-    <Original>Living Quarters</Original>
+    <English>Living Quarters</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FuelMedium_FuelDump_CUP_O_RU">
-    <Original>Fuel Dump</Original>
+    <English>Fuel Dump</English>
 </Key>
 <Key ID="STR_ZECCUP_MilitaryWoodland_FuelMedium_FuelDump_CUP_B_CDF">
-    <Original>Fuel Dump</Original>
+    <English>Fuel Dump</English>
 </Key>
 </Container></Package></Project>
