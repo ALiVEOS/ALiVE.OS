@@ -242,6 +242,13 @@ class flyInShot
 	RECOMPILE;
 };
 
+class flyOverShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_flyOverShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class lowerCamera
 {
 	file = "\x\alive\addons\x_lib\functions\camera\fnc_lowerCamera.sqf";
