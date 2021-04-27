@@ -17,7 +17,7 @@
             size = 8;
             class Object0	{side = 8; vehicle = "Land_vn_garbageheap_02_f"; rank = ""; position[] = {0.39502,0.0219727,0.952881}; dir = 0;};
             class Object1	{side = 8; vehicle = "Land_vn_sacks_heap_f"; rank = ""; position[] = {-6.51514,-1.9292,0.00105476}; dir = 93.4869;};
-            class Object2	{side = 8; vehicle = "vn_steeldrum_trash_02"; rank = ""; position[] = {3.99219,1.2168,0}; dir = 45.3621;};
+            class Object2	{side = 8; vehicle = "vn_steeldrum_trash_01"; rank = ""; position[] = {3.99219,1.2168,0}; dir = 45.3621;};
             class Object3	{side = 8; vehicle = "Land_vn_barricade_01_4m_f"; rank = ""; position[] = {4.91748,0.0761719,0}; dir = 13.6415;};
             class Object4	{side = 8; vehicle = "Land_vn_barricade_01_10m_f"; rank = ""; position[] = {-0.664551,-2.05811,0}; dir = 7.84955;};
             class Object5	{side = 8; vehicle = "Land_vn_tyre_01_line_x5_f"; rank = ""; position[] = {-0.0112305,1.19092,0.1196}; dir = -89.7852;};
