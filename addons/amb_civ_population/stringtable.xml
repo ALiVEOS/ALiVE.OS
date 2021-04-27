@@ -458,10 +458,6 @@
     <Original>You have gotten your answers already.</Original>
     <Spanish>Ya tienes tu respuesta sobre eso.</Spanish>
 </Key>
-<Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_8">
-    <Original>You have gotten your answers already.</Original>
-    <Spanish>Ya tienes tu respuesta sobre eso.</Spanish>
-</Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_1">
     <Original>I live over there, I'll show you (%1's house has been marked on the map).</Original>
     <Spanish>Vivo por allá, te mostraré. (La casa de %1 se ha marcado en el mapa)</Spanish>
@@ -478,7 +474,7 @@
     <Original>I live right over there (%1's house has been marked on the map).</Original>
     <Spanish>Vivo justo por allá. (La casa de %1 se ha marcado en el mapa).</Spanish>
 </Key>
-<Key ID="STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_4">
+<Key ID="STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_5">
     <Original>Just over there. (The house is marked on the map).</Original>
     <Spanish>Allí nada más. (La casa de %1 se ha marcado en el mapa).</Spanish>
 </Key>
@@ -846,15 +842,15 @@
     <Original>Do you want to get me killed?</Original>
     <Spanish>¿Acaso quieres que me maten?</Spanish>
 </Key>
-<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_6">
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_7">
     <Original>I will not put myself in danger.</Original>
     <Spanish>No me voy a poner en peligro a mí mismo.</Spanish>
 </Key>
-<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_7">
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_8">
     <Original>Why would you ask that?</Original>
     <Spanish>¿Por qué haces esa pregunta?</Spanish>
 </Key>
-<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_8">
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_9">
     <Original>I cannot help you with that.</Original>
     <Spanish>No te puedo ayudar con eso.</Spanish>
 </Key>
@@ -991,7 +987,7 @@
     <Original>Get away from me!</Original>
     <Spanish>¡Aléjate de mí!</Spanish>
 </Key>
-<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_7">
+<Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_8">
     <Original>You disgust me!</Original>
     <Spanish>¡Ustedes me dan asco!</Spanish>
 </Key>
@@ -1102,10 +1098,6 @@
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_MAP_2">
     <Original> Someone told me where he was (Position marked on map).</Original>
     <Spanish> Alguien me dijo dónde andaba (Posición marcada en el mapa).</Spanish>
-</Key>
-<Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_MAP_3">
-    <Original> I saw him earlier (Position marked on map).</Original>
-    <Spanish> Lo ví hoy temprano (Posición marcada en el mapa).</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_MAP_3">
     <Original> I saw him earlier (Position marked on map).</Original>

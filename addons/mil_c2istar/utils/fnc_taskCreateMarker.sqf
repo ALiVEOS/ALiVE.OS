@@ -88,6 +88,7 @@ ARJay
 private ["_position","_taskID","_markerColour","_markerText","_markerType","_markerDimensions",
 "_markerAlpha","_markerShape","_markerBrush","_taskMarkers","_m"];
 
+
 _position = _this select 0;
 _taskID = _this select 1;
 _markerColour = _this select 2;
@@ -105,15 +106,19 @@ if(isNil "ALIVE_taskMarkers") then {
     [ALIVE_taskMarkers,_taskID,[]] call ALIVE_fnc_hashSet;
 };
 
+
 if(_taskID in (ALIVE_taskMarkers select 1)) then {
 
     _taskMarkers = [ALIVE_taskMarkers,_taskID] call ALIVE_fnc_hashGet;
 
     {
-        deleteMarkerLocal _x;
+        if (markerText _x == _markerText) exitWith {
+            deleteMarkerLocal _x;
+            _taskMarkers = _taskMarkers - [_x];
+        };
     } forEach _taskMarkers;
 
-    [ALIVE_taskMarkers,_taskID,[]] call ALIVE_fnc_hashSet;
+    [ALIVE_taskMarkers,_taskID,_taskMarkers] call ALIVE_fnc_hashSet;
 
 }else{
 
@@ -124,7 +129,7 @@ if(_taskID in (ALIVE_taskMarkers select 1)) then {
 _taskMarkers = [ALIVE_taskMarkers,_taskID] call ALIVE_fnc_hashGet;
 
 // create the marker
-_m = createMarkerLocal [format["%1_m1",_taskID], _position];
+_m = createMarkerLocal [format["%1_%2",_taskID, _markerText], _position];
 _m setMarkerSizeLocal _markerDimensions;
 _m setMarkerColorLocal _markerColour;
 _m setMarkerAlphaLocal _markerAlpha;

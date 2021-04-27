@@ -407,6 +407,25 @@ switch (_taskState) do {
                         _crewProfile1 = [ALiVE_ProfileHandler,"getProfile",_crewID] call ALiVE_fnc_ProfileHandler;
                         _crewProfile1ID = _crewID;
 
+                        // Fail mission if there is an error and crew isnt created
+                        if (isnil "_crewProfile1") exitwith {
+                            [_params,"nextTask",""] call ALIVE_fnc_hashSet;
+
+                            // Mission Over intermediate state - if dead or timeout update the parent-task instead of the child so all children get updated
+                            _parent = _task select 11;
+                            _parent = if (_parent == "None") then {_taskID} else {_parent};
+                            _parentTask = [ALiVE_TaskHandler,"getTask",_parent] call ALiVE_fnc_TaskHandler;
+
+                            _parentTask set [8,"Canceled"];
+                            _parentTask set [10,"N"];
+
+                            [ALiVE_TaskHandler,"TASK_UPDATE",_parentTask] call ALiVE_fnc_TaskHandler;
+
+                            [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+
+                            ["chat_cancelled",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+                        };
+
                         waitUntil {
                             sleep 1;
                             _crew1Active = _crewProfile1 select 2 select 1;

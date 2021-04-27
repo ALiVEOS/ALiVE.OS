@@ -704,11 +704,14 @@ switch (_operation) do {
                         private _objs = attachedObjects _player;
                         private _result = objNull;
 
+                        //See comment below regarding "Drop-object"-action. Needed if all attached objs should be droppable
+                        /*
                         {
                             if (!isNull _x) exitWith {
                                 _result = _x;
                             };
                         } forEach _objs;
+                        */
 
                         if (isNull _result) then {
                             _result = (_player getVariable ["ALiVE_SYS_LOGISTICS_CARGO",[]]) select 0;
@@ -717,7 +720,11 @@ switch (_operation) do {
                         _result;
                     };
                     _container = {_this select 1};
-                    _condition = "alive _target && {vehicle _target == _originalTarget} && {{!isnull _x} count (attachedObjects _target) > 0 || {count (_target getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) > 0}}";
+                    //Enable to show "Drop object"-action as soon as any object is attached! If anything goes wrong player is able to detach all objects.
+                    //_condition = "alive _target && {vehicle _target == _originalTarget} && {{!isnull _x} count (attachedObjects _target) > 0 || {count (_target getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) > 0}}";
+                    
+                    //Show "Drop object"-action only if player is carrying something.
+                    _condition = "alive _target && {vehicle _target == _originalTarget} && {count (_target getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) > 0}";
                 };
                 case ("unloadObjects") : {
                     _text = "Load out cargo";
