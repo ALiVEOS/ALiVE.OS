@@ -128,6 +128,35 @@ for "_i" from 0 to ((count _objects) - 1) do {
         _newObj setPos _newPos;
 
         _created pushBack _newObj;
+					
+		    	// If vn trapdoor exists, 50% chance of spawning a tunnel. Random params.
+		    	if (typeOf _newObj == "Land_vn_o_trapdoor_01") then {
+		    		private _chance = [1,101] call BIS_fnc_randomInt;
+						if (_chance >50) then {
+							private _tunnelPosition = position _newObj;
+							private _tunneltype = selectRandom [1,2,3,4,5,6];
+							private _tunnelsize = selectRandom [2,3,4];
+							private _tunnelClassname = selectRandom ["pavn_vc_local","pavn_vc_regional","pavn_vc_main"];
+							private _classes = call compile getText(configfile >> "CfgVehicles" >> "vn_module_tunnel_init" >> "Attributes" >> "garrison_classnames_preselection" >> "values" >> _tunnelClassname >> "value");
+							private _tunnelmoduleGroup = createGroup sideLogic;
+						  private _tunnel = "vn_module_tunnel_init" createUnit [
+							  	_tunnelPosition,
+							 	 _tunnelmoduleGroup,
+							  	format["this setVariable ['tunnel_position', %1, true]; this setVariable ['garrison_classnames_preselection', %2, true]; this setVariable ['garrison_side', 1, true]; this setVariable ['garrison_size', %3, true];  this setVariable ['BIS_fnc_initModules_disableAutoActivation', false, true];", _tunneltype, _classes, _tunnelsize]
+							  ];
+						 	  ["Placing tunnel entrance for tunnel %1 at %2, enemy are %3 man %4 group", _tunneltype, _tunnelPosition, _tunnelsize * 10, _tunnelClassname] call ALiVE_fnc_dump;
+						    [_tunnelPosition] spawn
+						    {
+						        params["_tunnelPosition"];
+						        private _object = objNull;
+						        waitUntil { _object = _tunnelPosition nearestObject "Land_vn_o_trapdoor_01"; !isNull _object};
+						        private _heightAdjust = random [0.2, 0.4, 0.5];
+						        _object setpos [position _object select 0, position _object select 1, (position _object select 2) - _heightAdjust];
+						    };
+							  
+						};
+						deleteVehicle _newObj;
+					}; 
     };
 };
 
