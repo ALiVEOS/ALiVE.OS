@@ -51,10 +51,10 @@
     <English>Sets the max number of virtualized AI *groups* to spawn at any one time</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ZEUSSPAWN">
-    <Original>Zeus Spawn Virtual Groups:</Original>
+    <English>Zeus Spawn Virtual Groups:</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ZEUSSPAWN_COMMENT">
-    <Original>If enabled, active zeus entities will spawn virtual groups when in range</Original>
+    <English>If enabled, active zeus entities will spawn virtual groups when in range</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS">
     <English>Spawn planes radius:</English>
