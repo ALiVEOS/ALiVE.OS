@@ -29,7 +29,7 @@
             class Object11	{side = 8; vehicle = "vn_air_ch34_01_wreck"; rank = ""; position[] = {-6.0625,-9.17322,-0.00309753}; dir = -182.241;};
             class Object12	{side = 8; vehicle = "vn_o_prop_t884_01"; rank = ""; position[] = {-7.89844,-8.14526,-0.000753403}; dir = 138.656;};
             class Object13	{side = 8; vehicle = "Oil_Spill_F"; rank = ""; position[] = {-6.31641,-12.3164,0}; dir = 0;};
-            class Object14	{side = 8; vehicle = "Land_DirtPatch_05_F"; rank = ""; position[] = {-5.45508,-14.1312,0}; dir = 0;};
+            class Object14	{side = 8; vehicle = "Land_DirtPatch_03_F"; rank = ""; position[] = {-5.45508,-14.1312,0}; dir = 0;};
             class Object15	{side = 8; vehicle = "Land_vn_foodsack_01_dmg_white_idap_f"; rank = ""; position[] = {-8.98242,-7.95538,0}; dir = 97.884;};
             class Object16	{side = 8; vehicle = "Land_ClothShelter_01_F"; rank = ""; position[] = {-8.66797,-7.11859,0}; dir = -182.241;};
             class Object17	{side = 8; vehicle = "vn_o_item_bedroll_01"; rank = ""; position[] = {-8.73438,-7.55743,0}; dir = -144.69;};

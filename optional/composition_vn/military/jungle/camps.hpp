@@ -51,7 +51,7 @@
             class Object41	{side = 8; vehicle = "BloodPool_01_Large_New_F"; rank = ""; position[] = {-0.299438,-9.26416,0}; dir = -177.759;};
             class Object42	{side = 8; vehicle = "Land_vn_t_cocosnucifera3s_tall_f"; rank = ""; position[] = {12.2716,0.808105,0}; dir = -117.154;};
             class Object43	{side = 8; vehicle = "Land_vn_t_cocosnucifera3s_tall_f"; rank = ""; position[] = {-8.5907,-3.5083,0}; dir = -177.759;};
-            class Object44	{side = 8; vehicle = "Land_DirtPatch_05_F"; rank = ""; position[] = {-11.6913,-9.5166,0}; dir = -177.759;};
+            class Object44	{side = 8; vehicle = "Land_DirtPatch_03_F"; rank = ""; position[] = {-11.6913,-9.5166,0}; dir = -177.759;};
             class Object45	{side = 8; vehicle = "vn_campfire_burning_f"; rank = ""; position[] = {1.18762,-9.07471,0}; dir = -177.759;};
             class Object46	{side = 8; vehicle = "Land_vn_crater_decal_01"; rank = ""; position[] = {-0.00939941,-0.896484,0}; dir = -177.759;};
             class Object47	{side = 8; vehicle = "Land_vn_hut_tower_02"; rank = ""; position[] = {6.9032,9.39307,0}; dir = -180.351;};
@@ -192,7 +192,7 @@
             class Object63	{side = 8; vehicle = "Land_ClutterCutter_large_F"; rank = ""; position[] = {-7.78711,40.9326,0}; dir = -356.405;};
             class Object64	{side = 8; vehicle = "Land_vn_c_fern_boletus_group"; rank = ""; position[] = {1.53271,34.9429,0}; dir = -143.728;};
             class Object65	{side = 8; vehicle = "Land_vn_misc_torzotree_pmc"; rank = ""; position[] = {20.896,13.8496,0}; dir = -268.146;};
-            class Object66	{side = 8; vehicle = "Land_DirtPatch_05_F"; rank = ""; position[] = {14.1846,19.7339,0.214737}; dir = -356.405;};
+            class Object66	{side = 8; vehicle = "Land_DirtPatch_03_F"; rank = ""; position[] = {14.1846,19.7339,0.214737}; dir = -356.405;};
             class Object67	{side = 8; vehicle = "Land_vn_t_cyathea_f"; rank = ""; position[] = {21.731,26.1792,0}; dir = -356.405;};
             class Object68	{side = 8; vehicle = "Land_vn_t_banana_slim_f"; rank = ""; position[] = {9.85205,1.23633,0}; dir = -356.405;};
             class Object69	{side = 8; vehicle = "Land_vn_t_cocos_small_f"; rank = ""; position[] = {13.9453,5.95215,0}; dir = -342.291;};
@@ -286,7 +286,7 @@
             class Object18	{side = 8; vehicle = "Land_vn_o_trapdoor_01"; rank = ""; position[] = {-12.0703,-9.784,0.0350065}; dir = -182.231;};
             class Object19	{side = 8; vehicle = "Land_vn_foodsack_01_empty_brown_idap_f"; rank = ""; position[] = {-11.7285,0.741821,0}; dir = 36.4496;};
             class Object20	{side = 8; vehicle = "Land_Sacks_heap_F"; rank = ""; position[] = {-12.7324,5.88678,0}; dir = -21.9754;};
-            class Object21	{side = 8; vehicle = "Land_DirtPatch_05_F"; rank = ""; position[] = {-9.27344,1.9906,0}; dir = 0.00967407;};
+            class Object21	{side = 8; vehicle = "Land_DirtPatch_03_F"; rank = ""; position[] = {-9.27344,1.9906,0}; dir = 0.00967407;};
             class Object22	{side = 8; vehicle = "Land_Cliff_boulder_F"; rank = ""; position[] = {-17.2734,-0.997559,0}; dir = 162.769;};
         };
     
