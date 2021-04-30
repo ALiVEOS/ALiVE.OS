@@ -2,9 +2,9 @@
     {
         name = $STR_ALIVE_COMP_VN_HqLarge;
         
-        class HQLarge_HQ_O_VC 
+        class HQLarge_FieldHQ_O_VC 
         {
-            name = "HQ [O_VC]";
+            name = "Field HQ [O_VC]";
             icon = \vn\objects_f_vietnam\flags\vn_flag_01_vc_co.paa;
             size = 8;
             class Object0	{side = 8; vehicle = "Land_vn_fence_bamboo_01_gate"; rank = ""; position[] = {-0.0129395,0.0908203,0}; dir = 0;};
@@ -121,8 +121,6 @@
             class Object111	{side = 8; vehicle = "Land_vn_fence_punji_01_10"; rank = ""; position[] = {-12.6506,41.6904,-1.90735e-006}; dir = 104.601;};
             class Object112	{side = 8; vehicle = "Land_vn_fence_punji_01_10"; rank = ""; position[] = {-15.0891,32.2793,1.90735e-006}; dir = 104.601;};
             class Object113	{side = 8; vehicle = "Land_vn_b_arundod2s_f"; rank = ""; position[] = {-12.8328,49.4219,-0.00446701}; dir = 168.687;};
-            class Object114	{side = 8; vehicle = "vn_viper"; rank = ""; position[] = {-46.4756,47.9756,0.00841904}; dir = 135.262;};
-            class Object115	{side = 8; vehicle = "vn_krait"; rank = ""; position[] = {7.57886,76.0156,0}; dir = 277.774;};
         }; 
         
 	};
