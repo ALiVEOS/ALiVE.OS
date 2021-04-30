@@ -85,6 +85,10 @@ link38[] = {26,10};
 link39[] = {27,28};
 globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-430.527191,110.709167,984.352661,85.005020,532,884,1};
 window[] = {2,-1,-1,-1,-1,1144,52,1219,52,3,550};
+globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-494.123688,104.336670,1100.633545,106.194580,532,884,1};
+window[] = {2,-1,-1,-32000,-32000,1170,78,1245,78,3,550};
+globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-554.890503,237.533569,1074.525391,-242.209290,641,884,1};
+window[] = {2,-1,-1,-1,-1,1222,130,1297,130,3,659};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -349,6 +353,9 @@ class FSM
                          "            _state = [_objective,""tacom_state""] call AliVE_fnc_HashGet;" \n
                          "            _transmit = !([_objective,""opcom_state""] call AliVE_fnc_HashGet == ""internal"");" \n
                          "            _dataset = nil;" \n
+                         "            " \n
+                         "            private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
+                         "            private _opcomOrderCompleteArgs = [];" \n
                          "" \n
                          "            switch (_state) do {" \n
                          "                case (""recon"") : {" \n
@@ -375,10 +382,17 @@ class FSM
                          "                    //analyse as recon is completed" \n
                          "                    _dataset = {_TACOM_DATA = [""analyze"",_objective]};" \n
                          "" \n
+                         "                        // log event --------------------------------------------------------------------------------------------" \n
+                         "                        // ADDED ARJay ---------------------------------------------------------------------------------------" \n
+                         "                        _event = ['OPCOM_RECON', [_side,_objective],""OPCOM""] call ALIVE_fnc_event;" \n
+                         "                        _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
+
                          "                    // log event --------------------------------------------------------------------------------------------" \n
                          "                    // ADDED ARJay ---------------------------------------------------------------------------------------" \n
                          "                    _event = ['OPCOM_RECON', [_side,_objective],""OPCOM""] call ALIVE_fnc_event;" \n
                          "                    _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
+                         "                    " \n
+                         "                    _opcomOrderCompleteArgs = [_danger];" \n
                          "                };" \n
                          "                case (""capture"") : {" \n
                          "                    if !([_OPCOM_HANDLER,""synchronizeorders"",_ProfileID] call ALiVE_fnc_OPCOM) exitwith {" \n
@@ -445,8 +459,15 @@ class FSM
                          "                    _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
                          "                };" \n
                          "                " \n
+                         "" \n
                          "                default {_dataset = {}};" \n
                          "            };" \n
+                         "" \n
+                         "            // OPCOM never actually registers an order as complete" \n
+                         "            // So we fire the event from here" \n
+                         "            private _event = ['OPCOM_ORDER_COMPLETE', [_opcomID,_objective,_state,_side,_factions, _opcomOrderCompleteArgs], ""OPCOM""] call ALIVE_fnc_event;" \n
+                         "            [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
+                         "            " \n
                          "            if !(isnil ""_dataset"") then {if (_transmit) then {call _dataset}};" \n
                          "        };" \n
                          "        default {};" \n
