@@ -99,6 +99,25 @@ class CfgVehicles {
                         description = "$STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER_COMMENT";
                         defaultvalue = "144";
                     };
+                    class zeusSpawn
+                    {
+                        displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZEUSSPAWN";
+                        description = "$STR_ALIVE_PROFILE_SYSTEM_ZEUSSPAWN_COMMENT";
+                        class Values
+                        {
+                            class Yes
+                            {
+                                name = "Yes";
+                                value = true;
+                                default = 1;
+                            };
+                            class No
+                            {
+                                name = "No";
+                                value = false;
+                            };
+                        };
+                    };
                     class speedModifier
                     {
                         displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER";
