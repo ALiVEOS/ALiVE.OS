@@ -56,7 +56,7 @@
             class Object4	{side = 8; vehicle = "Land_vn_b_prop_litter_body_02_02"; rank = ""; position[] = {-1.41992,-1.44141,0.291447}; dir = 54.6842;};
             class Object5	{side = 8; vehicle = "Land_vn_crater_decal_01"; rank = ""; position[] = {-4.25195,-6.0235,0}; dir = 0;};
             class Object6	{side = 8; vehicle = "Land_vn_b_sugarcane_sapling_row_f"; rank = ""; position[] = {0.361328,-1.66119,0.162883}; dir = -115.403;};
-            class Object7	{side = 8; vehicle = "Land_vn_mound01_8m_f"; rank = ""; position[] = {-11.875,-12.2776,0}; dir = 21.7924;};
+            class Object7	{side = 8; vehicle = "Land_vn_dirtpatch_01_4x4_f"; rank = ""; position[] = {-11.875,-12.2776,0}; dir = 21.7924;};
             class Object8	{side = 8; vehicle = "Land_vn_rock_clutter_04_01"; rank = ""; position[] = {-9.05664,-3.69733,0}; dir = -182.241;};
             class Object9	{side = 8; vehicle = "Land_vn_b_calochlaena_f"; rank = ""; position[] = {-11.1191,-10.1721,0}; dir = -1.74155;};
             class Object10	{side = 8; vehicle = "Land_vn_fireplace_f"; rank = ""; position[] = {-10.1973,-7.30804,0}; dir = -182.241;};
@@ -76,7 +76,7 @@
             name = "UH-1 Crash Site [B_MACV]";
             icon = \vn\objects_f_vietnam\flags\vn_flag_01_usa_co.paa;
             size = 8;
-            class Object0	{side = 8; vehicle = "Land_vn_mound01_8m_f"; rank = ""; position[] = {-0.0605469,-0.242676,0}; dir = 0;};
+            class Object0	{side = 8; vehicle = "Land_vn_dirtpatch_01_4x4_f"; rank = ""; position[] = {-0.0605469,-0.242676,0}; dir = 0;};
             class Object1	{side = 8; vehicle = "Land_vn_rock_clutter_04_01"; rank = ""; position[] = {-2.29688,9.08008,0}; dir = 155.967;};
             class Object2	{side = 8; vehicle = "land_vn_burned_t_cocosnucifera_01"; rank = ""; position[] = {-2.93164,2.73047,9.53674e-007}; dir = -21.792;};
             class Object3	{side = 8; vehicle = "Land_vn_misc_burnspruce_pmc"; rank = ""; position[] = {4.74023,15.8755,9.53674e-007}; dir = -21.792;};
