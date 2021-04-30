@@ -87,7 +87,8 @@ switch(_operation) do {
     case "listen": {
         private _listenerID = [ALiVE_eventLog, "addListener", [_logic, [
             "OPCOM_ORDER_CONFIRMED",
-            "TACOM_ORDER_ISSUED"
+            "TACOM_ORDER_ISSUED",
+            "OPCOM_ORDER_COMPLETE"
         ]]] call ALiVE_fnc_eventLog;
         _logic setvariable ["listenerID", _listenerID];
     };
@@ -116,22 +117,6 @@ switch(_operation) do {
             };
         };
     };
-
-    /*
-        opcom = OPCOM_INSTANCES select 0;
-        g2 = [opcom,"G2"] call ALiVE_fnc_hashGet;
-        [g2,"createSpotrep", [
-            "EAST",
-            "OPF_F",
-            "",
-            player getRelPos [100, getdir player],
-            "Infantry",
-            8,
-            0,
-            0,
-            0
-        ]] call ALiVE_fnc_G2;
-    */
 
     case "createSpotrep": {
         _args params ["_side","_faction","_profileID","_groupPosition","_groupType","_groupCount","_groupSpeed","_groupDirection","_timeSinceSeen"];
@@ -256,14 +241,16 @@ switch(_operation) do {
         private _reportsToRemove = [];
         {
             private _confidence = _y get "confidence";
-            private _newConfidence = _confidence - _confidenceDecay;
+            if (!isnil "_confidence") then {
+                private _newConfidence = _confidence - _confidenceDecay;
 
-            _y set ["confidence", _newConfidence];
+                _y set ["confidence", _newConfidence];
 
-            [_logic,_intelOnRemoveDisplayStrategy, [_logic,_y]] call MAINCLASS;
+                [_logic,_intelOnRemoveDisplayStrategy, [_logic,_y]] call MAINCLASS;
 
-            if (_newConfidence <= 0) then {
-                _reportsToRemove pushback _y;
+                if (_newConfidence <= 0) then {
+                    _reportsToRemove pushback _y;
+                };
             };
         } foreach _intel;
 
@@ -341,9 +328,41 @@ switch(_operation) do {
             private _type = [_event,"type"] call ALiVE_fnc_hashGet;
 
             switch (_type) do {
+                case "OPCOM_ORDER_CONFIRMED": {
+                    _eventData params ["_opcomID","_target","_operation","_side","_factions"];
 
+                    if (_operation in ["attack","defend"]) then {
+                        [_logic,"createFriendlyOPCOMOrder", [_opcomID,_target,_operation]] call MAINCLASS;
+                    };
+                };
+                case "OPCOM_ORDER_COMPLETE": {
+                    _eventData params ["_opcomID","_target","_operation","_side","_factions","_orderArguments"];
+
+                    if (_operation in ["attack","defend"]) then {
+                        [_logic,"removeFriendlyOPCOMOrder", [_opcomID,_target,_operation]] call MAINCLASS;
+                    };
+                };
             };
         };
+    };
+
+    case "createFriendlyOPCOMOrder": {
+        _args params ["_opcomID","_target","_operation"];
+
+        private _opcomOrderIntel = createHashMapFromArray [
+            ["type", "friendlyOPCOMOrder"],
+            ["opcomID", _opcomID],
+            ["objective", _target],
+            ["order", _operation]
+        ];
+
+        [_logic,"storeIntelReport", _opcomOrderIntel] call MAINCLASS;
+    };
+
+    case "removeFriendlyOPCOMOrder": {
+        _args params ["_opcomID","_target","_operation"];
+
+        systemchat format ["Finished %1 at %2", _operation, _target];
     };
 
     /////////////////////////////////////////////////////////////////////
@@ -380,7 +399,6 @@ switch(_operation) do {
 
         private _sideObject = _logic getvariable "sideObject";
         private _playersToSendMarkerTo = allPlayers select { side (group _X) == _sideObject };
-        systemchat format ["Sending to players of Side: %1 - count = %2", _sideObject, count _playersToSendMarkerTo];
 
         private _reportType = _report get "type";
         switch (_reportType) do {
@@ -410,12 +428,6 @@ switch(_operation) do {
                     _confidence
                 ];
 
-                // private _marker = createMarker [format [MTEMPLATE, _opcomID, _reportID, 1], _groupPosition];
-                // _marker setMarkerShape "ICON";
-                // _marker setMarkerSize [1, 1];
-                // _marker setMarkerType _markerType;
-                // _marker setMarkerColor _markerColor;
-
                 private _markers = [_markerIcon];
 
                 if (_speed > 0) then {
@@ -430,19 +442,65 @@ switch(_operation) do {
                         _confidence
                     ];
 
-                    // private _arrowMarker = createMarker [format [MTEMPLATE, _opcomID, _reportID, 2], _groupPosition getpos [100, _direction]];
-                    // _arrowMarker setMarkerShape "ICON";
-                    // _arrowMarker setMarkerSize [1, 2];
-                    // _arrowMarker setMarkerType "hd_arrow";
-                    // _arrowMarker setMarkerColor _markerColor;
-                    // _arrowMarker setMarkerDir _direction;
-
                     _markers pushback _markerArrow;
                 };
 
                 _report set ["markers", _markers apply { _x select 0 }];
 
                 [nil,"createMarkersLocally", _markers] remoteExecCall ["ALiVE_fnc_G2", _playersToSendMarkerTo];
+            };
+
+            case "friendlyOPCOMOrder": {
+                private _reportID = _report get "id";
+                private _opcomID = _report get "opcomID";
+                private _objective = _report get "objective";
+                private _order = _report get "order";
+
+                private _objectivePosition = [_objective,"center"] call ALiVE_fnc_hashGet;
+                private _objectiveSize = [_objective,"size"] call ALiVE_fnc_hashGet;
+
+                private ["_markerColor","_markerText"];
+                switch (_order) do {
+                    case "attack": {
+                        _markerColor = "ColorRed";
+                        _markerText = "Attacking";
+                    };
+                    case "defend": {
+                        _markerColor = "ColorBlue";
+                        _markerText = "Defending";
+                    };
+                    default {
+                        _markerColor = "ColorBlack";
+                        _markerText = "Unknown";
+                    };
+                };
+
+                private _circleMarker = [
+                    format [MTEMPLATE, _opcomID, _reportID, 1],
+                    _objectivePosition,
+                    "ELLIPSE",
+                    [_objectiveSize, _objectiveSize],
+                    "EMPTY",
+                    _markerColor,
+                    0,
+                    0.6
+                ];
+
+                private _textMarker = [
+                    format [MTEMPLATE, _opcomID, _reportID, 2],
+                    _objectivePosition,
+                    "ICON",
+                    [1,1],
+                    "mil_dot",
+                    "ColorBlack",
+                    0,
+                    1,
+                    _markerText
+                ];
+
+                _report set ["markers", [_circleMarker, _textMarker]];
+
+                [nil,"createMarkersLocally", [_circleMarker, _textMarker]] remoteExecCall ["ALiVE_fnc_G2", _playersToSendMarkerTo];
             };
         };
     };
@@ -471,7 +529,7 @@ switch(_operation) do {
         private _markersData = _args;
 
         {
-            _x params ["_id","_position","_shape","_size","_type","_color","_dir","_alpha"];
+            _x params ["_id","_position","_shape","_size","_type","_color","_dir","_alpha", ["_text",""]];
 
             private _marker = createMarkerLocal [_id, _position];
             _marker setMarkerShapeLocal _shape;
@@ -480,6 +538,7 @@ switch(_operation) do {
             _marker setMarkerColorLocal _color;
             _marker setMarkerDirLocal _dir;
             _marker setMarkerAlphaLocal _alpha;
+            _marker setMarkerTextLocal _text;
         } foreach _markersData;
     };
 
