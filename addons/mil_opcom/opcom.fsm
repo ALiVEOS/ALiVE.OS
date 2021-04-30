@@ -264,9 +264,7 @@ class FSM
                          "_data_value = nil;" \n
                          "" \n
                          "if (count _OPCOM_QUEUE > 0) then {" \n
-                         "    _OPCOM_ACTION = _OPCOM_QUEUE select 0;" \n
-                         "    _OPCOM_QUEUE set [0,""x""];" \n
-                         "    _OPCOM_QUEUE = _OPCOM_QUEUE - [""x""];" \n
+                         "    _OPCOM_ACTION = _OPCOM_QUEUE deleteat 0;" \n
                          "};" \n
                          "" \n
                          "_timeout = ((isnil ""_OPCOM_ACTION"") && {(time - _lastAnalyze) >= _cycleTime});" \n
