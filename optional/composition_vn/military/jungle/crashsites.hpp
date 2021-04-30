@@ -6,7 +6,7 @@
     {
         name = $STR_ALIVE_COMP_VN_CrashsitesMedium;
         
-        class CrashSitesMedium_F-4_B_MACV 
+        class CrashSitesMedium_F4_B_MACV 
         {
             name = "F-4 Crash Site [B_MACV]";
             icon = \vn\objects_f_vietnam\flags\vn_flag_01_usa_co.paa;
@@ -71,7 +71,7 @@
             class Object19	{side = 8; vehicle = "vn_o_item_canteen_02"; rank = ""; position[] = {-8.40625,-7.95386,0}; dir = -182.241;};
             class Object20	{side = 8; vehicle = "vn_o_item_binocs_case_01"; rank = ""; position[] = {-8.16992,-7.94415,0}; dir = -182.241;};
         }; 
-        class CrashSitesSmall_UH-1_B_MACV 
+        class CrashSitesSmall_UH1_B_MACV 
         {
             name = "UH-1 Crash Site [B_MACV]";
             icon = \vn\objects_f_vietnam\flags\vn_flag_01_usa_co.paa;
