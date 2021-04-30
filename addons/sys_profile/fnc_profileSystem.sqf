@@ -66,8 +66,9 @@ switch(_operation) do {
             [_logic,"spawnRadius",1000] call ALIVE_fnc_hashSet;
             [_logic,"spawnTypeJetRadius",1000] call ALIVE_fnc_hashSet;
             [_logic,"spawnTypeHeliRadius",1000] call ALIVE_fnc_hashSet;
-			[_logic,"spawnRadiusUAV", 1000] call ALiVE_fnc_hashSet;
+            [_logic,"spawnRadiusUAV", 1000] call ALiVE_fnc_hashSet;
             [_logic,"activeLimiter",30] call ALIVE_fnc_hashSet;
+            [_logic,"zeusSpawn",true] call ALIVE_fnc_hashSet;
             [_logic,"spawnCycleTime",1] call ALIVE_fnc_hashSet;
             [_logic,"despawnCycleTime",1] call ALIVE_fnc_hashSet;
             [_logic,"speedModifier",1] call ALIVE_fnc_hashSet;
@@ -415,6 +416,12 @@ switch(_operation) do {
                     [_logic,"activeLimiter",_args] call ALIVE_fnc_hashSet;
             };
             _result = [_logic,"activeLimiter"] call ALIVE_fnc_hashGet;
+    };
+    case "zeusSpawn": {
+            if(typeName _args == "BOOL") then {
+                    [_logic,"zeusSpawn",_args] call ALIVE_fnc_hashSet;
+            };
+            _result = [_logic,"zeusSpawn"] call ALIVE_fnc_hashGet;
     };
     case "syncMode": {
             if(typeName _args == "STRING") then {
