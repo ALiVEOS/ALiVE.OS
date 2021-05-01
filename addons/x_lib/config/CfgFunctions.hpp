@@ -1867,6 +1867,13 @@ class unitArraySortSide
 	RECOMPILE;
 };
 
+class unitsInArea
+{
+	file = "\x\alive\addons\x_lib\functions\units\fnc_unitsInArea.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class anyAutonomousInRange
 {
 	file = "\x\alive\addons\x_lib\functions\vehicles\fnc_anyAutonomousInRange.sqf";
