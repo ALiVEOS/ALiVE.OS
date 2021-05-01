@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=637;
+		nextID=649;
 	};
 	class Camera
 	{
@@ -11452,11 +11452,10 @@ class Mission
 			class Attributes
 			{
 				condition="call{this && (count (units EAST) < 5) && ({alive _x && vehicle _x == _x} count allPlayers == {alive _x} count allPlayers)}";
-				onActivation="call{[""T5"",""SUCCEEDED""] call BIS_fnc_taskSetState; }";
+				onActivation="call{[""T5"",""SUCCEEDED""] call BIS_fnc_taskSetState; [""end1""] remoteExecCall [""vn_fnc_endMission""];}";
 				sizeA=734.08197;
 				sizeB=304.06;
 				activationBy="ANYPLAYER";
-				type="END1";
 				isServerOnly=1;
 			};
 			id=1148;
