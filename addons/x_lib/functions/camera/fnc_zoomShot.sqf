@@ -31,8 +31,8 @@ private ["_camera", "_target", "_hideTarget", "_duration","_cameraPosition","_ta
 
 _camera = _this select 0;
 _target = _this select 1;
-_duration = if(count _this > 3) then {_this select 3} else {5};
-_hideTarget = if(count _this > 4) then {_this select 4} else {false};
+_duration = if(count _this > 2) then {_this select 2} else {5};
+_hideTarget = if(count _this > 3) then {_this select 3} else {false};
 
 if(_hideTarget) then
 {
