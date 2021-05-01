@@ -67,7 +67,7 @@ switch (_taskState) do {
 
         if(count _targetObjective == 0) exitwith {["C2ISTAR - Task InsurgencyPatrol - No targets found!"] call ALiVE_fnc_Dump};
 
-        _targetObjective call ALIVE_fnc_inspectArray;
+        // _targetObjective call ALIVE_fnc_inspectArray;
         _targetPosition = _targetObjective select 1;
 
         // ["pl %1 tar %2",getpos player, _targetPosition] call ALiVE_fnc_DumpR;

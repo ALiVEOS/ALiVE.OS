@@ -68,7 +68,7 @@ switch (_taskState) do {
 
         if(count _targetObjective == 0) exitwith {["C2ISTAR - Task InsurgencyDestroyAssets - No targets found!"] call ALiVE_fnc_Dump};
 
-        _targetObjective call ALIVE_fnc_inspectArray;
+        // _targetObjective call ALIVE_fnc_inspectArray;
         _targetPosition = _targetObjective select 1;
         _targetHQ = _targetObjective select 3;
         _targetDepot = _targetObjective select 4;
@@ -105,7 +105,7 @@ switch (_taskState) do {
         _selectedBuilding = (selectRandom _targetBuildings);
         _selectedBuilding = _selectedBuilding select 0;
 
-        _selectedBuilding call ALIVE_fnc_inspectArray;
+        // _selectedBuilding call ALIVE_fnc_inspectArray;
 
         if!(isNil "_selectedBuilding") then {
 
