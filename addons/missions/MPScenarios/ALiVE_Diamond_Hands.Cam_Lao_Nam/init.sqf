@@ -154,38 +154,49 @@ if (hasInterface) then {
     ["| OP DIAMOND HANDS - Running ClientInit..."] call ALiVE_fnc_dump;
 
     [] spawn {
-      //  enableRadio false;
+
+        // move JIP player to Outpost Meyer
+        if (didJIP) then {
+            player setpos (getMarkerPos "respawn_west");
+        };
+
+        //  enableRadio false;
         titleText ["\n\n\nThe ALiVE Team presents...", "BLACK IN",9999];
         0 fadesound 0;
 
-        sleep 3;
-        playMusic "Fortunate_Son";
+        if (!didJIP) then {
 
-        vehicle player addAction
-        [
-            "Turn Off Music",    // title
-            {
-                params ["_target", "_caller", "_actionId", "_arguments"];
-                playMusic "";
-                0 fadesound 1; // script
-            },
-            nil,        // arguments
-            1.5,        // priority
-            false,       // showWindow
-            true,       // hideOnUse
-            "",         // shortcut
-            "true",     // condition
-            5,         // radius
-            false,      // unconscious
-            "",         // selection
-            ""          // memoryPoint
-        ];
+            sleep 3;
 
-        private ["_cam","_camx","_camy","_camz","_object"];
-        _start = time;
+            playMusic "Fortunate_Son";
 
-        //waituntil {(player getvariable ["alive_sys_player_playerloaded",false]) || ((time - _start) > 10)};
-        sleep 2;
+            vehicle player addAction
+            [
+                "Turn Off Music",    // title
+                {
+                    params ["_target", "_caller", "_actionId", "_arguments"];
+                    playMusic "";
+                    0 fadesound 1; // script
+                },
+                nil,        // arguments
+                1.5,        // priority
+                false,       // showWindow
+                true,       // hideOnUse
+                "",         // shortcut
+                "true",     // condition
+                5,         // radius
+                false,      // unconscious
+                "",         // selection
+                ""          // memoryPoint
+            ];
+
+            private ["_cam","_camx","_camy","_camz","_object"];
+            _start = time;
+
+            //waituntil {(player getvariable ["alive_sys_player_playerloaded",false]) || ((time - _start) > 10)};
+            sleep 2;
+
+        };
 
         _cam = [player , false, "HIGH"] call ALIVE_fnc_addCamera;
 
@@ -222,33 +233,37 @@ if (hasInterface) then {
 		    ] spawn vn_ms_fnc_sfx_typeText;
 		};
 
-        sleep 5;
+        if (!didJIP) then {
 
-        [_cam, (vehicle player),5,false,65,40,350] call ALIVE_fnc_establishShot;
+             sleep 5;
 
-        sleep 5;
+            [_cam, (vehicle player),5,false,65,40,350] call ALIVE_fnc_establishShot;
 
-        [_cam, (vehicle player),4,false] call ALIVE_fnc_zoomShot;
+            sleep 5;
 
-        sleep 4;
+            [_cam, (vehicle player),4,false] call ALIVE_fnc_zoomShot;
 
-        [_cam, (vehicle player),4,false] call ALIVE_fnc_followShot;
+            sleep 4;
 
-        sleep 4;
+            [_cam, (vehicle player),4,false] call ALIVE_fnc_followShot;
 
-        [_cam, (vehicle player),5,false,12] call ALIVE_fnc_chaseSideShot;
+            sleep 4;
 
-        sleep 5;
+            [_cam, (vehicle player),5,false,12] call ALIVE_fnc_chaseSideShot;
 
-        _cam camSetTarget (driver choppah);
+            sleep 5;
 
-        _cam cameraEffect ["internal", "BACK"];
+            _cam camSetTarget (driver choppah);
 
-        _cam camCommit 0;
+            _cam cameraEffect ["internal", "BACK"];
 
-        _cam attachTo [vehicle player,[0,1,-1.3]];
+            _cam camCommit 0;
 
-        sleep 7;
+            _cam attachTo [vehicle player,[0,1,-1.3]];
+
+            sleep 7;
+
+        };
 
         _cam CameraEffect ["Terminate","Back"];
         CamDestroy _cam;
