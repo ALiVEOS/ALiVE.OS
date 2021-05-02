@@ -112,7 +112,7 @@ class Params
 	};
 	class Enablemapmarkers
 	{
-	    title = $STR_VN_COALIVE_PARAMS_MAPMARKERS_PH;
+	    title = $STR_VN_COALIVE_PARAMS_MAPMARKERS_DH;
 	    isGlobal = 1;
 	    values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
@@ -121,7 +121,7 @@ class Params
 	};
 	class Enablegroupmarkers
 	{
-			title = $STR_VN_COALIVE_PARAMS_GROUPMARKERS_PH;
+			title = $STR_VN_COALIVE_PARAMS_GROUPMARKERS_DH;
 			isGlobal = 1;
 			values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
@@ -130,7 +130,7 @@ class Params
 	};
 	class RotorLib
 	{
-	    title = $STR_VN_PARAMS_ROTORLIB_PH;
+	    title = $STR_VN_PARAMS_ROTORLIB_DH;
 	    isGlobal = 1;
 	    values[] = {2, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
