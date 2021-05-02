@@ -161,6 +161,26 @@ if (hasInterface) then {
         sleep 3;
         playMusic "Fortunate_Son";
 
+        vehicle player addAction
+        [
+            "Turn Off Music",    // title
+            {
+                params ["_target", "_caller", "_actionId", "_arguments"];
+                playMusic "";
+                0 fadesound 1; // script
+            },
+            nil,        // arguments
+            1.5,        // priority
+            false,       // showWindow
+            true,       // hideOnUse
+            "",         // shortcut
+            "true",     // condition
+            5,         // radius
+            false,      // unconscious
+            "",         // selection
+            ""          // memoryPoint
+        ];
+
         private ["_cam","_camx","_camy","_camz","_object"];
         _start = time;
 
