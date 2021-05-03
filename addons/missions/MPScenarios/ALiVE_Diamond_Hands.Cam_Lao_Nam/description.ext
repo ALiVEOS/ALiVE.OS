@@ -1,11 +1,11 @@
 
 dev = $STR_VN_MISSIONS_AUTHOR_ALIVE_DH;
 author = $STR_VN_MISSIONS_AUTH_MISSION_ALIVE_DH;
-overviewPicture = "pics\execution.paa";
+overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Diamond_Hands.Cam_Lao_Nam\pics\execution.paa";
 overviewText = $STR_VN_MISSIONS_DESC_MISSION_ALIVE_DH;
-onLoadName = "Op Diamond Hands";
+onLoadName = STR_VN_MISSIONS_TITLE_MISSION_ALIVE_DH;
 onLoadMission = $STR_VN_MISSIONS_DESC_MISSION_ALIVE_DH;
-loadScreen = "pics\execution.paa";
+loadScreen = "x\alive\addons\missions\mpscenarios\ALiVE_Diamond_Hands.Cam_Lao_Nam\pics\execution.paa";
 
 disabledAI = 0;
 aiKills = 0;
