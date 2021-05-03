@@ -5,7 +5,7 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=129;
+	toggles=1;
 	class ItemIDProvider
 	{
 		nextID=1085;
@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=823;
+		nextID=847;
 	};
 	class Camera
 	{
@@ -465,7 +465,7 @@ class Mission
 					class PositionInfo
 					{
 						position[]={14763.698,242.84352,9714.0811};
-						angles[]={6.122581,0,0.051952176};
+						angles[]={6.1225801,0,0.051958453};
 					};
 					id=27;
 					type="ALiVE_require";
@@ -2140,7 +2140,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="#A8F000";
+									value="#1A901A";
 								};
 							};
 						};
@@ -2425,7 +2425,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="#FFFFFF";
+									value="#1A901A";
 								};
 							};
 						};
@@ -2634,7 +2634,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="#009D91";
+									value="#1A901A";
 								};
 							};
 						};
@@ -2672,7 +2672,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="0";
+									value="1";
 								};
 							};
 						};
@@ -3528,7 +3528,7 @@ class Mission
 					class PositionInfo
 					{
 						position[]={14785.879,246.77722,9714.2314};
-						angles[]={6.0552177,0.1808161,6.2212648};
+						angles[]={6.0552101,0.1808161,6.221261};
 					};
 					id=38;
 					type="ALiVE_sup_combatsupport";
@@ -3549,7 +3549,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="vn_b_pack_prc77";
+									value="vn_b_pack_prc77,vn_b_pack_lw";
 								};
 							};
 						};
@@ -3786,7 +3786,7 @@ class Mission
 					class PositionInfo
 					{
 						position[]={14778.689,246.09508,9714.0811};
-						angles[]={6.1128521,0,0.15670604};
+						angles[]={6.1128583,0,0.15671311};
 					};
 					id=40;
 					type="ALiVE_MIL_C2ISTAR";
@@ -4017,7 +4017,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="vn_b_pack_prc77";
+									value="vn_b_pack_prc77,vn_b_pack_lw";
 								};
 							};
 						};
@@ -9683,7 +9683,7 @@ class Mission
 			};
 			id=592;
 			type="vn_b_item_radio_urc10_gh";
-			atlOffset=0.000177145;
+			atlOffset=0.00017428398;
 		};
 		class Item24
 		{
@@ -9768,7 +9768,7 @@ class Mission
 			};
 			id=598;
 			type="Land_vn_photos_v6_f";
-			atlOffset=0.0010199547;
+			atlOffset=0.0010170937;
 		};
 		class Item29
 		{
@@ -9786,7 +9786,7 @@ class Mission
 			};
 			id=599;
 			type="Land_vn_photos_v2_f";
-			atlOffset=2.1934509e-005;
+			atlOffset=1.9073486e-005;
 		};
 		class Item30
 		{
@@ -13488,7 +13488,7 @@ class Mission
 							};
 							id=992;
 							type="vn_b_prop_vrc12";
-							atlOffset=0.00024414063;
+							atlOffset=0.00022888184;
 						};
 						class Item18
 						{
@@ -15272,7 +15272,7 @@ class Mission
 					};
 					id=977;
 					type="vn_bar_01_lawnchair_01";
-					atlOffset=0.00080871582;
+					atlOffset=0.00082397461;
 				};
 				class Item3
 				{
@@ -15339,7 +15339,7 @@ class Mission
 					};
 					id=981;
 					type="vn_b_prop_fmradio_01";
-					atlOffset=0.014144897;
+					atlOffset=0.014175415;
 				};
 				class Item7
 				{
@@ -15414,7 +15414,7 @@ class Mission
 							};
 							id=984;
 							type="B_Soldier_F";
-							atlOffset=0.056213379;
+							atlOffset=0.056228638;
 							class CustomAttributes
 							{
 								class Attribute0
@@ -15539,7 +15539,7 @@ class Mission
 					{
 					};
 					id=983;
-					atlOffset=0.056213379;
+					atlOffset=0.056228638;
 				};
 				class Item9
 				{
@@ -17000,11 +17000,12 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={14771.346,244.53239,9713.9355};
-				angles[]={6.1421304,0,0.26371005};
+				position[]={14771.346,244.53241,9713.9355};
+				angles[]={6.1421275,0,0.2637018};
 			};
 			id=1084;
 			type="ALiVE_sys_profile";
+			atlOffset=1.5258789e-005;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -17155,11 +17156,30 @@ class Mission
 									"STRING"
 								};
 							};
-							value="0.50";
+							value="1.00";
 						};
 					};
 				};
 				class Attribute8
+				{
+					property="ALiVE_sys_profile_zeusSpawn";
+					expression="_this setVariable ['zeusSpawn',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="true";
+						};
+					};
+				};
+				class Attribute9
 				{
 					property="ALiVE_sys_profile_spawnTypeHeliRadius";
 					expression="_this setVariable ['spawnTypeHeliRadius',_value,true];";
@@ -17178,7 +17198,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute9
+				class Attribute10
 				{
 					property="ALiVE_sys_profile_debug";
 					expression="_this setVariable ['debug',_value,true];";
@@ -17197,7 +17217,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute10
+				class Attribute11
 				{
 					property="ALiVE_sys_profile_persistent";
 					expression="_this setVariable ['persistent',_value,true];";
@@ -17216,7 +17236,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute11
+				class Attribute12
 				{
 					property="ALiVE_sys_profile_syncronised";
 					expression="_this setVariable ['syncronised',_value,true];";
@@ -17235,7 +17255,7 @@ class Mission
 						};
 					};
 				};
-				class Attribute12
+				class Attribute13
 				{
 					property="ALiVE_sys_profile_virtualcombat_speedmodifier";
 					expression="_this setVariable ['virtualcombat_speedmodifier',_value,true];";
@@ -17254,7 +17274,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=13;
+				nAttributes=14;
 			};
 		};
 	};

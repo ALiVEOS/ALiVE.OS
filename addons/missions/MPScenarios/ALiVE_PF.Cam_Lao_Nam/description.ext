@@ -37,7 +37,6 @@ debriefing = 1;
 
 #include "CfgFunctions.inc"
 #include "classes.hpp"
-#include "groupMarkers.hpp"
 
 class header {
     gametype = ALIVE;
@@ -108,17 +107,8 @@ class Params
 	    isGlobal = 1;
 	    values[] = {0, 1};
 	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
-	    default = 0;
+	    default = 1;
 	    function = "vn_alivems_fnc_params_mapMarkers";
-	};
-	class Enablegroupmarkers
-	{
-			title = $STR_VN_COALIVE_PARAMS_GROUPMARKERS_VANTIEN;
-			isGlobal = 1;
-			values[] = {0, 1};
-	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
-			default = 0;
-			function = "vn_alivems_fnc_params_groupMarkers";
 	};
 	class RotorLib
 	{
