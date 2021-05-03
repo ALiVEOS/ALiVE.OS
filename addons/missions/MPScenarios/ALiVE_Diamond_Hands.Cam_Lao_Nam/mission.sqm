@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=659;
+		nextID=668;
 	};
 	class Camera
 	{
@@ -325,7 +325,7 @@ dlcs[]=
 randomSeed=8300791;
 class ScenarioData
 {
-	author="@STR_VN_MISSIONS_AUTH_MISSION_ALIVE_DH";
+	author="ALiVE Mod Team";
 	overviewText="Patrol along the Tri-border area, search and destroy key enemy tunnel systems collecting critical intelligence for future operations.";
 	overViewPicture="pics\splash.paa";
 	respawnDelay=10;
@@ -449,8 +449,8 @@ class Mission
 	appId=1227700;
 	class Intel
 	{
-		briefingName="@STR_VN_MISSIONS_TITLE_MISSION_ALIVE_DH";
-		overviewText="@STR_VN_MISSIONS_MINDESC_MISSION_ALIVE_DH";
+		briefingName="ALiVE | Op Diamond Hands";
+		overviewText="Viet Cong and NVA are using three underground bunkers as command and control facilities in the Tri-Border area. Locate, clear the bunkers and collect intellgence.";
 		resistanceWest=0;
 		resistanceEast=1;
 		timeOfChanges=1800.0002;
@@ -2159,7 +2159,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="#A8F000";
+									value="#1A901A";
 								};
 							};
 						};
@@ -2444,7 +2444,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="#FFFFFF";
+									value="#1A901A";
 								};
 							};
 						};
@@ -2653,7 +2653,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="#009D91";
+									value="#1A901A";
 								};
 							};
 						};
@@ -2691,7 +2691,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="0";
+									value="1";
 								};
 							};
 						};
@@ -11065,7 +11065,7 @@ class Mission
 				};
 			};
 			id=1095;
-			atlOffset=199.72455;
+			atlOffset=199.57211;
 		};
 		class Item47
 		{
@@ -11435,7 +11435,7 @@ class Mission
 			};
 			id=1133;
 			type="vn_b_air_uh1d_02_07";
-			atlOffset=199.72455;
+			atlOffset=199.57211;
 		};
 		class Item58
 		{
@@ -11458,7 +11458,7 @@ class Mission
 			position[]={8379.2939,150.18401,16430.811};
 			name="marker_28";
 			type="mil_arrow";
-			angle=303.68991;
+			angle=303.68988;
 			id=1144;
 			atlOffset=1.7857056;
 		};
@@ -11478,7 +11478,7 @@ class Mission
 			position[]={5780.0298,90.862,16182.718};
 			name="marker_30";
 			type="mil_arrow";
-			angle=188.42696;
+			angle=188.42694;
 			id=1146;
 			atlOffset=-23.557404;
 		};
@@ -14924,7 +14924,7 @@ class Mission
 			};
 			id=1289;
 			type="Land_vn_cncbarriermedium_f";
-			atlOffset=0.15439606;
+			atlOffset=0.15440369;
 		};
 	};
 	class Connections

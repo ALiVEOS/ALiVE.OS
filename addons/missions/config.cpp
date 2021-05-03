@@ -62,6 +62,14 @@ class CfgMissions
             overviewText = "MACV-SOG are running deniable operations using Spike Teams (ST) - across the fence - in Cambodia, Laos and South Vietnam.";
             author = "ALiVE Mod Team";
         };
+        class Showcase_Diamond_Hands
+        {
+            briefingName = "ALiVE | Diamond Hands (Cam Lao Nam)";
+            directory = "x\alive\addons\missions\mpscenarios\ALiVE_Diamond_Hands.Cam_Lao_Nam";
+            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Diamond_Hands.Cam_Lao_Name\pics\execution.paa";
+            overviewText = "Viet Cong and NVA are using three underground bunkers as command and control facilities in the Tri-Border area. Locate, clear the bunkers and collect intellgence.";
+            author = "ALiVE Mod Team";
+        };
         class Showcase_Getting_Started_APEX
         {
             briefingName = "ALiVE | Quick Start APEX (Tanoa)";
@@ -171,10 +179,10 @@ class CfgMissions
         };
         class MP_COOP_Diamond_Hands
         {
-            briefingName = "ALiVE | Diamond Hands (COOP 08)";
+            briefingName = "ALiVE | Diamond Hands (COOP 8)";
             directory = "x\alive\addons\missions\mpscenarios\ALiVE_Diamond_Hands.Cam_Lao_Nam";
             overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Diamond_Hands.Cam_Lao_Name\pics\execution.paa";
-            overviewText = "Intelligence reports that the Viet Cong and NVA are using three underground bunkers as command and control facilities in the Tri-Border area. MACV-SOG along with US Army ""Tunnel Rats"" have been tasked with going ""across the fence"" to clear the bunkers and collect intellgence.";
+            overviewText = "Viet Cong and NVA are using three underground bunkers as command and control facilities in the Tri-Border area. Locate, clear the bunkers and collect intellgence.";
             author = "ALiVE Mod Team";
         };
     };

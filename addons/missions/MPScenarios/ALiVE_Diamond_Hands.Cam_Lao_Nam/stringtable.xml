@@ -15,7 +15,7 @@
 </Key>
 <Key ID="STR_VN_MISSIONS_MINDESC_MISSION_ALIVE_DH">
 <Chinese></Chinese>
-<English>Intelligence reports that the Viet Cong and NVA are using three underground bunkers as command and control facilities in the Tri-Border area. MACV-SOG along with US Army "Tunnel Rats" have been tasked with going "across the fence" to clear the bunkers and collect intellgence.</English>
+<English>Viet Cong and NVA are using three underground bunkers as command and control facilities in the Tri-Border area. Locate, clear the bunkers and collect intellgence.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -123,16 +123,6 @@
 <Russian></Russian>
 <Spanish></Spanish>
 </Key>
-<Key ID="STR_VN_COALIVE_PARAMS_GROUPMARKERS_DH">
-<Chinese></Chinese>
-<English>Enable 3D Player Markers (SHIFT+CTRL+F1)</English>
-<French></French>
-<German></German>
-<Italian></Italian>
-<Portuguese></Portuguese>
-<Russian></Russian>
-<Spanish></Spanish>
-</Key>
 <Key ID="STR_VN_PARAMS_ROTORLIB_DH">
 <Chinese></Chinese>
 <English>Enable Advanced Rotor Flight Model</English>
@@ -147,7 +137,7 @@
 <Package name="Titles">
 <Key ID="STR_VN_MISSIONS_TITLE_MISSION_ALIVE_DH">
 <Chinese></Chinese>
-<English>ALiVE | Op Paper Hands</English>
+<English>ALiVE | Op Diamond Hands</English>
 <French></French>
 <German></German>
 <Italian></Italian>

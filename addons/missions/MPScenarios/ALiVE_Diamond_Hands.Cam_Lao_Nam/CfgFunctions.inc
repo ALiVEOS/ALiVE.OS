@@ -52,10 +52,6 @@ class CfgFunctions
 						{
 							recompile = 0;
 						};
-						class params_groupMarkers
-						{
-							recompile = 0;
-						};
 						class params_rotorLib
 						{
 							recompile = 0;
