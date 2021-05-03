@@ -1,17 +1,17 @@
 /*%FSM<COMPILE "D:\Steam\steamapps\common\Arma 3 Tools\FSMEditor\scriptedFSM.cfg, missionFlow">*/
 /*%FSM<HEAD>*/
 /*
-item0[] = {"authors__Jman",0,250,-75.000000,-175.000000,25.000000,-125.000000,0.000000,"authors:" \n "Jman"};
+item0[] = {"author__Jman",0,250,-75.000000,-175.000000,25.000000,-125.000000,0.000000,"author:" \n "Jman"};
 item1[] = {"_",8,218,-200.000000,-175.000000,-100.000000,-125.000000,0.000000,""};
 item2[] = {"exit",1,250,-325.000000,-175.000000,-225.000000,-125.000000,0.000000,"exit"};
 item3[] = {"isServer_",4,218,-75.000000,-100.000000,25.000000,-50.000000,1.000000,"isServer?"};
-item4[] = {"initialize_Missi",2,4346,-75.000000,-25.000000,25.000000,25.000000,0.000000,"initialize Mission"};
+item4[] = {"initialize_Missi",2,250,-75.000000,-25.000000,25.000000,25.000000,0.000000,"initialize Mission"};
 item5[] = {"_",8,218,-75.000000,50.000000,25.000000,100.000000,0.000000,""};
 item6[] = {"mission_running",2,250,-75.000000,125.000000,25.000000,175.000000,0.000000,"mission running"};
 item7[] = {"all_players_killed",4,218,-202.550964,118.197479,-100.000000,175.000000,0.000000,"all players" \n "killed?"};
 item8[] = {"mission_failed",1,250,-325.000000,125.000000,-225.000000,175.000000,0.000000,"mission failed"};
 item9[] = {"tasks_succeeded",4,218,-75.850281,190.646484,32.652893,256.802582,0.000000,"tasks" \n "succeeded?"};
-item10[] = {"mission_won",1,250,-75.000000,275.000000,25.000000,325.000000,0.000000,"mission won"};
+item10[] = {"mission_won",1,4346,-75.000000,275.000000,25.000000,325.000000,0.000000,"mission won"};
 link0[] = {0,1};
 link1[] = {0,3};
 link2[] = {1,2};
@@ -22,18 +22,18 @@ link6[] = {6,7};
 link7[] = {6,9};
 link8[] = {7,8};
 link9[] = {9,10};
-globals[] = {0.000000,0,0,0,0,640,480,1,14,6316128,1,-330.651794,74.784637,477.122284,-360.779694,559,713,1};
-window[] = {0,-1,-1,-1,-1,963,78,1440,78,1,577};
+globals[] = {0.000000,0,0,0,0,640,480,1,14,6316128,1,-373.222626,117.355408,150.947113,-474.781219,559,713,1};
+window[] = {0,-1,-1,-1,-1,989,104,1466,104,1,577};
 *//*%FSM</HEAD>*/
 class FSM
 {
         fsmName = "missionFlow";
         class States
         {
-                /*%FSM<STATE "authors__Jman">*/
-                class authors__Jman
+                /*%FSM<STATE "author__Jman">*/
+                class author__Jman
                 {
-                        name = "authors__Jman";
+                        name = "author__Jman";
                         itemno = 0;
                         init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -84,12 +84,7 @@ class FSM
                         init = /*%FSM<STATEINIT""">*/"[""| The Battle of Hue - Executing missionFlow.fsm...""] call ALiVE_fnc_dump;" \n
                          "// Mission finished trigger" \n
                          "vn_coalive_finished = false;" \n
-                         "" \n
-                         "" \n
-                         "// Start task FSM" \n
-                         "//[] call vn_alivems_fnc_coalive_xray;" \n
-                         "// and now the force pool" \n
-                         "//[] call vn_alivems_fnc_coalive_forcepool;"/*%FSM</STATEINIT""">*/;
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -182,7 +177,7 @@ class FSM
                 };
                 /*%FSM</STATE>*/
         };
-        initState="authors__Jman";
+        initState="author__Jman";
         finalStates[] =
         {
                 "exit",

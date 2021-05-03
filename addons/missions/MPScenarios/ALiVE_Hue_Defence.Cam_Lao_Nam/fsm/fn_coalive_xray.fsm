@@ -13,7 +13,7 @@ item8[] = {"board_transport",2,250,-71.515411,212.537292,28.484589,262.537354,0.
 item9[] = {"transport_boarded",4,218,-80.325638,311.937683,40.726715,385.419128,0.000000,"transport boarded?"};
 item10[] = {"travel_to_one_marked",2,250,-69.060150,600.163940,30.939850,650.163940,0.000000,"travel to one" \n "marked area"};
 item11[] = {"___100m_distance",4,218,-81.702271,699.362244,35.938477,764.217529,1.000000,"< 100m" \n "distance to" \n "AO"};
-item12[] = {"ALL_enemy_re_enforcements",4,4314,-260.078705,901.061890,-44.021118,982.629883,0.000000,"ALL enemy re-enforcements " \n "depleated"};
+item12[] = {"ALL_enemy_re_enforcements",4,218,-260.078705,901.061890,-44.021118,982.629883,0.000000,"ALL enemy re-enforcements " \n "depleated"};
 item13[] = {"task_succeeded",2,250,-153.305725,1041.054443,-53.305725,1091.054443,0.000000,"task succeeded"};
 item14[] = {"_",8,218,-78.305725,1116.054443,21.694275,1166.054443,0.000000,""};
 item15[] = {"all_players_dead",4,218,1.336548,889.920288,140.331909,964.060547,1.000000,"all players dead"};
@@ -63,8 +63,8 @@ link27[] = {27,8};
 link28[] = {28,7};
 link29[] = {29,10};
 link30[] = {30,21};
-globals[] = {0.000000,0,0,0,0,640,480,1,217,6316128,1,-368.572662,137.014618,1347.426880,651.761963,524,721,1};
-window[] = {0,-1,-1,-1,-1,1023,130,1809,130,1,542};
+globals[] = {0.000000,0,0,0,0,640,480,1,217,6316128,1,-491.452942,259.894470,464.984802,-557.131226,530,721,1};
+window[] = {0,-1,-1,-1,-1,1101,208,1887,208,1,548};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -596,14 +596,8 @@ class FSM
                                         condition=/*%FSM<CONDITION""">*/"_updateforcePoolPAVN = [ALIVE_globalForcePool,""O_PAVN"",0] call ALiVE_fnc_Hashget;" \n
                                          "_updateforcePoolVC = [ALIVE_globalForcePool,""O_VC"",0] call ALiVE_fnc_Hashget;" \n
                                          "_updateforcePool = (_updateforcePoolPAVN + _updateforcePoolVC);" \n
-                                         "" \n
-                                         "//[""ALiVE | The Battle of Hue - fn_coalive_xray(2) -> _totalforcePool: %1"",_totalforcePool] call ALiVE_fnc_dump;" \n
-                                         "" \n
                                          "_currentPercent = (_updateforcePool / _totalforcePool) * 100;" \n
                                          "_currentPercentformatted = floor _currentPercent;" \n
-                                         "" \n
-                                         "//[""ALiVE | The Battle of Hue - fn_coalive_xray -> current forcePool _currentPercentformatted: %1"",_currentPercentformatted] call ALiVE_fnc_dump;" \n
-                                         "" \n
                                          "vn_task_debug" \n
                                          "|| {" \n
                                          "	_currentPercentformatted < 5}" \n

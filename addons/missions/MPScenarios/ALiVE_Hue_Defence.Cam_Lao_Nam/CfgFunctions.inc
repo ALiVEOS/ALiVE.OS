@@ -52,10 +52,6 @@ class CfgFunctions
 						{
 							recompile = 0;
 						};
-						class params_groupMarkers
-						{
-							recompile = 0;
-						};
 						class params_rotorLib
 						{
 							recompile = 0;
@@ -73,10 +69,6 @@ class CfgFunctions
         {
             file = "fsm";
             class coalive_xray
-            {
-              ext = ".fsm";
-            };
-            class coalive_forcepool
             {
               ext = ".fsm";
             };

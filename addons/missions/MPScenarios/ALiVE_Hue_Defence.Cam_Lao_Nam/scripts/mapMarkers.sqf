@@ -29,151 +29,81 @@ private [
 	'_QS_ST_GPSrequireGPSItem','_QS_ST_GRPrequireGPSItem','_QS_ST_admin'
 ];
 
+_QS_ST_map_enableUnitIcons = TRUE;						
+_QS_ST_gps_enableUnitIcons = FALSE;	
+_QS_ST_enableGroupIcons = FALSE;
 
-//================== MASTER SWITCHES
-
-_QS_ST_map_enableUnitIcons = TRUE;							// BOOL. TRUE to enable MAP unit/vehicle Icons. Default TRUE.
-_QS_ST_gps_enableUnitIcons = FALSE;							// BOOL. TRUE to enable GPS unit/vehicle Icons. Default TRUE.
-_QS_ST_enableGroupIcons = FALSE;								// BOOL. TRUE to enable Map+GPS+HUD GROUP Icons. Default TRUE.
-
-//================= ADMIN
-
-_QS_ST_admin = FALSE;										// BOOL. TRUE to enable showing all units (even enemies) if logged in as admin on a server. Default FALSE;
-_QS_ST_showAll = 0;											// NUMBER. Intended for Debug / Development use only! Caution: Will cause lag if 1 or 2! Settings -  0 = Disabled (Recommended). 1 = Reveal all Units + vehicles. 2 = Reveal all mission objects + vehicles + units. May override below configurations if set at 1 or 2.
+_QS_ST_admin = FALSE;	
+_QS_ST_showAll = 0;
 	
-//================= DIPLOMACY - set the Friendly factions for each faction.
+_QS_ST_friendlySides_Dynamic = TRUE;					
+_QS_ST_friendlySides_EAST = [3];
+_QS_ST_friendlySides_WEST = [2];
+_QS_ST_friendlySides_RESISTANCE = [0];
+_QS_ST_friendlySides_CIVILIAN = [0];
 
-_QS_ST_friendlySides_Dynamic = TRUE;						// BOOL. Set TRUE to allow faction alliances to change dynamically (IE. AAF may not always be loyal to NATO) and be represented on the map. Default TRUE.
-_QS_ST_friendlySides_EAST = [								// ARRAY (NUMBER). Uncomment the relevant number(s). Remove comma after last used entry (important!).
-	//1,					//EAST is friendly to WEST
-	//2,					//EAST is friendly to INDEPENDENT/RESISTANCE
-	3						//EAST is friendly to CIVILIANS
-];
-_QS_ST_friendlySides_WEST = [								// ARRAY (NUMBER). Uncomment the relevant number(s). Remove comma after last used entry (important!).
-	//0,					//WEST is friendly to EAST
-	2						//WEST is friendly to INDEP/RESISTANCE
-	//3						//WEST is friendly to CIVILIAN
-];
-_QS_ST_friendlySides_RESISTANCE = [							// ARRAY (NUMBER). Uncomment the relevant number(s). Remove comma after last used entry (important!).
-	//0,					//RESISTANCE is friendly to EAST
-	1,						//RESISTANCE is friendly to WEST
-	3						//RESISTANCE is friendly to CIVILIAN
-];
-_QS_ST_friendlySides_CIVILIAN = [							// ARRAY (NUMBER). Uncomment the relevant number(s). Remove comma after last used entry (important!).
-	0,						//CIVILIAN is friendly to EAST
-	//1,					//CIVILIAN is friendly to WEST
-	2						//CIVILIAN is friendly to INDEP/RESISTANCE
-];
+_QS_ST_iconColor_EAST = [0.5,0,0,0.65];
+_QS_ST_iconColor_WEST = [0,0.3,0.6,0.65];
+_QS_ST_iconColor_RESISTANCE = [0,0.5,0,0.65];
+_QS_ST_iconColor_CIVILIAN = [0.4,0,0.5,0.65];
+_QS_ST_iconColor_UNKNOWN = [0.7,0.6,0,0.5];
 
-//================= DEFAULT ICON COLORS by FACTION
+_QS_ST_showMedicalWounded = FALSE;
+_QS_ST_MedicalSystem = [];
+_QS_ST_MedicalIconColor = [1,0.41,0,1];
+_QS_ST_colorInjured = [0.75,0.55,0,0.75];
 
-_QS_ST_iconColor_EAST = [0.5,0,0,0.65];							// ARRAY (NUMBER). RGBA color code.	Default [0.5,0,0,0.65];
-_QS_ST_iconColor_WEST = [0,0.3,0.6,0.65];						// ARRAY (NUMBER). RGBA color code. Default [0,0.3,0.6,0.65];
-_QS_ST_iconColor_RESISTANCE = [0,0.5,0,0.65];					// ARRAY (NUMBER). RGBA color code. Default [0,0.5,0,0.65];	
-_QS_ST_iconColor_CIVILIAN = [0.4,0,0.5,0.65];					// ARRAY (NUMBER). RGBA color code. Default [0.4,0,0.5,0.65];	
-_QS_ST_iconColor_UNKNOWN = [0.7,0.6,0,0.5];						// ARRAY (NUMBER). RGBA color code. Default [0.7,0.6,0,0.5];
+_QS_ST_showFactionOnly = FALSE;
+_QS_ST_showAI = FALSE;
+_QS_ST_AINames = FALSE;
+_QS_ST_showCivilianIcons = FALSE;
+_QS_ST_iconMapText = TRUE;
+_QS_ST_showMOS = TRUE;
+_QS_ST_showMOS_range = 3500;
+_QS_ST_showGroupOnly = FALSE;
+_QS_ST_showOnlyVehicles = FALSE;
+_QS_ST_iconMapClickShowDetail = TRUE;
+_QS_ST_iconUpdatePulseDelay = 0;
+_QS_ST_iconShadowMap = 1;
+_QS_ST_iconTextSize_Map = 0.05;
+_QS_ST_iconTextOffset = 'right';
+_QS_ST_iconSize_Man = 22;
+_QS_ST_iconSize_LandVehicle = 26;
+_QS_ST_iconSize_Ship = 24;
+_QS_ST_iconSize_Air = 24;
+_QS_ST_iconSize_StaticWeapon = 22;
+_QS_ST_iconTextFonts = ['TahomaB'];
+_QS_ST_otherDisplays = TRUE;
+_QS_ST_MAPrequireGPSItem = FALSE;
 
-//================= MEDICAL
+_QS_ST_GPSDist = 300;
+_QS_ST_GPSshowNames = FALSE;
+_QS_ST_GPSshowGroupOnly = FALSE;
+_QS_ST_iconTextSize_GPS = 0.05;
+_QS_ST_iconShadowGPS = 1;
+_QS_ST_GPSrequireGPSItem = FALSE;
 
-_QS_ST_showMedicalWounded = FALSE;								// BOOL. TRUE to show wounded on the map and GPS. FALSE to not show wounded on the map with this script. Default TRUE.
-_QS_ST_MedicalSystem = [										// ARRAY(STRING). The Active Medical System. Uncomment ONLY ONE. FIRST UNCOMMENTED ONE WILL BE USED. Comment the rest out as shown. Do not add commas and only allow 1 to be uncommented.
-	//'BIS'														// BIS Revive.
-	//'BTC'														// BTC Revive.
-	//'AIS'														// AIS Revive.
-	//'ACE'														// ACE 3 Revive.
-	//'FAR'														// Farooq's Revive.
-	//'AWS'    													// A3 Wounding System by Psycho.
-];
-_QS_ST_MedicalIconColor = [1,0.41,0,1];							// ARRAY (NUMBER). Color of medical icons in RGBA format. Default [1,0.41,0,1];
-_QS_ST_colorInjured = [0.75,0.55,0,0.75];						// ARRAY (NUMBER). RGBA color code. Color of units with > 10% damage, in map group interactive interface. Default [0.7,0.6,0,0.5];
+_QS_ST_showGroupMapIcons = TRUE;
+_QS_ST_showGroupHudIcons = FALSE;
+_QS_ST_showAIGroups = FALSE;
+_QS_ST_showAINames = FALSE;
+_QS_ST_groupInteractiveIcons = TRUE;
+_QS_ST_groupInteractiveIcons_showClass = TRUE;
+_QS_ST_dynamicGroupID = TRUE;
+_QS_ST_showGroupMapText = TRUE;
+_QS_ST_groupIconScale = 0.75;
+_QS_ST_groupIconOffset = [0.65,0.65];
+_QS_ST_groupTextFactionOnly = TRUE;
+_QS_ST_showCivilianGroups = FALSE;
+_QS_ST_showOwnGroup = FALSE;
+_QS_ST_GRPrequireGPSItem = FALSE;
 
-//==================================================================================//
-//=========================== CONFIGURE MAP (UNIT/VEHICLE) ICONS ===================//
-//==================================================================================//
+_QS_ST_showEmptyVehicles = FALSE;
+_QS_ST_iconColor_empty = [0.7,0.6,0,0.5];
+_QS_ST_iconSize_empty = 20;
 
-_QS_ST_showFactionOnly = FALSE;									// BOOL. will override ST_showFriendlySides TRUE. If TRUE then will only show players faction. If FALSE then can show friendly factions. Default FALSE.
-_QS_ST_showAI = FALSE;											// BOOL. FALSE = players only, TRUE = players and AI. Default TRUE.
-_QS_ST_AINames = FALSE;											// BOOL. Set TRUE to show human names for AI with the map/vehicle icons. Set FALSE and will be named 'AI'. Default FALSE.
-_QS_ST_showCivilianIcons = FALSE;								// BOOL. Set TRUE to allow showing of civilians, only works if Dynamic Diplomacy is enabled above. Default FALSE.
-_QS_ST_iconMapText = TRUE;										// BOOL. TRUE to show unit/vehicle icon text on the map. FALSE to only show the icon and NO text (name/class). Default TRUE.
-_QS_ST_showMOS = TRUE;											// BOOL. TRUE = show Military Occupational Specialty text(unit/vehicle class/role display name), FALSE = disable and only show icons and names. Default FALSE.
-_QS_ST_showMOS_range = 3500;									// NUMBER. Range in distance to show MOS on the map. Default 3500.
-_QS_ST_showGroupOnly = FALSE;									// BOOL. Set TRUE to show ONLY the unit icons of THE PLAYERS GROUP MEMBERS on the MAP, FALSE to show ALL your factions units. May override other config. Default TRUE.
-_QS_ST_showOnlyVehicles = FALSE;								// BOOL. Set TRUE to show ONLY vehicles, no foot-soldier units will be shown. May override other config. Default TRUE.
-_QS_ST_iconMapClickShowDetail = TRUE;							// BOOL. Set TRUE to show unit/vehicle detail when player clicks on their map near the vehicle. Only works for shown vehicles. Default TRUE.
-_QS_ST_iconUpdatePulseDelay = 0;								// NUMBER. How often should location of unit on the MAP be updated? 0 = as fast as possible, else if > 0 then it = time in seconds. Default 0.
-_QS_ST_iconShadowMap = 1;										// NUMBER. Icon Shadow on MAP. 0 = no shadow. 1 = shadow. 2 = outline. Must be 0, 1, or 2. Default 1.
-_QS_ST_iconTextSize_Map = 0.05;									// NUMBER. Icon Text Size on MAP display. Default is 0.05.
-_QS_ST_iconTextOffset = 'right';								// STRING. Icon Text Offset. Can be 'left' or 'center' or 'right'. Default is 'right'
-_QS_ST_iconSize_Man = 22;										// NUMBER. Icon Size by Vehicle Type. Man/Units. Default = 22
-_QS_ST_iconSize_LandVehicle = 26;								// NUMBER. Icon Size by Vehicle Type. Ground-based vehicles. Default = 26	
-_QS_ST_iconSize_Ship = 24;										// NUMBER. Icon Size by Vehicle Type. Water-based vehicles. Default = 24
-_QS_ST_iconSize_Air = 24;										// NUMBER. Icon Size by Vehicle Type. Air vehicles. Default = 24
-_QS_ST_iconSize_StaticWeapon = 22;								// NUMBER. Icon Size by Vehicle Type. Static Weapon (Mortar, remote designator, HMG/GMG. Default = 22
-_QS_ST_iconTextFonts = [										// ARRAY (STRING). Icon Text Font. Only the uncommented one will be used. Do not add commas and only allow 1 to be uncommented. Default 'puristaMedium'.
-	//'EtelkaMonospacePro'
-	//'EtelkaMonospaceProBold'
-	//'EtelkaNarrowMediumPro'
-	//'LucidaConsoleB'
-	//'PuristaBold'
-	//'PuristaLight'
-	//'puristaMedium'
-	//'PuristaSemibold'
-	'TahomaB'
-];
-_QS_ST_otherDisplays = TRUE;									// BOOL. TRUE to add Unit/Vehicle Icon support for UAV Terminal and Artillery Computer. Runs a separate script to handle these displays. Only works if  _QS_ST_map_enableUnitIcons = TRUE;
-_QS_ST_MAPrequireGPSItem = FALSE;								// BOOL. TRUE to require player have GPS in his assigned items. Default FALSE.
-
-//==================================================================================//
-//=========================== CONFIGURE GPS (UNIT/VEHICLE) ICONS ===================//
-//==================================================================================//
-
-_QS_ST_GPSDist = 300;											// NUMBER. Distance from player that units shown on GPS. Higher number = lower script performance. Not significant but every 1/10th of a frame counts! Default 300
-_QS_ST_GPSshowNames = FALSE;									// BOOL. TRUE to show unit names on the GPS display. Default FALSE.
-_QS_ST_GPSshowGroupOnly = FALSE;								// BOOL. TRUE to show only group members on the GPS display. Default TRUE.
-_QS_ST_iconTextSize_GPS = 0.05;									// NUMBER. Icon Text Size on GPS display. Default is 0.05.
-_QS_ST_iconShadowGPS = 1;										// NUMBER. Icon Shadow on GPS. 0 = no shadow. 1 = shadow. 2 = outline. Must be 0, 1, or 2. Default 1.
-_QS_ST_GPSrequireGPSItem = FALSE;								// BOOL. TRUE to require player have GPS in his assigned items. Default FALSE.
-
-//==================================================================================//
-//============================= CONFIGURE GROUP ICONS ==============================//
-//==================================================================================//
-
-_QS_ST_showGroupMapIcons = TRUE;								// BOOL. Group icons displayed on map. Default TRUE.
-_QS_ST_showGroupHudIcons = FALSE;								// BOOL. Group icons displayed on player 3D HUD. Default FALSE.
-_QS_ST_showAIGroups = TRUE;										// BOOL. Show Groups with AI leaders. Default TRUE.
-_QS_ST_showAINames = FALSE;										// BOOL. Show AI Names. If FALSE, when names are listed with Group features, will only display as '[AI]'. Default FALSE.
-_QS_ST_groupInteractiveIcons = TRUE;							// BOOL. Group icons are interactable (mouse hover and mouse click for group details). Default TRUE.
-_QS_ST_groupInteractiveIcons_showClass = TRUE;					// BOOL. TRUE to show units vehicle class when revealing group details with interactive map group click. Default TRUE.
-_QS_ST_dynamicGroupID = TRUE;									// BOOL. If TRUE, Script tries to utilize BIS-Dynamic-Groups Group Name for group info display (only available with QS_ST_groupInteractiveIcons), if available. Default TRUE. EDIT: Obsolete as of A3 1.48
-_QS_ST_showGroupMapText = TRUE;									// BOOL. TRUE to show Group Name on the map. If FALSE, name can still be seen by clicking on the group icon, if QS_ST_groupInteractiveIcons = TRUE. Default FALSE.
-_QS_ST_groupIconScale = 0.75;										// NUMBER. Group Icon Scale. Default = 0.75
-_QS_ST_groupIconOffset = [0.65,0.65];							// ARRAY (NUMBERS). [X,Y], offset position of icon from group leaders position. Can be positive or negative numbers. Default = [0.65,0.65];
-_QS_ST_groupTextFactionOnly = TRUE;								// BOOL. TRUE to show group icon text from ONLY the PLAYERS faction. FALSE will show text for all friendly/revealed factions. Default TRUE.
-_QS_ST_showCivilianGroups = FALSE;								// BOOL. TRUE to show Civilian groups. Must be whitelisted above in friendlySides. Default FALSE.
-_QS_ST_showOwnGroup = FALSE;									// BOOL. TRUE to show the Players own group icon. Default FALSE.
-_QS_ST_GRPrequireGPSItem = FALSE;								// BOOL. TRUE to require player have GPS in his assigned items. Default FALSE.
-
-//==================================================================================//
-//============================= CONFIGURE BONUS FEATURES ===========================//
-//==================================================================================//
-
-_QS_ST_showEmptyVehicles = FALSE;								// BOOL. TRUE to mark certain unoccupied vehicles on the map. The vehicle must be assigned this variable:    <vehicle> setVariable ['QS_ST_drawEmptyVehicle',TRUE,TRUE];    Default FALSE.   Only works if  _QS_ST_map_enableUnitIcons = TRUE;
-_QS_ST_iconColor_empty = [0.7,0.6,0,0.5];						// ARRAY (NUMBERS). Color of unoccupied vehicles, in RGBA. Default = [0.7,0.6,0,0.5];
-_QS_ST_iconSize_empty = 20;										// NUMBER. Icon size of unoccupied vehicles, if shown.
-
-//==================================================================================//
-//================ TEXT (for LOCALIZATION / LANGUAGE TRANSLATION) ==================//
-//==================================================================================//
-
-QS_ST_STR_text1 = 'Click to show group details';				// STRING. Text shown when a player passes Mouse over Group leader (only if _QS_ST_groupInteractiveIcons = TRUE;)
-QS_ST_STR_text2 = 'This group is not in your faction!';			// STRING. Text shown when a player clicks on a Group Icon of other faction. (only if _QS_ST_groupInteractiveIcons = TRUE;)
-
-//==============================================================================================================================//
-//=============================================================== CONFIGURATION END ============================================//
-//==============================================================================================================================//
-//===================================================== EDITING BELOW FOR ADVANCED USERS ONLY!!! ===============================//
-//==============================================================================================================================//
+QS_ST_STR_text1 = 'Click to show group details';
+QS_ST_STR_text2 = 'This group is not in your faction!';
 
 _QS_fnc_isIncapacitated = {
 	params ['_u','_med'];
