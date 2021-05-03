@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=13391;
+		nextID=14103;
 	};
 	class Camera
 	{
 		pos[]={16935.613,19.167175,9515.7744};
-		dir[]={0.75266433,-0.2147675,0.62250376};
-		up[]={0.16554539,0.97663772,0.13691936};
-		aside[]={0.63737398,6.1110768e-007,-0.77064019};
+		dir[]={0.75261182,-0.21475248,0.62246031};
+		up[]={0.16548629,0.97666848,0.13686822};
+		aside[]={0.63733011,-7.4505806e-009,-0.77059084};
 	};
 };
 binarizationWanted=0;
@@ -2710,7 +2710,7 @@ class Mission
 				};
 			};
 			id=177;
-			atlOffset=361.754;
+			atlOffset=205.59813;
 		};
 		class Item21
 		{
@@ -3318,7 +3318,7 @@ class Mission
 				};
 			};
 			id=209;
-			atlOffset=0.19854736;
+			atlOffset=-7.2391014;
 		};
 		class Item23
 		{
@@ -11444,11 +11444,11 @@ class Mission
 						};
 					};
 					id=410;
-					atlOffset=0.29297447;
+					atlOffset=-2.2508926;
 				};
 			};
 			id=553;
-			atlOffset=0.29297447;
+			atlOffset=-2.2508926;
 		};
 		class Item76
 		{
@@ -22033,6 +22033,7 @@ class Mission
 							};
 							id=2049;
 							type="Land_vn_b_trench_bunker_04_01";
+							atlOffset=-4.7683716e-007;
 							class CustomAttributes
 							{
 								class Attribute0

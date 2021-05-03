@@ -55,15 +55,6 @@ class Params
 	    texts[] = {""};
 	    default = "";
 	};
-	class vn_forcepool_polling_interval
-	{
-	    title = $STR_VN_COALIVE_PARAMS_FORCEPOOL_POLLINT_XRAY;
-	    isGlobal = 1;
-	    values[] = {60, 120, 180, 300, 600, 900, 1800};
-	    texts[] = {"1 minute", "2 minutes", "3 minutes", "5 minutes", "10 minutes", "15 minutes", "30 minutes"};
-	    default = 300;
-	    function = "vn_alivems_fnc_params_forcePoolPollint";
-	};
 	class alive_forcepool_pavn
 	{
 	    title = $STR_VN_COALIVE_PARAMS_FORCEPOOL_PAVN_XRAY;
