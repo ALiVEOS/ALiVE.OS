@@ -66,7 +66,7 @@ class CfgMissions
         {
             briefingName = "ALiVE | Diamond Hands (Cam Lao Nam)";
             directory = "x\alive\addons\missions\mpscenarios\ALiVE_Diamond_Hands.Cam_Lao_Nam";
-            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Diamond_Hands.Cam_Lao_Nam\pics\execution.paa";
+            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Diamond_Hands.Cam_Lao_Nam\pics\scenario.paa";
             overviewText = "Viet Cong and NVA are using three underground bunkers as command and control facilities in the Tri-Border area. Locate, clear the bunkers and collect intellgence.";
             author = "ALiVE Mod Team";
         };
@@ -181,7 +181,7 @@ class CfgMissions
         {
             briefingName = "ALiVE | Diamond Hands (COOP 8)";
             directory = "x\alive\addons\missions\mpscenarios\ALiVE_Diamond_Hands.Cam_Lao_Nam";
-            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Diamond_Hands.Cam_Lao_Nam\pics\execution.paa";
+            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Diamond_Hands.Cam_Lao_Nam\pics\scenario.paa";
             overviewText = "Viet Cong and NVA are using three underground bunkers as command and control facilities in the Tri-Border area. Locate, clear the bunkers and collect intellgence.";
             author = "ALiVE Mod Team";
         };
