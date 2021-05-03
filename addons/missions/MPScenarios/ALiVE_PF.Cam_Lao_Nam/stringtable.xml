@@ -123,16 +123,6 @@
 <Russian></Russian>
 <Spanish></Spanish>
 </Key>
-<Key ID="STR_VN_COALIVE_PARAMS_GROUPMARKERS_VANTIEN">
-<Chinese></Chinese>
-<English>Enable 3D Player Markers (SHIFT+CTRL+F1)</English>
-<French></French>
-<German></German>
-<Italian></Italian>
-<Portuguese></Portuguese>
-<Russian></Russian>
-<Spanish></Spanish>
-</Key>
 <Key ID="STR_VN_PARAMS_ROTORLIB_VANTIEN">
 <Chinese></Chinese>
 <English>Enable Advanced Rotor Flight Model</English>
