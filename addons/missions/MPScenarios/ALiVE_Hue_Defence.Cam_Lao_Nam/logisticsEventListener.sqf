@@ -41,8 +41,8 @@ switch (_operation) do {
             case "FORCEPOOL_UPDATED": {
                 _eventData params ["_x","_forcePool"];
 
-							  ["logisticsEventListener -> _forcePool: %1", _forcePool] call ALiVE_fnc_dump; 	
- 								["logisticsEventListener -> _x: %1", _x] call ALiVE_fnc_dump; 	
+							//  ["logisticsEventListener -> _forcePool: %1", _forcePool] call ALiVE_fnc_dump; 	
+ 							//	["logisticsEventListener -> _x: %1", _x] call ALiVE_fnc_dump; 	
  								
  								
  								if (_x == "O_PAVN") then {
@@ -58,8 +58,8 @@ switch (_operation) do {
 								_currentPercent = (_forcePool / _factionmaxforcePool) * 100;
 							  _currentPercentformatted = floor _currentPercent;
 							  
-							  ["_currentPercent -> _currentPercent: %1", _currentPercent] call ALiVE_fnc_dump; 	
-							  ["logisticsEventListener -> _currentPercentformatted: %1", _currentPercentformatted] call ALiVE_fnc_dump; 	
+							//  ["_currentPercent -> _currentPercent: %1", _currentPercent] call ALiVE_fnc_dump; 	
+							//  ["logisticsEventListener -> _currentPercentformatted: %1", _currentPercentformatted] call ALiVE_fnc_dump; 	
 
 									if (_currentPercentformatted >=66 && _currentPercentformatted <=100) then {
 									  _forceStatus = "high";
@@ -79,7 +79,7 @@ switch (_operation) do {
 									 {["openSideSmall",0.4] remoteExecCall ["ALIVE_fnc_displayMenu", _x];
 								   ["setSideSmallText",_text] remoteExecCall ["ALIVE_fnc_displayMenu", _x];} forEach (_grpUnits);
 		                
-            
+            			 ["CIDG reports %1 %2 reinforcement strength at %3 percent", _forceStatus, _factionformatted, _currentPercentformatted] call ALiVE_fnc_dump; 	
             };
         };
     };
