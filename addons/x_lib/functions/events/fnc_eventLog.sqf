@@ -39,7 +39,7 @@ nil
 
 #define MTEMPLATE   "ALiVE_EVENT_%1"
 
-TRACE_1("event log - input",_this);
+TRACE_1("event log - input", _this);
 
 params ["_logic","_operation","_args"];
 
@@ -50,7 +50,6 @@ switch(_operation) do {
         if (isServer) then {
             _logic setvariable ["super", QUOTE(SUPERCLASS)];
             _logic setvariable ["class", QUOTE(MAINCLASS)];
-            TRACE_1("After listener init", _logic);
 
             _logic setvariable ["debug", false];
             _logic setvariable ["listenerCount", 0];
@@ -90,20 +89,17 @@ switch(_operation) do {
         private _listeners = _logic getvariable "listeners";
         private _filteredListeners = _logic getvariable "listenersByFilter";
 
-        private _listenerID = _logic getvariable "getNextListenerInsertID";
+        private _listenerID = [_logic,"getNextListenerInsertID"] call MAINCLASS;
 
         // store the listener in a hash by filter type
 
         {
-            private _filter = _x;
-
-            if !(_filter in _filteredListeners) then {
-                _filteredListeners set [_filter, createHashMapFromArray [
+            if !(_x in _filteredListeners) then {
+                _filteredListeners set [_x, createHashMapFromArray [
                     [_listenerID, _args]
                 ]];
             }else{
-                private _typeFilters = _filteredListeners get _filter;
-                _filters set [_listenerID, _args];
+                (_filteredListeners get _x) set [_listenerID, _args];
             };
         } forEach _filters;
 
@@ -111,7 +107,7 @@ switch(_operation) do {
 
         _listeners set [_listenerID, _args];
 
-        if(_debug) then {
+        if (_debug) then {
             //_listeners call ALIVE_fnc_inspectHash;
             //_filteredListeners call ALIVE_fnc_inspectHash;
         };
@@ -127,15 +123,11 @@ switch(_operation) do {
         private _listener = _listeners get _listenerID;
         private _filters = _listener select 1;
 
-        // remove the event from the hash by type
-
         {
             (_filteredListeners get _x) deleteat _listenerID;
         } forEach _filters;
 
-        // remove the event from the main hash
-
-        _listeners setvariable [_listenerID, nil];
+        _listeners deleteat _listenerID;
     };
 
     case "getListeners": {
@@ -143,8 +135,8 @@ switch(_operation) do {
     };
 
     case "clearListeners": {
-        [_logic,"listeners", createHashMap] call ALIVE_fnc_hashSet;
-        [_logic,"listenersByFilter", createHashMap] call ALIVE_fnc_hashSet;
+        _logic setvariable ["listeners", createHashMap];
+        _logic setvariable ["listenersByFilter", createHashMap];
     };
 
     case "getListenersByFilter": {
@@ -179,12 +171,11 @@ switch(_operation) do {
         // store the event in a hash by type
 
         if !(_type in _eventsByType) then {
-            [_eventsByType,_type, createHashMapFromArray [
+            _eventsByType set [_type, createHashMapFromArray [
                 [_eventID, _event]
-            ]] call ALIVE_fnc_hashSet;
+            ]];
         } else {
-            private _eventTypes = _eventsByType get _type;
-            _eventTypes set [_eventID, _event];
+            (_eventsByType get _type) set [_eventID, _event];
         };
 
         // remove first event if over the max limit
@@ -206,33 +197,33 @@ switch(_operation) do {
             //_eventsByType call ALIVE_fnc_inspectHash;
         };
 
-        // spawn the event dispatch
+        // dispatch event
 
         private _filteredListeners = _logic getvariable "listenersByFilter";
-        private _typeListeners = _filteredListeners get _type;
-        private _globalListeners = _filteredListeners get "ALL";
+        private _typeListeners = _filteredListeners getOrDefault [_type, []];
+        private _globalListeners = _filteredListeners getOrDefault ["ALL", []];
 
         private _listeners = [];
 
-        if (!isnil "_typeListeners") then {
-            {
-                private _class = if(_x isEqualType objNull) then {
-                    _listeners pushback [_x, _x getVariable "class"];
-                } else {
-                    _listeners pushback [_x, [_x,"class"] call ALIVE_fnc_hashGet;];
-                };
-            } foreach _typeListeners;
-        };
+        {
+            private _listener = _y select 0;
 
-        if (!isnil "_typeListeners") then {
-            {
-                private _class = if(_x isEqualType objNull) then {
-                    _listeners pushback [_x, _x getVariable "class"];
-                } else {
-                    _listeners pushback [_x, [_x,"class"] call ALIVE_fnc_hashGet;];
-                };
-            } foreach _globalListeners;
-        };
+            private _class = if (_listener isEqualType objNull) then {
+                _listeners pushback [_listener, _listener getVariable "class"];
+            } else {
+                _listeners pushback [_listener, [_listener,"class"] call ALIVE_fnc_hashGet];
+            };
+        } foreach _typeListeners;
+
+        {
+            private _listener = _y select 0;
+
+            private _class = if (_listener isEqualType objNull) then {
+                _listeners pushback [_listener, _listener getVariable "class"];
+            } else {
+                _listeners pushback [_listener, [_listener,"class"] call ALIVE_fnc_hashGet];
+            };
+        } foreach _globalListeners;
 
         [_event, _listeners] spawn {
             params ["_event","_listeners"];
@@ -273,7 +264,7 @@ switch(_operation) do {
         private _type = _args;
         private _eventsByType = _logic getvariable "eventsByType";
 
-        _result = [_eventsByType,_type] call ALIVE_fnc_hashGet;
+        _result = _eventsByType get _type;
     };
 
     case "getEvents": {
@@ -289,20 +280,18 @@ switch(_operation) do {
         private _listenerCount = _logic getvariable "listenerCount";
         _result = format ["listener_%1", _listenerCount];
 
-        _listenerCount = _listenerCount + 1;
-        _logic setvariable ["listenerCount", _listenerCount];
+        _logic setvariable ["listenerCount", _listenerCount + 1];
     };
 
     case "getNextEventInsertID": {
         private _eventCount = _logic getvariable "eventCount";
         _result = format ["event_%1", _eventCount];
 
-        _eventCount = _eventCount + 1;
-        _logic setvariable ["eventCount", _eventCount];
+        _logic setvariable ["eventCount", _eventCount + 1];
     };
     
     default {
-        _result = [_logic, _operation, _args] call SUPERCLASS;
+        _result = _this call SUPERCLASS;
     };
 };
 

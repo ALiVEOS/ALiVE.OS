@@ -42,6 +42,6 @@ params [
 		["data", _data],
 		["from", _from],
 		["message", _message],
-		["id", 0],
+		["id", 0]
 	]
 ] call ALIVE_fnc_hashCreate
