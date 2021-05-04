@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=547;
+		nextID=559;
 	};
 	class Camera
 	{
@@ -11260,11 +11260,11 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={7073.6304,0,6815.5908};
+				position[]={7073.6299,0.00026661158,6815.5908};
 			};
 			id=1092;
 			type="ALiVE_sys_profile";
-			atlOffset=0.55683589;
+			atlOffset=0.55699998;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -11415,7 +11415,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="0.25";
+							value="0.75";
 						};
 					};
 				};
