@@ -18,7 +18,7 @@ Returns:
 
 Examples:
 (begin example)
-[_camera,_target,10,false] call ALIVE_fnc_chaseSideShot;
+[_camera,_target,10,false,10,0] call ALIVE_fnc_chaseSideShot;
 (end)
 
 See Also:
@@ -41,6 +41,13 @@ if(_hideTarget) then
     hideObjectGlobal _target;
 };
 
+_camera camSetTarget (driver _target);
+
+_camera camCommit 0;
+
+_camera attachTo [_target, [_dist,0,_height]];
+
+/*
 _startTime = time;
 _currentTime = _startTime;
 
@@ -57,4 +64,4 @@ _eventID = addMissionEventHandler ["Draw3D", {
 
 waitUntil { sleep 1; _currentTime = time; ((_currentTime - _startTime) >= _duration)};
 
-removeMissionEventHandler ["Draw3D",_eventID];
+removeMissionEventHandler ["Draw3D",_eventID];*/

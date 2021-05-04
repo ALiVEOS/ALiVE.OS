@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=799;
+		nextID=823;
 	};
 	class Camera
 	{
@@ -303,7 +303,7 @@ class AddonsMetaData
 randomSeed=8300791;
 class ScenarioData
 {
-	author="@STR_VN_MISSIONS_AUTH_MISSION_ALIVE_VANTIEN";
+	author="ALiVE Mod Team";
 	overviewText="PAVN general offensive against military and civilian objectives throughout South Vietnam, supported by VC conducting cross-border insurgency operations.";
 	overViewPicture="pics\splash.paa";
 	respawnDelay=10;
@@ -427,8 +427,8 @@ class Mission
 	appId=1227700;
 	class Intel
 	{
-		briefingName="@STR_VN_MISSIONS_TITLE_MISSION_ALIVE_VANTIEN";
-		overviewText="@STR_VN_MISSIONS_MINDESC_MISSION_ALIVE_VANTIEN";
+		briefingName="ALiVE | Op Van Tien";
+		overviewText="PAVN forces have launched a surprise offensive against key military and civilian objectives throughout the area of operations.";
 		resistanceWest=0;
 		resistanceEast=1;
 		timeOfChanges=1800.0002;
@@ -9965,7 +9965,7 @@ class Mission
 			};
 			id=616;
 			type="vn_sign_fob_05";
-			atlOffset=1.6644828;
+			atlOffset=1.6644826;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -13488,6 +13488,7 @@ class Mission
 							};
 							id=992;
 							type="vn_b_prop_vrc12";
+							atlOffset=0.00024414063;
 						};
 						class Item18
 						{
@@ -13514,21 +13515,21 @@ class Mission
 								angles[]={0,5.0726037,0};
 							};
 							side="Empty";
-							flags=4;
 							class Attributes
 							{
 								disableSimulation=1;
 							};
 							id=994;
 							type="Land_vn_woodentable_large_f";
+							atlOffset=0.56321716;
 						};
 					};
 					id=410;
-					atlOffset=28.231155;
+					atlOffset=28.231186;
 				};
 			};
 			id=768;
-			atlOffset=28.231155;
+			atlOffset=28.231186;
 		};
 		class Item70
 		{

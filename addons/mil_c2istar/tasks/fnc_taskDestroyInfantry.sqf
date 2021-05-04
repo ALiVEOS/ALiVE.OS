@@ -91,11 +91,11 @@ switch (_taskState) do {
 
         if(count _targetEntity > 0) then {
 
-            _targetEntity call ALiVE_fnc_InspectHash;
+            // _targetEntity call ALiVE_fnc_InspectHash;
 
             private["_entityPosition","_entityID"];
 
-            _targetEntity call ALIVE_fnc_inspectHash;
+            // _targetEntity call ALIVE_fnc_inspectHash;
             _entityPosition = _targetEntity select 2 select 2;
             _entityID = _targetEntity select 2 select 4;
 

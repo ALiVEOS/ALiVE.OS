@@ -3,13 +3,13 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_multispawn">
-    <Original>Player Multispawn</Original>
+    <English>Player Multispawn</English>
 </Key>
 <Key ID="STR_ALIVE_multispawn_COMMENT">
-    <Original>ALiVE Multispawn enables some handy Respawn functionalities! Please see our WiKi for more information!</Original>
+    <English>ALiVE Multispawn enables some handy Respawn functionalities! Please see our WiKi for more information!</English>
 </Key>
 <Key ID="STR_ALIVE_multispawn_USAGE">
-    <Original>
+    <English>
 Description&lt;br /&gt;
 &lt;br /&gt;
 Spawn on Squad: BF style respawn (groupwise)!&lt;br /&gt;
@@ -29,51 +29,51 @@ Spawn in vehicle (name vehicle): ALiVE_SUP_MULTISPAWN_RESPAWNVEHICLE_%FACTION%&l
 Spawn in building: ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%FACTION%&lt;br /&gt;
 &lt;br /&gt;
 You can sync your custom vehicles of choice to the module! Keep in mind only vehicles of the same faction are used!
-    </Original>
+    </English>
 </Key>
 <Key ID="STR_ALIVE_multispawn_DEBUG">
-    <Original>Enable debug:</Original>
+    <English>Enable debug:</English>
 </Key>
 <Key ID="STR_ALIVE_multispawn_DEBUG_COMMENT">
-    <Original>Enables debug</Original>
+    <English>Enables debug</English>
 </Key>
 <Key ID="STR_ALIVE_multispawn_TYPE">
-    <Original>Respawn Type:</Original>
+    <English>Respawn Type:</English>
 </Key>
 <Key ID="STR_ALIVE_multispawn_TYPE_COMMENT">
-    <Original>Select where players will be respawned</Original>
+    <English>Select where players will be respawned</English>
 </Key>
 <Key ID="STR_ALIVE_MULTISPAWN_TIMEOUT">
-    <Original>Respawn Timeout:</Original>
+    <English>Respawn Timeout:</English>
 </Key>
 <Key ID="STR_ALIVE_MULTISPAWN_TIMEOUT_COMMENT">
-    <Original>Add a wait time to respawn</Original>
+    <English>Add a wait time to respawn</English>
 </Key>
 <Key ID="STR_ALIVE_MULTISPAWN_VEHICLETYPES">
-    <Original>Vehicletypes:</Original>
+    <English>Vehicletypes:</English>
 </Key>
 <Key ID="STR_ALIVE_MULTISPAWN_VEHICLETYPES_COMMENT">
-    <Original>Respawn vehicle classes for some dynamic respawn types (like "Insertion",...)!</Original>
+    <English>Respawn vehicle classes for some dynamic respawn types (like "Insertion",...)!</English>
 </Key>
 <Key ID="STR_ALIVE_multispawn_DISABLED">
-    <Original>Disable multispawn:</Original>
+    <English>Disable multispawn:</English>
 </Key>
 <Key ID="STR_ALIVE_multispawn_DISABLED_COMMENT">
-    <Original>XXXX</Original>
+    <English>XXXX</English>
 </Key>
 <Key ID="STR_ALIVE_multispawn_ERROR1">
-    <Original>Only one multispawn module can be used</Original>
+    <English>Only one multispawn module can be used</English>
 </Key>
 <Key ID="STR_ALIVE_multispawn_SPAWNINGNEARENEMIESALLOWED">
-    <Original>Respawn Enemy Check:</Original>
+    <English>Respawn Enemy Check:</English>
 </Key>
 <Key ID="STR_ALIVE_multispawn_SPAWNINGNEARENEMIESALLOWED_COMMENT">
-    <Original>Allowed to spawn on squadmates even if enemies are near!</Original>
+    <English>Allowed to spawn on squadmates even if enemies are near!</English>
 </Key>
 <Key ID="STR_ALIVE_multispawn_RESPAWNWITHGEAR">
-    <Original>Respawn with Gear:</Original>
+    <English>Respawn with Gear:</English>
 </Key>
 <Key ID="STR_ALIVE_multispawn_RESPAWNWITHGEAR_COMMENT">
-    <Original>Respawn with the same gear that the player carried when he was killed</Original>
+    <English>Respawn with the same gear that the player carried when he was killed</English>
 </Key>
 </Container></Package></Project>

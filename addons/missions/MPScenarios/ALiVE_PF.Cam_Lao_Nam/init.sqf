@@ -45,10 +45,13 @@ if (hasInterface) then {
     [] spawn {
      //   enableRadio false;
        
-        playMusic "vn_deadly_jungle";
+        
         _start = time;
         waituntil {(player getvariable ["alive_sys_player_playerloaded",false]) || ((time - _start) > 10)};
 
+				sleep 3;
+				playMusic "vn_deadly_jungle";
+			  10 fadesound 0.9;
         sleep 60;
 
         _title = "<t size='1.5' color='#68a7b7' shadow='1'>OP VAN TIEN</t><br/>";

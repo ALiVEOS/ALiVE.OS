@@ -116,7 +116,7 @@ for "_i" from 0 to ((count _configPath) - 1) do
 
 /*
     <Key ID="STR_ALIVE_CMP">
-        <Original>Custom Military Objective</Original>
+        <English>Custom Military Objective</English>
     </Key>
 */
 
@@ -133,7 +133,7 @@ for "_i" from 0 to ((count _configPath) - 1) do
         _name = getText(_item >> "name");
 
         ['<Key ID="STR_ALIVE_COMPOSITION_%1">',_configName] call ALIVE_fnc_dump;
-        ['<Original>%1</Original>',_name] call ALIVE_fnc_dump;
+        ['<English>%1</English>',_name] call ALIVE_fnc_dump;
         ['</Key>'] call ALIVE_fnc_dump;
 
         for "_i" from 0 to ((count _item) - 1) do
@@ -149,7 +149,7 @@ for "_i" from 0 to ((count _configPath) - 1) do
                 _name = getText(_comp >> "name");
 
                 ['<Key ID="STR_ALIVE_COMPOSITION_%1">',_configName] call ALIVE_fnc_dump;
-                ['<Original>%1</Original>',_name] call ALIVE_fnc_dump;
+                ['<English>%1</English>',_name] call ALIVE_fnc_dump;
                 ['</Key>'] call ALIVE_fnc_dump;
 
 

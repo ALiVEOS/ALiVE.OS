@@ -3,60 +3,60 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_MI">
-    <Original>Military Intelligence - DEPRECIATED! REMOVE FROM YOUR MISSIONS</Original>
+    <English>Military Intelligence - DEPRECIATED! REMOVE FROM YOUR MISSIONS</English>
 </Key>
 <Key ID="STR_ALIVE_MI_COMMENT">
-    <Original>Strategic Military Intelligence - DEPRECIATED! REMOVE FROM YOUR MISSIONS</Original>
+    <English>Strategic Military Intelligence - DEPRECIATED! REMOVE FROM YOUR MISSIONS</English>
 </Key>
 <Key ID="STR_ALIVE_MI_DEBUG">
-    <Original>Enable Debug:</Original>
+    <English>Enable Debug:</English>
 </Key>
 <Key ID="STR_ALIVE_MI_DEBUG_COMMENT">
-    <Original>Enables MI Module Debug</Original>
+    <English>Enables MI Module Debug</English>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE">
-    <Original>Intel Coverage:</Original>
+    <English>Intel Coverage:</English>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE_COMMENT">
-    <Original>Amount of intel reports generated</Original>
+    <English>Amount of intel reports generated</English>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE_LOW">
-    <Original>Low coverage of intel</Original>
+    <English>Low coverage of intel</English>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE_MEDIUM">
-    <Original>Medium coverage of intel</Original>
+    <English>Medium coverage of intel</English>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE_HIGH">
-    <Original>High coverage of intel</Original>
+    <English>High coverage of intel</English>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE_TOTAL">
-    <Original>Total coverage of intel</Original>
+    <English>Total coverage of intel</English>
 </Key>
 <Key ID="STR_ALIVE_MI_FRIENDLY_INTEL">
-    <Original>Friendly Coverage:</Original>
+    <English>Friendly Coverage:</English>
 </Key>
 <Key ID="STR_ALIVE_MI_FRIENDLY_INTEL_COMMENT">
-    <Original>Display nearby friendly units</Original>
+    <English>Display nearby friendly units</English>
 </Key>
 <Key ID="STR_ALIVE_MI_FRIENDLY_INTEL_RADIUS">
-    <Original>Friendly Radius:</Original>
+    <English>Friendly Radius:</English>
 </Key>
 <Key ID="STR_ALIVE_MI_FRIENDLY_INTEL_RADIUS_COMMENT">
-    <Original>Display friendly units within this radius around players</Original>
+    <English>Display friendly units within this radius around players</English>
 </Key>
 <Key ID="STR_ALIVE_MI_USAGE">
-    <Original>place 1 Mil_Int module only per mission. Select the level of detail and frequency of intel received in the options. It is also possible to show Friendly Intel to track units friendly to players.</Original>
+    <English>place 1 Mil_Int module only per mission. Select the level of detail and frequency of intel received in the options. It is also possible to show Friendly Intel to track units friendly to players.</English>
 </Key>
 <Key ID="STR_ALIVE_SD">
-    <Original>Military Sector Display - DEPRECIATED! REMOVE FROM YOUR MISSIONS</Original>
+    <English>Military Sector Display - DEPRECIATED! REMOVE FROM YOUR MISSIONS</English>
 </Key>
 <Key ID="STR_ALIVE_SD_RUN_EVERY">
-    <Original>Update time</Original>
+    <English>Update time</English>
 </Key>
 <Key ID="STR_ALIVE_SD_RUN_EVERY_COMMENT">
-    <Original>Update sector markings every number of minutes entered</Original>
+    <English>Update sector markings every number of minutes entered</English>
 </Key>
 <Key ID="STR_ALIVE_PSD">
-    <Original>Player Sector Display - DEPRECIATED! REMOVE FROM YOUR MISSIONS</Original>
+    <English>Player Sector Display - DEPRECIATED! REMOVE FROM YOUR MISSIONS</English>
 </Key>
 </Container></Package></Project>
