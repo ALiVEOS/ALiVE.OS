@@ -4208,6 +4208,8 @@ switch(_operation) do {
 
                                 } foreach _emptyVehicleProfiles;
 
+                            } else {
+                                ["WARNING: No %1 transport vehicles found for Heli Insert.",_eventFaction] call ALIVE_fnc_dump;
                             };
 
                             _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
@@ -4349,6 +4351,12 @@ switch(_operation) do {
 
                                     // RHS hacky stuff :(
                                     if !(_itemCategory in ["Infantry", "Support", "SpecOps", "Naval", "Armored", "Mechanized", "Motorized", "Air"]) then {
+                                        if(!isNil "ALIVE_factionCustomMappings") then {
+                                            if(_groupfaction in (ALIVE_factionCustomMappings select 1)) then {
+                                                private _customMappings = [ALIVE_factionCustomMappings, _groupfaction] call ALIVE_fnc_hashGet;
+                                                _groupfaction = [_customMappings, "GroupFactionName"] call ALIVE_fnc_hashGet;
+                                            };
+                                        };
                                         private _key = format ["%1_%2", _groupFaction, _group];
                                         private _value = [ALIVE_groupConfig, _key] call CBA_fnc_hashGet;
                                         private _side = (_value select 1) select 0;
@@ -4423,6 +4431,10 @@ switch(_operation) do {
                                             _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
                                             _profile = _profiles select 0;
                                             [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+                                        };
+                                        default {
+                                            ["ML - WARNING: No item category defined for group %1, using infantry.",_group] call ALIVE_fnc_dump;
+                                            _infantryProfiles pushback _profileIDs;
                                         };
                                     };
 
@@ -4517,6 +4529,11 @@ switch(_operation) do {
                                             if (_transport > _heliTransport) then {_vehicleClass = _x};
                                         } foreach _transportGroups;
 
+
+                                        if (_debug) then {
+                                            ["ML - Found %1 for heli insert of %2", _vehicleclass, _infantryProfiles] call ALIVE_fnc_dump;
+                                        };
+
                                         // Create profiles
                                         _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
 
@@ -4539,6 +4556,8 @@ switch(_operation) do {
 
                                 };
 
+                            } else {
+                                ["ML - WARNING: No %1 transport vehicles found for Heli Insert.",_eventFaction] call ALIVE_fnc_dump;
                             };
 
                             _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
@@ -4638,6 +4657,8 @@ switch(_operation) do {
 
                                 } foreach _groupProfiles;
 
+                            } else {
+                                ["WARNING: No %1 transport vehicles found for Heli Insert.",_eventFaction] call ALIVE_fnc_dump;
                             };
 
                             _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
