@@ -76,8 +76,8 @@ switch(_operation) do {
     };
 
     default {
-        private _err = format["%1 does not support ""%2"" operation", _logic, _operation];
-        _err call ALiVE_fnc_logger;
+        private _baseclass = [_logic,"class", _fnc_scriptNameParent] call ALiVE_fnc_hashGet;
+        ["class '%3' does not support operation '%2' - %1", _logic, _operation, _baseclass] call ALiVE_fnc_dump;
     };
 
 };

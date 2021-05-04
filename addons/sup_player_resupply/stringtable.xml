@@ -3,63 +3,63 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_PR">
-    <Original>Player Combat Logistics</Original>
+    <English>Player Combat Logistics</English>
 </Key>
 <Key ID="STR_ALIVE_PR_COMMENT">
-    <Original>Resupply players with logistics requests</Original>
+    <English>Resupply players with logistics requests</English>
 </Key>
 <Key ID="STR_ALIVE_PR_ALLOW">
-    <Original>Call Log. Support with</Original>
+    <English>Call Log. Support with</English>
 </Key>
 <Key ID="STR_ALIVE_PR_ALLOW_COMMENT">
-    <Original>Define the item the player must have to be able to use Player Resupply i.e "LaserDesignator"</Original>
+    <English>Define the item the player must have to be able to use Player Resupply i.e "LaserDesignator"</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE">
-    <Original>Restrict to</Original>
+    <English>Restrict to</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_COMMENT">
-    <Original>Restrict the player selection to items from own side or their own faction / whitelisted factions (defined below)</Original>
+    <English>Restrict the player selection to items from own side or their own faction / whitelisted factions (defined below)</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_SIDE">
-    <Original>Side</Original>
+    <English>Side</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_FACTION">
-    <Original>Faction</Original>
+    <English>Faction</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_AIRDROP">
-    <Original>Allow Airdrop</Original>
+    <English>Allow Airdrop</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_AIRDROP_COMMENT">
-    <Original>Allow players to request supplies via Air Drop</Original>
+    <English>Allow players to request supplies via Air Drop</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_INSERT">
-    <Original>Allow Helicopter/VTOL Resupply</Original>
+    <English>Allow Helicopter/VTOL Resupply</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_INSERT_COMMENT">
-    <Original>Allow players to request supplies via Helicopter/VTOL</Original>
+    <English>Allow players to request supplies via Helicopter/VTOL</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_CONVOY">
-    <Original>Allow Convoy</Original>
+    <English>Allow Convoy</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_CONVOY_COMMENT">
-    <Original>Allow players to request supplies via Convoy</Original>
+    <English>Allow players to request supplies via Convoy</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_BLACKLIST">
-    <Original>Blacklist</Original>
+    <English>Blacklist</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_BLACKLIST_COMMENT">
-    <Original>Excluded config classes (f.e. Box_IND_Ammo_F,B_Soldier_diver_base_F,B_MRAP_01_F,...)! Caution: case sensitive!</Original>
+    <English>Excluded config classes (f.e. Box_IND_Ammo_F,B_Soldier_diver_base_F,B_MRAP_01_F,...)! Caution: case sensitive!</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_WHITELIST">
-    <Original>Whitelist</Original>
+    <English>Whitelist</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_WHITELIST_COMMENT">
-    <Original>Only these config classes will be used (Box_IND_Ammo_F,B_Soldier_diver_base_F,B_MRAP_01_F,...)! Caution: case sensitive!</Original>
+    <English>Only these config classes will be used (Box_IND_Ammo_F,B_Soldier_diver_base_F,B_MRAP_01_F,...)! Caution: case sensitive!</English>
 </Key>
 <Key ID="STR_ALIVE_PR_FACTION_WHITELIST">
-    <Original>Faction Whitelist</Original>
+    <English>Faction Whitelist</English>
 </Key>
 <Key ID="STR_ALIVE_PR_FACTION_WHITELIST_COMMENT">
-    <Original>If defined, only vehicles/groups from these factions (BLU_F,BLU_T_F...) can be delivered. If undefined, defaults to player faction. Caution: case sensitive!</Original>
+    <English>If defined, only vehicles/groups from these factions (BLU_F,BLU_T_F...) can be delivered. If undefined, defaults to player faction. Caution: case sensitive!</English>
 </Key>
 </Container></Package></Project>

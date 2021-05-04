@@ -2482,12 +2482,13 @@ switch(_operation) do {
                                         _customMappings = [ALIVE_factionCustomMappings, _faction] call ALIVE_fnc_hashGet;
                                         _groups = [_customMappings, "Groups"] call ALIVE_fnc_hashGet;
 
-                                        _groups call ALIVE_fnc_inspectHash;
+                                        //_groups call ALIVE_fnc_inspectHash;
 
                                         {
                                             _groupNames = [_groups, _x] call ALIVE_fnc_hashGet;
 
-                                            _groupNames call ALIVE_fnc_inspectArray;
+
+                                            //_groupNames call ALIVE_fnc_inspectArray;
 
                                             if(_payloadClass in _groupNames) then {
                                                 _payloadInfo set [2,_x];
