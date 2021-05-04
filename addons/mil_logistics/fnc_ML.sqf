@@ -5783,12 +5783,19 @@ switch(_operation) do {
                     _group = _entityProfile select 2 select 13;
                     _group setBehaviour "CARELESS";
 
-                    _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
-                    _position = _position findEmptyPosition [10,200];
+                    // _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
+                    // _position = _position findEmptyPosition [10,200];
 
-                    if(count _position == 0) then {
+                    private _position = [];
+                    for "_i" from 0 to 1 do {
+                        if (_position isequalto []) then {
+                            _position = [_eventPosition, 0, 300, 15, 0, 0.25, 0] call BIS_fnc_findSafePos;
+                        };
+                    };
+                    if(_position isequalto []) then {
                         _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
                     };
+
                     _heliPad = "Land_HelipadEmpty_F" createVehicle _position;
 
                     _eventAssets pushback _heliPad;
@@ -5805,13 +5812,11 @@ switch(_operation) do {
 
                             sleep 3;
 
-                            while { ( (alive _vehicle) && !(unitReady _vehicle) ) } do
-                            {
-                                   sleep 2;
+                            while { ( (alive _vehicle) && !(unitReady _vehicle) ) } do {
+                                sleep 2;
                             };
 
-                            if (alive _vehicle) then
-                            {
+                            if (alive _vehicle) then {
                                 if (_slingLoading) then {
 
                                     _slingloadVehicle = getSlingLoad _vehicle;
