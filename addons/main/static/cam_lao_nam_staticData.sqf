@@ -23,7 +23,7 @@ private["_worldName"];
  ALIVE_civilianSettlementBuildingTypes = [];
  ALIVE_problematicHangarBuildings = [];
 
-ALiVE_mapCompositionType = "Jungle";
+ ALiVE_mapCompositionType = "Jungle";
 
  if(tolower(_worldName) == "cam_lao_nam") then {
 [ALIVE_mapBounds, worldName, 21000] call ALIVE_fnc_hashSet;
