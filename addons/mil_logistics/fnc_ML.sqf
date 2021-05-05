@@ -4328,6 +4328,7 @@ switch(_operation) do {
                         private _reinforceGroupProfiles = [];
 
                         {
+
                             private _profileList = _x select 0;
                             private _groupList = _x select 1;
 
@@ -4366,6 +4367,37 @@ switch(_operation) do {
 
                                         if (isText _configPath) then {
                                             _itemCategory = getText _configPath;
+                                        } else {
+                                            // Try the icon...
+                                            private _iconText = getText(((((configFile >> "CfgGroups") select _side) select _faction) select _category) >> _group >> "icon");
+                                            switch (true) do {
+                                                case ([_iconText,"_air"] call CBA_fnc_find != -1): {
+                                                    _itemCategory = "Air";
+                                                };
+                                                case ([_iconText,"_motor_inf"] call CBA_fnc_find != -1): {
+                                                    _itemCategory = "Motorized";
+                                                };
+                                                case ([_iconText,"_mech_inf"] call CBA_fnc_find != -1): {
+                                                    _itemCategory = "Mechanized";
+                                                };
+                                                case ([_iconText,"_armor"] call CBA_fnc_find != -1): {
+                                                    _itemCategory = "Armored";
+                                                };
+                                                case ([_iconText,"_naval"] call CBA_fnc_find != -1): {
+                                                    _itemCategory = "Naval";
+                                                };
+                                                case ([_iconText,"_recon"] call CBA_fnc_find != -1): {
+                                                    _itemCategory = "SpecOps";
+                                                };
+                                                case ([_iconText,"_art"] call CBA_fnc_find != -1 || [_iconText,"_mortar"] call CBA_fnc_find != -1 || [_iconText,"_antiair"] call CBA_fnc_find != -1): {
+                                                    _itemCategory = "Support";
+                                                };
+
+                                                default {
+                                                     _itemCategory = "Infantry";
+                                                };
+                                            };
+                                            ["ML - WARNING: No item category defined for group %1, using %2 based on group icon.",_group, _itemCategory] call ALIVE_fnc_dump;
                                         };
                                     };
 
