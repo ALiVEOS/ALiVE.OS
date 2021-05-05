@@ -183,5 +183,57 @@ ALIVE_factionDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 
 // VN
 
+ALIVE_VNDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
+
+[ALIVE_VNDefaultResupplyGroupOptions, "PR_AIRDROP", ["Armored","Mechanized","vn_b_group_motor_army","vn_b_group_mech_army","vn_b_group_armor_army","vn_b_group_armor_usmc","vn_b_group_air_army","vn_b_group_air_usmc","vn_b_group_air_navy","vn_b_group_air_usaf","vn_b_group_men_aircrew","vn_b_group_men_navy","vn_b_group_boats",
+"vn_o_group_motor_vcmf",
+"vn_o_group_mech_vcmf",
+"vn_o_group_armor_vcmf",
+"vn_o_group_motor_nva",
+"vn_o_group_mech_nva",
+"vn_o_group_armor_nva",
+"vn_o_group_motor_nva_65",
+"vn_o_group_mech_nva_65",
+"vn_o_group_armor_nva_65",
+"vn_o_group_motor_nvam",
+"vn_o_group_mech_nvam",
+"vn_o_group_air_army",
+"vn_i_group_motor_army",
+"vn_i_group_mech_army",
+"vn_i_group_armor_army",
+"vn_i_group_air_army"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_VNDefaultResupplyGroupOptions, "PR_HELI_INSERT", ["Armored","Mechanized","vn_b_group_motor_army","vn_b_group_mech_army","vn_b_group_armor_army","vn_b_group_armor_usmc","vn_b_group_air_army","vn_b_group_air_usmc","vn_b_group_air_navy","vn_b_group_air_usaf","vn_b_group_men_aircrew","vn_b_group_men_navy","vn_b_group_boats",
+"vn_o_group_motor_vcmf",
+"vn_o_group_mech_vcmf",
+"vn_o_group_armor_vcmf",
+"vn_o_group_motor_nva",
+"vn_o_group_mech_nva",
+"vn_o_group_armor_nva",
+"vn_o_group_motor_nva_65",
+"vn_o_group_mech_nva_65",
+"vn_o_group_armor_nva_65",
+"vn_o_group_motor_nvam",
+"vn_o_group_mech_nvam",
+"vn_o_group_air_army",
+"vn_i_group_motor_army",
+"vn_i_group_mech_army",
+"vn_i_group_armor_army",
+"vn_i_group_air_army"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_VNDefaultResupplyGroupOptions, "PR_STANDARD", []] call ALIVE_fnc_hashSet;
+
+
+[ALIVE_factionDefaultResupplyGroupOptions, "O_PAVN", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "O_VC", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "I_ARVN", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "B_MACV", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "C_VIET", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 
 // OVER
+
+
+
+
