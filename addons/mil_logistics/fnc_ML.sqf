@@ -4427,9 +4427,17 @@ switch(_operation) do {
 
                                     private _profiles = [_group, _position, random(360), false, _groupFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
                                     private _profileIDs = [];
+                                    private _containsVehicles = 0;
 
                                     {
-                                        private _profileID = (_x select 2) select 4;
+                                        private _profileID = _x select 2 select 4;
+                                        private _inCargo = _x select 2 select 9;
+
+                                        //Count vehicles in group
+                                        if ([_profileID,"vehicle"] call CBA_fnc_find != -1) then {
+                                            _containsVehicles = _containsVehicles + 1;
+                                        };
+
                                         _profileIDs pushback _profileID;
                                     } forEach _profiles;
 
@@ -4443,7 +4451,13 @@ switch(_operation) do {
                                             _infantryProfiles pushback _profileIDs;
                                         };
                                         case "SpecOps":{
-                                            _specOpsProfiles pushback _profileIDs;
+                                            //If the spec op team, does not have a vehicle (like submarines in A3 vanilla)
+                                            //treat them as infantry to allow heli insertion and paradrop
+                                            if (_containsVehicles == 0) then {
+                                                _infantryProfiles pushback _profileIDs;
+                                            } else {
+                                                _specOpsProfiles pushback _profileIDs;
+                                            };
                                         };
                                         case "Naval":{
                                             _marineProfiles pushback _profileIDs;
