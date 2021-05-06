@@ -74,7 +74,7 @@ switch(_profileSide) do {
     };
 };
 
-// Add startpoint as waypoint and ensure it is in water
+// Ensure first start-WP is in water
 if !(surfaceIsWater _startpos) then {
 
     _startPos = [_startPos, 10, 50, 10, 2, 5 , 0, [], [_startPos]] call BIS_fnc_findSafePos;
