@@ -1,0 +1,235 @@
+/*%FSM<COMPILE "D:\Steam\steamapps\common\Arma 3 Tools\FSMEditor\scriptedFSM.cfg, Force Pool">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"author__Jman",0,250,-75.000000,-425.000000,25.000000,-375.000000,0.000000,"author:" \n "Jman"};
+item1[] = {"_",8,218,-200.000000,-425.000000,-100.000000,-375.000000,0.000000,""};
+item2[] = {"exit",1,250,-325.000000,-425.000000,-225.000000,-375.000000,0.000000,"exit"};
+item3[] = {"isServer_",4,218,-75.000000,-350.000000,25.000000,-300.000000,1.000000,"isServer?"};
+item4[] = {"init_and_wait_for",2,250,-75.000000,-275.000000,25.000000,-225.000000,0.000000,"init and" \n "wait for players"};
+item5[] = {"units___0_",4,218,-75.000000,-200.000000,25.000000,-150.000000,0.000000,"units > 0?"};
+item6[] = {"init_values",2,250,-72.606003,-123.204498,27.393997,-73.204498,0.000000,"init values"};
+item7[] = {"broadcast_feeder",4,218,-88.028740,-37.622665,38.676704,28.233704,0.000000,"broadcast" \n "feeder"};
+item8[] = {"forcepool_analyz",2,4346,-71.441895,78.771347,28.558121,128.771408,0.000000,"forcepool" \n "analyze"};
+link0[] = {0,1};
+link1[] = {0,3};
+link2[] = {1,2};
+link3[] = {3,4};
+link4[] = {4,5};
+link5[] = {5,6};
+link6[] = {6,7};
+link7[] = {7,8};
+link8[] = {8,7};
+globals[] = {0.000000,0,0,0,0,640,480,1,217,6316128,1,-401.612640,203.825958,197.786682,-477.103699,802,894,1};
+window[] = {2,-1,-1,-1,-1,1095,78,1750,78,3,820};
+*//*%FSM</HEAD>*/
+class FSM
+{
+        fsmName = "Force Pool";
+        class States
+        {
+                /*%FSM<STATE "author__Jman">*/
+                class author__Jman
+                {
+                        name = "author__Jman";
+                        itemno = 0;
+                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "isServer_">*/
+                                class isServer_
+                                {
+                                        itemno = 3;
+                                        priority = 1.000000;
+                                        to="init_and_wait_for";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"isServer"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "_">*/
+                                class _
+                                {
+                                        itemno = 1;
+                                        priority = 0.000000;
+                                        to="exit";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "exit">*/
+                class exit
+                {
+                        name = "exit";
+                        itemno = 2;
+                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "init_and_wait_for">*/
+                class init_and_wait_for
+                {
+                        name = "init_and_wait_for";
+                        itemno = 4;
+                        init = /*%FSM<STATEINIT""">*/"[""ALiVE | The Battle of Hue - Executing fn_coalive_forcepool.fsm...""] call ALiVE_fnc_dump;" \n
+                         "" \n
+                         "private _cycleTime = _this select 0;" \n
+                         "[""ALiVE | The Battle of Hue - forcePool -> _cycleTime: %1"",_cycleTime] call ALiVE_fnc_dump;" \n
+                         "" \n
+                         "// All infantry groups" \n
+                         "private _xrayGroups = [" \n
+                         "    vn_alivegrp_xray_1," \n
+                         "	  vn_alivegrp_xray_2" \n
+                         "];" \n
+                         "" \n
+                         "// Debug variable to skip task if set to true" \n
+                         "vn_task_debug = false;" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "units___0_">*/
+                                class units___0_
+                                {
+                                        itemno = 5;
+                                        priority = 0.000000;
+                                        to="init_values";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"private _grpUnits = [];" \n
+                                         "" \n
+                                         "{" \n
+                                         "    _grpUnits append (units _x);" \n
+                                         "} forEach _xrayGroups;" \n
+                                         "" \n
+                                         "" \n
+                                         "!(_grpUnits isEqualTo []) && time > 120"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "init_values">*/
+                class init_values
+                {
+                        name = "init_values";
+                        itemno = 6;
+                        init = /*%FSM<STATEINIT""">*/"private _lastanalyze = 0;" \n
+                         "private _forcePoolPAVN = [ALIVE_globalForcePool,""O_PAVN"",0] call ALiVE_fnc_Hashget;" \n
+                         "private _forcePoolVC = [ALIVE_globalForcePool,""O_VC"",0] call ALiVE_fnc_Hashget;" \n
+                         "private _forcePool = (_forcePoolPAVN + _forcePoolVC);" \n
+                         "private _maxforcePool = _forcePool;" \n
+                         "private _currentPercent = 100;" \n
+                         "private _currentPercentformatted = 100;" \n
+                         "private _sideObject = [""WEST""] call ALIVE_fnc_sideTextToObject;" \n
+                         "private _forceStatus = ""high"";" \n
+                         "" \n
+                         "" \n
+                         "" \n
+                         "" \n
+                         "" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "broadcast_feeder">*/
+                                class broadcast_feeder
+                                {
+                                        itemno = 7;
+                                        priority = 0.000000;
+                                        to="forcepool_analyz";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"time - _lastAnalyze > _cycleTime;" \n
+                                         "// [""broadcast feeder""] call ALiVE_fnc_dump;" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "forcepool_analyz">*/
+                class forcepool_analyz
+                {
+                        name = "forcepool_analyz";
+                        itemno = 8;
+                        init = /*%FSM<STATEINIT""">*/"[""ALiVE | The Battle of Hue - forcepool analyze""] call ALiVE_fnc_dump;" \n
+                         "time - _lastAnalyze >= _cycleTime;" \n
+                         "_lastAnalyze = time;" \n
+                         "" \n
+                         "[""ALiVE | The Battle of Hue - broadcast analyze -> _forcePool: %1"",_forcePool] call ALiVE_fnc_dump;" \n
+                         "[""ALiVE | The Battle of Hue - forcepool analyze -> _lastAnalyze: %1"", _lastAnalyze] call ALiVE_fnc_dump;" \n
+                         "" \n
+                         "_updateforcePoolPAVN = [ALIVE_globalForcePool,""O_PAVN"",0] call ALiVE_fnc_Hashget;" \n
+                         "_updateforcePoolVC = [ALIVE_globalForcePool,""O_VC"",0] call ALiVE_fnc_Hashget;" \n
+                         "_updateforcePool = (_updateforcePoolPAVN + _updateforcePoolVC);" \n
+                         "[""ALiVE | The Battle of Hue - broadcast analyze -> _updateforcePool: %1"",_updateforcePool] call ALiVE_fnc_dump;" \n
+                         "" \n
+                         "" \n
+                         "if (_updateforcePool < _forcePool) then {" \n
+                         " [""ALiVE | The Battle of Hue - broadcast analyze -> forcepool has been reduced""] call ALiVE_fnc_dump;" \n
+                         "" \n
+                         " _currentPercent = (_updateforcePool / _maxforcePool) * 100;" \n
+                         " _currentPercentformatted = floor _currentPercent;" \n
+                         "" \n
+                         "if (_currentPercent >=66 && _currentPercent <=100) then {" \n
+                         "  _forceStatus = ""high"";" \n
+                         "};" \n
+                         "" \n
+                         "if (_currentPercent >33 && _currentPercent <66) then {" \n
+                         "  _forceStatus = ""medium"";" \n
+                         "};" \n
+                         "" \n
+                         "if (_currentPercent >0 && _currentPercent <=33) then {" \n
+                         "  _forceStatus = ""low"";" \n
+                         "};" \n
+                         "" \n
+                         "" \n
+                         " _message = format[""CIDG reports %1 PAVN-VC reinforcement strength at %2 percent"", _forceStatus, _currentPercent];" \n
+                         " _radioBroadcast = [objNull,_message,""side"",_sideObject,false,false,false,true,""HQ""];" \n
+                         " [""WEST"",_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;" \n
+                         "" \n
+                         "" \n
+                         " _forcePoolPAVN = [ALIVE_globalForcePool,""O_PAVN"",0] call ALiVE_fnc_Hashget;" \n
+                         " _forcePoolVC = [ALIVE_globalForcePool,""O_VC"",0] call ALiVE_fnc_Hashget;" \n
+                         " _forcePool = (_forcePoolPAVN + _forcePoolVC);" \n
+                         "" \n
+                         "};" \n
+                         "" \n
+                         "" \n
+                         "" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "broadcast_feeder">*/
+                                class broadcast_feeder
+                                {
+                                        itemno = 7;
+                                        priority = 0.000000;
+                                        to="forcepool_analyz";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"time - _lastAnalyze > _cycleTime;" \n
+                                         "// [""broadcast feeder""] call ALiVE_fnc_dump;" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+        };
+        initState="author__Jman";
+        finalStates[] =
+        {
+                "exit",
+        };
+};
+/*%FSM</COMPILE>*/
