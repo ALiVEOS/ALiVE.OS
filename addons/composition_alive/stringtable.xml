@@ -3,92 +3,92 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_Military_FortMedium_AA_OPF_F">
-    <Original>AA Bunker [OPF]</Original>
+    <English>AA Bunker [OPF]</English>
 </Key>
 <Key ID="STR_ALIVE_Military_FortLarge_SAM_OPF_F">
-    <Original>SAM Site [OPF]</Original>
+    <English>SAM Site [OPF]</English>
 </Key>
 <Key ID="STR_ALIVE_Military_FortMedium_SAM_OPF_F">
-    <Original>SAM Bunker [OPF]</Original>
+    <English>SAM Bunker [OPF]</English>
 </Key>
 <Key ID="STR_ALIVE_Military_FortLarge_SAM_BLU_F">
-    <Original>SAM Site [BLU]</Original>
+    <English>SAM Site [BLU]</English>
 </Key>
 <Key ID="STR_ALIVE_Military_FortMedium_SAM_BLU_F">
-    <Original>SAM Bunker [BLU]</Original>
+    <English>SAM Bunker [BLU]</English>
 </Key>
 <Key ID="STR_ALIVE_Military_FortMedium_Artillery_BLU_F">
-    <Original>Artillery Bunker [BLU]</Original>
+    <English>Artillery Bunker [BLU]</English>
 </Key>
 <Key ID="STR_ALIVE_Military_FortMedium_AA_BLU_F">
-    <Original>AA Bunker [BLU]</Original>
+    <English>AA Bunker [BLU]</English>
 </Key>
 <Key ID="STR_ALIVE_COMPOSITION_hq">
-    <Original>HQ</Original>
+    <English>HQ</English>
 </Key>
 
 <Key ID="STR_ALIVE_COMPOSITION_camps">
-    <Original>Camps</Original>
+    <English>Camps</English>
 </Key>
 
 <Key ID="STR_ALIVE_COMPOSITION_mediumAirstation1">
-    <Original>Airstation 1 [Medium]</Original>
+    <English>Airstation 1 [Medium]</English>
 </Key>
 
 <Key ID="STR_ALIVE_COMPOSITION_power">
-    <Original>Power</Original>
+    <English>Power</English>
 </Key>
 
 <Key ID="STR_ALIVE_COMPOSITION_communications">
-    <Original>Communications</Original>
+    <English>Communications</English>
 </Key>
 
 <Key ID="STR_ALIVE_COMPOSITION_fuel">
-    <Original>Fuel</Original>
+    <English>Fuel</English>
 </Key>
 
 <Key ID="STR_ALIVE_COMPOSITION_smallFuelStation1">
-    <Original>Fuel Station 1 [Small]</Original>
+    <English>Fuel Station 1 [Small]</English>
 </Key>
 
 <Key ID="STR_ALIVE_COMPOSITION_mediumFuelSilo1">
-    <Original>Fuel Silo 1 [Medium]</Original>
+    <English>Fuel Silo 1 [Medium]</English>
 </Key>
 
 <Key ID="STR_ALIVE_COMPOSITION_marine">
-    <Original>Marine</Original>
+    <English>Marine</English>
 </Key>
 
 <Key ID="STR_ALIVE_COMPOSITION_constructionSupplies">
-    <Original>Construct Supplies</Original>
+    <English>Construct Supplies</English>
 </Key>
 
 <Key ID="STR_ALIVE_COMPOSITION_settlement">
-    <Original>Settlement</Original>
+    <English>Settlement</English>
 </Key>
 
 <Key ID="STR_ALIVE_COMPOSITION_crashsites">
-    <Original>Crashsites</Original>
+    <English>Crashsites</English>
 </Key>
 
 <Key ID="STR_ALIVE_COMPOSITION_smallOspreyCrashsite1">
-    <Original>Osprey site 1 [Small]</Original>
+    <English>Osprey site 1 [Small]</English>
 </Key>
 
 <Key ID="STR_ALIVE_COMPOSITION_smallAH99Crashsite1">
-    <Original>AH-99 site 1 [Small]</Original>
+    <English>AH-99 site 1 [Small]</English>
 </Key>
 
 <Key ID="STR_ALIVE_COMPOSITION_mediumc192Crash1">
-    <Original>C192 site 1 [Medium]</Original>
+    <English>C192 site 1 [Medium]</English>
 </Key>
 
 <Key ID="STR_ALIVE_COMPOSITION_objectives">
-    <Original>Objectives</Original>
+    <English>Objectives</English>
 </Key>
 
 <Key ID="STR_ALIVE_COMPOSITION_IEDFactory1">
-    <Original>IED Factory 1 [Small]</Original>
+    <English>IED Factory 1 [Small]</English>
 </Key>
 
 </Container></Package></Project>
