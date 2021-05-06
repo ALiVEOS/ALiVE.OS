@@ -4195,6 +4195,8 @@ switch(_operation) do {
 
                                 } foreach _emptyVehicleProfiles;
 
+                            } else {
+                                ["WARNING: No %1 transport vehicles found for Heli Insert.",_eventFaction] call ALIVE_fnc_dump;
                             };
 
                             _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
@@ -4313,6 +4315,7 @@ switch(_operation) do {
                         private _reinforceGroupProfiles = [];
 
                         {
+
                             private _profileList = _x select 0;
                             private _groupList = _x select 1;
 
@@ -4336,6 +4339,12 @@ switch(_operation) do {
 
                                     // RHS hacky stuff :(
                                     if !(_itemCategory in ["Infantry", "Support", "SpecOps", "Naval", "Armored", "Mechanized", "Motorized", "Air"]) then {
+                                        if(!isNil "ALIVE_factionCustomMappings") then {
+                                            if(_groupfaction in (ALIVE_factionCustomMappings select 1)) then {
+                                                private _customMappings = [ALIVE_factionCustomMappings, _groupfaction] call ALIVE_fnc_hashGet;
+                                                _groupfaction = [_customMappings, "GroupFactionName"] call ALIVE_fnc_hashGet;
+                                            };
+                                        };
                                         private _key = format ["%1_%2", _groupFaction, _group];
                                         private _value = [ALIVE_groupConfig, _key] call CBA_fnc_hashGet;
                                         private _side = (_value select 1) select 0;
@@ -4345,6 +4354,37 @@ switch(_operation) do {
 
                                         if (isText _configPath) then {
                                             _itemCategory = getText _configPath;
+                                        } else {
+                                            // Try the icon...
+                                            private _iconText = getText(((((configFile >> "CfgGroups") select _side) select _faction) select _category) >> _group >> "icon");
+                                            switch (true) do {
+                                                case ([_iconText,"_air"] call CBA_fnc_find != -1): {
+                                                    _itemCategory = "Air";
+                                                };
+                                                case ([_iconText,"_motor_inf"] call CBA_fnc_find != -1): {
+                                                    _itemCategory = "Motorized";
+                                                };
+                                                case ([_iconText,"_mech_inf"] call CBA_fnc_find != -1): {
+                                                    _itemCategory = "Mechanized";
+                                                };
+                                                case ([_iconText,"_armor"] call CBA_fnc_find != -1): {
+                                                    _itemCategory = "Armored";
+                                                };
+                                                case ([_iconText,"_naval"] call CBA_fnc_find != -1): {
+                                                    _itemCategory = "Naval";
+                                                };
+                                                case ([_iconText,"_recon"] call CBA_fnc_find != -1): {
+                                                    _itemCategory = "SpecOps";
+                                                };
+                                                case ([_iconText,"_art"] call CBA_fnc_find != -1 || [_iconText,"_mortar"] call CBA_fnc_find != -1 || [_iconText,"_antiair"] call CBA_fnc_find != -1): {
+                                                    _itemCategory = "Support";
+                                                };
+
+                                                default {
+                                                     _itemCategory = "Infantry";
+                                                };
+                                            };
+                                            ["ML - WARNING: No item category defined for group %1, using %2 based on group icon.",_group, _itemCategory] call ALIVE_fnc_dump;
                                         };
                                     };
 
@@ -4374,9 +4414,17 @@ switch(_operation) do {
 
                                     private _profiles = [_group, _position, random(360), false, _groupFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
                                     private _profileIDs = [];
+                                    private _containsVehicles = 0;
 
                                     {
-                                        private _profileID = (_x select 2) select 4;
+                                        private _profileID = _x select 2 select 4;
+                                        private _inCargo = _x select 2 select 9;
+
+                                        //Count vehicles in group
+                                        if ([_profileID,"vehicle"] call CBA_fnc_find != -1) then {
+                                            _containsVehicles = _containsVehicles + 1;
+                                        };
+
                                         _profileIDs pushback _profileID;
                                     } forEach _profiles;
 
@@ -4390,7 +4438,13 @@ switch(_operation) do {
                                             _infantryProfiles pushback _profileIDs;
                                         };
                                         case "SpecOps":{
-                                            _specOpsProfiles pushback _profileIDs;
+                                            //If the spec op team, does not have a vehicle (like submarines in A3 vanilla)
+                                            //treat them as infantry to allow heli insertion and paradrop
+                                            if (_containsVehicles == 0) then {
+                                                _infantryProfiles pushback _profileIDs;
+                                            } else {
+                                                _specOpsProfiles pushback _profileIDs;
+                                            };
                                         };
                                         case "Naval":{
                                             _marineProfiles pushback _profileIDs;
@@ -4410,6 +4464,10 @@ switch(_operation) do {
                                             _profileWaypoint = [_reinforcementPosition, 100, "MOVE", "LIMITED", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
                                             _profile = _profiles select 0;
                                             [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+                                        };
+                                        default {
+                                            ["ML - WARNING: No item category defined for group %1, using infantry.",_group] call ALIVE_fnc_dump;
+                                            _infantryProfiles pushback _profileIDs;
                                         };
                                     };
 
@@ -4504,6 +4562,11 @@ switch(_operation) do {
                                             if (_transport > _heliTransport) then {_vehicleClass = _x};
                                         } foreach _transportGroups;
 
+
+                                        if (_debug) then {
+                                            ["ML - Found %1 for heli insert of %2", _vehicleclass, _infantryProfiles] call ALIVE_fnc_dump;
+                                        };
+
                                         // Create profiles
                                         _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
 
@@ -4526,6 +4589,8 @@ switch(_operation) do {
 
                                 };
 
+                            } else {
+                                ["ML - WARNING: No %1 transport vehicles found for Heli Insert.",_eventFaction] call ALIVE_fnc_dump;
                             };
 
                             _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
@@ -4625,6 +4690,8 @@ switch(_operation) do {
 
                                 } foreach _groupProfiles;
 
+                            } else {
+                                ["WARNING: No %1 transport vehicles found for Heli Insert.",_eventFaction] call ALIVE_fnc_dump;
                             };
 
                             _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
