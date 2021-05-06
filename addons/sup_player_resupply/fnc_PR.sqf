@@ -1975,11 +1975,24 @@ switch(_operation) do {
                                     case "Groups": {
 
                                         _options = ["<< Back"];
+                                        _values = _options;
                                         _factions = _sortedGroups select 1;
                                         _options = _options + _factions;
 
+                                        {
+
+                                            if (_x != "<< Back") then {
+                                                private _displayName = getText(configfile >> "CfgFactionClasses" >> _x >> "displayName");
+
+                                                ["Set %1 to %2", _x, _displayName] call ALiVE_fnc_dump;
+                                                _options set [_foreachindex, _displayName];
+                                                _values set [_foreachindex, _x];
+                                            };
+
+                                        } forEach _options;
+
                                         _selectedReinforceListOptions set [1,_options];
-                                        _selectedReinforceListValues set [1,_options];
+                                        _selectedReinforceListValues set [1,_values];
 
                                     };
                                 };
@@ -1995,6 +2008,7 @@ switch(_operation) do {
                                     // display categories
 
                                     _options = ["<< Back"];
+                                    _values = _options;
                                     _categories = [_sortedGroups,_selectedValue] call ALIVE_fnc_hashGet;
                                     _categories = _categories select 1;
                                     _options = _options + _categories;
@@ -2013,24 +2027,30 @@ switch(_operation) do {
 
                                     _blacklistOptions = [_staticOptions,_selectedDeliveryValue] call ALIVE_fnc_hashGet;
 
-                                    /*
-                                    switch(_selectedDeliveryValue) do {
-                                        case "PR_AIRDROP": {
-                                            _blacklistOptions = ["Armored","Support"];
-                                        };
-                                        case "PR_HELI_INSERT": {
-                                            _blacklistOptions = ["Armored","Mechanized","Motorized","Motorized_MTP","SpecOps","Support"];
-                                        };
-                                        case "PR_STANDARD": {
-                                            _blacklistOptions = ["Support"];
-                                        };
-                                    };
-                                    */
-
                                     _options = _options - _blacklistOptions;
 
+                                    private _groupfaction = _faction;
+
+                                    if(!isNil "ALIVE_factionCustomMappings") then {
+                                        if(_groupfaction in (ALIVE_factionCustomMappings select 1)) then {
+                                            private _customMappings = [ALIVE_factionCustomMappings, _groupfaction] call ALIVE_fnc_hashGet;
+                                            _groupfaction = [_customMappings, "GroupFactionName"] call ALIVE_fnc_hashGet;
+                                        };
+                                    };
+
+                                    {
+
+                                        if (_x != "<< Back") then {
+                                            private _displayName = getText(configFile >> "CfgGroups" >> _side >> _groupFaction >> _x >> "name");
+
+                                            _options set [_foreachindex, _displayName];
+                                            _values set [_foreachindex, _x];
+                                        };
+
+                                    } forEach _options;
+
                                     _selectedReinforceListOptions set [2,_options];
-                                    _selectedReinforceListValues set [2,_options];
+                                    _selectedReinforceListValues set [2,_values];
 
                                 }else{
 
