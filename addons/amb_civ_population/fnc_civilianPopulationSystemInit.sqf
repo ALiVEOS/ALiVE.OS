@@ -46,6 +46,17 @@ if(isServer) then {
     private _ambientCrowdFaction = (_logic getVariable ["ambientCrowdFaction",""]);
     private _enableInteraction = (_logic getVariable ["enableInteraction","false"]) == "true";
 
+    private _customWaterItems = [_logic getvariable "customWaterItems", " ", ""] call CBA_fnc_replace;
+    _customWaterItems = [_customWaterItems, ","] call CBA_fnc_split;
+
+    private _customRationItems = [_logic getvariable "customRationItems", " ", ""] call CBA_fnc_replace;
+    _customRationItems = [_customRationItems, ","] call CBA_fnc_split;
+
+    waitUntil {!isnil "ALiVE_STATIC_DATA_LOADED"};
+
+    _logic setVariable ["waterItems", ALiVE_CivPop_Interaction_WaterItems + _customWaterItems, true];
+    _logic setVariable ["rationItems", ALiVE_CivPop_Interaction_RationItems + _customRationItems, true];
+
 //Check if a SYS Profile Module is available
     private _errorMessage = "No Virtual AI system module was found! Please use this module in your mission! %1 %2";
     private _error1 = "";

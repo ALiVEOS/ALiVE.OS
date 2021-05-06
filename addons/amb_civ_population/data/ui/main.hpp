@@ -136,7 +136,7 @@ class ALiVE_CivilianInteraction {
 		class CivInteract_Ration: CivInteract_RscButton
 		{
 			idc = 92314;
-			action = "[ALiVE_civInteractHandler,'giveItem',['humratItem']] call ALiVE_fnc_civInteract";
+			action = "[ALiVE_civInteractHandler,'giveItem',['humratItems']] call ALiVE_fnc_civInteract";
 
 			text = "Give Ration";
 			x = 0.17 * safezoneW + safezoneX;
@@ -149,7 +149,7 @@ class ALiVE_CivilianInteraction {
 		class CivInteract_Water: CivInteract_RscButton
 		{
 			idc = 92315;
-			action = "[ALiVE_civInteractHandler,'giveItem',['waterItem']] call ALiVE_fnc_civInteract";
+			action = "[ALiVE_civInteractHandler,'giveItem',['waterItems']] call ALiVE_fnc_civInteract";
 
 			text = "Give Water";
 			x = 0.17 * safezoneW + safezoneX;
