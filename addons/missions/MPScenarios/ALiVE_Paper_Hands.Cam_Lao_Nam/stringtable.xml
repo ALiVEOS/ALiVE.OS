@@ -1,0 +1,161 @@
+<?xml version="1.0" ?>
+<Project name="missions_coalive">
+<Package name="Actions">
+</Package>
+<Package name="Descriptions">
+<Key ID="STR_VN_MISSIONS_DESC_MISSION_ALIVE_PH">
+<Chinese></Chinese>
+<English>MACV-SOG are running deniable operations using Spike Teams (ST) - across the fence - in Cambodia, Laos and South Vietnam. ST Sisler have been tasked with disrupting Viet Cong supply lines, operations and outposts along the tri-border area.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_MISSIONS_MINDESC_MISSION_ALIVE_PH">
+<Chinese></Chinese>
+<English>MACV-SOG are running deniable operations using Spike Teams (ST) - across the fence - in Cambodia, Laos and South Vietnam. ST Sisler have been tasked with disrupting Viet Cong supply lines, operations and outposts along the tri-border area.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="General">
+<Key ID="STR_VN_MISSIONS_AUTH_MISSION_ALIVE_PH">
+<Chinese></Chinese>
+<English>ALiVE Mod Team || Mission by Tupolov</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>	
+</Package>
+<Package name="Misc">
+</Package>
+<Package name="Debrief">
+</Package>
+<Package name="CO01 Briefing">
+<Key ID="STR_VN_BRIEFING_COALIVE_ALIVEHOWTO_PH">
+<Chinese></Chinese>
+<English>ALiVE populates the entire map with a full scale war. The AI commanders determine the strategy and use conventional or asymmetric warfare tactics to achieve their goals. Infantry, motorized, mechanized, armored units and aircraft are used to capture or defend strategic objectives across the area of operations.&lt;br/&gt;&lt;br/&gt;AI commanders will call in resupply and reinforcements, close air support and air strikes and recruit insurgencts from the civilian population to plant IEDs and conduct sabotage. Meanwhile, the civilian population actively support or turn against combatants based on their actions and interactions.&lt;br/&gt;&lt;br/&gt;As a squad playing an ALiVE mission, you must work together to use the tools at your disposal to patrol, identify and attack enemy units, positions and assets. Player Commanders using the ALiVE Menu can manage operations and tasks in coordination with AI commanders.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_ALIVEMENUINTER_PH">
+<Chinese></Chinese>
+<English>The ALiVE Menu can be activated using the RIGHT APP MENU key (or a user defined key 20).&lt;br/&gt;&lt;br/&gt;For ADMINS, the ALiVE Menu offers the chance to debug issues, teleport players, access the debug console and more.&lt;br/&gt;&lt;br/&gt;For PLAYERS, the ALiVE Menu offers some basic settings and a chance to save your position and loadout.&lt;br/&gt;&lt;br/&gt;Using the scroll wheel,PLAYERS can interact with civilians to question them on the local situation and influence them by giving them rations. Civilians won't forgive collateral damage.&lt;br/&gt;&lt;br/&gt;Using the map, PLAYERS can leave SPOTREPS and ADVANCED MARKERS by hitting the LEFT CTRL key when creating a map marker.&lt;br/&gt;&lt;br/&gt;For PLAYER COMMANDERS with an appropriate radio (PRC-77) the ALiVE Menu enables you to access COMMANDER ACTIONS to manage personnel, logistics, tasks, combat support and more.&lt;br/&gt;&lt;br/&gt;</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_ALIVEACTIONS_PH">
+<Chinese></Chinese>
+<English>ALiVE COMMANDER ACTIONS (requires PRC-77)&lt;br/&gt;&lt;br/&gt;Press the ALiVE Menu key to access Commander Actions.&lt;br/&gt;&lt;br/&gt;Personnel - Move players and AI units between groups&lt;br/&gt;&lt;br/&gt;Intel - Provides access to your side's AI Commander objectives as well as marking any known units on the map.&lt;br/&gt;&lt;br/&gt;Logistics - Call in resupplies, from individuals and groups to vehicles, weapons and fortifications. Use convoys, airdrop or airlift.&lt;br/&gt;&lt;br/&gt;Tasks - Request tasks from the AI commander in order to contribute to the overall battlefield situation.&lt;br/&gt;&lt;br/&gt;Operations - Direct AI groups and issue waypoints or join AI controlled groups and fight alongside them.&lt;br/&gt;&lt;br/&gt;Combat Support - Request artillery, close air support or transport from assets within the AO.&lt;br/&gt;&lt;br/&gt;Reports - Commanders can leave PATROLREPS and SITREPS in order to keep other commanders up to date with player and enemy activities.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_SITUATION_PH">
+<Chinese></Chinese>
+<English>&lt;img image=&quot;pics\splash.paa&quot; width=&quot;380&quot; height=&quot;380&quot;/&gt;&lt;br/&gt;&lt;br/&gt;MACV-SOG are running deniable operations using Spike Teams (ST) "across the fence" in Cambodia, Laos and South Vietnam.&lt;br/&gt;&lt;br/&gt;Viet Cong and NVA forces are consolidating positions and supply lines in the Tri-Border area in an effort to open a western front.&lt;br/&gt;&lt;br/&gt;Int indicates a growing insurgency with Viet Cong establishing outposts at villages in the AO and villagers being recruited by VC.&lt;br/&gt; &lt;br/&gt;While VC operate primarily on the western side of the river, NVA forces predominantly hold the eastern side.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish>.</Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_MISSION_PH">
+<Chinese></Chinese>
+<English>&lt;img image=&quot;pics\mission.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Spike Team Sisler are based at &lt;marker name='respawn_west'&gt;Outpost Scurlock&lt;/marker&gt; and are conducting counter insurgency ops along the western banks of the river in the &lt;marker name='marker_18'&gt;Area of Operations&lt;/marker&gt;. &lt;br/&gt;&lt;br/&gt;Taskings may require action outside of the primary area of operations, use your judgement.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_TACTICAL_PH">
+<Chinese></Chinese>
+<English>&lt;img image=&quot;pics\cobra.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;&lt;marker name='CS'&gt;Combat Support&lt;/marker&gt; and &lt;marker name='CSS'&gt;Combat Service Support&lt;/marker&gt; assets are available including Support Helicopters, Artillery, Mortars and a Cobra Attack Helicopter on call for Close Air Support.&lt;br/&gt;&lt;br/&gt;There are a limited number of PRC-77 radios available for the RTO to request and coord support from HQ. Don't lose them!&lt;br/&gt;&lt;br/&gt;The Duty Officer at Outpost Scurlock can despatch you directly to your squad (if its enabled in mission settings).&lt;br/&gt;&lt;br/&gt;MACV SOG HQ will provide intelligence and suggested taskings on a regular basis. You DON'T have to accept these tasks, a commander can manage taskings using the PRC-77.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_EXECUTION_PH">
+<Chinese></Chinese>
+<English>&lt;img image=&quot;pics\execution.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Advance north either along the river using the &lt;marker name='marker_14'&gt;PTF Nasty Boats&lt;/marker&gt; provided or by foot.&lt;br/&gt;&lt;br/&gt;Disrupt VC activity in the area and collect intelligence on high value targets, arms caches, cave and tunnel systems and prisoners of war.&lt;br/&gt;&lt;br/&gt;Resupplies, close air support, artillery and air extraction can be requested via PRC-77.&lt;br/&gt;&lt;br/&gt;Counter the insurgency, win hearts and minds by distributing rations and water to villagers. Villagers may provide intelligence. Dead soldiers may also carry intelligence on them, search them for any interesting items.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="Parameters">
+<Key ID="STR_VN_COALIVE_PARAMS_MAPMARKERS_PH">
+<Chinese></Chinese>
+<English>Side Map Markers</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_PARAMS_ROTORLIB_PH">
+<Chinese></Chinese>
+<English>Enable Advanced Rotor Flight Model</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="Titles">
+<Key ID="STR_VN_MISSIONS_TITLE_MISSION_ALIVE_PH">
+<Chinese></Chinese>
+<English>ALiVE | Op Paper Hands</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_MISSIONS_AUTHOR_ALIVE_PH">
+<Chinese></Chinese>
+<English>ALiVE Mod Team</English>
+<French>ALiVE Mod Team</French>
+<German>ALiVE Mod Team</German>
+<Italian>ALiVE Mod Team</Italian>
+<Portuguese>ALiVE Mod Team</Portuguese>
+<Russian>ALiVE Mod Team</Russian>
+<Spanish>ALiVE Mod Team</Spanish>
+</Key>
+</Package>
+<Package name="Waypoints">
+</Package>
+</Project>
