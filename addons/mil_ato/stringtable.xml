@@ -3,123 +3,123 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_ATO">
-    <Original>Military Air Component Commander</Original>
+    <English>Military Air Component Commander</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_COMMENT">
-    <Original>Joint Forces Air Component Commander</Original>
+    <English>Joint Forces Air Component Commander</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_DEBUG">
-    <Original>Enable Debug:</Original>
+    <English>Enable Debug:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_DEBUG_COMMENT">
-    <Original>Enables Module Debug</Original>
+    <English>Enables Module Debug</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_PERSISTENT">
-    <Original>Persistent:</Original>
+    <English>Persistent:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_PERSISTENT_COMMENT">
-    <Original>Enables external Database persistence</Original>
+    <English>Enables external Database persistence</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_BROADCASTONRADIO">
-    <Original>Radio Messages:</Original>
+    <English>Radio Messages:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_BROADCASTONRADIO_COMMENT">
-    <Original>Broadcast radio messages on ATO activity</Original>
+    <English>Broadcast radio messages on ATO activity</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_FACTION">
-    <Original>Faction:</Original>
+    <English>Faction:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_FACTION_COMMENT">
-    <Original>Select the faction for air taskings.</Original>
+    <English>Select the faction for air taskings.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_TYPES">
-    <Original>Available ATOs:</Original>
+    <English>Available ATOs:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_TYPES_COMMENT">
-    <Original>Select the type of air tasking orders, in order of priority. Choices are SEAD, DCA, CAP, CAS, Strike, Recce</Original>
+    <English>Select the type of air tasking orders, in order of priority. Choices are SEAD, DCA, CAP, CAS, Strike, Recce</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_AIRSPACE">
-    <Original>Airspace Markers:</Original>
+    <English>Airspace Markers:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_AIRSPACE_COMMENT">
-    <Original>Enter the marker names representing the airspace managed by this module</Original>
+    <English>Enter the marker names representing the airspace managed by this module</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_USAGE">
-    <Original>Place a MACC module to provide Combat Air Patrol and Suppresion of Enemy Air Defenses over your airspace. Sync to an AI Commander module to enable Recce, Strike or Close Air Support requests</Original>
+    <English>Place a MACC module to provide Combat Air Patrol and Suppresion of Enemy Air Defenses over your airspace. Sync to an AI Commander module to enable Recce, Strike or Close Air Support requests</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_CREATE_HQ">
-    <Original>Create HQ:</Original>
+    <English>Create HQ:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_CREATE_HQ_COMMENT">
-    <Original>Selects HQ objective close to the module or spawns an appropriate composition</Original>
+    <English>Selects HQ objective close to the module or spawns an appropriate composition</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_PLACE_AA">
-    <Original>Place Anti-Air:</Original>
+    <English>Place Anti-Air:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_PLACE_AA_COMMENT">
-    <Original>Places Ground Based Air Defenses around the existing MACC HQ</Original>
+    <English>Places Ground Based Air Defenses around the existing MACC HQ</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_PLACE_AIR">
-    <Original>Place Air Assets:</Original>
+    <English>Place Air Assets:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_PLACE_AIR_COMMENT">
-    <Original>If there are no available air assets, then place additional assets at the nearest airbase or helipad</Original>
+    <English>If there are no available air assets, then place additional assets at the nearest airbase or helipad</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_GENERATE_TASKS">
-    <Original>Generate Player Tasks:</Original>
+    <English>Generate Player Tasks:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_GENERATE_TASKS_COMMENT">
-    <Original>Automatically generate player Air Tasking Orders (CSAR, CAS, Strike)</Original>
+    <English>Automatically generate player Air Tasking Orders (CSAR, CAS, Strike)</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_RESUPPLY">
-    <Original>Resupply:</Original>
+    <English>Resupply:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_RESUPPLY_COMMENT">
-    <Original>Enables resupply of air assets. If LOGCOM is available to AI OPCOM then air assets will be ordered from LOGCOM.</Original>
+    <English>Enables resupply of air assets. If LOGCOM is available to AI OPCOM then air assets will be ordered from LOGCOM.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_NOT_ESTABLISHED">
-    <Original>All callsigns, this is %1, %2 forward airbase has not been established. No air assets available for tasking. Out.</Original>
+    <English>All callsigns, this is %1, %2 forward airbase has not been established. No air assets available for tasking. Out.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_ESTABLISHED">
-    <Original>All callsigns, this is %1, %2 forward airbase established at grid %3, Air Tasking Orders to follow. Out.</Original>
+    <English>All callsigns, this is %1, %2 forward airbase established at grid %3, Air Tasking Orders to follow. Out.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_UNDER_ATTACK">
-    <Original>All callsigns, this is %1, %2 forward airbase at grid %3 is under attack by enemy forces, request immediate support. Out.</Original>
+    <English>All callsigns, this is %1, %2 forward airbase at grid %3 is under attack by enemy forces, request immediate support. Out.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_OVERRUN">
-    <Original>All callsigns, this is %1, %2 forward airbase at grid %3 is compromised. Relocating to alternate. Air combat operations unavailable until further notice. Out.</Original>
+    <English>All callsigns, this is %1, %2 forward airbase at grid %3 is compromised. Relocating to alternate. Air combat operations unavailable until further notice. Out.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_REQUEST_ACKNOWLEDGED">
-    <Original>All callsigns, this is %1, %2 has requested %3 at grid %4. Air Tasking Order to follow. Out.</Original>
+    <English>All callsigns, this is %1, %2 has requested %3 at grid %4. Air Tasking Order to follow. Out.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_UNAVAILABLE">
-    <Original>All callsigns, this is %1, aircraft unavailable, air combat operations suspended. Requesting replen. Out.</Original>
+    <English>All callsigns, this is %1, aircraft unavailable, air combat operations suspended. Requesting replen. Out.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_REQUEST_DENIED">
-    <Original>All callsigns, this is %1, request for %2 at grid %3 denied. Aircraft not available. Out.</Original>
+    <English>All callsigns, this is %1, request for %2 at grid %3 denied. Aircraft not available. Out.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_START">
-    <Original>All callsigns, this is %1, scrambling %2 on ATO %3 at grid %4. Out.</Original>
+    <English>All callsigns, this is %1, scrambling %2 on ATO %3 at grid %4. Out.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_AIRCRAFT_LOST">
-    <Original>All callsigns, this is %1, we've lost radar contact with a %2 on %3. Out.</Original>
+    <English>All callsigns, this is %1, we've lost radar contact with a %2 on %3. Out.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_ON_STATION">
-    <Original>All callsigns, this is %1, %2 on station at grid %3. Commencing %4 now. Out.</Original>
+    <English>All callsigns, this is %1, %2 on station at grid %3. Commencing %4 now. Out.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_RETURN">
-    <Original>on %1. Air tasking complete, I am RTB. Out.</Original>
+    <English>on %1. Air tasking complete, I am RTB. Out.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_RETURN_FUEL">
-    <Original>Bingo fuel, I am RTB. Out.</Original>
+    <English>Bingo fuel, I am RTB. Out.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_RETURN_AMMO">
-    <Original>Winchester, I am RTB. Out.</Original>
+    <English>Winchester, I am RTB. Out.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_RETURN_DAMAGE">
-    <Original>We've been hit, critical damage sustained, I am RTB. Out.</Original>
+    <English>We've been hit, critical damage sustained, I am RTB. Out.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_MISSION_COMPLETE">
-    <Original>All callsigns, this is %1, %2 is back at base, %3 mission complete. Out.</Original>
+    <English>All callsigns, this is %1, %2 is back at base, %3 mission complete. Out.</English>
 </Key>
 </Container></Package></Project>
