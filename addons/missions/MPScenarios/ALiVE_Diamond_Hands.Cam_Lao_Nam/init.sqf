@@ -221,12 +221,13 @@ if (hasInterface) then {
 		    [
 		        [
 		            ["Operation: ", "<t align = 'left' shadow = '1' size = '1.0' font='tt2020style_e_vn_bold'>%1</t>"],
-		            ["<t size = '1.0'>Diamond Hands</t>"],
-		            [format ["<t size = '1.0'>Tuesday 6th May 1969. %1%2%3%4h</t>", ["0", ""] select (_hour >= 10), _hour, ["0", ""] select (_minute >= 10), _minute]],
+		            ["Diamond Hands", "<t align = 'left' shadow = '1' size = '1.0' font='tt2020style_e_vn_bold'>%1</t><br/>"],
+		            [format ["Tuesday 6th May 1969. %1%2%3%4h", ["0", ""] select (_hour >= 10), _hour, ["0", ""] select (_minute >= 10), _minute], "<t align = 'left' shadow = '1' size = '1.0' font='tt2020style_e_vn_bold'>%1</t><br/>"],
 		            ["RT Idaho, MACV-SOG, 5th SF Group,", "<t align = 'left' shadow = '1' size = '1.0'>%1</t><br/>"],
-                ["South Vietnam.", "<t align = 'left' shadow = '1' size = '1.0' font='tt2020style_e_vn_bold'>%1</t><br/><br/>"],
+                    ["South Vietnam.", "<t align = 'left' shadow = '1' size = '1.0' font='tt2020style_e_vn_bold'>%1</t><br/>"],
+                    [" "],
 		            ["Mission: ", "<t align = 'left' shadow = '1' size = '1.0' font='tt2020style_e_vn_bold'>%1</t>"],
-		            ["<t size = '1.0'>Search and destroy enemy tunnel systems and collect intelligence.</t>", nil, 3.5]
+		            ["Search and destroy enemy tunnel systems and collect intelligence.", "<t align = 'left' shadow = '1' size = '1.0' font='tt2020style_e_vn_bold'>%1</t>", 3.5]
 		        ],
 		        [safeZoneX + safeZoneW - _w, _w],
 		        [safeZoneY + safeZoneH - _h - 0.05, _h]

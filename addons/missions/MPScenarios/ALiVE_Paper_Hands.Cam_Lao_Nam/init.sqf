@@ -34,7 +34,7 @@ if (hasInterface) then {
         sleep 3;
 
  				playMusic "vn_enemy_territory";
- 				
+
         _object = player;
         _camx = getposATL player select 0;
         _camy = getposATL player select 1;
@@ -62,13 +62,14 @@ if (hasInterface) then {
 
 		    [
 		        [
-		            ["Operation: ", "<t align = 'left' shadow = '1' size = '1.0' font='tt2020style_e_vn_bold'>%1</t>"],
-		            ["<t size = '1.0'>Paper Hands</t>"],
-		            [format ["<t size = '1.0'>Thursday 21st Dec 1967. %1%2%3%4h</t>", ["0", ""] select (_hour >= 10), _hour, ["0", ""] select (_minute >= 10), _minute]],
-		            ["ST Sisler, MACV-SOG, 5th SF Group,", "<t align = 'left' shadow = '1' size = '1.0'>%1</t><br/>"],
-                ["Tri-Border Area", "<t align = 'left' shadow = '1' size = '1.0' font='tt2020style_e_vn_bold'>%1</t><br/><br/>"],
-		            ["Mission: ", "<t align = 'left' shadow = '1' size = '1.0' font='tt2020style_e_vn_bold'>%1</t>"],
-		            ["<t size = '1.0'>Conduct counter insurgency operations deep behind enemy lines.</t>", nil, 3.5]
+		            ["Operation: ", "<t align = 'left' shadow = '1' size = '1' font='tt2020style_e_vn_bold'>%1</t>"],
+		            ["Paper Hands", "<t align = 'left' shadow = '1' size = '1' font='tt2020style_e_vn_bold'>%1</t><br/>"],
+		            [format ["Thursday 21st Dec 1967. %1%2%3%4h", ["0", ""] select (_hour >= 10), _hour, ["0", ""] select (_minute >= 10), _minute], "<t align = 'left' shadow = '1' size = '1' font='tt2020style_e_vn_bold'>%1</t><br/>"],
+		            ["ST Sisler, MACV-SOG, 5th SF Group,", "<t align = 'left' shadow = '1' size = '1' font='tt2020style_e_vn_bold'>%1</t><br/>"],
+                    ["Tri-Border Area", "<t align = 'left' shadow = '1' size = '1' font='tt2020style_e_vn_bold'>%1</t><br/>"],
+                    [" "],
+		            ["Mission: ", "<t align = 'left' shadow = '1' size = '1' font='tt2020style_e_vn_bold'>%1</t>"],
+		            ["Conduct counter insurgency operations deep behind enemy lines", "<t align = 'left' shadow = '1' size = '1' font='tt2020style_e_vn_bold'>%1</t>", 3.5]
 		        ],
 		        [safeZoneX + safeZoneW - _w, _w],
 		        [safeZoneY + safeZoneH - _h - 0.05, _h]

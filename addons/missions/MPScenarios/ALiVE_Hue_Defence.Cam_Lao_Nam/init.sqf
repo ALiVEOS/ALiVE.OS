@@ -65,10 +65,11 @@ if (hasInterface) then {
 		    [
 		        [
 	            ["The Battle of Hue", "<t align = 'left' shadow = '1' size = '1.0' font='tt2020style_e_vn_bold'>%1</t><br/>"],
-	            [format ["<t size = '1.0'>Wednesday 31st January 1968. %1%2%3%4h</t>", ["0", ""] select (_hour >= 10), _hour, ["0", ""] select (_minute >= 10), _minute]],
-	            ["1st Marine Regiment, Task Force X-Ray, Phu Bai Combat Base, South Vietnam", "<t align = 'left' shadow = '1' size = '1.0'>%1</t><br/><br/>"],
+	            [format ["Wednesday 31st January 1968. %1%2%3%4h", ["0", ""] select (_hour >= 10), _hour, ["0", ""] select (_minute >= 10), _minute], "<t align = 'left' shadow = '1' size = '1.0' font='tt2020style_e_vn_bold'>%1</t><br/>"],
+	            ["1st Marine Regiment, Task Force X-Ray, Phu Bai Combat Base, South Vietnam", "<t align = 'left' shadow = '1' size = '1.0'>%1</t><br/>"],
+                [" "],
 	            ["Target AO: ", "<t align = 'left' shadow = '1' size = '1.0' font='tt2020style_e_vn_bold'>%1</t>"],
-	            ["<t size = '1.0'>The Imperial City and Citadel of Hue</t>", nil, 3.5]
+	            ["The Imperial City and Citadel of Hue", "<t align = 'left' shadow = '1' size = '1.0' font='tt2020style_e_vn_bold'>%1</t>", 3.5]
 		        ],
 		        [safeZoneX + safeZoneW - _w, _w],
 		        [safeZoneY + safeZoneH - _h - 0.05, _h]
