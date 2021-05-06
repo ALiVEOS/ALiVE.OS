@@ -255,13 +255,25 @@ class CfgVehicles {
                 description = "$STR_ALIVE_CIV_POP_MAX_ALLOWED_AID_COMMENT";
                 defaultvalue = "3";
             };
+            class customWaterItems
+            {
+                displayName = "$STR_ALIVE_CIV_POP_WATER_ITEMS";
+                description = "$STR_ALIVE_CIV_POP_WATER_ITEMS_COMMENT";
+                defaultvalue = "";
+            };
+            class customHumRatItems
+            {
+                displayName = "$STR_ALIVE_CIV_POP_HUMRAT_ITEMS";
+                description = "$STR_ALIVE_CIV_POP_HUMRAT_ITEMS_COMMENT";
+                defaultvalue = "";
+            };
             class disableACEX
             {
                 displayName = "$STR_ALIVE_CIV_POP_ACEX_COMPAT";
                 description = "$STR_ALIVE_CIV_POP_ACEX_COMPAT_COMMENT";
                 typeName = "BOOL";
                 defaultValue = 0;
-            };  
+            };
         };
 
     };
@@ -278,7 +290,7 @@ class CfgVehicles {
                 class ALiVE_Waterbottle {
                         name = "ALiVE_Waterbottle";
                         count = 1;
-                }; 
+                };
         };
     };
     class ALiVE_Humrat_Item: Item_Base_F
@@ -292,7 +304,7 @@ class CfgVehicles {
                 class ALiVE_Humrat {
                         name = "ALiVE_Humrat";
                         count = 1;
-                }; 
+                };
         };
     };
 

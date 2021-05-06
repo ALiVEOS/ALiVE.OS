@@ -66,7 +66,12 @@ switch (_operation) do {
 
 		if (isNil QMOD(civInteractHandler)) then {
 			//-- Get settings
-			private ["_debug", "_factionEnemy", "_humanitarianDecrease", "_maxAllowAid", "_enableACEX", "_authorized", "_water", "_humrat"];
+			private ["_debug", "_factionEnemy", "_humanitarianDecrease", "_maxAllowAid", "_enableACEX", "_authorized"];
+
+			waitUntil {_result = _logic getVariable "waterItems"; !isNil "_result"};
+
+			private _waterItems = _logic getVariable ["waterItems", []];
+			private _humratItems = _logic getVariable ["rationItems", []];
 
 			_debug = _logic getVariable "debug";
 			_factionEnemy = _logic getVariable "insurgentFaction";
@@ -81,14 +86,10 @@ switch (_operation) do {
 			[MOD(civInteractHandler), "InsurgentFaction", _factionEnemy] call ALiVE_fnc_hashSet;
 			[MOD(civInteractHandler), "authorized", _authorized] call ALiVE_fnc_hashSet;
 
-			// -- Check ACEX Compat
-			_water = if (isClass(configfile >> "CfgPatches" >> "acex_main") && _enableACEX) then {"ACE_WaterBottle"} else {"ALiVE_Waterbottle"};
-			_humrat = if (isClass(configfile >> "CfgPatches" >> "acex_main") && _enableACEX) then {"ACE_Humanitarian_Ration"} else {"ALiVE_Humrat"};
-
 			// -- Store init data
 			_humanitarianData = [] call ALiVE_fnc_hashCreate;
-			[_humanitarianData, "waterItem", _water] call ALiVE_fnc_hashSet;
-			[_humanitarianData, "humratItem", _humrat] call ALiVE_fnc_hashSet;
+			[_humanitarianData, "waterItems", _waterItems] call ALiVE_fnc_hashSet;
+			[_humanitarianData, "humratItems", _humratItems] call ALiVE_fnc_hashSet;
 			[_humanitarianData, "hostilityDecrease", _humanitarianDecrease] call ALiVE_fnc_hashSet;
 			[_humanitarianData, "maxAllowAid", _maxAllowAid] call ALiVE_fnc_hashSet;
 			[MOD(civInteractHandler), "humanitarianData", _humanitarianData] call ALiVE_fnc_hashSet;
@@ -807,23 +808,39 @@ switch (_operation) do {
 
 		_civ = [_logic, "Civ"] call ALiVE_fnc_hashGet;
 		_humanitarian = [_logic, "humanitarianData"] call ALiVE_fnc_hashGet;
-		_item = [_humanitarian, _itemType] call ALiVE_fnc_hashGet;
+		_items = [_humanitarian, _itemType] call ALiVE_fnc_hashGet;
 		_decreaseChance = [_humanitarian, "hostilityDecrease"] call ALiVE_fnc_hashGet;
 		_maxAllowAid = [_humanitarian, "maxAllowAid"] call ALiVE_fnc_hashGet;
 
 		// Check amount of aid already received
 		_consumed = _civ getVariable[QGVAR(consumedItems), 0];
 		if (_consumed >= _maxAllowAid) exitWith {
-			["openSideSmall",0.3] call ALIVE_fnc_displayMenu; 
-			["setSideSmallText","This Civilian has already received the max allowed aid!"] spawn ALIVE_fnc_displayMenu;
+			["openSideSmall",0.3] call ALIVE_fnc_displayMenu;
+			["setSideSmallText",localize "STR_ALIVE_CIV_POP_TOOMUCHAID"] spawn ALIVE_fnc_displayMenu;
 		};
 
 		// Ensure item is in the inventory & remove it
-		if !(_item in items player) exitWith {
-			["openSideSmall",0.3] call ALIVE_fnc_displayMenu; 
-			["setSideSmallText","You do not have an item provide this Civilian"] spawn ALIVE_fnc_displayMenu;
+		private _validItems = ((vestItems player) + (uniformItems player) + (backpackItems player)) arrayIntersect _items;
+		if (_validItems isequalto []) exitWith {
+			["openSideSmall",0.3] call ALIVE_fnc_displayMenu;
+			["setSideSmallText",localize "STR_ALIVE_CIV_POP_NOAID"] spawn ALIVE_fnc_displayMenu;
 		};
-		player removeItem _item;
+
+		private _item = _validItems select 0;
+
+		if (_item in vestItems player) then
+		{
+			player removeItemFromVest _item;
+		} else {
+			if (_item in uniformItems player) then {
+				player removeItemFromUniform _item;
+			} else {
+				if (_item in backpackItems player) then {
+					player removeItemFromBackpack _item;
+				};
+			};
+		};
+
 
 		_civ setVariable[QGVAR(consumedItems), (_consumed + 1)];
 		[_civ] spawn {
