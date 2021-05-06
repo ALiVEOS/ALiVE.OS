@@ -8,7 +8,7 @@ class EditorData
 	toggles=522;
 	class ItemIDProvider
 	{
-		nextID=3200;
+		nextID=3201;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=14730;
+		nextID=14916;
 	};
 	class Camera
 	{
-		pos[]={16980.781,51.768997,9739.876};
-		dir[]={-0.97080606,-0.20879227,-0.11866315};
-		up[]={-0.20739833,0.97793579,-0.025350876};
-		aside[]={-0.12133735,9.9407043e-007,0.99268103};
+		pos[]={18645.412,46.638565,8362.8643};
+		dir[]={-0.78135812,-0.5102362,0.35936388};
+		up[]={-0.46355966,0.86003381,0.21320142};
+		aside[]={0.41784799,-2.0314474e-008,0.90851974};
 	};
 };
 binarizationWanted=0;
@@ -30003,6 +30003,7 @@ class Mission
 			};
 			id=2231;
 			type="Land_vn_bagfence_corner_f";
+			atlOffset=9.5367432e-007;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -56599,12 +56600,12 @@ class Mission
 				angles[]={0,4.6777143,0};
 			};
 			side="Empty";
-			flags=4;
 			class Attributes
 			{
 			};
 			id=2966;
 			type="vn_air_uh1d_med_wreck";
+			atlOffset=1.1121168;
 		};
 		class Item809
 		{
@@ -57212,7 +57213,7 @@ class Mission
 							class PositionInfo
 							{
 								position[]={17114.008,12.359422,9746.5283};
-								angles[]={0,3.4497981,0};
+								angles[]={0,3.4498003,0};
 							};
 							side="Empty";
 							flags=4;
@@ -57220,8 +57221,8 @@ class Mission
 							{
 								dynamicSimulation=1;
 							};
-							id=2979;
-							type="vn_steeldrum_trash_02";
+							id=3200;
+							type="vn_steeldrum_trash_01";
 							class CustomAttributes
 							{
 								class Attribute0
@@ -57248,11 +57249,11 @@ class Mission
 						};
 					};
 					id=2968;
-					atlOffset=0.015398979;
+					atlOffset=0.015780449;
 				};
 			};
 			id=2980;
-			atlOffset=0.015398979;
+			atlOffset=0.015780449;
 		};
 		class Item811
 		{
@@ -58169,9 +58170,11 @@ class Mission
 						};
 					};
 					id=2996;
+					atlOffset=-1.9073486e-006;
 				};
 			};
 			id=3017;
+			atlOffset=-1.9073486e-006;
 		};
 		class Item825
 		{
