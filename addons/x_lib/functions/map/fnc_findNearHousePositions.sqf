@@ -35,7 +35,7 @@ Highhead
 private ["_pos","_radius","_positions","_nearbldgs"];
 
 PARAMS_2(_pos,_radius);
-DEFAULT_PARAM(2,_type,"House");
+DEFAULT_PARAM(2,_type,"Static");
 
 _positions = [];
 //_nearbldgs = nearestObjects [_pos, [_type], _radius];

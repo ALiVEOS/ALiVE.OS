@@ -31,7 +31,7 @@ Highhead
 params ["_pos","_radius"];
 
 private _positions = [];
-private _nearbldgs = nearestObjects [_pos, ["House"], _radius];
+private _nearbldgs = nearestObjects [_pos, ["House","Building","Static"], _radius];
 
 {
         private _house = _x;
