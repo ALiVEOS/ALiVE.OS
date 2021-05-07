@@ -32,6 +32,8 @@ Wolffy.au
 
 private ["_position","_radius","_enterable","_err"];
 
+["Calling getEnterableHouses"] call ALiVE_fnc_DumpR;
+
 PARAMS_2(_position,_radius);
 _err = "position or radius not valid";
 ASSERT_DEFINED("_position",_err);
@@ -44,7 +46,7 @@ _enterable = [];
     if ([_x] call ALIVE_fnc_isHouseEnterable) then {
         _enterable pushback _x;
     };
-} forEach (nearestObjects [_position, ["House","Building","Static"], _radius]);
+} forEach (_position nearObjects ["Static", _radius]);
 _err = "enterable array not valid";
 ASSERT_TRUE(typeName _enterable == "ARRAY",_err);
 
