@@ -44,7 +44,7 @@ _enterable = [];
     if ([_x] call ALIVE_fnc_isHouseEnterable) then {
         _enterable pushback _x;
     };
-} forEach (_position nearObjects ["Static", _radius]);
+} forEach (nearestObjects [_position, ["House","Building","land_vn_cave_base"], _radius]);
 _err = "enterable array not valid";
 ASSERT_TRUE(typeName _enterable == "ARRAY",_err);
 

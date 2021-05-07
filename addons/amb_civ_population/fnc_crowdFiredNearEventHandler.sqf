@@ -75,7 +75,7 @@ if !(_unit getVariable ["ALiVE_Crowd_Fleeing", false]) then {
 	private _pos = [position _unit, 50] call ALIVE_fnc_findIndoorHousePositions;
 
 	if (count _pos == 0) then {
-		_pos = [position _unit,60,"House"] call ALIVE_fnc_findNearHousePositions;
+		_pos = [position _unit,60,["House"]] call ALIVE_fnc_findNearHousePositions;
 	};
 
 	if (count _pos > 0) then {
