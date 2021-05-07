@@ -32,8 +32,6 @@ Wolffy.au
 
 private ["_position","_radius","_enterable","_err"];
 
-["Calling getEnterableHouses"] call ALiVE_fnc_DumpR;
-
 PARAMS_2(_position,_radius);
 _err = "position or radius not valid";
 ASSERT_DEFINED("_position",_err);
