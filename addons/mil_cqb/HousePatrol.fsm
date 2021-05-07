@@ -144,7 +144,7 @@ class FSM
        "" \n
        "_pos = getPosATL _leader;" \n
        "_posDespawn = _pos;" \n
-       "_bldgpos = [_pos,_radius,""building""] call ALiVE_fnc_findNearHousePositions;" \n
+       "_bldgpos = [_pos,_radius] call ALiVE_fnc_findNearHousePositions;" \n
        "_staticWeapons = nearestObjects [_pos, [""StaticWeapon""], 20];" \n
        "" \n
        "if ((count _bldgpos) < (count units _grp)*1.2) then {" \n
