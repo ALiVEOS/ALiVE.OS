@@ -3382,7 +3382,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="vn_b_pack_prc77";
+									value="vn_b_pack_prc77,vn_b_pack_lw";
 								};
 							};
 						};
