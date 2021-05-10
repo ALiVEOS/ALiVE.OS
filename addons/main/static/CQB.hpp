@@ -81,10 +81,17 @@ ALiVE_MIL_CQB_STRATEGICHOUSES = ALiVE_MIL_CQB_CUSTOM_STRATEGICHOUSES +
     "Land_vn_o_platform_06",
     "Land_vn_hut_tower_02",
     "Land_vn_o_shelter_01",
-    "Land_vn_cave_04_01",
-    "Land_vn_cave_03_01",
+    "Land_vn_cave_01",
+    "Land_vn_cave_01_01",
+    "Land_vn_cave_02",
     "Land_vn_cave_02_01",
-    "Land_vn_cave_01_01"
+    "Land_vn_cave_03",
+    "Land_vn_cave_03_01",
+    "Land_vn_cave_04",
+    "Land_vn_cave_04_01",
+    "Land_vn_cave_05",
+    "Land_vn_cave_06",
+    "Land_vn_cave_07"
 ];
 
 /*
