@@ -22,7 +22,7 @@ item17[] = {"HAS_NEW__BUILDIN",4,218,-94.943115,202.020569,-4.943207,252.020691,
 item18[] = {"WAIT",4,218,-402.581726,-117.430069,-312.581726,-67.430016,1.000000,"WAIT"};
 item19[] = {"NO__ACTIVATE",4,218,201.312622,276.080139,291.312500,326.080261,0.000000,"NO " \n "ACTIVATE"};
 item20[] = {"ANALYSE_NEW_HOUS",2,250,13.272003,273.792206,103.272133,323.792389,0.000000,"ANALYSE" \n "NEW" \n "HOUSES"};
-item21[] = {"SPAWN_LOOP",2,250,12.918488,595.304810,102.918610,645.305054,0.000000,"SPAWN" \n "LOOP"};
+item21[] = {"SPAWN_LOOP",2,4346,12.918488,595.304810,102.918610,645.305054,0.000000,"SPAWN" \n "LOOP"};
 item22[] = {"ITERATE",4,218,144.952240,594.056030,234.952271,644.056152,1.000000,"ITERATE"};
 item23[] = {"END_LOOP",4,218,13.280243,665.988647,103.280182,715.988647,0.000000,"END" \n "LOOP"};
 item24[] = {"ANALYSE_ACTIVE_A",2,250,-565.516724,302.894653,-475.516846,352.894592,0.000000,"ANALYSE" \n "ACTIVE" \n "AGENTS"};
@@ -133,7 +133,7 @@ link64[] = {47,46};
 link65[] = {48,6};
 link66[] = {49,0};
 link67[] = {50,33};
-globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-872.153259,-226.015320,868.962524,336.629913,1215,1001,1};
+globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-1295.704712,197.535278,1217.912476,-12.320534,1215,1001,1};
 window[] = {0,-1,-1,-32000,-32000,1355,182,2682,182,1,1233};
 *//*%FSM</HEAD>*/
 class FSM
@@ -1155,7 +1155,7 @@ class FSM
                          "" \n
                          "		if (!isnil ""_civClasses"" && {count _civClasses > 0} && {!isnil ""_building"" }) then {" \n
                          "" \n
-                         "		private _m = createAgent [selectRandom _civClasses, selectRandom _positions, [], 0, ""NONE""]; " \n
+                         "		private _m = createAgent [selectRandom _civClasses, selectRandom _positions, [], 0, ""CAN_COLLIDE""]; " \n
                          "		_m setVariable [""BIS_fnc_animalBehaviour_disable"", true];" \n
                          "		_m setVariable [""ALiVE_homePos"", position _building];" \n
                          "		_m disableAI ""FSM"";" \n
@@ -1176,7 +1176,7 @@ class FSM
                          "		_m setVariable [""ALIVE_CIV_ACTION"", ""Init Move"", false];" \n
                          "		" \n
                          "		if (random 1 > 0.5 || _countActiveBuildings == 1) then {" \n
-                         "			private _player = [position _m, 100] call ALIVE_fnc_getRandomPlayerNear;" \n
+                         "			private _player = [position _m, _spawndistance * 2] call ALIVE_fnc_getRandomPlayerNear;" \n
                          "			if (count _player > 0) then {" \n
                          "				_position = (_player select 0) getpos [5 + random 10, random 360];" \n
                          "				_m setVariable [""ALIVE_CIV_ACTION"", ""Init Player"", false];" \n
