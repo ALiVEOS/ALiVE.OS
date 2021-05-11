@@ -22,7 +22,7 @@ item17[] = {"HAS_NEW__BUILDIN",4,218,-94.943115,202.020569,-4.943207,252.020691,
 item18[] = {"WAIT",4,218,-402.581726,-117.430069,-312.581726,-67.430016,1.000000,"WAIT"};
 item19[] = {"NO__ACTIVATE",4,218,201.312622,276.080139,291.312500,326.080261,0.000000,"NO " \n "ACTIVATE"};
 item20[] = {"ANALYSE_NEW_HOUS",2,250,13.272003,273.792206,103.272133,323.792389,0.000000,"ANALYSE" \n "NEW" \n "HOUSES"};
-item21[] = {"SPAWN_LOOP",2,4346,12.918488,595.304810,102.918610,645.305054,0.000000,"SPAWN" \n "LOOP"};
+item21[] = {"SPAWN_LOOP",2,250,12.918488,595.304810,102.918610,645.305054,0.000000,"SPAWN" \n "LOOP"};
 item22[] = {"ITERATE",4,218,144.952240,594.056030,234.952271,644.056152,1.000000,"ITERATE"};
 item23[] = {"END_LOOP",4,218,13.280243,665.988647,103.280182,715.988647,0.000000,"END" \n "LOOP"};
 item24[] = {"ANALYSE_ACTIVE_A",2,250,-565.516724,302.894653,-475.516846,352.894592,0.000000,"ANALYSE" \n "ACTIVE" \n "AGENTS"};
@@ -133,8 +133,8 @@ link64[] = {47,46};
 link65[] = {48,6};
 link66[] = {49,0};
 link67[] = {50,33};
-globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-474.636108,448.056519,968.257690,208.080475,1215,1001,1};
-window[] = {0,-1,-1,-1,-1,1433,260,2760,260,1,1233};
+globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-872.153259,-226.015320,868.962524,336.629913,1215,1001,1};
+window[] = {0,-1,-1,-32000,-32000,1355,182,2682,182,1,1233};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -181,7 +181,7 @@ class FSM
                          "					_weapon = selectRandom ALiVE_CivPop_Crowd_Weapons;" \n
                          "					doStop _agent;" \n
                          "					[_agent, """"] call ALIVE_fnc_switchMove;" \n
-                         "					 private _target = [position _agent, 60] call ALIVE_fnc_getRandomPlayerNear;  " \n
+                         "					 private _target = [position _agent, _spawnDistance * 2] call ALIVE_fnc_getRandomPlayerNear;  " \n
                          "					_agent setDir (_agent getDir (_target select 0));" \n
                          "					_agent addWeapon ""Throw"";" \n
                          "					_agent addMagazine [(_weapon select 0),1];" \n
@@ -207,7 +207,7 @@ class FSM
                          "					_weapon = selectRandom ALiVE_CivPop_Crowd_Weapons;" \n
                          "					doStop _agent;" \n
                          "					[_agent, """"] call ALIVE_fnc_switchMove;" \n
-                         "					 private _target = [position _agent, 60] call ALIVE_fnc_getRandomPlayerNear;  " \n
+                         "					 private _target = [position _agent, _spawnDistance * 2] call ALIVE_fnc_getRandomPlayerNear;  " \n
                          "					_agent setDir (_agent getDir  (_target select 0));" \n
                          "					_agent addWeapon ""Throw"";" \n
                          "					_agent addMagazine [(_weapon select 0),1];" \n
@@ -252,7 +252,10 @@ class FSM
                          "" \n
                          "       // Check hostility" \n
                          "" \n
-                         "       private _player = [_position, 60] call ALIVE_fnc_getRandomPlayerNear;       " \n
+                         "       private _player = [_position, _spawnDistance * 2] call ALIVE_fnc_getRandomPlayerNear;" \n
+                         "		 if (count _player == 0) then {" \n
+                         "				_player = allplayers select {alive _x};" \n
+                         "       };" \n
                          "       private _clusterHostilityLevel = _agent getVariable [""ALiVE_CivPop_Hostility"",-99];" \n
                          "" \n
                          "       if (_clusterHostilityLevel == -99) then {" \n
