@@ -75,7 +75,7 @@ if (_faction != "") then {
 	_text = _text + format["            name = ""%1"";%2", _name, _br];
 };
 
-_text = _text + format["            size = 8;%1", _br];
+_text = _text + format["            side = 8;%1", _br];
 {
 	private ["_objPos","_objSide","_objRank"];
 	_objPos = _logic worldtomodel position _x;
