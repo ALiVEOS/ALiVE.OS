@@ -215,7 +215,7 @@
 
 		_taskData = [] call ALIVE_fnc_hashCreate;
 		[_taskData,"title","Locate Crew"] call ALIVE_fnc_hashSet;
-		[_taskData,"description","We have received reports that a %1 has been shot down in enemy territory. It is believed the crew ejected and landed in the vicinity of %2. Conduct a thorough search in order to locate, secure and recover any survivors as quickly as possible!"] call ALIVE_fnc_hashSet;
+		[_taskData,"description","We have received reports that a %1 has been shot down in enemy territory. It is believed the crew survived and are in the vicinity of %2. Conduct a thorough search in order to locate, secure and recover any survivors as quickly as possible!"] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_start",[["HQ","Reports confirmed! %1 has been shot down over enemy territory. Move immediately to locate and rescue surviving crew."],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_update",[["HQ","All callsigns, SITREP. We've picked up an emergency beacon at grid %1. Beacon has been authenticated. Look for IR strobe. Proceed with urgency."],["PLAYERS","Roger, Out"]]] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_success",[["PLAYERS","Crew secured, we are RTB, Over"],["HQ","Roger, well done, Out"]]] call ALIVE_fnc_hashSet;
@@ -257,6 +257,7 @@
 		[_taskData,"title","Locate and Rescue Crew"] call ALIVE_fnc_hashSet;
 		[_taskData,"description","We have confirmation that a %1 has crashed in enemy territory near %2. SIGINT indicates there are survivors. Secure and rescue survivors as quickly as possible!"] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_start",[["HQ","Confirmed! A %1 has been shot down over enemy territory and crashed near %2. Secure and rescue the crew as quickly as possible!"],["PLAYERS","Roger, moving now, Out."]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_update",[["HQ","All callsigns, SITREP. We've picked up an emergency beacon at grid %1. Beacon has been authenticated. Look for crashsite or IR strobe. Proceed with urgency."],["PLAYERS","Roger, Out"]]] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_success",[["PLAYERS","Crew has been found alive but injured, Over"],["HQ","Roger, well done, Out"]]] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_failed",[["HQ","Mission aborted, crew have been killed, Over"],["PLAYERS","Sorry to hear that, we are RTB, Out"]]] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_cancelled",[["PLAYERS","Callsign compromised, mission aborted, Over"],["HQ","Roger, break contact and withdraw. Send SITREP when ready, Out"]]] call ALIVE_fnc_hashSet;
