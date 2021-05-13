@@ -147,13 +147,13 @@
 	_tasksData = [] call ALIVE_fnc_hashCreate;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
-	[_taskData,"title","Kill the HVT"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","Kill the high value target."] call ALIVE_fnc_hashSet;
+	[_taskData,"title","Assassinate the HVT"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Eliminate the high value target."] call ALIVE_fnc_hashSet;
 	[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
 	[_taskData,"title","Eliminate the target"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","We received HUMINT of an High Value Target (HVT) near %1! Eliminate the target as quickly as possible!"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","We received HUMINT of an High Value Target (HVT) %2 near %1! Eliminate the target as quickly as possible!"] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_start",[["HQ","We received HUMINT of an High Value Target (HVT) near %1! Eliminate the target as quickly as possible!"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_insertion",[["HQ","We received additional intel that the HVT is in transit from near %1 to the target area"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_extraction",[["HQ","We received additional intel that the HVT is going to be extracted from the AO near %1. Eliminate target before they are extracted."],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;

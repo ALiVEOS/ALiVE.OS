@@ -212,8 +212,8 @@ switch (_taskState) do {
                 _unitTypeName = "Officer";
             };
             private _genName = getText(configFile >> "CfgVehicles" >> _units select 0 >> "genericNames");
-            private _firstName = getText((configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "FirstNames") select (random count (configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "FirstNames") -1 ));
-            private _surName = getText((configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "LastNames") select (random count (configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "LastNames") -1 ));
+            private _firstName = getText((configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "FirstNames") select (random (count (configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "FirstNames") -1) ));
+            private _surName = getText((configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "LastNames") select (random (count (configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "LastNames") -1) ));
             private _unitname = Format["%1 %2", _firstName, _surName];
 
             private _unitDescr = format["%1 %2 (%3)", _unitRank, _unitName, _unitTypeName];
@@ -347,7 +347,7 @@ switch (_taskState) do {
             [_taskParams,"hostageAnims",_hostageAnims] call ALIVE_fnc_hashSet;
             [_taskParams,"enemyFaction",_taskEnemyFaction] call ALIVE_fnc_hashSet;
             [_taskParams,"targetPosition",_targetPosition] call ALIVE_fnc_hashSet;
-            [_taskParams,"unit",[_units,_unitName,_unitRank,_unitTypeName]] call ALIVE_fnc_hashSet;
+            [_taskParams,"unit",[_units, _firstName, _surName, _unitRank, _unitTypeName]] call ALIVE_fnc_hashSet;
             // return the created tasks and params
 
             _result = [_tasks,_taskParams];
@@ -448,8 +448,8 @@ switch (_taskState) do {
                         _hostageGroup = _hostageProfile1 select 2 select 13;
                         _hostage = leader _hostageGroup;
                         _hostage setCaptive true;
-                        _hostage setName [(_unitDetails select 1), ((_unitDetails select 1) splitString " ") select 0, ((_unitDetails select 1)  splitString " ") select 1];
-                        _hostage setRank toUpper(_unitDetails select 2);
+                        _hostage setName [format["%1 %2",(_unitDetails select 1), (_unitDetails select 2)], (_unitDetails select 1), (_unitDetails select 2)];
+                        _hostage setRank toUpper(_unitDetails select 3);
                         removeAllWeapons _hostage;
                         removeAllItems _hostage;
                         removeBackpack _hostage;

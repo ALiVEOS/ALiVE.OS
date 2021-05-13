@@ -183,14 +183,25 @@ switch (_taskState) do {
 
             // format the dialog options
 
-            private["_nearestTown","_dialog","_formatDescription","_formatChat","_formatMessage","_formatMessageText"];
+            private["_units","_nearestTown","_dialog","_formatDescription","_formatChat","_formatMessage","_formatMessageText"];
+
+            _units = [[_taskEnemyFaction],1,ALiVE_MIL_CQB_UNITBLACKLIST,true] call ALiVE_fnc_chooseRandomUnits;
 
             _nearestTown = [_targetPosition] call ALIVE_fnc_taskGetNearestLocationName;
 
             _dialog = [_dialogOption,"Destroy"] call ALIVE_fnc_hashGet;
 
+            private _unitRankNo = random [4,5,6];
+            private _unitRank = getText((configFile >> "CfgRanks") select _unitRankNo >> "rank");
+            private _genName = getText(configFile >> "CfgVehicles" >> _units select 0 >> "genericNames");
+            private _firstName = getText((configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "FirstNames") select (random (count (configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "FirstNames") -1) ));
+            private _surName = getText((configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "LastNames") select (random (count (configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "LastNames") -1) ));
+            private _unitname = Format["%1 %2", _firstName, _surName];
+
+            private _unitDescr = format["%1 %2", _unitRank, _unitName];
+
             _formatDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
-            _formatDescription = format[_formatDescription,_nearestTown];
+            _formatDescription = format[_formatDescription,_nearestTown,_unitDescr];
             [_dialog,"description",_formatDescription] call ALIVE_fnc_hashSet;
 
             _formatChat = [_dialog,"chat_start"] call ALIVE_fnc_hashGet;
@@ -254,7 +265,7 @@ switch (_taskState) do {
             [_taskParams,"lastState",""] call ALIVE_fnc_hashSet;
             [_taskParams,"HVTSpawned",false] call ALIVE_fnc_hashSet;
             [_taskParams,"HVTSpawnType",_spawnType] call ALIVE_fnc_hashSet;
-
+            [_taskParams,"unit",[_units, _firstName, _surName, _unitRank]] call ALIVE_fnc_hashSet;
             // return the created tasks and params
 
             _result = [_tasks,_taskParams];
@@ -284,6 +295,8 @@ switch (_taskState) do {
         _currentTaskDialog = [_taskDialog,_taskState] call ALIVE_fnc_hashGet;
         _HVTSpawned = [_params,"HVTSpawned"] call ALIVE_fnc_hashGet;
         _HVTSpawnType = [_taskParams,"HVTSpawnType"] call ALIVE_fnc_hashGet;
+
+        private _unitDetails = [_params,"unit"] call ALIVE_fnc_hashGet;
 
         if(_lastState != "Destroy") then {
 
@@ -356,9 +369,8 @@ switch (_taskState) do {
 
                         private["_units","_HVTProfile1","_HVTProfile1ID","_HVTProfile2","_HVTProfile1ID","_HVTProfile2ID","_HVTGroup","_HVT","_HVTGroup2","_HVT2","_HVT1Active","_HVT2Active"];
 
-                        _units = [[_taskEnemyFaction],1,ALiVE_MIL_CQB_UNITBLACKLIST,true] call ALiVE_fnc_chooseRandomUnits;
+                        _HVTProfile1 = [_unitDetails select 0,_taskEnemySide,_taskEnemyFaction,_taskPosition,random(360),_taskEnemyFaction,true] call ALIVE_fnc_createProfileEntity;
 
-                        _HVTProfile1 = [_units,_taskEnemySide,_taskEnemyFaction,_taskPosition,random(360),_taskEnemyFaction,true] call ALIVE_fnc_createProfileEntity;
                         _HVTProfile1ID = _HVTProfile1 select 2 select 4;
 
                         _units = [[_taskEnemyFaction],1,ALiVE_MIL_CQB_UNITBLACKLIST,true] call ALiVE_fnc_chooseRandomUnits;
@@ -378,6 +390,8 @@ switch (_taskState) do {
                         _HVT = leader _HVTGroup;
                         _HVT setpos [getpos _table select 0,(getpos _table select 1)-2,0];
                         _HVT setdir ([_HVT, _table] call BIS_fnc_dirTo);
+                        _HVT setName [format["%1 %2",(_unitDetails select 1), (_unitDetails select 2)], (_unitDetails select 1), (_unitDetails select 2)];
+                        _HVT setRank toUpper(_unitDetails select 3);
 
                         _HVTGroup2 = _HVTProfile2 select 2 select 13;
                         _HVT2 = leader _HVTGroup2;

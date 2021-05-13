@@ -80,7 +80,7 @@ ARJay
             [_crewProfile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
             _profileWaypoint = [_taskPosition, 25, "MOVE", "LIMITED", 25, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
-            [_taskProfile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;            
+            [_taskProfile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
         };
         case "Helicopter":{
             _vehicleClass = (selectRandom _heliClasses);
@@ -122,6 +122,11 @@ ARJay
         [_taskProfile,_vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
     };
 
-    _profileWaypoint = [_insertionPosition, 100, "MOVE", "LIMITED", 100, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
-    [_crewProfile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+
+
+    _crewProfile = [ALIVE_profileHandler, "getProfile", _crewProfileID] call ALIVE_fnc_profileHandler;
+    if!(isNil "_crewProfile") then {
+        _profileWaypoint = [_insertionPosition, 100, "MOVE", "LIMITED", 100, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+        [_crewProfile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+    };
 };
