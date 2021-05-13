@@ -180,8 +180,8 @@
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
 	[_taskData,"title","Rescue the hostage"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","We have received HUMINT that indicates enemy forces have captured an allied commander in the vicinity of %1. You are to find and recover the officer as quickly as possible!"] call ALIVE_fnc_hashSet;
-	[_taskData,"chat_start",[["HQ","HUMINT indicates enemy forces have captured an allied commander in the vicinity of %1. Find and recover the officer as quickly as possible!"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"description","We have received HUMINT that indicates enemy forces have captured %2 in the vicinity of %1. You are to find and recover them as quickly as possible!"] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","HUMINT indicates enemy forces have captured a friendly in the vicinity of %1. Find and recover them as quickly as possible!"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_update",[["HQ","All callsigns, SITREP, hostage (%1) location has been confirmed at GR%2. Int indicates enemy forces will execute hostage within the hour."],["PLAYERS","Roger, Out"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_success",[["PLAYERS","The package is secure, Over"],["HQ","Roger, well done, Out"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_failed",[["HQ","Mission aborted, hostage has been killed, Over"],["PLAYERS","Dammit! Rest in peace, we're RTB, Out"]]] call ALIVE_fnc_hashSet;
@@ -200,7 +200,35 @@
 
 	_options set [count _options,_tasksData];
 
-	[ALIVE_generatedTasks, "Rescue", ["Hostage Rescue",_options]] call ALIVE_fnc_hashSet;
+	_tasksData = [] call ALIVE_fnc_hashCreate;
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","POW Rescue Mission"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Rescue the prisoner of war before they are killed."] call ALIVE_fnc_hashSet;
+	[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Rescue the Prisoner of War"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","We have received HUMINT that indicates enemy forces are holding prisoner of war %2 in the vicinity of %1. You are to find and recover them as quickly as possible!"] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","HUMINT indicates enemy forces are holding a POW in the vicinity of %1. Find and recover them as quickly as possible!"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_update",[["HQ","All callsigns, SITREP, POW (%1) location has been confirmed at GR%2. Int indicates enemy forces will execute POW within the hour."],["PLAYERS","Roger, Out"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_success",[["PLAYERS","The POW is secure, Over"],["HQ","Roger, well done, Out"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_failed",[["HQ","Mission aborted, POW has been killed, Over"],["PLAYERS","Dammit! Rest in peace, we're RTB, Out"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_cancelled",[["PLAYERS","Callsign compromised, mission aborted, Over"],["HQ","Roger, break contact and withdraw. Send SITREP when ready, Out"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
+	[_tasksData,"Rescue",_taskData] call ALIVE_fnc_hashSet;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Return POW"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Escort the prisoner or war to the safe location near %1."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","Immediately escort POW to safe house near %1"],["PLAYERS","Roger, moving now, Out"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_failed",[["HQ","POW has been killed, abort mission and RTB immediately, Over"],["PLAYERS","Roger Out"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_success",[["PLAYERS","Package has been returned to the safe location"],["HQ","Roger, great job! Well done, Out"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
+	[_tasksData,"Return",_taskData] call ALIVE_fnc_hashSet;
+
+	_options set [count _options,_tasksData];
+
+	[ALIVE_generatedTasks, "Rescue", ["POW Rescue",_options]] call ALIVE_fnc_hashSet;
 
 // Combat Search and Rescue Tasks
 
