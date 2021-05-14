@@ -23,7 +23,7 @@ ARJay
 
 [_this] spawn {
 
-    private ["_args","_insertionPosition","_taskPosition","_taskSide","_taskFaction","_taskProfile","_taskProfileID","_insertionTypes","_countUnits","_insertionType","_carClasses","_heliClasses"];
+    private ["_args","_insertionPosition","_taskPosition","_nearRoadsTaskPosition","_nearRoadsInsertionPosition","_taskSide","_taskFaction","_taskProfile","_taskProfileID","_insertionTypes","_countUnits","_insertionType","_carClasses","_heliClasses"];
 
     _args = _this select 0;
 
@@ -41,8 +41,10 @@ ARJay
 
     _carClasses = [_countUnits,_taskFaction,"Car"] call ALiVE_fnc_findVehicleType;
     _carClasses = _carClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
+    _nearRoadstaskPosition = _taskPosition nearRoads 200;
+    _nearRoadsinsertionPosition = _insertionPosition nearRoads 200;
 
-    if(count _carClasses == 0) then {
+    if(count _carClasses == 0 || {count _nearRoadstaskPosition == 0} || {count _nearRoadsinsertionPosition == 0}) then {
         _insertionTypes = _insertionTypes - ["Car"];
     };
 
@@ -54,7 +56,44 @@ ARJay
     };
 
     if(count _insertionTypes == 0) then {
-        _heliClasses = [_countUnits,nil,"Helicopter"] call ALiVE_fnc_findVehicleType;
+
+        //Try to get helicopter from a friendly faction
+        private _presentFactions = [];
+        private _friendlyFactions = [];
+
+        private _taskEnemySide = _taskFaction call ALiVE_fnc_factionSide;
+        private _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideObjectToNumber;
+        private _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideNumberToText;
+        private _sideFactions = _taskEnemySide call ALiVE_fnc_getSideFactions;
+
+        private _profiles = [ALiVE_profileHandler,"getProfiles","entity"] call ALiVE_fnc_ProfileHandler;
+
+        {
+            private _faction = [_x,"faction"] call ALiVE_fnc_HashGet;
+
+            _presentFactions pushBackUnique _faction;
+        } foreach (_profiles select 2);
+
+        {
+            private _faction = faction (leader _x);
+            _presentFactions pushBackUnique _faction;
+        } foreach allGroups;
+
+        {
+            if (_x in _sideFactions) then {
+                _friendlyFactions pushBackUnique _x;
+            };
+        } foreach _presentFactions;
+
+        _friendlyFactions = _friendlyFactions - [_taskFaction];
+
+        private _faction = selectRandom _sideFactions;
+
+        if (count _friendlyFactions > 0) then {
+            _faction = selectRandom _friendlyFactions;
+        };
+
+        _heliClasses = [_countUnits,_faction, "Helicopter"] call ALiVE_fnc_findVehicleType;
         _heliClasses = _heliClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
         _insertionType = "Helicopter";
     }else{
