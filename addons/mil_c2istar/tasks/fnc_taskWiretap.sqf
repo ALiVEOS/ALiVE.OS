@@ -65,7 +65,7 @@ switch (_taskState) do {
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideObjectToNumber;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideNumberToText;
         private _targetBuildings = [];
-        private _blacklist = ["Land_dp_smallFactory_F"];
+        private _blacklist = ["Land_dp_smallFactory_F","Land_Garbage_square5_F","Land_vn_garbage_square5_f"];
 
         // establish the location for the task
         // get enemy location based on input
