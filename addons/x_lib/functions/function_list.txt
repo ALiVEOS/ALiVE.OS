@@ -298,6 +298,7 @@ units
 	ALiVE_fnc_anyPlayersInRangeIncludeAir
 	ALiVE_fnc_chooseRandomUnits
 	ALiVE_fnc_doMoveRemote
+	ALiVE_fnc_disguise
 	ALiVE_fnc_getNearUnits
 	ALiVE_fnc_getPlayerByUID
 	ALiVE_fnc_getPlayerByUIDOnConnect

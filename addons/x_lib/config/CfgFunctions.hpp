@@ -1706,6 +1706,13 @@ class doMoveRemote
 	RECOMPILE;
 };
 
+class disguise
+{
+	file = "\x\alive\addons\x_lib\functions\units\fnc_disguise.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class getNearUnits
 {
 	file = "\x\alive\addons\x_lib\functions\units\fnc_getNearUnits.sqf";
