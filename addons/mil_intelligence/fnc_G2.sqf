@@ -338,9 +338,9 @@ switch(_operation) do {
                 case "OPCOM_ORDER_COMPLETE": {
                     _eventData params ["_opcomID","_target","_operation","_side","_factions","_orderArguments"];
 
-                    if (_operation in ["attack","defend"]) then {
+                    //if (_operation in ["attack","defend"]) then {
                         [_logic,"removeFriendlyOPCOMOrder", [_opcomID,_target,_operation]] call MAINCLASS;
-                    };
+                    //};
                 };
             };
         };
@@ -417,35 +417,42 @@ switch(_operation) do {
 
                 private _opcomID = _logic getvariable "opcomID";
 
-                private _markerIcon = [
-                    format [MTEMPLATE, _opcomID, _reportID, 1],
-                    _groupPosition,
-                    "ICON",
-                    [1, 1],
-                    _markerType,
-                    _markerColor,
-                    0,
-                    _confidence
+                private _markerIcon = createHashMapFromArray [
+                    ["id", format [MTEMPLATE, _opcomID, _reportID, 1]],
+                    ["position", _groupPosition],
+                    ["shape", "ICON"],
+                    ["size", [1,1]],
+                    ["type", _markerType],
+                    ["color", _markerColor],
+                    ["alpha", _confidence]
                 ];
 
                 private _markers = [_markerIcon];
 
                 if (_speed > 0) then {
-                    private _markerArrow = [
-                        format [MTEMPLATE, _opcomID, _reportID, 2],
-                        _groupPosition getpos [100, _direction],
-                        "ICON",
-                        [1, 2],
-                        "hd_arrow",
-                        _markerColor,
-                        _direction,
-                        _confidence
+                    private _startPoint = _groupPosition getpos [30, _direction];
+                    private _endPoint = _startPoint getpos [60, _direction];
+                    private _linePath = [_logic,"createPolylinePath", [
+                        _startPoint,
+                        _endPoint,
+                        _endPoint getpos [15, _direction - 150],
+                        _endPoint,
+                        _endPoint getpos [15, _direction + 150]
+                    ]] call MAINCLASS;
+
+                    private _markerArrow = createHashMapFromArray [
+                        ["id", format [MTEMPLATE, _opcomID, _reportID, 2]],
+                        ["position", _groupPosition getpos [100, _direction]],
+                        ["shape", "POLYLINE"],
+                        ["path", _linePath],
+                        ["color", _markerColor],
+                        ["alpha", _confidence]
                     ];
 
                     _markers pushback _markerArrow;
                 };
 
-                _report set ["markers", _markers apply { _x select 0 }];
+                _report set ["markers", _markers apply { _x get "id" }];
 
                 [nil,"createMarkersLocally", _markers] remoteExecCall ["ALiVE_fnc_G2", _playersToSendMarkerTo];
             };
@@ -475,27 +482,25 @@ switch(_operation) do {
                     };
                 };
 
-                private _circleMarker = [
-                    format [MTEMPLATE, _opcomID, _reportID, 1],
-                    _objectivePosition,
-                    "ELLIPSE",
-                    [_objectiveSize, _objectiveSize],
-                    "EMPTY",
-                    _markerColor,
-                    0,
-                    0.6
+                private _circleMarker = createHashMapFromArray [
+                    ["id", format [MTEMPLATE, _opcomID, _reportID, 1]],
+                    ["position", _objectivePosition],
+                    ["shape", "ELLIPSE"],
+                    ["size", [_objectiveSize,_objectiveSize]],
+                    ["type", "hq_dot"],
+                    ["color", _markerColor],
+                    ["alpha",  0.4]
                 ];
 
-                private _textMarker = [
-                    format [MTEMPLATE, _opcomID, _reportID, 2],
-                    _objectivePosition,
-                    "ICON",
-                    [1,1],
-                    "mil_dot",
-                    "ColorBlack",
-                    0,
-                    1,
-                    _markerText
+                private _textMarker = createHashMapFromArray [
+                    ["id", format [MTEMPLATE, _opcomID, _reportID, 2]],
+                    ["position", _objectivePosition],
+                    ["shape", "ICON"],
+                    ["size", [0.6,0.6]],
+                    ["type", "hd_dot_noshadow"],
+                    ["color", "ColorBlack"],
+                    ["alpha",  0.7],
+                    ["text", _markerText]
                 ];
 
                 _report set ["markers", [_circleMarker, _textMarker]];
@@ -525,20 +530,56 @@ switch(_operation) do {
         } foreach _reportMarkers;
     };
 
+    case "createPolylinePath": {
+        _result = [];
+
+        {
+            _result pushback (_x select 0);
+            _result pushback (_x select 1);
+        } foreach _args;
+    };
+
     case "createMarkersLocally": {
         private _markersData = _args;
 
         {
-            _x params ["_id","_position","_shape","_size","_type","_color","_dir","_alpha", ["_text",""]];
+            private _id = _x get "id";
+            private _position = _x get "position";
+            private _shape = _x get "shape";
+            private _color = _x get "color";
+            private _alpha = _x get "alpha";
 
             private _marker = createMarkerLocal [_id, _position];
             _marker setMarkerShapeLocal _shape;
-            _marker setMarkerSizeLocal _size;
-            _marker setMarkerTypeLocal _type;
-            _marker setMarkerColorLocal _color;
-            _marker setMarkerDirLocal _dir;
-            _marker setMarkerAlphaLocal _alpha;
-            _marker setMarkerTextLocal _text;
+
+            if (!isnil "_color") then {
+                _marker setMarkerColor _color;
+            };
+            if (!isnil "_alpha") then {
+                _marker setMarkerAlpha _alpha;
+            };
+
+            switch (_shape) do {
+                case "ELLIPSE";
+                case "RECTANGLE";
+                case "ICON": {
+                    private _type = _x get "type";
+                    private _size = _x get "size";
+                    private _dir = _x get "direction";
+                    private _text = _x get "text";
+
+                    _marker setMarkerType _type;
+                    _marker setMarkerSize _size;
+                    _marker setMarkerDir _dir;
+                    _marker setMarkerText _text;
+                };
+                case "POLYLINE": {
+                    private _path = _x get "path";
+
+                    _marker setMarkerPolyline _path;
+                    _marker setMarkerShadow false;
+                };
+            };
         } foreach _markersData;
     };
 
