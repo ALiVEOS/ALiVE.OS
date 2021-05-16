@@ -65,7 +65,7 @@ if (!isNil "ALiVE_mapCompositionType") then {
 };
 
 if (_env != "Urban") then {
-    _compType = format["%1_%2",_comp,_env]; // Civilian_Pacific etc
+    _compType = format["%1_%2",_comp,_env]; // Civilian_Pacific, Military_Jungle etc
 };
 
 private _configPaths = [
@@ -75,7 +75,7 @@ private _configPaths = [
 
 // Default to regular if additional PBOs are not loaded
 if (!isClass (_configPaths select 0) && !isClass(_configPaths select 1)) then {
-    ["WARNING: You don't appear to have the %1 compositions loaded, make sure you have added the composition PBOs to your @or @ALiVEServer addon folders! Falling back to %2!", _compType,_comp] call ALiVE_fnc_dump;
+    ["WARNING: You don't appear to have the %1 compositions loaded, make sure you have added the composition PBOs to your @ALiVE or @ALiVEServer addon folders! Falling back to %2!", _compType,_comp] call ALiVE_fnc_dump;
 
     _configPaths = [
         missionConfigFile >> "CfgGroups" >> "Empty" >> _comp,
@@ -160,7 +160,7 @@ if (count _faction != 0) then {
 } foreach _configPaths;
 
 
-if (count _result == 0 && !_recursive) then {
+if (count _result == 0 && _recursive) then {
     private _temp = "Urban";
     if (!isNil "ALiVE_mapCompositionType") then {
         // If we can't find any compositions for the current environment i.e. desert/woodland then check urban for any size composition
