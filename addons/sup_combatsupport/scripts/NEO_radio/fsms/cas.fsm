@@ -32,7 +32,7 @@ item27[] = {"loiter",2,250,107.333862,570.656189,197.333847,620.656189,0.000000,
 item28[] = {"Attack",4,218,236.318878,328.071045,326.319061,378.071075,0.000000,"Attack"};
 item29[] = {"__8",2,250,241.414948,409.013489,331.414917,459.013550,0.000000,""};
 item30[] = {"nr_position",4,218,236.070999,501.930420,326.070984,551.930481,0.000000,"nr position"};
-item31[] = {"__9",2,250,236.055298,615.580505,326.055267,665.580505,0.000000,""};
+item31[] = {"__9",2,4346,236.055298,615.580505,326.055267,665.580505,0.000000,""};
 item32[] = {"",7,210,270.519501,264.013885,278.519501,272.013885,0.000000,""};
 item33[] = {"__10",2,250,488.254669,574.671753,578.254639,624.671753,0.000000,""};
 item34[] = {"at_base",4,218,583.062378,624.445740,673.062378,674.445740,0.000000,"at base"};
@@ -98,8 +98,8 @@ link52[] = {37,27};
 link53[] = {38,20};
 link54[] = {39,40};
 link55[] = {40,20};
-globals[] = {0.000000,0,0,0,0,640,480,1,72,6316128,1,-236.860229,536.301147,929.424988,347.744324,1175,884,1};
-window[] = {2,-1,-1,-1,-1,971,234,1494,234,3,1193};
+globals[] = {0.000000,0,0,0,0,640,480,1,72,6316128,1,-385.975098,859.208740,1115.463135,178.661011,1175,884,1};
+window[] = {2,-1,-1,-32000,-32000,893,156,1416,156,3,1193};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -1199,9 +1199,15 @@ class FSM
                          "	_posCas = _this select 8;" \n
                          "	_radiusCas = _this select 9;" \n
                          "" \n
+                         "  (driver _veh) setSkill 1;" \n
+                         "" \n
                          "	_needsAlign = false;" \n
                          "	" \n
                          "	_target = [_veh, _posCas, _radiusCas,_weapon] call NEO_fnc_pickCasTarget;" \n
+                         "    " \n
+                         "    private _wp = (group (driver _veh)) addWaypoint [_posCas, 0];" \n
+                         "    _wp waypointAttachObject _target;" \n
+                         "    _wp setWaypointType ""SAD"";" \n
                          "" \n
                          "	[""Telling %1 to target %2 (%3 %4)"",_veh,_target, _posCas,_radiusCas] call ALiVE_fnc_dump;" \n
                          "	" \n
@@ -1222,12 +1228,16 @@ class FSM
                          "	};" \n
                          "	" \n
                          "	_casStart = time;" \n
-                         "	while { (_veh ammo _weapon) > 0 && alive _target && !(_veh getVariable[""NEO_radioCasUnitBreakOff"",false]) && _casStart > (time - 60) } do {" \n
+                         "	while {" \n
+                         "        private _vehicleWeaponInfo = [_veh] call NEO_fnc_getVehicleWeaponInfo;" \n
+                         "        private _weaponAmmo = [_vehicleWeaponInfo,_weapon] call NEO_fnc_getVehicleWeaponAmmo;" \n
+                         "        _weaponAmmo > 0 && alive _target && !(_veh getVariable[""NEO_radioCasUnitBreakOff"",false]) && _casStart > (time - 60)" \n
+                         "    } do {" \n
                          "		_veh doWatch _target;" \n
                          "		_veh doTarget _target;" \n
                          "" \n
                          "		waitUntil {_veh aimedAtTarget [_target] > .8};" \n
-                         "		_veh fireAtTarget [_target];" \n
+                         "		//_veh fireAtTarget [_target, _weapon];" \n
                          "		if( _sleep > 0.5 ) then { _veh doWatch objNull; };" \n
                          "		sleep _sleep;" \n
                          "		" \n
@@ -1251,7 +1261,10 @@ class FSM
                          "                sleep 8;" \n
                          "                [[_veh,format[""%1 cannot engage any targets in the AO. Out."",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "        } else {" \n
-                         "            if( (_veh ammo _weapon) == 0) then {" \n
+                         "            private _vehicleWeaponInfo = [_veh] call NEO_fnc_getVehicleWeaponInfo;" \n
+                         "            private _weaponAmmo = [_vehicleWeaponInfo,_weapon] call NEO_fnc_getVehicleWeaponAmmo;" \n
+                         "            systemchat format [""Winchester?: %1"", _weaponAmmo];" \n
+                         "            if(_weaponAmmo == 0) then {" \n
                          "                [[_veh,format[""%1 is Winchester for %2. Returning to loiter position. Out."",_callsign,[configFile >> ""CfgWeapons"" >> _weapon] call bis_fnc_displayName],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "            } else {" \n
                          "                  [[_veh, format[""%1 has completed attack run, will loiter until further orders. Out."",_callsign], ""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n

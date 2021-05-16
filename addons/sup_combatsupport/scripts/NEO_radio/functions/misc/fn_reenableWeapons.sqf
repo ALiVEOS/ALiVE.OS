@@ -1,9 +1,11 @@
-private["_veh","_ammoCount"];
-_veh = _this select 0;
-_ammoCount = _this select 1;
+params ["_veh","_disabledWeaponsAmmoCount"];
 
 {
-    if( (_ammoCount select _foreachindex) != -1 ) then {
-        _veh setAmmo [_x, _ammoCount select _foreachindex];
-    };
-} foreach weapons _veh;
+    private _weapon = _x;
+    private _weaponPylonsAmmoCount = _y;
+
+    {
+        _X params ["_pylon","_pylonAmmo"];
+        _veh setAmmoOnPylon [_pylon, _pylonAmmo];
+    } foreach _weaponPylonsAmmoCount;
+} foreach _disabledWeaponsAmmoCount;

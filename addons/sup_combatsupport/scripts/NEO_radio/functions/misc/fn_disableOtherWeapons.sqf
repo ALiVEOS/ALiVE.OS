@@ -1,16 +1,26 @@
-private["_veh","_keepWeapon","_wepCount","_ammoCount","_count"];
-_veh = _this select 0;
-_keepWeapon = _this select 1;
-_ammoCount = [];
-{
-    private "_count";
-    if (_x == _keepWeapon) then {
-        _count = -1;
-    } else {
-        _count = _veh ammo _x;
-        _veh setAmmo [_x, 0];
-    };
-    _ammoCount pushback _count;
-} foreach weapons _veh;
+params ["_veh","_keepWeapon"];
 
-_ammoCount;
+private _vehicleWeaponInfo = [_veh] call NEO_fnc_getVehicleWeaponInfo;
+private _disabledWeaponsAmmoCount = createHashMap;
+
+{
+    private _weapon = _x;
+    if (_weapon != _keepWeapon) then {
+        private _pylons = _y get "pylons";
+        private _weaponPylonsAmmoCount = [];
+
+        {
+            _y params ["_magazine","_magazineAmmoCount"];
+
+            private _pylon = _x;
+            _weaponPylonsAmmoCount pushback [_pylon, _magazineAmmoCount];
+
+            private _pylon = _x;
+            _veh setAmmoOnPylon [_pylon, 0];
+        } foreach _pylons;
+
+        _disabledWeaponsAmmoCount set [_weapon, _weaponPylonsAmmoCount];
+    };
+} foreach _vehicleWeaponInfo;
+
+_disabledWeaponsAmmoCount

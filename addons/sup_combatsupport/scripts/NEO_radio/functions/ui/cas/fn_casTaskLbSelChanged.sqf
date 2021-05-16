@@ -81,19 +81,22 @@ if (toUpper (_lb lbText _index) == "SAD" || toUpper (_lb lbText _index) == "LOIT
 
         _casAttackRunLB ctrlEnable true;
         lbClear _casAttackRunLB;
+        private _vehicleWeaponInfo = [_veh] call NEO_fnc_getVehicleWeaponInfo;
         {
-            private "_weapon";
-            _weapon = [(configFile>>"CfgWeapons">>_x)] call bis_fnc_displayName;
-            _casAttackRunLB lbAdd _weapon;
-        } forEach weapons _veh;
-
+            private _weapon = _x;
+            private _weaponDisplayName = _y get "weaponDisplayName";
+            private _row = _casAttackRunLB lbAdd _weaponDisplayName;
+            _casAttackRunLB lbsetdata [_row, _weapon];
+        } foreach _vehicleWeaponInfo;
     } else {
         lbClear _casAttackRunLB;
+        private _vehicleWeaponInfo = [_veh] call NEO_fnc_getVehicleWeaponInfo;
         {
-            private "_weapon";
-            _weapon = [(configFile>>"CfgWeapons">>_x)] call bis_fnc_displayName;
-            _casAttackRunLB lbAdd _weapon;
-        } forEach weapons _veh;
+            private _weapon = _x;
+            private _weaponDisplayName = _y get "weaponDisplayName";
+            private _row = _casAttackRunLB lbAdd _weaponDisplayName;
+            _casAttackRunLB lbsetdata [_row, _weapon];
+        } foreach _vehicleWeaponInfo;
         _casAttackRunLB lbSetCurSel 0;
     };
 }

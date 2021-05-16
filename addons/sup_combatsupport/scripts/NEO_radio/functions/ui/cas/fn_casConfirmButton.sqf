@@ -30,8 +30,12 @@ _flyInHeight = switch (sliderPosition _casFlyHeightSlider) do
     case 3 : { if (_isPlane) then { 500 } else { 150 } };
 };
 _coord = _pos call BIS_fnc_posToGrid;
-_weapon = (weapons _veh) select (lbCurSel _casAttackRunLB);
+_weapon = _casAttackRunLB lbdata (lbCurSel _casAttackRunLB);
 _ROE = _casROELb lbData (lbCurSel _casROELb);
+
+private _vehicleWeaponInfo = [_veh] call NEO_fnc_getVehicleWeaponInfo;
+private _weaponAmmo = [_vehicleWeaponInfo, _weapon] call NEO_fnc_getVehicleWeaponAmmo;
+systemchat format ["Weapon Ammo: %1", _weaponAmmo];
 
 //New Task
 _veh setVariable ["NEO_radioCasNewTask", [_task, _pos, _radius, _flyInHeight, _weapon, _ROE, player], true];
