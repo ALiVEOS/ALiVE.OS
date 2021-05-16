@@ -4,6 +4,8 @@
 
 #include "jungle\checkpoints.hpp"
 
+#include "jungle\comms.hpp"
+
 #include "jungle\crashsites.hpp"
 
 #include "jungle\fieldhq.hpp"
