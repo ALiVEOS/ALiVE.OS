@@ -170,23 +170,35 @@ switch (_taskState) do {
 
                 // Spawn composition
                 _compType = "Military";
-                _site = "smallAH99Crashsite1";
-                _comp = [_site, _CompType] call ALiVE_fnc_findComposition;
-                [_comp,_targetposition,random 360,_taskFaction] call ALiVE_fnc_spawnComposition;
+                _site = "crashsites";
 
-                // replace wreck with downed bird
-                _wreck = nearestObject [_targetposition, "Land_Wreck_Heli_Attack_01_F"];
-                _pos = getposATL _wreck;
-                _dir = getdir _wreck;
-                deleteVehicle _wreck;
+                // Get the aircraft displayname and first string before a white space and remove any dashes i.e. UH1D or F4B ugh
+                private _displayName = getText(configFile >> "CfgVehicles" >> _aircraft >> "displayName");
+                private _tempText = (_displayName splitString " ") select 0;
+                _tempText = [_tempText, "-", ""] call CBA_fnc_replace;
+                _comp = [_compType, [_site], [], _taskFaction, false, [_tempText]] call ALiVE_fnc_getCompositions;
 
-                // Spawn downed bird
-                _vehicle = createVehicle [_aircraft, _pos, [], 0, "CAN_COLLIDE"];
-                _vehicle setDir _dir;
-                _vehicle setposATL _pos;
-                _vehicle setDamage 1;
-                // ["%1 spawned at %2 with %3 damage", _aircraft, _pos, damage _vehicle] call ALiVE_fnc_dump;
+                if (count _comp == 0) then {
+                    _site = "smallAH99Crashsite1";
+                    _comp = [_site, _CompType] call ALiVE_fnc_findComposition;
 
+                    [_comp,_targetposition,random 360,_taskFaction] call ALiVE_fnc_spawnComposition;
+
+                    // replace wreck with downed bird
+                    _wreck = nearestObject [_targetposition, "Land_Wreck_Heli_Attack_01_F"];
+                    _pos = getposATL _wreck;
+                    _dir = getdir _wreck;
+                    deleteVehicle _wreck;
+
+                    // Spawn downed bird
+                    _vehicle = createVehicle [_aircraft, _pos, [], 0, "CAN_COLLIDE"];
+                    _vehicle setDir _dir;
+                    _vehicle setposATL _pos;
+                    _vehicle setDamage 1;
+                    // ["%1 spawned at %2 with %3 damage", _aircraft, _pos, damage _vehicle] call ALiVE_fnc_dump;
+                } else {
+                    [_comp select 0,_targetposition,random 360,_taskFaction] call ALiVE_fnc_spawnComposition;
+                };
             } else {
                 // Spawn parachute on ground
 
