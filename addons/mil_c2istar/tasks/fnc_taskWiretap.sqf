@@ -185,14 +185,14 @@ switch (_taskState) do {
             [_taskLocation, _compType, "Communications", _taskEnemyFaction, ["Small","Medium"], 1] call ALIVE_fnc_spawnRandomPopulatedComposition;
 
             // Add Tower just in case
-            createVehicle ["Land_TTowerSmall_2_F" , _taskLocation, [], 15, "NONE"];
+            private _transmitter = createVehicle ["Land_TTowerSmall_2_F" , _taskLocation, [], 15, "NONE"];
 
             // Get buildings from comp (or nearest)
-            _targetBuildings = _taskLocation nearObjects ["House_F",50];
+            _targetBuildings = [_transmitter];
         };
 
         _targetBuildings = [_targetBuildings, [], {
-			//By indoor building positions
+			//By size?
             sizeOf (typeof _x);
         },"DESCEND",{
             private _alive = alive _x;
@@ -208,13 +208,7 @@ switch (_taskState) do {
         if (_targetBuildings isEqualTo []) exitwith {["C2ISTAR - Task Wiretap - There are no buildings to wiretap at the target area!"] call ALiVE_fnc_Dump};
 
 		//Move on
-		private _targetBuilding = objNull;
-        if (count _targetBuildings >= 3) then {
-            _targetBuildings resize 3;
-            _targetBuilding = selectRandom _targetBuildings;
-        } else {
-            _targetBuilding = _targetBuildings select 0;
-        };
+		private _targetBuilding = _targetBuildings select 0;
 
         private _targetPosition = getPosATL _targetBuilding;
         private _targetID = str (floor (_targetPosition select 0)) + str (floor (_targetPosition select 1));
@@ -222,7 +216,6 @@ switch (_taskState) do {
 
         ["C2ISTAR - Task Wiretap - Building: %1 | Type: %2 | Pos: %3!", _targetBuilding, _targetDisplayType, _targetPosition] call ALiVE_fnc_Dump;
 
-        //["Sorting buildings by type and adding reward..."] call ALiVE_fnc_DumpR;
         private _points = 0;
         private _list = [];
 		private ["_buildingType", "_reward"];
@@ -364,7 +357,7 @@ switch (_taskState) do {
     case "Parent": {
 
     };
-    case "WireTap": {
+    case "Wiretap": {
 		_task params [
 				"_taskID",
 				"_requestPlayerID",
@@ -381,6 +374,8 @@ switch (_taskState) do {
         private _taskDialog = [_params, "dialog"] call ALIVE_fnc_hashGet;
         private _currentTaskDialog = [_taskDialog, _taskState] call ALIVE_fnc_hashGet;
         private _targets = [_params, "targets"] call ALIVE_fnc_hashGet;
+        private _taskEnemyFaction = [_params, "enemyFaction"] call ALIVE_fnc_hashGet;
+        private _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
 
         if (_lastState != "Wiretap") then {
             ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
@@ -404,19 +399,18 @@ switch (_taskState) do {
             [_currentTaskDialog, _taskSide, _taskFaction] call ALIVE_fnc_taskCreateReward;
 
             // Increase chance of intel by 10%
-            private _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
             private _currentIntelChance = missionnamespace getvariable (format["ALiVE_MIL_OPCOM_INTELCHANCE_%1",_taskEnemySide]);
             missionnamespace setvariable [format["ALiVE_MIL_OPCOM_INTELCHANCE_%1",_taskEnemySide], _currentIntelChance + 0.1];
 
         } else {
-            private _taskEnemyFaction = [_params, "enemyFaction"] call ALIVE_fnc_hashGet;
-            private _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
-            private _targets = [_targetsState, "targets"] call ALIVE_fnc_hashGet;
+            private _destinationReached = [_taskPosition,_taskPlayers,75] call ALIVE_fnc_taskHavePlayersReachedDestination;
 
-            {
-                private _objectType = getText (configfile >> "CfgVehicles" >> typeOf _x >> "displayName");
-                [getposATL _x, _taskEnemySide, _taskPlayers, _taskID, "building", _objectType] call ALIVE_fnc_taskCreateMarkersForPlayers;
-            } forEach _targets;
+            if(_destinationReached) then {
+                {
+                    private _objectType = getText (configfile >> "CfgVehicles" >> typeOf _x >> "displayName");
+                    [getposATL _x, _taskEnemySide, _taskPlayers, _taskID, "building", _objectType] call ALIVE_fnc_taskCreateMarkersForPlayers;
+                } forEach _targets;
+            };
         };
     };
 };

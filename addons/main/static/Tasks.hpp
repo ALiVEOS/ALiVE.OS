@@ -653,7 +653,7 @@
 	[_taskData,"title","Wiretap %1"] call ALIVE_fnc_hashSet;
 	[_taskData,"description","We received intelligence about a strategically important communications facility near %1. Infiltrate the objective and place a wiretap on the %2!"] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_start",[["HQ","We received intelligence about a strategically relevant comms post near %1! Setup a wiretap!"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
-	[_taskData,"chat_success",[["PLAYERS","The wiretap is operational, Over."],["HQ","Roger that, well done, extract from the target area."]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_success",[["PLAYERS","The wiretap is operational, Over."],["HQ","Roger that, you've increased the chance we'll receive intelligence, well done! Extract from the target area."]]] call ALIVE_fnc_hashSet;
 	[_taskData,"reward",["forcePool",10]] call ALIVE_fnc_hashSet;
 	[_tasksData,"Wiretap",_taskData] call ALIVE_fnc_hashSet;
 
