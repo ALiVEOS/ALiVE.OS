@@ -290,7 +290,7 @@ switch (_taskState) do {
             },
             {},
             [],
-            (sizeOf (typeOf _targetBuilding)) max 45
+            ((sizeOf (typeOf _targetBuilding)) max 15) min 30
         ] remoteExec ["BIS_fnc_holdActionAdd", 0, true];
 
         // select the random text
@@ -403,10 +403,10 @@ switch (_taskState) do {
 
             [_currentTaskDialog, _taskSide, _taskFaction] call ALIVE_fnc_taskCreateReward;
 
-            // Increase chance of intel
+            // Increase chance of intel by 10%
             private _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
             private _currentIntelChance = missionnamespace getvariable (format["ALiVE_MIL_OPCOM_INTELCHANCE_%1",_taskEnemySide]);
-            missionnamespace setvariable [format["ALiVE_MIL_OPCOM_INTELCHANCE_%1",_taskEnemySide], _currentIntelChance + 1];
+            missionnamespace setvariable [format["ALiVE_MIL_OPCOM_INTELCHANCE_%1",_taskEnemySide], _currentIntelChance + 0.1];
 
         } else {
             private _taskEnemyFaction = [_params, "enemyFaction"] call ALIVE_fnc_hashGet;
