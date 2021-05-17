@@ -937,32 +937,27 @@ switch(_operation) do {
         };
 
         case "synchronizeorders": {
-            ASSERT_TRUE(typeName _args == "STRING",str _args);
+            private _ProfileIDInput = _args;
+            private _pendingOrders = [_logic,"pendingorders", []] call ALiVE_fnc_HashGet;
+            private _synchronized = false;
 
-            private ["_ProfileIDInput","_profiles","_orders_pending","_synchronized","_item","_objectiveID","_profileID"];
+            for "_i" from 0 to ((count _pendingOrders)-1) do {
+                if (_i >= (count _pendingOrders)) exitwith {};
 
-            _ProfileIDInput = _args;
-            _profiles = ([ALIVE_profileHandler, "getProfiles","entity"] call ALIVE_fnc_profileHandler) select 1;
-            _orders_pending = ([_logic,"pendingorders",[]] call ALiVE_fnc_HashGet);
-            _synchronized = false;
+                private _item = _pendingOrders select _i;
 
-            for "_i" from 0 to ((count _orders_pending)-1) do {
-                if (_i >= (count _orders_pending)) exitwith {};
+                if (_item isequaltype []) then {
+                    _item params ["_pos","_profileID","_objectiveID","_time"];
 
-                _item = _orders_pending select _i;
+                    private _dead = isnil { [ALiVE_profileHandler,"getProfile", _profileID] call ALiVE_fnc_profileHandler };
+                    private _timeout = (time - _time) > 3600;
 
-                if (typeName _item == "ARRAY") then {
-                    _pos = _item select 0;
-                    _profileID = _item select 1;
-                    _objectiveID = _item select 2;
-                    _time = _item select 3;
-                    _dead = !(_ProfileID in _profiles);
-                    _timeout = (time - _time) > 3600;
-
-                    if ((_dead) || {_timeout} || {_ProfileID == _ProfileIDInput}) then {
-                        _orders_pending set [_i,"x"]; _orders_pending = _orders_pending - ["x"];
-                        [_logic,"pendingorders",_orders_pending] call ALiVE_fnc_HashSet;
-                        if (({_objectiveID == (_x select 2)} count (_orders_pending)) == 0) then {_synchronized = true};
+                    if (_dead || { _timeout } || { _ProfileID == _ProfileIDInput }) then {
+                        _pendingOrders deleteat _i;
+                        private _objectiveFound = _pendingOrders findIf { _objectiveID == (_x select 2) };
+                        if (_objectiveFound == -1) then {
+                           _synchronized = true; 
+                        };
                     };
                 };
             };
@@ -971,57 +966,47 @@ switch(_operation) do {
         };
 
         case "resetorders": {
-            ASSERT_TRUE(typeName _args == "STRING",str _args);
-            private ["_active","_profileID","_profile","_ProfileIDsBusy","_profileIDx","_pendingOrders","_ProfileIDsReserve","_section","_objectives"];
-
-            _profileID = _args;
+            private _profileID = _args;
 
             //Reset busy queue if there is an entry for the entitiy
-            [_logic,"ProfileIDsBusy",([_logic,"ProfileIDsBusy",[]] call ALiVE_fnc_HashGet) - [_profileID]] call ALiVE_fnc_HashSet;
+            // this list appears to be unused, and never exists
+            private _profileIDsBusy = [_logic,"ProfileIDsBusy", []] call ALiVE_fnc_HashGet;
+            _profileIDsBusy deleteat (_profileIDsBusy find _profileID);
 
             //Reset reserve queue if there is an entry for the entitiy
-            [_logic,"ProfileIDsReserve",([_logic,"ProfileIDsReserve",[]] call ALiVE_fnc_HashGet) - [_profileID]] call ALiVE_fnc_HashSet;
+            private _profileIDsReserve = [_logic,"ProfileIDsReserve", []] call ALiVE_fnc_HashGet;
+            _profileIDsReserve deleteat (_profileIDsReserve find _profileID);
 
             //Reset pending orders if there is an entry for the entitiy
-            _pendingOrders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
-            {
-                _profileIDx = _x select 1;
+            private _pendingOrders = [_logic,"pendingorders", []] call ALiVE_fnc_HashGet;
+            private _profilePendingOrders = _pendingOrders select { (_x select 1) == _profileID };
+            _pendingOrders = _pendingOrders - _profilePendingOrders;
 
-                if (_profileIDx == _profileID) then {
-                    _pendingOrders set [_foreachIndex,"x"];
-                };
-            } foreach _pendingOrders;
-            _pendingOrders = _pendingOrders - ["x"];
-            [_logic,"pendingorders",_pendingOrders] call ALiVE_fnc_HashSet;
+            [_logic,"pendingorders", _pendingOrders] call ALiVE_fnc_HashSet;
 
             //Reset section entry on objectives if the entitiy is still assigned to an objective
-            _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
+            private _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
             {
-                _section = [_x,"section",[]] call ALiVE_fnc_HashGet;
-                [_x,"sectionAssist",[]] call ALiVE_fnc_HashSet;
+                private _section = [_x,"section", []] call ALiVE_fnc_HashGet;
+                [_x,"sectionAssist", []] call ALiVE_fnc_HashSet;
 
-                if (count _section > 0) then {
-                    if (_profileID in _section) then {
-                        _section = _section - [_profileID];
+                if !(_section isequalto []) then {
+                    _section deleteat (_section find _profileID);
 
-                        [_x,"section",_section] call ALiVE_fnc_HashSet;
-                    };
-
-                    if (count _section == 0) then {
+                    if (_section isequalto []) then {
                         [_logic,"resetObjective",([_x,"objectiveID"] call ALiVE_fnc_HashGet)] call ALiVE_fnc_OPCOM;
                     };
                 };
             } foreach _objectives;
 
-            _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
-
+            private _profile = [ALIVE_profileHandler,"getProfile", _profileID] call ALIVE_fnc_profileHandler;
             if !(isnil "_profile") then {
-               _active = [_profile, "active", false] call ALIVE_fnc_HashGet;
-               _activeCommands = [_profile, "activeCommands", []] call ALIVE_fnc_HashGet;
+               private _active = [_profile,"active", false] call ALIVE_fnc_HashGet;
+               private _activeCommands = [_profile,"activeCommands", []] call ALIVE_fnc_HashGet;
 
-               if (!_active && {count _activeCommands == 0}) then {
-                    [_profile, "clearActiveCommands"] call ALIVE_fnc_profileEntity;
-                    [_profile, "setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[200,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity;
+               if (!_active && { _activeCommands isequalto [] }) then {
+                    [_profile,"clearActiveCommands"] call ALIVE_fnc_profileEntity;
+                    [_profile,"setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[200,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity;
                };
             };
 
@@ -1253,9 +1238,8 @@ switch(_operation) do {
 
         case "resetObjective": {
             if(isnil "_args") then {
-                    _args = [_logic,"objectives",[]] call ALIVE_fnc_hashGet;
+                _args = [_logic,"objectives",[]] call ALIVE_fnc_hashGet;
             } else {
-                ASSERT_TRUE(typeName _args == "STRING",str _args);
                 private ["_objective"];
 
                 _objective = [_logic,"getobjectivebyid",_args] call ALiVE_fnc_OPCOM;
@@ -1268,12 +1252,11 @@ switch(_operation) do {
                 [_objective,"opcom_orders","none"] call AliVE_fnc_HashSet;
                 [_objective,"objectiveType",[_objective,"objectiveType","MIL"] call AliVE_fnc_HashGet] call AliVE_fnc_HashSet;
 
-                // debug ---------------------------------------
                 if (_debug) then {_args setMarkerColorLocal "ColorWhite"};
-                // debug ---------------------------------------
 
                 _args = [_logic,"objectives",[]] call ALIVE_fnc_hashGet;
             };
+
             _result = _args;
         };
 
