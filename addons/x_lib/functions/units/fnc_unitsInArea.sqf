@@ -54,7 +54,7 @@ if (!_found) then {
     {
         private _unit = _x;
 
-        if (alive _unit && {([side _x] call ALiVE_fnc_sideToSideText) == _side} && {(getposATL _unit) inArea _trigger}) then {
+        if (alive _unit && {([side group _x] call ALiVE_fnc_sideToSideText) == _side} && {(getposATL _unit) inArea _trigger}) then {
 
             _found = true;
 

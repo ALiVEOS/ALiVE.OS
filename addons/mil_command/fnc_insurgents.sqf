@@ -102,7 +102,7 @@ if (_type == "entity") then {
                     private _list = _position nearEntities ["CAManBase",60];
 
                     {
-                        if !((side _x) in _sidesEnemy) then {
+                        if !((side group _x) in _sidesEnemy) then {
                             _list set [_foreachindex,objnull];
                         };
                     } foreach _list;
@@ -199,7 +199,7 @@ if (_type == "entity") then {
                     private _list = _position nearEntities ["CAManBase",60];
 
                     {
-                        if !((side _x) in _sidesEnemy) then {
+                        if !((side group _x) in _sidesEnemy) then {
                             _list set [_foreachindex,objnull];
                         };
                     } foreach _list;

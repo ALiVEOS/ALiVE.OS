@@ -165,7 +165,7 @@ if (_menuName == "C2ISTAR") then {
                     localize "STR_ALIVE_PR_COMMENT",
                      "",
                      -1,
-                     (MOD(Require) getVariable [format["ALIVE_MIL_LOG_AVAIL_%1", (side player)], false]),
+                     (MOD(Require) getVariable [format["ALIVE_MIL_LOG_AVAIL_%1", (side group player)], false]),
                      [QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable && {_otherResult}
                 ],
                 ["Tasks",

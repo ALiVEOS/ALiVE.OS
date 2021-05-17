@@ -32,10 +32,10 @@ if (isServer || isDedicated) then {
 	_unit = _this select 0;
 
 	if (ins_debug) then {
-		["INS_fnc_handlerRegister called on unit: %1 unit side: %2 debug: %3", _unit, side _unit, ins_debug] call ALIVE_fnc_dump;
+		["INS_fnc_handlerRegister called on unit: %1 unit side: %2 debug: %3", _unit, side group _unit, ins_debug] call ALIVE_fnc_dump;
 	};
 
-	if ((side _unit == EAST) || (side _unit == RESISTANCE)) then {
+	if ((side (group _unit) == EAST) || (side (group _unit) == RESISTANCE)) then {
 		_unit addEventHandler ["Killed", {_this call INS_fnc_intelDrop}];
 		if (ins_debug) then {
 			["EventHandler added to unit"] call ALIVE_fnc_dump;

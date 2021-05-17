@@ -819,7 +819,7 @@ switch(_operation) do {
                     // add all uavs connected to a unit
 
                     {
-                        if (side _x == _side) then {
+                        if (side group _x == _side) then {
 
                             // get unit connected uav if one exists
 

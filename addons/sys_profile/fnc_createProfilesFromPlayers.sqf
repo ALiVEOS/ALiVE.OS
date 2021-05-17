@@ -287,7 +287,7 @@ if!(isNil "_registeredProfile") then {
                         } foreach (_units);
 
                         _position = getPosATL _leader;
-                        _side = str(side _leader);
+                        _side = str(side group _leader);
 
                         _profileEntity = [nil, "create"] call ALIVE_fnc_profileEntity;
                         [_profileEntity, "init"] call ALIVE_fnc_profileEntity;
@@ -389,7 +389,7 @@ if!(isNil "_registeredProfile") then {
                 } foreach (_units);
 
                 _position = getPosATL _leader;
-                _side = str(side _leader);
+                _side = str(side group _leader);
 
                 [_profileEntity, "unitClasses", _unitClasses] call ALIVE_fnc_profileEntity;
                 [_profileEntity, "position", _position] call ALIVE_fnc_profileEntity;
@@ -453,7 +453,7 @@ if!(isNil "_registeredProfile") then {
                 } foreach (_units);
 
                 _position = getPosATL _leader;
-                _side = str(side _leader);
+                _side = str(side group _leader);
 
                 _profileEntity = [nil, "create"] call ALIVE_fnc_profileEntity;
                 [_profileEntity, "init"] call ALIVE_fnc_profileEntity;
@@ -568,7 +568,7 @@ if!(isNil "_registeredProfile") then {
                 } foreach (_units);
 
                 _position = getPosATL _leader;
-                _side = str(side _leader);
+                _side = str(side group _leader);
 
                 [_profileEntity, "unitClasses", _unitClasses] call ALIVE_fnc_profileEntity;
                 [_profileEntity, "position", _position] call ALIVE_fnc_profileEntity;
@@ -632,7 +632,7 @@ if!(isNil "_registeredProfile") then {
                 } foreach (_units);
 
                 _position = getPosATL _leader;
-                _side = str(side _leader);
+                _side = str(side group _leader);
 
                 _profileEntity = [nil, "create"] call ALIVE_fnc_profileEntity;
                 [_profileEntity, "init"] call ALIVE_fnc_profileEntity;

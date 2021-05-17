@@ -33,7 +33,7 @@ MOD(SUP_PR_Items) = [([MOD(SUP_PLAYER_RESUPPLY), "pr_item"] call ALIVE_fnc_PR), 
 private _menu = "ALiVE_PR";
 
 // Condition code for PR menu items //
-private _prCond = {(({([(toLower(str((assignedItems player) + (uniformItems player) + (backpackItems player) + (vestItems player)))), toLower(_x)] call CBA_fnc_find) > -1} count MOD(SUP_PR_Items)) > 0) && {(MOD(Require) getVariable [(format ["ALIVE_MIL_LOG_AVAIL_%1", (side player)]), false])}};
+private _prCond = {(({([(toLower(str((assignedItems player) + (uniformItems player) + (backpackItems player) + (vestItems player)))), toLower(_x)] call CBA_fnc_find) > -1} count MOD(SUP_PR_Items)) > 0) && {(MOD(Require) getVariable [(format ["ALIVE_MIL_LOG_AVAIL_%1", (side group player)]), false])}};
 
 private _action = [
     _menu,

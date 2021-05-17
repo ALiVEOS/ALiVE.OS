@@ -205,7 +205,7 @@ switch(_operation) do {
                     waituntil {!isnull player};
 
                     // Set local respawn positions
-                    _respawn = format["Respawn_%1",side player];
+                    _respawn = format["Respawn_%1",side group player];
                     _respawnFaction = format["ALiVE_SUP_MULTISPAWN_RESPAWN_%1",faction player];
                     _respawnGroup = format["ALiVE_SUP_MULTISPAWN_RESPAWNGROUP_%1",groupID (group player)];
 
@@ -304,7 +304,7 @@ switch(_operation) do {
 
                             waituntil {!isnull player};
 
-                            _respawn = format["Respawn_%1",side player];
+                            _respawn = format["Respawn_%1",side group player];
                             _respawnVehicle = !isnil {call compile (format["ALiVE_SUP_MULTISPAWN_RESPAWNVEHICLE_%1",faction player])};
 
                             if !(_respawn call ALiVE_fnc_markerExists) then {createMarkerLocal [_respawn, getposATL _logic]};
@@ -347,7 +347,7 @@ switch(_operation) do {
 
                             waituntil {!isnull player};
 
-                            _respawn = format["Respawn_%1",side player];
+                            _respawn = format["Respawn_%1",side group player];
                             _respawnBuilding = nearestObject [getmarkerpos format["ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1",faction player], "Building"];
 
                             if !(_respawn call ALiVE_fnc_markerExists) then {createMarkerLocal [_respawn, getposATL _logic]};

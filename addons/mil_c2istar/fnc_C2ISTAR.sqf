@@ -703,10 +703,10 @@ switch(_operation) do {
 
             waitUntil {
                 sleep 1;
-                ((str side player) != "UNKNOWN")
+                ((str side group player) != "UNKNOWN")
             };
 
-            _playerSide = side player;
+            _playerSide = side group player;
             _sideNumber = [_playerSide] call ALIVE_fnc_sideObjectToNumber;
             _sideText = [_sideNumber] call ALIVE_fnc_sideNumberToText;
 
@@ -810,7 +810,7 @@ switch(_operation) do {
             private _autoGenerate = [_logic, "autoGenerateBlufor"] call MAINCLASS;
             private _autoGenerateEnemyFaction = [_logic, "autoGenerateBluforEnemyFaction"] call MAINCLASS;
 
-            switch (side player) do {
+            switch (side group player) do {
                 case EAST: {
                     _autoGenerate = [_logic, "autoGenerateOpfor"] call MAINCLASS;
                     _autoGenerateEnemyFaction = [_logic, "autoGenerateOpforEnemyFaction"] call MAINCLASS;

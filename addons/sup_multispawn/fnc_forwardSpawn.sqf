@@ -75,7 +75,7 @@ while {!(keyout > 0)} do {
         _target = _currentmate;
 
         if (_target isKindOf "Man" && player == vehicle player) then{
-            if((side _target == playerSide || playerside == resistance) && (player distance _target) < _distance) then {
+            if((side group _target == playerSide || playerside == resistance) && (player distance _target) < _distance) then {
                 _nameString = "<t size='0.6' shadow='2' color='#FFA500'>" + format['%1',_target getVariable ['unitname', name _target]] + "</t>";
                 [_nameString,0,0.8,_refresh,0,0,3] spawn bis_fnc_dynamicText;
             };
@@ -98,7 +98,7 @@ If (EXITFSS) exitwith {showCinemaBorder false; player cameraEffect ["terminate",
 if (!(isnil "_hdl") && {!(scriptDone _hdl)}) then {titleText ["Gear is still beeing applied...", "PLAIN"]};
 
 _playerUnit = (aliveUnits select actualUnits);
-_enemyunits = {((side _x) getfriend (side _playerUnit)) < 0.6} count ((getposATL _playerUnit) nearEntities [["CAmanBase"],__NMEDISTANCE]);
+_enemyunits = {((side group _x) getfriend (side group _playerUnit)) < 0.6} count ((getposATL _playerUnit) nearEntities [["CAmanBase"],__NMEDISTANCE]);
 _spawningNearEnemiesAllowed = ((ALIVE_SUP_MULTISPAWN getvariable ["spawningnearenemiesallowed","false"]) == "true");
 
 if ((_enemyunits > 0) && {!(_spawningNearEnemiesAllowed)}) then {

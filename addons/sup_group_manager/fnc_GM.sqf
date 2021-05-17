@@ -165,10 +165,10 @@ switch(_operation) do {
 
             waitUntil {
                 sleep 1;
-                ((str side player) != "UNKNOWN")
+                ((str side group player) != "UNKNOWN")
             };
 
-            _playerSide = side player;
+            _playerSide = side group player;
             _sideNumber = [_playerSide] call ALIVE_fnc_sideObjectToNumber;
             _sideText = [_sideNumber] call ALIVE_fnc_sideNumberToText;
 

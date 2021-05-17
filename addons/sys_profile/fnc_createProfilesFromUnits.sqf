@@ -117,7 +117,7 @@ if(_debug) then {
     _leader = leader _group;
     _units = units _group;
 
-    if((_leader getVariable ["profileID",""] == "") && !(isPlayer _leader) && !(isNull _leader) && !(str(side _leader) == "LOGIC")) then {
+    if((_leader getVariable ["profileID",""] == "") && !(isPlayer _leader) && !(isNull _leader) && !(str(side group _leader) == "LOGIC")) then {
 
         _unitClasses = [];
         _positions = [];
@@ -158,7 +158,7 @@ if(_debug) then {
             [_profileEntity, "positions", _positions] call ALIVE_fnc_profileEntity;
             [_profileEntity, "damages", _damages] call ALIVE_fnc_profileEntity;
             [_profileEntity, "ranks", _ranks] call ALIVE_fnc_profileEntity;
-            [_profileEntity, "side", str(side _leader)] call ALIVE_fnc_profileEntity;
+            [_profileEntity, "side", str(side group _leader)] call ALIVE_fnc_profileEntity;
             [_profileEntity, "faction", faction _leader] call ALIVE_fnc_profileEntity;
             [_profileEntity, "isPlayer", false] call ALIVE_fnc_profileEntity;
 

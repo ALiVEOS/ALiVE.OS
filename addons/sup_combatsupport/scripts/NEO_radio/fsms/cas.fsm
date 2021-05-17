@@ -494,7 +494,7 @@ class FSM
                                          "" \n
                                          "" \n
                                          "{" \n
-                                         "  if (alive _x && side _x != side _veh) then" \n
+                                         "  if (alive _x && {(side group _x) != (side _veh)}) then" \n
                                          "  {" \n
                                          "    _grp reveal _x;" \n
                                          "  };" \n
