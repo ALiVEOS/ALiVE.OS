@@ -177,8 +177,10 @@ switch (_taskState) do {
         if (count _targetBuildings == 0) then {
             ["C2ISTAR - No buildings given for this wiretap location! Creating comms composition..."] call ALiVE_fnc_Dump;
 
-            // Find a suitable position
-            _taskLocation = [_taskLocation,500,15,0.06] call ALiVE_fnc_findFlatArea;
+            // Find a suitable position high up
+            _taskLocation = [_taskLocation,"overwatch"] call ALIVE_fnc_taskGetSectorPosition;
+
+            _taskLocation = [_taskLocation,100,15,0.06] call ALiVE_fnc_findFlatArea;
 
             private ["_category","_compType"];
             _compType = "Military";
