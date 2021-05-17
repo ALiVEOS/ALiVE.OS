@@ -246,7 +246,7 @@ switch(_operation) do {
         private _eventID = _args;
 
         private _events = _logic getvariable "events";
-        private _event = [_events,_eventID] call ALIVE_fnc_hashGet;
+        private _event = _events get _eventID;
         if (isnil "_event") exitwith {};
 
         private _type = [_event,"type"] call ALIVE_fnc_hashGet;
@@ -257,7 +257,7 @@ switch(_operation) do {
             _eventsForType deleteat _eventID;
         };
         
-        _events setvariable [_eventID, nil];
+        _events deleteat _eventID;
     };
 
     case "getEventsByType": {
