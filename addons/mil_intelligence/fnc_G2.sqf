@@ -65,14 +65,14 @@ switch(_operation) do {
 
         _logic setvariable ["intel", createHashMap];
         _logic setvariable ["spotrepsByProfileID", createHashMap];
+        _logic setvariable ["intelByObjectiveID", createHashMap];
 
         _result = _logic;
     };
 
     case "start": {
+        if (_logic getvariable "side" != "WEST") exitwith {};
         private _timeBetweenConfidenceDecay = _logic getvariable "timeBetweenConfidenceDecay";
-
-        [_logic,"listen"] call MAINCLASS;
 
         private _perFrameID = [{
             private _logic = _this select 0;
@@ -81,6 +81,8 @@ switch(_operation) do {
 
         _logic setvariable ["perFrameID", _perFrameID];
 
+        [_logic,"listen"] call MAINCLASS;
+
         _logic setvariable ["startupComplete", true];
     };
 
@@ -88,7 +90,7 @@ switch(_operation) do {
         private _listenerID = [ALiVE_eventLog, "addListener", [_logic, [
             "OPCOM_ORDER_CONFIRMED",
             "TACOM_ORDER_ISSUED",
-            "OPCOM_ORDER_COMPLETE"
+            "TACOM_ORDER_COMPLETE"
         ]]] call ALiVE_fnc_eventLog;
         _logic setvariable ["listenerID", _listenerID];
     };
@@ -119,6 +121,7 @@ switch(_operation) do {
     };
 
     case "createSpotrep": {
+        if (true) exitwith {};
         _args params ["_side","_faction","_profileID","_groupPosition","_groupType","_groupCount","_groupSpeed","_groupDirection","_timeSinceSeen"];
 
         private _maxIntelLifetime = _logic getvariable "maxIntelLifetime";
@@ -170,6 +173,8 @@ switch(_operation) do {
         private _intelDisplayStrategies = _logic getvariable "intelDisplayStrategies";
         private _intelOnRemoveDisplayStrategy = _intelDisplayStrategies get "onCreate";
         [_logic,_intelOnRemoveDisplayStrategy, [_logic,_report]] call MAINCLASS;
+
+        _result = _reportID;
     };
 
     case "updateIntelReport": {
@@ -198,12 +203,16 @@ switch(_operation) do {
         private _intelOnRemoveDisplayStrategy = _intelDisplayStrategies get "onRemove";
 
         {
-            private _reportID = _x get "id";
+            private _report = _x;
+            if (_report isequaltype "") then {
+                _report = _intel get _x;
+            };
+            private _reportID = _report get "id";
 
-            [_logic,_intelOnRemoveDisplayStrategy, [_logic,_x]] call MAINCLASS;
+            [_logic,_intelOnRemoveDisplayStrategy, [_logic,_report]] call MAINCLASS;
 
-            private _profileID = _x get "profileID";
-            if (_profileID != "") then {
+            private _profileID = _report get "profileID";
+            if (!isnil "_profileID" && { _profileID != "" }) then {
                 private _spotrepsByProfileID = _logic getvariable "spotrepsByProfileID";
                 _spotrepsByProfileID deleteat _profileID;
             };
@@ -213,6 +222,7 @@ switch(_operation) do {
     };
 
     case "removeProfileSpotreps": {
+        if (true) exitwith {};
         private _profiles = _args;
 
         private _spotrepsByProfileID = _logic getvariable "spotrepsByProfileID";
@@ -336,11 +346,27 @@ switch(_operation) do {
                     };
                 };
                 case "OPCOM_ORDER_COMPLETE": {
+                    // _eventData params ["_opcomID","_target","_operation","_side","_factions","_orderArguments"];
+
+                    // if (_operation in ["capture","defend"]) then {
+                    //     [_logic,"removeFriendlyOPCOMOrder", [_opcomID,_target,_operation]] call MAINCLASS;
+                    // };
+                };
+                case "TACOM_ORDER_ISSUED": {
                     _eventData params ["_opcomID","_target","_operation","_side","_factions","_orderArguments"];
 
-                    //if (_operation in ["attack","defend"]) then {
-                        [_logic,"removeFriendlyOPCOMOrder", [_opcomID,_target,_operation]] call MAINCLASS;
-                    //};
+                    if (_operation in ["recon","capture"]) then {
+                        [_logic,"createFriendlyTACOMOrder", [_opcomID,_target,_operation]] call MAINCLASS;
+                    };
+                };
+                case "TACOM_ORDER_COMPLETE": {
+                    _eventData params ["_opcomID","_target","_operation","_side","_factions","_orderArguments"];
+
+                    if (_operation in ["recon","capture"]) then {
+                        systemchat format ["ORDER COMPLETE - %1 | %2", _operation, [_target,"objectiveID"] call ALiVE_fnc_hashGet];
+
+                        [_logic,"removeFriendlyTACOMOrder", [_opcomID,_target,_operation]] call MAINCLASS;
+                    };
                 };
             };
         };
@@ -356,13 +382,85 @@ switch(_operation) do {
             ["order", _operation]
         ];
 
-        [_logic,"storeIntelReport", _opcomOrderIntel] call MAINCLASS;
+        private _reportID = [_logic,"storeIntelReport", _opcomOrderIntel] call MAINCLASS;
+
+        private _objectiveID = [_target,"objectiveID"] call ALiVE_fnc_hashGet;
+
+        private _intelByObjectiveID = _logic getvariable "intelByObjectiveID";
+        private _existingObjectiveIntel = _intelByObjectiveID get [_opcomID, _objectiveID];
+        if (isnil "_existingObjectiveIntel") then {
+            _existingObjectiveIntel = createHashMap;
+            _intelByObjectiveID set [[_opcomID, _objectiveID], _existingObjectiveIntel];
+        };
+
+        if ("base" in _existingObjectiveIntel) then {
+            systemchat "ADDING BASE WHEN ALREADY THERE";
+        };
+        _existingObjectiveIntel set ["base", _reportID];
     };
 
     case "removeFriendlyOPCOMOrder": {
         _args params ["_opcomID","_target","_operation"];
 
-        systemchat format ["Finished %1 at %2", _operation, _target];
+        private _objectiveID = [_target,"objectiveID"] call ALiVE_fnc_hashGet;
+        private _objectiveIntelKey = [_opcomID, _objectiveID];
+
+        private _intelByObjectiveID = _logic getvariable "intelByObjectiveID";
+        private _objectiveIntel = _intelByObjectiveID get _objectiveIntelKey;
+
+        if (isnil "_objectiveIntel") exitwith {};
+
+        _intelByObjectiveID deleteat _objectiveIntelKey;
+
+        private _allObjectiveIntel = (keys _objectiveIntel) apply {_objectiveIntel get _x};
+        [_logic,"removeIntelReports", (keys _objectiveIntel) apply {_objectiveIntel get _x}] call MAINCLASS;
+    };
+
+    case "createFriendlyTACOMOrder": {
+        _args params ["_opcomID","_target","_operation"];
+
+        private _intelType = switch (_operation) do {
+            case "recon":   { "friendlyTACOMRecon" };
+            case "capture": { "friendlyTACOMCapture" };
+        };
+
+        private _tacomOrderIntel = createHashMapFromArray [
+            ["type", _intelType],
+            ["opcomID", _opcomID],
+            ["objective", _target],
+            ["order", _operation]
+        ];
+
+        private _objectiveID = [_target,"objectiveID"] call ALiVE_fnc_hashGet;
+
+        private _intelByObjectiveID = _logic getvariable "intelByObjectiveID";
+        private _existingObjectiveIntel = _intelByObjectiveID get [_opcomID, _objectiveID];
+        if (isnil "_existingObjectiveIntel") then {
+            _existingObjectiveIntel = createHashMap;
+            _intelByObjectiveID set [[_opcomID, _objectiveID], _existingObjectiveIntel];
+        };
+
+        private _reportID = [_logic,"storeIntelReport", _tacomOrderIntel] call MAINCLASS;
+        _existingObjectiveIntel set [_operation, _reportID];
+    };
+
+    case "removeFriendlyTACOMOrder": {
+        _args params ["_opcomID","_target","_operation"];
+
+        private _objectiveID = [_target,"objectiveID"] call ALiVE_fnc_hashGet;
+
+        private _intelByObjectiveID = _logic getvariable "intelByObjectiveID";
+        private _existingObjectiveIntel = _intelByObjectiveID get [_opcomID, _objectiveID];
+        if (!isnil "_existingObjectiveIntel") then {
+            private _operationIntel = _existingObjectiveIntel get _operation;
+            if (isnil "_operationIntel") exitwith {
+                systemchat format ["TACOM INTEL MISSING ON REMOVE %1 - %2", _operation, _objectiveID];
+            };
+
+            [_logic,"removeIntelReports", [_operationIntel]] call MAINCLASS;
+
+            _existingObjectiveIntel deleteat _operation;
+        };
     };
 
     /////////////////////////////////////////////////////////////////////
@@ -503,9 +601,109 @@ switch(_operation) do {
                     ["text", _markerText]
                 ];
 
-                _report set ["markers", [_circleMarker, _textMarker]];
+                _report set ["markers", [_circleMarker get "id", _textMarker get "id"]];
 
                 [nil,"createMarkersLocally", [_circleMarker, _textMarker]] remoteExecCall ["ALiVE_fnc_G2", _playersToSendMarkerTo];
+            };
+
+            case "friendlyTACOMRecon": {
+                private _reportID = _report get "id";
+                private _opcomID = _report get "opcomID";
+                private _objective = _report get "objective";
+                private _order = _report get "order";
+
+                private _objectivePosition = [_objective,"center"] call ALiVE_fnc_hashGet;
+                private _objectiveSize = [_objective,"size"] call ALiVE_fnc_hashGet;
+                private _objectiveSection = [_objective,"section"] call ALiVE_fnc_hashGet;
+
+                private _assignedProfiles = _objectiveSection apply { [ALiVE_profileHandler,"getProfile", _x] call ALiVE_fnc_profileHandler };
+                private _profilePositions = _assignedProfiles apply { _x select 2 select 2 };
+                private _profilePositionsMidpoint = _profilePositions call ALiVE_fnc_findMidpoint;
+                private _dirToAttackers = _objectivePosition getdir _profilePositionsMidpoint;
+                private _dirToObjective = _dirToAttackers - 180;
+
+                private _lineCenter = _objectivePosition getpos [350, _dirToAttackers];
+
+                private _lineMarker = createHashMapFromArray [
+                    ["id", format [MTEMPLATE, _opcomID, _reportID, 1]],
+                    ["position", _lineCenter],
+                    ["shape", "RECTANGLE"],
+                    ["size", [25, (_objectiveSize * 1.5) min 350]],
+                    ["direction", _dirToAttackers - 90],
+                    ["color", "ColorBlufor"],
+                    ["brush", "FDiagonal"]
+                ];
+
+                private _arrowStart = _objectivePosition getpos [550, _dirToAttackers];
+                private _arrowEnd = _arrowStart getpos [100, _dirToObjective];
+                private _turn1 = _arrowEnd getpos [15, _dirToObjective + 90];
+                private _turn2 = _turn1 getpos [45, _dirToObjective - 30];
+                private _turn3 = _turn2 getpos [45, _dirToAttackers + 30];
+                private _turn4 = _turn3 getpos [15, _dirToObjective + 90];
+                private _turn5 = _turn4 getpos [100, _dirToAttackers];
+                private _path = [_logic,"createPolylinePath", [_arrowStart,_arrowEnd, _turn1, _turn2, _turn3, _turn4, _turn5]] call MAINCLASS;
+
+                private _arrowMarker = createHashMapFromArray [
+                    ["id", format [MTEMPLATE, _opcomID, _reportID, 2]],
+                    ["position", _arrowStart],
+                    ["shape", "POLYLINE"],
+                    ["path", _path],
+                    ["color", "ColorBlufor"]
+                ];
+
+                _report set ["markers", [_lineMarker get "id", _arrowMarker get "id"]];
+
+                [nil,"createMarkersLocally", [_lineMarker, _arrowMarker]] remoteExecCall ["ALiVE_fnc_G2", _playersToSendMarkerTo];
+            };
+
+            case "friendlyTACOMCapture": {
+                private _reportID = _report get "id";
+                private _opcomID = _report get "opcomID";
+                private _objective = _report get "objective";
+                private _order = _report get "order";
+
+                private _objectivePosition = [_objective,"center"] call ALiVE_fnc_hashGet;
+                private _objectiveSize = [_objective,"size"] call ALiVE_fnc_hashGet;
+                private _objectiveSection = [_objective,"section"] call ALiVE_fnc_hashGet;
+
+                private _assignedProfiles = _objectiveSection apply { [ALiVE_profileHandler,"getProfile", _x] call ALiVE_fnc_profileHandler };
+                private _profilePositions = _assignedProfiles apply { _x select 2 select 2 };
+                private _profilePositionsMidpoint = _profilePositions call ALiVE_fnc_findMidpoint;
+                private _dirToAttackers = _objectivePosition getdir _profilePositionsMidpoint;
+                private _dirToObjective = _dirToAttackers - 180;
+
+                private _lineCenter = _objectivePosition getpos [350, _dirToAttackers];
+
+                private _lineMarker = createHashMapFromArray [
+                    ["id", format [MTEMPLATE, _opcomID, _reportID, 1]],
+                    ["position", _lineCenter],
+                    ["shape", "RECTANGLE"],
+                    ["size", [25, (_objectiveSize * 1.5) min 350]],
+                    ["direction", _dirToAttackers - 90],
+                    ["color", "ColorBlufor"],
+                    ["brush", "FDiagonal"]
+                ];
+
+                private _arrowStart = _objectivePosition getpos [400, _dirToAttackers];
+                private _arrowEnd = _arrowStart getpos [100, _dirToObjective];
+                private _turn1 = _arrowEnd getpos [15, _dirToObjective + 90];
+                private _turn2 = _turn1 getpos [45, _dirToObjective - 30];
+                private _turn3 = _turn2 getpos [45, _dirToAttackers + 30];
+                private _turn4 = _turn3 getpos [15, _dirToObjective + 90];
+                private _turn5 = _turn4 getpos [100, _dirToAttackers];
+                private _path = [_logic,"createPolylinePath", [_arrowStart,_arrowEnd, _turn1, _turn2, _turn3, _turn4, _turn5]] call MAINCLASS;
+
+                private _arrowMarker = createHashMapFromArray [
+                    ["id", format [MTEMPLATE, _opcomID, _reportID, 2]],
+                    ["position", _arrowStart],
+                    ["shape", "POLYLINE"],
+                    ["path", _path],
+                    ["color", "ColorBlufor"]
+                ];
+
+                _report set ["markers", [_lineMarker get "id", _arrowMarker get "id"]];
+
+                [nil,"createMarkersLocally", [_lineMarker, _arrowMarker]] remoteExecCall ["ALiVE_fnc_G2", _playersToSendMarkerTo];
             };
         };
     };
@@ -553,10 +751,10 @@ switch(_operation) do {
             _marker setMarkerShapeLocal _shape;
 
             if (!isnil "_color") then {
-                _marker setMarkerColor _color;
+                _marker setMarkerColorLocal _color;
             };
             if (!isnil "_alpha") then {
-                _marker setMarkerAlpha _alpha;
+                _marker setMarkerAlphaLocal _alpha;
             };
 
             switch (_shape) do {
@@ -567,17 +765,22 @@ switch(_operation) do {
                     private _size = _x get "size";
                     private _dir = _x get "direction";
                     private _text = _x get "text";
+                    private _brush = _x get "brush";
 
-                    _marker setMarkerType _type;
-                    _marker setMarkerSize _size;
-                    _marker setMarkerDir _dir;
-                    _marker setMarkerText _text;
+                    _marker setMarkerTypeLocal _type;
+                    _marker setMarkerSizeLocal _size;
+                    _marker setMarkerDirLocal _dir;
+                    _marker setMarkerTextLocal _text;
+
+                    if (!isnil "_brush") then {
+                        _marker setMarkerBrushLocal _brush;
+                    }
                 };
                 case "POLYLINE": {
                     private _path = _x get "path";
 
-                    _marker setMarkerPolyline _path;
-                    _marker setMarkerShadow false;
+                    _marker setMarkerPolylineLocal _path;
+                    _marker setMarkerShadowLocal false;
                 };
             };
         } foreach _markersData;
@@ -622,7 +825,6 @@ switch(_operation) do {
 
         _result = [_markerType,_color];
     };
-    //
 
     case "debug": {
         if (!isnil "_args") then {
