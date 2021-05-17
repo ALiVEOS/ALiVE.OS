@@ -58,12 +58,15 @@ private _brokenCheckpoints = [
 // Hide Terrain objects around composition
 private _hideLocaly = false;
 private _flags = 12 call bis_fnc_decodeFlags2;
-private _radius = 15;
+private _radius = 20;
 private _hidingCode = switch (true) do
 {
     case (_hideLocaly && isServer):
     {
-        {_x hideObject true;_x allowDamage false;};
+        {
+            _x hideObject true;
+            _x allowDamage false;
+        };
     };
     case (_hideLocaly && !isServer):
     {
@@ -71,11 +74,13 @@ private _hidingCode = switch (true) do
     };
     default
     {
-        {if (_x isEqualType objNull && {!(_x isKindOf "Logic")} ) then {
-            _x hideObjectGlobal true;
-            _x allowDamage false;
-            ["Removing object: %1", _x] call ALiVE_fnc_dump;
-        };};
+        {
+            if (_x isEqualType objNull && {!(_x isKindOf "Logic")} ) then {
+                _x hideObjectGlobal true;
+                _x allowDamage false;
+                //["Removing object: %1", _x] call ALiVE_fnc_dump;
+            };
+        };
     };
 
 };
@@ -84,7 +89,8 @@ private _hidingCode = switch (true) do
     if (_x == 1) then
     {
         private _found = nearestTerrainObjects [_position,CATEGORY_COMP select _forEachIndex,_radius,false,true];
-        ["Removing objects: %1 - %2", CATEGORY_COMP select _forEachIndex, _found] call ALiVE_fnc_dump;
+        ["Removing objects: %1", CATEGORY_COMP select _forEachIndex] call ALiVE_fnc_dump;
+        _found call ALiVE_fnc_inspectArray;
         _hidingCode forEach (_found inAreaArray [_position, _radius, _radius]);
     };
 }
