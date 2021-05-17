@@ -874,6 +874,14 @@ switch(_operation) do {
                             [_agent, "homeCluster", _clusterID] call ALIVE_fnc_civilianAgent;
                             [_agent, "homePosition", _buildingPosition] call ALIVE_fnc_civilianAgent;
 
+                            // Add persistent name to civ
+                            private _genName = getText(configFile >> "CfgVehicles" >> _unitClass >> "genericNames");
+                            private _firstName = getText((configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "FirstNames") select (random (count (configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "FirstNames") -1) ));
+                            private _lastName = getText((configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "LastNames") select (random (count (configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "LastNames") -1) ));
+
+                            [_agent, "firstName", _firstName] call ALIVE_fnc_civilianAgent;
+                            [_agent, "lastName", _lastName] call ALIVE_fnc_civilianAgent;
+
                             if (count _ambientCivilianRoles > 0 && {random 1 > 0.5}) then {
                                 private _role = selectRandom _ambientCivilianRoles;
                                 //private _roles = _ambientCivilianRoles - [_role];
