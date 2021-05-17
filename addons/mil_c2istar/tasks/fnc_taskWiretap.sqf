@@ -177,6 +177,9 @@ switch (_taskState) do {
         if (count _targetBuildings == 0) then {
             ["C2ISTAR - No buildings given for this wiretap location! Creating comms composition..."] call ALiVE_fnc_Dump;
 
+            // Find a suitable position
+            _taskLocation = [_taskLocation,500,15] call ALiVE_fnc_findFlatArea;
+
             private ["_category","_compType"];
             _compType = "Military";
             If (_taskEnemySide == "GUER") then {
@@ -185,7 +188,7 @@ switch (_taskState) do {
             [_taskLocation, _compType, "Communications", _taskEnemyFaction, ["Small","Medium"], 1] call ALIVE_fnc_spawnRandomPopulatedComposition;
 
             // Add Tower just in case
-            private _transmitter = createVehicle ["Land_TTowerSmall_2_F" , _taskLocation, [], 15, "NONE"];
+            private _transmitter = createVehicle ["Land_TTowerSmall_2_F" , _taskLocation, [], 5, "NONE"];
 
             // Get buildings from comp (or nearest)
             _targetBuildings = [_transmitter];
@@ -314,7 +317,6 @@ switch (_taskState) do {
 
         // create the parent task
         private _dialog = [_dialogOption, "Parent"] call ALIVE_fnc_hashGet;
-
         private _taskTitle = [_dialog, "title"] call ALIVE_fnc_hashGet;
         private _taskDescription = [_dialog, "description"] call ALIVE_fnc_hashGet;
         private _taskSource = format ["%1-Wiretap-Parent", _taskID];
