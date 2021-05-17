@@ -178,7 +178,7 @@ switch (_taskState) do {
             ["C2ISTAR - No buildings given for this wiretap location! Creating comms composition..."] call ALiVE_fnc_Dump;
 
             // Find a suitable position
-            _taskLocation = [_taskLocation,500,15] call ALiVE_fnc_findFlatArea;
+            _taskLocation = [_taskLocation,500,15,0.06] call ALiVE_fnc_findFlatArea;
 
             private ["_category","_compType"];
             _compType = "Military";
