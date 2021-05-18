@@ -37,7 +37,7 @@ _loopHandle = [] spawn {
         } foreach vehicles;
 
         // Get List of Man units from Mission
-        { if ((side _x in _sideMask) && (_x != player) && (_x isKindOf "MAN")) then
+        { if (((side group _x) in _sideMask) && (_x != player) && (_x isKindOf "MAN")) then
             {
                 private ["_nn","_fh"];
                 infantry pushback _x;

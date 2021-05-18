@@ -24,7 +24,7 @@ Tupolov
 
 params ["_unit", "_firer", "_distance"];
 
-if (side _firer == civilian) exitWith {};
+if (side group _firer == civilian) exitWith {};
 
 // Set the crowd system to stop spawning due to combat in the area
 private _crowdActivatorFSM = [ALIVE_civilianPopulationSystem, "crowd_FSM"] call ALiVE_fnc_HashGet;
@@ -55,7 +55,7 @@ if (random 1 > 0.85 && !(_unit getVariable ["ALiVE_Crowd_Fleeing", false])) then
 if (_distance < 15 && !(_unit getVariable ["alreadyPissedOff", false])) then {
 
 	// Hostility will increase towards firer faction
-	[position _unit,[str(side _firer)], +0.5] call ALiVE_fnc_updateSectorHostility;
+	[position _unit,[str(side group _firer)], +0.5] call ALiVE_fnc_updateSectorHostility;
 
 	// They can only be angry once
 	_unit setVariable ["alreadyPissedOff", true, false];

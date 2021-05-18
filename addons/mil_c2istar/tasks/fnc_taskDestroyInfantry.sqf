@@ -78,8 +78,13 @@ switch (_taskState) do {
 
             _profile = [ALiVE_ProfileHandler, "getProfile",_x] call ALIVE_fnc_ProfileHandler;
 
-            if (([_profile,"side"] call ALiVE_fnc_HashGet) == _Input1) then {
-                _final = ([_profile,"position"] call ALiVE_fnc_HashGet) distance _Input0
+            if (!isNil "_profile") then {
+
+                if (([_profile,"side"] call ALiVE_fnc_HashGet) == _Input1) then {
+                    _final = ([_profile,"position"] call ALiVE_fnc_HashGet) distance _Input0
+                } else {
+                    _final = 999999
+                };
             } else {
                 _final = 999999
             };

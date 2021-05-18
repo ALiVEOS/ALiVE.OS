@@ -181,7 +181,7 @@ for "_j" from 1 to _numIEDs do {
                 };
 
 				// Update Sector Hostility
-    			[position _IED, [str(side _killer)], +10] call ALiVE_fnc_updateSectorHostility;
+    			[position _IED, [str(side (group _killer))], +10] call ALiVE_fnc_updateSectorHostility;
 
                 //set pos to 0 height and give it an extra shot
                 _pos set [2,0];

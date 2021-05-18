@@ -40,7 +40,7 @@ switch (_size) do {
     };
 };
 
-private _faction = if(str(side player) == "CIV") then {""} else { faction player };
+private _faction = if(str(side group player) == "CIV") then {""} else { faction player };
 
 _objects = player nearObjects _radius;
 

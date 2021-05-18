@@ -60,7 +60,7 @@ if ((random 1) > 0.90) then {
         } foreach _trgr;
 
         // Update Sector Hostility
-    	[[position _IED, [str(side player)], +10] ,"ALiVE_fnc_updateSectorHostility", false, false, true] call BIS_fnc_MP;
+    	[[position _IED, [str(side group player)], +10] ,"ALiVE_fnc_updateSectorHostility", false, false, true] call BIS_fnc_MP;
 
         [[ADDON, "removeIED", _IED] ,"ALiVE_fnc_IED", false, false, true] call BIS_fnc_MP;
 
@@ -81,7 +81,7 @@ if ((random 1) > 0.90) then {
         };
 
         // Update Sector Hostility
-    	[[position _IED, [str(side player)], -20] ,"ALiVE_fnc_updateSectorHostility", false, false, true] call BIS_fnc_MP;
+    	[[position _IED, [str(side group player)], -20] ,"ALiVE_fnc_updateSectorHostility", false, false, true] call BIS_fnc_MP;
 
         [[ADDON, "removeIED", _IED] ,"ALiVE_fnc_IED", false, false, true] call BIS_fnc_MP;
 
@@ -111,7 +111,7 @@ if ((random 1) > 0.90) then {
     };
 
     // Update Sector Hostility
-    [[position _IED, [str(side player)], -20] ,"ALiVE_fnc_updateSectorHostility", false, false, true] call BIS_fnc_MP;
+    [[position _IED, [str(side group player)], -20] ,"ALiVE_fnc_updateSectorHostility", false, false, true] call BIS_fnc_MP;
 
     [[ADDON, "removeIED", _IED] ,"ALiVE_fnc_IED", false, false, true] call BIS_fnc_MP;
 

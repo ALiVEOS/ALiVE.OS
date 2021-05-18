@@ -24,7 +24,7 @@ Tupolov
 
 params ["_unit", "_firer", "_distance"];
 
-if (side _firer == civilian) exitWith {};
+if (side group _firer == civilian) exitWith {};
 
 private _agentID = _unit getVariable "agentID";
 private _agent = [ALIVE_agentHandler, "getAgent", _agentID] call ALIVE_fnc_agentHandler;
@@ -55,7 +55,7 @@ if (_distance < 50) then {
 if (_distance < 25 && !(_unit getVariable ["alreadyPissedOff", false])) then {
 
 	// Hostility will increase towards firer faction
-	[position _unit,[str(side _firer)], +2] call ALiVE_fnc_updateSectorHostility;
+	[position _unit,[str(side group _firer)], +2] call ALiVE_fnc_updateSectorHostility;
 
 	// They can only be angry once
 	_unit setVariable ["alreadyPissedOff", true, false];

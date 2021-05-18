@@ -481,7 +481,7 @@ if (isDedicated || (isServer && _pns)) then {
                         TRACE_1("SYS_DATA AAR", allUnits);
                         {
                             private _unit = _x;
-                            if ((vehicle _unit == _unit) && alive _unit && (typeof _unit != "Logic") && (side _unit != civilian)) then {
+                            if ((vehicle _unit == _unit) && alive _unit && (typeof _unit != "Logic") && (side group _unit != civilian)) then {
                                 TRACE_1("SYS_DATA AAR", _unit);
                                 private _unitHash = [] call ALIVE_fnc_hashCreate;
 

@@ -48,7 +48,7 @@ private _aimingAccuracy = _unit skill "aimingAccuracy";
 private _aimingShake = _unit skill "aimingShake";
 private _aimingSpeed = _unit skill "aimingSpeed";
 
-if ((_faction in (_factionSkills select 1)) && {!(side _unit == CIVILIAN)}) then {
+if ((_faction in (_factionSkills select 1)) && {!(side group _unit == CIVILIAN)}) then {
     _factionSkill = [_factionSkills,_faction] call ALIVE_fnc_hashGet;
 
     if((_aimingAccuracy != _factionSkill select 2) && {_aimingShake != _factionSkill select 3} && {_aimingSpeed != _factionSkill select 4}) then {

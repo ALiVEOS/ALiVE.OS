@@ -211,7 +211,7 @@ switch(_operation) do {
                                 (_x distance player < GVAR(RADIUS)) &&
                                 {call _onView} &&
                                 {!(lineIntersects [eyePos player, eyePos _x, player, _x])} &&
-                                { !playertags_restricttofriendly || { side _x == _playerSide } }
+                                { !playertags_restricttofriendly || { side group _x == _playerSide } }
                             ) then {
 
                                     private ["_icon","_color"];
@@ -220,7 +220,7 @@ switch(_operation) do {
                                     _width = 0.9; _height = 0.9;
                                     _name = name _x;
 
-                                    switch (side _x) do {
+                                    switch (side group _x) do {
                                         case (WEST) : {_color = [0.259,0.235,0.941,1]};
                                         case (EAST) : {_color = [0.91,0.145,0.275,1]};
                                         case (RESISTANCE) : {_color = [0.278,0.788,0.404,1]};

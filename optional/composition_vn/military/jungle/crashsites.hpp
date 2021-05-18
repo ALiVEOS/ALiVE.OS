@@ -5,8 +5,8 @@
     class CrashsitesMedium
     {
         name = $STR_ALIVE_COMP_VN_CrashsitesMedium;
-        
-        class CrashSitesMedium_F4_B_MACV 
+
+        class CrashSitesMedium_F4B_B_MACV
         {
             name = "F-4 Crash Site [B_MACV]";
             icon = \vn\objects_f_vietnam\flags\vn_flag_01_usa_co.paa;
@@ -44,7 +44,7 @@
     {
         name = $STR_ALIVE_COMP_VN_CrashsitesSmall;
 				// WEST
-        class CrashSitesSmall_H34_B_MACV
+        class CrashSitesSmall_UH34_B_MACV
         {
             name = "H-34 Crash Site [B_MACV]";
             icon = \vn\objects_f_vietnam\flags\vn_flag_01_usa_co.paa;
@@ -52,7 +52,7 @@
             class Object0	{side = 8; vehicle = "land_vn_burned_t_cocosnucifera_01"; rank = ""; position[] = {0,0,9.53674e-007}; dir = 0;};
             class Object1	{side = 8; vehicle = "Land_vn_rock_clutter_01_01"; rank = ""; position[] = {-4.24414,-4.34137,0}; dir = 21.1801;};
             class Object2	{side = 8; vehicle = "Land_vn_rock_clutter_02_01"; rank = ""; position[] = {-2.49609,-10.1868,0}; dir = -182.241;};
-            class Object3	{side = 8; vehicle = "Land_vn_b_prop_litter_body_02"; rank = ""; position[] = {-0.884766,-2.06458,0.291448}; dir = 53.1268;};  
+            class Object3	{side = 8; vehicle = "Land_vn_b_prop_litter_body_02"; rank = ""; position[] = {-0.884766,-2.06458,0.291448}; dir = 53.1268;};
             class Object4	{side = 8; vehicle = "Land_vn_b_prop_litter_body_02_02"; rank = ""; position[] = {-1.41992,-1.44141,0.291447}; dir = 54.6842;};
             class Object5	{side = 8; vehicle = "Land_vn_crater_decal_01"; rank = ""; position[] = {-4.25195,-6.0235,0}; dir = 0;};
             class Object6	{side = 8; vehicle = "Land_vn_b_sugarcane_sapling_row_f"; rank = ""; position[] = {0.361328,-1.66119,0.162883}; dir = -115.403;};
@@ -70,8 +70,8 @@
             class Object18	{side = 8; vehicle = "vn_o_item_firstaid_01"; rank = ""; position[] = {-8.43359,-8.15643,0}; dir = 132.759;};
             class Object19	{side = 8; vehicle = "vn_o_item_canteen_02"; rank = ""; position[] = {-8.40625,-7.95386,0}; dir = -182.241;};
             class Object20	{side = 8; vehicle = "vn_o_item_binocs_case_01"; rank = ""; position[] = {-8.16992,-7.94415,0}; dir = -182.241;};
-        }; 
-        class CrashSitesSmall_UH1_B_MACV 
+        };
+        class CrashSitesSmall_UH1D_B_MACV
         {
             name = "UH-1 Crash Site [B_MACV]";
             icon = \vn\objects_f_vietnam\flags\vn_flag_01_usa_co.paa;
@@ -96,5 +96,31 @@
             class Object17	{side = 8; vehicle = "Land_ClothShelter_02_F"; rank = ""; position[] = {1.95215,5.76172,0}; dir = 155.967;};
             class Object18	{side = 8; vehicle = "vn_o_item_firstaid_01"; rank = ""; position[] = {1.68555,5.33691,0}; dir = 67.7305;};
             class Object19	{side = 8; vehicle = "vn_o_item_bedroll_01"; rank = ""; position[] = {0.847656,6.14795,0}; dir = 182.728;};
-        };      
+        };
+        class CrashSitesSmall_UH1C_B_MACV
+        {
+            name = "UH-1 Crash Site [B_MACV]";
+            icon = \vn\objects_f_vietnam\flags\vn_flag_01_usa_co.paa;
+            size = 8;
+            class Object0   {side = 8; vehicle = "Land_vn_dirtpatch_01_4x4_f"; rank = ""; position[] = {-0.0605469,-0.242676,0}; dir = 0;};
+            class Object1   {side = 8; vehicle = "Land_vn_rock_clutter_04_01"; rank = ""; position[] = {-2.29688,9.08008,0}; dir = 155.967;};
+            class Object2   {side = 8; vehicle = "land_vn_burned_t_cocosnucifera_01"; rank = ""; position[] = {-2.93164,2.73047,9.53674e-007}; dir = -21.792;};
+            class Object3   {side = 8; vehicle = "Land_vn_misc_burnspruce_pmc"; rank = ""; position[] = {4.74023,15.8755,9.53674e-007}; dir = -21.792;};
+            class Object4   {side = 8; vehicle = "Land_vn_b_calochlaena_f"; rank = ""; position[] = {-1.80859,2.30273,0}; dir = 336.466;};
+            class Object5   {side = 8; vehicle = "Land_vn_b_prop_litter_body_02"; rank = ""; position[] = {7.33008,8.16699,0}; dir = 327.883;};
+            class Object6   {side = 8; vehicle = "Land_vn_crater_decal_01"; rank = ""; position[] = {3.02832,8.70361,0}; dir = -21.792;};
+            class Object7   {side = 8; vehicle = "vn_o_prop_t884_01"; rank = ""; position[] = {1.88574,4.71826,-0.000754356}; dir = 70.3932;};
+            class Object8   {side = 8; vehicle = "vn_air_uh1c_01_wreck"; rank = ""; position[] = {2.5166,5.10693,9.53674e-007}; dir = 155.967;};
+            class Object9   {side = 8; vehicle = "Land_vn_rock_clutter_01_01"; rank = ""; position[] = {2.41016,10.2686,0}; dir = -0.611902;};
+            class Object10  {side = 8; vehicle = "Land_vn_rock_clutter_02_01"; rank = ""; position[] = {6.2041,5.48975,0}; dir = 155.967;};
+            class Object11  {side = 8; vehicle = "vn_o_item_binocs_case_01"; rank = ""; position[] = {1.38672,5.98975,0}; dir = 40.8282;};
+            class Object12  {side = 8; vehicle = "Land_vn_fireplace_f"; rank = ""; position[] = {-0.631836,5.99463,0}; dir = 155.967;};
+            class Object13  {side = 8; vehicle = "Land_vn_b_sugarcane_sapling_row_f"; rank = ""; position[] = {5.69238,14.4673,0}; dir = 222.805;};
+            class Object14  {side = 8; vehicle = "Oil_Spill_F"; rank = ""; position[] = {3.44727,2.09424,0}; dir = -21.792;};
+            class Object15  {side = 8; vehicle = "Land_DirtPatch_03_F"; rank = ""; position[] = {4.9209,0.729004,0}; dir = -21.792;};
+            class Object16  {side = 8; vehicle = "vn_o_item_canteen_02"; rank = ""; position[] = {2.03125,5.33496,0}; dir = 155.967;};
+            class Object17  {side = 8; vehicle = "Land_ClothShelter_02_F"; rank = ""; position[] = {1.95215,5.76172,0}; dir = 155.967;};
+            class Object18  {side = 8; vehicle = "vn_o_item_firstaid_01"; rank = ""; position[] = {1.68555,5.33691,0}; dir = 67.7305;};
+            class Object19  {side = 8; vehicle = "vn_o_item_bedroll_01"; rank = ""; position[] = {0.847656,6.14795,0}; dir = 182.728;};
+        };
     };

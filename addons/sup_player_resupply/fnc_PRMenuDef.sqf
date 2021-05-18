@@ -82,7 +82,7 @@ _menus =
                 localize "STR_ALIVE_PR_COMMENT",
                 "",
                 -1,
-                (MOD(Require) getVariable [format["ALIVE_MIL_LOG_AVAIL_%1", (side player)], false]),
+                (MOD(Require) getVariable [format["ALIVE_MIL_LOG_AVAIL_%1", (side group player)], false]),
                 !([QMOD(mil_C2ISTAR)] call ALiVE_fnc_isModuleAvailable) && {_result}
             ]
         ]

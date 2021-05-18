@@ -30,8 +30,8 @@ private ["_unit","_target","_unitSide","_targetSide","_group","_currentGroup"];
 _unit = _this select 0;
 _target = _this select 1;
 
-_unitSide = side _unit;
-_targetSide = side _target;
+_unitSide = side group _unit;
+_targetSide = side group _target;
 
 if!((_unitSide) getFriend (_targetSide) < 0.6) then {
     switch (_targetSide) do {

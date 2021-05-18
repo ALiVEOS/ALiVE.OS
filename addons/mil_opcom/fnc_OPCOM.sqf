@@ -1351,7 +1351,7 @@ switch(_operation) do {
 
                                             [getpos _charge,30] remoteExec  ["ALiVE_fnc_RemoveComposition",2];
 
-                                            ["Nice Job", format ["%1 disabled the roadblock at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side _caller];
+                                            ["Nice Job", format ["%1 disabled the roadblock at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side (group _caller)];
 
                                             deletevehicle _charge;
                                         },

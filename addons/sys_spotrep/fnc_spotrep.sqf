@@ -197,7 +197,7 @@ switch (_operation) do {
 
                 waitUntil {
                     sleep 1;
-                    ((str side player) != "UNKNOWN")
+                    ((str side group player) != "UNKNOWN")
                 };
 
 

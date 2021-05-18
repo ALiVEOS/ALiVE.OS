@@ -324,7 +324,7 @@ switch(_operation) do {
 
             _unit setVariable ["profileID",""];
 
-            _newGroup = createGroup (side _unit);
+            _newGroup = createGroup (side group _unit);
 
             [_unit] joinSilent _newGroup;
 

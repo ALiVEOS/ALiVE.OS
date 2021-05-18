@@ -83,7 +83,7 @@ private _ammoStates = _states + [["BLACK",4]];
 _eyesControl = _display displayctrl EYES_LIST;
 _eyes = [
     ["UNCLASSIFIED (PUBLIC)", "GLOBAL"],
-    [format ["CLASSIFIED Confidential (%1 ONLY)", side player], "SIDE"],
+    [format ["CLASSIFIED Confidential (%1 ONLY)", side group player], "SIDE"],
     [format ["CLASSIFIED Secret (%1 ONLY)", getText (((faction player) call ALiVE_fnc_configGetFactionClass) >> "displayName")], "FACTION"],
     [format ["CLASSIFIED Top Secret (%1 ONLY)", group player], "GROUP"],
     ["PRIVATE", "LOCAL"]

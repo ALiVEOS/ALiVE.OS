@@ -29,7 +29,7 @@ if (GVAR(ENABLED)) then {
         if ((isPlayer _target) || (isPlayer _source) || (isPlayer (gunner _target))  || (isPlayer (gunner _source)) ) then {
 
             _sideTarget = side (group _target); // group side is more reliable
-            _sidesource = side _source;
+            _sidesource = side (group _source);
 
             _factionsource = getText (((faction _source) call ALiVE_fnc_configGetFactionClass) >> "displayName");
             _factionTarget = getText (((faction _target) call ALiVE_fnc_configGetFactionClass) >> "displayName");

@@ -1201,8 +1201,8 @@ switch(_operation) do {
                             _sides = [];
                             {
                                 _player = _x select 0;
-                                if!((side _player) in _sides) then {
-                                    _sides pushback (side _player);
+                                if!((side group _player) in _sides) then {
+                                    _sides pushback (side group _player);
                                 };
 
                             } forEach _active;
