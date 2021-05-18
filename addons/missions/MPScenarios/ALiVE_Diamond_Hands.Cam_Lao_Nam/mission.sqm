@@ -5,10 +5,10 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=521;
+	toggles=649;
 	class ItemIDProvider
 	{
-		nextID=1290;
+		nextID=1293;
 	};
 	class MarkerIDProvider
 	{
@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=686;
+		nextID=695;
 	};
 	class Camera
 	{
@@ -70,7 +70,8 @@ addons[]=
 	"A3_Structures_F_Civ_Accessories",
 	"A3_Structures_F_Civ_Camping",
 	"cba_xeh",
-	"A3_Structures_F_Items_Tools"
+	"A3_Structures_F_Items_Tools",
+	"A3_Characters_F"
 };
 class AddonsMetaData
 {
@@ -474,7 +475,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=99;
+		items=102;
 		class Item0
 		{
 			dataType="Layer";
@@ -488,7 +489,7 @@ class Mission
 					class PositionInfo
 					{
 						position[]={7572.4438,98.477592,7445.3799};
-						angles[]={6.1677008,0,0.1154846};
+						angles[]={6.167697,0,0.11548844};
 					};
 					id=27;
 					type="ALiVE_require";
@@ -699,7 +700,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="false";
+									value="true";
 								};
 							};
 						};
@@ -14925,6 +14926,43 @@ class Mission
 			id=1289;
 			type="Land_vn_cncbarriermedium_f";
 			atlOffset=0.15440369;
+		};
+		class Item99
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={9118.3896,244.4826,15928.698};
+			};
+			name="hc1";
+			isPlayer=1;
+			id=1290;
+			type="HeadlessClient_F";
+			atlOffset=0.0035552979;
+		};
+		class Item100
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={9118.4736,244.24443,15926.598};
+			};
+			name="hc3";
+			id=1291;
+			type="HeadlessClient_F";
+			atlOffset=0.0090637207;
+		};
+		class Item101
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={9118.5029,244.4265,15927.646};
+			};
+			name="hc2";
+			id=1292;
+			type="HeadlessClient_F";
+			atlOffset=0.069503784;
 		};
 	};
 	class Connections

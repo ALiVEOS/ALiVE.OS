@@ -8,7 +8,7 @@ class EditorData
 	toggles=1545;
 	class ItemIDProvider
 	{
-		nextID=1355;
+		nextID=1358;
 	};
 	class MarkerIDProvider
 	{
@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=615;
+		nextID=620;
 	};
 	class Camera
 	{
@@ -59,13 +59,14 @@ addons[]=
 	"A3_Modules_F_Multiplayer",
 	"alive_mil_logistics",
 	"air_f_vietnam_c",
-	"alive_sys_profile"
+	"alive_sys_profile",
+	"A3_Characters_F"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=30;
+		items=31;
 		class Item0
 		{
 			className="ALiVE_main";
@@ -256,6 +257,13 @@ class AddonsMetaData
 			name="alive_sys_profile";
 			author="ALiVE Mod Team";
 		};
+		class Item30
+		{
+			className="A3_Characters_F";
+			name="Arma 3 Alpha - Characters and Clothing";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
 	};
 };
 randomSeed=8300791;
@@ -410,7 +418,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=66;
+		items=69;
 		class Item0
 		{
 			dataType="Layer";
@@ -424,7 +432,7 @@ class Mission
 					class PositionInfo
 					{
 						position[]={7572.4438,98.477592,7445.3799};
-						angles[]={6.1677008,0,0.1154846};
+						angles[]={6.167697,0,0.11548844};
 					};
 					id=27;
 					type="ALiVE_require";
@@ -635,7 +643,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="false";
+									value="true";
 								};
 							};
 						};
@@ -8617,7 +8625,7 @@ class Mission
 							};
 							id=836;
 							type="vn_b_ammobox_02";
-							atlOffset=2.4795532e-005;
+							atlOffset=-6.1035156e-005;
 							class CustomAttributes
 							{
 								class Attribute0
@@ -8794,7 +8802,7 @@ class Mission
 							};
 							id=875;
 							type="vn_b_ammobox_02";
-							atlOffset=-1.7166138e-005;
+							atlOffset=6.8664551e-005;
 							class CustomAttributes
 							{
 								class Attribute0
@@ -10299,7 +10307,7 @@ class Mission
 			};
 			id=1061;
 			type="vn_b_item_firstaid_01";
-			atlOffset=0.00085258484;
+			atlOffset=0.0007276535;
 		};
 		class Item35
 		{
@@ -11522,7 +11530,7 @@ class Mission
 			};
 			id=1347;
 			type="vn_b_item_wiretap_gh";
-			atlOffset=-7.6293945e-006;
+			atlOffset=-6.6757202e-006;
 		};
 		class Item59
 		{
@@ -11642,6 +11650,43 @@ class Mission
 			id=1354;
 			type="vn_b_item_wiretap_gh";
 			atlOffset=-1.4305115e-005;
+		};
+		class Item66
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={6980.2227,13.873837,8686.2559};
+			};
+			name="hc1";
+			isPlayer=1;
+			id=1355;
+			type="HeadlessClient_F";
+			atlOffset=0.0035552979;
+		};
+		class Item67
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={6980.3066,13.803725,8684.1553};
+			};
+			name="hc3";
+			id=1356;
+			type="HeadlessClient_F";
+			atlOffset=0.0090637207;
+		};
+		class Item68
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={6980.3359,13.90789,8685.2041};
+			};
+			name="hc2";
+			id=1357;
+			type="HeadlessClient_F";
+			atlOffset=0.069503784;
 		};
 	};
 	class Connections

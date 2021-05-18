@@ -41,7 +41,7 @@ debriefing = 1;
 class header {
     gametype = ALIVE;
     minplayers = 1;
-    maxplayers = 12;
+    maxplayers = 13;
     playerCountMultipleOf = 1;
 };
 

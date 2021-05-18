@@ -5,10 +5,10 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=1;
+	toggles=129;
 	class ItemIDProvider
 	{
-		nextID=1085;
+		nextID=1088;
 	};
 	class MarkerIDProvider
 	{
@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=847;
+		nextID=859;
 	};
 	class Camera
 	{
@@ -451,7 +451,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=137;
+		items=140;
 		class Item0
 		{
 			dataType="Layer";
@@ -677,7 +677,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="false";
+									value="true";
 								};
 							};
 						};
@@ -9965,7 +9965,7 @@ class Mission
 			};
 			id=616;
 			type="vn_sign_fob_05";
-			atlOffset=1.6644826;
+			atlOffset=1.6644828;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -15438,8 +15438,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -15448,10 +15448,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_02";
 										};
 									};
 								};
@@ -15514,8 +15514,8 @@ class Mission
 								};
 								class Attribute5
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -15524,10 +15524,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_02";
+											value=0;
 										};
 									};
 								};
@@ -15638,8 +15638,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -15648,10 +15648,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_09";
 										};
 									};
 								};
@@ -15695,8 +15695,8 @@ class Mission
 								};
 								class Attribute4
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -15705,10 +15705,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_09";
+											value=0;
 										};
 									};
 								};
@@ -17276,6 +17276,43 @@ class Mission
 				};
 				nAttributes=14;
 			};
+		};
+		class Item137
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={14734.18,244.1534,9630.4502};
+			};
+			name="hc1";
+			isPlayer=1;
+			id=1085;
+			type="HeadlessClient_F";
+			atlOffset=0.0035552979;
+		};
+		class Item138
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={14734.264,244.1579,9628.3496};
+			};
+			name="hc3";
+			id=1086;
+			type="HeadlessClient_F";
+			atlOffset=0.0090637207;
+		};
+		class Item139
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={14734.293,244.21799,9629.3984};
+			};
+			name="hc2";
+			id=1087;
+			type="HeadlessClient_F";
+			atlOffset=0.069503784;
 		};
 	};
 	class Connections
