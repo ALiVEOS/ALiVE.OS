@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=14916;
+		nextID=15009;
 	};
 	class Camera
 	{
@@ -2309,7 +2309,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="[""vn_default""]";
+							value="[""vn_arsenal_alive""]";
 						};
 					};
 				};
@@ -2984,8 +2984,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -2994,10 +2994,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_02";
 										};
 									};
 								};
@@ -3060,8 +3060,8 @@ class Mission
 								};
 								class Attribute5
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -3070,10 +3070,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_02";
+											value=0;
 										};
 									};
 								};
@@ -3184,8 +3184,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -3194,10 +3194,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_09";
 										};
 									};
 								};
@@ -3241,8 +3241,8 @@ class Mission
 								};
 								class Attribute4
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -3251,10 +3251,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_09";
+											value=0;
 										};
 									};
 								};
@@ -20701,7 +20701,7 @@ class Mission
 			};
 			id=1429;
 			type="vn_b_army_static_m60_high";
-			atlOffset=1.3841472;
+			atlOffset=1.382;
 		};
 		class Item190
 		{
@@ -57249,11 +57249,11 @@ class Mission
 						};
 					};
 					id=2968;
-					atlOffset=0.015780449;
+					atlOffset=0.031559944;
 				};
 			};
 			id=2980;
-			atlOffset=0.015780449;
+			atlOffset=0.031559944;
 		};
 		class Item811
 		{

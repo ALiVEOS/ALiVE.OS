@@ -16231,7 +16231,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="[""vn_default""]";
+							value="[""vn_arsenal_alive""]";
 						};
 					};
 				};
