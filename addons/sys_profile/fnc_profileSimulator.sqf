@@ -180,7 +180,7 @@ if (!_simAttacks) then {
                                 private _destination = [_activeWaypoint,"position"] call ALiVE_fnc_hashGet;
                                 private _completionRadius = [_activeWaypoint,"completionRadius"] call ALiVE_fnc_hashGet;
                                 private _statements = [_activeWaypoint,"statements"] call ALiVE_fnc_hashGet;
-                                private _distanceToWaypoint = _profilePosition distance _destination;
+                                private _distanceToWaypoint = _profilePosition distance2D _destination;
 
                                 private _speedPerSecondArray = _profile select 2 select 22;
                                 private _speedPerSecond = _speedPerSecondArray select 1;
