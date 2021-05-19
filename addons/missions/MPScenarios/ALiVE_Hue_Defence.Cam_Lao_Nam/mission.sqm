@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=15288;
+		nextID=15474;
 	};
 	class Camera
 	{
@@ -12940,6 +12940,7 @@ class Mission
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{if (local this && !isMultiplayer) then {deleteVehicle this}}";
 						name="vn_xray_02_01";
 						description="Squad Leader";
 						isPlayable=1;
@@ -13020,6 +13021,7 @@ class Mission
 					flags=4;
 					class Attributes
 					{
+						init="call{if (local this && !isMultiplayer) then {deleteVehicle this}}";
 						name="vn_xray_02_02";
 						description="Radio Telephone Operator";
 						isPlayable=1;
@@ -13101,6 +13103,7 @@ class Mission
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{if (local this && !isMultiplayer) then {deleteVehicle this}}";
 						name="vn_xray_02_06";
 						description="Demolitions ";
 						isPlayable=1;
@@ -13181,6 +13184,7 @@ class Mission
 					flags=4;
 					class Attributes
 					{
+						init="call{if (local this && !isMultiplayer) then {deleteVehicle this}}";
 						name="vn_xray_02_03";
 						description="Medic";
 						isPlayable=1;
@@ -13263,6 +13267,7 @@ class Mission
 					class Attributes
 					{
 						rank="MAJOR";
+						init="call{if (local this && !isMultiplayer) then {deleteVehicle this}}";
 						name="vn_xray_02_04";
 						description="Rifleman";
 						isPlayable=1;
@@ -13344,6 +13349,7 @@ class Mission
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{if (local this && !isMultiplayer) then {deleteVehicle this}}";
 						name="vn_xray_02_10";
 						description="Rifleman";
 						isPlayable=1;
@@ -13425,6 +13431,7 @@ class Mission
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{if (local this && !isMultiplayer) then {deleteVehicle this}}";
 						name="vn_xray_02_08";
 						description="Marksman";
 						isPlayable=1;
@@ -13505,6 +13512,7 @@ class Mission
 					flags=4;
 					class Attributes
 					{
+						init="call{if (local this && !isMultiplayer) then {deleteVehicle this}}";
 						name="vn_xray_02_05";
 						description="M60 Machine Gunner";
 						isPlayable=1;
@@ -13585,6 +13593,7 @@ class Mission
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{if (local this && !isMultiplayer) then {deleteVehicle this}}";
 						name="vn_xray_02_07";
 						description="Grenadier";
 						isPlayable=1;
@@ -13667,6 +13676,7 @@ class Mission
 					class Attributes
 					{
 						rank="SERGEANT";
+						init="call{if (local this && !isMultiplayer) then {deleteVehicle this}}";
 						name="vn_xray_02_09";
 						description="Sniper";
 						isPlayable=1;
@@ -20701,7 +20711,7 @@ class Mission
 			};
 			id=1429;
 			type="vn_b_army_static_m60_high";
-			atlOffset=1.3841472;
+			atlOffset=1.382;
 		};
 		class Item190
 		{
