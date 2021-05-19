@@ -872,7 +872,7 @@ switch (_taskState) do {
                         _active = _profile select 2 select 1;
                         _unit = _profile select 2 select 10;
 
-                        if(_active && {vehicle _unit == _unit} && {_unit distance _taskPosition <= 10}) then {
+                        if(_active && {vehicle _unit == _unit} && {(getpos _unit) select 2 < 2} && {_unit distance _taskPosition <= 10}) then {
                             [_unit] joinSilent grpNull;
                             [_unit, _taskPosition] call ALiVE_fnc_doMoveRemote;
 
