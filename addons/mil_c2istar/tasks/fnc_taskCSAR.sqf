@@ -857,7 +857,7 @@ switch (_taskState) do {
 
             }else{
 
-                _destinationReached = [_taskPosition, _taskPlayers, 50] call ALIVE_fnc_taskHavePlayersReachedDestination;
+                _destinationReached = [_taskPosition, _taskPlayers, 10] call ALIVE_fnc_taskHavePlayersReachedDestination;
 
                 // the players are at the return point
                 if(_destinationReached) then {
@@ -872,11 +872,12 @@ switch (_taskState) do {
                         _active = _profile select 2 select 1;
                         _unit = _profile select 2 select 10;
 
-                        if(_active && {vehicle _unit == _unit && _unit distance _taskPosition < 40}) then {
+                        if(_active && {vehicle _unit == _unit} && {_unit distance _taskPosition <= 10}) then {
                             [_unit] joinSilent grpNull;
                             [_unit, _taskPosition] call ALiVE_fnc_doMoveRemote;
+
                             _returnReached = true;
-                            [_params,"returnReached",true] call ALIVE_fnc_hashSet;
+                            [_params,"returnReached",_returnReached] call ALIVE_fnc_hashSet;
                         };
                     } foreach _profiles;
 
