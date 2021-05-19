@@ -5,7 +5,7 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=522;
+	toggles=650;
 	class ItemIDProvider
 	{
 		nextID=3204;
@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=15195;
+		nextID=15288;
 	};
 	class Camera
 	{
@@ -2984,8 +2984,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -2994,10 +2994,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_02";
+											value=0;
 										};
 									};
 								};
@@ -3060,8 +3060,8 @@ class Mission
 								};
 								class Attribute5
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -3070,10 +3070,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_02";
 										};
 									};
 								};
@@ -3184,8 +3184,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -3194,10 +3194,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_09";
+											value=0;
 										};
 									};
 								};
@@ -3241,8 +3241,8 @@ class Mission
 								};
 								class Attribute4
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -3251,10 +3251,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_09";
 										};
 									};
 								};
@@ -20701,7 +20701,7 @@ class Mission
 			};
 			id=1429;
 			type="vn_b_army_static_m60_high";
-			atlOffset=1.382;
+			atlOffset=1.3841472;
 		};
 		class Item190
 		{
@@ -68577,37 +68577,39 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={18611.965,21.407715,8377.0596};
+				position[]={18611.965,21.408152,8377.0596};
 			};
 			name="hc1";
-			isPlayer=1;
+			isPlayable=1;
 			id=3201;
 			type="HeadlessClient_F";
-			atlOffset=0.0035629272;
+			atlOffset=0.0039997101;
 		};
 		class Item996
 		{
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={18612.049,21.401367,8374.959};
+				position[]={18612.049,21.4013,8374.959};
 			};
 			name="hc3";
+			isPlayable=1;
 			id=3202;
 			type="HeadlessClient_F";
-			atlOffset=0.0090694427;
+			atlOffset=0.0090026855;
 		};
 		class Item997
 		{
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={18612.078,21.468018,8376.0078};
+				position[]={18612.078,21.46752,8376.0078};
 			};
 			name="hc2";
+			isPlayable=1;
 			id=3203;
 			type="HeadlessClient_F";
-			atlOffset=0.069498062;
+			atlOffset=0.069000244;
 		};
 	};
 	class Connections

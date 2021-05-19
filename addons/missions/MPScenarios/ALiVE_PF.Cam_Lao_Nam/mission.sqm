@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=859;
+		nextID=895;
 	};
 	class Camera
 	{
@@ -15438,8 +15438,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -15448,10 +15448,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_02";
+											value=0;
 										};
 									};
 								};
@@ -15514,8 +15514,8 @@ class Mission
 								};
 								class Attribute5
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -15524,10 +15524,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_02";
 										};
 									};
 								};
@@ -15638,8 +15638,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -15648,10 +15648,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_09";
+											value=0;
 										};
 									};
 								};
@@ -15695,8 +15695,8 @@ class Mission
 								};
 								class Attribute4
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -15705,10 +15705,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_09";
 										};
 									};
 								};
@@ -17282,37 +17282,39 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={14734.18,244.1534,9630.4502};
+				position[]={14734.18,244.15384,9630.4502};
 			};
 			name="hc1";
-			isPlayer=1;
+			isPlayable=1;
 			id=1085;
 			type="HeadlessClient_F";
-			atlOffset=0.0035552979;
+			atlOffset=0.0039978027;
 		};
 		class Item138
 		{
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={14734.264,244.1579,9628.3496};
+				position[]={14734.264,244.15784,9628.3496};
 			};
 			name="hc3";
+			isPlayable=1;
 			id=1086;
 			type="HeadlessClient_F";
-			atlOffset=0.0090637207;
+			atlOffset=0.0090026855;
 		};
 		class Item139
 		{
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={14734.293,244.21799,9629.3984};
+				position[]={14734.293,244.21849,9629.3984};
 			};
 			name="hc2";
+			isPlayable=1;
 			id=1087;
 			type="HeadlessClient_F";
-			atlOffset=0.069503784;
+			atlOffset=0.070007324;
 		};
 	};
 	class Connections

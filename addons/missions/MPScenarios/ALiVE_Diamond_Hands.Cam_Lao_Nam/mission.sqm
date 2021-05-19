@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=695;
+		nextID=704;
 	};
 	class Camera
 	{
@@ -14932,37 +14932,39 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={9118.3896,244.4826,15928.698};
+				position[]={9118.3896,244.48303,15928.698};
 			};
 			name="hc1";
-			isPlayer=1;
+			isPlayable=1;
 			id=1290;
 			type="HeadlessClient_F";
-			atlOffset=0.0035552979;
+			atlOffset=0.0039825439;
 		};
 		class Item100
 		{
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={9118.4736,244.24443,15926.598};
+				position[]={9118.4736,244.24435,15926.598};
 			};
 			name="hc3";
+			isPlayable=1;
 			id=1291;
 			type="HeadlessClient_F";
-			atlOffset=0.0090637207;
+			atlOffset=0.0089874268;
 		};
 		class Item101
 		{
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={9118.5029,244.4265,15927.646};
+				position[]={9118.5029,244.42699,15927.646};
 			};
 			name="hc2";
+			isPlayable=1;
 			id=1292;
 			type="HeadlessClient_F";
-			atlOffset=0.069503784;
+			atlOffset=0.069992065;
 		};
 	};
 	class Connections
