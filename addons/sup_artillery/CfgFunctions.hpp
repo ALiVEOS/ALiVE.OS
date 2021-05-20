@@ -1,16 +1,11 @@
 class cfgFunctions {
-        class PREFIX {
-                class COMPONENT {
-                        class ARTILLERY {
-                                description = "The main class";
-                                file = "\x\alive\addons\sup_artillery\fnc_artillery.sqf";
+    class PREFIX {
+        class COMPONENT {
+            class loadRounds {
+                description = "";
+                file = "\x\alive\addons\sup_artillery\fnc_loadRounds.sqf";
                 RECOMPILE;
-                        };
-                        class artilleryInit {
-                                description = "The module initialisation function";
-                                file = "\x\alive\addons\sup_artillery\fnc_artilleryInit.sqf";
-                RECOMPILE;
-                        };
-                   };
+            };
         };
+    };
 };
