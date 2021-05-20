@@ -62,14 +62,45 @@ if (_debug) then {
     diag_log format ["ALIVE-%1 Suicide Bomber: created at %2 going after %3", time, _pos, name _victim];
 };
 
+[
+    {
+        [
+            // condition
+            {
+                if (!isNil "_victim" && {time - _timer > 15}) then {
+                    [_bomber, getposATL _victim] call ALiVE_fnc_doMoveRemote;
+                    if (ADDON getVariable ["debug",false]) then {
+                        _marker = _bomber getVariable ["marker", nil];
+                        if (isNil "_marker" || {!(_marker in allMapMarkers)}) then {
+                            private ["_markers"];
+                            _marker = [format ["suic_%1", random 1000], position _bomber , "Icon", [1,1], "TEXT:", "Suicide", "TYPE:", "mil_dot", "COLOR:", "ColorRed", "GLOBAL"] call CBA_fnc_createMarker;
+                            _bomber setVariable ["marker", _marker];
+                        } else {
+                            _marker setmarkerpos position _bomber;
+                        };
+                    } else {
+                        _marker = _bomber getVariable ["marker", ""];
+                        [_marker] call CBA_fnc_deleteEntity;
+                    };
+                    _timer = time;
+                };
+
+                !(alive _victim) || (isNil "_victim") || (_bomber distance _victim < 8) || (time > _time) || !(alive _bomber)
+            },
+            // condition reached
+            {
+
+            },
+            _this
+        ] call CBA_fnc_waitUntilAndExecute;
+    },
+    random 60,
+    [_victim,_bomber, _pos]
+] call CBA_fnc_waitAndExecute;
+
 [_victim,_bomber, _pos] spawn {
 
-    private["_victim","_bomber","_debug","_marker","_shell","_pos"];
-
-    _victim = _this select 0;
-    _bomber = _this select 1;
-    _pos = _this select 2;
-    sleep (random 60);
+    private["_debug","_marker","_shell"];
 
     // Have bomber go after victim for up to 10 minutes
     _time = time + 600;
@@ -99,7 +130,7 @@ if (_debug) then {
         !(alive _victim) || (isNil "_victim") || (_bomber distance _victim < 8) || (time > _time) || !(alive _bomber)
     };
 
-    if (!(alive _victim) || isNil "_victim") exitWith {    deletevehicle _bomber;};
+    if (!(alive _victim) || isNil "_victim") exitWith { deletevehicle _bomber;};
 
     // Blow up bomber
     if ((_bomber distance _victim < 8) && (alive _bomber)) then {
