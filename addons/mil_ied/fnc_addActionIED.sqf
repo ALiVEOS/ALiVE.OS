@@ -8,6 +8,6 @@ private _debug = (MOD(mil_ied) getVariable ["debug", 0]);
 
 if (isServer && _debug) then {["addActionIED running."] call ALiVE_fnc_dump};
 
-_this addAction ["<t color='#ff0000'>Disarm IED</t>",ALiVE_fnc_disarmIED, "", 6, false, true,"", "", 3];
+_this addAction ["<t color='#ff0000'>Disarm IED</t>", ALiVE_fnc_disarmIED, "", 6, false, true,"", "", 3];
 
 _this call ALiVE_fnc_aceMenu_addActionIED;

@@ -76,6 +76,16 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_ied\fnc_removeActionIED.sqf";
                                 RECOMPILE;
                         };
+                        class bomberDetonate {
+                                description = "Suicide bomber has reached its target or has reached its timeout";
+                                file = "\x\alive\addons\mil_ied\fnc_bomberDetonate.sqf";
+                                RECOMPILE;
+                        };
+                        class bomberHuntForTarget {
+                                description = "Command Suicide bomber to move towards its target";
+                                file = "\x\alive\addons\mil_ied\fnc_bomberHuntForTarget.sqf";
+                                RECOMPILE;
+                        };
                 };
         };
 };
