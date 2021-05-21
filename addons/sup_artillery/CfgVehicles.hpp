@@ -86,21 +86,23 @@ class CfgVehicles {
         displayName = "Artillery Test";
         is3DEN = 1;
         class Attributes {
+            // class ArtilleryClass {
+            //     control = "Edit";
+            //     displayName = "Artillery Classname";
+            //     tooltip = "The classname of the artillery unit";
+            //     property = "artilleryClassname";
+
+            //     expression = "_this setVariable ['%s',_value];";
+            //     defaultValue = "'B_MBT_01_arty_F'";
+            // };
             class ArtilleryClass {
-                control = "Edit";
-                displayName = "Artillery Classname";
-                tooltip = "The classname of the artillery unit";
-                property = "artilleryClassname";
-                defaultValue = "'B_MBT_01_arty_F'";
-            };
-            class RoundCount {
-                control = "ALiVE_Artillery_RoundCount";
+                control = "ALiVE_ArtilleryClassInfo";
                 displayName = "TEST ME BABY ONE MORE TIME";
                 tooltip = "YOU DONT DESERVE A TOOLTIP";
-                property = "RoundCount";
+                property = "ArtilleryClassInfo";
 
                 expression = "_this setVariable ['%s', str _value];";
-                defaultValue = "_this call ALiVE_fnc_defaultValueArtilleryRounds";
+                defaultValue = "str ['B_MBT_01_arty_F', []]";
             };
         };
     };
@@ -117,9 +119,9 @@ class Cfg3DEN {
             };
         };
 
-        class ALiVE_Artillery_RoundCount: Title {
-            attributeLoad = "[_this, _value] call ALiVE_fnc_loadRounds";
-            attributeSave = "systemchat str [_this]";
+        class ALiVE_ArtilleryClassInfo: Title {
+            attributeLoad = "[_this, _value] call ALiVE_fnc_artilleryInfoLoad";
+            attributeSave = "[_this, _value] call ALiVE_fnc_artilleryInfoSave";
             class Controls: Controls {};
         };
     };

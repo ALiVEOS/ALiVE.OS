@@ -1,9 +1,9 @@
 @echo off
 rem set exe=echo
-set exe=MakePBO -A -BD -L -P -U -X=thumbs.db,*.h,*.dep,*.bak,*.png,*.log,*.pew -Z=default 
+set exe=MakePBO -A -P -U -N -X=thumbs.db,*.h,*.dep,*.bak,*.png,*.log,*.pew
 set source=P:\x\alive\addons
 
-set exeuncommpressed=MakePBO.exe -A -BD -L -P -X=thumbs.db,*.h,*.dep,*.bak,*.png,*.log,*.pew
+set exeuncommpressed=MakePBO.exe -A -N -P -X=thumbs.db,*.h,*.dep,*.bak,*.png,*.log,*.pew
 set uncommpressedsource=P:\x\alive\addons\mil_OPCOM
 
 rem ********************
