@@ -141,7 +141,14 @@ switch (_taskState) do {
                     if (count _targetBuildings < 2) then {
                         _targetPosition = [_targetPosition,500] call ALiVE_fnc_findFlatArea;
 
-                        //[_targetPosition, "camps", _taskEnemyFaction, 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+                        private ["_category","_compType"];
+                        _compType = "Military";
+                        If (_taskEnemySide == "GUER") then {
+                            _compType = "Guerrilla";
+                        };
+                        _category = (selectRandom ["HQ", "Outposts", "FieldHQ", "Camps"]);
+
+                        [_targetPosition, _compType, _category, _taskEnemyFaction, "Small", 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
                         private ["_category","_compType"];
                         _compType = "Military";
                         If (_taskEnemySide == "GUER") then {
@@ -158,7 +165,7 @@ switch (_taskState) do {
             _targetPosition = _taskLocation;
 
             // Check for buildings before spawning a composition
-            private _targetBuildings = nearestObjects [_targetPosition, ["House", "Building"], 300];
+            private _targetBuildings = nearestObjects [_targetPosition, ["House", "Building"], 100];
 
             if (count _targetBuildings < 2) then {
                 private ["_category","_compType"];
