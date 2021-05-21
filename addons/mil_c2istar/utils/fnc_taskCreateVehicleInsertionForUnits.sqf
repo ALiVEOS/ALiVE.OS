@@ -23,7 +23,7 @@ ARJay
 
 [_this] spawn {
 
-    private ["_args","_insertionPosition","_taskPosition","_nearRoadsTaskPosition","_nearRoadsInsertionPosition","_taskSide","_taskFaction","_taskProfile","_taskProfileID","_insertionTypes","_countUnits","_insertionType","_carClasses","_heliClasses"];
+    private ["_args","_heliPad","_insertionPosition","_taskPosition","_nearRoadsTaskPosition","_nearRoadsInsertionPosition","_taskSide","_taskFaction","_taskProfile","_taskProfileID","_insertionTypes","_countUnits","_insertionType","_carClasses","_heliClasses"];
 
     _args = _this select 0;
 
@@ -100,7 +100,7 @@ ARJay
         _insertionType = (selectRandom _insertionTypes);
     };
 
-    private ["_vehicleClass","_profiles","_crewProfile","_crewProfileID","_vehicleProfile","_vehicleProfileID","_profileWaypoint"];
+    private ["_vehicleClass","_profiles","_crewProfile","_crewProfileID","_vehicleProfile","_vehicleProfileID","_profileWaypoint","_transportPosition"];
 
     switch(_insertionType) do {
         case "Car":{
@@ -113,12 +113,12 @@ ARJay
 
             [_taskProfile,_vehicleProfile] call ALIVE_fnc_createProfileVehicleAssignment;
 
-            _taskPosition = [_taskPosition] call ALIVE_fnc_getClosestRoad;
+            _transportPosition = [_taskPosition] call ALIVE_fnc_getClosestRoad;
 
-            _profileWaypoint = [_taskPosition, 100, "MOVE", "NORMAL", 100, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+            _profileWaypoint = [_transportPosition, 5, "MOVE", "NORMAL", 100, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
             [_crewProfile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
-            _profileWaypoint = [_taskPosition, 25, "MOVE", "LIMITED", 25, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+            _profileWaypoint = [_taskPosition, 5, "MOVE", "LIMITED", 25, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
             [_taskProfile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
         };
         case "Helicopter":{
@@ -131,15 +131,61 @@ ARJay
 
             [_taskProfile,_vehicleProfile] call ALIVE_fnc_createProfileVehicleAssignment;
 
-            _profileWaypoint = [_taskPosition, 100, "MOVE", "LIMITED", 100, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+            _transportPosition = _taskPosition findEmptyPosition [10,200,_vehicleClass];
+
+            if (count _transportPosition == 0) then {
+                _transportPosition = [_taskPosition,0,200,10,0,0.2,0,[],[_taskPosition]] call BIS_fnc_findSafePos;
+                ["Defaulting to sp"] call ALiVE_fnc_DumpR;
+            };
+
+            _heliPad = "Land_HelipadEmpty_F" createVehicle _transportPosition;
+
+            _profileWaypoint = [_transportPosition, 1, "TR UNLOAD", "LIMITED", 100, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
             [_crewProfile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
-            _profileWaypoint = [_taskPosition, 25, "MOVE", "FULL", 25, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+            _profileWaypoint = [_taskPosition, 10, "MOVE", "FULL", 25, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
             [_taskProfile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
         };
     };
 
     private ["_waypointComplete"];
+
+    waitUntil {
+        sleep 5;
+
+        _crewProfile = [ALIVE_profileHandler, "getProfile", _crewProfileID] call ALIVE_fnc_profileHandler;
+        if!(isNil "_crewProfile") then {
+            _waypointComplete = [_crewProfile,"checkWaypointComplete"] call ALIVE_fnc_profileEntity;
+
+            private _active = _crewProfile select 2 select 1;
+
+            if (_waypointComplete && {_active}) then {
+                private _group = _crewProfile select 2 select 13;
+                private _leader = leader _group;
+
+                if ((getposATL _leader) select 2 > 2) then {
+                    _waypointComplete = false;
+                };
+            };
+        } else {
+            _waypointComplete = true;
+        };
+
+        _waypointComplete
+    };
+
+    _taskProfile = [ALIVE_profileHandler, "getProfile", _taskProfileID] call ALIVE_fnc_profileHandler;
+    _vehicleProfile = [ALIVE_profileHandler, "getProfile", _vehicleProfileID] call ALIVE_fnc_profileHandler;
+
+    if(!(isNil "_taskProfile") && !(isNil "_vehicleProfile")) then {
+        [_taskProfile,_vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
+    };
+
+    _crewProfile = [ALIVE_profileHandler, "getProfile", _crewProfileID] call ALIVE_fnc_profileHandler;
+    if!(isNil "_crewProfile") then {
+        _profileWaypoint = [_insertionPosition, 100, "MOVE", "NORMAL", 100, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+        [_crewProfile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+    };
 
     waitUntil {
         sleep 5;
@@ -154,18 +200,15 @@ ARJay
         _waypointComplete
     };
 
-    _taskProfile = [ALIVE_profileHandler, "getProfile", _taskProfileID] call ALIVE_fnc_profileHandler;
-    _vehicleProfile = [ALIVE_profileHandler, "getProfile", _vehicleProfileID] call ALIVE_fnc_profileHandler;
-
-    if(!(isNil "_taskProfile") && !(isNil "_vehicleProfile")) then {
-        [_taskProfile,_vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
+    if (!isnil "_heliPad") then {
+        deleteVehicle _heliPad;
     };
 
+    if (!isnil "_crewProfile") then {
+        [_crewProfile, "destroy"] call ALIVE_fnc_profileEntity;
+    };
 
-
-    _crewProfile = [ALIVE_profileHandler, "getProfile", _crewProfileID] call ALIVE_fnc_profileHandler;
-    if!(isNil "_crewProfile") then {
-        _profileWaypoint = [_insertionPosition, 100, "MOVE", "LIMITED", 100, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
-        [_crewProfile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+    if (!isnil "_vehicleProfile") then {
+        [_vehicleProfile,"destroy"] call ALIVE_fnc_profileVehicle;
     };
 };
