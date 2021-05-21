@@ -1,5 +1,5 @@
 #include "\x\alive\addons\mil_IED\script_component.hpp"
-SCRIPT(bomberOnFrame);
+SCRIPT(bomberHuntForTarget);
 
 params ["_args","_handle"];
 

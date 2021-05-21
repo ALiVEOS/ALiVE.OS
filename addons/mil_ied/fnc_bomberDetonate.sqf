@@ -1,5 +1,5 @@
 #include "\x\alive\addons\mil_IED\script_component.hpp"
-SCRIPT(bomberOnFrame);
+SCRIPT(bomberDetonate);
 
 params ["_victim","_bomber","_pos"];
 
