@@ -215,11 +215,6 @@ if (!_simAttacks) then {
                                     private _handleWPcomplete = {};
 
                                     switch ([_activeWaypoint,"type"] call ALiVE_fnc_hashGet) do {
-                                        case "MOVE" : {
-                                            _direction = _profilePosition getDir _destination;
-                                            _newPosition = _profilePosition getPos [_moveDistance, _direction];
-                                            _handleWPcomplete = {};
-                                        };
                                         case "CYCLE" : {
                                             _direction = _profilePosition getDir _destination;
                                             _newPosition = _profilePosition getPos [_moveDistance, _direction];
@@ -227,6 +222,12 @@ if (!_simAttacks) then {
                                                 _waypoints append _waypointsCompleted;
                                                 _waypointsCompleted = [];
                                             };
+                                        };
+                                        default {
+                                            //Default MOVE command for all other types
+                                            _direction = _profilePosition getDir _destination;
+                                            _newPosition = _profilePosition getPos [_moveDistance, _direction];
+                                            _handleWPcomplete = {};
                                         };
                                     };
 
