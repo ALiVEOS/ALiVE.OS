@@ -512,7 +512,10 @@ switch (_taskState) do {
             _entitiesState = [_entityProfiles] call ALIVE_fnc_taskGetStateOfEntityProfiles;
             _dead = [_entitiesState,"allDestroyed"] call ALIVE_fnc_hashGet;
 
-            if (_dead || time > _startTime + 3300) then {
+            if (_dead || {time > _startTime + 3300}) then {
+
+                //execute hostage as a sort of cleanup :)
+                _hostage setCaptive false;
 
                 // Next Task will be empty so a new one gets created
                 [_params,"nextTask",""] call ALIVE_fnc_hashSet;
