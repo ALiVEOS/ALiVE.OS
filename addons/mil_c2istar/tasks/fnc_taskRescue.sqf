@@ -439,6 +439,8 @@ switch (_taskState) do {
                         _hostageProfile1 = [_unitDetails select 0,_taskSide,_taskFaction, _targetPosition,random(360),_taskFaction,true] call ALIVE_fnc_createProfileEntity;
                         _hostageProfile1ID = _hostageProfile1 select 2 select 4;
 
+                        [_hostageProfile1,"spawnType",["preventDespawn"]] call ALiVE_fnc_profileEntity;
+
                         waitUntil {
                             sleep 1;
                             _hostage1Active = _hostageProfile1 select 2 select 1;
