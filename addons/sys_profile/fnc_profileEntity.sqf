@@ -1182,19 +1182,28 @@ switch(_operation) do {
         // not already inactive
         if (_active) then {
 
-            // if any linked profiles have despawn prevented
             private _despawnPrevented = false;
             private _linked = [_logic] call ALIVE_fnc_vehicleAssignmentsGetLinkedProfiles;
             //_linked call ALIVE_fnc_inspectHash;
+
+            // check if any linked profiles have despawn prevented
             if (count (_linked select 1) > 1) then {
                 {
-                    private _spawnType = [_x,"spawnType"] call ALIVE_fnc_hashGet;
+                    private _spawnType = [_x,"spawnType",[]] call ALIVE_fnc_hashGet;
                     if (count _spawnType > 0) then {
                         if(_spawnType select 0 == "preventDespawn") then {
                             _despawnPrevented = true;
                         };
                     }
                 } forEach (_linked select 2);
+            // check if entity-profile itself has despawn prevented
+            } else {
+                private _spawnType = [_logic, "spawnType",[]] call ALIVE_fnc_HashGet;
+                if (count _spawnType > 0) then {
+                    if(_spawnType select 0 == "preventDespawn") then {
+                        _despawnPrevented = true;
+                    };
+                };
             };
 
             if !(_despawnPrevented) then {
