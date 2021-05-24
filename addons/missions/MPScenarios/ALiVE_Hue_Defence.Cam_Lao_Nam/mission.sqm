@@ -5,7 +5,7 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=650;
+	toggles=522;
 	class ItemIDProvider
 	{
 		nextID=3204;
@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=15474;
+		nextID=15567;
 	};
 	class Camera
 	{
@@ -2984,8 +2984,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -2994,10 +2994,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_02";
 										};
 									};
 								};
@@ -3060,8 +3060,8 @@ class Mission
 								};
 								class Attribute5
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -3070,10 +3070,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_02";
+											value=0;
 										};
 									};
 								};
@@ -3184,8 +3184,8 @@ class Mission
 								};
 								class Attribute1
 								{
-									property="enableStamina";
-									expression="_this enablestamina _value;";
+									property="face";
+									expression="_this setface _value;";
 									class Value
 									{
 										class data
@@ -3194,10 +3194,10 @@ class Mission
 											{
 												type[]=
 												{
-													"BOOL"
+													"STRING"
 												};
 											};
-											value=0;
+											value="WhiteHead_09";
 										};
 									};
 								};
@@ -3241,8 +3241,8 @@ class Mission
 								};
 								class Attribute4
 								{
-									property="face";
-									expression="_this setface _value;";
+									property="enableStamina";
+									expression="_this enablestamina _value;";
 									class Value
 									{
 										class data
@@ -3251,10 +3251,10 @@ class Mission
 											{
 												type[]=
 												{
-													"STRING"
+													"BOOL"
 												};
 											};
-											value="WhiteHead_09";
+											value=0;
 										};
 									};
 								};
@@ -8615,7 +8615,7 @@ class Mission
 											"SCALAR"
 										};
 									};
-									value=0;
+									value=6;
 								};
 							};
 						};
@@ -9741,7 +9741,7 @@ class Mission
 											"SCALAR"
 										};
 									};
-									value=0;
+									value=6;
 								};
 							};
 						};
@@ -10484,7 +10484,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="70";
+							value="50";
 						};
 					};
 				};
@@ -10579,7 +10579,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="70";
+							value="50";
 						};
 					};
 				};
@@ -14099,7 +14099,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={17106.078,8.5799999,9159.9199};
-				angles[]={0,1.3370477,0};
+				angles[]={0,1.3370444,0};
 			};
 			id=866;
 			type="ALiVE_mil_placement_custom";
@@ -14310,7 +14310,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="35";
+							value="65";
 						};
 					};
 				};
@@ -14405,7 +14405,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="35";
+							value="65";
 						};
 					};
 				};
@@ -15266,7 +15266,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="60";
+							value="70";
 						};
 					};
 				};
@@ -15361,7 +15361,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="60";
+							value="70";
 						};
 					};
 				};
@@ -20711,7 +20711,7 @@ class Mission
 			};
 			id=1429;
 			type="vn_b_army_static_m60_high";
-			atlOffset=1.382;
+			atlOffset=1.3841472;
 		};
 		class Item190
 		{
@@ -36914,12 +36914,12 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={17436.848,7.9633789,9202.6416};
+				position[]={17436.848,7.9629998,9202.6416};
 				angles[]={0,1.2037362,0};
 			};
 			id=2514;
 			type="ModuleEffectsSmoke_F";
-			atlOffset=0.84337902;
+			atlOffset=0.84299994;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -67987,8 +67987,8 @@ class Mission
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={17127.553,19.445652,9796.6475};
-				angles[]={0,4.3546705,0};
+				position[]={17127.553,19.445999,9796.6475};
+				angles[]={0,4.3546662,0};
 			};
 			side="Empty";
 			flags=1;
@@ -67998,7 +67998,7 @@ class Mission
 			};
 			id=3190;
 			type="Land_vn_bagfence_long_f";
-			atlOffset=0.9756279;
+			atlOffset=0.97597504;
 			class CustomAttributes
 			{
 				class Attribute0
