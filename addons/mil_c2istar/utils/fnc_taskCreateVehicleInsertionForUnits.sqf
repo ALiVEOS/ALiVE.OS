@@ -99,7 +99,7 @@ ARJay
     }else{
         _insertionType = (selectRandom _insertionTypes);
     };
-
+    
     private ["_vehicleClass","_profiles","_crewProfile","_crewProfileID","_vehicleProfile","_vehicleProfileID","_profileWaypoint","_transportPosition"];
 
     switch(_insertionType) do {
@@ -110,6 +110,17 @@ ARJay
             _crewProfileID = _crewProfile select 2 select 4;
             _vehicleProfile = _profiles select 1;
             _vehicleProfileID = _vehicleProfile select 2 select 4;
+
+            {
+                private _profile = _x;
+
+                private _type = [_profile,"type",""] call ALiVE_fnc_HashGet;
+
+                switch (tolower _type) do {
+                    case "entity" : {[_profile,"spawnType",["preventDespawn"]] call ALiVE_fnc_profileEntity};
+                    case "vehicle" : {[_profile,"spawnType",["preventDespawn"]] call ALiVE_fnc_profileVehicle};
+                };
+            } foreach _profiles;
 
             [_taskProfile,_vehicleProfile] call ALIVE_fnc_createProfileVehicleAssignment;
 
